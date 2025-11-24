@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "danger_manager.h"
+
 #include "custommonster.h"
 #include "memory_space.h"
 #include "profiler.h"
@@ -18,6 +19,8 @@
 #include "object_broker.h"
 #include "script_game_object.h"
 
+namespace
+{
 struct CDangerPredicate
 {
     const CObject* m_object;
@@ -81,8 +84,9 @@ struct CRemoveByTimePredicate
         return (false);
     }
 };
+} // namespace
 
-CDangerManager::~CDangerManager() {}
+CDangerManager::~CDangerManager() = default;
 
 void CDangerManager::Load(LPCSTR)
 {
@@ -222,16 +226,18 @@ void CDangerManager::add(const CVisibleObject& object)
         return;
 
     const CEntityAlive* obj = smart_cast<const CEntityAlive*>(object.m_object);
-    if (obj && !obj->g_Alive() && (obj->killer_id() != ALife::_OBJECT_ID(-1)))
+    if (obj && !obj->g_Alive() && obj->killer_id() != std::numeric_limits<ALife::_OBJECT_ID>::max())
     {
         if (!on_before_add.empty())
         {
-            sol::function func;
-            if (ai().script_engine().function(on_before_add.c_str(), func))
+            if (sol::function func; ai().script_engine().function(on_before_add.c_str(), func))
+            {
                 if (!func(m_object->lua_game_object(), object, obj->Position(), object.m_level_time, CDangerObject::eDangerTypeFreshEntityCorpse,
                           CDangerObject::eDangerPerceiveTypeVisual))
                     return;
+            }
         }
+
         add(CDangerObject(obj, obj->Position(), object.m_level_time, CDangerObject::eDangerTypeFreshEntityCorpse, CDangerObject::eDangerPerceiveTypeVisual));
         return;
     }
@@ -248,12 +254,14 @@ void CDangerManager::add(const CSoundObject& object)
     {
         if (!on_before_add.empty())
         {
-            luabind::functor<bool> funct;
-            if (ai().script_engine().functor(on_before_add.c_str(), funct))
-                if (!funct(m_object->lua_game_object(), object, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeBulletRicochet,
-                           CDangerObject::eDangerPerceiveTypeSound))
+            if (sol::function func; ai().script_engine().function(on_before_add.c_str(), func))
+            {
+                if (!func(m_object->lua_game_object(), object, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeBulletRicochet,
+                          CDangerObject::eDangerPerceiveTypeSound))
                     return;
+            }
         }
+
         add(CDangerObject(obj, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeBulletRicochet, CDangerObject::eDangerPerceiveTypeSound));
         return;
     }
@@ -262,12 +270,14 @@ void CDangerManager::add(const CSoundObject& object)
     {
         if (!on_before_add.empty())
         {
-            luabind::functor<bool> funct;
-            if (ai().script_engine().functor(on_before_add.c_str(), funct))
-                if (!funct(m_object->lua_game_object(), object, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeAttackSound,
-                           CDangerObject::eDangerPerceiveTypeSound))
+            if (sol::function func; ai().script_engine().function(on_before_add.c_str(), func))
+            {
+                if (!func(m_object->lua_game_object(), object, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeAttackSound,
+                          CDangerObject::eDangerPerceiveTypeSound))
                     return;
+            }
         }
+
         add(CDangerObject(obj, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeAttackSound, CDangerObject::eDangerPerceiveTypeSound));
         return;
     }
@@ -281,18 +291,22 @@ void CDangerManager::add(const CSoundObject& object)
             if (actor && !m_object->is_relation_enemy(actor))
                 do_add = false;
         }
+
         if (do_add)
         {
             if (!on_before_add.empty())
             {
-                luabind::functor<bool> funct;
-                if (ai().script_engine().functor(on_before_add.c_str(), funct))
-                    if (!funct(m_object->lua_game_object(), object, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeEntityAttacked,
-                               CDangerObject::eDangerPerceiveTypeSound))
+                if (sol::function func; ai().script_engine().function(on_before_add.c_str(), func))
+                {
+                    if (!func(m_object->lua_game_object(), object, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeEntityAttacked,
+                              CDangerObject::eDangerPerceiveTypeSound))
                         return;
+                }
             }
+
             add(CDangerObject(obj, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeEntityAttacked, CDangerObject::eDangerPerceiveTypeSound));
         }
+
         return;
     }
 
@@ -300,12 +314,14 @@ void CDangerManager::add(const CSoundObject& object)
     {
         if (!on_before_add.empty())
         {
-            luabind::functor<bool> funct;
-            if (ai().script_engine().functor(on_before_add.c_str(), funct))
-                if (!funct(m_object->lua_game_object(), object, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeEntityDeath,
-                           CDangerObject::eDangerPerceiveTypeSound))
+            if (sol::function func; ai().script_engine().function(on_before_add.c_str(), func))
+            {
+                if (!func(m_object->lua_game_object(), object, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeEntityDeath,
+                          CDangerObject::eDangerPerceiveTypeSound))
                     return;
+            }
         }
+
         add(CDangerObject(obj, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeEntityDeath, CDangerObject::eDangerPerceiveTypeSound));
         return;
     }
@@ -314,12 +330,14 @@ void CDangerManager::add(const CSoundObject& object)
     {
         if (!on_before_add.empty())
         {
-            luabind::functor<bool> funct;
-            if (ai().script_engine().functor(on_before_add.c_str(), funct))
-                if (!funct(m_object->lua_game_object(), object, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeEnemySound,
-                           CDangerObject::eDangerPerceiveTypeSound))
+            if (sol::function func; ai().script_engine().function(on_before_add.c_str(), func))
+            {
+                if (!func(m_object->lua_game_object(), object, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeEnemySound,
+                          CDangerObject::eDangerPerceiveTypeSound))
                     return;
+            }
         }
+
         add(CDangerObject(obj, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeEnemySound, CDangerObject::eDangerPerceiveTypeSound));
         return;
     }
@@ -337,13 +355,16 @@ void CDangerManager::add(const CHitObject& object)
         return;
 
     const CEntityAlive* obj = smart_cast<const CEntityAlive*>(object.m_object);
+
     if (!on_before_add.empty())
     {
-        luabind::functor<bool> funct;
-        if (ai().script_engine().functor(on_before_add.c_str(), funct))
-            if (!funct(m_object->lua_game_object(), object, obj->Position(), object.m_level_time, CDangerObject::eDangerTypeAttacked, CDangerObject::eDangerPerceiveTypeHit))
+        if (sol::function func; ai().script_engine().function(on_before_add.c_str(), func))
+        {
+            if (!func(m_object->lua_game_object(), object, obj->Position(), object.m_level_time, CDangerObject::eDangerTypeAttacked, CDangerObject::eDangerPerceiveTypeHit))
                 return;
+        }
     }
+
     add(CDangerObject(obj, obj->Position(), object.m_level_time, CDangerObject::eDangerTypeAttacked, CDangerObject::eDangerPerceiveTypeHit));
 }
 
@@ -376,5 +397,4 @@ void CDangerManager::ignore(const CGameObject* object)
 }
 
 void CDangerManager::save(NET_Packet& packet) const { save_data(m_ignored, packet); }
-
 void CDangerManager::load(IReader& packet) { load_data(m_ignored, packet); }

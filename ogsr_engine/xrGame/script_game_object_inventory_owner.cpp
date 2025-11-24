@@ -5,6 +5,7 @@
 #include "stdafx.h"
 
 #include "script_game_object.h"
+
 #include "InventoryOwner.h"
 #include "InventoryBox.h"
 #include "Pda.h"
@@ -195,10 +196,10 @@ bool CScriptGameObject::IsTradeEnabled()
     return pInventoryOwner->IsTradeEnabled();
 }
 
-void CScriptGameObject::ForEachInventoryItems(const luabind::functor<void>& functor)
+void CScriptGameObject::ForEachInventoryItems(sol::function function)
 {
     auto owner = smart_cast<CInventoryOwner*>(&object());
-    if (!owner)
+    if (owner == nullptr)
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CScriptGameObject::ForEachInventoryItems non-CInventoryOwner object !!!");
         return;
@@ -207,13 +208,15 @@ void CScriptGameObject::ForEachInventoryItems(const luabind::functor<void>& func
     TIItemContainer item_list;
     owner->inventory().AddAvailableItems(item_list, true);
 
-    for (const auto* it : item_list)
+    for (const auto it : item_list)
+    {
         if (!it->object().getDestroy())
-            functor(it->object().lua_game_object(), this);
+            function(it->object().lua_game_object(), this);
+    }
 }
 
 // 1
-void CScriptGameObject::IterateInventory(const luabind::functor<void>& functor, const luabind::object& object)
+void CScriptGameObject::IterateInventory(sol::function function, sol::object object)
 {
     /**
         IterateInventory расширен: Работает как для CInventoryOwner, так и для IInventoryBox, а так же для любых классов наследующих от одного из них.
@@ -222,17 +225,19 @@ void CScriptGameObject::IterateInventory(const luabind::functor<void>& functor, 
     */
     if (auto inventory_owner = smart_cast<CInventoryOwner*>(&this->object()))
     {
-        for (const auto* it : inventory_owner->inventory().m_all)
+        for (const auto it : inventory_owner->inventory().m_all)
+        {
             if (!it->object().getDestroy())
-                functor(object, it->object().lua_game_object());
+                function(object, it->object().lua_game_object());
+        }
     }
     else if (auto inventory_box = smart_cast<IInventoryBox*>(&this->object()))
     {
-        for (u32 i = 0; i < inventory_box->GetSize(); i++)
+        for (gsl::index i{}; i < inventory_box->GetSize(); ++i)
         {
-            auto* iit = inventory_box->GetObjectByIndex(i);
-            if (iit)
-                functor(object, iit);
+            auto iit = inventory_box->GetObjectByIndex(i);
+            if (iit != nullptr)
+                function(object, iit);
         }
     }
     else
@@ -1249,20 +1254,26 @@ void CScriptGameObject::SetIIFlags(Flags16 flags)
     inventory_item->m_flags = flags;
 }
 
-void CScriptGameObject::IterateBelt(const luabind::functor<void>& functor, const luabind::object& object)
+void CScriptGameObject::IterateBelt(sol::function function, sol::object object)
 {
     auto inventory_owner = smart_cast<CInventoryOwner*>(&this->object());
     ASSERT_FMT(inventory_owner, "[%s]: %s not an CInventoryOwner", __FUNCTION__, this->object().Name());
-    for (const auto* it : inventory_owner->inventory().m_belt)
+
+    for (const auto it : inventory_owner->inventory().m_belt)
+    {
         if (!it->object().getDestroy())
-            functor(object, it->object().lua_game_object());
+            function(object, it->object().lua_game_object());
+    }
 }
 
-void CScriptGameObject::IterateRuck(const luabind::functor<void>& functor, const luabind::object& object)
+void CScriptGameObject::IterateRuck(sol::function function, sol::object object)
 {
     auto inventory_owner = smart_cast<CInventoryOwner*>(&this->object());
     ASSERT_FMT(inventory_owner, "[%s]: %s not an CInventoryOwner", __FUNCTION__, this->object().Name());
-    for (const auto* it : inventory_owner->inventory().m_ruck)
+
+    for (const auto it : inventory_owner->inventory().m_ruck)
+    {
         if (!it->object().getDestroy())
-            functor(object, it->object().lua_game_object());
+            function(object, it->object().lua_game_object());
+    }
 }

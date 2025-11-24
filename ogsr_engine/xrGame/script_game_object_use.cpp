@@ -1,13 +1,13 @@
 #include "stdafx.h"
 
 #include "script_game_object.h"
+
 #include "UsableScriptObject.h"
 #include "GameObject.h"
 #include "script_engine.h"
 #include "stalker_planner.h"
 #include "ai/stalker/ai_stalker.h"
 #include "searchlight.h"
-#include "script_callback_ex.h"
 #include "game_object_space.h"
 #include "memory_manager.h"
 #include "enemy_manager.h"
@@ -198,7 +198,7 @@ CScriptActionPlanner* script_action_planner(CScriptGameObject* obj) { return obj
 void CScriptGameObject::set_enemy_callback(sol::function function, sol::object object)
 {
     CCustomMonster* monster = smart_cast<CCustomMonster*>(&this->object());
-    if (!monster)
+    if (monster == nullptr)
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member set_enemy_callback!");
         return;
@@ -207,7 +207,7 @@ void CScriptGameObject::set_enemy_callback(sol::function function, sol::object o
     monster->memory().enemy().set_useful_callback(std::move(function), std::move(object));
 }
 
-void CScriptGameObject::set_enemy_callback(sol::function function) { set_enemy_callback(function, {}); }
+void CScriptGameObject::set_enemy_callback(sol::function function) { set_enemy_callback(std::move(function), {}); }
 void CScriptGameObject::set_enemy_callback() { set_enemy_callback({}, {}); }
 
 void CScriptGameObject::SetCallback(GameObject::ECallbackType type, sol::function function, sol::object object)
@@ -215,17 +215,16 @@ void CScriptGameObject::SetCallback(GameObject::ECallbackType type, sol::functio
     if (auto it = this->object().m_callbacks.find(type); it != this->object().m_callbacks.end())
     {
         auto& info = it->second;
-
-        info.m_callback = function;
-        info.m_object = object;
+        info.m_callback = std::move(function);
+        info.m_object = std::move(object);
     }
     else
     {
-        this->object().m_callbacks.try_emplace(type, function, object);
+        this->object().m_callbacks.try_emplace(type, std::move(function), std::move(object));
     }
 }
 
-void CScriptGameObject::SetCallback(GameObject::ECallbackType type, sol::function function) { SetCallback(type, function, {}); }
+void CScriptGameObject::SetCallback(GameObject::ECallbackType type, sol::function function) { SetCallback(type, std::move(function), {}); }
 void CScriptGameObject::SetCallback(GameObject::ECallbackType type) { SetCallback(type, {}, {}); }
 
 void CScriptGameObject::set_fastcall(sol::function function, sol::object object)

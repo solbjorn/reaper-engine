@@ -23,5 +23,5 @@ public:
 
 private:
     shared_str m_sTipText;
-    bool m_bNonscriptUsable;
+    bool m_bNonscriptUsable{true};
 };

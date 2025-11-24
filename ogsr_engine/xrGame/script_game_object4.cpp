@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "script_game_object.h"
 
 #include "script_zone.h"
@@ -731,29 +732,21 @@ u32 CScriptGameObject::play_hud_animation(LPCSTR anim, bool mix_in, u32 state, f
 
 u32 CScriptGameObject::play_hud_animation(LPCSTR anim) { return play_hud_animation(anim, true, std::numeric_limits<u32>::max(), 1.f); }
 
-void CScriptGameObject::addFeelTouch(float radius, const luabind::object& lua_object, const luabind::functor<void>& new_delete)
-{
-    const luabind::functor<bool> contact;
-    addFeelTouch(radius, lua_object, new_delete, contact);
-}
-
-void CScriptGameObject::addFeelTouch(float radius, const luabind::object& lua_object, const luabind::functor<void>& new_delete, const luabind::functor<bool>& contact)
+void CScriptGameObject::addFeelTouch(f32 radius, sol::object lua_object, sol::function new_delete, sol::function contact)
 {
     CGameObject* GO = smart_cast<CGameObject*>(&object());
-    GO->addFeelTouch(radius, lua_object, new_delete, contact);
+    GO->addFeelTouch(radius, std::move(lua_object), std::move(new_delete), std::move(contact));
 }
 
-void CScriptGameObject::removeFeelTouch(const luabind::object& lua_object, const luabind::functor<void>& new_delete)
-{
-    const luabind::functor<bool> contact;
-    removeFeelTouch(lua_object, new_delete, contact);
-}
+void CScriptGameObject::addFeelTouch(f32 radius, sol::object lua_object, sol::function new_delete) { addFeelTouch(radius, std::move(lua_object), std::move(new_delete), {}); }
 
-void CScriptGameObject::removeFeelTouch(const luabind::object& lua_object, const luabind::functor<void>& new_delete, const luabind::functor<bool>& contact)
+void CScriptGameObject::removeFeelTouch(sol::object lua_object, sol::function new_delete, sol::function contact)
 {
     CGameObject* GO = smart_cast<CGameObject*>(&object());
-    GO->removeFeelTouch(lua_object, new_delete, contact);
+    GO->removeFeelTouch(std::move(lua_object), std::move(new_delete), std::move(contact));
 }
+
+void CScriptGameObject::removeFeelTouch(sol::object lua_object, sol::function new_delete) { removeFeelTouch(std::move(lua_object), std::move(new_delete), {}); }
 
 void CScriptGameObject::PHCaptureObject(CScriptGameObject* obj, LPCSTR capture_bone)
 {

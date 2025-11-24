@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "actor.h"
+
 #include "../xr_3da/camerabase.h"
 
 #include "ActorEffector.h"
@@ -23,7 +24,6 @@
 #include "characterphysicssupport.h"
 #include "inventory.h"
 
-#include "script_callback_ex.h"
 #include "script_game_object.h"
 
 void CActor::attach_Vehicle(CHolderCustom* vehicle)

@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "script_storage.h"
+
 #include "script_engine.h"
 #include "ai_space.h"
 
@@ -16,8 +17,7 @@
 
 namespace
 {
-// KRodin: this не убирать ни в коем случае! Он нужен для того, чтобы классы luabind'а регистрировались внутри модуля в котором находятся, а не в _G
-// см. luabind/src/create_class.cpp
+// KRodin: this не убирать ни в коем случае! Он нужен для того, чтобы классы регистрировались внутри модуля в котором находятся, а не в _G
 constexpr const char* FILE_HEADER =
     "\
 local function script_name() \
@@ -27,13 +27,7 @@ local this; \
 module('{0}', package.seeall, function(m) this = m end); \
 {1}";
 
-const char* get_lua_traceback(lua_State* L)
-{
-    luaL_traceback(L, L, nullptr, 0);
-    auto tb = lua_tostring(L, -1);
-    lua_pop(L, 1);
-    return tb;
-}
+void get_lua_traceback(lua_State* L) { Log(sol::stack::get_traceback_or_errors(L).what()); }
 } // namespace
 
 //*********************************************************************************************
@@ -96,15 +90,10 @@ void CScriptStorage::LogVariable(lua_State* l, const char* name, int level)
     switch (ntype)
     {
     case LUA_TFUNCTION: xr_strcpy(value, "[[function]]"); break;
-
     case LUA_TTHREAD: xr_strcpy(value, "[[thread]]"); break;
-
     case LUA_TNUMBER: xr_sprintf(value, "%f", lua_tonumber(l, -1)); break;
-
     case LUA_TBOOLEAN: xr_sprintf(value, "%s", lua_toboolean(l, -1) ? "true" : "false"); break;
-
     case LUA_TSTRING: xr_sprintf(value, "%.127s", lua_tostring(l, -1)); break;
-
     case LUA_TTABLE:
         if (level <= 3)
         {
@@ -117,40 +106,17 @@ void CScriptStorage::LogVariable(lua_State* l, const char* name, int level)
             xr_sprintf(value, "[...]");
         }
         break;
-
     case LUA_TUSERDATA: {
-        auto obj = static_cast<luabind::detail::object_rep*>(lua_touserdata(l, -1));
+        auto obj = lua_touserdata(l, -1);
 
         // Skip already dumped object
         if (m_dumpedObjList.find(obj) != m_dumpedObjList.end())
             return;
         m_dumpedObjList.insert(obj);
 
-        auto& r = obj->get_lua_table();
-        if (r.is_valid())
-        {
-            r.get(l);
-            Msg("%s Userdata: %s", tabBuffer.get(), name);
-            LogTable(l, name, level + 1);
-            lua_pop(l, 1); // Remove userobject
-            return;
-        }
-        else
-        {
-            // Dump class and element pointer if available
-            if (const auto objectClass = obj->crep())
-            {
-                auto cpp_name = LUABIND_TYPE_INFO_NAME(objectClass->type());
-                xr_sprintf(value, "(%s): %p", !cpp_name.empty() ? cpp_name.c_str() : objectClass->name(), obj->ptr());
-            }
-            else
-            {
-                xr_strcpy(value, "[not available]");
-            }
-        }
+        xr_strcpy(value, sol::associated_type_name(l, -1, sol::type::userdata).c_str());
     }
     break;
-
     default: xr_strcpy(value, "[not available]"); break;
     }
 
@@ -204,7 +170,7 @@ void CScriptStorage::reinit(lua_State* LSVM)
     Debug.set_crashhandler(ScriptCrashHandler);
 }
 
-void CScriptStorage::print_stack() { Log(get_lua_traceback(lua())); }
+void CScriptStorage::print_stack() { get_lua_traceback(lua()); }
 
 #ifdef DEBUG
 void CScriptStorage::script_log(ScriptStorage::ELuaMessageType tLuaMessageType, const char* caFormat, ...) // Используется в очень многих местах //Очень много пишет в лог.
@@ -366,107 +332,24 @@ bool CScriptStorage::namespace_loaded(const char* name, bool remove_from_stack) 
     return true;
 }
 
-bool CScriptStorage::object(const char* identifier, int type)
-{
-    int start{
-#ifdef DEBUG
-        lua_gettop(lua())
-#endif
-    };
-
-    lua_pushnil(lua());
-    while (lua_next(lua(), -2))
-    {
-        if (lua_type(lua(), -1) == type && std::is_eq(xr_strcmp(identifier, lua_tostring(lua(), -2))))
-        {
-            VERIFY(lua_gettop(lua()) >= 3);
-            lua_pop(lua(), 3);
-            VERIFY(lua_gettop(lua()) == start - 1);
-            return true;
-        }
-        lua_pop(lua(), 1);
-    }
-    VERIFY(lua_gettop(lua()) >= 1);
-    lua_pop(lua(), 1);
-    VERIFY(lua_gettop(lua()) == start - 1);
-    return false;
-}
-
-bool CScriptStorage::object(const char* namespace_name, const char* identifier, int type)
-{
-    int start{
-#ifdef DEBUG
-        lua_gettop(lua())
-#endif
-    };
-
-    if (xr_strlen(namespace_name) && !namespace_loaded(namespace_name, false))
-    {
-        VERIFY(lua_gettop(lua()) == start);
-        return false;
-    }
-    bool result = object(identifier, type);
-    VERIFY(lua_gettop(lua()) == start);
-    return result;
-}
-
-luabind::object CScriptStorage::name_space(const char* namespace_name)
-{
-    string256 S1;
-    xr_strcpy(S1, namespace_name);
-    auto S = S1;
-
-    auto lua_namespace = luabind::get_globals(lua());
-
-    for (;;)
-    {
-        if (!xr_strlen(S))
-            return lua_namespace;
-
-        auto I = strchr(S, '.');
-        if (!I)
-        {
-            lua_namespace = lua_namespace[S];
-            return lua_namespace;
-        }
-
-        *I = 0;
-        lua_namespace = lua_namespace[S];
-        S = I + 1;
-    }
-}
-
-bool CScriptStorage::print_output(lua_State* L, const char* caScriptFileName,
+void CScriptStorage::print_output(lua_State* L, const char* caScriptFileName,
                                   int errorCode) // KRodin: вызывается из нескольких мест, в т.ч. из калбеков lua_error, lua_pcall_failed, lua_cast_failed, lua_panic
 {
-    auto Prefix = "";
-    if (errorCode)
+    gsl::czstring Prefix;
+
+    switch (errorCode)
     {
-        switch (errorCode)
-        {
-        case LUA_ERRRUN: Prefix = "SCRIPT RUNTIME ERROR"; break;
-        case LUA_ERRMEM: Prefix = "SCRIPT ERROR (memory allocation)"; break;
-        case LUA_ERRERR: Prefix = "SCRIPT ERROR (while running the error handler function)"; break;
-        case LUA_ERRFILE: Prefix = "SCRIPT ERROR (while running file)"; break;
-        case LUA_ERRSYNTAX: Prefix = "SCRIPT SYNTAX ERROR"; break;
-        case LUA_YIELD: Prefix = "Thread is yielded"; break;
-        default: NODEFAULT;
-        }
+    case LUA_ERRRUN: Prefix = "SCRIPT RUNTIME ERROR"; break;
+    case LUA_ERRMEM: Prefix = "SCRIPT ERROR (memory allocation)"; break;
+    case LUA_ERRERR: Prefix = "SCRIPT ERROR (while running the error handler function)"; break;
+    case LUA_ERRFILE: Prefix = "SCRIPT ERROR (while running file)"; break;
+    case LUA_ERRSYNTAX: Prefix = "SCRIPT SYNTAX ERROR"; break;
+    case LUA_YIELD: Prefix = "Thread is yielded"; break;
+    default: Prefix = "SCRIPT ERROR"; break;
     }
 
-    auto traceback = get_lua_traceback(L);
-
-    if (!lua_isstring(L, -1)) // НЕ УДАЛЯТЬ! Иначе будут вылeты без лога!
-    {
-        Msg("*********************************************************************************");
-        Msg("[print_output(%s)] %s!\n%s", caScriptFileName, Prefix, traceback);
-        Msg("*********************************************************************************");
-        return false;
-    }
-
-    auto S = lua_tostring(L, -1);
     Msg("*********************************************************************************");
-    Msg("[print_output(%s)] %s:\n%s\n%s", caScriptFileName, Prefix, S, traceback);
+    Msg("[print_output(%s)] %s!\n", caScriptFileName, Prefix);
+    get_lua_traceback(L);
     Msg("*********************************************************************************");
-    return true;
 }

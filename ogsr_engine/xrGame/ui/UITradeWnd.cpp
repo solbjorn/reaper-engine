@@ -31,7 +31,6 @@
 #include "UITalkWnd.h"
 
 #include "../game_object_space.h"
-#include "../script_callback_ex.h"
 #include "../script_game_object.h"
 #include "../trade_parameters.h"
 #include "../xr_level_controller.h"

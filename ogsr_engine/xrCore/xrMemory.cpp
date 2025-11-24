@@ -38,15 +38,9 @@ void xrMemory::mem_compact()
     smem_container::clean();
 }
 
-[[nodiscard]] XR_RESTRICT void* xrMemory::mem_alloc_aligned(gsl::index size, gsl::index align) noexcept
-{
-    return _aligned_malloc(gsl::narrow<size_t>(size), gsl::narrow<size_t>(align));
-}
+XR_RESTRICT void* xrMemory::mem_alloc_aligned(gsl::index size, gsl::index align) noexcept { return _aligned_malloc(gsl::narrow<size_t>(size), gsl::narrow<size_t>(align)); }
 
-[[nodiscard]] void* xrMemory::mem_realloc_aligned(void* P, gsl::index size, gsl::index align) noexcept
-{
-    return _aligned_realloc(P, gsl::narrow<size_t>(size), gsl::narrow<size_t>(align));
-}
+void* xrMemory::mem_realloc_aligned(void* P, gsl::index size, gsl::index align) noexcept { return _aligned_realloc(P, gsl::narrow<size_t>(size), gsl::narrow<size_t>(align)); }
 
 void xrMemory::mem_free_aligned(void* P) noexcept { _aligned_free(P); }
 

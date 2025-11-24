@@ -25,6 +25,11 @@
 #include "patrol_path.h"
 #include "patrol_path_storage.h"
 
+#include "game_object_space.h"
+#include "script_game_object.h"
+
+#include "Debug_Renderer.h"
+
 xr_vector<CLevelChanger*> g_lchangers;
 
 CLevelChanger::~CLevelChanger() = default;
@@ -191,10 +196,6 @@ void CLevelChanger::update_actor_invitation()
     }
 }
 
-#include "game_object_space.h"
-#include "script_callback_ex.h"
-#include "script_game_object.h"
-
 void CLevelChanger::ChangeLevel()
 {
     Fvector p, r;
@@ -206,8 +207,6 @@ void CLevelChanger::ChangeLevel()
         pGameSP->ChangeLevel(m_game_vertex_id, m_level_vertex_id, m_position, m_angles, p, r, b);
     }
 }
-
-#include "Debug_Renderer.h"
 
 void CLevelChanger::OnRender()
 {

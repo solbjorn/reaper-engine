@@ -1,8 +1,9 @@
 #include "stdafx.h"
 
+#include "ActorEffector.h"
+
 #include "ai_space.h"
 #include "script_engine.h"
-#include "ActorEffector.h"
 #include "../xr_3da/ObjectAnimator.h"
 
 void CAnimatorCamEffectorScriptCB::ProcessIfInvalid(SCamEffectorInfo& info)
@@ -23,10 +24,10 @@ BOOL CAnimatorCamEffectorScriptCB::Valid()
     BOOL res = inherited::Valid();
     if (!res && !cb_name.empty())
     {
-        luabind::functor<LPCSTR> fl;
-        R_ASSERT(ai().script_engine().functor<LPCSTR>(*cb_name, fl));
-        fl();
+        sol::function fl;
+        R_ASSERT(ai().script_engine().function(cb_name.c_str(), fl));
 
+        fl();
         cb_name._set("");
     }
 

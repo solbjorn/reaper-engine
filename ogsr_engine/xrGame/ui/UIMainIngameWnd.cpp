@@ -5,7 +5,6 @@
 #include "UIMessagesWindow.h"
 #include "../UIZoneMap.h"
 
-#include <dinput.h>
 #include "../actor.h"
 #include "../HUDManager.h"
 #include "../PDA.h"
@@ -47,7 +46,6 @@
 
 #include "UICellCustomItems.h"
 #include "../game_object_space.h"
-#include "../script_callback_ex.h"
 #include "../script_game_object.h"
 #include "../Actor.h"
 
@@ -55,6 +53,8 @@
 #include "../attachable_item.h"
 #include "..\..\xr_3da\xr_input.h"
 #endif
+
+#include <dinput.h>
 
 using namespace InventoryUtilities;
 

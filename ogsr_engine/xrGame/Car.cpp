@@ -26,7 +26,6 @@
 #include "PHActivationShape.h"
 #include "CharacterPhysicsSupport.h"
 #include "car_memory.h"
-#include "script_callback_ex.h"
 #include "script_game_object.h"
 
 #ifdef DEBUG

@@ -435,7 +435,7 @@ void CAI_Stalker::net_Save(NET_Packet& P)
     m_pPhysics_support->in_NetSave(P);
 }
 
-BOOL CAI_Stalker::net_SaveRelevant() { return inherited::net_SaveRelevant() || PPhysicsShell(); }
+BOOL CAI_Stalker::net_SaveRelevant() { return inherited::net_SaveRelevant() || PPhysicsShell() != nullptr; }
 
 void CAI_Stalker::net_Export(CSE_Abstract* E)
 {
@@ -482,35 +482,7 @@ void CAI_Stalker::update_object_handler()
     if (!g_Alive())
         return;
 
-    /*try
-    {
-        try
-        {*/
     CObjectHandler::update();
-    /*}
-#ifndef LUABIND_NO_EXCEPTIONS
-    catch (luabind::cast_failed& message)
-    {
-        Msg("! Expression \"%s\" from luabind::object to %s", message.what(), message.info()->name());
-        throw;
-    }
-#endif
-    catch (std::exception& message)
-    {
-        Msg("! Expression \"%s\"", message.what());
-        throw;
-    }
-    catch (...)
-    {
-        throw;
-    }
-}
-catch (...)
-{
-    Msg("!![CAI_Stalker::update_object_handler] Error in function CObjectHandler::update()");
-    CObjectHandler::set_goal(eObjectActionIdle);
-    CObjectHandler::update();
-}*/
 }
 
 void CAI_Stalker::create_anim_mov_ctrl(CBlend* b)
@@ -609,8 +581,6 @@ void CAI_Stalker::PHHit(SHit& H) { m_pPhysics_support->in_Hit(H, !g_Alive()); }
 
 CPHDestroyable* CAI_Stalker::ph_destroyable() { return smart_cast<CPHDestroyable*>(character_physics_support()); }
 
-#include "../../enemy_manager.h"
-
 void CAI_Stalker::shedule_Update(u32 DT)
 {
     VERIFY2(getEnabled() || PPhysicsShell(), *cName());
@@ -638,10 +608,6 @@ void CAI_Stalker::shedule_Update(u32 DT)
         agent_manager().update();
 #endif // USE_SCHEDULER_IN_AGENT_MANAGER
 
-//		bool			check = !!memory().enemy().selected();
-#if 0 // def DEBUG
-		memory().visual().check_visibles();
-#endif
         if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtAiVision))
             Device.add_to_seq_parallel(CallMe::fromMethod<&CCustomMonster::Exec_Visibility>((CCustomMonster*)this));
         else
@@ -732,68 +698,14 @@ void CAI_Stalker::spawn_supplies()
 
 void CAI_Stalker::Think()
 {
-    START_PROFILE("stalker/schedule_update/think")
-    u32 update_delta = Device.dwTimeGlobal - m_dwLastUpdateTime;
+    const u32 update_delta = Device.dwTimeGlobal - m_dwLastUpdateTime;
 
-    START_PROFILE("stalker/schedule_update/think/brain")
-    //	try {
-    //		try {
     brain().update(update_delta);
-//		}
-#ifndef LUABIND_NO_EXCEPTIONS
-//		catch (luabind::cast_failed &message) {
-//			Msg						("! Expression \"%s\" from luabind::object to %s",message.what(),message.info()->name());
-//			throw;
-//		}
-#endif
-//		catch (std::exception &message) {
-//			Msg						("! Expression \"%s\"",message.what());
-//			throw;
-//		}
-//		catch (...) {
-//			Msg						("! unknown exception occured");
-//			throw;
-//		}
-//	}
-//	catch(...) {
-#ifdef DEBUG
-//		Msg						("! Last action being executed : %s",brain().current_action().m_action_name);
-#endif
-    //		brain().setup			(this);
-    //		brain().update			(update_delta);
-    //	}
-    STOP_PROFILE
 
-    START_PROFILE("stalker/schedule_update/think/movement")
     if (!g_Alive())
         return;
 
-    //	try {
     movement().update(update_delta);
-//	}
-#if 0 // ndef LUABIND_NO_EXCEPTIONS
-	catch (luabind::cast_failed &message) {
-		Msg						("! Expression \"%s\" from luabind::object to %s",message.what(),message.info()->name());
-		movement().initialize	();
-		movement().update		(update_delta);
-		throw;
-	}
-	catch (std::exception &message) {
-		Msg						("! Expression \"%s\"",message.what());
-		movement().initialize	();
-		movement().update		(update_delta);
-		throw;
-	}
-	catch (...) {
-		Msg						("! unknown exception occured");
-		movement().initialize	();
-		movement().update		(update_delta);
-		throw;
-	}
-#endif // DEBUG
-
-    STOP_PROFILE
-    STOP_PROFILE
 }
 
 void CAI_Stalker::SelectAnimation(const Fvector&, const Fvector&, float)

@@ -17,7 +17,6 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "zone_effector.h"
 #include "breakableobject.h"
-#include "script_callback_ex.h"
 #include "game_object_space.h"
 #include "script_game_object.h"
 

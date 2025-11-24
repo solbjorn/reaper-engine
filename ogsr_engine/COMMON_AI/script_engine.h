@@ -33,30 +33,15 @@ public:
     void init();
     virtual void unload();
     void setup_auto_load();
+
     bool process_file_if_exists(const char* file_name, bool warn_if_not_exist);
     bool process_file(const char* file_name);
     bool process_file(const char* file_name, bool reload_modules);
-    bool function(const char* function_to_call, sol::function& func);
-    bool function_object(const char* function_to_call, luabind::object& object, int type = LUA_TFUNCTION);
-    void register_script_classes();
+    [[nodiscard]] bool function(gsl::czstring function_to_call, sol::function& func);
     void parse_script_namespace(const char* name, char* ns, u32 nsSize, char* func, u32 funcSize);
 
+    void register_script_classes();
     void collect_all_garbage();
-
-    template <typename TResult>
-    IC bool functor(const char* function_to_call, luabind::functor<TResult>& lua_function)
-    {
-        luabind::object object;
-        if (!function_object(function_to_call, object))
-            return false;
-        // try {
-        lua_function = luabind::object_cast<luabind::functor<TResult>>(object);
-        //}
-        // catch (...) {
-        //	return false;
-        //}
-        return true;
-    }
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

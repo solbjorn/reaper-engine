@@ -4,47 +4,32 @@
 
 #include "UIWindow.h"
 #include "../object_broker.h"
-#include "../callback_info.h"
 
 struct event_comparer
 {
     shared_str name;
     s16 event;
 
-    event_comparer(shared_str n, s16 e) : name(n), event(e) {}
-    bool operator()(SCallbackInfo& i) { return ((i.m_controlName == name) && (i.m_event == event)); }
+    constexpr explicit event_comparer(shared_str n, s16 e) : name{n}, event{e} {}
+
+    [[nodiscard]] constexpr bool operator()(const CUIWndCallback::callback& i) const { return name == i.m_controlName && event == i.m_event; }
 };
 
 void CUIWndCallback::Register(CUIWindow* pChild) { pChild->SetMessageTarget(smart_cast<CUIWindow*>(this)); }
 
 void CUIWndCallback::OnEvent(CUIWindow* pWnd, s16 msg, void* pData)
 {
-    if (!pWnd)
+    if (pWnd == nullptr)
         return;
-    event_comparer ec(pWnd->WindowName(), msg);
 
-    CALLBACK_IT it = std::find_if(m_callbacks.begin(), m_callbacks.end(), ec);
+    const event_comparer ec{pWnd->WindowName(), msg};
+
+    const auto it = std::find_if(m_callbacks.begin(), m_callbacks.end(), ec);
     if (it == m_callbacks.end())
         return;
 
-    (*it).m_callback();
-    (*it).m_cpp_callback(pWnd, pData);
+    it->m_cpp_callback(pWnd, pData);
 }
 
-SCallbackInfo* CUIWndCallback::NewCallback() { return &m_callbacks.emplace_back(); }
-
-void CUIWndCallback::AddCallback(LPCSTR control_id, s16 event, const void_function& f)
-{
-    SCallbackInfo* c = NewCallback();
-    c->m_cpp_callback = f;
-    c->m_controlName._set(control_id);
-    c->m_event = event;
-}
-
-void CUIWndCallback::AddCallback(const shared_str& control_id, s16 event, const void_function& f)
-{
-    SCallbackInfo* c = NewCallback();
-    c->m_cpp_callback = f;
-    c->m_controlName._set(control_id);
-    c->m_event = event;
-}
+void CUIWndCallback::AddCallback(LPCSTR control_id, s16 event, const void_function& f) { m_callbacks.emplace_back(f, shared_str{control_id}, event); }
+void CUIWndCallback::AddCallback(const shared_str& control_id, s16 event, const void_function& f) { m_callbacks.emplace_back(f, control_id, event); }

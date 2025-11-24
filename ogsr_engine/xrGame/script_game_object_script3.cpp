@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "script_game_object.h"
+
 #include "alife_space.h"
 #include "script_entity_space.h"
 #include "movement_manager_space.h"
@@ -37,13 +38,12 @@ void CScriptGameObject::script_register2(CScriptGameObject::usertype& lua)
 {
     xr::sol_set(
         lua, "add_sound",
-        sol::overload(sol::resolve<u32(LPCSTR, u32, ESoundTypes, u32, u32, u32)>(&CScriptGameObject::add_sound),
-                      sol::resolve<u32(LPCSTR, u32, ESoundTypes, u32, u32, u32, LPCSTR)>(&CScriptGameObject::add_sound)),
+        sol::overload(sol::resolve<u32(LPCSTR, u32, ESoundTypes, u32, u32, u32, LPCSTR)>(&CScriptGameObject::add_sound),
+                      sol::resolve<u32(LPCSTR, u32, ESoundTypes, u32, u32, u32)>(&CScriptGameObject::add_sound)),
         "remove_sound", &CScriptGameObject::remove_sound, "set_sound_mask", &CScriptGameObject::set_sound_mask, "play_sound",
-        sol::overload(sol::resolve<void(u32)>(&CScriptGameObject::play_sound), sol::resolve<void(u32, u32)>(&CScriptGameObject::play_sound),
-                      sol::resolve<void(u32, u32, u32)>(&CScriptGameObject::play_sound), sol::resolve<void(u32, u32, u32, u32)>(&CScriptGameObject::play_sound),
-                      sol::resolve<void(u32, u32, u32, u32, u32)>(&CScriptGameObject::play_sound),
-                      sol::resolve<void(u32, u32, u32, u32, u32, u32)>(&CScriptGameObject::play_sound)),
+        sol::overload(sol::resolve<void(u32, u32, u32, u32, u32, u32)>(&CScriptGameObject::play_sound), sol::resolve<void(u32, u32, u32, u32, u32)>(&CScriptGameObject::play_sound),
+                      sol::resolve<void(u32, u32, u32, u32)>(&CScriptGameObject::play_sound), sol::resolve<void(u32, u32, u32)>(&CScriptGameObject::play_sound),
+                      sol::resolve<void(u32, u32)>(&CScriptGameObject::play_sound), sol::resolve<void(u32)>(&CScriptGameObject::play_sound)),
 
         "binded_object", &CScriptGameObject::binded_object, "set_previous_point", &CScriptGameObject::set_previous_point, "set_start_point", &CScriptGameObject::set_start_point,
         "get_current_point_index", &CScriptGameObject::get_current_patrol_point_index, "path_completed", &CScriptGameObject::path_completed, "patrol_path_make_inactual",
@@ -52,17 +52,17 @@ void CScriptGameObject::script_register2(CScriptGameObject::usertype& lua)
         sol::overload(sol::resolve<int()>(&CScriptGameObject::active_sound_count), sol::resolve<int(bool)>(&CScriptGameObject::active_sound_count)),
 
         "best_cover",
-        sol::overload(sol::resolve<const CCoverPoint*(const Fvector&, const Fvector&, float, float, float)>(&CScriptGameObject::best_cover),
-                      sol::resolve<const CCoverPoint*(const Fvector&, const Fvector&, float, float, float, const luabind::functor<bool>&)>(&CScriptGameObject::best_cover)),
+        sol::overload(sol::resolve<const CCoverPoint*(const Fvector&, const Fvector&, f32, f32, f32, sol::function)>(&CScriptGameObject::best_cover),
+                      sol::resolve<const CCoverPoint*(const Fvector&, const Fvector&, f32, f32, f32)>(&CScriptGameObject::best_cover)),
         "safe_cover",
-        sol::overload(sol::resolve<const CCoverPoint*(const Fvector&, float, float)>(&CScriptGameObject::safe_cover),
-                      sol::resolve<const CCoverPoint*(const Fvector&, float, float, const luabind::functor<bool>&)>(&CScriptGameObject::safe_cover)),
+        sol::overload(sol::resolve<const CCoverPoint*(const Fvector&, f32, f32, sol::function)>(&CScriptGameObject::safe_cover),
+                      sol::resolve<const CCoverPoint*(const Fvector&, f32, f32)>(&CScriptGameObject::safe_cover)),
         "ambush_cover",
-        sol::overload(sol::resolve<const CCoverPoint*(const Fvector&, const Fvector&, float, float)>(&CScriptGameObject::ambush_cover),
-                      sol::resolve<const CCoverPoint*(const Fvector&, const Fvector&, float, float, const luabind::functor<bool>&)>(&CScriptGameObject::ambush_cover)),
+        sol::overload(sol::resolve<const CCoverPoint*(const Fvector&, const Fvector&, f32, f32, sol::function)>(&CScriptGameObject::ambush_cover),
+                      sol::resolve<const CCoverPoint*(const Fvector&, const Fvector&, f32, f32)>(&CScriptGameObject::ambush_cover)),
         "angle_cover",
-        sol::overload(sol::resolve<const CCoverPoint*(const Fvector&, float, const Fvector&, float, float, u32)>(&CScriptGameObject::angle_cover),
-                      sol::resolve<const CCoverPoint*(const Fvector&, float, const Fvector&, float, float, u32, const luabind::functor<bool>&)>(&CScriptGameObject::angle_cover)),
+        sol::overload(sol::resolve<const CCoverPoint*(const Fvector&, f32, const Fvector&, f32, f32, u32, sol::function)>(&CScriptGameObject::angle_cover),
+                      sol::resolve<const CCoverPoint*(const Fvector&, f32, const Fvector&, f32, f32, u32)>(&CScriptGameObject::angle_cover)),
 
         "spawn_ini", &CScriptGameObject::spawn_ini, "memory_visible_objects", &CScriptGameObject::memory_visible_objects, "memory_sound_objects",
         &CScriptGameObject::memory_sound_objects, "memory_hit_objects", &CScriptGameObject::memory_hit_objects, "not_yet_visible_objects",
@@ -77,16 +77,16 @@ void CScriptGameObject::script_register2(CScriptGameObject::usertype& lua)
                       sol::resolve<void(SightManager::ESightType, bool, bool path)>(&CScriptGameObject::set_sight),
                       sol::resolve<void(SightManager::ESightType, const Fvector&, bool)>(&CScriptGameObject::set_sight),
                       sol::resolve<void(SightManager::ESightType, const Fvector*)>(&CScriptGameObject::set_sight),
-                      sol::resolve<void(CScriptGameObject*)>(&CScriptGameObject::set_sight), sol::resolve<void(CScriptGameObject*, bool)>(&CScriptGameObject::set_sight),
+                      sol::resolve<void(CScriptGameObject*, bool, bool, bool)>(&CScriptGameObject::set_sight),
                       sol::resolve<void(CScriptGameObject*, bool, bool)>(&CScriptGameObject::set_sight),
-                      sol::resolve<void(CScriptGameObject*, bool, bool, bool)>(&CScriptGameObject::set_sight)),
+                      sol::resolve<void(CScriptGameObject*, bool)>(&CScriptGameObject::set_sight), sol::resolve<void(CScriptGameObject*)>(&CScriptGameObject::set_sight)),
 
         // object handler
         "set_item",
-        sol::overload(sol::resolve<void(MonsterSpace::EObjectAction)>(&CScriptGameObject::set_item),
-                      sol::resolve<void(MonsterSpace::EObjectAction, CScriptGameObject*)>(&CScriptGameObject::set_item),
+        sol::overload(sol::resolve<void(MonsterSpace::EObjectAction, CScriptGameObject*, u32, u32)>(&CScriptGameObject::set_item),
                       sol::resolve<void(MonsterSpace::EObjectAction, CScriptGameObject*, u32)>(&CScriptGameObject::set_item),
-                      sol::resolve<void(MonsterSpace::EObjectAction, CScriptGameObject*, u32, u32)>(&CScriptGameObject::set_item)),
+                      sol::resolve<void(MonsterSpace::EObjectAction, CScriptGameObject*)>(&CScriptGameObject::set_item),
+                      sol::resolve<void(MonsterSpace::EObjectAction)>(&CScriptGameObject::set_item)),
 
         "bone_position", &CScriptGameObject::bone_position, "is_body_turning", &CScriptGameObject::is_body_turning,
 
@@ -255,9 +255,9 @@ void CScriptGameObject::script_register2(CScriptGameObject::usertype& lua)
         sol::overload(sol::resolve<u32(LPCSTR)>(&CScriptGameObject::play_hud_animation), sol::resolve<u32(LPCSTR, bool, u32, float)>(&CScriptGameObject::play_hud_animation)),
 
         "add_feel_touch",
-        sol::overload(sol::resolve<void(float, const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>&)>(&CScriptGameObject::addFeelTouch),
-                      sol::resolve<void(float, const luabind::object&, const luabind::functor<void>&)>(&CScriptGameObject::addFeelTouch)),
+        sol::overload(sol::resolve<void(f32, sol::object, sol::function, sol::function)>(&CScriptGameObject::addFeelTouch),
+                      sol::resolve<void(f32, sol::object, sol::function)>(&CScriptGameObject::addFeelTouch)),
         "remove_feel_touch",
-        sol::overload(sol::resolve<void(const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>&)>(&CScriptGameObject::removeFeelTouch),
-                      sol::resolve<void(const luabind::object&, const luabind::functor<void>&)>(&CScriptGameObject::removeFeelTouch)));
+        sol::overload(sol::resolve<void(sol::object, sol::function, sol::function)>(&CScriptGameObject::removeFeelTouch),
+                      sol::resolve<void(sol::object, sol::function)>(&CScriptGameObject::removeFeelTouch)));
 }

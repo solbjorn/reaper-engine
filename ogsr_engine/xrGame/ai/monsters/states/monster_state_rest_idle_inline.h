@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ai_space.h"
 #include "state_move_to_point.h"
 #include "state_look_point.h"
 #include "state_custom_action.h"

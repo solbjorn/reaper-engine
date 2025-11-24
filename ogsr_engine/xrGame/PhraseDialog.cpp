@@ -1,9 +1,13 @@
 #include "stdafx.h"
 
 #include "phrasedialog.h"
+
 #include "phrasedialogmanager.h"
 #include "gameobject.h"
 #include "ai_debug.h"
+
+#include "script_engine.h"
+#include "ai_space.h"
 
 SPhraseDialogData::SPhraseDialogData() { m_PhraseGraph.clear(); }
 SPhraseDialogData::~SPhraseDialogData() = default;
@@ -147,21 +151,19 @@ void CPhraseDialog::Load(shared_str dialog_id)
 
     if (GetForceReload())
     {
-        if (data()->m_sInitFunction.size())
+        if (!data()->m_sInitFunction.empty())
         {
             data()->m_PhraseGraph.clear();
 
-            luabind::functor<void> lua_function;
-            bool functor_exists = ai().script_engine().functor(data()->m_sInitFunction.c_str(), lua_function);
-            ASSERT_FMT_DBG(functor_exists, "!![%s] Cannot find precondition [%s]", __FUNCTION__, data()->m_sInitFunction.c_str());
-            if (functor_exists)
+            sol::function lua_function;
+            const bool function_exists = ai().script_engine().function(data()->m_sInitFunction.c_str(), lua_function);
+            ASSERT_FMT_DBG(function_exists, "!![%s] Cannot find precondition [%s]", __FUNCTION__, data()->m_sInitFunction.c_str());
+
+            if (function_exists)
                 lua_function(this);
         }
     }
 }
-
-#include "script_engine.h"
-#include "ai_space.h"
 
 void CPhraseDialog::load_shared(LPCSTR)
 {
@@ -190,14 +192,15 @@ void CPhraseDialog::load_shared(LPCSTR)
     data()->m_PhraseGraph.clear();
 
     XML_NODE* phrase_list_node = pXML->NavigateToNode(dialog_node, "phrase_list", 0);
-    if (!phrase_list_node && !GetForceReload())
+    if (phrase_list_node == nullptr && !GetForceReload())
     {
         data()->m_sInitFunction._set(pXML->Read(dialog_node, "init_func", 0, ""));
 
-        luabind::functor<void> lua_function;
-        bool functor_exists = ai().script_engine().functor(data()->m_sInitFunction.c_str(), lua_function);
-        ASSERT_FMT_DBG(functor_exists, "!![%s] Cannot find precondition [%s]", __FUNCTION__, data()->m_sInitFunction.c_str());
-        if (functor_exists)
+        sol::function lua_function;
+        const bool function_exists = ai().script_engine().function(data()->m_sInitFunction.c_str(), lua_function);
+        ASSERT_FMT_DBG(function_exists, "!![%s] Cannot find precondition [%s]", __FUNCTION__, data()->m_sInitFunction.c_str());
+
+        if (function_exists)
             lua_function(this);
 
         return;

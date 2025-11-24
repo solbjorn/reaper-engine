@@ -435,38 +435,3 @@ void CALifeSimulator::script_register(sol::state_view& lua)
 
     xr::sol_new_enum(lua, "spawn_story_ids", target);
 }
-
-#if 0 // def DEBUG
-struct dummy {
-    int count;
-    lua_State* state;
-    int ref;
-};
-
-void CALifeSimulator::validate			()
-{
-	typedef CALifeSpawnRegistry::SPAWN_GRAPH::const_vertex_iterator	const_vertex_iterator;
-	const_vertex_iterator		I = spawns().spawns().vertices().begin();
-	const_vertex_iterator		E = spawns().spawns().vertices().end();
-	for ( ; I != E; ++I) {
-		luabind::wrap_base		*base = smart_cast<luabind::wrap_base*>(&(*I).second->data()->object());
-		if (!base)
-			continue;
-
-		if (!base->m_self.m_impl)
-			continue;
-
-		dummy					*_dummy = (dummy*)((void*)base->m_self.m_impl);
-		lua_State				**_state = &_dummy->state;
-		VERIFY2					(
-			base->m_self.state(),
-			make_string(
-				"0x%08x name[%s] name_replace[%s]",
-				*(int*)&_state,
-				(*I).second->data()->object().name(),
-				(*I).second->data()->object().name_replace()
-			)
-		);
-	}
-}
-#endif // DEBUG

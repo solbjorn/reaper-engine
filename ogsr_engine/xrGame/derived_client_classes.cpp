@@ -8,8 +8,9 @@
 
 #include "StdAfx.h"
 
-#include "base_client_classes.h"
 #include "derived_client_classes.h"
+
+#include "base_client_classes.h"
 #include "HUDManager.h"
 #include "exported_classes_def.h"
 #include "script_game_object.h"
@@ -52,13 +53,11 @@ void CAnomalyZoneScript::script_register(sol::state_view& lua)
                                   sol::property(&get_zone_state, &CAnomalyZoneScript::set_zone_state), sol::base_classes, xr::sol_bases<CCustomZone>());
 }
 
-static void alive_entity_set_radiation(CEntityAlive* E, float value) { E->SetfRadiation(value); }
-
 void CEntityScript::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CEntity>("CEntity", sol::no_constructor, sol::base_classes, xr::sol_bases<CEntity>());
 
-    lua.new_usertype<CEntityAlive>("CEntityAlive", sol::no_constructor, "radiation", sol::property(&CEntityAlive::g_Radiation, &alive_entity_set_radiation), "condition",
+    lua.new_usertype<CEntityAlive>("CEntityAlive", sol::no_constructor, "radiation", sol::property(&CEntityAlive::g_Radiation, &CEntityAlive::SetfRadiation), "condition",
                                    sol::property(&CEntityAlive::conditions), sol::base_classes, xr::sol_bases<CEntityAlive>());
 }
 
@@ -107,52 +106,20 @@ static CScriptGameObject* inventory_selected_item(CInventory* I)
 
 static CScriptGameObject* get_inventory_target(CInventory* I) { return item_lua_object(I->m_pTarget); }
 
-static LPCSTR get_item_name(CInventoryItem* I) { return I->Name(); }
-static LPCSTR get_item_name_short(CInventoryItem* I) { return I->NameShort(); }
-
 static void set_item_name(CInventoryItem* item, LPCSTR name) { item->m_name = CStringTable().translate(shared_str{name}); }
 static void set_item_name_short(CInventoryItem* item, LPCSTR name) { item->m_nameShort = CStringTable().translate(shared_str{name}); }
 
 static LPCSTR get_item_description(CInventoryItem* I) { return I->m_Description.c_str(); }
 static void set_item_description(CInventoryItem* item, LPCSTR text) { item->m_Description = CStringTable().translate(shared_str{text}); }
 
-static luabind::object get_slots(CInventoryItem* itm)
-{
-    // lua_State* L = ai().script_engine().lua();
-
-    // lua_createtable(L, 0, 0);
-    // int tidx = lua_gettop(L);
-    // if (itm)
-    //{
-    //     for (u32 i = 0; i < itm->GetSlotsCount(); i++)
-    //     {
-    //         lua_pushinteger(L, i + 1); // key
-    //         lua_pushinteger(L, itm->GetSlots()[i]);
-    //         lua_settable(L, tidx);
-    //     }
-    // }
-
-    auto table = luabind::newtable(ai().script_engine().lua());
-
-    if (itm)
-    {
-        for (u32 i = 0; i < itm->GetSlotsCount(); i++)
-        {
-            table[i + 1] = itm->GetSlots()[i];
-        }
-    }
-
-    return table;
-}
-
 void CInventoryScript::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CInventoryItem>("CInventoryItem", sol::no_constructor, "item_place", sol::readonly(&CInventoryItem::m_eItemPlace), "item_condition",
                                      &CInventoryItem::m_fCondition, "inv_weight", &CInventoryItem::m_weight, "m_flags", &CInventoryItem::m_flags, "always_ungroupable",
                                      &CInventoryItem::m_always_ungroupable, "psy_health_restore_speed", &CInventoryItem::m_fPsyHealthRestoreSpeed, "radiation_restore_speed",
-                                     &CInventoryItem::m_fRadiationRestoreSpeed, "inv_name", sol::property(&get_item_name, &set_item_name), "inv_name_short",
-                                     sol::property(&get_item_name_short, &set_item_name_short), "cost", sol::property(&CInventoryItem::Cost, &CInventoryItem::SetCost), "slot",
-                                     sol::property(&CInventoryItem::GetSlot, &CInventoryItem::SetSlot), "slots", sol::property(&get_slots), "description",
+                                     &CInventoryItem::m_fRadiationRestoreSpeed, "inv_name", sol::property(&CInventoryItem::Name, &set_item_name), "inv_name_short",
+                                     sol::property(&CInventoryItem::NameShort, &set_item_name_short), "cost", sol::property(&CInventoryItem::Cost, &CInventoryItem::SetCost),
+                                     "slot", sol::property(&CInventoryItem::GetSlot, &CInventoryItem::SetSlot), "slots", sol::property(&CInventoryItem::GetSlots), "description",
                                      sol::property(&get_item_description, &set_item_description), sol::base_classes, xr::sol_bases<CInventoryItem>());
 
     lua.new_usertype<CInventoryItemObject>("CInventoryItemObject", sol::no_constructor, sol::base_classes, xr::sol_bases<CInventoryItemObject>());
@@ -184,8 +151,6 @@ void CMonsterScript::script_register(sol::state_view& lua)
                                    xr::sol_bases<CBaseMonster>());
 }
 
-static int curr_fire_mode(CWeaponMagazined* wpn) { return wpn->GetCurrentFireMode(); }
-
 void COutfitScript::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CCustomOutfit>("CCustomOutfit", sol::no_constructor, "additional_inventory_weight", &CCustomOutfit::m_additional_weight, "additional_inventory_weight2",
@@ -204,59 +169,22 @@ void COutfitScript::script_register(sol::state_view& lua)
                                     xr::sol_bases<CCustomOutfit>());
 }
 
-SRotation& CWeaponScript::FireDeviation(CWeapon* wpn) { return wpn->constDeviation; }
+const xr_vector<int>& CWeaponScript::get_fire_modes(CWeaponMagazined* wpn) { return wpn->m_aFireModes; }
 
-using namespace luabind;
-
-luabind::object CWeaponScript::get_fire_modes(CWeaponMagazined* wpn)
+void CWeaponScript::set_fire_modes(CWeaponMagazined* wpn, sol::table t)
 {
-    lua_State* L = ai().script_engine().lua();
-    luabind::object t = newtable(L);
-    auto& vector = wpn->m_aFireModes;
-    int index = 1;
-    for (auto it = vector.begin(); it != vector.end(); ++it, ++index)
-        t[index] = *it;
+    wpn->m_aFireModes.clear();
 
-    return t;
+    for (gsl::index i{1}; i <= std::ssize(t); ++i)
+        wpn->m_aFireModes.emplace_back(t[i]);
 }
 
-void CWeaponScript::set_fire_modes(CWeaponMagazined* wpn, luabind::object const& t)
+std::array<f32, 4> CWeaponScript::get_hit_power(CWeapon* wpn) { return *reinterpret_cast<const std::array<f32, 4>*>(&wpn->fvHitPower); }
+
+void CWeaponScript::set_hit_power(CWeapon* wpn, sol::table t)
 {
-    if (LUA_TTABLE != t.type())
-        return;
-    auto& vector = wpn->m_aFireModes;
-    vector.clear();
-    for (auto it = t.begin(); it != t.end(); ++it)
-    {
-        int m = object_cast<int>(*it);
-        vector.push_back(m);
-    }
-}
-
-luabind::object CWeaponScript::get_hit_power(CWeapon* wpn)
-{
-    lua_State* L = ai().script_engine().lua();
-    luabind::object t = newtable(L);
-    auto& vector = wpn->fvHitPower;
-
-    t[1] = vector.x;
-    t[2] = vector.y;
-    t[3] = vector.z;
-    t[4] = vector.w;
-
-    return t;
-}
-
-void CWeaponScript::set_hit_power(CWeapon* wpn, luabind::object const& t)
-{
-    if (LUA_TTABLE != t.type())
-        return;
-    auto& vector = wpn->fvHitPower;
-
-    vector.x = object_cast<float>(t[1]);
-    vector.y = object_cast<float>(t[2]);
-    vector.z = object_cast<float>(t[3]);
-    vector.w = object_cast<float>(t[4]);
+    for (gsl::index i{1}; i <= 4; ++i)
+        wpn->fvHitPower[i - 1] = t[i];
 }
 
 static LPCSTR get_scope_name(CWeapon* I) { return I->m_sScopeName.c_str(); }
@@ -312,7 +240,7 @@ void CWeaponScript::script_register(sol::state_view& lua)
                               &CWeapon::m_fSecondVPZoomFactor, "second_vp_enabled", &CWeapon::SecondVPEnabled,
 
                               // отклонение при стрельбе от целика (для непристрелляного оружия).
-                              "const_deviation", sol::property(&CWeaponScript::FireDeviation),
+                              "const_deviation", sol::readonly(&CWeapon::constDeviation),
 
                               "ammo_elapsed", sol::property(&CWeapon::GetAmmoElapsed, &CWeapon::SetAmmoElapsed), "get_ammo_current", &CWeapon::GetAmmoCurrent, "start_fire",
                               &CWeapon::FireStart, "stop_fire", &CWeapon::FireEnd,
@@ -326,8 +254,8 @@ void CWeaponScript::script_register(sol::state_view& lua)
 
     lua.new_usertype<CWeaponMagazined>(
         "CWeaponMagazined", sol::no_constructor, "shot_num", sol::readonly(&CWeaponMagazined::m_iShotNum), "queue_size", &CWeaponMagazined::m_iQueueSize, "shoot_effector_start",
-        &CWeaponMagazined::m_iShootEffectorStart, "cur_fire_mode", &CWeaponMagazined::m_iCurFireMode, "fire_mode", sol::property(&curr_fire_mode), "fire_modes",
-        sol::property(&get_fire_modes, &set_fire_modes), "attach_addon", &CWeaponMagazined::Attach, "detach_addon", &CWeaponMagazined::Detach, "can_attach_addon",
+        &CWeaponMagazined::m_iShootEffectorStart, "cur_fire_mode", &CWeaponMagazined::m_iCurFireMode, "fire_mode", sol::property(&CWeaponMagazined::GetCurrentFireMode),
+        "fire_modes", sol::property(&get_fire_modes, &set_fire_modes), "attach_addon", &CWeaponMagazined::Attach, "detach_addon", &CWeaponMagazined::Detach, "can_attach_addon",
         &CWeaponMagazined::CanAttach, "can_detach_addon", &CWeaponMagazined::CanDetach, sol::base_classes, xr::sol_bases<CWeaponMagazined>());
 
     lua.new_usertype<CWeaponMagazinedWGrenade>("CWeaponMagazinedWGrenade", sol::no_constructor, "gren_mag_size", &CWeaponMagazinedWGrenade::iMagazineSize2, "switch_gl",

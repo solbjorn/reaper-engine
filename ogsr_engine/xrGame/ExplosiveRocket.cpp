@@ -7,6 +7,7 @@
 
 #include "ExplosiveRocket.h"
 
+#include "ai_space.h"
 #include "xrserver_objects_alife_items.h"
 #include "level.h"
 #include "level_graph.h"

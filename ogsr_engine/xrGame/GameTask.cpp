@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "GameTask.h"
+
 #include "ui/xrUIXmlParser.h"
 #include "encyclopedia_article.h"
 #include "map_location.h"
@@ -9,7 +10,6 @@
 #include "level.h"
 #include "actor.h"
 #include "script_engine.h"
-#include "script_callback_ex.h"
 #include "script_game_object.h"
 #include "ai_space.h"
 #include "alife_object_registry.h"
@@ -54,9 +54,8 @@ u16 storyId2GameId(ALife::_STORY_ID id)
 
 CUIXml* g_gameTaskXml{};
 
-CGameTask::CGameTask(const TASK_ID& id) : m_priority{std::numeric_limits<u32>::max()} { Load(id); }
-
 CGameTask::CGameTask() : m_ID{nullptr}, m_version{0}, m_objectives_version{0}, m_show_all_objectives{false} {}
+CGameTask::CGameTask(const TASK_ID& id) : m_priority{std::numeric_limits<u32>::max()} { Load(id); }
 
 void CGameTask::Load(const TASK_ID& id)
 {
@@ -149,71 +148,75 @@ void CGameTask::Load(const TASK_ID& id)
         }
 
         //------infoportion_complete
-        int info_num = g_gameTaskXml->GetNodesNum(l_root, "infoportion_complete");
+        gsl::index info_num = g_gameTaskXml->GetNodesNum(l_root, "infoportion_complete");
         objective.m_completeInfos.reserve(info_num);
-        int j;
-        for (j = 0; j < info_num; ++j)
+
+        for (gsl::index j{}; j < info_num; ++j)
             objective.m_completeInfos.emplace_back(g_gameTaskXml->Read(l_root, "infoportion_complete", j, nullptr));
 
         //------infoportion_fail
         info_num = g_gameTaskXml->GetNodesNum(l_root, "infoportion_fail");
         objective.m_failInfos.reserve(info_num);
 
-        for (j = 0; j < info_num; ++j)
+        for (gsl::index j{}; j < info_num; ++j)
             objective.m_failInfos.emplace_back(g_gameTaskXml->Read(l_root, "infoportion_fail", j, nullptr));
 
         //------infoportion_set_complete
         info_num = g_gameTaskXml->GetNodesNum(l_root, "infoportion_set_complete");
         objective.m_infos_on_complete.reserve(info_num);
-        for (j = 0; j < info_num; ++j)
+
+        for (gsl::index j{}; j < info_num; ++j)
             objective.m_infos_on_complete.emplace_back(g_gameTaskXml->Read(l_root, "infoportion_set_complete", j, nullptr));
 
         //------infoportion_set_fail
         info_num = g_gameTaskXml->GetNodesNum(l_root, "infoportion_set_fail");
         objective.m_infos_on_fail.reserve(info_num);
-        for (j = 0; j < info_num; ++j)
+
+        for (gsl::index j{}; j < info_num; ++j)
             objective.m_infos_on_fail.emplace_back(g_gameTaskXml->Read(l_root, "infoportion_set_fail", j, nullptr));
 
         //------function_complete
-        LPCSTR str;
-        bool functor_exists;
-        info_num = g_gameTaskXml->GetNodesNum(l_root, "function_complete");
-        objective.m_complete_lua_functions.resize(info_num);
-        for (j = 0; j < info_num; ++j)
+        objective.m_complete_lua_functions.resize(g_gameTaskXml->GetNodesNum(l_root, "function_complete"));
+
+        for (auto [j, fn] : xr::views_enumerate(objective.m_complete_lua_functions))
         {
-            str = g_gameTaskXml->Read(l_root, "function_complete", j, nullptr);
-            functor_exists = ai().script_engine().functor(str, objective.m_complete_lua_functions[j]);
-            ASSERT_FMT_DBG(functor_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, str);
+            gsl::czstring str = g_gameTaskXml->Read(l_root, "function_complete", j, nullptr);
+            const bool function_exists = ai().script_engine().function(str, fn);
+
+            ASSERT_FMT_DBG(function_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, str);
         }
 
         //------function_fail
-        info_num = g_gameTaskXml->GetNodesNum(l_root, "function_fail");
-        objective.m_fail_lua_functions.resize(info_num);
-        for (j = 0; j < info_num; ++j)
+        objective.m_fail_lua_functions.resize(g_gameTaskXml->GetNodesNum(l_root, "function_fail"));
+
+        for (auto [j, fn] : xr::views_enumerate(objective.m_fail_lua_functions))
         {
-            str = g_gameTaskXml->Read(l_root, "function_fail", j, nullptr);
-            functor_exists = ai().script_engine().functor(str, objective.m_fail_lua_functions[j]);
-            ASSERT_FMT_DBG(functor_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, str);
+            gsl::czstring str = g_gameTaskXml->Read(l_root, "function_fail", j, nullptr);
+            const bool function_exists = ai().script_engine().function(str, fn);
+
+            ASSERT_FMT_DBG(function_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, str);
         }
 
         //------function_on_complete
-        info_num = g_gameTaskXml->GetNodesNum(l_root, "function_call_complete");
-        objective.m_lua_functions_on_complete.resize(info_num);
-        for (j = 0; j < info_num; ++j)
+        objective.m_lua_functions_on_complete.resize(g_gameTaskXml->GetNodesNum(l_root, "function_call_complete"));
+
+        for (auto [j, fn] : xr::views_enumerate(objective.m_lua_functions_on_complete))
         {
-            str = g_gameTaskXml->Read(l_root, "function_call_complete", j, nullptr);
-            functor_exists = ai().script_engine().functor(str, objective.m_lua_functions_on_complete[j]);
-            ASSERT_FMT_DBG(functor_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, str);
+            gsl::czstring str = g_gameTaskXml->Read(l_root, "function_call_complete", j, nullptr);
+            const bool function_exists = ai().script_engine().function(str, fn);
+
+            ASSERT_FMT_DBG(function_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, str);
         }
 
         //------function_on_fail
-        info_num = g_gameTaskXml->GetNodesNum(l_root, "function_call_fail");
-        objective.m_lua_functions_on_fail.resize(info_num);
-        for (j = 0; j < info_num; ++j)
+        objective.m_lua_functions_on_fail.resize(g_gameTaskXml->GetNodesNum(l_root, "function_call_fail"));
+
+        for (auto [j, fn] : xr::views_enumerate(objective.m_lua_functions_on_fail))
         {
-            str = g_gameTaskXml->Read(l_root, "function_call_fail", j, nullptr);
-            functor_exists = ai().script_engine().functor(str, objective.m_lua_functions_on_fail[j]);
-            ASSERT_FMT_DBG(functor_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, str);
+            gsl::czstring str = g_gameTaskXml->Read(l_root, "function_call_fail", j, nullptr);
+            const bool function_exists = ai().script_engine().function(str, fn);
+
+            ASSERT_FMT_DBG(function_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, str);
         }
 
         g_gameTaskXml->SetLocalRoot(task_node);
@@ -222,31 +225,32 @@ void CGameTask::Load(const TASK_ID& id)
     g_gameTaskXml->SetLocalRoot(g_gameTaskXml->GetRoot());
 }
 
-bool CGameTask::HasLinkedMapLocations()
+bool CGameTask::HasLinkedMapLocations() const
 {
-    for (u32 i = 0; i < m_Objectives.size(); ++i)
+    for (auto& obj : m_Objectives)
     {
-        if (m_Objectives[i].LinkedMapLocation())
+        if (obj.LinkedMapLocation() != nullptr)
             return true;
     }
 
     return false;
 }
 
-bool CGameTask::HasInProgressObjective()
+bool CGameTask::HasInProgressObjective() const
 {
-    for (u32 i = 1; i < m_Objectives.size(); ++i)
-        if (m_Objectives[i].TaskState() == eTaskStateInProgress)
+    for (auto& obj : m_Objectives | std::views::drop(1))
+    {
+        if (obj.TaskState() == eTaskStateInProgress)
             return true;
+    }
 
     return false;
 }
 
+SGameTaskObjective::SGameTaskObjective() : parent{nullptr}, idx{0} {}
 SGameTaskObjective::SGameTaskObjective(CGameTask* _parent, int _idx) : parent{_parent}, idx{_idx} {}
 
-SGameTaskObjective::SGameTaskObjective() : parent{nullptr}, idx{0} {}
-
-CMapLocation* SGameTaskObjective::LinkedMapLocation()
+CMapLocation* SGameTaskObjective::LinkedMapLocation() const
 {
     if (map_location.empty())
         return nullptr;
@@ -304,45 +308,38 @@ ETaskState SGameTaskObjective::UpdateState()
 
 void SGameTaskObjective::SendInfo(xr_vector<shared_str>& v)
 {
-    xr_vector<shared_str>::iterator it = v.begin();
-    for (; it != v.end(); ++it)
-        Actor()->TransferInfo((*it), true);
+    for (const auto& info : v)
+        Actor()->TransferInfo(info, true);
 }
 
 bool SGameTaskObjective::CheckInfo(xr_vector<shared_str>& v)
 {
-    bool res = false;
-    xr_vector<shared_str>::iterator it = v.begin();
-    for (; it != v.end(); ++it)
+    for (const auto& info : v)
     {
-        res = Actor()->HasInfo(*it);
-        if (!res)
-            break;
+        if (!Actor()->HasInfo(info))
+            return false;
     }
-    return res;
+
+    return true;
 }
 
-bool SGameTaskObjective::CheckFunctions(xr_vector<luabind::functor<bool>>& v)
+bool SGameTaskObjective::CheckFunctions(xr_vector<sol::function>& v)
 {
-    bool res = false;
-    xr_vector<luabind::functor<bool>>::iterator it = v.begin();
-    for (; it != v.end(); ++it)
+    for (auto& fn : v)
     {
-        if ((*it).is_valid())
-            res = (*it)(*(parent->m_ID), idx);
-        if (!res)
-            break;
+        if (!fn || !fn(parent->m_ID.c_str(), idx))
+            return false;
     }
-    return res;
+
+    return true;
 }
 
-void SGameTaskObjective::CallAllFuncs(xr_vector<luabind::functor<bool>>& v)
+void SGameTaskObjective::CallAllFuncs(xr_vector<sol::function>& v)
 {
-    xr_vector<luabind::functor<bool>>::iterator it = v.begin();
-    for (; it != v.end(); ++it)
+    for (auto& fn : v)
     {
-        if ((*it).is_valid())
-            (*it)(*(parent->m_ID), idx);
+        if (fn)
+            fn(parent->m_ID.c_str(), idx);
     }
 }
 
@@ -378,10 +375,10 @@ void CGameTask::SetPriority_script(int _prio) { m_priority = _prio; }
 
 void CGameTask::AddObjective_script(SGameTaskObjective* O)
 {
-    O->m_pScriptHelper.init_functors(O->m_pScriptHelper.m_s_complete_lua_functions, O->m_complete_lua_functions);
-    O->m_pScriptHelper.init_functors(O->m_pScriptHelper.m_s_fail_lua_functions, O->m_fail_lua_functions);
-    O->m_pScriptHelper.init_functors(O->m_pScriptHelper.m_s_lua_functions_on_complete, O->m_lua_functions_on_complete);
-    O->m_pScriptHelper.init_functors(O->m_pScriptHelper.m_s_lua_functions_on_fail, O->m_lua_functions_on_fail);
+    O->m_pScriptHelper.init_functions(O->m_pScriptHelper.m_s_complete_lua_functions, O->m_complete_lua_functions);
+    O->m_pScriptHelper.init_functions(O->m_pScriptHelper.m_s_fail_lua_functions, O->m_fail_lua_functions);
+    O->m_pScriptHelper.init_functions(O->m_pScriptHelper.m_s_lua_functions_on_complete, O->m_lua_functions_on_complete);
+    O->m_pScriptHelper.init_functions(O->m_pScriptHelper.m_s_lua_functions_on_fail, O->m_lua_functions_on_fail);
 
     m_Objectives.push_back(*O);
 }
@@ -436,27 +433,26 @@ void SGameTaskObjective::load(IReader& stream)
 
     bool b_script;
     load_data(b_script, stream); //-V614
+
     if (b_script)
     {
         load_data(m_pScriptHelper, stream);
 
-        m_pScriptHelper.init_functors(m_pScriptHelper.m_s_complete_lua_functions, m_complete_lua_functions);
-        m_pScriptHelper.init_functors(m_pScriptHelper.m_s_fail_lua_functions, m_fail_lua_functions);
-        m_pScriptHelper.init_functors(m_pScriptHelper.m_s_lua_functions_on_complete, m_lua_functions_on_complete);
-        m_pScriptHelper.init_functors(m_pScriptHelper.m_s_lua_functions_on_fail, m_lua_functions_on_fail);
+        m_pScriptHelper.init_functions(m_pScriptHelper.m_s_complete_lua_functions, m_complete_lua_functions);
+        m_pScriptHelper.init_functions(m_pScriptHelper.m_s_fail_lua_functions, m_fail_lua_functions);
+        m_pScriptHelper.init_functions(m_pScriptHelper.m_s_lua_functions_on_complete, m_lua_functions_on_complete);
+        m_pScriptHelper.init_functions(m_pScriptHelper.m_s_lua_functions_on_fail, m_lua_functions_on_fail);
     }
 }
 
-void SScriptObjectiveHelper::init_functors(xr_vector<shared_str>& v_src, xr_vector<luabind::functor<bool>>& v_dest)
+void SScriptObjectiveHelper::init_functions(xr_vector<shared_str>& v_src, xr_vector<sol::function>& v_dest)
 {
-    xr_vector<shared_str>::iterator it = v_src.begin();
-    xr_vector<shared_str>::iterator it_e = v_src.end();
     v_dest.resize(v_src.size());
 
-    for (u32 idx = 0; it != it_e; ++it, ++idx)
+    for (auto [str, fn] : std::views::zip(v_src, v_dest))
     {
-        bool functor_exists = ai().script_engine().functor(*(*it), v_dest[idx]);
-        ASSERT_FMT_DBG(functor_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, (*it).c_str());
+        const bool function_exists = ai().script_engine().function(str.c_str(), fn);
+        ASSERT_FMT_DBG(function_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, str.c_str());
     }
 }
 

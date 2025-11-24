@@ -5,6 +5,7 @@
 #include "PhysicsShell.h"
 #include "actor.h"
 #include "torch.h"
+#include "ai_space.h"
 #include "xrserver_objects_alife.h"
 #include "level.h"
 #include "xr_level_controller.h"

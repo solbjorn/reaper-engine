@@ -288,9 +288,6 @@
     <ClInclude Include="EventAPI.h">
       <Filter>Engine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="ai_script_space.h">
-      <Filter>Engine\Core\Scripting</Filter>
-    </ClInclude>
     <ClInclude Include="perlin.h">
       <Filter>Engine\Noise</Filter>
     </ClInclude>

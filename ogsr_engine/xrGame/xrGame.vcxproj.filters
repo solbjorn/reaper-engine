@@ -4044,9 +4044,6 @@
     <ClInclude Include="base_client_classes.h">
       <Filter>AI\AScript\ScriptClasses\BaseClientClasses</Filter>
     </ClInclude>
-    <ClInclude Include="script_callback_ex.h">
-      <Filter>AI\AScript\ScriptClasses\ScriptCallbackEx</Filter>
-    </ClInclude>
     <ClInclude Include="script_lanim.h">
       <Filter>AI\AScript\ScriptClasses\ScriptLAnim</Filter>
     </ClInclude>
@@ -5315,9 +5312,6 @@
     </ClInclude>
     <ClInclude Include="ui\UIInventoryUtilities.h">
       <Filter>AI\AScript\ScriptClasses\UI\Common\InventoryUtilities</Filter>
-    </ClInclude>
-    <ClInclude Include="callback_info.h">
-      <Filter>AI\AScript\ScriptClasses\UI\UIWindows</Filter>
     </ClInclude>
     <ClInclude Include="ui\uiabstract.h">
       <Filter>AI\AScript\ScriptClasses\UI\UIWindows</Filter>

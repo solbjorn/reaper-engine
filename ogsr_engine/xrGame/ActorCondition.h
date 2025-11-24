@@ -7,9 +7,6 @@
 #include "actor_defs.h"
 #include "..\xr_3da\feel_touch.h"
 
-template <typename _return_type>
-class CScriptCallbackEx;
-
 class CActor;
 
 class CActorCondition : public CEntityCondition

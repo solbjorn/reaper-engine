@@ -89,11 +89,10 @@ add_to_type_list(COutfitScript);
 class CWeaponScript
 {
 public:
-    static SRotation& FireDeviation(CWeapon* wpn);
-    static luabind::object get_fire_modes(CWeaponMagazined* wpn);
-    static void set_fire_modes(CWeaponMagazined* wpn, luabind::object const& t);
-    static luabind::object get_hit_power(CWeapon* wpn);
-    static void set_hit_power(CWeapon* wpn, luabind::object const& t);
+    static const xr_vector<int>& get_fire_modes(CWeaponMagazined* wpn);
+    static void set_fire_modes(CWeaponMagazined* wpn, sol::table t);
+    static std::array<f32, 4> get_hit_power(CWeapon* wpn);
+    static void set_hit_power(CWeapon* wpn, sol::table t);
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

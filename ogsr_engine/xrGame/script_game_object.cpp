@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "script_game_object.h"
+
 #include "script_entity_action.h"
 #include "ai_space.h"
 #include "script_engine.h"
@@ -471,38 +472,23 @@ bool CScriptGameObject::inside(const Fvector& position, float epsilon) const
 
 bool CScriptGameObject::inside(const Fvector& position) const { return (inside(position, EPS_L)); }
 
-void CScriptGameObject::set_patrol_extrapolate_callback(const luabind::functor<bool>& functor)
-{
-    CCustomMonster* monster = smart_cast<CCustomMonster*>(&object());
-    if (!monster)
-    {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member set_patrol_extrapolate_callback!");
-        return;
-    }
-    monster->movement().patrol().extrapolate_callback().set(functor);
-}
-
-void CScriptGameObject::set_patrol_extrapolate_callback(const luabind::functor<bool>& functor, const luabind::object& object)
+void CScriptGameObject::set_patrol_extrapolate_callback(sol::function function, sol::object object)
 {
     CCustomMonster* monster = smart_cast<CCustomMonster*>(&this->object());
-    if (!monster)
+    if (monster == nullptr)
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member set_patrol_extrapolate_callback!");
         return;
     }
-    monster->movement().patrol().extrapolate_callback().set(functor, object);
+
+    auto& cb = monster->movement().patrol().extrapolate_callback();
+    cb.m_callback = std::move(function);
+    cb.m_object = std::move(object);
 }
 
-void CScriptGameObject::set_patrol_extrapolate_callback()
-{
-    CCustomMonster* monster = smart_cast<CCustomMonster*>(&this->object());
-    if (!monster)
-    {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member set_patrol_extrapolate_callback!");
-        return;
-    }
-    monster->movement().patrol().extrapolate_callback().clear();
-}
+void CScriptGameObject::set_patrol_extrapolate_callback(sol::function function) { set_patrol_extrapolate_callback(std::move(function), {}); }
+
+void CScriptGameObject::set_patrol_extrapolate_callback() { set_patrol_extrapolate_callback({}, {}); }
 
 void CScriptGameObject::extrapolate_length(float extrapolate_length)
 {

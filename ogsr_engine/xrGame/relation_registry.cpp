@@ -12,6 +12,10 @@
 #include "character_reputation.h"
 #include "character_rank.h"
 
+#include "game_object_space.h"
+#include "script_game_object.h"
+#include "Actor.h"
+
 //////////////////////////////////////////////////////////////////////////
 
 SRelation::SRelation() { m_iGoodwill = NEUTRAL_GOODWILL; }
@@ -172,11 +176,6 @@ CHARACTER_GOODWILL RELATION_REGISTRY::GetGoodwill(u16 from, u16 to) const
     // если отношение еще не задано, то возвращаем нейтральное
     return NEUTRAL_GOODWILL;
 }
-
-#include "game_object_space.h"
-#include "script_callback_ex.h"
-#include "script_game_object.h"
-#include "Actor.h"
 
 void RELATION_REGISTRY::SetGoodwill(u16 from, u16 to, CHARACTER_GOODWILL goodwill)
 {

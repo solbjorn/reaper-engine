@@ -6,6 +6,7 @@
 #include "stdafx.h"
 
 #include "InventoryOwner.h"
+
 #include "GameObject.h"
 #include "xrMessages.h"
 #include "ai_space.h"
@@ -16,7 +17,6 @@
 #include "level.h"
 #include "infoportion.h"
 #include "alife_registry_wrappers.h"
-#include "script_callback_ex.h"
 #include "game_object_space.h"
 
 void CInventoryOwner::OnEvent(NET_Packet& P, u16 type)
@@ -70,9 +70,6 @@ bool CInventoryOwner::OnReceiveInfo(shared_str info_id) const
     // Запустить скриптовый callback
     const CGameObject* pThisGameObject = smart_cast<const CGameObject*>(this);
     VERIFY(pThisGameObject);
-
-    //	SCRIPT_CALLBACK_EXECUTE_2(*m_pInfoCallback, pThisGameObject->lua_game_object(), info_index);
-    //	pThisGameObject->callback(GameObject::eInventoryInfo)(pThisGameObject->lua_game_object(), *info_id);
 
     CInfoPortion info_portion;
     info_portion.Load(info_id);

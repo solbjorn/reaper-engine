@@ -19,15 +19,15 @@ public:
     xr_vector<shared_str> m_s_lua_functions_on_fail;
 
 public:
-    bool not_empty() const
+    [[nodiscard]] constexpr bool not_empty() const
     {
-        return m_s_complete_lua_functions.size() || m_s_fail_lua_functions.size() || m_s_lua_functions_on_complete.size() || m_s_lua_functions_on_fail.size();
+        return !m_s_complete_lua_functions.empty() || !m_s_fail_lua_functions.empty() || !m_s_lua_functions_on_complete.empty() || !m_s_lua_functions_on_fail.empty();
     }
 
     void save(IWriter& stream) const;
     void load(IReader& stream);
 
-    void init_functors(xr_vector<shared_str>& v_src, xr_vector<luabind::functor<bool>>& v_dest);
+    void init_functions(xr_vector<shared_str>& v_src, xr_vector<sol::function>& v_dest);
 };
 
 template <typename M>
@@ -49,10 +49,11 @@ class SGameTaskObjective
 
 private:
     CGameTask* parent;
+
     void SendInfo(xr_vector<shared_str>&);
-    void CallAllFuncs(xr_vector<luabind::functor<bool>>& v);
+    void CallAllFuncs(xr_vector<sol::function>& v);
     bool CheckInfo(xr_vector<shared_str>&);
-    bool CheckFunctions(xr_vector<luabind::functor<bool>>& v);
+    bool CheckFunctions(xr_vector<sol::function>& v);
 
 public:
     ETaskState task_state{eTaskStateInProgress};
@@ -62,31 +63,33 @@ public:
     void save(IWriter& stream) const;
     void load(IReader& stream);
 
-    SGameTaskObjective(CGameTask* parent, int idx);
     SGameTaskObjective();
+    explicit SGameTaskObjective(CGameTask* parent, int idx);
+
     shared_str description;
     shared_str article_id;
     shared_str map_hint;
     shared_str map_location;
     u16 object_id{std::numeric_limits<u16>::max()};
-    CMapLocation* LinkedMapLocation();
-    ETaskState TaskState() { return task_state; }
+
+    CMapLocation* LinkedMapLocation() const;
+    ETaskState TaskState() const { return task_state; }
     ETaskState UpdateState();
 
     shared_str icon_texture_name;
     Frect icon_rect;
     bool def_location_enabled{true};
+
     // complete/fail stuff
     xr_vector<shared_str> m_completeInfos;
     xr_vector<shared_str> m_failInfos;
     xr_vector<shared_str> m_infos_on_complete;
     xr_vector<shared_str> m_infos_on_fail;
 
-    xr_vector<luabind::functor<bool>> m_complete_lua_functions;
-    xr_vector<luabind::functor<bool>> m_fail_lua_functions;
-
-    xr_vector<luabind::functor<bool>> m_lua_functions_on_complete;
-    xr_vector<luabind::functor<bool>> m_lua_functions_on_fail;
+    xr_vector<sol::function> m_complete_lua_functions;
+    xr_vector<sol::function> m_fail_lua_functions;
+    xr_vector<sol::function> m_lua_functions_on_complete;
+    xr_vector<sol::function> m_lua_functions_on_fail;
 
     // for scripting access
     void SetDescription_script(LPCSTR _descr);
@@ -135,11 +138,11 @@ protected:
     void sync_task_version();
 
 public:
-    CGameTask(const TASK_ID& id);
     CGameTask();
+    explicit CGameTask(const TASK_ID& id);
 
-    bool HasLinkedMapLocations();
-    bool HasInProgressObjective();
+    [[nodiscard]] bool HasLinkedMapLocations() const;
+    [[nodiscard]] bool HasInProgressObjective() const;
 
     SGameTaskObjective& Objective(int objectice_id) { return m_Objectives.at(objectice_id); }
 

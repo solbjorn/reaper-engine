@@ -80,7 +80,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrPhysics;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\concurrency\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\luabind;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\zstd\zstd\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrPhysics;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\concurrency\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\zstd\zstd\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
@@ -138,7 +138,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrPhysics;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\concurrency\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\luabind;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\zstd\zstd\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrPhysics;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\concurrency\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\zstd\zstd\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
@@ -940,7 +940,6 @@
     <ClInclude Include="fs_registrator.h" />
     <ClInclude Include="console_registrator.h" />
     <ClInclude Include="base_client_classes.h" />
-    <ClInclude Include="script_callback_ex.h" />
     <ClInclude Include="script_lanim.h" />
     <ClInclude Include="..\COMMON_AI\script_fcolor.h" />
     <ClInclude Include="script_particles.h" />
@@ -1304,7 +1303,6 @@
     <ClInclude Include="ui\UIWpnParams.h" />
     <ClInclude Include="ui\UIOutfitInfo.h" />
     <ClInclude Include="ui\UIInventoryUtilities.h" />
-    <ClInclude Include="callback_info.h" />
     <ClInclude Include="ui\uiabstract.h" />
     <ClInclude Include="ui\UIBtnHint.h" />
     <ClInclude Include="ui\UIMessages.h" />

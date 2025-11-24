@@ -12,7 +12,6 @@
 #include "GameTaskManager.h"
 #include "xrServer.h"
 #include "game_object_space.h"
-#include "script_callback_ex.h"
 #include "alife_simulator_header.h"
 
 struct FindLocationBySpotID

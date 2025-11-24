@@ -9,10 +9,10 @@
 #include "stdafx.h"
 
 #include "stalker_animation_manager.h"
+
 #include "ai/stalker/ai_stalker.h"
 #include "script_engine.h"
 #include "game_object_space.h"
-#include "script_callback_ex.h"
 #include "ai_space.h"
 
 void CStalkerAnimationManager::script_play_callback(CBlend* blend)

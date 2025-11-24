@@ -8,8 +8,9 @@
 
 #include "stdafx.h"
 
-#include "../COMMON_AI/script_camera.h"
 #include "base_client_classes.h"
+
+#include "../COMMON_AI/script_camera.h"
 #include "script_game_object.h"
 #include "exported_classes_def.h"
 
@@ -141,8 +142,7 @@ void CAnomalyDetectorScript::script_register(sol::state_view& lua)
 }
 
 LPCSTR CPatrolPointScript::getName(CPatrolPoint* pp) { return pp->m_name.c_str(); }
-
-void CPatrolPointScript::setName(CPatrolPoint* pp, LPCSTR str) { pp->m_name = shared_str(str); }
+void CPatrolPointScript::setName(CPatrolPoint* pp, LPCSTR str) { pp->m_name._set(str); }
 
 void CPatrolPointScript::script_register(sol::state_view& lua)
 {
@@ -159,23 +159,24 @@ void CPatrolPathScript::script_register(sol::state_view& lua)
                                   sol::base_classes, xr::sol_bases<CPatrolPath>());
 }
 
-static luabind::object script_texture_find(const char* name)
+namespace
 {
-    auto textures = Device.m_pRender->GetResourceManager()->FindTexture(name);
+xr_map<gsl::czstring, ITexture*> script_texture_find(gsl::czstring name)
+{
+    xr_map<gsl::czstring, ITexture*> ret;
 
-    auto table = luabind::newtable(ai().script_engine().lua());
+    for (const auto tex : Device.m_pRender->GetResourceManager()->FindTexture(name))
+        ret.try_emplace(tex->GetName(), tex); // key - texture name, value - texture object
 
-    for (const auto& tex : textures)
-        table[tex->GetName()] = tex; // key - texture name, value - texture object
-
-    return table;
+    return ret;
 }
 
-static void script_texture_load(ITexture* t, const char* name)
+void script_texture_load(ITexture* t, gsl::czstring name)
 {
     t->Unload();
     t->Load(name);
 }
+} // namespace
 
 template <>
 void ITextureScript::script_register(sol::state_view& lua)

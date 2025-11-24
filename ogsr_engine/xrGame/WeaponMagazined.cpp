@@ -24,7 +24,6 @@
 #include "ai_object_location.h"
 
 #include "game_object_space.h"
-#include "script_callback_ex.h"
 #include "script_game_object.h"
 #include "../xr_3da/x_ray.h"
 

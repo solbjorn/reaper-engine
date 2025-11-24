@@ -7,11 +7,12 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "script_zone.h"
+
 #include "script_game_object.h"
 #include "xrserver_objects_alife_monsters.h"
 #include "../xr_3da/xr_collide_form.h"
-#include "script_callback_ex.h"
 #include "game_object_space.h"
 
 #ifdef DEBUG
@@ -19,9 +20,8 @@
 #include "debug_renderer.h"
 #endif
 
-CScriptZone::CScriptZone() {}
-
-CScriptZone::~CScriptZone() {}
+CScriptZone::CScriptZone() = default;
+CScriptZone::~CScriptZone() = default;
 
 void CScriptZone::reinit() { inherited::reinit(); }
 

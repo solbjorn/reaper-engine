@@ -13,11 +13,9 @@
 #include "gameobject.h"
 #include "script_game_object.h"
 #include "restricted_object.h"
-#include "ai_space.h"
 #include "script_engine.h"
 #include "ai_object_location.h"
 #include "script_entity_space.h"
-#include "script_callback_ex.h"
 #include "game_object_space.h"
 #include "level_graph.h"
 
@@ -54,8 +52,10 @@ CPatrolPathManager::~CPatrolPathManager() = default;
 bool CPatrolPathManager::extrapolate_path()
 {
     VERIFY(m_path && m_path->vertex(m_curr_point_index));
+
     if (!m_extrapolate_callback)
         return true;
+
     return m_extrapolate_callback(m_curr_point_index, m_path_name.c_str());
 }
 
@@ -65,15 +65,15 @@ void CPatrolPathManager::reinit()
     m_actuality = true;
     m_failed = false;
     m_completed = true;
-    m_extrapolate_callback.clear();
+
+    m_extrapolate_callback.m_callback = sol::function{};
+    m_extrapolate_callback.m_object = sol::object{};
 
     reset();
 }
 
 IC bool CPatrolPathManager::accessible(const Fvector& position) const { return (m_object ? object().accessible(position) : true); }
-
 IC bool CPatrolPathManager::accessible(u32 vertex_id) const { return (m_object ? object().accessible(vertex_id) : true); }
-
 IC bool CPatrolPathManager::accessible(const CPatrolPath::CVertex* vertex) const { return (vertex ? object().accessible(vertex->data().position()) : true); }
 
 struct CAccessabilityEvaluator

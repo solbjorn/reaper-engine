@@ -13,13 +13,26 @@
 #include "patrol_path_storage.h"
 #include "patrol_path.h"
 #include "patrol_path_manager_space.h"
-#include "script_callback_ex.h"
-
-template <typename _return_type>
-class CScriptCallbackEx;
 
 class CRestrictedObject;
 class CGameObject;
+
+struct CExtrapolateCallback
+{
+    sol::function m_callback;
+    sol::object m_object;
+
+    [[nodiscard]] constexpr explicit operator bool() const noexcept { return !!m_callback; }
+
+    template <typename... Args>
+    [[nodiscard]] constexpr bool operator()(Args&&... args)
+    {
+        if (m_object)
+            return m_callback(m_object, std::forward<Args>(args)...);
+        else
+            return m_callback(std::forward<Args>(args)...);
+    }
+};
 
 class CPatrolPathManager : public virtual RTTI::Enable
 {
@@ -28,10 +41,6 @@ class CPatrolPathManager : public virtual RTTI::Enable
 private:
     friend struct CAccessabilityEvaluator;
 
-private:
-    typedef CScriptCallbackEx<bool> CExtrapolateCallback;
-
-private:
     const CPatrolPath* m_path{};
     shared_str m_path_name;
     PatrolPathManager::EPatrolStartType m_start_type{PatrolPathManager::ePatrolStartTypeDummy};
@@ -59,7 +68,8 @@ public:
     ~CPatrolPathManager() override;
 
     virtual void reinit();
-    IC CExtrapolateCallback& extrapolate_callback();
+    inline CExtrapolateCallback& extrapolate_callback();
+    inline const CExtrapolateCallback& extrapolate_callback() const;
     IC void make_inactual();
     IC const CPatrolPath* get_path() const;
     IC void set_path(const CPatrolPath* path, shared_str path_name);

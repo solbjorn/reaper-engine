@@ -13,6 +13,10 @@
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "ai_debug.h"
 
+#include "game_object_space.h"
+#include "script_game_object.h"
+#include "Actor.h"
+
 CALifeObjectRegistry::CALifeObjectRegistry() = default;
 
 CALifeObjectRegistry::~CALifeObjectRegistry()
@@ -61,12 +65,6 @@ void CALifeObjectRegistry::save(IWriter& memory_stream, CSE_ALifeDynamicObject* 
         save(memory_stream, child, object_count);
     }
 }
-
-#include "stdafx.h"
-#include "game_object_space.h"
-#include "script_callback_ex.h"
-#include "script_game_object.h"
-#include "Actor.h"
 
 void CALifeObjectRegistry::save(IWriter& memory_stream)
 {

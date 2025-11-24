@@ -1,12 +1,21 @@
 #include "stdafx.h"
 
+#include "UIMap.h"
+
 #include "../level.h"
 #include "../map_location.h"
 #include "../map_manager.h"
 #include "../map_spot.h"
-#include "UIMap.h"
 #include "UIMapWnd.h"
 #include "../../xr_3da/xr_input.h" //remove me !!!
+
+#include "../game_object_space.h"
+#include "../script_game_object.h"
+#include "../Actor.h"
+#include "../UICursor.h"
+#include "../UIGameSP.h"
+#include "../HUDManager.h"
+#include "UiPdaWnd.h"
 
 CUICustomMap::CUICustomMap()
 {
@@ -489,15 +498,6 @@ void CUILevelMap::Update()
         }
     }
 }
-
-#include "../game_object_space.h"
-#include "../script_callback_ex.h"
-#include "../script_game_object.h"
-#include "../Actor.h"
-#include "../UICursor.h"
-#include "../UIGameSP.h"
-#include "../HUDManager.h"
-#include "UiPdaWnd.h"
 
 bool CUILevelMap::OnMouse(float x, float y, EUIMessages mouse_action)
 {

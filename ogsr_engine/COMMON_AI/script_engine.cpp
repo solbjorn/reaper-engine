@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "script_engine.h"
+
 #include "ai_space.h"
 #include "MainMenu.h"
 #include "object_factory.h"
@@ -238,7 +239,7 @@ void CScriptEngine::register_script_classes()
     result(const_cast<CObjectFactory*>(&object_factory()));
 }
 
-bool CScriptEngine::function(const char* function_to_call, sol::function& func)
+bool CScriptEngine::function(gsl::czstring function_to_call, sol::function& func)
 {
     if (xr_strlen(function_to_call) == 0)
         return false;
@@ -267,36 +268,6 @@ bool CScriptEngine::function(const char* function_to_call, sol::function& func)
         return false;
 
     func = x.value();
-    return true;
-}
-
-bool CScriptEngine::function_object(const char* function_to_call, luabind::object& object, int type)
-{
-    if (xr_strlen(function_to_call) == 0)
-        return false;
-
-    string256 name_space, function;
-    parse_script_namespace(function_to_call, name_space, sizeof(name_space), function, sizeof(function));
-
-    if (std::is_neq(xr_strcmp(name_space, GlobalNamespace)))
-    {
-        auto file_name = strchr(name_space, '.');
-        if (!file_name)
-            process_file(name_space);
-        else
-        {
-            *file_name = 0;
-            process_file(name_space);
-            *file_name = '.';
-        }
-    }
-
-    if (!this->object(name_space, function, type))
-        return false;
-
-    auto lua_namespace = this->name_space(name_space);
-    object = lua_namespace[function];
-
     return true;
 }
 

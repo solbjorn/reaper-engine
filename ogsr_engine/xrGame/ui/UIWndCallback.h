@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../callback_info.h"
-
 class CUIWindow;
 
 class CUIWndCallback : public virtual RTTI::Enable
@@ -11,13 +9,15 @@ class CUIWndCallback : public virtual RTTI::Enable
 public:
     using void_function = CallMe::Delegate<void(CUIWindow*, void*)>;
 
-private:
-    typedef xr_vector<SCallbackInfo> CALLBACKS;
-    typedef CALLBACKS::iterator CALLBACK_IT;
+    struct callback
+    {
+        CallMe::Delegate<void(CUIWindow*, void*)> m_cpp_callback;
+        shared_str m_controlName;
+        s16 m_event;
+    };
 
 private:
-    CALLBACKS m_callbacks;
-    SCallbackInfo* NewCallback();
+    xr_vector<callback> m_callbacks;
 
 public:
     ~CUIWndCallback() override = default;

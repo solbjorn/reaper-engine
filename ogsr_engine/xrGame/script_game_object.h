@@ -313,9 +313,9 @@ public:
     void DisableTrade();
     bool IsTradeEnabled();
 
-    void IterateInventory(const luabind::functor<void>& functor, const luabind::object& object);
-    void IterateBelt(const luabind::functor<void>& functor, const luabind::object& object);
-    void IterateRuck(const luabind::functor<void>& functor, const luabind::object& object);
+    void IterateInventory(sol::function function, sol::object object);
+    void IterateBelt(sol::function function, sol::object object);
+    void IterateRuck(sol::function function, sol::object object);
     void MarkItemDropped(CScriptGameObject* item);
     bool MarkedDropped(CScriptGameObject* item);
     void UnloadMagazine(bool spawn_ammo = false, bool unload_gl = false);
@@ -323,7 +323,7 @@ public:
     void DropItem(CScriptGameObject* pItem);
     void DropItemAndTeleport(CScriptGameObject* pItem, Fvector position);
     void DropItemAndThrow(CScriptGameObject*, Fvector);
-    void ForEachInventoryItems(const luabind::functor<void>& functor);
+    void ForEachInventoryItems(sol::function function);
     void TransferItem(CScriptGameObject* pItem, CScriptGameObject* pForWho);
     void TransferMoney(int money, CScriptGameObject* pForWho);
     void GiveMoney(int money);
@@ -372,8 +372,8 @@ public:
     void SetCallback(GameObject::ECallbackType type, sol::function function);
     void SetCallback(GameObject::ECallbackType type);
 
-    void set_patrol_extrapolate_callback(const luabind::functor<bool>& functor);
-    void set_patrol_extrapolate_callback(const luabind::functor<bool>& functor, const luabind::object& object);
+    void set_patrol_extrapolate_callback(sol::function function, sol::object object);
+    void set_patrol_extrapolate_callback(sol::function function);
     void set_patrol_extrapolate_callback();
 
     void set_enemy_callback(sol::function function, sol::object object);
@@ -515,17 +515,19 @@ public:
     void remove_memory_object(CScriptGameObject*);
     int active_sound_count();
     int active_sound_count(bool only_playing);
-    const CCoverPoint* best_cover(const Fvector& position, const Fvector& enemy_position, float radius, float min_enemy_distance, float max_enemy_distance);
-    const CCoverPoint* best_cover(const Fvector& position, const Fvector& enemy_position, float radius, float min_enemy_distance, float max_enemy_distance,
-                                  const luabind::functor<bool>&);
-    const CCoverPoint* safe_cover(const Fvector& position, float radius, float min_distance);
-    const CCoverPoint* safe_cover(const Fvector& position, float radius, float min_distance, const luabind::functor<bool>&);
-    const CCoverPoint* ambush_cover(const Fvector& position, const Fvector& enemy_position, float radius, float min_distance);
-    const CCoverPoint* ambush_cover(const Fvector& position, const Fvector& enemy_position, float radius, float min_distance, const luabind::functor<bool>&);
-    const CCoverPoint* angle_cover(const Fvector&, float, const Fvector&, float, float, u32);
-    const CCoverPoint* angle_cover(const Fvector&, float, const Fvector&, float, float, u32, const luabind::functor<bool>&);
-    CScriptIniFile* spawn_ini() const;
-    bool active_zone_contact(u16 id);
+    [[nodiscard]] const CCoverPoint* best_cover(const Fvector& position, const Fvector& enemy_position, f32 radius, f32 min_enemy_distance, f32 max_enemy_distance,
+                                                sol::function callback);
+    [[nodiscard]] const CCoverPoint* best_cover(const Fvector& position, const Fvector& enemy_position, f32 radius, f32 min_enemy_distance, f32 max_enemy_distance);
+    [[nodiscard]] const CCoverPoint* safe_cover(const Fvector& position, f32 radius, f32 min_distance, sol::function callback);
+    [[nodiscard]] const CCoverPoint* safe_cover(const Fvector& position, f32 radius, f32 min_distance);
+    [[nodiscard]] const CCoverPoint* ambush_cover(const Fvector& position, const Fvector& enemy_position, f32 radius, f32 min_distance, sol::function callback);
+    [[nodiscard]] const CCoverPoint* ambush_cover(const Fvector& position, const Fvector& enemy_position, f32 radius, f32 min_distance);
+    [[nodiscard]] const CCoverPoint* angle_cover(const Fvector& position, f32 radius, const Fvector& enemy_position, f32 min_enemy_distance, f32 max_enemy_distance,
+                                                 u32 enemy_vertex_id, sol::function callback);
+    [[nodiscard]] const CCoverPoint* angle_cover(const Fvector& position, f32 radius, const Fvector& enemy_position, f32 min_enemy_distance, f32 max_enemy_distance,
+                                                 u32 enemy_vertex_id);
+    [[nodiscard]] CScriptIniFile* spawn_ini() const;
+    [[nodiscard]] bool active_zone_contact(u16 id);
 
     ///
     void add_restrictions(LPCSTR out, LPCSTR in);
@@ -797,10 +799,10 @@ public:
     [[nodiscard]] u32 play_hud_animation(LPCSTR anim, bool mix_in, u32 state, float speed);
     [[nodiscard]] u32 play_hud_animation(LPCSTR anim);
 
-    void addFeelTouch(float, const luabind::object&, const luabind::functor<void>&);
-    void addFeelTouch(float, const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>&);
-    void removeFeelTouch(const luabind::object&, const luabind::functor<void>&);
-    void removeFeelTouch(const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>&);
+    void addFeelTouch(f32 radius, sol::object lua_object, sol::function new_delete, sol::function contact);
+    void addFeelTouch(f32 radius, sol::object lua_object, sol::function new_delete);
+    void removeFeelTouch(sol::object lua_object, sol::function new_delete, sol::function contact);
+    void removeFeelTouch(sol::object lua_object, sol::function new_delete);
 
     void PHCaptureObject(CScriptGameObject*);
     void PHCaptureObject(CScriptGameObject*, LPCSTR);

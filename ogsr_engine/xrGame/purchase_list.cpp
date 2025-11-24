@@ -16,9 +16,11 @@
 #include "xrServer_Object_Base.h"
 #include "xrServer_Objects_ALife.h"
 
+#include "script_game_object.h"
+
 namespace
 {
-constexpr float min_deficit_factor{.3f};
+constexpr f32 min_deficit_factor{0.3f};
 }
 
 void CPurchaseList::process(CInifile& ini_file, LPCSTR section, CInventoryOwner& owner)
@@ -46,8 +48,6 @@ void CPurchaseList::process(CInifile& ini_file, LPCSTR section, CInventoryOwner&
         process(game_object, I.first, atoi(_GetItem(I.second.c_str(), 0, temp0)), (float)atof(_GetItem(I.second.c_str(), 1, temp1)), lua_function);
     }
 }
-
-#include "script_game_object.h"
 
 void CPurchaseList::process(const CGameObject& owner, const shared_str& name, const u32& count, const float& probability, sol::function& lua_function)
 {

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "grenade.h"
+
 #include "PhysicsShell.h"
 #include "entity.h"
 #include "ParticlesObject.h"
@@ -12,7 +13,6 @@
 #include "game_cl_base.h"
 #include "xrserver_objects_alife.h"
 #include "game_object_space.h"
-#include "script_callback_ex.h"
 #include "script_game_object.h"
 
 namespace

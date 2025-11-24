@@ -1,6 +1,7 @@
 #include "stdAfx.h"
 
 #include "embedded_editor_main.h"
+
 #include "embedded_editor_helper.h"
 #include "embedded_editor_weather.h"
 #include "embedded_editor_hud.h"
@@ -132,8 +133,6 @@ void ShowEditor()
         ShowSoundEnvEditor(show_sound_env_window);
     // if (show_prop_window)
     //     ShowPropEditor(show_prop_window);
-    // if (show_lua_binder)
-    //     ShowLuaBinder(show_lua_binder);
     // if (show_logic_editor)
     //     ShowLogicEditor(show_logic_editor);
 }

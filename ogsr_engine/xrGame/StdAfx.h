@@ -2,7 +2,6 @@
 
 #include "../xr_3da/stdafx.h"
 #include "../xrScriptEngine/xr_sol.h"
-#include "..\xr_3da\ai_script_space.h" //KRodin: пусть луа для рендера и скриптов инитится в одном месте.
 
 #define THROW VERIFY
 #define THROW2 VERIFY2

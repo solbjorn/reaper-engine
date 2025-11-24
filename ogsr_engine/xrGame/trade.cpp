@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "trade.h"
+
 #include "actor.h"
 #include "ai/stalker/ai_stalker.h"
 #include "ai/trader/ai_trader.h"
@@ -10,7 +11,6 @@
 #include "character_info.h"
 #include "relation_registry.h"
 #include "level.h"
-#include "script_callback_ex.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
 
@@ -18,6 +18,7 @@ class CInventoryOwner;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CTrade class //////////////////////////////////////////////////////////////////////////
+
 CTrade::CTrade(CInventoryOwner* p_io)
 {
     TradeState = false;

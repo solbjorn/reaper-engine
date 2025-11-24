@@ -10,7 +10,6 @@
 #include "game_base_space.h"
 #include "xrserver.h"
 #include "ai_space.h"
-#include "script_callback_ex.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
 #include "object_broker.h"
@@ -627,8 +626,9 @@ void CActorCondition::UpdateTutorialThresholds()
 
     if (!b)
     {
-        luabind::functor<LPCSTR> fl;
-        R_ASSERT(ai().script_engine().functor<LPCSTR>(cb_name, fl));
+        sol::function fl;
+        R_ASSERT(ai().script_engine().function(cb_name, fl));
+
         fl();
     }
 }

@@ -47,7 +47,7 @@ public:
 
 protected:
     // загрузка содержания последовательности тагов в контейнер строк
-    template <class T>
+    template <typename T>
     void LoadSequence(CUIXml* ui_xml, XML_NODE* phrase_node, LPCSTR tag, T& str_vector);
 
     // манипуляции с информацией во время вызовов Precondition и Action

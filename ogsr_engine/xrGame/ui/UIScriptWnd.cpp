@@ -4,7 +4,6 @@
 
 #include "../HudManager.h"
 #include "../object_broker.h"
-#include "../callback_info.h"
 
 struct event_comparer
 {

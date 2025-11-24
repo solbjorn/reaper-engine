@@ -1,20 +1,13 @@
 #include "stdafx.h"
 
 #include "UsableScriptObject.h"
+
 #include "GameObject.h"
 #include "script_game_object.h"
-#include "script_callback_ex.h"
 #include "game_object_space.h"
 
-using namespace luabind;
-
-CUsableScriptObject::CUsableScriptObject()
-{
-    m_bNonscriptUsable = true;
-    set_tip_text_default();
-}
-
-CUsableScriptObject::~CUsableScriptObject() {}
+CUsableScriptObject::CUsableScriptObject() = default;
+CUsableScriptObject::~CUsableScriptObject() = default;
 
 bool CUsableScriptObject::use(CGameObject* who_use)
 {
@@ -27,7 +20,7 @@ bool CUsableScriptObject::use(CGameObject* who_use)
     return true;
 }
 
-LPCSTR CUsableScriptObject::tip_text() { return *m_sTipText; }
+LPCSTR CUsableScriptObject::tip_text() { return m_sTipText.c_str(); }
 void CUsableScriptObject::set_tip_text(LPCSTR new_text) { m_sTipText._set(new_text); }
 void CUsableScriptObject::set_tip_text_default() { m_sTipText._set(nullptr); }
 

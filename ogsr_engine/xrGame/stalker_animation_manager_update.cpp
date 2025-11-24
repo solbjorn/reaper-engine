@@ -7,11 +7,11 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_animation_manager.h"
+
 #include "ai/stalker/ai_stalker.h"
 #include "game_object_space.h"
-#include "script_callback_ex.h"
-#include "profiler.h"
 #include "stalker_movement_manager.h"
 
 /*IC*/ void CStalkerAnimationManager::play_delayed_callbacks()
@@ -28,7 +28,7 @@ IC bool CStalkerAnimationManager::script_callback() const
     if (script_animations().empty())
         return (false);
 
-    return (object().callback(GameObject::eScriptAnimation));
+    return !!object().callback(GameObject::eScriptAnimation);
 }
 
 IC bool CStalkerAnimationManager::need_update() const
@@ -187,20 +187,4 @@ void CStalkerAnimationManager::update_impl()
     torso().synchronize(m_skeleton_animated, m_legs);
 }
 
-void CStalkerAnimationManager::update()
-{
-    START_PROFILE("stalker/client_update/animations")
-    //try
-    //{
-        update_impl();
-    /*}
-    catch (...)
-    {
-        Msg("! error in stalker with visual [%s]", object().cNameVisual().c_str());
-        head().reset();
-        torso().reset();
-        legs().reset();
-        global().reset();
-    }*/
-    STOP_PROFILE
-}
+void CStalkerAnimationManager::update() { update_impl(); }

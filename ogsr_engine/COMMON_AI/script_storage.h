@@ -34,9 +34,6 @@ protected:
     bool do_file(const char* caScriptName, const char* caNameSpaceName);
     bool load_buffer(lua_State* L, const char* caBuffer, size_t tSize, const char* caScriptName, const char* caNameSpaceName);
     bool namespace_loaded(const char* caName, bool remove_from_stack = true);
-    bool object(const char* caIdentifier, int type);
-    bool object(const char* caNamespaceName, const char* caIdentifier, int type);
-    luabind::object name_space(const char* namespace_name);
     void reinit(lua_State* LSVM);
     void close();
 
@@ -52,7 +49,7 @@ public:
     static void XR_PRINTF(2, 3) script_log(ScriptStorage::ELuaMessageType, const char*, ...) {}
 #endif
 
-    static bool print_output(lua_State* L, const char* caScriptName, int iErorCode = 0);
+    static void print_output(lua_State* L, const char* caScriptName, int iErorCode = 0);
     static constexpr const char* GlobalNamespace = "_G";
     void print_stack();
     void dump_state();

@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "level.h"
+
 #include "HUDmanager.h"
 #include "..\xr_3da\XR_IOConsole.h"
 #include "entity_alive.h"
@@ -8,7 +10,6 @@
 #include "alife_simulator_header.h"
 #include "level_graph.h"
 #include "../xr_3da/fdemorecord.h"
-#include "level.h"
 #include "xr_level_controller.h"
 #include "game_cl_base.h"
 #include "stalker_movement_manager.h"
@@ -23,7 +24,6 @@
 #include "saved_game_wrapper.h"
 
 #include "game_object_space.h"
-#include "script_callback_ex.h"
 #include "GamePersistent.h"
 #include "MainMenu.h"
 #include "UIGameSP.h"

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIInventoryWnd.h"
+
 #include "../level.h"
 #include "../actor.h"
 #include "../ActorCondition.h"
@@ -14,7 +15,6 @@
 #include "UI3tButton.h"
 
 #include "../game_object_space.h"
-#include "../script_callback_ex.h"
 #include "../script_game_object.h"
 #include "../CustomDetector.h"
 #include "../player_hud.h"

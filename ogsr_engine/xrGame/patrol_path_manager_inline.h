@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "ai_space.h"
+
 IC CPatrolPathManager::CPatrolPathManager(CRestrictedObject* object, CGameObject* game_object) : m_object{object}, m_game_object{game_object}
 {
     VERIFY(game_object);
@@ -15,13 +17,11 @@ IC CPatrolPathManager::CPatrolPathManager(CRestrictedObject* object, CGameObject
 }
 
 IC bool CPatrolPathManager::actual() const { return (m_actuality); }
-
 IC bool CPatrolPathManager::failed() const { return (m_failed); }
 
 IC const CPatrolPath* CPatrolPathManager::get_path() const { return (m_path); }
 
 IC bool CPatrolPathManager::completed() const { return (m_completed); }
-
 IC bool CPatrolPathManager::random() const { return (m_random); }
 
 IC const Fvector& CPatrolPathManager::destination_position() const
@@ -83,4 +83,5 @@ IC CRestrictedObject& CPatrolPathManager::object() const
     return (*m_object);
 }
 
-IC CPatrolPathManager::CExtrapolateCallback& CPatrolPathManager::extrapolate_callback() { return (m_extrapolate_callback); }
+inline CExtrapolateCallback& CPatrolPathManager::extrapolate_callback() { return m_extrapolate_callback; }
+inline const CExtrapolateCallback& CPatrolPathManager::extrapolate_callback() const { return m_extrapolate_callback; }

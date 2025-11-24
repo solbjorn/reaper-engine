@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "GameObject.h"
+
 #include "PhysicsShell.h"
 #include "ai_space.h"
 #include "CustomMonster.h"
@@ -20,7 +21,6 @@
 #include "..\xr_3da\igame_level.h"
 #include "level.h"
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
-#include "script_callback_ex.h"
 #include "MathUtils.h"
 #include "game_level_cross_table.h"
 #include "animation_movement_controller.h"
@@ -996,43 +996,30 @@ const CLevelGraph::CVertex* CAI_ObjectLocation::level_vertex() const
 
 //////////////////////////////////////////////////////////////////////////////////
 
-void CGameObject::addFeelTouch(float radius, const luabind::object& lua_object, const luabind::functor<void>& new_delete, const luabind::functor<bool>& contact)
+void CGameObject::addFeelTouch(f32 radius, sol::object lua_object, sol::function new_delete, sol::function contact)
 {
-    CScriptCallbackEx<bool> feel_touch_contact;
-    CScriptCallbackEx<void> feel_touch_new_delete;
-    feel_touch_new_delete.set(new_delete, lua_object);
-    if (contact)
-        feel_touch_contact.set(contact, lua_object);
-    for (auto& ft : feel_touch_addons)
+    for (auto ft : feel_touch_addons)
     {
-        if (ft->feel_touch_new_delete == feel_touch_new_delete && (!contact || ft->feel_touch_contact == feel_touch_contact))
+        if (ft->equal_new_delete(new_delete, lua_object) && (!contact || ft->equal_contact(contact, lua_object)))
         {
             ft->radius = radius;
             return;
         }
     }
-    FeelTouchAddon* ft = xr_new<FeelTouchAddon>();
-    feel_touch_addons.push_back(ft);
-    ft->radius = radius;
-    ft->feel_touch_new_delete = feel_touch_new_delete;
-    if (contact)
-        ft->feel_touch_contact = feel_touch_contact;
+
+    feel_touch_addons.emplace_back(xr_new<FeelTouchAddon>(radius, std::move(new_delete), std::move(contact), std::move(lua_object)));
 }
 
-void CGameObject::removeFeelTouch(const luabind::object& lua_object, const luabind::functor<void>& new_delete, const luabind::functor<bool>& contact)
+void CGameObject::removeFeelTouch(sol::object lua_object, sol::function new_delete, sol::function contact)
 {
-    CScriptCallbackEx<bool> feel_touch_contact;
-    CScriptCallbackEx<void> feel_touch_new_delete;
-    feel_touch_new_delete.set(new_delete, lua_object);
-    if (contact)
-        feel_touch_contact.set(contact, lua_object);
     if (feel_touch_processing)
     {
-        for (auto& ft : feel_touch_addons)
+        for (auto ft : feel_touch_addons)
         {
-            if (ft->feel_touch_new_delete == feel_touch_new_delete && (!contact || ft->feel_touch_contact == feel_touch_contact))
+            if (ft->equal_new_delete(new_delete, lua_object) && (!contact || ft->equal_contact(contact, lua_object)))
             {
-                ft->radius = -1;
+                ft->radius = -1.0f;
+
                 feel_touch_changed = true;
                 break;
             }
@@ -1042,11 +1029,12 @@ void CGameObject::removeFeelTouch(const luabind::object& lua_object, const luabi
     {
         feel_touch_addons.erase(std::remove_if(feel_touch_addons.begin(), feel_touch_addons.end(),
                                                [&](auto& ft) {
-                                                   if (ft->feel_touch_new_delete == feel_touch_new_delete && (!contact || ft->feel_touch_contact == feel_touch_contact))
+                                                   if (ft->equal_new_delete(new_delete, lua_object) && (!contact || ft->equal_contact(contact, lua_object)))
                                                    {
                                                        xr_delete(ft);
                                                        return true;
                                                    }
+
                                                    return false;
                                                }),
                                 feel_touch_addons.end());
@@ -1057,32 +1045,34 @@ void CGameObject::FeelTouchAddonsUpdate()
 {
     feel_touch_changed = false;
     feel_touch_processing = true;
-    for (auto& ft : feel_touch_addons)
+
+    for (auto ft : feel_touch_addons)
     {
-        if (ft->radius <= 0)
+        if (ft->radius <= 0.0f)
             continue;
+
         ft->feel_touch.feel_touch_update(
             Position(), ft->radius,
             [&](const auto O, bool is_new) {
                 CGameObject* GO = smart_cast<CGameObject*>(O);
-                ft->feel_touch_new_delete(GO->lua_game_object(), is_new);
+                ft->call_new_delete(GO->lua_game_object(), is_new);
             },
             [&](const auto O) -> bool {
                 CGameObject* GO = smart_cast<CGameObject*>(O);
-                if (!GO)
+                if (GO == nullptr)
                     return false;
+
                 if (ft->feel_touch_contact)
-                {
-                    return ft->feel_touch_contact(GO->lua_game_object());
-                }
-                else
-                    return (smart_cast<CEntityAlive*>(O) || smart_cast<CCar*>(O)) ? true : false;
+                    return ft->call_contact(GO->lua_game_object());
+
+                return smart_cast<CEntityAlive*>(O) || smart_cast<CCar*>(O);
             });
     }
+
     feel_touch_processing = false;
     if (feel_touch_changed)
     {
-        feel_touch_addons.erase(std::remove_if(feel_touch_addons.begin(), feel_touch_addons.end(), [](auto& ft) { return ft->radius < 0; }), feel_touch_addons.end());
+        feel_touch_addons.erase(std::remove_if(feel_touch_addons.begin(), feel_touch_addons.end(), [](const auto ft) { return ft->radius < 0.0f; }), feel_touch_addons.end());
         feel_touch_changed = false;
     }
 }
@@ -1091,11 +1081,12 @@ void CGameObject::FeelTouchAddonsRelcase(CObject* O)
 {
     if (Level().is_removing_objects())
         return;
-    for (auto& ft : feel_touch_addons)
+
+    for (auto ft : feel_touch_addons)
     {
         ft->feel_touch.feel_touch_relcase2(O, [&](const auto O, bool is_new) {
             CGameObject* GO = smart_cast<CGameObject*>(O);
-            ft->feel_touch_new_delete(GO->lua_game_object(), is_new);
+            ft->call_new_delete(GO->lua_game_object(), is_new);
         });
     }
 }

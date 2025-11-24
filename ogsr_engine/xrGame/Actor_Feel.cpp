@@ -167,14 +167,11 @@ void CActor::PickupModeUpdate_COD()
 
             if (pSettings->line_exist("engine_callbacks", "actor_on_item_before_pickup"))
             {
-                std::string on_item_before_pickup = pSettings->r_string("engine_callbacks", "actor_on_item_before_pickup");
+                gsl::czstring on_item_before_pickup = pSettings->r_string("engine_callbacks", "actor_on_item_before_pickup");
 
                 // Tronex: ability to prevent item picking up if the export returns false
-                luabind::functor<bool> func;
-                if (ai().script_engine().functor(on_item_before_pickup.c_str(), func))
-                {
+                if (sol::function func; ai().script_engine().function(on_item_before_pickup, func))
                     allow_pickup = func(pNearestItem->cast_game_object()->lua_game_object());
-                }
             }
 
             PickupModeOff();
@@ -267,14 +264,11 @@ void CActor::PickupModeUpdate_COD()
 
             if (pSettings->line_exist("engine_callbacks", "actor_on_item_before_pickup"))
             {
-                std::string on_item_before_pickup = pSettings->r_string("engine_callbacks", "actor_on_item_before_pickup");
+                gsl::czstring on_item_before_pickup = pSettings->r_string("engine_callbacks", "actor_on_item_before_pickup");
 
                 // Tronex: ability to prevent item picking up if the export returns false
-                luabind::functor<bool> func;
-                if (ai().script_engine().functor(on_item_before_pickup.c_str(), func))
-                {
+                if (sol::function func; ai().script_engine().function(on_item_before_pickup, func))
                     allow_pickup = func(pNearestItem->cast_game_object()->lua_game_object());
-                }
             }
 
             PickupModeOff();

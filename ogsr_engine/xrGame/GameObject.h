@@ -10,7 +10,6 @@
 #include "UsableScriptObject.h"
 #include "script_binder.h"
 #include "Hit.h"
-#include "script_callback_ex.h"
 #include "..\xr_3da\feel_touch.h"
 
 class CPhysicsShell;
@@ -51,10 +50,10 @@ struct GOCallbackInfo
     sol::function m_callback;
     sol::object m_object;
 
-    operator bool() const noexcept { return !!m_callback; }
+    [[nodiscard]] constexpr explicit operator bool() const noexcept { return !!m_callback; }
 
     template <typename... Args>
-    void operator()(Args&&... args) const
+    constexpr void operator()(Args&&... args) const
     {
         if (!m_callback)
             return;
@@ -66,15 +65,41 @@ struct GOCallbackInfo
     }
 };
 
-template <typename _return_type>
-class CScriptCallbackEx;
-
 struct FeelTouchAddon
 {
     Feel::Touch feel_touch;
-    float radius;
-    CScriptCallbackEx<bool> feel_touch_contact;
-    CScriptCallbackEx<void> feel_touch_new_delete;
+    f32 radius;
+
+    sol::function feel_touch_new_delete;
+    sol::function feel_touch_contact;
+    sol::object arg;
+
+    FeelTouchAddon() = delete;
+
+    constexpr explicit FeelTouchAddon(f32 rad, sol::function&& new_delete, sol::function&& contact, sol::object&& obj)
+        : radius{rad}, feel_touch_new_delete{std::move(new_delete)}, feel_touch_contact{std::move(contact)}, arg{std::move(obj)}
+    {}
+
+    [[nodiscard]] constexpr bool equal_new_delete(const sol::function& func, const sol::object& obj) const { return feel_touch_new_delete == func && arg == obj; }
+    [[nodiscard]] constexpr bool equal_contact(const sol::function& func, const sol::object& obj) const { return feel_touch_contact == func && arg == obj; }
+
+    template <typename... Args>
+    constexpr void call_new_delete(Args&&... args)
+    {
+        if (arg)
+            feel_touch_new_delete(std::forward<Args>(args)..., arg);
+        else
+            feel_touch_new_delete(std::forward<Args>(args)...);
+    }
+
+    template <typename... Args>
+    [[nodiscard]] constexpr bool call_contact(Args&&... args)
+    {
+        if (arg)
+            return feel_touch_contact(std::forward<Args>(args)..., arg);
+        else
+            return feel_touch_contact(std::forward<Args>(args)...);
+    }
 };
 
 class CGameObject : public CObject, public CUsableScriptObject, public CScriptBinder
@@ -293,7 +318,7 @@ protected:
     void FeelTouchAddonsRelcase(CObject*);
 
 public:
-    void addFeelTouch(float, const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>&);
-    void removeFeelTouch(const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>&);
+    void addFeelTouch(f32 radius, sol::object lua_object, sol::function new_delete, sol::function contact);
+    void removeFeelTouch(sol::object lua_object, sol::function new_delete, sol::function contact);
 };
 XR_SOL_BASE_CLASSES(CGameObject);

@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "script_entity.h"
+
 #include "CustomMonster.h"
 #include "..\xr_3da\feel_vision.h"
 #include "..\Include/xrRender/Kinematics.h"
@@ -28,7 +29,6 @@
 #include "visual_memory_manager.h"
 #include "ai_object_location.h"
 #include "movement_manager.h"
-#include "script_callback_ex.h"
 #include "game_object_space.h"
 
 namespace

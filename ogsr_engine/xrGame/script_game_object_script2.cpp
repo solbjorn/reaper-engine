@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "script_game_object.h"
+
 #include "alife_space.h"
 #include "script_entity_space.h"
 #include "movement_manager_space.h"
@@ -85,9 +86,9 @@ void CScriptGameObject::script_register1(CScriptGameObject::usertype& lua)
                       sol::resolve<void(GameObject::ECallbackType, sol::function)>(&CScriptGameObject::SetCallback),
                       sol::resolve<void(GameObject::ECallbackType)>(&CScriptGameObject::SetCallback)),
         "set_patrol_extrapolate_callback",
-        sol::overload(sol::resolve<void()>(&CScriptGameObject::set_patrol_extrapolate_callback),
-                      sol::resolve<void(const luabind::functor<bool>&)>(&CScriptGameObject::set_patrol_extrapolate_callback),
-                      sol::resolve<void(const luabind::functor<bool>&, const luabind::object&)>(&CScriptGameObject::set_patrol_extrapolate_callback)),
+        sol::overload(sol::resolve<void(sol::function, sol::object)>(&CScriptGameObject::set_patrol_extrapolate_callback),
+                      sol::resolve<void(sol::function)>(&CScriptGameObject::set_patrol_extrapolate_callback),
+                      sol::resolve<void()>(&CScriptGameObject::set_patrol_extrapolate_callback)),
         "set_enemy_callback",
         sol::overload(sol::resolve<void(sol::function, sol::object)>(&CScriptGameObject::set_enemy_callback),
                       sol::resolve<void(sol::function)>(&CScriptGameObject::set_enemy_callback), sol::resolve<void()>(&CScriptGameObject::set_enemy_callback)),

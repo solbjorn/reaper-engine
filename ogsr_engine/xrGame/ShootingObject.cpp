@@ -17,6 +17,10 @@
 #include "clsid_game.h"
 #include "game_cl_single.h"
 
+#include "weapon.h"
+#include "script_game_object.h"
+#include "game_object_space.h"
+
 CShootingObject::CShootingObject() { reinit(); }
 CShootingObject::~CShootingObject() = default;
 
@@ -241,11 +245,6 @@ void CShootingObject::LoadFlameParticles(LPCSTR section, LPCSTR prefix)
     m_sFlameParticlesCurrent = m_sFlameParticles;
     m_sSmokeParticlesCurrent = m_sSmokeParticles;
 }
-
-#include "weapon.h"
-#include "script_callback_ex.h"
-#include "script_game_object.h"
-#include "game_object_space.h"
 
 void CShootingObject::OnShellDrop(const Fvector& play_pos, const Fvector& parent_vel)
 {

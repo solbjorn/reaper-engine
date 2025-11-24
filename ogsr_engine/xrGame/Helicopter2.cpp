@@ -10,7 +10,6 @@
 #include "../xr_3da/LightAnimLibrary.h"
 #include "PhysicsShell.h"
 #include "clsid_game.h"
-#include "script_callback_ex.h"
 #include "ai/stalker/ai_stalker.h"
 #include "CustomZone.h"
 #include "MathUtils.h"

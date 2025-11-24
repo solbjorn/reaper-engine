@@ -24,8 +24,8 @@ public:
     [[nodiscard]] static gsl::index mem_usage(gsl::index* pBlocksUsed = nullptr, gsl::index* pBlocksFree = nullptr);
     static void mem_compact();
 
-    [[nodiscard]] XR_RESTRICT static void* mem_alloc_aligned(gsl::index size, gsl::index align) noexcept;
-    [[nodiscard]] static void* mem_realloc_aligned(void* p, gsl::index size, gsl::index align) noexcept;
+    [[gnu::returns_nonnull]] [[nodiscard]] XR_RESTRICT static void* mem_alloc_aligned(gsl::index size, gsl::index align) noexcept;
+    [[gnu::returns_nonnull]] [[nodiscard]] static void* mem_realloc_aligned(void* p, gsl::index size, gsl::index align) noexcept;
     static void mem_free_aligned(void* p) noexcept;
 };
 
@@ -43,7 +43,7 @@ constexpr inline gsl::index align_v = std::max(gsl::index{alignof(T)}, xr::defau
 
 #ifdef USE_MEMORY_VALIDATOR
 
-[[nodiscard]] inline void* xr_malloc(gsl::index size, const std::source_location& loc = std::source_location::current())
+[[gnu::returns_nonnull]] [[nodiscard]] XR_RESTRICT inline void* xr_malloc(gsl::index size, const std::source_location& loc = std::source_location::current())
 {
     void* ptr = Memory.mem_alloc_aligned(size, xr::default_align_v);
 
@@ -56,7 +56,7 @@ constexpr inline gsl::index align_v = std::max(gsl::index{alignof(T)}, xr::defau
     return ptr;
 }
 
-[[nodiscard]] inline void* xr_realloc(void* p, gsl::index size, const std::source_location& loc = std::source_location::current())
+[[gnu::returns_nonnull]] [[nodiscard]] inline void* xr_realloc(void* p, gsl::index size, const std::source_location& loc = std::source_location::current())
 {
     PointerRegistryRelease(p, loc);
     void* ptr = Memory.mem_realloc_aligned(p, size, xr::default_align_v);
@@ -78,7 +78,8 @@ inline void xr_mfree(void* p, const std::source_location& loc = std::source_loca
 
 // generic "C"-like allocations/deallocations
 template <typename T>
-[[nodiscard]] inline T* xr_alloc(gsl::index count, const bool is_container = false, const std::source_location& loc = std::source_location::current())
+[[gnu::returns_nonnull]] [[nodiscard]] XR_RESTRICT inline T* xr_alloc(gsl::index count, const bool is_container = false,
+                                                                      const std::source_location& loc = std::source_location::current())
 {
     T* ptr = static_cast<T*>(Memory.mem_alloc_aligned(count * gsl::index{sizeof(T)}, xr::align_v<T>));
 
@@ -115,7 +116,7 @@ void registerClass(T* ptr, const std::source_location& loc)
 }
 
 template <typename T>
-[[nodiscard]] constexpr T* xr_new(const std::source_location& loc = std::source_location::current())
+[[gnu::returns_nonnull]] [[nodiscard]] XR_RESTRICT constexpr T* xr_new(const std::source_location& loc = std::source_location::current())
 {
     if (std::is_constant_evaluated())
         return new T{};
@@ -127,7 +128,7 @@ template <typename T>
 }
 
 template <typename T, typename A0>
-[[nodiscard]] constexpr T* xr_new(A0&& a0, const std::source_location& loc = std::source_location::current())
+[[gnu::returns_nonnull]] [[nodiscard]] XR_RESTRICT constexpr T* xr_new(A0&& a0, const std::source_location& loc = std::source_location::current())
 {
     if (std::is_constant_evaluated())
         return new T{std::forward<A0>(a0)};
@@ -139,7 +140,7 @@ template <typename T, typename A0>
 }
 
 template <typename T, typename A0, typename A1>
-[[nodiscard]] constexpr T* xr_new(A0&& a0, A1&& a1, const std::source_location& loc = std::source_location::current())
+[[gnu::returns_nonnull]] [[nodiscard]] XR_RESTRICT constexpr T* xr_new(A0&& a0, A1&& a1, const std::source_location& loc = std::source_location::current())
 {
     if (std::is_constant_evaluated())
         return new T{std::forward<A0>(a0), std::forward<A1>(a1)};
@@ -151,7 +152,7 @@ template <typename T, typename A0, typename A1>
 }
 
 template <typename T, typename A0, typename A1, typename A2>
-[[nodiscard]] constexpr T* xr_new(A0&& a0, A1&& a1, A2&& a2, const std::source_location& loc = std::source_location::current())
+[[gnu::returns_nonnull]] [[nodiscard]] XR_RESTRICT constexpr T* xr_new(A0&& a0, A1&& a1, A2&& a2, const std::source_location& loc = std::source_location::current())
 {
     if (std::is_constant_evaluated())
         return new T{std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2)};
@@ -163,7 +164,7 @@ template <typename T, typename A0, typename A1, typename A2>
 }
 
 template <typename T, typename A0, typename A1, typename A2, typename A3>
-[[nodiscard]] constexpr T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, const std::source_location& loc = std::source_location::current())
+[[gnu::returns_nonnull]] [[nodiscard]] XR_RESTRICT constexpr T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, const std::source_location& loc = std::source_location::current())
 {
     if (std::is_constant_evaluated())
         return new T{std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3)};
@@ -175,7 +176,8 @@ template <typename T, typename A0, typename A1, typename A2, typename A3>
 }
 
 template <typename T, typename A0, typename A1, typename A2, typename A3, typename A4>
-[[nodiscard]] constexpr T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4, const std::source_location& loc = std::source_location::current())
+[[gnu::returns_nonnull]] [[nodiscard]] XR_RESTRICT constexpr T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4,
+                                                                       const std::source_location& loc = std::source_location::current())
 {
     if (std::is_constant_evaluated())
         return new T{std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4)};
@@ -187,7 +189,8 @@ template <typename T, typename A0, typename A1, typename A2, typename A3, typena
 }
 
 template <typename T, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5>
-[[nodiscard]] constexpr T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, const std::source_location& loc = std::source_location::current())
+[[gnu::returns_nonnull]] [[nodiscard]] XR_RESTRICT constexpr T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5,
+                                                                       const std::source_location& loc = std::source_location::current())
 {
     if (std::is_constant_evaluated())
         return new T{std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5)};
@@ -234,7 +237,7 @@ constexpr void xr_delete(T*& ptr, const std::source_location& loc = std::source_
 
 // generic "C"-like allocations/deallocations
 template <typename T>
-[[nodiscard]] inline XR_RESTRICT T* xr_alloc(gsl::index count) noexcept
+[[gnu::returns_nonnull]] [[nodiscard]] XR_RESTRICT inline T* xr_alloc(gsl::index count) noexcept
 {
     return static_cast<T*>(Memory.mem_alloc_aligned(count * gsl::index{sizeof(T)}, xr::align_v<T>));
 }
@@ -250,7 +253,7 @@ inline void xr_free(T*& P) noexcept
 }
 
 template <typename T, typename... Args>
-[[nodiscard]] constexpr T* xr_new(Args&&... args)
+[[gnu::returns_nonnull]] [[nodiscard]] XR_RESTRICT constexpr T* xr_new(Args&&... args)
 {
     if (std::is_constant_evaluated())
         return new T{std::forward<Args>(args)...};
