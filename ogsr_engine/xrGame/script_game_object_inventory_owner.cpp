@@ -859,7 +859,10 @@ CScriptGameObject* CScriptGameObject::item_in_slot(u8 slot_id) const
     return result ? result->object().lua_game_object() : nullptr;
 }
 
-void CScriptGameObject::GiveTaskToActor(CGameTask* t, u32 dt, bool bCheckExisting) { Actor()->GameTaskManager().GiveGameTaskToActor(t, dt, bCheckExisting); }
+void CScriptGameObject::GiveTaskToActor(std::unique_ptr<CGameTask>& t, u32 dt, bool bCheckExisting)
+{
+    Actor()->GameTaskManager().GiveGameTaskToActor(t.release(), dt, bCheckExisting);
+}
 
 u32 CScriptGameObject::active_slot()
 {

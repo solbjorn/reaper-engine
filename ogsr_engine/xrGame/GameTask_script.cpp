@@ -19,7 +19,7 @@ void CGameTask::script_register(sol::state_view& lua)
 
                                          "get_idx", &SGameTaskObjective::GetIDX_script, "get_state", &SGameTaskObjective::TaskState);
 
-    lua.new_usertype<CGameTask>("CGameTask", sol::no_constructor, sol::call_constructor, sol::constructors<CGameTask()>(), "load", &CGameTask::Load_script, "set_title",
+    lua.new_usertype<CGameTask>("CGameTask", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CGameTask>), "load", &CGameTask::Load_script, "set_title",
                                 &CGameTask::SetTitle_script, "get_title", &CGameTask::GetTitle_script, "set_priority", &CGameTask::SetPriority_script, "get_priority",
                                 &CGameTask::GetPriority_script, "add_objective", &CGameTask::AddObjective_script, "get_id", &CGameTask::GetID_script, "set_id",
                                 &CGameTask::SetID_script, "get_objective", &CGameTask::GetObjective_script, "get_objectives_cnt", &CGameTask::GetObjectiveSize_script);

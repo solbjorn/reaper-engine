@@ -301,7 +301,7 @@ public:
     // работа с заданиями
     ETaskState GetGameTaskState(LPCSTR task_id, int objective_num);
     void SetGameTaskState(ETaskState state, LPCSTR task_id, int objective_num);
-    void GiveTaskToActor(CGameTask* t, u32 dt, bool bCheckExisting);
+    void GiveTaskToActor(std::unique_ptr<CGameTask>& t, u32 dt, bool bCheckExisting);
 
     bool IsTalking();
     void StopTalk();
