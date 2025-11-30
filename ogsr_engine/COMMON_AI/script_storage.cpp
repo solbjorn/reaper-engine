@@ -18,16 +18,14 @@
 namespace
 {
 // KRodin: this не убирать ни в коем случае! Он нужен для того, чтобы классы регистрировались внутри модуля в котором находятся, а не в _G
-constexpr const char* FILE_HEADER =
+constexpr absl::string_view FILE_HEADER{
     "\
 local function script_name() \
 return '{0}' \
 end; \
 local this; \
 module('{0}', package.seeall, function(m) this = m end); \
-{1}";
-
-void get_lua_traceback(lua_State* L) { Log(sol::stack::get_traceback_or_errors(L).what()); }
+{1}"};
 } // namespace
 
 //*********************************************************************************************
@@ -38,8 +36,9 @@ void CScriptStorage::dump_state()
         return;
     reentrantGuard = true;
 
-    lua_State* L = lua();
+    auto L = lua().lua_state();
     lua_Debug l_tDebugInfo;
+
     for (int i = 0; lua_getstack(L, i, &l_tDebugInfo); ++i)
     {
         lua_getinfo(L, "nSlu", &l_tDebugInfo);
@@ -55,6 +54,7 @@ void CScriptStorage::dump_state()
         m_dumpedObjList.clear();
         Msg("\tEnd");
     }
+
     reentrantGuard = false;
 }
 
@@ -122,9 +122,35 @@ void CScriptStorage::LogVariable(lua_State* l, const char* name, int level)
 
     Msg("%s %s %s : %s", tabBuffer.get(), type, name, value);
 }
+
 //*********************************************************************************************
 
-static void ScriptCrashHandler(bool dump_lua_locals)
+namespace
+{
+void lua_panic(s32 code)
+{
+    auto L = ai().script_engine().lua().lua_state();
+    xr_string data;
+    size_t len;
+
+    gsl::czstring desc = lua_tolstring(L, -1, &len);
+    if (desc != nullptr)
+    {
+        data.assign(desc, len);
+        lua_pop(L, 1);
+
+        desc = data.c_str();
+    }
+    else
+    {
+        desc = "An unexpected error occurred and panic has been invoked";
+    }
+
+    xr_string expr = "script " + sol::to_string(sol::call_status{code}) + " error";
+    Debug.backend(expr.c_str(), desc, nullptr, nullptr, DEBUG_INFO);
+}
+
+void ScriptCrashHandler(bool dump_lua_locals)
 {
     if (!Device.OnMainThread())
         return;
@@ -142,35 +168,39 @@ static void ScriptCrashHandler(bool dump_lua_locals)
         Msg("Can't dump script call stack - Engine corrupted");
     }
 }
-
-void CScriptStorage::close()
-{
-    if (m_virtual_machine)
-    {
-        // Msg("[CScriptStorage] Closing LuaJIT - start");
-        lua_close(m_virtual_machine); // Вот тут закрывается LuaJIT.
-        // Msg("[CScriptStorage] Closing LuaJIT - end");
-        m_virtual_machine = nullptr;
-    }
-}
+} // namespace
 
 CScriptStorage::~CScriptStorage()
 {
-    close();
-
-    Debug.set_crashhandler(nullptr);
+    R_ASSERT(Debug.set_lua_trace(nullptr) == ScriptCrashHandler);
+    R_ASSERT(Debug.set_lua_panic(nullptr) == lua_panic);
 }
 
-void CScriptStorage::reinit(lua_State* LSVM)
+void CScriptStorage::reinit()
 {
-    close();
+    m_virtual_machine.emplace();
 
-    m_virtual_machine = LSVM;
-
-    Debug.set_crashhandler(ScriptCrashHandler);
+    std::ignore = Debug.set_lua_panic(lua_panic);
+    std::ignore = Debug.set_lua_trace(ScriptCrashHandler);
 }
 
-void CScriptStorage::print_stack() { get_lua_traceback(lua()); }
+void CScriptStorage::close() { m_virtual_machine.reset(); }
+
+void CScriptStorage::print_stack()
+{
+    auto L = lua().lua_state();
+    luaL_traceback(L, L, nullptr, 0);
+    size_t len;
+
+    gsl::czstring stack = lua_tolstring(L, -1, &len);
+    if (stack == nullptr)
+        return;
+
+    xr_string data(stack, len);
+    lua_pop(L, 1);
+
+    Log(data);
+}
 
 #ifdef DEBUG
 void CScriptStorage::script_log(ScriptStorage::ELuaMessageType tLuaMessageType, const char* caFormat, ...) // Используется в очень многих местах //Очень много пишет в лог.
@@ -204,45 +234,14 @@ void CScriptStorage::script_log(ScriptStorage::ELuaMessageType tLuaMessageType, 
 }
 #endif
 
-bool CScriptStorage::load_buffer(lua_State* L, const char* caBuffer, size_t tSize, const char* caScriptName,
-                                 const char* caNameSpaceName) // KRodin: эта функция форматирует содержимое скрипта используя FILE_HEADER и после этого загружает его в lua
+bool CScriptStorage::do_file(gsl::czstring caScriptName, gsl::czstring caNameSpaceName)
 {
-    int l_iErrorCode = 0;
-    const std::string_view strbuf{caBuffer, tSize};
-
-    if (std::is_neq(xr_strcmp(GlobalNamespace, caNameSpaceName))) // Все скрипты кроме _G
-    {
-        // KRodin: обращаться к _G только с большой буквы! Иначе он загрузится ещё раз и это неизвестно к чему приведёт!
-        // Глобальное пространство инитится один раз после запуска луаджита, и никогда больше.
-        if (std::is_eq(xr_strcmp("_g", caNameSpaceName)))
-            return false;
-
-        const std::string script = std::format(FILE_HEADER, caNameSpaceName, strbuf);
-
-        // Log("[CScriptStorage::load_buffer(1)] Loading buffer:");
-        // Log(script.c_str());
-        l_iErrorCode = luaL_loadbuffer(L, script.c_str(), script.size(), caScriptName);
-    }
-    else //_G.script и только он.
-    {
-        // Log("[CScriptStorage::load_buffer(2)] Loading buffer:");
-        // Log(strbuf.c_str());
-        l_iErrorCode = luaL_loadbuffer(L, strbuf.data(), strbuf.size(), caScriptName);
-    }
-    if (l_iErrorCode)
-    {
-        print_output(L, caScriptName, l_iErrorCode);
-        R_ASSERT(false); // НЕ ЗАКОММЕНТИРОВАТЬ!
+    // KRodin: обращаться к _G только с большой буквы! Иначе он загрузится ещё раз и это неизвестно к чему приведёт!
+    // Глобальное пространство инитится один раз после запуска луаджита, и никогда больше.
+    if (std::is_eq(xr_strcmp(caNameSpaceName, "_g")))
         return false;
-    }
-    return true;
-}
 
-bool CScriptStorage::do_file(
-    const char* caScriptName,
-    const char* caNameSpaceName) // KRodin: эта функция открывает скрипт с диска и оправляет его содержимое в функцию load_buffer, после этого походу запускает скрипт.
-{
-    auto l_tpFileReader = FS.r_open(caScriptName);
+    const auto l_tpFileReader = absl::WrapUnique(FS.r_open(caScriptName));
     if (!l_tpFileReader)
     {
         // заменить на ассерт?
@@ -253,34 +252,34 @@ bool CScriptStorage::do_file(
     l_tpFileReader->skip_bom(caScriptName);
 
     string_path l_caLuaFileName;
-    strconcat(sizeof(l_caLuaFileName), l_caLuaFileName, "@", caScriptName); // KRodin: приводит путь к виду @f:\games\s.t.a.l.k.e.r\gamedata\scripts\***.script
+    xr_strconcat(l_caLuaFileName, "@", caScriptName); // KRodin: приводит путь к виду @f:\games\s.t.a.l.k.e.r\gamedata\scripts\***.script
 
-    bool loaded = load_buffer(lua(), reinterpret_cast<const char*>(l_tpFileReader->pointer()), (size_t)l_tpFileReader->elapsed(), l_caLuaFileName, caNameSpaceName);
+    absl::string_view strbuf{static_cast<gsl::czstring>(l_tpFileReader->pointer()), gsl::narrow_cast<size_t>(l_tpFileReader->elapsed())};
+    xr_string script;
 
-    FS.r_close(l_tpFileReader);
-    if (!loaded)
-        return false;
-
-    int l_iErrorCode = lua_pcall(lua(), 0, 0, 0); // KRodin: без этого скрипты не работают!
-    if (l_iErrorCode)
+    if (std::is_neq(xr_strcmp(caNameSpaceName, GlobalNamespace)))
     {
-        print_output(lua(), caScriptName, l_iErrorCode);
-        R_ASSERT(false); // НЕ ЗАКОММЕНТИРОВАТЬ!
-        return false;
+        script = std::format(FILE_HEADER, caNameSpaceName, strbuf);
+        strbuf = script;
     }
+
+    lua().script(strbuf, l_caLuaFileName);
+
     return true;
 }
 
-bool CScriptStorage::namespace_loaded(const char* name, bool remove_from_stack) // KRodin: видимо, функция проверяет, загружен ли скрипт.
+// KRodin: видимо, функция проверяет, загружен ли скрипт.
+bool CScriptStorage::namespace_loaded(gsl::czstring name, bool remove_from_stack)
 {
+    auto L = lua().lua_state();
     int start{
 #ifdef DEBUG
-        lua_gettop(lua())
+        lua_gettop(L)
 #endif
     };
 
-    lua_pushstring(lua(), GlobalNamespace);
-    lua_rawget(lua(), LUA_GLOBALSINDEX);
+    lua_pushstring(L, GlobalNamespace.data());
+    lua_rawget(L, LUA_GLOBALSINDEX);
     string256 S2;
     xr_strcpy(S2, name);
     auto S = S2;
@@ -288,68 +287,46 @@ bool CScriptStorage::namespace_loaded(const char* name, bool remove_from_stack) 
     {
         if (!xr_strlen(S))
         {
-            VERIFY(lua_gettop(lua()) >= 1);
-            lua_pop(lua(), 1);
-            VERIFY(start == lua_gettop(lua()));
+            VERIFY(lua_gettop(L) >= 1);
+            lua_pop(L, 1);
+            VERIFY(start == lua_gettop(L));
             return false;
         }
         auto S1 = strchr(S, '.');
         if (S1)
             *S1 = 0;
-        lua_pushstring(lua(), S);
-        lua_rawget(lua(), -2);
-        if (lua_isnil(lua(), -1))
+        lua_pushstring(L, S);
+        lua_rawget(L, -2);
+        if (lua_isnil(L, -1))
         {
-            // lua_settop(lua(),0);
-            VERIFY(lua_gettop(lua()) >= 2);
-            lua_pop(lua(), 2);
-            VERIFY(start == lua_gettop(lua()));
+            // lua_settop(L,0);
+            VERIFY(lua_gettop(L) >= 2);
+            lua_pop(L, 2);
+            VERIFY(start == lua_gettop(L));
             return false; // there is no namespace!
         }
-        else if (!lua_istable(lua(), -1))
+        else if (!lua_istable(L, -1))
         {
-            // lua_settop(lua(), 0);
-            VERIFY(lua_gettop(lua()) >= 1);
-            lua_pop(lua(), 1);
-            VERIFY(start == lua_gettop(lua()));
+            // lua_settop(L, 0);
+            VERIFY(lua_gettop(L) >= 1);
+            lua_pop(L, 1);
+            VERIFY(start == lua_gettop(L));
             R_ASSERT3(false, "Error : the namespace is already being used by the non-table object! Name: ", S);
             return false;
         }
-        lua_remove(lua(), -2);
+        lua_remove(L, -2);
         if (S1)
             S = ++S1;
         else
             break;
     }
     if (!remove_from_stack)
-        VERIFY(lua_gettop(lua()) == start + 1);
+        VERIFY(lua_gettop(L) == start + 1);
     else
     {
-        VERIFY(lua_gettop(lua()) >= 1);
-        lua_pop(lua(), 1);
-        VERIFY(lua_gettop(lua()) == start);
+        VERIFY(lua_gettop(L) >= 1);
+        lua_pop(L, 1);
+        VERIFY(lua_gettop(L) == start);
     }
     return true;
-}
-
-void CScriptStorage::print_output(lua_State* L, const char* caScriptFileName,
-                                  int errorCode) // KRodin: вызывается из нескольких мест, в т.ч. из калбеков lua_error, lua_pcall_failed, lua_cast_failed, lua_panic
-{
-    gsl::czstring Prefix;
-
-    switch (errorCode)
-    {
-    case LUA_ERRRUN: Prefix = "SCRIPT RUNTIME ERROR"; break;
-    case LUA_ERRMEM: Prefix = "SCRIPT ERROR (memory allocation)"; break;
-    case LUA_ERRERR: Prefix = "SCRIPT ERROR (while running the error handler function)"; break;
-    case LUA_ERRFILE: Prefix = "SCRIPT ERROR (while running file)"; break;
-    case LUA_ERRSYNTAX: Prefix = "SCRIPT SYNTAX ERROR"; break;
-    case LUA_YIELD: Prefix = "Thread is yielded"; break;
-    default: Prefix = "SCRIPT ERROR"; break;
-    }
-
-    Msg("*********************************************************************************");
-    Msg("[print_output(%s)] %s!\n", caScriptFileName, Prefix);
-    get_lua_traceback(L);
-    Msg("*********************************************************************************");
 }

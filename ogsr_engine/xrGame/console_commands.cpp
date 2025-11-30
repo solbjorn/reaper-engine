@@ -1070,27 +1070,31 @@ public:
 
 class CCC_LuaGCMethod : public CCC_Token
 {
+    RTTI_DECLARE_TYPEINFO(CCC_LuaGCMethod, CCC_Token);
+
 public:
-    explicit CCC_LuaGCMethod(pcstr name) : CCC_Token(name, &ps_lua_gc_method, lua_gc_method_token) {}
+    explicit CCC_LuaGCMethod(gsl::czstring name) : CCC_Token{name, &ps_lua_gc_method, lua_gc_method_token} {}
     ~CCC_LuaGCMethod() override = default;
 
-    void Execute(pcstr args) override
+    void Execute(gsl::czstring args) override
     {
         const auto prev = *value;
         CCC_Token::Execute(args);
 
         switch (*value)
         {
-        case 0: lua_gc(ai().script_engine().lua(), LUA_GCSTOP, 0); break;
+        case 0: ai().script_engine().lua().stop_gc(); break;
         case 1:
         case 2:
             if (prev == 0)
-                lua_gc(ai().script_engine().lua(), LUA_GCRESTART, 0);
+                ai().script_engine().lua().restart_gc();
+
             break;
         case 3:
             // Perform a full garbage collection cycle and return to previous strategy.
-            lua_gc(ai().script_engine().lua(), LUA_GCCOLLECT, 0);
+            ai().script_engine().lua().collect_gc();
             *value = prev;
+
             break;
         }
     }

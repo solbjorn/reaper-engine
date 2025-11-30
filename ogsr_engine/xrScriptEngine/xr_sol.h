@@ -3,10 +3,12 @@
 
 // Enable checks for types and arguments
 #define SOL_ALL_SAFETIES_ON 1
-// Don't allow any script errors
+// Let Lua panic on any error and be caught by our handler
 #define SOL_SAFE_FUNCTIONS 0
+// Logs are printed by the handler, don't flood std::cerr
+#define SOL_PRINT_ERRORS 0
 
-// Don't rely on LuaJIT's non-conformant exceptions
+// Make sure LuaJIT won't swallow any C++ exceptions
 #define SOL_EXCEPTIONS_ALWAYS_UNSAFE 1
 #define SOL_EXCEPTIONS_CATCH_ALL 1
 

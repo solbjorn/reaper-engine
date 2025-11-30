@@ -1,25 +1,42 @@
 #pragma once
 
-#include <cstdarg>
-#include <cstdio>
-#include <string>
+#include "_types.h"
 
 #include <gsl/narrow>
 #include <gsl/zstring>
+
+#include <cstdarg>
+#include <cstdio>
+#include <string>
 
 #define DEBUG_INVOKE __debugbreak()
 
 class xrDebug
 {
 private:
-    using crashhandler = void(bool);
-    crashhandler* handler = nullptr;
+    using lua_panic_handler = void (*)(s32);
+    using lua_trace_handler = void (*)(bool);
+
+    lua_panic_handler lua_panic{};
+    lua_trace_handler lua_trace{};
 
 public:
-    void _initialize();
+    [[nodiscard]] lua_panic_handler get_lua_panic() const { return lua_panic; }
+    [[nodiscard]] lua_trace_handler get_lua_trace() const { return lua_trace; }
 
-    crashhandler* get_crashhandler() const { return handler; }
-    void set_crashhandler(crashhandler* _handler) { handler = _handler; }
+    [[nodiscard]] lua_panic_handler set_lua_panic(lua_panic_handler panic)
+    {
+        std::swap(lua_panic, panic);
+        return panic;
+    }
+
+    [[nodiscard]] lua_trace_handler set_lua_trace(lua_trace_handler trace)
+    {
+        std::swap(lua_trace, trace);
+        return trace;
+    }
+
+    void _initialize();
 
     const char* DXerror2string(const HRESULT code) const;
     const char* error2string(const DWORD code) const;

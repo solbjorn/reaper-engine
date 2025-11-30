@@ -15,11 +15,8 @@ class CScriptEngine : public CScriptStorage
 {
     RTTI_DECLARE_TYPEINFO(CScriptEngine, CScriptStorage);
 
-protected:
-    int m_stack_level;
-
 private:
-    bool m_reload_modules;
+    bool m_reload_modules{};
 
     string_unordered_map<shared_str, bool> no_files;
 

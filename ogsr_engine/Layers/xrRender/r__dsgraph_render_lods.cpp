@@ -11,7 +11,7 @@ void R_dsgraph_structure::render_lods()
         return;
 
     // *** Fill VB and generate groups
-    constexpr u32 shid = SE_R1_LMODELS;
+    constexpr u32 shid{4};
     auto iter = mapLOD.begin();
     FLOD* firstV = (FLOD*)iter->second.pVisual;
     ref_selement cur_S = firstV->shader->E[shid];

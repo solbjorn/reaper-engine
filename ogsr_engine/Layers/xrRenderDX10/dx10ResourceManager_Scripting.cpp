@@ -1,13 +1,14 @@
 #include "stdafx.h"
 
 #include "../xrRender/ResourceManager.h"
+
 #include "../xrRender/tss.h"
 #include "../xrRender/blenders/blender.h"
 #include "../xrRender/blenders/blender_recorder.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 
-#include "../../xr_3da/Render.h"
 #include "../../xrScriptEngine/xr_sol.h"
+#include "../../xr_3da/Render.h"
 
 #include <format>
 
@@ -18,13 +19,15 @@ class adopt_dx10sampler
 {
     CBlender_Compile* m_pC;
     u32 m_SI; //	Sampler index
+
 public:
-    adopt_dx10sampler(CBlender_Compile* C, u32 SamplerIndex) : m_pC(C), m_SI(SamplerIndex)
+    explicit adopt_dx10sampler(CBlender_Compile* C, u32 SamplerIndex) : m_pC{C}, m_SI{SamplerIndex}
     {
         if (m_SI == std::numeric_limits<u32>::max())
             m_pC = nullptr;
     }
-    adopt_dx10sampler(const adopt_dx10sampler& _C) : m_pC(_C.m_pC), m_SI(_C.m_SI)
+
+    adopt_dx10sampler(const adopt_dx10sampler& _C) : m_pC{_C.m_pC}, m_SI{_C.m_SI}
     {
         if (m_SI == std::numeric_limits<u32>::max())
             m_pC = nullptr;
@@ -81,8 +84,8 @@ class adopt_compiler
     }
 
 public:
-    adopt_compiler(CBlender_Compile* _C, bool& bFirstPass) : C(_C), m_bFirstPass(bFirstPass) { m_bFirstPass = true; }
-    adopt_compiler(const adopt_compiler& _C) : C(_C.C), m_bFirstPass(_C.m_bFirstPass) {}
+    explicit adopt_compiler(CBlender_Compile* _C, bool& bFirstPass) : C{_C}, m_bFirstPass{bFirstPass} { m_bFirstPass = true; }
+    adopt_compiler(const adopt_compiler& _C) : C{_C.C}, m_bFirstPass{_C.m_bFirstPass} {}
 
     adopt_compiler& _options(int P, bool S)
     {
@@ -177,177 +180,122 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-lua_State* LSVM{};
-
-constexpr const char* GlobalNamespace = "_G";
-constexpr const char* FILE_HEADER =
+constexpr absl::string_view GlobalNamespace{"_G"};
+constexpr absl::string_view FILE_HEADER{
     "\
 local function script_name() \
 return '{0}' \
 end; \
 local this; \
 module('{0}', package.seeall, function(m) this = m end); \
-{1}";
+{1}"};
 
-bool do_file(sol::state_view lua, const char* caScriptName, const char* caNameSpaceName)
+std::optional<sol::state> __declspec(align(std::hardware_destructive_interference_size)) lua;
+
+void lua_panic(s32 code)
 {
-    auto l_tpFileReader = FS.r_open(caScriptName);
+    xr_string data;
+    size_t len;
+
+    gsl::czstring desc = lua_tolstring(lua->lua_state(), -1, &len);
+    if (desc != nullptr)
+    {
+        data.assign(desc, len);
+        lua_pop(lua->lua_state(), 1);
+
+        desc = data.c_str();
+    }
+    else
+    {
+        desc = "An unexpected error occurred and panic has been invoked";
+    }
+
+    xr_string expr = "script " + sol::to_string(sol::call_status{code}) + " error";
+    Debug.backend(expr.c_str(), desc, nullptr, nullptr, DEBUG_INFO);
+}
+
+void lua_trace(bool)
+{
+    auto L = lua->lua_state();
+    luaL_traceback(L, L, nullptr, 0);
+    size_t len;
+
+    gsl::czstring stack = lua_tolstring(L, -1, &len);
+    if (stack == nullptr)
+        return;
+
+    xr_string data(stack, len);
+    lua_pop(L, 1);
+
+    Log(data);
+}
+
+class lua_scoped_handler
+{
+private:
+    decltype(std::declval<xrDebug>().get_lua_panic()) old_panic{};
+    decltype(std::declval<xrDebug>().get_lua_trace()) old_trace{};
+
+public:
+    constexpr lua_scoped_handler()
+    {
+        old_panic = Debug.set_lua_panic(lua_panic);
+        old_trace = Debug.set_lua_trace(lua_trace);
+    }
+
+    constexpr ~lua_scoped_handler()
+    {
+        R_ASSERT(Debug.set_lua_trace(old_trace) == lua_trace);
+        R_ASSERT(Debug.set_lua_panic(old_panic) == lua_panic);
+    }
+};
+
+void do_file(gsl::czstring caScriptName, gsl::czstring caNameSpaceName)
+{
+    const auto l_tpFileReader = absl::WrapUnique(FS.r_open(caScriptName));
     if (!l_tpFileReader)
     {
         // заменить на ассерт?
         Msg("!![CResourceManager::do_file] Cannot open file [%s]", caScriptName);
-        return false;
+        return;
     }
 
     l_tpFileReader->skip_bom(caScriptName);
 
     string_path l_caLuaFileName;
-    strconcat(sizeof(l_caLuaFileName), l_caLuaFileName, "@", caScriptName); // KRodin: приводит путь к виду @f:\games\s.t.a.l.k.e.r\gamedata\scripts\class_registrator.script
+    xr_strconcat(l_caLuaFileName, "@", caScriptName); // KRodin: приводит путь к виду @f:\games\s.t.a.l.k.e.r\gamedata\scripts\class_registrator.script
 
-    const std::string_view strbuf{reinterpret_cast<const char*>(l_tpFileReader->pointer()), (size_t)l_tpFileReader->elapsed()};
-    const std::string script = std::format(FILE_HEADER, caNameSpaceName, strbuf);
+    absl::string_view strbuf{static_cast<gsl::czstring>(l_tpFileReader->pointer()), gsl::narrow_cast<size_t>(l_tpFileReader->elapsed())};
+    xr_string script;
 
-    FS.r_close(l_tpFileReader);
-
-    try
+    if (std::is_neq(xr_strcmp(caNameSpaceName, GlobalNamespace)))
     {
-        lua.safe_script(script, l_caLuaFileName);
-    }
-    catch (const sol::error& e)
-    {
-        ASSERT_FMT(false, "%s", e.what());
-        return false;
+        script = std::format(FILE_HEADER, caNameSpaceName, strbuf);
+        strbuf = script;
     }
 
-    return true;
+    lua->script(script, l_caLuaFileName);
 }
 
-bool namespace_loaded(const char* name, bool remove_from_stack)
-{
-    int start{
-#ifdef DEBUG
-        lua_gettop(LSVM)
-#endif
-    };
-
-    lua_pushstring(LSVM, GlobalNamespace);
-    lua_rawget(LSVM, LUA_GLOBALSINDEX);
-    string256 S2;
-    xr_strcpy(S2, name);
-    auto S = S2;
-    for (;;)
-    {
-        if (!xr_strlen(S))
-        {
-            VERIFY(lua_gettop(LSVM) >= 1);
-            lua_pop(LSVM, 1);
-            VERIFY(start == lua_gettop(LSVM));
-            return false;
-        }
-        auto S1 = strchr(S, '.');
-        if (S1)
-            *S1 = 0;
-        lua_pushstring(LSVM, S);
-        lua_rawget(LSVM, -2);
-        if (lua_isnil(LSVM, -1))
-        {
-            // lua_settop(LSVM,0);
-            VERIFY(lua_gettop(LSVM) >= 2);
-            lua_pop(LSVM, 2);
-            VERIFY(start == lua_gettop(LSVM));
-            return false; // there is no namespace!
-        }
-        else if (!lua_istable(LSVM, -1))
-        {
-            // lua_settop(LSVM, 0);
-            VERIFY(lua_gettop(LSVM) >= 1);
-            lua_pop(LSVM, 1);
-            VERIFY(start == lua_gettop(LSVM));
-            R_ASSERT3(false, "Error : the namespace is already being used by the non-table object! Name: ", S);
-            return false;
-        }
-        lua_remove(LSVM, -2);
-        if (S1)
-            S = ++S1;
-        else
-            break;
-    }
-    if (!remove_from_stack)
-        VERIFY(lua_gettop(LSVM) == start + 1);
-    else
-    {
-        VERIFY(lua_gettop(LSVM) >= 1);
-        lua_pop(LSVM, 1);
-        VERIFY(lua_gettop(LSVM) == start);
-    }
-    return true;
-}
-
-bool OBJECT_1(const char* identifier, int type)
-{
-    int start{
-#ifdef DEBUG
-        lua_gettop(LSVM)
-#endif
-    };
-
-    lua_pushnil(LSVM);
-    while (lua_next(LSVM, -2))
-    {
-        if (lua_type(LSVM, -1) == type && std::is_eq(xr_strcmp(identifier, lua_tostring(LSVM, -2))))
-        {
-            VERIFY(lua_gettop(LSVM) >= 3);
-            lua_pop(LSVM, 3);
-            VERIFY(lua_gettop(LSVM) == start - 1);
-            return true;
-        }
-        lua_pop(LSVM, 1);
-    }
-    VERIFY(lua_gettop(LSVM) >= 1);
-    lua_pop(LSVM, 1);
-    VERIFY(lua_gettop(LSVM) == start - 1);
-    return false;
-}
-
-bool OBJECT_2(const char* namespace_name, const char* identifier, int type)
-{
-    int start{
-#ifdef DEBUG
-        lua_gettop(LSVM)
-#endif
-    };
-
-    if (xr_strlen(namespace_name) && !namespace_loaded(namespace_name, false))
-    {
-        VERIFY(lua_gettop(LSVM) == start);
-        return false;
-    }
-    bool result = OBJECT_1(identifier, type);
-    VERIFY(lua_gettop(LSVM) == start);
-    return result;
-}
-
-void LuaLog(const char* caMessage) { Log(caMessage); }
+[[nodiscard]] bool lua_function(gsl::czstring ns, gsl::czstring fn) { return !!lua->get<sol::optional<sol::function>>(std::tie(ns, fn)); }
 } // namespace
 
 // export
 void CResourceManager::LS_Load()
 {
-    //**************************************************************//
-    // Msg("[CResourceManager] Starting LuaJIT");
-    R_ASSERT2(!LSVM, "! LuaJIT is already running"); // На всякий случай
+    R_ASSERT(!lua, "! LuaJIT is already running");
+    lua.emplace();
+    R_ASSERT(lua, "! ERROR : Cannot initialize LUA VM!");
 
-    LSVM = luaL_newstate(); // Запускаем LuaJIT. Память себе он выделит сам.
-    R_ASSERT2(LSVM, "! ERROR : Cannot initialize LUA VM!"); // Надо проверить, случается ли такое.
-    sol::set_default_state(LSVM);
+    lua->open_libraries();
+    const lua_scoped_handler sc;
 
-    sol::state_view lua(LSVM);
-    lua.open_libraries();
+    lua->set_function("log", sol::resolve<void(gsl::czstring)>(&Log));
 
-    lua.set_function("log", LuaLog);
-    lua.new_usertype<adopt_dx10sampler>("_dx10sampler", sol::no_constructor, sol::call_constructor, sol::constructors<adopt_dx10sampler(const adopt_dx10sampler&)>(), "clamp",
-                                        sol::policies(&adopt_dx10sampler::_clamp, sol::returns_self()));
-    lua.new_usertype<adopt_compiler>(
+    lua->new_usertype<adopt_dx10sampler>("_dx10sampler", sol::no_constructor, sol::call_constructor, sol::constructors<adopt_dx10sampler(const adopt_dx10sampler&)>(), "clamp",
+                                         sol::policies(&adopt_dx10sampler::_clamp, sol::returns_self()));
+
+    lua->new_usertype<adopt_compiler>(
         "_compiler", sol::no_constructor, sol::call_constructor, sol::constructors<adopt_compiler(const adopt_compiler&)>(), "begin",
         sol::policies(sol::overload(&adopt_compiler::_pass, &adopt_compiler::_passgs), sol::returns_self()), "sorting",
         sol::policies(&adopt_compiler::_options, sol::returns_self()), "emissive", sol::policies(&adopt_compiler::_o_emissive, sol::returns_self()), "distort",
@@ -359,38 +307,43 @@ void CResourceManager::LS_Load()
         "dx10stencil", sol::policies(&adopt_compiler::_dx10Stencil, sol::returns_self()), "dx10stencil_ref", sol::policies(&adopt_compiler::_dx10StencilRef, sol::returns_self()),
         "dx10cullmode", sol::policies(&adopt_compiler::_dx10CullMode, sol::returns_self()), "dx10zfunc", sol::policies(&adopt_compiler::_dx10ZFunc, sol::returns_self()),
         "dx10sampler", &adopt_compiler::_dx10sampler);
-    lua.new_enum("blend", "zero", D3DBLEND_ZERO, "one", D3DBLEND_ONE, "srccolor", D3DBLEND_SRCCOLOR, "invsrccolor", D3DBLEND_INVSRCCOLOR, "srcalpha", D3DBLEND_SRCALPHA,
-                 "invsrcalpha", D3DBLEND_INVSRCALPHA, "destalpha", D3DBLEND_DESTALPHA, "invdestalpha", D3DBLEND_INVDESTALPHA, "destcolor", D3DBLEND_DESTCOLOR, "invdestcolor",
-                 D3DBLEND_INVDESTCOLOR, "srcalphasat", D3DBLEND_SRCALPHASAT);
-    lua.new_enum("cmp_func", "never", D3DCMP_NEVER, "less", D3DCMP_LESS, "equal", D3DCMP_EQUAL, "lessequal", D3DCMP_LESSEQUAL, "greater", D3DCMP_GREATER, "notequal",
-                 D3DCMP_NOTEQUAL, "greaterequal", D3DCMP_GREATEREQUAL, "always", D3DCMP_ALWAYS);
-    lua.new_enum("stencil_op", "keep", D3DSTENCILOP_KEEP, "zero", D3DSTENCILOP_ZERO, "replace", D3DSTENCILOP_REPLACE, "incrsat", D3DSTENCILOP_INCRSAT, "decrsat",
-                 D3DSTENCILOP_DECRSAT, "invert", D3DSTENCILOP_INVERT, "incr", D3DSTENCILOP_INCR, "decr", D3DSTENCILOP_DECR);
+
+    lua->new_enum("blend", "zero", D3DBLEND_ZERO, "one", D3DBLEND_ONE, "srccolor", D3DBLEND_SRCCOLOR, "invsrccolor", D3DBLEND_INVSRCCOLOR, "srcalpha", D3DBLEND_SRCALPHA,
+                  "invsrcalpha", D3DBLEND_INVSRCALPHA, "destalpha", D3DBLEND_DESTALPHA, "invdestalpha", D3DBLEND_INVDESTALPHA, "destcolor", D3DBLEND_DESTCOLOR, "invdestcolor",
+                  D3DBLEND_INVDESTCOLOR, "srcalphasat", D3DBLEND_SRCALPHASAT);
+
+    lua->new_enum("cmp_func", "never", D3DCMP_NEVER, "less", D3DCMP_LESS, "equal", D3DCMP_EQUAL, "lessequal", D3DCMP_LESSEQUAL, "greater", D3DCMP_GREATER, "notequal",
+                  D3DCMP_NOTEQUAL, "greaterequal", D3DCMP_GREATEREQUAL, "always", D3DCMP_ALWAYS);
+
+    lua->new_enum("stencil_op", "keep", D3DSTENCILOP_KEEP, "zero", D3DSTENCILOP_ZERO, "replace", D3DSTENCILOP_REPLACE, "incrsat", D3DSTENCILOP_INCRSAT, "decrsat",
+                  D3DSTENCILOP_DECRSAT, "invert", D3DSTENCILOP_INVERT, "incr", D3DSTENCILOP_INCR, "decr", D3DSTENCILOP_DECR);
 
     // load shaders
     xr_vector<char*>* folder = FS.file_list_open("$game_shaders$", RImplementation.getShaderPath(), FS_ListFiles | FS_RootOnly);
-    VERIFY(folder);
-    for (u32 it = 0; it < folder->size(); it++)
+    VERIFY(folder != nullptr);
+    const auto _ = gsl::finally([&folder] { FS.file_list_close(folder); });
+
+    for (const auto path : *folder)
     {
         string_path namesp, fn;
-        xr_strcpy(namesp, (*folder)[it]);
-        if (!strext(namesp) || 0 != xr_strcmp(strext(namesp), ".s"))
+        xr_strcpy(namesp, path);
+
+        auto ext = strext(namesp);
+        if (ext == nullptr || std::is_neq(xr_strcmp(ext, ".s")))
             continue;
-        *strext(namesp) = 0;
-        if (0 == namesp[0])
-            xr_strcpy(namesp, "_G");
-        strconcat(sizeof(fn), fn, RImplementation.getShaderPath(), (*folder)[it]);
+
+        *ext = '\0';
+        if (namesp[0] == '\0')
+            xr_strcpy(namesp, GlobalNamespace.data());
+
+        xr_strconcat(fn, RImplementation.getShaderPath(), path);
         std::ignore = FS.update_path(fn, "$game_shaders$", fn);
-        do_file(lua, fn, namesp);
+
+        do_file(fn, namesp);
     }
-    FS.file_list_close(folder);
 }
 
-void CResourceManager::LS_Unload()
-{
-    lua_close(LSVM);
-    LSVM = nullptr;
-}
+void CResourceManager::LS_Unload() { lua.reset(); }
 
 BOOL CResourceManager::_lua_HasShader(LPCSTR s_shader)
 {
@@ -398,23 +351,20 @@ BOOL CResourceManager::_lua_HasShader(LPCSTR s_shader)
     for (int i = 0, l = xr_strlen(s_shader) + 1; i < l; i++)
         undercorated[i] = ('\\' == s_shader[i]) ? '_' : s_shader[i];
 
-    bool bHasShader = OBJECT_2(undercorated, "normal", LUA_TFUNCTION) || OBJECT_2(undercorated, "l_special", LUA_TFUNCTION);
+    if (lua_function(undercorated, "normal") || lua_function(undercorated, "l_special"))
+        return true;
 
     // If not found - try to find new ones
-    if (!bHasShader)
+    for (gsl::index i{0}; i < SHADER_ELEMENTS_MAX; ++i)
     {
-        for (int i = 0; i < SHADER_ELEMENTS_MAX; ++i)
-        {
-            string16 buff;
-            std::snprintf(buff, sizeof(buff), "element_%d", i);
-            if (OBJECT_2(undercorated, buff, LUA_TFUNCTION))
-            {
-                bHasShader = true;
-                break;
-            }
-        }
+        string16 buff;
+        std::snprintf(buff, sizeof(buff), "element_%zd", i);
+
+        if (lua_function(undercorated, buff))
+            return true;
     }
-    return bHasShader;
+
+    return false;
 }
 
 Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
@@ -437,57 +387,52 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
     C.detail_texture = nullptr;
     C.detail_scaler = nullptr;
 
+    const lua_scoped_handler sc;
     // Choose workflow here: old (using named stages) or new (explicitly declaring stage number)
-    bool bUseNewWorkflow = false;
+    bool bUseNewWorkflow{};
 
-    for (int i = 0; i < SHADER_ELEMENTS_MAX; ++i)
+    for (auto [i, elem] : xr::views_enumerate(S.E))
     {
         string16 buff;
-        std::snprintf(buff, sizeof(buff), "element_%d", i);
-        if (OBJECT_2(s_shader, buff, LUA_TFUNCTION))
-        {
-            C.iElement = i;
-            C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
-            S.E[i]._set(C._lua_Compile(s_shader, buff));
+        std::snprintf(buff, sizeof(buff), "element_%zd", i);
 
-            bUseNewWorkflow = true;
-        }
+        if (!lua_function(s_shader, buff))
+            continue;
+
+        C.iElement = i;
+        C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
+        elem._set(C._lua_Compile(s_shader, buff));
+
+        bUseNewWorkflow = true;
     }
 
     if (!bUseNewWorkflow)
     {
         // Compile element	(LOD0 - HQ)
-        if (OBJECT_2(s_shader, "normal_hq", LUA_TFUNCTION))
+        if (lua_function(s_shader, "normal_hq"))
         {
             // Analyze possibility to detail this shader
             C.iElement = 0;
             C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
-
-            if (C.bDetail)
-                S.E[0]._set(C._lua_Compile(s_shader, "normal_hq"));
-            else
-                S.E[0]._set(C._lua_Compile(s_shader, "normal"));
+            S.E[0]._set(C._lua_Compile(s_shader, C.bDetail ? "normal_hq" : "normal"));
         }
-        else
+        else if (lua_function(s_shader, "normal"))
         {
-            if (OBJECT_2(s_shader, "normal", LUA_TFUNCTION))
-            {
-                C.iElement = 0;
-                C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
-                S.E[0]._set(C._lua_Compile(s_shader, "normal"));
+            C.iElement = 0;
+            C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
+            S.E[0]._set(C._lua_Compile(s_shader, "normal"));
 
-                /// SSS fix water for DX10
-                // Water Flag
-                if (S.E[0]->flags.bDistort)
-                {
-                    if (strstr(s_shader, "effects_water"))
-                        S.E[0]->flags.isWater = TRUE;
-                }
+            /// SSS fix water for DX10
+            // Water Flag
+            if (S.E[0]->flags.bDistort)
+            {
+                if (strstr(s_shader, "effects_water") != nullptr)
+                    S.E[0]->flags.isWater = TRUE;
             }
         }
 
         // Compile element	(LOD1)
-        if (OBJECT_2(s_shader, "normal", LUA_TFUNCTION))
+        if (lua_function(s_shader, "normal"))
         {
             C.iElement = 1;
             C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
@@ -495,7 +440,7 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
         }
 
         // Compile element
-        if (OBJECT_2(s_shader, "l_point", LUA_TFUNCTION))
+        if (lua_function(s_shader, "l_point"))
         {
             C.iElement = 2;
             C.bDetail = FALSE;
@@ -503,7 +448,7 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
         }
 
         // Compile element
-        if (OBJECT_2(s_shader, "l_spot", LUA_TFUNCTION))
+        if (lua_function(s_shader, "l_spot"))
         {
             C.iElement = 3;
             C.bDetail = FALSE;
@@ -511,7 +456,7 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
         }
 
         // Compile element
-        if (OBJECT_2(s_shader, "l_special", LUA_TFUNCTION))
+        if (lua_function(s_shader, "l_special"))
         {
             C.iElement = 4;
             C.bDetail = FALSE;
@@ -520,10 +465,10 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
     }
 
     // Search equal in shaders array
-    for (Shader* v_shader : v_shaders)
+    for (auto sh : v_shaders)
     {
-        if (S.equal(v_shader))
-            return v_shader;
+        if (S.equal(sh))
+            return sh;
     }
 
     // Create _new_ entry
@@ -545,14 +490,12 @@ ShaderElement* CBlender_Compile::_lua_Compile(LPCSTR namesp, LPCSTR name)
     LPCSTR t_1 = (L_textures.size() > 1) ? *L_textures[1] : "null";
     LPCSTR t_d = detail_texture ? detail_texture : "null";
 
-    sol::function element = sol::state_view(LSVM)[namesp][name];
+    bool bFirstPass{};
+    adopt_compiler ac{this, bFirstPass};
+    sol::function element = (*lua)[namesp][name];
 
-    bool bFirstPass = false;
-    adopt_compiler ac = adopt_compiler(this, bFirstPass);
     element(ac, t_0, t_1, t_d);
-
     r_End();
-    ShaderElement* _r = RImplementation.Resources->_CreateElement(std::move(E));
 
-    return _r;
+    return RImplementation.Resources->_CreateElement(std::move(E));
 }

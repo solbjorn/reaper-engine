@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "object_factory.h"
+
 #include "ai_space.h"
 #include "script_engine.h"
 #include "object_item_script.h"
@@ -53,11 +54,11 @@ void CObjectFactory::register_script() const
 {
     actualize();
 
-    sol::state_view lua{ai().script_engine().lua()};
+    auto& lua = ai().script_engine().lua();
     sol::table target = lua.create_table(clsids().size(), 0);
 
     for (auto [id, item] : xr::views_enumerate(clsids()))
-        target.set(*item->script_clsid(), id);
+        target.set(item->script_clsid().c_str(), id);
 
     xr::sol_new_enum(lua, "clsid", target);
 }

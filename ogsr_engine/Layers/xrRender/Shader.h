@@ -19,7 +19,7 @@ class IBlender;
 class IBlenderXr;
 
 #define SHADER_PASSES_MAX 2
-#define SHADER_ELEMENTS_MAX 16
+constexpr inline gsl::index SHADER_ELEMENTS_MAX{6};
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -157,8 +157,7 @@ struct Shader : public xr_resource_flagged
     RTTI_DECLARE_TYPEINFO(Shader, xr_resource_flagged);
 
 public:
-    ref_selement E[6]; // R1 - 0=norm_lod0(det),	1=norm_lod1(normal),	2=L_point,		3=L_spot,	4=L_for_models,
-                       // R2 - 0=deffer,			1=norm_lod1(normal),	2=psm,			3=ssm,		4=dsm
+    std::array<ref_selement, SHADER_ELEMENTS_MAX> E;
 
     Shader() = default;
     ~Shader() override;
@@ -169,7 +168,7 @@ public:
     void clone(Shader&& from)
     {
         xr_resource_flagged::clone(from);
-        std::ranges::move(from.E, E);
+        E = std::move(from.E);
     }
 };
 
@@ -193,19 +192,5 @@ struct resptrcode_shader : public resptr_base<Shader>
 };
 
 using ref_shader = resptr_core<Shader, resptrcode_shader>;
-
-enum SE_R1
-{
-    SE_R1_NORMAL_HQ = 0, // high quality/detail
-    SE_R1_NORMAL_LQ = 1, // normal or low quality
-    SE_R1_LPOINT = 2, // add: point light
-    SE_R1_LSPOT = 3, // add:	spot light
-    SE_R1_LMODELS = 4, // lighting info for models or shadowing from models
-};
-
-//	E[3] - can use for night vision but need to extend SE_R1. Will need
-//	Extra shader element.
-//	E[4] - distortion or self illumination(self emission).
-//	E[4] Can use for lightmap capturing.
 
 #endif // SHADER__INCLUDED_

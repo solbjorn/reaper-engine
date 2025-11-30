@@ -145,47 +145,47 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, const char* s_shader, const c
 
     // Compile element	(LOD0 - HQ)
     {
-        C.iElement = SE_R1_NORMAL_HQ;
+        C.iElement = 0;
         C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[SE_R1_NORMAL_HQ]._set(_CreateElement(std::move(E)));
+        S.E[0]._set(_CreateElement(std::move(E)));
     }
 
     // Compile element	(LOD1)
     {
-        C.iElement = SE_R1_NORMAL_LQ;
+        C.iElement = 1;
         C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[SE_R1_NORMAL_LQ]._set(_CreateElement(std::move(E)));
+        S.E[1]._set(_CreateElement(std::move(E)));
     }
 
     // Compile element
     {
-        C.iElement = SE_R1_LPOINT;
+        C.iElement = 2;
         C.bDetail = FALSE;
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[SE_R1_LPOINT]._set(_CreateElement(std::move(E)));
+        S.E[2]._set(_CreateElement(std::move(E)));
     }
 
     // Compile element
     {
-        C.iElement = SE_R1_LSPOT;
+        C.iElement = 3;
         C.bDetail = FALSE;
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[SE_R1_LSPOT]._set(_CreateElement(std::move(E)));
+        S.E[3]._set(_CreateElement(std::move(E)));
     }
 
     // Compile element
     {
-        C.iElement = SE_R1_LMODELS;
+        C.iElement = 4;
         C.bDetail = TRUE; //.$$$ HACK :)
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[SE_R1_LMODELS]._set(_CreateElement(std::move(E)));
+        S.E[4]._set(_CreateElement(std::move(E)));
     }
 
     // Compile element
@@ -322,7 +322,7 @@ xr_vector<ITexture*> CResourceManager::FindTexture(const char* Name) const
     {
         auto I = m_textures.find(filename);
         if (I != m_textures.end())
-            res.emplace_back(smart_cast<ITexture*>(I->second));
+            res.emplace_back(I->second);
     }
     else
     {
@@ -330,8 +330,10 @@ xr_vector<ITexture*> CResourceManager::FindTexture(const char* Name) const
         ch[0] = 0; // remove *
 
         for (const auto& [name, tex] : m_textures)
-            if (strstr(name, filename))
-                res.emplace_back(smart_cast<ITexture*>(tex));
+        {
+            if (strstr(name, filename) != nullptr)
+                res.emplace_back(tex);
+        }
     }
 
     return res;

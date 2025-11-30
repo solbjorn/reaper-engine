@@ -455,25 +455,25 @@ u32 ps_lua_gc_method = 1;
 
 void CLevel::script_gc()
 {
-    auto* state = ai().script_engine().lua();
+    auto& lua = ai().script_engine().lua();
 
     switch (ps_lua_gc_method)
     {
     case 0: return;
 #ifdef LUA_GCTIMEOUT
     case 2:
-        if (state, LUA_GCTIMEOUT, psLUA_GCTIMEOUT) >= 0)
+        if (lua_gc(lua.lua_state(), LUA_GCTIMEOUT, psLUA_GCTIMEOUT) >= 0)
             break;
 
         // LUA_GCTIMEOUT is unsupported, fallback to LUA_GCSTEP
         [[fallthrough]];
 #endif
     default: ps_lua_gc_method = 1; [[fallthrough]];
-    case 1: lua_gc(state, LUA_GCSTEP, psLUA_GCSTEP); break;
+    case 1: lua.step_gc(psLUA_GCSTEP); break;
     }
 
     // If script_gc() is performed once a frame, we don't need automatic GC
-    lua_gc(state, LUA_GCSTOP, 0);
+    lua.stop_gc();
 }
 
 void CLevel::OnRender()

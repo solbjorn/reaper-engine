@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdint>
+#include <limits>
+
 // Type defs
 using s8 = std::int8_t;
 using u8 = std::uint8_t;

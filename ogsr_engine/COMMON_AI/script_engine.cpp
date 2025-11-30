@@ -16,18 +16,11 @@
 
 #include "ui/UIWpnParams.h"
 
-CScriptEngine::CScriptEngine()
-{
-    m_stack_level = 0;
-    m_reload_modules = false;
-}
-
+CScriptEngine::CScriptEngine() = default;
 CScriptEngine::~CScriptEngine() = default;
 
 void CScriptEngine::unload()
 {
-    // lua_settop(lua(), m_stack_level);
-
     destroy_lua_wpn_params();
     if (MainMenu())
     {
@@ -60,46 +53,38 @@ string_unordered_map<shared_str, shared_str> xray_scripts;
 
 void CScriptEngine::setup_auto_load()
 {
-    lua_pushstring(lua(), GlobalNamespace);
-    lua_gettable(lua(), LUA_GLOBALSINDEX);
-    int value_index = lua_gettop(lua()); // alpet: во избежания оставления в стеке лишней метатаблицы
-    luaL_newmetatable(lua(), "XRAY_AutoLoadMetaTable");
-    lua_pushstring(lua(), "__index");
-    lua_pushcfunction(lua(), auto_load);
-    lua_settable(lua(), -3);
-    // luaL_getmetatable(lua(), "XRAY_AutoLoadMetaTable");
-    lua_setmetatable(lua(), value_index);
+    auto L = lua().lua_state();
+
+    lua_pushstring(L, GlobalNamespace.data());
+    lua_gettable(L, LUA_GLOBALSINDEX);
+    int value_index = lua_gettop(L); // alpet: во избежания оставления в стеке лишней метатаблицы
+    luaL_newmetatable(L, "XRAY_AutoLoadMetaTable");
+    lua_pushstring(L, "__index");
+    lua_pushcfunction(L, auto_load);
+    lua_settable(L, -3);
+    // luaL_getmetatable(L, "XRAY_AutoLoadMetaTable");
+    lua_setmetatable(L, value_index);
 
     xray_scripts.clear();
 }
 
 void CScriptEngine::init()
 {
-    // Msg("[CScriptEngine::init] Starting LuaJIT!");
-
-    lua_State* LSVM = luaL_newstate(); // Запускаем LuaJIT. Память себе он выделит сам.
-    R_ASSERT2(LSVM, "! ERROR : Cannot initialize LUA VM!");
-
-    sol::set_default_state(LSVM);
-
-    auto lua = sol::state_view(LSVM);
-    lua.open_libraries();
-
-    reinit(LSVM);
+    reinit();
+    R_ASSERT(initialized(), "! ERROR : Cannot initialize LUA VM!");
+    lua().open_libraries();
 
     //-----------------------------------------------------//
-    export_classes(lua); // Тут регистрируются все движковые функции, импортированные в скрипты
+    export_classes(lua()); // Тут регистрируются все движковые функции, импортированные в скрипты
     setup_auto_load(); // Построение метатаблицы
-    bool save = m_reload_modules;
-    m_reload_modules = true;
-    process_file_if_exists(GlobalNamespace, false); // Компиляция _G.script
-    m_reload_modules = save;
 
-    m_stack_level = lua_gettop(LSVM); //?
+    const bool save = m_reload_modules;
+    m_reload_modules = true;
+    process_file_if_exists(GlobalNamespace.data(), false); // Компиляция _G.script
+    m_reload_modules = save;
 
     register_script_classes(); // Походу, запуск class_registrator.script
     object_factory().register_script(); // Регистрация классов
-    // Msg("[CScriptEngine::init] LuaJIT Started!");
 }
 
 void CScriptEngine::parse_script_namespace(const char* name, char* ns, u32 nsSize, char* func, u32 funcSize)
@@ -107,7 +92,7 @@ void CScriptEngine::parse_script_namespace(const char* name, char* ns, u32 nsSiz
     auto p = strrchr(name, '.');
     if (!p)
     {
-        xr_strcpy(ns, nsSize, GlobalNamespace);
+        xr_strcpy(ns, nsSize, GlobalNamespace.data());
         p = name - 1;
     }
     else
@@ -235,7 +220,7 @@ bool CScriptEngine::process_file(const char* file_name, bool reload_modules)
 
 void CScriptEngine::register_script_classes()
 {
-    sol::function result = sol::state_view(lua())["class_registrator"]["register"];
+    sol::function result = lua()["class_registrator"]["register"];
     result(const_cast<CObjectFactory*>(&object_factory()));
 }
 
@@ -263,7 +248,7 @@ bool CScriptEngine::function(gsl::czstring function_to_call, sol::function& func
     const char* ns = name_space;
     const char* fn = function;
 
-    auto x = sol::state_view(lua()).get<sol::optional<sol::function>>(std::tie(ns, fn));
+    auto x = lua().get<sol::optional<sol::function>>(std::tie(ns, fn));
     if (!x)
         return false;
 
@@ -273,8 +258,6 @@ bool CScriptEngine::function(gsl::czstring function_to_call, sol::function& func
 
 void CScriptEngine::collect_all_garbage()
 {
-    lua_gc(lua(), LUA_GCCOLLECT, 0);
-    lua_gc(lua(), LUA_GCCOLLECT, 0);
-    lua_gc(lua(), LUA_GCCOLLECT, 0);
-    lua_gc(lua(), LUA_GCCOLLECT, 0);
+    for (gsl::index i{0}; i < 4; ++i)
+        lua().collect_gc();
 }

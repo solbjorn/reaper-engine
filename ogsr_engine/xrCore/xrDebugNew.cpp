@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "xrdebug.h"
+
 #include "stacktrace_collector.h"
 
 #include <sstream>
@@ -12,10 +13,15 @@
 #include <shellapi.h>
 
 xrDebug Debug;
-HWND gGameWindow = nullptr;
-bool ExitFromWinMain = false;
 
-static bool error_after_dialog = false;
+HWND gGameWindow{};
+bool ExitFromWinMain{};
+
+namespace
+{
+long (*orig)(_EXCEPTION_POINTERS*){};
+bool error_after_dialog{};
+} // namespace
 
 static void ShowErrorMessage(const char* msg, const bool show_msg = false)
 {
@@ -72,7 +78,7 @@ void LogStackTrace(const char* header, const bool dump_lua_locals)
 {
     __try
     {
-        if (auto pCrashHandler = Debug.get_crashhandler())
+        if (auto pCrashHandler = Debug.get_lua_trace())
             pCrashHandler(dump_lua_locals);
         Log("********************************************************************************");
         Msg("!![%s] Thread: [%s]", __FUNCTION__, GetThreadName());
@@ -87,7 +93,7 @@ void LogStackTrace(const char* header, _EXCEPTION_POINTERS* pExceptionInfo, bool
 {
     __try
     {
-        if (auto pCrashHandler = Debug.get_crashhandler())
+        if (auto pCrashHandler = Debug.get_lua_trace())
             pCrashHandler(dump_lua_locals);
         Log("********************************************************************************");
         Msg("!![%s] Thread: [%s], ExceptionCode: [0x%lx]", __FUNCTION__, GetThreadName(), pExceptionInfo->ExceptionRecord->ExceptionCode);
@@ -112,47 +118,85 @@ namespace
 void gather_info(const char* expression, const char* description, const char* argument0, const char* argument1, const char* file, gsl::index line, const char* function,
                  char* assertion_info)
 {
+    xr_string unhandled;
+
+    try
+    {
+        auto ep = std::current_exception();
+        if (ep)
+            std::rethrow_exception(ep);
+    }
+    catch (const std::exception& ex)
+    {
+        unhandled = ex.what();
+    }
+    catch (const std::string& msg)
+    {
+        unhandled = msg;
+    }
+    catch (gsl::czstring msg)
+    {
+        unhandled = msg;
+    }
+    catch (...)
+    {
+        unhandled = "Unknown exception type";
+    }
+
     auto buffer = assertion_info;
     auto endline = "\n";
     auto prefix = "[error]";
-    bool extended_description = (description && !argument0 && strchr(description, '\n'));
+    const bool extended_description = strchr(description, '\n') != nullptr;
+    const bool extended_unhandled = unhandled.contains('\n');
+
     for (int i = 0; i < 2; ++i)
     {
         if (!i)
             buffer += sprintf(buffer, "%sFATAL ERROR%s%s", endline, endline, endline);
+
         buffer += sprintf(buffer, "%sExpression    : %s%s", prefix, expression, endline);
         buffer += sprintf(buffer, "%sFunction      : %s%s", prefix, function, endline);
         buffer += sprintf(buffer, "%sFile          : %s%s", prefix, file, endline);
         buffer += sprintf(buffer, "%sLine          : %zd%s", prefix, line, endline);
 
         if (extended_description)
-        {
-            buffer += sprintf(buffer, "%s%s%s", endline, description, endline);
-            /*if (argument0) { //Этот код не выполнится. См. условие extended_description
-                if (argument1) {
-                    buffer += sprintf(buffer, "%s%s", argument0, endline);
-                    buffer += sprintf(buffer, "%s%s", argument1, endline);
-                }
-                else
-                    buffer += sprintf(buffer, "%s%s", argument0, endline);
-            }*/
-        }
+            buffer += sprintf(buffer, "%sDescription   :%s%s%s%s", prefix, endline, endline, description, endline);
         else
-        {
             buffer += sprintf(buffer, "%sDescription   : %s%s", prefix, description, endline);
-            if (argument0)
+
+        if (argument0)
+        {
+            if (extended_description)
+                buffer += sprintf(buffer, "%s", endline);
+
+            if (argument1)
             {
-                if (argument1)
-                {
-                    buffer += sprintf(buffer, "%sArgument 0    : %s%s", prefix, argument0, endline);
-                    buffer += sprintf(buffer, "%sArgument 1    : %s%s", prefix, argument1, endline);
-                }
-                else
-                    buffer += sprintf(buffer, "%sArguments     : %s%s", prefix, argument0, endline);
+                buffer += sprintf(buffer, "%sArgument 0    : %s%s", prefix, argument0, endline);
+                buffer += sprintf(buffer, "%sArgument 1    : %s%s", prefix, argument1, endline);
+            }
+            else
+            {
+                buffer += sprintf(buffer, "%sArguments     : %s%s", prefix, argument0, endline);
             }
         }
 
         buffer += sprintf(buffer, "%s", endline);
+
+        if (!unhandled.empty())
+        {
+            buffer += sprintf(buffer, "%sExpression    : %s%s", prefix, "unhandled exception", endline);
+            buffer += sprintf(buffer, "%sFunction      : %s%s", prefix, function, endline);
+            buffer += sprintf(buffer, "%sFile          : %s%s", prefix, file, endline);
+            buffer += sprintf(buffer, "%sLine          : %zd%s", prefix, line, endline);
+
+            if (extended_unhandled)
+                buffer += sprintf(buffer, "%sDescription   :%s%s%s%s", prefix, endline, endline, unhandled.c_str(), endline);
+            else
+                buffer += sprintf(buffer, "%sDescription   : %s%s", prefix, unhandled.c_str(), endline);
+
+            buffer += sprintf(buffer, "%s", endline);
+        }
+
         if (!i)
         {
             Log(assertion_info);
@@ -361,7 +405,69 @@ static void save_mini_dump(_EXCEPTION_POINTERS* pExceptionInfo)
 }
 #endif
 
-static void format_message(char* buffer)
+namespace
+{
+// LuaJIT always throws a custom structured exception instead of calling to
+// the user-defined panic handler. It is used for unwinding when inside a
+// protected call, otherwise the exception sneaks out and finishes in the
+// unhandled exception handler.
+// If the code matches, redirect it to the Lua panic handler, which will
+// print the error off the Lua stack, then eventually the stack trace and
+// the locals if accessible.
+class lua_panic_handler
+{
+private:
+    static constexpr unsigned long lua_exception_base{0xe24c4a00};
+
+    decltype(std::declval<xrDebug>().get_lua_panic()) handler{};
+    s32 code{};
+
+    [[noreturn]] void execute()
+    {
+        handler(code);
+        std::unreachable();
+    }
+
+public:
+    constexpr explicit lua_panic_handler(const _EXCEPTION_RECORD& rec)
+    {
+        const auto maybe_code = rec.ExceptionCode ^ lua_exception_base;
+        if (maybe_code > std::numeric_limits<u8>::max())
+            return;
+
+        handler = Debug.get_lua_panic();
+        code = gsl::narrow_cast<s32>(maybe_code);
+    }
+
+    constexpr ~lua_panic_handler()
+    {
+        if (handler != nullptr)
+            execute();
+    }
+
+    [[nodiscard]] constexpr explicit operator bool() const { return handler != nullptr; }
+};
+
+// An uncaught C++ exception finishes as an unhandled structured exception in
+// the handler with the particular codes. If that's the case, the handler
+// shouldn't exit immediately -- pass it to the default handler, which will
+// call std::terminate() where it can be rethrown and logged.
+[[nodiscard]] constexpr bool is_cpp_exception(const _EXCEPTION_RECORD& rec)
+{
+    if (rec.ExceptionCode != 0xe06d7363 || rec.NumberParameters != 4)
+        return false;
+
+    switch (rec.ExceptionInformation[0])
+    {
+    case 0x19930520:
+    case 0x19930521:
+    case 0x19930522:
+    case 0x01994000: return true;
+    default: return false;
+    }
+}
+
+void format_message(char* buffer)
 {
     __try
     {
@@ -385,9 +491,12 @@ static void format_message(char* buffer)
     }
 }
 
-static LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS* pExceptionInfo)
+[[nodiscard]] long UnhandledFilter(_EXCEPTION_POINTERS* pExceptionInfo)
 {
-    if (!error_after_dialog)
+    const auto& rec = *pExceptionInfo->ExceptionRecord;
+    const lua_panic_handler panic{rec};
+
+    if (!panic && !is_cpp_exception(rec) && !error_after_dialog)
     {
         string1024 error_message;
         format_message(error_message);
@@ -403,17 +512,15 @@ static LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS* pExceptionInfo)
     save_mini_dump(pExceptionInfo);
 #endif
 
-    return EXCEPTION_EXECUTE_HANDLER;
+    return orig != nullptr ? orig(pExceptionInfo) : EXCEPTION_CONTINUE_SEARCH;
 }
 
-static void _terminate() // Вызывается при std::terminate()
-{
-    Debug.backend("<no expression>", "Unexpected application termination", nullptr, nullptr, DEBUG_INFO);
-}
+// Вызывается при std::terminate()
+void _terminate() { Debug.backend("<no expression>", "Unexpected application termination", nullptr, nullptr, DEBUG_INFO); }
 
-static void handler_base(const char* reason_string) { Debug.backend("error handler is invoked!", reason_string, nullptr, nullptr, DEBUG_INFO); }
+void handler_base(const char* reason_string) { Debug.backend("error handler is invoked!", reason_string, nullptr, nullptr, DEBUG_INFO); }
 
-static void invalid_parameter_handler(const wchar_t* expression, const wchar_t* function, const wchar_t* file, unsigned int line, uintptr_t)
+void invalid_parameter_handler(const wchar_t* expression, const wchar_t* function, const wchar_t* file, unsigned int line, uintptr_t)
 {
     string4096 expression_;
     string4096 function_;
@@ -441,20 +548,20 @@ static void invalid_parameter_handler(const wchar_t* expression, const wchar_t* 
     Debug.backend("error handler is invoked!", expression_, nullptr, nullptr, file_, line, function_);
 }
 
-static void std_out_of_memory_handler() { handler_base("std: out of memory"); }
-static void pure_call_handler() { handler_base("pure virtual function call"); }
-static void abort_handler(int) { handler_base("application is aborting"); }
-static void floating_point_handler(int) { handler_base("floating point error"); }
-static void illegal_instruction_handler(int) { handler_base("illegal instruction"); }
-static void termination_handler(int) { handler_base("termination with exit code 3"); }
+void std_out_of_memory_handler() { handler_base("std: out of memory"); }
+void pure_call_handler() { handler_base("pure virtual function call"); }
+void abort_handler(int) { handler_base("application is aborting"); }
+void floating_point_handler(int) { handler_base("floating point error"); }
+void illegal_instruction_handler(int) { handler_base("illegal instruction"); }
+void termination_handler(int) { handler_base("termination with exit code 3"); }
 
-/*static void segment_violation( int signal ) {
+/*void segment_violation( int signal ) {
   handler_base( "Segment violation error" );
 }*/
 
 /*
 // http://qaru.site/questions/441696/what-actions-do-i-need-to-take-to-get-a-crash-dump-in-all-error-scenarios
-static BOOL PreventSetUnhandledExceptionFilter()
+BOOL PreventSetUnhandledExceptionFilter()
 {
     HMODULE hKernel32 = GetModuleHandle("kernel32.dll");
     if (!hKernel32)
@@ -481,6 +588,7 @@ static BOOL PreventSetUnhandledExceptionFilter()
     return bRet;
 }
 */
+} // namespace
 
 void xrDebug::_initialize()
 {
@@ -505,7 +613,7 @@ void xrDebug::_initialize()
 
     _set_purecall_handler(&pure_call_handler);
 
-    ::SetUnhandledExceptionFilter(UnhandledFilter);
+    orig = SetUnhandledExceptionFilter(UnhandledFilter);
 
     // PreventSetUnhandledExceptionFilter();
 
