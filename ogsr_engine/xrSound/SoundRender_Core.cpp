@@ -14,7 +14,7 @@ XR_DIAG_POP();
 
 BOOL bSenvironmentXrExport{};
 int psSoundTargets = 256; // 512; //--#SM+#-- //32;
-Flags32 psSoundFlags = {/*ss_Hardware*/};
+Flags32 psSoundFlags = {ss_UseFloat32};
 
 float psSoundOcclusionScale = 0.8f;
 float psSoundOcclusionHf = 0.5f;
