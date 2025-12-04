@@ -345,6 +345,8 @@ void CResourceManager::LS_Load()
 
 void CResourceManager::LS_Unload() { lua.reset(); }
 
+gsl::index CResourceManager::LS_mem() const { return lua ? gsl::narrow_cast<gsl::index>(lua->memory_used()) : 0z; }
+
 BOOL CResourceManager::_lua_HasShader(LPCSTR s_shader)
 {
     string256 undercorated;

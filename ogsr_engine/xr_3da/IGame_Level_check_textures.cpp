@@ -1,23 +1,13 @@
 #include "stdafx.h"
-// #include "resourcemanager.h"
+
 #include "igame_level.h"
 
 void IGame_Level::LL_CheckTextures()
 {
-    u32 m_base, c_base, m_lmaps, c_lmaps;
-    Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+    xr::render_memory_usage usage;
+    Device.m_pRender->ResourcesGetMemoryUsage(usage);
 
-    Msg("* t-report - base: %u, %u K", c_base, m_base / 1024);
-    Msg("* t-report - lmap: %u, %u K", c_lmaps, m_lmaps / 1024);
-
-    // if (m_base > 64 * 1024 * 1024 || c_base > 400)
-    //{
-    //     LPCSTR msg = "Too many base-textures (limit: 400 textures or 64M).\n        Reduce number of textures (better) or their resolution (worse).";
-    //     Msg("***FATAL***: %s", msg);
-    // }
-    // if (m_lmaps > 32 * 1024 * 1024 || c_lmaps > 8)
-    //{
-    //     LPCSTR msg = "Too many lmap-textures (limit: 8 textures or 32M).\n        Reduce pixel density (worse) or use more vertex lighting (better).";
-    //     Msg("***FATAL***: %s", msg);
-    // }
+    Msg("* t-report - base: %zd, %zd Kb", usage.c_base, usage.m_base / 1024);
+    Msg("* t-report - lmap: %zd, %zd Kb", usage.c_lmaps, usage.m_lmaps / 1024);
+    Msg("* t-report - Lua: %zd Kb", usage.lua / 1024);
 }

@@ -3,6 +3,18 @@
 class IResourceManager;
 enum class DeviceState;
 
+namespace xr
+{
+struct render_memory_usage
+{
+    gsl::index c_base;
+    gsl::index c_lmaps;
+    gsl::index m_base;
+    gsl::index m_lmaps;
+    gsl::index lua;
+};
+} // namespace xr
+
 class XR_NOVTABLE IRenderDeviceRender : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IRenderDeviceRender);
@@ -34,8 +46,8 @@ public:
     //	Resources control
     virtual void DeferredLoad(BOOL E) = 0;
     virtual void ResourcesDeferredUpload() = 0;
-    virtual void ResourcesGetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps) = 0;
-    virtual void ResourcesDumpMemoryUsage() = 0;
+    virtual void ResourcesGetMemoryUsage(xr::render_memory_usage& usage) const = 0;
+    virtual void ResourcesDumpMemoryUsage() const = 0;
 
     //	Device state
     virtual DeviceState GetDeviceState() = 0;

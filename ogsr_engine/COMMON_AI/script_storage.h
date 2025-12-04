@@ -30,8 +30,6 @@ private:
     xr_set<void*> m_dumpedObjList;
 
 protected:
-    [[nodiscard]] bool initialized() const { return !!m_virtual_machine; }
-
     [[nodiscard]] bool do_file(gsl::czstring caScriptName, gsl::czstring caNameSpaceName);
     [[nodiscard]] bool namespace_loaded(gsl::czstring caName, bool remove_from_stack = true);
     void reinit();
@@ -57,3 +55,8 @@ public:
     void LogTable(lua_State* l, LPCSTR S, int level);
     void LogVariable(lua_State* l, const char* name, int level);
 };
+
+namespace xr
+{
+[[nodiscard]] bool script_engine_initialized();
+}

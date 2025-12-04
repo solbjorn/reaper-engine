@@ -77,6 +77,7 @@ public:
 private:
     void LS_Load();
     void LS_Unload();
+    [[nodiscard]] gsl::index LS_mem() const;
 
     // Miscelaneous
     void _ParseList(sh_list& dest, LPCSTR names);
@@ -95,8 +96,8 @@ public:
     CResourceManager() = default;
     ~CResourceManager() override;
 
-    void _GetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps);
-    void _DumpMemoryUsage();
+    void _GetMemoryUsage(xr::render_memory_usage& usage) const;
+    void _DumpMemoryUsage() const;
 
     // Debug
     void DBG_VerifyTextures();

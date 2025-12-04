@@ -148,11 +148,13 @@ public:
     {
         Memory.mem_compact();
 
-        u32 m_base = 0, c_base = 0, m_lmaps = 0, c_lmaps = 0;
+        xr::render_memory_usage usage;
 
         //	Resource check moved to m_pRender
-        if (Device.m_pRender)
-            Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+        if (Device.m_pRender != nullptr)
+            Device.m_pRender->ResourcesGetMemoryUsage(usage);
+        else
+            std::memset(&usage, 0, sizeof(usage));
 
         Log("--------------------------------------------------------------------------------");
 
@@ -189,13 +191,17 @@ public:
         const auto _eco_strings = str_container::stat_economy();
         const auto _eco_smem = smem_container::stat_economy();
 
-        Msg("* [ D3D ]: textures count [%u]", (c_base + c_lmaps));
-        Msg("* [ D3D ]: textures[%u K]", (m_base + m_lmaps) / 1024);
-        Msg("* [x-ray]: process heap[%zd K]", _process_heap / 1024);
-        Msg("* [x-ray]: economy: strings[%zd K], smem[%zd K]", _eco_strings / 1024, _eco_smem / 1024);
+        Msg("* [ D3D ]: textures count [%zd]", usage.c_base + usage.c_lmaps);
+        Msg("* [ D3D ]: textures [%zd Kb]", (usage.m_base + usage.m_lmaps) / 1024);
+
+        const auto script = xr::script_engine_initialized() ? ai().script_engine().lua().memory_used() : 0uz;
+        Msg("* [ Lua ]: render [%zd Kb], game [%zu Kb]", usage.lua / 1024, script / 1024);
+
+        Msg("* [x-ray]: process heap [%zd Kb]", _process_heap / 1024);
+        Msg("* [x-ray]: economy: strings [%zd Kb], smem [%zd Kb]", _eco_strings / 1024, _eco_smem / 1024);
 
 #ifdef DEBUG
-        Msg("* [x-ray]: file mapping: memory[%u K], count[%u]", g_file_mapped_memory / 1024, g_file_mapped_count);
+        Msg("* [x-ray]: file mapping: memory [%u Kb], count [%u]", g_file_mapped_memory / 1024, g_file_mapped_count);
         dump_file_mappings();
 #endif // DEBUG
     }
@@ -1081,18 +1087,22 @@ public:
         const auto prev = *value;
         CCC_Token::Execute(args);
 
+        if (!xr::script_engine_initialized())
+            return;
+
+        auto& lua = ai().script_engine().lua();
         switch (*value)
         {
-        case 0: ai().script_engine().lua().stop_gc(); break;
+        case 0: lua.stop_gc(); break;
         case 1:
         case 2:
             if (prev == 0)
-                ai().script_engine().lua().restart_gc();
+                lua.restart_gc();
 
             break;
         case 3:
             // Perform a full garbage collection cycle and return to previous strategy.
-            ai().script_engine().lua().collect_gc();
+            lua.collect_gc();
             *value = prev;
 
             break;

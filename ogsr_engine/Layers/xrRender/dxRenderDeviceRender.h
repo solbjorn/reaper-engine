@@ -38,8 +38,8 @@ public:
     //	Resources control
     virtual void DeferredLoad(BOOL E);
     virtual void ResourcesDeferredUpload();
-    virtual void ResourcesGetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps);
-    virtual void ResourcesDumpMemoryUsage();
+    void ResourcesGetMemoryUsage(xr::render_memory_usage& usage) const override;
+    void ResourcesDumpMemoryUsage() const override;
 
     //	Device state
     virtual DeviceState GetDeviceState();

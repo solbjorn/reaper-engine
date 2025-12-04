@@ -168,6 +168,8 @@ void ScriptCrashHandler(bool dump_lua_locals)
         Msg("Can't dump script call stack - Engine corrupted");
     }
 }
+
+bool initialized{};
 } // namespace
 
 CScriptStorage::~CScriptStorage()
@@ -178,13 +180,19 @@ CScriptStorage::~CScriptStorage()
 
 void CScriptStorage::reinit()
 {
+    initialized = false;
     m_virtual_machine.emplace();
+    initialized = !!m_virtual_machine;
 
     std::ignore = Debug.set_lua_panic(lua_panic);
     std::ignore = Debug.set_lua_trace(ScriptCrashHandler);
 }
 
-void CScriptStorage::close() { m_virtual_machine.reset(); }
+void CScriptStorage::close()
+{
+    initialized = false;
+    m_virtual_machine.reset();
+}
 
 void CScriptStorage::print_stack()
 {
@@ -330,3 +338,8 @@ bool CScriptStorage::namespace_loaded(gsl::czstring name, bool remove_from_stack
     }
     return true;
 }
+
+namespace xr
+{
+bool script_engine_initialized() { return initialized; }
+} // namespace xr

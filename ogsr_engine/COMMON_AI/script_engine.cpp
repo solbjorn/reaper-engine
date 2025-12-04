@@ -71,7 +71,7 @@ void CScriptEngine::setup_auto_load()
 void CScriptEngine::init()
 {
     reinit();
-    R_ASSERT(initialized(), "! ERROR : Cannot initialize LUA VM!");
+    R_ASSERT(xr::script_engine_initialized(), "! ERROR : Cannot initialize LUA VM!");
     lua().open_libraries();
 
     //-----------------------------------------------------//

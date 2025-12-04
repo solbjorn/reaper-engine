@@ -236,13 +236,10 @@ void CResourceManager::DeferredUpload()
     Msg("CResourceManager::DeferredUpload [MT] -> START, size = [%zu]", m_textures.size());
     Msg("CResourceManager::DeferredUpload VRAM usage before:");
 
-    u32 m_base = 0;
-    u32 c_base = 0;
-    u32 m_lmaps = 0;
-    u32 c_lmaps = 0;
+    xr::render_memory_usage usage;
 
-    _GetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
-    Msg("textures loaded size %f MB (%f bytes)", (float)(m_base + m_lmaps) / 1024 / 1024, (float)(m_base + m_lmaps));
+    _GetMemoryUsage(usage);
+    Msg("textures loaded size: %f Mb (%zd bytes)", gsl::narrow_cast<f32>(usage.m_base + usage.m_lmaps) / 1024.0f / 1024.0f, usage.m_base + usage.m_lmaps);
 
     HW.DumpVideoMemoryUsage();
 
@@ -251,59 +248,50 @@ void CResourceManager::DeferredUpload()
 
     Msg("CResourceManager::DeferredUpload VRAM usage after:");
 
-    _GetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
-    Msg("textures loaded size %f MB (%f bytes)", (float)(m_base + m_lmaps) / 1024 / 1024, (float)(m_base + m_lmaps));
+    _GetMemoryUsage(usage);
+    Msg("textures loaded size: %f Mb (%zd bytes)", gsl::narrow_cast<f32>(usage.m_base + usage.m_lmaps) / 1024.0f / 1024.0f, usage.m_base + usage.m_lmaps);
 
     HW.DumpVideoMemoryUsage();
 
     Msg("CResourceManager::DeferredUpload -> END");
 }
 
-void CResourceManager::_GetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps)
+void CResourceManager::_GetMemoryUsage(xr::render_memory_usage& usage) const
 {
-    m_base = c_base = m_lmaps = c_lmaps = 0;
+    std::memset(&usage, 0, sizeof(usage));
 
-    map_Texture::iterator I = m_textures.begin();
-    map_Texture::iterator E = m_textures.end();
-    for (; I != E; I++)
+    for (auto [name, tex] : m_textures)
     {
-        u32 m = I->second->flags.memUsage;
-        if (strstr(I->first, "lmap"))
+        const gsl::index m{tex->flags.memUsage};
+
+        if (std::strstr(name, "lmap") != nullptr)
         {
-            c_lmaps++;
-            m_lmaps += m;
+            usage.c_lmaps++;
+            usage.m_lmaps += m;
         }
         else
         {
-            c_base++;
-            m_base += m;
+            usage.c_base++;
+            usage.m_base += m;
         }
     }
+
+    usage.lua = LS_mem();
 }
 
-void CResourceManager::_DumpMemoryUsage()
+void CResourceManager::_DumpMemoryUsage() const
 {
-    xr_multimap<u32, std::pair<u32, shared_str>> mtex;
+    xr_multimap<gsl::index, std::pair<gsl::index, gsl::czstring>> mtex;
 
     // sort
-    {
-        map_Texture::iterator I = m_textures.begin();
-        map_Texture::iterator E = m_textures.end();
-        for (; I != E; I++)
-        {
-            u32 m = I->second->flags.memUsage;
-            shared_str n = I->second->cName;
-            mtex.emplace(m, std::make_pair(I->second->ref_count.load(), n));
-        }
-    }
+    for (auto [_, tex] : m_textures)
+        mtex.emplace(gsl::index{tex->flags.memUsage}, std::make_pair(tex->ref_count.load(), tex->cName.c_str()));
 
     // dump
-    {
-        xr_multimap<u32, std::pair<u32, shared_str>>::iterator I = mtex.begin();
-        xr_multimap<u32, std::pair<u32, shared_str>>::iterator E = mtex.end();
-        for (; I != E; I++)
-            Msg("* %4.1f : [%4u] %s", float(I->first) / 1024.f, I->second.first, I->second.second.c_str());
-    }
+    for (const auto [mem, entry] : mtex)
+        Msg("* %4.1f : [%4zd] %s", gsl::narrow_cast<f32>(mem) / 1024.0f, entry.first, entry.second);
+
+    Msg("* %4.1f : Lua", gsl::narrow_cast<f32>(LS_mem()) / 1024.0f);
 }
 
 xr_vector<ITexture*> CResourceManager::FindTexture(const char* Name) const

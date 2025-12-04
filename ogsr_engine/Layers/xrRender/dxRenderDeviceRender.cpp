@@ -210,13 +210,15 @@ void dxRenderDeviceRender::DeferredLoad(BOOL E) { Resources->DeferredLoad(E); }
 
 void dxRenderDeviceRender::ResourcesDeferredUpload() { Resources->DeferredUpload(); }
 
-void dxRenderDeviceRender::ResourcesGetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps)
+void dxRenderDeviceRender::ResourcesGetMemoryUsage(xr::render_memory_usage& usage) const
 {
-    if (Resources)
-        Resources->_GetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+    if (Resources != nullptr)
+        Resources->_GetMemoryUsage(usage);
+    else
+        std::memset(&usage, 0, sizeof(usage));
 }
 
-void dxRenderDeviceRender::ResourcesDumpMemoryUsage() { Resources->_DumpMemoryUsage(); }
+void dxRenderDeviceRender::ResourcesDumpMemoryUsage() const { Resources->_DumpMemoryUsage(); }
 
 DeviceState dxRenderDeviceRender::GetDeviceState() { return HW.GetDeviceState(); }
 

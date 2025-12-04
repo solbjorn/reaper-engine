@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "r4.h"
+
 #include "../xrRender/ResourceManager.h"
 #include "../xrRender/fbasicvisual.h"
 #include "../../xr_3da/fmesh.h"
@@ -23,12 +24,13 @@ void CRender::level_Load(IReader* fs)
     R_ASSERT(g_pGameLevel);
     R_ASSERT(!b_loaded);
 
-    u32 m_base, c_base, m_lmaps, c_lmaps;
-    ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+    xr::render_memory_usage usage;
+    ResourcesGetMemoryUsage(usage);
 
     Msg("~ LevelResources load...");
-    Msg("~ LevelResources - base: %u, %u K", c_base, m_base / 1024);
-    Msg("~ LevelResources - lmap: %u, %u K", c_lmaps, m_lmaps / 1024);
+    Msg("~ LevelResources - base: %zd, %zd Kb", usage.c_base, usage.m_base / 1024);
+    Msg("~ LevelResources - lmap: %zd, %zd Kb", usage.c_lmaps, usage.m_lmaps / 1024);
+    Msg("~ LevelResources - Lua: %zd Kb", usage.lua / 1024);
 
     // Begin
     pApp->LoadBegin();
@@ -117,11 +119,12 @@ void CRender::level_Load(IReader* fs)
     // End
     pApp->LoadEnd();
 
-    ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+    ResourcesGetMemoryUsage(usage);
 
     Msg("~ LevelResources load completed!");
-    Msg("~ LevelResources - base: %u, %u K", c_base, m_base / 1024);
-    Msg("~ LevelResources - lmap: %u, %u K", c_lmaps, m_lmaps / 1024);
+    Msg("~ LevelResources - base: %zd, %zd Kb", usage.c_base, usage.m_base / 1024);
+    Msg("~ LevelResources - lmap: %zd, %zd Kb", usage.c_lmaps, usage.m_lmaps / 1024);
+    Msg("~ LevelResources - Lua: %zd Kb", usage.lua / 1024);
 
     // signal loaded
     b_loaded = TRUE;
@@ -134,12 +137,13 @@ void CRender::level_Unload()
     if (!b_loaded)
         return;
 
-    u32 m_base, c_base, m_lmaps, c_lmaps;
-    ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+    xr::render_memory_usage usage;
+    ResourcesGetMemoryUsage(usage);
 
     Msg("~ LevelResources unload...");
-    Msg("~ LevelResources - base: %u, %u K", c_base, m_base / 1024);
-    Msg("~ LevelResources - lmap: %u, %u K", c_lmaps, m_lmaps / 1024);
+    Msg("~ LevelResources - base: %zd, %zd Kb", usage.c_base, usage.m_base / 1024);
+    Msg("~ LevelResources - lmap: %zd, %zd Kb", usage.c_lmaps, usage.m_lmaps / 1024);
+    Msg("~ LevelResources - Lua: %zd Kb", usage.lua / 1024);
 
     // HOM
     HOM.Unload();
@@ -197,11 +201,12 @@ void CRender::level_Unload()
     //*** Shaders
     Shaders.clear();
 
-    ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+    ResourcesGetMemoryUsage(usage);
 
     Msg("~ LevelResources unload completed!");
-    Msg("~ LevelResources - base: %u, %u K", c_base, m_base / 1024);
-    Msg("~ LevelResources - lmap: %u, %u K", c_lmaps, m_lmaps / 1024);
+    Msg("~ LevelResources - base: %zd, %zd Kb", usage.c_base, usage.m_base / 1024);
+    Msg("~ LevelResources - lmap: %zd, %zd Kb", usage.c_lmaps, usage.m_lmaps / 1024);
+    Msg("~ LevelResources - Lua: %zd Kb", usage.lua / 1024);
 
     b_loaded = FALSE;
 }

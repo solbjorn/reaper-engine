@@ -515,13 +515,11 @@ public:
 
         Msg("total\t \t %f \t %f \t %f \n", vb_video + ib_video + rt_video, vb_managed + ib_managed + rt_managed, vb_system + ib_system + rt_system);
 
-        u32 m_base = 0;
-        u32 c_base = 0;
-        u32 m_lmaps = 0;
-        u32 c_lmaps = 0;
+        xr::render_memory_usage usage;
+        RImplementation.ResourcesGetMemoryUsage(usage);
 
-        RImplementation.ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
-        Msg("textures loaded size %f MB (%f bytes)", (float)(m_base + m_lmaps) / 1024 / 1024, (float)(m_base + m_lmaps));
+        Msg("textures loaded size: %f Mb (%zd bytes)", gsl::narrow_cast<f32>(usage.m_base + usage.m_lmaps) / 1024.0f / 1024.0f, usage.m_base + usage.m_lmaps);
+        Msg("Lua memory usage: %f Mb (%zd bytes)", gsl::narrow_cast<f32>(usage.lua) / 1024.0f / 1024.0f, usage.lua);
 
         HW.DumpVideoMemoryUsage();
     }

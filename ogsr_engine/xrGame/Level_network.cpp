@@ -23,12 +23,13 @@ void CLevel::remove_objects()
     m_is_removing_objects = true;
     BOOL b_stored = psDeviceFlags.test(rsDisableObjectsAsCrows);
 
-    u32 m_base, c_base, m_lmaps, c_lmaps;
-    Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+    xr::render_memory_usage usage;
+    Device.m_pRender->ResourcesGetMemoryUsage(usage);
 
     Msg("~ ObjectResources unload...");
-    Msg("~ ObjectResources - base: %u, %u K", c_base, m_base / 1024);
-    Msg("~ ObjectResources - lmap: %u, %u K", c_lmaps, m_lmaps / 1024);
+    Msg("~ ObjectResources - base: %zd, %zd Kb", usage.c_base, usage.m_base / 1024);
+    Msg("~ ObjectResources - lmap: %zd, %zd Kb", usage.c_lmaps, usage.m_lmaps / 1024);
+    Msg("~ ObjectResources - Lua: %zd Kb", usage.lua / 1024);
 
     Game().reset_ui();
 
@@ -91,12 +92,12 @@ void CLevel::remove_objects()
     g_pGamePersistent->destroy_particles(false);
     ::Sound->stop_emitters();
 
-    // u32 m_base, c_base, m_lmaps, c_lmaps;
-    Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+    Device.m_pRender->ResourcesGetMemoryUsage(usage);
 
     Msg("~ ObjectResources unload completed!");
-    Msg("~ ObjectResources - base: %u, %u K", c_base, m_base / 1024);
-    Msg("~ ObjectResources - lmap: %u, %u K", c_lmaps, m_lmaps / 1024);
+    Msg("~ ObjectResources - base: %zd, %zd Kb", usage.c_base, usage.m_base / 1024);
+    Msg("~ ObjectResources - lmap: %zd, %zd Kb", usage.c_lmaps, usage.m_lmaps / 1024);
+    Msg("~ ObjectResources - Lua: %zd Kb", usage.lua / 1024);
 
     ai().script_engine().collect_all_garbage();
 
