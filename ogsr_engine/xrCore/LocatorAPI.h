@@ -12,7 +12,6 @@ class CStreamReader;
 
 namespace sqfs
 {
-struct sqfs_compressor_t;
 struct sqfs_dir_iterator_t;
 struct sqfs_file_t;
 } // namespace sqfs
@@ -76,19 +75,14 @@ private:
         union
         {
             // SquashFS
-            struct
-            {
-                sqfs::sqfs_file_t* file{};
-                sqfs::sqfs_compressor_t* cmp{};
-                xr_sqfs* fs{};
-            };
+            xr_sqfs* fs;
 
             // DB
             struct
             {
-                void* hSrcMap;
-                CInifile* header;
-                u32 key;
+                void* hSrcMap{};
+                CInifile* header{};
+                u32 key{};
             };
         };
 

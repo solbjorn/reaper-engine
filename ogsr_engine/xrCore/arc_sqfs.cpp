@@ -25,6 +25,12 @@ XR_DIAG_POP();
 } // namespace sqfs
 
 template <>
+struct std::default_delete<sqfs::sqfs_compressor_t>
+{
+    constexpr void operator()(sqfs::sqfs_compressor_t* ptr) const noexcept { sqfs::sqfs_drop(ptr); }
+};
+
+template <>
 struct std::default_delete<sqfs::sqfs_data_reader_t>
 {
     constexpr void operator()(sqfs::sqfs_data_reader_t* ptr) const noexcept { sqfs::sqfs_drop(ptr); }
@@ -73,6 +79,7 @@ public:
     {
     public:
         std::unique_ptr<sqfs::sqfs_file_t> file;
+        std::unique_ptr<sqfs::sqfs_compressor_t> cmp;
         std::unique_ptr<sqfs::sqfs_dir_reader_t> dr;
         std::unique_ptr<sqfs::sqfs_data_reader_t> data;
 
@@ -91,13 +98,24 @@ private:
     pool_t pool;
 
 public:
-    sqfs::sqfs_super_t super{};
+    sqfs::sqfs_super_t super;
+    sqfs::sqfs_compressor_config_t cfg;
 
     xr_sqfs() = delete;
-    explicit xr_sqfs(sqfs::sqfs_file_t& file) { R_ASSERT(sqfs::sqfs_super_read(&super, &file) == 0); }
+    explicit xr_sqfs(gsl::czstring path);
 
     [[nodiscard]] auto acquire_scoped(const archive& arc) { return pool.acquire_scoped(arc); }
 };
+
+CLocatorAPI::archive::xr_sqfs::xr_sqfs(gsl::czstring path)
+{
+    sqfs::sqfs_file_t* f;
+    R_ASSERT(sqfs::sqfs_file_open(&f, path, sqfs::SQFS_FILE_OPEN_READ_ONLY | sqfs::SQFS_FILE_OPEN_NO_CHARSET_XFRM) == 0);
+    const auto file = absl::WrapUnique(f);
+
+    R_ASSERT(sqfs::sqfs_super_read(&super, file.get()) == 0);
+    R_ASSERT(sqfs::sqfs_compressor_config_init(&cfg, gsl::narrow<sqfs::SQFS_COMPRESSOR>(super.compression_id), super.block_size, sqfs::SQFS_COMP_FLAG_UNCOMPRESS) == 0);
+}
 
 CLocatorAPI::archive::xr_sqfs::reader::reader(const archive& arc)
 {
@@ -105,8 +123,12 @@ CLocatorAPI::archive::xr_sqfs::reader::reader(const archive& arc)
     R_ASSERT(sqfs::sqfs_file_open(&f, arc.path.c_str(), sqfs::SQFS_FILE_OPEN_READ_ONLY | sqfs::SQFS_FILE_OPEN_NO_CHARSET_XFRM) == 0);
     file = absl::WrapUnique(f);
 
-    dr = absl::WrapUnique(sqfs::sqfs_dir_reader_create(&arc.fs->super, arc.cmp, file.get(), 0));
-    data = absl::WrapUnique(sqfs::sqfs_data_reader_create(file.get(), arc.fs->super.block_size, arc.cmp, 0));
+    sqfs::sqfs_compressor_t* c;
+    R_ASSERT(sqfs::sqfs_compressor_create(&arc.fs->cfg, &c) == 0);
+    cmp = absl::WrapUnique(c);
+
+    dr = absl::WrapUnique(sqfs::sqfs_dir_reader_create(&arc.fs->super, cmp.get(), file.get(), 0));
+    data = absl::WrapUnique(sqfs::sqfs_data_reader_create(file.get(), arc.fs->super.block_size, cmp.get(), 0));
     R_ASSERT(dr && data);
 
     R_ASSERT(sqfs::sqfs_data_reader_load_fragment_table(data.get(), &arc.fs->super) == 0);
@@ -240,14 +262,7 @@ CStreamReader* CLocatorAPI::archive::xr_sqfs_stream::open_chunk(u32 chunk_id)
 void CLocatorAPI::archive::open_sqfs()
 {
     type = container::SQFS;
-
-    R_ASSERT(sqfs::sqfs_file_open(&file, path.c_str(), sqfs::SQFS_FILE_OPEN_READ_ONLY | sqfs::SQFS_FILE_OPEN_NO_CHARSET_XFRM) == 0);
-    fs = xr_new<xr_sqfs>(*file);
-
-    sqfs::sqfs_compressor_config_t cfg;
-    sqfs::sqfs_compressor_config_init(&cfg, gsl::narrow<sqfs::SQFS_COMPRESSOR>(fs->super.compression_id), fs->super.block_size, sqfs::SQFS_COMP_FLAG_UNCOMPRESS);
-
-    R_ASSERT(sqfs::sqfs_compressor_create(&cfg, &cmp) == 0);
+    fs = xr_new<xr_sqfs>(path.c_str());
 }
 
 bool CLocatorAPI::archive::autoload_sqfs()
@@ -304,11 +319,11 @@ void CLocatorAPI::archive::index_dir_sqfs(CLocatorAPI& loc, gsl::czstring path, 
 
 void CLocatorAPI::archive::index_sqfs(CLocatorAPI& loc, gsl::czstring fs_entry_point) const
 {
-    const auto idt = absl::WrapUnique(sqfs::sqfs_id_table_create(0));
-    R_ASSERT(idt && sqfs::sqfs_id_table_read(idt.get(), file, &fs->super, cmp) == 0);
-
     const auto obj = fs->acquire_scoped(*this);
     const auto& rd = obj.value;
+
+    const auto idt = absl::WrapUnique(sqfs::sqfs_id_table_create(0));
+    R_ASSERT(idt && sqfs::sqfs_id_table_read(idt.get(), rd.file.get(), &fs->super, rd.cmp.get()) == 0);
 
     const auto it = [&idt, &rd] {
         sqfs::sqfs_inode_generic_t* inp;
@@ -349,13 +364,4 @@ void CLocatorAPI::archive::cleanup_sqfs()
     // cleanup() is inverse autoload(), which does nothing
 }
 
-void CLocatorAPI::archive::close_sqfs()
-{
-    sqfs::sqfs_drop(cmp);
-    cmp = nullptr;
-
-    xr_delete(fs);
-
-    sqfs::sqfs_drop(file);
-    file = nullptr;
-}
+void CLocatorAPI::archive::close_sqfs() { xr_delete(fs); }
