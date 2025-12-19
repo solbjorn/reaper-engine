@@ -39,7 +39,7 @@ struct std::default_delete<sqfs::sqfs_data_reader_t>
 template <>
 struct std::default_delete<sqfs::sqfs_dir_entry_t>
 {
-    constexpr void operator()(sqfs::sqfs_dir_entry_t* ptr) const noexcept { xr_free(ptr); }
+    constexpr void operator()(sqfs::sqfs_dir_entry_t* ptr) const noexcept { sqfs::sqfs_free(ptr); }
 };
 
 template <>
@@ -69,7 +69,7 @@ struct std::default_delete<sqfs::sqfs_id_table_t>
 template <>
 struct std::default_delete<sqfs::sqfs_inode_generic_t>
 {
-    constexpr void operator()(sqfs::sqfs_inode_generic_t* ptr) const noexcept { xr_free(ptr); }
+    constexpr void operator()(sqfs::sqfs_inode_generic_t* ptr) const noexcept { sqfs::sqfs_free(ptr); }
 };
 
 class CLocatorAPI::archive::xr_sqfs
