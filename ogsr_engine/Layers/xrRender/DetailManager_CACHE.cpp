@@ -165,9 +165,9 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view)
         while (!cache_task.empty())
         {
             // Decompress and remove task
-            const u32 bestId = cache_task.size() - 1;
+            const auto bestId = cache_task.size() - 1;
             cache_Decompress(cache_task[bestId]);
-            cache_task.erase(bestId);
+            std::ignore = cache_task.erase(bestId);
         }
     }
     else
@@ -211,12 +211,11 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view)
         for (int i = dm_max_decompress - 1; i >= 0; --i)
         {
             const u32 bestId = bestIndexes[i];
-
             if (bestId != invalidIndex)
             {
                 // Decompress and remove task
                 cache_Decompress(cache_task[bestId]);
-                cache_task.erase(bestId);
+                std::ignore = cache_task.erase(bestId);
             }
         }
     }

@@ -756,10 +756,10 @@ void CGameObject::remove_visual_callback(visual_callback* callback)
 {
     CALLBACK_VECTOR_IT I = std::find(m_visual_callback.begin(), m_visual_callback.end(), callback);
     VERIFY(I != m_visual_callback.end());
-    m_visual_callback.erase(I);
+
+    std::ignore = m_visual_callback.erase(I);
     if (m_visual_callback.empty())
         SetKinematicsCallback(false);
-    //		smart_cast<IKinematics*>(Visual())->Callback(0,0);
 }
 
 void CGameObject::SetKinematicsCallback(bool set)

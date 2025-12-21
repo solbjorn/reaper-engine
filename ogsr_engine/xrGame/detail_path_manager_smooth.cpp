@@ -9,8 +9,8 @@
 #include "stdafx.h"
 
 #include "detail_path_manager.h"
+
 #include "ai_space.h"
-#include "profiler.h"
 #include "level_graph.h"
 
 #ifdef DEBUG
@@ -714,7 +714,7 @@ void CDetailPathManager::postprocess_key_points()
         m_key_points.pop_back();
 
     // TODO: KRodin: цикл смысла не имеет. В будущем или выпилить его, или попытаться исправить.
-    for (gsl::index i{1}; i < std::ssize(m_key_points); ++i)
+    for (gsl::index i{1}, n{std::ssize(m_key_points) - 1}; i < n; ++i)
     {
         STravelPoint key_point0 = compute_better_key_point(m_key_points[i - 1], m_key_points[i], m_key_points[i + 1], false);
         STravelPoint key_point1 = compute_better_key_point(m_key_points[i + 1], m_key_points[i], m_key_points[i - 1], true);

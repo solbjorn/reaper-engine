@@ -136,16 +136,18 @@ public:
     constexpr void inc() { count++; }
     [[nodiscard]] constexpr bool empty() const { return count == 0; }
 
-    constexpr void erase(size_type id)
+    [[nodiscard]] constexpr iterator erase(size_type id)
     {
         VERIFY(id < count);
-        count--;
+        --count;
 
         for (size_type i{id}; i < count; ++i)
             array[i] = array[i + 1];
+
+        return begin() + id;
     }
 
-    constexpr void erase(iterator it) { erase(it - begin()); }
+    [[nodiscard]] constexpr iterator erase(iterator it) { return erase(it - begin()); }
 
     constexpr void insert(size_type id, const value_type& V)
     {

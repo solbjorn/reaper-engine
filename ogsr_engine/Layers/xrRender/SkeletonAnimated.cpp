@@ -28,8 +28,10 @@ void CBlendInstance::blend_add(CBlend* H)
         for (BlendSVecIt it = Blend.begin() + 1; it != Blend.end(); it++)
             if ((*it)->blendAmount < (*_d)->blendAmount)
                 _d = it;
-        Blend.erase(_d);
+
+        std::ignore = Blend.erase(_d);
     }
+
     VERIFY(Blend.size() < MAX_BLENDED);
     Blend.push_back(H);
 }
@@ -38,7 +40,7 @@ void CBlendInstance::blend_remove(CBlend* H)
 {
     auto I = std::find(Blend.begin(), Blend.end(), H);
     if (I != Blend.end())
-        Blend.erase(I);
+        std::ignore = Blend.erase(I);
 }
 
 // Motion control
@@ -204,6 +206,7 @@ void CKinematicsAnimated::LL_FadeCycle(u16 part, float falloff, u8 mask_channel 
             B.stop_at_end_callback = FALSE; // callback не должен приходить!
     }
 }
+
 void CKinematicsAnimated::LL_CloseCycle(u16 part, u8 mask_channel /*= (1<<0)*/)
 {
     if (BI_NONE == part)
@@ -212,12 +215,19 @@ void CKinematicsAnimated::LL_CloseCycle(u16 part, u8 mask_channel /*= (1<<0)*/)
         return;
 
     // destroy cycle(s)
-    BlendSVecIt I = blend_cycles[part].begin(), E = blend_cycles[part].end();
-    for (; I != E; I++)
+    auto& cycles = blend_cycles[part];
+    auto I = cycles.begin();
+    auto E = cycles.end();
+    while (I != E)
     {
         CBlend& B = *(*I);
+
         if (!(mask_channel & (1 << B.channel)))
+        {
+            ++I;
             continue;
+        }
+
         // B.blend = CBlend::eFREE_SLOT;
         B.set_free_state();
 
@@ -225,11 +235,11 @@ void CKinematicsAnimated::LL_CloseCycle(u16 part, u8 mask_channel /*= (1<<0)*/)
         for (u32 i = 0; i < P.bones.size(); i++)
             Bone_Motion_Stop_IM((*bones)[P.bones[i]], *I);
 
-        blend_cycles[part].erase(I); // ?
-        E = blend_cycles[part].end();
-        I--;
+        I = cycles.erase(I); // ?
+        E = cycles.end();
     }
-    // blend_cycles[part].clear	(); // ?
+
+    // cycles.clear	(); // ?
 }
 
 float CKinematicsAnimated::get_animation_length(MotionID motion_ID)
@@ -464,27 +474,34 @@ void CKinematicsAnimated::DestroyCycle(CBlend& B)
 
 void CKinematicsAnimated::LL_UpdateTracks(float dt, bool b_force, bool leave_blends)
 {
-    BlendSVecIt I, E;
     // Cycles
-    for (u16 part = 0; part < MAX_PARTS; part++)
+    for (auto [part, cycles] : xr::views_enumerate(blend_cycles))
     {
         if (!m_Partition->part(part).Name)
             continue;
 
-        I = blend_cycles[part].begin();
-        E = blend_cycles[part].end();
-        for (; I != E; I++)
+        auto I = cycles.begin();
+        auto E = cycles.end();
+        while (I != E)
         {
             CBlend& B = *(*I);
+
             if (!b_force && B.dwFrame == Device.dwFrame)
-                continue;
+                goto next;
+
             B.dwFrame = Device.dwFrame;
+
             if (B.update(dt, B.Callback) && !leave_blends)
             {
                 DestroyCycle(B);
-                blend_cycles[part].erase(I);
-                E = blend_cycles[part].end();
-                I--;
+
+                I = cycles.erase(I);
+                E = cycles.end();
+            }
+            else
+            {
+            next:
+                ++I;
             }
         }
     }
@@ -495,23 +512,23 @@ void CKinematicsAnimated::LL_UpdateTracks(float dt, bool b_force, bool leave_ble
 void CKinematicsAnimated::LL_UpdateFxTracks(float dt)
 {
     // FX
-    BlendSVecIt I, E;
-    I = blend_fx.begin();
-    E = blend_fx.end();
-    for (; I != E; I++)
+    auto I = blend_fx.begin();
+    auto E = blend_fx.end();
+    while (I != E)
     {
         CBlend& B = *(*I);
+
         if (!B.stop_at_end_callback)
         {
             B.playing = FALSE;
-            continue;
+            goto next;
         }
+
         // B.timeCurrent += dt*B.speed;
         B.update_time(dt);
+
         switch (B.blend_state())
         {
-        case CBlend::eFREE_SLOT: NODEFAULT;
-
         case CBlend::eAccrue:
             B.blendAmount += dt * B.blendAccrue * B.blendPower * B.speed;
             if (B.blendAmount >= B.blendPower)
@@ -521,6 +538,7 @@ void CKinematicsAnimated::LL_UpdateFxTracks(float dt)
                 // B.blend			= CBlend::eFalloff;//CBlend::eFixed;
                 B.set_falloff_state();
             }
+
             break;
         case CBlend::eFalloff:
             B.blendAmount -= dt * B.blendFalloff * B.blendPower * B.speed;
@@ -530,15 +548,21 @@ void CKinematicsAnimated::LL_UpdateFxTracks(float dt)
                 // B.blend = CBlend::eFREE_SLOT;
                 B.set_free_state();
                 Bone_Motion_Stop((*bones)[B.bone_or_part], *I);
-                blend_fx.erase(I);
+
+                I = blend_fx.erase(I);
                 E = blend_fx.end();
-                I--;
+                continue;
             }
+
             break;
         default: NODEFAULT;
         }
+
+    next:
+        ++I;
     }
 }
+
 void CKinematicsAnimated::UpdateTracks()
 {
     _DBG_SINGLE_USE_MARKER;
