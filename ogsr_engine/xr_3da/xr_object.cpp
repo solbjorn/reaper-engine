@@ -125,8 +125,6 @@ const Fbox& CObject::BoundingBox() const
 //----------------------------------------------------------------------
 CObject::CObject() : ISpatial{g_SpatialSpace}
 {
-    spatial.type |= STYPE_COLLIDEABLE | STYPE_RENDERABLE;
-
 #ifdef DEBUG
     dbg_update_shedule = u32(-1) / 2;
     dbg_update_cl = u32(-1) / 2;

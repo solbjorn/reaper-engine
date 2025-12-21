@@ -8,8 +8,6 @@
 
 CPS_Instance::CPS_Instance(bool destroy_on_game_load) : ISpatial{g_SpatialSpace}, m_destroy_on_game_load{destroy_on_game_load}
 {
-    spatial.type |= STYPE_RENDERABLE;
-
     g_pGamePersistent->ps_active.insert(this);
     renderable.pROS_Allowed = false;
 }
