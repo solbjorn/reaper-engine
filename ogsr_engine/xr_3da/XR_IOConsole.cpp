@@ -339,7 +339,7 @@ void CConsole::OnRender()
         // переделал тут на символьный вывод. в таком случае оно получше все выглядит
 
         auto draw_string = [&](CGameFont* f, LPCSTR str) {
-            for (const auto c : absl::string_view{str})
+            for (const auto c : std::string_view{str})
             {
                 f->OutI(-1.0f + out_pos * scr_x, ypos, "%c", c);
                 out_pos += f->SizeOf_(c);

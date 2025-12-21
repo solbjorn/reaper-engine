@@ -992,7 +992,7 @@ CInventoryItem* CInventory::tpfGetObjectByIndex(int iIndex)
 
 CInventoryItem* CInventory::GetItemFromInventory(LPCSTR SectName)
 {
-    if (const auto It = m_allMap.find(shared_str{SectName}); It != m_allMap.end())
+    if (const auto It = m_allMap.find(SectName); It != m_allMap.end())
     {
         CInventoryItem* inventory_item = It->second;
         return inventory_item;

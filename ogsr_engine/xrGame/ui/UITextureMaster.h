@@ -43,7 +43,7 @@ protected:
     //	typedef xr_map<shader_name, regions>			shared_textures;
     //	typedef xr_map<shader_name, regions>::iterator	shared_textures_it;
 
-    static xr_map<shared_str, TEX_INFO> m_textures;
+    static xr_map<shared_str, TEX_INFO, absl::container_internal::StringBtreeDefaultLess> m_textures;
 
 //	static	shared_textures		m_shTex;
 #ifdef DEBUG

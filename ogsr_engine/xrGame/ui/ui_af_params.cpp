@@ -21,7 +21,7 @@ CUIArtefactParams::~CUIArtefactParams()
 
 namespace
 {
-constexpr std::array<absl::string_view, 18> af_item_sect_names{
+constexpr std::array<std::string_view, 18> af_item_sect_names{
     "health_restore_speed",
     "radiation_restore_speed",
     "satiety_restore_speed",
@@ -43,7 +43,7 @@ constexpr std::array<absl::string_view, 18> af_item_sect_names{
     "fire_wound_immunity",
 };
 
-constexpr std::array<absl::string_view, 18> af_item_param_names{
+constexpr std::array<std::string_view, 18> af_item_param_names{
     "ui_inv_health",
     "ui_inv_radiation",
     "ui_inv_satiety",
@@ -65,8 +65,8 @@ constexpr std::array<absl::string_view, 18> af_item_param_names{
     "ui_inv_outfit_fire_wound_protection", // "(fire_wound_imm)",
 };
 
-constexpr std::array<absl::string_view, 7> af_actor_param_names{"satiety_health_v", "radiation_v",         "satiety_v",   "thirst_v",
-                                                                "satiety_power_v",  "wound_incarnation_v", "psy_health_v"};
+constexpr std::array<std::string_view, 7> af_actor_param_names{"satiety_health_v", "radiation_v",         "satiety_v",   "thirst_v",
+                                                               "satiety_power_v",  "wound_incarnation_v", "psy_health_v"};
 } // namespace
 
 void CUIArtefactParams::InitFromXml(CUIXml& xml_doc)

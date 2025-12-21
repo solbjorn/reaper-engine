@@ -15,7 +15,7 @@
 
 namespace
 {
-constexpr absl::string_view BULLET_MANAGER_SECTION{"bullet_manager"};
+constexpr std::string_view BULLET_MANAGER_SECTION{"bullet_manager"};
 }
 
 CCartridge::CCartridge()

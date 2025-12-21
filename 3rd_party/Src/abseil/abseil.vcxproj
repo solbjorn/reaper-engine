@@ -76,8 +76,6 @@
       copy /Y "absl\random\absl_random_internal_seed_material.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_internal_seed_material.lib"
       copy /Y "absl\random\absl_random_seed_gen_exception.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_seed_gen_exception.lib"
       copy /Y "absl\random\absl_random_seed_sequences.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_seed_sequences.lib"
-      md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\strings
-      copy /Y "absl\strings\absl_string_view.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\strings\absl_string_view.lib"
       md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\synchronization
       copy /Y "absl\synchronization\absl_kernel_timeout_internal.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\synchronization\absl_kernel_timeout_internal.lib"
       copy /Y "absl\synchronization\absl_synchronization.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\synchronization\absl_synchronization.lib"

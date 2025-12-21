@@ -405,7 +405,7 @@ void CLocatorAPI::ProcessOne(LPCSTR path, const _FINDDATA_T& F, bool bNoRecurse)
     else
     {
         if (!m_Flags.is(flTargetFolderOnly) && strext(N) != nullptr &&
-            (absl::string_view{strext(N)}.starts_with(".db") || absl::string_view{strext(N)}.starts_with(".sq") || absl::string_view{strext(N)}.starts_with(".xdb")))
+            (std::string_view{strext(N)}.starts_with(".db") || std::string_view{strext(N)}.starts_with(".sq") || std::string_view{strext(N)}.starts_with(".xdb")))
         {
             Msg("--Found base arch: [%s], size: [%lld]", N, F.size);
             ProcessArchive(N);
@@ -793,7 +793,7 @@ xr_vector<char*>* CLocatorAPI::file_list_open(const char* _path, u32 flags)
     for (++I; I != files.end(); I++)
     {
         const file& entry = *I;
-        if (!absl::string_view{entry.name}.starts_with(absl::string_view{N, gsl::narrow_cast<size_t>(base_len)}))
+        if (!std::string_view{entry.name}.starts_with(std::string_view{N, gsl::narrow_cast<size_t>(base_len)}))
             break; // end of list
 
         const char* end_symbol = entry.name + xr_strlen(entry.name) - 1;
@@ -868,7 +868,7 @@ gsl::index CLocatorAPI::file_list(FS_FileSet& dest, LPCSTR path, u32 flags, LPCS
     for (++I; I != files.end(); I++)
     {
         const file& entry = *I;
-        if (!absl::string_view{entry.name}.starts_with(absl::string_view{N, gsl::narrow_cast<size_t>(base_len)}))
+        if (!std::string_view{entry.name}.starts_with(std::string_view{N, gsl::narrow_cast<size_t>(base_len)}))
             break; // end of list
 
         LPCSTR end_symbol = entry.name + xr_strlen(entry.name) - 1;
@@ -1223,7 +1223,7 @@ void CLocatorAPI::rescan_physical_path(LPCSTR full_path, BOOL bRecurse)
     while (I != files.end())
     {
         const file& entry = *I;
-        if (!absl::string_view{entry.name}.starts_with(absl::string_view{full_path, gsl::narrow_cast<size_t>(base_len)}))
+        if (!std::string_view{entry.name}.starts_with(std::string_view{full_path, gsl::narrow_cast<size_t>(base_len)}))
             break; // end of list
 
         const char* entry_begin = entry.name + base_len;

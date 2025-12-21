@@ -180,8 +180,8 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-constexpr absl::string_view GlobalNamespace{"_G"};
-constexpr absl::string_view FILE_HEADER{
+constexpr std::string_view GlobalNamespace{"_G"};
+constexpr std::string_view FILE_HEADER{
     "\
 local function script_name() \
 return '{0}' \
@@ -265,7 +265,7 @@ void do_file(gsl::czstring caScriptName, gsl::czstring caNameSpaceName)
     string_path l_caLuaFileName;
     xr_strconcat(l_caLuaFileName, "@", caScriptName); // KRodin: приводит путь к виду @f:\games\s.t.a.l.k.e.r\gamedata\scripts\class_registrator.script
 
-    absl::string_view strbuf{static_cast<gsl::czstring>(l_tpFileReader->pointer()), gsl::narrow_cast<size_t>(l_tpFileReader->elapsed())};
+    std::string_view strbuf{static_cast<gsl::czstring>(l_tpFileReader->pointer()), gsl::narrow_cast<size_t>(l_tpFileReader->elapsed())};
     xr_string script;
 
     if (std::is_neq(xr_strcmp(caNameSpaceName, GlobalNamespace)))

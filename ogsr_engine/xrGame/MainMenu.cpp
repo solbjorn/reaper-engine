@@ -21,7 +21,7 @@
 
 namespace
 {
-constexpr std::array<absl::string_view, 2> ErrMsgBoxTemplate{"message_box_session_full", "msg_box_error_loading"};
+constexpr std::array<std::string_view, 2> ErrMsgBoxTemplate{"message_box_session_full", "msg_box_error_loading"};
 }
 
 CMainMenu* MainMenu() { return smart_cast<CMainMenu*>(g_pGamePersistent->m_pMainMenu); }

@@ -119,11 +119,7 @@ public:
 
     void SetSlotsBlocked(u16 mask, bool bBlock, bool now = false);
 
-    struct str_pred
-    {
-        IC bool operator()(const shared_str& x, const shared_str& y) const { return xr_strcmp(x, y) < 0; }
-    };
-    xr_multimap<shared_str, PIItem, str_pred> m_allMap;
+    xr_multimap<shared_str, PIItem, absl::container_internal::StringBtreeDefaultLess> m_allMap;
 
     TIItemContainer m_all;
     TIItemContainer m_ruck, m_belt;

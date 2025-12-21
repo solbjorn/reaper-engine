@@ -1272,7 +1272,7 @@ void CUIXmlInit::InitColorDefs()
         int b = uiXml.ReadAttribInt("color", i, "b", 0);
         int a = uiXml.ReadAttribInt("color", i, "a", 255);
 
-        (*m_pColorDefs)[shared_str{name}] = color_argb(a, r, g, b);
+        (*m_pColorDefs)[name] = color_argb(a, r, g, b);
     }
 }
 
@@ -1442,7 +1442,7 @@ u32 CUIXmlInit::GetColor(CUIXml& xml_doc, const char* path, int index, u32 def_c
     LPCSTR clr_def = xml_doc.ReadAttrib(path, index, "color", nullptr);
     if (clr_def)
     {
-        const auto it = GetColorDefs()->find(shared_str{clr_def});
+        const auto it = GetColorDefs()->find(clr_def);
         VERIFY(it != GetColorDefs()->end());
         return it->second;
     }

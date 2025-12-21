@@ -49,15 +49,9 @@ struct CProfileStats
 
 class CProfiler
 {
-private:
-    struct pred_rstr
-    {
-        [[nodiscard]] constexpr bool operator()(const shared_str& _1, const shared_str& _2) const { return std::is_lt(xr_strcmp(_1, _2)); }
-    };
-
 protected:
     typedef xr_vector<CProfileResultPortion> PORTIONS;
-    typedef xr_map<shared_str, CProfileStats, pred_rstr> TIMERS;
+    typedef xr_map<shared_str, CProfileStats, absl::container_internal::StringBtreeDefaultLess> TIMERS;
 
 protected:
     PORTIONS m_portions;

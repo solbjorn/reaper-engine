@@ -30,7 +30,7 @@ void CPartition::load(IKinematics* V)
     if (ini->sections().empty() || !ini->section_exist("part_0"))
         return;
 
-    static constexpr absl::string_view part_name{"partition_name"};
+    static constexpr std::string_view part_name{"partition_name"};
 
     for (u32 i = 0; i < MAX_PARTS; ++i)
     {

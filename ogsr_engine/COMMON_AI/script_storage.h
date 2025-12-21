@@ -39,7 +39,7 @@ public:
     CScriptStorage() = default;
     ~CScriptStorage() override;
 
-    static constexpr absl::string_view GlobalNamespace{"_G"};
+    static constexpr std::string_view GlobalNamespace{"_G"};
 
     [[nodiscard]] sol::state_view& lua() { return *m_virtual_machine; }
     [[nodiscard]] const sol::state_view& lua() const { return *m_virtual_machine; }

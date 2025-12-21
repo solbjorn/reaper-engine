@@ -108,9 +108,9 @@ namespace
 {
 const char* ExtractFileName(const char* fname)
 {
-    const auto pos = absl::string_view{fname}.find_last_of('\\');
+    const auto pos = std::string_view{fname}.find_last_of('\\');
 
-    return pos == absl::string_view::npos ? fname : &fname[pos + 1];
+    return pos == std::string_view::npos ? fname : &fname[pos + 1];
 }
 
 void CollectScriptFiles(decltype(xray_scripts)& map, const char* path)

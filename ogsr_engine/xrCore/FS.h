@@ -7,7 +7,7 @@
 constexpr inline size_t CFS_CompressMark{1ul << 31ul};
 constexpr inline size_t CFS_HeaderChunkID{666};
 
-void VerifyPath(absl::string_view path);
+void VerifyPath(std::string_view path);
 
 #ifdef DEBUG
 extern u32 g_file_mapped_memory;

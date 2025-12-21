@@ -60,7 +60,7 @@ public:
 
 str_value* str_container_impl::insert(gsl::czstring str)
 {
-    const absl::string_view sv{str};
+    const std::string_view sv{str};
     const auto xxh = xxh::XXH3_64bits(sv.data(), sv.size());
 
     const auto obj = pool.acquire_scoped(base_cap);
@@ -109,7 +109,7 @@ void str_container_impl::verify()
     pool.for_each_available([](const auto& map) {
         for (auto& [_, value] : map)
         {
-            const absl::string_view sv{value->value};
+            const std::string_view sv{value->value};
             ASSERT_FMT(value->dwLength == std::ssize(sv), "corrupted shared string length: %zd bytes, expected %zd bytes", value->dwLength, std::ssize(sv));
 
             const auto xxh = xxh::XXH3_64bits(sv.data(), sv.size());

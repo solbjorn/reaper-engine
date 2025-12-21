@@ -26,8 +26,9 @@ u16 storyId2GameId(ALife::_STORY_ID);
 
 ALife::_STORY_ID story_id(LPCSTR story_id)
 {
-    auto I = story_ids.find(shared_str{story_id});
+    const auto I = story_ids.find(story_id);
     ASSERT_FMT_DBG(I != story_ids.end(), "story_id not found: %s", story_id);
+
     return I != story_ids.end() ? ALife::_STORY_ID((*I).second) : INVALID_STORY_ID;
 }
 

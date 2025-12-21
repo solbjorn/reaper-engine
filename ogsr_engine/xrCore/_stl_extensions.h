@@ -64,7 +64,8 @@ using xr_map = absl::btree_map<Key, Value, Compare, Alloc>;
 template <typename Key, typename Value, typename Compare = std::less<Key>, typename Alloc = xr_allocator<std::pair<const Key, Value>>>
 using xr_multimap = absl::btree_multimap<Key, Value, Compare, Alloc>;
 
-template <class K, class V, class Hash = absl::DefaultHashContainerHash<K>, class Eq = absl::DefaultHashContainerEq<K>, class Allocator = xr_allocator<std::pair<const K, V>>>
+template <class K, class V, class Hash = typename absl::container_internal::FlatHashMapPolicy<K, V>::DefaultHash,
+          class Eq = typename absl::container_internal::FlatHashMapPolicy<K, V>::DefaultEq, class Allocator = xr_allocator<std::pair<const K, V>>>
 using xr_unordered_map = absl::flat_hash_map<K, V, Hash, Eq, Allocator>;
 
 namespace xr
@@ -79,11 +80,6 @@ namespace xr
 struct pred_str
 {
     [[nodiscard]] constexpr bool operator()(gsl::czstring x, gsl::czstring y) const { return std::is_lt(xr_strcmp(x, y)); }
-};
-
-struct pred_stri
-{
-    [[nodiscard]] constexpr bool operator()(gsl::czstring x, gsl::czstring y) const { return std::is_lt(xr::strcasecmp(x, y)); }
 };
 
 // STL extensions

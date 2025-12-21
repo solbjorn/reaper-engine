@@ -24,14 +24,14 @@ CUIOutfitInfo::~CUIOutfitInfo()
 
 namespace
 {
-constexpr std::array<absl::string_view, 16> _imm_names{
+constexpr std::array<std::string_view, 16> _imm_names{
     "health_restore_speed", "radiation_restore_speed", "satiety_restore_speed", "thirst_restore_speed", "power_restore_speed", "bleeding_restore_speed", "psy_health_restore_speed",
 
     "burn_immunity",        "shock_immunity",          "strike_immunity",       "wound_immunity",       "radiation_immunity",  "telepatic_immunity",     "chemical_burn_immunity",
     "explosion_immunity",   "fire_wound_immunity",
 };
 
-constexpr std::array<absl::string_view, 16> _imm_st_names{
+constexpr std::array<std::string_view, 16> _imm_st_names{
     "ui_inv_health",
     "ui_inv_radiation",
     "ui_inv_satiety",
@@ -51,7 +51,7 @@ constexpr std::array<absl::string_view, 16> _imm_st_names{
     "ui_inv_outfit_fire_wound_protection",
 };
 
-constexpr std::array<absl::string_view, 7> _actor_param_names{"satiety_health_v", "radiation_v", "satiety_v", "thirst_v", "satiety_power_v", "wound_incarnation_v", "psy_health_v"};
+constexpr std::array<std::string_view, 7> _actor_param_names{"satiety_health_v", "radiation_v", "satiety_v", "thirst_v", "satiety_power_v", "wound_incarnation_v", "psy_health_v"};
 } // namespace
 
 void CUIOutfitInfo::InitFromXml(CUIXml& xml_doc)

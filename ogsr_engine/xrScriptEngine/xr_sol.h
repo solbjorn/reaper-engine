@@ -65,7 +65,7 @@ using sol_bases = typename RTTI::type_descriptor<T>::base_types ::template to<so
 
 // Generate enum-style table with non-constexpr values (clsids, story IDs etc.)
 template <bool read_only = true>
-inline sol::table sol_new_enum(sol::state_view& lua, absl::string_view name, sol::table& target)
+inline sol::table sol_new_enum(sol::state_view& lua, std::string_view name, sol::table& target)
 {
     if constexpr (read_only)
     {

@@ -227,7 +227,7 @@ dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
         *strext(low_name) = '\0';
 
     // 0. Search POOL
-    POOL_IT it = Pool.find(shared_str{low_name});
+    auto it = Pool.find(low_name);
     if (it != Pool.end())
     {
         // 1. Instance found

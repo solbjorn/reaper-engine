@@ -280,7 +280,7 @@ void CTexture::Load(const char* Name)
     if (std::is_eq(xr::strcasecmp(Name, "$null")))
         return;
 
-    if (absl::string_view{Name}.starts_with("$user$"))
+    if (std::string_view{Name}.starts_with("$user$"))
         return;
 
     Preload(Name);

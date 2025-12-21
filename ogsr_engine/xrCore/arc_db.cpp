@@ -12,7 +12,7 @@ namespace
 // (vanilla SoC RU archives), the rest must be in either SquashFS or XDB
 constexpr struct
 {
-    absl::string_view ext;
+    std::string_view ext;
     u32 size;
     u32 key;
 } excls[] = {

@@ -65,7 +65,7 @@ void CResourceManager::LoadShaderFile(LPCSTR fname)
     R_ASSERT2(F, fname);
     F->r(&id, 8);
 
-    if (absl::string_view{id, 8}.starts_with("shENGINE"))
+    if (std::string_view{id, 8}.starts_with("shENGINE"))
         FATAL("Unsupported blender library. Compressed?");
 
     string_path ini_path;

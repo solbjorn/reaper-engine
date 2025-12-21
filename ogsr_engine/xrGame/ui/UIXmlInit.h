@@ -98,8 +98,7 @@ public:
     static StaticsVec InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CUIWindow* pParentWnd);
 
     // Initialize and store predefined colors
-    //	typedef std::pair<shared_str, u32> ColorMap;
-    DEF_MAP(ColorDefs, shared_str, u32);
+    using ColorDefs = xr_map<shared_str, u32, absl::container_internal::StringBtreeDefaultLess>;
 
     static const ColorDefs* GetColorDefs()
     {

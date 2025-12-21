@@ -6,6 +6,7 @@
 #include "stdafx.h"
 
 #include "Tracer.h"
+
 #include "..\xr_3da\render.h"
 
 //////////////////////////////////////////////////////////////////////
@@ -14,7 +15,7 @@
 
 namespace
 {
-constexpr absl::string_view TRACERS_COLOR_TABLE{"tracers_color_table"};
+constexpr std::string_view TRACERS_COLOR_TABLE{"tracers_color_table"};
 }
 
 CTracer::CTracer()

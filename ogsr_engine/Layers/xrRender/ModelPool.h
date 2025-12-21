@@ -19,11 +19,6 @@ class CModelPool : public virtual RTTI::Enable
 private:
     friend class CRender;
 
-    struct str_pred
-    {
-        [[nodiscard]] constexpr bool operator()(const shared_str& x, const shared_str& y) const { return std::is_lt(xr_strcmp(x, y)); }
-    };
-
     struct ModelDef
     {
         shared_str name;
@@ -62,8 +57,7 @@ private:
         }
     };
 
-    typedef xr_multimap<shared_str, dxRender_Visual*, str_pred> POOL;
-    typedef POOL::iterator POOL_IT;
+    using POOL = xr_multimap<shared_str, dxRender_Visual*, absl::container_internal::StringBtreeDefaultLess>;
     typedef xr_map<dxRender_Visual*, shared_str> REGISTRY;
     typedef REGISTRY::iterator REGISTRY_IT;
 

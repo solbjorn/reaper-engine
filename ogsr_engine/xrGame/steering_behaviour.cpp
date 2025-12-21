@@ -165,11 +165,9 @@ vec wander::calc_acceleration()
 }
 
 float& wander::proj_x(vec& v) { return m_p_params->plane == params::yz_plane ? v.y : v.x; }
-
 float& wander::proj_y(vec& v) { return m_p_params->plane == params::xy_plane ? v.y : v.z; }
 
 const float& wander::proj_x(const vec& v) { return m_p_params->plane == params::yz_plane ? v.y : v.x; }
-
 const float& wander::proj_y(const vec& v) { return m_p_params->plane == params::xy_plane ? v.y : v.z; }
 
 //----------------------------------------------------------
@@ -281,12 +279,12 @@ vec manager::calc_acceleration()
 }
 
 void manager::add(base* behaviour) { m_behaviours.insert(behaviour); }
-
 void manager::schedule_remove(base* behaviour) { m_schedule_remove.insert(behaviour); }
 
 void manager::clear()
 {
-    for_each(m_behaviours.begin(), m_behaviours.end(), &deleter);
+    std::ranges::for_each(m_behaviours, &deleter);
+
     m_behaviours.clear();
     m_schedule_remove.clear();
 }

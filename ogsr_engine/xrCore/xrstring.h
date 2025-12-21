@@ -111,7 +111,7 @@ public:
 
     [[nodiscard]] constexpr auto operator<=>(const shared_str& that) const
     {
-        using ret_t = std::compare_three_way_result_t<absl::string_view>;
+        using ret_t = std::compare_three_way_result_t<std::string_view>;
 
         const auto p1 = _get();
         const auto p2 = that._get();
@@ -126,14 +126,14 @@ public:
         if (p1->hash == p2->hash)
             return ret_t::equal;
 
-        return absl::string_view{*this} < absl::string_view{that} ? ret_t::less : ret_t::greater;
+        return std::string_view{*this} < std::string_view{that} ? ret_t::less : ret_t::greater;
     }
 
     [[nodiscard]] constexpr explicit operator bool() const { return p_ != nullptr; }
     [[nodiscard]] constexpr gsl::czstring operator*() const { return p_ ? p_->value : nullptr; }
 
-    // Чтобы можно было легко кастить в absl::string_view как и все остальные строки
-    [[nodiscard]] constexpr operator absl::string_view() const { return p_ ? absl::string_view{p_->value, gsl::narrow_cast<size_t>(p_->dwLength)} : absl::string_view{}; }
+    // Чтобы можно было легко кастить в std::string_view как и все остальные строки
+    [[nodiscard]] constexpr operator std::string_view() const { return p_ ? std::string_view{p_->value, gsl::narrow_cast<size_t>(p_->dwLength)} : std::string_view{}; }
 
     [[nodiscard]] constexpr gsl::czstring c_str() const { return p_ ? p_->value : nullptr; }
     // Используется в погодном редакторе.
@@ -175,7 +175,7 @@ public:
     template <typename H>
     friend constexpr H AbslHashValue(H h, const shared_str& str)
     {
-        return H::combine(std::move(h), absl::string_view{str});
+        return H::combine(std::move(h), std::string_view{str});
     }
 };
 
@@ -189,11 +189,11 @@ constexpr void swap(shared_str& lhs, shared_str& rhs) { lhs.swap(rhs); }
 
 [[nodiscard]] constexpr gsl::index xr_strlen(const shared_str& a) { return a.size(); }
 
-[[nodiscard]] constexpr auto xr_strcmp(const shared_str& a, absl::string_view b) { return xr_strcmp(absl::string_view{a}, b); }
-[[nodiscard]] constexpr auto xr_strcmp(absl::string_view a, const shared_str& b) { return xr_strcmp(a, absl::string_view{b}); }
+[[nodiscard]] constexpr auto xr_strcmp(const shared_str& a, std::string_view b) { return xr_strcmp(std::string_view{a}, b); }
+[[nodiscard]] constexpr auto xr_strcmp(std::string_view a, const shared_str& b) { return xr_strcmp(a, std::string_view{b}); }
 
-[[nodiscard]] constexpr auto xr_strcmp(const shared_str& a, gsl::czstring b) { return xr_strcmp(absl::string_view{a}, absl::string_view{b}); }
-[[nodiscard]] constexpr auto xr_strcmp(gsl::czstring a, const shared_str& b) { return xr_strcmp(absl::string_view{a}, absl::string_view{b}); }
+[[nodiscard]] constexpr auto xr_strcmp(const shared_str& a, gsl::czstring b) { return xr_strcmp(std::string_view{a}, std::string_view{b}); }
+[[nodiscard]] constexpr auto xr_strcmp(gsl::czstring a, const shared_str& b) { return xr_strcmp(std::string_view{a}, std::string_view{b}); }
 
 [[nodiscard]] constexpr auto xr_strcmp(const shared_str& a, const shared_str& b) { return a <=> b; }
 
@@ -214,8 +214,8 @@ IC void xr_strlwr(shared_str& src)
     }
 }
 
-template <class K, class V, class Hash = absl::DefaultHashContainerHash<absl::string_view>, class Eq = absl::DefaultHashContainerEq<absl::string_view>,
-          class Allocator = xr_allocator<std::pair<const K, V>>>
+template <class K, class V, class Hash = typename absl::container_internal::FlatHashMapPolicy<std::string_view, V>::DefaultHash,
+          class Eq = typename absl::container_internal::FlatHashMapPolicy<std::string_view, V>::DefaultEq, class Allocator = xr_allocator<std::pair<const K, V>>>
 using string_unordered_map = absl::flat_hash_map<K, V, Hash, Eq, Allocator>;
 
 namespace xr_string_utils

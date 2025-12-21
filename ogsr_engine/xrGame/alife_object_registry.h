@@ -38,7 +38,7 @@ public:
     IC void remove(const ALife::_OBJECT_ID& id, bool no_assert = false);
 
     IC CSE_ALifeDynamicObject* object(const ALife::_OBJECT_ID& id, bool no_assert = false) const;
-    inline CSE_ALifeDynamicObject* object_by_name(absl::string_view name, bool no_assert = false) const;
+    inline CSE_ALifeDynamicObject* object_by_name(std::string_view name, bool no_assert = false) const;
 
     IC const OBJECT_REGISTRY& objects() const;
     IC OBJECT_REGISTRY& objects();

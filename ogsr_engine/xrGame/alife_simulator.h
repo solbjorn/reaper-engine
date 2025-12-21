@@ -37,7 +37,7 @@ add_to_type_list(CALifeSimulator);
 extern LPCSTR alife_section;
 
 // alife_simulator_script.cpp
-using STORY_PAIRS = xr_map<shared_str, int>;
+using STORY_PAIRS = xr_map<shared_str, int, absl::container_internal::StringBtreeDefaultLess>;
 using SPAWN_STORY_PAIRS = STORY_PAIRS;
 
 extern STORY_PAIRS story_ids;

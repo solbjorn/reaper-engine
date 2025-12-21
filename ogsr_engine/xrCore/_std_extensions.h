@@ -1,8 +1,6 @@
 #ifndef __XRCORE_STD_EXTENSIONS_H
 #define __XRCORE_STD_EXTENSIONS_H
 
-#include <absl/strings/string_view.h>
-
 #include <algorithm>
 #include <memory>
 
@@ -297,16 +295,16 @@ constexpr ICF void xr_memcpy(void* dst, const void* src, size_t size)
 inline const char* strext(const char* str) { return std::strrchr(str, '.'); }
 inline char* strext(char* str) { return std::strrchr(str, '.'); }
 
-[[nodiscard]] constexpr gsl::index xr_strlen(absl::string_view sv) { return std::ssize(sv); }
-[[nodiscard]] constexpr gsl::index xr_strlen(gsl::czstring str) { return xr_strlen(absl::string_view{str}); }
+[[nodiscard]] constexpr gsl::index xr_strlen(std::string_view sv) { return std::ssize(sv); }
+[[nodiscard]] constexpr gsl::index xr_strlen(gsl::czstring str) { return xr_strlen(std::string_view{str}); }
 
 IC char* xr_strlwr(char* S) { return _strlwr(S); }
 
-[[nodiscard]] constexpr auto xr_strcmp(absl::string_view a, absl::string_view b) { return a <=> b; }
-[[nodiscard]] constexpr auto xr_strcmp(gsl::czstring a, gsl::czstring b) { return xr_strcmp(absl::string_view{a}, absl::string_view{b}); }
+[[nodiscard]] constexpr auto xr_strcmp(std::string_view a, std::string_view b) { return a <=> b; }
+[[nodiscard]] constexpr auto xr_strcmp(gsl::czstring a, gsl::czstring b) { return xr_strcmp(std::string_view{a}, std::string_view{b}); }
 
-[[nodiscard]] constexpr auto xr_strcmp(absl::string_view a, gsl::czstring b) { return xr_strcmp(a, absl::string_view{b}); }
-[[nodiscard]] constexpr auto xr_strcmp(gsl::czstring a, absl::string_view b) { return xr_strcmp(absl::string_view{a}, b); }
+[[nodiscard]] constexpr auto xr_strcmp(std::string_view a, gsl::czstring b) { return xr_strcmp(a, std::string_view{b}); }
+[[nodiscard]] constexpr auto xr_strcmp(gsl::czstring a, std::string_view b) { return xr_strcmp(std::string_view{a}, b); }
 
 namespace xr
 {
@@ -345,7 +343,7 @@ namespace xr
     }
 }
 
-[[nodiscard]] constexpr auto strcasecmp(absl::string_view a, absl::string_view b)
+[[nodiscard]] constexpr auto strcasecmp(std::string_view a, std::string_view b)
 {
     constexpr auto cmp = [](char x, char y) { return xr::tolower(x) <=> xr::tolower(y); };
 

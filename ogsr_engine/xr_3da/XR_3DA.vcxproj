@@ -22,10 +22,9 @@
     <AbseilHash>absl\hash\absl_city.lib;absl\hash\absl_hash.lib</AbseilHash>
     <AbseilNumeric>absl\numeric\absl_int128.lib</AbseilNumeric>
     <AbseilRandom>absl\random\absl_random_distributions.lib;absl\random\absl_random_internal_entropy_pool.lib;absl\random\absl_random_internal_platform.lib;absl\random\absl_random_internal_randen.lib;absl\random\absl_random_internal_randen_hwaes.lib;absl\random\absl_random_internal_randen_hwaes_impl.lib;absl\random\absl_random_internal_randen_slow.lib;absl\random\absl_random_internal_seed_material.lib;absl\random\absl_random_seed_gen_exception.lib;absl\random\absl_random_seed_sequences.lib</AbseilRandom>
-    <AbseilStrings>absl\strings\absl_string_view.lib</AbseilStrings>
     <AbseilSynchronization>absl\synchronization\absl_kernel_timeout_internal.lib;absl\synchronization\absl_synchronization.lib</AbseilSynchronization>
     <AbseilTime>absl\time\absl_time.lib;absl\time\absl_time_zone.lib</AbseilTime>
-    <AbseilLibs>$(AbseilBase);$(AbseilContainer);$(AbseilDebugging);$(AbseilHash);$(AbseilNumeric);$(AbseilRandom);$(AbseilStrings);$(AbseilSynchronization);$(AbseilTime)</AbseilLibs>
+    <AbseilLibs>$(AbseilBase);$(AbseilContainer);$(AbseilDebugging);$(AbseilHash);$(AbseilNumeric);$(AbseilRandom);$(AbseilSynchronization);$(AbseilTime)</AbseilLibs>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
