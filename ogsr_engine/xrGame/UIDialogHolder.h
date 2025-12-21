@@ -1,6 +1,7 @@
 #pragma once
 
 class CUIDialogWnd;
+class CUIDialogWndEx;
 class CUIWindow;
 
 class dlgItem
@@ -41,6 +42,10 @@ public:
     xr_vector<recvItem> m_input_receivers;
     xr_vector<dlgItem> m_dialogsToRender;
 
+protected:
+    xr_vector<std::unique_ptr<CUIDialogWndEx>> script_menus;
+
+public:
     void StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators);
     void StopMenu(CUIDialogWnd* pDialog);
 
@@ -62,6 +67,7 @@ public:
     // dialogs
     CUIDialogWnd* MainInputReceiver();
     virtual void StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators);
+    void StartStopMenu_script(std::unique_ptr<CUIDialogWndEx>& pDialog, bool bDoHideIndicators);
     void AddDialogToRender(CUIWindow* pDialog);
     void RemoveDialogToRender(CUIWindow* pDialog);
     virtual void OnFrame();

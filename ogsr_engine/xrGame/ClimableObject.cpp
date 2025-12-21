@@ -47,14 +47,19 @@ IC void OrientToNorm(const Fvector& normal, Fmatrix& form, Fobb& box)
 
 class CPHLeaderGeomShell : public CPHStaticGeomShell
 {
+    RTTI_DECLARE_TYPEINFO(CPHLeaderGeomShell, CPHStaticGeomShell);
+
+private:
     CClimableObject* m_pClimable;
 
 public:
-    CPHLeaderGeomShell(CClimableObject* climable);
+    explicit CPHLeaderGeomShell(CClimableObject* climable);
+
     void near_callback(CPHObject* obj);
 };
 
-CPHLeaderGeomShell::CPHLeaderGeomShell(CClimableObject* climable) { m_pClimable = climable; }
+CPHLeaderGeomShell::CPHLeaderGeomShell(CClimableObject* climable) : m_pClimable{climable} {}
+
 void CPHLeaderGeomShell::near_callback(CPHObject* obj)
 {
     if (obj && obj->CastType() == CPHObject::tpCharacter)

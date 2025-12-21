@@ -3,10 +3,10 @@
 #include "UIDialogHolder.h"
 
 #include "HUDManager.h"
-#include "ui\UIDialogWnd.h"
 #include "UICursor.h"
 #include "level.h"
 #include "actor.h"
+#include "ui/UIScriptWnd.h"
 #include "xr_level_controller.h"
 
 dlgItem::dlgItem(CUIWindow* pWnd) : wnd{pWnd} {}
@@ -121,6 +121,9 @@ void CDialogHolder::StopMenu(CUIDialogWnd* pDialog)
 
     if (!MainInputReceiver() || !MainInputReceiver()->NeedCursor())
         GetUICursor()->Hide();
+
+    if (const auto menu = smart_cast<CUIDialogWndEx*>(pDialog); menu != nullptr)
+        std::erase_if(script_menus, [menu](const auto& ptr) { return ptr.get() == menu; });
 }
 
 void CDialogHolder::AddDialogToRender(CUIWindow* pDialog)
@@ -209,6 +212,15 @@ void CDialogHolder::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
         StopMenu(pDialog);
     else
         StartMenu(pDialog, bDoHideIndicators);
+}
+
+void CDialogHolder::StartStopMenu_script(std::unique_ptr<CUIDialogWndEx>& pDialog, bool bDoHideIndicators)
+{
+    const bool start = !pDialog->IsShown();
+    StartStopMenu(pDialog.get(), bDoHideIndicators);
+
+    if (start)
+        script_menus.emplace_back(pDialog.release());
 }
 
 void CDialogHolder::OnFrame()

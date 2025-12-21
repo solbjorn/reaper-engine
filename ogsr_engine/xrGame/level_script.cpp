@@ -17,7 +17,6 @@
 #include "client_spawn_manager.h"
 #include "..\xr_3da\IGame_Persistent.h"
 #include "game_cl_base.h"
-#include "ui/UIDialogWnd.h"
 #include "date_time.h"
 #include "ai_space.h"
 #include "level_graph.h"
@@ -49,6 +48,8 @@
 
 #include "UIGameCustom.h"
 #include "ui/UIInventoryWnd.h"
+#include "ui/UIPdaWnd.h"
+#include "ui/UIScriptWnd.h"
 #include "ui/UITradeWnd.h"
 #include "ui/UITalkWnd.h"
 #include "ui/UICarBodyWnd.h"
@@ -56,6 +57,8 @@
 #include "HUDManager.h"
 #include "HUDTarget.h"
 #include "InventoryBox.h"
+
+#include "game_sv_single.h"
 
 #include "../xr_3da/fdemorecord.h"
 
@@ -112,13 +115,13 @@ static CScriptGameObject* get_object_by_id(u32 id)
     return pGameObject->lua_game_object();
 }
 
-static LPCSTR get_weather() { return (*g_pGamePersistent->Environment().GetWeather()); }
+namespace
+{
+[[nodiscard]] gsl::czstring get_weather() { return g_pGamePersistent->Environment().GetWeather().c_str(); }
+[[nodiscard]] gsl::czstring get_weather_prev() { return g_pGamePersistent->Environment().GetPrevWeather().c_str(); }
+[[nodiscard]] u32 get_weather_last_shift() { return g_pGamePersistent->Environment().GetWeatherLastShift(); }
 
-static LPCSTR get_weather_prev() { return (*g_pGamePersistent->Environment().GetPrevWeather()); }
-
-static u32 get_weather_last_shift() { return g_pGamePersistent->Environment().GetWeatherLastShift(); }
-
-static void set_weather(LPCSTR weather_name, bool forced)
+void set_weather(gsl::czstring weather_name, bool forced)
 {
     if (s_ScriptWeather)
         return;
@@ -129,6 +132,9 @@ static void set_weather(LPCSTR weather_name, bool forced)
 
     g_pGamePersistent->Environment().SetWeather(shared_str{weather_name}, forced);
 }
+
+inline void set_weather(gsl::czstring weather_name) { set_weather(weather_name, false); }
+} // namespace
 
 static void set_weather_next(LPCSTR weather_name)
 {
@@ -313,7 +319,11 @@ static void prefetch_sound(LPCSTR name) { Level().PrefetchSound(name); }
 
 static CClientSpawnManager& get_client_spawn_manager() { return (Level().client_spawn_manager()); }
 
-static void start_stop_menu(CUIDialogWnd* pDialog, bool bDoHideIndicators) { HUD().GetUI()->StartStopMenu(pDialog, bDoHideIndicators); }
+namespace
+{
+void start_stop_menu(CUIDialogWnd* pDialog, bool bDoHideIndicators) { HUD().GetUI()->StartStopMenu(pDialog, bDoHideIndicators); }
+void start_stop_menu(std::unique_ptr<CUIDialogWndEx>& pDialog, bool bDoHideIndicators) { HUD().GetUI()->StartStopMenu_script(pDialog, bDoHideIndicators); }
+} // namespace
 
 static void add_dialog_to_render(CUIDialogWnd* pDialog) { HUD().GetUI()->AddDialogToRender(pDialog); }
 
@@ -356,13 +366,17 @@ static CScriptGameObject* GetSecondTalker()
     return smart_cast<CGameObject*>(wnd->GetSecondTalker())->lua_game_object();
 }
 
-static CUIWindow* GetPdaWindow()
+namespace
+{
+CUIDialogWnd* GetPdaWindow()
 {
     CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-    if (!pGameSP)
+    if (pGameSP == nullptr)
         return nullptr;
-    return (CUIWindow*)pGameSP->PdaMenu;
+
+    return pGameSP->PdaMenu;
 }
+} // namespace
 
 static CUIWindow* GetCarBodyWindow()
 {
@@ -759,8 +773,6 @@ static void g_set_anomaly_position(const u32 i, const float x, const float y, co
 
 static void g_set_detector_params(const int _one, const int _two) { shader_exports.set_detector_params(Ivector2{_one, _two}); }
 
-#include "game_sv_single.h"
-
 static void AdvanceGameTime(u32 _ms)
 {
     auto game = smart_cast<game_sv_Single*>(Level().Server->game);
@@ -1078,18 +1090,20 @@ void CLevel::script_register(sol::state_view& lua)
         "debug_object", &get_object_by_name, "debug_actor", &tpfGetActor, "check_object", &check_object,
 #endif
 
-        "get_weather", &get_weather, "get_weather_prev", &get_weather_prev, "get_weather_last_shift", &get_weather_last_shift, "set_weather", &set_weather, "set_weather_next",
-        &set_weather_next, "set_weather_fx", &set_weather_fx, "start_weather_fx_from_time", &start_weather_fx_from_time, "is_wfx_playing", &is_wfx_playing, "get_wfx_time",
-        &get_wfx_time, "stop_weather_fx", &stop_weather_fx, "environment", &environment, "set_time_factor", &set_time_factor, "get_time_factor", &get_time_factor,
-        "set_game_difficulty", &set_game_difficulty, "get_game_difficulty", &get_game_difficulty, "get_time_days", &get_time_days, "get_time_hours", &get_time_hours,
-        "get_time_minutes", &get_time_minutes, "cover_in_direction", &cover_in_direction, "vertex_in_direction", &vertex_in_direction, "rain_factor", &rain_factor, "rain_hemi",
-        &rain_hemi, "rain_wetness", [] { return g_pGamePersistent->Environment().wetness_factor; }, "set_rain_wetness", set_rain_wetness, "patrol_path_exists", &patrol_path_exists,
+        "get_weather", &get_weather, "get_weather_prev", &get_weather_prev, "get_weather_last_shift", &get_weather_last_shift, "set_weather",
+        sol::overload(sol::resolve<void(gsl::czstring, bool)>(&set_weather), sol::resolve<void(gsl::czstring)>(&set_weather)), "set_weather_next", &set_weather_next,
+        "set_weather_fx", &set_weather_fx, "start_weather_fx_from_time", &start_weather_fx_from_time, "is_wfx_playing", &is_wfx_playing, "get_wfx_time", &get_wfx_time,
+        "stop_weather_fx", &stop_weather_fx, "environment", &environment, "set_time_factor", &set_time_factor, "get_time_factor", &get_time_factor, "set_game_difficulty",
+        &set_game_difficulty, "get_game_difficulty", &get_game_difficulty, "get_time_days", &get_time_days, "get_time_hours", &get_time_hours, "get_time_minutes",
+        &get_time_minutes, "cover_in_direction", &cover_in_direction, "vertex_in_direction", &vertex_in_direction, "rain_factor", &rain_factor, "rain_hemi", &rain_hemi,
+        "rain_wetness", [] { return g_pGamePersistent->Environment().wetness_factor; }, "set_rain_wetness", set_rain_wetness, "patrol_path_exists", &patrol_path_exists,
         "vertex_position", &vertex_position, "name", &get_name, "prefetch_sound", &prefetch_sound, "prefetch_sound", prefetch_sound, "prefetch_many_sounds", prefetch_many_sounds,
         "client_spawn_manager", &get_client_spawn_manager, "map_add_object_spot_ser", &map_add_object_spot_ser, "map_add_object_spot", &map_add_object_spot,
         "map_remove_object_spot", &map_remove_object_spot, "map_has_object_spot", &map_has_object_spot, "map_change_spot_hint", &map_change_spot_hint, "map_change_spot_ser",
-        &map_change_spot_ser, "map_add_user_spot", &map_add_user_spot, "start_stop_menu", &start_stop_menu, "add_dialog_to_render", &add_dialog_to_render,
-        "remove_dialog_to_render", &remove_dialog_to_render, "main_input_receiver", &main_input_receiver, "hide_indicators", &hide_indicators, "show_indicators", &show_indicators,
-        "game_indicators_shown", &game_indicators_shown, "get_hud_flags", &get_hud_flags, "add_call",
+        &map_change_spot_ser, "map_add_user_spot", &map_add_user_spot, "start_stop_menu",
+        sol::overload(sol::resolve<void(std::unique_ptr<CUIDialogWndEx>&, bool)>(&start_stop_menu), sol::resolve<void(CUIDialogWnd*, bool)>(&start_stop_menu)),
+        "add_dialog_to_render", &add_dialog_to_render, "remove_dialog_to_render", &remove_dialog_to_render, "main_input_receiver", &main_input_receiver, "hide_indicators",
+        &hide_indicators, "show_indicators", &show_indicators, "game_indicators_shown", &game_indicators_shown, "get_hud_flags", &get_hud_flags, "add_call",
         sol::overload(sol::resolve<CPHCall*(sol::function, sol::function)>(&add_call), sol::resolve<CPHCall*(sol::object, sol::function, sol::function)>(&add_call),
                       sol::resolve<CPHCall*(sol::object, LPCSTR, LPCSTR)>(&add_call)),
         "remove_call",

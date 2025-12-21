@@ -51,8 +51,10 @@ public:
     explicit CScriptParticles(LPCSTR caParticlesName);
     ~CScriptParticles() override;
 
-    void Play(bool bHudMode = false) const;
-    void PlayAtPos(const Fvector& pos, bool bHudMode = false);
+    void Play(bool bHudMode) const;
+    void Play() const { Play(false); }
+    void PlayAtPos(const Fvector& pos, bool bHudMode);
+    void PlayAtPos(const Fvector& pos) { PlayAtPos(pos, false); }
     void Stop() const;
     void StopDeffered() const;
 

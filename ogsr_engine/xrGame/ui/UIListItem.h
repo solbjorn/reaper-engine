@@ -45,8 +45,6 @@ protected:
     // присоедениены к элементу
     void* m_pData{};
 
-    sol::object priv;
-
     // произвольное число, приписанное объекту
     int m_iValue{};
 

@@ -12,11 +12,12 @@
 
 void CScriptParticles::script_register(sol::state_view& lua)
 {
-    lua.new_usertype<CScriptParticles>("particles_object", sol::no_constructor, sol::call_constructor, sol::constructors<CScriptParticles(LPCSTR)>(), "play",
-                                       &CScriptParticles::Play, "play_at_pos", &CScriptParticles::PlayAtPos, "stop", &CScriptParticles::Stop, "stop_deffered",
-                                       &CScriptParticles::StopDeffered, "playing", &CScriptParticles::IsPlaying, "looped", &CScriptParticles::IsLooped, "move_to",
-                                       &CScriptParticles::MoveTo, "set_position", &CScriptParticles::XFORMMoveTo, "set_direction", &CScriptParticles::SetDirection,
-                                       "set_orientation", &CScriptParticles::SetOrientation, "last_position", &CScriptParticles::LastPosition, "load_path",
-                                       &CScriptParticles::LoadPath, "start_path", &CScriptParticles::StartPath, "stop_path", &CScriptParticles::StopPath, "pause_path",
-                                       &CScriptParticles::PausePath, "life_time", &CScriptParticles::LifeTime, "length", &CScriptParticles::Length);
+    lua.new_usertype<CScriptParticles>(
+        "particles_object", sol::no_constructor, sol::call_constructor, sol::constructors<CScriptParticles(LPCSTR)>(), "play",
+        sol::overload(sol::resolve<void(bool) const>(&CScriptParticles::Play), sol::resolve<void() const>(&CScriptParticles::Play)), "play_at_pos",
+        sol::overload(sol::resolve<void(const Fvector&, bool)>(&CScriptParticles::PlayAtPos), sol::resolve<void(const Fvector&)>(&CScriptParticles::PlayAtPos)), "stop",
+        &CScriptParticles::Stop, "stop_deffered", &CScriptParticles::StopDeffered, "playing", &CScriptParticles::IsPlaying, "looped", &CScriptParticles::IsLooped, "move_to",
+        &CScriptParticles::MoveTo, "set_position", &CScriptParticles::XFORMMoveTo, "set_direction", &CScriptParticles::SetDirection, "set_orientation",
+        &CScriptParticles::SetOrientation, "last_position", &CScriptParticles::LastPosition, "load_path", &CScriptParticles::LoadPath, "start_path", &CScriptParticles::StartPath,
+        "stop_path", &CScriptParticles::StopPath, "pause_path", &CScriptParticles::PausePath, "life_time", &CScriptParticles::LifeTime, "length", &CScriptParticles::Length);
 }

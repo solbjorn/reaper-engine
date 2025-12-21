@@ -239,7 +239,9 @@ static CSE_Abstract* CALifeSimulator__spawn_ammo(CALifeSimulator* self, LPCSTR s
     return self->server().Process_spawn(packet, clientID);
 }
 
-static void CALifeSimulator__release(CALifeSimulator* self, CSE_Abstract* object, bool)
+namespace
+{
+void CALifeSimulator__release(CALifeSimulator* self, CSE_Abstract* object, bool)
 {
     VERIFY(self);
     //	self->release						(object,true);
@@ -261,6 +263,9 @@ static void CALifeSimulator__release(CALifeSimulator* self, CSE_Abstract* object
     packet.w_u16(object->ID);
     Level().Send(packet, net_flags(TRUE, TRUE));
 }
+
+inline void CALifeSimulator__release(CALifeSimulator* self, CSE_Abstract* object) { CALifeSimulator__release(self, object, false); }
+} // namespace
 
 static void CALifeSimulator__assign_story_id(CALifeSimulator* self, ALife::_OBJECT_ID _id, ALife::_STORY_ID _story_id)
 {
@@ -401,7 +406,10 @@ void CALifeSimulator::script_register(sol::state_view& lua)
         "add_in_restriction", &add_in_restriction, "add_out_restriction", &add_out_restriction, "remove_in_restriction", &remove_in_restriction, "remove_in_restrictions",
         &remove_in_restrictions, "remove_out_restriction", &remove_out_restriction, "remove_out_restrictions", &remove_out_restrictions, "remove_all_restrictions",
         &CALifeSimulator::remove_all_restrictions, "create", sol::overload(&CALifeSimulator__create, &CALifeSimulator__spawn_item2, &CALifeSimulator__spawn_item), "create_ammo",
-        &CALifeSimulator__spawn_ammo, "release", &CALifeSimulator__release, "spawn_id",
+        &CALifeSimulator__spawn_ammo, "release",
+        sol::overload(sol::resolve<void(CALifeSimulator*, CSE_Abstract*, bool)>(&CALifeSimulator__release),
+                      sol::resolve<void(CALifeSimulator*, CSE_Abstract*)>(&CALifeSimulator__release)),
+        "spawn_id",
         sol::overload([](CALifeSimulator* self, ALife::_SPAWN_STORY_ID spawn_story_id) { return self->spawns().spawn_id(spawn_story_id); },
                       [](CALifeSimulator* self, const char* obj_name) { return self->spawns().spawn_id(obj_name); }),
         "actor", &get_actor, "has_info", &has_info, "dont_has_info", &dont_has_info, "switch_distance", &CALifeSimulator::switch_distance, "set_switch_distance",

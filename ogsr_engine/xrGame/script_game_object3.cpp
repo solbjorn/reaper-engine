@@ -323,7 +323,7 @@ LPCSTR CScriptGameObject::GetPatrolPathName()
         return (*stalker->movement().patrol().path_name());
 }
 
-void CScriptGameObject::add_animation(LPCSTR animation, bool hand_usage, bool use_movement_controller)
+void CScriptGameObject::add_animation(gsl::czstring animation, bool hand_usage, bool use_movement_controller)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
     if (!stalker)

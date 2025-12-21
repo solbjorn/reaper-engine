@@ -11,8 +11,8 @@ void CUIEditBox::script_register(sol::state_view& lua)
                                     "SetTextPosX", &CUICustomEdit::SetTextPosX, "SetTextPosY", &CUICustomEdit::SetTextPosY, "SetNumbersOnly", &CUICustomEdit::SetNumbersOnly,
                                     sol::base_classes, xr::sol_bases<CUICustomEdit>());
 
-    lua.new_usertype<CUIEditBox>("CUIEditBox", sol::no_constructor, sol::call_constructor, sol::constructors<CUIEditBox()>(), "InitTexture", &CUIEditBox::InitTexture,
-                                 sol::base_classes, xr::sol_bases<CUIEditBox>());
+    lua.new_usertype<CUIEditBox>("CUIEditBox", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CUIEditBox>), "factory", &xr::ui_factory<CUIEditBox>,
+                                 "InitTexture", &CUIEditBox::InitTexture, sol::base_classes, xr::sol_bases<CUIEditBox>());
 
     lua.new_usertype<CUIEditBoxEx>("CUIEditBoxEx", sol::no_constructor, sol::call_constructor, sol::constructors<CUIEditBoxEx()>(), "InitTexture", &CUIEditBoxEx::InitTexture,
                                    sol::base_classes, xr::sol_bases<CUIEditBoxEx>());

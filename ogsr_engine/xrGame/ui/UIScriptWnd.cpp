@@ -54,7 +54,7 @@ void CUIDialogWndEx::Update() { inherited::Update(); }
 
 void CUIDialogWndEx::ClearCallbacks()
 {
-    priv = sol::object();
+    priv = sol::object{};
     ops.clear();
 
     m_callbacks.clear();

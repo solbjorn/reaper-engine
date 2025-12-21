@@ -8,12 +8,15 @@
 
 #include "stdafx.h"
 
-#include "object_factory.h"
 #include "object_item_script.h"
+
+#include "object_factory.h"
 
 ObjectFactory::CLIENT_BASE_CLASS* CObjectItemScript::client_object() const
 {
-    std::unique_ptr<ObjectFactory::CLIENT_SCRIPT_BASE_CLASS>& ptr = m_client_creator();
+    sol::userdata data = m_client_creator();
+    std::unique_ptr<ObjectFactory::CLIENT_SCRIPT_BASE_CLASS>& ptr = data["factory"](data);
+
     ObjectFactory::CLIENT_SCRIPT_BASE_CLASS* object = ptr.release();
     R_ASSERT(object);
 
@@ -22,7 +25,9 @@ ObjectFactory::CLIENT_BASE_CLASS* CObjectItemScript::client_object() const
 
 ObjectFactory::SERVER_BASE_CLASS* CObjectItemScript::server_object(LPCSTR section) const
 {
-    std::unique_ptr<ObjectFactory::SERVER_SCRIPT_BASE_CLASS>& ptr = m_server_creator(section);
+    sol::userdata data = m_server_creator(section);
+    std::unique_ptr<ObjectFactory::SERVER_SCRIPT_BASE_CLASS>& ptr = data["factory"](data);
+
     ObjectFactory::SERVER_SCRIPT_BASE_CLASS* object = ptr.release();
     R_ASSERT(object);
 

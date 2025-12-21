@@ -10,9 +10,10 @@
 
 #include "xrServer_Objects_ALife_Monsters.h"
 
-static LPCSTR profile_name_script(CSE_ALifeTraderAbstract* ta) { return *ta->character_profile(); }
-static LPCSTR character_name_script(CSE_ALifeTraderAbstract* ta) { return ta->m_character_name.c_str(); }
-static void set_character_name_script(CSE_ALifeTraderAbstract* ta, LPCSTR name) { ta->m_character_name = name; }
+namespace
+{
+[[nodiscard]] gsl::czstring profile_name_script(CSE_ALifeTraderAbstract* ta) { return ta->character_profile().c_str(); }
+} // namespace
 
 void CSE_ALifeTraderAbstract::script_register(sol::state_view& lua)
 {
@@ -21,20 +22,25 @@ void CSE_ALifeTraderAbstract::script_register(sol::state_view& lua)
                                               "community", &CSE_ALifeTraderAbstract::CommunityName, "profile_name", &profile_name_script, "rank", &CSE_ALifeTraderAbstract::Rank,
                                               "reputation", &CSE_ALifeTraderAbstract::Reputation,
 #endif // XRGAME_EXPORTS
-                                              "money", &CSE_ALifeTraderAbstract::m_dwMoney, "character_name", sol::property(&character_name_script, &set_character_name_script));
+                                              "money", &CSE_ALifeTraderAbstract::m_dwMoney, "character_name", &CSE_ALifeTraderAbstract::m_character_name);
 }
 
-static ALife::_OBJECT_ID CSE_AlifeTrader__smart_terrain_id(CSE_ALifeTrader* trader)
+namespace
+{
+[[nodiscard]] bool CSE_AlifeTrader_alive(CSE_ALifeTrader&) { return true; }
+
+[[nodiscard]] ALife::_OBJECT_ID CSE_AlifeTrader__smart_terrain_id(CSE_ALifeTrader* trader)
 {
     THROW(trader);
-    return 0xffff;
+    return std::numeric_limits<ALife::_OBJECT_ID>::max();
 }
+} // namespace
 
 void CSE_ALifeTrader::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CSE_ALifeTrader>("cse_alife_trader", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSE_ALifeTrader, LPCSTR>), "factory",
-                                      &xr::server_factory<CSE_ALifeTrader>, "smart_terrain_id", &CSE_AlifeTrader__smart_terrain_id, sol::base_classes,
-                                      xr::sol_bases<CSE_ALifeTrader>());
+                                      &xr::server_factory<CSE_ALifeTrader>, "alive", &CSE_AlifeTrader_alive, "smart_terrain_id", &CSE_AlifeTrader__smart_terrain_id,
+                                      sol::base_classes, xr::sol_bases<CSE_ALifeTrader>());
 }
 
 void CSE_ALifeCustomZone::script_register(sol::state_view& lua)

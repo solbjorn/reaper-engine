@@ -160,8 +160,10 @@ void CScriptGameObject::script_register1(CScriptGameObject::usertype& lua)
         "set_dest_level_vertex_id", &CScriptGameObject::set_dest_level_vertex_id, "level_vertex_id", &CScriptGameObject::level_vertex_id, "level_vertex_light",
         &CScriptGameObject::level_vertex_light, "game_vertex_id", &CScriptGameObject::game_vertex_id,
 
-        "add_animation", sol::resolve<void(LPCSTR, bool, bool)>(&CScriptGameObject::add_animation), "clear_animations", &CScriptGameObject::clear_animations, "animation_count",
-        &CScriptGameObject::animation_count, "animation_slot", &CScriptGameObject::animation_slot,
+        "add_animation",
+        sol::overload(sol::resolve<void(gsl::czstring, bool, bool)>(&CScriptGameObject::add_animation), sol::resolve<void(gsl::czstring, bool)>(&CScriptGameObject::add_animation),
+                      sol::resolve<void(gsl::czstring)>(&CScriptGameObject::add_animation)),
+        "clear_animations", &CScriptGameObject::clear_animations, "animation_count", &CScriptGameObject::animation_count, "animation_slot", &CScriptGameObject::animation_slot,
 
         "ignore_monster_threshold", sol::overload(&CScriptGameObject::ignore_monster_threshold, &CScriptGameObject::set_ignore_monster_threshold),
         "restore_ignore_monster_threshold", &CScriptGameObject::restore_ignore_monster_threshold, "max_ignore_monster_distance",

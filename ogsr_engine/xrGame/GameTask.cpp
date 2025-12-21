@@ -315,6 +315,9 @@ void SGameTaskObjective::SendInfo(xr_vector<shared_str>& v)
 
 bool SGameTaskObjective::CheckInfo(xr_vector<shared_str>& v)
 {
+    if (v.empty())
+        return false;
+
     for (const auto& info : v)
     {
         if (!Actor()->HasInfo(info))
@@ -326,6 +329,9 @@ bool SGameTaskObjective::CheckInfo(xr_vector<shared_str>& v)
 
 bool SGameTaskObjective::CheckFunctions(xr_vector<sol::function>& v)
 {
+    if (v.empty())
+        return false;
+
     for (auto& fn : v)
     {
         if (!fn || !fn(parent->m_ID.c_str(), idx))

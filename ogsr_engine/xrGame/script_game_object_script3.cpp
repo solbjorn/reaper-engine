@@ -32,6 +32,7 @@
 #include "GameTask.h"
 #include "car.h"
 #include "sight_manager_space.h"
+
 #include "../xr_3da/IGame_Persistent.h"
 
 void CScriptGameObject::script_register2(CScriptGameObject::usertype& lua)
@@ -142,8 +143,9 @@ void CScriptGameObject::script_register2(CScriptGameObject::usertype& lua)
         sol::var(RELATION_REGISTRY::FIGHT_HELP_HUMAN), "relation_kill", sol::var(RELATION_REGISTRY::KILL),
 
         // CustomZone
-        "enable_anomaly", &CScriptGameObject::EnableAnomaly, "disable_anomaly", &CScriptGameObject::DisableAnomaly, "get_anomaly_power", &CScriptGameObject::GetAnomalyPower,
-        "set_anomaly_power", &CScriptGameObject::SetAnomalyPower,
+        "enable_anomaly", &CScriptGameObject::EnableAnomaly, "disable_anomaly",
+        sol::overload(sol::resolve<void(bool)>(&CScriptGameObject::DisableAnomaly), sol::resolve<void()>(&CScriptGameObject::DisableAnomaly)), "get_anomaly_power",
+        &CScriptGameObject::GetAnomalyPower, "set_anomaly_power", &CScriptGameObject::SetAnomalyPower,
 
         // HELICOPTER
         "get_helicopter", &CScriptGameObject::get_helicopter, "get_car", &CScriptGameObject::get_car, "get_hanging_lamp", &CScriptGameObject::get_hanging_lamp, "get_physics_shell",

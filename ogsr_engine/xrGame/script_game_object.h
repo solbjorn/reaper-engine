@@ -499,10 +499,14 @@ public:
     u32 level_vertex_id() const;
     float level_vertex_light(const u32& level_vertex_id) const;
     u32 game_vertex_id() const;
-    void add_animation(LPCSTR animation, bool hand_usage, bool use_movement_controller);
+
+    void add_animation(gsl::czstring animation, bool hand_usage, bool use_movement_controller);
+    void add_animation(gsl::czstring animation, bool hand_usage) { add_animation(animation, hand_usage, false); }
+    void add_animation(gsl::czstring animation) { add_animation(animation, false); }
     void clear_animations();
     int animation_count() const;
     int animation_slot() const;
+
     CScriptBinderObject* binded_object();
     void set_previous_point(int point_index);
     void set_start_point(int point_index);
@@ -555,7 +559,8 @@ public:
     bool attachable_item_enabled() const;
     // CustomZone
     void EnableAnomaly();
-    void DisableAnomaly(bool = false);
+    void DisableAnomaly(bool keep_update);
+    void DisableAnomaly() { DisableAnomaly(false); }
     float GetAnomalyPower();
     void SetAnomalyPower(float p);
 

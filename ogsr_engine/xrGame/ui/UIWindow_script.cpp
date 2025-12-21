@@ -11,6 +11,7 @@
 #include "UILabel.h"
 #include "UIMMShniaga.h"
 #include "UITextureMaster.h"
+#include "UIScriptWnd.h"
 #include "UIScrollView.h"
 #include "UIIconParams.h"
 
@@ -40,8 +41,6 @@ static CGameFont* GetFontArial21() { return mngr().pFontArial21; }
 
 static CGameFont* GetFontCustom(LPCSTR section) { return mngr().InitializeCustomFont(section); }
 
-static int GetARGB(u16 a, u16 r, u16 g, u16 b) { return color_argb(a, r, g, b); }
-
 static Frect get_texture_rect(LPCSTR icon_name) { return CUITextureMaster::GetTextureRect(icon_name); }
 static LPCSTR get_texture_name(LPCSTR icon_name) { return CUITextureMaster::GetTextureFileName(icon_name); }
 
@@ -51,11 +50,17 @@ static LPCSTR CIconParams__get_name(CIconParams* self) { return self->name.c_str
 
 namespace
 {
-void AttachChild_script(CUIWindow& self, std::unique_ptr<CUIWindow>& pChild, bool bottom) { self.AttachChild(pChild.release(), bottom); }
-inline void AttachChild_script(CUIWindow& self, std::unique_ptr<CUIWindow>& pChild) { AttachChild_script(self, pChild, false); }
+void AttachChild_script(CUIWindow& self, sol::object obj, bool bottom)
+{
+    auto data = obj.as<sol::userdata>();
+    std::unique_ptr<CUIWindow>& pChild = data["factory"](data);
 
-void AttachChild_script(CUIWindow& self, std::unique_ptr<CUIStatic>& pChild, bool bottom) { self.AttachChild(static_cast<CUIWindow*>(pChild.release()), bottom); }
-inline void AttachChild_script(CUIWindow& self, std::unique_ptr<CUIStatic>& pChild) { AttachChild_script(self, pChild, false); }
+    self.AttachChild(pChild.release(), bottom);
+}
+
+inline void AttachChild_script(CUIWindow& self, sol::object obj) { AttachChild_script(self, std::move(obj), false); }
+
+inline void DetachChild(CUIWindow& self, CUIWindow* pChild) { self.DetachChild(pChild, false); }
 
 template <typename T>
 inline T* wnd_object_cast(CUIWindow* wnd)
@@ -66,7 +71,7 @@ inline T* wnd_object_cast(CUIWindow* wnd)
 
 void CUIWindow::script_register(sol::state_view& lua)
 {
-    lua.set("GetARGB", &GetARGB, "GetFontSmall", &GetFontSmall, "GetFontMedium", &GetFontMedium, "GetFontDI", &GetFontDI, "GetFontGraffiti19Russian", &GetFontGraffiti19Russian,
+    lua.set("GetARGB", &color_argb, "GetFontSmall", &GetFontSmall, "GetFontMedium", &GetFontMedium, "GetFontDI", &GetFontDI, "GetFontGraffiti19Russian", &GetFontGraffiti19Russian,
             "GetFontGraffiti22Russian", &GetFontGraffiti22Russian, "GetFontLetterica16Russian", &GetFontLetterica16Russian, "GetFontLetterica18Russian", &GetFontLetterica18Russian,
             "GetFontGraffiti32Russian", &GetFontGraffiti32Russian, "GetFontGraffiti40Russian", &GetFontGraffiti40Russian, "GetFontGraffiti50Russian", &GetFontGraffiti50Russian,
             "GetFontArial14", &GetFontArial14, "GetFontArial21", &GetFontArial21, "GetFontLetterica25", &GetFontLetterica25, "GetFontCustom", &GetFontCustom);
@@ -76,19 +81,17 @@ void CUIWindow::script_register(sol::state_view& lua)
     lua.set("GetTextureName", &get_texture_name, "GetTextureRect", &get_texture_rect, "GetTextureInfo", &get_texture_info);
 
     lua.new_usertype<CUIWindow>(
-        "CUIWindow", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CUIWindow>), "AttachChild",
-        sol::overload(sol::resolve<void(CUIWindow&, std::unique_ptr<CUIWindow>&, bool)>(&AttachChild_script),
-                      sol::resolve<void(CUIWindow&, std::unique_ptr<CUIWindow>&)>(&AttachChild_script),
-                      sol::resolve<void(CUIWindow&, std::unique_ptr<CUIStatic>&, bool)>(&AttachChild_script),
-                      sol::resolve<void(CUIWindow&, std::unique_ptr<CUIStatic>&)>(&AttachChild_script)),
-        "DetachChild", &CUIWindow::DetachChild, "DetachAll", &CUIWindow::DetachAll, "SetAutoDelete", &CUIWindow::SetAutoDelete, "IsAutoDelete", &CUIWindow::IsAutoDelete,
-        "SetWndRect", sol::overload(sol::resolve<void(Frect)>(&CUIWindow::SetWndRect_script), sol::resolve<void(float, float, float, float)>(&CUIWindow::SetWndRect_script)),
-        "Init", sol::overload(sol::resolve<void(float, float, float, float)>(&CUIWindow::Init), sol::resolve<void(Frect*)>(&CUIWindow::Init)), "GetWndPos", &CUIWindow::GetWndPos,
-        "SetWndPos", sol::resolve<void(float, float)>(&CUIWindow::SetWndPos), "SetWndSize", [](CUIWindow& self, float w, float h) -> void { self.SetWndSize(Fvector2{w, h}); },
-        "GetWidth", &CUIWindow::GetWidth, "SetWidth", &CUIWindow::SetWidth, "GetHeight", &CUIWindow::GetHeight, "SetHeight", &CUIWindow::SetHeight, "GetPosTop",
-        &CUIWindow::GetPosTop, "GetPosLeft", &CUIWindow::GetPosLeft, "Enable", &CUIWindow::Enable, "IsEnabled", &CUIWindow::IsEnabled, "Show", &CUIWindow::Show, "IsShown",
-        &CUIWindow::IsShown, "SetFont", &CUIWindow::SetFont, "GetFont", &CUIWindow::GetFont, "DetachFromParent", &CUIWindow::DetachFromParent, "WindowName",
-        &CUIWindow::WindowName_script, "SetWindowName",
+        "CUIWindow", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CUIWindow>), "factory", &xr::ui_factory<CUIWindow>, "AttachChild",
+        sol::overload(sol::resolve<void(CUIWindow&, sol::object, bool)>(&AttachChild_script), sol::resolve<void(CUIWindow&, sol::object)>(&AttachChild_script)), "DetachChild",
+        sol::overload(&CUIWindow::DetachChild, &::DetachChild), "DetachAll", &CUIWindow::DetachAll, "SetAutoDelete", &CUIWindow::SetAutoDelete, "IsAutoDelete",
+        &CUIWindow::IsAutoDelete, "SetWndRect",
+        sol::overload(sol::resolve<void(Frect)>(&CUIWindow::SetWndRect_script), sol::resolve<void(float, float, float, float)>(&CUIWindow::SetWndRect_script)), "Init",
+        sol::overload(sol::resolve<void(float, float, float, float)>(&CUIWindow::Init), sol::resolve<void(Frect*)>(&CUIWindow::Init)), "GetWndPos", &CUIWindow::GetWndPos,
+        "SetWndPos", sol::overload(sol::resolve<void(float, float)>(&CUIWindow::SetWndPos), sol::resolve<void(const Fvector2&)>(&CUIWindow::SetWndPos)), "SetWndSize",
+        [](CUIWindow& self, float w, float h) -> void { self.SetWndSize(Fvector2{w, h}); }, "GetWidth", &CUIWindow::GetWidth, "SetWidth", &CUIWindow::SetWidth, "GetHeight",
+        &CUIWindow::GetHeight, "SetHeight", &CUIWindow::SetHeight, "GetPosTop", &CUIWindow::GetPosTop, "GetPosLeft", &CUIWindow::GetPosLeft, "Enable", &CUIWindow::Enable,
+        "IsEnabled", &CUIWindow::IsEnabled, "Show", &CUIWindow::Show, "IsShown", &CUIWindow::IsShown, "SetFont", &CUIWindow::SetFont, "GetFont", &CUIWindow::GetFont,
+        "DetachFromParent", &CUIWindow::DetachFromParent, "WindowName", &CUIWindow::WindowName_script, "SetWindowName",
         sol::overload(sol::resolve<void(const char*, bool)>(&CUIWindow::SetWindowName), sol::resolve<void(const char*)>(&CUIWindow::SetWindowName)), "SetPPMode",
         &CUIWindow::SetPPMode, "ResetPPMode", &CUIWindow::ResetPPMode, "GetMousePosX", &CUIWindow::GetMousePosX, "GetMousePosY", &CUIWindow::GetMousePosY, "GetParent",
         &CUIWindow::GetParent, "GetWndRect", sol::resolve<void(Frect&)>(&CUIWindow::GetWndRect_script), "IsChild", &CUIWindow::IsChild, "FindChild",
@@ -118,10 +121,11 @@ void CUIWindow::script_register(sol::state_view& lua)
                                    xr::sol_bases<CUIMMShniaga>());
 
     lua.new_usertype<CUIScrollView>("CUIScrollView", sol::no_constructor, sol::call_constructor, sol::constructors<CUIScrollView()>(), "AddWindow", &CUIScrollView::AddWindow,
-                                    "RemoveWindow", &CUIScrollView::RemoveWindow, "Clear", &CUIScrollView::Clear, "ScrollToBegin", &CUIScrollView::ScrollToBegin, "ScrollToEnd",
-                                    &CUIScrollView::ScrollToEnd, "GetMinScrollPos", &CUIScrollView::GetMinScrollPos, "GetMaxScrollPos", &CUIScrollView::GetMaxScrollPos,
-                                    "GetCurrentScrollPos", &CUIScrollView::GetCurrentScrollPos, "SetScrollPos", &CUIScrollView::SetScrollPos, "ForceUpdate",
-                                    &CUIScrollView::ForceUpdate, sol::base_classes, xr::sol_bases<CUIScrollView>());
+                                    "RemoveWindow", &CUIScrollView::RemoveWindow, "Clear",
+                                    sol::overload(sol::resolve<void(bool)>(&CUIScrollView::Clear), sol::resolve<void()>(&CUIScrollView::Clear)), "ScrollToBegin",
+                                    &CUIScrollView::ScrollToBegin, "ScrollToEnd", &CUIScrollView::ScrollToEnd, "GetMinScrollPos", &CUIScrollView::GetMinScrollPos,
+                                    "GetMaxScrollPos", &CUIScrollView::GetMaxScrollPos, "GetCurrentScrollPos", &CUIScrollView::GetCurrentScrollPos, "SetScrollPos",
+                                    &CUIScrollView::SetScrollPos, "ForceUpdate", &CUIScrollView::ForceUpdate, sol::base_classes, xr::sol_bases<CUIScrollView>());
 
     lua.new_usertype<CIconParams>("CIconParams", sol::no_constructor, sol::call_constructor, sol::constructors<CIconParams(LPCSTR)>(), "icon_group",
                                   sol::readonly(&CIconParams::icon_group), "grid_width", sol::readonly(&CIconParams::grid_width), "grid_height",

@@ -228,6 +228,15 @@ add_to_type_list(CUIWindow);
 #undef script_type_list
 #define script_type_list save_type_list(CUIWindow)
 
+namespace xr
+{
+template <typename T>
+inline std::unique_ptr<CUIWindow> ui_factory(std::unique_ptr<T>& self)
+{
+    return absl::WrapUnique(static_cast<CUIWindow*>(self.release()));
+}
+} // namespace xr
+
 extern BOOL g_show_wnd_rect;
 extern BOOL g_show_wnd_rect_text;
 extern BOOL g_show_wnd_rect2;

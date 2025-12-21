@@ -24,6 +24,6 @@ void CScriptPropertyEvaluator::script_register(sol::state_view& lua)
 
     lua.new_usertype<CPropertyEvaluatorConst<CScriptGameObject>>(
         "property_evaluator_const", sol::no_constructor, sol::call_constructor,
-        sol::constructors<CPropertyEvaluatorConst<CScriptGameObject>(CPropertyEvaluatorConst<CScriptGameObject>::_value_type)>(), sol::base_classes,
+        sol::factories(std::make_unique<CPropertyEvaluatorConst<CScriptGameObject>, CPropertyEvaluatorConst<CScriptGameObject>::_value_type>), sol::base_classes,
         xr::sol_bases<CPropertyEvaluatorConst<CScriptGameObject>>());
 }

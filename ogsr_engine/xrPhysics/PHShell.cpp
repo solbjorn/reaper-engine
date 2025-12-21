@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 
+#include "PHShell.h"
+
 #include "PHDynamicData.h"
 #include "Physics.h"
 #include "tri-colliderknoopc/dTriList.h"
@@ -15,8 +17,6 @@
 
 #include "ExtendedGeom.h"
 #include "PHElement.h"
-#include "PHShell.h"
-#include "PHCollideValidator.h"
 #include "PHElementInline.h"
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
@@ -306,7 +306,7 @@ CPhysicsElement* CPHShell::get_Element(const shared_str& bone_name)
     return get_Element(m_pKinematics->LL_BoneID(bone_name));
 }
 
-CPhysicsElement* CPHShell::get_Element(LPCSTR bone_name) { return get_Element((const shared_str&)(bone_name)); }
+CPhysicsElement* CPHShell::get_Element(LPCSTR bone_name) { return get_Element(shared_str{bone_name}); }
 
 CPhysicsElement* CPHShell::get_ElementByStoreOrder(u16 num)
 {
@@ -353,8 +353,8 @@ CPhysicsJoint* CPHShell::get_Joint(const shared_str& bone_name)
     return get_Joint(m_pKinematics->LL_BoneID(bone_name));
 }
 
-CPhysicsJoint* CPHShell::get_Joint(LPCSTR bone_name) { return get_Joint((const shared_str&)bone_name); }
-CPhysicsJoint* CPHShell::get_JointByStoreOrder(u16 num) { return (CPhysicsJoint*)joints[num]; }
+CPhysicsJoint* CPHShell::get_Joint(LPCSTR bone_name) { return get_Joint(shared_str{bone_name}); }
+CPhysicsJoint* CPHShell::get_JointByStoreOrder(u16 num) { return joints[num]; }
 
 u16 CPHShell::get_JointsNumber() { return u16(joints.size()); }
 

@@ -222,6 +222,8 @@ protected:
     int m_iElipsisIndent{};
     Frect m_ClipRect;
 
+    sol::object priv;
+
     void Elipsis(const Frect&, EElipsisPosition elipsisPos);
 
 private:

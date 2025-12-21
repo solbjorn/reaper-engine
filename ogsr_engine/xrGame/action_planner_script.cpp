@@ -9,23 +9,28 @@
 #include "stdafx.h"
 
 #include "action_planner.h"
+
+#include "property_evaluator_const.h"
 #include "script_game_object.h"
 
-static void set_goal_world_state(CScriptActionPlanner* action_planner, CScriptActionPlanner::CState* world_state) { action_planner->set_target_state(*world_state); }
+namespace
+{
+void set_goal_world_state(CScriptActionPlanner* action_planner, CScriptActionPlanner::CState* world_state) { action_planner->set_target_state(*world_state); }
 
-static bool get_actual(const CScriptActionPlanner* action_planner) { return (action_planner->actual()); }
+[[nodiscard]] bool get_actual(const CScriptActionPlanner* action_planner) { return action_planner->actual(); }
 
-static void add_operator_script(CScriptActionPlanner& self, const CScriptActionPlanner::_edge_type& operator_id,
-                                std::unique_ptr<std::remove_pointer_t<CScriptActionPlanner::_operator_ptr>>& _operator)
+void add_operator_script(CScriptActionPlanner& self, const CScriptActionPlanner::_edge_type& operator_id,
+                         std::unique_ptr<std::remove_pointer_t<CScriptActionPlanner::_operator_ptr>>& _operator)
 {
     return self.add_operator(operator_id, _operator.release());
 }
 
-static void add_evaluator_script(CScriptActionPlanner& self, const CScriptActionPlanner::_condition_type& condition_id,
-                                 std::unique_ptr<std::remove_pointer_t<CScriptActionPlanner::condition_evaluator_ptr>>& evaluator)
+template <typename T>
+void add_evaluator_script(CScriptActionPlanner& self, const CScriptActionPlanner::_condition_type& condition_id, std::unique_ptr<T>& evaluator)
 {
     return self.add_evaluator(condition_id, evaluator.release());
 }
+} // namespace
 
 template <>
 void CActionPlanner<CScriptGameObject>::script_register(sol::state_view& lua)
@@ -34,9 +39,11 @@ void CActionPlanner<CScriptGameObject>::script_register(sol::state_view& lua)
                                            sol::readonly(&CScriptActionPlanner::m_object), "storage", sol::readonly(&CScriptActionPlanner::m_storage), "actual", &get_actual,
                                            "setup", &CScriptActionPlanner::setup, "update", &CScriptActionPlanner::update, "add_action", &add_operator_script, "remove_action",
                                            sol::resolve<void(const CScriptActionPlanner::_edge_type&)>(&CScriptActionPlanner::remove_operator), "action",
-                                           &CScriptActionPlanner::action, "add_evaluator", add_evaluator_script, "remove_evaluator",
-                                           sol::resolve<void(const CScriptActionPlanner::_condition_type&)>(&CScriptActionPlanner::remove_evaluator), "evaluator",
-                                           &CScriptActionPlanner::evaluator, "current_action_id", &CScriptActionPlanner::current_action_id, "current_action",
+                                           &CScriptActionPlanner::action, "add_evaluator",
+                                           sol::overload(&add_evaluator_script<CPropertyEvaluatorConst<CScriptGameObject>>,
+                                                         &add_evaluator_script<std::remove_pointer_t<CScriptActionPlanner::condition_evaluator_ptr>>),
+                                           "remove_evaluator", sol::resolve<void(const CScriptActionPlanner::_condition_type&)>(&CScriptActionPlanner::remove_evaluator),
+                                           "evaluator", &CScriptActionPlanner::evaluator, "current_action_id", &CScriptActionPlanner::current_action_id, "current_action",
                                            &CScriptActionPlanner::current_action, "initialized", &CScriptActionPlanner::initialized, "set_goal_world_state", &set_goal_world_state,
 #ifdef LOG_ACTION
                                            "show", &CScriptActionPlanner::show,
