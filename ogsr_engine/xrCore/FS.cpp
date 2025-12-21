@@ -97,8 +97,8 @@ void CMemoryWriter::w(const void* ptr, gsl::index count)
 
 void CMemoryWriter::reserve(gsl::index count)
 {
-    data = static_cast<std::byte*>(xr_malloc(mem_size));
     mem_size = count;
+    data = static_cast<std::byte*>(xr_malloc(mem_size));
 }
 
 bool CMemoryWriter::save_to(LPCSTR fn) const

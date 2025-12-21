@@ -55,9 +55,9 @@ struct XR_TRIVIAL Fcolor
         constexpr f32 f{1.0f / 255.0f};
 
         a = f * gsl::narrow_cast<f32>(gsl::narrow_cast<u8>(dw >> 24));
-        b = f * gsl::narrow_cast<f32>(gsl::narrow_cast<u8>(dw >> 16));
+        r = f * gsl::narrow_cast<f32>(gsl::narrow_cast<u8>(dw >> 16));
         g = f * gsl::narrow_cast<f32>(gsl::narrow_cast<u8>(dw >> 8));
-        r = f * gsl::narrow_cast<f32>(gsl::narrow_cast<u8>(dw));
+        b = f * gsl::narrow_cast<f32>(gsl::narrow_cast<u8>(dw));
 
         return *this;
     }
