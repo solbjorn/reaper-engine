@@ -996,7 +996,7 @@
       <Filter>Core_Target</Filter>
     </ClCompile>
     <ClCompile Include="r4_rendertarget_phase_ssao.cpp">
-      <Filter>Core_Target</ Filter>
+      <Filter>Core_Target</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\ColorMapManager.cpp">
       <Filter>Core_Target\ColorMap</Filter>

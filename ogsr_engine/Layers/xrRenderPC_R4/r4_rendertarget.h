@@ -38,7 +38,7 @@ public:
 #endif
 
     // Base targets
-    xr_vector<ref_rt> rt_Base;
+    xr::inlined_vector<ref_rt, 3> rt_Base;
     ref_rt rt_Base_Depth;
 
     // MRT-path
