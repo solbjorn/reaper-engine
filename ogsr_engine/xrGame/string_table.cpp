@@ -2,6 +2,7 @@
 
 #include "string_table.h"
 
+#include "MainMenu.h"
 #include "ui/xrUIXmlParser.h"
 #include "xr_level_controller.h"
 
@@ -33,7 +34,7 @@ void CStringTable::Init()
     pData = xr_new<STRING_TABLE_DATA>();
 
     // имя языка, если не задано (NULL), то первый <text> в <string> в XML
-    pData->m_sLanguage._set(pSettings->r_string("string_table", "language"));
+    SetLanguage();
 
     LPCSTR S = pSettings->r_string("string_table", "files");
     if (S && S[0])
@@ -102,6 +103,23 @@ void CStringTable::Load(LPCSTR xml_file)
             Msg("!![%s] duplicate string table id: [%s]", __FUNCTION__, string_name);
 
         pData->m_StringTable[string_name] = str_val;
+    }
+}
+
+void CStringTable::SetLanguage() { pData->m_sLanguage._set(xr::GetLanguagesToken()); }
+
+void CStringTable::ReloadLanguage()
+{
+    if (std::is_eq(xr_strcmp(xr::GetLanguagesToken(), pData->m_sLanguage)))
+        return;
+
+    Destroy();
+    Init();
+
+    if (g_pGamePersistent->IsMainMenuActive())
+    {
+        MainMenu()->Activate(false);
+        MainMenu()->Activate(true);
     }
 }
 

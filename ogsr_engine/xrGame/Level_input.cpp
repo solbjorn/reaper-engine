@@ -116,6 +116,9 @@ void CLevel::IR_OnKeyboardPress(int key)
 
     EGameActions _curr = get_binded_action(key);
 
+    if (m_blocked_actions.find(_curr) != m_blocked_actions.end())
+        return; // Real Wolf. 14.10.2014
+
     bool b_ui_exist = (pHUD && pHUD->GetUI());
 
     switch (_curr)
@@ -354,6 +357,9 @@ void CLevel::IR_OnKeyboardRelease(int key)
 
     EGameActions _curr = get_binded_action(key);
 
+    if (m_blocked_actions.find(_curr) != m_blocked_actions.end())
+        return; // Real Wolf. 14.10.2014
+
     if (g_block_all_except_movement)
     {
         if (!(_curr < kCAM_1 || _curr == kPAUSE || _curr == kSCREENSHOT || _curr == kQUIT || _curr == kCONSOLE))
@@ -394,6 +400,9 @@ void CLevel::IR_OnKeyboardHold(int key)
         return;
 
     EGameActions _curr = get_binded_action(key);
+
+    if (m_blocked_actions.find(_curr) != m_blocked_actions.end())
+        return; // Real Wolf. 14.10.2014
 
     if (g_block_all_except_movement)
     {
@@ -456,3 +465,6 @@ void CLevel::IR_OnActivate()
         }
     }
 }
+
+void CLevel::block_action(EGameActions cmd) { m_blocked_actions.insert(cmd); }
+void CLevel::unblock_action(EGameActions cmd) { m_blocked_actions.erase(cmd); }

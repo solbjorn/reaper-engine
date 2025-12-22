@@ -15,7 +15,7 @@ class CMainMenu : public IMainMenu, public IInputReceiver, public pureRender, pu
 {
     RTTI_DECLARE_TYPEINFO(CMainMenu, IMainMenu, IInputReceiver, pureRender, CDialogHolder, CUIWndCallback, CDeviceResetNotifier);
 
-public:
+private:
     CUIDialogWnd* m_startDialog{};
 
     enum
@@ -30,13 +30,15 @@ public:
         flNeedVidRestart = (1 << 7),
     };
     Flags16 m_Flags;
-    string_path m_screenshot_name;
+    bool languageChanged{};
+
     u32 m_screenshotFrame;
+    string_path m_screenshot_name;
+
     void ReadTextureInfo();
 
     xr_vector<CUIWindow*> m_pp_draw_wnds;
 
-private:
     ref_sound CurrentSound;
 
 public:
@@ -63,6 +65,9 @@ public:
     virtual void Activate(bool bActive);
     virtual bool IsActive();
     virtual bool CanSkipSceneRendering();
+
+    [[nodiscard]] bool IsLanguageChanged() const { return languageChanged; }
+    void SetLanguageChanged(bool status) { languageChanged = status; }
 
     virtual void IR_OnMousePress(int btn);
     virtual void IR_OnMouseRelease(int btn);
@@ -104,3 +109,9 @@ public:
 XR_SOL_BASE_CLASSES(CMainMenu);
 
 extern CMainMenu* MainMenu();
+
+// console_commands.cpp
+namespace xr
+{
+[[nodiscard]] gsl::czstring GetLanguagesToken();
+}

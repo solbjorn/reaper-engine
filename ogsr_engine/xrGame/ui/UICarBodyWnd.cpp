@@ -152,12 +152,13 @@ void CUICarBodyWnd::Init()
         XML_NODE* stored_root = uiXml.GetLocalRoot();
         uiXml.SetLocalRoot(uiXml.NavigateToNode("action_sounds", 0));
 
-        ::Sound->create(sounds[eInvSndOpen], uiXml.Read("snd_open", 0, nullptr), st_Effect, sg_SourceType);
-        ::Sound->create(sounds[eInvSndClose], uiXml.Read("snd_close", 0, nullptr), st_Effect, sg_SourceType);
-        ::Sound->create(sounds[eInvProperties], uiXml.Read("snd_properties", 0, nullptr), st_Effect, sg_SourceType);
-        ::Sound->create(sounds[eInvDropItem], uiXml.Read("snd_drop_item", 0, nullptr), st_Effect, sg_SourceType);
-        ::Sound->create(sounds[eInvDetachAddon], uiXml.Read("snd_detach_addon", 0, nullptr), st_Effect, sg_SourceType);
-        ::Sound->create(sounds[eInvItemUse], uiXml.Read("snd_item_use", 0, nullptr), st_Effect, sg_SourceType);
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvSndOpen)], uiXml.Read("snd_open", 0, nullptr));
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvSndClose)], uiXml.Read("snd_close", 0, nullptr));
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvProperties)], uiXml.Read("snd_properties", 0, nullptr));
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvDropItem)], uiXml.Read("snd_drop_item", 0, nullptr));
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvDetachAddon)], uiXml.Read("snd_detach_addon", 0, nullptr));
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvItemUse)], uiXml.Read("snd_item_use", 0, nullptr));
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvItemMove)], uiXml.Read("snd_item_move", 0, nullptr));
 
         uiXml.SetLocalRoot(stored_root);
     }
@@ -256,7 +257,7 @@ void CUICarBodyWnd::Hide()
         if (Actor())
             Actor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, false);
 
-    PlaySnd(eInvSndClose);
+    PlaySnd(eInventorySndAction::eInvSndClose);
 }
 
 void CUICarBodyWnd::UpdateLists()
@@ -349,19 +350,22 @@ void CUICarBodyWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
             case INVENTORY_DETACH_SCOPE_ADDON: {
                 auto wpn = smart_cast<CWeapon*>(CurrentIItem());
                 wpn->Detach(wpn->GetScopeName().c_str(), true);
-                PlaySnd(eInvDetachAddon);
+
+                PlaySnd(eInventorySndAction::eInvDetachAddon);
             }
             break;
             case INVENTORY_DETACH_SILENCER_ADDON: {
                 auto wpn = smart_cast<CWeapon*>(CurrentIItem());
                 wpn->Detach(wpn->GetSilencerName().c_str(), true);
-                PlaySnd(eInvDetachAddon);
+
+                PlaySnd(eInventorySndAction::eInvDetachAddon);
             }
             break;
             case INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON: {
                 auto wpn = smart_cast<CWeapon*>(CurrentIItem());
                 wpn->Detach(wpn->GetGrenadeLauncherName().c_str(), true);
-                PlaySnd(eInvDetachAddon);
+
+                PlaySnd(eInventorySndAction::eInvDetachAddon);
             }
             break;
             case INVENTORY_MOVE_ACTION: {
@@ -439,10 +443,12 @@ void CUICarBodyWnd::Show()
     InventoryUtilities::UpdateWeight(*m_pUIOurBagWnd);
 
     if (Core.Features.test(xrCore::Feature::engine_ammo_repacker) && !Core.Features.test(xrCore::Feature::hard_ammo_reload))
-        if (auto pActor = Actor())
+    {
+        if (auto pActor = Actor(); pActor != nullptr)
             pActor->RepackAmmo();
+    }
 
-    PlaySnd(eInvSndOpen);
+    PlaySnd(eInventorySndAction::eInvSndOpen);
 }
 
 void CUICarBodyWnd::DisableAll()
@@ -571,6 +577,7 @@ void CUICarBodyWnd::MoveItems(CUICellItem* itm)
     owner_list->RemoveItem(itm, true);
 
     SetCurrentItem(nullptr);
+    PlaySnd(eInventorySndAction::eInvItemMove);
 }
 
 namespace
@@ -629,12 +636,10 @@ void CUICarBodyWnd::DropItemsfromCell(bool b_all)
     SendEvent_Item_Drop(from_id, iitm);
 
     old_owner->RemoveItem(ci, b_all);
-
     SetCurrentItem(nullptr);
 
     InventoryUtilities::UpdateWeight(*m_pUIOurBagWnd);
-
-    PlaySnd(eInvDropItem);
+    PlaySnd(eInventorySndAction::eInvDropItem);
 }
 
 bool CUICarBodyWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
@@ -785,7 +790,7 @@ void CUICarBodyWnd::ActivatePropertiesBox()
         cursor_pos.sub(vis_rect.lt);
         m_pUIPropertiesBox->Show(vis_rect, cursor_pos);
 
-        PlaySnd(eInvProperties);
+        PlaySnd(eInventorySndAction::eInvProperties);
     }
 }
 
@@ -810,7 +815,7 @@ void CUICarBodyWnd::EatItem()
     P.w_u16(CurrentIItem()->object().ID());
     CGameObject::u_EventSend(P);
 
-    PlaySnd(eInvItemUse);
+    PlaySnd(eInventorySndAction::eInvItemUse);
 }
 
 bool CUICarBodyWnd::OnItemStartDrag(CUICellItem*)
@@ -881,6 +886,7 @@ void CUICarBodyWnd::MoveItem(CUICellItem* itm)
     }
 
     SetCurrentItem(nullptr);
+    PlaySnd(eInventorySndAction::eInvItemMove);
 }
 
 bool CUICarBodyWnd::OnItemSelected(CUICellItem* itm)
@@ -945,6 +951,8 @@ void CUICarBodyWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 
 void CUICarBodyWnd::PlaySnd(eInventorySndAction a)
 {
-    if (sounds[a]._handle())
-        sounds[a].play(nullptr, sm_2D);
+    auto& snd = sounds[std::to_underlying(a)];
+
+    if (snd._handle() != nullptr && snd._feedback() == nullptr)
+        snd.play(nullptr, sm_2D);
 }

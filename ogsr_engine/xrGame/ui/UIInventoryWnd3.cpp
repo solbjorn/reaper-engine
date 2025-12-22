@@ -20,6 +20,9 @@
 #include "../CustomOutfit.h"
 #include "../string_table.h"
 
+#include "../Medkit.h"
+#include "../Antirad.h"
+
 #include <regex>
 
 void CUIInventoryWnd::EatItem(PIItem itm)
@@ -30,12 +33,8 @@ void CUIInventoryWnd::EatItem(PIItem itm)
         return;
 
     SendEvent_Item_Eat(itm);
-
-    PlaySnd(eInvItemUse);
+    PlaySnd(eInventorySndAction::eInvItemUse);
 }
-
-#include "../Medkit.h"
-#include "../Antirad.h"
 
 void CUIInventoryWnd::ActivatePropertiesBox()
 {
@@ -216,8 +215,9 @@ void CUIInventoryWnd::ActivatePropertiesBox()
         GetAbsoluteRect(vis_rect);
         cursor_pos = GetUICursor()->GetCursorPosition();
         cursor_pos.sub(vis_rect.lt);
+
         UIPropertiesBox.Show(vis_rect, cursor_pos);
-        PlaySnd(eInvProperties);
+        PlaySnd(eInventorySndAction::eInvProperties);
     }
 }
 

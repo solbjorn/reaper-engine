@@ -216,6 +216,8 @@ protected:
     Flags32 m_dbg_flag;
 #endif
 
+    static void create_ui_snd(ref_sound& S, gsl::czstring fName);
+
 public:
     inline float GetMousePosX() const { return cursor_pos.x; }
     inline float GetMousePosY() const { return cursor_pos.y; }

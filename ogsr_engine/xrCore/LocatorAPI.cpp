@@ -1214,9 +1214,7 @@ void CLocatorAPI::rescan_physical_path(LPCSTR full_path, BOOL bRecurse)
     if (I == files.end())
         return;
 
-#ifdef DEBUG
-    Msg("[rescan_physical_path] files count before: [%d]", files.size());
-#endif
+    MsgDbg("[rescan_physical_path] files count before: [%d]", files.size());
 
     const auto base_len = xr_strlen(full_path);
 
@@ -1243,16 +1241,12 @@ void CLocatorAPI::rescan_physical_path(LPCSTR full_path, BOOL bRecurse)
         }
     }
 
-#ifdef DEBUG
-    Msg("[rescan_physical_path] files count before2: [%u]", files.size());
-#endif
+    MsgDbg("[rescan_physical_path] files count before2: [%u]", files.size());
 
     bool bNoRecurse = !bRecurse;
     std::ignore = RecurseScanPhysicalPath(full_path, false, bNoRecurse);
 
-#ifdef DEBUG
-    Msg("[rescan_physical_path] files count after: [%d]", files.size());
-#endif
+    MsgDbg("[rescan_physical_path] files count after: [%d]", files.size());
 }
 
 void CLocatorAPI::rescan_physical_pathes()

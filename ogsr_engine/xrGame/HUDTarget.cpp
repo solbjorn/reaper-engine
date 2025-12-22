@@ -47,7 +47,6 @@ constexpr float HIDE_INFO_SPEED{10.f};
 
 CHUDTarget::CHUDTarget()
 {
-    fuzzyShowInfo = 0.f;
     RQ.range = 0.f;
 
     hShader->create("hud\\cursor", "ui\\cursor");
@@ -67,10 +66,6 @@ void CHUDTarget::net_Relcase(CObject* O)
 }
 
 void CHUDTarget::Load() { HUDCrosshair.Load(); }
-
-float CHUDTarget::GetDist() { return RQ.range; }
-
-CObject* CHUDTarget::GetObj() { return RQ.O; }
 
 ICF static BOOL pick_trace_callback(collide::rq_result& result, LPVOID params)
 {
@@ -111,12 +106,16 @@ void CHUDTarget::CursorOnFrame()
     RQ.O = nullptr;
     RQ.range = g_pGamePersistent->Environment().CurrentEnv->far_plane * 0.99f;
     RQ.element = -1;
+    m_real_dist = -1.0f;
 
     collide::ray_defs RD(p1, dir, RQ.range, CDB::OPT_CULL, collide::rqtBoth);
     RQR.r_clear();
     VERIFY(!fis_zero(RD.dir.square_magnitude()));
     if (Level().ObjectSpace.RayQuery(RQR, RD, pick_trace_callback, &RQ, nullptr, Level().CurrentEntity()))
+    {
+        m_real_dist = RQ.range;
         clamp(RQ.range, NEAR_LIM, RQ.range);
+    }
 }
 
 void CHUDTarget::Render()

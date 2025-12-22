@@ -1143,9 +1143,10 @@ void CLevel::script_register(sol::state_view& lua)
 
         //--#SM+# Begin --
         "set_blender_mode_main", &set_blender_mode_main, "get_blender_mode_main", &get_blender_mode_main, "set_shader_params", &set_shader_params, "get_shader_params",
-        &get_shader_params
+        &get_shader_params,
         //--#SM+# End --
-    );
+
+        "block_action", [](EGameActions action) { Level().block_action(action); }, "unblock_action", [](EGameActions action) { Level().unblock_action(action); });
 
     lua.create_named_table("actor_stats", "add_points", &add_actor_points, "add_points_str", &add_actor_points_str, "get_points", &get_actor_points, "remove_points",
                            &remove_actor_points, "add_to_ranking", &add_human_to_top_list, "remove_from_ranking", &remove_human_from_top_list, "get_actor_ranking",

@@ -997,7 +997,7 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
     switch (cmd)
     {
     case kWPN_RELOAD: {
-        if (!Core.Features.test(xrCore::Feature::lock_reload_in_sprint) || (!ParentIsActor() || !(g_actor->get_state() & ACTOR_DEFS::mcSprint)))
+        if (!psActorFlags.test(AF_LOCK_RELOAD) || (!ParentIsActor() || !(g_actor->get_state() & ACTOR_DEFS::mcSprint)))
         {
             if (flags & CMD_START)
             {

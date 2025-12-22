@@ -167,12 +167,7 @@ void CGrenade::Destroy()
     CExplosive::GenExplodeEvent(C, normal);
 }
 
-bool CGrenade::Useful() const
-{
-    bool res = (/* !m_throw && */ m_dwDestroyTime == 0xffffffff && CExplosive::Useful() && TestServerFlag(CSE_ALifeObject::flCanSave));
-
-    return res;
-}
+bool CGrenade::Useful() const { return m_dwDestroyTime == 0xffffffff && CExplosive::Useful() && TestServerFlag(CSE_ALifeObject::flCanSave); }
 
 void CGrenade::OnEvent(NET_Packet& P, u16 type)
 {
@@ -214,7 +209,33 @@ void CGrenade::PutNextToSlot()
             if (pActor)
                 pActor->OnPrevWeaponSlot();
         }
-        /////	m_thrown				= false;
+    }
+}
+
+void CGrenade::TrySwitchGrenade(CGrenade* grenade)
+{
+    static CGrenade* target{};
+    static bool need_next{};
+
+    if (!need_next && grenade != nullptr)
+    {
+        target = grenade;
+        need_next = true;
+
+        SwitchState(eHiding);
+    }
+    else if (need_next)
+    {
+        need_next = false;
+
+        if (m_pCurrentInventory != nullptr && target != nullptr)
+        {
+            m_pCurrentInventory->Ruck(this);
+            m_pCurrentInventory->SetActiveSlot(NO_ACTIVE_SLOT);
+            m_pCurrentInventory->Slot(target);
+        }
+
+        target = nullptr;
     }
 }
 
@@ -223,7 +244,13 @@ void CGrenade::OnAnimationEnd(u32 state)
     switch (state)
     {
     case eThrowEnd: SwitchState(eHidden); break;
-    default: inherited::OnAnimationEnd(state);
+    case eHiding:
+        TrySwitchGrenade();
+
+        setVisible(false);
+        SwitchState(eHidden);
+        break;
+    default: inherited::OnAnimationEnd(state); break;
     }
 }
 
@@ -241,51 +268,32 @@ bool CGrenade::Action(s32 cmd, u32 flags)
     switch (cmd)
     {
     // переключение типа гранаты
-    case kWPN_NEXT: {
+    case kWPN_NEXT:
         if (flags & CMD_START)
         {
             const u32 state = GetState();
-            if (state == eHidden || state == eIdle || state == eBore)
+            if (m_pCurrentInventory != nullptr && (state == eHidden || state == eIdle || state == eBore))
             {
-                if (m_pCurrentInventory)
+                xr_map<shared_str, CGrenade*> tmp;
+                tmp.try_emplace(cNameSect(), this);
+
+                for (auto it : m_pCurrentInventory->m_ruck)
                 {
-                    TIItemContainer::iterator it = m_pCurrentInventory->m_ruck.begin();
-                    TIItemContainer::iterator it_e = m_pCurrentInventory->m_ruck.end();
-                    /*	for(;it!=it_e;++it)
-                        {
-                            CGrenade *pGrenade = smart_cast<CGrenade*>(*it);
-                            if(pGrenade && xr_strcmp(pGrenade->cNameSect(), cNameSect()))
-                            {
-                                m_pCurrentInventory->Ruck(this);
-                                m_pCurrentInventory->SetActiveSlot(NO_ACTIVE_SLOT);
-                                m_pCurrentInventory->Slot(pGrenade);
-                                return true;
-                            }
-                        }*/
-                    xr_map<shared_str, CGrenade*> tmp;
-                    tmp.try_emplace(cNameSect(), this);
-                    for (; it != it_e; ++it)
-                    {
-                        CGrenade* pGrenade = smart_cast<CGrenade*>(*it);
-                        if (pGrenade && (tmp.find(pGrenade->cNameSect()) == tmp.end()))
-                            tmp.try_emplace(pGrenade->cNameSect(), pGrenade);
-                    }
-                    xr_map<shared_str, CGrenade*>::iterator curr_it = tmp.find(cNameSect());
-                    curr_it++;
-                    CGrenade* tgt;
-                    if (curr_it != tmp.end())
-                        tgt = curr_it->second;
-                    else
-                        tgt = tmp.begin()->second;
-                    m_pCurrentInventory->Ruck(this);
-                    m_pCurrentInventory->SetActiveSlot(NO_ACTIVE_SLOT);
-                    m_pCurrentInventory->Slot(tgt);
+                    CGrenade* pGrenade = smart_cast<CGrenade*>(it);
+                    if (pGrenade != nullptr)
+                        tmp.try_emplace(pGrenade->cNameSect(), pGrenade);
                 }
+
+                auto curr_it = tmp.find(cNameSect());
+                curr_it++;
+
+                CGrenade* tgt = curr_it != tmp.end() ? curr_it->second : tmp.begin()->second;
+                if (tgt->cNameSect() != cNameSect()) // prxphet: Если тот же тип, ничего не делаем
+                    TrySwitchGrenade(tgt);
             }
         }
 
         return true;
-    }
     }
 
     return false;

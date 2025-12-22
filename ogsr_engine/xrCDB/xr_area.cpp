@@ -67,7 +67,7 @@ void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range, float t
             continue;
 
         VERIFY(_valid(dist));
-        VERIFY2(!fis_zero(p->max_ai_distance), S->handle->file_name());
+        VERIFY(!fis_zero(p->max_ai_distance), S->handle->file_name());
 
         f32 Power = (1.f - dist / p->max_ai_distance) * p->volume;
         VERIFY(_valid(Power));

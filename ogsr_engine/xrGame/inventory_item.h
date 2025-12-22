@@ -86,6 +86,7 @@ public:
     ~CInventoryItem() override;
 
     virtual void Load(LPCSTR section);
+    void ReloadNames();
 
     virtual LPCSTR Name();
     virtual LPCSTR NameShort();

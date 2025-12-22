@@ -761,3 +761,11 @@ void CUIWindow::DetachFromParent()
 
     m_pParentWnd->DetachChild(this);
 }
+
+void CUIWindow::create_ui_snd(ref_sound& S, gsl::czstring fName)
+{
+    S.destroy();
+
+    if (fName != nullptr && fName[0] != '\0')
+        ::Sound->create(S, fName, st_Effect, sg_SourceType);
+}

@@ -664,9 +664,10 @@ public:
     bool IsInRuck(CScriptGameObject* object) const;
     bool IsInSlot(CScriptGameObject* object) const;
     u8 GetSlot() const;
-    void MoveToSlot(CScriptGameObject* object, bool bNotActivate = true);
-    void MoveToBelt(CScriptGameObject* object);
-    void MoveToRuck(CScriptGameObject* object);
+    [[nodiscard]] bool MoveToSlot(CScriptGameObject* object, bool bNotActivate);
+    [[nodiscard]] bool MoveToSlot(CScriptGameObject* object) { return MoveToSlot(object, true); }
+    [[nodiscard]] bool MoveToBelt(CScriptGameObject* object);
+    [[nodiscard]] bool MoveToRuck(CScriptGameObject* object);
     u32 BeltSize() const;
     u32 RuckSize() const;
     void InvalidateInventory();

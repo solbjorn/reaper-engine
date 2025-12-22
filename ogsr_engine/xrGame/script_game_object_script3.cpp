@@ -199,8 +199,10 @@ void CScriptGameObject::script_register2(CScriptGameObject::usertype& lua)
         // functions for CInventoryOwner class
         "item_on_belt", &CScriptGameObject::ItemOnBelt, "item_in_ruck", &CScriptGameObject::ItemInRuck, "is_on_belt", &CScriptGameObject::IsOnBelt, "is_in_ruck",
         &CScriptGameObject::IsInRuck, "is_in_slot", &CScriptGameObject::IsInSlot, "move_to_ruck", &CScriptGameObject::MoveToRuck, "move_to_belt", &CScriptGameObject::MoveToBelt,
-        "move_to_slot", &CScriptGameObject::MoveToSlot, "belt_count", &CScriptGameObject::BeltSize, "ruck_count", &CScriptGameObject::RuckSize, "invalidate_inventory",
-        &CScriptGameObject::InvalidateInventory, "get_slot", &CScriptGameObject::GetSlot,
+        "move_to_slot",
+        sol::overload(sol::resolve<bool(CScriptGameObject*, bool)>(&CScriptGameObject::MoveToSlot), sol::resolve<bool(CScriptGameObject*)>(&CScriptGameObject::MoveToSlot)),
+        "belt_count", &CScriptGameObject::BeltSize, "ruck_count", &CScriptGameObject::RuckSize, "invalidate_inventory", &CScriptGameObject::InvalidateInventory, "get_slot",
+        &CScriptGameObject::GetSlot,
 
         // functions for CInventoryItem class
         "set_inventory_item_flags", &CScriptGameObject::SetIIFlags, "get_inventory_item_flags", &CScriptGameObject::GetIIFlags,

@@ -101,7 +101,7 @@ protected:
     bool TransferItem(PIItem itm, CInventoryOwner* owner_from, CInventoryOwner* owner_to, bool b_check);
     void BindDragDropListEnents(CUIDragDropListEx* lst);
 
-    enum eInventorySndAction
+    enum class eInventorySndAction : s32
     {
         eInvSndOpen = 0,
         eInvSndClose,
@@ -109,9 +109,11 @@ protected:
         eInvDropItem,
         eInvDetachAddon,
         eInvItemUse,
-        eInvSndMax
+        eInvItemMove,
+        eInvSndMax,
     };
 
-    ref_sound sounds[eInvSndMax];
+    std::array<ref_sound, std::to_underlying(eInventorySndAction::eInvSndMax)> sounds;
+
     void PlaySnd(eInventorySndAction a);
 };

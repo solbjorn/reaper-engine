@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "actor.h"
+
 #include "inventory.h"
 #include "xrserver_objects_alife_monsters.h"
 #include "xrServer.h"
@@ -534,13 +535,10 @@ bool CActor::InventoryAllowSprint()
         return false;
     }
 
-    auto wpn = smart_cast<const CWeapon*>(pActiveItem);
-    if (wpn)
+    if (auto wpn = smart_cast<const CWeapon*>(pActiveItem); wpn != nullptr)
     {
-        if (Core.Features.test(xrCore::Feature::lock_reload_in_sprint) && wpn->GetState() == CWeapon::eReload)
-        {
+        if (psActorFlags.test(AF_LOCK_RELOAD) && wpn->GetState() == CWeapon::eReload)
             return false;
-        }
     }
 
     const PIItem pOutfitItem = inventory().ItemFromSlot(OUTFIT_SLOT);

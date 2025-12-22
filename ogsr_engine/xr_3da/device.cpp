@@ -296,7 +296,9 @@ void CRenderDevice::ProcessFrame()
             SecondThreadTasksElapsedTime = SecondThreadTasksEndTime - SecondThreadTasksStartTime;
         });
 
+#ifdef LOG_SECOND_THREAD_STATS
     const std::chrono::duration<double, std::milli> FrameElapsedTime = FrameEndTime - FrameStartTime;
+#endif
 
     float curFPSLimit = ps_framelimiter;
     if (g_pGamePersistent->IsMainMenuActive() || Paused())
@@ -319,6 +321,7 @@ void CRenderDevice::ProcessFrame()
         }
     }
 
+#ifdef LOG_SECOND_THREAD_STATS
     bool show_stats = SecondThreadTasksElapsedTime > FrameElapsedTime;
     if (show_stats && !dwPrecacheFrame) [[unlikely]]
     {
@@ -327,6 +330,7 @@ void CRenderDevice::ProcessFrame()
         Msg("##[%s] Second thread work time is too long! Avail: [%f]ms, used: [%f]ms, free: [%f]ms", __FUNCTION__, FrameElapsedTime.count(), SecondThreadTasksElapsedTime.count(),
             SecondThreadFreeTime.count());
     }
+#endif
 
     if (!b_is_Active)
         Sleep(1);

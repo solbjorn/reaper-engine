@@ -134,8 +134,8 @@ void CScriptActor::script_register(sol::state_view& lua)
                              "orientation", sol::property(&get_actor_orientation),
 
                              // Real Wolf. Start. 14.10.2014.
-                             "block_action", &CActor::block_action, "unblock_action", &CActor::unblock_action, "press_action", &CActor::IR_OnKeyboardPress, "hold_action",
-                             &CActor::IR_OnKeyboardHold, "release_action", &CActor::IR_OnKeyboardRelease, "is_zoom_aiming_mode", &CActor::IsZoomAimingMode,
+                             "press_action", &CActor::IR_OnKeyboardPress, "hold_action", &CActor::IR_OnKeyboardHold, "release_action", &CActor::IR_OnKeyboardRelease,
+                             "is_zoom_aiming_mode", &CActor::IsZoomAimingMode,
                              // Real Wolf. End. 14.10.2014.
 
                              "get_body_state", &CActor::get_state, "is_actor_normal", &CActor::is_actor_normal, "is_actor_crouch", &CActor::is_actor_crouch, "is_actor_creep",

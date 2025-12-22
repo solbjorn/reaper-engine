@@ -23,6 +23,7 @@ public:
 
     static void Destroy();
 
+    void ReloadLanguage();
     STRING_VALUE translate(const STRING_ID& str_id) const;
 
     static void ReparseKeyBindings();
@@ -34,7 +35,9 @@ private:
     void Init();
     void Load(LPCSTR xml_file);
 
+    static void SetLanguage();
     static STRING_VALUE ParseLine(LPCSTR str, LPCSTR key, bool bFirst);
+
     static std::mutex pDataMutex;
     static STRING_TABLE_DATA* pData;
 };

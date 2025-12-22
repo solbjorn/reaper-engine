@@ -225,21 +225,24 @@ void CUIInventoryWnd::Init()
     xml_init.Init3tButton(uiXml, "exit_button", 0, UIExitButton);
 
     // Load sounds
+    if (uiXml.NavigateToNode("action_sounds", 0))
+    {
+        XML_NODE* stored_root = uiXml.GetLocalRoot();
+        uiXml.SetLocalRoot(uiXml.NavigateToNode("action_sounds", 0));
 
-    XML_NODE* stored_root = uiXml.GetLocalRoot();
-    uiXml.SetLocalRoot(uiXml.NavigateToNode("action_sounds", 0));
-    ::Sound->create(sounds[eInvSndOpen], uiXml.Read("snd_open", 0, nullptr), st_Effect, sg_SourceType);
-    ::Sound->create(sounds[eInvSndClose], uiXml.Read("snd_close", 0, nullptr), st_Effect, sg_SourceType);
-    ::Sound->create(sounds[eInvItemToSlot], uiXml.Read("snd_item_to_slot", 0, nullptr), st_Effect, sg_SourceType);
-    ::Sound->create(sounds[eInvItemToBelt], uiXml.Read("snd_item_to_belt", 0, nullptr), st_Effect, sg_SourceType);
-    ::Sound->create(sounds[eInvItemToRuck], uiXml.Read("snd_item_to_ruck", 0, nullptr), st_Effect, sg_SourceType);
-    ::Sound->create(sounds[eInvProperties], uiXml.Read("snd_properties", 0, nullptr), st_Effect, sg_SourceType);
-    ::Sound->create(sounds[eInvDropItem], uiXml.Read("snd_drop_item", 0, nullptr), st_Effect, sg_SourceType);
-    ::Sound->create(sounds[eInvAttachAddon], uiXml.Read("snd_attach_addon", 0, nullptr), st_Effect, sg_SourceType);
-    ::Sound->create(sounds[eInvDetachAddon], uiXml.Read("snd_detach_addon", 0, nullptr), st_Effect, sg_SourceType);
-    ::Sound->create(sounds[eInvItemUse], uiXml.Read("snd_item_use", 0, nullptr), st_Effect, sg_SourceType);
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvSndOpen)], uiXml.Read("snd_open", 0, nullptr));
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvSndClose)], uiXml.Read("snd_close", 0, nullptr));
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvItemToSlot)], uiXml.Read("snd_item_to_slot", 0, nullptr));
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvItemToBelt)], uiXml.Read("snd_item_to_belt", 0, nullptr));
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvItemToRuck)], uiXml.Read("snd_item_to_ruck", 0, nullptr));
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvProperties)], uiXml.Read("snd_properties", 0, nullptr));
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvDropItem)], uiXml.Read("snd_drop_item", 0, nullptr));
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvAttachAddon)], uiXml.Read("snd_attach_addon", 0, nullptr));
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvDetachAddon)], uiXml.Read("snd_detach_addon", 0, nullptr));
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvItemUse)], uiXml.Read("snd_item_use", 0, nullptr));
 
-    uiXml.SetLocalRoot(stored_root);
+        uiXml.SetLocalRoot(stored_root);
+    }
 }
 
 EListType CUIInventoryWnd::GetType(CUIDragDropListEx* l)
@@ -261,8 +264,10 @@ EListType CUIInventoryWnd::GetType(CUIDragDropListEx* l)
 
 void CUIInventoryWnd::PlaySnd(eInventorySndAction a)
 {
-    if (sounds[a]._handle())
-        sounds[a].play(nullptr, sm_2D);
+    auto& snd = sounds[std::to_underlying(a)];
+
+    if (snd._handle() != nullptr)
+        snd.play(nullptr, sm_2D);
 }
 
 CUIInventoryWnd::~CUIInventoryWnd()
@@ -342,7 +347,7 @@ void CUIInventoryWnd::Show()
     SendInfoToActor("ui_inventory");
 
     Update();
-    PlaySnd(eInvSndOpen);
+    PlaySnd(eInventorySndAction::eInvSndOpen);
 
     m_b_need_update_stats = true;
 
@@ -353,7 +358,8 @@ void CUIInventoryWnd::Show()
 
 void CUIInventoryWnd::Hide()
 {
-    PlaySnd(eInvSndClose);
+    PlaySnd(eInventorySndAction::eInvSndClose);
+
     inherited::Hide();
 
     SendInfoToActor("ui_inventory_hide");
@@ -394,9 +400,9 @@ void CUIInventoryWnd::ShowSlotsHighlight(PIItem InvItem)
 
 void CUIInventoryWnd::AttachAddon(PIItem item_to_upgrade)
 {
-    PlaySnd(eInvAttachAddon);
-    R_ASSERT(item_to_upgrade);
+    PlaySnd(eInventorySndAction::eInvAttachAddon);
 
+    R_ASSERT(item_to_upgrade);
     item_to_upgrade->Attach(CurrentIItem(), true);
 
     SetCurrentItem(nullptr);
@@ -404,8 +410,7 @@ void CUIInventoryWnd::AttachAddon(PIItem item_to_upgrade)
 
 void CUIInventoryWnd::DetachAddon(const char* addon_name)
 {
-    PlaySnd(eInvDetachAddon);
-
+    PlaySnd(eInventorySndAction::eInvDetachAddon);
     CurrentIItem()->Detach(addon_name, true);
 }
 
@@ -423,7 +428,8 @@ void CUIInventoryWnd::SendEvent_Item2Slot(PIItem pItem)
     pItem->object().u_EventGen(P, GEG_PLAYER_ITEM2SLOT, pItem->object().H_Parent()->ID());
     P.w_u16(pItem->object().ID());
     pItem->object().u_EventSend(P);
-    g_pInvWnd->PlaySnd(eInvItemToSlot);
+
+    g_pInvWnd->PlaySnd(eInventorySndAction::eInvItemToSlot);
     m_b_need_update_stats = true;
 }
 
@@ -433,7 +439,8 @@ void CUIInventoryWnd::SendEvent_Item2Belt(PIItem pItem)
     pItem->object().u_EventGen(P, GEG_PLAYER_ITEM2BELT, pItem->object().H_Parent()->ID());
     P.w_u16(pItem->object().ID());
     pItem->object().u_EventSend(P);
-    g_pInvWnd->PlaySnd(eInvItemToBelt);
+
+    g_pInvWnd->PlaySnd(eInventorySndAction::eInvItemToBelt);
     m_b_need_update_stats = true;
 }
 
@@ -443,7 +450,8 @@ void CUIInventoryWnd::SendEvent_Item2Ruck(PIItem pItem)
     pItem->object().u_EventGen(P, GEG_PLAYER_ITEM2RUCK, pItem->object().H_Parent()->ID());
     P.w_u16(pItem->object().ID());
     pItem->object().u_EventSend(P);
-    g_pInvWnd->PlaySnd(eInvItemToRuck);
+
+    g_pInvWnd->PlaySnd(eInventorySndAction::eInvItemToRuck);
     m_b_need_update_stats = true;
 }
 
@@ -451,7 +459,7 @@ void CUIInventoryWnd::SendEvent_Item_Drop(PIItem pItem)
 {
     pItem->SetDropManual(TRUE);
 
-    g_pInvWnd->PlaySnd(eInvDropItem);
+    g_pInvWnd->PlaySnd(eInventorySndAction::eInvDropItem);
     m_b_need_update_stats = true;
 }
 

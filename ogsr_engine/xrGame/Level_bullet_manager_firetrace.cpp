@@ -6,6 +6,7 @@
 #include "stdafx.h"
 
 #include "Level_Bullet_Manager.h"
+
 #include "entity.h"
 #include "../xr_3da/gamemtllib.h"
 #include "level.h"
@@ -62,9 +63,12 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
                     {
                         if (result == Fsphere::rpOriginInside)
                             dist = 0.0f;
+
                         // да попали, найдем кто стрелял
                         bool play_whine = true;
                         CObject* initiator = Level().Objects.net_Find(bullet->parent_id);
+                        auto& bullet_manager = Level().BulletManager();
+
                         if (actor)
                         {
                             // попали в актера
@@ -85,7 +89,7 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
                                 {
                                     game_difficulty_hit_probability = weapon->hit_probability();
                                     float fly_dist = bullet->fly_dist + dist;
-                                    dist_factor = _min(1.f, fly_dist / Level().BulletManager().m_fHPMaxDist);
+                                    dist_factor = std::min(1.0f, fly_dist / bullet_manager.m_fHPMaxDist);
                                 }
                             }
 
@@ -98,9 +102,9 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
                             else
                             {
                                 // real test actor CFORM
-                                Level().BulletManager().m_rq_results.r_clear();
+                                bullet_manager.m_rq_results.r_clear();
 
-                                if (cform->_RayQuery(rd, Level().BulletManager().m_rq_results))
+                                if (cform->RayQuery(bullet_manager.m_rq_results, rd))
                                 {
                                     bRes = TRUE; // hit actor
                                     play_whine = false; // don't play whine sound
@@ -117,7 +121,7 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
                         {
                             Fvector pt;
                             pt.mad(bullet->pos, bullet->dir, dist);
-                            Level().BulletManager().PlayWhineSound(bullet, initiator, pt);
+                            bullet_manager.PlayWhineSound(bullet, initiator, pt);
                         }
                     }
                     else

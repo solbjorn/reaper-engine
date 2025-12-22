@@ -230,6 +230,78 @@ public:
     virtual void Info(TInfo& I) { strcpy_s(I, "game difficulty"); }
 };
 
+xr_vector<xr_token> LanguagesToken;
+u32 LanguageID{};
+} // namespace
+
+namespace xr
+{
+gsl::czstring GetLanguagesToken() { return LanguagesToken[LanguageID].name; }
+} // namespace xr
+
+namespace
+{
+class CCC_GameLanguage : public CCC_Token
+{
+    RTTI_DECLARE_TYPEINFO(CCC_GameLanguage, CCC_Token);
+
+public:
+    explicit CCC_GameLanguage(gsl::czstring N) : CCC_Token{N, &LanguageID, LanguagesToken.data()}
+    {
+        gsl::czstring str = pSettings->r_string("string_table", "language");
+
+        for (gsl::index i{0}, count{_GetItemCount(str)}; i < count; i++)
+        {
+            string64 temp;
+            std::ignore = _GetItem(str, i, temp);
+
+            LanguagesToken.emplace_back(xr_strdup(temp), i);
+        }
+
+        LanguagesToken.emplace_back(nullptr, 0);
+        tokens = LanguagesToken.data();
+    }
+
+    ~CCC_GameLanguage() override
+    {
+        for (const auto& tok : LanguagesToken)
+        {
+            auto name = const_cast<gsl::zstring>(tok.name);
+            xr_free(name);
+        }
+
+        LanguagesToken.clear();
+    }
+
+    void Execute(gsl::czstring args) override
+    {
+        CCC_Token::Execute(args);
+
+        CStringTable().ReloadLanguage();
+
+        if (g_pGamePersistent->IsMainMenuActive())
+            MainMenu()->SetLanguageChanged(true);
+
+        if (g_pGameLevel == nullptr)
+            return;
+
+        if (g_pGamePersistent->IsMainMenuActive())
+        {
+            MainMenu()->Activate(false);
+            MainMenu()->Activate(true);
+        }
+
+        for (u32 id{0}; id < std::numeric_limits<ALife::_OBJECT_ID>::max(); id++)
+        {
+            if (auto gameObj = Level().Objects.net_Find(id); gameObj != nullptr)
+            {
+                if (auto invItem = smart_cast<CInventoryItem*>(gameObj); invItem != nullptr)
+                    invItem->ReloadNames();
+            }
+        }
+    }
+};
+
 #ifdef DEBUG
 class CCC_ALifePath : public IConsole_Command
 {
@@ -549,69 +621,46 @@ public:
 
 class CCC_ALifeLoadFrom : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_ALifeLoadFrom, IConsole_Command);
+
 public:
-    explicit CCC_ALifeLoadFrom(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_ALifeLoadFrom(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_ALifeLoadFrom() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(gsl::czstring args) override
     {
-        if (!ai().get_alife())
+        if (!CSavedGameWrapper::valid_saved_game(args))
         {
-            Log("! ALife simulator has not been started yet");
+            Msg("! Cannot load saved game [%s]: not found or version mismatch or corrupted", args ? args : "nullptr");
             return;
         }
 
-        string256 saved_game;
-        saved_game[0] = 0;
-        //.		sscanf						(args,"%s",saved_game);
-        strcpy_s(saved_game, args);
-        if (!xr_strlen(saved_game))
+        if (ai().get_alife() != nullptr)
         {
-            Log("! Specify file name!");
-            return;
-        }
+            if (MainMenu()->IsActive())
+                MainMenu()->Activate(false);
 
-        if (!CSavedGameWrapper::saved_game_exist(saved_game))
+            Console->Hide();
+            ::Sound->set_master_volume(0.0f);
+
+            if (Device.Paused())
+                Device.Pause(false, true, true, "CCC_ALifeLoadFrom");
+
+            NET_Packet net_packet;
+            net_packet.w_begin(M_LOAD_GAME);
+            net_packet.w_stringZ(args);
+
+            Level().Send(net_packet, net_flags(true));
+        }
+        else
         {
-            Msg("! Cannot find saved game %s", saved_game);
-            return;
+            string_path command;
+            xr_strconcat(command, "start server(", args, "/single/alife/load)");
+            Console->Execute(command);
         }
-
-        if (!CSavedGameWrapper::valid_saved_game(saved_game))
-        {
-            Msg("! Cannot load saved game %s, version mismatch or saved game is corrupted", saved_game);
-            return;
-        }
-        /*     moved to level_network_messages.cpp
-                CSavedGameWrapper			wrapper(args);
-                if (wrapper.level_id() == ai().level_graph().level_id()) {
-                    if (Device.Paused())
-                        Device.Pause		(FALSE, TRUE, TRUE, "CCC_ALifeLoadFrom");
-
-                    Level().remove_objects	();
-
-                    game_sv_Single			*game = smart_cast<game_sv_Single*>(Level().Server->game);
-                    R_ASSERT				(game);
-                    game->restart_simulator	(saved_game);
-
-                    return;
-                }
-        */
-        if (MainMenu()->IsActive())
-            MainMenu()->Activate(false);
-
-        Console->Hide();
-
-        if (Device.Paused())
-            Device.Pause(FALSE, TRUE, TRUE, "CCC_ALifeLoadFrom");
-
-        NET_Packet net_packet;
-        net_packet.w_begin(M_LOAD_GAME);
-        net_packet.w_stringZ(saved_game);
-        Level().Send(net_packet, net_flags(TRUE));
     }
 
-    virtual void fill_tips(vecTips& tips) { get_files_list(tips, "$game_saves$", SAVE_EXTENSION); }
+    void fill_tips(vecTips& tips) override { get_files_list(tips, "$game_saves$", SAVE_EXTENSION); }
 };
 
 class CCC_LoadLastSave : public IConsole_Command
@@ -1525,14 +1574,30 @@ public:
     virtual void Execute(LPCSTR args) { PointerRegistryInfo(); }
 };
 #endif // USE_MEMORY_VALIDATOR
+
+class CCC_UI_Reload : public IConsole_Command
+{
+    RTTI_DECLARE_TYPEINFO(CCC_UI_Reload, IConsole_Command);
+
+public:
+    explicit CCC_UI_Reload(gsl::czstring N) : IConsole_Command{N, true} {}
+
+    void Execute(gsl::czstring) override
+    {
+        if (g_pGamePersistent != nullptr && g_pGameLevel != nullptr && Level().game != nullptr)
+            HUD().OnScreenRatioChanged();
+    }
+};
 } // namespace
 
 void CCC_RegisterCommands()
 {
     CMD1(CCC_MemStats, "stat_memory");
+    CMD1(CCC_UI_Reload, "ui_reload");
+
     // game
-    // CMD3(CCC_Mask, "g_always_run", &psActorFlags, AF_ALWAYSRUN);
     CMD1(CCC_GameDifficulty, "g_game_difficulty");
+    CMD1(CCC_GameLanguage, "g_language");
 
     CMD3(CCC_Mask, "wpn_aim_toggle", &psActorFlags, AF_WPN_AIM_TOGGLE);
 
@@ -1697,6 +1762,7 @@ void CCC_RegisterCommands()
     CMD3(CCC_Mask, "g_vertex_dbg", &psActorFlags, AF_VERTEX_DBG);
     CMD3(CCC_Mask, "keypress_on_start", &psActorFlags, AF_KEYPRESS_ON_START);
     CMD3(CCC_Mask, "g_effects_on_demorecord", &psActorFlags, AF_EFFECTS_ON_DEMORECORD);
+    CMD3(CCC_Mask, "g_lock_reload", &psActorFlags, AF_LOCK_RELOAD);
 
     CMD4(CCC_Integer, "g_cop_death_anim", &g_bCopDeathAnim, 0, 1);
 

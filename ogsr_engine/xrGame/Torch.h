@@ -31,6 +31,11 @@ protected:
     Fvector m_focus;
     Fcolor m_color;
 
+    Fvector m_camera_torch_offset;
+    Fvector m_camera_omni_offset;
+    f32 m_min_target_dist{0.5f};
+    bool m_bind_to_camera{};
+
 private:
     bool useVolumetric{}, useVolumetricForActor{};
 
@@ -69,6 +74,8 @@ protected:
     HUD_SOUND m_NightVisionOffSnd;
     HUD_SOUND m_NightVisionIdleSnd;
     HUD_SOUND m_NightVisionBrokenSnd;
+    HUD_SOUND sndTurnOn;
+    HUD_SOUND sndTurnOff;
 
     enum EStats
     {

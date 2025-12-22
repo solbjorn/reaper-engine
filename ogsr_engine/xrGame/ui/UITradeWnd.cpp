@@ -188,6 +188,20 @@ void CUITradeWnd::Init()
     BindDragDropListEvents(&m_uidata->UIOthersBagList);
     BindDragDropListEvents(&m_uidata->UIOurTradeList);
     BindDragDropListEvents(&m_uidata->UIOthersTradeList);
+
+    // Load sounds
+    if (uiXml.NavigateToNode("action_sounds", 0))
+    {
+        XML_NODE* stored_root = uiXml.GetLocalRoot();
+        uiXml.SetLocalRoot(uiXml.NavigateToNode("action_sounds", 0));
+
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvProperties)], uiXml.Read("snd_properties", 0, nullptr));
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvItemMove)], uiXml.Read("snd_item_move", 0, nullptr));
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvSndTrade)], uiXml.Read("snd_trade_completed", 0, nullptr));
+        create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvSndTradeBlock)], uiXml.Read("snd_trade_blocked", 0, nullptr));
+
+        uiXml.SetLocalRoot(stored_root);
+    }
 }
 
 void CUITradeWnd::InitTrade(CInventoryOwner* pOur, CInventoryOwner* pOthers)
@@ -542,6 +556,8 @@ void CUITradeWnd::ActivatePropertiesBox()
     cursor_pos = GetUICursor()->GetCursorPosition();
     cursor_pos.sub(vis_rect.lt);
     m_pUIPropertiesBox->Show(vis_rect, cursor_pos);
+
+    PlaySnd(eInventorySndAction::eInvProperties);
 }
 
 void CUITradeWnd::DisableAll()
@@ -750,6 +766,7 @@ void CUITradeWnd::MoveItems(CUICellItem* itm)
 
     UpdatePrices();
 
+    PlaySnd(eInventorySndAction::eInvItemMove);
     SetCurrentItem(nullptr);
 }
 
@@ -765,6 +782,8 @@ bool CUITradeWnd::MoveItem(CUICellItem* itm)
         ToOthersTrade(itm);
     else if (old_owner == &m_uidata->UIOthersTradeList)
         ToOthersBag(itm);
+
+    PlaySnd(eInventorySndAction::eInvItemMove);
 
     return true;
 }
@@ -807,6 +826,14 @@ void CUITradeWnd::BindDragDropListEvents(CUIDragDropListEx* lst)
     lst->m_f_item_db_click = CallMe::fromMethod<&CUITradeWnd::OnItemDbClick>(this);
     lst->m_f_item_selected = CallMe::fromMethod<&CUITradeWnd::OnItemSelected>(this);
     lst->m_f_item_rbutton_click = CallMe::fromMethod<&CUITradeWnd::OnItemRButtonClick>(this);
+}
+
+void CUITradeWnd::PlaySnd(eInventorySndAction a)
+{
+    auto& snd = sounds[std::to_underlying(a)];
+
+    if (snd._handle() != nullptr && snd._feedback() == nullptr)
+        snd.play(nullptr, sm_2D);
 }
 
 void CUITradeWnd::ColorizeItem(CUICellItem* itm, bool canTrade, bool highlighted)
