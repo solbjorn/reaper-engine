@@ -4,7 +4,7 @@
 
 #include "QueryHelper.h"
 
-R_occlusion::~R_occlusion() { occq_destroy(); }
+R_occlusion::~R_occlusion() { occq_destroy(true); }
 
 void R_occlusion::occq_create()
 {
@@ -12,19 +12,27 @@ void R_occlusion::occq_create()
     last_frame = Device.dwFrame;
 }
 
-void R_occlusion::occq_destroy()
+void R_occlusion::occq_destroy(bool silent)
 {
-    Msg("* [%s]: fids[%zu] used[%zu] pool[%zu]", __FUNCTION__, fids.size(), used.size(), pool.size());
-    size_t p_cnt = pool.size(), u_cnt = 0;
+    const auto p_cnt = std::ssize(pool);
+
+    if (!silent)
+        Msg("* [%s]: fids[%zd] used[%zd] pool[%zd]", __FUNCTION__, std::ssize(fids), std::ssize(used), p_cnt);
+
+    gsl::index u_cnt{};
+
     for (const auto& it : used)
+    {
         if (it.Q)
             u_cnt++;
+    }
 
     used.clear();
     pool.clear();
     fids.clear();
 
-    Msg("* [%s]: released [%zu] used and [%zu] pool queries", __FUNCTION__, u_cnt, p_cnt);
+    if (!silent)
+        Msg("* [%s]: released [%zd] used and [%zd] pool queries", __FUNCTION__, u_cnt, p_cnt);
 }
 
 void R_occlusion::cleanup_lost()

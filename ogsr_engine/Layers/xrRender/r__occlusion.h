@@ -41,7 +41,7 @@ public:
     ~R_occlusion();
 
     void occq_create();
-    void occq_destroy();
+    void occq_destroy(bool silent = false);
 
     u32 occq_begin(u32& ID, ctx_id_t context_id); // returns 'order'
     void occq_end(u32& ID, ctx_id_t context_id);
