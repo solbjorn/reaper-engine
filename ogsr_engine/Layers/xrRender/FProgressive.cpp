@@ -62,6 +62,8 @@ void FProgressive::Load(const char* N, IReader* data, u32 dwFlags)
 
 void FProgressive::Render(CBackend& cmd_list, float LOD, bool use_fast_geo)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     if (m_fast && use_fast_geo)
     {
         int lod_id = iFloor((1.f - clampr(LOD, 0.f, 1.f)) * float(xSWI->count - 1) + 0.5f);

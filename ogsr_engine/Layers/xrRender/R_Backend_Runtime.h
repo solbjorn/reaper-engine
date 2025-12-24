@@ -119,6 +119,8 @@ ICF void CBackend::set_States(ID3DState* _state)
 
 IC void CBackend::set_Pass(SPass* P)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     set_States(P->state);
 
     set_PS(P->ps);

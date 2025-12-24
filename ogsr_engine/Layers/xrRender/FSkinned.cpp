@@ -547,6 +547,8 @@ BOOL CSkeletonX_ext::_PickBoneHW4W(IKinematics::pick_result& r, float dist, cons
 
 BOOL CSkeletonX_ext::_PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id, u32 iBase)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     VERIFY(Parent && (ChildIDX != u16(-1)));
     CBoneData& BD = Parent->LL_GetData(bone_id);
     CBoneData::FacesVec* faces = &BD.child_faces[ChildIDX];

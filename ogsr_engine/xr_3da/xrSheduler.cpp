@@ -305,32 +305,18 @@ void CSheduler::ProcessStep()
     {
         // Update
         Item item = Top();
-        bool condition;
-
-#ifndef DEBUG
-        __try
-        {
-#endif
-            condition = !item.Object || !item.Object->shedule_Needed();
-#ifndef DEBUG
-        }
-        __except (ExceptStackTrace("[CSheduler::ProcessStep] stack trace:\n"))
-        {
-            Msg("Scheduler tried to update object %s", item.scheduled_name.c_str());
-            item.Object = nullptr;
-            continue;
-        }
-#endif
-
-        if (condition)
+        if (item.Object == nullptr || !item.Object->shedule_Needed())
         {
 #ifdef DEBUG_SCHEDULER
             Msg("SCHEDULER: process unregister [%s][%x][%s]", item.scheduled_name.c_str(), item.Object, "false");
 #endif
+
             // Erase element
             Pop();
             continue;
         }
+
+        XR_TRACY_ZONE_SCOPED();
 
 #ifdef DEBUG_SCHEDULER
         Msg("SCHEDULER: process step [%s][%x][false]", item.scheduled_name.c_str(), item.Object);
@@ -341,51 +327,36 @@ void CSheduler::ProcessStep()
 
         u32 Elapsed = dwTime - item.dwTimeOfLastExecute;
 
-#ifndef DEBUG
-        __try
-        {
-#endif
-            // Real update call
-            // Msg						("------- %d:",Device.dwFrame);
+        // Real update call
 #ifdef DEBUG
-            item.Object->dbg_startframe = Device.dwFrame;
-            eTimer.Start();
+        item.Object->dbg_startframe = Device.dwFrame;
+        eTimer.Start();
 #endif
 
-            // Calc next update interval
-            const u32 dwMin = _max(30u, static_cast<u32>(item.Object->shedule.t_min));
-            u32 dwMax = (1000 + item.Object->shedule.t_max) / 2;
-            const float scale = item.Object->shedule_Scale();
-            u32 dwUpdate = dwMin + iFloor(float(dwMax - dwMin) * scale);
-            clamp(dwUpdate, u32(_max(dwMin, u32(20))), dwMax);
+        // Calc next update interval
+        const u32 dwMin = _max(30u, static_cast<u32>(item.Object->shedule.t_min));
+        u32 dwMax = (1000 + item.Object->shedule.t_max) / 2;
+        const float scale = item.Object->shedule_Scale();
+        u32 dwUpdate = dwMin + iFloor(float(dwMax - dwMin) * scale);
+        clamp(dwUpdate, u32(_max(dwMin, u32(20))), dwMax);
 
-            m_current_step_obj = item.Object;
-            item.Object->shedule_Update(clampr(Elapsed, u32(1), u32(_max(u32(item.Object->shedule.t_max), u32(1000)))));
+        m_current_step_obj = item.Object;
+        item.Object->shedule_Update(clampr(Elapsed, u32(1), u32(_max(u32(item.Object->shedule.t_max), u32(1000)))));
 
-            if (!m_current_step_obj)
-            {
-#ifdef DEBUG_SCHEDULER
-                Msg("SCHEDULER: process unregister (self unregistering) [%s][%x][%s]", item.scheduled_name.c_str(), item.Object, "false");
-#endif
-                continue;
-            }
-
-            m_current_step_obj = nullptr;
-
-            // Fill item structure
-            item.dwTimeForExecute = dwTime + dwUpdate;
-            item.dwTimeOfLastExecute = dwTime;
-            ItemsProcessed.emplace_back(std::move(item));
-
-#ifndef DEBUG
-        }
-        __except (ExceptStackTrace("[CSheduler::ProcessStep2] stack trace:\n"))
+        if (!m_current_step_obj)
         {
-            Msg("Scheduler tried to update object %s", *item.scheduled_name);
-            item.Object = nullptr;
+#ifdef DEBUG_SCHEDULER
+            Msg("SCHEDULER: process unregister (self unregistering) [%s][%x][%s]", item.scheduled_name.c_str(), item.Object, "false");
+#endif
             continue;
         }
-#endif
+
+        m_current_step_obj = nullptr;
+
+        // Fill item structure
+        item.dwTimeForExecute = dwTime + dwUpdate;
+        item.dwTimeOfLastExecute = dwTime;
+        ItemsProcessed.emplace_back(std::move(item));
 
         if (!prefetch && CPU::QPC() > cycles_limit)
             break;
@@ -401,6 +372,8 @@ void CSheduler::ProcessStep()
 
 void CSheduler::Update()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Initialize
     auto& stats = *Device.Statistic;
     stats.Sheduler.Begin();

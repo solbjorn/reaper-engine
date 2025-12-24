@@ -1232,5 +1232,7 @@ void CSE_ALifeSmartZone::update()
     if (op == ops.end())
         return;
 
+    XR_TRACY_ZONE_SCOPED();
+
     op->second(this);
 }

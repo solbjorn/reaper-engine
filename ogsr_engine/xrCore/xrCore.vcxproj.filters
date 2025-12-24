@@ -219,6 +219,9 @@
     <ClInclude Include="vector.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="defines.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
     <ClInclude Include="dump_string.h">
       <Filter>Math</Filter>
     </ClInclude>
@@ -281,9 +284,6 @@
     </ClInclude>
     <ClInclude Include="xr_resource.h">
       <Filter>shared memory/string library</Filter>
-    </ClInclude>
-    <ClInclude Include="xr_rtti.h">
-      <Filter>Kernel</Filter>
     </ClInclude>
     <ClInclude Include="xrsharedmem.h">
       <Filter>shared memory/string library</Filter>

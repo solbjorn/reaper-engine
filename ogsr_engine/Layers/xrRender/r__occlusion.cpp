@@ -112,6 +112,8 @@ R_occlusion::occq_result R_occlusion::occq_get(u32& ID)
     if (!used[ID].Q)
         return std::numeric_limits<occq_result>::max();
 
+    XR_TRACY_ZONE_SCOPED();
+
     occq_result fragments = 0;
     HRESULT hr;
     CTimer T;

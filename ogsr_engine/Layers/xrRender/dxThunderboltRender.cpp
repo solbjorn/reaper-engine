@@ -29,6 +29,8 @@ void dxThunderboltRender::Copy(IThunderboltRender& _in)
 
 void dxThunderboltRender::Render(CEffect_Thunderbolt& owner)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     VERIFY(owner.current);
 
     // lightning model

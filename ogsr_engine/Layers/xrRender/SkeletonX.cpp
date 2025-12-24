@@ -52,10 +52,12 @@ void CSkeletonX::_Copy(CSkeletonX* B)
 }
 
 //////////////////////////////////////////////////////////////////////
+
 void CSkeletonX::_Render(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 {
-    const bool CalcVelocity = cmd_list.RVelocity;
+    XR_TRACY_ZONE_SCOPED();
 
+    const bool CalcVelocity = cmd_list.RVelocity;
     if (CalcVelocity)
     {
         // Previous WVP
@@ -178,6 +180,8 @@ void CSkeletonX::_Render(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iO
 
 void CSkeletonX::_Render_soft(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     u32 vOffset = cache_vOffset;
 
     _VertexStream& _VS = RImplementation.Vertex;

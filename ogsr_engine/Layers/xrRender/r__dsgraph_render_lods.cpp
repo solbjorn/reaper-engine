@@ -10,6 +10,8 @@ void R_dsgraph_structure::render_lods()
     if (mapLOD.empty())
         return;
 
+    XR_TRACY_ZONE_SCOPED();
+
     // *** Fill VB and generate groups
     constexpr u32 shid{4};
     auto iter = mapLOD.begin();

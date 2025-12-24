@@ -132,6 +132,8 @@ void CROS_impl::update(IRenderable* O)
         return;
     }
 
+    XR_TRACY_ZONE_SCOPED();
+
     // select sample, randomize position inside object
     vis_data& vis = O->renderable.visual->getVisData();
     Fvector position;

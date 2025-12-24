@@ -2,6 +2,8 @@
 
 void CRenderTarget::draw_rain(const light& RainSetup)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     float fRainFactor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
 
     // Common calc for quad-rendering

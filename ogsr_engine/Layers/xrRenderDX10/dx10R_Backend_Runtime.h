@@ -428,6 +428,8 @@ IC void CBackend::set_Constants(R_constant_table* C)
     if (ctable == C)
         return;
 
+    XR_TRACY_ZONE_SCOPED();
+
     ctable = C;
     xforms.unmap();
     hemi.unmap();
@@ -437,8 +439,6 @@ IC void CBackend::set_Constants(R_constant_table* C)
 
     if (!C)
         return;
-
-    PGO(Msg("PGO:c-table"));
 
     //	Setup constant tables
     {

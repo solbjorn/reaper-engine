@@ -82,6 +82,8 @@ struct R_dsgraph_structure
 
     void reset()
     {
+        XR_TRACY_ZONE_SCOPED();
+
         context_id = R__INVALID_CTX_ID;
         val_feedback = nullptr;
 

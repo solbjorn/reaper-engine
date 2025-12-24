@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "Light_Package.h"
 
 void light_Package::clear()
@@ -28,6 +29,8 @@ void light_Package::sort()
 // один раз за кадр.
 void light_Package::vis_prepare()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     for (light* L : v_point)
         L->vis_prepare();
     for (light* L : v_shadowed)
@@ -40,6 +43,8 @@ void light_Package::vis_prepare()
 // самого свежего запроса, к самому старому. См. комментарии выше.
 void light_Package::vis_update()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     if (!v_spot.empty())
     {
         for (int it = v_spot.size() - 1; it >= 0; it--)

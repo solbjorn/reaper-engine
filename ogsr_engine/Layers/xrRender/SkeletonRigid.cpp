@@ -16,6 +16,8 @@ void CKinematics::CalculateBones(BOOL bForceExact)
     if (Device.dwTimeGlobal == UCalc_Time)
         return; // early out for "fast" update
 
+    XR_TRACY_ZONE_SCOPED();
+
     std::scoped_lock UCalc_Lock(UCalc_Mutex);
     OnCalculateBones();
 
@@ -47,6 +49,8 @@ void CKinematics::CalculateBones(BOOL bForceExact)
     UCalc_Visibox++;
     if (UCalc_Visibox >= psSkeletonUpdate)
     {
+        XR_TRACY_ZONE_SCOPED();
+
         // mark
         UCalc_Visibox = -(::Random.randI(psSkeletonUpdate - 1));
 
@@ -190,6 +194,8 @@ void CKinematics::CalculateBonesAdditionalTransforms(const CBoneData* bd, CBoneI
 
 void CKinematics::CLBone(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 channel_mask /*= (1<<0)*/)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     u16 SelfID = bd->GetSelfID();
 
     if (LL_GetBoneVisible(SelfID))
@@ -231,6 +237,8 @@ void CKinematics::Bone_GetAnimPos(Fmatrix& pos, u16 id, u8 mask_channel, bool ig
 
 void CKinematics::Bone_Calculate(CBoneData* bd, const Fmatrix* parent)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     u16 SelfID = bd->GetSelfID();
     CBoneInstance& BONE_INST = LL_GetBoneInstance(SelfID);
     CLBone(bd, BONE_INST, parent, std::numeric_limits<u8>::max());
@@ -241,6 +249,8 @@ void CKinematics::Bone_Calculate(CBoneData* bd, const Fmatrix* parent)
 
 void CKinematics::BoneChain_Calculate(const CBoneData* bd, CBoneInstance& bi, u8 mask_channel, bool ignore_callbacks)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     u16 SelfID = bd->GetSelfID();
     // CBlendInstance& BLEND_INST	= LL_GetBlendInstance(SelfID);
     // CBlendInstance::BlendSVec &Blend = BLEND_INST.blend_vector();

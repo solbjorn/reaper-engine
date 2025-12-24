@@ -615,6 +615,8 @@ void CRenderTarget::reset_light_marker(CBackend& cmd_list, bool bResetStencil)
     if (!bResetStencil)
         return;
 
+    XR_TRACY_ZONE_SCOPED();
+
     u32 Offset;
     float _w = float(Device.dwWidth);
     float _h = float(Device.dwHeight);

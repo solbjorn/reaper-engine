@@ -104,6 +104,10 @@ typedef struct tagTHREADNAME_INFO
 
 static void set_thread_name(HANDLE ThreadHandle, const char* threadName)
 {
+#ifdef TRACY_ENABLE
+    tracy::SetThreadName(threadName);
+#endif
+
     if (IsWindows10OrGreater())
     {
         using FuncSetThreadDescription = HRESULT(WINAPI*)(HANDLE, PCWSTR);

@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "../xrRender/light.h"
+
 #include "../xrRender/FBasicVisual.h"
 
 smapvis::smapvis()
@@ -98,6 +99,8 @@ void smapvis::flushoccq()
     // the tough part
     if (!pending || testQ_frame < Device.dwFrame)
         return;
+
+    XR_TRACY_ZONE_SCOPED();
 
     u64 fragments = RImplementation.occq_get(testQ_id);
     pending = false;

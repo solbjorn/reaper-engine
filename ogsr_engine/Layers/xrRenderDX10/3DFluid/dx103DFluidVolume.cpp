@@ -41,6 +41,8 @@ void dx103DFluidVolume::Render(CBackend& cmd_list, float, bool) // LOD - Level O
     if (!ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE))
         return;
 
+    XR_TRACY_ZONE_SCOPED();
+
     u32 dwOffset, dwCount;
 
     FVF::LIT* pv_start = (FVF::LIT*)RImplementation.Vertex.Lock(6 * 3 * 2, m_Geom->vb_stride, dwOffset);

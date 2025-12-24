@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "../xrRender/DetailManager.h"
 
 #include "../../xr_3da/igame_persistent.h"
@@ -25,6 +26,8 @@ static float GoToValue(float& current, float go_to)
 
 void CDetailManager::hw_Render(CBackend& cmd_list, float fade_distance, const Fvector* light_position)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Render-prepare
     //	Update timer
     //	Can't use Device.fTimeDelta since it is smoothed! Don't know why, but smoothed value looks more choppy!
@@ -71,6 +74,8 @@ void CDetailManager::hw_Render(CBackend& cmd_list, float fade_distance, const Fv
 void CDetailManager::hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, u32 var_id, u32 lod_id, float fade_distance,
                                     const Fvector* light_position)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     constexpr const char* strConsts = "consts";
     constexpr const char* strWave = "wave";
     constexpr const char* strDir2D = "dir2D";

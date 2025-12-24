@@ -64,6 +64,8 @@ void CScriptBinderObject::shedule_Update(u32 time_delta)
     if (op == ops.end())
         return;
 
+    XR_TRACY_ZONE_SCOPED();
+
     op->second(this, time_delta);
 }
 

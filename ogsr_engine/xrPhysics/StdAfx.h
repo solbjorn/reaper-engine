@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../xr_3da/stdafx.h"
-#include "../xrScriptEngine/xr_sol.h"
+#include "../xrExternal/sol.h"
 
 #define THROW VERIFY
 #define THROW2 VERIFY2

@@ -74,6 +74,8 @@ void CDetailManager::cache_Decompress(Slot* S)
     if (D.empty)
         return;
 
+    XR_TRACY_ZONE_SCOPED();
+
     const DetailSlot& DS = QueryDB(D.sx, D.sz);
 
     // Select polygons

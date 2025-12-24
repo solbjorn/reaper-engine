@@ -103,6 +103,8 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 {
     if (m_Def && m_RT_Flags.is(flRT_Playing))
     {
+        XR_TRACY_ZONE_SCOPED();
+
         m_MemDT += frame_dt;
 
         int StepCount = 0;
@@ -369,6 +371,8 @@ ICF void magnitude_sse(const Fvector& vec, float& res)
 
 void CParticleEffect::ParticleRenderStream(PAPI::Particle* particles, FVF::LIT* pv, u32 count)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     float sina = 0.0f, cosa = 0.0f;
     // Xottab_DUTY: changed angle to be float instead of DWORD
     // But it must be 0xFFFFFFFF or otherwise some particles won't play
@@ -510,6 +514,8 @@ void CParticleEffect::Render(CBackend& cmd_list, float, bool)
 
     if (!dwCount)
         return;
+
+    XR_TRACY_ZONE_SCOPED();
 
     bool hud = GetHudMode();
     if (hud)

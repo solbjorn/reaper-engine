@@ -4,6 +4,8 @@
 
 void CRenderTarget::accum_spot(light* L)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     phase_accumulator(RCache);
     RImplementation.stats.l_visible++;
 
@@ -220,6 +222,8 @@ void CRenderTarget::accum_volumetric(light* L)
 
     if (!L->flags.bVolumetric)
         return;
+
+    XR_TRACY_ZONE_SCOPED();
 
     if (!RImplementation.o.ssfx_volumetric)
     {

@@ -16,6 +16,8 @@ sector_id_t R_dsgraph_structure::detect_sector(const Fvector& P)
 
 sector_id_t R_dsgraph_structure::detect_sector(const Fvector& P, Fvector& dir)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Portals model
     int id1 = -1;
     float range1 = 500.f;

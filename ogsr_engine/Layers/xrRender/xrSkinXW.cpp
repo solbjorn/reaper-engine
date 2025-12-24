@@ -15,6 +15,8 @@ XR_DIAG_POP();
 
 void Skin1W(vertRender* D, vertBoned1W* S, u32 vCount, CBoneInstance* Bones)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Prepare
     int U_Count = vCount / 8;
     vertBoned1W* V = S;
@@ -104,6 +106,8 @@ void Skin1W(vertRender* D, vertBoned1W* S, u32 vCount, CBoneInstance* Bones)
 
 void Skin2W(vertRender* D, vertBoned2W* S, u32 vCount, CBoneInstance* Bones)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Prepare
     int U_Count = vCount;
     vertBoned2W* V = S;
@@ -141,6 +145,8 @@ void Skin2W(vertRender* D, vertBoned2W* S, u32 vCount, CBoneInstance* Bones)
 
 void Skin3W(vertRender* D, vertBoned3W* S, u32 vCount, CBoneInstance* Bones)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Prepare
     int U_Count = vCount;
     vertBoned3W* V = S;
@@ -189,6 +195,8 @@ void Skin3W(vertRender* D, vertBoned3W* S, u32 vCount, CBoneInstance* Bones)
 
 void Skin4W(vertRender* D, vertBoned4W* S, u32 vCount, CBoneInstance* Bones)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     oneapi::tbb::parallel_for(oneapi::tbb::blocked_range<u32>(0, vCount), [&](const auto& range) {
         Fvector P0, N0, P1, N1, P2, N2, P3, N3;
 

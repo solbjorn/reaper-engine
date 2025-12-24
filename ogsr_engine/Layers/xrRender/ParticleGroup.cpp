@@ -335,8 +335,11 @@ void OnGroupParticleDead(void* owner, u32 param, PAPI::Particle& m, u32 idx)
 } // namespace
 
 //------------------------------------------------------------------------------
+
 void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& box, bool& bPlaying)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     CParticleEffect* E = static_cast<CParticleEffect*>(_effect);
     if (E)
     {
@@ -424,8 +427,8 @@ void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& 
             _children_free.erase(new_end, _children_free.end());
         }
     }
-    //	Msg("C: %d CS: %d",_children.size(),_children_stopped.size());
 }
+
 void CParticleGroup::SItem::OnDeviceCreate()
 {
     VisualVec visuals;
@@ -433,6 +436,7 @@ void CParticleGroup::SItem::OnDeviceCreate()
     for (auto& visual : visuals)
         static_cast<CParticleEffect*>(visual)->OnDeviceCreate();
 }
+
 void CParticleGroup::SItem::OnDeviceDestroy()
 {
     VisualVec visuals;
@@ -440,6 +444,7 @@ void CParticleGroup::SItem::OnDeviceDestroy()
     for (auto& visual : visuals)
         static_cast<CParticleEffect*>(visual)->OnDeviceDestroy();
 }
+
 u32 CParticleGroup::SItem::ParticlesCount()
 {
     u32 p_count = 0;
@@ -468,6 +473,8 @@ CParticleGroup::~CParticleGroup()
 
 void CParticleGroup::OnFrame(u32 u_dt)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     std::scoped_lock slock(lock);
 
     if (m_Def && m_RT_Flags.is(flRT_Playing))

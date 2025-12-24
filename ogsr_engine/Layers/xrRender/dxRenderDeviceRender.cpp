@@ -228,6 +228,8 @@ u32 dxRenderDeviceRender::GetCacheStatPolys() { return RCache.stat.polys; }
 
 void dxRenderDeviceRender::Begin()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     get_imm_context().context_id = R__IMM_CTX_ID;
     contexts_used.set(R__IMM_CTX_ID);
 
@@ -255,6 +257,8 @@ void dxRenderDeviceRender::Clear()
 
 void dxRenderDeviceRender::End()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     VERIFY(HW.pDevice);
 
     if (HW.Caps.SceneMode)

@@ -55,8 +55,9 @@
     <File Path="ogsr_engine/xray.natvis" />
   </Folder>
   <Project Path="ogsr_engine/Layers/xrRenderPC_R4/xrRender_R4.vcxproj" Id="ac9b12ed-a2d7-4337-a981-5bd8430e96d8">
+    <BuildDependency Project="3rd_party/Src/DirectXTex/DirectXTex.vcxproj" />
     <BuildDependency Project="3rd_party/Src/concurrency/oneTBB/oneTBB.vcxproj" />
-    <BuildDependency Project="3rd_party/Src/luajit2/luajit2.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/imgui/imgui.vcxproj" />
     <BuildDependency Project="3rd_party/Src/xxHash/xxHash.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrCDB/xrCDB.vcxproj" Id="a19b1df2-82ec-4364-8bdf-85d13a1c89b5">
@@ -65,22 +66,22 @@
   <Project Path="ogsr_engine/xrCore/xrCore.vcxproj" Id="a0f7d1fb-59a7-4717-a7e4-96f37e91998e">
     <BuildDependency Project="3rd_party/Src/abseil/abseil.vcxproj" />
     <BuildDependency Project="3rd_party/Src/libsquashfs/libsquashfs.vcxproj" />
-    <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     <BuildDependency Project="3rd_party/Src/mimalloc/mimalloc.vcxproj" />
     <BuildDependency Project="3rd_party/Src/tinyxml2/tinyxml2.vcxproj" />
     <BuildDependency Project="3rd_party/Src/xxHash/xxHash.vcxproj" />
   </Project>
+  <Project Path="ogsr_engine/xrExternal/xrExternal.vcxproj" Id="6d4e1cd0-9d48-4210-982e-93827a58256e">
+    <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/luajit2/luajit2.vcxproj" />
+  </Project>
   <Project Path="ogsr_engine/xrGame/xrGame.vcxproj" Id="200652a6-043e-4634-8837-87983b3bd5e0">
     <BuildDependency Project="3rd_party/Src/concurrency/oneTBB/oneTBB.vcxproj" />
-    <BuildDependency Project="3rd_party/Src/luajit2/luajit2.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/imgui/imgui.vcxproj" />
     <BuildDependency Project="3rd_party/Src/zstd/zstd.vcxproj" />
-    <BuildDependency Project="ogsr_engine/xrPhysics/xrPhysics.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrParticles/xrParticles.vcxproj" Id="94a1c366-3d19-48e6-8170-4adc2e70df97" />
   <Project Path="ogsr_engine/xrPhysics/xrPhysics.vcxproj" Id="dfe83c79-b305-40b1-b566-00f78a6d2568">
-    <BuildDependency Project="3rd_party/Src/luajit2/luajit2.vcxproj" />
     <BuildDependency Project="3rd_party/Src/ode/contrib/msvc7/ode_default/default.vcxproj" />
-    <BuildDependency Project="ogsr_engine/xrCore/xrCore.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrSound/xrSound.vcxproj" Id="ccca7859-eb86-493e-9b53-c4235f45b3c5">
     <BuildDependency Project="3rd_party/Src/concurrency/oneTBB/oneTBB.vcxproj" />
@@ -91,7 +92,6 @@
   <Project Path="ogsr_engine/xr_3da/XR_3DA.vcxproj" Id="2578c6d8-660d-48ae-9322-7422f8664f06">
     <BuildDependency Project="3rd_party/Src/Xiph/theora/theora.vcxproj" />
     <BuildDependency Project="3rd_party/Src/concurrency/oneTBB/oneTBB.vcxproj" />
-    <BuildDependency Project="ogsr_engine/Layers/xrRenderPC_R4/xrRender_R4.vcxproj" />
-    <BuildDependency Project="ogsr_engine/xrGame/xrGame.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/imgui/imgui.vcxproj" />
   </Project>
 </Solution>

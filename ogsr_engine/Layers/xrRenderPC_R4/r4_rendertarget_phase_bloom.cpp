@@ -70,7 +70,9 @@ void CalcGauss_wave(Fvector4& w0, // weight
 
 void CRenderTarget::phase_bloom()
 {
+    XR_TRACY_ZONE_SCOPED();
     PIX_EVENT(phase_bloom);
+
     u32 Offset;
 
     // Targets
@@ -322,6 +324,8 @@ void CRenderTarget::phase_bloom()
 
 void CRenderTarget::phase_ssfx_bloom()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Constants
     u32 Offset = 0;
     constexpr u32 C = color_rgba(0, 0, 0, 0);

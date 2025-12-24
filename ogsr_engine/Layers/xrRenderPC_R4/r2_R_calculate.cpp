@@ -9,6 +9,8 @@ float g_fSCREEN;
 
 void CRender::Calculate()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     auto& dsgraph = get_imm_context();
 
     // Transfer to global space to avoid deep pointer access
@@ -27,6 +29,8 @@ void CRender::Calculate()
     // Detect camera-sector
     if (!Device.vCameraDirectionSaved.similar(Device.vCameraPosition, EPS_L))
     {
+        XR_TRACY_ZONE_SCOPED();
+
         const auto sector_id = dsgraph.detect_sector(Device.vCameraPosition);
         if (sector_id != INVALID_SECTOR_ID)
         {
@@ -41,6 +45,8 @@ void CRender::Calculate()
     Lights.Update();
 
     main_tg->run([this] {
+        XR_TRACY_ZONE_SCOPED();
+
         auto& dsgraph = get_imm_context();
         VERIFY(dsgraph.mapDistort.empty() && dsgraph.mapHUDDistort.empty());
 

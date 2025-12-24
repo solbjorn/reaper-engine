@@ -29,6 +29,8 @@ void dxLensFlareRender::Copy(ILensFlareRender& _in)
 
 void dxLensFlareRender::Render(CLensFlare& owner, BOOL bSun, BOOL bFlares, BOOL bGradient)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     Fcolor dwLight;
     Fcolor color;
     Fvector vec, vecSx, vecSy;

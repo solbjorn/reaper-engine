@@ -16,6 +16,8 @@ constexpr std::array<u16, 16 * 3> XR_ALIGNED_DEFAULT facetable{3, 2, 1, 3, 1, 0,
 
 void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, const Fmatrix& xform, const Fmatrix& xform_prev, float fBias)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Choose normal code-path or filtered
     phase_accumulator(cmd_list);
 
@@ -306,6 +308,8 @@ void CRenderTarget::accum_direct_volumetric(CBackend& cmd_list, u32 sub_phase, c
 
     if ((sub_phase != SE_SUN_NEAR) && (sub_phase != SE_SUN_FAR))
         return;
+
+    XR_TRACY_ZONE_SCOPED();
 
     phase_vol_accumulator(cmd_list);
     cmd_list.set_ColorWriteEnable();

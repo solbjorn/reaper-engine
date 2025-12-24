@@ -92,6 +92,8 @@ void CObjectList::SingleUpdate(CObject* O)
 {
     if (O->processing_enabled() && (Device.dwFrame != O->dwFrame_UpdateCL))
     {
+        XR_TRACY_ZONE_SCOPED();
+
         if (O->H_Parent())
             SingleUpdate(O->H_Parent());
         Device.Statistic->UpdateClient_updated++;
@@ -136,6 +138,8 @@ void CObjectList::Update(bool bForce)
         // Clients
         if (Device.fTimeDelta > EPS_S || bForce)
         {
+            XR_TRACY_ZONE_SCOPED();
+
             // Select Crow-Mode
             Device.Statistic->UpdateClient_updated = 0;
             Device.Statistic->UpdateClient_crows = crows->size();
@@ -177,6 +181,8 @@ void CObjectList::ProcessDestroyQueue()
     // Destroy
     if (!destroy_queue.empty())
     {
+        XR_TRACY_ZONE_SCOPED();
+
         // Info
         for (const auto& oit : objects_active)
             for (int it = destroy_queue.size() - 1; it >= 0; it--)

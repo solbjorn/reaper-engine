@@ -61,6 +61,8 @@ void CPortalTraverser::fade_render()
     if (f_portals.empty())
         return;
 
+    XR_TRACY_ZONE_SCOPED();
+
     // re-sort, back to front
     std::ranges::sort(f_portals, [this](const auto& p1, const auto& p2) {
         const float d1 = i_vBase.distance_to_sqr(p1.first->S.P);
@@ -151,6 +153,8 @@ void CPortalTraverser::dbg_draw()
 
 void CPortalTraverser::traverse_sector(CSector* sector, CFrustum& F, _scissor& R_scissor)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Register traversal process sector
     if (sector->r_marker != i_marker)
     {

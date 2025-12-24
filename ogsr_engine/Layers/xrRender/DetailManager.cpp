@@ -204,10 +204,14 @@ void CDetailManager::UpdateVisibleM(const Fvector& EYE)
     // if (Device.m_SecondViewport.IsSVPFrame())
     //     return;
 
+    XR_TRACY_ZONE_SCOPED();
+
     // Clean up
     for (auto& vec : m_visibles)
+    {
         for (auto& vis : vec)
             vis.clear();
+    }
 
     CFrustum View;
     View.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
@@ -358,6 +362,8 @@ void CDetailManager::Render(CBackend& cmd_list, float fade_distance, const Fvect
     if (!RImplementation.Details || !dtFS || !psDeviceFlags.is(rsDetails))
         return;
 
+    XR_TRACY_ZONE_SCOPED();
+
     tg->wait();
 
     Device.Statistic->RenderDUMP_DT_Render.Begin();
@@ -394,6 +400,8 @@ void CDetailManager::run_async()
         if (!psDeviceFlags.is(rsDetails))
             return;
 
+        XR_TRACY_ZONE_SCOPED();
+
         if (need_init) [[unlikely]]
         {
             cache_Initialize();
@@ -419,6 +427,8 @@ void CDetailManager::details_clear()
         return;
 
     for (auto& list : m_visibles)
+    {
         for (auto& vis : list)
             vis.clear();
+    }
 }

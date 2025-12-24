@@ -14,6 +14,8 @@ void R_sync_point::Create()
 
 bool R_sync_point::Wait(s32 wait_sleep, s64 timeout)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     BOOL result = FALSE;
     CTimer T;
 

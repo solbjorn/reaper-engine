@@ -19,6 +19,8 @@ static_assert(sizeof(v_filter) == 144);
 
 void CRenderTarget::phase_luminance()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     u32 Offset = 0;
     constexpr float eps = 0;
 

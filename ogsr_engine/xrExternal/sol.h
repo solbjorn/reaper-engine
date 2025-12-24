@@ -1,5 +1,5 @@
-#ifndef __XR_SOL_H
-#define __XR_SOL_H
+#ifndef __XREXTERNAL_SOL_H
+#define __XREXTERNAL_SOL_H
 
 // Enable checks for types and arguments
 #define SOL_ALL_SAFETIES_ON 1
@@ -100,4 +100,4 @@ inline sol::usertype<Class>& sol_set(sol::usertype<Class>& ut, Args&&... args)
 }
 } // namespace xr
 
-#endif // __XR_SOL_H
+#endif // __XREXTERNAL_SOL_H

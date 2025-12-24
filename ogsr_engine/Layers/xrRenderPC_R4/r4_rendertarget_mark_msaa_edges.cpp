@@ -2,6 +2,8 @@
 
 void CRenderTarget::mark_msaa_edges()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     u32 Offset{};
     constexpr f32 d_Z{EPS_S}, d_W{1.0f};
     constexpr u32 C{color_rgba(255, 255, 255, 255)};

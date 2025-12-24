@@ -46,6 +46,8 @@ Fvector wform(const Fmatrix& m, Fvector v)
 
 void CRender::calculate_sun(sun::cascade& cascade)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     light* sun = (light*)Lights.sun._get();
 
     CFrustum& cull_frustum = cascade.cull_frustum;
@@ -230,6 +232,8 @@ void CRender::calculate_sun(sun::cascade& cascade)
 
 void CRender::accumulate_cascade(u32 cascade_ind)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     auto& cascade = m_sun_cascades[cascade_ind];
     auto& cmd_list = get_context(cascade.context_id).cmd_list;
 
@@ -254,6 +258,8 @@ void CRender::sun_run()
     }
 
     sun_tg->run([this] {
+        XR_TRACY_ZONE_SCOPED();
+
         constexpr float fBias = -0.0000025f;
         auto* cascade = &m_sun_cascades[SE_SUN_NEAR];
 
@@ -291,6 +297,8 @@ void CRender::sun_run()
         for (auto& cascade : m_sun_cascades)
         {
             sun_tg->run([this, &cascade] {
+                XR_TRACY_ZONE_SCOPED();
+
                 auto& dsgraph = get_context(cascade.context_id);
 
                 // Fill the database
@@ -302,6 +310,8 @@ void CRender::sun_run()
                 sun.X.D.combine[cascade.cascade_ind] = cascade.cull_xform;
 
                 sun_tg->run([this, cascade_ind = cascade.cascade_ind] {
+                    XR_TRACY_ZONE_SCOPED();
+
                     // Begin SMAP-render
                     auto& dsgraph = get_context(m_sun_cascades[cascade_ind].context_id);
 
@@ -330,7 +340,9 @@ void CRender::sun_run()
 
 void CRender::sun_sync()
 {
+    XR_TRACY_ZONE_SCOPED();
     PIX_EVENT(DEFER_SUN);
+
     sun_tg->wait();
 
     for (u32 i = 0; i < R__NUM_SUN_CASCADES + 1; i++)

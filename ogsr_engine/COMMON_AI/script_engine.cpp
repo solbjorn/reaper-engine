@@ -16,6 +16,15 @@
 
 #include "ui/UIWpnParams.h"
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wcomma");
+XR_DIAG_IGNORE("-Wextra-semi-stmt");
+XR_DIAG_IGNORE("-Wunused-parameter");
+
+#include <tracy/TracyLua.hpp>
+
+XR_DIAG_POP();
+
 CScriptEngine::CScriptEngine() = default;
 CScriptEngine::~CScriptEngine() = default;
 
@@ -72,7 +81,9 @@ void CScriptEngine::init()
 {
     reinit();
     R_ASSERT(xr::script_engine_initialized(), "! ERROR : Cannot initialize LUA VM!");
+
     lua().open_libraries();
+    tracy::LuaRegister(lua().lua_state());
 
     //-----------------------------------------------------//
     export_classes(lua()); // Тут регистрируются все движковые функции, импортированные в скрипты

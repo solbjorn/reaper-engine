@@ -1,4 +1,5 @@
 #pragma once
+
 // Для изменения настроек нужно создать папку build_config_overrides,
 // скопировать этот файл в нее и изменить, как требуется.
 
@@ -58,3 +59,11 @@
 
 // Включает поддержку анимированных физобъектов типа крутящегося вентилятора в подземке агропрома из ЧН.
 #define ANIMATED_PHYSICS_OBJECT_SUPPORT
+
+// Uncomment to enable profiling with Tracy
+// #define TRACY_ENABLE
+
+// Uncomment to enable runtime checks for the RTTI tree validity. Each result
+// of smart_cast<>() will be rechecked against the result of dynamic_cast<>()
+// to make sure every class has its own RTTI, not inherited from a parent.
+// #define XR_RTTI_DEBUG

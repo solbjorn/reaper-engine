@@ -6,6 +6,8 @@
 
 void CRenderTarget::draw_volume(const light* L)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     switch (L->flags.type)
     {
     case IRender_Light::POINT:

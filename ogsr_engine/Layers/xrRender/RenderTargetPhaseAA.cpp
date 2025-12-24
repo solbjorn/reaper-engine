@@ -2,6 +2,8 @@
 
 void CRenderTarget::ProcessSMAA()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     u32 Offset{};
     constexpr f32 d_Z{EPS_S};
     constexpr f32 d_W{1.0f};

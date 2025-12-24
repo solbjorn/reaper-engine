@@ -94,6 +94,8 @@ BOOL CDetailManager::cache_Validate()
 
 void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     bool bNeedMegaUpdate = (cache_cx != v_x) || (cache_cz != v_z);
     // *****	Cache shift
     while (cache_cx != v_x)

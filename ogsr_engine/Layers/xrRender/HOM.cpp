@@ -137,6 +137,8 @@ void CHOM::Unload()
 
 void CHOM::Render_DB(CFrustum& base)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Update projection matrices on every frame to ensure valid HOM culling
     float view_dim = occ_dim_0;
     const Fmatrix m_viewport{view_dim / 2.f,         0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f + 0 + 0,
@@ -243,6 +245,8 @@ void CHOM::run_async()
         return;
 
     tg->run([this] {
+        XR_TRACY_ZONE_SCOPED();
+
         CFrustum ViewBase;
         ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
         Enable();

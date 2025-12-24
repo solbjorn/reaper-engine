@@ -37,6 +37,8 @@ void R_constant_table::merge(const R_constant_table* T)
     if (T == nullptr)
         return;
 
+    XR_TRACY_ZONE_SCOPED();
+
     // Real merge
     xr_vector<ref_constant> table_tmp;
     table_tmp.reserve(table.size());

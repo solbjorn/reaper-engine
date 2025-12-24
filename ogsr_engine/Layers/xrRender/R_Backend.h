@@ -357,6 +357,8 @@ public:
 
     ICF void submit()
     {
+        XR_TRACY_ZONE_SCOPED();
+
         VERIFY(context_id != R__IMM_CTX_ID);
         ID3D11CommandList* pCommandList{};
 

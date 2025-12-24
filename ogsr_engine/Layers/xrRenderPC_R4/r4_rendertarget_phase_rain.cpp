@@ -8,6 +8,8 @@ void CRenderTarget::phase_rain()
 
 void CRenderTarget::phase_ssfx_rain()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Constants
     u32 Offset{};
     constexpr u32 C{color_rgba(0, 0, 0, 255)};

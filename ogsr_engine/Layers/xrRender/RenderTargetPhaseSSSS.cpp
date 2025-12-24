@@ -3,6 +3,8 @@
 // Screen Space Sun Shafts
 void CRenderTarget::PhaseSSSS()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Constants
     float intensity = g_pGamePersistent->Environment().CurrentEnv->m_fSunShaftsIntensity *
         3.3f; // Домножаем, т.к. интенсивность плоских саншафтов примерно соответствует объемным как 1 к 0.3. А конфиги погоды рассчитаны на объемные лучи же.

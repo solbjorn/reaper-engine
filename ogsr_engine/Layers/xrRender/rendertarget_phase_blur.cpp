@@ -2,6 +2,8 @@
 
 void CRenderTarget::phase_blur()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Get common data
     u32 Offset{};
     constexpr f32 d_Z{EPS_S};
@@ -168,6 +170,8 @@ void CRenderTarget::phase_blur()
 
 void CRenderTarget::phase_ssfx_ssr()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Constants
     u32 Offset{};
     constexpr u32 C{color_rgba(0, 0, 0, 255)};
@@ -342,6 +346,8 @@ void CRenderTarget::phase_ssfx_volumetric_blur()
         return;
     }
 
+    XR_TRACY_ZONE_SCOPED();
+
     // Constants
     u32 Offset{};
     constexpr u32 C{color_rgba(0, 0, 0, 255)};
@@ -413,6 +419,8 @@ void CRenderTarget::phase_ssfx_volumetric_blur()
 
 void CRenderTarget::phase_ssfx_water_blur()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Constants
     u32 Offset{};
     constexpr u32 C{color_rgba(0, 0, 0, 255)};
@@ -509,6 +517,8 @@ void CRenderTarget::phase_ssfx_water_blur()
 
 void CRenderTarget::phase_ssfx_water_waves()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Constants
     u32 Offset{};
     constexpr u32 C{color_rgba(0, 0, 0, 255)};
@@ -549,6 +559,8 @@ void CRenderTarget::phase_ssfx_water_waves()
 
 void CRenderTarget::phase_ssfx_sss()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Constants
     u32 Offset{};
     constexpr u32 C{color_rgba(255, 255, 255, 255)};
@@ -662,6 +674,8 @@ ICF void memset128(void* dst, const void* src, size_t size)
 
 void CRenderTarget::phase_ssfx_sss_ext(light_Package& LP)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     static constexpr const char* strLights{"lights_data"};
     static __declspec(align(sizeof(__m128i))) light* LightSlot[8];
     static u32 sss_currentframe;

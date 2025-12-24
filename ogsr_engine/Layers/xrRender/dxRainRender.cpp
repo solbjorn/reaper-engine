@@ -51,6 +51,8 @@ void dxRainRender::Render(CEffect_Rain& owner)
     if (factor < EPS_L)
         return;
 
+    XR_TRACY_ZONE_SCOPED();
+
     float _drop_len = drop_length;
     float _drop_width = drop_width;
     ref_shader& _splash_SH = DM_Drop->shader;
@@ -221,6 +223,8 @@ void dxRainRender::Calculate(CEffect_Rain& owner)
     float factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
     if (factor < EPS_L)
         return;
+
+    XR_TRACY_ZONE_SCOPED();
 
     // Prepare correct angle and distance to hit the player
     Fvector Rain_Axis{0.f, -1.f, 0.f};

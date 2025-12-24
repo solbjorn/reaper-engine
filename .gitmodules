@@ -71,6 +71,9 @@
 [submodule "3rd_party/Src/tinyxml2/tinyxml2"]
 	path = 3rd_party/Src/tinyxml2/tinyxml2
 	url = https://github.com/leethomason/tinyxml2.git
+[submodule "3rd_party/Src/tracy"]
+	path = 3rd_party/Src/tracy
+	url = https://github.com/wolfpld/tracy.git
 [submodule "3rd_party/Src/xxHash/xxHash"]
 	path = 3rd_party/Src/xxHash/xxHash
 	url = https://github.com/Cyan4973/xxHash.git

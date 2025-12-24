@@ -7,7 +7,7 @@
 #include "../xrRender/blenders/blender_recorder.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 
-#include "../../xrScriptEngine/xr_sol.h"
+#include "../../xrExternal/sol.h"
 #include "../../xr_3da/Render.h"
 
 #include <format>

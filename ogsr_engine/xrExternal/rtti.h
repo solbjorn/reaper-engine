@@ -1,5 +1,5 @@
-#ifndef __XRCORE_RTTI_H
-#define __XRCORE_RTTI_H
+#ifndef __XREXTERNAL_RTTI_H
+#define __XREXTERNAL_RTTI_H
 
 // Implementation of {dynamic,smart}_cast() using LLVM-style Open Hierarchy RTTI,
 // including <void*> cast for operator delete().
@@ -16,15 +16,7 @@ class Model;
 } // namespace Opcode
 
 template <typename T>
-concept class_exists = requires(T const* ptr)
-{
-    sizeof(*ptr) > 0;
-};
-
-// Uncomment to enable runtime checks for the RTTI tree validity. Each result
-// of smart_cast() will be rechecked against the result of dynamic_cast() to
-// make sure every class has its own RTTI, not inherited from a parent class.
-// #define XR_RTTI_DEBUG
+concept class_exists = requires(T const* ptr) { sizeof(*ptr) > 0; };
 
 template <typename To, typename From>
 [[nodiscard]] To smart_cast(From* from) noexcept
@@ -60,4 +52,4 @@ template <typename To, typename From>
 #endif
 }
 
-#endif /* __XRCORE_RTTI_H */
+#endif // __XREXTERNAL_RTTI_H

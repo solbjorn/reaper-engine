@@ -93,7 +93,9 @@ void R_dsgraph_structure::hud_node(float key, _MatrixItemS& val)
 
 void R_dsgraph_structure::render_graph(u32 _priority)
 {
+    XR_TRACY_ZONE_SCOPED();
     PIX_EVENT_CTX(cmd_list, dsgraph_render_graph);
+
     Device.Statistic->RenderDUMP.Begin();
 
     cmd_list.set_xform_world(Fidentity);
@@ -103,6 +105,7 @@ void R_dsgraph_structure::render_graph(u32 _priority)
     // Sorting by SSA and changes minimizations
     // Render several passes
     {
+        XR_TRACY_ZONE_SCOPED();
         PIX_EVENT_CTX(cmd_list, dsgraph_render_static);
 
         for (u32 iPass = 0; iPass < SHADER_PASSES_MAX; ++iPass)
@@ -138,6 +141,7 @@ void R_dsgraph_structure::render_graph(u32 _priority)
     // Sorting by SSA and changes minimizations
     // Render several passes
     {
+        XR_TRACY_ZONE_SCOPED();
         PIX_EVENT_CTX(cmd_list, dsgraph_render_dynamic);
 
         for (u32 iPass = 0; iPass < SHADER_PASSES_MAX; ++iPass)
@@ -180,6 +184,7 @@ void R_dsgraph_structure::render_graph(u32 _priority)
 // HUD render
 void R_dsgraph_structure::render_hud(bool NoPS)
 {
+    XR_TRACY_ZONE_SCOPED();
     PIX_EVENT_CTX(cmd_list, r_dsgraph_render_hud);
 
     if ((!NoPS && mapHUD.empty()) || (NoPS && HUDMask.empty()))
@@ -214,6 +219,8 @@ void R_dsgraph_structure::render_hud(bool NoPS)
 
 void R_dsgraph_structure::render_hud_ui()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Change projection
     cmd_list.set_xform_view(Device.mViewHud);
     cmd_list.set_xform_project(Device.mProjectHud);
@@ -231,6 +238,8 @@ void R_dsgraph_structure::render_hud_ui()
 // strict-sorted render
 void R_dsgraph_structure::render_sorted()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Sorted (back to front)
     for (auto& elem : mapSorted)
         sorted_L1(elem.first, elem.second);
@@ -262,6 +271,8 @@ void R_dsgraph_structure::render_sorted()
 // strict-sorted render
 void R_dsgraph_structure::render_emissive(bool clear, bool renderHUD)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Sorted (back to front)
     for (auto& elem : mapEmissive)
         sorted_L1(elem.first, elem.second);
@@ -298,12 +309,16 @@ void R_dsgraph_structure::render_emissive(bool clear, bool renderHUD)
 
 void R_dsgraph_structure::render_water_ssr()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     for (auto& elem : mapWater)
         water_node_ssr(elem.first, elem.second);
 }
 
 void R_dsgraph_structure::render_water()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     for (auto& elem : mapWater)
         water_node(elem.first, elem.second);
 
@@ -314,6 +329,8 @@ void R_dsgraph_structure::render_water()
 // strict-sorted render
 void R_dsgraph_structure::render_wmarks()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Sorted (back to front)
     for (auto& elem : mapWmark)
         sorted_L1(elem.first, elem.second);
@@ -325,6 +342,8 @@ void R_dsgraph_structure::render_wmarks()
 // strict-sorted render
 void R_dsgraph_structure::render_distort()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Sorted (back to front)
     for (auto& elem : mapDistort)
         sorted_L1(elem.first, elem.second);
@@ -379,6 +398,8 @@ void R_dsgraph_structure::pLandscape_1(_MatrixItemS& val)
 
 void R_dsgraph_structure::render_landscape(u32 pass, bool _clear)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     cmd_list.set_xform_world(Fidentity);
 
     if (pass == 0)

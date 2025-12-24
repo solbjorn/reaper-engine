@@ -117,6 +117,8 @@ static_assert(sizeof(TL_2c3uv) == 48);
 
 void CRenderTarget::phase_pp()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // combination/postprocess
     u_setrt(RCache, Device.dwWidth, Device.dwHeight, get_base_rt(), nullptr, nullptr, get_base_zb());
 

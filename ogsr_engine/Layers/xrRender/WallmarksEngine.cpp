@@ -116,12 +116,17 @@ void CWallmarksEngine::static_wm_render(CWallmarksEngine::static_wallmark* W, FV
         V++;
     }
 }
+
 //--------------------------------------------------------------------------------
+
 void CWallmarksEngine::RecurseTri(u32 t, Fmatrix& mView, CWallmarksEngine::static_wallmark& W)
 {
     CDB::TRI* T = sml_collector.getT() + t;
     if (T->dummy)
         return;
+
+    XR_TRACY_ZONE_SCOPED();
+
     T->dummy = 0xffffffff;
 
     // Some vars
@@ -197,6 +202,8 @@ void CWallmarksEngine::BuildMatrix(Fmatrix& mView, float invsz, const Fvector& f
 
 void CWallmarksEngine::AddWallmark_internal(CDB::TRI* pTri, const Fvector* pVerts, const Fvector& contact_point, const ref_shader& hShader, float sz)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // query for polygons in bounding box
     // calculate adjacency
     {
@@ -349,6 +356,8 @@ ICF void FlushStream(ref_geom hGeom, ref_shader shader, u32& w_offset, FVF::LIT*
 
 void CWallmarksEngine::Render()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     auto& dsgraph = RImplementation.get_imm_context();
     auto& cmd_list = dsgraph.cmd_list;
 

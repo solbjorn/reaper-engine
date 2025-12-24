@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -11,8 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{A0F7D1FB-59A7-4717-A7E4-96F37E91998E}</ProjectGuid>
-    <RootNamespace>xrCore</RootNamespace>
+    <ProjectGuid>{6D4E1CD0-9D48-4210-982E-93827A58256E}</ProjectGuid>
+    <RootNamespace>xrExternal</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -52,7 +52,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";SQFS_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -69,12 +69,13 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\concurrency\cpputils\include;$(SolutionDir)\3rd_party\Src\libsquashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\sol2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <CompileAsManaged>
       </CompileAsManaged>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -98,7 +99,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <PreprocessorDefinitions>_WINDOWS;_USRDLL;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";SQFS_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;_USRDLL;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>false</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -115,12 +116,13 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\concurrency\cpputils\include;$(SolutionDir)\3rd_party\Src\libsquashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\sol2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <CompileAsManaged>
       </CompileAsManaged>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <Link>
@@ -139,109 +141,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Layers\xrAPI\xrAPI.cpp" />
-    <ClCompile Include="FTimer.cpp" />
-    <ClCompile Include="stacktrace_collector.cpp" />
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="trivial_encryptor.cpp" />
-    <ClCompile Include="xrXMLParser.cpp" />
-    <ClCompile Include="xrCore.cpp" />
-    <ClCompile Include="xrMemoryDebug.cpp" />
-    <ClCompile Include="_compressed_normal.cpp" />
-    <ClCompile Include="_math.cpp" />
-    <ClCompile Include="_random.cpp" />
-    <ClCompile Include="_sphere.cpp" />
-    <ClCompile Include="xrcpuid.cpp" />
-    <ClCompile Include="_std_extensions.cpp" />
-    <ClCompile Include="clsid.cpp" />
-    <ClCompile Include="xr_trims.cpp" />
-    <ClCompile Include="FS.cpp" />
-    <ClCompile Include="LocatorAPI.cpp" />
-    <ClCompile Include="LocatorAPI_defs.cpp" />
-    <ClCompile Include="arc_db.cpp" />
-    <ClCompile Include="arc_sqfs.cpp" />
-    <ClCompile Include="log.cpp" />
-    <ClCompile Include="Xr_ini.cpp" />
-    <ClCompile Include="stream_reader.cpp" />
-    <ClCompile Include="file_stream_reader.cpp" />
-    <ClCompile Include="xrMemory.cpp" />
-    <ClCompile Include="xrDebugNew.cpp" />
-    <ClCompile Include="xrsharedmem.cpp" />
-    <ClCompile Include="xrstring.cpp" />
-    <ClCompile Include="LzHuf.cpp" />
+    <ClCompile Include="tracy.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Include\xrAPI\xrAPI.h" />
-    <ClInclude Include="buffer_vector.h" />
-    <ClInclude Include="buffer_vector_inline.h" />
-    <ClInclude Include="FTimer.h" />
-    <ClInclude Include="stacktrace_collector.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="trivial_encryptor.h" />
-    <ClInclude Include="xalloc.h" />
-    <ClInclude Include="xrXMLParser.h" />
-    <ClInclude Include="xrCore.h" />
-    <ClInclude Include="xrCore_platform.h" />
-    <ClInclude Include="xrMemoryDebug.h" />
-    <ClInclude Include="_bitwise.h" />
-    <ClInclude Include="_color.h" />
-    <ClInclude Include="_compressed_normal.h" />
-    <ClInclude Include="_cylinder.h" />
-    <ClInclude Include="_fbox.h" />
-    <ClInclude Include="_fbox2.h" />
-    <ClInclude Include="_flags.h" />
-    <ClInclude Include="_math.h" />
-    <ClInclude Include="_matrix.h" />
-    <ClInclude Include="_matrix33.h" />
-    <ClInclude Include="_obb.h" />
-    <ClInclude Include="_plane.h" />
-    <ClInclude Include="_plane2.h" />
-    <ClInclude Include="_quaternion.h" />
-    <ClInclude Include="_random.h" />
-    <ClInclude Include="_rect.h" />
-    <ClInclude Include="_sphere.h" />
-    <ClInclude Include="_types.h" />
-    <ClInclude Include="_vector2.h" />
-    <ClInclude Include="_vector3d.h" />
-    <ClInclude Include="_vector3d_ext.h" />
-    <ClInclude Include="_vector4.h" />
-    <ClInclude Include="vector.h" />
-    <ClInclude Include="defines.h" />
-    <ClInclude Include="dump_string.h" />
-    <ClInclude Include="xrcpuid.h" />
-    <ClInclude Include="FixedVector.h" />
-    <ClInclude Include="xrPool.h" />
-    <ClInclude Include="_std_extensions.h" />
-    <ClInclude Include="_stl_extensions.h" />
-    <ClInclude Include="clsid.h" />
-    <ClInclude Include="xr_trims.h" />
-    <ClInclude Include="FS.h" />
-    <ClInclude Include="FS_internal.h" />
-    <ClInclude Include="LocatorAPI.h" />
-    <ClInclude Include="LocatorAPI_defs.h" />
-    <ClInclude Include="log.h" />
-    <ClInclude Include="xr_ini.h" />
-    <ClInclude Include="stream_reader.h" />
-    <ClInclude Include="stream_reader_inline.h" />
-    <ClInclude Include="file_stream_reader.h" />
-    <ClInclude Include="xrMemory.h" />
-    <ClInclude Include="xrDebug.h" />
-    <ClInclude Include="xrDebug_macros.h" />
-    <ClInclude Include="xr_resource.h" />
-    <ClInclude Include="xrsharedmem.h" />
-    <ClInclude Include="xrstring.h" />
-    <ClInclude Include="intrusive_ptr.h" />
-    <ClInclude Include="lzhuf.h" />
-    <ClInclude Include="xrSyncronize.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\xrExternal\xrExternal.vcxproj">
-      <Project>{6d4e1cd0-9d48-4210-982e-93827a58256e}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="rtti.h" />
+    <ClInclude Include="sol.h" />
+    <ClInclude Include="tracy.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

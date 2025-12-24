@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{61a60c70-b020-461c-8f72-30ff3b87687d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Profiling">
+      <UniqueIdentifier>{03acac38-71f4-48a3-833f-d74066591de7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripting">
+      <UniqueIdentifier>{a6a9d1f7-c769-4f64-b902-8fbde3e9c45e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="tracy.cpp">
+      <Filter>Profiling</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="rtti.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="sol.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="tracy.h">
+      <Filter>Profiling</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

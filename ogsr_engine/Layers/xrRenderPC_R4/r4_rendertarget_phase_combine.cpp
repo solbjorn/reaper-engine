@@ -7,9 +7,10 @@
 
 void CRenderTarget::phase_combine()
 {
+    XR_TRACY_ZONE_SCOPED();
     PIX_EVENT(phase_combine);
-    auto& dsgraph = RImplementation.get_imm_context();
 
+    auto& dsgraph = RImplementation.get_imm_context();
     bool ssfx_PrevPos_Requiered = false;
 
     //	TODO: DX10: Remove half poxel offset
@@ -111,7 +112,9 @@ void CRenderTarget::phase_combine()
     // Draw full-screen quad textured with our scene image
     if (!_menu_pp)
     {
+        XR_TRACY_ZONE_SCOPED();
         PIX_EVENT(combine_1);
+
         // Compute params
         CEnvDescriptorMixer& envdesc = *g_pGamePersistent->Environment().CurrentEnv;
         constexpr float minamb = 0.001f;
@@ -393,7 +396,9 @@ void CRenderTarget::phase_combine()
     RCache.set_Stencil(FALSE);
 
     {
+        XR_TRACY_ZONE_SCOPED();
         PIX_EVENT(combine_2);
+
         //
         struct alignas(8) v_aa
         {
@@ -569,7 +574,9 @@ void CRenderTarget::phase_wallmarks()
 
 void CRenderTarget::phase_combine_volumetric()
 {
+    XR_TRACY_ZONE_SCOPED();
     PIX_EVENT(phase_combine_volumetric);
+
     u32 Offset = 0;
 
     //	TODO: DX10: Remove half pixel offset here

@@ -2,6 +2,8 @@
 
 void CRenderTarget::accum_point(light* L)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     phase_accumulator(RCache);
     RImplementation.stats.l_visible++;
 

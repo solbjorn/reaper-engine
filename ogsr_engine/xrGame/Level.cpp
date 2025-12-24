@@ -454,6 +454,8 @@ u32 ps_lua_gc_method = 1;
 
 void CLevel::script_gc()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     auto& lua = ai().script_engine().lua();
 
     switch (ps_lua_gc_method)

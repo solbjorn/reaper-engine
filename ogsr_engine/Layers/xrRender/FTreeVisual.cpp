@@ -107,6 +107,8 @@ private:
 
 void FTreeVisual::Render(CBackend& cmd_list, float, bool)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     static FTreeVisual_setup tvs;
     tvs.update();
 

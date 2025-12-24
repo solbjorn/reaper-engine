@@ -569,6 +569,8 @@ void CKinematicsAnimated::UpdateTracks()
     if (Update_LastTime == Device.dwTimeGlobal)
         return;
 
+    XR_TRACY_ZONE_SCOPED();
+
     u32 DT = Device.dwTimeGlobal - Update_LastTime;
     if (DT > 66)
         DT = 66;
@@ -861,6 +863,8 @@ void CKinematicsAnimated::LL_ClearAdditionalTransform(u16 bone_id) { inherited::
 
 void CKinematicsAnimated::BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 channel_mask /*= (1<<0)*/)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     SKeyTable keys;
 
     LL_BuldBoneMatrixDequatize(bd, channel_mask, keys);

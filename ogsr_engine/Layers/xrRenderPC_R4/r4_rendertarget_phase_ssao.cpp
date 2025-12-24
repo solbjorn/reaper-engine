@@ -2,6 +2,8 @@
 
 void CRenderTarget::phase_ssfx_ao()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Constants
     u32 Offset = 0;
     constexpr u32 C = color_rgba(0, 0, 0, 255);
@@ -160,6 +162,8 @@ void CRenderTarget::phase_ssfx_ao()
 
 void CRenderTarget::phase_ssfx_il()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Constants
     u32 Offset = 0;
     constexpr u32 C = color_rgba(0, 0, 0, 255);

@@ -54,6 +54,9 @@ void R_dsgraph_structure::insert_dynamic(IRenderable* root, dxRender_Visual* pVi
 {
     if (pVisual->vis.marker[context_id] == marker)
         return;
+
+    XR_TRACY_ZONE_SCOPED();
+
     pVisual->vis.marker[context_id] = marker;
 
     float distSQ, SSA;
@@ -150,6 +153,9 @@ void R_dsgraph_structure::insert_static(dxRender_Visual* pVisual)
 {
     if (pVisual->vis.marker[context_id] == marker)
         return;
+
+    XR_TRACY_ZONE_SCOPED();
+
     pVisual->vis.marker[context_id] = marker;
 
     float distSQ;
@@ -337,6 +343,8 @@ constexpr Fvector4 o_optimize_dynamic_l3_size{O_D_L3_S_LOW, O_D_L3_S_MED, O_D_L3
 {
     if ((isStatic && opt_static >= 1) || (!isStatic && opt_dynamic >= 1))
     {
+        XR_TRACY_ZONE_SCOPED();
+
         float sphere_volume = pVisual->getVisData().sphere.volume();
         Fvector dpos;
         Fvector& fpos = dpos;
@@ -484,6 +492,8 @@ void R_dsgraph_structure::add_leafs_dynamic(IRenderable* root, dxRender_Visual* 
     if (!ignore && !IsValuableToRender(root, pVisual, false, phase == CRender::PHASE_SMAP, &xform))
         return;
 
+    XR_TRACY_ZONE_SCOPED();
+
     // Visual is 100% visible - simply add it
     switch (pVisual->Type)
     {
@@ -559,6 +569,8 @@ void R_dsgraph_structure::add_leafs_static(dxRender_Visual* pVisual)
     if (!pVisual->_ignore_optimization && !IsValuableToRender(nullptr, pVisual, true, phase == CRender::PHASE_SMAP, nullptr))
         return;
 
+    XR_TRACY_ZONE_SCOPED();
+
     // Visual is 100% visible - simply add it
     switch (pVisual->Type)
     {
@@ -618,6 +630,8 @@ void R_dsgraph_structure::add_static(dxRender_Visual* pVisual, const CFrustum& v
 {
     if (!pVisual->_ignore_optimization && !IsValuableToRender(nullptr, pVisual, true, phase == CRender::PHASE_SMAP, nullptr))
         return;
+
+    XR_TRACY_ZONE_SCOPED();
 
     vis_data& vis = pVisual->vis;
 
@@ -704,6 +718,8 @@ void R_dsgraph_structure::add_static(dxRender_Visual* pVisual, const CFrustum& v
 // sub-space rendering - PHASE_NORMAL
 void R_dsgraph_structure::build_subspace(sector_id_t o_sector_id, CFrustum& _frustum)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     marker++;
 
     phase = CRender::PHASE_NORMAL;
@@ -723,6 +739,8 @@ void R_dsgraph_structure::build_subspace(sector_id_t o_sector_id, CFrustum& _fru
 
     if (RImplementation.rmPortals)
     {
+        XR_TRACY_ZONE_SCOPED();
+
         // Check if camera is too near to some portal - if so force DualRender
         constexpr float eps = VIEWPORT_NEAR + EPS_L;
         constexpr Fvector box_radius{eps, eps, eps};
@@ -849,6 +867,8 @@ void R_dsgraph_structure::build_subspace(sector_id_t o_sector_id, CFrustum& _fru
 // sub-space rendering - PHASE_SMAP
 void R_dsgraph_structure::build_subspace(sector_id_t o_sector_id, CFrustum& _frustum, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     VERIFY(o_sector_id != INVALID_SECTOR_ID);
     marker++; // !!! critical here
 

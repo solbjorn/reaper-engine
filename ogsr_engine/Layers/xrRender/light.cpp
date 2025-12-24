@@ -216,6 +216,9 @@ void light::xform_calc()
 {
     if (Device.dwFrame == m_xform_frame)
         return;
+
+    XR_TRACY_ZONE_SCOPED();
+
     m_xform_frame = Device.dwFrame;
 
     // build final rotation / translation
@@ -300,6 +303,8 @@ constexpr std::array<Fvector, 6> cmDir{
 
 void light::export_to(light_Package& package)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     if (flags.bShadow)
     {
         switch (flags.type)

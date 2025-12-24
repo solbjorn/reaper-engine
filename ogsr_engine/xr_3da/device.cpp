@@ -202,6 +202,8 @@ void CRenderDevice::OnCameraUpdated()
     if (camFrame == dwFrame)
         return;
 
+    XR_TRACY_ZONE_SCOPED();
+
     // Precache
     if (dwPrecacheFrame)
     {
@@ -238,6 +240,8 @@ void CRenderDevice::ProcessFrame()
     if (!BeforeFrame())
         return;
 
+    XR_TRACY_ZONE_SCOPED();
+
     const auto FrameStartTime = std::chrono::high_resolution_clock::now();
 
     ImGui_ImplDX11_NewFrame(); // должно быть перед FrameMove
@@ -250,6 +254,8 @@ void CRenderDevice::ProcessFrame()
 
     oneapi::tbb::parallel_invoke(
         [this, &FrameEndTime] {
+            XR_TRACY_ZONE_SCOPED();
+
             bool calc = g_bEnableStatGather;
 
             g_bEnableStatGather = true;
@@ -281,6 +287,8 @@ void CRenderDevice::ProcessFrame()
             FrameEndTime = std::chrono::high_resolution_clock::now();
         },
         [this, &SecondThreadTasksElapsedTime] {
+            XR_TRACY_ZONE_SCOPED();
+
             const auto SecondThreadTasksStartTime = std::chrono::high_resolution_clock::now();
 
             auto size = seqParallel.size();
@@ -350,6 +358,7 @@ void CRenderDevice::message_loop()
         }
 
         ProcessFrame();
+        XR_TRACY_FRAME_MARK();
     }
 }
 
@@ -415,6 +424,8 @@ u32 app_inactive_time_start{};
 
 void CRenderDevice::FrameMove()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     dwFrame++;
     dwTimeContinual = TimerMM.GetElapsed_ms() - app_inactive_time;
 

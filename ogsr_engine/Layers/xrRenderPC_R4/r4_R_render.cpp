@@ -9,7 +9,9 @@
 
 void CRender::render_menu()
 {
+    XR_TRACY_ZONE_SCOPED();
     PIX_EVENT(render_menu);
+
     //	Globals
     RCache.set_CullMode(CULL_CCW);
     RCache.set_Stencil(FALSE);
@@ -87,6 +89,8 @@ void CRender::Render()
         return;
     }
 
+    XR_TRACY_ZONE_SCOPED();
+
     //*******
     // Sync point
     Device.Statistic->RenderDUMP_Wait_S.Begin();
@@ -121,7 +125,9 @@ void CRender::Render()
 
     //******* Main render :: PART-0	-- first
     {
+        XR_TRACY_ZONE_SCOPED();
         PIX_EVENT(DEFER_PART0_SPLIT);
+
         // level, SPLIT
         Target->phase_scene_begin();
         dsgraph.render_graph(0);
@@ -154,6 +160,7 @@ void CRender::Render()
 
     //******* Main render :: PART-1 (second)
     {
+        XR_TRACY_ZONE_SCOPED();
         PIX_EVENT(DEFER_PART1_SPLIT);
 
         // level
@@ -311,6 +318,8 @@ void CRender::Render()
 
 void CRender::render_forward()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     //******* Main render - second order geometry (the one, that doesn't support deffering)
     //.todo: should be done inside "combine" with estimation of of luminance, tone-mapping, etc.
     // level

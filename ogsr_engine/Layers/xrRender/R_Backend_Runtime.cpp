@@ -13,8 +13,6 @@ void CBackend::OnFrameEnd()
 
 void CBackend::OnFrameBegin()
 {
-    PGO(Msg("PGO:*****frame[%d]*****", Device.dwFrame));
-
     Invalidate();
     // DX9 sets base rt nd base zb by default
     RImplementation.rmNormal(*this);
@@ -26,6 +24,8 @@ void CBackend::OnFrameBegin()
 
 void CBackend::Invalidate()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     pRT[0] = nullptr;
     pRT[1] = nullptr;
     pRT[2] = nullptr;
@@ -136,6 +136,8 @@ void CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _xform, u32 fmask)
 
 void CBackend::set_Textures(STextureList* textures_list)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // TODO: expose T invalidation method
     // if (T == textures_list) // disabled due to cases when the set of resources the same, but different srv is need to be bind
     //    return;
@@ -417,6 +419,8 @@ void CBackend::apply_object(IRenderable& O)
 
 void CBackend::apply_lmaterial(IRenderable* O)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     if (O && O->renderable_ROS())
         apply_object(*O);
 

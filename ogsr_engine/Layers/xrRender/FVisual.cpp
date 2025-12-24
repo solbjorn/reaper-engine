@@ -162,6 +162,8 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
 
 void Fvisual::Render(CBackend& cmd_list, float, bool use_fast_geo)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     if (m_fast && use_fast_geo && !cmd_list.is_TessEnabled())
     {
         cmd_list.set_Geometry(m_fast->rm_geom);

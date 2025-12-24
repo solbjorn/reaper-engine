@@ -4,6 +4,7 @@
 #include "stdafx.h"
 
 #include "../xrRender/HW.h"
+
 #include "../../xr_3da/XR_IOConsole.h"
 #include "../../xr_3da/xr_input.h"
 #include "../../Include/xrAPI/xrAPI.h"
@@ -614,6 +615,8 @@ void fill_vid_mode_list(CHW* _hw)
 
 void CHW::Present()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     UINT present_flags = 0;
     bool use_vsync = !!psDeviceFlags.test(rsVSync);
     UINT present_interval = (use_vsync) ? 1 : 0;

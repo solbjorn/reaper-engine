@@ -1,11 +1,6 @@
 #pragma once
 
-// KRodin: это инклудить только здесь и нигде больше!
-#if __has_include("..\build_config_overrides\build_config_defines.h")
-#include "..\build_config_overrides\build_config_defines.h"
-#else
-#include "..\build_config_defines.h"
-#endif
+#include "defines.h"
 
 #if defined(__MSVC_RUNTIME_CHECKS) && defined(__SANITIZE_ADDRESS__)
 #error DISABLE RTC!
@@ -42,14 +37,6 @@
 #define ICF __forceinline // !!! this should be used only in critical places found by PROFILER
 #define ICN __declspec(noinline)
 
-// Require function-like macros to end with a ';'
-#define XR_MACRO_END() static_assert(true, "")
-
-#define __XR_DIAG_STR(s) #s
-#define XR_DIAG_PUSH() _Pragma(__XR_DIAG_STR(clang diagnostic push)) XR_MACRO_END()
-#define XR_DIAG_IGNORE(s) _Pragma(__XR_DIAG_STR(clang diagnostic ignored s)) XR_MACRO_END()
-#define XR_DIAG_POP() _Pragma(__XR_DIAG_STR(clang diagnostic pop)) XR_MACRO_END()
-
 #ifdef _MSC_VER
 #define XR_NOVTABLE __declspec(novtable)
 #else
@@ -80,8 +67,11 @@
 #include "xrDebug.h"
 #include "vector.h"
 
+// 3rd party
+#include "../xrExternal/rtti.h"
+#include "../xrExternal/tracy.h"
+
 #include "clsid.h"
-#include "xr_rtti.h"
 #include "xrSyncronize.h"
 #include "xrMemory.h"
 

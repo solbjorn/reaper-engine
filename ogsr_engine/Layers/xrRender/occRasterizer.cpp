@@ -68,6 +68,8 @@ static inline bool shared(occTri* T1, occTri* T2)
 
 void occRasterizer::propagade()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Clip-and-propagade zero level
     occTri** pFrame = get_frame();
     float* pDepth = get_depth();

@@ -328,6 +328,8 @@ void i_section_t1() { i_section(TOP, 1); }
 
 u32 occRasterizer::rasterize(occTri* T)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     // Order the vertices by Y
     currentTri = T;
     dwPixels = 0;

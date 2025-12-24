@@ -55,7 +55,6 @@
 #include "../../visual_memory_manager.h"
 #include "../../enemy_manager.h"
 #include "alife_human_brain.h"
-#include "profiler.h"
 #include "../../BoneProtections.h"
 #include "../../stalker_animation_names.h"
 #include "../../stalker_decision_space.h"
@@ -507,22 +506,16 @@ void CAI_Stalker::destroy_anim_mov_ctrl()
 
 void CAI_Stalker::UpdateCL()
 {
-    START_PROFILE("stalker")
-    START_PROFILE("stalker/client_update")
+    XR_TRACY_ZONE_SCOPED();
+
     VERIFY2(PPhysicsShell() || getEnabled(), *cName());
 
     if (g_Alive())
     {
         if (g_mt_config.test(mtObjectHandler) && CObjectHandler::planner().initialized())
-        {
             Device.add_to_seq_parallel(CallMe::fromMethod<&CAI_Stalker::update_object_handler>(this));
-        }
         else
-        {
-            START_PROFILE("stalker/client_update/object_handler")
             update_object_handler();
-            STOP_PROFILE
-        }
 
         if (movement().speed(character_physics_support()->movement()) > EPS_L && movement().movement_type() != MonsterSpace::eMovementTypeStand &&
             movement().mental_state() == MonsterSpace::eMentalStateDanger)
@@ -532,49 +525,21 @@ void CAI_Stalker::UpdateCL()
         }
     }
 
-    START_PROFILE("stalker/client_update/inherited")
     inherited::UpdateCL();
-    STOP_PROFILE
-
-    START_PROFILE("stalker/client_update/physics")
     m_pPhysics_support->in_UpdateCL();
-    STOP_PROFILE
 
     if (g_Alive())
     {
-        START_PROFILE("stalker/client_update/sight_manager")
         VERIFY(!m_pPhysicsShell);
-        __try
-        {
-            sight().update();
-        }
-        __except (ExceptStackTrace("[CAI_Stalker::UpdateCL] stack trace:\n"))
-        {
-            __try
-            {
-                sight().setup(CSightAction(SightManager::eSightTypeCurrentDirection));
-                sight().update();
-            }
-            __except (ExceptStackTrace("[CAI_Stalker::UpdateCL] - 2 stack trace:\n"))
-            {
-                Msg("!![%s] error in sight().update() of NPC [%s]", __FUNCTION__, this->Name());
-            }
-        }
 
+        sight().update();
         Exec_Look(client_update_fdelta());
-        STOP_PROFILE
 
-        START_PROFILE("stalker/client_update/step_manager")
         CStepManager::update();
-        STOP_PROFILE
 
-        START_PROFILE("stalker/client_update/weapon_shot_effector")
         if (weapon_shot_effector().IsActive())
             weapon_shot_effector().Update();
-        STOP_PROFILE
     }
-    STOP_PROFILE
-    STOP_PROFILE
 }
 
 void CAI_Stalker::PHHit(SHit& H) { m_pPhysics_support->in_Hit(H, !g_Alive()); }
@@ -583,6 +548,8 @@ CPHDestroyable* CAI_Stalker::ph_destroyable() { return smart_cast<CPHDestroyable
 
 void CAI_Stalker::shedule_Update(u32 DT)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     VERIFY2(getEnabled() || PPhysicsShell(), *cName());
 
     if (!CObjectHandler::planner().initialized())

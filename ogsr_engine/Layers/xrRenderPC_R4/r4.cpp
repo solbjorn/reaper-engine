@@ -296,6 +296,8 @@ void CRender::reset_end()
 
 void CRender::OnFrame()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     Models->DeleteQueue();
 
     if (g_pGamePersistent->MainMenuActiveOrLevelNotExist())

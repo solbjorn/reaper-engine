@@ -5,6 +5,7 @@
 #include "stdafx.h"
 
 #include "Shader.h"
+
 #include "ResourceManager.h"
 
 STextureList::~STextureList() { RImplementation.Resources->_DeleteTextureList(this); }

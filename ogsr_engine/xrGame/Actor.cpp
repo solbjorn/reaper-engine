@@ -62,6 +62,8 @@
 #include "PHCapture.h"
 #include "CustomDetector.h"
 
+#include "debug_renderer.h"
+
 #ifdef DEBUG
 #include "ode_include.h"
 #include "../xr_3da/StatGraph.h"
@@ -747,6 +749,8 @@ float CActor::currentFOV()
 
 void CActor::UpdateCL()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     if (m_feel_touch_characters > 0)
     {
         for (xr_vector<CObject*>::iterator it = feel_touch.begin(); it != feel_touch.end(); it++)
@@ -890,6 +894,8 @@ float NET_Jump{};
 
 void CActor::shedule_Update(u32 DT)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     setSVU(TRUE);
 
     BOOL bHudView = HUDview();
@@ -1157,8 +1163,6 @@ void CActor::shedule_Update(u32 DT)
 
     updated = true;
 }
-
-#include "debug_renderer.h"
 
 void CActor::renderable_Render(u32 context_id, IRenderable* root)
 {

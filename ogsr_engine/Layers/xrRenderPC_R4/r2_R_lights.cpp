@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "xr_task.h"
 
 static bool check_grass_shadow(const light* L, const CFrustum& VB)
@@ -29,6 +30,8 @@ struct light_ctx
 void CRender::render_lights_shadowed_one(light_ctx& task)
 {
     lights_tg->run([this, &task] {
+        XR_TRACY_ZONE_SCOPED();
+
         auto& dsgraph = get_context(task.context_id);
         light* L = task.lights[task.curr];
 
@@ -47,6 +50,8 @@ void CRender::render_lights_shadowed_one(light_ctx& task)
         if (!empty)
         {
             lights_tg->run([this, &task] {
+                XR_TRACY_ZONE_SCOPED();
+
                 auto& dsgraph = get_context(task.context_id);
                 light* L = task.lights[task.curr];
 
@@ -82,6 +87,8 @@ void CRender::render_lights_shadowed_one(light_ctx& task)
 
 void CRender::render_lights_shadowed(light_Package& LP)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     auto& source = LP.v_shadowed;
 
     //////////////////////////////////////////////////////////////////////////
@@ -284,6 +291,8 @@ void CRender::render_lights_shadowed(light_Package& LP)
 
 void CRender::render_lights(light_Package& LP)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     if (!LP.v_shadowed.empty())
         render_lights_shadowed(LP);
 

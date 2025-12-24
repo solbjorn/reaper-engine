@@ -191,6 +191,8 @@ void dxEnvironmentRender::lerp(IEnvDescriptorRender* inA, IEnvDescriptorRender* 
 
 void dxEnvironmentRender::RenderSky(CEnvironment& env)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     RImplementation.rmFar(RCache);
 
     // draw sky box
@@ -241,6 +243,8 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env)
 
 void dxEnvironmentRender::RenderClouds(CEnvironment& env)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     RImplementation.rmFar(RCache);
 
     Fmatrix mXFORM, mScale;

@@ -40,6 +40,8 @@ void CRender::rain_run()
     VERIFY(rain_context_id != R__INVALID_CTX_ID);
 
     rain_tg->run([this] {
+        XR_TRACY_ZONE_SCOPED();
+
         //	Use light as placeholder for rain data.
         light& RainLight = *(light*)Lights.rain._get();
 
@@ -194,6 +196,8 @@ void CRender::rain_run()
         RainLight.X.D.combine[0] = cull_xform;
 
         rain_tg->run([this] {
+            XR_TRACY_ZONE_SCOPED();
+
             // Begin SMAP-render
             auto& dsgraph = get_context(rain_context_id);
             PIX_EVENT_CTX(dsgraph.cmd_list, render_rain);
@@ -218,7 +222,9 @@ void CRender::rain_run()
 
 void CRender::rain_sync()
 {
+    XR_TRACY_ZONE_SCOPED();
     PIX_EVENT(DEFER_RAIN);
+
     rain_tg->wait();
 
     get_context(rain_context_id).cmd_list.submit();

@@ -510,6 +510,8 @@ void CKinematics::LL_SetBonesVisible(VisMask mask)
 
 void CKinematics::Visibility_Update()
 {
+    XR_TRACY_ZONE_SCOPED();
+
     Update_Visibility = FALSE;
     // check visible
     for (u32 c_it = 0; c_it < children.size(); c_it++)
@@ -607,6 +609,8 @@ bool CKinematics::PickBone(const Fmatrix& parent_xform, IKinematics::pick_result
 
 void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start, const Fvector3& dir, ref_shader shader, float size)
 {
+    XR_TRACY_ZONE_SCOPED();
+
     Fvector S, D, normal{};
     // transform ray from world to model
     Fmatrix P;
@@ -711,6 +715,8 @@ void CKinematics::CalculateWallmarks(bool hud)
 {
     if (!wallmarks.empty() && (wm_frame != Device.dwFrame))
     {
+        XR_TRACY_ZONE_SCOPED();
+
         wm_frame = Device.dwFrame;
         bool need_remove = false;
         for (SkeletonWMVecIt it = wallmarks.begin(); it != wallmarks.end(); it++)
@@ -746,6 +752,8 @@ void CKinematics::RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT*&
 
     if (!wm || !bones || !bone_instances)
         return;
+
+    XR_TRACY_ZONE_SCOPED();
 
     // skin vertices
     for (u32 f_idx = 0; f_idx < wm->m_Faces.size(); f_idx++)
