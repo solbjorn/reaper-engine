@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "restricted_object.h"
+
 #include "space_restriction_manager.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "level.h"
@@ -17,7 +18,6 @@
 #include "space_restriction.h"
 #include "space_restriction_bridge.h"
 #include "space_restriction_base.h"
-#include "profiler.h"
 #include "alife_simulator.h"
 #include "alife_object_registry.h"
 #include "game_graph.h"

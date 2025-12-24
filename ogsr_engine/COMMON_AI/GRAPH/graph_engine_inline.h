@@ -30,8 +30,6 @@ IC bool CGraphEngine::search(const _Graph& graph, const GraphEngineSpace::_index
                              xr_vector<GraphEngineSpace::_index_type>* node_path, const _Parameters& parameters)
 {
     Device.Statistic->AI_Path.Begin();
-    START_PROFILE("graph_engine")
-    START_PROFILE("graph_engine/search")
 
     using CPathManagerGeneric =
         CPathManager<_Graph, CAlgorithm::CDataStorage, _Parameters, GraphEngineSpace::_dist_type, GraphEngineSpace::_index_type, GraphEngineSpace::_iteration_type>;
@@ -39,13 +37,11 @@ IC bool CGraphEngine::search(const _Graph& graph, const GraphEngineSpace::_index
     CPathManagerGeneric path_manager;
 
     path_manager.setup(&graph, &m_algorithm->data_storage(), node_path, start_node, dest_node, parameters);
-
-    bool successfull = m_algorithm->find(path_manager);
+    const bool successful = m_algorithm->find(path_manager);
 
     Device.Statistic->AI_Path.End();
-    return (successfull);
-    STOP_PROFILE
-    STOP_PROFILE
+
+    return successful;
 }
 
 template <typename _Graph, typename _Parameters>
@@ -53,8 +49,6 @@ IC bool CGraphEngine::search(const _Graph& graph, const GraphEngineSpace::_index
                              xr_vector<GraphEngineSpace::_index_type>* node_path, _Parameters& parameters)
 {
     Device.Statistic->AI_Path.Begin();
-    START_PROFILE("graph_engine")
-    START_PROFILE("graph_engine/search")
 
     using CPathManagerGeneric =
         CPathManager<_Graph, CAlgorithm::CDataStorage, _Parameters, GraphEngineSpace::_dist_type, GraphEngineSpace::_index_type, GraphEngineSpace::_iteration_type>;
@@ -62,14 +56,11 @@ IC bool CGraphEngine::search(const _Graph& graph, const GraphEngineSpace::_index
     CPathManagerGeneric path_manager;
 
     path_manager.setup(&graph, &m_algorithm->data_storage(), node_path, start_node, dest_node, parameters);
-
-    bool successfull = m_algorithm->find(path_manager);
+    const bool successful = m_algorithm->find(path_manager);
 
     Device.Statistic->AI_Path.End();
 
-    return (successfull);
-    STOP_PROFILE
-    STOP_PROFILE
+    return successful;
 }
 
 template <typename _Graph, typename _Parameters, typename _PathManager>
@@ -77,18 +68,13 @@ IC bool CGraphEngine::search(const _Graph& graph, const GraphEngineSpace::_index
                              xr_vector<GraphEngineSpace::_index_type>* node_path, const _Parameters& parameters, _PathManager& path_manager)
 {
     Device.Statistic->AI_Path.Begin();
-    START_PROFILE("graph_engine")
-    START_PROFILE("graph_engine/search")
 
     path_manager.setup(&graph, &m_algorithm->data_storage(), node_path, start_node, dest_node, parameters);
-
-    bool successfull = m_algorithm->find(path_manager);
+    const bool successful = m_algorithm->find(path_manager);
 
     Device.Statistic->AI_Path.End();
-    return (successfull);
 
-    STOP_PROFILE
-    STOP_PROFILE
+    return successful;
 }
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5, bool T6, typename T7, typename T8, typename _Parameters>
@@ -96,8 +82,6 @@ IC bool CGraphEngine::search(const CProblemSolver<T1, T2, T3, T4, T5, T6, T7, T8
                              const GraphEngineSpace::_solver_index_type& dest_node, xr_vector<GraphEngineSpace::_solver_edge_type>* node_path, const _Parameters& parameters)
 {
     Device.Statistic->AI_Path.Begin();
-    START_PROFILE("graph_engine")
-    START_PROFILE("graph_engine/problem_solver")
 
     using CSProblemSolver = CProblemSolver<T1, T2, T3, T4, T5, T6, T7, T8>;
     using CSolverPathManager = CPathManager<CSProblemSolver, CSolverAlgorithm::CDataStorage, _Parameters, GraphEngineSpace::_solver_dist_type, GraphEngineSpace::_solver_index_type,
@@ -106,12 +90,9 @@ IC bool CGraphEngine::search(const CProblemSolver<T1, T2, T3, T4, T5, T6, T7, T8
     CSolverPathManager path_manager;
 
     path_manager.setup(&graph, &m_solver_algorithm->data_storage(), node_path, start_node, dest_node, parameters);
-
-    bool successfull = m_solver_algorithm->find(path_manager);
+    const bool successful = m_solver_algorithm->find(path_manager);
 
     Device.Statistic->AI_Path.End();
-    return (successfull);
 
-    STOP_PROFILE
-    STOP_PROFILE
+    return successful;
 }

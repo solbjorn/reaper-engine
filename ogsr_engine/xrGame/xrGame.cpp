@@ -13,7 +13,6 @@
 #include "object_factory.h"
 #include "ui/xrUIXmlParser.h"
 #include "xr_level_controller.h"
-#include "profiler.h"
 
 DLL_Pure* xrFactory_Create(CLASS_ID clsid)
 {
@@ -41,8 +40,4 @@ void AttachGame()
     CCC_RegisterCommands();
     // keyboard binding
     CCC_RegisterInput();
-
-#ifdef DEBUG
-    g_profiler = xr_new<CProfiler>();
-#endif
 }

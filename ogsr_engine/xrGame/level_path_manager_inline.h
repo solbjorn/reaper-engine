@@ -8,8 +8,6 @@
 
 #pragma once
 
-#include "profiler.h"
-
 #define TEMPLATE_SPECIALIZATION template <typename _VertexEvaluator, typename _vertex_id_type, typename _index_type>
 
 #define CLevelManagerTemplate CBasePathManager<CLevelGraph, _VertexEvaluator, _vertex_id_type, _index_type>

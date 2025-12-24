@@ -18,7 +18,6 @@
 #include "vertex_manager_hash_fixed.h"
 #include "data_storage_binary_heap.h"
 
-#include "profiler.h"
 #include "problem_solver.h"
 #include "operator_condition.h"
 #include "condition_state.h"

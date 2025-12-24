@@ -194,8 +194,6 @@ public:
     s32 m_skinning;
     s32 m_MSAASample;
 
-    BENCH_SEC_SCRAMBLEMEMBER1
-
     // data
     CFrustum ViewBase;
 
@@ -204,9 +202,6 @@ public:
     virtual void destroy() = 0;
     virtual void reset_begin() = 0;
     virtual void reset_end() = 0;
-
-    BENCH_SEC_SCRAMBLEVTBL1
-    BENCH_SEC_SCRAMBLEVTBL3
 
     virtual void level_Load(IReader*) = 0;
     virtual void level_Unload() = 0;

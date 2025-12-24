@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "sound_memory_manager.h"
+
 #include "memory_manager.h"
 #include "hit_memory_manager.h"
 #include "visual_memory_manager.h"
@@ -21,7 +22,6 @@
 #include "agent_manager.h"
 #include "agent_member_manager.h"
 #include "ai/stalker/ai_stalker.h"
-#include "profiler.h"
 #include "client_spawn_manager.h"
 #include "memory_manager.h"
 #include "..\xr_3da\IGame_Persistent.h"
@@ -309,8 +309,6 @@ struct CRemoveOfflinePredicate
 
 void CSoundMemoryManager::update()
 {
-    START_PROFILE("Memory Manager/sounds::update")
-
     clear_delayed_objects();
 
     VERIFY(m_sounds);
@@ -331,8 +329,6 @@ void CSoundMemoryManager::update()
         }
     }
 #endif
-
-    STOP_PROFILE
 }
 
 struct CSoundObjectPredicate

@@ -6,9 +6,6 @@
 #include "net_messages.h"
 
 INetQueue::INetQueue()
-#ifdef PROFILE_CRITICAL_SECTIONS
-    : cs(MUTEX_PROFILE_ID(INetQueue))
-#endif // PROFILE_CRITICAL_SECTIONS
 {
     unused.reserve(128);
     for (int i = 0; i < 16; i++)

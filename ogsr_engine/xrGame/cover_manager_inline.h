@@ -52,8 +52,6 @@ IC bool CCoverManager::inertia(float radius, _evaluator_type& evaluator, const _
 template <typename _evaluator_type, typename _restrictor_type>
 IC const CCoverPoint* CCoverManager::best_cover(const Fvector& position, float radius, _evaluator_type& evaluator, const _restrictor_type& restrictor) const
 {
-    START_PROFILE("Covers/best_cover")
-
     if (inertia(radius, evaluator, restrictor))
         return (evaluator.selected());
 
@@ -95,12 +93,9 @@ IC const CCoverPoint* CCoverManager::best_cover(const Fvector& position, float r
     }
 
     evaluator.finalize();
-
     restrictor.finalize(evaluator.selected());
 
-    return (evaluator.selected());
-
-    STOP_PROFILE
+    return evaluator.selected();
 }
 
 template <typename _evaluator_type>
@@ -112,5 +107,4 @@ IC const CCoverPoint* CCoverManager::best_cover(const Fvector& position, float r
 IC bool CCoverManager::operator()(const CCoverPoint*) const { return (true); }
 
 IC float CCoverManager::weight(const CCoverPoint*) const { return (1.f); }
-
 IC void CCoverManager::finalize(const CCoverPoint*) const {}

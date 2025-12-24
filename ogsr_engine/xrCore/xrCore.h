@@ -161,12 +161,3 @@ public:
 
 extern xrCore Core;
 extern bool gModulesLoaded;
-
-// Трэш
-#define BENCH_SEC_CALLCONV
-#define BENCH_SEC_SCRAMBLEVTBL1
-#define BENCH_SEC_SCRAMBLEVTBL2
-#define BENCH_SEC_SCRAMBLEVTBL3
-#define BENCH_SEC_SIGN
-#define BENCH_SEC_SCRAMBLEMEMBER1
-#define BENCH_SEC_SCRAMBLEMEMBER2

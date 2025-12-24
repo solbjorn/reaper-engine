@@ -22,7 +22,6 @@
 #include "graph_engine.h"
 #include "../xr_3da/x_ray.h"
 #include "restriction_space.h"
-#include "profiler.h"
 #include "mt_config.h"
 #include "gamepersistent.h"
 #include "script_engine.h"

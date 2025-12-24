@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "visual_memory_manager.h"
+
 #include "ai/stalker/ai_stalker.h"
 #include "memory_space.h"
 #include "../Include/xrRender/Kinematics.h"
@@ -20,7 +21,6 @@
 #include "agent_manager.h"
 #include "agent_member_manager.h"
 #include "ai_space.h"
-#include "profiler.h"
 #include "actor.h"
 #include "../xr_3da/camerabase.h"
 #include "gamepersistent.h"
@@ -389,18 +389,13 @@ void CVisualMemoryManager::add_visible_object(const CObject* object, float time_
         return;
 #endif // MASTER_GOLD
 
-    //	START_PROFILE("Memory Manager/visuals/update/add_visibles/visible")
     auto game_object = smart_cast<const CGameObject*>(object);
     if (!game_object || (!fictitious && !visible(game_object, time_delta)))
         return;
-    //	STOP_PROFILE
 
-    //	START_PROFILE("Memory Manager/visuals/update/add_visibles/find_object_by_id")
     const CGameObject* self = m_object;
     auto J = std::find(m_objects->begin(), m_objects->end(), object_id(game_object));
-    //	STOP_PROFILE
 
-    //	START_PROFILE("Memory Manager/visuals/update/add_visibles/fill")
     if (m_objects->end() == J)
     {
         CVisibleObject visible_object;
@@ -433,7 +428,6 @@ void CVisualMemoryManager::add_visible_object(const CObject* object, float time_
             (*J).m_enabled = true;
         }
     }
-    //	STOP_PROFILE
 }
 
 void CVisualMemoryManager::add_visible_object(CVisibleObject visible_object)
@@ -579,8 +573,6 @@ MemorySpace::squad_mask_type CVisualMemoryManager::mask() const
 
 void CVisualMemoryManager::update(float time_delta)
 {
-    START_PROFILE("Memory Manager/visuals/update")
-
     clear_delayed_objects();
 
     if (!enabled())
@@ -592,17 +584,16 @@ void CVisualMemoryManager::update(float time_delta)
     VERIFY(m_objects);
     m_visible_objects.clear();
 
-    START_PROFILE("Memory Manager/visuals/update/feel_vision_get")
     if (m_object)
+    {
         m_object->feel_vision_get(m_visible_objects);
+    }
     else
     {
         VERIFY(m_client);
         m_client->feel_vision_get(m_visible_objects);
     }
-    STOP_PROFILE
 
-    START_PROFILE("Memory Manager/visuals/update/make_invisible")
     {
         auto I = m_objects->begin();
         auto E = m_objects->end();
@@ -610,9 +601,7 @@ void CVisualMemoryManager::update(float time_delta)
             if ((*I).m_level_time + current_state().m_still_visible_time < Device.dwTimeGlobal)
                 (*I).visible(mask, false);
     }
-    STOP_PROFILE
 
-    START_PROFILE("Memory Manager/visuals/update/add_visibles")
     {
         xr_vector<CObject*>::const_iterator I = m_visible_objects.begin();
         xr_vector<CObject*>::const_iterator E = m_visible_objects.end();
@@ -621,9 +610,7 @@ void CVisualMemoryManager::update(float time_delta)
 
         m_visible_objects.clear();
     }
-    STOP_PROFILE
 
-    START_PROFILE("Memory Manager/visuals/update/make_not_yet_visible")
     {
         xr_vector<CNotYetVisibleObject>::iterator I = m_not_yet_visible_objects.begin();
         xr_vector<CNotYetVisibleObject>::iterator E = m_not_yet_visible_objects.end();
@@ -631,9 +618,7 @@ void CVisualMemoryManager::update(float time_delta)
             if ((*I).m_update_time < Device.dwTimeGlobal)
                 (*I).m_value = 0.f;
     }
-    STOP_PROFILE
 
-    START_PROFILE("Memory Manager/visuals/update/removing_offline")
     // verifying if object is online
     {
         m_objects->erase(std::remove_if(m_objects->begin(), m_objects->end(), SRemoveOfflinePredicate()), m_objects->end());
@@ -651,16 +636,6 @@ void CVisualMemoryManager::update(float time_delta)
         m_not_yet_visible_objects.erase(std::remove_if(m_not_yet_visible_objects.begin(), m_not_yet_visible_objects.end(), SRemoveOfflinePredicate()),
                                         m_not_yet_visible_objects.end());
     }
-    STOP_PROFILE
-
-#if 0 // def DEBUG
-	if (m_stalker) {
-		CAgentMemberManager::MEMBER_STORAGE::const_iterator	I = m_stalker->agent_manager().member().members().begin();
-		CAgentMemberManager::MEMBER_STORAGE::const_iterator	E = m_stalker->agent_manager().member().members().end();
-		for ( ; I != E; ++I)
-			(*I)->object().memory().visual().check_visibles();
-	}
-#endif
 
     if (m_object && g_actor)
     {
@@ -668,17 +643,15 @@ void CVisualMemoryManager::update(float time_delta)
         {
             xr_vector<CNotYetVisibleObject>::iterator I = std::find_if(m_not_yet_visible_objects.begin(), m_not_yet_visible_objects.end(), CNotYetVisibleObjectPredicate(Actor()));
             if (I != m_not_yet_visible_objects.end())
-            {
                 Actor()->SetActorVisibility(m_object->ID(), clampr((*I).m_value / visibility_threshold(), 0.f, 1.f));
-            }
             else
                 Actor()->SetActorVisibility(m_object->ID(), 0.f);
         }
         else
+        {
             Actor()->SetActorVisibility(m_object->ID(), 0.f);
+        }
     }
-
-    STOP_PROFILE
 }
 
 void CVisualMemoryManager::save(NET_Packet& packet) const

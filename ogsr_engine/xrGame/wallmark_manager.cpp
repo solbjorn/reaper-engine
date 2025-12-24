@@ -1,10 +1,10 @@
 #include "stdafx.h"
 
 #include "wallmark_manager.h"
+
 #include "Level.h"
 #include "..\xr_3da\GameMtlLib.h"
 #include "CalculateTriangle.h"
-#include "profiler.h"
 
 #ifdef DEBUG
 #include "phdebug.h"

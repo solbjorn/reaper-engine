@@ -1,13 +1,13 @@
 #include "stdafx.h"
 
+#include "step_manager.h"
+
 #include "..\Include/xrRender/KinematicsAnimated.h"
 #include "step_manager_defs.h"
-#include "step_manager.h"
 #include "entity_alive.h"
 #include "level.h"
 #include "gamepersistent.h"
 #include "material_manager.h"
-#include "profiler.h"
 #include "IKLimbsController.h"
 #include "actor.h"
 #include "game_object_space.h"
@@ -107,8 +107,6 @@ void CStepManager::on_animation_start(MotionID motion_id, CBlend* blend)
 
 void CStepManager::update()
 {
-    START_PROFILE("Step Manager")
-
     if (m_step_info.disable)
         return;
     if (!m_blend)
@@ -207,12 +205,12 @@ void CStepManager::update()
             m_step_info.activity[i].cycle = m_step_info.cur_cycle;
         }
     }
-    STOP_PROFILE
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Function for foot processing
 //////////////////////////////////////////////////////////////////////////
+
 Fvector CStepManager::get_foot_position(ELegType leg_type)
 {
     R_ASSERT2(m_foot_bones[leg_type] != BI_NONE, make_string("[%s] foot bone had not been set", m_object->Name()));

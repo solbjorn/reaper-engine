@@ -9,12 +9,12 @@
 #include "stdafx.h"
 
 #include "movement_manager.h"
+
 #include "PHMovementControl.h"
 #include "detail_path_manager.h"
 #include "level.h"
 #include "custommonster.h"
 #include "IColisiondamageInfo.h"
-#include "profiler.h"
 
 // Lain: added
 #include "steering_behaviour.h"

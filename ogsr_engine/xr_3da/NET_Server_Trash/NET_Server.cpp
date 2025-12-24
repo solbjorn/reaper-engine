@@ -66,14 +66,7 @@ IClient* IPureServer::ID_to_client(ClientID ID, bool ScanAll) // пока не �
     return nullptr;
 }
 
-IPureServer::IPureServer(CTimer* timer)
-#ifdef PROFILE_CRITICAL_SECTIONS
-    : csPlayers(MUTEX_PROFILE_ID(IPureServer::csPlayers))
-#endif // PROFILE_CRITICAL_SECTIONS
-{
-    device_timer = timer;
-}
-
+IPureServer::IPureServer(CTimer* timer) : device_timer{timer} {}
 IPureServer::~IPureServer() { SV_Client = nullptr; }
 
 IPureServer::EConnect IPureServer::Connect(LPCSTR options) // опции вида [имя_сейва/single/alife]

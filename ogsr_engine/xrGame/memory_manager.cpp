@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "memory_manager.h"
+
 #include "visual_memory_manager.h"
 #include "sound_memory_manager.h"
 #include "hit_memory_manager.h"
@@ -22,7 +23,6 @@
 #include "memory_space.h"
 #include "ai_object_location.h"
 #include "level_graph.h"
-#include "profiler.h"
 #include "agent_enemy_manager.h"
 #include "holder_custom.h"
 
@@ -114,8 +114,6 @@ void CMemoryManager::update_enemies(const bool& registered_in_combat)
 
 void CMemoryManager::update(float time_delta)
 {
-    START_PROFILE("Memory Manager")
-
     visual().update(time_delta);
     sound().update();
     hit().update();
@@ -137,8 +135,6 @@ void CMemoryManager::update(float time_delta)
     update_enemies(registered_in_combat);
     item().update();
     danger().update();
-
-    STOP_PROFILE
 }
 
 void CMemoryManager::enable(const CObject* object, bool enable)

@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "item_manager.h"
+
 #include "inventory_item.h"
 #include "custommonster.h"
 #include "ai_object_location.h"
@@ -16,7 +17,6 @@
 #include "restricted_object.h"
 #include "movement_manager.h"
 #include "ai_space.h"
-#include "profiler.h"
 
 bool CItemManager::is_useful(const CGameObject* object) const { return (m_object->useful(this, object)); }
 
@@ -67,8 +67,6 @@ float CItemManager::evaluate(const CGameObject* object) const
 
 void CItemManager::update()
 {
-    START_PROFILE("Memory Manager/items::update")
-
 #ifdef DEBUG
     OBJECTS::const_iterator I = m_objects.begin();
     OBJECTS::const_iterator E = m_objects.end();
@@ -80,8 +78,6 @@ void CItemManager::update()
 
     VERIFY3(!selected() || m_object->movement().restrictions().accessible(selected()->ai_location().level_vertex_id()), *m_object->cName(),
             selected() ? *selected()->cName() : "<no selected item>");
-
-    STOP_PROFILE
 }
 
 void CItemManager::remove_links(CObject* object)

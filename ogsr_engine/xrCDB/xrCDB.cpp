@@ -28,11 +28,7 @@ using namespace CDB;
 using namespace Opcode;
 
 // Model building
-MODEL::MODEL()
-#ifdef PROFILE_CRITICAL_SECTIONS
-    : cs(MUTEX_PROFILE_ID(MODEL))
-#endif // PROFILE_CRITICAL_SECTIONS
-{}
+MODEL::MODEL() = default;
 
 MODEL::~MODEL()
 {

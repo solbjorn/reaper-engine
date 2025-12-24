@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "sight_manager.h"
+
 #include "custommonster.h"
 #include "ai/stalker/ai_stalker.h"
 #include "detail_path_manager.h"
@@ -16,7 +17,6 @@
 #include "stalker_movement_manager.h"
 #include "ai/stalker/ai_stalker_space.h"
 #include "ai_space.h"
-#include "profiler.h"
 
 using namespace StalkerSpace;
 
@@ -218,8 +218,6 @@ bool CSightManager::need_correction(float x1, float x2, float x3)
 
 void CSightManager::Exec_Look(float dt)
 {
-    START_PROFILE("Sight Manager")
-
     typedef MonsterSpace::SBoneRotation CBoneRotation;
 
     CBoneRotation& body = object().movement().m_body;
@@ -272,31 +270,13 @@ void CSightManager::Exec_Look(float dt)
         object().movement().m_head.target.yaw, object().movement().m_head.target.pitch);
 #endif
 
-#if 0
-	Fmatrix				mXFORM;
-	mXFORM.setHPB		(-body.current.yaw,0,0);
-	mXFORM.c.set		(m_object->Position());
-	m_object->XFORM().set(mXFORM);
-#else
-
     Fmatrix& m = m_object->XFORM();
-    /*
-        if(m_object->animation_movement_controlled	( )	)
-        {
-            //m.getHPB
-            body.current.yaw = - atan2(m.i.x,m.i.z);
-            body.target.yaw = body.current.yaw;
-        } else {
-    */
     float _sh, _ch, h = -body.current.yaw;
     DirectX::XMScalarSinCos(&_sh, &_ch, h);
 
     m.vm[0].set(_ch, 0.f, _sh, 0.f);
     m.vm[1].set(0.f, 1.f, 0.f, 0.f);
     m.vm[2].set(-_sh, 0.f, _ch, 0.f);
-//	}
-#endif
-    STOP_PROFILE
 }
 
 void CSightManager::setup(const CSightAction& sight_action)
@@ -313,7 +293,6 @@ void CSightManager::setup(const CSightAction& sight_action)
 
 void CSightManager::update()
 {
-    START_PROFILE("Sight Manager")
     if (enabled())
     {
         if (fis_zero(object().movement().speed()))
@@ -348,13 +327,12 @@ void CSightManager::update()
             }
         }
         else
+        {
             m_turning_in_place = false;
-
-        //		Msg								("%6d : %f,%f",Device.dwTimeGlobal,object().movement().m_head.target.yaw,object().movement().m_head.target.pitch);
+        }
 
         inherited::update();
     }
-    STOP_PROFILE
 }
 
 bool CSightManager::GetDirectionAngles(float& yaw, float& pitch)

@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "enemy_manager.h"
+
 #include "memory_manager.h"
 #include "visual_memory_manager.h"
 #include "hit_memory_manager.h"
@@ -20,7 +21,6 @@
 #include "level.h"
 #include "script_game_object.h"
 #include "ai_space.h"
-#include "profiler.h"
 #include "actor.h"
 #include "ai/stalker/ai_stalker.h"
 #include "movement_manager.h"
@@ -346,8 +346,6 @@ void CEnemyManager::try_change_enemy()
 
 void CEnemyManager::update()
 {
-    START_PROFILE("Memory Manager/enemies::update")
-
     try_change_enemy();
 
     if (selected())
@@ -355,6 +353,4 @@ void CEnemyManager::update()
         m_last_enemy_time = Device.dwTimeGlobal;
         m_last_enemy = selected();
     }
-
-    STOP_PROFILE
 }

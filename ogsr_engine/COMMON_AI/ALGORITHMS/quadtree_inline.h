@@ -141,11 +141,10 @@ IC _object_type* CSQuadTree::find(const Fvector& position) const
 TEMPLATE_SPECIALIZATION
 IC void CSQuadTree::nearest(const Fvector& position, float radius, xr_vector<_object_type*>& objects, bool clear) const
 {
-    START_PROFILE("Covers/nearest")
     if (clear)
         objects.clear();
+
     nearest(position, radius, objects, m_root, m_center, m_radius, 0);
-    STOP_PROFILE
 }
 
 TEMPLATE_SPECIALIZATION
@@ -242,13 +241,7 @@ IC void CSQuadTree::nearest(const Fvector& position, float radius, xr_vector<_ob
 }
 
 TEMPLATE_SPECIALIZATION
-IC _object_type* CSQuadTree::remove(const _object_type* object)
-{
-    START_PROFILE("Covers/remove")
-    _object_type* _object = remove(object, m_root, m_center, m_radius, 0);
-    return (_object);
-    STOP_PROFILE
-}
+IC _object_type* CSQuadTree::remove(const _object_type* object) { return remove(object, m_root, m_center, m_radius, 0); }
 
 TEMPLATE_SPECIALIZATION
 IC _object_type* CSQuadTree::remove(const _object_type* object, CQuadNode*& node, Fvector center, float distance, int depth)

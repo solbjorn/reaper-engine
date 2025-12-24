@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "agent_manager.h"
+
 #include "agent_corpse_manager.h"
 #include "agent_enemy_manager.h"
 #include "agent_explosive_manager.h"
@@ -16,7 +17,6 @@
 #include "agent_member_manager.h"
 #include "agent_memory_manager.h"
 #include "agent_manager_planner.h"
-#include "profiler.h"
 
 CAgentManager::CAgentManager()
 {
@@ -97,15 +97,11 @@ void CAgentManager::update_impl()
 }
 
 #ifdef USE_SCHEDULER_IN_AGENT_MANAGER
+
 void CAgentManager::shedule_Update(u32 time_delta)
 {
-    START_PROFILE("Agent_Manager")
-
     ISheduled::shedule_Update(time_delta);
-
     update_impl();
-
-    STOP_PROFILE
 }
 
 float CAgentManager::shedule_Scale() const { return 0.5f; }

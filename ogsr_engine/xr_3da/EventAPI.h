@@ -36,9 +36,7 @@ private:
     mutable xrCriticalSection CS;
 
 public:
-#ifdef PROFILE_CRITICAL_SECTIONS
-    CEventAPI() : CS(MUTEX_PROFILE_ID(CEventAPI)) {}
-#endif // PROFILE_CRITICAL_SECTIONS
+    CEventAPI() = default;
 
     EVENT Create(const char* N);
     void Destroy(EVENT& E);

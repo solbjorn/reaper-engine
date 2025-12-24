@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include "safe_map_iterator.h"
 #include "xrServer_Objects_ALife.h"
+
+#include "safe_map_iterator.h"
 #include "ai_debug.h"
-#include "profiler.h"
 
 class CALifeScheduleRegistry : public CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeSchedulable, std::less<ALife::_OBJECT_ID>, false>
 {

@@ -26,7 +26,6 @@
 #include "phvalidevalues.h"
 #include "PHActivationShape.h"
 #include "game_base_space.h"
-#include "profiler.h"
 #include "..\Include/xrRender/Kinematics.h"
 #include "../xr_3da/IGame_Persistent.h"
 
@@ -424,16 +423,14 @@ void CExplosive::Explode()
     }
 
     GetExplosionBox(m_vExplodeSize);
-    START_PROFILE("explosive/activate explosion box")
     ActivateExplosionBox(m_vExplodeSize, m_vExplodePos);
-    STOP_PROFILE
-    //---------------------------------------------------------------------
+
 #ifdef DEBUG
+    //---------------------------------------------------------------------
     if (ph_dbg_draw_mask.test(phDbgDrawExplosions))
-    {
         DBG_ClosedCashedDraw(100000);
-    }
 #endif
+
     //////////////////////////////////////////////////////////////////////////
     // Explode Effector	//////////////
     CGameObject* GO = smart_cast<CGameObject*>(Level().CurrentEntity());
