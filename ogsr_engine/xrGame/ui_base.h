@@ -48,22 +48,19 @@ struct S2DVert
 #define UI_FRUSTUM_MAXPLANES 12
 #define UI_FRUSTUM_SAFE (UI_FRUSTUM_MAXPLANES * 4)
 
-typedef svector<S2DVert, UI_FRUSTUM_SAFE> sPoly2D;
+using sPoly2D = svector<S2DVert, UI_FRUSTUM_SAFE>;
 
 class C2DFrustum
-{ // only rect form
+{
+    // only rect form
     svector<Fplane2, FRUSTUM_MAXPLANES> planes;
-    Frect m_rect;
+    Frect m_rect{};
 
 public:
     void CreateFromRect(const Frect& rect);
     sPoly2D* ClipPoly(sPoly2D& S, sPoly2D& D) const;
 
-    void Clear()
-    {
-        if (planes.size())
-            planes.clear();
-    }
+    void Clear() { planes.clear(); }
 };
 
 class ui_core : public CDeviceResetNotifier

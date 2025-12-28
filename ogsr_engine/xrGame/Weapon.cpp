@@ -1615,7 +1615,12 @@ void CWeapon::UpdateAddonsVisibility()
 
 bool CWeapon::Activate(bool now)
 {
+    VisMask new_mask;
+    new_mask.set_all();
+
+    smart_cast<IKinematics*>(Visual())->LL_SetBonesVisible(new_mask);
     UpdateAddonsVisibility();
+
     return inherited::Activate(now);
 }
 
@@ -2264,4 +2269,14 @@ void CWeapon::update_visual_bullet_textures(const bool forced)
         current_bullet_texture = bullet_texrure_name;
         // Msg("--[%s] replaced texture [%s] --> [%s] for [%s]", __FUNCTION__, tex_name.c_str(), current_bullet_texture.c_str(), cNameSect().c_str());
     }
+}
+
+void CWeapon::on_a_hud_attach()
+{
+    inherited::on_a_hud_attach();
+
+    VisMask new_mask;
+    new_mask.set_all();
+
+    HudItemData()->m_model->LL_SetBonesVisible(new_mask);
 }

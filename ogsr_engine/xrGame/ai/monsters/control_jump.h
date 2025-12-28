@@ -53,7 +53,7 @@ class CControlJump : public CControl_ComCustom<SControlJumpData>
     RTTI_DECLARE_TYPEINFO(CControlJump, CControl_ComCustom<SControlJumpData>);
 
 private:
-    typedef CControl_ComCustom<SControlJumpData> inherited;
+    using inherited = CControl_ComCustom<SControlJumpData>;
 
     enum EStateAnimJump
     {
@@ -65,34 +65,34 @@ private:
     };
 
     // loadable parameters
-    u32 m_delay_after_jump;
-    float m_jump_factor;
-    float m_trace_ground_range;
-    float m_hit_trace_range;
-    float m_build_line_distance;
-    float m_min_distance;
-    float m_max_distance;
-    float m_max_angle;
-    float m_max_height;
-    float m_auto_aim_factor;
-    Fvector m_jump_start_pos;
+    u32 m_delay_after_jump{};
+    f32 m_jump_factor{};
+    f32 m_trace_ground_range{};
+    f32 m_hit_trace_range{};
+    f32 m_build_line_distance{};
+    f32 m_min_distance{};
+    f32 m_max_distance{};
+    f32 m_max_angle{};
+    f32 m_max_height{};
+    f32 m_auto_aim_factor{};
+    Fvector m_jump_start_pos{};
 
     // run-time params
-    u32 m_time_next_allowed;
-    u32 m_time_started; // time jump started
-    float m_jump_time; // physical-counted time of jump
-    float m_blend_speed; // current anim blend speed
-    Fvector m_target_position; // save target position for internal needs
+    u32 m_time_next_allowed{};
+    u32 m_time_started{}; // time jump started
+    f32 m_jump_time{}; // physical-counted time of jump
+    f32 m_blend_speed{}; // current anim blend speed
+    Fvector m_target_position{}; // save target position for internal needs
 
     // state flags
-    bool m_object_hitted;
-    bool m_velocity_bounced;
+    bool m_object_hitted{};
+    bool m_velocity_bounced{};
 
     // animation
-    EStateAnimJump m_anim_state_prev;
-    EStateAnimJump m_anim_state_current;
+    EStateAnimJump m_anim_state_prev{};
+    EStateAnimJump m_anim_state_current{};
 
-    u32 m_last_time_added_impulse;
+    u32 m_last_time_added_impulse{};
 
 public:
     ~CControlJump() override = default;

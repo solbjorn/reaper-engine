@@ -18,6 +18,12 @@
 #include "LevelDebugScript.h"
 #include "UIGameCustom.h"
 
+#include "xrServer_Objects.h"
+
+#ifdef DEBUG
+void show_animation_stats();
+#endif // DEBUG
+
 void CLevel::remove_objects()
 {
     m_is_removing_objects = true;
@@ -33,12 +39,12 @@ void CLevel::remove_objects()
 
     Game().reset_ui();
 
-    {
-        VERIFY(Server);
-        Server->SLS_Clear();
-    }
+    VERIFY(Server != nullptr);
+    Server->SLS_Clear(); // generate GE_DESTROY for all game objects
 
     snd_Events.clear();
+
+    // process destroy queue
     for (int i = 0; i < 6; ++i)
     {
         // ugly hack for checks that update is twice on frame
@@ -50,7 +56,6 @@ void CLevel::remove_objects()
         ProcessGameEvents();
 
         Objects.Update(true);
-        // Sleep(100);
     }
 
     BulletManager().Clear();
@@ -102,18 +107,15 @@ void CLevel::remove_objects()
     ai().script_engine().collect_all_garbage();
 
     for (auto& i : m_debug_render_queue)
-    {
         xr_delete(i.second);
-    }
 
     m_debug_render_queue.clear();
 
+    // clean up scheduler queues
+    Engine.Sheduler.Destroy();
+
     m_is_removing_objects = false;
 }
-
-#ifdef DEBUG
-extern void show_animation_stats();
-#endif // DEBUG
 
 void CLevel::net_Stop()
 {
@@ -155,8 +157,6 @@ void CLevel::ClientSend()
         }
     }
 }
-
-#include "xrServer_Objects.h"
 
 void CLevel::ClientSave()
 {

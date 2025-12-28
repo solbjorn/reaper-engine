@@ -10,10 +10,9 @@ class CUIDialogWndEx : public CUIDialogWnd, public DLL_Pure
 public:
     struct callback
     {
+        sol::function fn;
         shared_str m_controlName;
         s16 m_event;
-
-        sol::function fn;
     };
 
     typedef CUIDialogWnd inherited;
@@ -38,12 +37,13 @@ protected:
 
 public:
     CUIDialogWndEx();
-    ~CUIDialogWndEx() override = default;
+    ~CUIDialogWndEx() override;
 
     void Register(CUIWindow* pChild);
     void Register(CUIWindow* pChild, LPCSTR name);
     void AddCallback(LPCSTR control_id, s16 event, sol::function function);
     void ClearCallbacks();
+
     virtual void Update();
     virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
 

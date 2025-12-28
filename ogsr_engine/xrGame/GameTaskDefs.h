@@ -1,20 +1,21 @@
 #pragma once
 
-enum ETaskState : u32
+#include "alife_abstract_registry.h"
+
+enum class ETaskState : u32
 {
     eTaskStateFail = 0,
     eTaskStateInProgress,
     eTaskStateCompleted,
-    //.	eTaskUserDefined,
-    eTaskStateDummy = u32(-1)
+    eTaskStateSkipped,
+
+    eTaskStateDummy = std::numeric_limits<u32>::max(),
 };
 
 typedef shared_str TASK_ID;
 DEFINE_VECTOR(TASK_ID, TASK_ID_VECTOR, TASK_ID_IT);
 extern shared_str g_active_task_id;
 extern u16 g_active_task_objective_id;
-
-#include "alife_abstract_registry.h"
 
 class CGameTask;
 

@@ -110,9 +110,14 @@ struct SHeliMovementState
     float isAdnAcc;
 
 protected:
-    float HeadingSpK, HeadingSpB;
-    float PitchSpK, PitchSpB, AngSP, AngSH;
-    float speedInDestPoint;
+    f32 HeadingSpK{};
+    f32 HeadingSpB{};
+    f32 PitchSpK{};
+    f32 PitchSpB{};
+    f32 AngSP{};
+    f32 AngSH{};
+    f32 speedInDestPoint{};
+
     void SetPointFlags(u32 idx, u32 new_flags);
 
 public:

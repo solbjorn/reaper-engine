@@ -237,10 +237,6 @@ void CShootingObject::LoadFlameParticles(LPCSTR section, LPCSTR prefix)
     if (pSettings->line_exist(section, full_name))
         m_sSmokeParticles._set(pSettings->r_string(section, full_name));
 
-    strconcat(sizeof(full_name), full_name, prefix, "shot_particles");
-    if (pSettings->line_exist(section, full_name))
-        m_sShotParticles._set(pSettings->r_string(section, full_name));
-
     // текущие партиклы
     m_sFlameParticlesCurrent = m_sFlameParticles;
     m_sSmokeParticlesCurrent = m_sSmokeParticles;
@@ -389,6 +385,7 @@ void CShootingObject::FireBullet(const Fvector& pos, const Fvector& shot_dir, fl
     dir.random_dir(shot_dir, fire_disp);
 
     if (!Core.Features.test(xrCore::Feature::npc_simplified_shooting) || ParentIsActor())
+    {
         if (!fis_zero(constDeviation.pitch) || !fis_zero(constDeviation.yaw))
         {
             // WARN: при больших значениях девиации стрелок может отсрелить себе голову!
@@ -398,9 +395,8 @@ void CShootingObject::FireBullet(const Fvector& pos, const Fvector& shot_dir, fl
             dir_yaw += constDeviation.yaw;
             dir.setHP(dir_yaw, dir_pitch);
         }
+    }
 
-    m_vCurrentShootDir = dir;
-    m_vCurrentShootPos = pos;
     m_iCurrentParentID = parent_id;
 
     bool aim_bullet;
@@ -408,20 +404,16 @@ void CShootingObject::FireBullet(const Fvector& pos, const Fvector& shot_dir, fl
     {
         if (ParentIsActor())
         {
-            if (m_fPredBulletTime == 0.0)
+            if (fis_zero(m_fPredBulletTime))
             {
                 aim_bullet = true;
             }
             else
             {
                 if ((Device.fTimeGlobal - m_fPredBulletTime) >= m_fTimeToAim)
-                {
                     aim_bullet = true;
-                }
                 else
-                {
                     aim_bullet = false;
-                }
             }
         }
         else
@@ -433,6 +425,7 @@ void CShootingObject::FireBullet(const Fvector& pos, const Fvector& shot_dir, fl
     {
         aim_bullet = false;
     }
+
     m_fPredBulletTime = Device.fTimeGlobal;
 
     float l_fHitPower;
@@ -450,9 +443,3 @@ void CShootingObject::FireBullet(const Fvector& pos, const Fvector& shot_dir, fl
 
 void CShootingObject::FireStart() { bWorking = true; }
 void CShootingObject::FireEnd() { bWorking = false; }
-
-void CShootingObject::StartShotParticles()
-{
-    CParticlesObject* pSmokeParticles{};
-    StartParticles(pSmokeParticles, *m_sShotParticles, m_vCurrentShootPos, true);
-}

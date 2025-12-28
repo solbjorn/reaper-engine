@@ -377,6 +377,7 @@ void CCustomZone::Load(LPCSTR section)
     m_ef_weapon_type = pSettings->r_u32(section, "ef_weapon_type");
 
     DestroyAfterBlowout = READ_IF_EXISTS(pSettings, r_bool, section, "DestroyAfterBlowout", false);
+    m_b_always_fastmode = READ_IF_EXISTS(pSettings, r_bool, section, "always_fast_mode", false);
 }
 
 BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
@@ -456,13 +457,12 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
     m_fDistanceToCurEntity = flt_max;
     m_bBlowoutWindActive = false;
 
-    o_fastmode = TRUE; // start initially with fast-mode enabled
-    if (spawn_ini() && spawn_ini()->line_exist("fast_mode", "always_fast"))
-    {
-        m_b_always_fastmode = spawn_ini()->r_bool("fast_mode", "always_fast");
-    }
+    o_fastmode = true; // start initially with fast-mode enabled
 
-    return (TRUE);
+    if (spawn_ini() != nullptr && spawn_ini()->line_exist("fast_mode", "always_fast"))
+        m_b_always_fastmode = spawn_ini()->r_bool("fast_mode", "always_fast");
+
+    return true;
 }
 
 void CCustomZone::net_Destroy()
@@ -541,8 +541,9 @@ void CCustomZone::UpdateWorkload(u32 dt)
 
     if (!IsEnabled())
     {
-        if (m_effector && EnableEffector())
+        if (m_effector != nullptr)
             m_effector->Stop();
+
         // KRodin: чуть переделал фикс неотключения света после отключения аномалии. Это более оптимальный вариант, на мой взгляд.
         if (m_pIdleLight && m_pIdleLight->get_active())
             StopIdleLight();
@@ -571,15 +572,13 @@ void CCustomZone::UpdateWorkload(u32 dt)
         m_dwDeltaTime = 0;
 
     if (m_dwDeltaTime > m_dwPeriod)
-    {
         m_dwDeltaTime = m_dwPeriod;
-    }
 
     if (Level().CurrentEntity())
     {
         m_fDistanceToCurEntity = Level().CurrentEntity()->Position().distance_to(Position());
 
-        if (m_effector && EnableEffector())
+        if (m_effector != nullptr)
             m_effector->Update(m_fDistanceToCurEntity);
     }
 

@@ -124,7 +124,11 @@ public:
 
 class CMotionDef
 {
-    float speed, power, accrue, falloff;
+private:
+    f32 speed{};
+    f32 power{};
+    f32 accrue{};
+    f32 falloff{};
 
 public:
     u16 bone_or_part;

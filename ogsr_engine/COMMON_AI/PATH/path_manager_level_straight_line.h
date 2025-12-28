@@ -23,13 +23,14 @@ protected:
     typedef CPathManager<_Graph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type> inherited;
 
 protected:
-    _Parameters* m_parameters;
+    _Parameters* m_parameters{};
 
 public:
     ~CPathManager() override = default;
 
     IC void setup(const _Graph* graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path, const _index_type& _start_node_index, const _index_type& _goal_node_index,
                   _Parameters& params);
+
     template <typename T>
     IC void create_path(T& vertex);
 };

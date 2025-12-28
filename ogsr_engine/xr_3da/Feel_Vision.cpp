@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "feel_vision.h"
+
 #include "render.h"
 #include "xr_object.h"
 #include "xr_collide_form.h"
@@ -9,9 +10,6 @@
 
 namespace Feel
 {
-Vision::Vision() : pure_relcase(CallMe::fromMethod<&Vision::feel_vision_relcase>(this)) {}
-Vision::~Vision() {}
-
 struct SFeelParam
 {
     Vision* parent;
@@ -36,18 +34,19 @@ IC BOOL feel_vision_callback(collide::rq_result& result, LPVOID params)
     }
     return (fp->vis > fp->vis_threshold);
 }
+
+Vision::Vision() : pure_relcase{CallMe::fromMethod<&Vision::feel_vision_relcase>(this)} {}
+Vision::~Vision() { feel_vision_clear(); }
+
 void Vision::o_new(CObject* O)
 {
     auto& I = feel_visible.emplace_back();
     I.O = O;
-    I.Cache_vis = 1.f;
-    I.Cache.verts[0].set(0, 0, 0);
-    I.Cache.verts[1].set(0, 0, 0);
-    I.Cache.verts[2].set(0, 0, 0);
     I.fuzzy = -EPS_S;
-    I.cp_LP.set(0, 0, 0);
-    I.trans = 1.f;
+    I.Cache_vis = 1.0f;
+    I.trans = 1.0f;
 }
+
 void Vision::o_delete(CObject* O)
 {
     xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), TE = feel_visible.end();
@@ -106,6 +105,9 @@ void Vision::feel_vision_query(Fmatrix& mFull)
         if (object && feel_vision_isRelevant(object))
             seen.push_back(object);
     }
+
+    r_spatial.clear();
+
     if (seen.size() > 1)
     {
         std::ranges::sort(seen);

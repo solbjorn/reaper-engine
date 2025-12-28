@@ -30,8 +30,9 @@ class CDamagableHealthItem : public CDamagableItem
     RTTI_DECLARE_TYPEINFO(CDamagableHealthItem, CDamagableItem);
 
 private:
-    typedef CDamagableItem inherited;
-    float m_health;
+    using inherited = CDamagableItem;
+
+    f32 m_health{};
 
 public:
     ~CDamagableHealthItem() override = default;

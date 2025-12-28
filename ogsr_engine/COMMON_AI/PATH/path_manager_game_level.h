@@ -24,7 +24,7 @@ protected:
     typedef CPathManager<_Graph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type> inherited;
 
 protected:
-    _Parameters* m_evaluator;
+    _Parameters* m_evaluator{};
 
 public:
     ~CPathManager() override = default;
@@ -33,6 +33,7 @@ public:
                   _Parameters& params);
     IC _dist_type estimate(const _index_type& node_index) const;
     IC bool is_goal_reached(const _index_type& node_index);
+
     template <typename T>
     IC void create_path(T& vertex);
 };

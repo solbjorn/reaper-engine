@@ -26,12 +26,11 @@ game_cl_GameState::game_cl_GameState()
 
 game_cl_GameState::~game_cl_GameState()
 {
-    PLAYERS_MAP_IT I = players.begin();
-    for (; I != players.end(); ++I)
-        xr_delete(I->second);
-    players.clear();
+    for (auto& pl : players)
+        xr_delete(pl.second);
 
-    shedule_unregister();
+    players.clear();
+    shedule_unregister(true);
 }
 
 void game_cl_GameState::net_import_GameTime(NET_Packet& P)
@@ -41,6 +40,7 @@ void game_cl_GameState::net_import_GameTime(NET_Packet& P)
         m_need_to_update = true;
         return;
     }
+
     // time
     u64 GameTime;
     P.r_u64(GameTime);

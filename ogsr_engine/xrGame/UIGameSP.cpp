@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "uigamesp.h"
+
 #include "actor.h"
 #include "level.h"
 
@@ -8,6 +9,7 @@
 #include "ui/UIPdaAux.h"
 #include "xr_level_controller.h"
 #include "actorcondition.h"
+#include "inventory.h"
 #include "object_broker.h"
 #include "GameTaskManager.h"
 #include "GameTask.h"
@@ -85,6 +87,13 @@ bool CUIGameSP::IR_OnKeyboardPress(int dik)
     hud_adjust_mode_keyb(dik);
     if (attach_adjust_mode_keyb(dik))
         return true;
+
+    if (Core.Features.test(xrCore::Feature::busy_actor_restrictions))
+    {
+        const auto active_hud = smart_cast<CHudItem*>(pActor->inventory().ActiveItem());
+        if (active_hud != nullptr && active_hud->GetState() != CHudItem::eIdle)
+            return false;
+    }
 
     auto bind = get_binded_action(dik);
     switch (bind)

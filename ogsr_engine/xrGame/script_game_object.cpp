@@ -23,7 +23,6 @@
 #include "weaponmagazined.h"
 #include "xrmessages.h"
 #include "inventory.h"
-#include "script_ini_file.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "HangingLamp.h"
 #include "patrol_path_manager.h"
@@ -99,7 +98,7 @@ u32 CScriptGameObject::game_vertex_id() const { return (object().ai_location().g
 
 float CScriptGameObject::level_vertex_light(const u32& level_vertex_id) const { return ((float)ai().level_graph().vertex(level_vertex_id)->light() / 15.f); }
 
-CScriptIniFile* CScriptGameObject::spawn_ini() const { return ((CScriptIniFile*)object().spawn_ini()); }
+CInifile* CScriptGameObject::spawn_ini() const { return object().spawn_ini(); }
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -537,16 +536,16 @@ void CScriptGameObject::set_range(float new_range)
 u32 CScriptGameObject::vertex_in_direction(u32 level_vertex_id, Fvector direction, float max_distance) const
 {
     CCustomMonster* monster = smart_cast<CCustomMonster*>(&object());
-    if (!monster)
+    if (monster == nullptr)
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member vertex_in_direction!");
-        return (u32(-1));
+        return std::numeric_limits<u32>::max();
     }
 
     if (!monster->movement().restrictions().accessible(level_vertex_id))
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster::vertex_in_direction - start vertex id is not accessible!");
-        return (u32(-1));
+        return std::numeric_limits<u32>::max();
     }
 
     direction.normalize_safe();
@@ -556,9 +555,10 @@ u32 CScriptGameObject::vertex_in_direction(u32 level_vertex_id, Fvector directio
 
     u32 result{std::numeric_limits<u32>::max()};
     monster->movement().restrictions().add_border(level_vertex_id, max_distance);
-    ai().level_graph().farthest_vertex_in_direction(level_vertex_id, start_position, finish_position, result, nullptr, true);
+    std::ignore = ai().level_graph().farthest_vertex_in_direction(level_vertex_id, start_position, finish_position, result, nullptr, true);
     monster->movement().restrictions().remove_border();
-    return (ai().level_graph().valid_vertex_id(result) ? result : level_vertex_id);
+
+    return ai().level_graph().valid_vertex_id(result) ? result : level_vertex_id;
 }
 
 bool CScriptGameObject::invulnerable() const

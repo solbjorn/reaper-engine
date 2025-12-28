@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "BreakableObject.h"
+
 #include "xrserver_objects_alife.h"
 #include "PHStaticGeomShell.h"
 #include "PhysicsShell.h"
@@ -48,11 +49,9 @@ BOOL CBreakableObject::net_Spawn(CSE_Abstract* DC)
     setVisible(TRUE);
     setEnabled(TRUE);
     CreateUnbroken();
-    // CreateBroken			();
     bRemoved = false;
-    // Break					();
-    //	shedule_unregister		();
-    return (TRUE);
+
+    return true;
 }
 
 void CBreakableObject::shedule_Update(u32 dt)
@@ -61,13 +60,15 @@ void CBreakableObject::shedule_Update(u32 dt)
     if (m_pPhysicsShell && !bRemoved && Device.dwTimeGlobal - m_break_time > m_remove_time)
         SendDestroy();
 }
+
 void CBreakableObject::UpdateCL()
 {
     inherited::UpdateCL();
-    //	Fmatrix	d;
+
     if (m_pPhysicsShell && m_pPhysicsShell->isFullActive())
         m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
 }
+
 void CBreakableObject::enable_notificate()
 {
     if (b_resived_damage)

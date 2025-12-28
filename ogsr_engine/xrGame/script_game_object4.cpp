@@ -33,6 +33,9 @@
 #include "agent_member_manager.h"
 #include "player_hud.h"
 
+#include "HudManager.h"
+#include "UIGameSP.h"
+
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -384,11 +387,8 @@ u32 CScriptGameObject::InvBoxCount()
 }
 
 float CScriptGameObject::GetCamFOV() { return g_fov; }
-
 void CScriptGameObject::SetCamFOV(float _fov) { g_fov = _fov; }
 
-#include "HudManager.h"
-#include "UIGameSP.h"
 void CScriptGameObject::OpenInvBox(CScriptGameObject* obj)
 {
     CInventoryOwner* e = smart_cast<CInventoryOwner*>(&object());
@@ -403,8 +403,7 @@ void CScriptGameObject::OpenInvBox(CScriptGameObject* obj)
         pGameSP->StartCarBody(e, trunk);
 }
 
-#include "script_ini_file.h"
-CScriptIniFile* CScriptGameObject::GetVisIni()
+CInifile* CScriptGameObject::GetVisIni() const
 {
     IKinematics* k = smart_cast<IKinematics*>(object().Visual());
     if (!k)
@@ -412,7 +411,8 @@ CScriptIniFile* CScriptGameObject::GetVisIni()
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "IKinematics : cannot access class member GetVisIni!");
         return nullptr;
     }
-    return reinterpret_cast<CScriptIniFile*>(k->LL_UserData());
+
+    return k->LL_UserData();
 }
 
 CScriptGameObject* CScriptGameObject::ObjectFromInvBox(int _i)

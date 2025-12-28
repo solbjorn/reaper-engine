@@ -16,7 +16,7 @@ class CUIStalkersRankingWnd : public CUIWindow
     RTTI_DECLARE_TYPEINFO(CUIStalkersRankingWnd, CUIWindow);
 
 public:
-    typedef CUIWindow inherited;
+    using inherited = CUIWindow;
 
     ~CUIStalkersRankingWnd() override = default;
 
@@ -25,16 +25,17 @@ public:
     void ShowHumanDetails();
 
 protected:
-    CUIFrameWindow* UIInfoFrame;
-    CUIFrameWindow* UICharIconFrame;
-    CUIFrameLineWnd* UIInfoHeader;
-    CUIFrameLineWnd* UICharIconHeader;
-    CUIAnimatedStatic* UIAnimatedIcon;
+    CUIFrameWindow* UIInfoFrame{};
+    CUIFrameWindow* UICharIconFrame{};
+    CUIFrameLineWnd* UIInfoHeader{};
+    CUIFrameLineWnd* UICharIconHeader{};
+    CUIAnimatedStatic* UIAnimatedIcon{};
     // информация о персонаже
-    CUIWindow* UICharacterWindow;
-    CUICharacterInfo* UICharacterInfo;
+    CUIWindow* UICharacterWindow{};
+    CUICharacterInfo* UICharacterInfo{};
+    CUIScrollView* UIList{};
+
     void FillList();
-    CUIScrollView* UIList;
     void AddStalkerItem(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t);
     void AddActorItem(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t);
 

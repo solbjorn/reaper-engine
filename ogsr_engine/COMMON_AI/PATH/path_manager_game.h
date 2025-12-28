@@ -21,7 +21,7 @@ protected:
     typedef CPathManagerGeneric<CGameGraph, _DataStorage, _Parameters, _dist_type, _index_type, _iteration_type> inherited;
 
 protected:
-    const CGameGraph::CVertex* goal_vertex;
+    const CGameGraph::CVertex* goal_vertex{};
 
 public:
     ~CPathManager() override = default;

@@ -21,26 +21,17 @@ CUICellItem* CUICellItem::m_mouse_selected_item{};
 CUICellItem::CUICellItem()
 {
     SetAccelerator(0);
-    m_b_destroy_childs = true;
 
     if (Core.Features.test(xrCore::Feature::show_inv_item_condition))
         init();
 }
 
-CUICellItem::~CUICellItem()
-{
-    if (m_b_destroy_childs)
-        delete_data(m_childs);
-
-    delete_data(m_custom_draw);
-}
+CUICellItem::~CUICellItem() { delete_data(m_childs); }
 
 void CUICellItem::Draw()
 {
     m_b_already_drawn = true;
     inherited::Draw();
-    if (m_custom_draw)
-        m_custom_draw->OnDraw(this);
 }
 
 bool CUICellItem::OnMouse(float, float, EUIMessages mouse_action)
@@ -121,7 +112,9 @@ u32 CUICellItem::ChildsCount() { return m_childs.size(); }
 void CUICellItem::PushChild(CUICellItem* c)
 {
     R_ASSERT(c->ChildsCount() == 0);
-    VERIFY(this != c);
+    R_ASSERT(c->GetParent() == nullptr);
+    R_ASSERT(this != c);
+
     m_childs.push_back(c);
     UpdateItemText();
 }
@@ -131,9 +124,13 @@ CUICellItem* CUICellItem::PopChild()
     CUICellItem* itm = m_childs.back();
     m_childs.pop_back();
     std::swap(itm->m_pData, m_pData);
-    UpdateItemText();
+
     R_ASSERT(itm->ChildsCount() == 0);
+    R_ASSERT(itm->GetParent() == nullptr);
+    R_ASSERT(this != itm);
+
     itm->SetOwnerList(nullptr);
+    itm->SetParent(nullptr);
 
     return itm;
 }
@@ -166,13 +163,6 @@ void CUICellItem::UpdateItemText()
 
         SetText(str);
     }
-}
-
-void CUICellItem::SetCustomDraw(ICustomDrawCell* c)
-{
-    if (m_custom_draw)
-        xr_delete(m_custom_draw);
-    m_custom_draw = c;
 }
 
 void CUICellItem::init()

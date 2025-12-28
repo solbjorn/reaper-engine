@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////
-//	Module 		: script_ini_file.cpp
+//	Module 		: script_lanim.cpp
 //	Created 	: 21.05.2004
 //  Modified 	: 21.05.2004
 //	Author		: Dmitriy Iassenev
@@ -8,8 +8,9 @@
 
 #include "stdafx.h"
 
-#include "../xr_3da/LightAnimLibrary.h"
 #include "script_lanim.h"
+
+#include "../xr_3da/LightAnimLibrary.h"
 
 struct lanim_wrapper
 {

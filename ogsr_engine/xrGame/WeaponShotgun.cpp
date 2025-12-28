@@ -8,6 +8,8 @@
 #include "level.h"
 #include "actor.h"
 
+#include "../xr_3da/x_ray.h"
+
 CWeaponShotgun::CWeaponShotgun() : CWeaponCustomPistol{}
 {
     m_eSoundShotBoth = ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
@@ -122,7 +124,7 @@ void CWeaponShotgun::OnShotBoth()
     AddShotEffector();
 
     // анимация дуплета
-    PlayHUDMotion({"anim_shoot_both", "anm_shots_both"}, false, GetState());
+    PlayHUDMotion({"anim_shoot_both", "anm_shots_both"}, IS_OGSR_GA, GetState());
 
     // Shell Drop
     Fvector vel;

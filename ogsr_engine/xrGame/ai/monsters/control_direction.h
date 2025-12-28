@@ -42,7 +42,7 @@ public:
             current_speed = 0;
             current_acc = flt_max;
         }
-    } m_heading, m_pitch;
+    } m_heading{}, m_pitch{};
 
     ~CControlDirection() override = default;
 

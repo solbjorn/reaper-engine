@@ -14,14 +14,17 @@ class SScriptObjectiveHelper
 public:
     xr_vector<shared_str> m_s_complete_lua_functions;
     xr_vector<shared_str> m_s_fail_lua_functions;
+    xr_vector<shared_str> m_s_skipped_lua_functions;
 
     xr_vector<shared_str> m_s_lua_functions_on_complete;
     xr_vector<shared_str> m_s_lua_functions_on_fail;
+    xr_vector<shared_str> m_s_lua_functions_on_skipped;
 
 public:
     [[nodiscard]] constexpr bool not_empty() const
     {
-        return !m_s_complete_lua_functions.empty() || !m_s_fail_lua_functions.empty() || !m_s_lua_functions_on_complete.empty() || !m_s_lua_functions_on_fail.empty();
+        return !m_s_complete_lua_functions.empty() || !m_s_fail_lua_functions.empty() || !m_s_skipped_lua_functions.empty() || !m_s_lua_functions_on_complete.empty() ||
+            !m_s_lua_functions_on_fail.empty() || !m_s_lua_functions_on_skipped.empty();
     }
 
     void save(IWriter& stream) const;
@@ -56,7 +59,7 @@ private:
     bool CheckFunctions(xr_vector<sol::function>& v);
 
 public:
-    ETaskState task_state{eTaskStateInProgress};
+    ETaskState task_state{ETaskState::eTaskStateInProgress};
     int idx;
     void SetTaskState(ETaskState new_state);
     SScriptObjectiveHelper m_pScriptHelper;
@@ -80,16 +83,22 @@ public:
     Frect icon_rect;
     bool def_location_enabled{true};
 
-    // complete/fail stuff
+    // complete/fail/skip stuff
     xr_vector<shared_str> m_completeInfos;
     xr_vector<shared_str> m_failInfos;
+    xr_vector<shared_str> m_skippedInfos;
+
     xr_vector<shared_str> m_infos_on_complete;
     xr_vector<shared_str> m_infos_on_fail;
+    xr_vector<shared_str> m_infos_on_skipped;
 
     xr_vector<sol::function> m_complete_lua_functions;
     xr_vector<sol::function> m_fail_lua_functions;
+    xr_vector<sol::function> m_skipped_lua_functions;
+
     xr_vector<sol::function> m_lua_functions_on_complete;
     xr_vector<sol::function> m_lua_functions_on_fail;
+    xr_vector<sol::function> m_lua_functions_on_skipped;
 
     // for scripting access
     void SetDescription_script(LPCSTR _descr);
@@ -101,16 +110,23 @@ public:
 
     void SetIconName_script(LPCSTR _str);
 
-    void AddCompleteInfo_script(LPCSTR _str);
-    void AddFailInfo_script(LPCSTR _str);
-    void AddOnCompleteInfo_script(LPCSTR _str);
-    void AddOnFailInfo_script(LPCSTR _str);
+    void AddCompleteInfo_script(gsl::czstring _str);
+    void AddFailInfo_script(gsl::czstring _str);
+    void AddSkippedInfo_script(gsl::czstring _str);
 
-    void AddCompleteFunc_script(LPCSTR _str);
-    void AddFailFunc_script(LPCSTR _str);
-    void AddOnCompleteFunc_script(LPCSTR _str);
-    void AddOnFailFunc_script(LPCSTR _str);
-    LPCSTR GetDescription_script() { return *description; }
+    void AddOnCompleteInfo_script(gsl::czstring _str);
+    void AddOnFailInfo_script(gsl::czstring _str);
+    void AddOnSkippedInfo_script(gsl::czstring _str);
+
+    void AddCompleteFunc_script(gsl::czstring _str);
+    void AddFailFunc_script(gsl::czstring _str);
+    void AddSkippedFunc_script(gsl::czstring _str);
+
+    void AddOnCompleteFunc_script(gsl::czstring _str);
+    void AddOnFailFunc_script(gsl::czstring _str);
+    void AddOnSkippedFunc_script(gsl::czstring _str);
+
+    [[nodiscard]] std::string_view GetDescription_script() const { return description; }
     void ChangeStateCallback();
 };
 

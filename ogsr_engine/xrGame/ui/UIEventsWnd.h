@@ -19,22 +19,25 @@ class CUIEventsWnd : public CUIWindow, public CUIWndCallback
 {
     RTTI_DECLARE_TYPEINFO(CUIEventsWnd, CUIWindow, CUIWndCallback);
 
-public:
-    typedef CUIWindow inherited;
-    enum ETaskFilters
+private:
+    using inherited = CUIWindow;
+
+    enum class ETaskFilters : s32
     {
         eActiveTask = 0,
         eAccomplishedTask,
         eFailedTask,
-        //.						eOwnTask,
-        eMaxTask
+        eSkippedTask,
+        eMaxTask,
     };
+
     enum EEventWndFlags
     {
         flNeedReload = (1 << 0),
         flMapMode = (1 << 1),
     };
     Flags16 m_flags;
+
     ETaskFilters m_currFilter;
     CUIFrameWindow* m_UILeftFrame;
     CUIWindow* m_UIRightWnd;
@@ -55,7 +58,6 @@ public:
     void ShowDescription(CGameTask* t, int idx);
     bool ItemHasDescription(CUITaskItem*);
 
-public:
     CUIEventsWnd();
     ~CUIEventsWnd() override;
 

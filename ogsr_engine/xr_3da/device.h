@@ -97,7 +97,7 @@ public:
     }
 
 protected:
-    s64 Timer_MM_Delta;
+    s64 Timer_MM_Delta{};
     CTimer_paused Timer;
     CTimer_paused TimerGlobal;
 

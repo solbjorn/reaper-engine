@@ -10,6 +10,7 @@
 
 #include "alife_simulator.h"
 
+#include "GameObject.h"
 #include "ai_space.h"
 #include "alife_object_registry.h"
 #include "alife_story_registry.h"
@@ -99,10 +100,6 @@ static void generate_story_ids(STORY_PAIRS& result, _id_type INVALID_ID, LPCSTR 
     result.try_emplace(shared_str{INVALID_ID_STRING}, INVALID_ID);
 }
 
-static void kill_entity0(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster, const GameGraph::_GRAPH_ID& game_vertex_id) { alife->kill_entity(monster, game_vertex_id); }
-
-static void kill_entity1(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster) { alife->kill_entity(monster, monster->m_tGraphID); }
-
 static void add_in_restriction(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster, ALife::_OBJECT_ID id)
 {
     alife->add_restriction(monster->ID, id, RestrictionSpace::eRestrictorTypeIn);
@@ -129,8 +126,6 @@ static void remove_out_restrictions(CALifeSimulator* alife, CSE_ALifeMonsterAbst
 {
     alife->remove_all_restrictions(monster->ID, RestrictionSpace::eRestrictorTypeOut);
 }
-
-static u32 get_level_id(CALifeSimulator* self) { return (self->graph().level().level_id()); }
 
 static CSE_ALifeDynamicObject* CALifeSimulator__create(CALifeSimulator* self, ALife::_SPAWN_ID spawn_id)
 {
@@ -255,6 +250,12 @@ void CALifeSimulator__release(CALifeSimulator* self, CSE_Abstract* object, bool)
         return;
     }
 
+    if (auto pGameObject = smart_cast<CGameObject*>(Level().Objects.net_Find(alife_object->ID)); pGameObject != nullptr)
+    {
+        pGameObject->DestroyObject();
+        return;
+    }
+
     // awful hack, for stohe only
     NET_Packet packet;
     packet.w_begin(M_EVENT);
@@ -309,26 +310,33 @@ static void FAKE_CALifeSimulator__teleport_object(CALifeSimulator*, const char*,
     FATAL("INCORRECT ARGUMENTS! Must be: alife():teleport_object(id, position, lvid, gvid)");
 }
 
-static LPCSTR get_level_name(const CALifeSimulator*, int level_id)
-{
-    LPCSTR result = *ai().game_graph().header().level((GameGraph::_LEVEL_ID)level_id).name();
-    return (result);
-}
-
-static CSE_ALifeCreatureActor* get_actor(const CALifeSimulator* self)
-{
-    THROW(self);
-    return (self->graph().actor());
-}
-
-static KNOWN_INFO_VECTOR* registry(const CALifeSimulator* self, const ALife::_OBJECT_ID& id)
-{
-    THROW(self);
-    return (self->registry(info_portions).object(id, true));
-}
-
 namespace
 {
+[[nodiscard]] u32 get_level_id(CALifeSimulator* self) { return self->graph().level().level_id(); }
+
+[[nodiscard]] u32 get_level_id_by_name(CALifeSimulator*, gsl::czstring level_name)
+{
+    const GameGraph::SLevel* level = ai().game_graph().header().level(level_name, true);
+    if (level != nullptr)
+        return level->id();
+
+    return std::numeric_limits<u32>::max();
+}
+
+[[nodiscard]] std::string_view get_level_name(const CALifeSimulator*, GameGraph::_LEVEL_ID level_id) { return ai().game_graph().header().level(level_id).name(); }
+
+[[nodiscard]] CSE_ALifeCreatureActor* get_actor(const CALifeSimulator* self)
+{
+    THROW(self);
+    return self->graph().actor();
+}
+
+[[nodiscard]] KNOWN_INFO_VECTOR* registry(const CALifeSimulator* self, ALife::_OBJECT_ID id)
+{
+    THROW(self);
+    return self->registry(info_portions).object(id, true);
+}
+
 class CFindByIDPred
 {
 public:
@@ -360,16 +368,6 @@ static bool dont_has_info(const CALifeSimulator* self, const ALife::_OBJECT_ID& 
     return (!has_info(self, id, info_id));
 }
 
-// void disable_info_portion						(const CALifeSimulator *self, const ALife::_OBJECT_ID &id)
-//{
-//	THROW								(self);
-// }
-
-// void give_info_portion							(const CALifeSimulator *self, const ALife::_OBJECT_ID &id)
-//{
-//	THROW								(self);
-// }
-
 static LPCSTR get_save_name(CALifeSimulator* sim)
 {
     // alpet: обертка предотвращает вылет, при обращении к свойству на ранней стадии  инициализации
@@ -394,19 +392,18 @@ static bool sim_is_unloading(CALifeSimulator* sim) { return sim->is_unloading();
 void CALifeSimulator::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CALifeSimulator>(
-        "alife_simulator", sol::no_constructor, "valid_object_id", &valid_object_id, "level_id", sol::resolve<u32(CALifeSimulator*)>(&get_level_id), "level_name", &get_level_name,
-        "objects", &alife_objects, "object",
-        sol::overload(sol::resolve<CSE_ALifeDynamicObject*(const CALifeSimulator*, ALife::_OBJECT_ID)>(&alife_object),
-                      sol::resolve<CSE_ALifeDynamicObject*(const CALifeSimulator*, LPCSTR)>(&alife_object),
-                      sol::resolve<CSE_ALifeDynamicObject*(const CALifeSimulator*, ALife::_OBJECT_ID, bool)>(&alife_object)),
+        "alife_simulator", sol::no_constructor, "valid_object_id", &valid_object_id, "level_id",
+        sol::overload(&get_level_id_by_name, sol::resolve<u32(CALifeSimulator*)>(&get_level_id)), "level_name", &get_level_name, "objects", &alife_objects, "object",
+        sol::overload(sol::resolve<CSE_ALifeDynamicObject*(const CALifeSimulator*, ALife::_OBJECT_ID, bool)>(&alife_object),
+                      sol::resolve<CSE_ALifeDynamicObject*(const CALifeSimulator*, ALife::_OBJECT_ID)>(&alife_object),
+                      sol::resolve<CSE_ALifeDynamicObject*(const CALifeSimulator*, LPCSTR)>(&alife_object)),
         "is_unloading", &sim_is_unloading, "story_object", sol::resolve<CSE_ALifeDynamicObject*(const CALifeSimulator*, ALife::_STORY_ID)>(alife_story_object), "set_switch_online",
         sol::resolve<void(ALife::_OBJECT_ID, bool)>(&CALifeSimulator::set_switch_online), "set_switch_offline",
         sol::resolve<void(ALife::_OBJECT_ID, bool)>(&CALifeSimulator::set_switch_offline), "set_interactive",
-        sol::resolve<void(ALife::_OBJECT_ID, bool)>(&CALifeSimulator::set_interactive), "kill_entity", sol::overload(&CALifeSimulator::kill_entity, &kill_entity0, &kill_entity1),
-        "add_in_restriction", &add_in_restriction, "add_out_restriction", &add_out_restriction, "remove_in_restriction", &remove_in_restriction, "remove_in_restrictions",
-        &remove_in_restrictions, "remove_out_restriction", &remove_out_restriction, "remove_out_restrictions", &remove_out_restrictions, "remove_all_restrictions",
-        &CALifeSimulator::remove_all_restrictions, "create", sol::overload(&CALifeSimulator__create, &CALifeSimulator__spawn_item2, &CALifeSimulator__spawn_item), "create_ammo",
-        &CALifeSimulator__spawn_ammo, "release",
+        sol::resolve<void(ALife::_OBJECT_ID, bool)>(&CALifeSimulator::set_interactive), "add_in_restriction", &add_in_restriction, "add_out_restriction", &add_out_restriction,
+        "remove_in_restriction", &remove_in_restriction, "remove_in_restrictions", &remove_in_restrictions, "remove_out_restriction", &remove_out_restriction,
+        "remove_out_restrictions", &remove_out_restrictions, "remove_all_restrictions", &CALifeSimulator::remove_all_restrictions, "create",
+        sol::overload(&CALifeSimulator__spawn_item2, &CALifeSimulator__spawn_item, CALifeSimulator__create), "create_ammo", &CALifeSimulator__spawn_ammo, "release",
         sol::overload(sol::resolve<void(CALifeSimulator*, CSE_Abstract*, bool)>(&CALifeSimulator__release),
                       sol::resolve<void(CALifeSimulator*, CSE_Abstract*)>(&CALifeSimulator__release)),
         "spawn_id",

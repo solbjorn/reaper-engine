@@ -1085,10 +1085,18 @@ void CActor::shedule_Update(u32 DT)
     // если в режиме HUD, то сама модель актера не рисуется
     if (!character_physics_support()->IsRemoved() && !m_holder)
         setVisible(!HUDview());
+
     // что актер видит перед собой
     collide::rq_result& RQ = HUD().GetCurrentRayQuery();
+    bool can_use = true;
 
-    if (!input_external_handler_installed() && !m_holder && RQ.O && RQ.O->getVisible() && RQ.range < inventory().GetTakeDist())
+    if (Core.Features.test(xrCore::Feature::busy_actor_restrictions))
+    {
+        const auto active_hud = smart_cast<CHudItem*>(inventory().ActiveItem());
+        can_use = active_hud == nullptr || active_hud->GetState() == CHudItem::eIdle;
+    }
+
+    if (can_use && !input_external_handler_installed() && !m_holder && RQ.O && RQ.O->getVisible() && RQ.range < inventory().GetTakeDist())
     {
         m_pObjectWeLookingAt = smart_cast<CGameObject*>(RQ.O);
         m_pUsableObject = smart_cast<CUsableScriptObject*>(RQ.O);

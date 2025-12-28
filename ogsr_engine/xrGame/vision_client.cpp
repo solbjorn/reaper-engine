@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "vision_client.h"
+
 #include "entity.h"
 #include "visual_memory_manager.h"
 
@@ -18,13 +19,10 @@ IC const CEntity& vision_client::object() const
     return (*m_object);
 }
 
-vision_client::vision_client(CEntity* object, const u32& update_interval) : m_object(object)
+vision_client::vision_client(CEntity* object, const u32& update_interval) : m_object{object}
 {
     VERIFY(m_object);
-
     m_visual = xr_new<CVisualMemoryManager>(this);
-
-    m_state = 0;
 
     shedule.t_min = update_interval;
     shedule.t_max = shedule.t_min;
@@ -33,7 +31,7 @@ vision_client::vision_client(CEntity* object, const u32& update_interval) : m_ob
 
 vision_client::~vision_client()
 {
-    shedule_unregister();
+    shedule_unregister(true);
     xr_delete(m_visual);
 }
 

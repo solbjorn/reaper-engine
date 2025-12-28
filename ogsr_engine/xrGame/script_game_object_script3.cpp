@@ -18,7 +18,6 @@
 #include "cover_point.h"
 #include "script_hit.h"
 #include "script_binder_object.h"
-#include "script_ini_file.h"
 #include "script_sound_info.h"
 #include "script_monster_hit_info.h"
 #include "script_entity_action.h"
@@ -165,9 +164,9 @@ void CScriptGameObject::script_register2(CScriptGameObject::usertype& lua)
         "jump", &CScriptGameObject::jump, "make_object_visible_somewhen", &CScriptGameObject::make_object_visible_somewhen,
 
         "buy_condition",
-        sol::overload(sol::resolve<void(CScriptIniFile*, LPCSTR)>(&CScriptGameObject::buy_condition), sol::resolve<void(float, float)>(&CScriptGameObject::buy_condition)),
+        sol::overload(sol::resolve<void(CInifile*, gsl::czstring)>(&CScriptGameObject::buy_condition), sol::resolve<void(f32, f32)>(&CScriptGameObject::buy_condition)),
         "show_condition", &CScriptGameObject::show_condition, "sell_condition",
-        sol::overload(sol::resolve<void(CScriptIniFile*, LPCSTR)>(&CScriptGameObject::sell_condition), sol::resolve<void(float, float)>(&CScriptGameObject::sell_condition)),
+        sol::overload(sol::resolve<void(CInifile*, gsl::czstring)>(&CScriptGameObject::sell_condition), sol::resolve<void(f32, f32)>(&CScriptGameObject::sell_condition)),
         "buy_supplies", &CScriptGameObject::buy_supplies,
 
         "sound_prefix", sol::overload(sol::resolve<LPCSTR() const>(&CScriptGameObject::sound_prefix), sol::resolve<void(LPCSTR)>(&CScriptGameObject::sound_prefix)),

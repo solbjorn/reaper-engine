@@ -33,18 +33,17 @@ class CUIAmmoCellItem : public CUIInventoryCellItem
 {
     RTTI_DECLARE_TYPEINFO(CUIAmmoCellItem, CUIInventoryCellItem);
 
-public:
-    typedef CUIInventoryCellItem inherited;
-
-protected:
-    virtual void UpdateItemText();
+private:
+    using inherited = CUIInventoryCellItem;
 
 public:
     explicit CUIAmmoCellItem(CWeaponAmmo* itm);
     ~CUIAmmoCellItem() override = default;
 
     virtual void Update();
+    void UpdateItemText() override;
     virtual bool EqualTo(CUICellItem* itm);
+
     CWeaponAmmo* object() { return static_cast<CWeaponAmmo*>(m_pData); }
 };
 
@@ -86,19 +85,4 @@ public:
     virtual bool EqualTo(CUICellItem* itm);
     CUIStatic* get_addon_static(u32 idx) { return m_addons[idx]; }
     Fvector2 get_addon_offset(u32 idx) { return m_addon_offset[idx]; }
-};
-
-class CBuyItemCustomDrawCell : public ICustomDrawCell
-{
-    RTTI_DECLARE_TYPEINFO(CBuyItemCustomDrawCell, ICustomDrawCell);
-
-public:
-    CGameFont* m_pFont;
-    string16 m_string;
-
-public:
-    explicit CBuyItemCustomDrawCell(LPCSTR str, CGameFont* pFont);
-    ~CBuyItemCustomDrawCell() override = default;
-
-    virtual void OnDraw(CUICellItem* cell);
 };

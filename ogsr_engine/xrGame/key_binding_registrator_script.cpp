@@ -1,22 +1,29 @@
 #include "stdafx.h"
 
-#include <dinput.h>
-
 #include "key_binding_registrator.h"
+
 #include "xr_level_controller.h"
 
-static int dik_to_bind(int dik) { return get_binded_action(dik); }
-static int bind_to_dik(EGameActions bind) { return get_action_dik(bind); }
+#include "../xr_3da/xr_input.h"
+
+#include <dinput.h>
+
+namespace
+{
+[[nodiscard]] int dik_to_bind(int dik) { return get_binded_action(dik); }
+[[nodiscard]] int bind_to_dik(EGameActions bind) { return get_action_dik(bind); }
+[[nodiscard]] bool key_state(int key) { return pInput->iGetAsyncKeyState(key); }
+} // namespace
 
 void key_binding_registrator::script_register(sol::state_view& lua)
 {
-    lua.set("dik_to_bind", &dik_to_bind, "bind_to_dik", &bind_to_dik, "dik_to_keyname", &dik_to_keyname, "keyname_to_dik", &keyname_to_dik);
+    lua.set("dik_to_bind", &dik_to_bind, "bind_to_dik", &bind_to_dik, "dik_to_keyname", &dik_to_keyname, "keyname_to_dik", &keyname_to_dik, "key_state", &key_state);
 
     auto kb = lua.create_table(actions.size(), 0);
 
     for (const auto& action : actions)
     {
-        if (action.export_name)
+        if (action.export_name != nullptr)
             kb.set(action.export_name, action.id);
     }
 

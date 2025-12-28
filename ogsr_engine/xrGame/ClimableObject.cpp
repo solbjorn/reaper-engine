@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
-#include "climableobject.h "
+#include "ClimableObject.h"
+
 #include "PHStaticGeomShell.h"
 #include "xrServer_Objects_ALife.h"
 #include "PHCharacter.h"
@@ -118,9 +119,10 @@ BOOL CClimableObject::net_Spawn(CSE_Abstract* DC)
         m_axis.invert();
         m_side.invert();
     }
-    //	shedule_unregister();
+
     processing_deactivate();
     m_pStaticShell->set_ObjectContactCallback(ObjectContactCallback);
+
     return ret;
 }
 

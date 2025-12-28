@@ -945,7 +945,6 @@
     <ClInclude Include="script_particles_inline.h" />
     <ClInclude Include="..\COMMON_AI\script_engine.h" />
     <ClInclude Include="..\COMMON_AI\script_engine_export.h" />
-    <ClInclude Include="..\COMMON_AI\script_storage.h" />
     <ClInclude Include="..\COMMON_AI\ai_sounds.h" />
     <ClInclude Include="ai_space.h" />
     <ClInclude Include="ai_space_inline.h" />
@@ -1390,6 +1389,7 @@
     <ClCompile Include="EliteDetector.cpp" />
     <ClCompile Include="InventoryContainer.cpp" />
     <ClCompile Include="LevelDebugScript.cpp" />
+    <ClCompile Include="level_graph_script.cpp" />
     <ClCompile Include="physics_shell_animated.cpp" />
     <ClCompile Include="player_hud.cpp" />
     <ClCompile Include="player_hud_tune.cpp" />
@@ -1473,7 +1473,6 @@
     <ClCompile Include="alife_simulator.cpp" />
     <ClCompile Include="alife_simulator_script.cpp" />
     <ClCompile Include="..\COMMON_AI\alife_space.cpp" />
-    <ClCompile Include="alife_combat_manager.cpp" />
     <ClCompile Include="alife_anomalous_zone.cpp" />
     <ClCompile Include="alife_creature_abstract.cpp" />
     <ClCompile Include="alife_dynamic_object.cpp" />
@@ -1758,7 +1757,6 @@
     <ClCompile Include="script_game_object_use.cpp" />
     <ClCompile Include="script_game_object_use2.cpp" />
     <ClCompile Include="script_hit_script.cpp" />
-    <ClCompile Include="..\COMMON_AI\script_ini_file.cpp" />
     <ClCompile Include="..\COMMON_AI\script_ini_file_script.cpp" />
     <ClCompile Include="script_monster_hit_info_script.cpp" />
     <ClCompile Include="..\COMMON_AI\script_net_packet_script.cpp" />
@@ -1782,7 +1780,6 @@
     <ClCompile Include="..\COMMON_AI\script_engine.cpp" />
     <ClCompile Include="..\COMMON_AI\script_engine_export.cpp" />
     <ClCompile Include="..\COMMON_AI\script_engine_script.cpp" />
-    <ClCompile Include="..\COMMON_AI\script_storage.cpp" />
     <ClCompile Include="..\COMMON_AI\ai_sounds.cpp" />
     <ClCompile Include="ai_space.cpp" />
     <ClCompile Include="StdAfx.cpp">

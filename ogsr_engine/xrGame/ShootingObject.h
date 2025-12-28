@@ -30,8 +30,6 @@ protected:
     void reload(LPCSTR) {}
     void Load(LPCSTR section);
 
-    Fvector m_vCurrentShootDir{};
-    Fvector m_vCurrentShootPos{};
     // ID персонажа который иницировал действие
     u16 m_iCurrentParentID{std::numeric_limits<u16>::max()};
 
@@ -138,9 +136,6 @@ protected:
     // партиклы дыма
     virtual void StartSmokeParticles(const Fvector& play_pos);
 
-    // партиклы полосы от пули
-    virtual void StartShotParticles();
-
     // партиклы гильз
     virtual void OnShellDrop(const Fvector& play_pos, const Fvector& parent_vel);
 
@@ -164,7 +159,4 @@ protected:
     // имя пратиклов для дыма
     shared_str m_sSmokeParticlesCurrent;
     shared_str m_sSmokeParticles;
-
-    // имя партиклов следа от пули
-    shared_str m_sShotParticles;
 };

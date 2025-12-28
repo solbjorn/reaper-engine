@@ -10,13 +10,11 @@
 
 #include "xrServer_Objects_ALife_Monsters.h"
 
-#include "script_ini_file.h"
-
 #include "../xr_3da/NET_Server_Trash/NET_utils.h"
 
 namespace
 {
-CScriptIniFile* get_spawn_ini(CSE_Abstract* abstract) { return ((CScriptIniFile*)&abstract->spawn_ini()); }
+[[nodiscard]] CInifile* get_spawn_ini(CSE_Abstract* abstract) { return &abstract->spawn_ini(); }
 
 void save_spawn_ini(CSE_Abstract* abstract)
 {
@@ -35,15 +33,15 @@ void set_ini_string_script(CSE_Abstract* abstract, LPCSTR cd)
 
 void CSE_Abstract::script_register(sol::state_view& lua)
 {
-    lua.new_usertype<CSE_Abstract>("cse_abstract", sol::no_constructor, "priv", &CSE_Abstract::priv, "ops", &CSE_Abstract::ops, "STATE_READ",
-                                   sol::var(CSE_Abstract::server_ops::STATE_READ), "STATE_WRITE", sol::var(CSE_Abstract::server_ops::STATE_WRITE), "id",
-                                   sol::readonly(&CSE_Abstract::ID), "parent_id", sol::readonly(&CSE_Abstract::ID_Parent), "script_version",
-                                   sol::readonly(&CSE_Abstract::m_script_version), "position", &CSE_Abstract::o_Position, "angle", &CSE_Abstract::o_Angle, "section_name",
-                                   &CSE_Abstract::name, "name", &CSE_Abstract::name_replace, "clsid", &CSE_Abstract::script_clsid, "spawn_ini", &get_spawn_ini, "STATE_Read",
-                                   &CSE_Abstract::STATE_Read, "STATE_Write", &CSE_Abstract::STATE_Write, "UPDATE_Read", &CSE_Abstract::UPDATE_Read, "UPDATE_Write",
-                                   &CSE_Abstract::UPDATE_Write, "custom_data", sol::property(&get_ini_string_script, &set_ini_string_script), "save_spawn_ini", &save_spawn_ini,
-                                   "get_dynamic_object", &CSE_Abstract::cast_alife_dynamic_object, "get_trader", &CSE_Abstract::cast_trader, "get_smart_zone",
-                                   &CSE_Abstract::cast_smart_zone, "get_human", &CSE_Abstract::cast_human_abstract, "get_monster", &CSE_Abstract::cast_monster_abstract);
+    lua.new_usertype<CSE_Abstract>(
+        "cse_abstract", sol::no_constructor, "priv", &CSE_Abstract::priv, "ops", &CSE_Abstract::ops, "STATE_READ", sol::var(CSE_Abstract::server_ops::STATE_READ), "STATE_WRITE",
+        sol::var(CSE_Abstract::server_ops::STATE_WRITE), "id", sol::readonly(&CSE_Abstract::ID), "parent_id", sol::readonly(&CSE_Abstract::ID_Parent), "script_version",
+        sol::readonly(&CSE_Abstract::m_script_version), "position", &CSE_Abstract::o_Position, "angle", &CSE_Abstract::o_Angle, "section_name", &CSE_Abstract::name, "name",
+        &CSE_Abstract::name_replace, "set_name", &CSE_Abstract::set_name_replace, "clsid", &CSE_Abstract::script_clsid, "spawn_ini", &get_spawn_ini, "STATE_Read",
+        &CSE_Abstract::STATE_Read, "STATE_Write", &CSE_Abstract::STATE_Write, "UPDATE_Read", &CSE_Abstract::UPDATE_Read, "UPDATE_Write", &CSE_Abstract::UPDATE_Write, "custom_data",
+        sol::property(&get_ini_string_script, &set_ini_string_script), "save_spawn_ini", &save_spawn_ini, "get_dynamic_object", &CSE_Abstract::cast_alife_dynamic_object,
+        "get_trader", &CSE_Abstract::cast_trader, "get_smart_zone", &CSE_Abstract::cast_smart_zone, "get_human", &CSE_Abstract::cast_human_abstract, "get_monster",
+        &CSE_Abstract::cast_monster_abstract);
 }
 
 void CSE_Shape::script_register(sol::state_view& lua) { lua.new_usertype<CSE_Shape>("cse_shape", sol::no_constructor); }

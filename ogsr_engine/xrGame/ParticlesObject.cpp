@@ -57,13 +57,8 @@ void CParticlesObject::Init(LPCSTR p_name, sector_id_t sector_id, BOOL bAutoRemo
 }
 
 //----------------------------------------------------
-CParticlesObject::~CParticlesObject()
-{
-    VERIFY(0 == mt_dt);
 
-    //	we do not need this since CPS_Instance does it
-    //	shedule_unregister		();
-}
+CParticlesObject::~CParticlesObject() { VERIFY(mt_dt == 0); }
 
 void CParticlesObject::UpdateSpatial()
 {

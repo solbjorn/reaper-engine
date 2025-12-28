@@ -29,10 +29,10 @@ public:
     Fmatrix mRenderTransform_temp; // Temp var
 
 private:
-    BoneCallback Callback;
-    void* Callback_Param;
-    BOOL Callback_overwrite; // performance hint - don't calc anims
-    u32 Callback_type;
+    BoneCallback Callback{};
+    void* Callback_Param{};
+    bool Callback_overwrite{}; // performance hint - don't calc anims
+    u32 Callback_type{};
 
 public:
     float param[MAX_BONE_PARAMS]; //

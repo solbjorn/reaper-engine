@@ -4,7 +4,8 @@
 
 void CGameTask::script_register(sol::state_view& lua)
 {
-    lua.new_enum("task", "fail", eTaskStateFail, "in_progress", eTaskStateInProgress, "completed", eTaskStateCompleted, "task_dummy", eTaskStateDummy);
+    lua.new_enum("task", "fail", ETaskState::eTaskStateFail, "in_progress", ETaskState::eTaskStateInProgress, "completed", ETaskState::eTaskStateCompleted, "skipped",
+                 ETaskState::eTaskStateSkipped, "task_dummy", ETaskState::eTaskStateDummy);
 
     lua.new_usertype<SGameTaskObjective>("SGameTaskObjective", sol::no_constructor, sol::call_constructor, sol::constructors<SGameTaskObjective(CGameTask*, int)>(),
                                          "set_description", &SGameTaskObjective::SetDescription_script, "get_description", &SGameTaskObjective::GetDescription_script,
@@ -13,9 +14,11 @@ void CGameTask::script_register(sol::state_view& lua)
                                          &SGameTaskObjective::SetIconName_script, "def_ml_enabled", &SGameTaskObjective::def_location_enabled,
 
                                          "add_complete_info", &SGameTaskObjective::AddCompleteInfo_script, "add_fail_info", &SGameTaskObjective::AddFailInfo_script,
-                                         "add_on_complete_info", &SGameTaskObjective::AddOnCompleteInfo_script, "add_on_fail_info", &SGameTaskObjective::AddOnFailInfo_script,
+                                         "add_skipped_info", &SGameTaskObjective::AddSkippedInfo_script, "add_on_complete_info", &SGameTaskObjective::AddOnCompleteInfo_script,
+                                         "add_on_fail_info", &SGameTaskObjective::AddOnFailInfo_script, "add_on_skipped_info", &SGameTaskObjective::AddOnSkippedInfo_script,
                                          "add_complete_func", &SGameTaskObjective::AddCompleteFunc_script, "add_fail_func", &SGameTaskObjective::AddFailFunc_script,
-                                         "add_on_complete_func", &SGameTaskObjective::AddOnCompleteFunc_script, "add_on_fail_func", &SGameTaskObjective::AddOnFailFunc_script,
+                                         "add_skipped_func", &SGameTaskObjective::AddSkippedFunc_script, "add_on_complete_func", &SGameTaskObjective::AddOnCompleteFunc_script,
+                                         "add_on_fail_func", &SGameTaskObjective::AddOnFailFunc_script, "add_on_skipped_func", &SGameTaskObjective::AddOnSkippedFunc_script,
 
                                          "get_idx", &SGameTaskObjective::GetIDX_script, "get_state", &SGameTaskObjective::TaskState);
 

@@ -13,9 +13,9 @@ class CControlMovement : public CControl_ComPure<SControlMovementData>
     RTTI_DECLARE_TYPEINFO(CControlMovement, CControl_ComPure<SControlMovementData>);
 
 public:
-    typedef CControl_ComPure<SControlMovementData> inherited;
+    using inherited = CControl_ComPure<SControlMovementData>;
 
-    float m_velocity_current;
+    f32 m_velocity_current{};
 
     ~CControlMovement() override = default;
 

@@ -74,7 +74,7 @@ private:
 
 #ifdef USE_HEAD_BONE_PART_FAKE
 private:
-    u32 m_script_bone_part_mask;
+    u32 m_script_bone_part_mask{};
 #endif // USE_HEAD_BONE_PART_FAKE
 
 private:

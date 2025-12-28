@@ -17,6 +17,7 @@
 #include "level_graph.h"
 #include "game_graph.h"
 
+CPatrolPathStorage::CPatrolPathStorage() { m_registry.reserve(8192); }
 CPatrolPathStorage::~CPatrolPathStorage() { delete_data(m_registry); }
 
 void CPatrolPathStorage::load_raw(const CLevelGraph* level_graph, const CGameLevelCrossTable* cross, const CGameGraph* game_graph, IReader& stream)
@@ -155,12 +156,14 @@ const CPatrolPath* CPatrolPathStorage::safe_path(shared_str patrol_name, bool no
             if (!ai().level_graph().valid_vertex_id(pp.m_level_vertex_id))
             {
                 u32 prev_vertex_id = pp.m_level_vertex_id;
-                pp.m_level_vertex_id = ai().level_graph().vertex(pp.m_position);
+                pp.m_level_vertex_id = ai().level_graph().nearest_vertex_id(pp.m_position);
                 Msg("* [%s]: path[%s] pp[%s] level_vertex_id[%u] -> %u", __FUNCTION__, patrol_name.c_str(), pp.m_name.c_str(), prev_vertex_id, pp.m_level_vertex_id);
             }
         }
         else
+        {
             return path(patrol_name, no_assert);
+        }
     }
 
     return path(patrol_name, no_assert);

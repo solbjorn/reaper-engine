@@ -9,10 +9,10 @@ class CControllerPsyHit : public CControl_ComCustom<>
     RTTI_DECLARE_TYPEINFO(CControllerPsyHit, CControl_ComCustom<>);
 
 private:
-    typedef CControl_ComCustom<> inherited;
+    using inherited = CControl_ComCustom<>;
 
     MotionID m_stage[4];
-    u8 m_current_index;
+    u8 m_current_index{};
 
     enum ESoundState
     {
@@ -21,16 +21,16 @@ private:
         ePull,
         eHit,
         eNone
-    } m_sound_state;
+    } m_sound_state{};
 
-    float m_min_tube_dist;
-    bool m_disable_camera_effect;
-    bool m_disable_actor_block;
+    f32 m_min_tube_dist{};
+    bool m_disable_camera_effect{};
+    bool m_disable_actor_block{};
 
     // internal flag if weapon was hidden
-    bool m_blocked;
+    bool m_blocked{};
 
-    u32 m_time_last_tube;
+    u32 m_time_last_tube{};
 
 public:
     ~CControllerPsyHit() override = default;

@@ -6,14 +6,14 @@ class CScanningAbility : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CScanningAbility<_Object>);
 
 private:
-    _Object* object;
+    _Object* object{};
 
     // external members
-    float critical_value;
-    float scan_radius;
-    float velocity_threshold;
-    float decrease_value;
-    float scan_trace_time_freq;
+    f32 critical_value{};
+    f32 scan_radius{};
+    f32 velocity_threshold{};
+    f32 decrease_value{};
+    f32 scan_trace_time_freq{};
 
     ref_sound sound_scan;
 
@@ -23,18 +23,18 @@ private:
         eStateDisabled,
         eStateNotActive,
         eStateScanning
-    } state;
+    } state{};
 
-    float scan_value;
+    f32 scan_value{};
 
     SPPInfo m_effector_info;
-    float m_effector_time;
-    float m_effector_time_attack;
-    float m_effector_time_release;
+    f32 m_effector_time{};
+    f32 m_effector_time_attack{};
+    f32 m_effector_time_release{};
 
-    u32 time_last_trace;
+    u32 time_last_trace{};
 
-    bool m_this_scan;
+    bool m_this_scan{};
 
 public:
     ~CScanningAbility() override = default;

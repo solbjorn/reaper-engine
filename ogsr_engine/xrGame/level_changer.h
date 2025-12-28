@@ -17,16 +17,17 @@ class CLevelChanger : public CGameObject, public Feel::Touch
     RTTI_DECLARE_TYPEINFO(CLevelChanger, CGameObject, Feel::Touch);
 
 private:
-    typedef CGameObject inherited;
+    using inherited = CGameObject;
 
 private:
-    GameGraph::_GRAPH_ID m_game_vertex_id;
-    u32 m_level_vertex_id;
-    Fvector m_position;
-    Fvector m_angles;
-    float m_entrance_time;
+    GameGraph::_GRAPH_ID m_game_vertex_id{};
+    u32 m_level_vertex_id{};
+    Fvector m_position{};
+    Fvector m_angles{};
+    f32 m_entrance_time{};
+    u8 m_SilentMode{};
+
     void update_actor_invitation();
-    u8 m_SilentMode;
     bool get_reject_pos(Fvector& p, Fvector& r);
     void ChangeLevel();
 

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "torridZone.h"
+
 #include "../xr_3da/objectanimator.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 
@@ -12,14 +13,15 @@ BOOL CTorridZone::net_Spawn(CSE_Abstract* DC)
     if (!inherited::net_Spawn(DC))
         return (FALSE);
 
-    CSE_Abstract* abstract = (CSE_Abstract*)(DC);
-    CSE_ALifeTorridZone* zone = smart_cast<CSE_ALifeTorridZone*>(abstract);
+    CSE_ALifeTorridZone* zone = smart_cast<CSE_ALifeTorridZone*>(DC);
     VERIFY(zone);
 
     m_animator->Load(zone->get_motion());
     m_animator->Play(true);
 
-    return (TRUE);
+    m_b_always_fastmode = true;
+
+    return true;
 }
 
 void CTorridZone::UpdateWorkload(u32 dt)

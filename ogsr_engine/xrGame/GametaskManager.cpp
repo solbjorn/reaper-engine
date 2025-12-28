@@ -119,7 +119,7 @@ void CGameTaskManager::SetTaskState(CGameTask* t, u16 objective_num, ETaskState 
     CMapLocation* ml = o->LinkedMapLocation();
     bool bActive = ActiveObjective() == o;
 
-    if ((state == eTaskStateFail || state == eTaskStateCompleted) && ml)
+    if ((state == ETaskState::eTaskStateFail || state == ETaskState::eTaskStateCompleted || state == ETaskState::eTaskStateSkipped) && ml)
     {
         Level().MapManager().RemoveMapLocation(o->map_location, o->object_id);
         o->map_location._set(nullptr);
@@ -143,15 +143,15 @@ void CGameTaskManager::SetTaskState(CGameTask* t, u16 objective_num, ETaskState 
     if (isRoot)
     {
         for (u16 i = 0; i < t->m_Objectives.size(); ++i)
-            if (t->Objective(i).TaskState() == eTaskStateInProgress)
+            if (t->Objective(i).TaskState() == ETaskState::eTaskStateInProgress)
                 SetTaskState(t, i, state);
     }
-    else if (state == eTaskStateCompleted && objective_num < (t->m_Objectives.size() - 1))
+    else if (state == ETaskState::eTaskStateCompleted && objective_num < (t->m_Objectives.size() - 1))
     {
         // enable hidden locations for next objective
         SGameTaskObjective& obj = t->Objective(objective_num + 1);
 
-        if (!obj.def_location_enabled && obj.TaskState() == eTaskStateInProgress)
+        if (!obj.def_location_enabled && obj.TaskState() == ETaskState::eTaskStateInProgress)
         {
             if (obj.object_id != u16(-1) && *obj.map_location)
             {
@@ -164,7 +164,7 @@ void CGameTaskManager::SetTaskState(CGameTask* t, u16 objective_num, ETaskState 
         }
     }
 
-    if ((isRoot && eTaskStateCompleted == state) || eTaskStateFail == state)
+    if ((isRoot && state == ETaskState::eTaskStateCompleted) || state == ETaskState::eTaskStateFail || state == ETaskState::eTaskStateSkipped)
         t->m_FinishTime = Level().GetGameTime();
 
     CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
@@ -194,7 +194,7 @@ void CGameTaskManager::UpdateTasks()
         return;
 
     auto act_task = ActiveTask();
-    bool need_update_active_task = !act_task || act_task->Objective(0).TaskState() != eTaskStateInProgress;
+    bool need_update_active_task = !act_task || act_task->Objective(0).TaskState() != ETaskState::eTaskStateInProgress;
 
     size_t processed{};
     auto iter = tasks.rbegin();
@@ -209,7 +209,7 @@ void CGameTaskManager::UpdateTasks()
         for (u16 i = 0; i < t->m_Objectives.size(); ++i)
         {
             auto& obj = t->Objective(i);
-            if (obj.TaskState() != eTaskStateInProgress)
+            if (obj.TaskState() != ETaskState::eTaskStateInProgress)
             {
                 if (i == 0)
                     break;
@@ -218,15 +218,15 @@ void CGameTaskManager::UpdateTasks()
             }
 
             ETaskState state = obj.UpdateState();
-            if (state == eTaskStateFail || state == eTaskStateCompleted)
+            if (state == ETaskState::eTaskStateFail || state == ETaskState::eTaskStateCompleted || state == ETaskState::eTaskStateSkipped)
             {
                 SetTaskState(t, i, state);
                 // Тут проверяем заново, потому что в функции выше активный таск может обновиться
                 act_task = ActiveTask();
-                need_update_active_task = !act_task || act_task->Objective(0).TaskState() != eTaskStateInProgress;
+                need_update_active_task = !act_task || act_task->Objective(0).TaskState() != ETaskState::eTaskStateInProgress;
             }
             // Тут ставим активным только первый objective если он один либо второй, чтоб тут случайно не назначился тот который скрыт опцией show_objectives_ondemand.
-            else if (need_update_active_task && ((i == 0 && t->m_Objectives.size() == 1) || (i == 1 && t->Objective(0).TaskState() == eTaskStateInProgress)))
+            else if (need_update_active_task && ((i == 0 && t->m_Objectives.size() == 1) || (i == 1 && t->Objective(0).TaskState() == ETaskState::eTaskStateInProgress)))
             {
                 SetActiveTask(t->m_ID, i);
                 need_update_active_task = false;
@@ -320,7 +320,7 @@ void CGameTaskManager::cleanup()
     xr_vector<shared_str> articles;
     GameTasks().erase(std::remove_if(GameTasks().begin(), GameTasks().end(),
                                      [&](const SGameTaskKey& k) {
-                                         if (k.game_task->Objective(0).TaskState() != eTaskStateInProgress)
+                                         if (k.game_task->Objective(0).TaskState() != ETaskState::eTaskStateInProgress)
                                          {
                                              for (const auto& obj : k.game_task->m_Objectives)
                                                  if (obj.article_id.size())

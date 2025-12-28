@@ -183,6 +183,8 @@ use_new_parse_text = true
 ;Включить поддержку ANSI-символов кириллицы для юникодных шрифтов. Полезно тем, что можно юзать эти шрифты но не надо конвертировать все ресурсы игры в utf-8
 enable_ansi_aupport_for_mb_fonts = true
 
+;Включает запреты действий когда актор что то делает с оружием (перезарядка и тп): нельзя поюзать что либо, аптечку, фонарик и тп.
+busy_actor_restrictions = false
 
 [dragdrop]
 ; ЗП-стайл подсветки ячеек инвентаря зависят от текстуры ui\ui_grid.dds. В ней нарисованы 7 клеток, по порядку слева направо:
@@ -213,11 +215,9 @@ equipped_untradable = false
 ; Подсветка при наведении мыши на предмет будет иметь самый высокий приоритет по отношению к другим подсветкам. Если выключено - самый низкий.
 select_mode_1342 = true
 
-
 [user_spots]
 ; Переопределить тип метки, используемой для пользовательских меток на карте. По умолчанию используется red_location
 ;spot_type = red_location
-
 
 ; Настройки для wpn_bobbing
 [wpn_bobbing_effector]
@@ -231,7 +231,6 @@ walk_speed     = 6.26
 crouch_k = 0.75
 ;zoom_k   = 0.1
 scope_zoom_k = 0.1
-
 
 [engine_callbacks]
 ; ui_item_info_callback( UIDesc ) вызывается перед заполнением статика
@@ -279,10 +278,21 @@ scope_zoom_k = 0.1
 ; переключения на новую погодную секцию.
 ;on_change_weather = dsh_cop_weather.on_engine_weather_change
 
-
 ; Коллбек вызываеться перед поднятием предмета ГГ
 ; Если вернуть false - движок не будет поднимать предмет
 ;actor_on_item_before_pickup = engine_callbacks.actor_on_item_before_pickup
+
+; after_graph_load(graph) - called once the game graph is fully loaded and
+; it's now safe to call game_graph().
+;after_graph_load = after_graph_load_callback
+
+; after_objs_load(reader) - called after the save is loaded to read data
+; saved with after_objs_save().
+;after_objs_load = reap_stor.load
+
+; after_objs_save(writer) - called after the save is written to write
+; data with no size restrictions.
+;after_objs_save = reap_stor.save
 
 ; Переопределение секции [capture] из визуалов брони для актора.
 ; А то в этих визуалах такой бардак. У некоторых даже и кастомной даты нет.
@@ -298,14 +308,12 @@ capture_force  = 6500  ; max force for holding tagett
 ; Тоже самое для сталкеров
 [stalker_capture]:actor_capture
 
-
 ; Чтение patrol_path из ltx файлов напрямую
 ; Формат файлов такой же, как выдает acdc при распаковке.
 ; При загрузке, пути из файла будут заменять пути из all.spawn с таким же именем.
 ; Можно вообще убрать пути из своего all.spawn и все перенести в ltx файлы, для удобства.
 ;[engine_custom_spawn]
 ;waypoints_file = <name_of_file.ltx> ; путь к файлу в $game_config$
-
 
 ; Замена шейдеров в визуалах
 ;[vis_shaders_replace]
@@ -314,6 +322,9 @@ capture_force  = 6500  ; max force for holding tagett
 ;actors   = models\model,models\model_pn, models\weapons,models\model_pn, models\artefact,models\model_pn, models\artefact2,models\model_pn
 ;monsters = models\model,models\model_pn
 
+;[vis_shaders_override]
+;act = models\model,models\model_pn
+;corp = models\model,models\model_pn
 
 [hud_movement_layers]
 ;types: 0 = aim_walk, 1 = aim_crouch, 2 = crouch, 3 = walk, 4 = run, 5 = sprint
@@ -324,7 +335,6 @@ movement_layer_2        = movement\newwalk.anm,      1,      0.1
 movement_layer_3        = movement\newwalk.anm,      1,      0.1
 movement_layer_4        = movement\newwalk.anm,      1.25,     0.125
 movement_layer_5        = movement\newrunreload.anm, 1,      0.15
-
 
 ;Пример конфига шрифта с поддержкой юникода. Используется в меню настройки звукового устройства.
 [ui_font_utf]

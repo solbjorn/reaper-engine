@@ -23,20 +23,17 @@ protected:
     typedef CPathManagerGeneric<_Graph, _DataStorage, _Parameters, _dist_type, _index_type, _iteration_type> inherited;
 
 protected:
-    int x1;
-    //	float				y1;
-    int z1;
-    int x2;
-    //	float				y2;
-    int z2;
-    int x3;
-    //	float				y3;
-    int z3;
-    //	float				square_size_y;
-    //	float				size_y;
-    float m_sqr_distance_xz;
-    float m_distance_xz;
-    const _Graph::CVertex* best_node;
+    s32 x1{};
+    s32 z1{};
+    s32 x2{};
+    s32 z2{};
+    s32 x3{};
+    s32 z3{};
+
+    f32 m_sqr_distance_xz{};
+    f32 m_distance_xz{};
+
+    const _Graph::CVertex* best_node{};
 
 public:
     using const_iterator = typename inherited::const_iterator;
