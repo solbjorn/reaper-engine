@@ -354,7 +354,7 @@ void CPhysicsShellHolder::PHSaveState(NET_Packet& P)
     if (K)
     {
         _vm = K->LL_GetBonesVisible();
-        P.w_u64(_vm._visimask.flags);
+        P.w_u64(_vm.to_u64(0));
         P.w_u16(K->LL_GetBoneRoot());
     }
     else
@@ -401,7 +401,7 @@ void CPhysicsShellHolder::PHSaveState(NET_Packet& P)
     if (bones_number > 64)
     {
         Msg("!![CPhysicsShellHolder::PHSaveState] bones_number is [%u]!", bones_number);
-        P.w_u64(K ? _vm._visimask_ex.flags : std::numeric_limits<u64>::max());
+        P.w_u64(K != nullptr ? _vm.to_u64(1) : std::numeric_limits<u64>::max());
     }
 
     for (u16 i = 0; i < bones_number; i++)

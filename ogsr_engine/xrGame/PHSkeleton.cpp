@@ -201,7 +201,7 @@ void CPHSkeleton::SaveNetState(NET_Packet&)
         if(K)
         {
             _vm = K->LL_GetBonesVisible();
-            P.w_u64(_vm._visimask.flags);
+            P.w_u64(_vm.to_u64(0));
     //		P.w_u64(K->LL_GetBonesVisible());
             P.w_u16(K->LL_GetBoneRoot());
         }
@@ -242,7 +242,7 @@ void CPHSkeleton::SaveNetState(NET_Packet&)
         if (bones_number > 64)
         {
             Msg("!![CPHSkeleton::SaveNetState] bones_number is [%u]!", bones_number);
-            P.w_u64(K ? _vm._visimask_ex.flags : std::numeric_limits<u64>::max());
+            P.w_u64(K != nullptr ? _vm.to_u64(1) : std::numeric_limits<u64>::max());
         }
 
         for(u16 i=0;i<bones_number;i++)
@@ -388,12 +388,12 @@ void CPHSkeleton::UnsplitSingle(CPHSkeleton* SO)
     pKinematics->CalculateBones();
 
     mask0 = pKinematics->LL_GetBonesVisible(); // first part mask
-    VERIFY2(mask0._visimask.flags, "mask0 -Zero");
+    VERIFY2(mask0.to_u64(0) != 0, "mask0 -Zero");
     mask0.invert();
     mask1.And(mask0); // second part mask
 
     newKinematics->LL_SetBoneRoot(split_bone);
-    VERIFY2(mask1._visimask.flags, "mask1 -Zero");
+    VERIFY2(mask1.to_u64(0) != 0, "mask1 -Zero");
     newKinematics->LL_SetBonesVisible(mask1);
 
     newKinematics->CalculateBones_Invalidate();

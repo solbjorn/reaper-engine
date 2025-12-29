@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "PHNetState.h"
+
 #include "../xr_3da/NET_Server_Trash/NET_utils.h"
 
 //////////////////////////////////////8/////////////////////////////////////////////////////
@@ -182,7 +183,7 @@ SPHBonesData::SPHBonesData()
 
 void SPHBonesData::net_Save(NET_Packet& P)
 {
-    P.w_u64(bones_mask._visimask.flags);
+    P.w_u64(bones_mask.to_u64(0));
     P.w_u16(root_bone);
 
     P.w_vec3(get_min());
@@ -191,7 +192,7 @@ void SPHBonesData::net_Save(NET_Packet& P)
     if (bones.size() > 64)
     {
         Msg("!![SPHBonesData::net_Save] bones_size is [%zu]!", bones.size());
-        P.w_u64(bones_mask._visimask_ex.flags);
+        P.w_u64(bones_mask.to_u64(1));
     }
     PHNETSTATE_I i = bones.begin(), e = bones.end();
     for (; e != i; i++)
@@ -209,7 +210,7 @@ void SPHBonesData::net_Load(NET_Packet& P)
     bones.clear();
 
     u64 _low = P.r_u64();
-    u64 _high = 0;
+    u64 _high = std::numeric_limits<u64>::max();
 
     root_bone = P.r_u16();
     Fvector _mn, _mx;

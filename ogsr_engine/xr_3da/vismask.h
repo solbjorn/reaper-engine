@@ -1,104 +1,98 @@
-#pragma once
+#ifndef __XRENGINE_VISMASK_H
+#define __XRENGINE_VISMASK_H
 
 struct VisMask final
 {
-    Flags64 _visimask;
-    Flags64 _visimask_ex;
+private:
+    xr::bitset<128> storage;
 
-    constexpr VisMask()
-    {
-        _visimask.zero();
-        _visimask_ex.zero();
-    }
+public:
+    constexpr VisMask() noexcept = default;
+    constexpr explicit VisMask(u64 low, u64 high) { set(low, high); }
 
-    constexpr VisMask(const VisMask& _second)
-    {
-        _visimask.flags = _second._visimask.flags;
-        _visimask_ex.flags = _second._visimask_ex.flags;
-    }
+    constexpr VisMask(const VisMask&) noexcept = default;
+    constexpr VisMask(VisMask&&) noexcept = default;
 
-    constexpr explicit VisMask(u64 _low, u64 _high)
-    {
-        _visimask.assign(_low);
-        _visimask_ex.assign(_high);
-    }
+    constexpr VisMask& operator=(const VisMask&) noexcept = default;
+    constexpr VisMask& operator=(VisMask&&) noexcept = default;
 
-    [[nodiscard]] constexpr bool operator!=(const VisMask& _second) const noexcept
-    {
-        if (_visimask.flags != _second._visimask.flags)
-            return true;
-        if (_visimask_ex.flags != _second._visimask_ex.flags)
-            return true;
-        return false;
-    }
+    [[nodiscard]] constexpr bool operator==(const VisMask& that) const noexcept { return storage == that.storage; }
+    [[nodiscard]] constexpr bool operator!=(const VisMask& that) const noexcept { return !(*this == that); }
 
-    [[nodiscard]] constexpr bool operator==(const VisMask& _second) const noexcept
+    constexpr VisMask& set(gsl::index digit, bool set)
     {
-        return (_visimask.flags == _second._visimask.flags) && (_visimask_ex.flags == _second._visimask_ex.flags);
-    }
-
-    constexpr VisMask& operator=(const VisMask& _second)
-    {
-        _visimask.flags = _second._visimask.flags;
-        _visimask_ex.flags = _second._visimask_ex.flags;
+        storage.set(gsl::narrow_cast<size_t>(digit), set);
         return *this;
     }
 
-    constexpr void set(u16 _digit, bool _set)
+    constexpr VisMask& set(u64 low, u64 high)
     {
-        if (_digit < 64)
-            _visimask.set(1ull << _digit, _set);
-        else
-            _visimask_ex.set(1ull << (_digit - 64), _set);
+        const std::array<u64, 2> arr{low, high};
+
+        for (auto [k, val] : xr::views_enumerate(arr))
+        {
+            auto bitset = val;
+
+            while (bitset != 0)
+            {
+                const u64 t = bitset & -bitset;
+                const auto r = std::countr_zero(bitset);
+
+                storage.set(gsl::narrow_cast<size_t>(k * 64 + r));
+                bitset ^= t;
+            }
+        }
+
+        return *this;
     }
 
-    constexpr void set(u64 _low, u64 _high)
+    [[nodiscard]] constexpr bool is(gsl::index digit) const { return storage.test(gsl::narrow_cast<size_t>(digit)); }
+
+    constexpr VisMask& zero() noexcept
     {
-        _visimask.assign(_low);
-        _visimask_ex.assign(_high);
+        storage.reset();
+        return *this;
     }
 
-    [[nodiscard]] constexpr bool is(u16 _digit) const
+    [[nodiscard]] constexpr gsl::index count() const noexcept { return gsl::narrow_cast<gsl::index>(storage.count()); }
+
+    constexpr VisMask& set_all() noexcept
     {
-        if (_digit < 64)
-            return !!_visimask.is(1ull << _digit);
-        else
-            return !!_visimask_ex.is(1ull << (_digit - 64));
+        storage.set();
+        return *this;
     }
 
-    constexpr void zero()
+    constexpr VisMask& And(const VisMask& that) noexcept
     {
-        _visimask.zero();
-        _visimask_ex.zero();
+        storage &= that.storage;
+        return *this;
     }
 
-    [[nodiscard]] constexpr u16 count() const
+    constexpr VisMask& invert() noexcept
     {
-        u16 _c = 0;
-        for (u16 i = 0; i < 64; ++i)
-            if (_visimask.is(1ull << i))
-                ++_c;
-        for (u16 j = 0; j < 64; ++j)
-            if (_visimask_ex.is(1ull << j))
-                ++_c;
-        return _c;
+        storage.flip();
+        return *this;
     }
 
-    constexpr void set_all()
+    [[nodiscard]] constexpr u64 to_u64(gsl::index part) const
     {
-        for (u16 i = 0; i < 128; ++i)
-            this->set(i, true);
-    }
+        const auto base = gsl::narrow_cast<size_t>(part * 64);
+        R_ASSERT(base < storage.size());
 
-    constexpr void And(const VisMask& _second)
-    {
-        _visimask.And(_second._visimask.flags);
-        _visimask_ex.And(_second._visimask_ex.flags);
-    }
+        size_t index{base};
+        u64 value = storage.test(index);
 
-    constexpr void invert()
-    {
-        _visimask.invert();
-        _visimask_ex.invert();
+        while (true)
+        {
+            index = storage.next_one(index);
+            if (index >= std::min(base + 64, storage.size()))
+                break;
+
+            value |= 1ull << (index - base);
+        }
+
+        return value;
     }
 };
+
+#endif // __XRENGINE_VISMASK_H
