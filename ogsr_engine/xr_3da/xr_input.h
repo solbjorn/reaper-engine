@@ -5,8 +5,26 @@
 
 class IInputReceiver;
 
+#ifndef MOUSE_1
+#define MOUSE_1 MOUSE_1
+
+// 0xed - max vavue in DIK* enum
+constexpr inline gsl::index MOUSE_1{0xed + 100};
+constexpr inline gsl::index MOUSE_2{0xed + 101};
+constexpr inline gsl::index MOUSE_3{0xed + 102};
+
+constexpr inline gsl::index MOUSE_4{0xed + 103};
+constexpr inline gsl::index MOUSE_5{0xed + 104};
+constexpr inline gsl::index MOUSE_6{0xed + 105};
+constexpr inline gsl::index MOUSE_7{0xed + 106};
+constexpr inline gsl::index MOUSE_8{0xed + 107};
+#endif
+
+constexpr inline std::array<gsl::index, 8> mouse_button_2_key{MOUSE_1, MOUSE_2, MOUSE_3, MOUSE_4, MOUSE_5, MOUSE_6, MOUSE_7, MOUSE_8};
+
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //описание класса
+
 constexpr inline int mouse_device_key{1};
 constexpr inline int keyboard_device_key{2};
 constexpr inline int all_device_key{mouse_device_key | keyboard_device_key};

@@ -24,10 +24,10 @@ public:
 
     void CreateD3D();
     void DestroyD3D();
-    void CreateDevice(HWND hw);
+    void CreateDevice(HWND hw, u32& dwWidth, u32& dwHeight);
 
     void DestroyDevice();
-    void Reset(HWND hw);
+    void Reset(HWND hw, u32& dwWidth, u32& dwHeight);
 
     void selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed);
     u32 selectPresentInterval();
@@ -81,6 +81,11 @@ public:
 
     virtual void OnAppActivate();
     virtual void OnAppDeactivate();
+
+private:
+    void imgui_init() const;
+    static void imgui_reset();
+    static void imgui_shutdown();
 };
 
 extern CHW HW;

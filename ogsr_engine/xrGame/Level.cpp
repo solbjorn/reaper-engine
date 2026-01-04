@@ -57,8 +57,6 @@
 #include "ui/UIPDAWnd.h"
 #include "ui/UIBtnHint.h"
 
-#include "embedded_editor/embedded_editor_main.h"
-
 CPHWorld* ph_world{};
 
 //////////////////////////////////////////////////////////////////////
@@ -402,10 +400,8 @@ void CLevel::OnFrame()
     // Inherited update
     inherited::OnFrame();
 
-    if (!s_ScriptTime)
-    {
+    if (xr::editor() == nullptr || !xr::editor()->script_time())
         g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
-    }
 
     m_ph_commander->update();
     m_ph_commander_scripts->update();
@@ -439,8 +435,6 @@ void CLevel::OnFrame()
         pStatGraphR->AppendItem(float(m_dwRPC) * fRPC_Mult, 0xffff0000, 1);
         pStatGraphR->AppendItem(float(m_dwRPS) * fRPS_Mult, 0xff00ff00, 0);
     }
-
-    ShowEditor();
 }
 
 int psLUA_GCSTEP = 100; // 10

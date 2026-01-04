@@ -60,6 +60,10 @@ public:
     virtual void SetCacheXform(Fmatrix& mView, Fmatrix& mProject) = 0;
     virtual void OnAssetsChanged() = 0;
     virtual IResourceManager* GetResourceManager() const = 0;
+
+    virtual void editor_new() = 0;
+    virtual void editor_end() = 0;
+    virtual void editor_render() = 0;
 };
 
 inline IRenderDeviceRender::~IRenderDeviceRender() = default;

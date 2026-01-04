@@ -3,10 +3,11 @@
 
 #include "../xrCore/defines.h"
 
-#define TRACY_BUILDING
+#define XR_TRACY_BUILDING
 
+#include "imgui.h"
 #include "rtti.h"
 #include "sol.h"
 #include "tracy.h"
 
-#endif // __XREXTERNAL_PCH_H
+#endif // !__XREXTERNAL_PCH_H

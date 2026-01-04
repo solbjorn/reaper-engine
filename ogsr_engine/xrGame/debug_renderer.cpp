@@ -125,3 +125,36 @@ void CDebugRenderer::draw_ellipse(const Fmatrix& matrix, const u32& color, bool 
 {
     add_lines(ellipse_verts{matrix}.data(), nverts, pairs.data(), npairs, color, hud_mode); //-V706
 }
+
+void CDebugRenderer::draw_cone(const Fmatrix& transform, f32 height, f32 radius, u32 color, bool hud_mode)
+{
+    xr_vector<Fvector> vertices;
+    constexpr u16 segments{24};
+    xr_vector<u16> pairs;
+
+    vertices.emplace_back(0.0f, 0.0f, 0.0f);
+
+    for (u16 i{0}; i < segments; ++i)
+    {
+        f32 sin, cos;
+        DirectX::XMScalarSinCos(&sin, &cos, 2.0f * PI * gsl::narrow_cast<f32>(i) / f32{segments});
+        vertices.emplace_back(radius * cos, radius * sin, height);
+
+        pairs.push_back(0);
+        pairs.push_back(i + 1);
+
+        if (i < segments - 1)
+        {
+            pairs.push_back(i + 1);
+            pairs.push_back((i + 1) % segments + 1);
+        }
+    }
+
+    pairs.push_back(1);
+    pairs.push_back(segments);
+
+    for (auto& vertex : vertices)
+        transform.transform_tiny(vertex);
+
+    add_lines(vertices.data(), gsl::narrow_cast<u32>(vertices.size()), pairs.data(), gsl::narrow_cast<u32>(pairs.size() / 2), color, hud_mode);
+}

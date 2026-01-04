@@ -22,6 +22,7 @@
 #include "..\xr_3da\DiscordRPC.hpp"
 #include "holder_custom.h"
 
+#include "embedded_editor/embedded_editor.h"
 #include "game_sv_single.h"
 #include "xrServer.h"
 
@@ -119,10 +120,11 @@ void CGamePersistent::OnAppStart()
 
     auto& glob = xr_task_group_run(init_game_globals);
 
-    __super::OnAppStart();
+    IGame_Persistent::OnAppStart();
 
     m_pUI_core = xr_new<ui_core>();
     m_pMainMenu = xr_new<CMainMenu>();
+    xr::detail::editor = xr::ingame_editor_create();
 
     glob.wait_put();
 }
@@ -132,10 +134,11 @@ void CGamePersistent::OnAppEnd()
     if (m_pMainMenu->IsActive())
         m_pMainMenu->Activate(false);
 
+    xr::ingame_editor_destroy(xr::detail::editor);
     xr_delete(m_pMainMenu);
     xr_delete(m_pUI_core);
 
-    __super::OnAppEnd();
+    IGame_Persistent::OnAppEnd();
 
     clean_game_globals();
     GMLib.Unload();

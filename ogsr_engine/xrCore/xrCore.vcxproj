@@ -53,6 +53,7 @@
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";SQFS_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>%(AdditionalOptions) -Wconversion -Wnarrowing -Wold-style-cast -Wsigned-enum-bitfield</AdditionalOptions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -99,6 +100,7 @@
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <PreprocessorDefinitions>_WINDOWS;_USRDLL;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";SQFS_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>%(AdditionalOptions) -Wconversion -Wnarrowing -Wold-style-cast -Wsigned-enum-bitfield</AdditionalOptions>
       <StringPooling>false</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>

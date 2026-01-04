@@ -54,6 +54,10 @@ public:
 
     IResourceManager* GetResourceManager() const override;
 
+    void editor_new() override;
+    void editor_end() override;
+    void editor_render() override;
+
     void CreateQuadIB();
 
     CResourceManager* Resources{};

@@ -4,6 +4,9 @@
     <Filter Include="Core">
       <UniqueIdentifier>{61a60c70-b020-461c-8f72-30ff3b87687d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ImGui">
+      <UniqueIdentifier>{1bedd022-e50c-4080-813d-e27315bac8cd}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Profiling">
       <UniqueIdentifier>{03acac38-71f4-48a3-833f-d74066591de7}</UniqueIdentifier>
     </Filter>
@@ -12,6 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="imgui.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_lua.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -20,6 +29,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="imgui.h">
+      <Filter>ImGui</Filter>
+    </ClCompile>
     <ClInclude Include="pch.h">
       <Filter>Core</Filter>
     </ClInclude>

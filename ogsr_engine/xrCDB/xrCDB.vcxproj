@@ -60,6 +60,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\OpCoDe\OpCoDe;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;..\xrCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;ICE_NO_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>%(AdditionalOptions) -Wconversion -Wnarrowing -Wold-style-cast -Wsigned-enum-bitfield</AdditionalOptions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -119,6 +120,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\OpCoDe\OpCoDe;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;..\xrCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDOWS;_USRDLL;ICE_NO_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>%(AdditionalOptions) -Wconversion -Wnarrowing -Wold-style-cast -Wsigned-enum-bitfield</AdditionalOptions>
       <StringPooling>false</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>

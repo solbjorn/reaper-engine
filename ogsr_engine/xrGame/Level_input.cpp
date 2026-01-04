@@ -28,8 +28,6 @@
 #include "MainMenu.h"
 #include "UIGameSP.h"
 
-#include "embedded_editor/embedded_editor_main.h"
-
 #ifdef DEBUG
 #include "ai/monsters/BaseMonster/base_monster.h"
 
@@ -45,9 +43,6 @@ bool g_bDisableAllInput = false;
 
 void CLevel::IR_OnMouseWheel(int direction)
 {
-    if (Editor_MouseWheel(direction))
-        return;
-
     if (g_bDisableAllInput)
         return;
 
@@ -72,20 +67,12 @@ void CLevel::IR_OnMouseWheel(int direction)
     }
 }
 
-namespace
-{
-constexpr int mouse_button_2_key[]{MOUSE_1, MOUSE_2, MOUSE_3};
-}
-
 void CLevel::IR_OnMousePress(int btn) { IR_OnKeyboardPress(mouse_button_2_key[btn]); }
 void CLevel::IR_OnMouseRelease(int btn) { IR_OnKeyboardRelease(mouse_button_2_key[btn]); }
 void CLevel::IR_OnMouseHold(int btn) { IR_OnKeyboardHold(mouse_button_2_key[btn]); }
 
 void CLevel::IR_OnMouseMove(int dx, int dy)
 {
-    if (Editor_MouseMove())
-        return;
-
     if (g_bDisableAllInput)
         return;
     if (pHUD->GetUI()->IR_OnMouseMove(dx, dy))
@@ -108,9 +95,6 @@ void CLevel::IR_OnMouseMove(int dx, int dy)
 
 void CLevel::IR_OnKeyboardPress(int key)
 {
-    if (Editor_KeyPress(key))
-        return;
-
     if (GamePersistent().OnKeyboardPress())
         return;
 
@@ -349,9 +333,6 @@ case DIK_MULTIPLY:
 
 void CLevel::IR_OnKeyboardRelease(int key)
 {
-    if (Editor_KeyRelease(key))
-        return;
-
     if (g_bDisableAllInput)
         return;
 
@@ -393,9 +374,6 @@ void CLevel::IR_OnKeyboardRelease(int key)
 
 void CLevel::IR_OnKeyboardHold(int key)
 {
-    if (Editor_KeyHold())
-        return;
-
     if (g_bDisableAllInput)
         return;
 

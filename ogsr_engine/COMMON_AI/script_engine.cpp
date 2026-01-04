@@ -16,6 +16,8 @@
 
 #include "ui/UIWpnParams.h"
 
+#include "../xrExternal/imgui.h"
+
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wcomma");
 XR_DIAG_IGNORE("-Wextra-semi-stmt");
@@ -142,6 +144,7 @@ void CScriptEngine::init()
 
     lua().open_libraries();
     tracy::LuaRegister(lua().lua_state());
+    sol_ImGui::Init(*m_virtual_machine);
 
     //-----------------------------------------------------//
     export_classes(lua()); // Тут регистрируются все движковые функции, импортированные в скрипты

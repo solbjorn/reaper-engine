@@ -12,8 +12,6 @@
 #include "StateManager\dx10SamplerStateCache.h"
 #include "StateManager\dx10StateCache.h"
 
-#include "imgui_impl_dx11.h"
-
 #include <dxgi1_6.h>
 
 namespace
@@ -40,9 +38,11 @@ CHW::~CHW()
     Device.seqAppActivate.Remove(this);
     Device.seqAppDeactivate.Remove(this);
 }
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
+
 void CHW::CreateD3D()
 {
     R_CHK(CreateDXGIFactory2(0, IID_PPV_ARGS(&m_pFactory)));
@@ -91,25 +91,21 @@ void CHW::CreateD3D()
     // Configuration where this occurs:
     // - Windows 10 Enterprise LTSC, 21H2, 19044.4894
     // - NVIDIA driver version 560.94
+    IDXGIFactory5* factory5{};
+    auto hr = m_pFactory->QueryInterface(IID_PPV_ARGS(&factory5));
+
+    if (SUCCEEDED(hr) && factory5 != nullptr)
     {
-        HRESULT hr;
+        BOOL supports_vrr{};
 
-        IDXGIFactory5* factory5 = nullptr;
-        hr = m_pFactory->QueryInterface(IID_PPV_ARGS(&factory5));
+        hr = factory5->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &supports_vrr, sizeof(supports_vrr));
+        m_SupportsVRR = SUCCEEDED(hr) && supports_vrr;
 
-        if (SUCCEEDED(hr) && factory5)
-        {
-            BOOL supports_vrr = FALSE;
-            hr = factory5->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &supports_vrr, sizeof(supports_vrr));
-
-            m_SupportsVRR = (SUCCEEDED(hr) && supports_vrr);
-
-            factory5->Release();
-        }
-        else
-        {
-            m_SupportsVRR = false;
-        }
+        factory5->Release();
+    }
+    else
+    {
+        m_SupportsVRR = false;
     }
 }
 
@@ -125,7 +121,7 @@ void CHW::DestroyD3D()
     _RELEASE(m_pFactory);
 }
 
-void CHW::CreateDevice(HWND hwnd)
+void CHW::CreateDevice(HWND hwnd, u32& dwWidth, u32& dwHeight)
 {
     m_hWnd = hwnd;
     CreateD3D();
@@ -195,9 +191,7 @@ void CHW::CreateDevice(HWND hwnd)
     sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
     if (m_SupportsVRR)
-    {
         sd.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
-    }
 
     UINT create_device_flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 #ifdef DEBUG
@@ -235,7 +229,7 @@ void CHW::CreateDevice(HWND hwnd)
         R_CHK(pDevice->CreateDeferredContext1(0, &contexts_pool[id]));
 
     // create swapchain
-    R_CHK(m_pFactory->CreateSwapChainForHwnd(pDevice, m_hWnd, &sd, &sd_fullscreen, NULL, &m_pSwapChain));
+    R_CHK(m_pFactory->CreateSwapChainForHwnd(pDevice, m_hWnd, &sd, &sd_fullscreen, nullptr, &m_pSwapChain));
 
     // setup colorspace
     IDXGISwapChain3* swapchain3;
@@ -252,15 +246,15 @@ void CHW::CreateDevice(HWND hwnd)
 
     // NOTE: this seems required to get the default render target to match the swap chain resolution
     // probably the sequence ResizeTarget, and ResizeBuffers is important
-    Reset(hwnd);
+    Reset(hwnd, dwWidth, dwHeight);
     fill_vid_mode_list(this);
 
-    ImGui_ImplDX11_Init(m_hWnd, pDevice, contexts_pool[R__IMM_CTX_ID]);
+    imgui_init();
 }
 
 void CHW::DestroyDevice()
 {
-    ImGui_ImplDX11_Shutdown();
+    imgui_shutdown();
 
     //	Destroy state managers
     RSManager.ClearStateArray();
@@ -268,7 +262,7 @@ void CHW::DestroyDevice()
     BSManager.ClearStateArray();
     SSManager.ClearStateArray();
 
-    //	Must switch to windowed mode to release swap chain
+    // Must switch to windowed mode to release swap chain
     if (!m_ChainDescFullscreen.Windowed)
         m_pSwapChain->SetFullscreenState(FALSE, nullptr);
 
@@ -282,26 +276,24 @@ void CHW::DestroyDevice()
     _RELEASE(pDevice);
 
     DestroyD3D();
-
     free_vid_mode_list();
 }
 
 //////////////////////////////////////////////////////////////////////
 // Resetting device
 //////////////////////////////////////////////////////////////////////
-void CHW::Reset(HWND hwnd)
+
+void CHW::Reset(HWND hwnd, u32& dwWidth, u32& dwHeight)
 {
-    ImGui_ImplDX11_InvalidateDeviceObjects();
+    imgui_reset();
 
     DXGI_SWAP_CHAIN_DESC1& cd = m_ChainDesc;
     DXGI_SWAP_CHAIN_FULLSCREEN_DESC& cd_fs = m_ChainDescFullscreen;
 
     BOOL bWindowed = (g_screenmode != 2);
-
     cd_fs.Windowed = bWindowed;
 
     m_pSwapChain->SetFullscreenState(!bWindowed, nullptr);
-
     selectResolution(cd.Width, cd.Height, bWindowed);
 
     if (bWindowed)
@@ -310,7 +302,9 @@ void CHW::Reset(HWND hwnd)
         cd_fs.RefreshRate.Denominator = 1;
     }
     else
+    {
         cd_fs.RefreshRate = selectRefresh(cd.Width, cd.Height, cd.Format);
+    }
 
     DXGI_MODE_DESC mode{};
 
@@ -322,15 +316,13 @@ void CHW::Reset(HWND hwnd)
 
     UINT flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
     if (m_SupportsVRR)
-    {
         flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
-    }
 
     CHK_DX(m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, flags));
-
     updateWindowProps(hwnd);
 
-    ImGui_ImplDX11_CreateDeviceObjects();
+    dwWidth = cd.Width;
+    dwHeight = cd.Height;
 }
 
 void CHW::selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed)
@@ -344,21 +336,21 @@ void CHW::selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed)
     {
         dwWidth = psCurrentVidMode[0];
         dwHeight = psCurrentVidMode[1];
+        return;
     }
-    else // check
+
+    string64 buff;
+    xr_sprintf(buff, "%dx%d", psCurrentVidMode[0], psCurrentVidMode[1]);
+
+    if (_ParseItem(buff, vid_mode_token) == std::numeric_limits<u32>::max()) // not found
     {
-        string64 buff;
-        xr_sprintf(buff, sizeof(buff), "%dx%d", psCurrentVidMode[0], psCurrentVidMode[1]);
-
-        if (_ParseItem(buff, vid_mode_token) == u32(-1)) // not found
-        { // select safe
-            xr_sprintf(buff, sizeof(buff), "vid_mode %s", vid_mode_token[0].name);
-            Console->Execute(buff);
-        }
-
-        dwWidth = psCurrentVidMode[0];
-        dwHeight = psCurrentVidMode[1];
+        // select safe
+        xr_sprintf(buff, "vid_mode %s", vid_mode_token[0].name);
+        Console->Execute(buff);
     }
+
+    dwWidth = psCurrentVidMode[0];
+    dwHeight = psCurrentVidMode[1];
 }
 
 DXGI_RATIONAL CHW::selectRefresh(u32 dwWidth, u32 dwHeight, DXGI_FORMAT fmt)
@@ -421,9 +413,7 @@ void CHW::OnAppActivate()
 
         UINT flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
         if (m_SupportsVRR)
-        {
             flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
-        }
 
         m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, flags);
     }
@@ -439,12 +429,9 @@ void CHW::OnAppDeactivate()
 
         UINT flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
         if (m_SupportsVRR)
-        {
             flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
-        }
 
         m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, flags);
-
         ShowWindow(m_hWnd, SW_MINIMIZE);
     }
 }
@@ -533,7 +520,7 @@ struct _uniq_mode
 {
     gsl::czstring _val;
 
-    constexpr _uniq_mode(gsl::czstring v) : _val{v} {}
+    constexpr explicit _uniq_mode(gsl::czstring v) : _val{v} {}
 
     [[nodiscard]] constexpr bool operator()(gsl::czstring _other) { return std::is_eq(xr::strcasecmp(_val, _other)); }
 };
@@ -624,9 +611,7 @@ void CHW::Present()
     // NOTE: https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/variable-refresh-rate-displays
     BOOL is_windowed = m_ChainDescFullscreen.Windowed;
     if (is_windowed && !use_vsync && m_SupportsVRR)
-    {
         present_flags |= DXGI_PRESENT_ALLOW_TEARING;
-    }
 
     if (!Device.m_SecondViewport.IsSVPFrame() && !Device.m_SecondViewport.m_bCamReady)
     {

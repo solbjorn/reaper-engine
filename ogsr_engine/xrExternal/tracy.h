@@ -4,7 +4,7 @@
 #define TRACY_ON_DEMAND
 #define TRACY_NO_FRAME_IMAGE
 
-#ifndef TRACY_BUILDING
+#ifndef XR_TRACY_BUILDING
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wextra-semi");
 XR_DIAG_IGNORE("-Wextra-semi-stmt");
@@ -36,6 +36,6 @@ XR_DIAG_POP();
 
 #endif // !TRACY_ENABLE
 
-#endif // !TRACY_BUILDING
+#endif // !XR_TRACY_BUILDING
 
-#endif // __XREXTERNAL_TRACY_H
+#endif // !__XREXTERNAL_TRACY_H

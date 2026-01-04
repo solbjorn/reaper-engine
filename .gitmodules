@@ -12,7 +12,7 @@
 	url = https://github.com/microsoft/GSL.git
 [submodule "3rd_party/Src/OpCoDe/OpCoDe"]
 	path = 3rd_party/Src/OpCoDe/OpCoDe
-	url = https://github.com/solbjorn/OpCoDe
+	url = https://github.com/solbjorn/OpCoDe.git
 [submodule "3rd_party/Src/Xiph/ogg/ogg"]
 	path = 3rd_party/Src/Xiph/ogg/ogg
 	url = https://gitlab.xiph.org/xiph/ogg.git
@@ -39,6 +39,16 @@
 [submodule "3rd_party/Src/concurrency/oneTBB/oneTBB"]
 	path = 3rd_party/Src/concurrency/oneTBB/oneTBB
 	url = https://github.com/uxlfoundation/oneTBB.git
+[submodule "3rd_party/Src/imgui/ImGuizmo"]
+	path = 3rd_party/Src/imgui/ImGuizmo
+	url = https://github.com/CedricGuillemet/ImGuizmo.git
+[submodule "3rd_party/Src/imgui/imgui"]
+	path = 3rd_party/Src/imgui/imgui
+	url = https://github.com/ocornut/imgui.git
+	branch = docking
+[submodule "3rd_party/Src/imgui/sol2_ImGui_Bindings"]
+	path = 3rd_party/Src/imgui/sol2_ImGui_Bindings
+	url = https://github.com/mblackman/sol2_ImGui_Bindings.git
 [submodule "3rd_party/Src/libsquashfs/squashfs-tools-ng"]
 	path = 3rd_party/Src/libsquashfs/squashfs-tools-ng
 	url = https://github.com/AgentD/squashfs-tools-ng.git
@@ -61,7 +71,7 @@
 	url = https://github.com/kcat/openal-soft.git
 [submodule "3rd_party/Src/plf_bitsets"]
 	path = 3rd_party/Src/plf_bitsets
-	url = https://github.com/mattreecebentley/plf_bitsets
+	url = https://github.com/mattreecebentley/plf_bitsets.git
 [submodule "3rd_party/Src/rtti"]
 	path = 3rd_party/Src/rtti
 	url = https://github.com/solbjorn/rtti.git

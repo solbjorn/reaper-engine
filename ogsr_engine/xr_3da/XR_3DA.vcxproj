@@ -76,7 +76,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\imgui;..\xrCore\;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\concurrency\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\Xiph\ogg\ogg\include;$(SolutionDir)\3rd_party\Src\Xiph\theora\theora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\xrCore\;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\concurrency\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\Xiph\ogg\ogg\include;$(SolutionDir)\3rd_party\Src\Xiph\theora\theora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
@@ -104,7 +104,7 @@
       <Culture>0x0422</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>llvmlibc.lib;$(AbseilLibs);DirectXTex.lib;ode.lib;vorbis.lib;vorbisfile.lib;OpenAL32.lib;ogg.lib;theora.lib;vfw32.lib;winmm.lib;dinput8.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;imgui.lib;libomp.lib;libsquashfs.lib;luajit.lib;lz4.lib;tinyxml2.lib;zstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>llvmlibc.lib;$(AbseilLibs);DirectXTex.lib;ode.lib;vorbis.lib;vorbisfile.lib;OpenAL32.lib;ogg.lib;theora.lib;vfw32.lib;winmm.lib;dinput8.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;libomp.lib;libsquashfs.lib;luajit.lib;lz4.lib;tinyxml2.lib;zstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(LLVMInstallDir)\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /force:multiple</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -146,7 +146,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\imgui;..\xrCore\;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\concurrency\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\Xiph\ogg\ogg\include;$(SolutionDir)\3rd_party\Src\Xiph\theora\theora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\xrCore\;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\concurrency\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\Xiph\ogg\ogg\include;$(SolutionDir)\3rd_party\Src\Xiph\theora\theora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>false</StringPooling>
       <ExceptionHandling>
@@ -175,7 +175,7 @@
       <Culture>0x0422</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>llvmlibc.lib;$(AbseilLibs);DirectXTex.lib;ode.lib;vorbis.lib;vorbisfile.lib;OpenAL32.lib;ogg.lib;theora.lib;vfw32.lib;winmm.lib;dinput8.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;imgui.lib;libomp.lib;libsquashfs.lib;luajit.lib;lz4.lib;tinyxml2.lib;zstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>llvmlibc.lib;$(AbseilLibs);DirectXTex.lib;ode.lib;vorbis.lib;vorbisfile.lib;OpenAL32.lib;ogg.lib;theora.lib;vfw32.lib;winmm.lib;dinput8.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;libomp.lib;libsquashfs.lib;luajit.lib;lz4.lib;tinyxml2.lib;zstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(LLVMInstallDir)\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /force:multiple</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>

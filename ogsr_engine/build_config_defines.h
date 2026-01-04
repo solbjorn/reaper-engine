@@ -60,6 +60,11 @@
 // Включает поддержку анимированных физобъектов типа крутящегося вентилятора в подземке агропрома из ЧН.
 #define ANIMATED_PHYSICS_OBJECT_SUPPORT
 
+// Uncomment to disable ImGui and the ingame editor completely
+// #define IMGUI_DISABLE
+// Uncomment to enable ImGui exports to Lua
+#define XR_IMGUI_LUA
+
 // Uncomment to enable profiling with Tracy
 // #define TRACY_ENABLE
 

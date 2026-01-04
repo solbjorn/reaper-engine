@@ -1,5 +1,7 @@
 #include "stdafx.h"
-#include "uicursor.h"
+
+#include "UICursor.h"
+
 #include "ui/UIStatic.h"
 
 CUICursor::CUICursor()
@@ -61,7 +63,6 @@ void CUICursor::OnRender()
 }
 
 Fvector2 CUICursor::GetCursorPosition() const { return vPos; }
-
 Fvector2 CUICursor::GetCursorPositionDelta() const { return Fvector2{vPos.x - vPrevPos.x, vPos.y - vPrevPos.y}; }
 
 void CUICursor::UpdateCursorPosition(const int _dx, const int _dy)
@@ -100,4 +101,15 @@ void CUICursor::SetUICursorPosition(const Fvector2& pos)
     const int y = iFloor(vPos.y / (UI_BASE_HEIGHT / (float)Device.dwHeight));
 
     SetCursorPos(x, y);
+}
+
+void CUICursor::SetUICursorPositionReal(Fvector2 pos)
+{
+    Ivector2 pti{gsl::narrow_cast<s32>(pos.x), gsl::narrow_cast<s32>(pos.y)};
+
+    SetCursorPos(pti.x, pti.y);
+    ScreenToClient(Device.m_hWnd, reinterpret_cast<POINT*>(&pti));
+
+    vPos.x = gsl::narrow_cast<f32>(pti.x) * (UI_BASE_WIDTH / gsl::narrow_cast<f32>(Device.dwWidth));
+    vPos.y = gsl::narrow_cast<f32>(pti.y) * (UI_BASE_HEIGHT / gsl::narrow_cast<f32>(Device.dwHeight));
 }

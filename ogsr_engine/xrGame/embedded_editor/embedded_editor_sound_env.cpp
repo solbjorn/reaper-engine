@@ -1,49 +1,46 @@
 #include "stdafx.h"
 
+#ifndef IMGUI_DISABLE
 #include "embedded_editor_sound_env.h"
 
-XR_DIAG_PUSH();
-XR_DIAG_IGNORE("-Wnontrivial-memcall");
-
-#include <imgui.h>
-
-XR_DIAG_POP();
+#include "embedded_editor_helper.h"
 
 #include <mmeapi.h>
 
-XR_DIAG_PUSH();
-XR_DIAG_IGNORE("-Wmissing-variable-declarations");
-
 #include <../eax/eax.h>
 
-XR_DIAG_POP();
-
-/*
-constexpr const char* env_names[]{"GENERIC",    "PADDEDCELL",      "ROOM",       "BATHROOM",      "LIVINGROOM", "STONEROOM", "AUDITORIUM", "CONCERTHALL", "CAVE",   "ARENA",
-                                  "HANGAR",     "CARPETEDHALLWAY", "HALLWAY",    "STONECORRIDOR", "ALLEY",      "FOREST",    "CITY",       "MOUNTAINS",   "QUARRY", "PLAIN",
-                                  "PARKINGLOT", "SEWERPIPE",       "UNDERWATER", "DRUGGED",       "DIZZY",      "PSYCHOTIC"};
-static_assert(std::size(env_names) == EAX_ENVIRONMENT_COUNT);
-*/
+namespace xr
+{
+namespace detail
+{
+namespace
+{
+constexpr std::array<std::string_view, EAX_ENVIRONMENT_COUNT> env_names{"GENERIC",     "PADDEDCELL", "ROOM",    "BATHROOM",  "LIVINGROOM",      "STONEROOM", "AUDITORIUM",
+                                                                        "CONCERTHALL", "CAVE",       "ARENA",   "HANGAR",    "CARPETEDHALLWAY", "HALLWAY",   "STONECORRIDOR",
+                                                                        "ALLEY",       "FOREST",     "CITY",    "MOUNTAINS", "QUARRY",          "PLAIN",     "PARKINGLOT",
+                                                                        "SEWERPIPE",   "UNDERWATER", "DRUGGED", "DIZZY",     "PSYCHOTIC"};
+}
 
 void ShowSoundEnvEditor(bool& show)
 {
-    if (!ImGui::Begin("SoundEnv###SoundEnv", &show))
-    {
-        ImGui::End();
+    const xr::detail::ImguiWnd wnd{"SoundEnv Editor", &show};
+    if (wnd.Collapsed)
         return;
-    }
-
-    ::Sound->DbgCurrentEnvPaused(true);
 
     CSound_environment* env = ::Sound->DbgCurrentEnv();
 
     static string256 env_name;
+    xr_strcpy(env_name, env->name.c_str());
 
-    strcpy_s(env_name, env->name.c_str());
-
-    ImGui::InputText("Current Zone Name", env_name, std::size(env_name), ImGuiInputTextFlags_ReadOnly);
-
+    ImGui::InputText("Current Zone Name", env_name, sizeof(env_name), ImGuiInputTextFlags_ReadOnly);
     ImGui::Separator();
+
+    static bool paused{};
+
+    if (ImGui::Checkbox("Script Sound Env", &paused))
+        ::Sound->DbgCurrentEnvPaused(paused);
+
+    ImGui::BeginDisabled(!paused);
 
     ImGui::SliderFloat("Room", &env->Room, EAXLISTENER_MINROOM, EAXLISTENER_MAXROOM);
     ImGui::SliderFloat("RoomHF", &env->RoomHF, EAXLISTENER_MINROOMHF, EAXLISTENER_MAXROOMHF);
@@ -58,18 +55,19 @@ void ShowSoundEnvEditor(bool& show)
     ImGui::SliderFloat("EnvironmentDiffusion", &env->EnvironmentDiffusion, EAXLISTENER_MINENVIRONMENTDIFFUSION, EAXLISTENER_MAXENVIRONMENTDIFFUSION);
     ImGui::SliderFloat("AirAbsorptionHF", &env->AirAbsorptionHF, EAXLISTENER_MINAIRABSORPTIONHF, EAXLISTENER_MAXAIRABSORPTIONHF);
 
-    /* // Закомментировано, т.к. у нас вот это Environment нигде не используется, его менять смысла нет.
-        ImGui::SliderInt("Current: ", reinterpret_cast<int*>(&env->Environment), 0, EAX_ENVIRONMENT_COUNT - 1);
-        ImGui::SameLine();
-        ImGui::Text(env_names[env->Environment]);
-    */
+    static auto cur_env = gsl::narrow<s32>(env->Environment);
+
+    if (ImGui::SliderInt("Current: ", &cur_env, EAXLISTENER_MINENVIRONMENT, EAXLISTENER_MAXENVIRONMENT))
+        env->Environment = gsl::narrow<u32>(cur_env);
+
+    ImGui::SameLine();
+    ImGui::TextUnformatted(env_names[gsl::narrow<size_t>(cur_env)].data());
 
     if (ImGui::Button("Save"))
-    {
         ::Sound->DbgCurrentEnvSave();
 
-        Msg("--SoundEnvEditor saved!");
-    }
-
-    ImGui::End();
+    ImGui::EndDisabled();
 }
+} // namespace detail
+} // namespace xr
+#endif // !IMGUI_DISABLE

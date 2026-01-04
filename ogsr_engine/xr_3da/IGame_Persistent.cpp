@@ -16,6 +16,14 @@ extern Fvector4 ps_ssfx_grass_interactive;
 IGame_Persistent* g_pGamePersistent{};
 BOOL g_prefetch{TRUE};
 
+namespace xr
+{
+namespace detail
+{
+std::unique_ptr<xr::ingame_editor> editor;
+}
+} // namespace xr
+
 bool IGame_Persistent::IsMainMenuActive() const { return g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive(); }
 bool IGame_Persistent::MainMenuActiveOrLevelNotExist() const { return !g_pGameLevel || IsMainMenuActive(); }
 

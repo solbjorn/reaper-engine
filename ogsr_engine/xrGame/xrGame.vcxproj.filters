@@ -4053,9 +4053,6 @@
     <ClInclude Include="script_particles_inline.h">
       <Filter>AI\AScript\ScriptClasses\ScriptParticles</Filter>
     </ClInclude>
-    <ClInclude Include="..\xrScriptEngine\xr_sol.h">
-      <Filter>AI\AScript\ScriptEngine</Filter>
-    </ClInclude>
      <ClInclude Include="..\COMMON_AI\script_engine.h">
       <Filter>AI\AScript\ScriptEngine</Filter>
     </ClInclude>
@@ -5882,26 +5879,41 @@
     <ClInclude Include="SimpleDetectorSHOC.h">
       <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors</Filter>
     </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor.h">
+      <Filter>EmbeddedEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor_console.h">
+      <Filter>EmbeddedEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor_console_vars.h">
+      <Filter>EmbeddedEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor_guizmo.h">
+      <Filter>EmbeddedEditor</Filter>
+    </ClInclude>
     <ClInclude Include="embedded_editor\embedded_editor_helper.h">
-      <Filter>EmbeddedEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="embedded_editor\embedded_editor_main.h">
-      <Filter>EmbeddedEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="embedded_editor\embedded_editor_weather.h">
       <Filter>EmbeddedEditor</Filter>
     </ClInclude>
     <ClInclude Include="embedded_editor\embedded_editor_hud.h">
       <Filter>EmbeddedEditor</Filter>
     </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor_main.h">
+      <Filter>EmbeddedEditor</Filter>
+    </ClInclude>
     <ClInclude Include="embedded_editor\embedded_editor_pos_informer.h">
+      <Filter>EmbeddedEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor_sound_env.h">
+      <Filter>EmbeddedEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor_themes.h">
+      <Filter>EmbeddedEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor_weather.h">
       <Filter>EmbeddedEditor</Filter>
     </ClInclude>
     <ClInclude Include="physics_shell_animated.h">
       <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
-    </ClInclude>
-    <ClInclude Include="embedded_editor\embedded_editor_sound_env.h">
-      <Filter>EmbeddedEditor</Filter>
     </ClInclude>
     <ClInclude Include="LevelDebugScript.h">
       <Filter>Core\Client\Level</Filter>
@@ -8567,26 +8579,41 @@
     <ClCompile Include="SimpleDetectorSHOC.cpp">
       <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors</Filter>
     </ClCompile>
+    <ClCompile Include="embedded_editor\embedded_editor.cpp">
+      <Filter>EmbeddedEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="embedded_editor\embedded_editor_console.cpp">
+      <Filter>EmbeddedEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="embedded_editor\embedded_editor_console_vars.cpp">
+      <Filter>EmbeddedEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="embedded_editor\embedded_editor_guizmo.cpp">
+      <Filter>EmbeddedEditor</Filter>
+    </ClCompile>
     <ClCompile Include="embedded_editor\embedded_editor_helper.cpp">
-      <Filter>EmbeddedEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="embedded_editor\embedded_editor_main.cpp">
-      <Filter>EmbeddedEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="embedded_editor\embedded_editor_weather.cpp">
       <Filter>EmbeddedEditor</Filter>
     </ClCompile>
     <ClCompile Include="embedded_editor\embedded_editor_hud.cpp">
       <Filter>EmbeddedEditor</Filter>
     </ClCompile>
+    <ClCompile Include="embedded_editor\embedded_editor_main.cpp">
+      <Filter>EmbeddedEditor</Filter>
+    </ClCompile>
     <ClCompile Include="embedded_editor\embedded_editor_pos_informer.cpp">
+      <Filter>EmbeddedEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="embedded_editor\embedded_editor_sound_env.cpp">
+      <Filter>EmbeddedEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="embedded_editor\embedded_editor_themes.cpp">
+      <Filter>EmbeddedEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="embedded_editor\embedded_editor_weather.cpp">
       <Filter>EmbeddedEditor</Filter>
     </ClCompile>
     <ClCompile Include="physics_shell_animated.cpp">
       <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
-    </ClCompile>
-    <ClCompile Include="embedded_editor\embedded_editor_sound_env.cpp">
-      <Filter>EmbeddedEditor</Filter>
     </ClCompile>
     <ClCompile Include="level_graph_script.cpp">
       <Filter>AI\ANavigation\LevelGraph</Filter>

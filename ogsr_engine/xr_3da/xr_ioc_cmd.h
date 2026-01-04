@@ -38,8 +38,13 @@
     } \
     XR_MACRO_END()
 
-// KRodin: закомментировано.
-// #include "xrSASH.h"
+namespace xr
+{
+namespace detail
+{
+class ImGuiGameConsole;
+}
+} // namespace xr
 
 class XR_NOVTABLE IConsole_Command : public virtual RTTI::Enable
 {
@@ -47,6 +52,8 @@ class XR_NOVTABLE IConsole_Command : public virtual RTTI::Enable
 
 public:
     friend class CConsole;
+    friend class xr::detail::ImGuiGameConsole;
+
     using TInfo = string2048;
     using TStatus = string2048;
     typedef xr_vector<shared_str> vecTips;
@@ -198,11 +205,10 @@ class CCC_Token : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_Token, IConsole_Command);
 
-protected:
+public:
     u32* value;
     const xr_token* tokens;
 
-public:
     explicit CCC_Token(LPCSTR N, u32* V, const xr_token* T) : IConsole_Command{N}, value{V}, tokens{T} {}
     ~CCC_Token() override = default;
 
@@ -287,9 +293,10 @@ class CCC_Float : public IConsole_Command
 
 protected:
     float* value;
-    float min, max;
 
 public:
+    f32 min, max;
+
     explicit CCC_Float(LPCSTR N, f32* V, f32 _min = 0.0f, f32 _max = 1.0f) : IConsole_Command{N}, value{V}, min{_min}, max{_max} {}
     ~CCC_Float() override = default;
 
@@ -335,9 +342,10 @@ class CCC_Vector3 : public IConsole_Command
 
 protected:
     Fvector* value;
-    Fvector min, max;
 
 public:
+    Fvector min, max;
+
     explicit CCC_Vector3(LPCSTR N, Fvector* V, const Fvector _min, const Fvector _max) : IConsole_Command{N}, value{V}
     {
         min.set(_min);
@@ -390,9 +398,10 @@ class CCC_Integer : public IConsole_Command
 
 protected:
     int* value;
-    int min, max;
 
 public:
+    s32 min, max;
+
     [[nodiscard]] int GetValue() const { return *value; }
 
     void GetBounds(int& imin, int& imax) const
@@ -487,9 +496,10 @@ class CCC_Vector4 : public IConsole_Command
 
 protected:
     Fvector4* value;
-    Fvector4 min, max;
 
 public:
+    Fvector4 min, max;
+
     explicit CCC_Vector4(LPCSTR N, Fvector4* V, const Fvector4 _min, const Fvector4 _max) : IConsole_Command{N}, value{V}
     {
         min.set(_min);

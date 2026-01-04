@@ -1,13 +1,13 @@
 #include "stdafx.h"
 
+#include "device.h"
+
 #include "x_ray.h"
 #include "render.h"
 #include "xr_input.h"
 
 #include "IGame_Level.h"
 #include "igame_persistent.h"
-
-#include "../Layers/xrRenderDX10/imgui_impl_dx11.h"
 
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wunused-template");
@@ -57,7 +57,7 @@ bool CRenderDevice::RenderBegin()
 
 void CRenderDevice::Clear() { m_pRender->Clear(); }
 
-void CRenderDevice::RenderEnd(void)
+void CRenderDevice::RenderEnd()
 {
     if (dwPrecacheFrame)
     {
@@ -80,13 +80,6 @@ void CRenderDevice::RenderEnd(void)
     }
 
     g_bRendering = false;
-
-    if (g_appLoaded)
-    {
-        ImGui::Render();
-        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-    }
-
     m_pRender->End();
 
     vCameraDirectionSaved = vCameraDirection;
@@ -222,9 +215,8 @@ void CRenderDevice::OnCameraUpdated()
     // Matrices
     mFullTransform.mul(mProject, mView);
 
-    mViewHud.build_camera_dir({}, Device.vCameraDirection, Device.vCameraTop);
-    mProjectHud.build_projection(deg2rad(psHUD_FOV <= 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV), Device.fASPECT, HUD_VIEWPORT_NEAR,
-                                 g_pGamePersistent->Environment().CurrentEnv->far_plane);
+    mViewHud.build_camera_dir({}, vCameraDirection, vCameraTop);
+    mProjectHud.build_projection(deg2rad(psHUD_FOV <= 1.f ? psHUD_FOV * fFOV : psHUD_FOV), fASPECT, HUD_VIEWPORT_NEAR, g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
     mInvView.invert(mView);
     mInvFullTransform.invert_44(mFullTransform);
@@ -243,20 +235,29 @@ void CRenderDevice::ProcessFrame()
     XR_TRACY_ZONE_SCOPED();
 
     const auto FrameStartTime = std::chrono::high_resolution_clock::now();
+    const bool editor = xr::editor() != nullptr && xr::editor()->opened();
 
-    ImGui_ImplDX11_NewFrame(); // должно быть перед FrameMove
+    if (editor)
+        m_pRender->editor_new();
 
     FrameMove();
+
+    if (editor)
+    {
+        xr::editor()->update();
+        m_pRender->editor_end();
+    }
+
     OnCameraUpdated();
 
     std::chrono::time_point<std::chrono::high_resolution_clock> FrameEndTime;
     std::chrono::duration<double, std::milli> SecondThreadTasksElapsedTime;
 
     oneapi::tbb::parallel_invoke(
-        [this, &FrameEndTime] {
+        [this, &FrameEndTime, editor] {
             XR_TRACY_ZONE_SCOPED();
 
-            bool calc = g_bEnableStatGather;
+            const bool calc = g_bEnableStatGather;
 
             g_bEnableStatGather = true;
             Statistic->RenderTOTAL_Real.FrameStart();
@@ -267,6 +268,9 @@ void CRenderDevice::ProcessFrame()
             {
                 seqRender.Process();
 
+                if (editor)
+                    m_pRender->editor_render();
+
                 CalcFrameStats();
                 if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
                     Statistic->Show();
@@ -275,8 +279,6 @@ void CRenderDevice::ProcessFrame()
 
                 RenderEnd();
             }
-
-            ImGui::EndFrame();
 
             g_bEnableStatGather = true;
             Statistic->RenderTOTAL_Real.End();
@@ -575,15 +577,18 @@ void CLoadScreenRenderer::OnRender() { pApp->load_draw_internal(); }
 void CRenderDevice::CSecondVPParams::SetSVPActive(bool bState) //--#SM+#-- +SecondVP+
 {
     m_bIsActive = bState;
+
     if (g_pGamePersistent)
         g_pGamePersistent->m_pGShaderConstants.m_blender_mode.z = (m_bIsActive ? 1.0f : 0.0f);
 }
 
 bool CRenderDevice::CSecondVPParams::IsSVPFrame() //--#SM+#-- +SecondVP+
 {
-    bool cond = IsSVPActive() && ((Device.dwFrame % g_3dscopes_fps_factor) == 0);
+    const bool cond = IsSVPActive() && (Device.dwFrame % g_3dscopes_fps_factor) == 0;
+
     if (g_pGamePersistent)
         g_pGamePersistent->m_pGShaderConstants.m_blender_mode.y = cond ? 1.0f : 0.0f;
+
     return cond;
 }
 
@@ -591,5 +596,6 @@ void CRenderDevice::time_factor(const float& time_factor)
 {
     Timer.time_factor(time_factor);
     TimerGlobal.time_factor(time_factor);
+
     psSoundTimeFactor = time_factor; //--#SM+#--
 }

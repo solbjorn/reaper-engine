@@ -308,13 +308,17 @@ protected:
     LPCSTR m_strap_bone0;
     LPCSTR m_strap_bone1;
     Fmatrix m_StrapOffset;
-    bool m_strapped_mode;
-    bool m_can_be_strapped;
 
+public:
     Fmatrix m_Offset;
+
+protected:
     // 0-используется без участия рук, 1-одна рука, 2-две руки
     EHandDependence eHandDependence;
     bool m_bIsSingleHanded;
+
+    bool m_strapped_mode;
+    bool m_can_be_strapped;
 
 public:
     // загружаемые параметры
@@ -579,8 +583,10 @@ public:
 protected:
     bool has_laser{};
 
-private:
+public:
     shared_str laserdot_attach_bone;
+
+private:
     Fvector laserdot_world_attach_offset{};
     ref_light laser_light_render;
     CLAItem* laser_lanim{};
@@ -608,9 +614,12 @@ public:
 protected:
     bool has_flashlight{};
 
-private:
+public:
+    Fvector flashlight_omni_attach_offset{};
     shared_str flashlight_attach_bone;
-    Fvector flashlight_omni_attach_offset{}, flashlight_world_attach_offset{}, flashlight_omni_world_attach_offset{};
+
+private:
+    Fvector flashlight_world_attach_offset{}, flashlight_omni_world_attach_offset{};
     ref_light flashlight_render;
     ref_light flashlight_omni;
     ref_glow flashlight_glow;

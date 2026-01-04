@@ -17,7 +17,7 @@
 #include "..\xr_3da\DiscordRPC.hpp"
 #include "object_broker.h"
 
-#include <dinput.h>
+#include "../xr_3da/xr_input.h"
 
 namespace
 {
@@ -221,12 +221,6 @@ void CMainMenu::Activate(bool bActivate)
 
 bool CMainMenu::IsActive() { return !!m_Flags.test(flActive); }
 bool CMainMenu::CanSkipSceneRendering() { return IsActive() && !m_Flags.test(flGameSaveScreenshot); }
-
-// IInputReceiver
-namespace
-{
-constexpr int mouse_button_2_key[]{MOUSE_1, MOUSE_2, MOUSE_3};
-}
 
 void CMainMenu::IR_OnMousePress(int btn)
 {

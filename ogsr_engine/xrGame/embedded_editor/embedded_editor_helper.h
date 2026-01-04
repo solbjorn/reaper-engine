@@ -1,18 +1,40 @@
-#pragma once
+#ifndef __XRGAME_EMBEDDED_EDITOR_HELPER_H
+#define __XRGAME_EMBEDDED_EDITOR_HELPER_H
 
-XR_DIAG_PUSH();
-XR_DIAG_IGNORE("-Wnontrivial-memcall");
+#include "../xrExternal/imgui.h"
 
-#include <imgui.h>
-
-XR_DIAG_POP();
-
+#ifndef IMGUI_DISABLE
+namespace xr
+{
+namespace detail
+{
 struct ImguiWnd
 {
-    ImguiWnd(const char* name, bool* pOpen = nullptr) { Collapsed = !ImGui::Begin(name, pOpen); }
-    ~ImguiWnd() { ImGui::End(); }
+    explicit ImguiWnd(gsl::czstring name, bool* pOpen = nullptr)
+    {
+        Opened = pOpen == nullptr || *pOpen;
+        if (Opened)
+            Collapsed = !ImGui::Begin(name, pOpen);
+        else
+            Collapsed = true;
+    }
+
+    ~ImguiWnd()
+    {
+        if (Opened)
+            ImGui::End();
+    }
 
     bool Collapsed;
+    bool Opened;
 };
 
-bool ImGui_ListBox(const char* label, int* current_item, bool (*items_getter)(void*, int, const char**), void* data, int items_count, const ImVec2& size_arg = ImVec2(0, 0));
+[[nodiscard]] bool ImGui_HoverDragFloat(gsl::czstring label, f32& v, f32 v_speed, f32 v_min, f32 v_max, gsl::czstring format);
+[[nodiscard]] bool ImGui_HoverDragFloat3(gsl::czstring label, std::span<f32, 3> v, f32 v_speed, f32 v_min, f32 v_max, gsl::czstring format);
+
+[[nodiscard]] bool SelectFile(gsl::czstring label, gsl::czstring initial, shared_str& file_name);
+} // namespace detail
+} // namespace xr
+#endif // !IMGUI_DISABLE
+
+#endif // !__XRGAME_EMBEDDED_EDITOR_HELPER_H

@@ -135,13 +135,17 @@ void GetActionAllBinding(LPCSTR action, char* dst_buff, int dst_buff_sz);
 
 extern ConsoleBindCmds bindConsoleCmds;
 
-// 0xED - max vavue in DIK* enum
-#define MOUSE_1 (0xED + 100)
-#define MOUSE_2 (0xED + 101)
-#define MOUSE_3 (0xED + 102)
+#ifndef MOUSE_1
+#define MOUSE_1 MOUSE_1
 
-#define MOUSE_4 (0xED + 103)
-#define MOUSE_5 (0xED + 104)
-#define MOUSE_6 (0xED + 105)
-#define MOUSE_7 (0xED + 106)
-#define MOUSE_8 (0xED + 107)
+// 0xed - max vavue in DIK* enum
+constexpr inline gsl::index MOUSE_1{0xed + 100};
+constexpr inline gsl::index MOUSE_2{0xed + 101};
+constexpr inline gsl::index MOUSE_3{0xed + 102};
+
+constexpr inline gsl::index MOUSE_4{0xed + 103};
+constexpr inline gsl::index MOUSE_5{0xed + 104};
+constexpr inline gsl::index MOUSE_6{0xed + 105};
+constexpr inline gsl::index MOUSE_7{0xed + 106};
+constexpr inline gsl::index MOUSE_8{0xed + 107};
+#endif

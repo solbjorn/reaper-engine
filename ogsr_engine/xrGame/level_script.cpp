@@ -123,7 +123,7 @@ namespace
 
 void set_weather(gsl::czstring weather_name, bool forced)
 {
-    if (s_ScriptWeather)
+    if (xr::editor() != nullptr && xr::editor()->script_weather())
         return;
 
     // KRodin: ТЧ погоду всегда надо обновлять форсировано, иначе она почему-то не всегда корректно обновляется. А для ЗП погоды так делать нельзя - будут очень резкие переходы!
@@ -138,7 +138,7 @@ inline void set_weather(gsl::czstring weather_name) { set_weather(weather_name, 
 
 static void set_weather_next(LPCSTR weather_name)
 {
-    if (s_ScriptWeather)
+    if (xr::editor() != nullptr && xr::editor()->script_weather())
         return;
 
     g_pGamePersistent->Environment().SetWeatherNext(shared_str{weather_name});
@@ -146,7 +146,7 @@ static void set_weather_next(LPCSTR weather_name)
 
 static bool set_weather_fx(LPCSTR weather_name)
 {
-    if (s_ScriptWeather)
+    if (xr::editor() != nullptr && xr::editor()->script_weather())
         return false;
 
     return g_pGamePersistent->Environment().SetWeatherFX(shared_str{weather_name});
@@ -154,7 +154,7 @@ static bool set_weather_fx(LPCSTR weather_name)
 
 static bool start_weather_fx_from_time(LPCSTR weather_name, float time)
 {
-    if (s_ScriptWeather)
+    if (xr::editor() != nullptr && xr::editor()->script_weather())
         return false;
 
     return g_pGamePersistent->Environment().StartWeatherFXFromTime(shared_str{weather_name}, time);

@@ -80,7 +80,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrPhysics;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\concurrency\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\zstd\zstd\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrPhysics;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\concurrency\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\zstd\zstd\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
@@ -138,7 +138,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrPhysics;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\concurrency\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\zstd\zstd\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrPhysics;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\concurrency\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\zstd\zstd\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
@@ -231,14 +231,18 @@
     <ClInclude Include="..\COMMON_AI\PATH\patrol_point_inline.h" />
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper.h" />
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper_inline.h" />
-    <ClInclude Include="..\xrScriptEngine\xr_sol.h" />
     <ClInclude Include="AdvancedDetector.h" />
     <ClInclude Include="ai\monsters\anti_aim_ability.h" />
+    <ClInclude Include="embedded_editor\embedded_editor.h" />
+    <ClInclude Include="embedded_editor\embedded_editor_console.h" />
+    <ClInclude Include="embedded_editor\embedded_editor_console_vars.h" />
+    <ClInclude Include="embedded_editor\embedded_editor_guizmo.h" />
     <ClInclude Include="embedded_editor\embedded_editor_helper.h" />
     <ClInclude Include="embedded_editor\embedded_editor_hud.h" />
     <ClInclude Include="embedded_editor\embedded_editor_main.h" />
     <ClInclude Include="embedded_editor\embedded_editor_pos_informer.h" />
     <ClInclude Include="embedded_editor\embedded_editor_sound_env.h" />
+    <ClInclude Include="embedded_editor\embedded_editor_themes.h" />
     <ClInclude Include="embedded_editor\embedded_editor_weather.h" />
     <ClInclude Include="ai\monsters\group_states\group_state_attack.h" />
     <ClInclude Include="ai\monsters\group_states\group_state_attack_inline.h" />
@@ -1375,11 +1379,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AdvancedDetector.cpp" />
+    <ClCompile Include="embedded_editor\embedded_editor.cpp" />
+    <ClCompile Include="embedded_editor\embedded_editor_console.cpp" />
+    <ClCompile Include="embedded_editor\embedded_editor_console_vars.cpp" />
+    <ClCompile Include="embedded_editor\embedded_editor_guizmo.cpp" />
     <ClCompile Include="embedded_editor\embedded_editor_helper.cpp" />
     <ClCompile Include="embedded_editor\embedded_editor_hud.cpp" />
     <ClCompile Include="embedded_editor\embedded_editor_main.cpp" />
     <ClCompile Include="embedded_editor\embedded_editor_pos_informer.cpp" />
     <ClCompile Include="embedded_editor\embedded_editor_sound_env.cpp" />
+    <ClCompile Include="embedded_editor\embedded_editor_themes.cpp" />
     <ClCompile Include="embedded_editor\embedded_editor_weather.cpp" />
     <ClCompile Include="ai\monsters\anti_aim_ability.cpp" />
     <ClCompile Include="ai\monsters\monster_aura.cpp" />

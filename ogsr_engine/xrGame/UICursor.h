@@ -24,6 +24,7 @@ public:
     Fvector2 GetCursorPosition() const;
 
     void SetUICursorPosition(const Fvector2& pos);
+    void SetUICursorPositionReal(Fvector2 pos);
     void UpdateCursorPosition(const int _dx, const int _dy);
 
     bool IsVisible() const { return bVisible; }

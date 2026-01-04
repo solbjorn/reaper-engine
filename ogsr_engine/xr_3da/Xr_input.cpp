@@ -1,6 +1,8 @@
 #include "stdafx.h"
 
 #include "xr_input.h"
+
+#include "IGame_Persistent.h"
 #include "IInputReceiver.h"
 
 #define MOUSEBUFFERSIZE 64
@@ -165,7 +167,10 @@ void CInput::KeyUpdate()
         if (hr != S_OK)
             return;
     }
+
+    const bool editor = xr::editor() != nullptr;
     u32 i = 0;
+
     for (i = 0; i < dwElements; i++)
     {
         key = od[i].dwOfs;
@@ -175,16 +180,24 @@ void CInput::KeyUpdate()
             if (this->is_exclusive_mode && (key == DIK_LSHIFT || key == DIK_RSHIFT) && (this->iGetAsyncKeyState(DIK_LMENU) || this->iGetAsyncKeyState(DIK_RMENU)))
                 PostMessage(gGameWindow, WM_INPUTLANGCHANGEREQUEST, 2, 0); // Переключили язык. В эксклюзивном режиме это обязательно для правильной работы функции DikToChar
 
-            cbStack.back()->IR_OnKeyboardPress(key);
+            if (!editor || !xr::editor()->key_press(key))
+                cbStack.back()->IR_OnKeyboardPress(key);
         }
         else
         {
-            cbStack.back()->IR_OnKeyboardRelease(key);
+            if (!editor || !xr::editor()->key_release(key))
+                cbStack.back()->IR_OnKeyboardRelease(key);
         }
     }
+
     for (i = 0; i < COUNT_KB_BUTTONS; i++)
-        if (KBState[i])
+    {
+        if (KBState[i] == 0)
+            continue;
+
+        if (!editor || !xr::editor()->key_hold(i))
             cbStack.back()->IR_OnKeyboardHold(i);
+    }
 
     if (!b_altF4 && iGetAsyncKeyState(DIK_F4) && (iGetAsyncKeyState(DIK_RMENU) || iGetAsyncKeyState(DIK_LMENU)))
     {
@@ -258,7 +271,9 @@ void CInput::MouseUpdate()
     mouse_prev[1] = mouseState[1];
     mouse_prev[2] = mouseState[2];
 
+    const bool editor = xr::editor() != nullptr;
     offs[0] = offs[1] = offs[2] = 0;
+
     for (u32 i = 0; i < dwElements; i++)
     {
         switch (od[i].dwOfs)
@@ -279,96 +294,128 @@ void CInput::MouseUpdate()
             if (od[i].dwData & 0x80)
             {
                 mouseState[0] = TRUE;
-                cbStack.back()->IR_OnMousePress(0);
+
+                if (!editor || !xr::editor()->key_press(MOUSE_1))
+                    cbStack.back()->IR_OnMousePress(0);
             }
             if (!(od[i].dwData & 0x80))
             {
                 mouseState[0] = FALSE;
-                cbStack.back()->IR_OnMouseRelease(0);
+
+                if (!editor || !xr::editor()->key_release(MOUSE_1))
+                    cbStack.back()->IR_OnMouseRelease(0);
             }
             break;
         case DIMOFS_BUTTON1:
             if (od[i].dwData & 0x80)
             {
                 mouseState[1] = TRUE;
-                cbStack.back()->IR_OnMousePress(1);
+
+                if (!editor || !xr::editor()->key_press(MOUSE_2))
+                    cbStack.back()->IR_OnMousePress(1);
             }
             if (!(od[i].dwData & 0x80))
             {
                 mouseState[1] = FALSE;
-                cbStack.back()->IR_OnMouseRelease(1);
+
+                if (!editor || !xr::editor()->key_release(MOUSE_2))
+                    cbStack.back()->IR_OnMouseRelease(1);
             }
             break;
         case DIMOFS_BUTTON2:
             if (od[i].dwData & 0x80)
             {
                 mouseState[2] = TRUE;
-                cbStack.back()->IR_OnMousePress(2);
+
+                if (!editor || !xr::editor()->key_press(MOUSE_3))
+                    cbStack.back()->IR_OnMousePress(2);
             }
             if (!(od[i].dwData & 0x80))
             {
                 mouseState[2] = FALSE;
-                cbStack.back()->IR_OnMouseRelease(2);
+
+                if (!editor || !xr::editor()->key_release(MOUSE_3))
+                    cbStack.back()->IR_OnMouseRelease(2);
             }
             break;
         case DIMOFS_BUTTON3:
             if (od[i].dwData & 0x80)
             {
                 mouseState[2] = TRUE;
-                cbStack.back()->IR_OnKeyboardPress(0xED + 103);
+
+                if (!editor || !xr::editor()->key_press(MOUSE_4))
+                    cbStack.back()->IR_OnKeyboardPress(0xED + 103);
             }
             if (!(od[i].dwData & 0x80))
             {
                 mouseState[2] = FALSE;
-                cbStack.back()->IR_OnKeyboardRelease(0xED + 103);
+
+                if (!editor || !xr::editor()->key_release(MOUSE_4))
+                    cbStack.back()->IR_OnKeyboardRelease(0xED + 103);
             }
             break;
         case DIMOFS_BUTTON4:
             if (od[i].dwData & 0x80)
             {
                 mouseState[2] = TRUE;
-                cbStack.back()->IR_OnKeyboardPress(0xED + 104);
+
+                if (!editor || !xr::editor()->key_press(MOUSE_5))
+                    cbStack.back()->IR_OnKeyboardPress(0xED + 104);
             }
             if (!(od[i].dwData & 0x80))
             {
                 mouseState[2] = FALSE;
-                cbStack.back()->IR_OnKeyboardRelease(0xED + 104);
+
+                if (!editor || !xr::editor()->key_release(MOUSE_5))
+                    cbStack.back()->IR_OnKeyboardRelease(0xED + 104);
             }
             break;
         case DIMOFS_BUTTON5:
             if (od[i].dwData & 0x80)
             {
                 mouseState[2] = TRUE;
-                cbStack.back()->IR_OnKeyboardPress(0xED + 105);
+
+                if (!editor || !xr::editor()->key_press(MOUSE_6))
+                    cbStack.back()->IR_OnKeyboardPress(0xED + 105);
             }
             if (!(od[i].dwData & 0x80))
             {
                 mouseState[2] = FALSE;
-                cbStack.back()->IR_OnKeyboardRelease(0xED + 105);
+
+                if (!editor || !xr::editor()->key_release(MOUSE_6))
+                    cbStack.back()->IR_OnKeyboardRelease(0xED + 105);
             }
             break;
         case DIMOFS_BUTTON6:
             if (od[i].dwData & 0x80)
             {
                 mouseState[2] = TRUE;
-                cbStack.back()->IR_OnKeyboardPress(0xED + 106);
+
+                if (!editor || !xr::editor()->key_press(MOUSE_7))
+                    cbStack.back()->IR_OnKeyboardPress(0xED + 106);
             }
             if (!(od[i].dwData & 0x80))
             {
                 mouseState[2] = FALSE;
-                cbStack.back()->IR_OnKeyboardRelease(0xED + 106);
+
+                if (!editor || !xr::editor()->key_release(MOUSE_7))
+                    cbStack.back()->IR_OnKeyboardRelease(0xED + 106);
             }
             break;
         case DIMOFS_BUTTON7:
             if (od[i].dwData & 0x80)
             {
                 mouseState[2] = TRUE;
-                cbStack.back()->IR_OnKeyboardPress(0xED + 107);
+
+                if (!editor || !xr::editor()->key_press(MOUSE_8))
+                    cbStack.back()->IR_OnKeyboardPress(0xED + 107);
             }
             if (!(od[i].dwData & 0x80))
             {
                 mouseState[2] = FALSE;
-                cbStack.back()->IR_OnKeyboardRelease(0xED + 107);
+
+                if (!editor || !xr::editor()->key_release(MOUSE_8))
+                    cbStack.back()->IR_OnKeyboardRelease(0xED + 107);
             }
             break;
         }
@@ -382,12 +429,16 @@ void CInput::MouseUpdate()
         if (MouseState.rgbButtons[i] & 0x80 && mouseState[i] == FALSE)
         {
             mouseState[i] = TRUE;
-            cbStack.back()->IR_OnMousePress(i);
+
+            if (!editor || !xr::editor()->key_press(mouse_button_2_key[i]))
+                cbStack.back()->IR_OnMousePress(i);
         }
         else if (!(MouseState.rgbButtons[i] & 0x80) && mouseState[i] == TRUE)
         {
             mouseState[i] = FALSE;
-            cbStack.back()->IR_OnMouseRelease(i);
+
+            if (!editor || !xr::editor()->key_release(mouse_button_2_key[i]))
+                cbStack.back()->IR_OnMouseRelease(i);
         }
     };
 
@@ -401,7 +452,10 @@ void CInput::MouseUpdate()
 
     auto isButtonOnHold = [&](int i) {
         if (mouseState[i] && mouse_prev[i])
-            cbStack.back()->IR_OnMouseHold(i);
+        {
+            if (!editor || !xr::editor()->key_hold(mouse_button_2_key[i]))
+                cbStack.back()->IR_OnMouseHold(i);
+        }
     };
 
     isButtonOnHold(0);
@@ -411,9 +465,16 @@ void CInput::MouseUpdate()
     if (dwElements)
     {
         if (offs[0] || offs[1])
-            cbStack.back()->IR_OnMouseMove(offs[0], offs[1]);
+        {
+            if (!editor || !xr::editor()->mouse_move(offs[0], offs[1]))
+                cbStack.back()->IR_OnMouseMove(offs[0], offs[1]);
+        }
+
         if (offs[2])
-            cbStack.back()->IR_OnMouseWheel(offs[2]);
+        {
+            if (!editor || !xr::editor()->mouse_wheel(offs[2]))
+                cbStack.back()->IR_OnMouseWheel(offs[2]);
+        }
     }
     else
     {

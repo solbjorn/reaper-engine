@@ -86,13 +86,11 @@ void dxRenderDeviceRender::Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, float& 
 
     Resources->reset_begin();
     Memory.mem_compact();
-    HW.Reset(hWnd);
+    HW.Reset(hWnd, dwWidth, dwHeight);
 
-    dwWidth = HW.m_ChainDesc.Width;
-    dwHeight = HW.m_ChainDesc.Height;
+    fWidth_2 = gsl::narrow_cast<f32>(dwWidth) / 2.0f;
+    fHeight_2 = gsl::narrow_cast<f32>(dwHeight) / 2.0f;
 
-    fWidth_2 = float(dwWidth / 2);
-    fHeight_2 = float(dwHeight / 2);
     Resources->reset_end();
 
 #ifdef DEBUG
@@ -176,13 +174,10 @@ void dxRenderDeviceRender::Create(HWND hWnd, u32& dwWidth, u32& dwHeight, float&
     }
 #endif
 
-    HW.CreateDevice(hWnd);
+    HW.CreateDevice(hWnd, dwWidth, dwHeight);
 
-    dwWidth = HW.m_ChainDesc.Width;
-    dwHeight = HW.m_ChainDesc.Height;
-
-    fWidth_2 = gsl::narrow_cast<f32>(dwWidth / 2);
-    fHeight_2 = gsl::narrow_cast<f32>(dwHeight / 2);
+    fWidth_2 = gsl::narrow_cast<f32>(dwWidth) / 2.0f;
+    fHeight_2 = gsl::narrow_cast<f32>(dwHeight) / 2.0f;
 
     Resources = xr_new<CResourceManager>();
 }

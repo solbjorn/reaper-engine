@@ -52,4 +52,4 @@ template <typename To, typename From>
 #endif
 }
 
-#endif // __XREXTERNAL_RTTI_H
+#endif // !__XREXTERNAL_RTTI_H

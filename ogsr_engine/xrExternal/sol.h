@@ -33,9 +33,12 @@ XR_DIAG_IGNORE("-Wcomma");
 XR_DIAG_IGNORE("-Wextra-semi");
 XR_DIAG_IGNORE("-Wfloat-equal");
 XR_DIAG_IGNORE("-Wimplicit-fallthrough");
+XR_DIAG_IGNORE("-Wimplicit-int-float-conversion");
 XR_DIAG_IGNORE("-Wnewline-eof");
 XR_DIAG_IGNORE("-Wnrvo");
+XR_DIAG_IGNORE("-Wold-style-cast");
 XR_DIAG_IGNORE("-Wredundant-parens");
+XR_DIAG_IGNORE("-Wsign-conversion");
 XR_DIAG_IGNORE("-Wundefined-reinterpret-cast");
 XR_DIAG_IGNORE("-Wunused-template");
 XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
@@ -100,4 +103,4 @@ inline sol::usertype<Class>& sol_set(sol::usertype<Class>& ut, Args&&... args)
 }
 } // namespace xr
 
-#endif // __XREXTERNAL_SOL_H
+#endif // !__XREXTERNAL_SOL_H

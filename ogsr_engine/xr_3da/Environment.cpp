@@ -441,9 +441,7 @@ void CEnvironment::lerp(float& current_weight)
     for (auto& mit : Modifiers)
         mpower += EM.sum(mit, view);
 
-    extern bool s_ScriptNoMixer;
-
-    if (s_ScriptNoMixer)
+    if (xr::editor() != nullptr && xr::editor()->script_mixer())
         current_weight = 0;
 
     // final lerp

@@ -142,6 +142,40 @@ public:
 
 inline IMainMenu::~IMainMenu() = default;
 
+namespace xr
+{
+class XR_NOVTABLE ingame_editor : public virtual RTTI::Enable
+{
+    RTTI_DECLARE_TYPEINFO(xr::ingame_editor);
+
+public:
+    ~ingame_editor() override = 0;
+
+    [[nodiscard]] virtual bool opened() = 0;
+    virtual void update() = 0;
+
+    [[nodiscard]] virtual bool key_hold(gsl::index key) = 0;
+    [[nodiscard]] virtual bool key_press(gsl::index key) = 0;
+    [[nodiscard]] virtual bool key_release(gsl::index key) = 0;
+
+    [[nodiscard]] virtual bool mouse_move(gsl::index dx, gsl::index dy) = 0;
+    [[nodiscard]] virtual bool mouse_wheel(gsl::index dir) = 0;
+
+    [[nodiscard]] virtual bool script_mixer() const = 0;
+    [[nodiscard]] virtual bool script_time() const = 0;
+    [[nodiscard]] virtual bool script_weather() const = 0;
+};
+
+inline ingame_editor::~ingame_editor() = default;
+
+namespace detail
+{
+extern std::unique_ptr<xr::ingame_editor> editor;
+}
+
+[[nodiscard]] inline xr::ingame_editor* editor() { return xr::detail::editor.get(); }
+} // namespace xr
+
 extern IGame_Persistent* g_pGamePersistent;
 extern BOOL g_prefetch;
 
