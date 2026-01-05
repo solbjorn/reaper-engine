@@ -22,7 +22,9 @@
     <Project Path="3rd_party/Src/ode/contrib/msvc7/ode_default/default.vcxproj" Id="1bf75feb-87dd-486c-880b-227987d191c2">
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
-    <Project Path="3rd_party/Src/openal-soft/openal-soft.vcxproj" Id="8c67b3ec-af96-48db-b93e-e561c79f48d7" />
+    <Project Path="3rd_party/Src/openal-soft/openal-soft.vcxproj" Id="8c67b3ec-af96-48db-b93e-e561c79f48d7">
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
     <Project Path="3rd_party/Src/tinyxml2/tinyxml2.vcxproj" Id="ddc9ea5d-33c3-4b1c-a8c4-f2ec3d0e1c07">
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>

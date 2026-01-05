@@ -104,7 +104,7 @@
       <Culture>0x0422</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>llvmlibc.lib;$(AbseilLibs);DirectXTex.lib;ode.lib;vorbis.lib;vorbisfile.lib;OpenAL32.lib;ogg.lib;theora.lib;vfw32.lib;winmm.lib;dinput8.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;libomp.lib;libsquashfs.lib;luajit.lib;lz4.lib;tinyxml2.lib;zstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(AbseilLibs);DirectXTex.lib;OpenAL32.lib;avrt.lib;d3d11.lib;d3dcompiler.lib;dinput8.lib;dxgi.lib;dxguid.lib;libomp.lib;libsquashfs.lib;llvmlibc.lib;luajit.lib;lz4.lib;ode.lib;ogg.lib;theora.lib;tinyxml2.lib;vfw32.lib;vorbis.lib;vorbisfile.lib;winmm.lib;xxhash.lib;zstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(LLVMInstallDir)\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /force:multiple</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -175,7 +175,7 @@
       <Culture>0x0422</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>llvmlibc.lib;$(AbseilLibs);DirectXTex.lib;ode.lib;vorbis.lib;vorbisfile.lib;OpenAL32.lib;ogg.lib;theora.lib;vfw32.lib;winmm.lib;dinput8.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;libomp.lib;libsquashfs.lib;luajit.lib;lz4.lib;tinyxml2.lib;zstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(AbseilLibs);DirectXTex.lib;OpenAL32.lib;avrt.lib;d3d11.lib;d3dcompiler.lib;dinput8.lib;dxgi.lib;dxguid.lib;libomp.lib;libsquashfs.lib;llvmlibc.lib;luajit.lib;lz4.lib;ode.lib;ogg.lib;theora.lib;tinyxml2.lib;vfw32.lib;vorbis.lib;vorbisfile.lib;winmm.lib;xxhash.lib;zstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(LLVMInstallDir)\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /force:multiple</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>

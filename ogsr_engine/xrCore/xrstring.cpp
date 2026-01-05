@@ -9,8 +9,6 @@ namespace xxh
 #include <xxhash.h>
 }
 
-#pragma comment(lib, "xxhash")
-
 template <>
 struct std::default_delete<str_value>
 {
