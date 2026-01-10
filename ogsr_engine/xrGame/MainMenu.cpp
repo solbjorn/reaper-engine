@@ -306,10 +306,10 @@ void CMainMenu::IR_OnMouseWheel(int direction)
 
 bool CMainMenu::OnRenderPPUI_query() { return IsActive() && !m_Flags.test(flGameSaveScreenshot) && b_shniaganeed_pp; }
 
-void CMainMenu::OnRender()
+tmc::task<void> CMainMenu::OnRender()
 {
     if (m_Flags.test(flGameSaveScreenshot))
-        return;
+        co_return;
 
     Render->Render();
 
@@ -365,7 +365,7 @@ void CMainMenu::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 }
 
 // pureFrame
-void CMainMenu::OnFrame()
+tmc::task<void> CMainMenu::OnFrame()
 {
     if (m_Flags.test(flNeedChangeCapture))
     {
@@ -375,7 +375,8 @@ void CMainMenu::OnFrame()
         else
             IR_Release();
     }
-    CDialogHolder::OnFrame();
+
+    co_await CDialogHolder::OnFrame();
 
     // screenshot stuff
     if (m_Flags.test(flGameSaveScreenshot) && Device.dwFrame > m_screenshotFrame)
@@ -465,10 +466,12 @@ void CMainMenu::OnSessionTerminate(LPCSTR reason)
 
 void CMainMenu::SetNeedVidRestart() { m_Flags.set(flNeedVidRestart, TRUE); }
 
-void CMainMenu::OnDeviceReset()
+tmc::task<void> CMainMenu::OnDeviceReset()
 {
-    if (IsActive() && g_pGameLevel)
+    if (IsActive() && g_pGameLevel != nullptr)
         SetNeedVidRestart();
+
+    co_return;
 }
 
 LPCSTR CMainMenu::GetGSVer() { return Core.GetEngineVersion(); }

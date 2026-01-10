@@ -11,8 +11,6 @@ struct _processor_info final
     u32 family; // family of the processor, eg. Intel_Pentium_Pro is family 6 processor
     u32 model; // model of processor, eg. Intel_Pentium_Pro is model 1 of family 6 processor
     u32 stepping; // Processor revision number
-    u32 threadCount; // number of available threads, both physical and logical
-    u32 coresCount; // number of physical cores
 
     constexpr void clearFeatures()
     {
@@ -53,4 +51,16 @@ private:
     FILETIME prevSysIdle{}, prevSysKernel{}, prevSysUser{};
     std::unique_ptr<LARGE_INTEGER[]> m_idleTime;
     std::unique_ptr<SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[]> perfomanceInfo;
+
+    const tmc::ex_any* const cpu{tmc::cpu_executor().type_erased()};
+    const tmc::ex_any* const st{xr::tmc_cpu_st_executor().type_erased()};
+
+public:
+    xr_vector<tmc::topology::thread_info> threads;
+    tmc::topology::cpu_topology topo;
+
+    [[nodiscard]] constexpr bool on_cpu() const { return tmc::current_executor() == cpu; }
+    [[nodiscard]] constexpr bool on_st() const { return tmc::current_executor() == st; }
+
+    void print_topology();
 };

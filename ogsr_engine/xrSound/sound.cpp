@@ -10,7 +10,7 @@ namespace
 CSoundRender_CoreA* impl{};
 }
 
-void CSound_manager_interface::_create(int stage)
+tmc::task<void> CSound_manager_interface::_create(int stage)
 {
     if (stage == 0)
     {
@@ -20,14 +20,14 @@ void CSound_manager_interface::_create(int stage)
         if (strstr(Core.Params, "-nosound"))
         {
             SoundRender->bPresent = FALSE;
-            return;
+            co_return;
         }
 
         SoundRender->bPresent = TRUE; // make assumption that sound present
     }
 
     if (!SoundRender->bPresent)
-        return;
+        co_return;
 
     SoundRender->_initialize(stage);
 }

@@ -49,7 +49,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <OmitFramePointers>false</OmitFramePointers>
+      <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -70,7 +70,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\sol2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\tmc\hwloc\_Build\$(Configuration)\$(PlatformShortName)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <CompileAsManaged>
@@ -118,7 +118,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\sol2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\tmc\hwloc\_Build\$(Configuration)\$(PlatformShortName)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <CompileAsManaged>
@@ -149,6 +149,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="tmc.cpp" />
     <ClCompile Include="tracy.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -156,6 +157,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="rtti.h" />
     <ClInclude Include="sol.h" />
+    <ClInclude Include="tmc.h" />
     <ClInclude Include="tracy.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

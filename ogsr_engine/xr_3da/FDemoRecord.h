@@ -59,10 +59,12 @@ public:
 
     BOOL ProcessCam(SCamEffectorInfo& info) override;
 
-    void OnRender() override
+    [[nodiscard]] tmc::task<void> OnRender() override
     {
         if (pFontSystem)
             pFontSystem->OnRender();
+
+        co_return;
     }
 
     Fvector m_HPB;

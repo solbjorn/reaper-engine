@@ -85,8 +85,8 @@ public:
     void OnRenderPPUI_main();
     void OnRenderPPUI_PP();
 
-    virtual void OnRender();
-    virtual void OnFrame(void);
+    [[nodiscard]] tmc::task<void> OnRender() override;
+    [[nodiscard]] tmc::task<void> OnFrame() override;
     virtual void StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators);
     virtual bool UseIndicators() { return false; }
 
@@ -101,7 +101,7 @@ public:
     void CheckForErrorDlg();
     void OnSessionTerminate(LPCSTR reason);
     void SetNeedVidRestart();
-    virtual void OnDeviceReset();
+    [[nodiscard]] tmc::task<void> OnDeviceReset() override;
     LPCSTR GetGSVer();
 
     void PlaySound(LPCSTR Path);

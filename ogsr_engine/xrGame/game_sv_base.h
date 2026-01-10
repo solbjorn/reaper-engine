@@ -64,7 +64,7 @@ public:
     virtual void OnDetach(u16 eid_who, u16 eid_target) = 0;
 
     // Main
-    virtual void Create(shared_str&);
+    [[nodiscard]] tmc::task<void> Create(shared_str&) override;
     virtual void Update();
 
     virtual void net_Export_State(NET_Packet& P, ClientID id_to); // full state

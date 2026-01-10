@@ -203,7 +203,7 @@ public:
     virtual void reset_begin() = 0;
     virtual void reset_end() = 0;
 
-    virtual void level_Load(IReader*) = 0;
+    [[nodiscard]] virtual tmc::task<void> level_Load(IReader* fs) = 0;
     virtual void level_Unload() = 0;
 
     void shader_option_skinning(s32 mode) { m_skinning = mode; }

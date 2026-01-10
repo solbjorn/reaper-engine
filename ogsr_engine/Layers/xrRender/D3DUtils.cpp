@@ -1401,7 +1401,11 @@ void CDrawUtilities::DrawLink(const Fvector& p0, const Fvector& p1, float sz, u3
 
 void CDrawUtilities::DrawJoint(const Fvector& p, float radius, u32 clr) { DrawLineSphere(p, radius, clr, false); }
 
-void CDrawUtilities::OnRender() { m_Font->OnRender(); }
+tmc::task<void> CDrawUtilities::OnRender()
+{
+    m_Font->OnRender();
+    co_return;
+}
 
 void CDrawUtilities::OutText(const Fvector& pos, LPCSTR text, u32 color, u32 shadow_color)
 {

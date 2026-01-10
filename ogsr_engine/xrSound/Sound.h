@@ -360,7 +360,7 @@ protected:
 public:
     ~CSound_manager_interface() override = 0;
 
-    static void _create(int stage);
+    [[nodiscard]] static tmc::task<void> _create(int stage);
     static void _destroy();
 
     virtual void _restart() = 0;

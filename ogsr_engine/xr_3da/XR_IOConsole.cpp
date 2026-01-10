@@ -189,14 +189,14 @@ void CConsole::RemoveCommand(IConsole_Command* cc)
     }
 }
 
-void CConsole::OnFrame()
+tmc::task<void> CConsole::OnFrame()
 {
     m_editor->on_frame();
 
     if (Device.dwFrame % 10 == 0)
-    {
         update_tips();
-    }
+
+    co_return;
 }
 
 void CConsole::OutFont(LPCSTR text, float& pos_y)
@@ -232,18 +232,18 @@ void CConsole::OutFont(LPCSTR text, float& pos_y)
     }
 }
 
-void CConsole::OnScreenResolutionChanged()
+tmc::task<void> CConsole::OnScreenResolutionChanged()
 {
     xr_delete(pFont);
     xr_delete(pFont2);
+
+    co_return;
 }
 
-void CConsole::OnRender()
+tmc::task<void> CConsole::OnRender()
 {
     if (!bVisible && !g_console_show_always)
-    {
-        return;
-    }
+        co_return;
 
     if (!m_hShader_back)
     {

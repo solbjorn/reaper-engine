@@ -432,14 +432,17 @@ class CCC_VID_Reset : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_VID_Reset, IConsole_Command);
 
 public:
-    explicit CCC_VID_Reset(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_VID_Reset(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_VID_Reset() override = default;
 
-    void Execute(LPCSTR) override
+    void Execute(gsl::czstring) override
     {
         if (Device.b_is_Ready)
-            Device.Reset();
+            Device.add_async(CallMe::fromMethod<&CCC_VID_Reset::execute_async>(this));
     }
+
+private:
+    [[nodiscard]] tmc::task<void> execute_async() { co_await Device.Reset(); }
 };
 
 class CCC_VidMode : public CCC_Token
@@ -508,15 +511,34 @@ class CCC_Screenmode : public CCC_Token
 {
     RTTI_DECLARE_TYPEINFO(CCC_Screenmode, CCC_Token);
 
+private:
+    xr_string args_async;
+
 public:
-    explicit CCC_Screenmode(LPCSTR N) : CCC_Token{N, &g_screenmode, screen_mode_tokens} {}
+    explicit CCC_Screenmode(gsl::czstring N) : CCC_Token{N, &g_screenmode, screen_mode_tokens} {}
     ~CCC_Screenmode() override = default;
 
-    void Execute(LPCSTR args) override
+    void Execute(gsl::czstring args) override
     {
-        u32 prev_mode = g_screenmode;
-        CCC_Token::Execute(args);
+        args_async.assign(args);
+        Device.add_async(CallMe::fromMethod<&CCC_Screenmode::execute_async>(this));
+    }
 
+private:
+    [[nodiscard]] tmc::task<void> execute_async()
+    {
+        if (args_async.empty())
+            co_return;
+
+        const u32 prev_mode = g_screenmode;
+        CCC_Token::Execute(args_async.c_str());
+        args_async.clear();
+
+        co_await tmc::spawn(execute_st(prev_mode)).run_on(xr::tmc_cpu_st_executor());
+    }
+
+    [[nodiscard]] tmc::task<void> execute_st(u32 prev_mode)
+    {
         if ((prev_mode != g_screenmode))
         {
             // TODO: If you enable the debug layer for DX11 and switch between fullscreen and windowed a few times,
@@ -547,7 +569,7 @@ public:
             bool fullscreen_to_windowed = (prev_mode == 2) && ((g_screenmode == 0) || (g_screenmode == 1));
             bool reset_required = windowed_to_fullscreen || fullscreen_to_windowed;
             if (Device.b_is_Ready && reset_required)
-                Device.Reset();
+                co_await tmc::spawn(Device.Reset()).run_on(tmc::cpu_executor());
 
             if (g_screenmode == 0 || g_screenmode == 1)
             {
@@ -563,7 +585,8 @@ public:
 
         RECT winRect;
         GetClientRect(Device.m_hWnd, &winRect);
-        MapWindowPoints(Device.m_hWnd, nullptr, reinterpret_cast<LPPOINT>(&winRect), 2);
+
+        MapWindowPoints(Device.m_hWnd, nullptr, reinterpret_cast<POINT*>(&winRect), 2);
         ClipCursor(&winRect);
     }
 };

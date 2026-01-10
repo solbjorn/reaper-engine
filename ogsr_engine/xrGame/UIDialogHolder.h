@@ -70,7 +70,7 @@ public:
     void StartStopMenu_script(std::unique_ptr<CUIDialogWndEx>& pDialog, bool bDoHideIndicators);
     void AddDialogToRender(CUIWindow* pDialog);
     void RemoveDialogToRender(CUIWindow* pDialog);
-    virtual void OnFrame();
+    [[nodiscard]] tmc::task<void> OnFrame() override;
     virtual bool UseIndicators() { return true; }
 };
 XR_SOL_BASE_CLASSES(CDialogHolder);

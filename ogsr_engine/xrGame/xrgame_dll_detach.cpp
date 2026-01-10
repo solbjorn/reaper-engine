@@ -29,7 +29,7 @@
 #include "sound_collection_storage.h"
 #include "relation_registry.h"
 
-void init_game_globals()
+tmc::task<void> init_game_globals()
 {
     CUIXmlInit::InitColorDefs();
 
@@ -42,6 +42,8 @@ void init_game_globals()
     CHARACTER_RANK::InitInternal();
     CHARACTER_REPUTATION::InitInternal();
     MONSTER_COMMUNITY::InitInternal();
+
+    co_return;
 }
 
 void clean_game_globals()

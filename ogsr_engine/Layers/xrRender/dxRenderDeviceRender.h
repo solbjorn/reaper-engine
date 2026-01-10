@@ -25,11 +25,11 @@ public:
     //	Destroy
     virtual void OnDeviceDestroy(BOOL bKeepTextures);
     virtual void DestroyHW();
-    virtual void Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, float& fWidth_2, float& fHeight_2);
+    [[nodiscard]] tmc::task<void> Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, f32& fWidth_2, f32& fHeight_2) override;
     //	Init
     virtual void SetupStates();
     void OnDeviceCreate() override;
-    virtual void Create(HWND hWnd, u32& dwWidth, u32& dwHeight, float& fWidth_2, float& fHeight_2) override;
+    [[nodiscard]] tmc::task<void> Create(HWND hWnd, u32& dwWidth, u32& dwHeight, f32& fWidth_2, f32& fHeight_2) override;
     virtual void SetupGPU(BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF);
     //	Overdraw
     virtual void overdrawBegin();

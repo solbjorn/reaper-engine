@@ -155,7 +155,7 @@ public:
     CSE_Abstract* ID_to_entity(u16 ID);
 
     // main
-    virtual EConnect Connect(shared_str& session_name);
+    [[nodiscard]] tmc::task<EConnect> Connect(shared_str& session_name) override;
     virtual void Disconnect();
     virtual void Update();
 

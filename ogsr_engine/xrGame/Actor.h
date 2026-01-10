@@ -133,7 +133,7 @@ public:
     float m_snd_noise;
 
 #ifdef DEBUG
-    virtual void OnRender();
+    [[nodiscard]] tmc::task<void> OnRender() override;
 #endif
 
     // Имеется ли воздействие пси-ауры на ГГ (тряска рук)

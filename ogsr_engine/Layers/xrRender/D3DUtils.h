@@ -164,7 +164,7 @@ public:
 
     virtual void OutText(const Fvector& pos, LPCSTR text, u32 color = 0xFF000000, u32 shadow_color = 0xFF909090);
 
-    virtual void OnRender();
+    [[nodiscard]] tmc::task<void> OnRender() override;
 };
 
 extern CDrawUtilities DUImpl;

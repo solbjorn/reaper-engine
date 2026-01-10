@@ -20,7 +20,7 @@ public:
     ~game_sv_Single() override;
 
     virtual LPCSTR type_name() const { return "single"; }
-    virtual void Create(shared_str& options);
+    [[nodiscard]] tmc::task<void> Create(shared_str& options) override;
 
     virtual void OnCreate(u16 id_who);
     [[nodiscard]] BOOL OnTouch(u16 eid_who, u16 eid_what, BOOL = FALSE) override;
@@ -51,7 +51,7 @@ public:
 
     virtual shared_str level_name(const shared_str& server_options) const;
     virtual void on_death(CSE_Abstract* e_dest, CSE_Abstract* e_src);
-    void restart_simulator(LPCSTR saved_game_name);
+    [[nodiscard]] tmc::task<void> restart_simulator(gsl::czstring saved_game_name);
 
     IC xrServer& server() const
     {

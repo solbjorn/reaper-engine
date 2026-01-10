@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "alife_simulator.h"
+
 #include "xrServer_Objects_ALife.h"
 #include "ai_space.h"
 #include "..\xr_3da\IGame_Persistent.h"
@@ -49,10 +50,21 @@ CALifeSimulator::CALifeSimulator(xrServer* server, shared_str* command_line) : C
 
     R_ASSERT2(ai().script_engine().function(start_game_callback, function), "failed to get start game callback");
     function();
-
-    load(p.m_game_or_spawn, std::is_neq(xr_strcmp(p.m_new_or_load, "load")), std::is_eq(xr_strcmp(p.m_new_or_load, "new")));
-    RELATION_REGISTRY().build_reverse_personal();
 }
+
+namespace xr
+{
+tmc::task<std::unique_ptr<CALifeSimulator>> alife_simulator_create(xrServer* server, shared_str* command_line)
+{
+    auto sim = std::make_unique<CALifeSimulator>(server, command_line);
+    const auto& p = g_pGamePersistent->m_game_params;
+
+    co_await sim->load(p.m_game_or_spawn, std::is_neq(xr_strcmp(p.m_new_or_load, "load")), std::is_eq(xr_strcmp(p.m_new_or_load, "new")));
+    RELATION_REGISTRY().build_reverse_personal();
+
+    co_return sim;
+}
+} // namespace xr
 
 CALifeSimulator::~CALifeSimulator() { VERIFY(!ai().get_alife()); }
 

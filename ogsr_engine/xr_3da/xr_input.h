@@ -94,9 +94,9 @@ public:
     explicit CInput(bool bExclusive = true, int deviceForInit = default_key);
     ~CInput() override;
 
-    virtual void OnFrame(void);
-    virtual void OnAppActivate(void);
-    virtual void OnAppDeactivate(void);
+    [[nodiscard]] tmc::task<void> OnFrame() override;
+    [[nodiscard]] tmc::task<void> OnAppActivate() override;
+    [[nodiscard]] tmc::task<void> OnAppDeactivate() override;
 
     IInputReceiver* CurrentIR();
 

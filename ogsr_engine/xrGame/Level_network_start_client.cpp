@@ -1,9 +1,10 @@
 #include "stdafx.h"
 
+#include "Level.h"
+
 #include "HUDmanager.h"
 #include "PHdynamicdata.h"
 #include "Physics.h"
-#include "level.h"
 #include "..\xr_3da\x_ray.h"
 #include "..\xr_3da\igame_persistent.h"
 #include "PhysicsGamePars.h"
@@ -13,9 +14,10 @@
 #include "string_table.h"
 #include "xrServer.h"
 
-bool CLevel::net_start_client1()
+tmc::task<bool> CLevel::net_start_client1()
 {
     pApp->LoadBegin();
+
     // name_of_server
     string64 name_of_server = "";
     //	strcpy_s(name_of_server,*m_caClientOptions);
@@ -25,24 +27,18 @@ bool CLevel::net_start_client1()
     if (strchr(name_of_server, '/'))
         *strchr(name_of_server, '/') = 0;
 
-    // Startup client
-    /*	string256					temp;
-        sprintf_s						(temp,"%s %s",
-                                    CStringTable().translate("st_client_connecting_to").c_str(), name_of_server);
-
-        g_pGamePersistent->LoadTitle				(temp);*/
-    return true;
+    co_return true;
 }
 
-bool CLevel::net_start_client2()
+tmc::task<bool> CLevel::net_start_client2()
 {
     Server->create_direct_client();
     connected_to_server = Connect2Server(*m_caClientOptions);
 
-    return true;
+    co_return true;
 }
 
-bool CLevel::net_start_client3()
+tmc::task<bool> CLevel::net_start_client3()
 {
     if (connected_to_server)
     {
@@ -59,7 +55,7 @@ bool CLevel::net_start_client3()
             m_name._set(level_name);
             m_connect_server_err = xrServer::ErrNoLevel;
 
-            return false;
+            co_return false;
         }
 
         m_name._set(level_name);
@@ -67,15 +63,15 @@ bool CLevel::net_start_client3()
         R_ASSERT2(Load(level_id), "Loading failed.");
     }
 
-    return true;
+    co_return true;
 }
 
-bool CLevel::net_start_client4()
+tmc::task<bool> CLevel::net_start_client4()
 {
     if (connected_to_server)
     {
         // Begin spawn
-        g_pGamePersistent->LoadTitle("st_client_spawning");
+        co_await g_pGamePersistent->LoadTitle("st_client_spawning");
 
         // Send physics to single or multithreaded mode
         LoadPhysicsGameParams();
@@ -91,31 +87,35 @@ bool CLevel::net_start_client4()
         while (!game_configured)
         {
             ClientReceive();
+
             if (Server)
                 Server->Update();
+
             Sleep(5);
         }
     }
-    return true;
+
+    co_return true;
 }
 
-bool CLevel::net_start_client5()
+tmc::task<bool> CLevel::net_start_client5()
 {
     if (connected_to_server)
     {
         // HUD
+        pHUD->Load();
 
         // Textures
-        pHUD->Load();
-        g_pGamePersistent->LoadTitle("st_loading_textures");
+        co_await g_pGamePersistent->LoadTitle("st_loading_textures");
         Device.m_pRender->DeferredLoad(FALSE);
         Device.m_pRender->ResourcesDeferredUpload();
         LL_CheckTextures();
     }
-    return true;
+
+    co_return true;
 }
 
-bool CLevel::net_start_client6()
+tmc::task<bool> CLevel::net_start_client6()
 {
     if (connected_to_server)
     {
@@ -125,7 +125,8 @@ bool CLevel::net_start_client6()
 
         if (!psActorFlags.test(AF_KEYPRESS_ON_START))
             pApp->LoadForceFinish();
-        g_pGamePersistent->LoadTitle("st_client_synchronising");
+
+        co_await g_pGamePersistent->LoadTitle("st_client_synchronising");
         Device.PreCache(60, true, true);
         net_start_result_total = TRUE;
     }
@@ -135,5 +136,6 @@ bool CLevel::net_start_client6()
     }
 
     pApp->LoadEnd();
-    return true;
+
+    co_return true;
 }

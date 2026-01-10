@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "device.h"
+
 bool CRenderDevice::on_message(UINT uMsg, WPARAM wParam, LRESULT& result)
 {
     switch (uMsg)
@@ -7,10 +9,11 @@ bool CRenderDevice::on_message(UINT uMsg, WPARAM wParam, LRESULT& result)
     case WM_SYSKEYDOWN: {
         return true;
     }
-    case WM_ACTIVATE: {
-        OnWM_Activate(wParam);
-        return (false);
-    }
+    case WM_ACTIVATE:
+        wparam_async = wParam;
+        add_async(CallMe::fromMethod<&CRenderDevice::OnWM_Activate>(this));
+
+        return false;
     case WM_SETCURSOR: {
         result = 1;
         return (true);

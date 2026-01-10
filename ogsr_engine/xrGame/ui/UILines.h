@@ -12,7 +12,7 @@
 #include "../UI.h"
 #include "uiabstract.h"
 
-class CUILines : public IUITextControl, public CUISimpleWindow //, public CDeviceResetNotifier
+class CUILines : public IUITextControl, public CUISimpleWindow
 {
     RTTI_DECLARE_TYPEINFO(CUILines, IUITextControl, CUISimpleWindow);
 
@@ -54,9 +54,6 @@ public:
     virtual void Draw(float x, float y);
     virtual void Update();
     IC void SetWndSize_inline(const Fvector2& wnd_size);
-
-    // CDeviceResetNotifier methods
-    virtual void OnDeviceReset();
 
     // own methods
     void Reset();

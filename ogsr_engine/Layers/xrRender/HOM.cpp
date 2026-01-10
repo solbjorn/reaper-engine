@@ -11,15 +11,6 @@
 
 #include "../../xr_3da/GameFont.h"
 
-XR_DIAG_PUSH();
-XR_DIAG_IGNORE("-Wextra-semi");
-XR_DIAG_IGNORE("-Wextra-semi-stmt");
-XR_DIAG_IGNORE("-Wunused-template");
-
-#include <oneapi/tbb/parallel_for.h>
-
-XR_DIAG_POP();
-
 #include "xr_task.h"
 
 //////////////////////////////////////////////////////////////////////
@@ -29,10 +20,6 @@ XR_DIAG_POP();
 CHOM::CHOM()
 {
     tg = &xr_task_group_get();
-    bEnabled = FALSE;
-
-    m_pModel = nullptr;
-    m_pTris = nullptr;
 
 #ifdef DEBUG
     Device.seqRender.Add(this, REG_PRIORITY_LOW - 1000);
@@ -67,7 +54,7 @@ constexpr float Area(const Fvector& v0, const Fvector& v1, const Fvector& v2)
 }
 } // namespace
 
-void CHOM::Load()
+tmc::task<void> CHOM::Load()
 {
     // Find and open file
     string_path fName;
@@ -75,7 +62,7 @@ void CHOM::Load()
     if (!FS.exist(fName))
     {
         Msg(" WARNING: Occlusion map '%s' not found.", fName);
-        return;
+        co_return;
     }
 
     Msg("* Loading HOM: %s", fName);
@@ -95,30 +82,32 @@ void CHOM::Load()
     CL.calc_adjacency(adjacency);
 
     // Create RASTER-triangles
-    m_pTris = xr_alloc<occTri>(CL.getTS());
+    m_pTris.resize(CL.getTS());
 
-    tbb::parallel_for(tbb::blocked_range<size_t>(0, CL.getTS()), [&](const auto& range) {
-        for (size_t it = range.begin(); it != range.end(); ++it)
-        {
-            const CDB::TRI& clT = CL.getT()[it];
-            occTri& rT = m_pTris[it];
-            Fvector& v0 = CL.getV()[clT.verts[0]];
-            Fvector& v1 = CL.getV()[clT.verts[1]];
-            Fvector& v2 = CL.getV()[clT.verts[2]];
-            rT.adjacent[0] = (0xffffffff == adjacency[3 * it + 0]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 0]);
-            rT.adjacent[1] = (0xffffffff == adjacency[3 * it + 1]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 1]);
-            rT.adjacent[2] = (0xffffffff == adjacency[3 * it + 2]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 2]);
-            rT.flags = clT.dummy;
-            rT.area = Area(v0, v1, v2);
+    co_await tmc::spawn_many(std::views::iota(0z, CL.getTS()) | std::views::transform([this, &CL, &adjacency] [[nodiscard]] (auto it) -> tmc::task<void> {
+                                 return [] [[nodiscard]] (std::span<occTri> m_pTris, const CDB::Collector& CL, std::span<const u32> adjacency, auto it) -> tmc::task<void> {
+                                     const CDB::TRI& clT = CL.get_faces()[it];
+                                     occTri& rT = m_pTris[it];
+                                     const Fvector& v0 = CL.get_verts()[clT.verts[0]];
+                                     const Fvector& v1 = CL.get_verts()[clT.verts[1]];
+                                     const Fvector& v2 = CL.get_verts()[clT.verts[2]];
+                                     rT.adjacent[0] = (0xffffffff == adjacency[3 * it + 0]) ? ((occTri*)(-1)) : (&m_pTris[adjacency[3 * it + 0]]);
+                                     rT.adjacent[1] = (0xffffffff == adjacency[3 * it + 1]) ? ((occTri*)(-1)) : (&m_pTris[adjacency[3 * it + 1]]);
+                                     rT.adjacent[2] = (0xffffffff == adjacency[3 * it + 2]) ? ((occTri*)(-1)) : (&m_pTris[adjacency[3 * it + 2]]);
+                                     rT.flags = clT.dummy;
+                                     rT.area = Area(v0, v1, v2);
 
-            if (rT.area < EPS_L)
-                Msg("! Invalid HOM triangle (%f,%f,%f)-(%f,%f,%f)-(%f,%f,%f)", VPUSH(v0), VPUSH(v1), VPUSH(v2));
+                                     if (rT.area < EPS_L)
+                                         Msg("! Invalid HOM triangle (%f,%f,%f)-(%f,%f,%f)-(%f,%f,%f)", VPUSH(v0), VPUSH(v1), VPUSH(v2));
 
-            rT.plane.build(v0, v1, v2);
-            rT.skip = 0;
-            rT.center.add(v0, v1).add(v2).div(3.f);
-        }
-    });
+                                     rT.plane.build(v0, v1, v2);
+                                     rT.skip = 0;
+                                     rT.center.add(v0, v1).add(v2).div(3.0f);
+
+                                     co_return;
+                                 }(m_pTris, CL, adjacency, it);
+                             }))
+        .with_priority(xr::tmc_priority_any);
 
     // Create AABB-tree
     m_pModel = xr_new<CDB::MODEL>();
@@ -131,7 +120,7 @@ void CHOM::Load()
 void CHOM::Unload()
 {
     xr_delete(m_pModel);
-    xr_free(m_pTris);
+    m_pTris.clear();
     bEnabled = FALSE;
 }
 
@@ -396,60 +385,57 @@ void CHOM::Disable() { bEnabled = FALSE; }
 void CHOM::Enable() { bEnabled = m_pModel ? TRUE : FALSE; }
 
 #ifdef DEBUG
-void CHOM::OnRender()
+tmc::task<void> CHOM::OnRender()
 {
     Raster.on_dbg_render();
 
-    if (psDeviceFlags.is(rsOcclusionDraw))
+    if (!psDeviceFlags.is(rsOcclusionDraw) || m_pModel == nullptr)
+        co_return;
+
+    DEFINE_VECTOR(FVF::L, LVec, LVecIt);
+    static LVec poly;
+    poly.resize(m_pModel->get_tris_count() * 3);
+    static LVec line;
+    line.resize(m_pModel->get_tris_count() * 6);
+    for (int it = 0; it < m_pModel->get_tris_count(); it++)
     {
-        if (m_pModel)
-        {
-            DEFINE_VECTOR(FVF::L, LVec, LVecIt);
-            static LVec poly;
-            poly.resize(m_pModel->get_tris_count() * 3);
-            static LVec line;
-            line.resize(m_pModel->get_tris_count() * 6);
-            for (int it = 0; it < m_pModel->get_tris_count(); it++)
-            {
-                CDB::TRI* T = m_pModel->get_tris() + it;
-                Fvector* verts = m_pModel->get_verts();
-                poly[it * 3 + 0].set(*(verts + T->verts[0]), 0x80FFFFFF);
-                poly[it * 3 + 1].set(*(verts + T->verts[1]), 0x80FFFFFF);
-                poly[it * 3 + 2].set(*(verts + T->verts[2]), 0x80FFFFFF);
-                line[it * 6 + 0].set(*(verts + T->verts[0]), 0xFFFFFFFF);
-                line[it * 6 + 1].set(*(verts + T->verts[1]), 0xFFFFFFFF);
-                line[it * 6 + 2].set(*(verts + T->verts[1]), 0xFFFFFFFF);
-                line[it * 6 + 3].set(*(verts + T->verts[2]), 0xFFFFFFFF);
-                line[it * 6 + 4].set(*(verts + T->verts[2]), 0xFFFFFFFF);
-                line[it * 6 + 5].set(*(verts + T->verts[0]), 0xFFFFFFFF);
-            }
-            RCache.set_xform_world(Fidentity);
-            // draw solid
-            Device.SetNearer(TRUE);
-            RCache.set_Shader(RImplementation.m_SelectionShader);
-            RCache.set_c("tfactor", float(color_get_R(0x80FFFFFF)) / 255.f, float(color_get_G(0x80FFFFFF)) / 255.f, float(color_get_B(0x80FFFFFF)) / 255.f,
-                         float(color_get_A(0x80FFFFFF)) / 255.f);
-            RCache.dbg_Draw(D3DPT_TRIANGLELIST, &*poly.begin(), poly.size() / 3);
-            Device.SetNearer(FALSE);
-            // draw wire
-            if (bDebug)
-            {
-                RImplementation.rmNear(RCache);
-            }
-            else
-            {
-                Device.SetNearer(TRUE);
-            }
-            RCache.set_Shader(RImplementation.m_SelectionShader);
-            RCache.set_c("tfactor", 1.f, 1.f, 1.f, 1.f);
-            RCache.dbg_Draw(D3DPT_LINELIST, &*line.begin(), line.size() / 2);
-            if (bDebug)
-                RImplementation.rmNormal(RCache);
-            else
-                Device.SetNearer(FALSE);
-        }
+        CDB::TRI* T = m_pModel->get_tris() + it;
+        Fvector* verts = m_pModel->get_verts();
+        poly[it * 3 + 0].set(*(verts + T->verts[0]), 0x80FFFFFF);
+        poly[it * 3 + 1].set(*(verts + T->verts[1]), 0x80FFFFFF);
+        poly[it * 3 + 2].set(*(verts + T->verts[2]), 0x80FFFFFF);
+        line[it * 6 + 0].set(*(verts + T->verts[0]), 0xFFFFFFFF);
+        line[it * 6 + 1].set(*(verts + T->verts[1]), 0xFFFFFFFF);
+        line[it * 6 + 2].set(*(verts + T->verts[1]), 0xFFFFFFFF);
+        line[it * 6 + 3].set(*(verts + T->verts[2]), 0xFFFFFFFF);
+        line[it * 6 + 4].set(*(verts + T->verts[2]), 0xFFFFFFFF);
+        line[it * 6 + 5].set(*(verts + T->verts[0]), 0xFFFFFFFF);
     }
+    RCache.set_xform_world(Fidentity);
+    // draw solid
+    Device.SetNearer(TRUE);
+    RCache.set_Shader(RImplementation.m_SelectionShader);
+    RCache.set_c("tfactor", float(color_get_R(0x80FFFFFF)) / 255.f, float(color_get_G(0x80FFFFFF)) / 255.f, float(color_get_B(0x80FFFFFF)) / 255.f,
+                 float(color_get_A(0x80FFFFFF)) / 255.f);
+    RCache.dbg_Draw(D3DPT_TRIANGLELIST, &*poly.begin(), poly.size() / 3);
+    Device.SetNearer(FALSE);
+
+    // draw wire
+    if (bDebug)
+        RImplementation.rmNear(RCache);
+    else
+        Device.SetNearer(TRUE);
+
+    RCache.set_Shader(RImplementation.m_SelectionShader);
+    RCache.set_c("tfactor", 1.f, 1.f, 1.f, 1.f);
+    RCache.dbg_Draw(D3DPT_LINELIST, &*line.begin(), line.size() / 2);
+
+    if (bDebug)
+        RImplementation.rmNormal(RCache);
+    else
+        Device.SetNearer(FALSE);
 }
+
 void CHOM::stats()
 {
     if (m_pModel)

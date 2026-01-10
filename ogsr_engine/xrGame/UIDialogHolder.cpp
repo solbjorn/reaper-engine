@@ -223,7 +223,7 @@ void CDialogHolder::StartStopMenu_script(std::unique_ptr<CUIDialogWndEx>& pDialo
         script_menus.emplace_back(pDialog.release());
 }
 
-void CDialogHolder::OnFrame()
+tmc::task<void> CDialogHolder::OnFrame()
 {
     if (MainInputReceiver() && GetUICursor()->IsVisible())
     {
@@ -236,8 +236,12 @@ void CDialogHolder::OnFrame()
     }
 
     for (auto& it : m_dialogsToRender)
+    {
         if (it.enabled && it.wnd->IsEnabled())
             it.wnd->Update();
+    }
+
+    co_return;
 }
 
 void CDialogHolder::shedule_Update(u32 dt)

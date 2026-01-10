@@ -19,7 +19,7 @@
 
 #include <Utilities/FlexibleVertexFormat.h>
 
-void CRender::level_Load(IReader* fs)
+tmc::task<void> CRender::level_Load(IReader* fs)
 {
     R_ASSERT(g_pGameLevel);
     R_ASSERT(!b_loaded);
@@ -39,7 +39,8 @@ void CRender::level_Load(IReader* fs)
     IReader* chunk;
 
     // Shaders
-    g_pGamePersistent->LoadTitle("st_loading_shaders");
+    co_await g_pGamePersistent->LoadTitle("st_loading_shaders");
+
     {
         chunk = fs->open_chunk(fsL_SHADERS);
         R_ASSERT2(chunk, "Level doesn't builded correctly.");
@@ -75,7 +76,8 @@ void CRender::level_Load(IReader* fs)
     Details = xr_new<CDetailManager>();
 
     // VB,IB,SWI
-    g_pGamePersistent->LoadTitle("st_loading_geometry");
+    co_await g_pGamePersistent->LoadTitle("st_loading_geometry");
+
     {
         CStreamReader* geom = FS.rs_open("$level$", "level.geom");
         R_ASSERT2(geom, "level.geom");
@@ -93,27 +95,27 @@ void CRender::level_Load(IReader* fs)
     }
 
     // Visuals
-    g_pGamePersistent->LoadTitle("st_loading_spatial_db");
+    co_await g_pGamePersistent->LoadTitle("st_loading_spatial_db");
     chunk = fs->open_chunk(fsL_VISUALS);
     LoadVisuals(chunk);
     chunk->close();
 
     // Details
-    g_pGamePersistent->LoadTitle("st_loading_details");
+    co_await g_pGamePersistent->LoadTitle("st_loading_details");
     Details->Load();
 
     // Sectors
-    g_pGamePersistent->LoadTitle("st_loading_sectors_portals");
+    co_await g_pGamePersistent->LoadTitle("st_loading_sectors_portals");
     LoadSectors(fs);
 
     // 3D Fluid
     Load3DFluid();
 
     // HOM
-    HOM.Load();
+    co_await HOM.Load();
 
     // Lights
-    g_pGamePersistent->LoadTitle("st_loading_lights");
+    co_await g_pGamePersistent->LoadTitle("st_loading_lights");
     LoadLights(fs);
 
     // End

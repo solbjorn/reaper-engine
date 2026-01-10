@@ -29,16 +29,6 @@
 [submodule "3rd_party/Src/callme"]
 	path = 3rd_party/Src/callme
 	url = https://github.com/solbjorn/callme.git
-[submodule "3rd_party/Src/concurrency/cpputils"]
-	path = 3rd_party/Src/concurrency/cpputils
-	url = https://github.com/tzcnt/cpputils.git
-[submodule "3rd_party/Src/concurrency/hwloc/hwloc"]
-	path = 3rd_party/Src/concurrency/hwloc/hwloc
-	url = https://github.com/open-mpi/hwloc.git
-	branch = v2.x
-[submodule "3rd_party/Src/concurrency/oneTBB/oneTBB"]
-	path = 3rd_party/Src/concurrency/oneTBB/oneTBB
-	url = https://github.com/uxlfoundation/oneTBB.git
 [submodule "3rd_party/Src/imgui/ImGuizmo"]
 	path = 3rd_party/Src/imgui/ImGuizmo
 	url = https://github.com/CedricGuillemet/ImGuizmo.git
@@ -66,6 +56,9 @@
 	path = 3rd_party/Src/mimalloc/mimalloc
 	url = https://github.com/microsoft/mimalloc.git
 	branch = dev3
+[submodule "3rd_party/Src/oneTBB/oneTBB"]
+	path = 3rd_party/Src/oneTBB/oneTBB
+	url = https://github.com/uxlfoundation/oneTBB.git
 [submodule "3rd_party/Src/openal-soft/openal-soft"]
 	path = 3rd_party/Src/openal-soft/openal-soft
 	url = https://github.com/kcat/openal-soft.git
@@ -81,6 +74,16 @@
 [submodule "3rd_party/Src/tinyxml2/tinyxml2"]
 	path = 3rd_party/Src/tinyxml2/tinyxml2
 	url = https://github.com/leethomason/tinyxml2.git
+[submodule "3rd_party/Src/tmc/TooManyCooks"]
+	path = 3rd_party/Src/tmc/TooManyCooks
+	url = https://github.com/tzcnt/TooManyCooks.git
+[submodule "3rd_party/Src/tmc/cpputils"]
+	path = 3rd_party/Src/tmc/cpputils
+	url = https://github.com/tzcnt/cpputils.git
+[submodule "3rd_party/Src/tmc/hwloc/hwloc"]
+	path = 3rd_party/Src/tmc/hwloc/hwloc
+	url = https://github.com/open-mpi/hwloc.git
+	branch = v2.x
 [submodule "3rd_party/Src/tracy"]
 	path = 3rd_party/Src/tracy
 	url = https://github.com/wolfpld/tracy.git

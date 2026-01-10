@@ -1,12 +1,13 @@
 #include "stdafx.h"
 
 #include "xrServer.h"
+
+#include "MainMenu.h"
+#include "game_cl_single.h"
 #include "game_sv_single.h"
 #include "xrMessages.h"
-#include "game_cl_single.h"
-#include "MainMenu.h"
 
-xrServer::EConnect xrServer::Connect(shared_str& session_name)
+tmc::task<xrServer::EConnect> xrServer::Connect(shared_str& session_name)
 {
 #ifdef DEBUG
     Msg("* sv_Connect: %s", *session_name);
@@ -14,7 +15,7 @@ xrServer::EConnect xrServer::Connect(shared_str& session_name)
 
     // Parse options and create game
     if (!strchr(*session_name, '/'))
-        return ErrConnect;
+        co_return ErrConnect;
 
     string1024 options;
     R_ASSERT2(xr_strlen(session_name) <= gsl::index{sizeof(options)}, "session_name too BIIIGGG!!!");
@@ -34,7 +35,7 @@ xrServer::EConnect xrServer::Connect(shared_str& session_name)
 
     // Options
     if (!game)
-        return ErrConnect;
+        co_return ErrConnect;
 
     csPlayers.Enter();
 //	game->type				= type_id;
@@ -42,10 +43,10 @@ xrServer::EConnect xrServer::Connect(shared_str& session_name)
     Msg("* Created server_game %s", game->type_name());
 #endif
 
-    game->Create(session_name);
+    co_await game->Create(session_name);
     csPlayers.Leave();
 
-    return IPureServer::Connect(*session_name);
+    co_return co_await IPureServer::Connect(session_name);
 }
 
 IClient* xrServer::new_client(SClientConnectData* cl_data)

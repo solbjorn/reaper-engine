@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
-#include "level.h"
+#include "Level.h"
+
 #include "Level_Bullet_Manager.h"
 #include "xrserver.h"
 #include "game_cl_base.h"
@@ -59,30 +60,27 @@ BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
 
     //---------------------------------------------------------------------
     //---------------------------------------------------------------------------
-    g_loading_events.push_back(CallMe::fromMethod<&CLevel::net_start1>(this));
-    g_loading_events.push_back(CallMe::fromMethod<&CLevel::net_start2>(this));
-    g_loading_events.push_back(CallMe::fromMethod<&CLevel::net_start3>(this));
-    g_loading_events.push_back(CallMe::fromMethod<&CLevel::net_start4>(this));
-    g_loading_events.push_back(CallMe::fromMethod<&CLevel::net_start5>(this));
-    g_loading_events.push_back(CallMe::fromMethod<&CLevel::net_start6>(this));
+    g_loading_events.emplace_back(CallMe::fromMethod<&CLevel::net_start1>(this));
+    g_loading_events.emplace_back(CallMe::fromMethod<&CLevel::net_start2>(this));
+    g_loading_events.emplace_back(CallMe::fromMethod<&CLevel::net_start3>(this));
+    g_loading_events.emplace_back(CallMe::fromMethod<&CLevel::net_start4>(this));
+    g_loading_events.emplace_back(CallMe::fromMethod<&CLevel::net_start5>(this));
+    g_loading_events.emplace_back(CallMe::fromMethod<&CLevel::net_start6>(this));
 
     return net_start_result_total;
 }
 
-bool CLevel::net_start1()
+tmc::task<bool> CLevel::net_start1()
 {
     // Start client and server if need it
     if (m_caServerOptions.size())
     {
-        g_pGamePersistent->LoadTitle("st_server_starting");
+        co_await g_pGamePersistent->LoadTitle("st_server_starting");
 
-        typedef IGame_Persistent::params params;
-        params& p = g_pGamePersistent->m_game_params;
         // Connect
         Server = xr_new<xrServer>();
 
-        //		if (!strstr(*m_caServerOptions,"/alife"))
-        if (std::is_neq(xr_strcmp(p.m_alife, "alife")))
+        if (std::is_neq(xr_strcmp(g_pGamePersistent->m_game_params.m_alife, "alife")))
         {
             string64 l_name = "";
             const char* SOpts = *m_caServerOptions;
@@ -99,58 +97,60 @@ bool CLevel::net_start1()
                 pApp->LoadEnd();
                 Msg("Can't find level: [%s]", l_name);
                 net_start_result_total = FALSE;
-                return true;
+
+                co_return true;
             }
         }
     }
 
-    return true;
+    co_return true;
 }
 
-bool CLevel::net_start2()
+tmc::task<bool> CLevel::net_start2()
 {
-    if (net_start_result_total && m_caServerOptions.size())
+    if (net_start_result_total && !m_caServerOptions.empty())
     {
-        if ((m_connect_server_err = Server->Connect(m_caServerOptions)) != xrServer::ErrNoError)
+        if (m_connect_server_err = co_await Server->Connect(m_caServerOptions); m_connect_server_err != xrServer::ErrNoError)
         {
             net_start_result_total = false;
             Msg("! Failed to start server.");
-            //			Console->Execute("main_menu on");
-            return true;
+
+            co_return true;
         }
+
         Server->SLS_Default();
         m_name = Server->level_name(m_caServerOptions);
     }
 
-    return true;
+    co_return true;
 }
 
-bool CLevel::net_start3()
+tmc::task<bool> CLevel::net_start3()
 {
     if (!net_start_result_total)
-        return true;
+        co_return true;
 
-    return true;
+    co_return true;
 }
 
-bool CLevel::net_start4()
+tmc::task<bool> CLevel::net_start4()
 {
     if (!net_start_result_total)
-        return true;
+        co_return true;
 
     g_loading_events.pop_front();
 
-    g_loading_events.push_front(CallMe::fromMethod<&CLevel::net_start_client6>(this));
-    g_loading_events.push_front(CallMe::fromMethod<&CLevel::net_start_client5>(this));
-    g_loading_events.push_front(CallMe::fromMethod<&CLevel::net_start_client4>(this));
-    g_loading_events.push_front(CallMe::fromMethod<&CLevel::net_start_client3>(this));
-    g_loading_events.push_front(CallMe::fromMethod<&CLevel::net_start_client2>(this));
-    g_loading_events.push_front(CallMe::fromMethod<&CLevel::net_start_client1>(this));
+    g_loading_events.emplace_front(CallMe::fromMethod<&CLevel::net_start_client6>(this));
+    g_loading_events.emplace_front(CallMe::fromMethod<&CLevel::net_start_client5>(this));
+    g_loading_events.emplace_front(CallMe::fromMethod<&CLevel::net_start_client4>(this));
+    g_loading_events.emplace_front(CallMe::fromMethod<&CLevel::net_start_client3>(this));
+    g_loading_events.emplace_front(CallMe::fromMethod<&CLevel::net_start_client2>(this));
+    g_loading_events.emplace_front(CallMe::fromMethod<&CLevel::net_start_client1>(this));
 
-    return false;
+    co_return false;
 }
 
-bool CLevel::net_start5()
+tmc::task<bool> CLevel::net_start5()
 {
     if (net_start_result_total)
     {
@@ -159,7 +159,7 @@ bool CLevel::net_start5()
         Send(NP, net_flags(TRUE, TRUE));
     }
 
-    return true;
+    co_return true;
 }
 
 namespace
@@ -169,18 +169,18 @@ xrServer::EConnect g_connect_server_err = xrServer::ErrConnect;
 
 struct LevelLoadFinalizer
 {
-    bool net_start_finalizer() { return true; }
+    [[nodiscard]] tmc::task<bool> net_start_finalizer() { co_return true; }
 };
 
 LevelLoadFinalizer LF;
 } // namespace
 
-bool CLevel::net_start6()
+tmc::task<bool> CLevel::net_start6()
 {
     g_start_total_res = net_start_result_total;
     g_connect_server_err = m_connect_server_err;
     g_loading_events.pop_front();
-    g_loading_events.push_front(CallMe::fromMethod<&LevelLoadFinalizer::net_start_finalizer>(&LF));
+    g_loading_events.emplace_front(CallMe::fromMethod<&LevelLoadFinalizer::net_start_finalizer>(&LF));
 
     // init bullet manager
     BulletManager().Clear();
@@ -202,7 +202,7 @@ bool CLevel::net_start6()
             HUD().GetUI()->OnConnected();
     }
 
-    return false;
+    co_return false;
 }
 
 void CLevel::InitializeClientGame(NET_Packet& P)

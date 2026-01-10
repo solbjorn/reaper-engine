@@ -27,8 +27,9 @@
 #include "xrServer.h"
 
 #include "ai_debug.h"
-#include "xr_task.h"
 #include "UI/UIGameTutorial.h"
+
+#include "xr_level_controller.h"
 
 #ifndef MASTER_GOLD
 #include "custommonster.h"
@@ -113,23 +114,22 @@ void CGamePersistent::RegisterModel(IRenderVisual* V)
     }
 }
 
-void CGamePersistent::OnAppStart()
+tmc::task<void> CGamePersistent::OnAppStart()
 {
     // load game materials
     GMLib.Load();
 
-    auto& glob = xr_task_group_run(init_game_globals);
-
-    IGame_Persistent::OnAppStart();
+    auto glob = co_await tmc::fork_clang(init_game_globals(), tmc::current_executor(), xr::tmc_priority_any);
+    co_await IGame_Persistent::OnAppStart();
 
     m_pUI_core = xr_new<ui_core>();
     m_pMainMenu = xr_new<CMainMenu>();
     xr::detail::editor = xr::ingame_editor_create();
 
-    glob.wait_put();
+    co_await std::move(glob);
 }
 
-void CGamePersistent::OnAppEnd()
+tmc::task<void> CGamePersistent::OnAppEnd()
 {
     if (m_pMainMenu->IsActive())
         m_pMainMenu->Activate(false);
@@ -138,7 +138,7 @@ void CGamePersistent::OnAppEnd()
     xr_delete(m_pMainMenu);
     xr_delete(m_pUI_core);
 
-    IGame_Persistent::OnAppEnd();
+    co_await IGame_Persistent::OnAppEnd();
 
     clean_game_globals();
     GMLib.Unload();
@@ -150,9 +150,9 @@ void CGamePersistent::PreStart(LPCSTR op)
     IGame_Persistent::PreStart(op);
 }
 
-void CGamePersistent::Start(LPCSTR op)
+tmc::task<void> CGamePersistent::Start(gsl::czstring op)
 {
-    __super::Start(op);
+    co_await IGame_Persistent::Start(op);
     m_intro_event = CallMe::fromMethod<&CGamePersistent::start_game_intro>(this);
 }
 
@@ -167,12 +167,9 @@ void CGamePersistent::Disconnect()
     m_game_params.m_e_game_type = GAME_ANY;
 }
 
-#include "xr_level_controller.h"
-
-void CGamePersistent::OnGameStart()
+tmc::task<void> CGamePersistent::OnGameStart()
 {
-    __super::OnGameStart();
-
+    co_await IGame_Persistent::OnGameStart();
     UpdateGameType();
 }
 
@@ -504,7 +501,7 @@ void CGamePersistent::update_game_intro()
     }
 }
 
-void CGamePersistent::OnFrame()
+tmc::task<void> CGamePersistent::OnFrame()
 {
     if (g_tutorial2)
     {
@@ -520,6 +517,7 @@ void CGamePersistent::OnFrame()
 #ifdef DEBUG
     ++m_frame_counter;
 #endif
+
     if (!load_screen_renderer.b_registered)
         m_intro_event();
 
@@ -529,7 +527,8 @@ void CGamePersistent::OnFrame()
         {
             Device.Pause(TRUE, TRUE, TRUE, "AUTOPAUSE_START");
             pApp->LoadForceFinish();
-            LoadTitle("st_press_any_key");
+
+            co_await LoadTitle("st_press_any_key");
             GameAutopaused = true;
         }
         else
@@ -543,10 +542,8 @@ void CGamePersistent::OnFrame()
     if (!m_pMainMenu->IsActive())
         m_pMainMenu->DestroyInternal(false);
 
-    if (!g_pGameLevel)
-        return;
-    if (!g_pGameLevel->bReady)
-        return;
+    if (g_pGameLevel == nullptr || !g_pGameLevel->bReady)
+        co_return;
 
     if (Device.Paused())
     {
@@ -588,7 +585,8 @@ void CGamePersistent::OnFrame()
         }
 #endif // MASTER_GOLD
     }
-    __super::OnFrame();
+
+    co_await IGame_Persistent::OnFrame();
 
     if (!Device.Paused())
         Engine.Sheduler.Update();
@@ -626,7 +624,7 @@ void CGamePersistent::OnFrame()
 #endif
 }
 
-void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
+tmc::task<void> CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 {
     if (E == eQuickLoad)
     {
@@ -636,11 +634,13 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
         LPSTR saved_name = (LPSTR)(P1);
 
         Level().remove_objects();
+
         game_sv_Single* game = smart_cast<game_sv_Single*>(Level().Server->game);
         R_ASSERT(game);
-        game->restart_simulator(saved_name);
+        co_await game->restart_simulator(saved_name);
+
         xr_free(saved_name);
-        return;
+        co_return;
     }
     else if (E == eDemoStart)
     {
@@ -667,21 +667,21 @@ float CGamePersistent::MtlTransparent(u32 mtl_idx) { return GMLib.GetMaterialByI
 static BOOL bRestorePause = FALSE;
 static BOOL bEntryFlag = TRUE;
 
-void CGamePersistent::OnAppActivate()
+tmc::task<void> CGamePersistent::OnAppActivate()
 {
     Device.Pause(FALSE, !bRestorePause, TRUE, "CGP::OnAppActivate");
-
     bEntryFlag = TRUE;
+
+    co_return;
 }
 
-void CGamePersistent::OnAppDeactivate()
+tmc::task<void> CGamePersistent::OnAppDeactivate()
 {
     if (!bEntryFlag)
-        return;
+        co_return;
 
     bRestorePause = Device.Paused();
     Device.Pause(TRUE, TRUE, TRUE, "CGP::OnAppDeactivate");
-
     bEntryFlag = FALSE;
 }
 
@@ -699,13 +699,14 @@ void CGamePersistent::OnRenderPPUI_main()
 
 void CGamePersistent::OnRenderPPUI_PP() { MainMenu()->OnRenderPPUI_PP(); }
 
-void CGamePersistent::LoadTitle(const char* str)
+tmc::task<void> CGamePersistent::LoadTitle(gsl::czstring title)
 {
-    const char* tittle = CStringTable().translate(shared_str{str}).c_str();
-    pApp->SetLoadStageTitle(tittle);
-    pApp->LoadStage();
+    title = CStringTable().translate(shared_str{title}).c_str();
 
-    Discord.Update(tittle);
+    pApp->SetLoadStageTitle(title);
+    co_await pApp->LoadStage();
+
+    Discord.Update(title);
 }
 
 void CGamePersistent::SetTip() { pApp->LoadTitleInt(); }

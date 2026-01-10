@@ -24,17 +24,19 @@ public:
 
     void CreateD3D();
     void DestroyD3D();
-    void CreateDevice(HWND hw, u32& dwWidth, u32& dwHeight);
+    [[nodiscard]] tmc::task<void> CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight);
 
     void DestroyDevice();
-    void Reset(HWND hw, u32& dwWidth, u32& dwHeight);
+    [[nodiscard]] tmc::task<void> Reset(HWND wnd, u32& dwWidth, u32& dwHeight);
+
+private:
+    [[nodiscard]] tmc::task<void> reset_st(HWND wnd);
 
     void selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed);
-    u32 selectPresentInterval();
-    u32 selectGPU();
     u32 selectRefresh(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt);
-
     void updateWindowProps(HWND hw);
+
+public:
     void DumpVideoMemoryUsage() const;
 
     ICF ID3D11DeviceContext1* get_context(ctx_id_t context_id)
@@ -79,8 +81,8 @@ public:
 
     DXGI_RATIONAL selectRefresh(u32 dwWidth, u32 dwHeight, DXGI_FORMAT fmt);
 
-    virtual void OnAppActivate();
-    virtual void OnAppDeactivate();
+    [[nodiscard]] tmc::task<void> OnAppActivate() override;
+    [[nodiscard]] tmc::task<void> OnAppDeactivate() override;
 
 private:
     void imgui_init() const;

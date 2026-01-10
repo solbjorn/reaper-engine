@@ -170,7 +170,7 @@ void game_sv_GameState::net_Export_GameTime(NET_Packet& P)
 }
 
 void game_sv_GameState::OnPlayerConnect(ClientID) { signal_Syncronize(); }
-void game_sv_GameState::Create(shared_str&) {}
+tmc::task<void> game_sv_GameState::Create(shared_str&) { co_return; }
 
 void game_sv_GameState::u_EventGen(NET_Packet& P, u16 type, u16 dest)
 {

@@ -113,10 +113,11 @@ public:
 
     void NetRelcase(CPhysicsShell* s);
     void AddCall(CPHCondition* c, CPHAction* a);
+    [[nodiscard]] tmc::task<void> OnFrame() override;
+
 #ifdef DEBUG
-    virtual void OnRender();
+    [[nodiscard]] tmc::task<void> OnRender() override;
 #endif
-    virtual void OnFrame();
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

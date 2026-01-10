@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "game_sv_single.h"
+
 #include "xrserver_objects_alife_monsters.h"
 #include "alife_simulator.h"
 #include "alife_object_registry.h"
@@ -17,12 +18,12 @@
 game_sv_Single::game_sv_Single() { m_type = GAME_SINGLE; }
 game_sv_Single::~game_sv_Single() { delete_data(m_alife_simulator); }
 
-void game_sv_Single::Create(shared_str& options)
+tmc::task<void> game_sv_Single::Create(shared_str& options)
 {
-    inherited::Create(options);
+    co_await inherited::Create(options);
 
     if (strstr(*options, "/alife"))
-        m_alife_simulator = xr_new<CALifeSimulator>(&server(), &options);
+        m_alife_simulator = (co_await xr::alife_simulator_create(&server(), &options)).release();
 
     switch_Phase(GAME_PHASE_INPROGRESS);
 }
@@ -289,7 +290,7 @@ void game_sv_Single::on_death(CSE_Abstract* e_dest, CSE_Abstract* e_src)
     alife().on_death(e_dest, e_src);
 }
 
-void game_sv_Single::restart_simulator(LPCSTR saved_game_name)
+tmc::task<void> game_sv_Single::restart_simulator(gsl::czstring saved_game_name)
 {
     shared_str& options = *alife().server_command_line();
 
@@ -301,10 +302,14 @@ void game_sv_Single::restart_simulator(LPCSTR saved_game_name)
 
     pApp->SetLoadingScreen(xr_new<UILoadingScreen>());
     pApp->LoadBegin();
-    m_alife_simulator = xr_new<CALifeSimulator>(&server(), &options);
+
+    m_alife_simulator = (co_await xr::alife_simulator_create(&server(), &options)).release();
+
     if (!psActorFlags.test(AF_KEYPRESS_ON_START))
         pApp->LoadForceFinish();
-    g_pGamePersistent->LoadTitle("st_client_synchronising");
+
+    co_await g_pGamePersistent->LoadTitle("st_client_synchronising");
     Device.PreCache(60, true, true);
+
     pApp->LoadEnd();
 }

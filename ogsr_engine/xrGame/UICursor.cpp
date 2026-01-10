@@ -30,15 +30,17 @@ void CUICursor::InitInternal()
     m_static->SetStretchTexture(true);
 }
 
-void CUICursor::OnRender()
+tmc::task<void> CUICursor::OnRender()
 {
     static u32 last_frame{};
+
     if (last_frame == Device.dwFrame)
-        return;
+        co_return;
+
     last_frame = Device.dwFrame;
 
     if (!IsVisible())
-        return;
+        co_return;
 
 #ifdef DEBUG
     static u32 last_render_frame = 0;

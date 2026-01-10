@@ -22,14 +22,7 @@
 #include "DiscordRPC.hpp"
 #include "splash.h"
 
-XR_DIAG_PUSH();
-XR_DIAG_IGNORE("-Wextra-semi");
-
-#include <oneapi/tbb/global_control.h>
-
-XR_DIAG_POP();
-
-#include "xr_task.h"
+#include "xrcpuid.h"
 
 #define CORE_FEATURE_SET(feature, section) Core.Features.set(xrCore::Feature::feature, READ_IF_EXISTS(pSettings, r_bool, section, #feature, false))
 
@@ -43,7 +36,11 @@ struct SoundProcessor final : public pureFrame
     RTTI_DECLARE_TYPEINFO(SoundProcessor, pureFrame);
 
 public:
-    void OnFrame() override { ::Sound->update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop, Device.vCameraRight); }
+    [[nodiscard]] tmc::task<void> OnFrame() override
+    {
+        ::Sound->update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop, Device.vCameraRight);
+        co_return;
+    }
 } g_sound_processor;
 
 struct SoundRenderer final : public pureFrame
@@ -51,7 +48,11 @@ struct SoundRenderer final : public pureFrame
     RTTI_DECLARE_TYPEINFO(SoundRenderer, pureFrame);
 
 public:
-    void OnFrame() override { ::Sound->render(); }
+    [[nodiscard]] tmc::task<void> OnFrame() override
+    {
+        ::Sound->render();
+        co_return;
+    }
 } g_sound_renderer;
 } // namespace
 
@@ -135,7 +136,11 @@ static void InitConsole()
     CORE_FEATURE_SET(disable_dialog_break, "features");
 }
 
-static void execUserScript()
+namespace xr
+{
+namespace
+{
+[[nodiscard]] tmc::task<void> exec_user_script()
 {
     Console->Execute("unbindall");
 
@@ -149,23 +154,37 @@ static void execUserScript()
         std::ignore = FS.update_path(default_full_name, "$game_config$", "rspec_default.ltx");
         Console->ExecuteScript(default_full_name);
     }
+
+    co_await Device.process_async();
 }
 
-static void Startup(xr_task_group& spatial_tg)
+void pre_startup()
 {
     pApp = xr_new<CApplication>();
-    g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
-    spatial_tg.wait_put();
+    g_pGamePersistent = smart_cast<IGame_Persistent*>(NEW_INSTANCE(CLSID_GAME_PERSISTANT));
+}
 
+void destroy_splash()
+{
     // Destroy LOGO
     DestroyWindow(logoWindow);
     logoWindow = nullptr;
+}
+
+constexpr xr::tmc_atomic_wait_t code_start{std::numeric_limits<xr::tmc_atomic_wait_t>::min()};
+constexpr xr::tmc_atomic_wait_t code_splash{std::numeric_limits<xr::tmc_atomic_wait_t>::min() / 2};
+constexpr xr::tmc_atomic_wait_t code_exit{0};
+
+[[nodiscard]] tmc::task<void> startup(std::atomic<xr::tmc_atomic_wait_t>& code)
+{
+    code = xr::code_splash;
+    code.notify_all();
 
     Discord.Init();
 
     // Main cycle
     std::ignore = Memory.mem_usage();
-    Device.Run();
+    co_await Device.Run();
 
     // Destroy APP
     xr_delete(g_SpatialSpacePhysic);
@@ -188,13 +207,15 @@ static void Startup(xr_task_group& spatial_tg)
     if (!g_bBenchmark)
         xr_delete(Console);
     else
-        Console->OnScreenResolutionChanged(); // Console->Reset();
+        co_await Console->OnScreenResolutionChanged();
 
     CSound_manager_interface::_destroy();
 
     Device.Destroy();
     Engine.Destroy();
 }
+} // namespace
+} // namespace xr
 
 constexpr auto dwStickyKeysStructSize = sizeof(STICKYKEYS);
 constexpr auto dwFilterKeysStructSize = sizeof(FILTERKEYS);
@@ -298,6 +319,15 @@ struct damn_keys_filter
     }
 };
 
+namespace xr
+{
+namespace
+{
+[[nodiscard]] s32 main(gsl::czstring cmdline, void* handle);
+[[nodiscard]] tmc::task<void> main_async(gsl::czstring cmdline, void* handle, std::atomic<xr::tmc_atomic_wait_t>& code);
+} // namespace
+} // namespace xr
+
 namespace
 {
 int WinMain_impl(HINSTANCE hInstance, char* lpCmdLine)
@@ -328,21 +358,73 @@ int WinMain_impl(HINSTANCE hInstance, char* lpCmdLine)
     DisableProcessWindowsGhosting();
     logoWindow = ShowSplash(hInstance);
 
-    const char* tok = "-max-threads";
-    if (strstr(lpCmdLine, tok))
+    return xr::main(lpCmdLine, hCheckPresenceMutex);
+}
+} // namespace
+
+namespace xr
+{
+namespace
+{
+s32 main(gsl::czstring cmdline, void* handle)
+{
+    size_t cpus{};
+
+    if (gsl::czstring key{"-max-threads"}, param = std::strstr(cmdline, key); param != nullptr)
     {
-        u32 cpus = 0;
-        if (sscanf_s(strstr(lpCmdLine, tok) + xr_strlen(tok) + 1, "%u", &cpus))
-            oneapi::tbb::global_control c(oneapi::tbb::global_control::max_allowed_parallelism, cpus);
+        if (sscanf_s(param + xr_strlen(key) + 1, "%zu", &cpus) == 1)
+            cpus = std::clamp(cpus, 1uz, TMC_PLATFORM_BITS);
     }
 
-    auto& in = xr_task_group_run([] { pInput = xr_new<CInput>(); });
-    auto& snd = xr_task_group_run([] { CSound_manager_interface::_create(0); });
+    CPU::ID.topo = tmc::topology::query();
+    auto& cpu = tmc::cpu_executor();
 
-    tok = "-fsltx ";
-    string_path fsgame = "";
-    if (strstr(lpCmdLine, tok))
-        sscanf(strstr(lpCmdLine, tok) + xr_strlen(tok), "%[^ ] ", fsgame);
+    if (CPU::ID.topo.is_hybrid())
+    {
+        tmc::topology::topology_filter p_cores, e_cores;
+        p_cores.set_cpu_kinds(tmc::topology::cpu_kind::PERFORMANCE);
+        e_cores.set_cpu_kinds(tmc::topology::cpu_kind::EFFICIENCY1);
+
+        cpu.add_partition(p_cores, xr::tmc_priority_high, xr::tmc_priority_any + 1).add_partition(e_cores, xr::tmc_priority_any, xr::tmc_priority_low + 1);
+    }
+
+    if (cpus > 0)
+        cpu.set_thread_count(cpus);
+
+    cpu.fill_thread_occupancy().set_thread_init_hook([](tmc::topology::thread_info info) { CPU::ID.threads.emplace_back(std::move(info)); }).init();
+    std::ranges::sort(CPU::ID.threads, [](const auto& a, const auto& b) { return a.index < b.index; });
+
+    std::atomic<xr::tmc_atomic_wait_t> code{xr::code_start};
+    tmc::post(cpu, xr::main_async(cmdline, handle, code), xr::tmc_priority_high, 0);
+    code.wait(xr::code_start);
+
+    if (code == xr::code_splash)
+    {
+        destroy_splash();
+        code.wait(xr::code_splash);
+    }
+
+    return gsl::narrow_cast<s32>(code);
+}
+
+tmc::task<void> main_async(gsl::czstring cmdline, void* handle, std::atomic<xr::tmc_atomic_wait_t>& code)
+{
+    xr::tmc_cpu_st_executor().init();
+
+    auto in = co_await tmc::fork_clang(
+        [] [[nodiscard]] -> tmc::task<void> {
+            pInput = xr_new<CInput>();
+            co_return;
+        }(),
+        tmc::current_executor(), xr::tmc_priority_any);
+
+    auto snd = co_await tmc::fork_clang(CSound_manager_interface::_create(0), tmc::current_executor(), xr::tmc_priority_any);
+
+    string_path fsgame;
+    fsgame[0] = '\0';
+
+    if (gsl::czstring key{"-fsltx"}, param = std::strstr(cmdline, key); param != nullptr)
+        sscanf(param + xr_strlen(key) + 1, "%[^ ] ", fsgame);
 
     Core._initialize("xray", nullptr, TRUE, fsgame[0] ? fsgame : nullptr);
     InitSettings();
@@ -352,9 +434,9 @@ int WinMain_impl(HINSTANCE hInstance, char* lpCmdLine)
         (void)filter;
 
         Engine.Initialize();
-        Device.Initialize();
+        co_await tmc::spawn(Device.Initialize()).run_on(xr::tmc_cpu_st_executor());
 
-        in.wait();
+        co_await std::move(in);
         pInput->Attach();
         InitConsole();
 
@@ -362,13 +444,26 @@ int WinMain_impl(HINSTANCE hInstance, char* lpCmdLine)
         Engine.External.Initialize();
 
         Console->Execute("stat_memory");
-        execUserScript();
+        co_await xr::exec_user_script();
 
-        snd.wait();
-        snd.run([] { g_SpatialSpace = xr_new<ISpatial_DB>(); });
-        snd.run([] { g_SpatialSpacePhysic = xr_new<ISpatial_DB>(); });
+        co_await std::move(snd);
+        auto sp = tmc::fork_group();
 
-        CSound_manager_interface::_create(1);
+        co_await sp.fork_clang(
+            [] [[nodiscard]] -> tmc::task<void> {
+                g_SpatialSpace = xr_new<ISpatial_DB>();
+                co_return;
+            }(),
+            tmc::current_executor(), xr::tmc_priority_any);
+
+        co_await sp.fork_clang(
+            [] [[nodiscard]] -> tmc::task<void> {
+                g_SpatialSpacePhysic = xr_new<ISpatial_DB>();
+                co_return;
+            }(),
+            tmc::current_executor(), xr::tmc_priority_any);
+
+        co_await CSound_manager_interface::_create(1);
 
         // ...command line for auto start
         LPCSTR pStartup = strstr(Core.Params, "-start ");
@@ -379,25 +474,31 @@ int WinMain_impl(HINSTANCE hInstance, char* lpCmdLine)
         if (pStartup)
             Console->Execute(pStartup + 1);
 
-        in.run([] { LALib.OnCreate(); });
+        co_await Device.process_async();
+        auto la = co_await tmc::fork_clang(LALib.OnCreate(), tmc::current_executor(), xr::tmc_priority_any);
 
         // Initialize APP
-        ShowWindow(Device.m_hWnd, SW_SHOWNORMAL);
-        Device.Create();
+        co_await Device.Create();
 
-        in.wait_put();
-        Startup(snd);
+        co_await std::move(la);
+        xr::pre_startup();
+
+        co_await std::move(sp);
+        co_await xr::startup(code);
 
         Core._destroy();
 
-        if (!strstr(lpCmdLine, "-multi_instances")) // Delete application presence mutex
-            CloseHandle(hCheckPresenceMutex);
+        if (std::strstr(cmdline, "-multi_instances") == nullptr)
+            // Delete application presence mutex
+            CloseHandle(handle);
     }
     // here damn_keys_filter class instanse will be destroyed
 
-    return 0;
+    code = xr::code_exit;
+    code.notify_all();
 }
 } // namespace
+} // namespace xr
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, char* lpCmdLine, int)
 {
@@ -448,16 +549,18 @@ CApplication::~CApplication()
     Engine.Event.Handler_Detach(eQuit, this);
 }
 
-void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
+tmc::task<void> CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 {
     if (E == eQuit)
     {
-        PostQuitMessage(0);
+        co_await tmc::spawn([] [[nodiscard]] -> tmc::task<void> {
+            PostQuitMessage(0);
+            co_return;
+        }())
+            .run_on(xr::tmc_cpu_st_executor());
 
-        for (u32 i = 0; i < Levels.size(); i++)
-        {
-            xr_free(Levels[i].folder);
-        }
+        for (auto& level : Levels)
+            xr_free(level.folder);
     }
     else if (E == eStart)
     {
@@ -478,10 +581,11 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
             g_pGameLevel = (IGame_Level*)NEW_INSTANCE(CLSID_GAME_LEVEL);
 
             pApp->LoadBegin();
-            g_pGamePersistent->Start(op_server);
+            co_await g_pGamePersistent->Start(op_server);
             g_pGameLevel->net_Start(op_server, op_client);
             pApp->LoadEnd();
         }
+
         xr_free(op_server);
         xr_free(op_client);
     }
@@ -549,15 +653,15 @@ void CApplication::SetLoadingScreen(ILoadingScreen* newScreen)
 
 void CApplication::DestroyLoadingScreen() { xr_delete(loadingScreen); }
 
-void CApplication::LoadDraw()
+tmc::task<void> CApplication::LoadDraw()
 {
     if (g_appLoaded)
-        return;
+        co_return;
 
     Device.dwFrame++;
 
-    if (!Device.RenderBegin())
-        return;
+    if (!co_await Device.RenderBegin())
+        co_return;
 
     load_draw_internal();
 
@@ -569,7 +673,7 @@ void CApplication::LoadForceFinish() { loadingScreen->ForceFinish(); }
 void CApplication::SetLoadStageTitle(pcstr _ls_title) { loadingScreen->SetStageTitle(_ls_title); }
 void CApplication::LoadTitleInt() { loadingScreen->SetStageTip(); }
 
-void CApplication::LoadStage()
+tmc::task<void> CApplication::LoadStage()
 {
     VERIFY(ll_dwReference);
 
@@ -583,18 +687,20 @@ void CApplication::LoadStage()
     // else
     //	max_load_stage = 14;
 
-    LoadDraw();
+    co_await LoadDraw();
 
     ++load_stage;
     // Msg("--LoadStage is [%d]", load_stage);
 }
 
 // Sequential
-void CApplication::OnFrame()
+tmc::task<void> CApplication::OnFrame()
 {
-    Engine.Event.OnFrame();
+    co_await Engine.Event.OnFrame();
+
     g_SpatialSpace->update();
     g_SpatialSpacePhysic->update();
+
     if (g_pGameLevel)
         g_pGameLevel->SoundEvent_Dispatch();
 }

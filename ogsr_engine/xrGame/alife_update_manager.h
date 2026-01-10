@@ -34,7 +34,7 @@ public:
     void update();
 
 protected:
-    void new_game(LPCSTR save_name);
+    [[nodiscard]] tmc::task<void> new_game(gsl::czstring save_name);
     void init_ef_storage() const;
     virtual void reload(LPCSTR section);
 
@@ -48,7 +48,7 @@ public:
     virtual bool shedule_Needed() { return true; }
     void update_switch();
     void update_scheduled(bool init_ef = true);
-    void load(LPCSTR game_name = nullptr, bool no_assert = false, bool new_only = false);
+    [[nodiscard]] tmc::task<void> load(gsl::czstring game_name = nullptr, bool no_assert = false, bool new_only = false);
     bool load_game(LPCSTR game_name, bool no_assert = false);
     IC float update_monster_factor() const;
     bool change_level(NET_Packet& net_packet);

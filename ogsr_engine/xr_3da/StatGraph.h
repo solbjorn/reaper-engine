@@ -68,19 +68,11 @@ protected:
     DEFINE_DEQUE(SMarker, MarkersDeq, MarkersDeqIt);
     MarkersDeq m_Markers;
 
-protected:
-    //	virtual void	RenderBack		();
-
-    //	virtual void	RenderBars		( FVF::TL0uv** ppv, ElementsDeq* pelements );
-    //	virtual void	RenderLines		( FVF::TL0uv** ppv, ElementsDeq* pelements );
-    //	virtual void	RenderBarLines	( FVF::TL0uv** ppv, ElementsDeq* pelements );
-    ////	virtual void	RenderPoints	( FVF::TL0uv** ppv, ElementsDeq* pelements );
-    //	virtual	void	RenderMarkers	( FVF::TL0uv** ppv, MarkersDeq* pmarkers );
 public:
     CStatGraph();
     ~CStatGraph() override;
 
-    virtual void OnRender();
+    [[nodiscard]] tmc::task<void> OnRender() override;
     void OnDeviceCreate();
     void OnDeviceDestroy();
 

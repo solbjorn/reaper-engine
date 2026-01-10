@@ -16,7 +16,7 @@ public:
     CDeviceResetNotifier() { Device.seqDeviceReset.Add(this, REG_PRIORITY_NORMAL); }
     ~CDeviceResetNotifier() override { Device.seqDeviceReset.Remove(this); }
 
-    virtual void OnDeviceReset() {}
+    [[nodiscard]] tmc::task<void> OnDeviceReset() override { co_return; }
 };
 
 //---------------------------------------------------------------------------------------
@@ -107,7 +107,7 @@ public:
     void pp_stop();
     void RenderFont();
 
-    virtual void OnDeviceReset();
+    [[nodiscard]] tmc::task<void> OnDeviceReset() override;
     shared_str get_xml_name(LPCSTR fn);
     float get_current_kx();
 
@@ -116,6 +116,9 @@ public:
     C2DFrustum& ScreenFrustumLIT() { return m_FrustumLIT; }
 
     static bool is_widescreen();
+
+private:
+    void reset();
 };
 
 extern CUICursor* GetUICursor();

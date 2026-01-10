@@ -294,14 +294,14 @@ void CRender::reset_end()
     m_bFirstFrameAfterReset = true;
 }
 
-void CRender::OnFrame()
+tmc::task<void> CRender::OnFrame()
 {
     XR_TRACY_ZONE_SCOPED();
 
     Models->DeleteQueue();
 
     if (g_pGamePersistent->MainMenuActiveOrLevelNotExist())
-        return;
+        co_return;
 
     if (Details)
         g_pGamePersistent->GrassBendersUpdateAnimations();

@@ -41,19 +41,19 @@ public:
     void LoadBegin();
     void LoadEnd();
     void LoadTitleInt(); // 100 советов по выживанию в Зоне
-    void LoadStage();
-    void LoadDraw();
+    [[nodiscard]] tmc::task<void> LoadStage();
+    [[nodiscard]] tmc::task<void> LoadDraw();
     void LoadForceFinish();
 
     void SetLoadStageTitle(pcstr ls_title);
 
-    virtual void OnEvent(EVENT E, u64 P1, u64 P2);
+    [[nodiscard]] tmc::task<void> OnEvent(EVENT E, u64 P1, u64 P2) override;
 
     // Other
     CApplication();
     ~CApplication() override;
 
-    virtual void OnFrame();
+    [[nodiscard]] tmc::task<void> OnFrame() override;
     void load_draw_internal();
     void SetLoadingScreen(ILoadingScreen* newScreen);
     void DestroyLoadingScreen();

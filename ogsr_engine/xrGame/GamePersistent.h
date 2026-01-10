@@ -56,18 +56,18 @@ public:
     ~CGamePersistent() override;
 
     void PreStart(LPCSTR op) override;
-    virtual void Start(LPCSTR op);
+    [[nodiscard]] tmc::task<void> Start(gsl::czstring op) override;
     virtual void Disconnect();
 
-    virtual void OnAppActivate();
-    virtual void OnAppDeactivate();
+    [[nodiscard]] tmc::task<void> OnAppActivate() override;
+    [[nodiscard]] tmc::task<void> OnAppDeactivate() override;
 
-    virtual void OnAppStart();
-    virtual void OnAppEnd();
-    virtual void OnGameStart();
+    [[nodiscard]] tmc::task<void> OnAppStart() override;
+    [[nodiscard]] tmc::task<void> OnAppEnd() override;
+    [[nodiscard]] tmc::task<void> OnGameStart() override;
     virtual void OnGameEnd();
-    virtual void OnFrame();
-    virtual void OnEvent(EVENT E, u64 P1, u64 P2);
+    [[nodiscard]] tmc::task<void> OnFrame() override;
+    [[nodiscard]] tmc::task<void> OnEvent(EVENT E, u64 P1, u64 P2) override;
 
     virtual void UpdateGameType();
 
@@ -78,7 +78,7 @@ public:
     virtual bool OnRenderPPUI_query();
     virtual void OnRenderPPUI_main();
     virtual void OnRenderPPUI_PP();
-    virtual void LoadTitle(const char* title_name);
+    [[nodiscard]] tmc::task<void> LoadTitle(gsl::czstring title) override;
     virtual void SetTip();
 
     [[nodiscard]] bool OnKeyboardPress();
@@ -90,7 +90,7 @@ IC CGamePersistent& GamePersistent() { return *smart_cast<CGamePersistent*>(g_pG
 void CCC_RegisterCommands();
 
 // xrgame_dll_detach.cpp
-extern void clean_game_globals();
-extern void init_game_globals();
+[[nodiscard]] tmc::task<void> init_game_globals();
+void clean_game_globals();
 
 #endif // GamePersistentH

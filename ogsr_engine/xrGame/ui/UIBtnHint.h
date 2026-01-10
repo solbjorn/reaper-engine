@@ -21,7 +21,7 @@ public:
 
     CUIWindow* Owner() { return m_ownerWnd; }
     void Discard() { m_ownerWnd = nullptr; }
-    virtual void OnRender();
+    [[nodiscard]] tmc::task<void> OnRender() override;
     void Draw_() { m_enabledOnFrame = true; }
     void SetHintText(CUIWindow* w, LPCSTR text);
 };

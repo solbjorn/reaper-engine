@@ -114,11 +114,19 @@ sPoly2D* C2DFrustum::ClipPoly(sPoly2D& S, sPoly2D& D) const
     return dest;
 }
 
-void ui_core::OnDeviceReset()
+void ui_core::reset()
 {
-    m_scale_.set(float(Device.dwWidth) / UI_BASE_WIDTH, float(Device.dwHeight) / UI_BASE_HEIGHT);
+    const auto w = gsl::narrow_cast<f32>(Device.dwWidth);
+    const auto h = gsl::narrow_cast<f32>(Device.dwHeight);
 
-    m_2DFrustum.CreateFromRect(Frect().set(0.0f, 0.0f, float(Device.dwWidth), float(Device.dwHeight)));
+    m_scale_.set(w / UI_BASE_WIDTH, h / UI_BASE_HEIGHT);
+    m_2DFrustum.CreateFromRect(Frect{0.0f, 0.0f, w, h});
+}
+
+tmc::task<void> ui_core::OnDeviceReset()
+{
+    reset();
+    co_return;
 }
 
 void ui_core::ClientToScreenScaled(Fvector2& dest, float left, float top)
@@ -227,7 +235,7 @@ ui_core::ui_core()
     m_pFontManager = xr_new<CFontManager>();
     m_bPostprocess = false;
 
-    OnDeviceReset();
+    reset();
 
     m_current_scale = &m_scale_;
     //.	g_current_font_scale		= m_scale_;

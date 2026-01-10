@@ -49,7 +49,7 @@ void IGame_Level::net_Stop()
 //-------------------------------------------------------------------------------------------
 // extern CStatTimer				tscreate;
 
-BOOL IGame_Level::Load(u32)
+tmc::task<bool> IGame_Level::Load(u32)
 {
     // Initialize level data
     string_path temp;
@@ -58,7 +58,7 @@ BOOL IGame_Level::Load(u32)
     pLevel = xr_new<CInifile>(temp);
 
     // Open
-    g_pGamePersistent->LoadTitle("st_opening_stream");
+    co_await g_pGamePersistent->LoadTitle("st_opening_stream");
     IReader* LL_Stream = FS.r_open("$level$", "level");
     IReader& fs = *LL_Stream;
 
@@ -68,7 +68,7 @@ BOOL IGame_Level::Load(u32)
     R_ASSERT2(XRCL_PRODUCTION_VERSION == H.XRLC_version, "Incompatible level version.");
 
     // CForms
-    g_pGamePersistent->LoadTitle("st_loading_cform");
+    co_await g_pGamePersistent->LoadTitle("st_loading_cform");
     ObjectSpace.Load();
 
     // HUD + Environment
@@ -79,7 +79,7 @@ BOOL IGame_Level::Load(u32)
         pHUD = (CCustomHUD*)NEW_INSTANCE(CLSID_HUDMANAGER);
 
     // Render-level Load
-    Render->level_Load(LL_Stream);
+    co_await Render->level_Load(LL_Stream);
     // tscreate.FrameEnd			();
     //  Msg						("* S-CREATE: %f ms, %d times",tscreate.result,tscreate.count);
 
@@ -95,25 +95,23 @@ BOOL IGame_Level::Load(u32)
     Device.seqRender.Add(this);
     Device.seqFrame.Add(this);
 
-    return TRUE;
+    co_return true;
 }
 
-void IGame_Level::OnRender()
+tmc::task<void> IGame_Level::OnRender()
 {
-    //	if (_abs(Device.fTimeDelta)<EPS_S) return;
-
     // Level render, only when no client output required
     Render->Calculate();
     Render->Render();
+
+    co_return;
 }
 
-void IGame_Level::OnFrame()
+tmc::task<void> IGame_Level::OnFrame()
 {
-    // Log				("- level:on-frame: ",u32(Device.dwFrame));
-    //	if (_abs(Device.fTimeDelta)<EPS_S) return;
-
     // Update all objects
     VERIFY(bReady);
+
     Objects.Update(false);
     pHUD->OnFrame();
 
@@ -131,6 +129,8 @@ void IGame_Level::OnFrame()
             Sounds_Random[id].set_range(10, 200);
         }
     }
+
+    co_return;
 }
 
 // ==================================================================================================

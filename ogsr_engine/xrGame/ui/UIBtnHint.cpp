@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIBtnHint.h"
+
 #include "UIFrameLineWnd.h"
 #include "UIXmlInit.h"
 
@@ -30,21 +31,23 @@ CUIButtonHint::CUIButtonHint()
 
 CUIButtonHint::~CUIButtonHint() { Device.seqRender.Remove(this); }
 
-void CUIButtonHint::OnRender()
+tmc::task<void> CUIButtonHint::OnRender()
 {
     static u32 last_frame{};
+
     if (last_frame == Device.dwFrame)
-        return;
+        co_return;
+
     last_frame = Device.dwFrame;
 
-    if (m_enabledOnFrame)
-    {
-        m_text->Update();
-        m_border->Update();
-        m_border->SetColor(color_rgba(255, 255, 255, color_get_A(m_text->GetTextColor())));
-        Draw();
-        m_enabledOnFrame = false;
-    }
+    if (!m_enabledOnFrame)
+        co_return;
+
+    m_text->Update();
+    m_border->Update();
+    m_border->SetColor(color_rgba(255, 255, 255, color_get_A(m_text->GetTextColor())));
+    Draw();
+    m_enabledOnFrame = false;
 }
 
 void CUIButtonHint::SetHintText(CUIWindow* w, LPCSTR text)

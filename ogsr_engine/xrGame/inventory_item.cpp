@@ -521,19 +521,19 @@ void CInventoryItem::UpdateXForm()
 }
 
 #ifdef DEBUG
-void CInventoryItem::OnRender()
+tmc::task<void> CInventoryItem::OnRender()
 {
-    if (bDebug && object().Visual())
-    {
-        if (!(dbg_net_Draw_Flags.is_any((1 << 4))))
-            return;
+    if (!bDebug || object().Visual() == nullptr)
+        co_return;
 
-        Fvector bc, bd;
-        object().Visual()->getVisData().box.get_CD(bc, bd);
-        Fmatrix M = object().XFORM();
-        M.c.add(bc);
-        Level().debug_renderer().draw_obb(M, bd, color_rgba(0, 0, 255, 255));
-    };
+    if (!dbg_net_Draw_Flags.is_any((1 << 4)))
+        co_return;
+
+    Fvector bc, bd;
+    object().Visual()->getVisData().box.get_CD(bc, bd);
+    Fmatrix M = object().XFORM();
+    M.c.add(bc);
+    Level().debug_renderer().draw_obb(M, bd, color_rgba(0, 0, 255, 255));
 }
 #endif
 

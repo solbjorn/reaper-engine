@@ -106,7 +106,7 @@ public:
     ~CPortal() override;
 
 #ifdef DEBUG
-    virtual void OnRender();
+    [[nodiscard]] tmc::task<void> OnRender() override;
 #endif
 };
 

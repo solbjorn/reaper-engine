@@ -138,7 +138,11 @@ public:
     RDebugRender() { Device.seqRender.Add(this, REG_PRIORITY_LOW - 100); }
     ~RDebugRender() override { Device.seqRender.Remove(this); }
 
-    void OnRender() { Render(); }
+    [[nodiscard]] tmc::task<void> OnRender() override
+    {
+        Render();
+        co_return;
+    }
 
     virtual void add_lines(Fvector const* vertices, u32 const& vertex_count, u16 const* pairs, u32 const& pair_count, u32 const& color)
     {

@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "UIMMShniaga.h"
+
 #include "UIStatic.h"
 #include "UIScrollView.h"
 #include "UIXmlInit.h"
@@ -104,7 +105,7 @@ void CUIMMShniaga::Init(CUIXml& xml_doc, LPCSTR path)
     m_wheel_size[1].x /= 1.33f;
 }
 
-void CUIMMShniaga::OnDeviceReset()
+tmc::task<void> CUIMMShniaga::OnDeviceReset()
 {
     if (UI()->is_widescreen())
     {
@@ -116,6 +117,8 @@ void CUIMMShniaga::OnDeviceReset()
         m_anims[0]->SetWndSize(m_wheel_size[0]);
         m_anims[1]->SetWndSize(m_wheel_size[0]);
     }
+
+    co_return;
 }
 
 extern CActor* g_actor;

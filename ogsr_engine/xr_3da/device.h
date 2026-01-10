@@ -103,13 +103,13 @@ protected:
 
 public:
     // Registrators
-    MessageRegistry<pureRender> seqRender;
-    MessageRegistry<pureAppActivate> seqAppActivate;
-    MessageRegistry<pureAppDeactivate> seqAppDeactivate;
-    MessageRegistry<pureAppStart> seqAppStart;
-    MessageRegistry<pureAppEnd> seqAppEnd;
-    MessageRegistry<pureFrame> seqFrame;
-    MessageRegistry<pureScreenResolutionChanged> seqResolutionChanged;
+    message_registry<pureRender> seqRender;
+    message_registry<pureAppActivate> seqAppActivate;
+    message_registry<pureAppDeactivate> seqAppDeactivate;
+    message_registry<pureAppStart> seqAppStart;
+    message_registry<pureAppEnd> seqAppEnd;
+    message_registry<pureFrame> seqFrame;
+    message_registry<pureScreenResolutionChanged> seqResolutionChanged;
 
     HWND m_hWnd;
 
@@ -139,13 +139,18 @@ private:
     void _SetupStates();
 
     xr_deque<CallMe::Delegate<void()>> seqParallel;
+    xr_vector<CallMe::Delegate<tmc::task<void>()>> seq_async;
+
+    u64 wparam_async{std::numeric_limits<u64>::max()};
 
 public:
-    LRESULT MsgProc(HWND, UINT, WPARAM, LPARAM);
-
     u32 dwPrecacheTotal;
     float fWidth_2, fHeight_2;
-    void OnWM_Activate(WPARAM wParam);
+
+    LRESULT MsgProc(HWND, UINT, WPARAM, LPARAM);
+
+private:
+    [[nodiscard]] tmc::task<void> OnWM_Activate();
 
 public:
     IRenderDeviceRender* m_pRender{};
@@ -169,8 +174,8 @@ public:
     void DumpResourcesMemoryUsage() { m_pRender->ResourcesDumpMemoryUsage(); }
 
 public:
-    MessageRegistry<pureFrame> seqFrameMT;
-    MessageRegistry<pureDeviceReset> seqDeviceReset;
+    message_registry<pureFrame> seqFrameMT;
+    message_registry<pureDeviceReset> seqDeviceReset;
 
     CSecondVPParams m_SecondViewport; //--#SM+#-- +SecondVP+
 
@@ -193,13 +198,13 @@ public:
     BOOL Paused();
 
     // Scene control
-    void ProcessFrame();
+    [[nodiscard]] tmc::task<void> ProcessFrame();
     void PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input);
 
-    bool BeforeFrame();
-    void FrameMove();
+    [[nodiscard]] tmc::task<bool> BeforeFrame();
+    [[nodiscard]] tmc::task<void> FrameMove();
     void OnCameraUpdated();
-    bool RenderBegin();
+    [[nodiscard]] tmc::task<bool> RenderBegin();
     void Clear();
     void RenderEnd();
 
@@ -213,12 +218,12 @@ public:
 
     // Creation & Destroying
     void ConnectToRender();
-    void Create(void);
-    void Run(void);
-    void Destroy(void);
-    void Reset(bool precache = true);
+    [[nodiscard]] tmc::task<void> Create();
+    [[nodiscard]] tmc::task<void> Run();
+    void Destroy();
+    [[nodiscard]] tmc::task<void> Reset(bool precache = true);
 
-    void Initialize(void);
+    [[nodiscard]] tmc::task<void> Initialize();
 
     void time_factor(const float& time_factor); //--#SM+#--
 
@@ -243,20 +248,41 @@ public:
         seqParallel.erase(std::remove(seqParallel.begin(), seqParallel.end(), delegate), seqParallel.end());
     }
 
-private:
-    void CalcFrameStats();
+    template <typename... Args>
+    void add_async(Args&&... args)
+    {
+        seq_async.emplace_back(std::forward<Args>(args)...);
+    }
 
-public:
+    [[nodiscard]] tmc::task<void> process_async()
+    {
+        if (seq_async.empty())
+            co_return;
+
+        for (auto& task : seq_async)
+            co_await task();
+
+        seq_async.clear();
+    }
+
     bool on_message(UINT uMsg, WPARAM wParam, LRESULT& result);
 
 private:
-    void message_loop();
+    void CalcFrameStats();
+
+#ifdef LOG_SECOND_THREAD_STATS
+    [[nodiscard]] tmc::task<std::chrono::duration<f64, std::milli>> process_second();
+#else
+    [[nodiscard]] tmc::task<void> process_second();
+#endif
+
+    [[nodiscard]] tmc::task<void> message_loop();
 };
 
 extern CRenderDevice Device;
 extern float refresh_rate;
 extern bool g_bBenchmark;
-extern xr_list<CallMe::Delegate<bool()>> g_loading_events;
+extern xr_list<CallMe::Delegate<tmc::task<bool>()>> g_loading_events;
 
 class CLoadScreenRenderer : public pureRender
 {
@@ -268,7 +294,7 @@ public:
 
     void start(bool b_user_input);
     void stop();
-    virtual void OnRender();
+    [[nodiscard]] tmc::task<void> OnRender() override;
 
     bool b_registered;
     bool b_need_user_input{};

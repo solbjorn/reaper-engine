@@ -3,7 +3,9 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "r__sector.h"
+
 #include "../../xr_3da/xrLevel.h"
 #include "../../xr_3da/xr_object.h"
 #include "fbasicvisual.h"
@@ -28,55 +30,49 @@ CPortal::~CPortal()
 }
 
 #ifdef DEBUG
-void CPortal::OnRender()
+tmc::task<void> CPortal::OnRender()
 {
-    if (psDeviceFlags.is(rsOcclusionDraw))
+    if (!psDeviceFlags.is(rsOcclusionDraw))
+        co_return;
+
+    VERIFY(poly.size());
+    // draw rect
+    DEFINE_VECTOR(FVF::L, LVec, LVecIt);
+    static LVec V;
+    V.resize(poly.size() + 2);
+    constexpr u32 portalColor = 0x800000FF;
+    Fvector C{};
+    for (u32 k = 0; k < poly.size(); k++)
     {
-        VERIFY(poly.size());
-        // draw rect
-        DEFINE_VECTOR(FVF::L, LVec, LVecIt);
-        static LVec V;
-        V.resize(poly.size() + 2);
-        constexpr u32 portalColor = 0x800000FF;
-        Fvector C{};
-        for (u32 k = 0; k < poly.size(); k++)
-        {
-            C.add(poly[k]);
-            V[k + 1].set(poly[k], portalColor);
-        }
-        V.back().set(poly[0], portalColor);
-        C.div((float)poly.size());
-        V[0].set(C, portalColor);
-
-        RCache.set_xform_world(Fidentity);
-        // draw solid
-        RCache.set_Shader(RImplementation.m_SelectionShader);
-        RCache.set_c("tfactor", float(color_get_R(portalColor)) / 255.f, float(color_get_G(portalColor)) / 255.f, float(color_get_B(portalColor)) / 255.f,
-                     float(color_get_A(portalColor)) / 255.f);
-        RCache.dbg_Draw(D3DPT_TRIANGLEFAN, &*V.begin(), V.size() - 2);
-
-        // draw wire
-        if (bDebug)
-        {
-            RImplementation.rmNear(RCache);
-        }
-        else
-        {
-            Device.SetNearer(TRUE);
-        }
-        RCache.set_Shader(RImplementation.m_WireShader);
-        RCache.set_c("tfactor", float(color_get_R(portalColor)) / 255.f, float(color_get_G(portalColor)) / 255.f, float(color_get_B(portalColor)) / 255.f,
-                     float(color_get_A(portalColor)) / 255.f);
-        RCache.dbg_Draw(D3DPT_LINESTRIP, &*(V.begin() + 1), V.size() - 2);
-        if (bDebug)
-        {
-            RImplementation.rmNormal(RCache);
-        }
-        else
-        {
-            Device.SetNearer(FALSE);
-        }
+        C.add(poly[k]);
+        V[k + 1].set(poly[k], portalColor);
     }
+    V.back().set(poly[0], portalColor);
+    C.div((float)poly.size());
+    V[0].set(C, portalColor);
+
+    RCache.set_xform_world(Fidentity);
+    // draw solid
+    RCache.set_Shader(RImplementation.m_SelectionShader);
+    RCache.set_c("tfactor", float(color_get_R(portalColor)) / 255.f, float(color_get_G(portalColor)) / 255.f, float(color_get_B(portalColor)) / 255.f,
+                 float(color_get_A(portalColor)) / 255.f);
+    RCache.dbg_Draw(D3DPT_TRIANGLEFAN, &*V.begin(), V.size() - 2);
+
+    // draw wire
+    if (bDebug)
+        RImplementation.rmNear(RCache);
+    else
+        Device.SetNearer(TRUE);
+
+    RCache.set_Shader(RImplementation.m_WireShader);
+    RCache.set_c("tfactor", float(color_get_R(portalColor)) / 255.f, float(color_get_G(portalColor)) / 255.f, float(color_get_B(portalColor)) / 255.f,
+                 float(color_get_A(portalColor)) / 255.f);
+    RCache.dbg_Draw(D3DPT_LINESTRIP, &*(V.begin() + 1), V.size() - 2);
+
+    if (bDebug)
+        RImplementation.rmNormal(RCache);
+    else
+        Device.SetNearer(FALSE);
 }
 #endif
 

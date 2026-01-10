@@ -14,5 +14,3 @@ extern _processor_info ID;
 } // namespace CPU
 
 void _initialize_cpu();
-void set_current_thread_name(const char* threadName);
-void set_thread_name(const char* threadName, std::thread& thread);

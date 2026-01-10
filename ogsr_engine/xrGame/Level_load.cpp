@@ -1,11 +1,12 @@
 #include "stdafx.h"
 
+#include "Level.h"
+
 #include "HUDmanager.h"
 #include "LevelGameDef.h"
 #include "ai_space.h"
 #include "ParticlesObject.h"
 #include "script_engine.h"
-#include "level.h"
 #include "game_cl_base.h"
 #include "../xr_3da/x_ray.h"
 #include "../xr_3da/gamemtllib.h"
@@ -14,14 +15,13 @@
 #include "GamePersistent.h"
 #include "../xr_3da/Rain.h"
 
-BOOL CLevel::Load_GameSpecific_Before()
+tmc::task<bool> CLevel::Load_GameSpecific_Before()
 {
     // AI space
-    g_pGamePersistent->LoadTitle("st_loading_ai_objects");
-
+    co_await g_pGamePersistent->LoadTitle("st_loading_ai_objects");
     ASSERT_FMT(ai().get_alife(), "ai().get_alife() does not exist!");
 
-    return (TRUE);
+    co_return true;
 }
 
 BOOL CLevel::Load_GameSpecific_After()

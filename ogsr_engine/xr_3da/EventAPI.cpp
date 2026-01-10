@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
 #include "eventapi.h"
+
 #include "xr_ioconsole.h"
 
-//---------------------------------------------------------------------
 class CEvent
 {
     friend class CEventAPI;
@@ -14,7 +14,7 @@ private:
     u32 dwRefCount;
 
 public:
-    CEvent(const char* S);
+    explicit CEvent(gsl::czstring S);
     ~CEvent();
 
     LPCSTR GetFull() { return Name; }
@@ -33,13 +33,14 @@ public:
         if (I != Handlers.end())
             Handlers.erase(I);
     }
-    void Signal(u64 P1, u64 P2)
+
+    [[nodiscard]] tmc::task<void> Signal(u64 P1, u64 P2)
     {
-        for (u32 I = 0; I < Handlers.size(); I++)
-            Handlers[I]->OnEvent(this, P1, P2);
+        for (auto handler : Handlers)
+            co_await handler->OnEvent(this, P1, P2);
     }
 };
-//-----------------------------------------
+
 CEvent::CEvent(const char* S)
 {
     Name = xr_strdup(S);
@@ -47,8 +48,6 @@ CEvent::CEvent(const char* S)
     dwRefCount = 1;
 }
 CEvent::~CEvent() { xr_free(Name); }
-
-//-----------------------------------------
 
 void CEventAPI::Dump()
 {
@@ -111,18 +110,18 @@ void CEventAPI::Handler_Detach(EVENT& E, IEventReceiver* H)
     CS.Leave();
 }
 
-void CEventAPI::Signal(EVENT E, u64 P1, u64 P2)
+tmc::task<void> CEventAPI::Signal(EVENT E, u64 P1, u64 P2)
 {
     CS.Enter();
-    E->Signal(P1, P2);
+    co_await E->Signal(P1, P2);
     CS.Leave();
 }
 
-void CEventAPI::Signal(LPCSTR N, u64 P1, u64 P2)
+tmc::task<void> CEventAPI::Signal(gsl::czstring N, u64 P1, u64 P2)
 {
     CS.Enter();
     EVENT E = Create(N);
-    Signal(E, P1, P2);
+    co_await Signal(E, P1, P2);
     Destroy(E);
     CS.Leave();
 }
@@ -147,20 +146,22 @@ void CEventAPI::Defer(LPCSTR N, u64 P1, u64 P2)
     CS.Leave();
 }
 
-void CEventAPI::OnFrame()
+tmc::task<void> CEventAPI::OnFrame()
 {
     CS.Enter();
+
     if (Events_Deferred.empty())
     {
         CS.Leave();
-        return;
+        co_return;
     }
-    for (u32 I = 0; I < Events_Deferred.size(); I++)
+
+    for (auto& event : Events_Deferred)
     {
-        Deferred& DEF = Events_Deferred[I];
-        Signal(DEF.E, DEF.P1, DEF.P2);
-        Destroy(Events_Deferred[I].E);
+        co_await Signal(event.E, event.P1, event.P2);
+        Destroy(event.E);
     }
+
     Events_Deferred.clear();
     CS.Leave();
 }

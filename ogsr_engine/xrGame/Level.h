@@ -167,21 +167,19 @@ protected:
     BOOL net_start_result_total;
     BOOL connected_to_server;
 
-    bool net_start1();
-    bool net_start2();
-    bool net_start3();
-    bool net_start4();
-    bool net_start5();
-    bool net_start6();
+    [[nodiscard]] tmc::task<bool> net_start1();
+    [[nodiscard]] tmc::task<bool> net_start2();
+    [[nodiscard]] tmc::task<bool> net_start3();
+    [[nodiscard]] tmc::task<bool> net_start4();
+    [[nodiscard]] tmc::task<bool> net_start5();
+    [[nodiscard]] tmc::task<bool> net_start6();
 
-    bool net_start_client1();
-    bool net_start_client2();
-    bool net_start_client3();
-    bool net_start_client4();
-    bool net_start_client5();
-    bool net_start_client6();
-
-    bool net_start_finalizer();
+    [[nodiscard]] tmc::task<bool> net_start_client1();
+    [[nodiscard]] tmc::task<bool> net_start_client2();
+    [[nodiscard]] tmc::task<bool> net_start_client3();
+    [[nodiscard]] tmc::task<bool> net_start_client4();
+    [[nodiscard]] tmc::task<bool> net_start_client5();
+    [[nodiscard]] tmc::task<bool> net_start_client6();
 
     void net_OnChangeSelfName(NET_Packet* P);
 
@@ -200,7 +198,7 @@ public:
     virtual void net_Stop();
     virtual void net_Update();
 
-    virtual BOOL Load_GameSpecific_Before();
+    [[nodiscard]] tmc::task<bool> Load_GameSpecific_Before() override;
     virtual BOOL Load_GameSpecific_After();
 
     void Load_GameSpecific_CFORM_Serialize(IWriter& writer) override;
@@ -208,9 +206,9 @@ public:
     void Load_GameSpecific_CFORM(std::span<CDB::TRI> T) override;
 
     // Events
-    void OnEvent(EVENT E, u64 P1, u64) override;
-    virtual void OnFrame(void);
-    virtual void OnRender();
+    [[nodiscard]] tmc::task<void> OnEvent(EVENT E, u64 P1, u64) override;
+    [[nodiscard]] tmc::task<void> OnFrame() override;
+    [[nodiscard]] tmc::task<void> OnRender() override;
     void cl_Process_Event(u16 dest, u16 type, NET_Packet& P);
     void cl_Process_Spawn(NET_Packet& P);
     void ProcessGameEvents();

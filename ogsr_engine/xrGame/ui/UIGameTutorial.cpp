@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIGameTutorial.h"
+
 #include "UIWindow.h"
 #include "UIStatic.h"
 #include "UIXmlInit.h"
@@ -148,39 +149,40 @@ void CUISequencer::Stop()
     Destroy();
 }
 
-void CUISequencer::OnFrame()
+tmc::task<void> CUISequencer::OnFrame()
 {
     if (!m_bActive)
-        return;
+        co_return;
 
-    if (!m_items.size())
+    if (m_items.empty())
     {
         Stop();
-        return;
-    }
-    else
-    {
-        CUISequenceItem* pCurrItem = m_items.front();
-        if (!pCurrItem->IsPlaying())
-            Next();
+        co_return;
     }
 
-    if (!m_items.size())
+    CUISequenceItem* pCurrItem = m_items.front();
+    if (!pCurrItem->IsPlaying())
+        Next();
+
+    if (m_items.empty())
     {
         Stop();
-        return;
+        co_return;
     }
 
     m_items.front()->Update();
     m_UIWindow->Update();
 }
 
-void CUISequencer::OnRender()
+tmc::task<void> CUISequencer::OnRender()
 {
     if (m_UIWindow->IsShown())
         m_UIWindow->Draw();
+
     VERIFY(m_items.size());
     m_items.front()->OnRender();
+
+    co_return;
 }
 
 void CUISequencer::Next()

@@ -197,7 +197,12 @@ int CLAItem::NextKeyFrame(int frame)
 ELightAnimLibrary::ELightAnimLibrary() = default;
 ELightAnimLibrary::~ELightAnimLibrary() = default;
 
-void ELightAnimLibrary::OnCreate() { Load(); }
+tmc::task<void> ELightAnimLibrary::OnCreate()
+{
+    Load();
+    co_return;
+}
+
 void ELightAnimLibrary::OnDestroy() { Unload(); }
 
 void ELightAnimLibrary::Unload()

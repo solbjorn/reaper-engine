@@ -78,7 +78,7 @@ void dxRenderDeviceRender::DestroyHW()
     HW.DestroyDevice();
 }
 
-void dxRenderDeviceRender::Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, float& fWidth_2, float& fHeight_2)
+tmc::task<void> dxRenderDeviceRender::Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, f32& fWidth_2, f32& fHeight_2)
 {
 #ifdef DEBUG
     _SHOW_REF("*ref -CRenderDevice::ResetTotal: DeviceREF:", HW.pDevice);
@@ -86,7 +86,7 @@ void dxRenderDeviceRender::Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, float& 
 
     Resources->reset_begin();
     Memory.mem_compact();
-    HW.Reset(hWnd, dwWidth, dwHeight);
+    co_await HW.Reset(hWnd, dwWidth, dwHeight);
 
     fWidth_2 = gsl::narrow_cast<f32>(dwWidth) / 2.0f;
     fHeight_2 = gsl::narrow_cast<f32>(dwHeight) / 2.0f;
@@ -136,7 +136,7 @@ void dxRenderDeviceRender::OnDeviceCreate()
     UIRender->CreateUIGeom();
 }
 
-void dxRenderDeviceRender::Create(HWND hWnd, u32& dwWidth, u32& dwHeight, float& fWidth_2, float& fHeight_2)
+tmc::task<void> dxRenderDeviceRender::Create(HWND hWnd, u32& dwWidth, u32& dwHeight, f32& fWidth_2, f32& fHeight_2)
 {
 #ifdef USE_RENDERDOC
     if (!g_renderdoc_api)
@@ -174,7 +174,7 @@ void dxRenderDeviceRender::Create(HWND hWnd, u32& dwWidth, u32& dwHeight, float&
     }
 #endif
 
-    HW.CreateDevice(hWnd, dwWidth, dwHeight);
+    co_await HW.CreateDevice(hWnd, dwWidth, dwHeight);
 
     fWidth_2 = gsl::narrow_cast<f32>(dwWidth) / 2.0f;
     fHeight_2 = gsl::narrow_cast<f32>(dwHeight) / 2.0f;

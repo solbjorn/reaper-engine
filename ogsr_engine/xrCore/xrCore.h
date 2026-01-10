@@ -69,6 +69,7 @@
 
 // 3rd party
 #include "../xrExternal/rtti.h"
+#include "../xrExternal/tmc.h"
 #include "../xrExternal/tracy.h"
 
 #include "clsid.h"

@@ -69,10 +69,10 @@ IClient* IPureServer::ID_to_client(ClientID ID, bool ScanAll) // пока не �
 IPureServer::IPureServer(CTimer* timer) : device_timer{timer} {}
 IPureServer::~IPureServer() { SV_Client = nullptr; }
 
-IPureServer::EConnect IPureServer::Connect(LPCSTR options) // опции вида [имя_сейва/single/alife]
+tmc::task<IPureServer::EConnect> IPureServer::Connect(shared_str& options) // опции вида [имя_сейва/single/alife]
 {
-    connect_options._set(options);
-    return ErrNoError;
+    connect_options = options;
+    co_return ErrNoError;
 }
 
 void IPureServer::Disconnect() {}

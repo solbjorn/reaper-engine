@@ -217,10 +217,12 @@ struct _NetworkProcessor : public pureFrame
     RTTI_DECLARE_TYPEINFO(_NetworkProcessor, pureFrame);
 
 public:
-    void OnFrame() override
+    [[nodiscard]] tmc::task<void> OnFrame() override
     {
         if (g_pGameLevel && !Device.Paused())
             g_pGameLevel->net_Update();
+
+        co_return;
     }
 } NET_processor;
 

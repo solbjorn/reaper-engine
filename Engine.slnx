@@ -12,22 +12,20 @@
     <Project Path="3rd_party/Src/abseil/abseil.vcxproj" Id="639aecff-564b-474a-9eeb-b6a516288315">
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
-    <Project Path="3rd_party/Src/concurrency/hwloc/hwloc.vcxproj" Id="a3f8db74-fed0-4ed3-9e51-f5b4e5ac9713" />
-    <Project Path="3rd_party/Src/concurrency/oneTBB/oneTBB.vcxproj" Id="fd18cc23-5b32-4b39-9e74-80667ff8a9d0">
-      <BuildDependency Project="3rd_party/Src/concurrency/hwloc/hwloc.vcxproj" />
-    </Project>
     <Project Path="3rd_party/Src/llvm/llvm.vcxproj" Id="a2f5a99e-1330-4dc5-90da-c55d0fcc6bdf" />
     <Project Path="3rd_party/Src/luajit2/luajit2.vcxproj" Id="632aeeb6-dc06-4e15-9551-b2b09a4b73c5" />
     <Project Path="3rd_party/Src/mimalloc/mimalloc.vcxproj" Id="c0e0a539-f615-4317-b12c-24b77195b41a" />
     <Project Path="3rd_party/Src/ode/contrib/msvc7/ode_default/default.vcxproj" Id="1bf75feb-87dd-486c-880b-227987d191c2">
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
+    <Project Path="3rd_party/Src/oneTBB/oneTBB.vcxproj" Id="fd18cc23-5b32-4b39-9e74-80667ff8a9d0" />
     <Project Path="3rd_party/Src/openal-soft/openal-soft.vcxproj" Id="8c67b3ec-af96-48db-b93e-e561c79f48d7">
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
     <Project Path="3rd_party/Src/tinyxml2/tinyxml2.vcxproj" Id="ddc9ea5d-33c3-4b1c-a8c4-f2ec3d0e1c07">
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
+    <Project Path="3rd_party/Src/tmc/hwloc/hwloc.vcxproj" Id="a3f8db74-fed0-4ed3-9e51-f5b4e5ac9713" />
   </Folder>
   <Folder Name="/3rd_party/Compression/">
     <Project Path="3rd_party/Src/libsquashfs/libsquashfs.vcxproj" Id="e61c7c61-0119-4d89-9604-bd3b7c5f2aca">
@@ -55,7 +53,7 @@
   </Folder>
   <Project Path="ogsr_engine/Layers/xrRenderPC_R4/xrRender_R4.vcxproj" Id="ac9b12ed-a2d7-4337-a981-5bd8430e96d8">
     <BuildDependency Project="3rd_party/Src/DirectXTex/DirectXTex.vcxproj" />
-    <BuildDependency Project="3rd_party/Src/concurrency/oneTBB/oneTBB.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/oneTBB/oneTBB.vcxproj" />
     <BuildDependency Project="3rd_party/Src/xxHash/xxHash.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrCDB/xrCDB.vcxproj" Id="a19b1df2-82ec-4364-8bdf-85d13a1c89b5">
@@ -71,9 +69,10 @@
   <Project Path="ogsr_engine/xrExternal/xrExternal.vcxproj" Id="6d4e1cd0-9d48-4210-982e-93827a58256e">
     <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     <BuildDependency Project="3rd_party/Src/luajit2/luajit2.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/tmc/hwloc/hwloc.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrGame/xrGame.vcxproj" Id="200652a6-043e-4634-8837-87983b3bd5e0">
-    <BuildDependency Project="3rd_party/Src/concurrency/oneTBB/oneTBB.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/oneTBB/oneTBB.vcxproj" />
     <BuildDependency Project="3rd_party/Src/zstd/zstd.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrParticles/xrParticles.vcxproj" Id="94a1c366-3d19-48e6-8170-4adc2e70df97" />
@@ -81,13 +80,13 @@
     <BuildDependency Project="3rd_party/Src/ode/contrib/msvc7/ode_default/default.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrSound/xrSound.vcxproj" Id="ccca7859-eb86-493e-9b53-c4235f45b3c5">
-    <BuildDependency Project="3rd_party/Src/concurrency/oneTBB/oneTBB.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/oneTBB/oneTBB.vcxproj" />
     <BuildDependency Project="3rd_party/Src/openal-soft/openal-soft.vcxproj" />
     <BuildDependency Project="3rd_party/Src/Xiph/ogg/ogg.vcxproj" />
     <BuildDependency Project="3rd_party/Src/Xiph/vorbis/vorbis.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xr_3da/XR_3DA.vcxproj" Id="2578c6d8-660d-48ae-9322-7422f8664f06">
     <BuildDependency Project="3rd_party/Src/Xiph/theora/theora.vcxproj" />
-    <BuildDependency Project="3rd_party/Src/concurrency/oneTBB/oneTBB.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/oneTBB/oneTBB.vcxproj" />
   </Project>
 </Solution>

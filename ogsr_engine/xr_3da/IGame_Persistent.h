@@ -82,7 +82,7 @@ public:
     void destroy_particles(const bool& all_particles);
 
     virtual void PreStart(LPCSTR op);
-    virtual void Start(LPCSTR op);
+    [[nodiscard]] virtual tmc::task<void> Start(gsl::czstring op);
     virtual void Disconnect();
 
     IGame_ObjectPool ObjectPool;
@@ -100,14 +100,14 @@ public:
     virtual void OnRenderPPUI_main() {}
     virtual void OnRenderPPUI_PP() {}
 
-    virtual void OnAppStart();
-    virtual void OnAppEnd();
-    virtual void OnAppActivate();
-    virtual void OnAppDeactivate();
-    virtual void OnFrame();
+    [[nodiscard]] tmc::task<void> OnAppStart() override;
+    [[nodiscard]] tmc::task<void> OnAppEnd() override;
+    [[nodiscard]] tmc::task<void> OnAppActivate() override { co_return; }
+    [[nodiscard]] tmc::task<void> OnAppDeactivate() override { co_return; }
+    [[nodiscard]] tmc::task<void> OnFrame() override;
 
     // вызывается только когда изменяется тип игры
-    virtual void OnGameStart();
+    [[nodiscard]] virtual tmc::task<void> OnGameStart();
     virtual void OnGameEnd();
 
     virtual void UpdateGameType() {}
@@ -121,7 +121,7 @@ public:
 
     u32 GameType() { return m_game_params.m_e_game_type; }
     virtual void Statistics(CGameFont* F) = 0;
-    virtual void LoadTitle(const char* title_name) = 0;
+    [[nodiscard]] virtual tmc::task<void> LoadTitle(gsl::czstring title) = 0;
     virtual void SetTip() = 0;
 
     virtual void models_savePrefetch();

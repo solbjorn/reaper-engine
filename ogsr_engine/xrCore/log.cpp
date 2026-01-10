@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "log.h"
+#include "xrcpuid.h"
 
 #include <fstream> //для std::ofstream
 #include <iomanip> //для std::strftime
@@ -38,7 +39,20 @@ static void AddOne(std::string& split, bool first_line)
 
             std::strftime(buf, sizeof(buf), "%d.%m.%y %H:%M:%S", &lt);
             sprintf_s(curTime, "\n[%s.%03lld]", buf, ms.count());
-            split = std::format("{0} [{1}] {2}", curTime, std::this_thread::get_id(), split);
+
+            std::array<char, 16> tid;
+            gsl::index tlen;
+
+            if (CPU::ID.on_cpu())
+                tlen = xr_sprintf(tid.data(), tid.size(), "[%s%02zuP%1zu]",
+                                  CPU::ID.threads[tmc::current_thread_index()].group.cpu_kind == tmc::topology::cpu_kind::PERFORMANCE ? "PE" : "EF", tmc::current_thread_index(),
+                                  tmc::current_priority());
+            else if (CPU::ID.on_st())
+                tlen = xr_sprintf(tid.data(), tid.size(), "[ST00P%1zu]", tmc::current_priority());
+            else
+                tlen = xr_sprintf(tid.data(), tid.size(), "[EX%s]", std::format("{0}", std::this_thread::get_id()).c_str());
+
+            split = std::format("{0} {1} {2}", curTime, std::string_view{tid.data(), gsl::narrow_cast<size_t>(tlen)}, split);
         }
         else
         {

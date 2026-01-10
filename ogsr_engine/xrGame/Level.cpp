@@ -373,7 +373,7 @@ void CLevel::ProcessGameEvents()
         Device.add_to_seq_parallel(CallMe::fromMethod<&CLevel::ProcessGameSpawns>(this));
 }
 
-void CLevel::OnFrame()
+tmc::task<void> CLevel::OnFrame()
 {
     m_feel_deny.update();
 
@@ -398,7 +398,7 @@ void CLevel::OnFrame()
         MapManager().Update();
 
     // Inherited update
-    inherited::OnFrame();
+    co_await inherited::OnFrame();
 
     if (xr::editor() == nullptr || !xr::editor()->script_time())
         g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
@@ -466,18 +466,14 @@ void CLevel::script_gc()
     lua.stop_gc();
 }
 
-void CLevel::OnRender()
+tmc::task<void> CLevel::OnRender()
 {
     Render->BeforeWorldRender(); //--#SM+#-- +SecondVP+
-
-    inherited::OnRender();
-
+    co_await inherited::OnRender();
     Game().OnRender();
 
     // отрисовать трассы пуль
-    //  Device.Statistic->TEST1.Begin();
     BulletManager().Render();
-    // Device.Statistic->TEST1.End();
 
     auto pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
     auto pActor = smart_cast<CActor*>(Level().CurrentEntity());
@@ -488,9 +484,11 @@ void CLevel::OnRender()
     if (need_pda_render)
     {
         HUD().RenderUI();
+
         if (g_btnHint)
-            g_btnHint->OnRender();
-        GetUICursor()->OnRender();
+            co_await g_btnHint->OnRender();
+
+        co_await GetUICursor()->OnRender();
         draw_wnds_rects();
 
         Fvector2 cursor_pos = GetUICursor()->GetCursorPosition();
@@ -503,13 +501,14 @@ void CLevel::OnRender()
     }
 
     HUD().RenderUI();
+
     if (g_btnHint)
-        g_btnHint->OnRender();
-    GetUICursor()->OnRender();
+        co_await g_btnHint->OnRender();
+
+    co_await GetUICursor()->OnRender();
     draw_wnds_rects();
 
 #ifndef DEBUG
-
     if (psActorFlags.test(AF_ZONES_DBG))
     {
         for (u32 I = 0; I < Level().Objects.o_count(); I++)
@@ -555,9 +554,7 @@ void CLevel::OnRender()
             }
         }
     }
-
 #else
-
     ph_world->OnRender();
 
     if (ai().get_level_graph())
@@ -601,7 +598,6 @@ void CLevel::OnRender()
     debug_renderer().render();
 
 #ifdef DEBUG
-
     if (psAI_Flags.is(aiVision))
     {
         for (u32 I = 0; I < Level().Objects.o_count(); I++)
@@ -626,21 +622,18 @@ void CLevel::OnRender()
             stalker->dbg_draw_visibility_rays();
         }
     }
-
 #endif
 }
 
-void CLevel::OnEvent(EVENT E, u64 P1, u64)
+tmc::task<void> CLevel::OnEvent(EVENT E, u64 P1, u64)
 {
     if (E == eEntitySpawn)
     {
         char Name[128];
         Name[0] = 0;
         sscanf(LPCSTR(P1), "%s", Name);
+
         Level().g_cl_Spawn(Name, 0xff, M_SPAWN_OBJECT_LOCAL, Fvector().set(0, 0, 0));
-    }
-    else if (E == eChangeRP && P1)
-    {
     }
     else if (E == eDemoPlay && P1)
     {
@@ -648,21 +641,11 @@ void CLevel::OnEvent(EVENT E, u64 P1, u64)
         string_path RealName;
         strcpy_s(RealName, name);
         strcat_s(RealName, ".xrdemo");
+
         Cameras().AddCamEffector(xr_new<CDemoPlay>(RealName, 1.3f, 0u));
     }
-    else if (E == eChangeTrack && P1)
-    {
-        // int id = atoi((char*)P1);
-        // Environment->Music_Play(id);
-    }
-    else if (E == eEnvironment)
-    {
-        // int id=0; float s=1;
-        // sscanf((char*)P1,"%d,%f",&id,&s);
-        // Environment->set_EnvMode(id,s);
-    }
-    else
-        return;
+
+    co_return;
 }
 
 void CLevel::PhisStepsCallback(u32, u32) {}

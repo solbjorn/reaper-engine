@@ -26,6 +26,8 @@
 #include "gamepersistent.h"
 #include "script_engine.h"
 
+#include "../xr_3da/IGame_Persistent.h"
+
 using namespace ALife;
 
 class CSwitchPredicate
@@ -193,11 +195,9 @@ bool CALifeUpdateManager::change_level(NET_Packet& net_packet)
     return (true);
 }
 
-#include "..\xr_3da\IGame_Persistent.h"
-
-void CALifeUpdateManager::new_game(LPCSTR save_name)
+tmc::task<void> CALifeUpdateManager::new_game(gsl::czstring save_name)
 {
-    g_pGamePersistent->LoadTitle("st_creating_new_game");
+    co_await g_pGamePersistent->LoadTitle("st_creating_new_game");
     Msg("* Creating new game...");
 
     unload();
@@ -232,9 +232,9 @@ void CALifeUpdateManager::new_game(LPCSTR save_name)
     Msg("* New game is successfully created!");
 }
 
-void CALifeUpdateManager::load(LPCSTR game_name, bool no_assert, bool new_only)
+tmc::task<void> CALifeUpdateManager::load(gsl::czstring game_name, bool no_assert, bool new_only)
 {
-    g_pGamePersistent->LoadTitle("st_loading_alife_simulator");
+    co_await g_pGamePersistent->LoadTitle("st_loading_alife_simulator");
 
 #ifdef DEBUG
     Memory.mem_compact();
@@ -246,14 +246,14 @@ void CALifeUpdateManager::load(LPCSTR game_name, bool no_assert, bool new_only)
     if (new_only || !CALifeStorageManager::load(game_name))
     {
         R_ASSERT3(new_only || no_assert && xr_strlen(game_name), "Cannot find the specified saved game ", game_name);
-        new_game(game_name);
+        co_await new_game(game_name);
     }
 
 #ifdef DEBUG
     Msg("* Loading alife simulator is successfully completed (%zd Kb)", (Memory.mem_usage() - memory_usage) / 1024);
 #endif
 
-    g_pGamePersistent->LoadTitle("st_server_connecting");
+    co_await g_pGamePersistent->LoadTitle("st_server_connecting");
     g_pGamePersistent->SetTip();
 }
 

@@ -121,9 +121,9 @@ void CHW::DestroyD3D()
     _RELEASE(m_pFactory);
 }
 
-void CHW::CreateDevice(HWND hwnd, u32& dwWidth, u32& dwHeight)
+tmc::task<void> CHW::CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight)
 {
-    m_hWnd = hwnd;
+    m_hWnd = wnd;
     CreateD3D();
 
     // General - select adapter and device
@@ -246,7 +246,7 @@ void CHW::CreateDevice(HWND hwnd, u32& dwWidth, u32& dwHeight)
 
     // NOTE: this seems required to get the default render target to match the swap chain resolution
     // probably the sequence ResizeTarget, and ResizeBuffers is important
-    Reset(hwnd, dwWidth, dwHeight);
+    co_await Reset(wnd, dwWidth, dwHeight);
     fill_vid_mode_list(this);
 
     imgui_init();
@@ -283,7 +283,7 @@ void CHW::DestroyDevice()
 // Resetting device
 //////////////////////////////////////////////////////////////////////
 
-void CHW::Reset(HWND hwnd, u32& dwWidth, u32& dwHeight)
+tmc::task<void> CHW::Reset(HWND wnd, u32& dwWidth, u32& dwHeight)
 {
     imgui_reset();
 
@@ -306,23 +306,31 @@ void CHW::Reset(HWND hwnd, u32& dwWidth, u32& dwHeight)
         cd_fs.RefreshRate = selectRefresh(cd.Width, cd.Height, cd.Format);
     }
 
+    co_await tmc::spawn(reset_st(wnd)).run_on(xr::tmc_cpu_st_executor());
+
+    dwWidth = cd.Width;
+    dwHeight = cd.Height;
+}
+
+tmc::task<void> CHW::reset_st(HWND wnd)
+{
+    const auto& cd = m_ChainDesc;
     DXGI_MODE_DESC mode{};
 
     mode.Width = cd.Width;
     mode.Height = cd.Height;
     mode.Format = cd.Format;
-    mode.RefreshRate = cd_fs.RefreshRate;
+    mode.RefreshRate = m_ChainDescFullscreen.RefreshRate;
     CHK_DX(m_pSwapChain->ResizeTarget(&mode));
 
-    UINT flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+    u32 flags{DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH};
     if (m_SupportsVRR)
         flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
     CHK_DX(m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, flags));
-    updateWindowProps(hwnd);
+    updateWindowProps(wnd);
 
-    dwWidth = cd.Width;
-    dwHeight = cd.Height;
+    co_return;
 }
 
 void CHW::selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed)
@@ -402,38 +410,48 @@ DXGI_RATIONAL CHW::selectRefresh(u32 dwWidth, u32 dwHeight, DXGI_FORMAT fmt)
     return res;
 }
 
-void CHW::OnAppActivate()
+tmc::task<void> CHW::OnAppActivate()
 {
-    if (m_pSwapChain && !m_ChainDescFullscreen.Windowed)
-    {
-        ShowWindow(m_hWnd, SW_RESTORE);
-        m_pSwapChain->SetFullscreenState(true, nullptr);
+    if (m_pSwapChain == nullptr || m_ChainDescFullscreen.Windowed)
+        co_return;
 
-        const auto& cd = m_ChainDesc;
+    co_await tmc::spawn([] [[nodiscard]] (auto wnd) -> tmc::task<void> {
+        ShowWindow(wnd, SW_RESTORE);
+        co_return;
+    }(m_hWnd))
+        .run_on(xr::tmc_cpu_st_executor());
 
-        UINT flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-        if (m_SupportsVRR)
-            flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+    m_pSwapChain->SetFullscreenState(true, nullptr);
 
-        m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, flags);
-    }
+    const auto& cd = m_ChainDesc;
+
+    u32 flags{DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH};
+    if (m_SupportsVRR)
+        flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+
+    m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, flags);
 }
 
-void CHW::OnAppDeactivate()
+tmc::task<void> CHW::OnAppDeactivate()
 {
-    if (m_pSwapChain && !m_ChainDescFullscreen.Windowed)
-    {
-        m_pSwapChain->SetFullscreenState(false, nullptr);
+    if (m_pSwapChain == nullptr || m_ChainDescFullscreen.Windowed)
+        co_return;
 
-        const auto& cd = m_ChainDesc;
+    m_pSwapChain->SetFullscreenState(false, nullptr);
 
-        UINT flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-        if (m_SupportsVRR)
-            flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+    const auto& cd = m_ChainDesc;
 
-        m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, flags);
-        ShowWindow(m_hWnd, SW_MINIMIZE);
-    }
+    u32 flags{DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH};
+    if (m_SupportsVRR)
+        flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+
+    m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, flags);
+
+    co_await tmc::spawn([] [[nodiscard]] (auto wnd) -> tmc::task<void> {
+        ShowWindow(wnd, SW_MINIMIZE);
+        co_return;
+    }(m_hWnd))
+        .run_on(xr::tmc_cpu_st_executor());
 }
 
 void CHW::DumpVideoMemoryUsage() const
@@ -510,7 +528,6 @@ void CHW::updateWindowProps(HWND m_hWnd)
     }
 
     SetForegroundWindow(m_hWnd);
-
     pInput->clip_cursor(true);
 }
 

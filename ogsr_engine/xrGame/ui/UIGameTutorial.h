@@ -30,8 +30,8 @@ public:
 
     void Destroy(); // be careful
 
-    virtual void OnFrame();
-    virtual void OnRender();
+    [[nodiscard]] tmc::task<void> OnFrame() override;
+    [[nodiscard]] tmc::task<void> OnRender() override;
     CUIWindow* MainWnd() { return m_UIWindow; }
     bool IsActive() { return m_bActive; }
 

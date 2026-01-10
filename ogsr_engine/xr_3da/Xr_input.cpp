@@ -531,7 +531,7 @@ void CInput::iRelease(IInputReceiver* p)
     }
 }
 
-void CInput::OnAppActivate(void)
+tmc::task<void> CInput::OnAppActivate()
 {
     if (CurrentIR())
         CurrentIR()->IR_OnActivate();
@@ -543,9 +543,11 @@ void CInput::OnAppActivate(void)
     std::memset(timeStamp, 0, sizeof(timeStamp));
     std::memset(timeSave, 0, sizeof(timeSave));
     std::memset(offs, 0, sizeof(offs));
+
+    co_return;
 }
 
-void CInput::OnAppDeactivate(void)
+tmc::task<void> CInput::OnAppDeactivate()
 {
     if (CurrentIR())
         CurrentIR()->IR_OnDeactivate();
@@ -557,17 +559,22 @@ void CInput::OnAppDeactivate(void)
     std::memset(timeStamp, 0, sizeof(timeStamp));
     std::memset(timeSave, 0, sizeof(timeSave));
     std::memset(offs, 0, sizeof(offs));
+
+    co_return;
 }
 
-void CInput::OnFrame(void)
+tmc::task<void> CInput::OnFrame()
 {
     Device.Statistic->Input.Begin();
     dwCurTime = Device.TimerAsync_MMT();
+
     if (pKeyboard)
         KeyUpdate();
     if (pMouse)
         MouseUpdate();
+
     Device.Statistic->Input.End();
+    co_return;
 }
 
 IInputReceiver* CInput::CurrentIR()

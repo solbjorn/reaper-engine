@@ -117,9 +117,9 @@ public:
     virtual void Initialize();
     // virtual void Destroy();
 
-    virtual void OnRender();
-    virtual void OnFrame();
-    virtual void OnScreenResolutionChanged();
+    [[nodiscard]] tmc::task<void> OnRender() override;
+    [[nodiscard]] tmc::task<void> OnFrame() override;
+    [[nodiscard]] tmc::task<void> OnScreenResolutionChanged() override;
 
     string64 ConfigFile;
     bool bVisible;

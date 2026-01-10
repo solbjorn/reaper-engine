@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include "StatGraph.h"
-//---------------------------------------------
 
 CStatGraph::CStatGraph()
 {
@@ -28,7 +27,10 @@ CStatGraph::~CStatGraph()
 }
 
 void CStatGraph::OnDeviceCreate() { m_pRender->OnDeviceCreate(); }
-
 void CStatGraph::OnDeviceDestroy() { m_pRender->OnDeviceDestroy(); }
 
-void CStatGraph::OnRender() { m_pRender->OnRender(*this); }
+tmc::task<void> CStatGraph::OnRender()
+{
+    m_pRender->OnRender(*this);
+    co_return;
+}

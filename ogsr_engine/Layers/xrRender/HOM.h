@@ -23,9 +23,9 @@ class CHOM : public virtual RTTI::Enable
 
 private:
     xrXRC xrc;
-    CDB::MODEL* m_pModel;
-    occTri* m_pTris;
-    BOOL bEnabled;
+    CDB::MODEL* m_pModel{};
+    xr_vector<occTri> m_pTris;
+    bool bEnabled{};
     Fmatrix m_xform;
     Fmatrix m_xform_01;
 #ifdef DEBUG
@@ -42,7 +42,7 @@ public:
     CHOM();
     ~CHOM() override;
 
-    void Load();
+    [[nodiscard]] tmc::task<void> Load();
     void Unload();
 
     void Disable();
@@ -57,7 +57,7 @@ public:
     BOOL visible(const Fbox2& B, float depth) const; // viewport-space (0..1)
 
 #ifdef DEBUG
-    virtual void OnRender();
+    [[nodiscard]] tmc::task<void> OnRender() override;
     void stats();
 #endif
 };

@@ -46,7 +46,11 @@ dGeomID plane;
 #endif
 
 #ifdef DEBUG
-void CPHWorld::OnRender() { PH_DBG_Render(); }
+tmc::task<void> CPHWorld::OnRender()
+{
+    PH_DBG_Render();
+    co_return;
+}
 #endif
 
 CPHWorld::CPHWorld()
@@ -164,26 +168,22 @@ void CPHWorld::SetGravity(float g)
     dWorldSetGravity(phWorld, 0, -m_gravity, 0); //-2.f*9.81f
 }
 
-void CPHWorld::OnFrame()
+tmc::task<void> CPHWorld::OnFrame()
 {
-    // Msg									("------------- physics: %d / %d",u32(Device.dwFrame),u32(m_steps_num));
-    // просчитать полет пуль
-    /*
-    Device.Statistic->TEST0.Begin		();
-    Level().BulletManager().Update		();
-    Device.Statistic->TEST0.End			();
-    */
 #ifdef DEBUG
     DBG_DrawFrameStart();
     DBG_DrawStatBeforeFrameStep();
 #endif
+
     Device.Statistic->Physics.Begin();
     FrameStep(Device.fTimeDelta);
     Device.Statistic->Physics.End();
+
 #ifdef DEBUG
     DBG_DrawStatAfterFrameStep();
-
 #endif
+
+    co_return;
 }
 
 //////////////////////////////////////////////////////////////////////////////

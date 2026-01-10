@@ -54,18 +54,19 @@ IGame_Persistent::~IGame_Persistent()
     xr_delete(pEnvironment);
 }
 
-void IGame_Persistent::OnAppActivate() {}
+tmc::task<void> IGame_Persistent::OnAppStart()
+{
+    Environment().load();
+    co_return;
+}
 
-void IGame_Persistent::OnAppDeactivate() {}
-
-void IGame_Persistent::OnAppStart() { Environment().load(); }
-
-void IGame_Persistent::OnAppEnd()
+tmc::task<void> IGame_Persistent::OnAppEnd()
 {
     Environment().unload();
     OnGameEnd();
 
     DEL_INSTANCE(g_hud);
+    co_return;
 }
 
 void IGame_Persistent::PreStart(LPCSTR op)
@@ -81,21 +82,25 @@ void IGame_Persistent::PreStart(LPCSTR op)
         OnGameEnd();
     }
 }
-void IGame_Persistent::Start(LPCSTR op)
+
+tmc::task<void> IGame_Persistent::Start(gsl::czstring op)
 {
     string256 prev_type;
     strcpy_s(prev_type, m_game_params.m_game_type);
     m_game_params.parse_cmd_line(op);
+
     // change game type
     if ((0 != xr_strcmp(prev_type, m_game_params.m_game_type)))
     {
         if (*m_game_params.m_game_type)
-            OnGameStart();
+            co_await OnGameStart();
         if (g_hud)
             DEL_INSTANCE(g_hud);
     }
     else
+    {
         UpdateGameType();
+    }
 
     VERIFY(ps_destroy.empty());
 }
@@ -114,12 +119,12 @@ void IGame_Persistent::Disconnect()
     }
 }
 
-void IGame_Persistent::OnGameStart()
+tmc::task<void> IGame_Persistent::OnGameStart()
 {
-    LoadTitle("st_prefetching_objects");
+    co_await LoadTitle("st_prefetching_objects");
 
     if (!g_prefetch)
-        return;
+        co_return;
 
     // prefetch game objects & models
     float p_time = 1000.f * Device.GetTimerGlobal()->GetElapsed_sec();
@@ -143,7 +148,7 @@ void IGame_Persistent::OnGameEnd()
     Render->models_Clear(TRUE);
 }
 
-void IGame_Persistent::OnFrame()
+tmc::task<void> IGame_Persistent::OnFrame()
 {
     if (!Device.Paused() || Device.dwPrecacheFrame)
         Environment().OnFrame();
@@ -159,6 +164,7 @@ void IGame_Persistent::OnFrame()
         ps_needtoplay.pop_back();
         psi->Play();
     }
+
     // Destroy inactive particle systems
     while (!ps_destroy.empty())
     {
@@ -171,6 +177,8 @@ void IGame_Persistent::OnFrame()
         }
         psi->PSI_internal_delete();
     }
+
+    co_return;
 }
 
 void IGame_Persistent::destroy_particles(const bool& all_particles)

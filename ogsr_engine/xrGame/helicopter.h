@@ -160,25 +160,9 @@ public:
     void net_Destroy();
 };
 
-class CHelicopter : public CEntity,
-                    public CShootingObject,
-                    public CRocketLauncher,
-                    public CPHSkeleton,
-                    public CPHDestroyable,
-                    public CHitImmunity,
-                    public CExplosive
-#ifdef DEBUG
-    ,
-                    public pureRender
-#endif
-
+class CHelicopter : public CEntity, public CShootingObject, public CRocketLauncher, public CPHSkeleton, public CPHDestroyable, public CHitImmunity, public CExplosive
 {
-    RTTI_DECLARE_TYPEINFO(CHelicopter, CEntity, CShootingObject, CRocketLauncher, CPHSkeleton, CPHDestroyable, CHitImmunity, CExplosive
-#ifdef DEBUG
-                          ,
-                          pureRender
-#endif
-    );
+    RTTI_DECLARE_TYPEINFO(CHelicopter, CEntity, CShootingObject, CRocketLauncher, CPHSkeleton, CPHDestroyable, CHitImmunity, CExplosive);
 
 public:
     typedef CEntity inherited;
@@ -385,11 +369,6 @@ public:
     float GetSafeAltitude() { return m_movement.GetSafeAltitude(); }
     float GetHeliHealth() const { return inherited::GetfHealth(); }
     float SetHeliHealth(float value) { return inherited::SetfHealth(value); }
-
-#ifdef DEBUG
-public:
-    virtual void OnRender();
-#endif
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

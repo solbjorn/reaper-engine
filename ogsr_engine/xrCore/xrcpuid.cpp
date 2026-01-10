@@ -6,22 +6,6 @@
 
 namespace
 {
-[[nodiscard]] constexpr auto countSetBits(ULONG_PTR bitMask)
-{
-    DWORD LSHIFT = sizeof(ULONG_PTR) * 8 - 1;
-    DWORD bitSetCount = 0;
-    auto bitTest = static_cast<ULONG_PTR>(1) << LSHIFT;
-    DWORD i;
-
-    for (i = 0; i <= LSHIFT; ++i)
-    {
-        bitSetCount += ((bitMask & bitTest) ? 1 : 0);
-        bitTest /= 2;
-    }
-
-    return bitSetCount;
-}
-
 ICF void xr_cpuid(u32* regs, u32 leaf)
 {
 #ifdef __clang__
@@ -72,58 +56,75 @@ _processor_info::_processor_info()
     from_unsigned(m_f81_ECX, cpinfo[2]);
     from_unsigned(m_f81_EDX, cpinfo[3]);
 
-    // get version of OS
-    const u32 dwMajorVersion = GetVersion() & std::numeric_limits<u8>::max();
-    if (dwMajorVersion <= 5) // XP don't support SSE3+ instruction sets
-    {
-        m_f1_ECX.reset(0);
-        m_f1_ECX.reset(9);
-        m_f1_ECX.reset(19);
-        m_f1_ECX.reset(20);
-        m_f1_ECX.reset(28);
-        m_f81_ECX.reset(6);
-    }
-
-    // Calculate available processors
-    DWORD returnedLength = 0;
-    DWORD byteOffset = 0;
-    GetLogicalProcessorInformation(nullptr, &returnedLength);
-
-    auto buffer = std::make_unique<u8[]>(returnedLength);
-    auto ptr = reinterpret_cast<PSYSTEM_LOGICAL_PROCESSOR_INFORMATION>(buffer.get());
-    GetLogicalProcessorInformation(ptr, &returnedLength);
-
-    auto processorCoreCount = 0u;
-    auto logicalProcessorCount = 0u;
-
-    while (byteOffset + sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION) <= returnedLength)
-    {
-        switch (ptr->Relationship)
-        {
-        case RelationProcessorCore:
-            processorCoreCount++;
-
-            // A hyperthreaded core supplies more than one logical processor.
-            logicalProcessorCount += countSetBits(ptr->ProcessorMask);
-            break;
-
-        default: break;
-        }
-
-        byteOffset += sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
-        ptr++;
-    }
-
-    // All logical processors
-    coresCount = processorCoreCount;
-    threadCount = logicalProcessorCount;
-
     SYSTEM_INFO sysInfo;
     GetSystemInfo(&sysInfo);
     m_dwNumberOfProcessors = sysInfo.dwNumberOfProcessors;
     fUsage = std::make_unique<float[]>(m_dwNumberOfProcessors);
     m_idleTime = std::make_unique<LARGE_INTEGER[]>(m_dwNumberOfProcessors);
     perfomanceInfo = std::make_unique<SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[]>(m_dwNumberOfProcessors);
+}
+
+void _processor_info::print_topology()
+{
+    Msg("* NUMA nodes: %zu", topo.numa_count());
+
+    const bool hybrid = topo.is_hybrid();
+    Msg("* Hybrid architecture: %s", hybrid ? "yes" : "no");
+    Msg("* Physical cores: %zu", topo.core_count());
+
+    if (hybrid)
+    {
+        Msg("*  Performance cores: %zu", topo.cpu_kind_counts[0]);
+        Msg("*  Efficiency cores: %zu", topo.cpu_kind_counts[1]);
+    }
+
+    Msg("* Logical processors: %zu", topo.pu_count());
+    Msg("*  Container CPU quota: %g", topo.container_cpu_quota);
+    Msg("* Core groups: %zu", topo.group_count());
+
+    std::array<char, 256> out;
+
+    for (const auto& group : topo.groups)
+    {
+        Msg("*  Group %zu: NUMA %zu, kind: %s, SMT: %zu", group.index, group.numa_index, group.cpu_kind == tmc::topology::cpu_kind::PERFORMANCE ? "performance" : "efficiency",
+            group.smt_level);
+
+        gsl::zstring pos = out.data() + xr_sprintf(out.data(), out.size(), "*   Cores: %zu", group.core_indexes[0]);
+
+        for (auto idx : group.core_indexes | std::views::drop(1))
+            pos += xr_sprintf(pos, out.size() - gsl::narrow_cast<size_t>(pos - out.data()), ", %zu", idx);
+
+        Log(out.data());
+    }
+
+    Msg("* TMC threads: %zu (main) + %zu (ST)", tmc::cpu_executor().thread_count(), xr::tmc_cpu_st_executor().thread_count());
+
+    if (!hybrid)
+        return;
+
+    xr_vector<size_t> perf, eff;
+
+    for (const auto& thread : threads)
+    {
+        if (thread.group.cpu_kind == tmc::topology::cpu_kind::PERFORMANCE)
+            perf.emplace_back(thread.index);
+        else
+            eff.emplace_back(thread.index);
+    }
+
+    gsl::zstring pos = out.data() + xr_sprintf(out.data(), out.size(), "*  Performance: %zu", perf[0]);
+
+    for (auto idx : perf | std::views::drop(1))
+        pos += xr_sprintf(pos, out.size() - gsl::narrow_cast<size_t>(pos - out.data()), ", %zu", idx);
+
+    Log(out.data());
+
+    pos = out.data() + xr_sprintf(out.data(), out.size(), "*  Efficiency: %zu", eff[0]);
+
+    for (auto idx : eff | std::views::drop(1))
+        pos += xr_sprintf(pos, out.size() - gsl::narrow_cast<size_t>(pos - out.data()), ", %zu", idx);
+
+    Log(out.data());
 }
 
 namespace

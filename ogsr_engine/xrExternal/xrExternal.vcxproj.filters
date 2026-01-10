@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="Concurrency">
+      <UniqueIdentifier>{3e86f65c-ec4f-407d-ad1c-c77901656c72}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Core">
       <UniqueIdentifier>{61a60c70-b020-461c-8f72-30ff3b87687d}</UniqueIdentifier>
     </Filter>
@@ -24,6 +27,9 @@
     <ClCompile Include="pch.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="tmc.cpp">
+      <Filter>Concurrency</Filter>
+    </ClCompile>
     <ClCompile Include="tracy.cpp">
       <Filter>Profiling</Filter>
     </ClCompile>
@@ -41,6 +47,9 @@
     <ClInclude Include="sol.h">
       <Filter>Scripting</Filter>
     </ClInclude>
+    <ClCompile Include="tmc.h">
+      <Filter>Concurrency</Filter>
+    </ClCompile>
     <ClInclude Include="tracy.h">
       <Filter>Profiling</Filter>
     </ClInclude>

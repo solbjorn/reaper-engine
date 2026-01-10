@@ -9,6 +9,7 @@
 #include "StdAfx.h"
 
 #include "UILines.h"
+
 #include "../HUDmanager.h"
 #include "UIXmlInit.h"
 #include "uilinestd.h"
@@ -574,8 +575,6 @@ void CUILines::Draw()
 }
 
 void CUILines::Update() {}
-
-void CUILines::OnDeviceReset() { uFlags.set(flNeedReparse, TRUE); }
 
 float CUILines::GetIndentByAlign() const
 {

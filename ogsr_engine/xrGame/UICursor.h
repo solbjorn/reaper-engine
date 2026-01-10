@@ -18,7 +18,7 @@ public:
     ~CUICursor() override;
 
     void InitInternal();
-    void OnRender() override;
+    [[nodiscard]] tmc::task<void> OnRender() override;
 
     Fvector2 GetCursorPositionDelta() const;
     Fvector2 GetCursorPosition() const;

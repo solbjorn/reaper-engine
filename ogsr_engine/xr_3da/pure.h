@@ -1,5 +1,5 @@
-#ifndef _PURE_H_AAA_
-#define _PURE_H_AAA_
+#ifndef __XRENGINE_PURE_H
+#define __XRENGINE_PURE_H
 
 // messages
 constexpr inline int REG_PRIORITY_LOW{0x11111111};
@@ -16,12 +16,12 @@ constexpr inline int REG_PRIORITY_INVALID{std::numeric_limits<int>::lowest()};
     public: \
         ~pure##name() override = 0; \
 \
-        virtual void On##name() = 0; \
+        [[nodiscard]] virtual tmc::task<void> On##name() = 0; \
 \
-        static ICF void OnPure(pure##name* self) \
+        [[nodiscard]] static tmc::task<void> on_pure(pure##name* self) \
         { \
             XR_TRACY_ZONE_SCOPED(); \
-            self->On##name(); \
+            co_await self->On##name(); \
         } \
     }; \
 \
@@ -36,94 +36,100 @@ DECLARE_MESSAGE(AppEnd);
 DECLARE_MESSAGE(DeviceReset);
 DECLARE_MESSAGE(ScreenResolutionChanged);
 
-template <class T>
-class MessageRegistry
+template <typename T>
+class message_registry
 {
-    struct MessageObject
-    {
-        T* Object;
-        int Prio;
-    };
+private:
+    xr_vector<std::pair<T*, gsl::index>> messages;
 
-    xr_vector<MessageObject> messages;
-    bool changed, inProcess;
+    bool in_process{};
+    bool changed{};
 
 public:
-    MessageRegistry() : changed(false), inProcess(false) {}
+    constexpr message_registry() = default;
 
-    void Clear() { messages.clear(); }
-
-    constexpr void Add(T* object, const int priority = REG_PRIORITY_NORMAL) { Add({object, priority}); }
-
-    void Add(MessageObject&& newMessage)
+    constexpr void Add(T* object, gsl::index priority = REG_PRIORITY_NORMAL)
     {
 #ifdef DEBUG
-        VERIFY(newMessage.Object);
-        VERIFY(newMessage.Prio != REG_PRIORITY_INVALID);
+        VERIFY(object != nullptr && priority != REG_PRIORITY_INVALID);
 
         // Verify that we don't already have the same object with valid priority
-        for (size_t i = 0; i < messages.size(); ++i)
-        {
-            auto& message = messages[i];
-            VERIFY(!(message.Prio != REG_PRIORITY_INVALID && message.Object == newMessage.Object));
-        }
+        for (const auto& msg : messages)
+            VERIFY(msg.first != object || msg.second == REG_PRIORITY_INVALID);
 #endif
-        messages.emplace_back(newMessage);
 
-        if (inProcess)
+        messages.emplace_back(object, priority);
+
+        if (in_process)
             changed = true;
         else
-            Resort();
+            resort();
     }
 
-    void Remove(T* object)
+    constexpr void Remove(const T* object)
     {
-        for (size_t i = 0; i < messages.size(); ++i)
+        gsl::index hit{};
+
+        for (auto& msg : messages)
         {
-            auto& message = messages[i];
-            if (message.Object == object)
-                message.Prio = REG_PRIORITY_INVALID;
+            if (msg.first != object || msg.second == REG_PRIORITY_INVALID)
+                continue;
+
+            msg.second = REG_PRIORITY_INVALID;
+            ++hit;
+
+#ifndef DEBUG
+            break;
+#endif
         }
 
-        if (inProcess)
+#ifdef DEBUG
+        VERIFY(hit == 0 || hit == 1);
+#endif
+
+        if (hit == 0)
+            return;
+
+        if (in_process)
             changed = true;
         else
-            Resort();
+            resort();
     }
 
-    void Process()
+    constexpr void clear() { messages.clear(); }
+
+    [[nodiscard]] tmc::task<void> process()
     {
         if (messages.empty())
-            return;
+            co_return;
 
         XR_TRACY_ZONE_SCOPED();
 
-        inProcess = true;
+        in_process = true;
 
-        if (messages[0].Prio == REG_PRIORITY_CAPTURE)
-            messages[0].Object->OnPure(messages[0].Object);
-        else
+        for (const auto& msg : messages)
         {
-            for (size_t i = 0; i < messages.size(); ++i)
-            {
-                const auto& message = messages[i];
-                if (message.Prio != REG_PRIORITY_INVALID)
-                    message.Object->OnPure(message.Object);
-            }
+            if (msg.second == REG_PRIORITY_INVALID)
+                continue;
+
+            co_await msg.first->on_pure(msg.first);
+
+            if (msg.second == REG_PRIORITY_CAPTURE)
+                break;
         }
 
         if (changed)
-            Resort();
+            resort();
 
-        inProcess = false;
+        in_process = false;
     }
 
-    void Resort()
+    constexpr void resort()
     {
         if (!messages.empty())
-            std::ranges::sort(messages, [](const auto& a, const auto& b) { return a.Prio > b.Prio; });
+            std::ranges::sort(messages, [](const auto& a, const auto& b) { return a.second > b.second; });
 
-        while (!messages.empty() && messages.back().Prio == REG_PRIORITY_INVALID)
+        while (!messages.empty() && messages.back().second == REG_PRIORITY_INVALID)
             messages.pop_back();
 
         if (messages.empty())
@@ -133,4 +139,4 @@ public:
     }
 };
 
-#endif
+#endif // !__XRENGINE_PURE_H

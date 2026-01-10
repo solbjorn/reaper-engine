@@ -1,9 +1,12 @@
 #include "stdafx.h"
+
+#include "device.h"
+
 #include "resource.h"
 
 extern LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-void CRenderDevice::Initialize()
+tmc::task<void> CRenderDevice::Initialize()
 {
     Log("Initializing Engine...");
     TimerGlobal.Start();
@@ -40,12 +43,5 @@ void CRenderDevice::Initialize()
     GetWindowRect(m_hWnd, &m_rcWindowBounds);
     GetClientRect(m_hWnd, &m_rcWindowClient);
 
-    /*
-    if (strstr(lpCmdLine,"-gpu_sw")!=NULL)		HW.Caps.bForceGPU_SW		= TRUE;
-    else										HW.Caps.bForceGPU_SW		= FALSE;
-    if (strstr(lpCmdLine,"-gpu_nopure")!=NULL)	HW.Caps.bForceGPU_NonPure	= TRUE;
-    else										HW.Caps.bForceGPU_NonPure	= FALSE;
-    if (strstr(lpCmdLine,"-gpu_ref")!=NULL)		HW.Caps.bForceGPU_REF		= TRUE;
-    else										HW.Caps.bForceGPU_REF		= FALSE;
-    */
+    co_return;
 }

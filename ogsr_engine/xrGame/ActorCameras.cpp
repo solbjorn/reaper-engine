@@ -403,15 +403,15 @@ void CActor::update_camera(CCameraShotEffector* effector)
 #ifdef DEBUG
 void dbg_draw_frustum(float FOV, float _FAR, float A, Fvector& P, Fvector& D, Fvector& U);
 
-void CActor::OnRender()
+tmc::task<void> CActor::OnRender()
 {
     if (!bDebug)
-        return;
+        co_return;
 
     if ((dbg_net_Draw_Flags.is_any((1 << 5))))
         character_physics_support()->movement()->dbg_Draw();
 
-    inherited::OnRender();
+    co_await inherited::OnRender();
 }
 #endif
 

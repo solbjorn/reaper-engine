@@ -23,9 +23,18 @@ public:
     ~CStatsPhysics() override = default;
 };
 
-class CStats : public pureRender, public CStatsPhysics
+class CStats : public CStatsPhysics
+#ifdef DEBUG
+    ,
+               public pureRender
+#endif
 {
-    RTTI_DECLARE_TYPEINFO(CStats, pureRender, CStatsPhysics);
+    RTTI_DECLARE_TYPEINFO(CStats, CStatsPhysics
+#ifdef DEBUG
+                          ,
+                          pureRender
+#endif
+    );
 
 public:
     CGameFont* pFont{};
@@ -117,12 +126,14 @@ public:
     void Show();
     void Show_HW_Stats();
 
-    virtual void OnRender();
+#ifdef DEBUG
+    [[nodiscard]] tmc::task<void> OnRender() override;
+#endif
+
     void OnDeviceCreate(void);
     void OnDeviceDestroy(void);
 
     xr_vector<shared_str> errors;
-    MessageRegistry<pureStats> seqStats;
 
     CStats();
     ~CStats() override;

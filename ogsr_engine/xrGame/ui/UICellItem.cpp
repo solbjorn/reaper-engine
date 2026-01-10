@@ -270,8 +270,17 @@ bool CUIDragItem::OnMouse(float, float, EUIMessages mouse_action)
     return false;
 }
 
-void CUIDragItem::OnRender() { Draw(); }
-void CUIDragItem::OnFrame() { Update(); }
+tmc::task<void> CUIDragItem::OnRender()
+{
+    Draw();
+    co_return;
+}
+
+tmc::task<void> CUIDragItem::OnFrame()
+{
+    Update();
+    co_return;
+}
 
 void CUIDragItem::Draw()
 {
