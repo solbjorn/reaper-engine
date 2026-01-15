@@ -30,7 +30,7 @@ public:
     CUIGameSP();
     ~CUIGameSP() override;
 
-    virtual void reset_ui();
+    tmc::task<void> reset_ui() override;
     virtual void shedule_Update(u32 dt);
     virtual void Render();
     virtual void SetClGame(game_cl_GameState* g);

@@ -35,13 +35,14 @@ IGame_Level::~IGame_Level()
     CCameraManager::ResetPP();
 }
 
-void IGame_Level::net_Stop()
+tmc::task<void> IGame_Level::net_Stop()
 {
     for (int i = 0; i < 6; i++)
         Objects.Update(true);
+
     // Destroy all objects
     Objects.Unload();
-    IR_Release();
+    co_await IR_Release();
 
     bReady = false;
 }
@@ -91,7 +92,7 @@ tmc::task<bool> IGame_Level::Load(u32)
     // Done
     FS.r_close(LL_Stream);
     bReady = true;
-    IR_Capture();
+    co_await IR_Capture();
     Device.seqRender.Add(this);
     Device.seqFrame.Add(this);
 

@@ -152,7 +152,7 @@ public:
     ShaderElement* _CreateElement(ShaderElement&& L);
     void _DeleteElement(const ShaderElement* L);
 
-    void OnDeviceCreate();
+    tmc::task<void> OnDeviceCreate();
     void OnDeviceDestroy(BOOL bKeepTextures);
 
     void reset_begin();
@@ -170,7 +170,7 @@ public:
     void DeleteGeom(const SGeometry* VS);
 
     void DeferredLoad(BOOL E) { bDeferredLoad = E; }
-    void DeferredUpload();
+    tmc::task<void> DeferredUpload();
     void Dump(bool bBrief);
 
     xr_vector<ITexture*> FindTexture(const char* Name) const override;

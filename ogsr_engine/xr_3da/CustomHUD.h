@@ -36,7 +36,7 @@ public:
     virtual void Render_Last(ctx_id_t) {}
 
     virtual void OnFrame() {}
-    [[nodiscard]] tmc::task<void> OnEvent(EVENT, u64, u64) { co_return; }
+    tmc::task<void> OnEvent(EVENT, u64, u64) { co_return; }
 
     virtual IC CUI* GetUI() = 0;
     virtual void OnScreenRatioChanged() = 0;

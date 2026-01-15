@@ -112,8 +112,6 @@ public:
     message_registry<pureScreenResolutionChanged> seqResolutionChanged;
 
     HWND m_hWnd;
-
-    bool OnMainThread() const { return Core.OnMainThread(); }
 };
 
 class CRenderDeviceBase : public IRenderDevice, public CRenderDeviceData
@@ -134,12 +132,12 @@ private:
 
     CTimer TimerMM;
 
-    void _Create();
+    tmc::task<void> _Create();
     void _Destroy(BOOL bKeepTextures);
     void _SetupStates();
 
     xr_deque<CallMe::Delegate<void()>> seqParallel;
-    xr_vector<CallMe::Delegate<tmc::task<void>()>> seq_async;
+    xr_vector<CallMe::Delegate<tmc::task<void>()>> seq_frame_async;
 
     u64 wparam_async{std::numeric_limits<u64>::max()};
 
@@ -150,7 +148,7 @@ public:
     LRESULT MsgProc(HWND, UINT, WPARAM, LPARAM);
 
 private:
-    [[nodiscard]] tmc::task<void> OnWM_Activate();
+    tmc::task<void> OnWM_Activate();
 
 public:
     IRenderDeviceRender* m_pRender{};
@@ -198,13 +196,13 @@ public:
     BOOL Paused();
 
     // Scene control
-    [[nodiscard]] tmc::task<void> ProcessFrame();
+    tmc::task<void> ProcessFrame();
     void PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input);
 
-    [[nodiscard]] tmc::task<bool> BeforeFrame();
-    [[nodiscard]] tmc::task<void> FrameMove();
+    tmc::task<bool> BeforeFrame();
+    tmc::task<void> FrameMove();
     void OnCameraUpdated();
-    [[nodiscard]] tmc::task<bool> RenderBegin();
+    tmc::task<bool> RenderBegin();
     void Clear();
     void RenderEnd();
 
@@ -218,12 +216,12 @@ public:
 
     // Creation & Destroying
     void ConnectToRender();
-    [[nodiscard]] tmc::task<void> Create();
-    [[nodiscard]] tmc::task<void> Run();
+    tmc::task<void> Create();
+    tmc::task<void> Run();
     void Destroy();
-    [[nodiscard]] tmc::task<void> Reset(bool precache = true);
+    tmc::task<void> Reset(bool precache = true);
 
-    [[nodiscard]] tmc::task<void> Initialize();
+    tmc::task<void> Initialize();
 
     void time_factor(const float& time_factor); //--#SM+#--
 
@@ -249,20 +247,20 @@ public:
     }
 
     template <typename... Args>
-    void add_async(Args&&... args)
+    void add_frame_async(Args&&... args)
     {
-        seq_async.emplace_back(std::forward<Args>(args)...);
+        seq_frame_async.emplace_back(std::forward<Args>(args)...);
     }
 
-    [[nodiscard]] tmc::task<void> process_async()
+    tmc::task<void> process_frame_async()
     {
-        if (seq_async.empty())
+        if (seq_frame_async.empty())
             co_return;
 
-        for (auto& task : seq_async)
+        for (auto& task : seq_frame_async)
             co_await task();
 
-        seq_async.clear();
+        seq_frame_async.clear();
     }
 
     bool on_message(UINT uMsg, WPARAM wParam, LRESULT& result);
@@ -271,12 +269,12 @@ private:
     void CalcFrameStats();
 
 #ifdef LOG_SECOND_THREAD_STATS
-    [[nodiscard]] tmc::task<std::chrono::duration<f64, std::milli>> process_second();
+    tmc::task<std::chrono::duration<f64, std::milli>> process_second();
 #else
-    [[nodiscard]] tmc::task<void> process_second();
+    tmc::task<void> process_second();
 #endif
 
-    [[nodiscard]] tmc::task<void> message_loop();
+    tmc::task<void> message_loop();
 };
 
 extern CRenderDevice Device;
@@ -294,7 +292,7 @@ public:
 
     void start(bool b_user_input);
     void stop();
-    [[nodiscard]] tmc::task<void> OnRender() override;
+    tmc::task<void> OnRender() override;
 
     bool b_registered;
     bool b_need_user_input{};

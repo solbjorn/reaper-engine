@@ -33,15 +33,15 @@ class CTextureDescrMngr
     string_unordered_map<shared_str, texture_desc> m_texture_details;
     string_unordered_map<shared_str, cl_dt_scaler*> m_detail_scalers;
 
-    void LoadLTX(LPCSTR initial);
-    void LoadTHM(LPCSTR initial);
+    tmc::task<void> LoadLTX(gsl::czstring initial);
+    tmc::task<void> LoadTHM(gsl::czstring initial);
 
 public:
     ~CTextureDescrMngr();
-    void Load();
+
+    tmc::task<void> Load();
     void UnLoad();
 
-public:
     shared_str GetBumpName(const shared_str& tex_name) const;
     float GetMaterial(const shared_str& tex_name) const;
     void GetTextureUsage(const shared_str& tex_name, BOOL& bDiffuse, BOOL& bBump) const;

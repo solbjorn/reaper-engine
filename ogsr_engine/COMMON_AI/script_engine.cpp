@@ -64,9 +64,6 @@ void lua_panic(s32 code)
 
 void ScriptCrashHandler(bool dump_lua_locals)
 {
-    if (!Device.OnMainThread())
-        return;
-
     try
     {
         Msg("***************************[ScriptCrashHandler]**********************************");

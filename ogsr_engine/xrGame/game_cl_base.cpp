@@ -249,19 +249,16 @@ void game_cl_GameState::SendPickUpEvent(u16 ID_who, u16 ID_what)
 
 void game_cl_GameState::set_type_name(LPCSTR s) { m_game_type_name._set(s); }
 
-void game_cl_GameState::reset_ui()
+tmc::task<void> game_cl_GameState::reset_ui()
 {
     // KRodin: Функция правильно работает именно в таком варианте! НЕ ИЗМЕНЯТЬ!
     auto h = smart_cast<CHUDManager*>(Level().pHUD);
-
     auto ui = h->GetUI();
-
     auto uigame = ui->UIGame();
 
-    uigame->reset_ui();
+    co_await uigame->reset_ui();
 
     auto mgw = ui->UIMainIngameWnd;
-
     mgw->reset_ui();
 
     if (auto MIR = ui->MainInputReceiver())

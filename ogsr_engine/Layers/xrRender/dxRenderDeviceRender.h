@@ -25,11 +25,11 @@ public:
     //	Destroy
     virtual void OnDeviceDestroy(BOOL bKeepTextures);
     virtual void DestroyHW();
-    [[nodiscard]] tmc::task<void> Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, f32& fWidth_2, f32& fHeight_2) override;
+    tmc::task<void> Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, f32& fWidth_2, f32& fHeight_2) override;
     //	Init
     virtual void SetupStates();
-    void OnDeviceCreate() override;
-    [[nodiscard]] tmc::task<void> Create(HWND hWnd, u32& dwWidth, u32& dwHeight, f32& fWidth_2, f32& fHeight_2) override;
+    tmc::task<void> OnDeviceCreate() override;
+    tmc::task<void> Create(HWND hWnd, u32& dwWidth, u32& dwHeight, f32& fWidth_2, f32& fHeight_2) override;
     virtual void SetupGPU(BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF);
     //	Overdraw
     virtual void overdrawBegin();
@@ -37,7 +37,7 @@ public:
 
     //	Resources control
     virtual void DeferredLoad(BOOL E);
-    virtual void ResourcesDeferredUpload();
+    tmc::task<void> ResourcesDeferredUpload() override;
     void ResourcesGetMemoryUsage(xr::render_memory_usage& usage) const override;
     void ResourcesDumpMemoryUsage() const override;
 
@@ -50,7 +50,6 @@ public:
     virtual void End() override;
     virtual void ClearTarget() override;
     virtual void SetCacheXform(Fmatrix& mView, Fmatrix& mProject);
-    virtual void OnAssetsChanged();
 
     IResourceManager* GetResourceManager() const override;
 

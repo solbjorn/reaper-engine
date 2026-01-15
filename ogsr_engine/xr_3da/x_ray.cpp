@@ -36,7 +36,7 @@ struct SoundProcessor final : public pureFrame
     RTTI_DECLARE_TYPEINFO(SoundProcessor, pureFrame);
 
 public:
-    [[nodiscard]] tmc::task<void> OnFrame() override
+    tmc::task<void> OnFrame() override
     {
         ::Sound->update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop, Device.vCameraRight);
         co_return;
@@ -48,7 +48,7 @@ struct SoundRenderer final : public pureFrame
     RTTI_DECLARE_TYPEINFO(SoundRenderer, pureFrame);
 
 public:
-    [[nodiscard]] tmc::task<void> OnFrame() override
+    tmc::task<void> OnFrame() override
     {
         ::Sound->render();
         co_return;
@@ -140,7 +140,7 @@ namespace xr
 {
 namespace
 {
-[[nodiscard]] tmc::task<void> exec_user_script()
+tmc::task<void> exec_user_script()
 {
     Console->Execute("unbindall");
 
@@ -155,12 +155,12 @@ namespace
         Console->ExecuteScript(default_full_name);
     }
 
-    co_await Device.process_async();
+    co_await Device.process_frame_async();
 }
 
-void pre_startup()
+tmc::task<void> pre_startup()
 {
-    pApp = xr_new<CApplication>();
+    pApp = (co_await CApplication::co_create()).release();
     g_pGamePersistent = smart_cast<IGame_Persistent*>(NEW_INSTANCE(CLSID_GAME_PERSISTANT));
 }
 
@@ -175,7 +175,7 @@ constexpr xr::tmc_atomic_wait_t code_start{std::numeric_limits<xr::tmc_atomic_wa
 constexpr xr::tmc_atomic_wait_t code_splash{std::numeric_limits<xr::tmc_atomic_wait_t>::min() / 2};
 constexpr xr::tmc_atomic_wait_t code_exit{0};
 
-[[nodiscard]] tmc::task<void> startup(std::atomic<xr::tmc_atomic_wait_t>& code)
+tmc::task<void> startup(std::atomic<xr::tmc_atomic_wait_t>& code)
 {
     code = xr::code_splash;
     code.notify_all();
@@ -189,8 +189,9 @@ constexpr xr::tmc_atomic_wait_t code_exit{0};
     // Destroy APP
     xr_delete(g_SpatialSpacePhysic);
     xr_delete(g_SpatialSpace);
+
     DEL_INSTANCE(g_pGamePersistent);
-    xr_delete(pApp);
+    co_await pApp->co_destroy();
     Engine.Event.Dump();
 
     // Destroying
@@ -324,7 +325,7 @@ namespace xr
 namespace
 {
 [[nodiscard]] s32 main(gsl::czstring cmdline, void* handle);
-[[nodiscard]] tmc::task<void> main_async(gsl::czstring cmdline, void* handle, std::atomic<xr::tmc_atomic_wait_t>& code);
+tmc::task<void> main_async(gsl::czstring cmdline, void* handle, std::atomic<xr::tmc_atomic_wait_t>& code);
 } // namespace
 } // namespace xr
 
@@ -411,13 +412,7 @@ tmc::task<void> main_async(gsl::czstring cmdline, void* handle, std::atomic<xr::
 {
     xr::tmc_cpu_st_executor().init();
 
-    auto in = co_await tmc::fork_clang(
-        [] [[nodiscard]] -> tmc::task<void> {
-            pInput = xr_new<CInput>();
-            co_return;
-        }(),
-        tmc::current_executor(), xr::tmc_priority_any);
-
+    auto in = co_await tmc::fork_clang(CInput::co_create(), tmc::current_executor(), xr::tmc_priority_any);
     auto snd = co_await tmc::fork_clang(CSound_manager_interface::_create(0), tmc::current_executor(), xr::tmc_priority_any);
 
     string_path fsgame;
@@ -450,14 +445,14 @@ tmc::task<void> main_async(gsl::czstring cmdline, void* handle, std::atomic<xr::
         auto sp = tmc::fork_group();
 
         co_await sp.fork_clang(
-            [] [[nodiscard]] -> tmc::task<void> {
+            [] -> tmc::task<void> {
                 g_SpatialSpace = xr_new<ISpatial_DB>();
                 co_return;
             }(),
             tmc::current_executor(), xr::tmc_priority_any);
 
         co_await sp.fork_clang(
-            [] [[nodiscard]] -> tmc::task<void> {
+            [] -> tmc::task<void> {
                 g_SpatialSpacePhysic = xr_new<ISpatial_DB>();
                 co_return;
             }(),
@@ -474,14 +469,14 @@ tmc::task<void> main_async(gsl::czstring cmdline, void* handle, std::atomic<xr::
         if (pStartup)
             Console->Execute(pStartup + 1);
 
-        co_await Device.process_async();
+        co_await Device.process_frame_async();
         auto la = co_await tmc::fork_clang(LALib.OnCreate(), tmc::current_executor(), xr::tmc_priority_any);
 
         // Initialize APP
         co_await Device.Create();
 
         co_await std::move(la);
-        xr::pre_startup();
+        co_await xr::pre_startup();
 
         co_await std::move(sp);
         co_await xr::startup(code);
@@ -511,7 +506,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, char* lpCmdLine, int)
     return ret;
 }
 
-CApplication::CApplication() : loadingScreen(nullptr)
+CApplication::CApplication()
 {
     ll_dwReference = 0;
 
@@ -530,14 +525,26 @@ CApplication::CApplication() : loadingScreen(nullptr)
 
     Device.seqFrame.Add(&g_sound_processor, REG_PRIORITY_NORMAL - 1000); // Place it after Level update
     Device.seqFrameMT.Add(&g_sound_renderer);
+}
 
-    Console->Show();
+tmc::task<std::unique_ptr<CApplication>> CApplication::co_create()
+{
+    auto app = absl::WrapUnique(new (xr_alloc<CApplication>(1)) CApplication{});
+
+    co_await Console->Show();
+    co_return app;
+}
+
+tmc::task<void> CApplication::co_destroy()
+{
+    co_await Console->Hide();
+
+    auto app = this;
+    xr_delete(app);
 }
 
 CApplication::~CApplication()
 {
-    Console->Hide();
-
     Device.seqFrameMT.Remove(&g_sound_renderer);
     Device.seqFrame.Remove(&g_sound_processor);
     Device.seqFrame.Remove(this);
@@ -553,7 +560,7 @@ tmc::task<void> CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 {
     if (E == eQuit)
     {
-        co_await tmc::spawn([] [[nodiscard]] -> tmc::task<void> {
+        co_await tmc::spawn([] -> tmc::task<void> {
             PostQuitMessage(0);
             co_return;
         }())
@@ -569,22 +576,16 @@ tmc::task<void> CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
         R_ASSERT(!g_pGameLevel);
         R_ASSERT(g_pGamePersistent);
 
-        {
-            Console->Execute("main_menu off");
-            Console->Hide();
-            //!			this line is commented by Dima
-            //!			because I don't see any reason to reset device here
-            //!			Device.Reset(false);
-            //-----------------------------------------------------------
-            g_pGamePersistent->PreStart(op_server);
-            //-----------------------------------------------------------
-            g_pGameLevel = (IGame_Level*)NEW_INSTANCE(CLSID_GAME_LEVEL);
+        Console->Execute("main_menu off");
+        co_await Console->Hide();
 
-            pApp->LoadBegin();
-            co_await g_pGamePersistent->Start(op_server);
-            g_pGameLevel->net_Start(op_server, op_client);
-            pApp->LoadEnd();
-        }
+        g_pGamePersistent->PreStart(op_server);
+        g_pGameLevel = smart_cast<IGame_Level*>(NEW_INSTANCE(CLSID_GAME_LEVEL));
+
+        pApp->LoadBegin();
+        co_await g_pGamePersistent->Start(op_server);
+        g_pGameLevel->net_Start(op_server, op_client);
+        pApp->LoadEnd();
 
         xr_free(op_server);
         xr_free(op_client);
@@ -594,12 +595,11 @@ tmc::task<void> CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
         if (g_pGameLevel)
         {
             Console->Execute("main_menu off");
-            Console->Hide();
+            co_await Console->Hide();
 
-            g_pGameLevel->net_Stop();
-
+            co_await g_pGameLevel->net_Stop();
             DEL_INSTANCE(g_pGameLevel);
-            Console->Show();
+            co_await Console->Show();
 
             if ((FALSE == Engine.Event.Peek("KERNEL:quit")) && (FALSE == Engine.Event.Peek("KERNEL:start")))
             {

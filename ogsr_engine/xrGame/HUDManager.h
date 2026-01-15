@@ -40,7 +40,7 @@ public:
     LPCSTR GetFontTexName(LPCSTR section);
     CGameFont* InitializeCustomFont(LPCSTR section, u32 flags = 0);
 
-    [[nodiscard]] tmc::task<void> OnDeviceReset() override;
+    tmc::task<void> OnDeviceReset() override;
 };
 
 class CHUDManager : public CCustomHUD
@@ -62,7 +62,7 @@ public:
     CHUDManager();
     ~CHUDManager() override;
 
-    [[nodiscard]] tmc::task<void> OnEvent(EVENT, u64, u64) override;
+    tmc::task<void> OnEvent(EVENT, u64, u64) override;
 
     virtual void Load();
 

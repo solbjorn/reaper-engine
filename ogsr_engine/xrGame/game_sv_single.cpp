@@ -23,7 +23,7 @@ tmc::task<void> game_sv_Single::Create(shared_str& options)
     co_await inherited::Create(options);
 
     if (strstr(*options, "/alife"))
-        m_alife_simulator = (co_await xr::alife_simulator_create(&server(), &options)).release();
+        m_alife_simulator = (co_await CALifeSimulator::co_create(&server(), &options)).release();
 
     switch_Phase(GAME_PHASE_INPROGRESS);
 }
@@ -303,7 +303,7 @@ tmc::task<void> game_sv_Single::restart_simulator(gsl::czstring saved_game_name)
     pApp->SetLoadingScreen(xr_new<UILoadingScreen>());
     pApp->LoadBegin();
 
-    m_alife_simulator = (co_await xr::alife_simulator_create(&server(), &options)).release();
+    m_alife_simulator = (co_await CALifeSimulator::co_create(&server(), &options)).release();
 
     if (!psActorFlags.test(AF_KEYPRESS_ON_START))
         pApp->LoadForceFinish();

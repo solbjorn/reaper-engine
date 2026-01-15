@@ -91,8 +91,8 @@ public:
     CUIStatic* wnd() { return &m_static; }
     [[nodiscard]] bool OnMouse(float x, float y, EUIMessages mouse_action) override;
     virtual void Draw();
-    [[nodiscard]] tmc::task<void> OnRender() override;
-    [[nodiscard]] tmc::task<void> OnFrame() override;
+    tmc::task<void> OnRender() override;
+    tmc::task<void> OnFrame() override;
     CUICellItem* ParentItem() { return m_pParent; }
     void SetBackList(CUIDragDropListEx* l);
     CUIDragDropListEx* BackList() { return m_back_list; }

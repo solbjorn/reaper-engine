@@ -44,7 +44,7 @@ void CRenderDevice::Destroy()
     seqFrameMT.clear();
     seqDeviceReset.clear();
     seqParallel.clear();
-    seq_async.clear();
+    seq_frame_async.clear();
 
     RenderFactory->DestroyRenderDeviceRender(m_pRender);
     m_pRender = nullptr;
@@ -82,7 +82,7 @@ tmc::task<void> CRenderDevice::Reset(bool precache)
 
     if (g_screenmode == 1)
     {
-        co_await tmc::spawn([] [[nodiscard]] (auto wnd) -> tmc::task<void> {
+        co_await tmc::spawn([](auto wnd) -> tmc::task<void> {
             u32 w, h;
             GetMonitorResolution(w, h);
 

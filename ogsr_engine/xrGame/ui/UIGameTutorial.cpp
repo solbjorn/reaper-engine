@@ -78,7 +78,7 @@ CUISequencer::CUISequencer()
     m_bPlayEachItem = false;
 }
 
-void CUISequencer::Start(LPCSTR tutor_name)
+tmc::task<void> CUISequencer::Start(gsl::czstring tutor_name)
 {
     VERIFY(m_items.size() == 0);
     Device.seqFrame.Add(this, REG_PRIORITY_LOW - 10000);
@@ -116,29 +116,30 @@ void CUISequencer::Start(LPCSTR tutor_name)
     CUISequenceItem* pCurrItem = m_items.front();
     pCurrItem->Start();
     m_pStoredInputReceiver = pInput->CurrentIR();
-    IR_Capture();
+    co_await IR_Capture();
     m_bActive = true;
 }
 
-void CUISequencer::Destroy()
+tmc::task<void> CUISequencer::Destroy()
 {
     m_bActive = false;
     Device.seqFrame.Remove(this);
     Device.seqRender.Remove(this);
+
     delete_data(m_items);
     delete_data(m_UIWindow);
-    IR_Release();
+    co_await IR_Release();
     m_pStoredInputReceiver = nullptr;
 }
 
-void CUISequencer::Stop()
+tmc::task<void> CUISequencer::Stop()
 {
     if (m_items.size())
     {
         if (m_bPlayEachItem)
         {
             Next();
-            return;
+            co_return;
         }
         else
         {
@@ -146,7 +147,8 @@ void CUISequencer::Stop()
             pCurrItem->Stop(true);
         }
     }
-    Destroy();
+
+    co_await Destroy();
 }
 
 tmc::task<void> CUISequencer::OnFrame()
@@ -156,7 +158,7 @@ tmc::task<void> CUISequencer::OnFrame()
 
     if (m_items.empty())
     {
-        Stop();
+        co_await Stop();
         co_return;
     }
 
@@ -166,7 +168,7 @@ tmc::task<void> CUISequencer::OnFrame()
 
     if (m_items.empty())
     {
-        Stop();
+        co_await Stop();
         co_return;
     }
 
@@ -210,10 +212,10 @@ bool CUISequencer::GrabInput()
     return false;
 }
 
-void CUISequencer::IR_OnMousePress(int btn)
+tmc::task<void> CUISequencer::IR_OnMousePress(gsl::index btn)
 {
     if (m_bActive && !GrabInput() && m_pStoredInputReceiver)
-        m_pStoredInputReceiver->IR_OnMousePress(btn);
+        co_await m_pStoredInputReceiver->IR_OnMousePress(btn);
 }
 
 void CUISequencer::IR_OnMouseRelease(int btn)
@@ -222,10 +224,10 @@ void CUISequencer::IR_OnMouseRelease(int btn)
         m_pStoredInputReceiver->IR_OnMouseRelease(btn);
 }
 
-void CUISequencer::IR_OnMouseHold(int btn)
+tmc::task<void> CUISequencer::IR_OnMouseHold(gsl::index btn)
 {
     if (m_bActive && !GrabInput() && m_pStoredInputReceiver)
-        m_pStoredInputReceiver->IR_OnMouseHold(btn);
+        co_await m_pStoredInputReceiver->IR_OnMouseHold(btn);
 }
 
 void CUISequencer::IR_OnMouseMove(int x, int y)
@@ -246,22 +248,22 @@ void CUISequencer::IR_OnKeyboardRelease(int dik)
         m_pStoredInputReceiver->IR_OnKeyboardRelease(dik);
 }
 
-void CUISequencer::IR_OnKeyboardHold(int dik)
+tmc::task<void> CUISequencer::IR_OnKeyboardHold(gsl::index dik)
 {
     if (m_bActive && !GrabInput() && m_pStoredInputReceiver)
-        m_pStoredInputReceiver->IR_OnKeyboardHold(dik);
+        co_await m_pStoredInputReceiver->IR_OnKeyboardHold(dik);
 }
 
-void CUISequencer::IR_OnMouseWheel(int direction)
+tmc::task<void> CUISequencer::IR_OnMouseWheel(gsl::index direction)
 {
     if (m_bActive && !GrabInput() && m_pStoredInputReceiver)
-        m_pStoredInputReceiver->IR_OnMouseWheel(direction);
+        co_await m_pStoredInputReceiver->IR_OnMouseWheel(direction);
 }
 
-void CUISequencer::IR_OnKeyboardPress(int dik)
+tmc::task<void> CUISequencer::IR_OnKeyboardPress(gsl::index dik)
 {
     if (!m_bActive)
-        return;
+        co_return;
 
     if (m_items.size())
         m_items.front()->OnKeyboardPress(dik);
@@ -272,28 +274,27 @@ void CUISequencer::IR_OnKeyboardPress(int dik)
 
     if (b && is_binded(kQUIT, dik))
     {
-        Stop();
-        return;
+        co_await Stop();
+        co_return;
     }
 
     if (b && !GrabInput() && m_pStoredInputReceiver)
-        m_pStoredInputReceiver->IR_OnKeyboardPress(dik);
+        co_await m_pStoredInputReceiver->IR_OnKeyboardPress(dik);
 }
 
-void CUISequencer::IR_OnActivate()
+tmc::task<void> CUISequencer::IR_OnActivate()
 {
     if (!m_bActive)
-        return;
+        co_return;
 
     if (!pInput)
-        return;
+        co_return;
 
     for (u32 i = 0; i < CInput::COUNT_KB_BUTTONS; i++)
     {
         if (IR_GetKeyState(i))
         {
-            EGameActions action = get_binded_action(i);
-            switch (action)
+            switch (get_binded_action(i))
             {
             case kFWD:
             case kBACK:
@@ -307,7 +308,7 @@ void CUISequencer::IR_OnActivate()
             case kACCEL:
             case kL_LOOKOUT:
             case kR_LOOKOUT:
-            case kWPN_FIRE: IR_OnKeyboardPress(i); break;
+            case kWPN_FIRE: co_await IR_OnKeyboardPress(i); break;
             default: break;
             }
         }

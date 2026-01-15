@@ -106,7 +106,7 @@ void dxRenderDeviceRender::SetupStates()
         contexts_pool[id].cmd_list.SetupStates();
 }
 
-void dxRenderDeviceRender::OnDeviceCreate()
+tmc::task<void> dxRenderDeviceRender::OnDeviceCreate()
 {
     // Signal everyone - device created
 
@@ -123,7 +123,7 @@ void dxRenderDeviceRender::OnDeviceCreate()
     }
 
     m_Gamma.Update();
-    Resources->OnDeviceCreate();
+    co_await Resources->OnDeviceCreate();
     RImplementation.create();
     Device.Statistic->OnDeviceCreate();
 
@@ -202,8 +202,7 @@ void dxRenderDeviceRender::overdrawEnd()
 }
 
 void dxRenderDeviceRender::DeferredLoad(BOOL E) { Resources->DeferredLoad(E); }
-
-void dxRenderDeviceRender::ResourcesDeferredUpload() { Resources->DeferredUpload(); }
+tmc::task<void> dxRenderDeviceRender::ResourcesDeferredUpload() { co_await Resources->DeferredUpload(); }
 
 void dxRenderDeviceRender::ResourcesGetMemoryUsage(xr::render_memory_usage& usage) const
 {
@@ -280,12 +279,6 @@ void dxRenderDeviceRender::SetCacheXform(Fmatrix& mView, Fmatrix& mProject)
         contexts_pool[id].cmd_list.set_xform_view(mView);
         contexts_pool[id].cmd_list.set_xform_project(mProject);
     }
-}
-
-void dxRenderDeviceRender::OnAssetsChanged()
-{
-    Resources->m_textures_description.UnLoad();
-    Resources->m_textures_description.Load();
 }
 
 IResourceManager* dxRenderDeviceRender::GetResourceManager() const { return smart_cast<IResourceManager*>(Resources); }

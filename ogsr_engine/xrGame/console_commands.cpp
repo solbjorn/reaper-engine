@@ -245,6 +245,9 @@ class CCC_GameLanguage : public CCC_Token
 {
     RTTI_DECLARE_TYPEINFO(CCC_GameLanguage, CCC_Token);
 
+private:
+    xr_string args_async;
+
 public:
     explicit CCC_GameLanguage(gsl::czstring N) : CCC_Token{N, &LanguageID, LanguagesToken.data()}
     {
@@ -275,20 +278,31 @@ public:
 
     void Execute(gsl::czstring args) override
     {
-        CCC_Token::Execute(args);
+        args_async.assign(args);
+        Device.add_frame_async(CallMe::fromMethod<&CCC_GameLanguage::execute_async>(this));
+    }
 
-        CStringTable().ReloadLanguage();
+private:
+    tmc::task<void> execute_async()
+    {
+        if (args_async.empty())
+            co_return;
+
+        CCC_Token::Execute(args_async.c_str());
+        args_async.clear();
+
+        co_await CStringTable::ReloadLanguage();
 
         if (g_pGamePersistent->IsMainMenuActive())
             MainMenu()->SetLanguageChanged(true);
 
         if (g_pGameLevel == nullptr)
-            return;
+            co_return;
 
         if (g_pGamePersistent->IsMainMenuActive())
         {
-            MainMenu()->Activate(false);
-            MainMenu()->Activate(true);
+            co_await MainMenu()->Activate(false);
+            co_await MainMenu()->Activate(true);
         }
 
         for (u32 id{0}; id < std::numeric_limits<ALife::_OBJECT_ID>::max(); id++)
@@ -467,65 +481,97 @@ public:
     }
 };
 
-//-----------------------------------------------------------------------
 class CCC_DemoRecord : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DemoRecord, IConsole_Command);
+
+private:
+    xr_string args_async;
+
 public:
-    explicit CCC_DemoRecord(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_DemoRecord(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_DemoRecord() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(gsl::czstring args) override
     {
-        if (!g_pGameLevel)
-        { // level not loaded
+        if (g_pGameLevel == nullptr)
+        {
             Log("Demo Record is disabled when level is not loaded.");
             return;
         }
 
-        Console->Hide();
+        args_async.assign(args);
+        Device.add_frame_async(CallMe::fromMethod<&CCC_DemoRecord::execute_async>(this));
+    }
+
+private:
+    tmc::task<void> execute_async()
+    {
+        if (args_async.empty())
+            co_return;
+
+        co_await Console->Hide();
 
         if (MainMenu()->IsActive())
-            MainMenu()->Activate(false);
+            co_await MainMenu()->Activate(false);
 
         string_path fn_;
-        strconcat(sizeof(fn_), fn_, args, ".xrdemo");
+        xr_strconcat(fn_, args_async.c_str(), ".xrdemo");
+        args_async.clear();
+
         string_path fn;
         std::ignore = FS.update_path(fn, "$game_saves$", fn_);
 
-        g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoRecord>(fn));
+        g_pGameLevel->Cameras().AddCamEffector((co_await CDemoRecord::co_create(fn)).release());
     }
 };
 
 class CCC_DemoPlay : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DemoPlay, IConsole_Command);
+
+private:
+    xr_string args_async;
+
 public:
     explicit CCC_DemoPlay(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_DemoPlay() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(gsl::czstring args) override
     {
         if (!g_pGameLevel)
         {
             Msg("! There are no level(s) started");
+            return;
         }
-        else
+
+        args_async.assign(args);
+        Device.add_frame_async(CallMe::fromMethod<&CCC_DemoPlay::execute_async>(this));
+    }
+
+private:
+    tmc::task<void> execute_async()
+    {
+        if (args_async.empty())
+            co_return;
+
+        co_await Console->Hide();
+
+        gsl::czstring args = args_async.c_str();
+        string_path fn;
+        u32 loops{};
+
+        if (gsl::zstring comma = std::strchr(const_cast<gsl::zstring>(args), ','); comma != nullptr)
         {
-            Console->Hide();
-
-            string_path fn;
-            u32 loops = 0;
-            LPSTR comma = strchr(const_cast<LPSTR>(args), ',');
-            if (comma)
-            {
-                loops = atoi(comma + 1);
-                *comma = 0; //. :)
-            }
-
-            strconcat(sizeof(fn), fn, args, ".xrdemo");
-            std::ignore = FS.update_path(fn, "$game_saves$", fn);
-
-            g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoPlay>(fn, 1.0f, loops));
+            loops = std::atoi(comma + 1);
+            *comma = '\0';
         }
+
+        xr_strconcat(fn, args, ".xrdemo");
+        args_async.clear();
+
+        std::ignore = FS.update_path(fn, "$game_saves$", fn);
+        g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoPlay>(fn, 1.0f, loops));
     }
 };
 
@@ -547,51 +593,72 @@ bool valid_file_name(LPCSTR file_name)
 
 class CCC_ALifeSave : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_ALifeSave, IConsole_Command);
+
+private:
+    xr_string args_async;
+
 public:
-    explicit CCC_ALifeSave(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_ALifeSave(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_ALifeSave() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(gsl::czstring args) override
     {
-        if (!g_actor || !Actor()->g_Alive())
+        if (g_actor == nullptr || !Actor()->g_Alive())
         {
             Msg("cannot make saved game because actor is dead :(");
             return;
         }
 
-        string_path S, S1;
-        S[0] = 0;
-        //.		sscanf					(args ,"%s",S);
-        strcpy_s(S, args);
+        const bool named = args != nullptr && args[0] != '\0';
+        if (named && !valid_file_name(args))
+        {
+            Msg("invalid file name");
+            return;
+        }
+
+        args_async.assign(named ? args : "quick");
+        Device.add_frame_async(CallMe::fromMethod<&CCC_ALifeSave::execute_async>(this));
+    }
+
+private:
+    tmc::task<void> execute_async()
+    {
+        if (args_async.empty())
+            co_return;
 
 #ifdef DEBUG
         CTimer timer;
         timer.Start();
 #endif
 
-        if (!xr_strlen(S))
+        string_path S;
+        S[0] = '\0';
+
+        if (std::is_eq(xr_strcmp(args_async, "quick")))
         {
-            strconcat(sizeof(S), S, Core.UserName, "_", "quicksave");
+            xr_strconcat(S, Core.UserName, "_", "quicksave");
+
             NET_Packet net_packet;
             net_packet.w_begin(M_SAVE_GAME);
             net_packet.w_stringZ(S);
             net_packet.w_u8(0);
+
             Level().Send(net_packet, net_flags(TRUE));
         }
         else
         {
-            if (!valid_file_name(S))
-            {
-                Msg("invalid file name");
-                return;
-            }
+            xr_strcpy(S, args_async.c_str());
 
             NET_Packet net_packet;
             net_packet.w_begin(M_SAVE_GAME);
             net_packet.w_stringZ(S);
             net_packet.w_u8(1);
+
             Level().Send(net_packet, net_flags(TRUE));
         }
+
+        args_async.clear();
 
 #ifdef DEBUG
         Msg("Game save overhead  : %f milliseconds", timer.GetElapsed_sec() * 1000.f);
@@ -604,14 +671,15 @@ public:
         strconcat(sizeof(save_name), save_name, *CStringTable().translate(shared_str{"st_game_saved"}), ": ", S);
         _s->wnd()->SetText(save_name);
 
-        strcat_s(S, ".dds");
+        xr_strcat(S, ".dds");
+        string_path S1;
         std::ignore = FS.update_path(S1, "$game_saves$", S);
 
 #ifdef DEBUG
         timer.Start();
 #endif
 
-        MainMenu()->Screenshot(IRender_interface::SM_FOR_GAMESAVE, S1);
+        co_await MainMenu()->Screenshot(IRender_interface::SM_FOR_GAMESAVE, S1);
 
 #ifdef DEBUG
         Msg("Screenshot overhead : %f milliseconds", timer.GetElapsed_sec() * 1000.f);
@@ -623,6 +691,9 @@ class CCC_ALifeLoadFrom : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_ALifeLoadFrom, IConsole_Command);
 
+private:
+    xr_string args_async;
+
 public:
     explicit CCC_ALifeLoadFrom(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_ALifeLoadFrom() override = default;
@@ -631,33 +702,44 @@ public:
     {
         if (!CSavedGameWrapper::valid_saved_game(args))
         {
-            Msg("! Cannot load saved game [%s]: not found or version mismatch or corrupted", args ? args : "nullptr");
+            Msg("! Cannot load saved game [%s]: not found or version mismatch or corrupted", args ?: "nullptr");
             return;
         }
 
-        if (ai().get_alife() != nullptr)
-        {
-            if (MainMenu()->IsActive())
-                MainMenu()->Activate(false);
-
-            Console->Hide();
-            ::Sound->set_master_volume(0.0f);
-
-            if (Device.Paused())
-                Device.Pause(false, true, true, "CCC_ALifeLoadFrom");
-
-            NET_Packet net_packet;
-            net_packet.w_begin(M_LOAD_GAME);
-            net_packet.w_stringZ(args);
-
-            Level().Send(net_packet, net_flags(true));
-        }
-        else
+        if (ai().get_alife() == nullptr)
         {
             string_path command;
             xr_strconcat(command, "start server(", args, "/single/alife/load)");
+
             Console->Execute(command);
+            return;
         }
+
+        args_async.assign(args);
+        Device.add_frame_async(CallMe::fromMethod<&CCC_ALifeLoadFrom::execute_async>(this));
+    }
+
+private:
+    tmc::task<void> execute_async()
+    {
+        if (args_async.empty())
+            co_return;
+
+        if (MainMenu()->IsActive())
+            co_await MainMenu()->Activate(false);
+
+        co_await Console->Hide();
+        ::Sound->set_master_volume(0.0f);
+
+        if (Device.Paused())
+            Device.Pause(false, true, true, "CCC_ALifeLoadFrom");
+
+        NET_Packet net_packet;
+        net_packet.w_begin(M_LOAD_GAME);
+        net_packet.w_stringZ(args_async.c_str());
+
+        args_async.clear();
+        Level().Send(net_packet, net_flags(true));
     }
 
     void fill_tips(vecTips& tips) override { get_files_list(tips, "$game_saves$", SAVE_EXTENSION); }
@@ -1161,25 +1243,39 @@ public:
 
 class CCC_MainMenu : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_MainMenu, IConsole_Command);
+
+private:
+    xr_string args_async;
+
 public:
-    explicit CCC_MainMenu(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_MainMenu(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_MainMenu() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(gsl::czstring args) override
     {
-        bool bWhatToDo = TRUE;
-        if (0 == xr_strlen(args))
-        {
+        args_async.assign(args != nullptr && args[0] != '\0' ? args : "toggle");
+        Device.add_frame_async(CallMe::fromMethod<&CCC_MainMenu::execute_async>(this));
+    }
+
+private:
+    tmc::task<void> execute_async()
+    {
+        if (args_async.empty())
+            co_return;
+
+        const auto args = std::string_view{args_async};
+        bool bWhatToDo{true};
+
+        if (std::is_eq(xr_strcmp(args, "toggle")))
             bWhatToDo = !MainMenu()->IsActive();
-        }
+        else if (std::is_eq(xr_strcmp(args, "on")) || std::is_eq(xr_strcmp(args, "1")))
+            bWhatToDo = true;
+        else if (std::is_eq(xr_strcmp(args, "off")) || std::is_eq(xr_strcmp(args, "0")))
+            bWhatToDo = false;
 
-        if (EQ(args, "on") || EQ(args, "1"))
-            bWhatToDo = TRUE;
-
-        if (EQ(args, "off") || EQ(args, "0"))
-            bWhatToDo = FALSE;
-
-        MainMenu()->Activate(bWhatToDo);
+        args_async.clear();
+        co_await MainMenu()->Activate(bWhatToDo);
     }
 };
 

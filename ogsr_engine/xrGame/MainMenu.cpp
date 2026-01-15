@@ -106,16 +106,16 @@ void CMainMenu::ReadTextureInfo()
     }
 }
 
-void CMainMenu::Activate(bool bActivate)
+tmc::task<void> CMainMenu::Activate(bool bActivate)
 {
     if (!!m_Flags.test(flActive) == bActivate)
-        return;
+        co_return;
 
     if (m_Flags.test(flGameSaveScreenshot))
-        return;
+        co_return;
 
     if ((m_screenshotFrame == Device.dwFrame) || (m_screenshotFrame == Device.dwFrame - 1) || (m_screenshotFrame == Device.dwFrame + 1))
-        return;
+        co_return;
 
     if (bActivate)
     {
@@ -128,7 +128,7 @@ void CMainMenu::Activate(bool bActivate)
             if (!dlg)
             {
                 m_Flags.set(flActive | flNeedChangeCapture, FALSE);
-                return;
+                co_return;
             }
 
             xr_delete(m_startDialog);
@@ -139,7 +139,7 @@ void CMainMenu::Activate(bool bActivate)
         m_Flags.set(flRestoreConsole, Console->bVisible);
         m_Flags.set(flRestorePause, Device.Paused());
 
-        Console->Hide();
+        co_await Console->Hide();
 
         m_Flags.set(flRestoreCursor, GetUICursor()->IsVisible());
         m_Flags.set(flRestorePauseStr, bShowPauseString);
@@ -179,15 +179,12 @@ void CMainMenu::Activate(bool bActivate)
 
         bool b = !!Console->bVisible;
         if (b)
-        {
-            Console->Hide();
-        }
+            co_await Console->Hide();
 
-        IR_Release();
+        co_await IR_Release();
+
         if (b)
-        {
-            Console->Show();
-        }
+            co_await Console->Show();
 
         StartStopMenu(m_startDialog, true);
         CleanInternals();
@@ -199,7 +196,7 @@ void CMainMenu::Activate(bool bActivate)
         }
 
         if (m_Flags.test(flRestoreConsole))
-            Console->Show();
+            co_await Console->Show();
 
         if (!m_Flags.test(flRestorePause))
             Device.Pause(FALSE, TRUE, FALSE, "mm_deactivate1");
@@ -222,12 +219,12 @@ void CMainMenu::Activate(bool bActivate)
 bool CMainMenu::IsActive() { return !!m_Flags.test(flActive); }
 bool CMainMenu::CanSkipSceneRendering() { return IsActive() && !m_Flags.test(flGameSaveScreenshot); }
 
-void CMainMenu::IR_OnMousePress(int btn)
+tmc::task<void> CMainMenu::IR_OnMousePress(gsl::index btn)
 {
     if (!IsActive())
-        return;
+        co_return;
 
-    IR_OnKeyboardPress(mouse_button_2_key[btn]);
+    co_await IR_OnKeyboardPress(mouse_button_2_key[btn]);
 }
 
 void CMainMenu::IR_OnMouseRelease(int btn)
@@ -238,12 +235,12 @@ void CMainMenu::IR_OnMouseRelease(int btn)
     IR_OnKeyboardRelease(mouse_button_2_key[btn]);
 }
 
-void CMainMenu::IR_OnMouseHold(int btn)
+tmc::task<void> CMainMenu::IR_OnMouseHold(gsl::index btn)
 {
     if (!IsActive())
-        return;
+        co_return;
 
-    IR_OnKeyboardHold(mouse_button_2_key[btn]);
+    co_await IR_OnKeyboardHold(mouse_button_2_key[btn]);
 }
 
 void CMainMenu::IR_OnMouseMove(int x, int y)
@@ -257,24 +254,25 @@ void CMainMenu::IR_OnMouseMove(int x, int y)
 
 void CMainMenu::IR_OnMouseStop(int, int) {}
 
-void CMainMenu::IR_OnKeyboardPress(int dik)
+tmc::task<void> CMainMenu::IR_OnKeyboardPress(gsl::index dik)
 {
     if (!IsActive())
-        return;
+        co_return;
 
     if (is_binded(kCONSOLE, dik))
     {
-        Console->Show();
-        return;
+        co_await Console->Show();
+        co_return;
     }
+
     if (DIK_F12 == dik)
     {
         Render->Screenshot();
-        return;
+        co_return;
     }
 
     if (MainInputReceiver())
-        MainInputReceiver()->IR_OnKeyboardPress(dik);
+        co_await MainInputReceiver()->IR_OnKeyboardPress(dik);
 }
 
 void CMainMenu::IR_OnKeyboardRelease(int dik)
@@ -286,22 +284,22 @@ void CMainMenu::IR_OnKeyboardRelease(int dik)
         MainInputReceiver()->IR_OnKeyboardRelease(dik);
 }
 
-void CMainMenu::IR_OnKeyboardHold(int dik)
+tmc::task<void> CMainMenu::IR_OnKeyboardHold(gsl::index dik)
 {
     if (!IsActive())
-        return;
+        co_return;
 
     if (MainInputReceiver())
-        MainInputReceiver()->IR_OnKeyboardHold(dik);
+        co_await MainInputReceiver()->IR_OnKeyboardHold(dik);
 }
 
-void CMainMenu::IR_OnMouseWheel(int direction)
+tmc::task<void> CMainMenu::IR_OnMouseWheel(gsl::index direction)
 {
     if (!IsActive())
-        return;
+        co_return;
 
     if (MainInputReceiver())
-        MainInputReceiver()->IR_OnMouseWheel(direction);
+        co_await MainInputReceiver()->IR_OnMouseWheel(direction);
 }
 
 bool CMainMenu::OnRenderPPUI_query() { return IsActive() && !m_Flags.test(flGameSaveScreenshot) && b_shniaganeed_pp; }
@@ -370,10 +368,11 @@ tmc::task<void> CMainMenu::OnFrame()
     if (m_Flags.test(flNeedChangeCapture))
     {
         m_Flags.set(flNeedChangeCapture, FALSE);
+
         if (m_Flags.test(flActive))
-            IR_Capture();
+            co_await IR_Capture();
         else
-            IR_Release();
+            co_await IR_Release();
     }
 
     co_await CDialogHolder::OnFrame();
@@ -392,7 +391,7 @@ tmc::task<void> CMainMenu::OnFrame()
         }
 
         if (m_Flags.test(flRestoreConsole))
-            Console->Show();
+            co_await Console->Show();
     }
 
     if (IsActive())
@@ -404,27 +403,27 @@ tmc::task<void> CMainMenu::OnFrame()
 
 void CMainMenu::OnDeviceCreate() {}
 
-void CMainMenu::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
+tmc::task<void> CMainMenu::Screenshot(IRender_interface::ScreenshotMode mode, gsl::czstring name)
 {
     if (mode != IRender_interface::SM_FOR_GAMESAVE)
     {
         ::Render->Screenshot(mode, name);
+        co_return;
     }
-    else
+
+    m_Flags.set(flGameSaveScreenshot, true);
+    xr_strcpy(m_screenshot_name, name);
+
+    if (g_pGameLevel && m_Flags.test(flActive))
     {
-        m_Flags.set(flGameSaveScreenshot, TRUE);
-        strcpy_s(m_screenshot_name, name);
-
-        if (g_pGameLevel && m_Flags.test(flActive))
-        {
-            Device.seqFrame.Add(g_pGameLevel);
-            Device.seqRender.Add(g_pGameLevel);
-        }
-
-        m_screenshotFrame = Device.dwFrame + 1;
-        m_Flags.set(flRestoreConsole, Console->bVisible);
-        Console->Hide();
+        Device.seqFrame.Add(g_pGameLevel);
+        Device.seqRender.Add(g_pGameLevel);
     }
+
+    m_screenshotFrame = Device.dwFrame + 1;
+    m_Flags.set(flRestoreConsole, Console->bVisible);
+
+    co_await Console->Hide();
 }
 
 void CMainMenu::RegisterPPDraw(CUIWindow* w)
@@ -434,7 +433,6 @@ void CMainMenu::RegisterPPDraw(CUIWindow* w)
 }
 
 void CMainMenu::UnregisterPPDraw(CUIWindow* w) { m_pp_draw_wnds.erase(std::remove(m_pp_draw_wnds.begin(), m_pp_draw_wnds.end(), w), m_pp_draw_wnds.end()); }
-
 void CMainMenu::SetErrorDialog(EErrorDlg ErrDlg) { m_NeedErrDialog = ErrDlg; }
 
 void CMainMenu::CheckForErrorDlg()

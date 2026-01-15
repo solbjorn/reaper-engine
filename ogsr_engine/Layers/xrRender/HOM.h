@@ -42,7 +42,7 @@ public:
     CHOM();
     ~CHOM() override;
 
-    [[nodiscard]] tmc::task<void> Load();
+    tmc::task<void> Load();
     void Unload();
 
     void Disable();
@@ -57,7 +57,7 @@ public:
     BOOL visible(const Fbox2& B, float depth) const; // viewport-space (0..1)
 
 #ifdef DEBUG
-    [[nodiscard]] tmc::task<void> OnRender() override;
+    tmc::task<void> OnRender() override;
     void stats();
 #endif
 };

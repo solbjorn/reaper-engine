@@ -25,22 +25,27 @@ bool error_after_dialog{};
 
 static void ShowErrorMessage(const char* msg, const bool show_msg = false)
 {
-    const bool on_main_thread = Core.OnMainThread();
-
-    if (on_main_thread)
-    {
+    tmc::post(xr::tmc_cpu_st_executor(), [] -> tmc::task<void> {
         ShowWindow(gGameWindow, SW_HIDE);
+        co_return;
+    }());
 
-        while (ShowCursor(TRUE) < 0)
-            ;
-    }
+    while (ShowCursor(true) < 0)
+        ;
 
-    if (!IsDebuggerPresent())
+    if (IsDebuggerPresent())
+        return;
+
+    if (show_msg)
     {
-        if (show_msg && on_main_thread)
+        tmc::post(xr::tmc_cpu_st_executor(), [](gsl::czstring msg) -> tmc::task<void> {
             MessageBox(gGameWindow, msg, "FATAL ERROR", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
-        else
-            ShellExecute(nullptr, "open", logFName, nullptr, nullptr, SW_SHOW);
+            co_return;
+        }(msg));
+    }
+    else
+    {
+        ShellExecute(nullptr, "open", logFName, nullptr, nullptr, SW_SHOW);
     }
 }
 

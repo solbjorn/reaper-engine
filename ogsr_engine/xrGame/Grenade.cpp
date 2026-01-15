@@ -202,12 +202,9 @@ void CGrenade::PutNextToSlot()
             pNext->u_EventSend(P);
             m_pCurrentInventory->SetActiveSlot(pNext->GetSlot());
         }
-        else
+        else if (auto actor = smart_cast<CActor*>(m_pCurrentInventory->GetOwner()); actor != nullptr)
         {
-            CActor* pActor = smart_cast<CActor*>(m_pCurrentInventory->GetOwner());
-
-            if (pActor)
-                pActor->OnPrevWeaponSlot();
+            Device.add_frame_async(CallMe::fromMethod<&CActor::OnPrevWeaponSlot>(actor));
         }
     }
 }

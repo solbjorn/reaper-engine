@@ -46,48 +46,54 @@ void CConsole::Register_callbacks()
     ec().assign_callback(DIK_F12, text_editor::ks_free, CallMe::fromMethod<&CConsole::Screenshot>(this));
 }
 
-void CConsole::Screenshot() { Render->Screenshot(); }
+tmc::task<void> CConsole::Screenshot()
+{
+    Render->Screenshot();
+    co_return;
+}
 
-void CConsole::Prev_log() // DIK_PRIOR=PAGE_UP
+tmc::task<void> CConsole::Prev_log() // DIK_PRIOR=PAGE_UP
 {
     scroll_delta++;
     if (scroll_delta > int(LogFile.size()) - 1)
-    {
         scroll_delta = LogFile.size() - 1;
-    }
+
+    co_return;
 }
 
-void CConsole::Next_log() // DIK_NEXT=PAGE_DOWN
+tmc::task<void> CConsole::Next_log() // DIK_NEXT=PAGE_DOWN
 {
     scroll_delta--;
     if (scroll_delta < 0)
-    {
         scroll_delta = 0;
-    }
+
+    co_return;
 }
 
-void CConsole::Begin_log() // PAGE_UP+Ctrl
+tmc::task<void> CConsole::Begin_log() // PAGE_UP+Ctrl
 {
     scroll_delta = LogFile.size() - 1;
+    co_return;
 }
 
-void CConsole::End_log() // PAGE_DOWN+Ctrl
+tmc::task<void> CConsole::End_log() // PAGE_DOWN+Ctrl
 {
     scroll_delta = 0;
+    co_return;
 }
 
-void CConsole::Find_cmd() // DIK_TAB
+tmc::task<void> CConsole::Find_cmd() // DIK_TAB
 {
     shared_str out_str;
 
     IConsole_Command* cc = find_next_cmd(ec().str_edit(), out_str);
     if (cc && out_str.size())
-    {
         ec().set_edit(out_str.c_str());
-    }
+
+    co_return;
 }
 
-void CConsole::Find_cmd_back() // DIK_TAB+shift
+tmc::task<void> CConsole::Find_cmd_back() // DIK_TAB+shift
 {
     LPCSTR edt = ec().str_edit();
 
@@ -100,68 +106,86 @@ void CConsole::Find_cmd_back() // DIK_TAB+shift
 
         ec().set_edit(name_cmd);
     }
+
+    co_return;
 }
 
-void CConsole::Prev_cmd() // DIK_UP + Ctrl
+tmc::task<void> CConsole::Prev_cmd() // DIK_UP + Ctrl
 {
     prev_cmd_history_idx();
     SelectCommand();
+
+    co_return;
 }
 
-void CConsole::Next_cmd() // DIK_DOWN + Ctrl
+tmc::task<void> CConsole::Next_cmd() // DIK_DOWN + Ctrl
 {
     next_cmd_history_idx();
     SelectCommand();
+
+    co_return;
 }
 
-void CConsole::Prev_tip() // DIK_UP
+tmc::task<void> CConsole::Prev_tip() // DIK_UP
 {
     if (xr_strlen(ec().str_edit()) == 0)
     {
         prev_cmd_history_idx();
         SelectCommand();
-        return;
+
+        co_return;
     }
+
     prev_selected_tip();
 }
 
-void CConsole::Next_tip() // DIK_DOWN + Ctrl
+tmc::task<void> CConsole::Next_tip() // DIK_DOWN + Ctrl
 {
     if (xr_strlen(ec().str_edit()) == 0)
     {
         next_cmd_history_idx();
         SelectCommand();
-        return;
+
+        co_return;
     }
+
     next_selected_tip();
 }
 
-void CConsole::Begin_tips()
+tmc::task<void> CConsole::Begin_tips()
 {
     m_select_tip = 0;
     m_start_tip = 0;
+
+    co_return;
 }
 
-void CConsole::End_tips()
+tmc::task<void> CConsole::End_tips()
 {
     m_select_tip = m_tips.size() - 1;
     m_start_tip = m_select_tip - VIEW_TIPS_COUNT + 1;
+
     check_next_selected_tip();
+    co_return;
 }
 
-void CConsole::PageUp_tips()
+tmc::task<void> CConsole::PageUp_tips()
 {
     m_select_tip -= VIEW_TIPS_COUNT;
     check_prev_selected_tip();
+
+    co_return;
 }
 
-void CConsole::PageDown_tips()
+tmc::task<void> CConsole::PageDown_tips()
 {
     m_select_tip += VIEW_TIPS_COUNT;
     check_next_selected_tip();
+
+    co_return;
 }
 
-void CConsole::Execute_cmd() // DIK_RETURN, DIK_NUMPADENTER
+tmc::task<void> CConsole::Execute_cmd() // DIK_RETURN, DIK_NUMPADENTER
 {
     if (0 <= m_select_tip && m_select_tip < (int)m_tips.size())
     {
@@ -184,20 +208,23 @@ void CConsole::Execute_cmd() // DIK_RETURN, DIK_NUMPADENTER
     {
         ExecuteCommand(ec().str_edit());
     }
+
     m_disable_tips = false;
+    co_return;
 }
 
-void CConsole::Show_cmd() { Show(); }
-void CConsole::Hide_cmd() { Hide(); }
+tmc::task<void> CConsole::Show_cmd() { co_await Show(); }
+tmc::task<void> CConsole::Hide_cmd() { co_await Hide(); }
 
-void CConsole::Hide_cmd_esc()
+tmc::task<void> CConsole::Hide_cmd_esc()
 {
     if (0 <= m_select_tip && m_select_tip < (int)m_tips.size())
     {
         m_disable_tips = true;
-        return;
+        co_return;
     }
-    Hide();
+
+    co_await Hide();
 }
 
-void CConsole::GamePause() {}
+tmc::task<void> CConsole::GamePause() { co_return; }

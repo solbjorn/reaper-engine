@@ -132,7 +132,7 @@ tmc::task<void> CGamePersistent::OnAppStart()
 tmc::task<void> CGamePersistent::OnAppEnd()
 {
     if (m_pMainMenu->IsActive())
-        m_pMainMenu->Activate(false);
+        co_await m_pMainMenu->Activate(false);
 
     xr::ingame_editor_destroy(xr::detail::editor);
     xr_delete(m_pMainMenu);
@@ -442,39 +442,45 @@ void CGamePersistent::WeathersUpdate()
     }
 }
 
-void CGamePersistent::start_logo_intro()
+tmc::task<void> CGamePersistent::start_logo_intro()
 {
     if (!strstr(Core.Params, "-intro"))
     {
-        m_intro_event = CallMe::Delegate<void()>();
-        Console->Show();
+        m_intro_event = CallMe::Delegate<tmc::task<void>()>{};
+        co_await Console->Show();
         Console->Execute("main_menu on");
-        return;
+
+        co_return;
     }
 
-    if (!Device.dwPrecacheFrame)
+    if (Device.dwPrecacheFrame > 0)
+        co_return;
+
+    m_intro_event = CallMe::fromMethod<&CGamePersistent::update_logo_intro>(this);
+
+    if (!xr_strlen(m_game_params.m_game_or_spawn) && !g_pGameLevel)
     {
-        m_intro_event = CallMe::fromMethod<&CGamePersistent::update_logo_intro>(this);
-        if (!xr_strlen(m_game_params.m_game_or_spawn) && !g_pGameLevel)
-        {
-            VERIFY(!m_intro);
-            m_intro = xr_new<CUISequencer>();
-            m_intro->Start("intro_logo");
-            Console->Hide();
-        }
+        VERIFY(!m_intro);
+        m_intro = xr_new<CUISequencer>();
+
+        co_await m_intro->Start("intro_logo");
+        co_await Console->Hide();
     }
 }
-void CGamePersistent::update_logo_intro()
+
+tmc::task<void> CGamePersistent::update_logo_intro()
 {
     if (m_intro && (false == m_intro->IsActive()))
     {
-        m_intro_event = CallMe::Delegate<void()>();
+        m_intro_event = CallMe::Delegate<tmc::task<void>()>{};
         xr_delete(m_intro);
         Console->Execute("main_menu on");
     }
+
+    co_return;
 }
 
-void CGamePersistent::start_game_intro()
+tmc::task<void> CGamePersistent::start_game_intro()
 {
     if (g_pGameLevel && g_pGameLevel->bReady && Device.dwPrecacheFrame <= 2)
     {
@@ -485,41 +491,43 @@ void CGamePersistent::start_game_intro()
             VERIFY(m_intro == nullptr);
 
             m_intro = xr_new<CUISequencer>();
-            m_intro->Start("intro_game");
-            // Msg("Intro start: [%u]", Device.dwFrame);
+            co_await m_intro->Start("intro_game");
         }
     }
 }
-void CGamePersistent::update_game_intro()
+
+tmc::task<void> CGamePersistent::update_game_intro()
 {
     if (!m_intro)
-        m_intro_event = CallMe::Delegate<void()>();
+    {
+        m_intro_event = CallMe::Delegate<tmc::task<void>()>{};
+    }
     else if (!m_intro->IsActive())
     {
         xr_delete(m_intro);
-        m_intro_event = CallMe::Delegate<void()>();
+        m_intro_event = CallMe::Delegate<tmc::task<void>()>{};
     }
+
+    co_return;
 }
 
 tmc::task<void> CGamePersistent::OnFrame()
 {
     if (g_tutorial2)
     {
-        g_tutorial2->Destroy();
+        co_await g_tutorial2->Destroy();
         xr_delete(g_tutorial2);
     }
 
     if (g_tutorial && !g_tutorial->IsActive())
-    {
         xr_delete(g_tutorial);
-    }
 
 #ifdef DEBUG
     ++m_frame_counter;
 #endif
 
-    if (!load_screen_renderer.b_registered)
-        m_intro_event();
+    if (m_intro_event != CallMe::Delegate<tmc::task<void>()>{} && !load_screen_renderer.b_registered)
+        co_await m_intro_event();
 
     if (Device.dwPrecacheFrame == 0 && load_screen_renderer.b_registered && !GameAutopaused)
     {
@@ -633,7 +641,7 @@ tmc::task<void> CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 
         LPSTR saved_name = (LPSTR)(P1);
 
-        Level().remove_objects();
+        co_await Level().remove_objects();
 
         game_sv_Single* game = smart_cast<game_sv_Single*>(Level().Server->game);
         R_ASSERT(game);

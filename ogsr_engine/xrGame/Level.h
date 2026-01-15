@@ -167,19 +167,19 @@ protected:
     BOOL net_start_result_total;
     BOOL connected_to_server;
 
-    [[nodiscard]] tmc::task<bool> net_start1();
-    [[nodiscard]] tmc::task<bool> net_start2();
-    [[nodiscard]] tmc::task<bool> net_start3();
-    [[nodiscard]] tmc::task<bool> net_start4();
-    [[nodiscard]] tmc::task<bool> net_start5();
-    [[nodiscard]] tmc::task<bool> net_start6();
+    tmc::task<bool> net_start1();
+    tmc::task<bool> net_start2();
+    tmc::task<bool> net_start3();
+    tmc::task<bool> net_start4();
+    tmc::task<bool> net_start5();
+    tmc::task<bool> net_start6();
 
-    [[nodiscard]] tmc::task<bool> net_start_client1();
-    [[nodiscard]] tmc::task<bool> net_start_client2();
-    [[nodiscard]] tmc::task<bool> net_start_client3();
-    [[nodiscard]] tmc::task<bool> net_start_client4();
-    [[nodiscard]] tmc::task<bool> net_start_client5();
-    [[nodiscard]] tmc::task<bool> net_start_client6();
+    tmc::task<bool> net_start_client1();
+    tmc::task<bool> net_start_client2();
+    tmc::task<bool> net_start_client3();
+    tmc::task<bool> net_start_client4();
+    tmc::task<bool> net_start_client5();
+    tmc::task<bool> net_start_client6();
 
     void net_OnChangeSelfName(NET_Packet* P);
 
@@ -195,10 +195,10 @@ public:
     virtual BOOL net_Start(LPCSTR op_server, LPCSTR op_client);
     void net_Load(LPCSTR) override;
     virtual void net_Save(LPCSTR name);
-    virtual void net_Stop();
+    tmc::task<void> net_Stop() override;
     virtual void net_Update();
 
-    [[nodiscard]] tmc::task<bool> Load_GameSpecific_Before() override;
+    tmc::task<bool> Load_GameSpecific_Before() override;
     virtual BOOL Load_GameSpecific_After();
 
     void Load_GameSpecific_CFORM_Serialize(IWriter& writer) override;
@@ -206,9 +206,9 @@ public:
     void Load_GameSpecific_CFORM(std::span<CDB::TRI> T) override;
 
     // Events
-    [[nodiscard]] tmc::task<void> OnEvent(EVENT E, u64 P1, u64) override;
-    [[nodiscard]] tmc::task<void> OnFrame() override;
-    [[nodiscard]] tmc::task<void> OnRender() override;
+    tmc::task<void> OnEvent(EVENT E, u64 P1, u64) override;
+    tmc::task<void> OnFrame() override;
+    tmc::task<void> OnRender() override;
     void cl_Process_Event(u16 dest, u16 type, NET_Packet& P);
     void cl_Process_Spawn(NET_Packet& P);
     void ProcessGameEvents();
@@ -216,16 +216,16 @@ public:
     void ProcessGameSpawnsDestroy(u16 dest, u16 type);
 
     // Input
-    virtual void IR_OnKeyboardPress(int btn);
+    tmc::task<void> IR_OnKeyboardPress(gsl::index btn) override;
     virtual void IR_OnKeyboardRelease(int btn);
-    virtual void IR_OnKeyboardHold(int btn);
-    virtual void IR_OnMousePress(int btn);
+    tmc::task<void> IR_OnKeyboardHold(gsl::index btn) override;
+    tmc::task<void> IR_OnMousePress(gsl::index btn) override;
     virtual void IR_OnMouseRelease(int btn);
-    virtual void IR_OnMouseHold(int btn);
+    tmc::task<void> IR_OnMouseHold(gsl::index btn) override;
     virtual void IR_OnMouseMove(int, int);
     virtual void IR_OnMouseStop(int, int);
-    virtual void IR_OnMouseWheel(int direction);
-    virtual void IR_OnActivate(void);
+    tmc::task<void> IR_OnMouseWheel(gsl::index direction) override;
+    tmc::task<void> IR_OnActivate() override;
 
     // Real Wolf. Start. 14.10.2014
     void block_action(EGameActions cmd);
@@ -318,7 +318,7 @@ private:
 
 public:
     bool is_removing_objects() { return m_is_removing_objects; }
-    void remove_objects();
+    tmc::task<void> remove_objects();
     virtual void OnSessionTerminate(LPCSTR reason);
     void OnDestroyObject(u16 id) override;
     virtual void OnChangeCurrentWeather(const char* sect) override;

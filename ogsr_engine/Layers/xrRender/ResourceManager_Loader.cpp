@@ -26,10 +26,10 @@ void CResourceManager::OnDeviceDestroy(BOOL)
     LS_Unload();
 }
 
-void CResourceManager::OnDeviceCreate()
+tmc::task<void> CResourceManager::OnDeviceCreate()
 {
     if (!Device.b_is_Ready)
-        return;
+        co_return;
 
     // scripting
     LS_Load();
@@ -54,7 +54,7 @@ void CResourceManager::OnDeviceCreate()
         }
     }
 
-    m_textures_description.Load();
+    co_await m_textures_description.Load();
 }
 
 void CResourceManager::LoadShaderFile(LPCSTR fname)

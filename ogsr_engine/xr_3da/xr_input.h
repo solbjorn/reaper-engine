@@ -71,8 +71,10 @@ private:
     //	xr_stack<IInputReceiver*>	cbStack;
     xr_vector<IInputReceiver*> cbStack;
 
-    void MouseUpdate();
-    void KeyUpdate();
+    tmc::task<void> MouseUpdate();
+    tmc::task<void> RecheckMouseButtons(std::array<u8, 8> state, bool editor);
+    tmc::task<void> isButtonsOnHold(std::array<bool, COUNT_MOUSE_BUTTONS> mouse_prev, bool editor);
+    tmc::task<void> KeyUpdate();
     bool is_exclusive_mode;
 
 public:
@@ -80,23 +82,28 @@ public:
     sxr_key key_property;
     u32 dwCurTime;
 
+private:
+    explicit CInput(bool exclusive);
+    tmc::task<void> co_CInput(u32 device);
+
+public:
+    static tmc::task<void> co_create(bool exclusive = true, u32 device = default_key);
+    ~CInput() override;
+
     void Attach();
     void SetAllAcquire(BOOL bAcquire = TRUE);
     void SetMouseAcquire(BOOL bAcquire);
     void SetKBDAcquire(BOOL bAcquire);
 
-    void iCapture(IInputReceiver* pc);
-    void iRelease(IInputReceiver* pc);
+    tmc::task<void> iCapture(IInputReceiver* pc);
+    tmc::task<void> iRelease(IInputReceiver* pc);
     BOOL iGetAsyncKeyState(int dik);
     BOOL iGetAsyncBtnState(int btn);
     void iGetLastMouseDelta(Ivector2& p) { p.set(offs[0], offs[1]); }
 
-    explicit CInput(bool bExclusive = true, int deviceForInit = default_key);
-    ~CInput() override;
-
-    [[nodiscard]] tmc::task<void> OnFrame() override;
-    [[nodiscard]] tmc::task<void> OnAppActivate() override;
-    [[nodiscard]] tmc::task<void> OnAppDeactivate() override;
+    tmc::task<void> OnFrame() override;
+    tmc::task<void> OnAppActivate() override;
+    tmc::task<void> OnAppDeactivate() override;
 
     IInputReceiver* CurrentIR();
 

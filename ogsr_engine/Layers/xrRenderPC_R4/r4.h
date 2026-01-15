@@ -169,7 +169,7 @@ public:
     virtual void reset_begin();
     virtual void reset_end();
 
-    [[nodiscard]] tmc::task<void> level_Load(IReader* fs) override;
+    tmc::task<void> level_Load(IReader* fs) override;
     virtual void level_Unload();
 
     ID3DBaseTexture* texture_load(LPCSTR fname, u32& msize);
@@ -230,7 +230,7 @@ public:
     virtual void Calculate();
     virtual void Render();
     virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = nullptr);
-    [[nodiscard]] tmc::task<void> OnFrame() override;
+    tmc::task<void> OnFrame() override;
     virtual void BeforeWorldRender(); //--#SM+#-- +SecondVP+ Вызывается перед началом рендера мира и пост-эффектов
     virtual void AfterWorldRender(const bool save_bb_before_ui); //--#SM+#-- +SecondVP+ Вызывается после рендера мира и перед UI
     void AfterUIRender() override; // После рендеринга UI. Вызывать только если нам нужно отрендерить кадр для пда.

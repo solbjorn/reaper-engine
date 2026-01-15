@@ -41,27 +41,23 @@
 
 bool g_bAutoClearCrouch = true;
 
-void CActor::IR_OnKeyboardPress(int cmd)
+tmc::task<void> CActor::IR_OnKeyboardPress(gsl::index cmd)
 {
     if (g_bHudAdjustMode && pInput->iGetAsyncKeyState(DIK_LSHIFT))
     {
         if (pInput->iGetAsyncKeyState(DIK_RETURN) || pInput->iGetAsyncKeyState(DIK_BACKSPACE) || pInput->iGetAsyncKeyState(DIK_DELETE))
             g_player_hud->tune(Ivector{});
 
-        return;
+        co_return;
     }
 
     if (Remote())
-        return;
+        co_return;
 
-    //	if (conditions().IsSleeping())	return;
     if (IsTalking())
-        return;
+        co_return;
     if (m_input_external_handler && !m_input_external_handler->authorized(cmd))
-        return;
-
-    //	if (psCallbackFlags.test(CF_KEY_PRESS))
-    //		callback(GameObject::eOnKeyPress)(cmd);
+        co_return;
 
     switch (cmd)
     {
@@ -76,17 +72,20 @@ void CActor::IR_OnKeyboardPress(int cmd)
     }
 
     if (!g_Alive())
-        return;
+        co_return;
 
     if (m_holder && kUSE != cmd)
     {
         m_holder->OnKeyboardPress(cmd);
         if (m_holder->allowWeapon() && inventory().Action(cmd, CMD_START))
-            return;
-        return;
+            co_return;
+
+        co_return;
     }
     else if (inventory().Action(cmd, CMD_START))
-        return;
+    {
+        co_return;
+    }
 
     switch (cmd)
     {
@@ -118,7 +117,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
         {
             const auto active_hud = smart_cast<CHudItem*>(act_it);
             if (active_hud != nullptr && active_hud->GetState() != CHudItem::eIdle)
-                return;
+                co_return;
         }
 
         auto pTorch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
@@ -141,14 +140,8 @@ void CActor::IR_OnKeyboardPress(int cmd)
         b_DropActivated = TRUE;
         f_DropPower = 0;
         break;
-    case kNEXT_SLOT: {
-        OnNextWeaponSlot();
-    }
-    break;
-    case kPREV_SLOT: {
-        OnPrevWeaponSlot();
-    }
-    break;
+    case kNEXT_SLOT: co_await OnNextWeaponSlot(); break;
+    case kPREV_SLOT: co_await OnPrevWeaponSlot(); break;
 
     case kUSE_BANDAGE:
     case kUSE_MEDKIT: {
@@ -156,7 +149,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
         {
             const auto active_hud = smart_cast<CHudItem*>(inventory().ActiveItem());
             if (active_hud != nullptr && active_hud->GetState() != CHudItem::eIdle)
-                return;
+                co_return;
         }
 
         if (!(GetTrade()->IsInTradeState()))
@@ -176,26 +169,24 @@ void CActor::IR_OnKeyboardPress(int cmd)
     break;
     }
 }
-void CActor::IR_OnMouseWheel(int direction)
+
+tmc::task<void> CActor::IR_OnMouseWheel(gsl::index direction)
 {
     if (g_bHudAdjustMode)
     {
-        g_player_hud->tune(Ivector{0, 0, direction});
-        return;
+        g_player_hud->tune(Ivector{0, 0, gsl::narrow_cast<s32>(direction)});
+        co_return;
     }
 
-    //	if (psCallbackFlags.test(CF_MOUSE_WHEEL_ROT))
-    //		this->callback(GameObject::eOnMouseWheel)(direction);
-
     if (inventory().Action((direction > 0) ? kWPN_ZOOM_DEC : kWPN_ZOOM_INC, CMD_START))
-        return;
+        co_return;
 
     if (psActorFlags.test(AF_MOUSE_WHEEL_SWITCH_SLOTS))
     {
         if (direction > 0)
-            OnNextWeaponSlot();
+            co_await OnNextWeaponSlot();
         else
-            OnPrevWeaponSlot();
+            co_await OnPrevWeaponSlot();
     }
     else
     {
@@ -205,6 +196,7 @@ void CActor::IR_OnMouseWheel(int direction)
             inventory().Action(kWPN_FIREMODE_PREV, CMD_START | CMD_OPT);
     }
 }
+
 void CActor::IR_OnKeyboardRelease(int cmd)
 {
     if (g_bHudAdjustMode && pInput->iGetAsyncKeyState(DIK_LSHIFT))
@@ -248,7 +240,7 @@ void CActor::IR_OnKeyboardRelease(int cmd)
     }
 }
 
-void CActor::IR_OnKeyboardHold(int cmd)
+tmc::task<void> CActor::IR_OnKeyboardHold(gsl::index cmd)
 {
     if (g_bHudAdjustMode && pInput->iGetAsyncKeyState(DIK_LSHIFT))
     {
@@ -264,25 +256,23 @@ void CActor::IR_OnKeyboardHold(int cmd)
             g_player_hud->tune(Ivector{0, 0, 1});
         else if (pInput->iGetAsyncKeyState(DIK_PGDN))
             g_player_hud->tune(Ivector{0, 0, -1});
-        return;
+
+        co_return;
     }
 
     if (Remote() || !g_Alive())
-        return;
-    //	if (conditions().IsSleeping())				return;
-    if (m_input_external_handler && !m_input_external_handler->authorized(cmd))
-        return;
-    if (IsTalking())
-        return;
+        co_return;
 
-    //	int dik = get_action_dik((EGameActions)cmd);
-    //	if ((dik != DIK_LALT) && (dik != DIK_RALT) && (dik != DIK_F4)/* && psCallbackFlags.test(CF_KEY_HOLD)*/)
-    //		this->callback(GameObject::eOnKeyHold)(cmd);
+    if (m_input_external_handler && !m_input_external_handler->authorized(cmd))
+        co_return;
+
+    if (IsTalking())
+        co_return;
 
     if (m_holder)
     {
         m_holder->OnKeyboardHold(cmd);
-        return;
+        co_return;
     }
 
     float LookFactor = GetLookFactor();
@@ -510,7 +500,6 @@ void CActor::ActorUse()
 
 BOOL CActor::HUDview() const { return IsFocused() && (cam_active == ACTOR_DEFS::eacFirstEye) && ((!m_holder) || (m_holder && m_holder->allowWeapon() && m_holder->HUDView())); }
 
-// void CActor::IR_OnMousePress(int btn)
 constexpr u32 SlotsToCheck[] = {
     KNIFE_SLOT, // 0
     FIRST_WEAPON_SLOT, // 1
@@ -521,7 +510,7 @@ constexpr u32 SlotsToCheck[] = {
     PDA_SLOT,
 };
 
-void CActor::OnNextWeaponSlot()
+tmc::task<void> CActor::OnNextWeaponSlot()
 {
     u32 ActiveSlot = inventory().GetActiveSlot();
     if (ActiveSlot == NO_ACTIVE_SLOT)
@@ -538,22 +527,23 @@ void CActor::OnNextWeaponSlot()
             break;
 
     if (CurSlot >= NumSlotsToCheck)
-        return;
+        co_return;
 
     for (u32 i = CurSlot + 1; i < NumSlotsToCheck; i++)
     {
         if (inventory().ItemFromSlot(SlotsToCheck[i]))
         {
             if (SlotsToCheck[i] == PDA_SLOT)
-                IR_OnKeyboardPress(kACTIVE_JOBS);
+                co_await IR_OnKeyboardPress(kACTIVE_JOBS);
             else
-                IR_OnKeyboardPress(kWPN_1 + i);
-            return;
+                co_await IR_OnKeyboardPress(kWPN_1 + i);
+
+            co_return;
         }
     }
 }
 
-void CActor::OnPrevWeaponSlot()
+tmc::task<void> CActor::OnPrevWeaponSlot()
 {
     u32 ActiveSlot = inventory().GetActiveSlot();
     if (ActiveSlot == NO_ACTIVE_SLOT)
@@ -570,17 +560,18 @@ void CActor::OnPrevWeaponSlot()
             break;
 
     if (CurSlot >= NumSlotsToCheck)
-        return;
+        co_return;
 
     for (s32 i = s32(CurSlot - 1); i >= 0; i--)
     {
         if (inventory().ItemFromSlot(SlotsToCheck[i]))
         {
             if (SlotsToCheck[i] == PDA_SLOT)
-                IR_OnKeyboardPress(kACTIVE_JOBS);
+                co_await IR_OnKeyboardPress(kACTIVE_JOBS);
             else
-                IR_OnKeyboardPress(kWPN_1 + i);
-            return;
+                co_await IR_OnKeyboardPress(kWPN_1 + i);
+
+            co_return;
         }
     }
 }

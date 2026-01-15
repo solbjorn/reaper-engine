@@ -24,13 +24,13 @@ public:
 
     void CreateD3D();
     void DestroyD3D();
-    [[nodiscard]] tmc::task<void> CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight);
+    tmc::task<void> CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight);
 
     void DestroyDevice();
-    [[nodiscard]] tmc::task<void> Reset(HWND wnd, u32& dwWidth, u32& dwHeight);
+    tmc::task<void> Reset(HWND wnd, u32& dwWidth, u32& dwHeight);
 
 private:
-    [[nodiscard]] tmc::task<void> reset_st(HWND wnd);
+    tmc::task<void> reset_st(HWND wnd);
 
     void selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed);
     u32 selectRefresh(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt);
@@ -81,8 +81,8 @@ public:
 
     DXGI_RATIONAL selectRefresh(u32 dwWidth, u32 dwHeight, DXGI_FORMAT fmt);
 
-    [[nodiscard]] tmc::task<void> OnAppActivate() override;
-    [[nodiscard]] tmc::task<void> OnAppDeactivate() override;
+    tmc::task<void> OnAppActivate() override;
+    tmc::task<void> OnAppDeactivate() override;
 
 private:
     void imgui_init() const;

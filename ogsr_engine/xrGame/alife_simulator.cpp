@@ -52,11 +52,9 @@ CALifeSimulator::CALifeSimulator(xrServer* server, shared_str* command_line) : C
     function();
 }
 
-namespace xr
+tmc::task<std::unique_ptr<CALifeSimulator>> CALifeSimulator::co_create(xrServer* server, shared_str* command_line)
 {
-tmc::task<std::unique_ptr<CALifeSimulator>> alife_simulator_create(xrServer* server, shared_str* command_line)
-{
-    auto sim = std::make_unique<CALifeSimulator>(server, command_line);
+    auto sim = absl::WrapUnique(new (xr_alloc<CALifeSimulator>(1)) CALifeSimulator{server, command_line});
     const auto& p = g_pGamePersistent->m_game_params;
 
     co_await sim->load(p.m_game_or_spawn, std::is_neq(xr_strcmp(p.m_new_or_load, "load")), std::is_eq(xr_strcmp(p.m_new_or_load, "new")));
@@ -64,7 +62,6 @@ tmc::task<std::unique_ptr<CALifeSimulator>> alife_simulator_create(xrServer* ser
 
     co_return sim;
 }
-} // namespace xr
 
 CALifeSimulator::~CALifeSimulator() { VERIFY(!ai().get_alife()); }
 

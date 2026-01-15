@@ -19,8 +19,6 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, 
     strcpy_s(ApplicationName, _ApplicationName);
     if (0 == init_counter)
     {
-        mainThreadId = std::this_thread::get_id();
-
         /*
             По сути это не рекомендуемый Microsoft, но повсеместно используемый
            способ повышения точности соблюдения и измерения временных интревалов

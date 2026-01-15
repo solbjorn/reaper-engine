@@ -782,27 +782,75 @@ static void AdvanceGameTime(u32 _ms)
     GamePersistent().Environment().SetGameTime(Level().GetEnvironmentGameDayTimeSec(), Level().game->GetEnvironmentGameTimeFactor());
 }
 
-//
-static void send_event_key_press(int dik) // Нажатие клавиши
+namespace xr
 {
-    Level().IR_OnKeyboardPress(dik);
-}
+namespace
+{
+class level_input_async
+{
+private:
+    static constexpr gsl::index none{std::numeric_limits<gsl::index>::max()};
+
+    gsl::index key_async{none};
+    gsl::index hld_async{none};
+    gsl::index vol_async{};
+
+    tmc::task<void> press_async()
+    {
+        const auto key = key_async;
+        if (key == none)
+            co_return;
+
+        key_async = none;
+        co_await Level().IR_OnKeyboardPress(key);
+    }
+
+    tmc::task<void> hold_async()
+    {
+        const auto key = hld_async;
+        if (key == none)
+            co_return;
+
+        hld_async = none;
+        co_await Level().IR_OnKeyboardHold(key);
+    }
+
+    tmc::task<void> wheel_async()
+    {
+        const auto vol = vol_async;
+        if (vol == 0)
+            co_return;
+
+        vol_async = 0;
+        co_await Level().IR_OnMouseWheel(vol);
+    }
+
+public:
+    void press(gsl::index key)
+    {
+        key_async = key;
+        Device.add_frame_async(CallMe::fromMethod<&xr::level_input_async::press_async>(this));
+    }
+
+    void hold(gsl::index key)
+    {
+        hld_async = key;
+        Device.add_frame_async(CallMe::fromMethod<&xr::level_input_async::hold_async>(this));
+    }
+
+    void wheel(gsl::index vol)
+    {
+        vol_async = vol;
+        Device.add_frame_async(CallMe::fromMethod<&xr::level_input_async::wheel_async>(this));
+    }
+} input_async;
+} // namespace
+} // namespace xr
 
 static void send_event_key_release(int dik) // Отпускание клавиши
 {
     Level().IR_OnKeyboardRelease(dik);
 }
-
-static void send_event_key_hold(int dik) // Удержание клавиши.
-{
-    Level().IR_OnKeyboardHold(dik);
-}
-
-static void send_event_mouse_wheel(int vol) // Вращение колеса мыши
-{
-    Level().IR_OnMouseWheel(vol);
-}
-//
 
 namespace
 {
@@ -940,13 +988,11 @@ static int get_character_community_team(LPCSTR comm)
     return community.team();
 }
 
-static void demo_record_start()
+namespace
 {
-    string_path fn{};
-    g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoRecord>(fn));
-}
-
-static void demo_record_stop() { g_pGameLevel->Cameras().RemoveCamEffector(cefDemo); }
+tmc::task<void> demo_record_start() { g_pGameLevel->Cameras().AddCamEffector((co_await CDemoRecord::co_create()).release()); }
+void demo_record_stop() { g_pGameLevel->Cameras().RemoveCamEffector(cefDemo); }
+} // namespace
 
 static Fvector demo_record_get_position()
 {
@@ -1120,12 +1166,12 @@ void CLevel::script_register(sol::state_view& lua)
         &add_cam_effector, "add_cam_effector2", &add_cam_effector2, "remove_cam_effector", &remove_cam_effector, "add_pp_effector", &add_pp_effector, "set_pp_effector_factor",
         &set_pp_effector_factor, "set_pp_effector_factor", &set_pp_effector_factor2, "remove_pp_effector", &remove_pp_effector, "has_pp_effector", &has_pp_effector,
         "add_monster_cam_effector", &add_monster_cam_effector, "get_music_volume", &get_music_volume, "set_music_volume", &set_music_volume, "demo_record_start",
-        &demo_record_start, "demo_record_stop", &demo_record_stop, "demo_record_get_position", &demo_record_get_position, "demo_record_set_position", &demo_record_set_position,
-        "demo_record_get_HPB", &demo_record_get_HPB, "demo_record_set_HPB", &demo_record_set_HPB, "demo_record_set_direct_input", &demo_record_set_direct_input,
-        "add_complex_effector", &add_complex_effector, "remove_complex_effector", &remove_complex_effector, "game_id", &GameID, "set_ignore_game_state_update",
-        &set_ignore_game_state_update, "get_inventory_wnd", &GetInventoryWindow, "get_talk_wnd", &GetTalkWindow, "get_trade_wnd", &GetTradeWindow, "get_pda_wnd", &GetPdaWindow,
-        "get_car_body_wnd", &GetCarBodyWindow, "get_second_talker", &GetSecondTalker, "get_car_body_target", &GetCarBodyTarget, "get_change_level_wnd", &GetUIChangeLevelWnd,
-        "ray_query", &PerformRayQuery,
+        [] { Device.add_frame_async(CallMe::fromFunction<&demo_record_start>()); }, "demo_record_stop", &demo_record_stop, "demo_record_get_position", &demo_record_get_position,
+        "demo_record_set_position", &demo_record_set_position, "demo_record_get_HPB", &demo_record_get_HPB, "demo_record_set_HPB", &demo_record_set_HPB,
+        "demo_record_set_direct_input", &demo_record_set_direct_input, "add_complex_effector", &add_complex_effector, "remove_complex_effector", &remove_complex_effector,
+        "game_id", &GameID, "set_ignore_game_state_update", &set_ignore_game_state_update, "get_inventory_wnd", &GetInventoryWindow, "get_talk_wnd", &GetTalkWindow,
+        "get_trade_wnd", &GetTradeWindow, "get_pda_wnd", &GetPdaWindow, "get_car_body_wnd", &GetCarBodyWindow, "get_second_talker", &GetSecondTalker, "get_car_body_target",
+        &GetCarBodyTarget, "get_change_level_wnd", &GetUIChangeLevelWnd, "ray_query", &PerformRayQuery,
 
         // Real Wolf 07.07.2014
         "vertex_id", sol::overload(sol::resolve<u32(u32, const Fvector&)>(&vertex_id), sol::resolve<u32(const Fvector&)>(&vertex_id)),
@@ -1134,8 +1180,8 @@ void CLevel::script_register(sol::state_view& lua)
         &GetCurrentRayQuery,
 
         //
-        "send_event_key_press", &send_event_key_press, "send_event_key_release", &send_event_key_release, "send_event_key_hold", &send_event_key_hold, "send_event_mouse_wheel",
-        &send_event_mouse_wheel,
+        "send_event_key_press", [](gsl::index key) { xr::input_async.press(key); }, "send_event_key_release", &send_event_key_release, "send_event_key_hold",
+        [](gsl::index key) { xr::input_async.hold(key); }, "send_event_mouse_wheel", [](gsl::index vol) { xr::input_async.wheel(vol); },
 
         "iterate_nearest", &iterate_nearest, "change_level", &change_level, "set_cam_inert", &set_cam_inert, "set_monster_relation", &set_monster_relation, "patrol_path_add",
         &patrol_path_add, "patrol_path_remove", &patrol_path_remove, "valid_vertex_id", &valid_vertex_id, "vertex_count", &vertex_count, "disable_vertex", &disable_vertex,

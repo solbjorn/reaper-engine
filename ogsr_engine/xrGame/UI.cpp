@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UI.h"
+
 #include "..\xr_3da\xr_IOConsole.h"
 #include "Entity.h"
 #include "HUDManager.h"
@@ -8,6 +9,9 @@
 #include "actor.h"
 #include "level.h"
 #include "game_cl_base.h"
+#include "inventory.h"
+#include "huditem.h"
+
 #include "ui/UIMainIngameWnd.h"
 #include "ui/UIMessagesWindow.h"
 #include "ui/UIPdaWnd.h"
@@ -72,9 +76,7 @@ void CUI::UIOnFrame()
     }
     m_pMessagesWnd->Update();
 }
-//--------------------------------------------------------------------
-#include "inventory.h"
-#include "huditem.h"
+
 bool CUI::Render()
 {
     if (GameIndicatorsShown() /*&& psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT)*/)
@@ -116,58 +118,56 @@ bool CUI::Render()
     return false;
 }
 
-bool CUI::IR_OnMouseWheel(int direction)
+tmc::task<bool> CUI::IR_OnMouseWheel(gsl::index direction)
 {
     if (MainInputReceiver())
     {
-        if (MainInputReceiver()->IR_OnMouseWheel(direction))
-            return true;
+        if (co_await MainInputReceiver()->IR_OnMouseWheel(direction))
+            co_return true;
     }
 
     if (pUIGame && pUIGame->IR_OnMouseWheel(direction))
-        return true;
+        co_return true;
 
     if (MainInputReceiver())
-        return true;
+        co_return true;
 
-    return false;
+    co_return false;
 }
 
-//--------------------------------------------------------------------
-bool CUI::IR_OnKeyboardHold(int dik)
+tmc::task<bool> CUI::IR_OnKeyboardHold(gsl::index dik)
 {
     if (MainInputReceiver())
     {
-        if (MainInputReceiver()->IR_OnKeyboardHold(dik))
-            return true;
+        if (co_await MainInputReceiver()->IR_OnKeyboardHold(dik))
+            co_return true;
     }
 
     if (MainInputReceiver())
-        return true;
+        co_return true;
 
-    return false;
+    co_return false;
 }
 
-bool CUI::IR_OnKeyboardPress(int dik)
+tmc::task<bool> CUI::IR_OnKeyboardPress(gsl::index dik)
 {
     if (MainInputReceiver())
     {
-        if (MainInputReceiver()->IR_OnKeyboardPress(dik))
-            return true;
+        if (co_await MainInputReceiver()->IR_OnKeyboardPress(dik))
+            co_return true;
     }
 
     if (UIMainIngameWnd->OnKeyboardPress(dik))
-        return true;
+        co_return true;
 
-    if (pUIGame && pUIGame->IR_OnKeyboardPress(dik))
-        return true;
+    if (pUIGame != nullptr && pUIGame->IR_OnKeyboardPress(dik))
+        co_return true;
 
     if (MainInputReceiver())
-        return true;
+        co_return true;
 
-    return false;
+    co_return false;
 }
-//--------------------------------------------------------------------
 
 bool CUI::IR_OnKeyboardRelease(int dik)
 {

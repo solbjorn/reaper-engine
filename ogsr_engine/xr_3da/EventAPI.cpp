@@ -34,7 +34,7 @@ public:
             Handlers.erase(I);
     }
 
-    [[nodiscard]] tmc::task<void> Signal(u64 P1, u64 P2)
+    tmc::task<void> Signal(u64 P1, u64 P2)
     {
         for (auto handler : Handlers)
             co_await handler->OnEvent(this, P1, P2);

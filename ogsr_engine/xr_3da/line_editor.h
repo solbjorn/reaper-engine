@@ -26,8 +26,8 @@ public:
     void on_frame();
 
 protected:
-    void IR_OnKeyboardPress(int dik) override;
-    void IR_OnKeyboardHold(int dik) override;
+    tmc::task<void> IR_OnKeyboardPress(gsl::index dik) override;
+    tmc::task<void> IR_OnKeyboardHold(gsl::index dik) override;
     void IR_OnKeyboardRelease(int) override;
 
 private:

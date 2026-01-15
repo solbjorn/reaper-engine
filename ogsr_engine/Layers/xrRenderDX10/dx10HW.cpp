@@ -415,7 +415,7 @@ tmc::task<void> CHW::OnAppActivate()
     if (m_pSwapChain == nullptr || m_ChainDescFullscreen.Windowed)
         co_return;
 
-    co_await tmc::spawn([] [[nodiscard]] (auto wnd) -> tmc::task<void> {
+    co_await tmc::spawn([](auto wnd) -> tmc::task<void> {
         ShowWindow(wnd, SW_RESTORE);
         co_return;
     }(m_hWnd))
@@ -447,7 +447,7 @@ tmc::task<void> CHW::OnAppDeactivate()
 
     m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, flags);
 
-    co_await tmc::spawn([] [[nodiscard]] (auto wnd) -> tmc::task<void> {
+    co_await tmc::spawn([](auto wnd) -> tmc::task<void> {
         ShowWindow(wnd, SW_MINIMIZE);
         co_return;
     }(m_hWnd))

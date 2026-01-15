@@ -33,11 +33,11 @@ public:
     //	Destroy
     virtual void OnDeviceDestroy(BOOL bKeepTextures) = 0;
     virtual void DestroyHW() = 0;
-    [[nodiscard]] virtual tmc::task<void> Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, f32& fWidth_2, f32& fHeight_2) = 0;
+    virtual tmc::task<void> Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, f32& fWidth_2, f32& fHeight_2) = 0;
     //	Init
     virtual void SetupStates() = 0;
-    virtual void OnDeviceCreate() = 0;
-    [[nodiscard]] virtual tmc::task<void> Create(HWND hWnd, u32& dwWidth, u32& dwHeight, f32& fWidth_2, f32& fHeight_2) = 0;
+    virtual tmc::task<void> OnDeviceCreate() = 0;
+    virtual tmc::task<void> Create(HWND hWnd, u32& dwWidth, u32& dwHeight, f32& fWidth_2, f32& fHeight_2) = 0;
     virtual void SetupGPU(BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF) = 0;
     //	Overdraw
     virtual void overdrawBegin() = 0;
@@ -45,7 +45,7 @@ public:
 
     //	Resources control
     virtual void DeferredLoad(BOOL E) = 0;
-    virtual void ResourcesDeferredUpload() = 0;
+    virtual tmc::task<void> ResourcesDeferredUpload() = 0;
     virtual void ResourcesGetMemoryUsage(xr::render_memory_usage& usage) const = 0;
     virtual void ResourcesDumpMemoryUsage() const = 0;
 
@@ -58,7 +58,6 @@ public:
     virtual void End() = 0;
     virtual void ClearTarget() = 0;
     virtual void SetCacheXform(Fmatrix& mView, Fmatrix& mProject) = 0;
-    virtual void OnAssetsChanged() = 0;
     virtual IResourceManager* GetResourceManager() const = 0;
 
     virtual void editor_new() = 0;

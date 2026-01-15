@@ -72,7 +72,7 @@ public:
     CStatGraph();
     ~CStatGraph() override;
 
-    [[nodiscard]] tmc::task<void> OnRender() override;
+    tmc::task<void> OnRender() override;
     void OnDeviceCreate();
     void OnDeviceDestroy();
 

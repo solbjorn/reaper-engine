@@ -84,8 +84,8 @@ tmc::task<void> CHOM::Load()
     // Create RASTER-triangles
     m_pTris.resize(CL.getTS());
 
-    co_await tmc::spawn_many(std::views::iota(0z, CL.getTS()) | std::views::transform([this, &CL, &adjacency] [[nodiscard]] (auto it) -> tmc::task<void> {
-                                 return [] [[nodiscard]] (std::span<occTri> m_pTris, const CDB::Collector& CL, std::span<const u32> adjacency, auto it) -> tmc::task<void> {
+    co_await tmc::spawn_many(std::views::iota(0z, CL.getTS()) | std::views::transform([this, &CL, &adjacency](auto it) -> tmc::task<void> {
+                                 return [](std::span<occTri> m_pTris, const CDB::Collector& CL, std::span<const u32> adjacency, auto it) -> tmc::task<void> {
                                      const CDB::TRI& clT = CL.get_faces()[it];
                                      occTri& rT = m_pTris[it];
                                      const Fvector& v0 = CL.get_verts()[clT.verts[0]];

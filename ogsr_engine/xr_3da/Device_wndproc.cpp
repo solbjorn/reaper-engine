@@ -11,7 +11,7 @@ bool CRenderDevice::on_message(UINT uMsg, WPARAM wParam, LRESULT& result)
     }
     case WM_ACTIVATE:
         wparam_async = wParam;
-        add_async(CallMe::fromMethod<&CRenderDevice::OnWM_Activate>(this));
+        add_frame_async(CallMe::fromMethod<&CRenderDevice::OnWM_Activate>(this));
 
         return false;
     case WM_SETCURSOR: {

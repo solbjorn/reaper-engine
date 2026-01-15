@@ -117,9 +117,9 @@ public:
     virtual void Initialize();
     // virtual void Destroy();
 
-    [[nodiscard]] tmc::task<void> OnRender() override;
-    [[nodiscard]] tmc::task<void> OnFrame() override;
-    [[nodiscard]] tmc::task<void> OnScreenResolutionChanged() override;
+    tmc::task<void> OnRender() override;
+    tmc::task<void> OnFrame() override;
+    tmc::task<void> OnScreenResolutionChanged() override;
 
     string64 ConfigFile;
     bool bVisible;
@@ -129,8 +129,8 @@ public:
     void AddCommand(IConsole_Command* cc);
     void RemoveCommand(IConsole_Command* cc);
 
-    void Show();
-    void Hide();
+    tmc::task<void> Show();
+    tmc::task<void> Hide();
 
     void Execute(LPCSTR cmd);
     void Execute(LPCSTR cmd, LPCSTR arg);
@@ -186,31 +186,31 @@ protected:
     void Register_callbacks();
 
 protected:
-    void Screenshot();
+    tmc::task<void> Screenshot();
 
-    void Prev_log();
-    void Next_log();
-    void Begin_log();
-    void End_log();
+    tmc::task<void> Prev_log();
+    tmc::task<void> Next_log();
+    tmc::task<void> Begin_log();
+    tmc::task<void> End_log();
 
-    void Find_cmd();
-    void Find_cmd_back();
-    void Prev_cmd();
-    void Next_cmd();
-    void Prev_tip();
-    void Next_tip();
+    tmc::task<void> Find_cmd();
+    tmc::task<void> Find_cmd_back();
+    tmc::task<void> Prev_cmd();
+    tmc::task<void> Next_cmd();
+    tmc::task<void> Prev_tip();
+    tmc::task<void> Next_tip();
 
-    void Begin_tips();
-    void End_tips();
-    void PageUp_tips();
-    void PageDown_tips();
+    tmc::task<void> Begin_tips();
+    tmc::task<void> End_tips();
+    tmc::task<void> PageUp_tips();
+    tmc::task<void> PageDown_tips();
 
-    void Execute_cmd();
-    void Show_cmd();
-    void Hide_cmd();
-    void Hide_cmd_esc();
+    tmc::task<void> Execute_cmd();
+    tmc::task<void> Show_cmd();
+    tmc::task<void> Hide_cmd();
+    tmc::task<void> Hide_cmd_esc();
 
-    void GamePause();
+    tmc::task<void> GamePause();
 
 protected:
     void add_cmd_history(shared_str const& str);

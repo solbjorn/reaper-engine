@@ -24,7 +24,7 @@
 void show_animation_stats();
 #endif // DEBUG
 
-void CLevel::remove_objects()
+tmc::task<void> CLevel::remove_objects()
 {
     m_is_removing_objects = true;
     BOOL b_stored = psDeviceFlags.test(rsDisableObjectsAsCrows);
@@ -37,7 +37,7 @@ void CLevel::remove_objects()
     Msg("~ ObjectResources - lmap: %zd, %zd Kb", usage.c_lmaps, usage.m_lmaps / 1024);
     Msg("~ ObjectResources - Lua: %zd Kb", usage.lua / 1024);
 
-    Game().reset_ui();
+    co_await Game().reset_ui();
 
     VERIFY(Server != nullptr);
     Server->SLS_Clear(); // generate GE_DESTROY for all game objects
@@ -117,16 +117,17 @@ void CLevel::remove_objects()
     m_is_removing_objects = false;
 }
 
-void CLevel::net_Stop()
+tmc::task<void> CLevel::net_Stop()
 {
     Msg("- Disconnect");
     bReady = false;
+
     m_bGameConfigStarted = FALSE;
     game_configured = FALSE;
 
-    remove_objects();
+    co_await remove_objects();
+    co_await IGame_Level::net_Stop();
 
-    IGame_Level::net_Stop();
     IPureClient::Disconnect();
 
     if (Server)
@@ -136,7 +137,6 @@ void CLevel::net_Stop()
     }
 
     ai().script_engine().collect_all_garbage();
-
     Remove_all_statics();
 
 #ifdef DEBUG
@@ -217,7 +217,7 @@ struct _NetworkProcessor : public pureFrame
     RTTI_DECLARE_TYPEINFO(_NetworkProcessor, pureFrame);
 
 public:
-    [[nodiscard]] tmc::task<void> OnFrame() override
+    tmc::task<void> OnFrame() override
     {
         if (g_pGameLevel && !Device.Paused())
             g_pGameLevel->net_Update();

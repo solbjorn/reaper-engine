@@ -6,60 +6,49 @@
 #include "ui/xrUIXmlParser.h"
 #include "xr_level_controller.h"
 
-XR_DIAG_PUSH();
-XR_DIAG_IGNORE("-Wextra-semi");
-XR_DIAG_IGNORE("-Wextra-semi-stmt");
-XR_DIAG_IGNORE("-Wunused-template");
-
-#include <oneapi/tbb/parallel_for_each.h>
-
-XR_DIAG_POP();
-
-std::mutex CStringTable::pDataMutex;
+tmc::mutex CStringTable::pDataMutex;
 STRING_TABLE_DATA* CStringTable::pData{};
 
 BOOL CStringTable::WriteErrorsToLog{};
-
-CStringTable::CStringTable() { Init(); }
 
 void CStringTable::Destroy() { xr_delete(pData); }
 
 shared_str CStringTable::GetLanguage() { return pData->m_sLanguage; }
 
-void CStringTable::Init()
+tmc::task<void> CStringTable::Init()
 {
     if (pData)
-        return;
+        co_return;
 
     pData = xr_new<STRING_TABLE_DATA>();
 
     // имя языка, если не задано (NULL), то первый <text> в <string> в XML
     SetLanguage();
 
-    LPCSTR S = pSettings->r_string("string_table", "files");
-    if (S && S[0])
+    gsl::czstring S = pSettings->r_string("string_table", "files");
+    if (S != nullptr && S[0] != '\0')
     {
-        size_t count = _GetItemCount(S);
+        co_await tmc::spawn_many(std::views::iota(0z, _GetItemCount(S)) | std::views::transform([S](auto i) -> tmc::task<void> {
+                                     return [](gsl::czstring S, auto i) -> tmc::task<void> {
+                                         string_path xml_file;
 
-        oneapi::tbb::parallel_for(oneapi::tbb::blocked_range<size_t>(0, count), [this, &S](const auto& range) {
-            for (size_t i = range.begin(); i != range.end(); i++)
-            {
-                string128 xml_file;
-
-                std::ignore = _GetItem(S, i, xml_file);
-                Load(xml_file);
-            }
-        });
+                                         std::ignore = _GetItem(S, i, xml_file);
+                                         co_await Load(xml_file);
+                                     }(S, i);
+                                 }))
+            .with_priority(xr::tmc_priority_any);
     }
 
     if (pSettings->section_exist("string_table_files"))
     {
         CInifile::Sect& files = pSettings->r_section("string_table_files");
-        oneapi::tbb::parallel_for_each(files.Ordered_Data, [&](const auto& i) { Load(i.first.c_str()); });
+
+        co_await tmc::spawn_many(files.Ordered_Data | std::views::transform([](const auto& i) -> tmc::task<void> { co_await Load(i.first.c_str()); }))
+            .with_priority(xr::tmc_priority_any);
     }
 }
 
-void CStringTable::Load(LPCSTR xml_file)
+tmc::task<void> CStringTable::Load(gsl::czstring xml_file)
 {
     const char* lang = *pData->m_sLanguage;
     string_path xml_file_full, _s;
@@ -96,30 +85,34 @@ void CStringTable::Load(LPCSTR xml_file)
         LPCSTR string_text = uiXml.Read(uiXml.GetRoot(), node, i, nullptr);
         ASSERT_FMT(string_text, "no attribute '%s' in node %s", node, string_name);
 
-        const auto str_val{ParseLine(string_text, string_name, true)};
-        std::scoped_lock lock{pDataMutex};
+        auto ret = ParseLine(string_text, true);
+        co_await pDataMutex;
 
         if (WriteErrorsToLog && pData->m_StringTable.contains(string_name))
             Msg("!![%s] duplicate string table id: [%s]", __FUNCTION__, string_name);
 
-        pData->m_StringTable[string_name] = str_val;
+        pData->m_StringTable[string_name] = std::move(ret.first);
+        if (ret.second)
+            pData->m_string_key_binding[string_name]._set(string_text);
+
+        co_await pDataMutex.co_unlock();
     }
 }
 
 void CStringTable::SetLanguage() { pData->m_sLanguage._set(xr::GetLanguagesToken()); }
 
-void CStringTable::ReloadLanguage()
+tmc::task<void> CStringTable::ReloadLanguage()
 {
-    if (std::is_eq(xr_strcmp(xr::GetLanguagesToken(), pData->m_sLanguage)))
-        return;
+    if (pData != nullptr && std::is_eq(xr_strcmp(xr::GetLanguagesToken(), pData->m_sLanguage)))
+        co_return;
 
     Destroy();
-    Init();
+    co_await Init();
 
     if (g_pGamePersistent->IsMainMenuActive())
     {
-        MainMenu()->Activate(false);
-        MainMenu()->Activate(true);
+        co_await MainMenu()->Activate(false);
+        co_await MainMenu()->Activate(true);
     }
 }
 
@@ -129,14 +122,10 @@ void CStringTable::ReparseKeyBindings()
         return;
 
     for (const auto& [key, val] : pData->m_string_key_binding)
-    {
-        const auto str{ParseLine(val.c_str(), key.c_str(), false)};
-        std::scoped_lock lock{pDataMutex};
-        pData->m_StringTable[key] = str;
-    }
+        pData->m_StringTable[key] = ParseLine(val.c_str(), false).first;
 }
 
-STRING_VALUE CStringTable::ParseLine(LPCSTR str, LPCSTR skey, bool bFirst)
+std::pair<STRING_VALUE, bool> CStringTable::ParseLine(gsl::czstring str, bool bFirst)
 {
     //	LPCSTR str = "1 $$action_left$$ 2 $$action_right$$ 3 $$action_left$$ 4";
     xr_string res;
@@ -175,16 +164,10 @@ STRING_VALUE CStringTable::ParseLine(LPCSTR str, LPCSTR skey, bool bFirst)
     if (k < xr_strlen(str))
         res.append(str + k);
 
-    if (b_hit && bFirst)
-    {
-        std::scoped_lock lock{pDataMutex};
-        pData->m_string_key_binding[skey]._set(str);
-    }
-
-    return STRING_VALUE(res.c_str());
+    return {STRING_VALUE{res.c_str()}, bFirst && b_hit};
 }
 
-STRING_VALUE CStringTable::translate(const STRING_ID& str_id) const
+STRING_VALUE CStringTable::translate(const STRING_ID& str_id)
 {
     STRING_VALUE res = str_id;
 

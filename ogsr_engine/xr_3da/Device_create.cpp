@@ -60,7 +60,7 @@ void CRenderDevice::_SetupStates()
     m_pRender->SetupStates();
 }
 
-void CRenderDevice::_Create()
+tmc::task<void> CRenderDevice::_Create()
 {
     Memory.mem_compact();
 
@@ -68,8 +68,7 @@ void CRenderDevice::_Create()
     b_is_Ready = TRUE;
 
     _SetupStates();
-
-    m_pRender->OnDeviceCreate();
+    co_await m_pRender->OnDeviceCreate();
 
     dwFrame = 0;
 }
@@ -82,7 +81,7 @@ void CRenderDevice::ConnectToRender()
 
 tmc::task<void> CRenderDevice::Create()
 {
-    co_await tmc::spawn([] [[nodiscard]] (auto wnd) -> tmc::task<void> {
+    co_await tmc::spawn([](auto wnd) -> tmc::task<void> {
         ShowWindow(wnd, SW_SHOWNORMAL);
         co_return;
     }(m_hWnd))
@@ -109,7 +108,7 @@ tmc::task<void> CRenderDevice::Create()
     fASPECT = 1.f;
     co_await m_pRender->Create(m_hWnd, dwWidth, dwHeight, fWidth_2, fHeight_2);
 
-    co_await tmc::spawn([] [[nodiscard]] (auto wnd) -> tmc::task<void> {
+    co_await tmc::spawn([](auto wnd) -> tmc::task<void> {
         if (g_screenmode == 1)
         {
             u32 w, h;
@@ -132,7 +131,7 @@ tmc::task<void> CRenderDevice::Create()
     }(m_hWnd))
         .run_on(xr::tmc_cpu_st_executor());
 
-    _Create();
+    co_await _Create();
 
     PreCache(0, false, false);
 }

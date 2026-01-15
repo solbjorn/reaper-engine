@@ -20,8 +20,11 @@ protected:
     void setup_simulator(CSE_ALifeObject* object) override;
     void reload(LPCSTR section) override;
 
-public:
+private:
     explicit CALifeSimulator(xrServer* server, shared_str* command_line);
+
+public:
+    static tmc::task<std::unique_ptr<CALifeSimulator>> co_create(xrServer* server, shared_str* command_line);
     ~CALifeSimulator() override;
 
     void destroy() override;
@@ -35,11 +38,6 @@ add_to_type_list(CALifeSimulator);
 
 // alife_simulator.cpp
 extern LPCSTR alife_section;
-
-namespace xr
-{
-[[nodiscard]] tmc::task<std::unique_ptr<CALifeSimulator>> alife_simulator_create(xrServer* server, shared_str* command_line);
-}
 
 // alife_simulator_script.cpp
 using STORY_PAIRS = xr_map<shared_str, int, absl::container_internal::StringBtreeDefaultLess>;

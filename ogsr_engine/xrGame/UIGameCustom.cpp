@@ -159,17 +159,17 @@ void CUIGameCustom::RemoveCustomStatic(LPCSTR id)
     }
 }
 
-void CUIGameCustom::reset_ui()
+tmc::task<void> CUIGameCustom::reset_ui()
 {
     if (g_tutorial2)
     {
-        g_tutorial2->Destroy();
+        co_await g_tutorial2->Destroy();
         xr_delete(g_tutorial2);
     }
 
     if (g_tutorial)
     {
-        g_tutorial->Destroy();
+        co_await g_tutorial->Destroy();
         xr_delete(g_tutorial);
     }
 }

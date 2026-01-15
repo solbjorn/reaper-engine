@@ -10,16 +10,6 @@
 #include "blenders\blender_recorder.h"
 #include "tss.h"
 
-XR_DIAG_PUSH();
-XR_DIAG_IGNORE("-Wextra-semi");
-XR_DIAG_IGNORE("-Wextra-semi-stmt");
-XR_DIAG_IGNORE("-Winconsistent-missing-destructor-override");
-XR_DIAG_IGNORE("-Wunused-template");
-
-#include <oneapi/tbb/parallel_for_each.h>
-
-XR_DIAG_POP();
-
 IBlender* CResourceManager::_GetBlender(LPCSTR Name)
 {
     R_ASSERT(Name && Name[0]);
@@ -228,10 +218,10 @@ void CResourceManager::Delete(const Shader* S)
     Msg("! ERROR: Failed to find complete shader");
 }
 
-void CResourceManager::DeferredUpload()
+tmc::task<void> CResourceManager::DeferredUpload()
 {
     if (!Device.b_is_Ready)
-        return;
+        co_return;
 
     Msg("CResourceManager::DeferredUpload [MT] -> START, size = [%zu]", m_textures.size());
     Msg("CResourceManager::DeferredUpload VRAM usage before:");
@@ -244,7 +234,11 @@ void CResourceManager::DeferredUpload()
     HW.DumpVideoMemoryUsage();
 
     // Теперь многопоточная загрузка текстур даёт очень существенный прирост скорости, проверено.
-    oneapi::tbb::parallel_for_each(m_textures, [&](auto m_tex) { m_tex.second->Load(); });
+    co_await tmc::spawn_many(m_textures | std::views::transform([](const auto& m_tex) -> tmc::task<void> {
+                                 m_tex.second->Load();
+                                 co_return;
+                             }))
+        .with_priority(xr::tmc_priority_any);
 
     Msg("CResourceManager::DeferredUpload VRAM usage after:");
 

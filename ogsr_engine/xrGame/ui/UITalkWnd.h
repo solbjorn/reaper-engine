@@ -50,7 +50,7 @@ public:
     void NeedUpdateQuestions();
     // инициализации начального диалога собеседника
     void InitOthersStartDialog();
-    virtual bool IR_OnKeyboardPress(int dik);
+    tmc::task<bool> IR_OnKeyboardPress(gsl::index dik) override;
     virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
     void SwitchToTrade();
     void AddAnswerScript(LPCSTR text, bool is_actor = false);

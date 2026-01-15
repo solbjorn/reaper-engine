@@ -25,26 +25,55 @@
 CUISequencer* g_tutorial{};
 CUISequencer* g_tutorial2{};
 
-void start_tutorial(LPCSTR name)
+namespace xr
 {
-    if (g_tutorial)
+namespace
+{
+class tutorial_async
+{
+private:
+    xr_string name_async;
+
+    tmc::task<void> start_async()
     {
-        VERIFY(!g_tutorial2);
+        if (name_async.empty())
+            co_return;
+
+        co_await g_tutorial->Start(name_async.c_str());
+        name_async.clear();
+
+        if (g_tutorial2 != nullptr)
+            g_tutorial->m_pStoredInputReceiver = g_tutorial2->m_pStoredInputReceiver;
+    }
+
+public:
+    void start(gsl::czstring name)
+    {
+        name_async.assign(name);
+        Device.add_frame_async(CallMe::fromMethod<&xr::tutorial_async::start_async>(this));
+    }
+} g_tutorial_async;
+} // namespace
+} // namespace xr
+
+void start_tutorial(gsl::czstring name)
+{
+    if (g_tutorial != nullptr)
+    {
+        VERIFY(g_tutorial2 == nullptr);
         g_tutorial2 = g_tutorial;
     }
 
     g_tutorial = xr_new<CUISequencer>();
-    g_tutorial->Start(name);
-    if (g_tutorial2)
-        g_tutorial->m_pStoredInputReceiver = g_tutorial2->m_pStoredInputReceiver;
+    xr::g_tutorial_async.start(name);
 }
 
 namespace
 {
 void stop_tutorial()
 {
-    if (g_tutorial)
-        g_tutorial->Stop();
+    if (g_tutorial != nullptr)
+        Device.add_frame_async(CallMe::fromMethod<&CUISequencer::Stop>(g_tutorial));
 }
 
 u32 PlayHudMotion(u8 hand, LPCSTR hud_section, LPCSTR anm_name, bool bMixIn = true, float speed = 1.f, bool bOverride_item = false)

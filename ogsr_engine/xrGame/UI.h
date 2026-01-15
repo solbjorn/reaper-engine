@@ -34,11 +34,11 @@ public:
     void Load(CUIGameCustom* pGameUI);
     void UnLoad();
 
-    bool IR_OnKeyboardHold(int dik);
-    bool IR_OnKeyboardPress(int dik);
+    tmc::task<bool> IR_OnKeyboardHold(gsl::index dik);
+    tmc::task<bool> IR_OnKeyboardPress(gsl::index dik);
     bool IR_OnKeyboardRelease(int dik);
     bool IR_OnMouseMove(int, int);
-    bool IR_OnMouseWheel(int direction);
+    tmc::task<bool> IR_OnMouseWheel(gsl::index direction);
 
     CUIGameCustom* UIGame() { return pUIGame; }
 

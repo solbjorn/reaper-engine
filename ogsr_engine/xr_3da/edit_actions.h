@@ -21,7 +21,7 @@ public:
     ~base() override;
 
     void on_assign(base* const prev_action);
-    virtual void on_key_press(line_edit_control* const control);
+    virtual tmc::task<void> on_key_press(line_edit_control* const control);
 
 protected:
     base* m_previous_action{};
@@ -34,13 +34,13 @@ class callback_base : public base
     RTTI_DECLARE_TYPEINFO(callback_base, base);
 
 private:
-    using Callback = CallMe::Delegate<void()>;
+    using Callback = CallMe::Delegate<tmc::task<void>()>;
 
 public:
     explicit callback_base(Callback const& callback, key_state state);
     ~callback_base() override;
 
-    virtual void on_key_press(line_edit_control* const control);
+    tmc::task<void> on_key_press(line_edit_control* const control) override;
 
 protected:
     key_state m_run_state;
@@ -58,7 +58,7 @@ public:
     ~type_pair() override;
 
     void init(u32 dik, char c, char c_shift, bool b_translate);
-    virtual void on_key_press(line_edit_control* const control);
+    tmc::task<void> on_key_press(line_edit_control* const control) override;
 
 private:
     u32 m_dik;
@@ -77,7 +77,7 @@ public:
     explicit key_state_base(key_state state, base* type_pair);
     ~key_state_base() override;
 
-    virtual void on_key_press(line_edit_control* const control);
+    tmc::task<void> on_key_press(line_edit_control* const control) override;
 
 private:
     key_state m_state;

@@ -222,9 +222,9 @@ void CRenderDevice::OnCameraUpdated()
 
 tmc::task<void> CRenderDevice::ProcessFrame()
 {
-    if (!BeforeFrame())
+    if (!co_await BeforeFrame())
     {
-        co_await process_async();
+        co_await process_frame_async();
         co_return;
     }
 
@@ -244,7 +244,7 @@ tmc::task<void> CRenderDevice::ProcessFrame()
         m_pRender->editor_end();
     }
 
-    co_await process_async();
+    co_await process_frame_async();
     OnCameraUpdated();
 
     auto second = co_await tmc::fork_clang(process_second(), tmc::current_executor(), xr::tmc_priority_any);
@@ -364,7 +364,7 @@ tmc::task<void> CRenderDevice::message_loop()
             TranslateMessage(&msg);
             DispatchMessage(&msg);
 
-            co_await tmc::spawn(process_async()).run_on(tmc::cpu_executor());
+            co_await tmc::spawn(process_frame_async()).run_on(tmc::cpu_executor());
             continue;
         }
 
@@ -396,6 +396,8 @@ tmc::task<void> CRenderDevice::Run()
 {
     //	DUMP_PHASE;
     g_bLoaded = FALSE;
+
+    co_await process_frame_async();
 
     LogOsVersion();
     Log("Starting engine...");

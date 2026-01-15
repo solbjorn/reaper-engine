@@ -106,7 +106,7 @@ public:
     ~CPortal() override;
 
 #ifdef DEBUG
-    [[nodiscard]] tmc::task<void> OnRender() override;
+    tmc::task<void> OnRender() override;
 #endif
 };
 

@@ -19,31 +19,37 @@ float psMouseSens = 1.f;
 float psMouseSensScale = 1.f;
 Flags32 psMouseInvert = {FALSE};
 
-CInput::CInput(bool bExclusive, int deviceForInit)
+CInput::CInput(bool exclusive) : is_exclusive_mode{exclusive}
 {
-    is_exclusive_mode = bExclusive;
-
     Log("Starting INPUT device...");
-
     mouse_property.mouse_dt = 25;
+}
 
+tmc::task<void> CInput::co_CInput(u32 device)
+{
     //===================== Dummy pack
-    iCapture(&dummyController);
+    co_await iCapture(&dummyController);
 
     if (!pDI)
         CHK_DX(DirectInput8Create(GetModuleHandle(nullptr), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&pDI, nullptr));
 
     // KEYBOARD
-    if (deviceForInit & keyboard_device_key)
+    if (device & keyboard_device_key)
         CHK_DX(CreateInputDevice(&pKeyboard, GUID_SysKeyboard, &c_dfDIKeyboard, KEYBOARDBUFFERSIZE));
 
     // MOUSE
-    if (deviceForInit & mouse_device_key)
+    if (device & mouse_device_key)
         CHK_DX(CreateInputDevice(&pMouse, GUID_SysMouse, &c_dfDIMouse2, MOUSEBUFFERSIZE));
 
     Device.seqAppActivate.Add(this);
     Device.seqAppDeactivate.Add(this);
     Device.seqFrame.Add(this, REG_PRIORITY_HIGH);
+}
+
+tmc::task<void> CInput::co_create(bool exclusive, u32 device)
+{
+    pInput = new (xr_alloc<CInput>(1)) CInput{exclusive};
+    co_await pInput->co_CInput(device);
 }
 
 CInput::~CInput(void)
@@ -148,7 +154,7 @@ namespace
 BOOL b_altF4 = FALSE;
 }
 
-void CInput::KeyUpdate()
+tmc::task<void> CInput::KeyUpdate()
 {
     HRESULT hr;
     DWORD dwElements = KEYBOARDBUFFERSIZE;
@@ -162,10 +168,11 @@ void CInput::KeyUpdate()
     {
         hr = pKeyboard->Acquire();
         if (hr != S_OK)
-            return;
+            co_return;
+
         hr = pKeyboard->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0);
         if (hr != S_OK)
-            return;
+            co_return;
     }
 
     const bool editor = xr::editor() != nullptr;
@@ -178,10 +185,17 @@ void CInput::KeyUpdate()
         if (KBState[key])
         {
             if (this->is_exclusive_mode && (key == DIK_LSHIFT || key == DIK_RSHIFT) && (this->iGetAsyncKeyState(DIK_LMENU) || this->iGetAsyncKeyState(DIK_RMENU)))
-                PostMessage(gGameWindow, WM_INPUTLANGCHANGEREQUEST, 2, 0); // Переключили язык. В эксклюзивном режиме это обязательно для правильной работы функции DikToChar
+            {
+                co_await tmc::spawn([] -> tmc::task<void> {
+                    // Переключили язык. В эксклюзивном режиме это обязательно для правильной работы функции DikToChar
+                    PostMessage(gGameWindow, WM_INPUTLANGCHANGEREQUEST, 2, 0);
+                    co_return;
+                }())
+                    .run_on(xr::tmc_cpu_st_executor());
+            }
 
             if (!editor || !xr::editor()->key_press(key))
-                cbStack.back()->IR_OnKeyboardPress(key);
+                co_await cbStack.back()->IR_OnKeyboardPress(key);
         }
         else
         {
@@ -196,7 +210,7 @@ void CInput::KeyUpdate()
             continue;
 
         if (!editor || !xr::editor()->key_hold(i))
-            cbStack.back()->IR_OnKeyboardHold(i);
+            co_await cbStack.back()->IR_OnKeyboardHold(i);
     }
 
     if (!b_altF4 && iGetAsyncKeyState(DIK_F4) && (iGetAsyncKeyState(DIK_RMENU) || iGetAsyncKeyState(DIK_LMENU)))
@@ -242,7 +256,7 @@ BOOL CInput::iGetAsyncKeyState(int dik)
 
 BOOL CInput::iGetAsyncBtnState(int btn) { return mouseState[btn]; }
 
-void CInput::MouseUpdate()
+tmc::task<void> CInput::MouseUpdate()
 {
 #pragma push_macro("FIELD_OFFSET")
 #undef FIELD_OFFSET
@@ -259,19 +273,16 @@ void CInput::MouseUpdate()
     {
         hr = pMouse->Acquire();
         if (hr != S_OK)
-            return;
+            co_return;
+
         hr = pMouse->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0);
         if (hr != S_OK)
-            return;
+            co_return;
     }
 
-    BOOL mouse_prev[COUNT_MOUSE_BUTTONS];
-
-    mouse_prev[0] = mouseState[0];
-    mouse_prev[1] = mouseState[1];
-    mouse_prev[2] = mouseState[2];
-
+    const std::array<bool, COUNT_MOUSE_BUTTONS> mouse_prev{!!mouseState[0], !!mouseState[1], !!mouseState[2]};
     const bool editor = xr::editor() != nullptr;
+
     offs[0] = offs[1] = offs[2] = 0;
 
     for (u32 i = 0; i < dwElements; i++)
@@ -296,8 +307,9 @@ void CInput::MouseUpdate()
                 mouseState[0] = TRUE;
 
                 if (!editor || !xr::editor()->key_press(MOUSE_1))
-                    cbStack.back()->IR_OnMousePress(0);
+                    co_await cbStack.back()->IR_OnMousePress(0);
             }
+
             if (!(od[i].dwData & 0x80))
             {
                 mouseState[0] = FALSE;
@@ -305,6 +317,7 @@ void CInput::MouseUpdate()
                 if (!editor || !xr::editor()->key_release(MOUSE_1))
                     cbStack.back()->IR_OnMouseRelease(0);
             }
+
             break;
         case DIMOFS_BUTTON1:
             if (od[i].dwData & 0x80)
@@ -312,8 +325,9 @@ void CInput::MouseUpdate()
                 mouseState[1] = TRUE;
 
                 if (!editor || !xr::editor()->key_press(MOUSE_2))
-                    cbStack.back()->IR_OnMousePress(1);
+                    co_await cbStack.back()->IR_OnMousePress(1);
             }
+
             if (!(od[i].dwData & 0x80))
             {
                 mouseState[1] = FALSE;
@@ -321,6 +335,7 @@ void CInput::MouseUpdate()
                 if (!editor || !xr::editor()->key_release(MOUSE_2))
                     cbStack.back()->IR_OnMouseRelease(1);
             }
+
             break;
         case DIMOFS_BUTTON2:
             if (od[i].dwData & 0x80)
@@ -328,8 +343,9 @@ void CInput::MouseUpdate()
                 mouseState[2] = TRUE;
 
                 if (!editor || !xr::editor()->key_press(MOUSE_3))
-                    cbStack.back()->IR_OnMousePress(2);
+                    co_await cbStack.back()->IR_OnMousePress(2);
             }
+
             if (!(od[i].dwData & 0x80))
             {
                 mouseState[2] = FALSE;
@@ -337,6 +353,7 @@ void CInput::MouseUpdate()
                 if (!editor || !xr::editor()->key_release(MOUSE_3))
                     cbStack.back()->IR_OnMouseRelease(2);
             }
+
             break;
         case DIMOFS_BUTTON3:
             if (od[i].dwData & 0x80)
@@ -344,8 +361,9 @@ void CInput::MouseUpdate()
                 mouseState[2] = TRUE;
 
                 if (!editor || !xr::editor()->key_press(MOUSE_4))
-                    cbStack.back()->IR_OnKeyboardPress(0xED + 103);
+                    co_await cbStack.back()->IR_OnKeyboardPress(0xED + 103);
             }
+
             if (!(od[i].dwData & 0x80))
             {
                 mouseState[2] = FALSE;
@@ -353,6 +371,7 @@ void CInput::MouseUpdate()
                 if (!editor || !xr::editor()->key_release(MOUSE_4))
                     cbStack.back()->IR_OnKeyboardRelease(0xED + 103);
             }
+
             break;
         case DIMOFS_BUTTON4:
             if (od[i].dwData & 0x80)
@@ -360,8 +379,9 @@ void CInput::MouseUpdate()
                 mouseState[2] = TRUE;
 
                 if (!editor || !xr::editor()->key_press(MOUSE_5))
-                    cbStack.back()->IR_OnKeyboardPress(0xED + 104);
+                    co_await cbStack.back()->IR_OnKeyboardPress(0xED + 104);
             }
+
             if (!(od[i].dwData & 0x80))
             {
                 mouseState[2] = FALSE;
@@ -369,6 +389,7 @@ void CInput::MouseUpdate()
                 if (!editor || !xr::editor()->key_release(MOUSE_5))
                     cbStack.back()->IR_OnKeyboardRelease(0xED + 104);
             }
+
             break;
         case DIMOFS_BUTTON5:
             if (od[i].dwData & 0x80)
@@ -376,8 +397,9 @@ void CInput::MouseUpdate()
                 mouseState[2] = TRUE;
 
                 if (!editor || !xr::editor()->key_press(MOUSE_6))
-                    cbStack.back()->IR_OnKeyboardPress(0xED + 105);
+                    co_await cbStack.back()->IR_OnKeyboardPress(0xED + 105);
             }
+
             if (!(od[i].dwData & 0x80))
             {
                 mouseState[2] = FALSE;
@@ -385,6 +407,7 @@ void CInput::MouseUpdate()
                 if (!editor || !xr::editor()->key_release(MOUSE_6))
                     cbStack.back()->IR_OnKeyboardRelease(0xED + 105);
             }
+
             break;
         case DIMOFS_BUTTON6:
             if (od[i].dwData & 0x80)
@@ -392,8 +415,9 @@ void CInput::MouseUpdate()
                 mouseState[2] = TRUE;
 
                 if (!editor || !xr::editor()->key_press(MOUSE_7))
-                    cbStack.back()->IR_OnKeyboardPress(0xED + 106);
+                    co_await cbStack.back()->IR_OnKeyboardPress(0xED + 106);
             }
+
             if (!(od[i].dwData & 0x80))
             {
                 mouseState[2] = FALSE;
@@ -401,6 +425,7 @@ void CInput::MouseUpdate()
                 if (!editor || !xr::editor()->key_release(MOUSE_7))
                     cbStack.back()->IR_OnKeyboardRelease(0xED + 106);
             }
+
             break;
         case DIMOFS_BUTTON7:
             if (od[i].dwData & 0x80)
@@ -408,8 +433,9 @@ void CInput::MouseUpdate()
                 mouseState[2] = TRUE;
 
                 if (!editor || !xr::editor()->key_press(MOUSE_8))
-                    cbStack.back()->IR_OnKeyboardPress(0xED + 107);
+                    co_await cbStack.back()->IR_OnKeyboardPress(0xED + 107);
             }
+
             if (!(od[i].dwData & 0x80))
             {
                 mouseState[2] = FALSE;
@@ -417,6 +443,7 @@ void CInput::MouseUpdate()
                 if (!editor || !xr::editor()->key_release(MOUSE_8))
                     cbStack.back()->IR_OnKeyboardRelease(0xED + 107);
             }
+
             break;
         }
     }
@@ -425,42 +452,14 @@ void CInput::MouseUpdate()
     DIMOUSESTATE2 MouseState;
     hr = pMouse->GetDeviceState(sizeof(MouseState), &MouseState);
 
-    auto RecheckMouseButtonFunc = [&](int i) {
-        if (MouseState.rgbButtons[i] & 0x80 && mouseState[i] == FALSE)
-        {
-            mouseState[i] = TRUE;
-
-            if (!editor || !xr::editor()->key_press(mouse_button_2_key[i]))
-                cbStack.back()->IR_OnMousePress(i);
-        }
-        else if (!(MouseState.rgbButtons[i] & 0x80) && mouseState[i] == TRUE)
-        {
-            mouseState[i] = FALSE;
-
-            if (!editor || !xr::editor()->key_release(mouse_button_2_key[i]))
-                cbStack.back()->IR_OnMouseRelease(i);
-        }
-    };
-
     if (hr == S_OK)
     {
-        RecheckMouseButtonFunc(0);
-        RecheckMouseButtonFunc(1);
-        RecheckMouseButtonFunc(2);
+        auto& state = *reinterpret_cast<const std::array<u8, 8>*>(&MouseState.rgbButtons);
+        co_await RecheckMouseButtons(state, editor);
     }
     //-Giperion
 
-    auto isButtonOnHold = [&](int i) {
-        if (mouseState[i] && mouse_prev[i])
-        {
-            if (!editor || !xr::editor()->key_hold(mouse_button_2_key[i]))
-                cbStack.back()->IR_OnMouseHold(i);
-        }
-    };
-
-    isButtonOnHold(0);
-    isButtonOnHold(1);
-    isButtonOnHold(2);
+    co_await isButtonsOnHold(mouse_prev, editor);
 
     if (dwElements)
     {
@@ -473,7 +472,7 @@ void CInput::MouseUpdate()
         if (offs[2])
         {
             if (!editor || !xr::editor()->mouse_wheel(offs[2]))
-                cbStack.back()->IR_OnMouseWheel(offs[2]);
+                co_await cbStack.back()->IR_OnMouseWheel(offs[2]);
         }
     }
     else
@@ -487,20 +486,54 @@ void CInput::MouseUpdate()
 #pragma pop_macro("FIELD_OFFSET")
 }
 
-//-------------------------------------------------------
-void CInput::iCapture(IInputReceiver* p)
+tmc::task<void> CInput::RecheckMouseButtons(std::array<u8, 8> state, bool editor)
+{
+    for (gsl::index i{0}; i < 3; ++i)
+    {
+        if ((state[i] & 0x80) && mouseState[i] == FALSE)
+        {
+            mouseState[i] = TRUE;
+
+            if (!editor || !xr::editor()->key_press(mouse_button_2_key[i]))
+                co_await cbStack.back()->IR_OnMousePress(i);
+        }
+        else if (!(state[i] & 0x80) && mouseState[i] == TRUE)
+        {
+            mouseState[i] = FALSE;
+
+            if (!editor || !xr::editor()->key_release(mouse_button_2_key[i]))
+                cbStack.back()->IR_OnMouseRelease(i);
+        }
+    }
+}
+
+tmc::task<void> CInput::isButtonsOnHold(std::array<bool, COUNT_MOUSE_BUTTONS> mouse_prev, bool editor)
+{
+    for (gsl::index i{0}; i < 3; ++i)
+    {
+        if (!mouseState[i] || !mouse_prev[i])
+            continue;
+
+        if (!editor || !xr::editor()->key_hold(mouse_button_2_key[i]))
+            co_await cbStack.back()->IR_OnMouseHold(i);
+    }
+}
+
+tmc::task<void> CInput::iCapture(IInputReceiver* p)
 {
     VERIFY(p);
+
     if (pMouse)
-        MouseUpdate();
+        co_await MouseUpdate();
     if (pKeyboard)
-        KeyUpdate();
+        co_await KeyUpdate();
 
     // change focus
     if (!cbStack.empty())
         cbStack.back()->IR_OnDeactivate();
+
     cbStack.push_back(p);
-    cbStack.back()->IR_OnActivate();
+    co_await cbStack.back()->IR_OnActivate();
 
     // prepare for _new_ controller
     std::memset(timeStamp, 0, sizeof(timeStamp));
@@ -508,33 +541,35 @@ void CInput::iCapture(IInputReceiver* p)
     std::memset(offs, 0, sizeof(offs));
 }
 
-void CInput::iRelease(IInputReceiver* p)
+tmc::task<void> CInput::iRelease(IInputReceiver* p)
 {
     if (p == cbStack.back())
     {
         cbStack.back()->IR_OnDeactivate();
         cbStack.pop_back();
-        IInputReceiver* ir = cbStack.back();
-        ir->IR_OnActivate();
+
+        co_await cbStack.back()->IR_OnActivate();
+        co_return;
     }
-    else
-    { // we are not topmost receiver, so remove the nearest one
-        u32 cnt = cbStack.size();
-        for (; cnt > 0; --cnt)
-            if (cbStack[cnt - 1] == p)
-            {
-                xr_vector<IInputReceiver*>::iterator it = cbStack.begin();
-                std::advance(it, cnt - 1);
-                cbStack.erase(it);
-                break;
-            }
+
+    // we are not topmost receiver, so remove the nearest one
+    u32 cnt = cbStack.size();
+    for (; cnt > 0; --cnt)
+    {
+        if (cbStack[cnt - 1] == p)
+        {
+            xr_vector<IInputReceiver*>::iterator it = cbStack.begin();
+            std::advance(it, cnt - 1);
+            cbStack.erase(it);
+            break;
+        }
     }
 }
 
 tmc::task<void> CInput::OnAppActivate()
 {
-    if (CurrentIR())
-        CurrentIR()->IR_OnActivate();
+    if (CurrentIR() != nullptr)
+        co_await CurrentIR()->IR_OnActivate();
 
     SetAllAcquire(true);
 
@@ -543,8 +578,6 @@ tmc::task<void> CInput::OnAppActivate()
     std::memset(timeStamp, 0, sizeof(timeStamp));
     std::memset(timeSave, 0, sizeof(timeSave));
     std::memset(offs, 0, sizeof(offs));
-
-    co_return;
 }
 
 tmc::task<void> CInput::OnAppDeactivate()
@@ -569,12 +602,11 @@ tmc::task<void> CInput::OnFrame()
     dwCurTime = Device.TimerAsync_MMT();
 
     if (pKeyboard)
-        KeyUpdate();
+        co_await KeyUpdate();
     if (pMouse)
-        MouseUpdate();
+        co_await MouseUpdate();
 
     Device.Statistic->Input.End();
-    co_return;
 }
 
 IInputReceiver* CInput::CurrentIR()

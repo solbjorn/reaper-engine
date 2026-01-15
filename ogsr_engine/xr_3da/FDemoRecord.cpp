@@ -95,14 +95,12 @@ void update_whith_timescale(Fvector& v, const Fvector& v_delta)
 }
 } // namespace
 
-CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDemo, life_time)
+CDemoRecord::CDemoRecord(gsl::czstring name, f32 life_time) : CEffectorCam{cefDemo, life_time}
 {
     Device.seqRender.Add(this, REG_PRIORITY_LOW - 1000);
 
     pFontSystem = std::make_unique<CGameFont>("hud_font_di", CGameFont::fsDeviceIndependent);
-
     m_iLMScreenshotFragment = -1;
-
     m_b_redirect_input_to_level = false;
 
     if (name && name[0]) // что б можно было demo_record без файла использовать
@@ -110,62 +108,70 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
         _unlink(name);
         file = FS.w_open(name);
     }
-    // if (file)
-    {
-        // g_position.set_position = false;
-        IR_Capture(); // capture input
-        m_Camera = Device.mInvView;
+}
 
-        // parse yaw
-        Fvector& dir = m_Camera.k;
-        Fvector DYaw;
-        DYaw.set(dir.x, 0.f, dir.z);
-        DYaw.normalize_safe();
-        if (DYaw.x < 0)
-            m_HPB.x = acosf(DYaw.z);
-        else
-            m_HPB.x = 2 * PI - acosf(DYaw.z);
+tmc::task<void> CDemoRecord::co_CDemoRecord()
+{
+    co_await IR_Capture(); // capture input
+    m_Camera = Device.mInvView;
 
-        // parse pitch
-        dir.normalize_safe();
-        m_HPB.y = asinf(dir.y);
-        m_HPB.z = 0;
+    // parse yaw
+    Fvector& dir = m_Camera.k;
+    Fvector DYaw;
+    DYaw.set(dir.x, 0.f, dir.z);
+    DYaw.normalize_safe();
+    if (DYaw.x < 0)
+        m_HPB.x = acosf(DYaw.z);
+    else
+        m_HPB.x = 2 * PI - acosf(DYaw.z);
 
-        m_Position.set(m_Camera.c);
+    // parse pitch
+    dir.normalize_safe();
+    m_HPB.y = asinf(dir.y);
+    m_HPB.z = 0;
 
-        m_vVelocity.set(0, 0, 0);
-        m_vAngularVelocity.set(0, 0, 0);
-        iCount = 0;
+    m_Position.set(m_Camera.c);
 
-        m_vT.set(0, 0, 0);
-        m_vR.set(0, 0, 0);
-        m_bMakeCubeMap = false;
-        m_bMakeScreenshot = false;
-        m_bMakeLevelMap = false;
+    m_vVelocity.set(0, 0, 0);
+    m_vAngularVelocity.set(0, 0, 0);
+    iCount = 0;
 
-        m_fSpeed0 = pSettings->r_float("demo_record", "speed0");
-        m_fSpeed1 = pSettings->r_float("demo_record", "speed1");
-        m_fSpeed2 = pSettings->r_float("demo_record", "speed2");
-        m_fSpeed3 = pSettings->r_float("demo_record", "speed3");
-        m_fAngSpeed0 = pSettings->r_float("demo_record", "ang_speed0");
-        m_fAngSpeed1 = pSettings->r_float("demo_record", "ang_speed1");
-        m_fAngSpeed2 = pSettings->r_float("demo_record", "ang_speed2");
-        m_fAngSpeed3 = pSettings->r_float("demo_record", "ang_speed3");
-    }
-    // else
-    //{
-    //     fLifeTime = -1;
-    // }
+    m_vT.set(0, 0, 0);
+    m_vR.set(0, 0, 0);
+    m_bMakeCubeMap = false;
+    m_bMakeScreenshot = false;
+    m_bMakeLevelMap = false;
+
+    m_fSpeed0 = pSettings->r_float("demo_record", "speed0");
+    m_fSpeed1 = pSettings->r_float("demo_record", "speed1");
+    m_fSpeed2 = pSettings->r_float("demo_record", "speed2");
+    m_fSpeed3 = pSettings->r_float("demo_record", "speed3");
+    m_fAngSpeed0 = pSettings->r_float("demo_record", "ang_speed0");
+    m_fAngSpeed1 = pSettings->r_float("demo_record", "ang_speed1");
+    m_fAngSpeed2 = pSettings->r_float("demo_record", "ang_speed2");
+    m_fAngSpeed3 = pSettings->r_float("demo_record", "ang_speed3");
+}
+
+tmc::task<std::unique_ptr<CDemoRecord>> CDemoRecord::co_create(gsl::czstring name, f32 life_time)
+{
+    auto demo = absl::WrapUnique(new (xr_alloc<CDemoRecord>(1)) CDemoRecord{name, life_time});
+
+    co_await demo->co_CDemoRecord();
+    co_return demo;
+}
+
+tmc::task<void> CDemoRecord::co_destroy()
+{
+    co_await IR_Release(); // release input
+
+    auto demo = this;
+    xr_delete(demo);
 }
 
 CDemoRecord::~CDemoRecord()
 {
-    IR_Release(); // release input
-
-    if (file)
-    {
+    if (file != nullptr)
         FS.w_close(file);
-    }
 
     Device.seqRender.Remove(this);
 }
@@ -405,22 +411,22 @@ BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
     return TRUE;
 }
 
-void CDemoRecord::IR_OnKeyboardPress(int dik)
+tmc::task<void> CDemoRecord::IR_OnKeyboardPress(gsl::index dik)
 {
     if (dik == DIK_MULTIPLY)
     {
         m_b_redirect_input_to_level = !m_b_redirect_input_to_level;
-        return;
+        co_return;
     }
 
     if (m_b_redirect_input_to_level)
     {
-        g_pGameLevel->IR_OnKeyboardPress(dik);
-        return;
+        co_await g_pGameLevel->IR_OnKeyboardPress(dik);
+        co_return;
     }
 
     if (dik == DIK_GRAVE)
-        Console->Show();
+        co_await Console->Show();
     if (dik == DIK_SPACE)
         RecordKey();
     if (dik == DIK_BACK)
@@ -445,12 +451,12 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
         Device.Pause(!Device.Paused(), true, true, "demo_record");
 }
 
-void CDemoRecord::IR_OnKeyboardHold(int dik)
+tmc::task<void> CDemoRecord::IR_OnKeyboardHold(gsl::index dik)
 {
     if (m_b_redirect_input_to_level)
     {
-        g_pGameLevel->IR_OnKeyboardHold(dik);
-        return;
+        co_await g_pGameLevel->IR_OnKeyboardHold(dik);
+        co_return;
     }
 
     Fvector vT_delta{}, vR_delta{};
@@ -514,12 +520,12 @@ void CDemoRecord::IR_OnMouseMove(int dx, int dy)
     update_whith_timescale(m_vR, vR_delta);
 }
 
-void CDemoRecord::IR_OnMouseHold(int btn)
+tmc::task<void> CDemoRecord::IR_OnMouseHold(gsl::index btn)
 {
     if (m_b_redirect_input_to_level)
     {
-        g_pGameLevel->IR_OnMouseHold(btn);
-        return;
+        co_await g_pGameLevel->IR_OnMouseHold(btn);
+        co_return;
     }
 
     Fvector vT_delta{};
@@ -529,15 +535,16 @@ void CDemoRecord::IR_OnMouseHold(int btn)
     case 0: vT_delta.z += 1.0f; break; // Move Forward
     case 1: vT_delta.z -= 1.0f; break; // Move Backward
     }
+
     update_whith_timescale(m_vT, vT_delta);
 }
 
-void CDemoRecord::IR_OnMousePress(int btn)
+tmc::task<void> CDemoRecord::IR_OnMousePress(gsl::index btn)
 {
     if (m_b_redirect_input_to_level)
     {
-        g_pGameLevel->IR_OnMousePress(btn);
-        return;
+        co_await g_pGameLevel->IR_OnMousePress(btn);
+        co_return;
     }
 }
 

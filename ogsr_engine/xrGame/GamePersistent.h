@@ -32,12 +32,12 @@ public:
     CUISequencer* m_intro{};
     EVENT eQuickLoad;
 
-    CallMe::Delegate<void()> m_intro_event;
+    CallMe::Delegate<tmc::task<void>()> m_intro_event;
 
-    void start_logo_intro();
-    void update_logo_intro();
-    void start_game_intro();
-    void update_game_intro();
+    tmc::task<void> start_logo_intro();
+    tmc::task<void> update_logo_intro();
+    tmc::task<void> start_game_intro();
+    tmc::task<void> update_game_intro();
 
 #ifdef DEBUG
     u32 m_frame_counter{};
@@ -56,18 +56,18 @@ public:
     ~CGamePersistent() override;
 
     void PreStart(LPCSTR op) override;
-    [[nodiscard]] tmc::task<void> Start(gsl::czstring op) override;
+    tmc::task<void> Start(gsl::czstring op) override;
     virtual void Disconnect();
 
-    [[nodiscard]] tmc::task<void> OnAppActivate() override;
-    [[nodiscard]] tmc::task<void> OnAppDeactivate() override;
+    tmc::task<void> OnAppActivate() override;
+    tmc::task<void> OnAppDeactivate() override;
 
-    [[nodiscard]] tmc::task<void> OnAppStart() override;
-    [[nodiscard]] tmc::task<void> OnAppEnd() override;
-    [[nodiscard]] tmc::task<void> OnGameStart() override;
+    tmc::task<void> OnAppStart() override;
+    tmc::task<void> OnAppEnd() override;
+    tmc::task<void> OnGameStart() override;
     virtual void OnGameEnd();
-    [[nodiscard]] tmc::task<void> OnFrame() override;
-    [[nodiscard]] tmc::task<void> OnEvent(EVENT E, u64 P1, u64 P2) override;
+    tmc::task<void> OnFrame() override;
+    tmc::task<void> OnEvent(EVENT E, u64 P1, u64 P2) override;
 
     virtual void UpdateGameType();
 
@@ -78,7 +78,7 @@ public:
     virtual bool OnRenderPPUI_query();
     virtual void OnRenderPPUI_main();
     virtual void OnRenderPPUI_PP();
-    [[nodiscard]] tmc::task<void> LoadTitle(gsl::czstring title) override;
+    tmc::task<void> LoadTitle(gsl::czstring title) override;
     virtual void SetTip();
 
     [[nodiscard]] bool OnKeyboardPress();
@@ -90,7 +90,7 @@ IC CGamePersistent& GamePersistent() { return *smart_cast<CGamePersistent*>(g_pG
 void CCC_RegisterCommands();
 
 // xrgame_dll_detach.cpp
-[[nodiscard]] tmc::task<void> init_game_globals();
+tmc::task<void> init_game_globals();
 void clean_game_globals();
 
 #endif // GamePersistentH

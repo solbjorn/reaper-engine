@@ -19,12 +19,10 @@ struct STRING_TABLE_DATA
 class CStringTable
 {
 public:
-    CStringTable();
-
     static void Destroy();
 
-    void ReloadLanguage();
-    STRING_VALUE translate(const STRING_ID& str_id) const;
+    static tmc::task<void> ReloadLanguage();
+    static STRING_VALUE translate(const STRING_ID& str_id);
 
     static void ReparseKeyBindings();
     static shared_str GetLanguage();
@@ -32,12 +30,12 @@ public:
     static BOOL WriteErrorsToLog;
 
 private:
-    void Init();
-    void Load(LPCSTR xml_file);
+    static tmc::task<void> Init();
+    static tmc::task<void> Load(gsl::czstring xml_file);
 
     static void SetLanguage();
-    static STRING_VALUE ParseLine(LPCSTR str, LPCSTR key, bool bFirst);
+    static std::pair<STRING_VALUE, bool> ParseLine(gsl::czstring str, bool bFirst);
 
-    static std::mutex pDataMutex;
+    static tmc::mutex pDataMutex;
     static STRING_TABLE_DATA* pData;
 };

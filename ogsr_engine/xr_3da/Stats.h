@@ -127,7 +127,7 @@ public:
     void Show_HW_Stats();
 
 #ifdef DEBUG
-    [[nodiscard]] tmc::task<void> OnRender() override;
+    tmc::task<void> OnRender() override;
 #endif
 
     void OnDeviceCreate(void);

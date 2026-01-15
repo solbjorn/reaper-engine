@@ -623,14 +623,11 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool allow_disabl
     }
 }
 
-void CConsole::Show()
+tmc::task<void> CConsole::Show()
 {
-    // SECUROM_MARKER_HIGH_SECURITY_ON(11)
-
     if (bVisible)
-    {
-        return;
-    }
+        co_return;
+
     bVisible = true;
 
     GetCursorPos(&m_mouse_pos);
@@ -641,37 +638,34 @@ void CConsole::Show()
     reset_selected_tip();
     update_tips();
 
-    m_editor->IR_Capture();
+    co_await m_editor->IR_Capture();
 
     if (!g_console_show_always)
         Device.seqRender.Add(this, 1);
-    Device.seqFrame.Add(this);
 
-    // SECUROM_MARKER_HIGH_SECURITY_OFF(11)
+    Device.seqFrame.Add(this);
 }
 
 extern CInput* pInput;
 
-void CConsole::Hide()
+tmc::task<void> CConsole::Hide()
 {
     if (!bVisible)
-    {
-        return;
-    }
+        co_return;
 
     if (pInput->exclusive_mode())
-    {
         SetCursorPos(m_mouse_pos.x, m_mouse_pos.y);
-    }
 
     bVisible = false;
     reset_selected_tip();
     update_tips();
 
     Device.seqFrame.Remove(this);
+
     if (!g_console_show_always)
         Device.seqRender.Remove(this);
-    m_editor->IR_Release();
+
+    co_await m_editor->IR_Release();
 }
 
 void CConsole::SelectCommand()

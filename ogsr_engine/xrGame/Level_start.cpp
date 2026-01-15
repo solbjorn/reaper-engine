@@ -169,7 +169,7 @@ xrServer::EConnect g_connect_server_err = xrServer::ErrConnect;
 
 struct LevelLoadFinalizer
 {
-    [[nodiscard]] tmc::task<bool> net_start_finalizer() { co_return true; }
+    tmc::task<bool> net_start_finalizer() { co_return true; }
 };
 
 LevelLoadFinalizer LF;

@@ -36,11 +36,11 @@ public:
     virtual void Hide();
     virtual void Update();
 
-    virtual bool IR_OnKeyboardPress(int dik);
+    virtual tmc::task<bool> IR_OnKeyboardPress(gsl::index dik);
     virtual bool IR_OnKeyboardRelease(int dik);
     virtual bool IR_OnMouseMove(int dx, int dy);
-    virtual bool IR_OnMouseWheel(int direction);
-    virtual bool IR_OnKeyboardHold(int dik);
+    virtual tmc::task<bool> IR_OnMouseWheel(gsl::index direction);
+    virtual tmc::task<bool> IR_OnKeyboardHold(gsl::index dik);
     virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
     virtual bool OnKeyboardHold(int dik);
 

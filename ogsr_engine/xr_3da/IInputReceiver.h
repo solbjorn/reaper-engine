@@ -20,22 +20,22 @@ public:
 
     BOOL IR_GetKeyState(int dik);
     BOOL IR_GetBtnState(int btn);
-    void IR_Capture();
-    void IR_Release();
+    tmc::task<void> IR_Capture();
+    tmc::task<void> IR_Release();
 
+    virtual tmc::task<void> IR_OnActivate() { co_return; }
     virtual void IR_OnDeactivate();
-    virtual void IR_OnActivate();
 
-    virtual void IR_OnMousePress(int) {}
+    virtual tmc::task<void> IR_OnMousePress(gsl::index) { co_return; }
     virtual void IR_OnMouseRelease(int) {}
-    virtual void IR_OnMouseHold(int) {}
-    virtual void IR_OnMouseWheel(int) {}
+    virtual tmc::task<void> IR_OnMouseHold(gsl::index) { co_return; }
+    virtual tmc::task<void> IR_OnMouseWheel(gsl::index) { co_return; }
     virtual void IR_OnMouseMove(int, int) {}
     virtual void IR_OnMouseStop(int, int) {}
 
-    virtual void IR_OnKeyboardPress(int) {}
+    virtual tmc::task<void> IR_OnKeyboardPress(gsl::index) { co_return; }
     virtual void IR_OnKeyboardRelease(int) {}
-    virtual void IR_OnKeyboardHold(int) {}
+    virtual tmc::task<void> IR_OnKeyboardHold(gsl::index) { co_return; }
 };
 
 extern float psMouseSens;

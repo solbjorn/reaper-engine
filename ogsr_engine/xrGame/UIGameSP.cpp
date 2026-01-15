@@ -215,9 +215,10 @@ void CUIGameSP::ChangeLevel(GameGraph::_GRAPH_ID game_vert_id, u32 level_vert_id
     }
 }
 
-void CUIGameSP::reset_ui()
+tmc::task<void> CUIGameSP::reset_ui()
 {
-    inherited::reset_ui();
+    co_await inherited::reset_ui();
+
     InventoryMenu->Reset();
     PdaMenu->Reset();
     TalkMenu->Reset();

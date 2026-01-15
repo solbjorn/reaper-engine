@@ -1,18 +1,19 @@
 #include "stdafx.h"
 
-#include "xr_input.h"
-#include "iinputreceiver.h"
+#include "IInputReceiver.h"
 
-void IInputReceiver::IR_Capture(void)
+#include "xr_input.h"
+
+tmc::task<void> IInputReceiver::IR_Capture()
 {
     VERIFY(pInput);
-    pInput->iCapture(this);
+    co_await pInput->iCapture(this);
 }
 
-void IInputReceiver::IR_Release(void)
+tmc::task<void> IInputReceiver::IR_Release()
 {
     VERIFY(pInput);
-    pInput->iRelease(this);
+    co_await pInput->iRelease(this);
 }
 
 void IInputReceiver::IR_GetLastMouseDelta(Ivector2& p)
@@ -33,8 +34,6 @@ void IInputReceiver::IR_OnDeactivate(void)
     IR_OnMouseStop(DIMOFS_X, 0);
     IR_OnMouseStop(DIMOFS_Y, 0);
 }
-
-void IInputReceiver::IR_OnActivate(void) {}
 
 BOOL IInputReceiver::IR_GetKeyState(int dik)
 {

@@ -5,6 +5,7 @@
 #include "stdafx.h"
 
 #include "uidialogwnd.h"
+
 #include "../hudmanager.h"
 #include "../xr_level_controller.h"
 #include "..\..\xr_3da\xr_ioconsole.h"
@@ -12,7 +13,7 @@
 #include "../GameObject.h"
 
 CUIDialogWnd::CUIDialogWnd() { Hide(); }
-CUIDialogWnd::~CUIDialogWnd() {}
+CUIDialogWnd::~CUIDialogWnd() = default;
 
 void CUIDialogWnd::Show()
 {
@@ -31,12 +32,13 @@ void CUIDialogWnd::Hide()
     inherited::Show(false);
 }
 
-bool CUIDialogWnd::IR_OnKeyboardHold(int dik)
+tmc::task<bool> CUIDialogWnd::IR_OnKeyboardHold(gsl::index dik)
 {
     if (!IR_process())
-        return false;
+        co_return false;
+
     if (OnKeyboardHold(dik))
-        return true;
+        co_return true;
 
     if (!StopAnyMove() && g_pGameLevel)
     {
@@ -45,19 +47,22 @@ bool CUIDialogWnd::IR_OnKeyboardHold(int dik)
         {
             IInputReceiver* IR = smart_cast<IInputReceiver*>(smart_cast<CGameObject*>(O));
             if (!IR)
-                return (false);
-            IR->IR_OnKeyboardHold(get_binded_action(dik));
+                co_return false;
+
+            co_await IR->IR_OnKeyboardHold(get_binded_action(dik));
         }
     }
-    return false;
+
+    co_return false;
 }
 
 #define DOUBLE_CLICK_TIME 250
 
-bool CUIDialogWnd::IR_OnKeyboardPress(int dik)
+tmc::task<bool> CUIDialogWnd::IR_OnKeyboardPress(gsl::index dik)
 {
     if (!IR_process())
-        return false;
+        co_return false;
+
     // mouse click
     if (dik == MOUSE_1 || dik == MOUSE_2 || dik == MOUSE_3)
     {
@@ -70,12 +75,13 @@ bool CUIDialogWnd::IR_OnKeyboardPress(int dik)
                 action = WINDOW_LBUTTON_DB_CLICK;
             m_dwLastClickTime = dwCurTime;
         }
+
         if (OnMouse(cp.x, cp.y, action))
-            return true;
+            co_return true;
     }
 
     if (OnKeyboard(dik, WINDOW_KEY_PRESSED))
-        return true;
+        co_return true;
 
     if (!StopAnyMove() && g_pGameLevel)
     {
@@ -84,11 +90,13 @@ bool CUIDialogWnd::IR_OnKeyboardPress(int dik)
         {
             IInputReceiver* IR = smart_cast<IInputReceiver*>(smart_cast<CGameObject*>(O));
             if (!IR)
-                return (false);
-            IR->IR_OnKeyboardPress(get_binded_action(dik));
+                co_return false;
+
+            co_await IR->IR_OnKeyboardPress(get_binded_action(dik));
         }
     }
-    return false;
+
+    co_return false;
 }
 
 bool CUIDialogWnd::IR_OnKeyboardRelease(int dik)
@@ -122,10 +130,11 @@ bool CUIDialogWnd::IR_OnKeyboardRelease(int dik)
     return false;
 }
 
-bool CUIDialogWnd::IR_OnMouseWheel(int direction)
+tmc::task<bool> CUIDialogWnd::IR_OnMouseWheel(gsl::index direction)
 {
     if (!IR_process())
-        return false;
+        co_return false;
+
     Fvector2 pos = GetUICursor()->GetCursorPosition();
 
     if (direction > 0)
@@ -133,7 +142,7 @@ bool CUIDialogWnd::IR_OnMouseWheel(int direction)
     else
         OnMouse(pos.x, pos.y, WINDOW_MOUSE_WHEEL_DOWN);
 
-    return true;
+    co_return true;
 }
 
 bool CUIDialogWnd::IR_OnMouseMove(int dx, int dy)

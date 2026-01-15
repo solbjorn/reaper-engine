@@ -160,7 +160,7 @@ public:
     u16 Phase() const { return m_phase; }
     s32 Round() const { return m_round; }
     u32 StartTime() const { return m_start_time; }
-    [[nodiscard]] virtual tmc::task<void> Create(shared_str&) { co_return; }
+    virtual tmc::task<void> Create(shared_str&) { co_return; }
     virtual LPCSTR type_name() const { return "base game"; }
     // for scripting enhancement
     static CLASS_ID getCLASS_ID(LPCSTR game_type_name, bool bServer);

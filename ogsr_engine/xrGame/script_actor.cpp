@@ -8,10 +8,11 @@
 
 #include "StdAfx.h"
 
+#include "script_actor.h"
+
 #include "base_client_classes.h"
 #include "script_game_object.h"
 #include "CharacterPhysicsSupport.h"
-#include "script_actor.h"
 #include "PHSimpleCharacter.h"
 #include "Inventory.h"
 #include "Wound.h"
@@ -79,6 +80,57 @@ static CActorConditionObject* get_actor_condition(CActor* pActor) { return (CAct
 static SRotation& get_actor_orientation(CActor* pActor) { return pActor->Orientation(); }
 static ACTOR_DEFS::EActorCameras get_active_cam(CActor* pActor) { return pActor->active_cam(); }
 
+namespace xr
+{
+namespace
+{
+class actor_input_async
+{
+private:
+    static constexpr gsl::index none{std::numeric_limits<gsl::index>::max()};
+
+    CActor* actor_async{};
+    gsl::index key_async{none};
+    gsl::index hld_async{none};
+
+    tmc::task<void> press_async()
+    {
+        const auto key = key_async;
+        if (key == none)
+            co_return;
+
+        key_async = none;
+        co_await actor_async->IR_OnKeyboardPress(key);
+    }
+
+    tmc::task<void> hold_async()
+    {
+        const auto key = hld_async;
+        if (key == none)
+            co_return;
+
+        hld_async = none;
+        co_await actor_async->IR_OnKeyboardHold(key);
+    }
+
+public:
+    void press(CActor* actor, gsl::index key)
+    {
+        actor_async = actor;
+        key_async = key;
+        Device.add_frame_async(CallMe::fromMethod<&xr::actor_input_async::press_async>(this));
+    }
+
+    void hold(CActor* actor, gsl::index key)
+    {
+        actor_async = actor;
+        hld_async = key;
+        Device.add_frame_async(CallMe::fromMethod<&xr::actor_input_async::hold_async>(this));
+    }
+} input_async;
+} // namespace
+} // namespace xr
+
 static bool IsLimping(CActorCondition* C) { return C->m_condition_flags.test(CActorCondition::eLimping); }
 static bool IsCantWalk(CActorCondition* C) { return C->m_condition_flags.test(CActorCondition::eCantWalk); }
 static bool IsCantSprint(CActorCondition* C) { return C->m_condition_flags.test(CActorCondition::eCantSprint); }
@@ -121,30 +173,30 @@ void CScriptActor::script_register(sol::state_view& lua)
                                          "air_control_param", &CPHMovementControl::fAirControlParam, "jump_up_velocity",
                                          sol::property(&get_jump_up_velocity, &CPHMovementControl::SetJumpUpVelocity));
 
-    lua.new_usertype<CActor>("CActorBase", sol::no_constructor, "condition", sol::property(&get_actor_condition), "immunities", sol::property(&get_immunities), "hit_slowmo",
-                             &CActor::hit_slowmo, "hit_probability", &CActor::hit_probability, "walk_accel", &CActor::m_fWalkAccel,
+    lua.new_usertype<CActor>(
+        "CActorBase", sol::no_constructor, "condition", sol::property(&get_actor_condition), "immunities", sol::property(&get_immunities), "hit_slowmo", &CActor::hit_slowmo,
+        "hit_probability", &CActor::hit_probability, "walk_accel", &CActor::m_fWalkAccel,
 
-                             "run_coef", &CActor::m_fRunFactor, "run_back_coef", &CActor::m_fRunBackFactor, "walk_back_coef", &CActor::m_fWalkBackFactor, "crouch_coef",
-                             &CActor::m_fCrouchFactor, "climb_coef", &CActor::m_fClimbFactor, "sprint_koef", &CActor::m_fSprintFactor, "walk_strafe_coef",
-                             &CActor::m_fWalk_StrafeFactor, "run_strafe_coef", &CActor::m_fRun_StrafeFactor, "disp_base", &CActor::m_fDispBase, "disp_aim", &CActor::m_fDispAim,
-                             "disp_vel_factor", &CActor::m_fDispVelFactor, "disp_accel_factor", &CActor::m_fDispAccelFactor, "disp_crouch_factor", &CActor::m_fDispCrouchFactor,
-                             "disp_crouch_no_acc_factor", &CActor::m_fDispCrouchNoAccelFactor,
+        "run_coef", &CActor::m_fRunFactor, "run_back_coef", &CActor::m_fRunBackFactor, "walk_back_coef", &CActor::m_fWalkBackFactor, "crouch_coef", &CActor::m_fCrouchFactor,
+        "climb_coef", &CActor::m_fClimbFactor, "sprint_koef", &CActor::m_fSprintFactor, "walk_strafe_coef", &CActor::m_fWalk_StrafeFactor, "run_strafe_coef",
+        &CActor::m_fRun_StrafeFactor, "disp_base", &CActor::m_fDispBase, "disp_aim", &CActor::m_fDispAim, "disp_vel_factor", &CActor::m_fDispVelFactor, "disp_accel_factor",
+        &CActor::m_fDispAccelFactor, "disp_crouch_factor", &CActor::m_fDispCrouchFactor, "disp_crouch_no_acc_factor", &CActor::m_fDispCrouchNoAccelFactor,
 
-                             "movement", sol::property(&get_movement), "jump_speed", sol::property(&get_jump_speed, &set_jump_speed), "state", sol::property(&get_actor_state),
-                             "orientation", sol::property(&get_actor_orientation),
+        "movement", sol::property(&get_movement), "jump_speed", sol::property(&get_jump_speed, &set_jump_speed), "state", sol::property(&get_actor_state), "orientation",
+        sol::property(&get_actor_orientation),
 
-                             // Real Wolf. Start. 14.10.2014.
-                             "press_action", &CActor::IR_OnKeyboardPress, "hold_action", &CActor::IR_OnKeyboardHold, "release_action", &CActor::IR_OnKeyboardRelease,
-                             "is_zoom_aiming_mode", &CActor::IsZoomAimingMode,
-                             // Real Wolf. End. 14.10.2014.
+        // Real Wolf. Start. 14.10.2014.
+        "press_action", [](CActor* actor, gsl::index key) { xr::input_async.press(actor, key); }, "hold_action",
+        [](CActor* actor, gsl::index key) { xr::input_async.hold(actor, key); }, "release_action", &CActor::IR_OnKeyboardRelease, "is_zoom_aiming_mode", &CActor::IsZoomAimingMode,
+        // Real Wolf. End. 14.10.2014.
 
-                             "get_body_state", &CActor::get_state, "is_actor_normal", &CActor::is_actor_normal, "is_actor_crouch", &CActor::is_actor_crouch, "is_actor_creep",
-                             &CActor::is_actor_creep, "is_actor_climb", &CActor::is_actor_climb, "is_actor_walking", &CActor::is_actor_walking, "is_actor_running",
-                             &CActor::is_actor_running, "is_actor_sprinting", &CActor::is_actor_sprinting, "is_actor_crouching", &CActor::is_actor_crouching, "is_actor_creeping",
-                             &CActor::is_actor_creeping, "is_actor_climbing", &CActor::is_actor_climbing, "is_actor_moving", &CActor::is_actor_moving, "UpdateArtefactsOnBelt",
-                             &CActor::UpdateArtefactsOnBelt, "IsDetectorActive", &CActor::IsDetectorActive,
+        "get_body_state", &CActor::get_state, "is_actor_normal", &CActor::is_actor_normal, "is_actor_crouch", &CActor::is_actor_crouch, "is_actor_creep", &CActor::is_actor_creep,
+        "is_actor_climb", &CActor::is_actor_climb, "is_actor_walking", &CActor::is_actor_walking, "is_actor_running", &CActor::is_actor_running, "is_actor_sprinting",
+        &CActor::is_actor_sprinting, "is_actor_crouching", &CActor::is_actor_crouching, "is_actor_creeping", &CActor::is_actor_creeping, "is_actor_climbing",
+        &CActor::is_actor_climbing, "is_actor_moving", &CActor::is_actor_moving, "UpdateArtefactsOnBelt", &CActor::UpdateArtefactsOnBelt, "IsDetectorActive",
+        &CActor::IsDetectorActive,
 
-                             "active_cam", sol::property(&get_active_cam), "set_active_cam", &CActor::cam_Set, sol::base_classes, xr::sol_bases<CActor>());
+        "active_cam", sol::property(&get_active_cam), "set_active_cam", &CActor::cam_Set, sol::base_classes, xr::sol_bases<CActor>());
 
     lua.new_usertype<CActorObject>("CActor", sol::no_constructor, sol::base_classes, xr::sol_bases<CActorObject>());
 

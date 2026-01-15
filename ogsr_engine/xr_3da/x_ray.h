@@ -16,7 +16,7 @@ public:
         char* folder;
     };
 
-    ILoadingScreen* loadingScreen;
+    ILoadingScreen* loadingScreen{};
 
     u32 ll_dwReference;
 
@@ -41,19 +41,24 @@ public:
     void LoadBegin();
     void LoadEnd();
     void LoadTitleInt(); // 100 советов по выживанию в Зоне
-    [[nodiscard]] tmc::task<void> LoadStage();
-    [[nodiscard]] tmc::task<void> LoadDraw();
+    tmc::task<void> LoadStage();
+    tmc::task<void> LoadDraw();
     void LoadForceFinish();
 
     void SetLoadStageTitle(pcstr ls_title);
 
-    [[nodiscard]] tmc::task<void> OnEvent(EVENT E, u64 P1, u64 P2) override;
+    tmc::task<void> OnEvent(EVENT E, u64 P1, u64 P2) override;
 
+private:
     // Other
     CApplication();
+
+public:
+    static tmc::task<std::unique_ptr<CApplication>> co_create();
+    tmc::task<void> co_destroy();
     ~CApplication() override;
 
-    [[nodiscard]] tmc::task<void> OnFrame() override;
+    tmc::task<void> OnFrame() override;
     void load_draw_internal();
     void SetLoadingScreen(ILoadingScreen* newScreen);
     void DestroyLoadingScreen();

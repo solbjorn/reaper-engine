@@ -107,8 +107,9 @@ tmc::task<bool> CLevel::net_start_client5()
 
         // Textures
         co_await g_pGamePersistent->LoadTitle("st_loading_textures");
+
         Device.m_pRender->DeferredLoad(FALSE);
-        Device.m_pRender->ResourcesDeferredUpload();
+        co_await Device.m_pRender->ResourcesDeferredUpload();
         LL_CheckTextures();
     }
 
@@ -127,6 +128,7 @@ tmc::task<bool> CLevel::net_start_client6()
             pApp->LoadForceFinish();
 
         co_await g_pGamePersistent->LoadTitle("st_client_synchronising");
+
         Device.PreCache(60, true, true);
         net_start_result_total = TRUE;
     }

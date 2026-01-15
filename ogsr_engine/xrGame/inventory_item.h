@@ -242,7 +242,7 @@ public:
     IC bool useful_for_NPC() const;
 
 #ifdef DEBUG
-    [[nodiscard]] tmc::task<void> OnRender() override;
+    tmc::task<void> OnRender() override;
 #endif
 
 public:

@@ -96,19 +96,19 @@ public:
     virtual BOOL net_Start(LPCSTR op_server, LPCSTR op_client) = 0;
     virtual void net_Load(LPCSTR name) = 0;
     virtual void net_Save(LPCSTR name) = 0;
-    virtual void net_Stop();
+    virtual tmc::task<void> net_Stop();
     virtual void net_Update() = 0;
 
-    [[nodiscard]] virtual tmc::task<bool> Load(u32);
-    [[nodiscard]] virtual tmc::task<bool> Load_GameSpecific_Before() { co_return true; } // before object loading
+    virtual tmc::task<bool> Load(u32);
+    virtual tmc::task<bool> Load_GameSpecific_Before() { co_return true; } // before object loading
     virtual BOOL Load_GameSpecific_After() { return TRUE; } // after object loading
 
     virtual void Load_GameSpecific_CFORM_Serialize(IWriter& writer) = 0;
     virtual bool Load_GameSpecific_CFORM_Deserialize(IReader& reader) = 0;
     virtual void Load_GameSpecific_CFORM(std::span<CDB::TRI> T) = 0;
 
-    [[nodiscard]] tmc::task<void> OnFrame() override;
-    [[nodiscard]] tmc::task<void> OnRender() override;
+    tmc::task<void> OnFrame() override;
+    tmc::task<void> OnRender() override;
 
     // Main interface
     CObject* CurrentEntity(void) const { return pCurrentEntity; }

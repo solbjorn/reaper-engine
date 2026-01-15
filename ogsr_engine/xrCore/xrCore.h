@@ -147,12 +147,6 @@ public:
                              disable_dialog_break = 1ull << 41, actor_thirst = 1ull << 42, no_progress_bar_animation = 1ull << 43;
     };
 
-private:
-    std::thread::id mainThreadId;
-
-public:
-    bool OnMainThread() const { return std::this_thread::get_id() == mainThreadId; }
-
     void _initialize(LPCSTR ApplicationName, LogCallback cb = nullptr, BOOL init_fs = TRUE, LPCSTR fs_fname = nullptr);
     void _destroy();
 

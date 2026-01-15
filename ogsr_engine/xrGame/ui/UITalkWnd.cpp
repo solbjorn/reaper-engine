@@ -99,7 +99,6 @@ void CUITalkWnd::InitOthersStartDialog()
         m_pOthersDialogManager->InitDialog(m_pOurDialogManager, m_pCurrentDialog);
 
         // сказать фразу
-        CStringTable stbl;
         AddAnswer(shared_str{m_pCurrentDialog->GetPhraseText(shared_str{"0"})}, m_pOthersInvOwner->Name());
         m_pOthersDialogManager->SayPhrase(m_pCurrentDialog, shared_str{"0"});
 
@@ -368,20 +367,19 @@ void CUITalkWnd::SwitchToTrade()
     }
 }
 
-bool CUITalkWnd::IR_OnKeyboardPress(int dik)
+tmc::task<bool> CUITalkWnd::IR_OnKeyboardPress(gsl::index dik)
 {
-    //.	StopSnd						();
     EGameActions cmd = get_binded_action(dik);
     if (cmd == kUSE)
     {
         if ((Core.Features.test(xrCore::Feature::disable_dialog_break) && m_pCurrentDialog) || (m_pOthersInvOwner && m_pOthersInvOwner->NeedOsoznanieMode()))
-        {
-            return true;
-        }
+            co_return true;
+
         GetHolder()->StartStopMenu(this, true);
-        return true;
+        co_return true;
     }
-    return inherited::IR_OnKeyboardPress(dik);
+
+    co_return co_await inherited::IR_OnKeyboardPress(dik);
 }
 
 bool CUITalkWnd::OnKeyboard(int dik, EUIMessages keyboard_action)

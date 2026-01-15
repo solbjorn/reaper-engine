@@ -62,37 +62,37 @@ public:
     ~CMainMenu() override;
 
     virtual void DestroyInternal(bool bForce);
-    virtual void Activate(bool bActive);
+    tmc::task<void> Activate(bool bActive) override;
     virtual bool IsActive();
     virtual bool CanSkipSceneRendering();
 
     [[nodiscard]] bool IsLanguageChanged() const { return languageChanged; }
     void SetLanguageChanged(bool status) { languageChanged = status; }
 
-    virtual void IR_OnMousePress(int btn);
+    tmc::task<void> IR_OnMousePress(gsl::index btn) override;
     virtual void IR_OnMouseRelease(int btn);
-    virtual void IR_OnMouseHold(int btn);
+    tmc::task<void> IR_OnMouseHold(gsl::index btn) override;
     virtual void IR_OnMouseMove(int x, int y);
     virtual void IR_OnMouseStop(int, int);
 
-    virtual void IR_OnKeyboardPress(int dik);
+    tmc::task<void> IR_OnKeyboardPress(gsl::index dik) override;
     virtual void IR_OnKeyboardRelease(int dik);
-    virtual void IR_OnKeyboardHold(int dik);
+    tmc::task<void> IR_OnKeyboardHold(gsl::index dik) override;
 
-    virtual void IR_OnMouseWheel(int direction);
+    tmc::task<void> IR_OnMouseWheel(gsl::index direction) override;
 
     bool OnRenderPPUI_query();
     void OnRenderPPUI_main();
     void OnRenderPPUI_PP();
 
-    [[nodiscard]] tmc::task<void> OnRender() override;
-    [[nodiscard]] tmc::task<void> OnFrame() override;
+    tmc::task<void> OnRender() override;
+    tmc::task<void> OnFrame() override;
     virtual void StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators);
     virtual bool UseIndicators() { return false; }
 
     void OnDeviceCreate();
 
-    void Screenshot(IRender_interface::ScreenshotMode mode = IRender_interface::SM_NORMAL, LPCSTR name = nullptr);
+    tmc::task<void> Screenshot(IRender_interface::ScreenshotMode mode = IRender_interface::SM_NORMAL, gsl::czstring name = nullptr);
     void RegisterPPDraw(CUIWindow* w);
     void UnregisterPPDraw(CUIWindow* w);
 
@@ -101,7 +101,7 @@ public:
     void CheckForErrorDlg();
     void OnSessionTerminate(LPCSTR reason);
     void SetNeedVidRestart();
-    [[nodiscard]] tmc::task<void> OnDeviceReset() override;
+    tmc::task<void> OnDeviceReset() override;
     LPCSTR GetGSVer();
 
     void PlaySound(LPCSTR Path);

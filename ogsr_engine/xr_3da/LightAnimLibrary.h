@@ -51,7 +51,7 @@ public:
     ELightAnimLibrary();
     ~ELightAnimLibrary();
 
-    [[nodiscard]] tmc::task<void> OnCreate();
+    tmc::task<void> OnCreate();
     void OnDestroy();
     void Load();
     void Save();

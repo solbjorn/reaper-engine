@@ -133,7 +133,7 @@ public:
     float m_snd_noise;
 
 #ifdef DEBUG
-    [[nodiscard]] tmc::task<void> OnRender() override;
+    tmc::task<void> OnRender() override;
 #endif
 
     // Имеется ли воздействие пси-ауры на ГГ (тряска рук)
@@ -488,15 +488,16 @@ protected:
 
     float m_fExoFactor;
     float m_fLookoutAngle;
+
+public:
     //////////////////////////////////////////////////////////////////////////
     // User input/output
     //////////////////////////////////////////////////////////////////////////
-public:
     virtual void IR_OnMouseMove(int x, int y);
-    virtual void IR_OnKeyboardPress(int dik);
+    tmc::task<void> IR_OnKeyboardPress(gsl::index dik) override;
     virtual void IR_OnKeyboardRelease(int dik);
-    virtual void IR_OnKeyboardHold(int dik);
-    virtual void IR_OnMouseWheel(int direction);
+    tmc::task<void> IR_OnKeyboardHold(gsl::index dik) override;
+    tmc::task<void> IR_OnMouseWheel(gsl::index direction) override;
     virtual float GetLookFactor();
 
     IC void ResetStates()
@@ -672,8 +673,8 @@ public:
     virtual void SetHitInfo(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir);
 
     virtual bool InventoryAllowSprint();
-    virtual void OnNextWeaponSlot();
-    virtual void OnPrevWeaponSlot();
+    tmc::task<void> OnNextWeaponSlot();
+    tmc::task<void> OnPrevWeaponSlot();
 
 public:
     void on_weapon_shot_start(CWeapon* weapon) override;

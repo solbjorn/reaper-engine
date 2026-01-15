@@ -81,7 +81,7 @@ public:
 
     virtual void Render();
     virtual void OnFrame();
-    virtual void reset_ui();
+    virtual tmc::task<void> reset_ui();
 
     virtual bool IR_OnKeyboardPress(int);
     virtual bool IR_OnKeyboardRelease(int);

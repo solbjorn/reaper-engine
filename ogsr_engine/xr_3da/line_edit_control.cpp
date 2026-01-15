@@ -394,17 +394,17 @@ void line_edit_control::set_edit(LPCSTR str)
 
 // ========================================================
 
-void line_edit_control::on_key_press(int dik)
+tmc::task<void> line_edit_control::on_key_press(gsl::index dik)
 {
     if (DIK_COUNT <= dik)
-    {
-        return;
-    }
+        co_return;
+
     if (!m_hold_mode)
     {
         m_last_key_time = 0.0f;
         m_accel = 1.0f;
     }
+
     m_mark = true;
 
     clamp_cur_pos();
@@ -412,23 +412,20 @@ void line_edit_control::on_key_press(int dik)
     compute_positions();
 
     if (m_actions[dik])
-    {
-        m_actions[dik]->on_key_press(this);
-    }
+        co_await m_actions[dik]->on_key_press(this);
+
     // ===========
     if (dik == DIK_LCONTROL || dik == DIK_RCONTROL)
-    {
         m_mark = false;
-    }
 
     m_edit_str[m_buffer_size - 1] = 0;
     clamp_cur_pos();
 
     add_inserted_text();
+
     if (m_mark && (!get_key_state(ks_Shift) || !empty_inserted()))
-    {
         m_select_start = m_cur_pos;
-    }
+
     compute_positions();
 
     m_repeat_mode = false;
@@ -438,9 +435,7 @@ void line_edit_control::on_key_press(int dik)
     update_bufs();
 }
 
-// -------------------------------------------------------------------------------------------------
-
-void line_edit_control::on_key_hold(int dik)
+tmc::task<void> line_edit_control::on_key_hold(gsl::index dik)
 {
     update_key_states();
     update_bufs();
@@ -453,7 +448,7 @@ void line_edit_control::on_key_hold(int dik)
     case DIK_LCONTROL:
     case DIK_RCONTROL:
     case DIK_LALT:
-    case DIK_RALT: return;
+    case DIK_RALT: co_return;
     }
 
     if (m_repeat_mode && m_last_key_time > 3.0f * g_console_sensitive)
@@ -461,7 +456,7 @@ void line_edit_control::on_key_hold(int dik)
         float buf_time = m_rep_time;
         m_hold_mode = true;
 
-        on_key_press(dik);
+        co_await on_key_press(dik);
 
         m_hold_mode = false;
         m_rep_time = buf_time;
@@ -585,50 +580,69 @@ void line_edit_control::add_inserted_text()
 
 //------------------------------------------------
 
-void line_edit_control::copy_to_clipboard()
+tmc::task<void> line_edit_control::copy_to_clipboard()
 {
     if (m_p1 >= m_p2)
-        return;
+        co_return;
 
     auto edit_len = xr_strlen(m_edit_str);
-    LPSTR buf = (LPSTR)_alloca((edit_len + 1) * sizeof(char));
-    strncpy_s(buf, edit_len + 1, m_edit_str + m_p1, m_p2 - m_p1);
-    buf[edit_len] = 0;
-    os_clipboard::copy_to_clipboard(buf);
+    xr::inlined_vector<char, 128> buf(edit_len + 1);
+
+    strncpy_s(buf.data(), edit_len + 1, m_edit_str + m_p1, m_p2 - m_p1);
+    buf[edit_len] = '\0';
+
+    os_clipboard::copy_to_clipboard(buf.data());
     m_mark = false;
 }
 
-void line_edit_control::paste_from_clipboard()
+tmc::task<void> line_edit_control::paste_from_clipboard()
 {
     os_clipboard::paste_from_clipboard(m_inserted, m_buffer_size - 1);
     m_inserted_pos += xr_strlen(m_inserted);
+
+    co_return;
 }
 
-void line_edit_control::cut_to_clipboard()
+tmc::task<void> line_edit_control::cut_to_clipboard()
 {
-    copy_to_clipboard();
-    delete_selected_forward();
+    co_await copy_to_clipboard();
+    co_await delete_selected_forward();
 }
 
-// =================================================================================================
-
-void line_edit_control::undo_buf()
+tmc::task<void> line_edit_control::undo_buf()
 {
     xr_strcpy(m_inserted, m_buffer_size, m_undo_buf);
     m_undo_buf[0] = 0;
+
+    co_return;
 }
 
-void line_edit_control::select_all_buf()
+tmc::task<void> line_edit_control::select_all_buf()
 {
     m_select_start = 0;
     m_cur_pos = xr_strlen(m_edit_str);
     m_mark = false;
+
+    co_return;
 }
 
-void line_edit_control::flip_insert_mode() { m_insert_mode = !m_insert_mode; }
+tmc::task<void> line_edit_control::flip_insert_mode()
+{
+    m_insert_mode = !m_insert_mode;
+    co_return;
+}
 
-void line_edit_control::delete_selected_back() { delete_selected(true); }
-void line_edit_control::delete_selected_forward() { delete_selected(false); }
+tmc::task<void> line_edit_control::delete_selected_back()
+{
+    delete_selected(true);
+    co_return;
+}
+
+tmc::task<void> line_edit_control::delete_selected_forward()
+{
+    delete_selected(false);
+    co_return;
+}
 
 void line_edit_control::delete_selected(bool back)
 {
@@ -656,13 +670,13 @@ void line_edit_control::delete_selected(bool back)
     m_select_start = m_cur_pos;
 }
 
-void line_edit_control::delete_word_back()
+tmc::task<void> line_edit_control::delete_word_back()
 {
     bool const left_shift = get_key_state(ks_LShift);
     bool const right_shift = get_key_state(ks_RShift);
     set_key_state(ks_Shift, true);
 
-    move_pos_left_word();
+    co_await move_pos_left_word();
     compute_positions();
     delete_selected(true);
 
@@ -670,54 +684,71 @@ void line_edit_control::delete_word_back()
     set_key_state(ks_RShift, right_shift);
 }
 
-void line_edit_control::delete_word_forward()
+tmc::task<void> line_edit_control::delete_word_forward()
 {
     set_key_state(ks_Shift, true);
-    move_pos_right_word();
+    co_await move_pos_right_word();
+
     compute_positions();
     delete_selected(false);
     set_key_state(ks_Shift, false);
 }
 
-void line_edit_control::move_pos_home() { m_cur_pos = 0; }
-void line_edit_control::move_pos_end() { m_cur_pos = xr_strlen(m_edit_str); }
+tmc::task<void> line_edit_control::move_pos_home()
+{
+    m_cur_pos = 0;
+    co_return;
+}
 
-void line_edit_control::move_pos_left() { --m_cur_pos; }
-void line_edit_control::move_pos_right() { ++m_cur_pos; }
+tmc::task<void> line_edit_control::move_pos_end()
+{
+    m_cur_pos = xr_strlen(m_edit_str);
+    co_return;
+}
 
-void line_edit_control::move_pos_left_word()
+tmc::task<void> line_edit_control::move_pos_left()
+{
+    --m_cur_pos;
+    co_return;
+}
+
+tmc::task<void> line_edit_control::move_pos_right()
+{
+    ++m_cur_pos;
+    co_return;
+}
+
+tmc::task<void> line_edit_control::move_pos_left_word()
 {
     int i = m_cur_pos - 1;
     while (i >= 0 && m_edit_str[i] == ' ')
-    {
         --i;
-    }
+
     if (!terminate_char(m_edit_str[i]))
     {
         while (i >= 0 && !terminate_char(m_edit_str[i], true))
-        {
             --i;
-        }
+
         ++i;
     }
+
     m_cur_pos = i;
+    co_return;
 }
 
-void line_edit_control::move_pos_right_word()
+tmc::task<void> line_edit_control::move_pos_right_word()
 {
     auto edit_len = xr_strlen(m_edit_str);
     int i = m_cur_pos + 1;
 
     while (i < edit_len && !terminate_char(m_edit_str[i], true))
-    {
         ++i;
-    }
-    // while( i < edit_len && terminate_char( m_edit_str[i] ) ) { ++i; }
+
     while (i < edit_len && m_edit_str[i] == ' ')
-    {
         ++i;
-    }
+
     m_cur_pos = i;
+    co_return;
 }
 
 void line_edit_control::compute_positions()
@@ -739,12 +770,12 @@ void line_edit_control::compute_positions()
     }
 }
 
-void line_edit_control::clamp_cur_pos() { clamp(m_cur_pos, 0, gsl::narrow_cast<int>(xr_strlen(m_edit_str))); }
+void line_edit_control::clamp_cur_pos() { clamp(m_cur_pos, 0, gsl::narrow_cast<s32>(xr_strlen(m_edit_str))); }
 
-void line_edit_control::SwitchKL()
+tmc::task<void> line_edit_control::SwitchKL()
 {
     // У нас переключение языка находится в xr_input, поэтому здесь не нужно.
     // ActivateKeyboardLayout((HKL)HKL_NEXT, 0);
+    co_return;
 }
-
 } // namespace text_editor

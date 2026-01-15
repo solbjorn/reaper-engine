@@ -14,7 +14,7 @@ class XR_NOVTABLE IEventReceiver : public virtual RTTI::Enable
 public:
     ~IEventReceiver() override = 0;
 
-    [[nodiscard]] virtual tmc::task<void> OnEvent(EVENT E, u64 P1, u64 P2) = 0;
+    virtual tmc::task<void> OnEvent(EVENT E, u64 P1, u64 P2) = 0;
 };
 
 inline IEventReceiver::~IEventReceiver() = default;
@@ -44,12 +44,12 @@ public:
     EVENT Handler_Attach(const char* N, IEventReceiver* H);
     void Handler_Detach(EVENT& E, IEventReceiver* H);
 
-    [[nodiscard]] tmc::task<void> Signal(EVENT E, u64 P1 = 0, u64 P2 = 0);
-    [[nodiscard]] tmc::task<void> Signal(gsl::czstring E, u64 P1 = 0, u64 P2 = 0);
+    tmc::task<void> Signal(EVENT E, u64 P1 = 0, u64 P2 = 0);
+    tmc::task<void> Signal(gsl::czstring E, u64 P1 = 0, u64 P2 = 0);
     void Defer(EVENT E, u64 P1 = 0, u64 P2 = 0);
     void Defer(LPCSTR E, u64 P1 = 0, u64 P2 = 0);
 
-    [[nodiscard]] tmc::task<void> OnFrame();
+    tmc::task<void> OnFrame();
     void Dump();
     [[nodiscard]] bool Peek(gsl::czstring EName) const;
 

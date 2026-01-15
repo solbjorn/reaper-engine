@@ -36,7 +36,13 @@ public:
 
     std::unique_ptr<CGameFont> pFontSystem;
 
-    explicit CDemoRecord(const char* name, float life_time = 60.0f * 60.0f * 1000.0f);
+private:
+    explicit CDemoRecord(gsl::czstring name, f32 life_time);
+    tmc::task<void> co_CDemoRecord();
+
+public:
+    static tmc::task<std::unique_ptr<CDemoRecord>> co_create(gsl::czstring name = nullptr, f32 life_time = 60.0f * 60.0f * 1000.0f);
+    tmc::task<void> co_destroy();
     ~CDemoRecord() override;
 
     void MakeCubeMapFace(Fvector& D, Fvector& N);
@@ -47,19 +53,19 @@ public:
     void MakeScreenshot();
     void MakeLevelMapScreenshot(bool bHQ);
 
-    void IR_OnKeyboardPress(int dik) override;
-    void IR_OnKeyboardHold(int dik) override;
+    tmc::task<void> IR_OnKeyboardPress(gsl::index dik) override;
+    tmc::task<void> IR_OnKeyboardHold(gsl::index dik) override;
     void IR_OnKeyboardRelease(int dik) override;
 
-    void IR_OnMousePress(int btn) override;
+    tmc::task<void> IR_OnMousePress(gsl::index btn) override;
     void IR_OnMouseRelease(int btn) override;
 
     void IR_OnMouseMove(int dx, int dy) override;
-    void IR_OnMouseHold(int btn) override;
+    tmc::task<void> IR_OnMouseHold(gsl::index btn) override;
 
     BOOL ProcessCam(SCamEffectorInfo& info) override;
 
-    [[nodiscard]] tmc::task<void> OnRender() override
+    tmc::task<void> OnRender() override
     {
         if (pFontSystem)
             pFontSystem->OnRender();

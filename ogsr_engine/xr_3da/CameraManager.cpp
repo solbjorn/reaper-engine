@@ -6,12 +6,13 @@
 
 #include "CameraManager.h"
 
-#include "igame_level.h"
-#include "igame_persistent.h"
-#include "Environment.h"
 #include "CameraBase.h"
 #include "Effector.h"
 #include "EffectorPP.h"
+#include "Environment.h"
+#include "FDemoRecord.h"
+#include "igame_level.h"
+#include "igame_persistent.h"
 
 #include "x_ray.h"
 #include "gamefont.h"
@@ -273,14 +274,17 @@ void CCameraManager::RemovePPEffector(EEffectorPPType type)
 
 void CCameraManager::OnEffectorReleased(SBaseEffector* e)
 {
-    e->m_on_b_remove_callback();
-    xr_delete(e);
+    if (auto demo = smart_cast<CDemoRecord*>(e); demo != nullptr)
+        Device.add_frame_async(CallMe::fromMethod<&CDemoRecord::co_destroy>(demo));
+    else
+        xr_delete(e);
 }
 
 void CCameraManager::UpdateFromCamera(const CCameraBase* C)
 {
     Update(C->vPosition, C->vDirection, C->vNormal, C->f_fov, C->f_aspect, g_pGamePersistent->Environment().CurrentEnv->far_plane, C->m_Flags.flags);
 }
+
 void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N, float fFOV_Dest, float fASPECT_Dest, float fFAR_Dest, u32 flags)
 {
 #ifdef DEBUG

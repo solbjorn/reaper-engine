@@ -33,7 +33,7 @@ public:
     game_PlayerState* local_player{};
     bool m_need_to_update;
 
-    virtual void reset_ui();
+    virtual tmc::task<void> reset_ui();
 
 private:
     void switch_Phase(u32 new_phase) { inherited::switch_Phase(new_phase); }

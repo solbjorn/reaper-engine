@@ -24,30 +24,30 @@ public:
     CUISequencer();
     ~CUISequencer() override = default;
 
-    void Start(LPCSTR tutor_name);
-    void Stop();
+    tmc::task<void> Start(gsl::czstring tutor_name);
+    tmc::task<void> Stop();
     void Next();
 
-    void Destroy(); // be careful
+    tmc::task<void> Destroy(); // be careful
 
-    [[nodiscard]] tmc::task<void> OnFrame() override;
-    [[nodiscard]] tmc::task<void> OnRender() override;
+    tmc::task<void> OnFrame() override;
+    tmc::task<void> OnRender() override;
     CUIWindow* MainWnd() { return m_UIWindow; }
     bool IsActive() { return m_bActive; }
 
     // IInputReceiver
-    virtual void IR_OnMousePress(int btn);
+    tmc::task<void> IR_OnMousePress(gsl::index btn) override;
     virtual void IR_OnMouseRelease(int btn);
-    virtual void IR_OnMouseHold(int btn);
+    tmc::task<void> IR_OnMouseHold(gsl::index btn) override;
     virtual void IR_OnMouseMove(int x, int y);
     virtual void IR_OnMouseStop(int x, int y);
 
-    virtual void IR_OnKeyboardPress(int dik);
+    tmc::task<void> IR_OnKeyboardPress(gsl::index dik);
     virtual void IR_OnKeyboardRelease(int dik);
-    virtual void IR_OnKeyboardHold(int dik);
+    tmc::task<void> IR_OnKeyboardHold(gsl::index dik) override;
 
-    virtual void IR_OnMouseWheel(int direction);
-    virtual void IR_OnActivate(void);
+    tmc::task<void> IR_OnMouseWheel(gsl::index direction) override;
+    tmc::task<void> IR_OnActivate() override;
 };
 
 class XR_NOVTABLE CUISequenceItem : public virtual RTTI::Enable

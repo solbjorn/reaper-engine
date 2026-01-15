@@ -42,7 +42,7 @@ class line_edit_control
 {
 private:
     typedef text_editor::base Base;
-    using Callback = CallMe::Delegate<void()>;
+    using Callback = CallMe::Delegate<tmc::task<void>()>;
 
 public:
     explicit line_edit_control(u32 str_buffer_size);
@@ -50,8 +50,8 @@ public:
 
     void init(u32 str_buffer_size, init_mode mode = im_standart);
     void clear_states();
-    void on_key_press(int dik);
-    void on_key_hold(int dik);
+    tmc::task<void> on_key_press(gsl::index dik);
+    tmc::task<void> on_key_hold(gsl::index dik);
     void on_key_release();
     void on_frame();
 
@@ -82,26 +82,26 @@ private:
     void update_key_states();
     void update_bufs();
 
-    void undo_buf();
-    void select_all_buf();
-    void flip_insert_mode();
+    tmc::task<void> undo_buf();
+    tmc::task<void> select_all_buf();
+    tmc::task<void> flip_insert_mode();
 
-    void copy_to_clipboard();
-    void paste_from_clipboard();
-    void cut_to_clipboard();
+    tmc::task<void> copy_to_clipboard();
+    tmc::task<void> paste_from_clipboard();
+    tmc::task<void> cut_to_clipboard();
 
-    void move_pos_home();
-    void move_pos_end();
-    void move_pos_left();
-    void move_pos_right();
-    void move_pos_left_word();
-    void move_pos_right_word();
+    tmc::task<void> move_pos_home();
+    tmc::task<void> move_pos_end();
+    tmc::task<void> move_pos_left();
+    tmc::task<void> move_pos_right();
+    tmc::task<void> move_pos_left_word();
+    tmc::task<void> move_pos_right_word();
 
-    void delete_selected_back();
-    void delete_selected_forward();
-    void delete_word_back();
-    void delete_word_forward();
-    void SwitchKL();
+    tmc::task<void> delete_selected_back();
+    tmc::task<void> delete_selected_forward();
+    tmc::task<void> delete_word_back();
+    tmc::task<void> delete_word_forward();
+    tmc::task<void> SwitchKL();
 
     void assign_char_pairs(init_mode mode);
     void create_key_state(u32 const dik, key_state state);

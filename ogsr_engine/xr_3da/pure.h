@@ -16,9 +16,9 @@ constexpr inline int REG_PRIORITY_INVALID{std::numeric_limits<int>::lowest()};
     public: \
         ~pure##name() override = 0; \
 \
-        [[nodiscard]] virtual tmc::task<void> On##name() = 0; \
+        virtual tmc::task<void> On##name() = 0; \
 \
-        [[nodiscard]] static tmc::task<void> on_pure(pure##name* self) \
+        static tmc::task<void> on_pure(pure##name* self) \
         { \
             XR_TRACY_ZONE_SCOPED(); \
             co_await self->On##name(); \
@@ -98,7 +98,7 @@ public:
 
     constexpr void clear() { messages.clear(); }
 
-    [[nodiscard]] tmc::task<void> process()
+    tmc::task<void> process()
     {
         if (messages.empty())
             co_return;

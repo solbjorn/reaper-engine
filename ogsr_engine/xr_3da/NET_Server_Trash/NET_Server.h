@@ -105,7 +105,7 @@ public:
     explicit IPureServer(CTimer* timer);
     ~IPureServer() override;
 
-    [[nodiscard]] virtual tmc::task<EConnect> Connect(shared_str& session_name);
+    virtual tmc::task<EConnect> Connect(shared_str& session_name);
     virtual void Disconnect();
 
     // send

@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
+#include "console_registrator.h"
+
 #include "../xr_3da/XR_IOConsole.h"
 #include "../xr_3da/xr_ioc_cmd.h"
-
-#include "console_registrator.h"
 
 namespace
 {
@@ -60,9 +60,11 @@ void console_registrator::script_register(sol::state_view& lua)
 {
     lua.set_function("get_console", &console);
 
-    lua.new_usertype<CConsole>("CConsole", sol::no_constructor, "disable_command", &disable_cmd, "enable_command", &enable_cmd, "execute",
-                               sol::overload(sol::resolve<void(LPCSTR)>(&CConsole::Execute), sol::resolve<void(LPCSTR, LPCSTR)>(&CConsole::Execute)), "execute_script",
-                               &CConsole::ExecuteScript, "show", &CConsole::Show, "hide", &CConsole::Hide, "get_string", &CConsole::GetString, "get_integer", &get_console_integer,
-                               "get_bool", &get_console_bool, "get_float", &get_console_float, "get_token", &CConsole::GetToken, "get_vector", &CConsole::GetFVector, "get_vector4",
-                               &CConsole::GetFVector4, "visible", sol::readonly(&CConsole::bVisible));
+    lua.new_usertype<CConsole>(
+        "CConsole", sol::no_constructor, "disable_command", &disable_cmd, "enable_command", &enable_cmd, "execute",
+        sol::overload(sol::resolve<void(LPCSTR)>(&CConsole::Execute), sol::resolve<void(LPCSTR, LPCSTR)>(&CConsole::Execute)), "execute_script", &CConsole::ExecuteScript, "show",
+        [](CConsole* c) { Device.add_frame_async(CallMe::fromMethod<&CConsole::Show>(c)); }, "hide",
+        [](CConsole* c) { Device.add_frame_async(CallMe::fromMethod<&CConsole::Hide>(c)); }, "get_string", &CConsole::GetString, "get_integer", &get_console_integer, "get_bool",
+        &get_console_bool, "get_float", &get_console_float, "get_token", &CConsole::GetToken, "get_vector", &CConsole::GetFVector, "get_vector4", &CConsole::GetFVector4, "visible",
+        sol::readonly(&CConsole::bVisible));
 }

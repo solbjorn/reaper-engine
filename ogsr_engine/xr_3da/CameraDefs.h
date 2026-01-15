@@ -5,8 +5,6 @@ struct SBaseEffector : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(SBaseEffector);
 
 public:
-    CallMe::Delegate<void()> m_on_b_remove_callback;
-
     ~SBaseEffector() override = default;
 };
 

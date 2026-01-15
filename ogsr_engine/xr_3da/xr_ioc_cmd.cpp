@@ -68,12 +68,16 @@ class CCC_Quit : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_Quit, IConsole_Command);
 
 public:
-    explicit CCC_Quit(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_Quit(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_Quit() override = default;
 
-    void Execute(LPCSTR) override
+    void Execute(gsl::czstring) override { Device.add_frame_async(CallMe::fromMethod<&CCC_Quit::execute_async>(this)); }
+
+private:
+    tmc::task<void> execute_async()
     {
-        Console->Hide();
+        co_await Console->Hide();
+
         Engine.Event.Defer("KERNEL:disconnect");
         Engine.Event.Defer("KERNEL:quit");
     }
@@ -438,11 +442,11 @@ public:
     void Execute(gsl::czstring) override
     {
         if (Device.b_is_Ready)
-            Device.add_async(CallMe::fromMethod<&CCC_VID_Reset::execute_async>(this));
+            Device.add_frame_async(CallMe::fromMethod<&CCC_VID_Reset::execute_async>(this));
     }
 
 private:
-    [[nodiscard]] tmc::task<void> execute_async() { co_await Device.Reset(); }
+    tmc::task<void> execute_async() { co_await Device.Reset(); }
 };
 
 class CCC_VidMode : public CCC_Token
@@ -521,11 +525,11 @@ public:
     void Execute(gsl::czstring args) override
     {
         args_async.assign(args);
-        Device.add_async(CallMe::fromMethod<&CCC_Screenmode::execute_async>(this));
+        Device.add_frame_async(CallMe::fromMethod<&CCC_Screenmode::execute_async>(this));
     }
 
 private:
-    [[nodiscard]] tmc::task<void> execute_async()
+    tmc::task<void> execute_async()
     {
         if (args_async.empty())
             co_return;
@@ -537,7 +541,7 @@ private:
         co_await tmc::spawn(execute_st(prev_mode)).run_on(xr::tmc_cpu_st_executor());
     }
 
-    [[nodiscard]] tmc::task<void> execute_st(u32 prev_mode)
+    tmc::task<void> execute_st(u32 prev_mode)
     {
         if ((prev_mode != g_screenmode))
         {
@@ -745,7 +749,7 @@ public:
     explicit CCC_HideConsole(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_HideConsole() override = default;
 
-    void Execute(LPCSTR) override { Console->Hide(); }
+    void Execute(gsl::czstring) override { Device.add_frame_async(CallMe::fromMethod<&CConsole::Hide>(Console)); }
     void Status(TStatus& S) override { S[0] = 0; }
     void Info(TInfo& I) override { xr_sprintf(I, sizeof(I), "hide console"); }
 };
