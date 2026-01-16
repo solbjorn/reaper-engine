@@ -14,7 +14,7 @@ endif()
 
 # abseil
 if(ABSL_PROPAGATE_CXX_STD)
-  set(warning_options "${warning_options} -Wno-error=format")
+  set(warning_options "${warning_options} -Wno-error=format -Wno-error=format-signedness")
 endif()
 
 # hwloc
@@ -36,17 +36,18 @@ endif()
 
 # luajit2
 if(LUAJIT_DIR)
-  set(warning_options "${warning_options} -Wno-error=format -Wno-error=format-pedantic -Wno-error=microsoft-enum-value")
-endif()
-
-# ogg
-if(OGG_ROOT)
-  set(conformance_options "${conformance_options} -Dalloca=_alloca")
+  set(warning_options "${warning_options} -Wno-error=format -Wno-error=format-pedantic -Wno-error=format-signedness -Wno-error=microsoft-enum-value")
 endif()
 
 # oneTBB
 if(TBB_VERIFY_DEPENDENCY_SIGNATURE)
   set(warning_options "${warning_options} -Wno-error=format-nonliteral -Wno-error=microsoft-enum-value")
+endif()
+
+# vorbis
+if(OGG_ROOT)
+  set(conformance_options "${conformance_options} -Dalloca=_alloca")
+  set(warning_options "${warning_options} -Wno-error=incompatible-pointer-types")
 endif()
 
 # zstd

@@ -45,10 +45,6 @@
 
 #define XR_PRINTF(a, b) __attribute__((__format__(printf, a, b)))
 
-// Treat the class as trivial even if it has user-defined constructors and/or
-// assignment operators, e.g. the ones using AVX
-#define XR_TRIVIAL [[clang::trivial_abi]]
-
 // As of LLVM 21, [[clang::trivial_abi]] with MSVC ABI barely works:
 // * doesn't work when inheriting a trivial base
 // * doesn't work when a class has a user-defined move
@@ -58,7 +54,19 @@
 // https://github.com/llvm/llvm-project/issues/69394
 // https://github.com/llvm/llvm-project/issues/87993
 // https://github.com/llvm/llvm-project/pull/88857
+//
+// LLVM 22: [[clang::trivial_abi]] doesn't work even for types that worked
+// with LLVM 21. OTOH XR_TRIVIAL_ASSERT() still returns true for them, so
+// it is safe to just leave XR_TRIVIAL empty under XR_TRIVIAL_BROKEN.
 #define XR_TRIVIAL_BROKEN
+
+// Treat the class as trivial even if it has user-defined constructors and/or
+// assignment operators, e.g. the ones using AVX
+#ifndef XR_TRIVIAL_BROKEN
+#define XR_TRIVIAL [[clang::trivial_abi]]
+#else
+#define XR_TRIVIAL
+#endif
 
 #define XR_TRIVIAL_ASSERT(type, ...) static_assert(__builtin_is_cpp_trivially_relocatable(type, ##__VA_ARGS__))
 
