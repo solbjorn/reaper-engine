@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "cat.h"
+
 #include "cat_state_manager.h"
 #include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../monster_velocity_space.h"
@@ -8,7 +9,6 @@
 #include "../control_movement_base.h"
 
 CCat::CCat() { StateMan = xr_new<CStateManagerCat>(this); }
-
 CCat::~CCat() { xr_delete(StateMan); }
 
 void CCat::Load(LPCSTR section)
@@ -106,42 +106,10 @@ void CCat::try_to_jump()
 void CCat::CheckSpecParams(u32 spec_params)
 {
     if ((spec_params & ASP_CHECK_CORPSE) == ASP_CHECK_CORPSE)
-    {
         com_man().seq_run(anim().get_motion_id(eAnimCheckCorpse));
-    }
-
-    if ((spec_params & ASP_ROTATION_JUMP) == ASP_ROTATION_JUMP)
-    {
-        // float yaw, pitch;
-        // Fvector().sub(EnemyMan.get_enemy()->Position(), Position()).getHP(yaw,pitch);
-        // yaw *= -1;
-        // yaw = angle_normalize(yaw);
-
-        // EMotionAnim anim = eAnimJumpLeft;
-        // if (from_right(yaw,movement().m_body.current.yaw)) {
-        //	anim = eAnimJumpRight;
-        //	yaw = angle_normalize(yaw + PI / 20);
-        // } else yaw = angle_normalize(yaw - PI / 20);
-
-        // anim().Seq_Add(anim);
-        // anim().Seq_Switch();
-
-        // movement().stop_linear		();
-        // movement().m_body.target.yaw = yaw;
-
-        //// calculate angular speed
-        // float new_angular_velocity;
-        // float delta_yaw = angle_difference(yaw,movement().m_body.current.yaw);
-        // float time = anim().GetCurAnimTime();
-        // new_angular_velocity = delta_yaw / time;
-
-        // anim().ForceAngularSpeed(new_angular_velocity);
-
-        // return;
-    }
 }
 
-void CCat::UpdateCL() { inherited::UpdateCL(); }
+tmc::task<void> CCat::UpdateCL() { co_await inherited::UpdateCL(); }
 
 void CCat::HitEntityInJump(const CEntity* pEntity)
 {

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "base_monster.h"
+
 #include "PhysicsShell.h"
 #include "../../../hit.h"
 #include "../../../PHDestroyable.h"
@@ -279,12 +280,12 @@ void CBaseMonster::update_enemy_accessible_and_at_home_info()
     }
 }
 
-void CBaseMonster::UpdateCL()
+tmc::task<void> CBaseMonster::UpdateCL()
 {
     if (EatedCorpse && !CorpseMemory.is_valid_corpse(EatedCorpse))
         EatedCorpse = nullptr;
 
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
 
     if (g_Alive())
     {
@@ -295,7 +296,6 @@ void CBaseMonster::UpdateCL()
     }
 
     control().update_frame();
-
     m_pPhysics_support->in_UpdateCL();
 }
 

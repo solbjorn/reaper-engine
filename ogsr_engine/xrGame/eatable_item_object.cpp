@@ -90,10 +90,10 @@ void CEatableItemObject::OnH_A_Chield()
     CEatableItem::OnH_A_Chield();
 }
 
-void CEatableItemObject::UpdateCL()
+tmc::task<void> CEatableItemObject::UpdateCL()
 {
-    CPhysicItem::UpdateCL();
-    CEatableItem::UpdateCL();
+    co_await CPhysicItem::UpdateCL();
+    co_await CEatableItem::UpdateCL();
 }
 
 void CEatableItemObject::OnEvent(NET_Packet& P, u16 type)

@@ -434,9 +434,8 @@ void CCar::UpdateEx(float fov)
     DbgUbdateCl();
 #endif
 
-    //	Log("UpdateCL",Device.dwFrame);
-    // XFORM().set(m_pPhysicsShell->mXFORM);
     VisualUpdate();
+
     if (OwnerActor() && OwnerActor()->IsMyCamera())
     {
         cam_Update(Device.fTimeDelta, fov);
@@ -447,21 +446,26 @@ void CCar::UpdateEx(float fov)
 
 BOOL CCar::AlwaysTheCrow() { return (m_car_weapon && m_car_weapon->IsActive()); }
 
-void CCar::UpdateCL()
+tmc::task<void> CCar::UpdateCL()
 {
-    inherited::UpdateCL();
-    CExplosive::UpdateCL();
+    co_await inherited::UpdateCL();
+    co_await CExplosive::UpdateCL();
+
     if (m_car_weapon)
     {
-        m_car_weapon->UpdateCL();
+        co_await m_car_weapon->UpdateCL();
+
         if (m_memory)
             m_memory->set_camera(m_car_weapon->ViewCameraPos(), m_car_weapon->ViewCameraDir(), m_car_weapon->ViewCameraNorm());
     }
+
     ASCUpdate();
+
     if (Owner())
-        return;
+        co_return;
 
     VisualUpdate();
+
     if (GetScriptControl())
         ProcessScripts();
 }

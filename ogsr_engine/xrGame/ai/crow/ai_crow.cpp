@@ -8,8 +8,9 @@
 
 #include "stdafx.h"
 
-#include "physicsshell.h"
 #include "ai_crow.h"
+
+#include "physicsshell.h"
 #include "../../hudmanager.h"
 #include "../../level.h"
 #include "../../../Include/xrRender/Kinematics.h"
@@ -295,9 +296,10 @@ void CAI_Crow::UpdateWorkload(float fdt)
     }
 }
 
-void CAI_Crow::UpdateCL()
+tmc::task<void> CAI_Crow::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
+
     if (m_pPhysicsShell)
     {
         m_pPhysicsShell->Update();

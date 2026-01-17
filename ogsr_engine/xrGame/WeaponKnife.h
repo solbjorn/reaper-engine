@@ -31,7 +31,7 @@ protected:
     virtual void OnStateSwitch(u32 S, u32 oldState);
 
     virtual void DeviceUpdate() override;
-    virtual void UpdateCL() override;
+    tmc::task<void> UpdateCL() override;
     virtual void PlayAnimDeviceSwitch() override;
 
     void state_Attacking(float dt);

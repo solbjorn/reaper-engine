@@ -371,10 +371,11 @@ void CHelicopter::MoveStep()
     XFORM().translate_over(m_movement.currP);
 }
 
-void CHelicopter::UpdateCL()
+tmc::task<void> CHelicopter::UpdateCL()
 {
-    inherited::UpdateCL();
-    CExplosive::UpdateCL();
+    co_await inherited::UpdateCL();
+    co_await CExplosive::UpdateCL();
+
     if (PPhysicsShell() && (state() == CHelicopter::eDead))
     {
         PPhysicsShell()->InterpolateGlobalTransform(&XFORM());
@@ -387,10 +388,12 @@ void CHelicopter::UpdateCL()
         if (m_brokenSound._feedback())
             m_brokenSound.set_position(XFORM().c);
 
-        return;
+        co_return;
     }
     else
+    {
         PPhysicsShell()->SetTransform(XFORM());
+    }
 
     m_movement.Update();
 

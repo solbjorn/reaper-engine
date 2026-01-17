@@ -1,6 +1,11 @@
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_CXX_STANDARD 23)
 
+# https://github.com/llvm/llvm-project/commit/2ba7f11bce7f
+if(NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
+  set(CMAKE_PCH_PROLOGUE "")
+endif()
+
 set(conformance_options "/Brepro /bigobj /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__STDC__ /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /Zc:checkGwOdr /Zc:templateScope /DNOMINMAX -fno-delayed-template-parsing -fstrict-aliasing /D_CRT_STDIO_ISO_WIDE_SPECIFIERS -fno-ms-compatibility -fgnuc-version=0")
 
 set(llvm_options "-march=skylake -mavx2 /FIintrin.h -flto -fmerge-all-constants -fforce-emit-vtables -fwhole-program-vtables /clang:-fcoro-aligned-allocation")

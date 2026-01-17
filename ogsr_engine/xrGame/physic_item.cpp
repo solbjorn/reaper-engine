@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "physic_item.h"
+
 #include "physicsshell.h"
 #include "xrserver_objects.h"
 #include "../Include/xrRender/Kinematics.h"
@@ -33,7 +34,6 @@
     }
 
 CPhysicItem::CPhysicItem() { init(); }
-
 CPhysicItem::~CPhysicItem() { xr_delete(m_pPhysicsShell); }
 
 void CPhysicItem::init() { m_pPhysicsShell = nullptr; }
@@ -94,17 +94,12 @@ BOOL CPhysicItem::net_Spawn(CSE_Abstract* DC)
 
 void CPhysicItem::net_Destroy() { inherited::net_Destroy(); }
 
-void CPhysicItem::UpdateCL()
+tmc::task<void> CPhysicItem::UpdateCL()
 {
-    //	if (!xr_strcmp("bolt",cName()))
-    //		Log					("--- B - CBolt",renderable.xform);
     if (!H_Parent() && m_pPhysicsShell && m_pPhysicsShell->isActive())
         m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
-    //	if (!xr_strcmp("bolt",cName()))
-    //		Log						("--- C - CBolt",renderable.xform);
-    inherited::UpdateCL();
-    //	if (!xr_strcmp("bolt",cName()))
-    //		Log						("--- D - CBolt",renderable.xform);
+
+    co_await inherited::UpdateCL();
 }
 
 void CPhysicItem::activate_physic_shell()

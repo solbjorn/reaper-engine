@@ -35,7 +35,7 @@ public:
     virtual void net_Destroy();
     virtual void Load(LPCSTR section);
     virtual void shedule_Update(u32 dt); //
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
     virtual void net_Save(NET_Packet& P);
     virtual BOOL net_SaveRelevant();
     virtual BOOL UsedAI_Locations();

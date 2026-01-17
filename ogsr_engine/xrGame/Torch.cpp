@@ -326,14 +326,14 @@ void CTorch::OnH_B_Independent(bool just_before_destroy)
     // m_NightVisionChargeTime		= m_NightVisionRechargeTime;
 }
 
-void CTorch::UpdateCL()
+tmc::task<void> CTorch::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
 
     UpdateSwitchNightVision();
 
     if (!m_switched_on)
-        return;
+        co_return;
 
     if (useVolumetric)
     {
@@ -483,11 +483,11 @@ void CTorch::UpdateCL()
     }
 
     if (!m_switched_on)
-        return;
+        co_return;
 
     // calc color animator
     if (!lanim)
-        return;
+        co_return;
 
     int frame;
     // возвращает в формате BGR

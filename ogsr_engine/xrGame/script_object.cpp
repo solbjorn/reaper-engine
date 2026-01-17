@@ -43,8 +43,8 @@ void CScriptObject::shedule_Update(u32 DT)
     CScriptEntity::shedule_Update(DT);
 }
 
-void CScriptObject::UpdateCL()
+tmc::task<void> CScriptObject::UpdateCL()
 {
-    CGameObject::UpdateCL();
-    CScriptEntity::UpdateCL();
+    co_await CGameObject::UpdateCL();
+    co_await CScriptEntity::UpdateCL();
 }

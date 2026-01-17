@@ -60,7 +60,7 @@ public:
     virtual void HitSignal(float, Fvector&, CObject*, s16) {}
     virtual void HitImpulse(float, Fvector&, Fvector&) {}
     virtual void Hit(SHit* pHDS);
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
 
     void g_fireParams(CHudItem*, Fvector& P, Fvector& D, const bool = false) override;
     virtual void g_WeaponBones(int& L, int& R1, int& R2);

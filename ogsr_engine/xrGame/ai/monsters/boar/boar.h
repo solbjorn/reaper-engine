@@ -19,7 +19,7 @@ public:
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void reinit();
 
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
 
     IC virtual bool CanExecRotationJump() { return true; }
     void CheckSpecParams(u32) override {}

@@ -369,23 +369,14 @@ void CCustomMonster::net_update::lerp(CCustomMonster::net_update& A, CCustomMons
 
 void CCustomMonster::update_sound_player() { sound().update(); }
 
-void CCustomMonster::UpdateCL()
+tmc::task<void> CCustomMonster::UpdateCL()
 {
     m_client_update_delta = Device.dwTimeGlobal - m_last_client_update_time;
     m_last_client_update_time = Device.dwTimeGlobal;
 
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
 
     CScriptEntity::process_sound_callbacks();
-
-    /*	//. hack just to skip 'CalculateBones'
-    if (sound().need_bone_data()) {
-        // we do this because we know here would be virtual function call
-        IKinematics					*kinematics = smart_cast<IKinematics*>(Visual());
-        VERIFY						(kinematics);
-        kinematics->CalculateBones	();
-    }
-    */
 
     if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtSoundPlayer))
         Device.add_to_seq_parallel(CallMe::fromMethod<&CCustomMonster::update_sound_player>(this));
@@ -395,7 +386,7 @@ void CCustomMonster::UpdateCL()
     if (NET.empty())
     {
         update_animation_movement_controller();
-        return;
+        co_return;
     }
 
     m_dwCurrentTime = Device.dwTimeGlobal;

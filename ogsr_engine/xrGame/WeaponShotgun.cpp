@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "weaponshotgun.h"
+
 #include "entity.h"
 #include "ParticlesObject.h"
 #include "xr_level_controller.h"
@@ -145,7 +146,7 @@ void CWeaponShotgun::OnShotBoth()
     }
 }
 
-void CWeaponShotgun::UpdateCL()
+tmc::task<void> CWeaponShotgun::UpdateCL()
 {
     float dt = Device.fTimeDelta;
 
@@ -174,7 +175,7 @@ void CWeaponShotgun::UpdateCL()
         }
     }
 
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
 }
 
 void CWeaponShotgun::switch2_Fire()

@@ -243,7 +243,7 @@ void CInventoryItem::OnH_B_Chield() {}
 void CInventoryItem::OnH_A_Chield() { inherited::OnH_A_Chield(); }
 
 #ifdef DEBUG
-void CInventoryItem::UpdateCL()
+tmc::task<void> CInventoryItem::UpdateCL()
 {
     if (bDebug)
     {
@@ -257,6 +257,8 @@ void CInventoryItem::UpdateCL()
             Device.seqRender.Remove(this);
         }
     }
+
+    co_return;
 }
 #endif
 

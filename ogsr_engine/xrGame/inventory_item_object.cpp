@@ -88,10 +88,10 @@ void CInventoryItemObject::OnH_A_Chield()
     CInventoryItem::OnH_A_Chield();
 }
 
-void CInventoryItemObject::UpdateCL()
+tmc::task<void> CInventoryItemObject::UpdateCL()
 {
-    CPhysicItem::UpdateCL();
-    CInventoryItem::UpdateCL();
+    co_await CPhysicItem::UpdateCL();
+    co_await CInventoryItem::UpdateCL();
 }
 
 void CInventoryItemObject::OnEvent(NET_Packet& P, u16 type)

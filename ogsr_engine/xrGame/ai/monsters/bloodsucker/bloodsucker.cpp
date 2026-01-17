@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "bloodsucker.h"
+
 #include "bloodsucker_state_manager.h"
 #include "../../../actor.h"
 #include "../../../ActorEffector.h"
@@ -461,12 +462,13 @@ void CAI_Bloodsucker::update_invisibility()
     }
 }
 
-void CAI_Bloodsucker::UpdateCL()
+tmc::task<void> CAI_Bloodsucker::UpdateCL()
 {
     update_invisibility();
-    inherited::UpdateCL();
+
+    co_await inherited::UpdateCL();
+
     CControlledActor::frame_update();
-    // character_physics_support()->movement()->CollisionEnable(!is_collision_off()); -- that cause crash
 
     if (g_Alive())
     {

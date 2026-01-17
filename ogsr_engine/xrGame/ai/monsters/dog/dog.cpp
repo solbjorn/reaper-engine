@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "dog.h"
+
 #include "dog_state_manager.h"
 #include "../monster_velocity_space.h"
 #include "../control_animation_base.h"
@@ -202,12 +203,12 @@ void CAI_Dog::reinit()
     Home->set_move_dists(min_move_dist, max_move_dist);
 }
 
-void CAI_Dog::UpdateCL()
+tmc::task<void> CAI_Dog::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
 
     if (!detail::object_exists_in_alife_registry(ID()))
-        return;
+        co_return;
 
     if (b_anim_end)
     {

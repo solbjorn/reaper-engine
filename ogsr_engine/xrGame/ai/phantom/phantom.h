@@ -79,7 +79,7 @@ public:
     virtual void load(IReader& input_packet);
 
     virtual void shedule_Update(u32 DT);
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
 
     void HitSignal(float, Fvector&, CObject*, s16) override {}
     void HitImpulse(float, Fvector&, Fvector&) override {}

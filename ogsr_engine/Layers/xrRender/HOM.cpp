@@ -11,16 +11,12 @@
 
 #include "../../xr_3da/GameFont.h"
 
-#include "xr_task.h"
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
 CHOM::CHOM()
 {
-    tg = &xr_task_group_get();
-
 #ifdef DEBUG
     Device.seqRender.Add(this, REG_PRIORITY_LOW - 1000);
 #endif
@@ -28,8 +24,6 @@ CHOM::CHOM()
 
 CHOM::~CHOM()
 {
-    tg->cancel_put();
-
 #ifdef DEBUG
     Device.seqRender.Remove(this);
 #endif
@@ -228,22 +222,18 @@ void CHOM::Render(CFrustum& base)
     Device.Statistic->RenderCALC_HOM.End();
 }
 
-void CHOM::run_async()
+tmc::task<void> CHOM::render_async()
 {
-    if (ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_HOM))
-        return;
+    XR_TRACY_ZONE_SCOPED();
 
-    tg->run([this] {
-        XR_TRACY_ZONE_SCOPED();
+    CFrustum ViewBase;
+    ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+    Enable();
+    Render(ViewBase);
 
-        CFrustum ViewBase;
-        ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
-        Enable();
-        Render(ViewBase);
-    });
+    event.set();
+    co_return;
 }
-
-void CHOM::wait_async() const { tg->wait(); }
 
 static ICF BOOL xform_b0(Fvector2& min, Fvector2& max, float& minz, const Fmatrix& X, float _x, float _y, float _z)
 {

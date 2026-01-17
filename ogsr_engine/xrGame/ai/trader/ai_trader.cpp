@@ -274,9 +274,10 @@ void CAI_Trader::net_Destroy()
     CScriptEntity::net_Destroy();
 }
 
-void CAI_Trader::UpdateCL()
+tmc::task<void> CAI_Trader::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
+
     sound().update();
 
     if (!GetScriptControl() && !bfScriptAnimation())

@@ -121,9 +121,9 @@ public:
     virtual BOOL net_SaveRelevant() { return TRUE; }
 
 #ifdef DEBUG
-    virtual void UpdateCL();
+    virtual tmc::task<void> UpdateCL();
 #else
-    virtual void UpdateCL() {}
+    virtual tmc::task<void> UpdateCL() { co_return; }
 #endif
 
     virtual void Hit(SHit* pHDS);

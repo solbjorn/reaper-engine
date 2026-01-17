@@ -7,6 +7,39 @@
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/xr_object.h"
 
+tmc::task<void> CRender::main_run()
+{
+    XR_TRACY_ZONE_SCOPED();
+
+    auto& dsgraph = get_imm_context();
+    VERIFY(dsgraph.mapDistort.empty() && dsgraph.mapHUDDistort.empty());
+
+    // Check if we touch some light even trough portal
+    static xr_vector<ISpatial*> spatial_lights;
+    g_SpatialSpace->q_sphere(spatial_lights, 0, STYPE_LIGHTSOURCE, Device.vCameraPosition, EPS_L);
+
+    for (auto spatial : spatial_lights)
+    {
+        const auto& entity_pos = spatial->spatial_sector_point();
+
+        spatial->spatial_updatesector(dsgraph.detect_sector(entity_pos));
+        if (spatial->spatial.sector_id == INVALID_SECTOR_ID)
+            continue; // disassociated from S/P structure
+
+        VERIFY(spatial->spatial.type & STYPE_LIGHTSOURCE);
+
+        // lightsource
+        auto L = smart_cast<light*>(spatial->dcast_Light());
+        VERIFY(L != nullptr);
+        Lights.add_light(L);
+    }
+
+    Device.Statistic->RenderCALC.Begin();
+    dsgraph.r_pmask(true, true, true);
+    co_await dsgraph.build_subspace(last_sector_id, ViewBase);
+    Device.Statistic->RenderCALC.End();
+}
+
 void CRender::render_menu()
 {
     XR_TRACY_ZONE_SCOPED();
@@ -60,7 +93,7 @@ void CRender::render_menu()
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 }
 
-void CRender::Render()
+tmc::task<void> CRender::Render()
 {
     PIX_EVENT(CRender_Render);
 
@@ -71,7 +104,7 @@ void CRender::Render()
     if (_menu_pp)
     {
         render_menu();
-        return;
+        co_return;
     }
 
     IMainMenu* pMainMenu{g_pGamePersistent ? g_pGamePersistent->m_pMainMenu : nullptr};
@@ -80,26 +113,51 @@ void CRender::Render()
     if (!(g_pGameLevel && g_hud) || bMenu)
     {
         Target->u_setrt(RCache, Device.dwWidth, Device.dwHeight, Target->get_base_rt(), nullptr, nullptr, Target->get_base_zb());
-        return;
-    }
-
-    if (m_bFirstFrameAfterReset)
-    {
-        m_bFirstFrameAfterReset = false;
-        return;
+        co_return;
     }
 
     XR_TRACY_ZONE_SCOPED();
 
-    //*******
-    // Sync point
-    Device.Statistic->RenderDUMP_Wait_S.Begin();
-    q_sync_point.Wait(ps_r2_wait_sleep, ps_r2_wait_timeout);
-    Device.Statistic->RenderDUMP_Wait_S.End();
-    q_sync_point.End();
+    // Transfer to global space to avoid deep pointer access
+    const f32 fov_factor = _sqr(90.f / Device.fFOV);
+    const f32 g_fSCREEN = gsl::narrow_cast<f32>(Target->get_width(dsgraph.cmd_list) * Target->get_height(dsgraph.cmd_list)) * fov_factor * (EPS_S + ps_r__LOD);
+    r_ssaDISCARD = _sqr(ps_r__ssaDISCARD) / g_fSCREEN;
+    r_ssaLOD_A = _sqr(ps_r2_ssaLOD_A / 3) / g_fSCREEN;
+    r_ssaLOD_B = _sqr(ps_r2_ssaLOD_B / 3) / g_fSCREEN;
+    r_ssaGLOD_start = _sqr(ps_r__GLOD_ssa_start / 3) / g_fSCREEN;
+    r_ssaGLOD_end = _sqr(ps_r__GLOD_ssa_end / 3) / g_fSCREEN;
+    r_dtex_range = ps_r2_df_parallax_range * g_fSCREEN / (1024.0f * 768.0f);
+
+    if (m_bFirstFrameAfterReset)
+    {
+        m_bFirstFrameAfterReset = false;
+        co_return;
+    }
+
+    // Detect camera-sector
+    if (!Device.vCameraDirectionSaved.similar(Device.vCameraPosition, EPS_L))
+    {
+        XR_TRACY_ZONE_SCOPED();
+
+        const auto sector_id = dsgraph.detect_sector(Device.vCameraPosition);
+        if (sector_id != INVALID_SECTOR_ID)
+        {
+            if (sector_id != last_sector_id)
+                g_pGamePersistent->OnSectorChanged(sector_id);
+
+            last_sector_id = sector_id;
+        }
+    }
+
+    //
+    Lights.Update();
+
+    auto main = co_await tmc::fork_clang(main_run());
+    rain_run();
+    sun_run();
 
     Target->phase_scene_prepare();
-    main_sync();
+    co_await std::move(main);
 
     if (g_hud->RenderActiveItemUIQuery())
         dsgraph.render_hud_ui();
@@ -307,7 +365,7 @@ void CRender::Render()
     // Postprocess
     {
         PIX_EVENT(DEFER_LIGHT_COMBINE);
-        Target->phase_combine();
+        co_await Target->phase_combine();
     }
 
     if (Details)

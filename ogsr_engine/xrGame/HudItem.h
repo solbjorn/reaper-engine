@@ -163,7 +163,7 @@ public:
 
     virtual bool NeedBlendAnm();
 
-    virtual void UpdateCL();
+    virtual tmc::task<void> UpdateCL();
     virtual void renderable_Render(u32 context_id, IRenderable* root);
 
     virtual void Hide(bool = false) {}

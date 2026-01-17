@@ -557,7 +557,7 @@ public:
     virtual void Load(LPCSTR section);
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void net_Destroy();
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
     virtual void UpdateEx(float fov); // called by owner
 
     virtual void shedule_Update(u32 dt);

@@ -36,7 +36,7 @@ public:
     virtual void shedule_Update(u32 dt);
     virtual bool shedule_Needed();
 
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
     virtual void ChangeCondition(float fDeltaCondition) { CInventoryItem::ChangeCondition(fDeltaCondition); }
     virtual void StartTimerEffects();
 };

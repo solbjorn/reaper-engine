@@ -13,7 +13,7 @@ public:
 
     virtual void Load(LPCSTR section);
     virtual void reinit();
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
 
     void CheckSpecParams(u32) override;
     virtual void HitEntityInJump(const CEntity* pEntity);

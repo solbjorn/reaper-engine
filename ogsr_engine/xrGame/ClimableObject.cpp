@@ -138,9 +138,9 @@ void CClimableObject::shedule_Update(u32 dt) // Called by shedule
     inherited::shedule_Update(dt);
 }
 
-void CClimableObject::UpdateCL() // Called each frame, so no need for d
+tmc::task<void> CClimableObject::UpdateCL() // Called each frame, so no need for d
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
 }
 
 void CClimableObject::Center(Fvector& C) const { C.set(XFORM().c); }

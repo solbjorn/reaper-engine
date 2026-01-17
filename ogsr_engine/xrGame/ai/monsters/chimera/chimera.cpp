@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "chimera.h"
+
 #include "chimera_state_manager.h"
 #include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../../detail_path_manager.h"
@@ -166,4 +167,4 @@ void CChimera::jump(Fvector const& position, float const factor)
     sound().play(MonsterSound::eMonsterSoundAggressive);
 }
 
-void CChimera::UpdateCL() { inherited::UpdateCL(); }
+tmc::task<void> CChimera::UpdateCL() { co_await inherited::UpdateCL(); }

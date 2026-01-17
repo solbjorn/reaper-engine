@@ -61,9 +61,9 @@ void CBreakableObject::shedule_Update(u32 dt)
         SendDestroy();
 }
 
-void CBreakableObject::UpdateCL()
+tmc::task<void> CBreakableObject::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
 
     if (m_pPhysicsShell && m_pPhysicsShell->isFullActive())
         m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());

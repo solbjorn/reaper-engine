@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "phantom.h"
+
 #include "../../../xr_3da/NET_Server_Trash/net_utils.h"
 #include "level.h"
 #include "xrServer_Objects_ALife_Monsters.h"
@@ -272,16 +273,16 @@ void CPhantom::shedule_Update(u32 DT)
     K->UpdateTracks();
 }
 
-void CPhantom::UpdateCL()
+tmc::task<void> CPhantom::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
 
     UpdateEvent();
+
     if (m_TgtState != m_CurState)
         SwitchToState_internal(m_TgtState);
 }
-//---------------------------------------------------------------------
-// void CPhantom::Hit	(float P, Fvector &dir, CObject* who, s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type)
+
 void CPhantom::Hit(SHit* pHDS)
 {
     if (m_TgtState == stFly)

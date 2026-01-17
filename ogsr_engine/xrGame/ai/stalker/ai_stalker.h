@@ -178,7 +178,7 @@ public:
     virtual void save(NET_Packet& output_packet);
     virtual void load(IReader& input_packet);
 
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
     virtual void shedule_Update(u32 dt);
     virtual void Think();
     void SelectAnimation(const Fvector&, const Fvector&, float) override;

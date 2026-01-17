@@ -177,9 +177,9 @@ void CArtefact::OnH_B_Independent(bool just_before_destroy)
 }
 
 // called only in "fast-mode"
-void CArtefact::UpdateCL()
+tmc::task<void> CArtefact::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
 
     if (o_fastmode || m_activationObj)
         UpdateWorkload(Device.dwTimeDelta);

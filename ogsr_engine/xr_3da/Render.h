@@ -257,9 +257,8 @@ public:
     virtual BOOL occ_visible(sPoly& P) = 0;
 
     // Main
-    virtual void OnCameraUpdated() = 0;
-    virtual void Calculate() = 0;
-    virtual void Render() = 0;
+    virtual tmc::task<void> OnCameraUpdated() = 0;
+    virtual tmc::task<void> Render() = 0;
     virtual void BeforeWorldRender() = 0; //--#SM+#-- Перед рендерингом мира
     virtual void AfterWorldRender(const bool save_bb_before_ui) = 0; //--#SM+#-- После рендеринга мира (до UI)
     virtual void AfterUIRender() = 0; // После рендеринга UI. Вызывать только если нам нужно отрендерить кадр для пда.

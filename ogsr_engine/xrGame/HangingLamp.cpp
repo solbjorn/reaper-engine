@@ -217,15 +217,15 @@ void CHangingLamp::shedule_Update(u32 dt)
     inherited::shedule_Update(dt);
 }
 
-void CHangingLamp::UpdateCL()
+tmc::task<void> CHangingLamp::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
 
     if (m_pPhysicsShell)
         m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
 
     if (!Alive())
-        return;
+        co_return;
 
     if (light_render->get_active())
     {

@@ -197,9 +197,9 @@ void CMissile::DeviceUpdate()
     }
 }
 
-void CMissile::UpdateCL()
+tmc::task<void> CMissile::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
 
     if (!Core.Features.test(xrCore::Feature::stop_anim_playing))
     {

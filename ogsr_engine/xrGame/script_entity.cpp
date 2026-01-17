@@ -639,10 +639,13 @@ bool CScriptEntity::bfScriptAnimation()
     }
 }
 
-void CScriptEntity::UpdateCL() { bfScriptAnimation(); }
+tmc::task<void> CScriptEntity::UpdateCL()
+{
+    bfScriptAnimation();
+    co_return;
+}
 
 u32 CScriptEntity::GetActionCount() const { return (m_tpActionQueue.size()); }
-
 const CScriptEntityAction* CScriptEntity::GetActionByIndex(u32 action_index) const { return (m_tpActionQueue[action_index]); }
 
 void CScriptEntity::sound_callback(const CObject* object, int sound_type, const Fvector& position, float sound_power, float time_to_stop)

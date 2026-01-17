@@ -2,7 +2,6 @@
 
 #include "../xrRender/dxRenderDeviceRender.h"
 #include "../xrRender/r__occlusion.h"
-#include "../xrRender/r__sync_point.h"
 
 #include "../xrRender/PSLibrary.h"
 
@@ -102,7 +101,6 @@ public:
     xr_vector<light*> Lights_LastFrame;
     light_Package LP_normal;
 
-    R_sync_point q_sync_point;
     xr_vector<sun::cascade> m_sun_cascades;
 
     bool m_bFirstFrameAfterReset{}; // Determines weather the frame is the first after resetting device.
@@ -131,8 +129,7 @@ private:
     void calculate_sun(sun::cascade& cascade);
     void accumulate_cascade(u32 cascade_ind);
 
-    xr_task_group* main_tg{};
-    void main_sync();
+    tmc::task<void> main_run();
 
     xr_task_group* rain_tg{};
     void rain_run();
@@ -226,9 +223,8 @@ public:
     virtual BOOL occ_visible(sPoly& P);
 
     // Main
-    void OnCameraUpdated() override;
-    virtual void Calculate();
-    virtual void Render();
+    tmc::task<void> OnCameraUpdated() override;
+    tmc::task<void> Render() override;
     virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = nullptr);
     tmc::task<void> OnFrame() override;
     virtual void BeforeWorldRender(); //--#SM+#-- +SecondVP+ Вызывается перед началом рендера мира и пост-эффектов

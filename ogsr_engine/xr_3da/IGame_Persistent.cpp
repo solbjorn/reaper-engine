@@ -151,7 +151,7 @@ void IGame_Persistent::OnGameEnd()
 tmc::task<void> IGame_Persistent::OnFrame()
 {
     if (!Device.Paused() || Device.dwPrecacheFrame)
-        Environment().OnFrame();
+        co_await Environment().OnFrame();
 
     Device.Statistic->Particles_starting = ps_needtoplay.size();
     Device.Statistic->Particles_active = ps_active.size();
@@ -177,8 +177,6 @@ tmc::task<void> IGame_Persistent::OnFrame()
         }
         psi->PSI_internal_delete();
     }
-
-    co_return;
 }
 
 void IGame_Persistent::destroy_particles(const bool& all_particles)

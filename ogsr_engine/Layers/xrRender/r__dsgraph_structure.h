@@ -145,7 +145,7 @@ struct R_dsgraph_structure
     void insert_dynamic(IRenderable* root, dxRender_Visual* pVisual, Fmatrix& xform, Fvector& Center);
     void insert_static(dxRender_Visual* pVisual);
 
-    void build_subspace(sector_id_t o_sector_id, CFrustum& _frustum);
+    tmc::task<void> build_subspace(sector_id_t o_sector_id, CFrustum& _frustum);
     void build_subspace(sector_id_t o_sector_id, CFrustum& _frustum, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic);
 
 private:

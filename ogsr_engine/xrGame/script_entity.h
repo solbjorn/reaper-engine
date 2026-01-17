@@ -71,7 +71,7 @@ public:
     [[nodiscard]] virtual BOOL net_Spawn(CSE_Abstract*);
     virtual void net_Destroy();
     virtual void shedule_Update(u32);
-    virtual void UpdateCL();
+    virtual tmc::task<void> UpdateCL();
     virtual CScriptEntity* cast_script_entity() { return this; }
     virtual DLL_Pure* _construct();
 

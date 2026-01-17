@@ -46,7 +46,7 @@ public:
     static void BoneCallbackX(CBoneInstance* B);
     static void BoneCallbackY(CBoneInstance* B);
     void Load(LPCSTR section);
-    void UpdateCL();
+    tmc::task<void> UpdateCL();
     void Action(int id, u32 flags);
     void SetParam(int id, Fvector2 val);
     void SetParam(int id, Fvector val);

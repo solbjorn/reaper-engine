@@ -315,9 +315,10 @@ void CPhysicsShellHolder::OnChangeVisual()
     }
 }
 
-void CPhysicsShellHolder::UpdateCL()
+tmc::task<void> CPhysicsShellHolder::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
+
     // обновить присоединенные партиклы
     UpdateParticles();
 }

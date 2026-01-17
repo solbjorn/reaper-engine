@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "Rain.h"
+
 #include "igame_persistent.h"
 #include "environment.h"
 
@@ -178,12 +179,12 @@ void CEffect_Rain::Render()
     m_pRender->Render(*this);
 }
 
-void CEffect_Rain::Calculate()
+tmc::task<void> CEffect_Rain::Calculate(tmc::manual_reset_event& event)
 {
-    if (!g_pGameLevel)
-        return;
-
     m_pRender->Calculate(*this);
+
+    event.set();
+    co_return;
 }
 
 // startup _new_ particle system

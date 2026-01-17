@@ -504,7 +504,7 @@ void CAI_Stalker::destroy_anim_mov_ctrl()
     movement().m_head.target.pitch = movement().m_body.current.pitch;
 }
 
-void CAI_Stalker::UpdateCL()
+tmc::task<void> CAI_Stalker::UpdateCL()
 {
     XR_TRACY_ZONE_SCOPED();
 
@@ -525,7 +525,8 @@ void CAI_Stalker::UpdateCL()
         }
     }
 
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
+
     m_pPhysics_support->in_UpdateCL();
 
     if (g_Alive())

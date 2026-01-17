@@ -125,9 +125,10 @@ void CWeaponMounted::net_Destroy()
 
 void CWeaponMounted::net_Export(CSE_Abstract* E) { inherited::net_Export(E); }
 
-void CWeaponMounted::UpdateCL()
+tmc::task<void> CWeaponMounted::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
+
     if (Owner())
     {
         IKinematics* K = smart_cast<IKinematics*>(Visual());

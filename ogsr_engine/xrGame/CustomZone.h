@@ -58,7 +58,7 @@ public:
     virtual void Load(LPCSTR section);
     virtual void net_Destroy();
 
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
     virtual void UpdateWorkload(u32 dt); // related to fast-mode optimizations
     virtual void shedule_Update(u32 dt);
     virtual void enter_Zone(SZoneObjectInfo& io);

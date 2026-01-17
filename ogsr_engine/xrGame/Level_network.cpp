@@ -55,7 +55,7 @@ tmc::task<void> CLevel::remove_objects()
         ClientReceive();
         ProcessGameEvents();
 
-        Objects.Update(true);
+        co_await Objects.Update(true);
     }
 
     BulletManager().Clear();
@@ -91,7 +91,7 @@ tmc::task<void> CLevel::remove_objects()
     for (int i = 0; i < 6; i++)
     {
         ++(Device.dwFrame);
-        Objects.Update(true);
+        co_await Objects.Update(true);
     }
 
     g_pGamePersistent->destroy_particles(false);

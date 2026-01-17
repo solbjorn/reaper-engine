@@ -243,7 +243,6 @@
     <ClInclude Include="..\xrRender\r__dsgraph_types.h" />
     <ClInclude Include="..\xrRender\r__occlusion.h" />
     <ClInclude Include="..\xrRender\r__sector.h" />
-    <ClInclude Include="..\xrRender\r__sync_point.h" />
     <ClInclude Include="..\xrRender\Shader.h" />
     <ClInclude Include="..\xrRender\ShaderResourceTraits.h" />
     <ClInclude Include="..\xrRender\SH_Atomic.h" />
@@ -261,7 +260,6 @@
     <ClInclude Include="..\xrRender\WallmarksEngine.h" />
     <ClInclude Include="..\xrRender\xrD3DDefs.h" />
     <ClInclude Include="..\xrRender\xrRender_console.h" />
-    <ClInclude Include="..\xrRender\xrSkinXW.h" />
     <ClInclude Include="..\xrRender\xrStripify.h" />
     <ClInclude Include="..\xrRender\xr_effgamma.h" />
     <ClInclude Include="blender_bloom_build.h" />
@@ -416,7 +414,6 @@
     <ClCompile Include="..\xrRender\r__sector.cpp" />
     <ClCompile Include="..\xrRender\r__sector_detect.cpp" />
     <ClCompile Include="..\xrRender\r__sector_traversal.cpp" />
-    <ClCompile Include="..\xrRender\r__sync_point.cpp" />
     <ClCompile Include="..\xrRender\Shader.cpp" />
     <ClCompile Include="..\xrRender\SH_Atomic.cpp" />
     <ClCompile Include="..\xrRender\SkeletonAnimated.cpp" />
@@ -431,7 +428,6 @@
     <ClCompile Include="..\xrRender\VertexCache.cpp" />
     <ClCompile Include="..\xrRender\WallmarksEngine.cpp" />
     <ClCompile Include="..\xrRender\xrRender_console.cpp" />
-    <ClCompile Include="..\xrRender\xrSkinXW.cpp" />
     <ClCompile Include="..\xrRender\xrStripify.cpp" />
     <ClCompile Include="..\xrRender\xr_effgamma.cpp" />
     <ClCompile Include="blender_bloom_build.cpp" />
@@ -453,7 +449,6 @@
     <ClCompile Include="light_smapvis.cpp" />
     <ClCompile Include="light_vis.cpp" />
     <ClCompile Include="r2_blenders.cpp" />
-    <ClCompile Include="r2_R_calculate.cpp" />
     <ClCompile Include="r2_R_lights.cpp" />
     <ClCompile Include="r2_R_sun.cpp" />
     <ClCompile Include="r4.cpp" />

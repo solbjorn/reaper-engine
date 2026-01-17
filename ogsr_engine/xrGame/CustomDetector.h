@@ -164,7 +164,7 @@ public:
     virtual void OnH_B_Independent(bool just_before_destroy) override;
 
     virtual void shedule_Update(u32 dt) override;
-    virtual void UpdateCL() override;
+    tmc::task<void> UpdateCL() override;
 
     bool IsWorking() const;
 

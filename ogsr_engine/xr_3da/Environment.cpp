@@ -8,9 +8,7 @@
 #include "thunderbolt.h"
 #include "xrHemisphere.h"
 #include "perlin.h"
-
 #include "xr_input.h"
-#include "xr_task.h"
 
 #include "IGame_Level.h"
 #include "IGame_Persistent.h"
@@ -40,9 +38,7 @@ extern Fvector4 ps_ssfx_wind_trees;
 CEnvironment::CEnvironment()
 {
     USED_COP_WEATHER = FS.path_exist("$game_weathers$");
-
     CurrentWeatherName._set(nullptr);
-    OnDeviceCreate();
 
     fTimeFactor = 12.f;
     wind_blast_direction.set(1.f, 0.f, 0.f);
@@ -449,10 +445,10 @@ void CEnvironment::lerp(float& current_weight)
     m_pRender->lerp(&*Current[0]->m_pDescriptor, &*Current[1]->m_pDescriptor);
 }
 
-void CEnvironment::OnFrame()
+tmc::task<void> CEnvironment::OnFrame()
 {
     if (!g_pGameLevel)
-        return;
+        co_return;
 
     // Min wind velocity. [ ps_ssfx_wind_trees.w 0 ~ 1 ]
     float WindVel = std::max(CurrentEnv->wind_velocity, ps_ssfx_wind_trees.w * 1000);
@@ -515,8 +511,12 @@ void CEnvironment::OnFrame()
     eff_Thunderbolt->OnFrame(t_id, CurrentEnv->bolt_period, CurrentEnv->bolt_duration);
 
     eff_Rain->OnFrame();
-    if (!g_pGamePersistent->IsMainMenuActive())
-        tg->run([this] { eff_Rain->Calculate(); });
+
+    if (g_pGamePersistent->IsMainMenuActive())
+        co_return;
+
+    event.reset();
+    tmc::spawn(eff_Rain->Calculate(event)).with_priority(xr::tmc_priority_any).detach();
 }
 
 Fvector3 CEnvironment::calculate_config_sun_dir(float ftime)

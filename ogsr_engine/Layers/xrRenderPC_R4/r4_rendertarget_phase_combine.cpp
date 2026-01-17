@@ -5,7 +5,7 @@
 #include "../../xr_3da/environment.h"
 #include "../../xr_3da/igame_persistent.h"
 
-void CRenderTarget::phase_combine()
+tmc::task<void> CRenderTarget::phase_combine()
 {
     XR_TRACY_ZONE_SCOPED();
     PIX_EVENT(phase_combine);
@@ -258,7 +258,7 @@ void CRenderTarget::phase_combine()
                 u_setrt(RCache, rt_Generic_0_r, {}, {}, rt_MSAADepth);
         }
 
-        g_pGamePersistent->Environment().RenderLast(); // rain/thunder-bolts
+        co_await g_pGamePersistent->Environment().RenderLast(); // rain/thunder-bolts
     }
 
     if (ssfx_PrevPos_Requiered)

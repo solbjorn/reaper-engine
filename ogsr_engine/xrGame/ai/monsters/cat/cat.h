@@ -16,7 +16,7 @@ public:
     virtual void Load(LPCSTR section);
     virtual void reinit();
 
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
 
     virtual void CheckSpecParams(u32 spec_params);
 

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "WeaponKnife.h"
+
 #include "Entity.h"
 #include "Actor.h"
 #include "torch.h"
@@ -326,7 +327,7 @@ void CWeaponKnife::DeviceUpdate()
     }
 }
 
-void CWeaponKnife::UpdateCL() { inherited::UpdateCL(); }
+tmc::task<void> CWeaponKnife::UpdateCL() { co_await inherited::UpdateCL(); }
 
 void CWeaponKnife::LoadFireParams(LPCSTR section, LPCSTR prefix)
 {

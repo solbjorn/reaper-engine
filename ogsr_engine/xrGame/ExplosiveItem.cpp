@@ -50,10 +50,10 @@ void CExplosiveItem::OnEvent(NET_Packet& P, u16 type)
     inherited::OnEvent(P, type);
 }
 
-void CExplosiveItem::UpdateCL()
+tmc::task<void> CExplosiveItem::UpdateCL()
 {
-    CExplosive::UpdateCL();
-    inherited::UpdateCL();
+    co_await CExplosive::UpdateCL();
+    co_await inherited::UpdateCL();
 }
 
 void CExplosiveItem::shedule_Update(u32 dt)

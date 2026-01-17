@@ -25,6 +25,6 @@ public:
     virtual void net_Destroy();
     virtual BOOL UsedAI_Locations();
     virtual void shedule_Update(u32 DT);
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
     virtual CScriptEntity* cast_script_entity() { return this; }
 };

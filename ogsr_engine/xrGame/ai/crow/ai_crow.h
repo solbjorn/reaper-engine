@@ -123,7 +123,7 @@ public:
     virtual BOOL renderable_ShadowReceive() { return FALSE; }
     void renderable_Render(u32 context_id, IRenderable* root) override;
     virtual void shedule_Update(u32 DT);
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
 
     virtual CEntity* cast_entity() { return this; }
 

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "snork.h"
+
 #include "snork_state_manager.h"
 #include "../../../detail_path_manager_space.h"
 #include "../../../detail_path_manager.h"
@@ -132,37 +133,7 @@ void CSnork::reinit()
     m_target_node = 0;
 }
 
-void CSnork::UpdateCL()
-{
-    inherited::UpdateCL();
-
-    //////////////////////////////////////////////////////////////////////////
-    // CObject *obj = Level().CurrentEntity();
-    // if (!obj) return;
-
-    // find_geometry	();
-    //////////////////////////////////////////////////////////////////////////
-
-    /*
-    #ifdef DEBUG
-        // test
-        CObject *obj = Level().CurrentEntity();
-        if (!obj) return;
-        const CCoverPoint *point = CoverMan->find_cover(obj->Position(), 10.f, 30.f);
-
-        DBG().level_info(this).clear();
-        if (point) {
-            DBG().level_info(this).add_item	(point->position(),COLOR_RED);
-
-            Fvector pos;
-            pos.set(Position());
-            pos.y+=5.f;
-
-            DBG().level_info(this).add_item	(Position(),pos,COLOR_GREEN);
-        }
-    #endif
-    */
-}
+tmc::task<void> CSnork::UpdateCL() { co_await inherited::UpdateCL(); }
 
 #define TRACE_RANGE 30.f
 

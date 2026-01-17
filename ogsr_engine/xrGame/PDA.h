@@ -80,7 +80,7 @@ public:
     bool ThumbAnimsAllowed() const { return joystick == BI_NONE; }
 
     virtual void OnMoveToRuck(EItemPlace prevPlace) override;
-    virtual void UpdateCL() override;
+    tmc::task<void> UpdateCL() override;
     virtual void UpdateXForm() override;
     virtual void OnActiveItem() override;
     virtual void OnHiddenItem() override;

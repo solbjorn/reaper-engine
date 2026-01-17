@@ -38,7 +38,7 @@ IGame_Level::~IGame_Level()
 tmc::task<void> IGame_Level::net_Stop()
 {
     for (int i = 0; i < 6; i++)
-        Objects.Update(true);
+        co_await Objects.Update(true);
 
     // Destroy all objects
     Objects.Unload();
@@ -99,21 +99,14 @@ tmc::task<bool> IGame_Level::Load(u32)
     co_return true;
 }
 
-tmc::task<void> IGame_Level::OnRender()
-{
-    // Level render, only when no client output required
-    Render->Calculate();
-    Render->Render();
-
-    co_return;
-}
+tmc::task<void> IGame_Level::OnRender() { co_await Render->Render(); }
 
 tmc::task<void> IGame_Level::OnFrame()
 {
     // Update all objects
     VERIFY(bReady);
 
-    Objects.Update(false);
+    co_await Objects.Update(false);
     pHUD->OnFrame();
 
     // Ambience

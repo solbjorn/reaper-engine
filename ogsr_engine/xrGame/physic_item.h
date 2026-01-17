@@ -30,7 +30,7 @@ public:
     virtual void reload(LPCSTR section);
     virtual void OnH_B_Independent(bool just_before_destroy);
     virtual void OnH_B_Chield();
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void net_Destroy();
     virtual void activate_physic_shell();

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "WeaponStatMgun.h"
+
 #include "../Include/xrRender/Kinematics.h"
 #include "PhysicsShell.h"
 #include "weaponAmmo.h"
@@ -139,9 +140,10 @@ void CWeaponStatMgun::net_Export(CSE_Abstract* E)
     mgun->m_destEnemyDir = m_destEnemyDir;
 }
 
-void CWeaponStatMgun::UpdateCL()
+tmc::task<void> CWeaponStatMgun::UpdateCL()
 {
-    inheritedPH::UpdateCL();
+    co_await inheritedPH::UpdateCL();
+
     UpdateBarrelDir();
     UpdateFire();
 

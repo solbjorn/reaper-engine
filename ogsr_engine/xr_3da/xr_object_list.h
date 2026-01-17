@@ -52,8 +52,8 @@ public:
     CObject* Create(LPCSTR name);
     void Destroy(CObject* O);
 
-    void SingleUpdate(CObject* O);
-    void Update(bool bForce);
+    tmc::task<void> SingleUpdate(CObject* O);
+    tmc::task<void> Update(bool bForce);
     void ProcessDestroyQueue();
 
     void net_Register(CObject* O);

@@ -183,10 +183,10 @@ tmc::task<bool> CRenderDevice::BeforeFrame()
     co_return true;
 }
 
-void CRenderDevice::OnCameraUpdated()
+tmc::task<void> CRenderDevice::OnCameraUpdated()
 {
     if (camFrame == dwFrame)
-        return;
+        co_return;
 
     XR_TRACY_ZONE_SCOPED();
 
@@ -214,7 +214,7 @@ void CRenderDevice::OnCameraUpdated()
     mInvView.invert(mView);
     mInvFullTransform.invert_44(mFullTransform);
 
-    ::Render->OnCameraUpdated();
+    co_await ::Render->OnCameraUpdated();
     m_pRender->SetCacheXform(mView, mProject);
 
     camFrame = dwFrame;
@@ -245,7 +245,7 @@ tmc::task<void> CRenderDevice::ProcessFrame()
     }
 
     co_await process_frame_async();
-    OnCameraUpdated();
+    co_await OnCameraUpdated();
 
     auto second = co_await tmc::fork_clang(process_second(), tmc::current_executor(), xr::tmc_priority_any);
 

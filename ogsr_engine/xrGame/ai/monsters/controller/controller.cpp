@@ -373,11 +373,14 @@ void CController::control_hit()
     play_control_sound_hit();
 }
 
-static const float TEXTURE_SIZE_PERCENT = 2.f;
-
-void CController::UpdateCL()
+namespace
 {
-    inherited::UpdateCL();
+constexpr f32 TEXTURE_SIZE_PERCENT{2.0f};
+}
+
+tmc::task<void> CController::UpdateCL()
+{
+    co_await inherited::UpdateCL();
 
     if (m_sndShockEffector)
     {

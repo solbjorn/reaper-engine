@@ -71,8 +71,7 @@ BOOL CWeaponBinoculars::net_Spawn(CSE_Abstract* DC)
 
 void CWeaponBinoculars::net_Destroy() { inherited::net_Destroy(); }
 
-void CWeaponBinoculars::UpdateCL() { inherited::UpdateCL(); }
-
+tmc::task<void> CWeaponBinoculars::UpdateCL() { co_await inherited::UpdateCL(); }
 void CWeaponBinoculars::OnDrawUI() { inherited::OnDrawUI(); }
 
 void CWeaponBinoculars::save(NET_Packet& output_packet)

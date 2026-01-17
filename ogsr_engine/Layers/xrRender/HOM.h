@@ -6,7 +6,6 @@
 #include "../../xr_3da/IGame_Persistent.h"
 
 class occTri;
-class xr_task_group;
 
 class CHOM : public virtual RTTI::Enable
 #ifdef DEBUG
@@ -33,7 +32,7 @@ private:
     u32 tris_in_frame;
 #endif
 
-    xr_task_group* tg{};
+    tmc::manual_reset_event event{true};
 
     void Render(CFrustum& base);
     void Render_DB(CFrustum& base);
@@ -48,8 +47,17 @@ public:
     void Disable();
     void Enable();
 
-    void run_async();
-    void wait_async() const;
+    tmc::task<void> run_async()
+    {
+        if (ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_HOM))
+            co_return;
+
+        event.reset();
+        tmc::spawn(render_async()).with_priority(xr::tmc_priority_any).detach();
+    }
+
+    tmc::task<void> render_async();
+    tmc::task<void> wait_async() { co_await event; }
 
     BOOL visible(vis_data& vis) const;
     BOOL visible(const Fbox3& B) const;

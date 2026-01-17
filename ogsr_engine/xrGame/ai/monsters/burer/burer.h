@@ -132,7 +132,7 @@ public:
     virtual void net_Destroy();
     virtual void net_Relcase(CObject* O);
     virtual void shedule_Update(u32 dt);
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
     virtual void Hit(SHit* pHDS);
     virtual void Die(CObject* who);
     void ProcessTurn();

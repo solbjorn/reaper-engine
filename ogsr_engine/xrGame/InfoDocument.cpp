@@ -61,7 +61,7 @@ void CInfoDocument::Load(LPCSTR section) { inherited::Load(section); }
 void CInfoDocument::net_Destroy() { inherited::net_Destroy(); }
 
 void CInfoDocument::shedule_Update(u32 dt) { inherited::shedule_Update(dt); }
-void CInfoDocument::UpdateCL() { inherited::UpdateCL(); }
+tmc::task<void> CInfoDocument::UpdateCL() { co_await inherited::UpdateCL(); }
 
 void CInfoDocument::OnH_A_Chield()
 {

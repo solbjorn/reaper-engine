@@ -144,7 +144,7 @@ public:
     virtual void HitSignal(float, Fvector&, CObject*);
     virtual void g_WeaponBones(int&, int&, int&) {}
     virtual void shedule_Update(u32 DT);
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
 
     virtual void net_Export(CSE_Abstract*);
     virtual void net_Relcase(CObject* O);

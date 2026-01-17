@@ -906,12 +906,11 @@ u8 CWeapon::idle_state()
     return eIdle;
 }
 
-void CWeapon::UpdateCL()
+tmc::task<void> CWeapon::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
 
     UpdateHUDAddonsVisibility();
-
     UpdateVisualBullets();
 
     // подсветка от выстрела

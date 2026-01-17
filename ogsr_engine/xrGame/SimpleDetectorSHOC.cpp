@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "SimpleDetectorSHOC.h"
+
 #include "customzone.h"
 #include "hudmanager.h"
 #include "artifact.h"
@@ -120,18 +121,18 @@ void CCustomDetectorSHOC::StopAllSounds()
     }
 }
 
-void CCustomDetectorSHOC::UpdateCL()
+tmc::task<void> CCustomDetectorSHOC::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
 
     if (!IsWorking())
-        return;
+        co_return;
 
     if (!H_Parent())
-        return;
+        co_return;
 
     if (!m_pCurrentActor)
-        return;
+        co_return;
 
     ZONE_INFO_MAP_IT it;
     for (it = m_ZoneInfoMap.begin(); m_ZoneInfoMap.end() != it; ++it)

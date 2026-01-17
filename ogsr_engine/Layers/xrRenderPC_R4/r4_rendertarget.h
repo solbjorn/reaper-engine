@@ -353,7 +353,7 @@ public:
     void accum_volumetric(light* L);
     void phase_bloom();
     void phase_luminance();
-    void phase_combine();
+    tmc::task<void> phase_combine();
     void phase_combine_volumetric();
     void phase_pp();
 

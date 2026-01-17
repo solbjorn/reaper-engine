@@ -38,7 +38,7 @@ public:
 
     virtual void net_Destroy();
     virtual void net_Relcase(CObject* O);
-    virtual void UpdateCL();
+    virtual tmc::task<void> UpdateCL();
 
 private:
     virtual void Explode();

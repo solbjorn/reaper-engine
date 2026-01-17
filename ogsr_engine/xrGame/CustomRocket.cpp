@@ -366,11 +366,12 @@ void CCustomRocket::OnH_A_Independent()
     //	Msg("! CCustomRocket::OnH_A_Independent called, id[%d] frame[%d]",ID(),Device.dwFrame);
 }
 
-void CCustomRocket::UpdateCL()
+tmc::task<void> CCustomRocket::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
 
     PlayContact();
+
     switch (m_eState)
     {
     // состояния eEngine и eFlying отличаются, тем

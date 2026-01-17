@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "poltergeist.h"
+
 #include "poltergeist_state_manager.h"
 #include "../../../characterphysicssupport.h"
 #include "PHMovementControl.h"
@@ -295,21 +296,17 @@ void CPoltergeist::renderable_Render(u32 context_id, IRenderable* root)
     inherited::renderable_Render(context_id, root);
 }
 
-void CPoltergeist::UpdateCL()
+tmc::task<void> CPoltergeist::UpdateCL()
 {
     update_detection();
-    inherited::UpdateCL();
+
+    co_await inherited::UpdateCL();
 
     def_lerp(m_height, target_height, m_height_change_velocity, client_update_fdelta());
-
     ability()->update_frame();
 
     if (Actor()->memory().visual().visible_now(this) && Actor()->Position().distance_to(Position()) < 85.f)
-    {
         MakeMeCrow();
-    }
-
-    //	Visual()->getVisData().hom_frame = Device.dwFrame;
 }
 
 void CPoltergeist::ForceFinalAnimation()

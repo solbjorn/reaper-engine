@@ -37,7 +37,7 @@ public:
     virtual void load(IReader& input_packet);
 
     virtual bool Action(s32 cmd, u32 flags);
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
     virtual void OnDrawUI();
     virtual bool use_crosshair() const { return false; }
     virtual void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);

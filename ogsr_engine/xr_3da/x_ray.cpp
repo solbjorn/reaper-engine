@@ -162,6 +162,8 @@ tmc::task<void> pre_startup()
 {
     pApp = (co_await CApplication::co_create()).release();
     g_pGamePersistent = smart_cast<IGame_Persistent*>(NEW_INSTANCE(CLSID_GAME_PERSISTANT));
+
+    co_await g_pGamePersistent->Environment().OnDeviceCreate();
 }
 
 void destroy_splash()

@@ -19,8 +19,6 @@ struct SThunderboltDesc;
 struct SThunderboltCollection;
 class CLensFlareDescriptor;
 
-class xr_task_group;
-
 #define DAY_LENGTH 86400.f
 
 // t-defs
@@ -304,13 +302,13 @@ public:
     void mods_load();
     void mods_unload();
 
-    void OnFrame();
+    tmc::task<void> OnFrame();
     void lerp(float& current_weight);
 
     void RenderSky();
     void RenderClouds();
     void RenderFlares();
-    void RenderLast();
+    tmc::task<void> RenderLast();
 
     bool SetWeatherFX(shared_str name);
     bool StartWeatherFXFromTime(shared_str name, float time);
@@ -325,7 +323,7 @@ public:
     void SetGameTime(float game_time, float time_factor);
     u32 GetWeatherLastShift() { return m_last_weather_shift; }
 
-    void OnDeviceCreate();
+    tmc::task<void> OnDeviceCreate();
     void OnDeviceDestroy();
 
     bool m_dynamic_sun_movement{};
@@ -342,7 +340,7 @@ public:
     CInifile* m_thunderbolts_config{};
 
 private:
-    xr_task_group* tg{};
+    tmc::manual_reset_event event{true};
 
 protected:
     CEnvDescriptor* create_descriptor(shared_str const& identifier, CInifile* config);

@@ -219,9 +219,6 @@
     <ClInclude Include="..\xrRender\r__occlusion.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\xrRender\r__sync_point.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="..\xrRender\r_sun_cascades.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -728,9 +725,6 @@
     <ClCompile Include="r2_blenders.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="r2_R_calculate.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="r2_R_lights.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -762,9 +756,6 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\r__screenshot.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\r__sync_point.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\tga.cpp">

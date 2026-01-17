@@ -278,7 +278,7 @@ void CHudItem::Deactivate(bool now)
     OnHiddenItem();
 }
 
-void CHudItem::UpdateCL()
+tmc::task<void> CHudItem::UpdateCL()
 {
     m_dwStateTime += Device.dwTimeDelta;
 
@@ -323,8 +323,9 @@ void CHudItem::UpdateCL()
     }
 
     AllowHudBobbing((Core.Features.test(xrCore::Feature::wpn_bobbing) && allow_bobbing) || (g_actor && g_actor->PsyAuraAffect));
-
     TimeLockAnimation();
+
+    co_return;
 }
 
 void CHudItem::OnH_A_Chield() {}

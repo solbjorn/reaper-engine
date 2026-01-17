@@ -35,7 +35,7 @@ public:
     virtual void net_Destroy();
     virtual bool Activate(bool = false);
     virtual void Deactivate(bool = false);
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
     void renderable_Render(u32 context_id, IRenderable* root) override;
     void on_renderable_Render(u32 context_id, IRenderable* root) override;
 

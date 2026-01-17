@@ -55,7 +55,7 @@ public:
     virtual void load(IReader& input_packet);
     virtual BOOL net_SaveRelevant() { return inherited::net_SaveRelevant(); }
 
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
     virtual void shedule_Update(u32 dt);
 
     void renderable_Render(u32 context_id, IRenderable* root) override;

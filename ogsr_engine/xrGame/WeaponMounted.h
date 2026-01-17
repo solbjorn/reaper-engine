@@ -72,7 +72,7 @@ public:
     virtual void net_Destroy();
     virtual void net_Export(CSE_Abstract* E);
 
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
     virtual void shedule_Update(u32 dt);
 
     void renderable_Render(u32 context_id, IRenderable* root) override;

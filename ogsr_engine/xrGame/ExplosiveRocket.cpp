@@ -99,15 +99,12 @@ void CExplosiveRocket::OnH_B_Independent(bool just_before_destroy)
     inherited::OnH_B_Independent(just_before_destroy);
 }
 
-void CExplosiveRocket::UpdateCL()
+tmc::task<void> CExplosiveRocket::UpdateCL()
 {
-    if (eCollide == m_eState)
-    {
-        CExplosive::UpdateCL();
-        inherited::UpdateCL();
-    }
-    else
-        inherited::UpdateCL();
+    if (m_eState == eCollide)
+        co_await CExplosive::UpdateCL();
+
+    co_await inherited::UpdateCL();
 }
 
 void CExplosiveRocket::OnEvent(NET_Packet& P, u16 type)

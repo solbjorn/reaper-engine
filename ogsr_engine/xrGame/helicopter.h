@@ -308,7 +308,7 @@ public:
     virtual BOOL renderable_ShadowReceive() { return TRUE; }
 
     virtual void OnEvent(NET_Packet& P, u16 type);
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
     virtual void shedule_Update(u32 time_delta);
     void MoveStep();
 

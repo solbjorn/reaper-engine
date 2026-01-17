@@ -101,7 +101,7 @@ protected:
     virtual void DeviceUpdate() override;
 
 public:
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void net_Destroy();
     virtual void net_Export(CSE_Abstract* E);

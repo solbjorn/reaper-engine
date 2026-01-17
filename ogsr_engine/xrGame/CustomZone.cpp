@@ -587,9 +587,10 @@ void CCustomZone::UpdateWorkload(u32 dt)
 }
 
 // called only in "fast-mode"
-void CCustomZone::UpdateCL()
+tmc::task<void> CCustomZone::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
+
     if (o_fastmode)
         UpdateWorkload(Device.dwTimeDelta);
 }

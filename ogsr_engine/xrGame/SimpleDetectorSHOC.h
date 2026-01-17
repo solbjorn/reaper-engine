@@ -57,7 +57,7 @@ public:
     virtual void OnH_B_Independent(bool just_before_destroy);
 
     virtual void shedule_Update(u32 dt);
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
 
     virtual void feel_touch_new(CObject* O);
     virtual void feel_touch_delete(CObject* O);

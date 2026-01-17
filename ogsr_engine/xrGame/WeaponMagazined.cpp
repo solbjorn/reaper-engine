@@ -617,9 +617,10 @@ void CWeaponMagazined::DeviceUpdate()
     }
 }
 
-void CWeaponMagazined::UpdateCL()
+tmc::task<void> CWeaponMagazined::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
+
     float dt = Device.fTimeDelta;
 
     // когда происходит апдейт состояния оружия

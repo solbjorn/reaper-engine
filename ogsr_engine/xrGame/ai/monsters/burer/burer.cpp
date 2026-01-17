@@ -383,13 +383,11 @@ void CBurer::UpdateGraviObject()
         ::Sound->play_at_pos(sound_gravi_wave, nullptr, snd_pos);
 }
 
-void CBurer::UpdateCL()
+tmc::task<void> CBurer::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
 
     UpdateGraviObject();
-    // if (m_fast_gravi->check_start_conditions())
-    //	control().activate(ControlCom::eComCustom1);
 }
 
 void CBurer::StartGraviPrepare()

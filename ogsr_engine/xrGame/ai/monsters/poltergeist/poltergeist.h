@@ -60,7 +60,7 @@ public:
     virtual void net_Destroy();
     virtual void net_Relcase(CObject* O);
 
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
     virtual void shedule_Update(u32 dt);
 
     void set_actor_ignore(bool const actor_ignore) { m_actor_ignore = actor_ignore; }

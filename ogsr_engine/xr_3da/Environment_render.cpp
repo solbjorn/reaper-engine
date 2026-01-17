@@ -1,12 +1,12 @@
 #include "stdafx.h"
 
 #include "Environment.h"
+
 #include "render.h"
 #include "xr_efflensflare.h"
 #include "rain.h"
 #include "thunderbolt.h"
 #include "igame_level.h"
-#include "xr_task.h"
 
 //-----------------------------------------------------------------------------
 // Environment render
@@ -40,27 +40,25 @@ void CEnvironment::RenderFlares()
     eff_LensFlare->Render(false, true, true);
 }
 
-void CEnvironment::RenderLast()
+tmc::task<void> CEnvironment::RenderLast()
 {
-    tg->wait();
+    co_await event;
 
     // 2
     eff_Rain->Render();
     eff_Thunderbolt->Render();
 }
 
-void CEnvironment::OnDeviceCreate()
+tmc::task<void> CEnvironment::OnDeviceCreate()
 {
     m_pRender->OnDeviceCreate();
-    tg = &xr_task_group_get();
 
     Invalidate();
-    OnFrame();
+    co_await OnFrame();
 }
 
 void CEnvironment::OnDeviceDestroy()
 {
-    tg->cancel_put();
     m_pRender->OnDeviceDestroy();
     CurrentEnv->put();
 }

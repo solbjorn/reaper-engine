@@ -90,7 +90,7 @@ public:
     ~CEffect_Rain();
 
     void Render();
-    void Calculate();
+    tmc::task<void> Calculate(tmc::manual_reset_event& event);
     void OnFrame();
 
     void InvalidateState()

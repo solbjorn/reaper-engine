@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "physicsskeletonobject.h"
+
 #include "PhysicsShell.h"
 #include "phsynchronize.h"
 #include "xrserver_objects_alife.h"
@@ -83,9 +84,10 @@ BOOL CPhysicsSkeletonObject::net_SaveRelevant()
 
 BOOL CPhysicsSkeletonObject::UsedAI_Locations() { return (FALSE); }
 
-void CPhysicsSkeletonObject::UpdateCL()
+tmc::task<void> CPhysicsSkeletonObject::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
+
     PHObjectPositionUpdate();
 }
 

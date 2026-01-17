@@ -30,7 +30,7 @@ public:
     virtual void OnEvent(NET_Packet& P, u16 type);
 
     virtual void OnAnimationEnd(u32 state);
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
 
     virtual void Throw();
     virtual void Destroy();

@@ -29,8 +29,7 @@ public:
     virtual void StopHUDSounds();
 
     virtual void UpdateSounds();
-
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
 
     virtual bool Action(s32 cmd, u32 flags);
 

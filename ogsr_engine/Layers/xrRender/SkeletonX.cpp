@@ -7,7 +7,6 @@
 #include "SkeletonX.h"
 
 #include "SkeletonCustom.h"
-#include "xrSkinXW.h"
 
 #include "../../xr_3da/Render.h"
 #include "../../xr_3da/fmesh.h"
@@ -80,10 +79,7 @@ void CSkeletonX::_Render(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iO
     cmd_list.stat.r.s_dynamic.add(vCount);
     switch (RenderMode)
     {
-    case RM_SKINNING_SOFT:
-        _Render_soft(cmd_list, hGeom, vCount, iOffset, pCount);
-        cmd_list.stat.r.s_dynamic_sw.add(vCount);
-        break;
+    case RM_SKINNING_SOFT: FATAL("cannot use soft render!");
     case RM_SINGLE: {
         Fmatrix W;
         W.mul_43(cmd_list.xforms.m_w, Parent->LL_GetTransform_R(u16(RMS_boneid)));
@@ -176,64 +172,6 @@ void CSkeletonX::_Render(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iO
     }
     break;
     }
-}
-
-void CSkeletonX::_Render_soft(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
-{
-    XR_TRACY_ZONE_SCOPED();
-
-    u32 vOffset = cache_vOffset;
-
-    _VertexStream& _VS = RImplementation.Vertex;
-    if (cache_DiscardID != _VS.DiscardID() || vCount >= cache_vCount)
-    {
-        vertRender* Dest = (vertRender*)_VS.Lock(vCount, hGeom->vb_stride, vOffset);
-        cache_DiscardID = _VS.DiscardID();
-        cache_vCount = vCount;
-        cache_vOffset = vOffset;
-
-        Device.Statistic->RenderDUMP_SKIN.Begin();
-        if (*Vertices1W)
-        {
-            Skin1W(Dest, // dest
-                   *Vertices1W, // source
-                   vCount, // count
-                   Parent->bone_instances // bones
-            );
-        }
-        else if (*Vertices2W)
-        {
-            Skin2W(Dest, // dest
-                   *Vertices2W, // source
-                   vCount, // count
-                   Parent->bone_instances // bones
-            );
-        }
-        else if (*Vertices3W)
-        {
-            Skin3W(Dest, // dest
-                   *Vertices3W, // source
-                   vCount, // count
-                   Parent->bone_instances // bones
-            );
-        }
-        else if (*Vertices4W)
-        {
-            Skin4W(Dest, // dest
-                   *Vertices4W, // source
-                   vCount, // count
-                   Parent->bone_instances // bones
-            );
-        }
-        else
-            R_ASSERT2(0, "unsupported soft rendering");
-
-        Device.Statistic->RenderDUMP_SKIN.End();
-        _VS.Unlock(vCount, hGeom->vb_stride);
-    }
-
-    cmd_list.set_Geometry(hGeom);
-    cmd_list.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, iOffset, pCount);
 }
 
 void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)

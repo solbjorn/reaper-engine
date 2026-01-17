@@ -251,10 +251,10 @@ void CGrenade::OnAnimationEnd(u32 state)
     }
 }
 
-void CGrenade::UpdateCL()
+tmc::task<void> CGrenade::UpdateCL()
 {
-    inherited::UpdateCL();
-    CExplosive::UpdateCL();
+    co_await inherited::UpdateCL();
+    co_await CExplosive::UpdateCL();
 }
 
 bool CGrenade::Action(s32 cmd, u32 flags)

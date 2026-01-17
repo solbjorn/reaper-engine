@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "physicobject.h"
+
 #include "PhysicsShell.h"
 #include "Physics.h"
 #include "xrserver_objects_alife.h"
@@ -134,9 +135,9 @@ void CPhysicObject::shedule_Update(u32 dt)
     CPHSkeleton::Update(dt);
 }
 
-void CPhysicObject::UpdateCL()
+tmc::task<void> CPhysicObject::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
     // Если наш физический объект анимированный, то

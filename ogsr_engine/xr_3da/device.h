@@ -201,7 +201,7 @@ public:
 
     tmc::task<bool> BeforeFrame();
     tmc::task<void> FrameMove();
-    void OnCameraUpdated();
+    tmc::task<void> OnCameraUpdated();
     tmc::task<bool> RenderBegin();
     void Clear();
     void RenderEnd();

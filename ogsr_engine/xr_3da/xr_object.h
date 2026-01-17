@@ -171,7 +171,7 @@ public:
     virtual void shedule_Update(u32 dt); // Called by sheduler
     void renderable_Render(u32, IRenderable*) override;
 
-    virtual void UpdateCL(); // Called each frame, so no need for dt
+    virtual tmc::task<void> UpdateCL(); // Called each frame, so no need for dt
     virtual BOOL net_Spawn(CSE_Abstract*);
     virtual void net_Destroy();
     virtual void net_Export(CSE_Abstract*) {} // export to server

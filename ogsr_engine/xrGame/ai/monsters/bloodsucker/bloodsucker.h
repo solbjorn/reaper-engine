@@ -20,7 +20,7 @@ public:
     virtual void reinit();
     virtual void reload(LPCSTR section);
 
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
     virtual void shedule_Update(u32 dt);
     virtual void Die(CObject* who);
     virtual BOOL net_Spawn(CSE_Abstract* DC);

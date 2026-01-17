@@ -89,18 +89,20 @@ void CObjectList::o_sleep(CObject* O)
     O->MakeMeCrow();
 }
 
-void CObjectList::SingleUpdate(CObject* O)
+tmc::task<void> CObjectList::SingleUpdate(CObject* O)
 {
     if (O->processing_enabled() && (Device.dwFrame != O->dwFrame_UpdateCL))
     {
         XR_TRACY_ZONE_SCOPED();
 
         if (O->H_Parent())
-            SingleUpdate(O->H_Parent());
+            co_await SingleUpdate(O->H_Parent());
+
         Device.Statistic->UpdateClient_updated++;
         O->dwFrame_UpdateCL = Device.dwFrame;
+
         O->IAmNotACrowAnyMore();
-        O->UpdateCL();
+        co_await O->UpdateCL();
 
 #ifdef DEBUG
         VERIFY3(O->dbg_update_cl == Device.dwFrame, "Broken sequence of calls to 'UpdateCL'", *O->cName());
@@ -132,7 +134,7 @@ void clear_crow_vec(xr_vector<CObject*>& o)
 }
 } // namespace
 
-void CObjectList::Update(bool bForce)
+tmc::task<void> CObjectList::Update(bool bForce)
 {
     if (!(Device.Paused() && !bForce))
     {
@@ -166,8 +168,8 @@ void CObjectList::Update(bool bForce)
             Device.Statistic->UpdateClient_total = objects_active.size() + objects_sleeping.size();
 
             xr_vector<CObject*> objects_dup(*workload);
-            for (auto* obj_dup : objects_dup)
-                SingleUpdate(obj_dup);
+            for (auto obj_dup : objects_dup)
+                co_await SingleUpdate(obj_dup);
 
             Device.Statistic->UpdateClient.End();
         }

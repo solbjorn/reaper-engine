@@ -218,10 +218,10 @@ void CWeaponAmmo::renderable_Render(u32 context_id, IRenderable* root)
         inherited::renderable_Render(context_id, root);
 }
 
-void CWeaponAmmo::UpdateCL()
+tmc::task<void> CWeaponAmmo::UpdateCL()
 {
     VERIFY2(_valid(renderable.xform), *cName());
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
     VERIFY2(_valid(renderable.xform), *cName());
 }
 

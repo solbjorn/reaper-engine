@@ -894,7 +894,7 @@ void CGameObject::update_animation_movement_controller()
     destroy_anim_mov_ctrl();
 }
 
-void CGameObject::UpdateCL() { inherited::UpdateCL(); }
+tmc::task<void> CGameObject::UpdateCL() { co_await inherited::UpdateCL(); }
 
 void CGameObject::OnChangeVisual()
 {

@@ -142,9 +142,9 @@ void CProjector::TurnOff()
     smart_cast<IKinematics*>(Visual())->LL_SetBoneVisible(guid_bone, FALSE, TRUE);
 }
 
-void CProjector::UpdateCL()
+tmc::task<void> CProjector::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
 
     // update light source
     if (light_render->get_active())

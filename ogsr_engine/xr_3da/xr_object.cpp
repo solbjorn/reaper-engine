@@ -281,7 +281,7 @@ void CObject::spatial_update(float eps_P, float eps_R)
 }
 
 // Updates
-void CObject::UpdateCL()
+tmc::task<void> CObject::UpdateCL()
 {
     // consistency check
 #ifdef DEBUG
@@ -313,6 +313,8 @@ void CObject::UpdateCL()
         else if ((Visual() && Visual()->getVisData().hom_frame + 2 > Device.dwFrame) && (dist < CROW_RADIUS2 * CROW_RADIUS2))
             MakeMeCrow();
     }
+
+    co_return;
 }
 
 void CObject::shedule_Update(u32 T)

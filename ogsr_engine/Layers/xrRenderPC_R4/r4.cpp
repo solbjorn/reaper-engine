@@ -214,9 +214,7 @@ void CRender::create()
 
     Models = xr_new<CModelPool>();
     PSLibrary.OnCreate();
-
     HWOCC.occq_create();
-    q_sync_point.Create();
 
     rmNormal(RCache);
 
@@ -227,8 +225,6 @@ void CRender::create()
 void CRender::destroy()
 {
     FluidManager.Destroy();
-
-    q_sync_point.Destroy();
     HWOCC.occq_destroy();
 
     xr_delete(Models);
@@ -239,7 +235,6 @@ void CRender::destroy()
 
 void CRender::reset_begin()
 {
-    main_tg->wait();
     rain_tg->wait();
     sun_tg->wait();
     lights_tg->wait();
@@ -266,16 +261,12 @@ void CRender::reset_begin()
     //-AVO
 
     xr_delete(Target);
-
     HWOCC.occq_destroy();
-    q_sync_point.Destroy();
 }
 
 void CRender::reset_end()
 {
-    q_sync_point.Create();
     HWOCC.occq_create();
-
     Target = xr_new<CRenderTarget>();
 
     if (b_loaded /*&& ((dm_current_size != dm_size) || (ps_r__Detail_density != ps_current_detail_density))*/)
@@ -303,20 +294,21 @@ tmc::task<void> CRender::OnFrame()
     if (g_pGamePersistent->MainMenuActiveOrLevelNotExist())
         co_return;
 
-    if (Details)
+    if (Details != nullptr)
         g_pGamePersistent->GrassBendersUpdateAnimations();
 }
 
-void CRender::OnCameraUpdated()
+tmc::task<void> CRender::OnCameraUpdated()
 {
     // Frustum
     ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 
     if (g_pGamePersistent->MainMenuActiveOrLevelNotExist())
-        return;
+        co_return;
 
-    HOM.run_async();
-    if (Details)
+    co_await HOM.run_async();
+
+    if (Details != nullptr)
         Details->run_async();
 }
 
@@ -544,9 +536,9 @@ void CRender::rmNormal(const CBackend& cmd_list) const
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
+
 CRender::CRender()
 {
-    main_tg = &xr_task_group_get();
     rain_tg = &xr_task_group_get();
 
     m_sun_cascades.resize(R__NUM_SUN_CASCADES);
@@ -557,7 +549,6 @@ CRender::CRender()
 
 CRender::~CRender()
 {
-    main_tg->cancel_put();
     rain_tg->cancel_put();
     sun_tg->cancel_put();
     lights_tg->cancel_put();

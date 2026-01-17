@@ -1,5 +1,7 @@
 #include "stdafx.h"
+
 #include "boar.h"
+
 #include "boar_state_manager.h"
 #include "../../../../Include/xrRender/Kinematics.h"
 #include "../monster_velocity_space.h"
@@ -139,8 +141,9 @@ BOOL CAI_Boar::net_Spawn(CSE_Abstract* DC)
     return TRUE;
 }
 
-void CAI_Boar::UpdateCL()
+tmc::task<void> CAI_Boar::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
+
     angle_lerp(_cur_delta, _target_delta, _velocity, client_update_fdelta());
 }

@@ -87,10 +87,11 @@ void CCarWeapon::Load(LPCSTR section)
         inheritedShooting::Light_Create();
 }
 
-void CCarWeapon::UpdateCL()
+tmc::task<void> CCarWeapon::UpdateCL()
 {
     if (!m_bActive)
-        return;
+        co_return;
+
     UpdateBarrelDir();
     IKinematics* K = smart_cast<IKinematics*>(m_object->Visual());
     K->CalculateBones_Invalidate();

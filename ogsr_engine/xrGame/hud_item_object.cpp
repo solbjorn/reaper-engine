@@ -7,11 +7,11 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "hud_item_object.h"
 
-CHudItemObject::CHudItemObject() {}
-
-CHudItemObject::~CHudItemObject() {}
+CHudItemObject::CHudItemObject() = default;
+CHudItemObject::~CHudItemObject() = default;
 
 DLL_Pure* CHudItemObject::_construct()
 {
@@ -34,7 +34,6 @@ bool CHudItemObject::Action(s32 cmd, u32 flags)
 }
 
 void CHudItemObject::SwitchState(u32 S) { CHudItem::SwitchState(S); }
-
 void CHudItemObject::OnStateSwitch(u32 S, u32 oldState) { CHudItem::OnStateSwitch(S, oldState); }
 
 void CHudItemObject::OnEvent(NET_Packet& P, u16 type)
@@ -76,15 +75,13 @@ void CHudItemObject::net_Destroy()
 }
 
 bool CHudItemObject::Activate(bool now) { return CHudItem::Activate(now); }
-
 void CHudItemObject::Deactivate(bool now) { CHudItem::Deactivate(now); }
 
-void CHudItemObject::UpdateCL()
+tmc::task<void> CHudItemObject::UpdateCL()
 {
-    CInventoryItemObject::UpdateCL();
-    CHudItem::UpdateCL();
+    co_await CInventoryItemObject::UpdateCL();
+    co_await CHudItem::UpdateCL();
 }
 
 void CHudItemObject::renderable_Render(u32 context_id, IRenderable* root) { CHudItem::renderable_Render(context_id, root); }
-
 void CHudItemObject::on_renderable_Render(u32 context_id, IRenderable* root) { CInventoryItemObject::renderable_Render(context_id, root); }

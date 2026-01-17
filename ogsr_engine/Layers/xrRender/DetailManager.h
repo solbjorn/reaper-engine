@@ -9,6 +9,8 @@
 #include "detailformat.h"
 #include "detailmodel.h"
 
+class xr_task_group;
+
 constexpr inline int dm_max_decompress{7};
 constexpr inline int dm_cache1_count{4}; //
 constexpr inline int dm_max_objects{64};

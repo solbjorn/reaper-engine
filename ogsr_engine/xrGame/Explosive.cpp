@@ -463,20 +463,24 @@ void CExplosive::GetExplPosition(Fvector& p) { p.set(m_vExplodePos); }
 void CExplosive::GetExplDirection(Fvector& d) { d.set(m_vExplodeDir); }
 void CExplosive::GetExplVelocity(Fvector& v) { smart_cast<CPhysicsShellHolder*>(cast_game_object())->PHGetLinearVell(v); }
 
-void CExplosive::UpdateCL()
+tmc::task<void> CExplosive::UpdateCL()
 {
     // VERIFY(!this->getDestroy());
     VERIFY(!ph_world->Processing());
+
     if (!m_explosion_flags.test(flExploding))
-        return; // !m_bExploding
+        co_return; // !m_bExploding
+
     if (m_explosion_flags.test(flExploded))
     {
         CGameObject* go = cast_game_object();
         go->processing_deactivate();
         m_explosion_flags.set(flExploding, FALSE); // m_bExploding = false;
+
         OnAfterExplosion();
-        return;
+        co_return;
     }
+
     // время вышло, убираем объект взрывчатки
     if (m_fExplodeDuration < 0.f && m_blasted_objects.empty())
     {

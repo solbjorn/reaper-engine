@@ -539,12 +539,12 @@ void CPda::OnMoveToRuck(EItemPlace prevPlace)
     SetPending(FALSE);
 }
 
-void CPda::UpdateCL()
+tmc::task<void> CPda::UpdateCL()
 {
     if (this_is_3d_pda)
-        inherited::UpdateCL();
+        co_await inherited::UpdateCL();
     else
-        CInventoryItemObject::UpdateCL();
+        co_await CInventoryItemObject::UpdateCL();
 }
 
 void CPda::UpdateXForm() { CInventoryItem::UpdateXForm(); }

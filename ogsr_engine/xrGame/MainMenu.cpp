@@ -272,7 +272,7 @@ tmc::task<void> CMainMenu::IR_OnKeyboardPress(gsl::index dik)
     }
 
     if (MainInputReceiver())
-        co_await MainInputReceiver()->IR_OnKeyboardPress(dik);
+        std::ignore = co_await MainInputReceiver()->IR_OnKeyboardPress(dik);
 }
 
 void CMainMenu::IR_OnKeyboardRelease(int dik)
@@ -290,7 +290,7 @@ tmc::task<void> CMainMenu::IR_OnKeyboardHold(gsl::index dik)
         co_return;
 
     if (MainInputReceiver())
-        co_await MainInputReceiver()->IR_OnKeyboardHold(dik);
+        std::ignore = co_await MainInputReceiver()->IR_OnKeyboardHold(dik);
 }
 
 tmc::task<void> CMainMenu::IR_OnMouseWheel(gsl::index direction)
@@ -299,7 +299,7 @@ tmc::task<void> CMainMenu::IR_OnMouseWheel(gsl::index direction)
         co_return;
 
     if (MainInputReceiver())
-        co_await MainInputReceiver()->IR_OnMouseWheel(direction);
+        std::ignore = co_await MainInputReceiver()->IR_OnMouseWheel(direction);
 }
 
 bool CMainMenu::OnRenderPPUI_query() { return IsActive() && !m_Flags.test(flGameSaveScreenshot) && b_shniaganeed_pp; }
@@ -309,7 +309,7 @@ tmc::task<void> CMainMenu::OnRender()
     if (m_Flags.test(flGameSaveScreenshot))
         co_return;
 
-    Render->Render();
+    co_await Render->Render();
 
     if (!OnRenderPPUI_query())
     {

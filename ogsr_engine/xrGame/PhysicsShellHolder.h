@@ -112,7 +112,7 @@ public:
 
     virtual void OnChangeVisual();
     // для наследования CParticlesPlayer
-    virtual void UpdateCL();
+    tmc::task<void> UpdateCL() override;
     void correct_spawn_pos();
 
 public:

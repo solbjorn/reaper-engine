@@ -716,7 +716,7 @@ void R_dsgraph_structure::add_static(dxRender_Visual* pVisual, const CFrustum& v
 }
 
 // sub-space rendering - PHASE_NORMAL
-void R_dsgraph_structure::build_subspace(sector_id_t o_sector_id, CFrustum& _frustum)
+tmc::task<void> R_dsgraph_structure::build_subspace(sector_id_t o_sector_id, CFrustum& _frustum)
 {
     XR_TRACY_ZONE_SCOPED();
 
@@ -725,7 +725,7 @@ void R_dsgraph_structure::build_subspace(sector_id_t o_sector_id, CFrustum& _fru
     phase = CRender::PHASE_NORMAL;
     use_hom = true;
 
-    RImplementation.HOM.wait_async();
+    co_await RImplementation.HOM.wait_async();
 
     // Calculate sector(s) and their objects
     if (o_sector_id == INVALID_SECTOR_ID)
@@ -734,7 +734,7 @@ void R_dsgraph_structure::build_subspace(sector_id_t o_sector_id, CFrustum& _fru
         if (g_pGameLevel)
             g_hud->Render_Last(context_id); // HUD
 
-        return;
+        co_return;
     }
 
     if (RImplementation.rmPortals)

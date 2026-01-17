@@ -268,16 +268,18 @@ void CCustomDetector::UpdateVisibility()
     }
 }
 
-void CCustomDetector::UpdateCL()
+tmc::task<void> CCustomDetector::UpdateCL()
 {
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
 
     if (H_Parent() != Level().CurrentEntity())
-        return;
+        co_return;
 
     UpdateVisibility();
+
     if (!IsWorking())
-        return;
+        co_return;
+
     UpfateWork();
 }
 

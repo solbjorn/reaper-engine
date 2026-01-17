@@ -747,7 +747,7 @@ float CActor::currentFOV()
     return g_fov;
 }
 
-void CActor::UpdateCL()
+tmc::task<void> CActor::UpdateCL()
 {
     XR_TRACY_ZONE_SCOPED();
 
@@ -768,7 +768,7 @@ void CActor::UpdateCL()
     m_snd_noise -= 0.3f * Device.fTimeDelta;
 
     VERIFY2(_valid(renderable.xform), *cName());
-    inherited::UpdateCL();
+    co_await inherited::UpdateCL();
     VERIFY2(_valid(renderable.xform), *cName());
     m_pPhysics_support->in_UpdateCL();
     VERIFY2(_valid(renderable.xform), *cName());
@@ -783,7 +783,7 @@ void CActor::UpdateCL()
 
     Device.Statistic->TEST1.Begin();
     cam_Update(float(Device.dwTimeDelta) / 1000.0f, currentFOV());
-    Device.OnCameraUpdated();
+    co_await Device.OnCameraUpdated();
     Device.Statistic->TEST1.End();
 
     if (Level().CurrentEntity() && this->ID() == Level().CurrentEntity()->ID())
