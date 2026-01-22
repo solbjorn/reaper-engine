@@ -57,7 +57,7 @@ public:
 
     light* omnipart[6];
 
-    smapvis svis[R__NUM_CONTEXTS]; // used for 6-cubemap faces
+    std::array<smapvis, R__NUM_CONTEXTS> svis; // used for 6-cubemap faces
 
     ref_shader s_spot;
     ref_shader s_point;

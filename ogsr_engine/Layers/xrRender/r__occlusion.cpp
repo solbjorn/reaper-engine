@@ -4,6 +4,8 @@
 
 #include "QueryHelper.h"
 
+#include "sleep.h"
+
 R_occlusion::~R_occlusion() { occq_destroy(true); }
 
 void R_occlusion::occq_create()
@@ -117,31 +119,30 @@ R_occlusion::occq_result R_occlusion::occq_get(u32& ID)
 
     std::scoped_lock slock{lock};
 
+    VERIFY2(ID < used.size(), make_string("_Pos = %u, size() = %zu", ID, used.size()));
+
     if (!used[ID].Q)
         return std::numeric_limits<occq_result>::max();
 
     XR_TRACY_ZONE_SCOPED();
 
-    occq_result fragments = 0;
+    occq_result fragments;
     HRESULT hr;
-    CTimer T;
-    T.Start();
-    Device.Statistic->RenderDUMP_Wait.Begin();
-    VERIFY2(ID < used.size(), make_string("_Pos = %u, size() = %zu", ID, used.size()));
+
     // здесь нужно дождаться результата, т.к. отладка показывает, что
     // очень редко когда он готов немедленно
-    while ((hr = GetData(used[ID].Q.Get(), &fragments, sizeof(fragments))) == S_FALSE)
-    {
-        if (!SwitchToThread())
-            Sleep(ps_r2_wait_sleep);
+    Device.Statistic->RenderDUMP_Wait.Begin();
 
-        if (T.GetElapsed_ms() > ps_r2_wait_timeout)
-        {
-            fragments = std::numeric_limits<occq_result>::max();
-            break;
-        }
-    }
+    if (std::__libcpp_thread_poll_with_backoff(
+            [this, &hr, ID, &fragments] -> bool {
+                hr = GetData(used[ID].Q.Get(), &fragments, sizeof(fragments));
+                return hr != S_FALSE;
+            },
+            xr::backoff, std::chrono::milliseconds{ps_r2_wait_timeout}) == std::__poll_with_backoff_results::__timeout)
+        fragments = std::numeric_limits<occq_result>::max();
+
     Device.Statistic->RenderDUMP_Wait.End();
+
     if (hr == D3DERR_DEVICELOST)
         fragments = std::numeric_limits<occq_result>::max();
 

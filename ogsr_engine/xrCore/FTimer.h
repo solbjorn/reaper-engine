@@ -109,8 +109,8 @@ public:
         if (paused)
             return;
 
-        realTime = std::chrono::nanoseconds(0);
-        time = std::chrono::nanoseconds(0);
+        realTime = std::chrono::nanoseconds{0};
+        time = std::chrono::nanoseconds{0};
         inherited::Start();
     }
 

@@ -214,7 +214,7 @@ tmc::task<void> startup(std::atomic<xr::tmc_atomic_wait_t>& code)
 
     CSound_manager_interface::_destroy();
 
-    Device.Destroy();
+    co_await Device.Destroy();
     Engine.Destroy();
 }
 } // namespace
@@ -431,7 +431,7 @@ tmc::task<void> main_async(gsl::czstring cmdline, void* handle, std::atomic<xr::
         (void)filter;
 
         Engine.Initialize();
-        co_await tmc::spawn(Device.Initialize()).run_on(xr::tmc_cpu_st_executor());
+        co_await Device.Initialize();
 
         co_await std::move(in);
         pInput->Attach();
@@ -562,11 +562,9 @@ tmc::task<void> CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 {
     if (E == eQuit)
     {
-        co_await tmc::spawn([] -> tmc::task<void> {
-            PostQuitMessage(0);
-            co_return;
-        }())
-            .run_on(xr::tmc_cpu_st_executor());
+        auto scope = co_await tmc::enter(xr::tmc_cpu_st_executor());
+        PostQuitMessage(0);
+        co_await scope.exit();
 
         for (auto& level : Levels)
             xr_free(level.folder);
@@ -667,7 +665,7 @@ tmc::task<void> CApplication::LoadDraw()
 
     load_draw_internal();
 
-    Device.RenderEnd();
+    co_await Device.RenderEnd();
 }
 
 void CApplication::LoadForceFinish() { loadingScreen->ForceFinish(); }

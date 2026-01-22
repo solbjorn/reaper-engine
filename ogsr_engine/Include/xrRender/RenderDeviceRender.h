@@ -32,7 +32,7 @@ public:
 
     //	Destroy
     virtual void OnDeviceDestroy(BOOL bKeepTextures) = 0;
-    virtual void DestroyHW() = 0;
+    virtual tmc::task<void> DestroyHW() = 0;
     virtual tmc::task<void> Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, f32& fWidth_2, f32& fHeight_2) = 0;
     //	Init
     virtual void SetupStates() = 0;
@@ -50,12 +50,12 @@ public:
     virtual void ResourcesDumpMemoryUsage() const = 0;
 
     //	Device state
-    virtual DeviceState GetDeviceState() = 0;
+    virtual tmc::task<DeviceState> GetDeviceState() = 0;
     virtual BOOL GetForceGPU_REF() = 0;
     virtual u32 GetCacheStatPolys() = 0;
     virtual void Begin() = 0;
     virtual void Clear() = 0;
-    virtual void End() = 0;
+    virtual tmc::task<void> End() = 0;
     virtual void ClearTarget() = 0;
     virtual void SetCacheXform(Fmatrix& mView, Fmatrix& mProject) = 0;
     virtual IResourceManager* GetResourceManager() const = 0;

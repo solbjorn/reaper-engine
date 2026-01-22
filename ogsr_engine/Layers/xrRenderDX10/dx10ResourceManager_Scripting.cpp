@@ -190,7 +190,7 @@ local this; \
 module('{0}', package.seeall, function(m) this = m end); \
 {1}"};
 
-std::optional<sol::state> __declspec(align(std::hardware_destructive_interference_size)) lua;
+std::optional<sol::state> __declspec(align(TMC_CACHE_LINE_SIZE)) lua;
 
 void lua_panic(s32 code)
 {

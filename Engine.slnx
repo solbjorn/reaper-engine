@@ -53,7 +53,6 @@
   </Folder>
   <Project Path="ogsr_engine/Layers/xrRenderPC_R4/xrRender_R4.vcxproj" Id="ac9b12ed-a2d7-4337-a981-5bd8430e96d8">
     <BuildDependency Project="3rd_party/Src/DirectXTex/DirectXTex.vcxproj" />
-    <BuildDependency Project="3rd_party/Src/oneTBB/oneTBB.vcxproj" />
     <BuildDependency Project="3rd_party/Src/xxHash/xxHash.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrCDB/xrCDB.vcxproj" Id="a19b1df2-82ec-4364-8bdf-85d13a1c89b5">
@@ -72,7 +71,6 @@
     <BuildDependency Project="3rd_party/Src/tmc/hwloc/hwloc.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrGame/xrGame.vcxproj" Id="200652a6-043e-4634-8837-87983b3bd5e0">
-    <BuildDependency Project="3rd_party/Src/oneTBB/oneTBB.vcxproj" />
     <BuildDependency Project="3rd_party/Src/zstd/zstd.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrParticles/xrParticles.vcxproj" Id="94a1c366-3d19-48e6-8170-4adc2e70df97" />
@@ -80,13 +78,12 @@
     <BuildDependency Project="3rd_party/Src/ode/contrib/msvc7/ode_default/default.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrSound/xrSound.vcxproj" Id="ccca7859-eb86-493e-9b53-c4235f45b3c5">
-    <BuildDependency Project="3rd_party/Src/oneTBB/oneTBB.vcxproj" />
-    <BuildDependency Project="3rd_party/Src/openal-soft/openal-soft.vcxproj" />
     <BuildDependency Project="3rd_party/Src/Xiph/ogg/ogg.vcxproj" />
     <BuildDependency Project="3rd_party/Src/Xiph/vorbis/vorbis.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/oneTBB/oneTBB.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/openal-soft/openal-soft.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xr_3da/XR_3DA.vcxproj" Id="2578c6d8-660d-48ae-9322-7422f8664f06">
     <BuildDependency Project="3rd_party/Src/Xiph/theora/theora.vcxproj" />
-    <BuildDependency Project="3rd_party/Src/oneTBB/oneTBB.vcxproj" />
   </Project>
 </Solution>

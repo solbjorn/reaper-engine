@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include "xr_task.h"
-
 static bool check_grass_shadow(const light* L, const CFrustum& VB)
 {
     // Grass shadows are allowed?
@@ -23,19 +21,24 @@ static bool check_grass_shadow(const light* L, const CFrustum& VB)
 struct light_ctx
 {
     ctx_id_t context_id{R__INVALID_CTX_ID};
-    u32 curr{};
-    xr_vector<light*> lights;
+    xr::inlined_vector<light*, 14> lights;
 };
 
-void CRender::render_lights_shadowed_one(light_ctx& task)
+tmc::task<void> CRender::render_lights_shadowed_one(light_ctx& task)
 {
-    lights_tg->run([this, &task] {
+    XR_TRACY_ZONE_SCOPED();
+
+    auto& dsgraph = get_context(task.context_id);
+    auto iter = task.lights.begin(), end = task.lights.end();
+
+    Target->phase_smap_spot_clear(dsgraph.cmd_list);
+
+    while (iter != end)
+    {
         XR_TRACY_ZONE_SCOPED();
-
-        auto& dsgraph = get_context(task.context_id);
-        light* L = task.lights[task.curr];
-
         PIX_EVENT(SHADOWED_LIGHTS_RENDER_SUBSPACE);
+
+        auto L = *iter;
         L->svis[dsgraph.context_id].begin();
 
         CFrustum temp;
@@ -44,48 +47,40 @@ void CRender::render_lights_shadowed_one(light_ctx& task)
         dsgraph.r_pmask(true, false);
         dsgraph.build_subspace(L->spatial.sector_id, temp, L->X.S.combine, L->position, true);
 
-        bool empty = dsgraph.mapNormalPasses[0][0].empty() && dsgraph.mapMatrixPasses[0][0].empty();
         VERIFY(dsgraph.mapNormalPasses[1][0].empty() && dsgraph.mapMatrixPasses[1][0].empty() && dsgraph.mapSorted.empty());
 
-        if (!empty)
+        if (!dsgraph.mapNormalPasses[0][0].empty() || !dsgraph.mapMatrixPasses[0][0].empty())
         {
-            lights_tg->run([this, &task] {
-                XR_TRACY_ZONE_SCOPED();
+            XR_TRACY_ZONE_SCOPED();
 
-                auto& dsgraph = get_context(task.context_id);
-                light* L = task.lights[task.curr];
+            stats.s_merged++;
 
-                stats.s_merged++;
+            Target->phase_smap_spot(dsgraph.cmd_list, L);
+            dsgraph.cmd_list.set_xform_world(Fidentity);
+            dsgraph.cmd_list.set_xform_view(L->X.S.view);
+            dsgraph.cmd_list.set_xform_project(L->X.S.project);
+            dsgraph.render_graph(0);
 
-                Target->phase_smap_spot(dsgraph.cmd_list, L);
-                dsgraph.cmd_list.set_xform_world(Fidentity);
-                dsgraph.cmd_list.set_xform_view(L->X.S.view);
-                dsgraph.cmd_list.set_xform_project(L->X.S.project);
-                dsgraph.render_graph(0);
+            if (Details != nullptr && check_grass_shadow(L, ViewBase))
+                co_await Details->Render(dsgraph.cmd_list, L->position);
 
-                if (Details && check_grass_shadow(L, ViewBase))
-                    Details->Render(dsgraph.cmd_list, L->position);
+            L->svis[dsgraph.context_id].end();
 
-                L->svis[dsgraph.context_id].end();
-
-                if (++task.curr < task.lights.size())
-                    render_lights_shadowed_one(task);
-            });
+            iter++;
         }
         else
         {
             stats.s_finalclip++;
 
             L->svis[dsgraph.context_id].end();
-            task.lights.erase(task.lights.begin() + task.curr);
 
-            if (task.curr < task.lights.size())
-                render_lights_shadowed_one(task);
+            iter = task.lights.erase(iter);
+            end = task.lights.end();
         }
-    });
+    }
 }
 
-void CRender::render_lights_shadowed(light_Package& LP)
+tmc::task<void> CRender::render_lights_shadowed(light_Package& LP)
 {
     XR_TRACY_ZONE_SCOPED();
 
@@ -134,7 +129,7 @@ void CRender::render_lights_shadowed(light_Package& LP)
         static xr_vector<light_ctx> light_tasks;
         light_tasks.reserve(R__NUM_PARALLEL_CONTEXTS);
 
-        for (size_t i = 0; i < std::min<size_t>(R__NUM_PARALLEL_CONTEXTS, source.size()); i++)
+        for (size_t i = 0; i < std::min(size_t{R__NUM_PARALLEL_CONTEXTS}, source.size()); ++i)
         {
             ctx_id_t id = alloc_context();
             if (id != R__INVALID_CTX_ID)
@@ -144,7 +139,7 @@ void CRender::render_lights_shadowed(light_Package& LP)
         const size_t num_tasks = light_tasks.size();
 
         // 2. refactor - infact we could go from the backside and sort in ascending order
-        const auto light_cmp = [](const light* l1, const light* l2) {
+        constexpr auto light_cmp = [](const light* l1, const light* l2) {
             const u32 a0 = l1->X.S.size;
             const u32 a1 = l2->X.S.size;
             return a0 > a1; // reverse -> descending
@@ -195,15 +190,9 @@ void CRender::render_lights_shadowed(light_Package& LP)
         }
 
     calc:
-        for (auto& task : light_tasks)
-        {
-            Target->phase_smap_spot_clear(get_context(task.context_id).cmd_list);
-            render_lights_shadowed_one(task);
-        }
+        co_await tmc::spawn_many(light_tasks | std::views::transform([this](auto& task) -> tmc::task<void> { return render_lights_shadowed_one(task); }));
 
         static xr_vector<light*> L_spot_s;
-
-        lights_tg->wait();
 
         for (auto& task : light_tasks)
         {
@@ -289,12 +278,12 @@ void CRender::render_lights_shadowed(light_Package& LP)
     }
 }
 
-void CRender::render_lights(light_Package& LP)
+tmc::task<void> CRender::render_lights(light_Package& LP)
 {
     XR_TRACY_ZONE_SCOPED();
 
     if (!LP.v_shadowed.empty())
-        render_lights_shadowed(LP);
+        co_await render_lights_shadowed(LP);
 
     PIX_EVENT(POINT_LIGHTS_ACCUM);
     // Point lighting (unshadowed, if left)

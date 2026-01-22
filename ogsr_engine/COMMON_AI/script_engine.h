@@ -29,7 +29,7 @@ class CScriptEngine : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CScriptEngine);
 
 private:
-    alignas(std::hardware_destructive_interference_size) std::optional<sol::state> m_virtual_machine;
+    alignas(TMC_CACHE_LINE_SIZE) std::optional<sol::state> m_virtual_machine;
 
     string_unordered_map<shared_str, shared_str> xray_scripts;
     string_unordered_map<shared_str, bool> no_files;

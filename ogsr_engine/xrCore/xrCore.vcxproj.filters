@@ -105,6 +105,9 @@
     <ClCompile Include="Xr_ini.cpp">
       <Filter>FS</Filter>
     </ClCompile>
+    <ClCompile Include="sleep.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
     <ClCompile Include="stream_reader.cpp">
       <Filter>FS\stream_reader</Filter>
     </ClCompile>
@@ -263,6 +266,9 @@
     </ClInclude>
     <ClInclude Include="xr_ini.h">
       <Filter>FS</Filter>
+    </ClInclude>
+    <ClInclude Include="sleep.h">
+      <Filter>Kernel</Filter>
     </ClInclude>
     <ClInclude Include="stream_reader.h">
       <Filter>FS\stream_reader</Filter>

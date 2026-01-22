@@ -11,8 +11,6 @@
 #include "../xrRender/dxWallMarkArray.h"
 #include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"
 
-#include "xr_task.h"
-
 #include "../../xr_3da/CustomHUD.h"
 #include "../../xr_3da/environment.h"
 #include "../../xr_3da/GameFont.h"
@@ -235,10 +233,6 @@ void CRender::destroy()
 
 void CRender::reset_begin()
 {
-    rain_tg->wait();
-    sun_tg->wait();
-    lights_tg->wait();
-
     // Update incremental shadowmap-visibility solver
     // BUG-ID: 10646
     for (auto* light : Lights_LastFrame)
@@ -309,7 +303,7 @@ tmc::task<void> CRender::OnCameraUpdated()
     co_await HOM.run_async();
 
     if (Details != nullptr)
-        Details->run_async();
+        co_await Details->run_async();
 }
 
 // Перед началом рендера мира --#SM+#-- +SecondVP+
@@ -537,22 +531,8 @@ void CRender::rmNormal(const CBackend& cmd_list) const
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CRender::CRender()
-{
-    rain_tg = &xr_task_group_get();
-
-    m_sun_cascades.resize(R__NUM_SUN_CASCADES);
-    sun_tg = &xr_task_group_get();
-
-    lights_tg = &xr_task_group_get();
-}
-
-CRender::~CRender()
-{
-    rain_tg->cancel_put();
-    sun_tg->cancel_put();
-    lights_tg->cancel_put();
-}
+CRender::CRender() { m_sun_cascades.resize(R__NUM_SUN_CASCADES); }
+CRender::~CRender() = default;
 
 void CRender::Statistics(CGameFont* _F)
 {

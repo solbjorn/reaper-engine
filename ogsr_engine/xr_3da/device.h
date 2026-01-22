@@ -204,7 +204,7 @@ public:
     tmc::task<void> OnCameraUpdated();
     tmc::task<bool> RenderBegin();
     void Clear();
-    void RenderEnd();
+    tmc::task<void> RenderEnd();
 
     void overdrawBegin();
     void overdrawEnd();
@@ -218,7 +218,7 @@ public:
     void ConnectToRender();
     tmc::task<void> Create();
     tmc::task<void> Run();
-    void Destroy();
+    tmc::task<void> Destroy();
     tmc::task<void> Reset(bool precache = true);
 
     tmc::task<void> Initialize();

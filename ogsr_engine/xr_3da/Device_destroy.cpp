@@ -21,10 +21,10 @@ void CRenderDevice::_Destroy(BOOL bKeepTextures)
     Memory.mem_compact();
 }
 
-void CRenderDevice::Destroy()
+tmc::task<void> CRenderDevice::Destroy()
 {
     if (!b_is_Ready)
-        return;
+        co_return;
 
     Log("Destroying Direct3D...");
 
@@ -33,7 +33,7 @@ void CRenderDevice::Destroy()
     _Destroy(FALSE);
 
     // real destroy
-    m_pRender->DestroyHW();
+    co_await m_pRender->DestroyHW();
 
     seqRender.clear();
     seqAppActivate.clear();

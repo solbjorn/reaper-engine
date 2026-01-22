@@ -14,7 +14,7 @@ public:
     void clear();
     void sort();
     void vis_prepare();
-    void vis_update();
+    tmc::task<void> vis_update();
 };
 
 #endif /* __XRRENDER_LIGHT_PACKAGE_H */

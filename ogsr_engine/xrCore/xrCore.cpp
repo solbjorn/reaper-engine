@@ -2,6 +2,10 @@
 //
 #include "stdafx.h"
 
+#include "xrCore.h"
+
+#include "sleep.h"
+
 #include <mmsystem.h>
 #include <objbase.h>
 
@@ -37,6 +41,7 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, 
             https://github.com/tebjan/TimerTool
         */
         timeBeginPeriod(1);
+        xr::detail::timer_create();
 
         strcpy_s(Params, sizeof(Params), GetCommandLine());
 
@@ -128,6 +133,8 @@ void xrCore::_destroy()
         xr_FS.reset();
 
         CoUninitialize();
+
+        xr::detail::timer_destroy();
         timeEndPeriod(1);
     }
 }

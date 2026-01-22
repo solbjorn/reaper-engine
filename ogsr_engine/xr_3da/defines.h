@@ -30,7 +30,7 @@ extern BOOL bDebug;
 // psDeviceFlags
 enum : u32
 {
-    /* 1ul << 0ul, */
+    rs_triple_buffering = 1u << 0u,
     rsClearBB = (1ul << 1ul),
     rsVSync = (1ul << 2ul),
     rsWireframe = (1ul << 3ul),

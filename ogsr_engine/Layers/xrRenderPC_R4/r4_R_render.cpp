@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include "../xrRender/FBasicVisual.h"
-#include "../xrRender/QueryHelper.h"
 
 #include "../../xr_3da/customhud.h"
 #include "../../xr_3da/igame_persistent.h"
@@ -153,8 +152,16 @@ tmc::task<void> CRender::Render()
     Lights.Update();
 
     auto main = co_await tmc::fork_clang(main_run());
-    rain_run();
-    sun_run();
+    auto rain = tmc::fork_group();
+    auto sun = tmc::fork_group();
+
+    const bool rain_active = rain_prepare();
+    if (rain_active)
+        co_await rain.fork_clang(rain_run());
+
+    const bool sun_active = sun_prepare();
+    if (sun_active)
+        co_await sun.fork_clang(sun_run());
 
     Target->phase_scene_prepare();
     co_await std::move(main);
@@ -223,12 +230,16 @@ tmc::task<void> CRender::Render()
 
         // level
         Target->phase_scene_begin();
+
         dsgraph.render_hud();
         dsgraph.render_lods();
-        if (Details)
-            Details->Render(dsgraph.cmd_list);
+
+        if (Details != nullptr)
+            co_await Details->Render(dsgraph.cmd_list);
+
         if (ps_r2_ls_flags.test(R2FLAG_TERRAIN_PREPASS))
             dsgraph.render_landscape(1, true);
+
         Target->phase_scene_end();
     }
 
@@ -244,16 +255,19 @@ tmc::task<void> CRender::Render()
     {
         PIX_EVENT(DEFER_FLUSH_OCCLUSION);
 
-        for (auto* light : Lights_LastFrame)
+        auto scope = co_await tmc::enter(xr::tmc_cpu_st_executor());
+
+        for (auto light : Lights_LastFrame)
         {
-            if (!light)
+            if (light == nullptr)
                 continue;
 
-            for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
-                light->svis[id].flushoccq();
+            for (auto& svis : light->svis)
+                svis.flushoccq();
         }
 
         Lights_LastFrame.clear();
+        co_await scope.exit();
     }
 
     // full screen pass to mark msaa-edge pixels in highest stencil bit
@@ -262,6 +276,8 @@ tmc::task<void> CRender::Render()
         PIX_EVENT(MARK_MSAA_EDGES);
         Target->mark_msaa_edges();
     }
+
+    co_await std::move(rain);
 
     if (rain_active)
         rain_sync();
@@ -317,10 +333,13 @@ tmc::task<void> CRender::Render()
     }
 
     // Directional light - sun
+    co_await std::move(sun);
+
     if (sun_active)
     {
         stats.l_visible++;
-        sun_sync();
+
+        co_await sun_sync();
         Target->accum_direct_blend();
     }
 
@@ -352,11 +371,13 @@ tmc::task<void> CRender::Render()
     // Lighting, dependant on OCCQ
     {
         PIX_EVENT(DEFER_LIGHT_OCCQ);
+
         Target->phase_accumulator(RCache);
 
-        LP_normal.vis_update();
+        co_await tmc::spawn(LP_normal.vis_update()).run_on(xr::tmc_cpu_st_executor());
         LP_normal.sort();
-        render_lights(LP_normal);
+
+        co_await render_lights(LP_normal);
     }
 
     if (o.ssfx_volumetric)
@@ -372,24 +393,4 @@ tmc::task<void> CRender::Render()
         Details->details_clear();
 
     VERIFY(dsgraph.mapDistort.empty() && dsgraph.mapHUDDistort.empty());
-}
-
-void CRender::render_forward()
-{
-    XR_TRACY_ZONE_SCOPED();
-
-    //******* Main render - second order geometry (the one, that doesn't support deffering)
-    //.todo: should be done inside "combine" with estimation of of luminance, tone-mapping, etc.
-    // level
-    auto& dsgraph = get_imm_context();
-
-    //	Igor: we don't want to render old lods on next frame.
-    dsgraph.mapLOD.clear();
-
-    if (g_hud->RenderActiveItemUIQuery())
-        dsgraph.render_hud_ui();
-
-    dsgraph.render_graph(1); // normal level, secondary priority
-    dsgraph.PortalTraverser.fade_render(); // faded-portals
-    dsgraph.render_sorted(); // strict-sorted geoms
 }

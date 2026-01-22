@@ -35,8 +35,12 @@ struct R_dsgraph_structure
     R_dsgraph::mapMatrixPasses_T mapMatrixPasses[2];
 
     R_dsgraph::map_sorted mapSorted;
+
+private:
     R_dsgraph::map_item mapHUD;
     R_dsgraph::map_lod mapLOD;
+
+public:
     R_dsgraph::map_sorted mapDistort;
     R_dsgraph::map_sorted mapHUDDistort;
     R_dsgraph::map_sorted mapHUDSorted;
@@ -50,6 +54,8 @@ struct R_dsgraph_structure
 
     xr_vector<CSector*> Sectors;
     xr_vector<CPortal*> Portals;
+
+private:
     CPortalTraverser PortalTraverser;
     xrXRC Sectors_xrc;
 
@@ -58,12 +64,11 @@ struct R_dsgraph_structure
     xr_multimap<float, R_dsgraph::mapMatrix_T::value_type*, std::greater<float>> matPasses;
     xr_vector<u32> lstLODgroups;
     xr_vector<ISpatial*> lstRenderables;
-    xr_vector<ISpatial*> lstSpatial;
-    xr_vector<dxRender_Visual*> lstVisuals;
 
     u32 counter_S{};
     u32 counter_D{};
 
+public:
     CBackend cmd_list{};
 
     void set_Feedback(R_feedback* V, u32 id)
@@ -92,8 +97,6 @@ struct R_dsgraph_structure
 
         lstLODgroups.clear();
         lstRenderables.clear();
-        lstSpatial.clear();
-        lstVisuals.clear();
 
         for (int i = 0; i < SHADER_PASSES_MAX; ++i)
         {
@@ -157,18 +160,20 @@ private:
     void pLandscape_0(R_dsgraph::_MatrixItemS& val);
     void pLandscape_1(R_dsgraph::_MatrixItemS& val);
 
+    void render_sorted();
+
 public:
     void render_graph(u32 _priority);
     void render_hud(bool NoPS = false);
     void render_hud_ui();
     void render_lods();
-    void render_sorted();
     void render_emissive(bool clear = true, bool renderHUD = false);
     void render_wmarks();
     void render_distort();
     void render_landscape(u32 pass, bool _clear);
     void render_water_ssr();
     void render_water();
+    void render_forward();
 };
 
 // r__dsgraph_build.cpp

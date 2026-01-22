@@ -135,12 +135,12 @@ tmc::task<void> CRenderTarget::phase_combine()
 
         // sun-params
         {
-            light* sun = (light*)RImplementation.Lights.sun._get();
+            auto& sun = *smart_cast<const light*>(RImplementation.Lights.sun._get());
             Fvector L_dir, L_clr;
             float L_spec;
-            L_clr.set(sun->color.r, sun->color.g, sun->color.b);
+            L_clr.set(sun.color.r, sun.color.g, sun.color.b);
             L_spec = u_diffuse2s(L_clr);
-            Device.mView.transform_dir(L_dir, sun->direction);
+            Device.mView.transform_dir(L_dir, sun.direction);
             L_dir.normalize();
 
             sunclr.set(L_clr.x, L_clr.y, L_clr.z, L_spec);
@@ -276,7 +276,8 @@ tmc::task<void> CRenderTarget::phase_combine()
         RCache.set_CullMode(CULL_CCW);
         RCache.set_Stencil(FALSE);
         RCache.set_ColorWriteEnable();
-        RImplementation.render_forward();
+        dsgraph.render_forward();
+
         if (g_pGamePersistent)
             g_pGamePersistent->OnRenderPPUI_main(); // PP-UI
     }

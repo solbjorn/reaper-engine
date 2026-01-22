@@ -836,7 +836,7 @@ void CCC_Register()
     CMD4(CCC_Float, "r2_sunshafts_value", &ps_r2_sun_shafts_value, 0.5, 2.0);
 
     CMD3(CCC_Mask, "rs_v_sync", &psDeviceFlags, rsVSync);
-    //	CMD3(CCC_Mask,		"rs_disable_objects_as_crows",&psDeviceFlags,	rsDisableObjectsAsCrows	);
+    CMD3(CCC_Mask, "rs_triple_buffering", &psDeviceFlags, rs_triple_buffering);
     CMD1(CCC_Screenmode, "rs_screenmode");
     CMD3(CCC_Mask, "rs_stats", &psDeviceFlags, rsStatistic);
     CMD4(CCC_Float, "rs_vis_distance", &psVisDistance, 0.4f, 1.5f);

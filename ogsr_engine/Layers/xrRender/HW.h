@@ -26,7 +26,7 @@ public:
     void DestroyD3D();
     tmc::task<void> CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight);
 
-    void DestroyDevice();
+    tmc::task<void> DestroyDevice();
     tmc::task<void> Reset(HWND wnd, u32& dwWidth, u32& dwHeight);
 
 private:
@@ -34,7 +34,7 @@ private:
 
     void selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed);
     u32 selectRefresh(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt);
-    void updateWindowProps(HWND hw);
+    void updateWindowProps(HWND wnd) const;
 
 public:
     void DumpVideoMemoryUsage() const;
@@ -68,6 +68,7 @@ public:
     bool ExtendedDoublesShaderInstructions;
 
 private:
+    void* waitable{};
     IDXGIAdapter3* m_pAdapter3{};
     ID3D11DeviceContext1* contexts_pool[R__NUM_CONTEXTS]{};
 
@@ -76,8 +77,8 @@ public:
 
     bool doPresentTest{};
 
-    void Present();
-    DeviceState GetDeviceState();
+    tmc::task<void> Present();
+    tmc::task<DeviceState> GetDeviceState();
 
     DXGI_RATIONAL selectRefresh(u32 dwWidth, u32 dwHeight, DXGI_FORMAT fmt);
 

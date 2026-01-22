@@ -416,3 +416,22 @@ void R_dsgraph_structure::render_landscape(u32 pass, bool _clear)
     if (_clear)
         mapLandscape.clear();
 }
+
+void R_dsgraph_structure::render_forward()
+{
+    XR_TRACY_ZONE_SCOPED();
+
+    //******* Main render - second order geometry (the one, that doesn't support deffering)
+    //.todo: should be done inside "combine" with estimation of of luminance, tone-mapping, etc.
+    // level
+
+    //	Igor: we don't want to render old lods on next frame.
+    mapLOD.clear();
+
+    if (g_hud->RenderActiveItemUIQuery())
+        render_hud_ui();
+
+    render_graph(1); // normal level, secondary priority
+    PortalTraverser.fade_render(); // faded-portals
+    render_sorted(); // strict-sorted geoms
+}

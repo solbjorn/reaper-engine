@@ -12,12 +12,19 @@
 #include "StateManager\dx10SamplerStateCache.h"
 #include "StateManager\dx10StateCache.h"
 
+#include "sleep.h"
+
 #include <dxgi1_6.h>
 
 namespace
 {
 void fill_vid_mode_list(CHW* _hw);
 void free_vid_mode_list();
+
+[[nodiscard]] constexpr u32 get_swapchain_flags(bool wnd, bool vrr)
+{
+    return DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH | (DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT * !!wnd) | (DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING * !!vrr);
+}
 } // namespace
 
 CHW HW;
@@ -101,7 +108,7 @@ void CHW::CreateD3D()
         hr = factory5->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &supports_vrr, sizeof(supports_vrr));
         m_SupportsVRR = SUCCEEDED(hr) && supports_vrr;
 
-        factory5->Release();
+        _RELEASE(factory5);
     }
     else
     {
@@ -162,10 +169,11 @@ tmc::task<void> CHW::CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight)
     // Back buffer
     sd.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
     sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    sd.BufferCount = 2;
+    sd.BufferCount = psDeviceFlags.test(rs_triple_buffering) ? 3 : 2;
 
-    // Minus sd_fullscreen front buffer
-    BackBufferCount = sd.BufferCount - 1;
+    // With the DXGI_SWAP_EFFECT_FLIP_DISCARD mode, only the 0th back buffer
+    // is accessible to the application.
+    BackBufferCount = 1;
 
     // Multisample
     sd.SampleDesc.Count = 1;
@@ -188,10 +196,7 @@ tmc::task<void> CHW::CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight)
 
     //	Additional set up
     sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-
-    if (m_SupportsVRR)
-        sd.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+    sd.Flags = get_swapchain_flags(bWindowed, m_SupportsVRR);
 
     UINT create_device_flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 #ifdef DEBUG
@@ -229,14 +234,31 @@ tmc::task<void> CHW::CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight)
         R_CHK(pDevice->CreateDeferredContext1(0, &contexts_pool[id]));
 
     // create swapchain
+    auto scope = co_await tmc::enter(xr::tmc_cpu_st_executor());
     R_CHK(m_pFactory->CreateSwapChainForHwnd(pDevice, m_hWnd, &sd, &sd_fullscreen, nullptr, &m_pSwapChain));
+    co_await scope.exit();
 
-    // setup colorspace
     IDXGISwapChain3* swapchain3;
     R_CHK(m_pSwapChain->QueryInterface(IID_PPV_ARGS(&swapchain3)));
-    R_CHK(swapchain3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709));
-    _RELEASE(swapchain3);
 
+    // setup colorspace
+    R_CHK(swapchain3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709));
+
+    if (bWindowed)
+    {
+        R_CHK(swapchain3->SetMaximumFrameLatency(sd.BufferCount - 1));
+        waitable = swapchain3->GetFrameLatencyWaitableObject();
+    }
+    else
+    {
+        IDXGIDevice1* dxgi;
+        R_CHK(pDevice->QueryInterface(IID_PPV_ARGS(&dxgi)));
+
+        R_CHK(dxgi->SetMaximumFrameLatency(sd.BufferCount - 1));
+        _RELEASE(dxgi);
+    }
+
+    _RELEASE(swapchain3);
     _SHOW_REF("* CREATE: DeviceREF:", pDevice);
 
     size_t memory = Desc.DedicatedVideoMemory;
@@ -252,7 +274,7 @@ tmc::task<void> CHW::CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight)
     imgui_init();
 }
 
-void CHW::DestroyDevice()
+tmc::task<void> CHW::DestroyDevice()
 {
     imgui_shutdown();
 
@@ -262,9 +284,16 @@ void CHW::DestroyDevice()
     BSManager.ClearStateArray();
     SSManager.ClearStateArray();
 
+    if (waitable != nullptr)
+        CloseHandle(waitable);
+
     // Must switch to windowed mode to release swap chain
     if (!m_ChainDescFullscreen.Windowed)
-        m_pSwapChain->SetFullscreenState(FALSE, nullptr);
+    {
+        auto scope = co_await tmc::enter(xr::tmc_cpu_st_executor());
+        m_pSwapChain->SetFullscreenState(false, nullptr);
+        co_await scope.exit();
+    }
 
     _SHOW_REF("refCount:m_pSwapChain", m_pSwapChain);
     _RELEASE(m_pSwapChain);
@@ -293,7 +322,13 @@ tmc::task<void> CHW::Reset(HWND wnd, u32& dwWidth, u32& dwHeight)
     BOOL bWindowed = (g_screenmode != 2);
     cd_fs.Windowed = bWindowed;
 
-    m_pSwapChain->SetFullscreenState(!bWindowed, nullptr);
+    if (!bWindowed)
+    {
+        auto scope = co_await tmc::enter(xr::tmc_cpu_st_executor());
+        m_pSwapChain->SetFullscreenState(true, nullptr);
+        co_await scope.exit();
+    }
+
     selectResolution(cd.Width, cd.Height, bWindowed);
 
     if (bWindowed)
@@ -315,19 +350,16 @@ tmc::task<void> CHW::Reset(HWND wnd, u32& dwWidth, u32& dwHeight)
 tmc::task<void> CHW::reset_st(HWND wnd)
 {
     const auto& cd = m_ChainDesc;
-    DXGI_MODE_DESC mode{};
+    const auto& fs = m_ChainDescFullscreen;
 
+    DXGI_MODE_DESC mode{};
     mode.Width = cd.Width;
     mode.Height = cd.Height;
     mode.Format = cd.Format;
-    mode.RefreshRate = m_ChainDescFullscreen.RefreshRate;
+    mode.RefreshRate = fs.RefreshRate;
     CHK_DX(m_pSwapChain->ResizeTarget(&mode));
 
-    u32 flags{DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH};
-    if (m_SupportsVRR)
-        flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
-
-    CHK_DX(m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, flags));
+    CHK_DX(m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, get_swapchain_flags(fs.Windowed, m_SupportsVRR)));
     updateWindowProps(wnd);
 
     co_return;
@@ -415,21 +447,13 @@ tmc::task<void> CHW::OnAppActivate()
     if (m_pSwapChain == nullptr || m_ChainDescFullscreen.Windowed)
         co_return;
 
-    co_await tmc::spawn([](auto wnd) -> tmc::task<void> {
-        ShowWindow(wnd, SW_RESTORE);
-        co_return;
-    }(m_hWnd))
-        .run_on(xr::tmc_cpu_st_executor());
+    co_await tmc::resume_on(xr::tmc_cpu_st_executor());
 
+    ShowWindow(m_hWnd, SW_RESTORE);
     m_pSwapChain->SetFullscreenState(true, nullptr);
 
     const auto& cd = m_ChainDesc;
-
-    u32 flags{DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH};
-    if (m_SupportsVRR)
-        flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
-
-    m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, flags);
+    m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, get_swapchain_flags(false, m_SupportsVRR));
 }
 
 tmc::task<void> CHW::OnAppDeactivate()
@@ -437,21 +461,14 @@ tmc::task<void> CHW::OnAppDeactivate()
     if (m_pSwapChain == nullptr || m_ChainDescFullscreen.Windowed)
         co_return;
 
+    co_await tmc::resume_on(xr::tmc_cpu_st_executor());
+
     m_pSwapChain->SetFullscreenState(false, nullptr);
 
     const auto& cd = m_ChainDesc;
+    m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, get_swapchain_flags(false, m_SupportsVRR));
 
-    u32 flags{DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH};
-    if (m_SupportsVRR)
-        flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
-
-    m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, flags);
-
-    co_await tmc::spawn([](auto wnd) -> tmc::task<void> {
-        ShowWindow(wnd, SW_MINIMIZE);
-        co_return;
-    }(m_hWnd))
-        .run_on(xr::tmc_cpu_st_executor());
+    ShowWindow(m_hWnd, SW_MINIMIZE);
 }
 
 void CHW::DumpVideoMemoryUsage() const
@@ -476,7 +493,7 @@ void CHW::DumpVideoMemoryUsage() const
     }
 }
 
-void CHW::updateWindowProps(HWND m_hWnd)
+void CHW::updateWindowProps(HWND m_hWnd) const
 {
     BOOL bWindowed = g_screenmode != 2;
     LONG_PTR dwWindowStyle = 0;
@@ -615,13 +632,15 @@ void fill_vid_mode_list(CHW* _hw)
 #endif // DEBUG
     }
 }
+
+constexpr DXGI_PRESENT_PARAMETERS update_whole{};
 } // namespace
 
-void CHW::Present()
+tmc::task<void> CHW::Present()
 {
     XR_TRACY_ZONE_SCOPED();
 
-    UINT present_flags = 0;
+    u32 present_flags{DXGI_PRESENT_DO_NOT_WAIT};
     bool use_vsync = !!psDeviceFlags.test(rsVSync);
     UINT present_interval = (use_vsync) ? 1 : 0;
 
@@ -630,38 +649,59 @@ void CHW::Present()
     if (is_windowed && !use_vsync && m_SupportsVRR)
         present_flags |= DXGI_PRESENT_ALLOW_TEARING;
 
-    if (!Device.m_SecondViewport.IsSVPFrame() && !Device.m_SecondViewport.m_bCamReady)
+    // --#SM+#-- +SecondVP+ Не выводим кадр из второго вьюпорта на экран (на практике у нас экранная картинка обновляется минимум
+    // в два раза реже) [don't flush image into display for SecondVP-frame]
+    if (Device.m_SecondViewport.IsSVPFrame() || Device.m_SecondViewport.m_bCamReady)
+        co_return;
+
+    HRESULT res;
+
+    Device.Statistic->RenderDUMP_Wait_P.Begin();
+
+    std::__libcpp_thread_poll_with_backoff(
+        [this, &res, present_interval, present_flags] -> bool {
+            res = m_pSwapChain->Present1(present_interval, present_flags, &update_whole);
+            return res != DXGI_ERROR_WAS_STILL_DRAWING;
+        },
+        xr::backoff, std::chrono::milliseconds{ps_r2_wait_timeout});
+
+    Device.Statistic->RenderDUMP_Wait_P.End();
+
+    switch (res)
     {
-        Device.Statistic->RenderDUMP_Wait_P.Begin();
-
-        // --#SM+#-- +SecondVP+ Не выводим кадр из второго вьюпорта на экран (на практике у нас экранная картинка обновляется минимум в два
-        // раза реже) [don't flush image into display for SecondVP-frame]
-        switch (m_pSwapChain->Present(present_interval, present_flags))
-        {
-        case DXGI_STATUS_OCCLUDED:
-        case DXGI_ERROR_DEVICE_REMOVED: doPresentTest = true; break;
-        }
-
-        Device.Statistic->RenderDUMP_Wait_P.End();
+    case DXGI_STATUS_OCCLUDED:
+    case DXGI_ERROR_DEVICE_REMOVED: doPresentTest = true; break;
     }
 
-    CurrentBackBuffer = (CurrentBackBuffer + 1) % BackBufferCount;
+    if (++CurrentBackBuffer == BackBufferCount)
+        CurrentBackBuffer = 0;
 }
 
-DeviceState CHW::GetDeviceState()
+tmc::task<DeviceState> CHW::GetDeviceState()
 {
-    if (!doPresentTest)
-        return DeviceState::Normal;
+    XR_TRACY_ZONE_SCOPED();
 
-    switch (m_pSwapChain->Present(0, DXGI_PRESENT_TEST))
+    if (waitable == nullptr)
+        goto out;
+
+    Device.Statistic->RenderDUMP_Wait_W.Begin();
+    std::__libcpp_thread_poll_with_backoff([this] -> bool { return WaitForSingleObjectEx(waitable, 0, true) == WAIT_OBJECT_0; }, xr::backoff,
+                                           std::chrono::milliseconds{ps_r2_wait_timeout});
+    Device.Statistic->RenderDUMP_Wait_W.End();
+
+out:
+    if (!doPresentTest)
+        co_return DeviceState::Normal;
+
+    switch (m_pSwapChain->Present1(0, DXGI_PRESENT_TEST, &update_whole))
     {
     case S_OK: doPresentTest = false; break;
     case DXGI_STATUS_OCCLUDED:
         // Do not render until we become visible again
-        return DeviceState::Lost;
-    case DXGI_ERROR_DEVICE_RESET: return DeviceState::NeedReset;
+        co_return DeviceState::Lost;
+    case DXGI_ERROR_DEVICE_RESET: co_return DeviceState::NeedReset;
     case DXGI_ERROR_DEVICE_REMOVED: FATAL("Graphics driver was updated or GPU was physically removed from computer.\nPlease, restart the game.");
     }
 
-    return DeviceState::Normal;
+    co_return DeviceState::Normal;
 }

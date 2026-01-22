@@ -24,7 +24,7 @@ public:
 
     //	Destroy
     virtual void OnDeviceDestroy(BOOL bKeepTextures);
-    virtual void DestroyHW();
+    tmc::task<void> DestroyHW() override;
     tmc::task<void> Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, f32& fWidth_2, f32& fHeight_2) override;
     //	Init
     virtual void SetupStates();
@@ -42,12 +42,12 @@ public:
     void ResourcesDumpMemoryUsage() const override;
 
     //	Device state
-    virtual DeviceState GetDeviceState();
+    tmc::task<DeviceState> GetDeviceState() override;
     virtual BOOL GetForceGPU_REF();
     virtual u32 GetCacheStatPolys();
     virtual void Begin() override;
     virtual void Clear() override;
-    virtual void End() override;
+    tmc::task<void> End() override;
     virtual void ClearTarget() override;
     virtual void SetCacheXform(Fmatrix& mView, Fmatrix& mProject);
 

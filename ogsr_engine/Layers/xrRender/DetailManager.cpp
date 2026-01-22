@@ -11,8 +11,6 @@
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/environment.h"
 
-#include "xr_task.h"
-
 #include <xmmintrin.h>
 
 //--------------------------------------------------- Decompression
@@ -64,8 +62,6 @@ void CDetailManager::SSwingValue::lerp(const SSwingValue& A, const SSwingValue& 
 
 CDetailManager::CDetailManager()
 {
-    tg = &xr_task_group_get();
-
     // KD: variable detail radius
     dm_size = dm_current_size;
     dm_cache_line = dm_current_cache_line;
@@ -92,8 +88,6 @@ CDetailManager::CDetailManager()
 
 CDetailManager::~CDetailManager()
 {
-    tg->cancel_put();
-
     if (dtFS)
     {
         FS.r_close(dtFS);
@@ -357,14 +351,14 @@ void CDetailManager::UpdateVisibleM(const Fvector& EYE)
     Device.Statistic->RenderDUMP_DT_VIS.End();
 }
 
-void CDetailManager::Render(CBackend& cmd_list, float fade_distance, const Fvector* light_position)
+tmc::task<void> CDetailManager::Render(CBackend& cmd_list, f32 fade_distance, const Fvector* light_position)
 {
     if (!RImplementation.Details || !dtFS || !psDeviceFlags.is(rsDetails))
-        return;
+        co_return;
 
     XR_TRACY_ZONE_SCOPED();
 
-    tg->wait();
+    co_await event;
 
     Device.Statistic->RenderDUMP_DT_Render.Begin();
 
@@ -383,42 +377,53 @@ void CDetailManager::Render(CBackend& cmd_list, float fade_distance, const Fvect
 
 u32 reset_frame = 0;
 
-void CDetailManager::run_async()
+tmc::task<void> CDetailManager::run_async()
 {
     // костыли чтоб в 3д прицелах не мерцала трава. Фикс не совсем идеальный, иногда всё равно проскакивает, но не критично.
     if (!(Device.m_SecondViewport.IsSVPFrame() || !Device.m_SecondViewport.IsSVPActive() || (((Device.dwFrame - 1) % g_3dscopes_fps_factor) != 0)))
-        return;
+        co_return;
+
+    if (!psDeviceFlags.is(rsDetails))
+        co_return;
+
+    if (reset_frame == Device.dwFrame)
+        co_return;
+
+    if (RImplementation.Details == nullptr)
+        co_return; // possibly deleted
+
+    if (dtFS == nullptr)
+        co_return;
+
+    event.reset();
+    tmc::spawn(calc_async()).detach();
+}
+
+tmc::task<void> CDetailManager::calc_async()
+{
+    XR_TRACY_ZONE_SCOPED();
 
     // Заметка: сначала рендерится фрейм для 3д прицела, а уже следующий фрейм для всего мира вне прицела
-    tg->run([this] {
-        if (reset_frame == Device.dwFrame)
-            return;
-        if (!RImplementation.Details)
-            return; // possibly deleted
-        if (!dtFS)
-            return;
-        if (!psDeviceFlags.is(rsDetails))
-            return;
 
-        XR_TRACY_ZONE_SCOPED();
+    if (need_init) [[unlikely]]
+    {
+        cache_Initialize();
+        need_init = false;
+    }
 
-        if (need_init) [[unlikely]]
-        {
-            cache_Initialize();
-            need_init = false;
-        }
+    Fvector EYE = Device.vCameraPosition;
 
-        Fvector EYE = Device.vCameraPosition;
+    const int s_x = iFloor(EYE.x / dm_slot_size + .5f);
+    const int s_z = iFloor(EYE.z / dm_slot_size + .5f);
 
-        const int s_x = iFloor(EYE.x / dm_slot_size + .5f);
-        const int s_z = iFloor(EYE.z / dm_slot_size + .5f);
+    Device.Statistic->RenderDUMP_DT_Cache.Begin();
+    cache_Update(s_x, s_z, EYE);
+    Device.Statistic->RenderDUMP_DT_Cache.End();
 
-        Device.Statistic->RenderDUMP_DT_Cache.Begin();
-        cache_Update(s_x, s_z, EYE);
-        Device.Statistic->RenderDUMP_DT_Cache.End();
+    UpdateVisibleM(EYE);
 
-        UpdateVisibleM(EYE);
-    });
+    event.set();
+    co_return;
 }
 
 void CDetailManager::details_clear()

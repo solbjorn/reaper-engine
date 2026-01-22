@@ -106,9 +106,6 @@ public:
     bool m_bFirstFrameAfterReset{}; // Determines weather the frame is the first after resetting device.
 
 private:
-    bool sun_active{};
-    bool rain_active{};
-
     ctx_id_t rain_context_id{R__INVALID_CTX_ID};
     sector_id_t largest_sector_id{INVALID_SECTOR_ID};
 
@@ -120,29 +117,25 @@ private:
     void LoadSWIs(CStreamReader* fs);
     void Load3DFluid();
 
-public:
-    void render_forward();
-
-private:
     void render_menu();
-
-    void calculate_sun(sun::cascade& cascade);
-    void accumulate_cascade(u32 cascade_ind);
-
     tmc::task<void> main_run();
 
-    xr_task_group* rain_tg{};
-    void rain_run();
+    [[nodiscard]] bool rain_prepare();
+    tmc::task<void> rain_run();
     void rain_sync();
 
-    xr_task_group* sun_tg{};
-    void sun_run();
-    void sun_sync();
+    [[nodiscard]] bool sun_prepare();
 
-    xr_task_group* lights_tg{};
-    void render_lights_shadowed_one(light_ctx& task);
-    void render_lights_shadowed(light_Package& LP);
-    void render_lights(light_Package& LP);
+    tmc::task<void> sun_run();
+    void calculate_cascade(sun::cascade& cascade);
+    tmc::task<void> render_cascade(sun::cascade& cascade);
+
+    tmc::task<void> accumulate_cascade(u32 cascade_ind);
+    tmc::task<void> sun_sync();
+
+    tmc::task<void> render_lights_shadowed_one(light_ctx& task);
+    tmc::task<void> render_lights_shadowed(light_Package& LP);
+    tmc::task<void> render_lights(light_Package& LP);
 
 public:
     ShaderElement* rimp_select_sh_static(dxRender_Visual* pVisual, float cdist_sq, u32 phase);

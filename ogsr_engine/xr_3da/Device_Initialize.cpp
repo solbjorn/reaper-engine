@@ -12,6 +12,8 @@ tmc::task<void> CRenderDevice::Initialize()
     TimerGlobal.Start();
     TimerMM.Start();
 
+    co_await tmc::resume_on(xr::tmc_cpu_st_executor());
+
     // Unless a substitute hWnd has been specified, create a window to render into
     if (!m_hWnd)
     {
@@ -42,6 +44,4 @@ tmc::task<void> CRenderDevice::Initialize()
     m_dwWindowStyle = u32(GetWindowLongPtr(m_hWnd, GWL_STYLE));
     GetWindowRect(m_hWnd, &m_rcWindowBounds);
     GetClientRect(m_hWnd, &m_rcWindowClient);
-
-    co_return;
 }

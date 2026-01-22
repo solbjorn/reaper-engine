@@ -72,6 +72,7 @@ public:
     CStatTimer RenderCALC_HOM; // HOM rendering
     CStatTimer Animation; // skeleton calculation
     CStatTimer RenderDUMP; // actual primitive rendering
+    CStatTimer RenderDUMP_Wait_W; // ...waiting for the swap chain waitable object
     CStatTimer RenderDUMP_Wait; // ...waiting something back (queries results, etc.)
     CStatTimer RenderDUMP_Wait_P; // ...waiting for SwapChain->Present()
     CStatTimer RenderDUMP_RT; // ...render-targets

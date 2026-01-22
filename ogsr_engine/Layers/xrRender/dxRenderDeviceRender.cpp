@@ -72,10 +72,10 @@ void dxRenderDeviceRender::OnDeviceDestroy(BOOL bKeepTextures)
     Vertex.Destroy();
 }
 
-void dxRenderDeviceRender::DestroyHW()
+tmc::task<void> dxRenderDeviceRender::DestroyHW()
 {
     xr_delete(Resources);
-    HW.DestroyDevice();
+    co_await HW.DestroyDevice();
 }
 
 tmc::task<void> dxRenderDeviceRender::Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, f32& fWidth_2, f32& fHeight_2)
@@ -213,11 +213,9 @@ void dxRenderDeviceRender::ResourcesGetMemoryUsage(xr::render_memory_usage& usag
 }
 
 void dxRenderDeviceRender::ResourcesDumpMemoryUsage() const { Resources->_DumpMemoryUsage(); }
-
-DeviceState dxRenderDeviceRender::GetDeviceState() { return HW.GetDeviceState(); }
+tmc::task<DeviceState> dxRenderDeviceRender::GetDeviceState() { co_return co_await tmc::spawn(HW.GetDeviceState()).run_on(xr::tmc_cpu_st_executor()); }
 
 BOOL dxRenderDeviceRender::GetForceGPU_REF() { return HW.Caps.bForceGPU_REF; }
-
 u32 dxRenderDeviceRender::GetCacheStatPolys() { return RCache.stat.polys; }
 
 void dxRenderDeviceRender::Begin()
@@ -249,7 +247,7 @@ void dxRenderDeviceRender::Clear()
         RCache.ClearRT(RCache.get_RT(), {});
 }
 
-void dxRenderDeviceRender::End()
+tmc::task<void> dxRenderDeviceRender::End()
 {
     XR_TRACY_ZONE_SCOPED();
 
@@ -264,7 +262,7 @@ void dxRenderDeviceRender::End()
     // we're done with rendering
     cleanup_contexts();
 
-    HW.Present();
+    co_await tmc::spawn(HW.Present()).run_on(xr::tmc_cpu_st_executor());
 }
 
 void dxRenderDeviceRender::ClearTarget()
@@ -281,7 +279,7 @@ void dxRenderDeviceRender::SetCacheXform(Fmatrix& mView, Fmatrix& mProject)
     }
 }
 
-IResourceManager* dxRenderDeviceRender::GetResourceManager() const { return smart_cast<IResourceManager*>(Resources); }
+IResourceManager* dxRenderDeviceRender::GetResourceManager() const { return static_cast<IResourceManager*>(Resources); }
 
 ctx_id_t dxRenderDeviceRender::alloc_context()
 {

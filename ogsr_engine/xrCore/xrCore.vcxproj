@@ -167,6 +167,7 @@
     <ClCompile Include="arc_sqfs.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="Xr_ini.cpp" />
+    <ClCompile Include="sleep.cpp" />
     <ClCompile Include="stream_reader.cpp" />
     <ClCompile Include="file_stream_reader.cpp" />
     <ClCompile Include="xrMemory.cpp" />
@@ -226,6 +227,7 @@
     <ClInclude Include="LocatorAPI_defs.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="xr_ini.h" />
+    <ClInclude Include="sleep.h" />
     <ClInclude Include="stream_reader.h" />
     <ClInclude Include="stream_reader_inline.h" />
     <ClInclude Include="file_stream_reader.h" />

@@ -185,7 +185,6 @@ extern float ps_r2_dhemi_light_scale; // 1.f
 extern float ps_r2_dhemi_light_flow; // .1f
 extern int ps_r2_dhemi_count; // 5
 extern float ps_r2_slight_fade; // 1.f
-extern int ps_r2_wait_sleep;
 extern int ps_r2_wait_timeout;
 
 extern float ps_r2_lt_smooth;

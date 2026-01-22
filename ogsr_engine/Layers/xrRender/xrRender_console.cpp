@@ -143,7 +143,6 @@ float ps_r2_dhemi_sky_scale = 0.08f; // 1.5f
 float ps_r2_dhemi_light_scale = 0.2f;
 float ps_r2_dhemi_light_flow = 0.1f;
 int ps_r2_dhemi_count = 5; // 5
-int ps_r2_wait_sleep = 0;
 int ps_r2_wait_timeout = 500;
 
 float ps_r2_lt_smooth = 1.f; // 1.f
@@ -835,7 +834,6 @@ void xrRender_initconsole()
     psDeviceFlags2.set(rsOptShadowGeom, TRUE);
     CMD3(CCC_Mask, "r__optimize_shadow_geom", &psDeviceFlags2, rsOptShadowGeom);
 
-    CMD4(CCC_Integer, "r2_wait_sleep", &ps_r2_wait_sleep, 0, 1);
     CMD4(CCC_Integer, "r2_wait_timeout", &ps_r2_wait_timeout, 100, 1000);
 
 #ifndef MASTER_GOLD

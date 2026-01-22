@@ -25,7 +25,7 @@ float refresh_rate = 0;
 
 tmc::task<bool> CRenderDevice::RenderBegin()
 {
-    switch (m_pRender->GetDeviceState())
+    switch (co_await m_pRender->GetDeviceState())
     {
     case DeviceState::Normal: break;
 
@@ -39,7 +39,7 @@ tmc::task<bool> CRenderDevice::RenderBegin()
         co_await Reset();
         co_return false;
 
-    default: R_ASSERT(0);
+    default: NODEFAULT;
     }
 
     m_pRender->Begin();
@@ -50,7 +50,7 @@ tmc::task<bool> CRenderDevice::RenderBegin()
 
 void CRenderDevice::Clear() { m_pRender->Clear(); }
 
-void CRenderDevice::RenderEnd()
+tmc::task<void> CRenderDevice::RenderEnd()
 {
     if (dwPrecacheFrame)
     {
@@ -73,7 +73,7 @@ void CRenderDevice::RenderEnd()
     }
 
     g_bRendering = false;
-    m_pRender->End();
+    co_await m_pRender->End();
 
     vCameraDirectionSaved = vCameraDirection;
 }
@@ -272,7 +272,7 @@ tmc::task<void> CRenderDevice::ProcessFrame()
             if (psDeviceFlags.test(rsHWInfo))
                 Statistic->Show_HW_Stats();
 
-            RenderEnd();
+            co_await RenderEnd();
         }
 
         g_bEnableStatGather = true;

@@ -9,8 +9,6 @@
 #include "detailformat.h"
 #include "detailmodel.h"
 
-class xr_task_group;
-
 constexpr inline int dm_max_decompress{7};
 constexpr inline int dm_cache1_count{4}; //
 constexpr inline int dm_max_objects{64};
@@ -150,7 +148,7 @@ private:
     void UpdateVisibleM(const Fvector& EYE);
     void UpdateVisibleS();
 
-    void Render(CBackend& cmd_list, float fade_distance, const Fvector* light_position);
+    tmc::task<void> Render(CBackend& cmd_list, f32 fade_distance, const Fvector* light_position);
 
     // Hardware processor
     ref_geom hw_Geom{};
@@ -186,11 +184,11 @@ public:
     void Unload();
 
     // PHASE_NORMAL, regular scene
-    void Render(CBackend& cmd_list) { Render(cmd_list, fade_scene, nullptr); }
+    tmc::task<void> Render(CBackend& cmd_list) { co_await Render(cmd_list, fade_scene, nullptr); }
     // PHASE_SMAP, shadows from sun cascades
-    void Render(CBackend& cmd_list, float fade_distance) { Render(cmd_list, fade_distance, nullptr); }
+    tmc::task<void> Render(CBackend& cmd_list, f32 fade_distance) { co_await Render(cmd_list, fade_distance, nullptr); }
     // PHASE_SMAP, shadows from lights
-    void Render(CBackend& cmd_list, const Fvector& light_position) { Render(cmd_list, fade_light, &light_position); }
+    tmc::task<void> Render(CBackend& cmd_list, const Fvector& light_position) { co_await Render(cmd_list, fade_light, &light_position); }
 
 private:
     // PHASE_NORMAL, regular scene
@@ -198,10 +196,13 @@ private:
     // PHASE_SMAP, shadows from lights
     static constexpr float fade_light = -1.f;
 
-    xr_task_group* tg{};
+    tmc::manual_reset_event event{true};
+
+    tmc::task<void> calc_async();
 
 public:
-    void run_async();
+    tmc::task<void> run_async();
+
     bool need_init{};
 
     CDetailManager();

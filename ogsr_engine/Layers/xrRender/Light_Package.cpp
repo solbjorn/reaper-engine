@@ -11,7 +11,7 @@ void light_Package::clear()
 
 void light_Package::sort()
 {
-    const auto pred_light_cmp = [](const light* l1, const light* l2) {
+    constexpr auto pred_light_cmp = [](const light* l1, const light* l2) {
         return l1->range > l2->range; // sort by range
     };
 
@@ -41,7 +41,7 @@ void light_Package::vis_prepare()
 
 // Получаем ответы от запросов к окклюдеру в обратном порядке, от
 // самого свежего запроса, к самому старому. См. комментарии выше.
-void light_Package::vis_update()
+tmc::task<void> light_Package::vis_update()
 {
     XR_TRACY_ZONE_SCOPED();
 
@@ -69,4 +69,6 @@ void light_Package::vis_update()
             L->vis_update();
         }
     }
+
+    co_return;
 }
