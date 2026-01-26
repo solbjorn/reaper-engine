@@ -36,11 +36,11 @@ public:
     ~CPsyDog() override;
 
     virtual void Load(LPCSTR section);
-    virtual BOOL net_Spawn(CSE_Abstract* dc);
+    tmc::task<bool> net_Spawn(CSE_Abstract* dc) override;
     virtual void reinit();
     virtual void reload(LPCSTR section);
-    virtual void net_Destroy();
-    virtual void Die(CObject* who);
+    tmc::task<void> net_Destroy() override;
+    tmc::task<void> Die(CObject* who) override;
 
     virtual void Think();
     //				void	on_phantom_appear	();
@@ -99,12 +99,12 @@ public:
     CPsyDogPhantom();
     ~CPsyDogPhantom() override;
 
-    virtual BOOL net_Spawn(CSE_Abstract* dc);
+    tmc::task<bool> net_Spawn(CSE_Abstract* dc) override;
     virtual void Think();
     virtual void Hit(SHit* pHDS);
 
-    virtual void net_Destroy();
-    virtual void Die(CObject* who);
+    tmc::task<void> net_Destroy() override;
+    tmc::task<void> Die(CObject* who) override;
 
     void destroy_from_parent();
 

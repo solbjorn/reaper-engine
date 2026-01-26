@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "EliteDetector.h"
+
 #include "player_hud.h"
 #include "ui/UIXmlInit.h"
 #include "ui/UIStatic.h"
@@ -245,12 +246,13 @@ void CScientificDetector::UpfateWork()
     m_ui->update();
 }
 
-void CScientificDetector::shedule_Update(u32 dt)
+tmc::task<void> CScientificDetector::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
 
     if (!H_Parent())
-        return;
+        co_return;
+
     Fvector P;
     P.set(H_Parent()->Position());
     m_zones.feel_touch_update(P, m_fAfDetectRadius);

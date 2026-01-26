@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "weaponpistol.h"
+
 #include "ParticlesObject.h"
 #include "actor.h"
 
@@ -14,9 +15,9 @@ CWeaponPistol::CWeaponPistol() : CWeaponCustomPistol{}
 
 CWeaponPistol::~CWeaponPistol() = default;
 
-void CWeaponPistol::net_Destroy()
+tmc::task<void> CWeaponPistol::net_Destroy()
 {
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
 
     // sounds
     HUD_SOUND::DestroySound(sndClose);

@@ -161,7 +161,7 @@ SBullet& CBulletManager::AddBullet(const Fvector& position, const Fvector& direc
     return bullet;
 }
 
-void CBulletManager::UpdateWorkload()
+tmc::task<void> CBulletManager::UpdateWorkload()
 {
     u32 delta_time = Device.dwTimeDelta + m_dwTimeRemainder;
     u32 step_num = delta_time / m_dwStepTime;
@@ -198,6 +198,8 @@ void CBulletManager::UpdateWorkload()
             }
         }
     }
+
+    co_return;
 }
 
 bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, SBullet* bullet, u32 delta_time)
@@ -401,15 +403,16 @@ void CBulletManager::Render()
     UIRender->CacheSetCullMode(IUIRender::cmCCW);
 }
 
-void CBulletManager::CommitRenderSet() // @ the end of frame
+tmc::task<void> CBulletManager::CommitRenderSet() // @ the end of frame
 {
     m_BulletsRendered = m_Bullets;
-    // Msg("!![%s] size of m_BulletsRendered: [%u], m_Bullets: [%u], m_events: [%u]", __FUNCTION__, m_BulletsRendered.size(), m_Bullets.size(), m_Events.size());
+
     if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtBullets))
         Device.add_to_seq_parallel(CallMe::fromMethod<&CBulletManager::UpdateWorkload>(this));
     else
-        CBulletManager::UpdateWorkload();
+        co_await UpdateWorkload();
 }
+
 void CBulletManager::CommitEvents() // @ the start of frame
 {
     for (auto& E : m_Events)

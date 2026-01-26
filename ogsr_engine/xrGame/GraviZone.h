@@ -26,8 +26,8 @@ public:
 
     virtual void Load(LPCSTR section);
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual void net_Relcase(CObject* O);
 
     // воздействие зоной на объект
@@ -38,7 +38,7 @@ public:
     virtual void AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist);
     virtual void ThrowInCenter(Fvector& C);
     virtual bool CheckAffectField(CPhysicsShellHolder* GO, float dist_to_radius);
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
     virtual bool BlowoutState();
     virtual bool IdleState();
 

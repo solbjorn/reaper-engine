@@ -244,12 +244,12 @@ tmc::task<void> CDialogHolder::OnFrame()
     co_return;
 }
 
-void CDialogHolder::shedule_Update(u32 dt)
+tmc::task<void> CDialogHolder::shedule_Update(u32 dt)
 {
-    ISheduled::shedule_Update(dt);
+    co_await ISheduled::shedule_Update(dt);
 
     if (m_dialogsToRender.empty())
-        return;
+        co_return;
 
     m_dialogsToRender.erase(std::remove_if(m_dialogsToRender.begin(), m_dialogsToRender.end(), [](const auto& it) { return !it.enabled; }), m_dialogsToRender.end());
 }

@@ -20,7 +20,7 @@ public:
 
     virtual void Load(LPCSTR section);
 
-    void OnEvent(NET_Packet& P, u16 type);
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
 
     virtual void Hit(SHit* pHDS);
 

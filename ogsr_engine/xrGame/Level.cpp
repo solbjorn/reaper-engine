@@ -162,14 +162,6 @@ CLevel::~CLevel()
     sound_registry.clear();
     sound_registry_defer.clear();
 
-    // unload static sounds
-    for (u32 i = 0; i < static_Sounds.size(); ++i)
-    {
-        static_Sounds[i]->destroy();
-        xr_delete(static_Sounds[i]);
-    }
-    static_Sounds.clear();
-
     xr_delete(m_level_sound_manager);
     xr_delete(m_space_restriction_manager);
     xr_delete(m_seniority_hierarchy_holder);
@@ -271,7 +263,7 @@ bool CLevel::PrefetchManySoundsLater(LPCSTR prefix)
     return true;
 }
 
-void CLevel::PrefetchDeferredSounds()
+tmc::task<void> CLevel::PrefetchDeferredSounds()
 {
     while (!sound_registry_defer.empty())
     {
@@ -280,6 +272,8 @@ void CLevel::PrefetchDeferredSounds()
         if (PrefetchManySounds(s.c_str()))
             break;
     }
+
+    co_return;
 }
 
 void CLevel::CancelPrefetchManySounds(LPCSTR prefix)
@@ -311,9 +305,8 @@ int CLevel::get_RPID(LPCSTR /**name**/)
 
 BOOL g_bDebugEvents = FALSE;
 
-void CLevel::cl_Process_Event(u16 dest, u16 type, NET_Packet& P)
+tmc::task<void> CLevel::cl_Process_Event(u16 dest, u16 type, NET_Packet& P)
 {
-    //			Msg				("--- event[%d] for [%d]",type,dest);
     CObject* O = Objects.net_Find(dest);
     if (!O)
     {
@@ -322,23 +315,23 @@ void CLevel::cl_Process_Event(u16 dest, u16 type, NET_Packet& P)
 #endif // DEBUG
 
         ProcessGameSpawnsDestroy(dest, type);
-        return;
+        co_return;
     }
 
     CGameObject* GO = smart_cast<CGameObject*>(O);
     if (!GO)
     {
         Msg("! ERROR: c_EVENT[%d] : non-game-object", dest);
-        return;
+        co_return;
     }
 
     if (type == GE_DESTROY)
         Game().OnDestroy(GO);
 
-    GO->OnEvent(P, type);
+    co_await GO->OnEvent(P, type);
 }
 
-void CLevel::ProcessGameEvents()
+tmc::task<void> CLevel::ProcessGameEvents()
 {
     // Game events
     NET_Packet P;
@@ -355,17 +348,12 @@ void CLevel::ProcessGameEvents()
         case M_SPAWN: {
             u16 dummy16;
             std::ignore = P.r_begin(dummy16);
-            cl_Process_Spawn(P);
+
+            co_await cl_Process_Spawn(P);
+            break;
         }
-        break;
-        case M_EVENT: {
-            cl_Process_Event(dest, type, P);
-        }
-        break;
-        default: {
-            VERIFY(0);
-        }
-        break;
+        case M_EVENT: co_await cl_Process_Event(dest, type, P); break;
+        default: VERIFY(0); break;
         }
     }
 
@@ -385,17 +373,15 @@ tmc::task<void> CLevel::OnFrame()
     Device.Statistic->TEST0.End();
 
     Device.Statistic->netClient1.Begin();
-
-    ClientReceive();
-
+    co_await ClientReceive();
     Device.Statistic->netClient1.End();
 
-    ProcessGameEvents();
+    co_await ProcessGameEvents();
 
     if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtMap))
         Device.add_to_seq_parallel(CallMe::fromMethod<&CMapManager::Update>(m_map_manager));
     else
-        MapManager().Update();
+        co_await MapManager().Update();
 
     // Inherited update
     co_await inherited::OnFrame();
@@ -408,14 +394,14 @@ tmc::task<void> CLevel::OnFrame()
 
     // просчитать полет пуль
     Device.Statistic->TEST0.Begin();
-    BulletManager().CommitRenderSet();
+    co_await BulletManager().CommitRenderSet();
     Device.Statistic->TEST0.End();
 
     // update static sounds
     if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtLevelSounds))
         Device.add_to_seq_parallel(CallMe::fromMethod<&CLevelSoundManager::Update>(m_level_sound_manager));
     else
-        m_level_sound_manager->Update();
+        co_await m_level_sound_manager->Update();
 
     if (!sound_registry_defer.empty())
         Device.add_to_seq_parallel(CallMe::fromMethod<&CLevel::PrefetchDeferredSounds>(this));
@@ -424,7 +410,7 @@ tmc::task<void> CLevel::OnFrame()
     if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtLUA_GC))
         Device.add_to_seq_parallel(CallMe::fromMethod<&CLevel::script_gc>(this));
     else
-        script_gc();
+        co_await script_gc();
 
     //-----------------------------------------------------
     if (pStatGraphR)
@@ -441,7 +427,7 @@ int psLUA_GCSTEP = 100; // 10
 int psLUA_GCTIMEOUT = 1000;
 u32 ps_lua_gc_method = 1;
 
-void CLevel::script_gc()
+tmc::task<void> CLevel::script_gc()
 {
     XR_TRACY_ZONE_SCOPED();
 
@@ -449,7 +435,7 @@ void CLevel::script_gc()
 
     switch (ps_lua_gc_method)
     {
-    case 0: return;
+    case 0: co_return;
 #ifdef LUA_GCTIMEOUT
     case 2:
         if (lua_gc(lua.lua_state(), LUA_GCTIMEOUT, psLUA_GCTIMEOUT) >= 0)

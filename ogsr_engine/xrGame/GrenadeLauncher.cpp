@@ -10,7 +10,7 @@
 CGrenadeLauncher::CGrenadeLauncher() { m_fGrenadeVel = 0.f; }
 CGrenadeLauncher::~CGrenadeLauncher() {}
 
-BOOL CGrenadeLauncher::net_Spawn(CSE_Abstract* DC) { return (inherited::net_Spawn(DC)); }
+tmc::task<bool> CGrenadeLauncher::net_Spawn(CSE_Abstract* DC) { co_return co_await inherited::net_Spawn(DC); }
 
 void CGrenadeLauncher::Load(LPCSTR section)
 {
@@ -18,7 +18,7 @@ void CGrenadeLauncher::Load(LPCSTR section)
     inherited::Load(section);
 }
 
-void CGrenadeLauncher::net_Destroy() { inherited::net_Destroy(); }
+tmc::task<void> CGrenadeLauncher::net_Destroy() { co_await inherited::net_Destroy(); }
 tmc::task<void> CGrenadeLauncher::UpdateCL() { co_await inherited::UpdateCL(); }
 
 void CGrenadeLauncher::OnH_A_Chield() { inherited::OnH_A_Chield(); }

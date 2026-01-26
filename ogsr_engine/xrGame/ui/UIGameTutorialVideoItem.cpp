@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIGameTutorial.h"
+
 #include "UIWindow.h"
 #include "UIStatic.h"
 #include "UIXmlInit.h"
@@ -13,12 +14,13 @@
 //-----------------------------------------------------------------------------
 // Tutorial Item
 //-----------------------------------------------------------------------------
+
 CUISequenceVideoItem::CUISequenceVideoItem(CUISequencer* owner) : CUISequenceItem{owner} { m_flags.set(etiPlaying | etiNeedStart | etiDelayed | etiBackVisible, FALSE); }
 
 CUISequenceVideoItem::~CUISequenceVideoItem()
 {
-    m_sound[0].stop();
-    m_sound[1].stop();
+    m_sound[0].queue_stop();
+    m_sound[1].queue_stop();
     delete_data(m_wnd);
 }
 
@@ -184,8 +186,8 @@ bool CUISequenceVideoItem::Stop(bool bForce)
     m_wnd->Show(false);
     m_owner->MainWnd()->DetachChild(m_wnd);
 
-    m_sound[0].stop();
-    m_sound[1].stop();
+    m_sound[0].queue_stop();
+    m_sound[1].queue_stop();
     m_texture->ResetTexture();
 
     if (m_flags.test(etiNeedPauseOn) && !m_flags.test(etiStoredPauseState))

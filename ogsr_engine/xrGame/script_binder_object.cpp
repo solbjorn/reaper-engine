@@ -8,8 +8,9 @@
 
 #include "stdafx.h"
 
-#include "../COMMON_AI/xrServer_Objects_ALife.h"
 #include "script_binder_object.h"
+
+#include "../COMMON_AI/xrServer_Objects_ALife.h"
 #include "script_game_object.h"
 
 CScriptBinderObject::CScriptBinderObject(CScriptGameObject* object) { m_object = object; }
@@ -40,29 +41,29 @@ void CScriptBinderObject::reload(LPCSTR section)
     op->second(this, section);
 }
 
-bool CScriptBinderObject::net_Spawn(SpawnType DC)
+tmc::task<bool> CScriptBinderObject::net_Spawn(SpawnType DC)
 {
     auto op = ops.find(binder_ops::NET_SPAWN);
     if (op == ops.end())
-        return true;
+        co_return true;
 
-    return op->second(this, DC);
+    co_return op->second(this, DC);
 }
 
-void CScriptBinderObject::net_Destroy()
+tmc::task<void> CScriptBinderObject::net_Destroy()
 {
     auto op = ops.find(binder_ops::NET_DESTROY);
     if (op == ops.end())
-        return;
+        co_return;
 
     op->second(this);
 }
 
-void CScriptBinderObject::shedule_Update(u32 time_delta)
+tmc::task<void> CScriptBinderObject::shedule_Update(u32 time_delta)
 {
     auto op = ops.find(binder_ops::UPDATE);
     if (op == ops.end())
-        return;
+        co_return;
 
     XR_TRACY_ZONE_SCOPED();
 

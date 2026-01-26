@@ -29,10 +29,10 @@
 
 // TODO: KRodin: заменить на прямые вызовы вместо этих всратых ивентов!
 
-void CActor::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CActor::OnEvent(NET_Packet& P, u16 type)
 {
-    inherited::OnEvent(P, type);
-    CInventoryOwner::OnEvent(P, type);
+    co_await inherited::OnEvent(P, type);
+    co_await CInventoryOwner::OnEvent(P, type);
 
     u16 id;
     switch (type)
@@ -128,17 +128,14 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 #endif
             break;
         }
+
         switch (type)
         {
         case GEG_PLAYER_ITEM2SLOT: inventory().Slot(smart_cast<CInventoryItem*>(O)); break;
         case GEG_PLAYER_ITEM2BELT: inventory().Belt(smart_cast<CInventoryItem*>(O)); break;
         case GEG_PLAYER_ITEM2RUCK: inventory().Ruck(smart_cast<CInventoryItem*>(O)); break;
         case GEG_PLAYER_ITEM_EAT: inventory().Eat(smart_cast<CInventoryItem*>(O)); break;
-        case GEG_PLAYER_ACTIVATEARTEFACT: {
-            CArtefact* pArtefact = smart_cast<CArtefact*>(O);
-            pArtefact->ActivateArtefact();
-        }
-        break;
+        case GEG_PLAYER_ACTIVATEARTEFACT: co_await smart_cast<CArtefact*>(O)->ActivateArtefact(); break;
         }
     }
     break;

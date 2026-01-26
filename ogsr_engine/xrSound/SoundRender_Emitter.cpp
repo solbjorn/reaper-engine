@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "../xrCore/xr_task.h"
 #include "soundrender_emitter.h"
+
 #include "soundrender_core.h"
 #include "SoundRender_Source.h"
 
@@ -34,7 +34,6 @@ CSoundRender_Emitter::CSoundRender_Emitter()
     dbg_ID = ++incrementalID;
 #endif
 
-    tg = &xr_task_group_get();
     smooth_volume = 1.f;
     occluder_volume = 1.f;
     fade_volume = 1.f;
@@ -58,7 +57,6 @@ CSoundRender_Emitter::CSoundRender_Emitter()
 CSoundRender_Emitter::~CSoundRender_Emitter()
 {
     canceling = true;
-    tg->wait_put();
 
     // try to release dependencies, events, for example
     Event_ReleaseOwner();
@@ -235,16 +233,16 @@ void CSoundRender_Emitter::fill_block(void* ptr, u32 size)
     }
 }
 
-std::pair<u8*, size_t> CSoundRender_Emitter::obtain_block()
+tmc::task<std::span<u8>> CSoundRender_Emitter::obtain_block()
 {
-    wait_prefill();
+    co_await wait_prefill();
 
-    const std::pair result = {temp_buf[current_block].data(), temp_buf[current_block].size()};
+    const std::span result{temp_buf[current_block]};
     if (++current_block >= sdef_target_count_prefill)
         current_block = 0;
 
     filled_blocks--;
-    return std::move(result);
+    co_return std::move(result);
 }
 
 void CSoundRender_Emitter::fill_all_blocks()
@@ -257,42 +255,45 @@ void CSoundRender_Emitter::fill_all_blocks()
     filled_blocks = sdef_target_count_prefill;
 }
 
-void CSoundRender_Emitter::dispatch_prefill()
+tmc::task<void> CSoundRender_Emitter::dispatch_prefill()
 {
-    wait_prefill();
+    co_await wait_prefill();
 
     if (canceling)
-        return;
+        co_return;
 
-    const float fDeltaTime = SoundRender->fTimer_Delta;
-
-    tg->run([this, fDeltaTime] {
-        if (filled_blocks < sdef_target_count_prefill)
-        {
-            gsl::index next_block_to_fill = (current_block + filled_blocks) % sdef_target_count_prefill;
-
-            while (filled_blocks < sdef_target_count_prefill)
-            {
-                if (canceling)
-                    break;
-
-                auto& block = temp_buf[next_block_to_fill];
-                fill_block(block.data(), block.size());
-
-                next_block_to_fill = (next_block_to_fill + 1) % sdef_target_count_prefill;
-                filled_blocks++;
-            }
-        }
-
-        if (!canceling)
-        {
-            // Update occlusion
-            updateOccVolume(fDeltaTime);
-        }
-    });
+    event.reset();
+    tmc::spawn(prefill_async(SoundRender->fTimer_Delta)).with_priority(xr::tmc_priority_any).detach();
 }
 
-void CSoundRender_Emitter::wait_prefill() const { tg->wait(); }
+tmc::task<void> CSoundRender_Emitter::prefill_async(f32 fDeltaTime)
+{
+    if (filled_blocks < sdef_target_count_prefill)
+    {
+        gsl::index next_block_to_fill = (current_block + filled_blocks) % sdef_target_count_prefill;
+
+        while (filled_blocks < sdef_target_count_prefill)
+        {
+            if (canceling)
+                break;
+
+            auto& block = temp_buf[next_block_to_fill];
+            fill_block(block.data(), block.size());
+
+            next_block_to_fill = (next_block_to_fill + 1) % sdef_target_count_prefill;
+            filled_blocks++;
+        }
+    }
+
+    if (!canceling)
+    {
+        // Update occlusion
+        updateOccVolume(fDeltaTime);
+    }
+
+    event.set();
+    co_return;
+}
 
 u32 CSoundRender_Emitter::get_bytes_total() const { return owner_data->dwBytesTotal; }
 float CSoundRender_Emitter::get_length_sec() const { return owner_data->fTimeTotal; }

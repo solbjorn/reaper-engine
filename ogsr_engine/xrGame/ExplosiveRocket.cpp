@@ -33,17 +33,19 @@ void CExplosiveRocket::Load(LPCSTR section)
     m_safe_dist_to_explode = READ_IF_EXISTS(pSettings, r_float, section, "safe_dist_to_explode", 0);
 }
 
-BOOL CExplosiveRocket::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CExplosiveRocket::net_Spawn(CSE_Abstract* DC)
 {
-    BOOL result = inherited::net_Spawn(DC);
-    result = result && CInventoryItem::net_Spawn(DC);
+    bool result = co_await inherited::net_Spawn(DC);
+    result = result && co_await CInventoryItem::net_Spawn(DC);
+
     Fvector box;
     BoundingBox().getsize(box);
     float max_size = _max(_max(box.x, box.y), box.z);
     box.set(max_size, max_size, max_size);
     box.mul(3.f);
     CExplosive::SetExplosionSize(box);
-    return result;
+
+    co_return result;
 }
 
 void CExplosiveRocket::Contact(const Fvector& pos, const Fvector& normal)
@@ -84,11 +86,11 @@ void CExplosiveRocket::Contact(const Fvector& pos, const Fvector& normal)
     inherited::Contact(pos, normal);
 }
 
-void CExplosiveRocket::net_Destroy()
+tmc::task<void> CExplosiveRocket::net_Destroy()
 {
-    CInventoryItem::net_Destroy();
-    CExplosive::net_Destroy();
-    inherited::net_Destroy();
+    co_await CInventoryItem::net_Destroy();
+    co_await CExplosive::net_Destroy();
+    co_await inherited::net_Destroy();
 }
 
 void CExplosiveRocket::OnH_A_Independent() { inherited::OnH_A_Independent(); }
@@ -107,10 +109,10 @@ tmc::task<void> CExplosiveRocket::UpdateCL()
     co_await inherited::UpdateCL();
 }
 
-void CExplosiveRocket::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CExplosiveRocket::OnEvent(NET_Packet& P, u16 type)
 {
-    CExplosive::OnEvent(P, type);
-    inherited::OnEvent(P, type);
+    co_await CExplosive::OnEvent(P, type);
+    co_await inherited::OnEvent(P, type);
 }
 
 #ifdef DEBUG

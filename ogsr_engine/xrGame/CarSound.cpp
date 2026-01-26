@@ -1,9 +1,10 @@
 #include "stdafx.h"
 
+#include "Car.h"
+
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
-#include "car.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "PHWorld.h"
 
@@ -128,13 +129,14 @@ void CCar::SCarSound::Update()
 
 void CCar::SCarSound::SwitchOn() { pcar->processing_activate(); }
 
-void CCar::SCarSound::Destroy()
+tmc::task<void> CCar::SCarSound::Destroy()
 {
     SwitchOff();
-    snd_engine.destroy();
-    snd_transmission.destroy();
-    snd_engine_stop.destroy();
-    snd_engine_start.destroy();
+
+    co_await snd_engine.destroy();
+    co_await snd_transmission.destroy();
+    co_await snd_engine_stop.destroy();
+    co_await snd_engine_start.destroy();
 }
 
 void CCar::SCarSound::SwitchOff()
@@ -153,24 +155,15 @@ void CCar::SCarSound::Start()
     SetSoundPosition(snd_engine_start);
 }
 
-void CCar::SCarSound::Stall()
+tmc::task<void> CCar::SCarSound::Stop()
 {
     VERIFY(!ph_world->Processing());
-    if (eCarSound == sndOff)
-        return;
-    SwitchState(sndStalling);
-    snd_engine.stop_deffered();
-    snd_engine_stop.play(pcar);
-    SetSoundPosition(snd_engine_stop);
-}
 
-void CCar::SCarSound::Stop()
-{
-    VERIFY(!ph_world->Processing());
     if (eCarSound == sndOff)
-        return;
+        co_return;
+
     SwitchState(sndStoping);
-    snd_engine.stop_deffered();
+    co_await snd_engine.stop_deffered();
     snd_engine_stop.play(pcar);
     SetSoundPosition(snd_engine_stop);
 }

@@ -38,7 +38,7 @@ public:
 
     virtual shared_str shedule_Name() const { return shared_str("particle_instance"); }
 
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
     virtual IRenderable* dcast_Renderable() { return this; }
 };
 

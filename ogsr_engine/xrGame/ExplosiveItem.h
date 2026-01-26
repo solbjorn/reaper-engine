@@ -22,8 +22,8 @@ public:
     ~CExplosiveItem() override;
 
     virtual void Load(LPCSTR section);
-    virtual BOOL net_Spawn(CSE_Abstract* DC) { return CInventoryItemObject::net_Spawn(DC); }
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override { co_return co_await CInventoryItemObject::net_Spawn(DC); }
+    tmc::task<void> net_Destroy() override;
     virtual void net_Export(CSE_Abstract* E) { CInventoryItemObject::net_Export(E); }
     virtual void net_Relcase(CObject* O);
     virtual CGameObject* cast_game_object() { return this; }
@@ -31,9 +31,9 @@ public:
     virtual IDamageSource* cast_IDamageSource() { return CExplosive::cast_IDamageSource(); }
     virtual void GetRayExplosionSourcePos(Fvector& pos);
     void ActivateExplosionBox(const Fvector&, Fvector&) override;
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     virtual void Hit(SHit* pHDS);
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
     virtual bool shedule_Needed();
 
     tmc::task<void> UpdateCL() override;

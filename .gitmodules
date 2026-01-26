@@ -45,7 +45,7 @@
 [submodule "3rd_party/Src/llvm/llvm-project"]
 	path = 3rd_party/Src/llvm/llvm-project
 	url = https://github.com/llvm/llvm-project.git
-	branch = release/21.x
+	branch = release/22.x
 [submodule "3rd_party/Src/luajit2/luajit2"]
 	path = 3rd_party/Src/luajit2/luajit2
 	url = https://github.com/openresty/luajit2.git
@@ -56,9 +56,6 @@
 	path = 3rd_party/Src/mimalloc/mimalloc
 	url = https://github.com/microsoft/mimalloc.git
 	branch = dev3
-[submodule "3rd_party/Src/oneTBB/oneTBB"]
-	path = 3rd_party/Src/oneTBB/oneTBB
-	url = https://github.com/uxlfoundation/oneTBB.git
 [submodule "3rd_party/Src/openal-soft/openal-soft"]
 	path = 3rd_party/Src/openal-soft/openal-soft
 	url = https://github.com/kcat/openal-soft.git
@@ -83,7 +80,6 @@
 [submodule "3rd_party/Src/tmc/hwloc/hwloc"]
 	path = 3rd_party/Src/tmc/hwloc/hwloc
 	url = https://github.com/open-mpi/hwloc.git
-	branch = v2.x
 [submodule "3rd_party/Src/tracy"]
 	path = 3rd_party/Src/tracy
 	url = https://github.com/wolfpld/tracy.git

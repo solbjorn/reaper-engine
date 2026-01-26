@@ -5,7 +5,6 @@
 #include "SoundRender_Core.h"
 #include "soundrender_environment.h"
 
-class xr_task_group;
 struct OggVorbis_File;
 
 class CSoundRender_Emitter : public CSound_emitter
@@ -69,7 +68,7 @@ public:
     float fTimeToRewind; // --#SM+#--
 
     u32 marker;
-    void i_stop();
+    tmc::task<void> i_stop();
 
     [[nodiscard]] u32 get_cursor(bool b_absolute) const;
     void set_cursor(u32 p);
@@ -78,7 +77,7 @@ public:
 private:
     OggVorbis_File* ovf{};
 
-    xr_task_group* tg{};
+    tmc::manual_reset_event event{true};
     xr_vector<u8> temp_buf[sdef_target_count_prefill];
 
     gsl::index current_block{};
@@ -86,11 +85,11 @@ private:
 
     void fill_block(void* ptr, u32 size);
     void fill_data(void* dest, u32 offset, u32 size);
-
     void fill_all_blocks();
-    void dispatch_prefill();
 
-    void wait_prefill() const;
+    tmc::task<void> dispatch_prefill();
+    tmc::task<void> prefill_async(f32 fDeltaTime);
+    tmc::task<void> wait_prefill() { co_await event; }
 
     bool canceling{};
 
@@ -139,17 +138,17 @@ public:
     virtual void set_time(float t); //--#SM+#--
     virtual const CSound_params* get_params() { return &p_source; }
 
-    std::pair<u8*, size_t> obtain_block();
+    tmc::task<std::span<u8>> obtain_block();
 
     float priority() const;
     float att() const;
     void start(ref_sound* _owner, BOOL _loop, float delay);
-    void cancel(); // manager forces out of rendering
-    void update(float time, float dt);
-    void render();
+    tmc::task<void> cancel(); // manager forces out of rendering
+    tmc::task<void> update(f32 time, f32 dt);
+    tmc::task<void> render();
     BOOL update_culling(float dt);
     void rewind();
-    void stop(BOOL bDeffered, float speed_k = 1.f);
+    tmc::task<void> stop(bool bDeffered, f32 speed_k = 1.0f) override;
     void pause(BOOL bVal, int id);
 
     virtual u32 play_time();
@@ -158,7 +157,7 @@ public:
     ~CSoundRender_Emitter() override;
 
 private:
-    void stop_target();
+    tmc::task<void> stop_target();
 
     float applyOccVolume() const;
     float applyOccHfVolume() const;

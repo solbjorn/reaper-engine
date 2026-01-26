@@ -96,23 +96,24 @@ tmc::task<void> CEatableItemObject::UpdateCL()
     co_await CEatableItem::UpdateCL();
 }
 
-void CEatableItemObject::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CEatableItemObject::OnEvent(NET_Packet& P, u16 type)
 {
-    CPhysicItem::OnEvent(P, type);
-    CEatableItem::OnEvent(P, type);
+    co_await CPhysicItem::OnEvent(P, type);
+    co_await CEatableItem::OnEvent(P, type);
 }
 
-BOOL CEatableItemObject::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CEatableItemObject::net_Spawn(CSE_Abstract* DC)
 {
-    BOOL res = CPhysicItem::net_Spawn(DC);
-    CEatableItem::net_Spawn(DC);
-    return (res);
+    const bool res = co_await CPhysicItem::net_Spawn(DC);
+    std::ignore = co_await CEatableItem::net_Spawn(DC);
+
+    co_return res;
 }
 
-void CEatableItemObject::net_Destroy()
+tmc::task<void> CEatableItemObject::net_Destroy()
 {
-    CEatableItem::net_Destroy();
-    CPhysicItem::net_Destroy();
+    co_await CEatableItem::net_Destroy();
+    co_await CPhysicItem::net_Destroy();
 }
 
 void CEatableItemObject::net_Export(CSE_Abstract* E) { CEatableItem::net_Export(E); }

@@ -67,13 +67,13 @@ IC bool CScriptSound::IsPlaying() const
 IC void CScriptSound::Stop()
 {
     VERIFY(m_sound._handle());
-    m_sound.stop();
+    m_sound.queue_stop();
 }
 
 IC void CScriptSound::StopDeffered()
 {
     VERIFY(m_sound._handle());
-    m_sound.stop_deffered();
+    m_sound.queue_stop_deferred();
 }
 
 IC void CScriptSound::SetPosition(const Fvector& position)

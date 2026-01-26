@@ -21,9 +21,9 @@ public:
     virtual void reload(LPCSTR section);
 
     tmc::task<void> UpdateCL() override;
-    virtual void shedule_Update(u32 dt);
-    virtual void Die(CObject* who);
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
+    tmc::task<void> shedule_Update(u32 dt) override;
+    tmc::task<void> Die(CObject* who) override;
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     virtual void Load(LPCSTR section);
     virtual void Hit(SHit* pHDS);
 

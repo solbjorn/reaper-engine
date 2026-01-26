@@ -83,28 +83,29 @@ void CALifeUpdateManager::update_scheduled(bool init_ef)
     scheduled().update();
 }
 
-void CALifeUpdateManager::update()
+tmc::task<void> CALifeUpdateManager::update()
 {
     update_switch();
     update_scheduled(false);
+
+    co_return;
 }
 
-void CALifeUpdateManager::shedule_Update(u32 dt)
+tmc::task<void> CALifeUpdateManager::shedule_Update(u32 dt)
 {
-    ISheduled::shedule_Update(dt);
+    co_await ISheduled::shedule_Update(dt);
 
     if (!initialized())
-        return;
+        co_return;
 
     if (!m_first_time && g_mt_config.test(mtALife))
     {
         Device.add_to_seq_parallel(CallMe::fromMethod<&CALifeUpdateManager::update>(this));
-        return;
+        co_return;
     }
 
     m_first_time = false;
-
-    update();
+    co_await update();
 }
 
 void CALifeUpdateManager::set_process_time(int microseconds) { graph().set_process_time(float(microseconds) - float(microseconds) * update_monster_factor() / 1000000.f); }

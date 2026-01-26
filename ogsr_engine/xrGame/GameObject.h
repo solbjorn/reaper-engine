@@ -159,8 +159,8 @@ public:
 
     // Methods
     virtual void Load(LPCSTR section);
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual void net_Relcase(CObject* O);
     tmc::task<void> UpdateCL() override;
     virtual void OnChangeVisual();
@@ -175,14 +175,14 @@ public:
     virtual void spatial_move();
     virtual BOOL Ready() { return getReady(); } // update only if active and fully initialized by/for network
 
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
     virtual bool shedule_Needed();
 
     virtual void ForceTransform(const Fmatrix&) override {}
     virtual void ForceTransformAndDirection(const Fmatrix& m) override { ForceTransform(m); }
 
     void renderable_Render(u32 context_id, IRenderable* root) override;
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    virtual tmc::task<void> OnEvent(NET_Packet& P, u16 type);
     virtual void Hit(SHit*) {}
     virtual void SetHitInfo(CObject*, CObject*, s16, Fvector, Fvector) {}
 

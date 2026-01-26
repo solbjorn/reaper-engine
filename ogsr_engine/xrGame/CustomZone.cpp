@@ -55,13 +55,13 @@ CCustomZone::~CCustomZone()
     if (grassbender_id)
         g_pGamePersistent->GrassBendersRemoveByIndex(grassbender_id);
 
-    m_idle_sound.destroy();
-    m_accum_sound.destroy();
-    m_awaking_sound.destroy();
-    m_blowout_sound.destroy();
-    m_hit_sound.destroy();
-    m_entrance_sound.destroy();
-    m_ArtefactBornSound.destroy();
+    m_idle_sound.queue_destroy();
+    m_accum_sound.queue_destroy();
+    m_awaking_sound.queue_destroy();
+    m_blowout_sound.queue_destroy();
+    m_hit_sound.queue_destroy();
+    m_entrance_sound.queue_destroy();
+    m_ArtefactBornSound.queue_destroy();
 
     xr_delete(m_effector);
 }
@@ -380,10 +380,10 @@ void CCustomZone::Load(LPCSTR section)
     m_b_always_fastmode = READ_IF_EXISTS(pSettings, r_bool, section, "always_fast_mode", false);
 }
 
-BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CCustomZone::net_Spawn(CSE_Abstract* DC)
 {
-    if (!inherited::net_Spawn(DC))
-        return (FALSE);
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
 
     CSE_Abstract* e = (CSE_Abstract*)(DC);
     CSE_ALifeCustomZone* Z = smart_cast<CSE_ALifeCustomZone*>(e);
@@ -462,14 +462,14 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
     if (spawn_ini() != nullptr && spawn_ini()->line_exist("fast_mode", "always_fast"))
         m_b_always_fastmode = spawn_ini()->r_bool("fast_mode", "always_fast");
 
-    return true;
+    co_return true;
 }
 
-void CCustomZone::net_Destroy()
+tmc::task<void> CCustomZone::net_Destroy()
 {
     StopIdleParticles();
 
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
 
     StopWind();
 
@@ -596,7 +596,7 @@ tmc::task<void> CCustomZone::UpdateCL()
 }
 
 // called as usual
-void CCustomZone::shedule_Update(u32 dt)
+tmc::task<void> CCustomZone::shedule_Update(u32 dt)
 {
     m_bZoneActive = false;
 
@@ -649,7 +649,7 @@ void CCustomZone::shedule_Update(u32 dt)
         if (eZoneStateIdle == m_eZoneState)
             CheckForAwaking();
 
-        inherited::shedule_Update(dt);
+        co_await inherited::shedule_Update(dt);
 
         // check "fast-mode" border
         float cam_distance = Device.vCameraPosition.distance_to(P) - s.R;
@@ -686,7 +686,7 @@ void CCustomZone::shedule_Update(u32 dt)
     }
     else if (m_keep_update)
     {
-        inherited::shedule_Update(dt);
+        co_await inherited::shedule_Update(dt);
     }
 
     UpdateOnOffState();
@@ -831,7 +831,7 @@ void CCustomZone::PlayIdleParticles()
 
 void CCustomZone::StopIdleParticles()
 {
-    m_idle_sound.stop();
+    m_idle_sound.queue_stop();
 
     if (m_pIdleParticles)
         m_pIdleParticles->Stop(FALSE);
@@ -1216,7 +1216,7 @@ void CCustomZone::OnMove()
     }
 }
 
-void CCustomZone::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CCustomZone::OnEvent(NET_Packet& P, u16 type)
 {
     switch (type)
     {
@@ -1241,7 +1241,7 @@ void CCustomZone::OnEvent(NET_Packet& P, u16 type)
     }
     }
 
-    inherited::OnEvent(P, type);
+    co_await inherited::OnEvent(P, type);
 }
 
 void CCustomZone::OnOwnershipTake(u16 id)

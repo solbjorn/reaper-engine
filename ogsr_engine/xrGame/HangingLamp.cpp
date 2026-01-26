@@ -62,24 +62,26 @@ float CHangingLamp::Radius() const { return (renderable.visual) ? renderable.vis
 
 void CHangingLamp::Load(LPCSTR section) { inherited::Load(section); }
 
-void CHangingLamp::net_Destroy()
+tmc::task<void> CHangingLamp::net_Destroy()
 {
     light_render.destroy();
     light_ambient.destroy();
     glow_render.destroy();
+
     RespawnInit();
     if (Visual())
         CPHSkeleton::RespawnInit();
-    inherited::net_Destroy();
+
+    co_await inherited::net_Destroy();
 }
 
-BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CHangingLamp::net_Spawn(CSE_Abstract* DC)
 {
     CSE_Abstract* e = (CSE_Abstract*)(DC);
     CSE_ALifeObjectHangingLamp* lamp = smart_cast<CSE_ALifeObjectHangingLamp*>(e);
     R_ASSERT(lamp);
-    inherited::net_Spawn(DC);
-    Fcolor clr;
+
+    std::ignore = co_await inherited::net_Spawn(DC);
 
     // set bone id
     //	CInifile* pUserData		= K->LL_UserData();
@@ -98,6 +100,7 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
     }
 
     fBrightness = lamp->brightness;
+    Fcolor clr;
     clr.set(lamp->color);
     clr.a = 1.f;
     clr.mul_rgb(fBrightness);
@@ -176,7 +179,7 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
     setVisible(!!Visual());
     setEnabled(!!collidable.model);
 
-    return (TRUE);
+    co_return true;
 }
 
 void CHangingLamp::SpawnInitPhysics(CSE_Abstract* D)
@@ -211,10 +214,10 @@ void CHangingLamp::net_Save(NET_Packet& P)
 
 BOOL CHangingLamp::net_SaveRelevant() { return inherited::net_SaveRelevant() || PPhysicsShell(); }
 
-void CHangingLamp::shedule_Update(u32 dt)
+tmc::task<void> CHangingLamp::shedule_Update(u32 dt)
 {
     CPHSkeleton::Update(dt);
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
 }
 
 tmc::task<void> CHangingLamp::UpdateCL()

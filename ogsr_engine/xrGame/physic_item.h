@@ -31,8 +31,8 @@ public:
     virtual void OnH_B_Independent(bool just_before_destroy);
     virtual void OnH_B_Chield();
     tmc::task<void> UpdateCL() override;
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual void activate_physic_shell();
     virtual void setup_physic_shell();
     virtual void create_box_physic_shell();

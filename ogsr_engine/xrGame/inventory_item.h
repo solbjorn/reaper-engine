@@ -95,7 +95,7 @@ public:
     virtual void GetBriefInfo(xr_string&, xr_string&, xr_string&) {}
     virtual bool NeedBriefInfo() { return m_need_brief_info; }
 
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    virtual tmc::task<void> OnEvent(NET_Packet& P, u16 type);
 
     virtual bool Useful() const; // !!! Переопределить. (см. в Inventory.cpp)
     virtual bool Attach(PIItem, bool) { return false; }
@@ -230,8 +230,8 @@ protected:
     virtual void UpdateXForm();
 
 public:
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    virtual tmc::task<bool> net_Spawn(CSE_Abstract* DC);
+    virtual tmc::task<void> net_Destroy();
     virtual void reload(LPCSTR section);
     virtual void reinit();
     virtual bool can_kill() const;

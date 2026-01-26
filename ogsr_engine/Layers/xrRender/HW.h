@@ -30,8 +30,6 @@ public:
     tmc::task<void> Reset(HWND wnd, u32& dwWidth, u32& dwHeight);
 
 private:
-    tmc::task<void> reset_st(HWND wnd);
-
     void selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed);
     u32 selectRefresh(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt);
     void updateWindowProps(HWND wnd) const;

@@ -95,21 +95,21 @@ void CMissile::Load(LPCSTR section)
     m_explode_by_timer_on_safe_dist = READ_IF_EXISTS(pSettings, r_bool, section, "explode_by_timer_on_safe_dist", true);
 }
 
-BOOL CMissile::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CMissile::net_Spawn(CSE_Abstract* DC)
 {
-    BOOL l_res = inherited::net_Spawn(DC);
+    const bool l_res = co_await inherited::net_Spawn(DC);
 
     dwXF_Frame = 0xffffffff;
 
     m_throw_direction.set(0.0f, 1.0f, 0.0f);
     m_throw_matrix.identity();
 
-    return l_res;
+    co_return l_res;
 }
 
-void CMissile::net_Destroy()
+tmc::task<void> CMissile::net_Destroy()
 {
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
     m_fake_missile = nullptr;
 }
 
@@ -232,9 +232,10 @@ tmc::task<void> CMissile::UpdateCL()
     }
 }
 
-void CMissile::shedule_Update(u32 dt)
+tmc::task<void> CMissile::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
+
     if (!H_Parent() && getVisible() && m_pPhysicsShell)
     {
         if (m_dwDestroyTime <= Level().timeServer())
@@ -242,7 +243,6 @@ void CMissile::shedule_Update(u32 dt)
             m_dwDestroyTime = 0xffffffff;
             VERIFY(!m_pCurrentInventory);
             Destroy();
-            return;
         }
     }
 }
@@ -535,9 +535,10 @@ void CMissile::Throw()
     }
 }
 
-void CMissile::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CMissile::OnEvent(NET_Packet& P, u16 type)
 {
-    inherited::OnEvent(P, type);
+    co_await inherited::OnEvent(P, type);
+
     u16 id;
     switch (type)
     {

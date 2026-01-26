@@ -99,7 +99,7 @@ void CInventoryOwner::reinit()
 }
 
 // call this after CGameObject::net_Spawn
-BOOL CInventoryOwner::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CInventoryOwner::net_Spawn(CSE_Abstract* DC)
 {
     if (!m_pTrade)
         m_pTrade = xr_new<CTrade>(this);
@@ -113,14 +113,14 @@ BOOL CInventoryOwner::net_Spawn(CSE_Abstract* DC)
     //  m_inventory->setSlotsBlocked(false);
     CGameObject* pThis = smart_cast<CGameObject*>(this);
     if (!pThis)
-        return FALSE;
-    CSE_Abstract* E = (CSE_Abstract*)(DC);
+        co_return false;
 
+    CSE_Abstract* E = (CSE_Abstract*)(DC);
     CSE_ALifeTraderAbstract* pTrader{};
     if (E)
         pTrader = smart_cast<CSE_ALifeTraderAbstract*>(E);
     if (!pTrader)
-        return FALSE;
+        co_return false;
 
     R_ASSERT(pTrader->character_profile().size());
 
@@ -140,14 +140,14 @@ BOOL CInventoryOwner::net_Spawn(CSE_Abstract* DC)
     m_game_name = pTrader->m_character_name;
 
     if (!pThis->Local())
-        return TRUE;
+        co_return true;
 
-    return TRUE;
+    co_return true;
 }
 
-void CInventoryOwner::net_Destroy()
+tmc::task<void> CInventoryOwner::net_Destroy()
 {
-    CAttachmentOwner::net_Destroy();
+    co_await CAttachmentOwner::net_Destroy();
 
     inventory().Clear();
     inventory().SetActiveSlot(NO_ACTIVE_SLOT);

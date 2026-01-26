@@ -1,9 +1,12 @@
 #include "stdafx.h"
 
-#include "../xr_3da/xrLevel.h"
 #include "soundrender_core.h"
-#include "soundrender_source.h"
+
 #include "soundrender_emitter.h"
+#include "soundrender_source.h"
+
+#include "../xr_3da/device.h"
+#include "../xr_3da/xrLevel.h"
 
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wmissing-variable-declarations");
@@ -108,10 +111,10 @@ void CSoundRender_Core::_clear()
     s_emitters.clear();
 }
 
-void CSoundRender_Core::stop_emitters()
+tmc::task<void> CSoundRender_Core::stop_emitters()
 {
-    for (auto& s_emitter : s_emitters)
-        s_emitter->stop(false);
+    for (auto s_emitter : s_emitters)
+        co_await s_emitter->stop(false);
 }
 
 int CSoundRender_Core::pause_emitters(bool val)
@@ -425,12 +428,39 @@ void CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const Fvector& pos
         S._feedback()->switch_to_2D();
 }
 
-void CSoundRender_Core::destroy(ref_sound& S)
+tmc::task<void> CSoundRender_Core::stop(std::array<std::byte, 16>& arg)
 {
-    if (S._feedback())
+    auto& tuple = *reinterpret_cast<std::tuple<ref_sound, bool, f32>*>(&arg);
+    auto& S = std::get<ref_sound>(tuple);
+
+    if (S._feedback() != nullptr)
+        co_await smart_cast<CSoundRender_Emitter*>(S._feedback())->stop(std::get<bool>(tuple), std::get<f32>(tuple));
+
+    S._p._set(nullptr);
+}
+
+void CSoundRender_Core::queue_stop(ref_sound& S, bool deferred, f32 speed_k)
+{
+    auto& arg = Device.add_frame_async(CallMe::fromMethod<&CSoundRender_Core::stop>(this));
+    new (static_cast<void*>(&arg)) std::tuple<ref_sound, bool, f32>{S, deferred, speed_k};
+}
+
+tmc::task<void> CSoundRender_Core::destroy(std::array<std::byte, 16>& arg)
+{
+    auto& S = *reinterpret_cast<ref_sound*>(&arg);
+
+    if (S._feedback() != nullptr)
+        co_await smart_cast<CSoundRender_Emitter*>(S._feedback())->stop(false);
+
+    S._p._set(nullptr);
+}
+
+void CSoundRender_Core::queue_destroy(ref_sound& S)
+{
+    if (S._feedback() != nullptr)
     {
-        CSoundRender_Emitter* E = (CSoundRender_Emitter*)S._feedback();
-        E->stop(FALSE);
+        auto& arg = Device.add_frame_async(CallMe::fromMethod<&CSoundRender_Core::destroy>(this));
+        new (static_cast<void*>(&arg)) ref_sound{S};
     }
 
     S._p._set(nullptr);
@@ -450,18 +480,6 @@ void CSoundRender_Core::_create_data(ref_sound_data& S, LPCSTR fName, esound_typ
     S.g_userdata._set(nullptr);
     S.dwBytesTotal = S.handle->bytes_total();
     S.fTimeTotal = S.handle->length_sec();
-}
-
-void CSoundRender_Core::_destroy_data(ref_sound_data& S)
-{
-    if (S.feedback)
-    {
-        CSoundRender_Emitter* E = (CSoundRender_Emitter*)S.feedback;
-        E->stop(FALSE);
-    }
-
-    R_ASSERT(!S.feedback);
-    S.handle = nullptr;
 }
 
 CSoundRender_Environment* CSoundRender_Core::get_environment_def()

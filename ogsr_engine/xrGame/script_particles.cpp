@@ -38,9 +38,10 @@ void CScriptParticlesCustom::PSI_destroy()
     CParticlesObject::PSI_destroy();
 }
 
-void CScriptParticlesCustom::shedule_Update(u32 _dt)
+tmc::task<void> CScriptParticlesCustom::shedule_Update(u32 _dt)
 {
-    CParticlesObject::shedule_Update(_dt);
+    co_await CParticlesObject::shedule_Update(_dt);
+
     if (m_animator)
     {
         float dt = float(_dt) / 1000.f;

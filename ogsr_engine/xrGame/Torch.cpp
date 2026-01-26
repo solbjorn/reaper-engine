@@ -215,7 +215,7 @@ void CTorch::Switch(bool light_on)
 
 bool CTorch::torch_active() const { return (m_switched_on); }
 
-BOOL CTorch::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CTorch::net_Spawn(CSE_Abstract* DC)
 {
     auto torch = smart_cast<CSE_ALifeItemTorch*>(DC);
     R_ASSERT(torch);
@@ -225,8 +225,8 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
     R_ASSERT(smart_cast<IKinematics*>(Visual()));
     collidable.model = xr_new<CCF_Skeleton>(this);
 
-    if (!inherited::net_Spawn(DC))
-        return (FALSE);
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
 
     constexpr bool b_r2 = true;
 
@@ -292,15 +292,15 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 
     calc_m_delta_h(range);
 
-    return (TRUE);
+    co_return true;
 }
 
-void CTorch::net_Destroy()
+tmc::task<void> CTorch::net_Destroy()
 {
     Switch(false);
     SwitchNightVision(false);
 
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
 }
 
 void CTorch::OnH_A_Chield()

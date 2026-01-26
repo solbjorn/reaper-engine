@@ -21,10 +21,10 @@ public:
 
     virtual DLL_Pure* _construct();
     virtual void reinit();
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual BOOL UsedAI_Locations();
-    virtual void shedule_Update(u32 DT);
+    tmc::task<void> shedule_Update(u32 DT) override;
     tmc::task<void> UpdateCL() override;
     virtual CScriptEntity* cast_script_entity() { return this; }
 };

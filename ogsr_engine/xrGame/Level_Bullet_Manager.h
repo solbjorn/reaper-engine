@@ -175,7 +175,7 @@ protected:
     // скорость и положение с учетом гравитации и ветра
     // возвращаем true если пуля продолжает полет
     bool CalcBullet(collide::rq_results& rq_storage, SBullet* bullet, u32 delta_time);
-    void UpdateWorkload();
+    tmc::task<void> UpdateWorkload();
 
 public:
     CBulletManager();
@@ -187,7 +187,7 @@ public:
                        ALife::EHitType e_hit_type, float maximum_distance, const CCartridge& cartridge, bool SendHit, bool AimBullet = false);
 
     void CommitEvents(); // @ the start of frame
-    void CommitRenderSet(); // @ the end of frame
+    tmc::task<void> CommitRenderSet(); // @ the end of frame
     void Render();
 };
 

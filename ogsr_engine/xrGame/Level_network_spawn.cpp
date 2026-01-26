@@ -12,7 +12,7 @@
 #include "..\xr_3da\xr_object.h"
 #include "..\xr_3da\IGame_Persistent.h"
 
-void CLevel::cl_Process_Spawn(NET_Packet& P)
+tmc::task<void> CLevel::cl_Process_Spawn(NET_Packet& P)
 {
     // Begin analysis
     shared_str s_name;
@@ -36,9 +36,11 @@ void CLevel::cl_Process_Spawn(NET_Packet& P)
     if (std::find(m_just_destroyed.begin(), m_just_destroyed.end(), E->ID) != m_just_destroyed.end())
     {
         Msg("* [%s]: skip just destroyed [%s] ID: [%u] ID_Parent: [%u]", __FUNCTION__, E->name_replace(), E->ID, E->ID_Parent);
+
         m_just_destroyed.erase(std::remove(m_just_destroyed.begin(), m_just_destroyed.end(), E->ID), m_just_destroyed.end());
         F_entity_Destroy(E);
-        return;
+
+        co_return;
     }
 
     if (Device.dwPrecacheFrame == 0)
@@ -57,22 +59,16 @@ void CLevel::cl_Process_Spawn(NET_Packet& P)
                 }
             }
         }
+
         if (postpone)
         {
-            // Msg( "* [%s]: delay spawn ID[%d] ID_Parent[%d] name_replace[%s]", __FUNCTION__, E->ID, E->ID_Parent, E->name_replace() );
             game_spawn_queue.push_back(E);
-            return;
+            co_return;
         }
     }
 
-    /*
-    game_spawn_queue.push_back(E);
-    if (g_bDebugEvents)		ProcessGameSpawns();
-    /*/
-    g_sv_Spawn(E);
-
+    co_await g_sv_Spawn(E);
     F_entity_Destroy(E);
-    //*/
 }
 
 void CLevel::g_cl_Spawn(LPCSTR name, u8 rp, u16 flags, Fvector pos)
@@ -107,7 +103,7 @@ extern Flags32 psAI_Flags;
 #include "ai_debug.h"
 #endif // DEBUG
 
-void CLevel::g_sv_Spawn(CSE_Abstract* E)
+tmc::task<void> CLevel::g_sv_Spawn(CSE_Abstract* E)
 {
 #ifdef DEBUG
     Msg("* CLIENT: Spawn: %s, ID=%d", E->s_name.c_str(), E->ID);
@@ -116,15 +112,16 @@ void CLevel::g_sv_Spawn(CSE_Abstract* E)
     if (auto obj = Objects.net_Find(E->ID); obj != nullptr && obj->getDestroy())
     {
         Msg("[%s]: %s[%u] already net_Spawn'ed, call ProcessDestroyQueue()", __FUNCTION__, obj->cName().c_str(), obj->ID());
-        Objects.ProcessDestroyQueue();
+        co_await Objects.ProcessDestroyQueue();
     }
 
     // Client spawn
     CObject* O = Objects.Create(E->s_name.c_str());
-    if (O == nullptr || !O->net_Spawn(E))
+    if (O == nullptr || !co_await O->net_Spawn(E))
     {
         O->setDestroy(true);
-        O->net_Destroy();
+        co_await O->net_Destroy();
+
         client_spawn_manager().clear(O->ID());
         Objects.Destroy(O);
 
@@ -153,7 +150,8 @@ void CLevel::g_sv_Spawn(CSE_Abstract* E)
             GEN.write_start();
             GEN.read_start();
             GEN.w_u16(u16(O->ID()));
-            cl_Process_Event(E->ID_Parent, GE_OWNERSHIP_TAKE, GEN);
+
+            co_await cl_Process_Event(E->ID_Parent, GE_OWNERSHIP_TAKE, GEN);
         }
     }
 
@@ -203,20 +201,22 @@ CSE_Abstract* CLevel::spawn_item(LPCSTR section, const Fvector& position, u32 le
     return abstract;
 }
 
-void CLevel::ProcessGameSpawns()
+tmc::task<void> CLevel::ProcessGameSpawns()
 {
     CSE_Abstract* trader = nullptr;
     while (!game_spawn_queue.empty())
     {
         CSE_Abstract* E = game_spawn_queue.front();
         game_spawn_queue.pop_front();
-        // Msg( "* [%s]: delayed spawn dwFrame[%u] ID[%d] ID_Parent[%d] name_replace[%s]", __FUNCTION__, Device.dwFrame, E->ID, E->ID_Parent, E->name_replace() );
-        g_sv_Spawn(E);
+
+        co_await g_sv_Spawn(E);
+
         if (smart_cast<CSE_ALifeMonsterAbstract*>(E) || smart_cast<CSE_ALifeTraderAbstract*>(E))
         {
             trader = E;
             break;
         }
+
         F_entity_Destroy(E);
     }
 
@@ -225,12 +225,9 @@ void CLevel::ProcessGameSpawns()
         for (auto& E : game_spawn_queue)
         {
             if (E->ID_Parent == trader->ID)
-            {
-                // Msg( "* [%s]: delayed spawn dwFrame[%u] trader[%d] ID[%d] ID_Parent[%d] name_replace[%s]", __FUNCTION__, Device.dwFrame, trader->ID, E->ID, E->ID_Parent,
-                // E->name_replace() );
-                g_sv_Spawn(E);
-            }
+                co_await g_sv_Spawn(E);
         }
+
         game_spawn_queue.erase(std::remove_if(game_spawn_queue.begin(), game_spawn_queue.end(), [&](auto& E) { return E->ID_Parent == trader->ID; }), game_spawn_queue.end());
         F_entity_Destroy(trader);
     }

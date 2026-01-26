@@ -72,7 +72,7 @@ public:
 
     virtual void SetClGame(game_cl_GameState*) {}
     virtual float shedule_Scale() const;
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
 
     CUIGameCustom();
     ~CUIGameCustom() override;

@@ -35,7 +35,7 @@ CEffect_Rain::CEffect_Rain()
 
 CEffect_Rain::~CEffect_Rain()
 {
-    snd_Ambient.destroy();
+    snd_Ambient.queue_destroy();
     rain_volume = 0.0f;
 
     p_destroy();
@@ -94,10 +94,10 @@ void CEffect_Rain::RenewItem(Item& dest, float height, BOOL bHit)
     }
 }
 
-void CEffect_Rain::OnFrame()
+tmc::task<void> CEffect_Rain::OnFrame()
 {
     if (!g_pGameLevel)
-        return;
+        co_return;
 
     // Parse states
     const float rain_density = g_pGamePersistent->Environment().CurrentEnv->rain_density;
@@ -133,16 +133,18 @@ void CEffect_Rain::OnFrame()
         {
             if (snd_Ambient._feedback())
             {
-                snd_Ambient.stop();
+                co_await snd_Ambient.stop();
                 rain_volume = 0.0f;
             }
-            return;
+
+            co_return;
         }
+
         if (snd_Ambient._feedback())
         {
-            snd_Ambient.stop();
+            co_await snd_Ambient.stop();
             rain_volume = 0.0f;
-            return;
+            co_return;
         }
 
         snd_Ambient.play(nullptr, sm_Looped);
@@ -155,10 +157,12 @@ void CEffect_Rain::OnFrame()
         if (factor < EPS_L)
         {
             state = stIdle;
-            snd_Ambient.stop();
+
+            co_await snd_Ambient.stop();
             rain_volume = 0.0f;
-            return;
+            co_return;
         }
+
         break;
     }
 

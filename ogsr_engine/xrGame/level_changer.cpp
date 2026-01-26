@@ -37,15 +37,16 @@ CLevelChanger::~CLevelChanger() = default;
 void CLevelChanger::Center(Fvector& C) const { XFORM().transform_tiny(C, CFORM()->getSphere().P); }
 float CLevelChanger::Radius() const { return CFORM()->getRadius(); }
 
-void CLevelChanger::net_Destroy()
+tmc::task<void> CLevelChanger::net_Destroy()
 {
-    inherited ::net_Destroy();
+    co_await inherited::net_Destroy();
+
     xr_vector<CLevelChanger*>::iterator it = std::find(g_lchangers.begin(), g_lchangers.end(), this);
     if (it != g_lchangers.end())
         g_lchangers.erase(it);
 }
 
-BOOL CLevelChanger::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CLevelChanger::net_Spawn(CSE_Abstract* DC)
 {
     m_entrance_time = 0;
     CCF_Shape* l_pShape = xr_new<CCF_Shape>(this);
@@ -86,7 +87,7 @@ BOOL CLevelChanger::net_Spawn(CSE_Abstract* DC)
         }
     }
 
-    BOOL bOk = inherited::net_Spawn(DC);
+    const bool bOk = co_await inherited::net_Spawn(DC);
     if (bOk)
     {
         l_pShape->ComputeBounds();
@@ -94,13 +95,15 @@ BOOL CLevelChanger::net_Spawn(CSE_Abstract* DC)
         XFORM().transform_tiny(P, CFORM()->getSphere().P);
         setEnabled(TRUE);
     }
+
     g_lchangers.push_back(this);
-    return (bOk);
+
+    co_return bOk;
 }
 
-void CLevelChanger::shedule_Update(u32 dt)
+tmc::task<void> CLevelChanger::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
 
     const Fsphere& s = CFORM()->getSphere();
     Fvector P;

@@ -39,7 +39,7 @@ public:
     ~vision_client() override;
 
     virtual float shedule_Scale() const;
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
     virtual shared_str shedule_Name() const;
     virtual bool shedule_Needed();
 

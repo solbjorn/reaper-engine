@@ -53,14 +53,14 @@ public:
     CCustomZone();
     ~CCustomZone() override;
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     virtual void net_Export(CSE_Abstract* E);
     virtual void Load(LPCSTR section);
-    virtual void net_Destroy();
+    tmc::task<void> net_Destroy() override;
 
     tmc::task<void> UpdateCL() override;
     virtual void UpdateWorkload(u32 dt); // related to fast-mode optimizations
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
     virtual void enter_Zone(SZoneObjectInfo& io);
     virtual void exit_Zone(SZoneObjectInfo& io);
     virtual void feel_touch_new(CObject* O);
@@ -71,7 +71,7 @@ public:
     virtual float distance_to_center(CObject* O);
     virtual void Postprocess(float) {}
     virtual void net_Relcase(CObject* O);
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     void OnOwnershipTake(u16 id);
 
     float GetMaxPower() { return m_fMaxPower; }

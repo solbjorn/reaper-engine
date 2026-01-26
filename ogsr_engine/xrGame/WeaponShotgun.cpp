@@ -34,7 +34,7 @@ CWeaponShotgun::~CWeaponShotgun()
     HUD_SOUND::DestroySound(m_sndBreechJammed);
 }
 
-void CWeaponShotgun::net_Destroy() { inherited::net_Destroy(); }
+tmc::task<void> CWeaponShotgun::net_Destroy() { co_await inherited::net_Destroy(); }
 
 void CWeaponShotgun::Load(LPCSTR section)
 {

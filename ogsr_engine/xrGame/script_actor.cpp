@@ -80,56 +80,32 @@ static CActorConditionObject* get_actor_condition(CActor* pActor) { return (CAct
 static SRotation& get_actor_orientation(CActor* pActor) { return pActor->Orientation(); }
 static ACTOR_DEFS::EActorCameras get_active_cam(CActor* pActor) { return pActor->active_cam(); }
 
-namespace xr
-{
 namespace
 {
-class actor_input_async
+tmc::task<void> press_action_async(std::array<std::byte, 16>& arg)
 {
-private:
-    static constexpr gsl::index none{std::numeric_limits<gsl::index>::max()};
+    const auto& pair = *reinterpret_cast<std::pair<CActor*, gsl::index>*>(&arg);
+    co_await pair.first->IR_OnKeyboardPress(pair.second);
+}
 
-    CActor* actor_async{};
-    gsl::index key_async{none};
-    gsl::index hld_async{none};
+void press_action(CActor* actor, gsl::index key)
+{
+    auto& arg = Device.add_frame_async(CallMe::fromFunction<&press_action_async>());
+    *reinterpret_cast<std::pair<CActor*, gsl::index>*>(&arg) = std::make_pair(actor, key);
+}
 
-    tmc::task<void> press_async()
-    {
-        const auto key = key_async;
-        if (key == none)
-            co_return;
+tmc::task<void> hold_action_async(std::array<std::byte, 16>& arg)
+{
+    const auto& pair = *reinterpret_cast<std::pair<CActor*, gsl::index>*>(&arg);
+    co_await pair.first->IR_OnKeyboardHold(pair.second);
+}
 
-        key_async = none;
-        co_await actor_async->IR_OnKeyboardPress(key);
-    }
-
-    tmc::task<void> hold_async()
-    {
-        const auto key = hld_async;
-        if (key == none)
-            co_return;
-
-        hld_async = none;
-        co_await actor_async->IR_OnKeyboardHold(key);
-    }
-
-public:
-    void press(CActor* actor, gsl::index key)
-    {
-        actor_async = actor;
-        key_async = key;
-        Device.add_frame_async(CallMe::fromMethod<&xr::actor_input_async::press_async>(this));
-    }
-
-    void hold(CActor* actor, gsl::index key)
-    {
-        actor_async = actor;
-        hld_async = key;
-        Device.add_frame_async(CallMe::fromMethod<&xr::actor_input_async::hold_async>(this));
-    }
-} input_async;
+void hold_action(CActor* actor, gsl::index key)
+{
+    auto& arg = Device.add_frame_async(CallMe::fromFunction<&hold_action_async>());
+    *reinterpret_cast<std::pair<CActor*, gsl::index>*>(&arg) = std::make_pair(actor, key);
+}
 } // namespace
-} // namespace xr
 
 static bool IsLimping(CActorCondition* C) { return C->m_condition_flags.test(CActorCondition::eLimping); }
 static bool IsCantWalk(CActorCondition* C) { return C->m_condition_flags.test(CActorCondition::eCantWalk); }
@@ -186,8 +162,7 @@ void CScriptActor::script_register(sol::state_view& lua)
         sol::property(&get_actor_orientation),
 
         // Real Wolf. Start. 14.10.2014.
-        "press_action", [](CActor* actor, gsl::index key) { xr::input_async.press(actor, key); }, "hold_action",
-        [](CActor* actor, gsl::index key) { xr::input_async.hold(actor, key); }, "release_action", &CActor::IR_OnKeyboardRelease, "is_zoom_aiming_mode", &CActor::IsZoomAimingMode,
+        "press_action", &press_action, "hold_action", &hold_action, "release_action", &CActor::IR_OnKeyboardRelease, "is_zoom_aiming_mode", &CActor::IsZoomAimingMode,
         // Real Wolf. End. 14.10.2014.
 
         "get_body_state", &CActor::get_state, "is_actor_normal", &CActor::is_actor_normal, "is_actor_crouch", &CActor::is_actor_crouch, "is_actor_creep", &CActor::is_actor_creep,

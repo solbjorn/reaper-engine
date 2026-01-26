@@ -57,7 +57,7 @@ public:
 
     void PreStart(LPCSTR op) override;
     tmc::task<void> Start(gsl::czstring op) override;
-    virtual void Disconnect();
+    tmc::task<void> Disconnect() override;
 
     tmc::task<void> OnAppActivate() override;
     tmc::task<void> OnAppDeactivate() override;

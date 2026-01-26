@@ -68,12 +68,12 @@ public:
     virtual CHolderCustom* cast_holder_custom() { return this; }
     virtual void Load(LPCSTR section);
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual void net_Export(CSE_Abstract* E);
 
     tmc::task<void> UpdateCL() override;
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
 
     void renderable_Render(u32 context_id, IRenderable* root) override;
 

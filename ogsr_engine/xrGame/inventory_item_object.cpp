@@ -94,23 +94,24 @@ tmc::task<void> CInventoryItemObject::UpdateCL()
     co_await CInventoryItem::UpdateCL();
 }
 
-void CInventoryItemObject::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CInventoryItemObject::OnEvent(NET_Packet& P, u16 type)
 {
-    CPhysicItem::OnEvent(P, type);
-    CInventoryItem::OnEvent(P, type);
+    co_await CPhysicItem::OnEvent(P, type);
+    co_await CInventoryItem::OnEvent(P, type);
 }
 
-BOOL CInventoryItemObject::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CInventoryItemObject::net_Spawn(CSE_Abstract* DC)
 {
-    BOOL res = CPhysicItem::net_Spawn(DC);
-    CInventoryItem::net_Spawn(DC);
-    return (res);
+    const bool res = co_await CPhysicItem::net_Spawn(DC);
+    std::ignore = co_await CInventoryItem::net_Spawn(DC);
+
+    co_return res;
 }
 
-void CInventoryItemObject::net_Destroy()
+tmc::task<void> CInventoryItemObject::net_Destroy()
 {
-    CInventoryItem::net_Destroy();
-    CPhysicItem::net_Destroy();
+    co_await CInventoryItem::net_Destroy();
+    co_await CPhysicItem::net_Destroy();
 }
 
 void CInventoryItemObject::net_Export(CSE_Abstract* E) { CInventoryItem::net_Export(E); }

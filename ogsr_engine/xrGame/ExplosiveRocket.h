@@ -33,8 +33,8 @@ public:
 
 public:
     virtual void Load(LPCSTR section);
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual void net_Relcase(CObject* O);
     virtual void OnH_A_Independent();
     virtual void OnH_B_Independent(bool just_before_destroy);
@@ -42,7 +42,7 @@ public:
 
     virtual void Contact(const Fvector& pos, const Fvector& normal);
 
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
 
     virtual void Hit(SHit* pHDS) { inherited::Hit(pHDS); }
 

@@ -176,10 +176,10 @@ tmc::task<void> CObjectList::Update(bool bForce)
     }
 
     // Destroy
-    ProcessDestroyQueue();
+    co_await ProcessDestroyQueue();
 }
 
-void CObjectList::ProcessDestroyQueue()
+tmc::task<void> CObjectList::ProcessDestroyQueue()
 {
     // Destroy
     if (!destroy_queue.empty())
@@ -220,7 +220,7 @@ void CObjectList::ProcessDestroyQueue()
 #endif // DEBUG
 
             O->setDestroy(true);
-            O->net_Destroy();
+            co_await O->net_Destroy();
             Destroy(O);
         }
 
@@ -254,7 +254,7 @@ CObject* CObjectList::net_Find(u32 ID)
 
 void CObjectList::Load() { R_ASSERT(map_NETID.empty() && objects_active.empty() && destroy_queue.empty() && objects_sleeping.empty()); }
 
-void CObjectList::Unload()
+tmc::task<void> CObjectList::Unload()
 {
     if (!objects_sleeping.empty() || !objects_active.empty())
         Msg("! objects-leaked: %zu", objects_sleeping.size() + objects_active.size());
@@ -270,7 +270,7 @@ void CObjectList::Unload()
         Msg("Destroying object [%d][%s]", O->ID(), *O->cName());
 #endif
 
-        O->net_Destroy();
+        co_await O->net_Destroy();
         Destroy(O);
     }
 
@@ -284,7 +284,7 @@ void CObjectList::Unload()
         Msg("Destroying object [%d][%s]", O->ID(), *O->cName());
 #endif
 
-        O->net_Destroy();
+        co_await O->net_Destroy();
         Destroy(O);
     }
 }

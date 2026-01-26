@@ -186,12 +186,10 @@ tmc::task<void> CInput::KeyUpdate()
         {
             if (this->is_exclusive_mode && (key == DIK_LSHIFT || key == DIK_RSHIFT) && (this->iGetAsyncKeyState(DIK_LMENU) || this->iGetAsyncKeyState(DIK_RMENU)))
             {
-                co_await tmc::spawn([] -> tmc::task<void> {
-                    // Переключили язык. В эксклюзивном режиме это обязательно для правильной работы функции DikToChar
-                    PostMessage(gGameWindow, WM_INPUTLANGCHANGEREQUEST, 2, 0);
-                    co_return;
-                }())
-                    .run_on(xr::tmc_cpu_st_executor());
+                // Переключили язык. В эксклюзивном режиме это обязательно для правильной работы функции DikToChar
+                auto scope = co_await tmc::enter(xr::tmc_cpu_st_executor());
+                PostMessage(gGameWindow, WM_INPUTLANGCHANGEREQUEST, 2, 0);
+                co_await scope.exit();
             }
 
             if (!editor || !xr::editor()->key_press(key))

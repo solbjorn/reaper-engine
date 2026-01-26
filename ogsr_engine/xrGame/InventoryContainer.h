@@ -39,8 +39,8 @@ public:
     virtual float Weight() const;
     virtual float RadiationRestoreSpeed() const;
     virtual DLL_Pure* _construct();
-    virtual void OnEvent(NET_Packet& P, u16 type);
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
 
     virtual bool IsClosed() const { return !m_opened; } // alpet: если закрыт - можно подобрать в инвентарь
     virtual bool IsOpened() const { return m_opened; } // alpet: если открыт - в нем можно ковыряться

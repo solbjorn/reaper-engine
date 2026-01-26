@@ -18,13 +18,14 @@ class CAgentManagerPlanner;
 
 // #define USE_SCHEDULER_IN_AGENT_MANAGER
 
-#ifdef USE_SCHEDULER_IN_AGENT_MANAGER
-class CAgentManager : public ISheduled
-{
-#else // USE_SCHEDULER_IN_AGENT_MANAGER
 class CAgentManager
+#ifdef USE_SCHEDULER_IN_AGENT_MANAGER
+    : public ISheduled
+#endif
 {
-#endif // USE_SCHEDULER_IN_AGENT_MANAGER
+#ifdef USE_SCHEDULER_IN_AGENT_MANAGER
+    RTTI_DECLARE_TYPEINFO(CAgentManager, ISheduled);
+#endif
 
 private:
     CAgentCorpseManager* m_corpse;
@@ -54,16 +55,21 @@ private:
 
 public:
     CAgentManager();
-    // final class, no virtual destructor needed
-    ~CAgentManager();
+
 #ifdef USE_SCHEDULER_IN_AGENT_MANAGER
+    ~CAgentManager() override;
+
     virtual bool shedule_Needed() { return true; };
     virtual float shedule_Scale() const;
-    virtual void shedule_Update(u32 time_delta);
+    tmc::task<void> shedule_Update(u32 time_delta) override;
     virtual shared_str shedule_Name() const { return shared_str("agent_manager"); };
 #else // USE_SCHEDULER_IN_AGENT_MANAGER
+    // final class, no virtual destructor needed
+    ~CAgentManager();
+
     void update();
 #endif // USE_SCHEDULER_IN_AGENT_MANAGER
+
     shared_str cName() const;
     void remove_links(CObject* object);
 

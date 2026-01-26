@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "eatable_item.h"
+
 #include "physic_item.h"
 #include "Level.h"
 #include "entity_alive.h"
@@ -42,14 +43,14 @@ void CEatableItem::Load(LPCSTR section)
     VERIFY(m_iPortionsNum < 10000);
 }
 
-BOOL CEatableItem::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CEatableItem::net_Spawn(CSE_Abstract* DC)
 {
-    if (!inherited::net_Spawn(DC))
-        return FALSE;
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
 
     m_iPortionsNum = m_iStartPortionsNum;
 
-    return TRUE;
+    co_return true;
 }
 
 bool CEatableItem::Useful() const

@@ -71,10 +71,10 @@ public:
     virtual void Load(LPCSTR section);
     virtual void reinit();
     virtual void reload(LPCSTR section);
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
 
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
 
     bool IsFocused() const;
     bool IsMyCamera() const;
@@ -101,11 +101,11 @@ public:
     virtual void HitSignal(float P, Fvector& local_dir, CObject* who, s16 element) = 0;
     virtual void HitImpulse(float P, Fvector& vWorldDir, Fvector& vLocalDir) = 0;
 
-    virtual void Die(CObject*);
+    virtual tmc::task<void> Die(CObject*);
     void KillEntity(u16 whoID);
 
     // Events
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
 
     virtual BOOL IsVisibleForHUD() { return g_Alive(); }
     virtual void g_fireParams(CHudItem*, Fvector&, Fvector&, const bool = false) {}

@@ -75,7 +75,7 @@ CClimableObject::~CClimableObject() {}
 
 void CClimableObject::Load(LPCSTR section) { inherited::Load(section); }
 
-BOOL CClimableObject::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CClimableObject::net_Spawn(CSE_Abstract* DC)
 {
     CSE_Abstract* e = (CSE_Abstract*)(DC);
     CSE_ALifeObjectClimable* CLB = smart_cast<CSE_ALifeObjectClimable*>(e);
@@ -83,11 +83,11 @@ BOOL CClimableObject::net_Spawn(CSE_Abstract* DC)
     m_box.m_halfsize.set(b._11, b._22, b._33);
     m_radius = _max(_max(m_box.m_halfsize.x, m_box.m_halfsize.y), m_box.m_halfsize.z);
 
-    // m_box.m_halfsize.set(1.f,1.f,1.f);
-    BOOL ret = inherited::net_Spawn(DC);
-    const float f_min_width = 0.2f;
-    Fvector shift;
-    shift.set(0.f, 0.f, 0.f);
+    const bool ret = co_await inherited::net_Spawn(DC);
+
+    constexpr f32 f_min_width{0.2f};
+    Fvector shift{};
+
     SORT(
         b._11, m_axis.set(XFORM().i); m_axis.mul(m_box.m_halfsize.x), m_side.set(XFORM().i); m_side.mul(m_box.m_halfsize.x), m_norm.set(XFORM().i);
         if (m_box.m_halfsize.x < f_min_width) {
@@ -123,19 +123,20 @@ BOOL CClimableObject::net_Spawn(CSE_Abstract* DC)
     processing_deactivate();
     m_pStaticShell->set_ObjectContactCallback(ObjectContactCallback);
 
-    return ret;
+    co_return ret;
 }
 
-void CClimableObject::net_Destroy()
+tmc::task<void> CClimableObject::net_Destroy()
 {
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
+
     m_pStaticShell->Deactivate();
     xr_delete(m_pStaticShell);
 }
 
-void CClimableObject::shedule_Update(u32 dt) // Called by shedule
+tmc::task<void> CClimableObject::shedule_Update(u32 dt) // Called by shedule
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
 }
 
 tmc::task<void> CClimableObject::UpdateCL() // Called each frame, so no need for d

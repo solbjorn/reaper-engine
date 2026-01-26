@@ -107,8 +107,8 @@ void monster_aura::remove_pp_effector()
         RemoveEffector(Actor(), m_pp_index);
         m_pp_index = 0;
 
-        m_sound.stop();
-        m_detect_sound.stop();
+        m_sound.queue_stop();
+        m_detect_sound.queue_stop();
 
         if (this_is_psy_aura)
             Actor()->PsyAuraAffect = false;
@@ -149,10 +149,10 @@ void monster_aura::play_detector_sound()
     }
 }
 
-void monster_aura::on_monster_death()
+tmc::task<void> monster_aura::on_monster_death()
 {
-    m_sound.stop();
-    m_detect_sound.stop();
+    co_await m_sound.stop();
+    co_await m_detect_sound.stop();
 }
 
 void monster_aura::update_schedule()

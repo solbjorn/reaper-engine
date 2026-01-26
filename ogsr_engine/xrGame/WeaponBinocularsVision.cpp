@@ -150,7 +150,7 @@ CBinocularsVision::CBinocularsVision(CWeaponMagazined* parent)
     Load(m_parent->cNameSect());
 }
 
-CBinocularsVision::~CBinocularsVision() { m_snd_found.destroy(); }
+CBinocularsVision::~CBinocularsVision() { m_snd_found.queue_destroy(); }
 
 void CBinocularsVision::Update()
 {

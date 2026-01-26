@@ -106,7 +106,7 @@ void CGameObject::reinit()
 
 void CGameObject::reload(LPCSTR) { m_script_clsid = object_factory().script_clsid(CLS_ID); }
 
-void CGameObject::net_Destroy()
+tmc::task<void> CGameObject::net_Destroy()
 {
 #ifdef DEBUG
     if (psAI_Flags.test(aiDestroy))
@@ -126,7 +126,7 @@ void CGameObject::net_Destroy()
     if (Visual() && smart_cast<IKinematics*>(Visual()))
         smart_cast<IKinematics*>(Visual())->Callback(nullptr, nullptr);
 
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
     setReady(FALSE);
     g_pGameLevel->Objects.net_Unregister(this);
 
@@ -140,13 +140,13 @@ void CGameObject::net_Destroy()
     CPHSriptReqGObjComparer cmpr(this);
     Level().ph_commander_scripts().remove_calls(&cmpr);
 
-    CScriptBinder::net_Destroy();
+    co_await CScriptBinder::net_Destroy();
 
     xr_delete(m_lua_game_object);
     m_spawned = false;
 }
 
-void CGameObject::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CGameObject::OnEvent(NET_Packet& P, u16 type)
 {
     switch (type)
     {
@@ -203,11 +203,13 @@ void CGameObject::OnEvent(NET_Packet& P, u16 type)
     }
     break;
     }
+
+    co_return;
 }
 
 void VisualCallback(IKinematics* tpKinematics);
 
-BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CGameObject::net_Spawn(CSE_Abstract* DC)
 {
     VERIFY(!m_spawned);
     if (m_spawned)
@@ -352,12 +354,12 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
             // but I propose do not touch this, or touch and then
             // test the whole spawn sequence
             Parent = this;
-            inherited::net_Spawn(DC);
+            std::ignore = co_await inherited::net_Spawn(DC);
             Parent = nullptr;
         }
         else
         {
-            inherited::net_Spawn(DC);
+            std::ignore = co_await inherited::net_Spawn(DC);
         }
     }
     else
@@ -392,7 +394,7 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
                 Position().y = EPS_L + ai().level_graph().vertex_plane_y(*ai_location().level_vertex(), Position().x, Position().z);
         }
 
-        inherited::net_Spawn(DC);
+        std::ignore = co_await inherited::net_Spawn(DC);
     }
 
     m_bObjectRemoved = false;
@@ -404,14 +406,14 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
         Msg("CGameObject::net_Spawn obj %s Before CScriptBinder::net_Spawn %f,%f,%f", PH_DBG_ObjectTrack(), Position().x, Position().y, Position().z);
 #endif
 
-    BOOL ret = CScriptBinder::net_Spawn(DC);
+    const bool ret = co_await CScriptBinder::net_Spawn(DC);
 
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), cName())))
         Msg("CGameObject::net_Spawn obj %s Before CScriptBinder::net_Spawn %f,%f,%f", PH_DBG_ObjectTrack(), Position().x, Position().y, Position().z);
 #endif
 
-    return ret;
+    co_return ret;
 }
 
 void CGameObject::net_Save(NET_Packet& net_packet)
@@ -794,12 +796,11 @@ void CGameObject::DestroyObject()
     u_EventSend(P);
 }
 
-void CGameObject::shedule_Update(u32 dt)
+tmc::task<void> CGameObject::shedule_Update(u32 dt)
 {
-    // Msg							("-SUB-:[%x][%s] CGameObject::shedule_Update",smart_cast<void*>(this),*cName());
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
     FeelTouchAddonsUpdate();
-    CScriptBinder::shedule_Update(dt);
+    co_await CScriptBinder::shedule_Update(dt);
 }
 
 BOOL CGameObject::net_SaveRelevant() { return (CScriptBinder::net_SaveRelevant()); }

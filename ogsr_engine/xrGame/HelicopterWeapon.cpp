@@ -24,10 +24,11 @@ void CHelicopter::BoneMGunCallbackY(CBoneInstance* B)
     B->mTransform.mulB_43(rY);
 }
 
-void CHelicopter::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CHelicopter::OnEvent(NET_Packet& P, u16 type)
 {
-    inherited::OnEvent(P, type);
-    CExplosive::OnEvent(P, type);
+    co_await inherited::OnEvent(P, type);
+    co_await CExplosive::OnEvent(P, type);
+
     u16 id;
     switch (type)
     {

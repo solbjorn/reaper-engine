@@ -17,7 +17,7 @@
 CPhysicObject::CPhysicObject() = default;
 CPhysicObject::~CPhysicObject() = default;
 
-BOOL CPhysicObject::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CPhysicObject::net_Spawn(CSE_Abstract* DC)
 {
     CSE_Abstract* e = (CSE_Abstract*)(DC);
     CSE_ALifeObjectPhysic* po = smart_cast<CSE_ALifeObjectPhysic*>(e);
@@ -27,7 +27,7 @@ BOOL CPhysicObject::net_Spawn(CSE_Abstract* DC)
     m_mass = po->mass;
     m_collision_hit_callback = nullptr;
 
-    inherited::net_Spawn(DC);
+    std::ignore = co_await inherited::net_Spawn(DC);
     xr_delete(collidable.model);
 
     switch (m_type)
@@ -56,7 +56,7 @@ BOOL CPhysicObject::net_Spawn(CSE_Abstract* DC)
     // приложить небольшую силу для того, чтобы объект начал падать
     PPhysicsShell()->applyImpulse(Fvector().set(0.f, -1.0f, 0.f), 0.5f * PPhysicsShell()->getMass());
 
-    return TRUE;
+    co_return true;
 }
 
 void CPhysicObject::SpawnInitPhysics(CSE_Abstract* D)
@@ -87,14 +87,14 @@ void CPhysicObject::RunStartupAnim(CSE_Abstract* D)
     }
 }
 
-void CPhysicObject::net_Destroy()
+tmc::task<void> CPhysicObject::net_Destroy()
 {
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
     if (PPhysicsShell()->Animated())
         processing_deactivate();
 #endif
 
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
     CPHSkeleton::RespawnInit();
 }
 
@@ -129,9 +129,9 @@ void CPhysicObject::Load(LPCSTR section)
     CPHSkeleton::Load(section);
 }
 
-void CPhysicObject::shedule_Update(u32 dt)
+tmc::task<void> CPhysicObject::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
     CPHSkeleton::Update(dt);
 }
 

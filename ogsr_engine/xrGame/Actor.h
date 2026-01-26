@@ -120,10 +120,10 @@ public:
 public:
     virtual void Load(LPCSTR section);
 
-    virtual void shedule_Update(u32 T);
+    tmc::task<void> shedule_Update(u32 T) override;
     tmc::task<void> UpdateCL() override;
 
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
 
     // Render
     void renderable_Render(u32 context_id, IRenderable* root) override;
@@ -209,7 +209,7 @@ public:
     virtual void OnItemDrop(CInventoryItem* inventory_item);
     virtual void OnItemDropUpdate();
 
-    virtual void Die(CObject* who);
+    tmc::task<void> Die(CObject* who) override;
     virtual void Hit(SHit* pHDS);
     virtual void PHHit(SHit& H);
     virtual void HitSignal(float P, Fvector& vLocalDir, CObject* who, s16 element);
@@ -559,9 +559,9 @@ protected:
     // Network
     //////////////////////////////////////////////////////////////////////////
 public:
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     virtual void net_Export(CSE_Abstract* E);
-    virtual void net_Destroy();
+    tmc::task<void> net_Destroy() override;
     virtual BOOL net_Relevant(); //	{ return getSVU() | getLocal(); };		// relevant for export to server
     virtual void net_Relcase(CObject* O); //
     virtual void on_requested_spawn(CObject* object);

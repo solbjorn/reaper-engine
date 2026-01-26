@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "PHSoundPlayer.h"
+
 #include "PhysicsShellHolder.h"
 
 CPHSoundPlayer::CPHSoundPlayer(CPhysicsShellHolder* obj) { Init(obj); }
@@ -8,7 +9,8 @@ CPHSoundPlayer::CPHSoundPlayer(CPhysicsShellHolder* obj) { Init(obj); }
 CPHSoundPlayer::~CPHSoundPlayer()
 {
     for (auto& it : m_sound)
-        it.second.stop();
+        it.second.queue_stop();
+
     m_object = nullptr;
 }
 

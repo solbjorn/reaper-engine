@@ -128,15 +128,15 @@ public:
     void SwitchState(u32 S) override;
     // прием сообщения с сервера и его обработка
     void OnStateSwitch(u32 S, u32) override;
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    virtual tmc::task<void> OnEvent(NET_Packet& P, u16 type);
 
     virtual void OnH_A_Chield();
     virtual void OnH_B_Chield();
     virtual void OnH_B_Independent(bool);
     virtual void OnH_A_Independent();
 
-    [[nodiscard]] virtual BOOL net_Spawn(CSE_Abstract*);
-    virtual void net_Destroy();
+    virtual tmc::task<bool> net_Spawn(CSE_Abstract*);
+    virtual tmc::task<void> net_Destroy();
 
     virtual bool Activate(bool = false);
     virtual void Deactivate(bool = false);

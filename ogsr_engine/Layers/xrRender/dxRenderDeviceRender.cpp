@@ -213,7 +213,8 @@ void dxRenderDeviceRender::ResourcesGetMemoryUsage(xr::render_memory_usage& usag
 }
 
 void dxRenderDeviceRender::ResourcesDumpMemoryUsage() const { Resources->_DumpMemoryUsage(); }
-tmc::task<DeviceState> dxRenderDeviceRender::GetDeviceState() { co_return co_await tmc::spawn(HW.GetDeviceState()).run_on(xr::tmc_cpu_st_executor()); }
+
+tmc::task<DeviceState> dxRenderDeviceRender::GetDeviceState() { co_return co_await tmc::spawn_clang(HW.GetDeviceState(), xr::tmc_cpu_st_executor()); }
 
 BOOL dxRenderDeviceRender::GetForceGPU_REF() { return HW.Caps.bForceGPU_REF; }
 u32 dxRenderDeviceRender::GetCacheStatPolys() { return RCache.stat.polys; }
@@ -262,7 +263,7 @@ tmc::task<void> dxRenderDeviceRender::End()
     // we're done with rendering
     cleanup_contexts();
 
-    co_await tmc::spawn(HW.Present()).run_on(xr::tmc_cpu_st_executor());
+    co_await tmc::spawn_clang(HW.Present(), xr::tmc_cpu_st_executor());
 }
 
 void dxRenderDeviceRender::ClearTarget()

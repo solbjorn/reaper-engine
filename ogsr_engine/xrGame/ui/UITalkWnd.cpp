@@ -421,8 +421,7 @@ void CUITalkWnd::StopSnd()
     if (m_pActor && m_pActor->OnDialogSoundHandlerStop(m_pOthersInvOwner))
         return;
 
-    if (m_sound._feedback())
-        m_sound.stop();
+    m_sound.queue_stop();
 }
 
 void CUITalkWnd::AddAnswerScript(LPCSTR text, bool is_actor)

@@ -8,9 +8,10 @@
 
 #include "stdafx.h"
 
+#include "script_binder.h"
+
 #include "ai_space.h"
 #include "script_engine.h"
-#include "script_binder.h"
 #include "xrServer_Objects_ALife.h"
 #include "script_binder_object.h"
 #include "script_game_object.h"
@@ -73,26 +74,31 @@ void CScriptBinder::reload(LPCSTR section)
     }
 }
 
-BOOL CScriptBinder::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CScriptBinder::net_Spawn(CSE_Abstract* DC)
 {
     CSE_Abstract* abstract = (CSE_Abstract*)DC;
-    CSE_ALifeObject* object = smart_cast<CSE_ALifeObject*>(abstract);
-    if (object && m_object)
-    {
-        return (BOOL)m_object->net_Spawn(object);
-    }
-    return TRUE;
+
+    if (m_object == nullptr)
+        co_return true;
+
+    auto object = smart_cast<CSE_ALifeObject*>(abstract);
+    if (object != nullptr)
+        co_return co_await m_object->net_Spawn(object);
+
+    co_return true;
 }
 
-void CScriptBinder::net_Destroy()
+tmc::task<void> CScriptBinder::net_Destroy()
 {
-    if (m_object)
+    if (m_object != nullptr)
     {
 #ifdef DEBUG
         Msg("* Core object %s is UNbinded from the script object", smart_cast<CGameObject*>(this) ? *smart_cast<CGameObject*>(this)->cName() : "");
 #endif // DEBUG
-        m_object->net_Destroy();
+
+        co_await m_object->net_Destroy();
     }
+
     xr_delete(m_object);
 }
 
@@ -105,12 +111,10 @@ void CScriptBinder::set_object(CScriptBinderObject* object)
     m_object = object;
 }
 
-void CScriptBinder::shedule_Update(u32 time_delta)
+tmc::task<void> CScriptBinder::shedule_Update(u32 time_delta)
 {
-    if (m_object)
-    {
-        m_object->shedule_Update(time_delta);
-    }
+    if (m_object != nullptr)
+        co_await m_object->shedule_Update(time_delta);
 }
 
 void CScriptBinder::save(NET_Packet& output_packet)

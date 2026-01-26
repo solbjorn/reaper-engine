@@ -262,23 +262,23 @@ tmc::task<void> CInventoryItem::UpdateCL()
 }
 #endif
 
-void CInventoryItem::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CInventoryItem::OnEvent(NET_Packet& P, u16 type)
 {
-    if (type == GE_CHANGE_POS)
-    {
-        Fvector p;
-        P.r_vec3(p);
-        CPHSynchronize* pSyncObj{};
-        pSyncObj = object().PHGetSyncItem(0);
-        if (!pSyncObj)
-            return;
+    if (type != GE_CHANGE_POS)
+        co_return;
 
-        SPHNetState state;
-        pSyncObj->get_State(state);
-        state.position = p;
-        state.previous_position = p;
-        pSyncObj->set_State(state);
-    }
+    Fvector p;
+    P.r_vec3(p);
+
+    CPHSynchronize* pSyncObj = object().PHGetSyncItem(0);
+    if (pSyncObj == nullptr)
+        co_return;
+
+    SPHNetState state;
+    pSyncObj->get_State(state);
+    state.position = p;
+    state.previous_position = p;
+    pSyncObj->set_State(state);
 }
 
 // процесс отсоединения вещи заключается в спауне новой вещи
@@ -317,7 +317,7 @@ bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
 }
 
 /////////// network ///////////////////////////////
-BOOL CInventoryItem::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CInventoryItem::net_Spawn(CSE_Abstract* DC)
 {
     m_flags.set(FInInterpolation, FALSE);
     m_flags.set(FInInterpolate, FALSE);
@@ -342,16 +342,12 @@ BOOL CInventoryItem::net_Spawn(CSE_Abstract* DC)
 
     CSE_ALifeInventoryItem* pSE_InventoryItem = smart_cast<CSE_ALifeInventoryItem*>(e);
     if (!pSE_InventoryItem)
-        return TRUE;
+        co_return true;
 
-    return TRUE;
+    co_return true;
 }
 
-void CInventoryItem::net_Destroy()
-{
-    // инвентарь которому мы принадлежали
-    //.	m_pCurrentInventory = NULL;
-}
+tmc::task<void> CInventoryItem::net_Destroy() { co_return; }
 
 void CInventoryItem::save(NET_Packet& packet)
 {

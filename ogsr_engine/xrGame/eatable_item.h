@@ -27,7 +27,7 @@ public:
     virtual void Load(LPCSTR section);
     virtual bool Useful() const;
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
 
     virtual void OnH_B_Independent(bool just_before_destroy);
     virtual void UseBy(CEntityAlive* npc);

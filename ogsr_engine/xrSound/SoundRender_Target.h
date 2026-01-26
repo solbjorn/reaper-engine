@@ -32,10 +32,10 @@ public:
     virtual void _restart() = 0;
 
     virtual void start(CSoundRender_Emitter* E);
-    virtual void render();
-    virtual void rewind();
+    virtual tmc::task<void> render();
+    virtual tmc::task<void> rewind();
     virtual void stop();
-    virtual void update();
+    virtual tmc::task<void> update();
     virtual void fill_parameters(CSoundRender_Core* core) = 0;
 
     virtual void alAuxInit(ALuint slot) = 0;

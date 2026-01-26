@@ -33,7 +33,7 @@ tmc::task<bool> CLevel::net_start_client1()
 tmc::task<bool> CLevel::net_start_client2()
 {
     Server->create_direct_client();
-    connected_to_server = Connect2Server(*m_caClientOptions);
+    connected_to_server = co_await Connect2Server(m_caClientOptions.c_str());
 
     co_return true;
 }
@@ -86,7 +86,7 @@ tmc::task<bool> CLevel::net_start_client4()
 
         while (!game_configured)
         {
-            ClientReceive();
+            co_await ClientReceive();
 
             if (Server)
                 Server->Update();

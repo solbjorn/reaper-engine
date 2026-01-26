@@ -27,20 +27,20 @@ void CScriptObject::reinit()
     CGameObject::reinit();
 }
 
-BOOL CScriptObject::net_Spawn(CSE_Abstract* DC) { return (CGameObject::net_Spawn(DC) && CScriptEntity::net_Spawn(DC)); }
+tmc::task<bool> CScriptObject::net_Spawn(CSE_Abstract* DC) { co_return co_await CGameObject::net_Spawn(DC) && co_await CScriptEntity::net_Spawn(DC); }
 
-void CScriptObject::net_Destroy()
+tmc::task<void> CScriptObject::net_Destroy()
 {
-    CGameObject::net_Destroy();
-    CScriptEntity::net_Destroy();
+    co_await CGameObject::net_Destroy();
+    co_await CScriptEntity::net_Destroy();
 }
 
 BOOL CScriptObject::UsedAI_Locations() { return (FALSE); }
 
-void CScriptObject::shedule_Update(u32 DT)
+tmc::task<void> CScriptObject::shedule_Update(u32 DT)
 {
-    CGameObject::shedule_Update(DT);
-    CScriptEntity::shedule_Update(DT);
+    co_await CGameObject::shedule_Update(DT);
+    co_await CScriptEntity::shedule_Update(DT);
 }
 
 tmc::task<void> CScriptObject::UpdateCL()

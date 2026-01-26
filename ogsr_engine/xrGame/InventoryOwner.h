@@ -41,13 +41,13 @@ public:
     virtual CInventoryOwner* cast_inventory_owner() { return this; }
 
     virtual DLL_Pure* _construct();
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    virtual tmc::task<bool> net_Spawn(CSE_Abstract* DC);
+    tmc::task<void> net_Destroy() override;
     void Init();
     virtual void Load(LPCSTR section);
     virtual void reinit();
     virtual void reload(LPCSTR section);
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    virtual tmc::task<void> OnEvent(NET_Packet& P, u16 type);
 
     // serialization
     virtual void save(NET_Packet& output_packet);

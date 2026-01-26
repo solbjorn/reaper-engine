@@ -24,10 +24,10 @@ CSoundRender_Emitter* CSoundRender_Core::i_play(ref_sound* S, BOOL _loop, float 
 
 static u32 g_saved_event_count;
 
-void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R)
+tmc::task<void> CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R)
 {
     if (!bReady)
-        return;
+        co_return;
 
     Device.Statistic->SoundUpdate.Begin();
 
@@ -46,7 +46,7 @@ void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector
     {
         if (CSoundRender_Emitter* E = T->get_emitter())
         {
-            E->update(fTimer_Value, fTimer_Delta);
+            co_await E->update(fTimer_Value, fTimer_Delta);
             E->marker = s_emitters_u;
 
             E = T->get_emitter(); // update can stop itself
@@ -64,7 +64,7 @@ void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector
         CSoundRender_Emitter* pEmitter = s_emitters[it];
         if (pEmitter->marker != s_emitters_u)
         {
-            pEmitter->update(fTimer_Value, fTimer_Delta);
+            co_await pEmitter->update(fTimer_Value, fTimer_Delta);
             pEmitter->marker = s_emitters_u;
         }
         if (!pEmitter->isPlaying())
@@ -91,7 +91,7 @@ void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector
     Device.Statistic->SoundUpdate.End();
 }
 
-void CSoundRender_Core::render()
+tmc::task<void> CSoundRender_Core::render()
 {
     Device.Statistic->SoundRender.Begin();
 
@@ -101,7 +101,7 @@ void CSoundRender_Core::render()
     for (CSoundRender_Target* T : s_targets)
     {
         if (CSoundRender_Emitter* emitter = T->get_emitter())
-            emitter->render();
+            co_await emitter->render();
     }
 
     bLocked = false;

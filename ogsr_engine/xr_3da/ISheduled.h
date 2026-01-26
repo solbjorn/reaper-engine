@@ -27,9 +27,9 @@ public:
     virtual float shedule_Scale() const = 0;
 
 #ifdef DEBUG
-    virtual void shedule_Update(u32);
+    virtual tmc::task<void> shedule_Update(u32);
 #else
-    virtual void shedule_Update(u32) {}
+    virtual tmc::task<void> shedule_Update(u32) { co_return; }
 #endif
 
     virtual shared_str shedule_Name() const { return shared_str("unknown"); }

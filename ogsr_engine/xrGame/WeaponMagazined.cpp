@@ -83,16 +83,15 @@ void CWeaponMagazined::StopHUDSounds()
     inherited::StopHUDSounds();
 }
 
-void CWeaponMagazined::net_Destroy()
+tmc::task<void> CWeaponMagazined::net_Destroy()
 {
-    inherited::net_Destroy();
-    if (m_binoc_vision)
-        xr_delete(m_binoc_vision);
+    co_await inherited::net_Destroy();
+    xr_delete(m_binoc_vision);
 }
 
-BOOL CWeaponMagazined::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CWeaponMagazined::net_Spawn(CSE_Abstract* DC)
 {
-    BOOL bRes = inherited::net_Spawn(DC);
+    const bool bRes = co_await inherited::net_Spawn(DC);
     const auto wpn = smart_cast<CSE_ALifeItemWeaponMagazined*>(DC);
 
     m_iCurFireMode = wpn->m_u8CurFireMode;
@@ -111,7 +110,7 @@ BOOL CWeaponMagazined::net_Spawn(CSE_Abstract* DC)
 
     SetQueueSize(GetCurrentFireMode());
 
-    return bRes;
+    co_return bRes;
 }
 
 void CWeaponMagazined::Load(LPCSTR section)

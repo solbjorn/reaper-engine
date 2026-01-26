@@ -54,7 +54,7 @@ static void construct_string(StrType& result, xr_vector<ALife::_OBJECT_ID>& rest
     }
 }
 
-BOOL CRestrictedObject::net_Spawn(CSE_Abstract* data)
+tmc::task<bool> CRestrictedObject::net_Spawn(CSE_Abstract* data)
 {
     CSE_Abstract* abstract = (CSE_Abstract*)(data);
     CSE_ALifeMonsterAbstract* monster = smart_cast<CSE_ALifeMonsterAbstract*>(abstract);
@@ -77,10 +77,14 @@ BOOL CRestrictedObject::net_Spawn(CSE_Abstract* data)
 
     actual(true);
 
-    return (TRUE);
+    co_return true;
 }
 
-void CRestrictedObject::net_Destroy() { Level().space_restriction_manager().unrestrict(m_object->ID()); }
+tmc::task<void> CRestrictedObject::net_Destroy()
+{
+    Level().space_restriction_manager().unrestrict(m_object->ID());
+    co_return;
+}
 
 u32 CRestrictedObject::accessible_nearest(const Fvector& position, Fvector& result) const
 {

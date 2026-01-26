@@ -24,10 +24,10 @@ public:
     ~CScriptZone() override;
 
     virtual void reinit();
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual void net_Relcase(CObject* O);
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
     virtual void feel_touch_new(CObject* O);
     virtual void feel_touch_delete(CObject* O);
     virtual BOOL feel_touch_contact(CObject* O);

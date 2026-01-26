@@ -277,14 +277,13 @@ void CAI_Stalker::reload(LPCSTR section)
     m_fast_can_kill_entity = READ_IF_EXISTS(pSettings, r_bool, section, "fast_can_kill_entity", false);
 }
 
-void CAI_Stalker::Die(CObject* who)
+tmc::task<void> CAI_Stalker::Die(CObject* who)
 {
     notify_on_wounded_or_killed(who);
 
     SelectAnimation(XFORM().k, movement().detail().direction(), movement().speed());
 
     sound().clear_playing_sounds();
-
     sound().set_sound_mask((u32)eStalkerSoundMaskDie);
 
     if (is_special_killer(who))
@@ -294,7 +293,7 @@ void CAI_Stalker::Die(CObject* who)
 
     m_hammer_is_clutched = m_clutched_hammer_enabled && !CObjectHandler::planner().m_storage.property(ObjectHandlerSpace::eWorldPropertyStrapped) && !::Random.randI(0, 2);
 
-    inherited::Die(who);
+    co_await inherited::Die(who);
 
     // запретить использование слотов в инвенторе
     inventory().SetSlotsUseful(false);
@@ -313,20 +312,19 @@ void CAI_Stalker::Load(LPCSTR section)
     m_can_select_items = !!pSettings->r_bool(section, "can_select_items");
 }
 
-BOOL CAI_Stalker::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CAI_Stalker::net_Spawn(CSE_Abstract* DC)
 {
     CSE_Abstract* e = (CSE_Abstract*)(DC);
     CSE_ALifeHumanStalker* tpHuman = smart_cast<CSE_ALifeHumanStalker*>(e);
     R_ASSERT(tpHuman);
     m_group_behaviour = !!tpHuman->m_flags.test(CSE_ALifeObject::flGroupBehaviour);
 
-    if (!CObjectHandler::net_Spawn(DC) || !inherited::net_Spawn(DC))
-        return (FALSE);
+    if (!co_await CObjectHandler::net_Spawn(DC) || !co_await inherited::net_Spawn(DC))
+        co_return false;
 
     set_money(tpHuman->m_dwMoney, false);
 
     animation().reload(this);
-
     movement().m_head.current.yaw = movement().m_head.target.yaw = movement().m_body.current.yaw = movement().m_body.target.yaw = angle_normalize_signed(-tpHuman->o_torso.yaw);
     movement().m_body.current.pitch = movement().m_body.target.pitch = 0;
 
@@ -405,14 +403,14 @@ BOOL CAI_Stalker::net_Spawn(CSE_Abstract* DC)
 
     m_pPhysics_support->in_NetSpawn(e);
 
-    return (TRUE);
+    co_return true;
 }
 
-void CAI_Stalker::net_Destroy()
+tmc::task<void> CAI_Stalker::net_Destroy()
 {
     m_pPhysics_support->SyncNetState();
-    inherited::net_Destroy();
-    CInventoryOwner::net_Destroy();
+    co_await inherited::net_Destroy();
+    co_await CInventoryOwner::net_Destroy();
     m_pPhysics_support->in_NetDestroy();
 
     Device.remove_from_seq_parallel(CallMe::fromMethod<&CAI_Stalker::update_object_handler>(this));
@@ -476,10 +474,10 @@ void CAI_Stalker::net_Export(CSE_Abstract* E)
     stalker->m_start_dialog = m_sStartDialog;
 }
 
-void CAI_Stalker::update_object_handler()
+tmc::task<void> CAI_Stalker::update_object_handler()
 {
     if (!g_Alive())
-        return;
+        co_return;
 
     CObjectHandler::update();
 }
@@ -515,7 +513,7 @@ tmc::task<void> CAI_Stalker::UpdateCL()
         if (g_mt_config.test(mtObjectHandler) && CObjectHandler::planner().initialized())
             Device.add_to_seq_parallel(CallMe::fromMethod<&CAI_Stalker::update_object_handler>(this));
         else
-            update_object_handler();
+            co_await update_object_handler();
 
         if (movement().speed(character_physics_support()->movement()) > EPS_L && movement().movement_type() != MonsterSpace::eMovementTypeStand &&
             movement().mental_state() == MonsterSpace::eMentalStateDanger)
@@ -547,14 +545,14 @@ void CAI_Stalker::PHHit(SHit& H) { m_pPhysics_support->in_Hit(H, !g_Alive()); }
 
 CPHDestroyable* CAI_Stalker::ph_destroyable() { return smart_cast<CPHDestroyable*>(character_physics_support()); }
 
-void CAI_Stalker::shedule_Update(u32 DT)
+tmc::task<void> CAI_Stalker::shedule_Update(u32 DT)
 {
     XR_TRACY_ZONE_SCOPED();
 
     VERIFY2(getEnabled() || PPhysicsShell(), *cName());
 
     if (!CObjectHandler::planner().initialized())
-        update_object_handler();
+        co_await update_object_handler();
 
     // Queue shrink
     VERIFY(_valid(Position()));
@@ -579,19 +577,17 @@ void CAI_Stalker::shedule_Update(u32 DT)
         if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtAiVision))
             Device.add_to_seq_parallel(CallMe::fromMethod<&CCustomMonster::Exec_Visibility>((CCustomMonster*)this));
         else
-            Exec_Visibility();
+            co_await Exec_Visibility();
 
         process_enemies();
         memory().update(dt);
         anomaly_detector().update_schedule();
     }
 
-    CEntityAlive::shedule_Update(DT); // https://github.com/OpenXRay/xray-16/commit/30add3fdf05472faaa954f1c18783783fb5dc5bb
+    // https://github.com/OpenXRay/xray-16/commit/30add3fdf05472faaa954f1c18783783fb5dc5bb
+    co_await CEntityAlive::shedule_Update(DT);
 
-    if (Remote())
-    {
-    }
-    else
+    if (!Remote())
     {
         // here is monster AI call
         VERIFY(_valid(Position()));
@@ -643,8 +639,8 @@ void CAI_Stalker::shedule_Update(u32 DT)
     VERIFY(_valid(Position()));
 
     UpdateInventoryOwner();
-
     VERIFY(_valid(Position()));
+
     m_pPhysics_support->in_shedule_Update(DT);
     VERIFY(_valid(Position()));
 }

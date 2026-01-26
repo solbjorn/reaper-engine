@@ -18,11 +18,10 @@
 
 CWeaponRG6::~CWeaponRG6() = default;
 
-BOOL CWeaponRG6::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CWeaponRG6::net_Spawn(CSE_Abstract* DC)
 {
-    BOOL l_res = inheritedSG::net_Spawn(DC);
-    if (!l_res)
-        return l_res;
+    if (!co_await inheritedSG::net_Spawn(DC))
+        co_return false;
 
     if (iAmmoElapsed && !getCurrentRocket())
     {
@@ -38,7 +37,7 @@ BOOL CWeaponRG6::net_Spawn(CSE_Abstract* DC)
         }
     }
 
-    return l_res;
+    co_return true;
 }
 
 void CWeaponRG6::Load(LPCSTR section)
@@ -160,9 +159,9 @@ u8 CWeaponRG6::AddCartridge(u8 cnt)
     return k;
 }
 
-void CWeaponRG6::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CWeaponRG6::OnEvent(NET_Packet& P, u16 type)
 {
-    inheritedSG::OnEvent(P, type);
+    co_await inheritedSG::OnEvent(P, type);
 
     u16 id;
     switch (type)

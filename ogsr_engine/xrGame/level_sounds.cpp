@@ -1,8 +1,9 @@
 #include "stdafx.h"
 
-#include "level.h"
 #include "level_sounds.h"
+
 #include "Actor_Flags.h"
+#include "level.h"
 
 //-----------------------------------------------------------------------------
 // static level sounds
@@ -59,7 +60,7 @@ static bool should_play(const Ivector2& m_ActiveTime, int game_time)
     return game_time >= m_ActiveTime.x || game_time < m_ActiveTime.y;
 }
 
-void SStaticSound::Update(u32 game_time, u32 global_time)
+tmc::task<void> SStaticSound::Update(u32 game_time, u32 global_time)
 {
     const float vol = m_Volume;
 
@@ -98,13 +99,13 @@ void SStaticSound::Update(u32 game_time, u32 global_time)
         else
         {
             if (Device.dwTimeGlobal >= m_StopTime)
-                m_Source.stop_deffered();
+                co_await m_Source.stop_deffered();
         }
     }
     else
     {
         if (m_Source._feedback())
-            m_Source.stop_deffered();
+            co_await m_Source.stop_deffered();
     }
 }
 
@@ -147,10 +148,10 @@ void SMusicTrack::SetVolume(float volume)
     m_SourceRight.set_volume(volume * m_Volume);
 }
 
-void SMusicTrack::Stop()
+tmc::task<void> SMusicTrack::Stop()
 {
-    m_SourceLeft.stop_deffered();
-    m_SourceRight.stop_deffered();
+    co_await m_SourceLeft.stop_deffered();
+    co_await m_SourceRight.stop_deffered();
 }
 
 //-----------------------------------------------------------------------------
@@ -216,21 +217,17 @@ void CLevelSoundManager::Unload()
     m_MusicTracks.clear();
 }
 
-void CLevelSoundManager::Update()
+tmc::task<void> CLevelSoundManager::Update()
 {
-    if (Device.Paused())
-        return;
-    if (Device.dwPrecacheFrame != 0)
-        return;
+    if (Device.Paused() || Device.dwPrecacheFrame != 0)
+        co_return;
+
     // static sounds
     u32 game_time = Level().GetGameDayTimeMS();
     u32 engine_time = Device.dwTimeGlobal;
 
-    for (u32 k = 0; k < m_StaticSounds.size(); ++k)
-    {
-        SStaticSound& s = m_StaticSounds[k];
-        s.Update(game_time, engine_time);
-    }
+    for (auto& s : m_StaticSounds)
+        co_await s.Update(game_time, engine_time);
 
     // music track
     if (!m_MusicTracks.empty())
@@ -242,10 +239,12 @@ void CLevelSoundManager::Update()
             {
                 SMusicTrack& T = m_MusicTracks[k];
                 if (T.IsPlaying())
-                    T.Stop();
+                    co_await T.Stop();
+
                 if (should_play(T.m_ActiveTime, int(game_time)))
                     indices.push_back(k);
             }
+
             if (!indices.empty())
             {
                 u32 idx = Random.randI(indices.size());
@@ -261,6 +260,7 @@ void CLevelSoundManager::Update()
                 m_NextTrackTime = engine_time + 10000; // next check after 10 sec
             }
         }
+
         if (m_CurrentTrack >= 0)
         {
             SMusicTrack& T = m_MusicTracks[m_CurrentTrack];

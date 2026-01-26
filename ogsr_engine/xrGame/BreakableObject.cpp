@@ -33,12 +33,14 @@ void CBreakableObject::Load(LPCSTR section)
     this->shedule.t_max = 1000;
 }
 
-BOOL CBreakableObject::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CBreakableObject::net_Spawn(CSE_Abstract* DC)
 {
     CSE_Abstract* e = (CSE_Abstract*)(DC);
     CSE_ALifeObjectBreakable* obj = smart_cast<CSE_ALifeObjectBreakable*>(e);
     R_ASSERT(obj);
-    inherited::net_Spawn(DC);
+
+    std::ignore = co_await inherited::net_Spawn(DC);
+
     VERIFY(!collidable.model);
     collidable.model = xr_new<CCF_Skeleton>(this);
     // set bone id
@@ -51,12 +53,13 @@ BOOL CBreakableObject::net_Spawn(CSE_Abstract* DC)
     CreateUnbroken();
     bRemoved = false;
 
-    return true;
+    co_return true;
 }
 
-void CBreakableObject::shedule_Update(u32 dt)
+tmc::task<void> CBreakableObject::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
+
     if (m_pPhysicsShell && !bRemoved && Device.dwTimeGlobal - m_break_time > m_remove_time)
         SendDestroy();
 }
@@ -165,9 +168,10 @@ void CBreakableObject::ActivateBroken()
     m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
 }
 
-void CBreakableObject::net_Destroy()
+tmc::task<void> CBreakableObject::net_Destroy()
 {
     DestroyUnbroken();
+
     if (m_Shell)
     {
         m_Shell->Deactivate();
@@ -176,10 +180,11 @@ void CBreakableObject::net_Destroy()
     }
 
     m_pPhysicsShell = nullptr;
-    inherited::net_Destroy();
+
+    co_await inherited::net_Destroy();
     xr_delete(collidable.model);
     Init();
-    // Visual()->getVisData().box.set(m_saved_box);
+
     Render->model_Delete(renderable.visual, TRUE);
     cNameVisual_set(shared_str{""});
 }

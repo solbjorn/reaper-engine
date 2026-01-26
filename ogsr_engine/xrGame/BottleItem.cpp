@@ -15,7 +15,7 @@
 #define BREAK_POWER 5.f
 
 CBottleItem::CBottleItem() = default;
-CBottleItem::~CBottleItem() { sndBreaking.destroy(); }
+CBottleItem::~CBottleItem() { sndBreaking.queue_destroy(); }
 
 void CBottleItem::Load(LPCSTR section)
 {
@@ -30,9 +30,9 @@ void CBottleItem::Load(LPCSTR section)
     m_alcohol = READ_IF_EXISTS(pSettings, r_float, section, "eat_alcohol", 0.0f);
 }
 
-void CBottleItem::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CBottleItem::OnEvent(NET_Packet& P, u16 type)
 {
-    inherited::OnEvent(P, type);
+    co_await inherited::OnEvent(P, type);
 
     switch (type)
     {

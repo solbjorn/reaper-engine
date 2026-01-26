@@ -71,9 +71,9 @@ bool CInventoryContainer::CanTrade() const
 
 DLL_Pure* CInventoryContainer::_construct() { return inherited::_construct(); }
 
-BOOL CInventoryContainer::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CInventoryContainer::net_Spawn(CSE_Abstract* DC)
 {
-    BOOL res = inherited::net_Spawn(DC);
+    const bool res = co_await inherited::net_Spawn(DC);
 
     if (std::is_eq(xr_strcmp(cNameSect(), "shadow_inventory")))
     {
@@ -81,17 +81,10 @@ BOOL CInventoryContainer::net_Spawn(CSE_Abstract* DC)
         inherited::set_tip_text("st_pick_rucksack");
     }
 
-    return res;
+    co_return res;
 }
 
-void CInventoryContainer::OnEvent(NET_Packet& P, u16 type)
-{
-    inherited::OnEvent(P, type);
-    // if (GE_OWNERSHIP_TAKE == type)
-    //	Msg("CInventoryContainer %s received object", Name());
-    // if (GE_OWNERSHIP_REJECT == type)
-    //	Msg("CInventoryContainer %s lost object", Name());
-}
+tmc::task<void> CInventoryContainer::OnEvent(NET_Packet& P, u16 type) { co_await inherited::OnEvent(P, type); }
 
 void CInventoryContainer::close()
 {

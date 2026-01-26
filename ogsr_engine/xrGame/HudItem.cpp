@@ -189,8 +189,13 @@ void CHudItem::Load(LPCSTR section)
 
 void CHudItem::PlaySound(HUD_SOUND& hud_snd, const Fvector& position, bool overlap) { HUD_SOUND::PlaySound(hud_snd, position, object().H_Root(), !!GetHUDmode(), false, overlap); }
 
-void CHudItem::net_Destroy() { m_dwStateTime = 0; }
-BOOL CHudItem::net_Spawn(CSE_Abstract*) { return TRUE; }
+tmc::task<void> CHudItem::net_Destroy()
+{
+    m_dwStateTime = 0;
+    co_return;
+}
+
+tmc::task<bool> CHudItem::net_Spawn(CSE_Abstract*) { co_return true; }
 
 void CHudItem::renderable_Render(u32 context_id, IRenderable* root)
 {
@@ -230,7 +235,7 @@ void CHudItem::SwitchState(u32 S)
     }
 }
 
-void CHudItem::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CHudItem::OnEvent(NET_Packet& P, u16 type)
 {
     switch (type)
     {
@@ -241,6 +246,8 @@ void CHudItem::OnEvent(NET_Packet& P, u16 type)
     }
     break;
     }
+
+    co_return;
 }
 
 void CHudItem::OnStateSwitch(u32 S, u32)

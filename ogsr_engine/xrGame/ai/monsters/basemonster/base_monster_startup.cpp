@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "base_monster.h"
+
 #include "../../../ai_space.h"
 #include "../../../hit.h"
 #include "../../../PHDestroyable.h"
@@ -272,10 +273,10 @@ void CBaseMonster::reinit()
     anim().clear_override_animation();
 }
 
-BOOL CBaseMonster::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CBaseMonster::net_Spawn(CSE_Abstract* DC)
 {
-    if (!inherited::net_Spawn(DC))
-        return (FALSE);
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
 
     CSE_Abstract* e = (CSE_Abstract*)(DC);
 
@@ -299,35 +300,6 @@ BOOL CBaseMonster::net_Spawn(CSE_Abstract* DC)
     control().update_frame();
     control().update_schedule();
 
-    // spawn inventory item
-    //	if (ai().get_alife()) {
-    //
-    //		CSE_ALifeMonsterBase					*se_monster = smart_cast<CSE_ALifeMonsterBase*>(ai().alife().objects().object(ID()));
-    //		VERIFY									(se_monster);
-    //
-    //		if (se_monster->m_flags.is(CSE_ALifeMonsterBase::flNeedCheckSpawnItem)) {
-    //			float prob = Random.randF();
-    //			if ((prob < m_spawn_probability) || fsimilar(m_spawn_probability,1.f))
-    //				se_monster->m_flags.set(CSE_ALifeMonsterBase::flSkipSpawnItem, FALSE);
-    //
-    //			se_monster->m_flags.set(CSE_ALifeMonsterBase::flNeedCheckSpawnItem, FALSE);
-    //		}
-    //
-    //		if (!se_monster->m_flags.is(CSE_ALifeMonsterBase::flSkipSpawnItem)) {
-    //			CSE_Abstract	*object = Level().spawn_item (m_item_section,Position(),ai_location().level_vertex_id(),ID(),true);
-    //			CSE_ALifeObject	*alife_object = smart_cast<CSE_ALifeObject*>(object);
-    //			if (alife_object)
-    //				alife_object->m_flags.set	(CSE_ALifeObject::flCanSave,FALSE);
-    //
-    //			{
-    //				NET_Packet				P;
-    //				object->Spawn_Write		(P,TRUE);
-    //				Level().Send			(P,net_flags(TRUE));
-    //				F_entity_Destroy		(object);
-    //			}
-    //		}
-    //	}
-
     if (!fis_zero(m_psy_aura.max_distance()))
         Actor()->conditions().set_monsters_aura_radius(m_psy_aura.max_distance());
     if (!fis_zero(m_radiation_aura.max_distance()))
@@ -335,21 +307,21 @@ BOOL CBaseMonster::net_Spawn(CSE_Abstract* DC)
     if (!fis_zero(m_fire_aura.max_distance()))
         Actor()->conditions().set_monsters_aura_radius(m_fire_aura.max_distance());
 
-    return (TRUE);
+    co_return true;
 }
 
-void CBaseMonster::net_Destroy()
+tmc::task<void> CBaseMonster::net_Destroy()
 {
     m_pPhysics_support->SyncNetState();
+
     // функция должена быть вызвана перед inherited
     if (m_controlled)
         m_controlled->on_destroy();
     if (StateMan)
         StateMan->critical_finalize();
 
-    inherited::net_Destroy();
-
-    CInventoryOwner::net_Destroy();
+    co_await inherited::net_Destroy();
+    co_await CInventoryOwner::net_Destroy();
 
     m_pPhysics_support->in_NetDestroy();
 

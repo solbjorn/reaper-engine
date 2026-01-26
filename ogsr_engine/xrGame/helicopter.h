@@ -157,7 +157,7 @@ public:
     void save(NET_Packet& output_packet);
     void load(IReader& input_packet);
     void Load(LPCSTR section);
-    void net_Destroy();
+    tmc::task<void> net_Destroy();
 };
 
 class CHelicopter : public CEntity, public CShootingObject, public CRocketLauncher, public CPHSkeleton, public CPHDestroyable, public CHitImmunity, public CExplosive
@@ -259,6 +259,8 @@ protected:
     void StartFlame();
     void UpdateHeliParticles();
     void DieHelicopter();
+    tmc::task<void> die_async(std::array<std::byte, 16>&);
+
     void TurnLighting(bool bOn);
     void TurnEngineSound(bool bOn);
     // explosive
@@ -276,6 +278,7 @@ protected:
 
 public:
     void ExplodeHelicopter();
+    tmc::task<void> explode_async(std::array<std::byte, 16>&);
 
     CHelicopter();
     ~CHelicopter() override;
@@ -292,8 +295,8 @@ public:
     virtual void Load(LPCSTR section);
     virtual void reload(LPCSTR section);
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     void net_Export(CSE_Abstract*) override {}
     virtual void net_Relcase(CObject* O);
     virtual void save(NET_Packet& output_packet);
@@ -307,9 +310,9 @@ public:
     virtual BOOL renderable_ShadowGenerate() { return FALSE; }
     virtual BOOL renderable_ShadowReceive() { return TRUE; }
 
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     tmc::task<void> UpdateCL() override;
-    virtual void shedule_Update(u32 time_delta);
+    tmc::task<void> shedule_Update(u32 time_delta) override;
     void MoveStep();
 
     virtual void Hit(SHit* pHDS);

@@ -1,5 +1,7 @@
 #include "stdafx.h"
+
 #include "energy_holder.h"
+
 #include "../../gameobject.h"
 
 CEnergyHolder::CEnergyHolder()
@@ -38,17 +40,18 @@ void CEnergyHolder::activate()
     m_active = true;
 }
 
-void CEnergyHolder::deactivate()
+tmc::task<void> CEnergyHolder::deactivate()
 {
     if (is_active())
-        on_deactivate();
+        co_await on_deactivate();
+
     m_active = false;
 }
 
-void CEnergyHolder::schedule_update()
+tmc::task<void> CEnergyHolder::schedule_update()
 {
     if (!m_enable)
-        return;
+        co_return;
 
     // Обновить значение энергии
     u32 cur_time = Device.dwTimeGlobal;
@@ -66,7 +69,7 @@ void CEnergyHolder::schedule_update()
 
     // проверка на автоматическое включение/выключение поля
     if (is_active() && should_deactivate() && m_auto_deactivate)
-        deactivate();
+        co_await deactivate();
     if (!is_active() && can_activate() && m_auto_activate)
         activate();
 }

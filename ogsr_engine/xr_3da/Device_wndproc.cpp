@@ -9,11 +9,12 @@ bool CRenderDevice::on_message(UINT uMsg, WPARAM wParam, LRESULT& result)
     case WM_SYSKEYDOWN: {
         return true;
     }
-    case WM_ACTIVATE:
-        wparam_async = wParam;
-        add_frame_async(CallMe::fromMethod<&CRenderDevice::OnWM_Activate>(this));
+    case WM_ACTIVATE: {
+        auto& arg = add_frame_async(CallMe::fromMethod<&CRenderDevice::OnWM_Activate>(this));
+        *reinterpret_cast<u64*>(&arg) = wParam;
 
         return false;
+    }
     case WM_SETCURSOR: {
         result = 1;
         return (true);

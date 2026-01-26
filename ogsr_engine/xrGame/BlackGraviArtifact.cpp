@@ -42,10 +42,10 @@ void CBlackGraviArtefact::Load(LPCSTR section)
     m_sParticleName._set(pSettings->r_string(section, "particle"));
 }
 
-BOOL CBlackGraviArtefact::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CBlackGraviArtefact::net_Spawn(CSE_Abstract* DC)
 {
-    if (!inherited::net_Spawn(DC))
-        return FALSE;
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
 
     CParticlesObject* pStaticPG;
     pStaticPG = CParticlesObject::Create("anomaly\\galantine", FALSE);
@@ -60,14 +60,16 @@ BOOL CBlackGraviArtefact::net_Spawn(CSE_Abstract* DC)
     pStaticPG->UpdateParent(pos, vel);
     pStaticPG->Play();
 
-    return TRUE;
+    co_return true;
 }
+
 struct SRP
 {
     const CPhysicsShellHolder* obj;
     SRP(const CPhysicsShellHolder* O) { obj = O; }
     bool operator()(CPhysicsShellHolder* O) const { return obj == O; }
 };
+
 void CBlackGraviArtefact::net_Relcase(CObject* O)
 {
     inherited::net_Relcase(O);

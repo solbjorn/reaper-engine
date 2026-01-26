@@ -31,10 +31,10 @@ private:
     bool internal_Unregister(const ISheduled* object, bool RT);
     void internal_Registration();
 
-    void ProcessStep(gsl::index cycles_limit);
+    tmc::task<void> ProcessStep(gsl::index cycles_limit);
 
 public:
-    void Update();
+    tmc::task<void> Update();
 
     [[nodiscard]] bool Registered(const ISheduled* object) const;
     void Register(ISheduled* A, bool RT = false);

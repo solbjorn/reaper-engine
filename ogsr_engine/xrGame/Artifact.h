@@ -40,15 +40,15 @@ public:
 
     virtual void Load(LPCSTR section);
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
 
     virtual void OnH_A_Chield();
     virtual void OnH_B_Independent(bool just_before_destroy);
 
     tmc::task<void> UpdateCL() override;
-    virtual void shedule_Update(u32 dt);
-    void UpdateWorkload(u32);
+    tmc::task<void> shedule_Update(u32 dt) override;
+    tmc::task<void> UpdateWorkload();
 
     virtual bool CanTake() const;
 
@@ -86,7 +86,7 @@ protected:
 public:
     virtual void StartLights();
     virtual void StopLights();
-    void ActivateArtefact();
+    tmc::task<void> ActivateArtefact();
     bool CanBeActivated() { return m_bCanSpawnZone; } // does artefact can spawn anomaly zone
 
     void PhDataUpdate(dReal step) override;

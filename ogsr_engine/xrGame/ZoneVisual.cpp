@@ -1,17 +1,18 @@
 #include "stdafx.h"
 
-#include "CustomZone.h"
-#include "..\Include/xrRender/KinematicsAnimated.h"
-#include "../Include/xrRender/RenderVisual.h"
 #include "ZoneVisual.h"
+
 #include "xrServer_Objects_ALife_Monsters.h"
+
+#include "../Include/xrRender/RenderVisual.h"
 
 CVisualZone::CVisualZone() {}
 CVisualZone::~CVisualZone() {}
 
-BOOL CVisualZone::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CVisualZone::net_Spawn(CSE_Abstract* DC)
 {
-    BOOL ret = inherited::net_Spawn(DC);
+    const bool ret = co_await inherited::net_Spawn(DC);
+
     CSE_Abstract* e = (CSE_Abstract*)(DC);
     CSE_ALifeZoneVisual* Z = smart_cast<CSE_ALifeZoneVisual*>(e);
     IKinematicsAnimated* SA = smart_cast<IKinematicsAnimated*>(Visual());
@@ -19,10 +20,11 @@ BOOL CVisualZone::net_Spawn(CSE_Abstract* DC)
     m_idle_animation = SA->ID_Cycle(Z->startup_animation);
     SA->PlayCycle(m_idle_animation);
     setVisible(TRUE);
-    return ret;
+
+    co_return ret;
 }
 
-void CVisualZone::net_Destroy() { inherited::net_Destroy(); }
+tmc::task<void> CVisualZone::net_Destroy() { co_await inherited::net_Destroy(); }
 
 void CVisualZone::AffectObjects()
 {

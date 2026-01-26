@@ -51,9 +51,9 @@ void CWeaponRPG7::UpdateMissileVisibility()
     pWeaponVisual->LL_SetBoneVisible(pWeaponVisual->LL_BoneID(m_sGrenadeBoneName), vis_weap, TRUE);
 }
 
-BOOL CWeaponRPG7::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CWeaponRPG7::net_Spawn(CSE_Abstract* DC)
 {
-    BOOL l_res = inherited::net_Spawn(DC);
+    const bool l_res = co_await inherited::net_Spawn(DC);
 
     UpdateMissileVisibility();
     if (iAmmoElapsed && !getCurrentRocket())
@@ -61,7 +61,7 @@ BOOL CWeaponRPG7::net_Spawn(CSE_Abstract* DC)
         CRocketLauncher::SpawnRocket(*m_sRocketSection, this);
     }
 
-    return l_res;
+    co_return l_res;
 }
 
 void CWeaponRPG7::OnStateSwitch(u32 S, u32 oldState)
@@ -151,9 +151,10 @@ void CWeaponRPG7::switch2_Fire()
     }
 }
 
-void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CWeaponRPG7::OnEvent(NET_Packet& P, u16 type)
 {
-    inherited::OnEvent(P, type);
+    co_await inherited::OnEvent(P, type);
+
     u16 id;
     switch (type)
     {

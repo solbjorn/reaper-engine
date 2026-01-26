@@ -96,24 +96,21 @@ void CWeaponMagazinedWGrenade::Load(LPCSTR section)
     iMagazineSize2 = iMagazineSize;
 }
 
-void CWeaponMagazinedWGrenade::net_Destroy() { inherited::net_Destroy(); }
+tmc::task<void> CWeaponMagazinedWGrenade::net_Destroy() { co_await inherited::net_Destroy(); }
 void CWeaponMagazinedWGrenade::net_Relcase(CObject* object) { inherited::net_Relcase(object); }
 
 void CWeaponMagazinedWGrenade::OnDrawUI() { inherited::OnDrawUI(); }
 
-BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
 {
-    BOOL l_res = inherited::net_Spawn(DC);
+    const bool l_res = co_await inherited::net_Spawn(DC);
 
     UpdateGrenadeVisibility(!!iAmmoElapsed);
-
     SetPending(FALSE);
 
     const auto wgl = smart_cast<CSE_ALifeItemWeaponMagazinedWGL*>(DC);
     m_ammoType2 = m_ammoType2 > 0 ? m_ammoType2 : wgl->ammo_type2;
     iAmmoElapsed2 = iAmmoElapsed2 > 0 ? iAmmoElapsed2 : wgl->a_elapsed2;
-
-    // Msg("~~[%s][%s] net_Spawn", __FUNCTION__, this->Name());
 
     if (wgl->m_bGrenadeMode) // m_bGrenadeMode enabled
     {
@@ -161,7 +158,7 @@ BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
         }
     }
 
-    return l_res;
+    co_return l_res;
 }
 
 void CWeaponMagazinedWGrenade::switch2_Idle() { inherited::switch2_Idle(); }
@@ -412,9 +409,10 @@ void CWeaponMagazinedWGrenade::SwitchState(u32 S)
     }
 }
 
-void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)
 {
-    inherited::OnEvent(P, type);
+    co_await inherited::OnEvent(P, type);
+
     u16 id;
     switch (type)
     {

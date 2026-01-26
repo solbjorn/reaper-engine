@@ -162,8 +162,8 @@ public:
     virtual void Load(LPCSTR caSection);
     virtual void reinit();
     virtual void reload(LPCSTR caSection);
-    virtual BOOL net_Spawn(CSE_Abstract* data);
-    virtual void net_Destroy();
+    virtual tmc::task<bool> net_Spawn(CSE_Abstract* data);
+    virtual tmc::task<void> net_Destroy();
     virtual void on_frame(CPHMovementControl* movement_control, Fvector& dest_position);
     IC bool actual() const;
     bool actual_all() const;

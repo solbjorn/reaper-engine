@@ -16,7 +16,7 @@ public:
     ~CAI_Flesh() override;
 
     virtual void Load(LPCSTR section);
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
 
     virtual void CheckSpecParams(u32 spec_params);
 

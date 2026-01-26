@@ -257,7 +257,7 @@ void CCustomMonster::net_Export(CSE_Abstract* E)
     creature->s_group = u8(g_Group());
 }
 
-void CCustomMonster::shedule_Update(u32 DT)
+tmc::task<void> CCustomMonster::shedule_Update(u32 DT)
 {
     VERIFY(!g_Alive() || processing_enabled());
     // Queue shrink
@@ -268,6 +268,7 @@ void CCustomMonster::shedule_Update(u32 DT)
         NET.pop_front();
 
     float dt = float(DT) / 1000.f;
+
     // *** general stuff
     if (g_Alive())
     {
@@ -279,27 +280,27 @@ void CCustomMonster::shedule_Update(u32 DT)
             if (!psAI_Flags.test(aiStalker) || !!smart_cast<CActor*>(Level().CurrentEntity()))
                 Device.add_to_seq_parallel(CallMe::fromMethod<&CCustomMonster::Exec_Visibility>(this));
             else
-                Exec_Visibility();
+                co_await Exec_Visibility();
         }
 #endif // DEBUG
         else
-            Exec_Visibility();
+            co_await Exec_Visibility();
+
         memory().update(dt);
         anomaly_detector().update_schedule();
     }
-    inherited::shedule_Update(DT);
+
+    co_await inherited::shedule_Update(DT);
 
     // Queue setup
     if (dt > 3)
-        return;
+        co_return;
 
     m_dwCurrentTime = Device.dwTimeGlobal;
 
     VERIFY(_valid(Position()));
-    if (Remote())
-    {
-    }
-    else
+
+    if (!Remote())
     {
         // here is monster AI call
         m_fTimeUpdateDelta = dt;
@@ -322,8 +323,7 @@ void CCustomMonster::shedule_Update(u32 DT)
         {
             Exec_Action(dt);
             VERIFY(_valid(Position()));
-            // Exec_Visibility		();
-            VERIFY(_valid(Position()));
+
             //////////////////////////////////////
             // Fvector C; float R;
             //////////////////////////////////////
@@ -367,7 +367,11 @@ void CCustomMonster::net_update::lerp(CCustomMonster::net_update& A, CCustomMons
     fHealth = A.fHealth * (1.f - f) + B.fHealth * f;
 }
 
-void CCustomMonster::update_sound_player() { sound().update(); }
+tmc::task<void> CCustomMonster::update_sound_player()
+{
+    sound().update();
+    co_return;
+}
 
 tmc::task<void> CCustomMonster::UpdateCL()
 {
@@ -381,7 +385,7 @@ tmc::task<void> CCustomMonster::UpdateCL()
     if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtSoundPlayer))
         Device.add_to_seq_parallel(CallMe::fromMethod<&CCustomMonster::update_sound_player>(this));
     else
-        update_sound_player();
+        co_await update_sound_player();
 
     if (NET.empty())
     {
@@ -542,13 +546,13 @@ void CCustomMonster::eye_pp_s2()
     Device.Statistic->AI_Vis_RayTests.End();
 }
 
-void CCustomMonster::Exec_Visibility()
+tmc::task<void> CCustomMonster::Exec_Visibility()
 {
-    // if (0==Sector())				return;
     if (!g_Alive())
-        return;
+        co_return;
 
     Device.Statistic->AI_Vis.Begin();
+
     switch (eye_pp_stage % 2)
     {
     case 0:
@@ -557,7 +561,9 @@ void CCustomMonster::Exec_Visibility()
         break;
     case 1: eye_pp_s2(); break;
     }
+
     ++eye_pp_stage;
+
     Device.Statistic->AI_Vis.End();
 }
 
@@ -571,20 +577,19 @@ void CCustomMonster::UpdateCamera()
 
 void CCustomMonster::HitSignal(float, Fvector&, CObject*) {}
 
-void CCustomMonster::Die(CObject* who)
+tmc::task<void> CCustomMonster::Die(CObject* who)
 {
-    inherited::Die(who);
-    // Level().RemoveMapLocationByID(this->ID());
+    co_await inherited::Die(who);
     Actor()->SetActorVisibility(ID(), 0.f);
 }
 
-BOOL CCustomMonster::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CCustomMonster::net_Spawn(CSE_Abstract* DC)
 {
     memory().reload(*cNameSect());
     memory().reinit();
 
-    if (!movement().net_Spawn(DC) || !inherited::net_Spawn(DC) || !CScriptEntity::net_Spawn(DC))
-        return (FALSE);
+    if (!co_await movement().net_Spawn(DC) || !co_await inherited::net_Spawn(DC) || !co_await CScriptEntity::net_Spawn(DC))
+        co_return false;
 
     ISpatial* self = smart_cast<ISpatial*>(this);
     if (self)
@@ -654,7 +659,7 @@ BOOL CCustomMonster::net_Spawn(CSE_Abstract* DC)
     shedule.t_min = 100;
     shedule.t_max = 250; // This equaltiy is broken by Dima :-( // 30 * NET_Latency / 4;
 
-    return TRUE;
+    co_return true;
 }
 
 #ifdef DEBUG
@@ -669,14 +674,15 @@ void CCustomMonster::Hit(SHit* pHDS)
         inherited::Hit(pHDS);
 }
 
-void CCustomMonster::OnEvent(NET_Packet& P, u16 type) { inherited::OnEvent(P, type); }
+tmc::task<void> CCustomMonster::OnEvent(NET_Packet& P, u16 type) { co_await inherited::OnEvent(P, type); }
 
-void CCustomMonster::net_Destroy()
+tmc::task<void> CCustomMonster::net_Destroy()
 {
-    inherited::net_Destroy();
-    CScriptEntity::net_Destroy();
+    co_await inherited::net_Destroy();
+    co_await CScriptEntity::net_Destroy();
+
     sound().unload();
-    movement().net_Destroy();
+    co_await movement().net_Destroy();
 
     Actor()->SetActorVisibility(ID(), 0.f);
 

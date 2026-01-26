@@ -15,9 +15,9 @@ public:
     CWeaponRPG7();
     ~CWeaponRPG7() override;
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     virtual void OnStateSwitch(u32 S, u32 oldState);
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     virtual void ReloadMagazine();
     virtual void Load(LPCSTR section);
     virtual void switch2_Fire();

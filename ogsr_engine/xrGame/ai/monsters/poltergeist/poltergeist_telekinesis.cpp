@@ -319,15 +319,15 @@ void CPolterTele::tele_fire_objects()
     }
 }
 
-void CPolterTele::on_destroy()
+tmc::task<void> CPolterTele::on_destroy()
 {
-    inherited::on_destroy();
+    co_await inherited::on_destroy();
     deactivate();
 }
 
-void CPolterTele::on_die()
+tmc::task<void> CPolterTele::on_die()
 {
-    inherited::on_die();
+    co_await inherited::on_die();
     deactivate();
 }
 

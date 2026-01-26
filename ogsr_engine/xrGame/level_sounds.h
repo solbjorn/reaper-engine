@@ -17,7 +17,7 @@ struct SStaticSound
 public:
     void Load(IReader& F);
     void LoadIni(CInifile::Sect& section);
-    void Update(u32 gt, u32 rt);
+    tmc::task<void> Update(u32 gt, u32 rt);
 };
 
 // music interface
@@ -36,7 +36,7 @@ public:
     void Load(LPCSTR fn, LPCSTR params);
     BOOL IsPlaying() { return m_SourceLeft._feedback() || m_SourceRight._feedback(); }
     void Play();
-    void Stop();
+    tmc::task<void> Stop();
     void SetVolume(float volume);
 };
 
@@ -51,9 +51,10 @@ class CLevelSoundManager
 
 public:
     CLevelSoundManager();
+
     void Load();
     void Unload();
-    void Update();
+    tmc::task<void> Update();
 };
 
 #endif

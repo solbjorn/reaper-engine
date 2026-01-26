@@ -41,7 +41,7 @@ tmc::task<void> IGame_Level::net_Stop()
         co_await Objects.Update(true);
 
     // Destroy all objects
-    Objects.Unload();
+    co_await Objects.Unload();
     co_await IR_Release();
 
     bReady = false;
@@ -123,8 +123,6 @@ tmc::task<void> IGame_Level::OnFrame()
             Sounds_Random[id].set_range(10, 200);
         }
     }
-
-    co_return;
 }
 
 // ==================================================================================================

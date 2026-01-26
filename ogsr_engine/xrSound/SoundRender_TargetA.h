@@ -27,8 +27,8 @@ public:
     ALuint sound_local_filter{};
 
 private:
-    void submit_buffer(ALuint BufferID) const;
-    void submit_all_buffers() const;
+    tmc::task<void> submit_buffer(ALuint BufferID) const;
+    tmc::task<void> submit_all_buffers() const;
 
 public:
     ~CSoundRender_TargetA() override = default;
@@ -38,10 +38,10 @@ public:
     void _restart() override;
 
     void start(CSoundRender_Emitter* E) override;
-    void render() override;
-    void rewind() override;
+    tmc::task<void> render() override;
+    tmc::task<void> rewind() override;
     void stop() override;
-    void update() override;
+    tmc::task<void> update() override;
     void fill_parameters(CSoundRender_Core* core) override;
 
     void alAuxInit(ALuint slot) override;

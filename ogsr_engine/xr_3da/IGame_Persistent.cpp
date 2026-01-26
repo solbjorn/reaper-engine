@@ -105,7 +105,7 @@ tmc::task<void> IGame_Persistent::Start(gsl::czstring op)
     VERIFY(ps_destroy.empty());
 }
 
-void IGame_Persistent::Disconnect()
+tmc::task<void> IGame_Persistent::Disconnect()
 {
     // clear "need to play" particles
     destroy_particles(true);
@@ -114,9 +114,9 @@ void IGame_Persistent::Disconnect()
         g_hud->OnDisconnected();
 
     if (!g_prefetch) // очистка при выходе из игры в главное меню
-    {
         ObjectPool.clear();
-    }
+
+    co_return;
 }
 
 tmc::task<void> IGame_Persistent::OnGameStart()

@@ -137,9 +137,10 @@ void CWeaponAmmo::Load(LPCSTR section)
     m_boxCurr = m_boxSize;
 }
 
-BOOL CWeaponAmmo::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CWeaponAmmo::net_Spawn(CSE_Abstract* DC)
 {
-    BOOL bResult = inherited::net_Spawn(DC);
+    const bool bResult = co_await inherited::net_Spawn(DC);
+
     CSE_Abstract* e = (CSE_Abstract*)(DC);
     CSE_ALifeItemAmmo* l_pW = smart_cast<CSE_ALifeItemAmmo*>(e);
     m_boxCurr = l_pW->a_elapsed;
@@ -147,10 +148,10 @@ BOOL CWeaponAmmo::net_Spawn(CSE_Abstract* DC)
     if (m_boxCurr > m_boxSize)
         l_pW->a_elapsed = m_boxCurr = m_boxSize;
 
-    return bResult;
+    co_return bResult;
 }
 
-void CWeaponAmmo::net_Destroy() { inherited::net_Destroy(); }
+tmc::task<void> CWeaponAmmo::net_Destroy() { co_await inherited::net_Destroy(); }
 
 void CWeaponAmmo::OnH_B_Chield() { inherited::OnH_B_Chield(); }
 

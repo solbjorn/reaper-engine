@@ -104,7 +104,10 @@ public:
     tmc::task<void> OnDeviceReset() override;
     LPCSTR GetGSVer();
 
-    void PlaySound(LPCSTR Path);
+    void PlaySound(gsl::czstring path);
+
+private:
+    tmc::task<void> play_sound_async(std::array<std::byte, 16>& arg);
 };
 XR_SOL_BASE_CLASSES(CMainMenu);
 

@@ -76,8 +76,9 @@ private:
         ascExhoustStop = 1 << 2,
         ascLast = 1 << cAsCallsnum
     };
-    void ASCUpdate();
-    void ASCUpdate(EAsyncCalls c);
+
+    tmc::task<void> ASCUpdate();
+    tmc::task<void> ASCUpdate(EAsyncCalls c);
     void AscCall(EAsyncCalls c);
     ////////////////////////////////////////////////////////////////////////////////////////
     virtual bool CanRemoveObject();
@@ -356,6 +357,7 @@ public:
             sndStarting,
             sndDrive
         } eCarSound{};
+
         void Update();
         void UpdateStarting();
         void UpdateStoping();
@@ -366,14 +368,13 @@ public:
         void SwitchOff();
         void SwitchOn();
         void Init();
-        void Destroy();
+        tmc::task<void> Destroy();
         void Start();
-        void Stop();
-        void Stall();
+        tmc::task<void> Stop();
         void Drive();
         void TransmissionSwitch();
 
-        SCarSound(CCar* car);
+        explicit SCarSound(CCar* car);
         ~SCarSound();
 
         Fvector relative_pos{0.0f, 0.5f, -1.0f};
@@ -528,7 +529,7 @@ private:
 
     static void cb_Steer(CBoneInstance* B);
     virtual void Hit(SHit* pHDS);
-    virtual void Die(CObject* who);
+    tmc::task<void> Die(CObject* who) override;
     virtual void PHHit(float, Fvector& dir, CObject*, s16 element, Fvector p_in_object_space, float impulse, ALife::EHitType hit_type);
     bool WheelHit(float P, s16 element);
     bool DoorHit(float P, s16 element, ALife::EHitType hit_type);
@@ -555,12 +556,12 @@ public:
     // Core events
     virtual DLL_Pure* _construct();
     virtual void Load(LPCSTR section);
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     tmc::task<void> UpdateCL() override;
     virtual void UpdateEx(float fov); // called by owner
 
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
     void renderable_Render(u32 context_id, IRenderable* root) override;
     virtual bool bfAssignMovement(CScriptEntityAction* tpEntityAction);
     virtual bool bfAssignObject(CScriptEntityAction* tpEntityAction);
@@ -575,7 +576,7 @@ public:
     virtual void OnKeyboardRelease(int dik);
     virtual void OnKeyboardHold(int dik);
     virtual void vfProcessInputKey(int iCommand, bool bPressed);
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     virtual void OnAfterExplosion();
     virtual void OnBeforeExplosion();
     virtual void GetRayExplosionSourcePos(Fvector& pos);

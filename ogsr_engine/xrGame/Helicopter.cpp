@@ -124,7 +124,7 @@ void CollisionCallbackAlife(bool& do_colide, bool, dContact&, SGameMtl*, SGameMt
 void ContactCallbackAlife(CDB::TRI*, dContactGeom*) {}
 } // namespace
 
-BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CHelicopter::net_Spawn(CSE_Abstract* DC)
 {
     SetfHealth(100.0f);
     setState(CHelicopter::eAlive);
@@ -134,8 +134,8 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
     m_ready_explode = false;
     m_dead = false;
 
-    if (!inherited::net_Spawn(DC))
-        return (FALSE);
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
 
     std::ignore = CPHSkeleton::Spawn(DC);
 
@@ -241,22 +241,26 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
 
     renderable.visual->_ignore_optimization = true;
 
-    return TRUE;
+    co_return true;
 }
 
-void CHelicopter::net_Destroy()
+tmc::task<void> CHelicopter::net_Destroy()
 {
-    inherited::net_Destroy();
-    CExplosive::net_Destroy();
+    co_await inherited::net_Destroy();
+    co_await CExplosive::net_Destroy();
+
     CShootingObject::Light_Destroy();
     CShootingObject::StopFlameParticles();
     CPHSkeleton::RespawnInit();
     CPHDestroyable::RespawnInit();
-    m_engineSound.stop();
-    m_brokenSound.stop();
+
+    co_await m_engineSound.stop();
+    co_await m_brokenSound.stop();
+
     CParticlesObject::Destroy(m_pParticle);
     m_light_render.destroy();
-    m_movement.net_Destroy();
+
+    co_await m_movement.net_Destroy();
 
 #ifdef DEBUG
     Device.seqRender.Remove(this);
@@ -428,12 +432,13 @@ tmc::task<void> CHelicopter::UpdateCL()
     K->CalculateBones();
 }
 
-void CHelicopter::shedule_Update(u32 time_delta)
+tmc::task<void> CHelicopter::shedule_Update(u32 time_delta)
 {
     if (!getEnabled())
-        return;
+        co_return;
 
-    inherited::shedule_Update(time_delta);
+    co_await inherited::shedule_Update(time_delta);
+
     if (CPHDestroyable::Destroyed())
         CPHDestroyable::SheduleUpdate(time_delta);
     else
@@ -444,8 +449,12 @@ void CHelicopter::shedule_Update(u32 time_delta)
         for (u32 i = getRocketCount(); i < 4; ++i)
             CRocketLauncher::SpawnRocket(*m_sRocketSection, this);
     }
-    if (m_ready_explode)
-        ExplodeHelicopter();
+
+    if (!m_ready_explode)
+        co_return;
+
+    std::array<std::byte, 16> empty;
+    co_await explode_async(empty);
 }
 
 void CHelicopter::goPatrolByPatrolPath(LPCSTR path_name, int start_idx) { m_movement.goPatrolByPatrolPath(path_name, start_idx); }

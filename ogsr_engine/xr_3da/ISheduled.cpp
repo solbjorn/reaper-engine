@@ -30,7 +30,7 @@ void ISheduled::shedule_register() { Engine.Sheduler.Register(this); }
 void ISheduled::shedule_unregister(bool force) { Engine.Sheduler.Unregister(this, force); }
 
 #ifdef DEBUG
-void ISheduled::shedule_Update(u32)
+tmc::task<void> ISheduled::shedule_Update(u32)
 {
     if (dbg_startframe == dbg_update_shedule)
     {
@@ -42,5 +42,6 @@ void ISheduled::shedule_Update(u32)
     }
 
     dbg_update_shedule = dbg_startframe;
+    co_return;
 }
 #endif

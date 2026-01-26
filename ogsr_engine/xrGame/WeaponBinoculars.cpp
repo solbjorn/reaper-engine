@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "WeaponBinoculars.h"
+
 #include "xr_level_controller.h"
 
 #include "level.h"
@@ -63,15 +64,15 @@ void CWeaponBinoculars::OnZoomOut()
     inherited::OnZoomOut();
 }
 
-BOOL CWeaponBinoculars::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CWeaponBinoculars::net_Spawn(CSE_Abstract* DC)
 {
-    inherited::net_Spawn(DC);
-    return TRUE;
+    std::ignore = co_await inherited::net_Spawn(DC);
+    co_return true;
 }
 
-void CWeaponBinoculars::net_Destroy() { inherited::net_Destroy(); }
-
+tmc::task<void> CWeaponBinoculars::net_Destroy() { co_await inherited::net_Destroy(); }
 tmc::task<void> CWeaponBinoculars::UpdateCL() { co_await inherited::UpdateCL(); }
+
 void CWeaponBinoculars::OnDrawUI() { inherited::OnDrawUI(); }
 
 void CWeaponBinoculars::save(NET_Packet& output_packet)

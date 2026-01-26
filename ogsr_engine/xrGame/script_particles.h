@@ -27,7 +27,7 @@ public:
     explicit CScriptParticlesCustom(CScriptParticles* owner, LPCSTR caParticlesName);
     ~CScriptParticlesCustom() override;
 
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
 
     void LoadPath(LPCSTR caPathName);
     void StartPath(bool looped);

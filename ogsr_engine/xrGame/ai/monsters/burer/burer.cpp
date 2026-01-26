@@ -51,7 +51,7 @@ void CBurer::reinit()
     time_last_scan = 0;
 }
 
-void CBurer::net_Destroy() { inherited::net_Destroy(); }
+tmc::task<void> CBurer::net_Destroy() { co_await inherited::net_Destroy(); }
 
 void CBurer::reload(LPCSTR section)
 {
@@ -217,10 +217,9 @@ void CBurer::PostLoad(LPCSTR section)
     }
 }
 
-void CBurer::shedule_Update(u32 dt)
+tmc::task<void> CBurer::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
-
+    co_await inherited::shedule_Update(dt);
     CTelekinesis::schedule_update();
 }
 
@@ -451,9 +450,9 @@ void CBurer::Hit(SHit* pHDS)
     last_hit_frame = Device.dwFrame;
 }
 
-void CBurer::Die(CObject* who)
+tmc::task<void> CBurer::Die(CObject* who)
 {
-    inherited::Die(who);
+    co_await inherited::Die(who);
 
     if (com_man().ta_is_active())
         com_man().ta_deactivate();

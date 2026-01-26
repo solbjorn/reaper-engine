@@ -136,10 +136,8 @@ private:
     void _Destroy(BOOL bKeepTextures);
     void _SetupStates();
 
-    xr_deque<CallMe::Delegate<void()>> seqParallel;
-    xr_vector<CallMe::Delegate<tmc::task<void>()>> seq_frame_async;
-
-    u64 wparam_async{std::numeric_limits<u64>::max()};
+    xr_deque<CallMe::Delegate<tmc::task<void>()>> seqParallel;
+    xr_vector<std::pair<CallMe::Delegate<tmc::task<void>(std::array<std::byte, 16>&)>, std::array<std::byte, 16>>> seq_frame_async;
 
 public:
     u32 dwPrecacheTotal;
@@ -148,7 +146,7 @@ public:
     LRESULT MsgProc(HWND, UINT, WPARAM, LPARAM);
 
 private:
-    tmc::task<void> OnWM_Activate();
+    tmc::task<void> OnWM_Activate(std::array<std::byte, 16>& arg);
 
 public:
     IRenderDeviceRender* m_pRender{};
@@ -232,7 +230,7 @@ public:
     }
 
 public:
-    ICF bool add_to_seq_parallel(const CallMe::Delegate<void()>& delegate)
+    ICF bool add_to_seq_parallel(const CallMe::Delegate<tmc::task<void>()>& delegate)
     {
         auto I = std::find(seqParallel.begin(), seqParallel.end(), delegate);
         if (I != seqParallel.end())
@@ -241,15 +239,15 @@ public:
         return true;
     }
 
-    ICF void remove_from_seq_parallel(const CallMe::Delegate<void()>& delegate)
+    ICF void remove_from_seq_parallel(const CallMe::Delegate<tmc::task<void>()>& delegate)
     {
         seqParallel.erase(std::remove(seqParallel.begin(), seqParallel.end(), delegate), seqParallel.end());
     }
 
-    template <typename... Args>
-    void add_frame_async(Args&&... args)
+    template <typename D, typename... Args>
+    constexpr auto& add_frame_async(D&& d, Args&&... args)
     {
-        seq_frame_async.emplace_back(std::forward<Args>(args)...);
+        return seq_frame_async.emplace_back(std::piecewise_construct, std::forward_as_tuple(std::forward<D>(d)), std::forward_as_tuple(std::forward<Args>(args)...)).second;
     }
 
     tmc::task<void> process_frame_async()
@@ -257,8 +255,10 @@ public:
         if (seq_frame_async.empty())
             co_return;
 
-        for (auto& task : seq_frame_async)
-            co_await task();
+        XR_TRACY_ZONE_SCOPED();
+
+        for (auto& pair : seq_frame_async)
+            co_await pair.first(pair.second);
 
         seq_frame_async.clear();
     }

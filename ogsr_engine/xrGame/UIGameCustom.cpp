@@ -49,8 +49,7 @@ CUIGameCustom::~CUIGameCustom()
 }
 
 float CUIGameCustom::shedule_Scale() const { return 0.5f; }
-
-void CUIGameCustom::shedule_Update(u32 dt) { inherited::shedule_Update(dt); }
+tmc::task<void> CUIGameCustom::shedule_Update(u32 dt) { co_await inherited::shedule_Update(dt); }
 
 void CUIGameCustom::OnFrame()
 {

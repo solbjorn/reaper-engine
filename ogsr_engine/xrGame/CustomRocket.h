@@ -35,8 +35,8 @@ public:
     ~CCustomRocket() override;
 
     virtual void Load(LPCSTR section);
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual BOOL AlwaysTheCrow() { return TRUE; }
 
     virtual void reinit();
@@ -72,11 +72,12 @@ public:
     virtual void UpdateEnginePh();
 
     virtual void StartFlying();
-    virtual void StopFlying();
+    tmc::task<void> StopFlying();
 
     virtual void SetLaunchParams(const Fmatrix& xform, const Fvector& vel, const Fvector& angular_vel);
 
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
+
     bool m_bLaunched{};
 
 protected:
@@ -112,7 +113,7 @@ protected:
 
     // обработка столкновения
     virtual void Contact(const Fvector& pos, const Fvector& normal);
-    void PlayContact();
+    tmc::task<void> PlayContact();
     static void ObjectContactCallback(bool& do_colide, bool, dContact& c, SGameMtl* material_1, SGameMtl* material_2);
 
     //////////////////////////////////////////////////////////////////////////
@@ -148,15 +149,16 @@ protected:
 
     Fvector m_vPrevVel{};
     float m_time_to_explode;
+
 #ifdef DEBUG
     float gbg_rocket_speed1;
     float gbg_rocket_speed2;
 #endif
-protected:
+
     virtual void StartEngineParticles();
     virtual void StopEngineParticles();
     virtual void StartFlyParticles();
-    virtual void StopFlyParticles();
+    tmc::task<void> StopFlyParticles();
 
     virtual void UpdateParticles();
 };

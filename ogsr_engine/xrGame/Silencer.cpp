@@ -10,9 +10,9 @@
 CSilencer::CSilencer() = default;
 CSilencer::~CSilencer() = default;
 
-BOOL CSilencer::net_Spawn(CSE_Abstract* DC) { return (inherited::net_Spawn(DC)); }
+tmc::task<bool> CSilencer::net_Spawn(CSE_Abstract* DC) { co_return co_await inherited::net_Spawn(DC); }
 void CSilencer::Load(LPCSTR section) { inherited::Load(section); }
-void CSilencer::net_Destroy() { inherited::net_Destroy(); }
+tmc::task<void> CSilencer::net_Destroy() { co_await inherited::net_Destroy(); }
 
 tmc::task<void> CSilencer::UpdateCL() { co_await inherited::UpdateCL(); }
 

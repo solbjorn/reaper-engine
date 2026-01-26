@@ -44,8 +44,8 @@ public:
     virtual void AffectPullAlife(CEntityAlive* EA, const Fvector& throw_in_dir, float dist);
     virtual void AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist);
     virtual void ThrowInCenter(Fvector& C);
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual void Center(Fvector& C) const;
     virtual void NotificateDestroy(CPHDestroyableNotificate* dn);
     virtual float BlowoutRadiusPercent(CPhysicsShellHolder* GO);

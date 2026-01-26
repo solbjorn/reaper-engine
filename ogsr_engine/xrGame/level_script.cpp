@@ -782,78 +782,49 @@ static void AdvanceGameTime(u32 _ms)
     GamePersistent().Environment().SetGameTime(Level().GetEnvironmentGameDayTimeSec(), Level().game->GetEnvironmentGameTimeFactor());
 }
 
-namespace xr
-{
 namespace
 {
-class level_input_async
+tmc::task<void> send_event_key_press_async(std::array<std::byte, 16>& arg)
 {
-private:
-    static constexpr gsl::index none{std::numeric_limits<gsl::index>::max()};
+    const auto key = *reinterpret_cast<gsl::index*>(&arg);
+    co_await Level().IR_OnKeyboardPress(key);
+}
 
-    gsl::index key_async{none};
-    gsl::index hld_async{none};
-    gsl::index vol_async{};
+void send_event_key_press(gsl::index key)
+{
+    auto& arg = Device.add_frame_async(CallMe::fromFunction<&send_event_key_press_async>());
+    *reinterpret_cast<gsl::index*>(&arg) = key;
+}
 
-    tmc::task<void> press_async()
-    {
-        const auto key = key_async;
-        if (key == none)
-            co_return;
-
-        key_async = none;
-        co_await Level().IR_OnKeyboardPress(key);
-    }
-
-    tmc::task<void> hold_async()
-    {
-        const auto key = hld_async;
-        if (key == none)
-            co_return;
-
-        hld_async = none;
-        co_await Level().IR_OnKeyboardHold(key);
-    }
-
-    tmc::task<void> wheel_async()
-    {
-        const auto vol = vol_async;
-        if (vol == 0)
-            co_return;
-
-        vol_async = 0;
-        co_await Level().IR_OnMouseWheel(vol);
-    }
-
-public:
-    void press(gsl::index key)
-    {
-        key_async = key;
-        Device.add_frame_async(CallMe::fromMethod<&xr::level_input_async::press_async>(this));
-    }
-
-    void hold(gsl::index key)
-    {
-        hld_async = key;
-        Device.add_frame_async(CallMe::fromMethod<&xr::level_input_async::hold_async>(this));
-    }
-
-    void wheel(gsl::index vol)
-    {
-        vol_async = vol;
-        Device.add_frame_async(CallMe::fromMethod<&xr::level_input_async::wheel_async>(this));
-    }
-} input_async;
-} // namespace
-} // namespace xr
-
-static void send_event_key_release(int dik) // Отпускание клавиши
+void send_event_key_release(int dik) // Отпускание клавиши
 {
     Level().IR_OnKeyboardRelease(dik);
 }
 
-namespace
+tmc::task<void> send_event_key_hold_async(std::array<std::byte, 16>& arg)
 {
+    const auto key = *reinterpret_cast<gsl::index*>(&arg);
+    co_await Level().IR_OnKeyboardHold(key);
+}
+
+void send_event_key_hold(gsl::index key)
+{
+    auto& arg = Device.add_frame_async(CallMe::fromFunction<&send_event_key_hold_async>());
+    *reinterpret_cast<gsl::index*>(&arg) = key;
+}
+
+tmc::task<void> send_event_mouse_wheel_async(std::array<std::byte, 16>& arg)
+{
+    const auto vol = *reinterpret_cast<gsl::index*>(&arg);
+    co_await Level().IR_OnMouseWheel(vol);
+}
+
+void send_event_mouse_wheel(gsl::index vol)
+{
+    auto& arg = Device.add_frame_async(CallMe::fromFunction<send_event_mouse_wheel_async>());
+    *reinterpret_cast<gsl::index*>(&arg) = vol;
+}
+
 // Real Wolf 07.07.2014
 [[nodiscard]] u32 vertex_id(const Fvector& vec) { return ai().level_graph().vertex_id(vec); }
 [[nodiscard]] u32 vertex_id(u32 node, const Fvector& vec) { return ai().level_graph().vertex_id(node, vec); }
@@ -990,7 +961,7 @@ static int get_character_community_team(LPCSTR comm)
 
 namespace
 {
-tmc::task<void> demo_record_start() { g_pGameLevel->Cameras().AddCamEffector((co_await CDemoRecord::co_create()).release()); }
+tmc::task<void> demo_record_start(std::array<std::byte, 16>&) { g_pGameLevel->Cameras().AddCamEffector((co_await CDemoRecord::co_create()).release()); }
 void demo_record_stop() { g_pGameLevel->Cameras().RemoveCamEffector(cefDemo); }
 } // namespace
 
@@ -1180,8 +1151,8 @@ void CLevel::script_register(sol::state_view& lua)
         &GetCurrentRayQuery,
 
         //
-        "send_event_key_press", [](gsl::index key) { xr::input_async.press(key); }, "send_event_key_release", &send_event_key_release, "send_event_key_hold",
-        [](gsl::index key) { xr::input_async.hold(key); }, "send_event_mouse_wheel", [](gsl::index vol) { xr::input_async.wheel(vol); },
+        "send_event_key_press", &send_event_key_press, "send_event_key_release", &send_event_key_release, "send_event_key_hold", &send_event_key_hold, "send_event_mouse_wheel",
+        &send_event_mouse_wheel,
 
         "iterate_nearest", &iterate_nearest, "change_level", &change_level, "set_cam_inert", &set_cam_inert, "set_monster_relation", &set_monster_relation, "patrol_path_add",
         &patrol_path_add, "patrol_path_remove", &patrol_path_remove, "valid_vertex_id", &valid_vertex_id, "vertex_count", &vertex_count, "disable_vertex", &disable_vertex,

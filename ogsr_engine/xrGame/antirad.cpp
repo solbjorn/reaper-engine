@@ -12,11 +12,11 @@
 CAntirad::CAntirad() = default;
 CAntirad::~CAntirad() = default;
 
-BOOL CAntirad::net_Spawn(CSE_Abstract* DC) { return (inherited::net_Spawn(DC)); }
+tmc::task<bool> CAntirad::net_Spawn(CSE_Abstract* DC) { co_return co_await inherited::net_Spawn(DC); }
 void CAntirad::Load(LPCSTR section) { inherited::Load(section); }
-void CAntirad::net_Destroy() { inherited::net_Destroy(); }
+tmc::task<void> CAntirad::net_Destroy() { co_await inherited::net_Destroy(); }
 
-void CAntirad::shedule_Update(u32 dt) { inherited::shedule_Update(dt); }
+tmc::task<void> CAntirad::shedule_Update(u32 dt) { co_await inherited::shedule_Update(dt); }
 tmc::task<void> CAntirad::UpdateCL() { co_await inherited::UpdateCL(); }
 
 void CAntirad::OnH_A_Chield() { inherited::OnH_A_Chield(); }

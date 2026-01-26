@@ -101,7 +101,7 @@ public:
 
     virtual tmc::task<bool> Load(u32);
     virtual tmc::task<bool> Load_GameSpecific_Before() { co_return true; } // before object loading
-    virtual BOOL Load_GameSpecific_After() { return TRUE; } // after object loading
+    virtual tmc::task<bool> Load_GameSpecific_After() { co_return true; } // after object loading
 
     virtual void Load_GameSpecific_CFORM_Serialize(IWriter& writer) = 0;
     virtual bool Load_GameSpecific_CFORM_Deserialize(IReader& reader) = 0;

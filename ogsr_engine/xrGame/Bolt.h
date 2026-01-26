@@ -15,7 +15,7 @@ public:
     ~CBolt() override;
 
     virtual void OnH_A_Chield();
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
 
     virtual bool Activate(bool = false);
     virtual void Deactivate(bool = false);

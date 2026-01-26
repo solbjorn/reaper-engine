@@ -30,11 +30,11 @@ public:
     CPhysicObject();
     ~CPhysicObject() override;
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     virtual void CreatePhysicsShell(CSE_Abstract* e);
-    virtual void net_Destroy();
+    tmc::task<void> net_Destroy() override;
     virtual void Load(LPCSTR section);
-    virtual void shedule_Update(u32 dt); //
+    tmc::task<void> shedule_Update(u32 dt) override; //
     tmc::task<void> UpdateCL() override;
     virtual void net_Save(NET_Packet& P);
     virtual BOOL net_SaveRelevant();

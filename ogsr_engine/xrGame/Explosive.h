@@ -36,7 +36,7 @@ public:
     virtual void Load(LPCSTR section);
     virtual void Load(CInifile* ini, LPCSTR section);
 
-    virtual void net_Destroy();
+    virtual tmc::task<void> net_Destroy();
     virtual void net_Relcase(CObject* O);
     virtual tmc::task<void> UpdateCL();
 
@@ -48,7 +48,7 @@ public:
 
     static float ExplosionEffect(collide::rq_results& storage, CExplosive* exp_obj, CPhysicsShellHolder* blasted_obj, const Fvector& expl_centre, const float expl_radius);
 
-    virtual void OnEvent(NET_Packet& P, u16 type); //{inherited::OnEvent( P, type);}
+    virtual tmc::task<void> OnEvent(NET_Packet& P, u16 type);
     virtual void OnAfterExplosion();
     virtual void OnBeforeExplosion();
     virtual void SetCurrentParentID(u16 parent_id) { m_iCurrentParentID = parent_id; }

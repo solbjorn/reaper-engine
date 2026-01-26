@@ -68,9 +68,9 @@ public:
 
     void init();
     virtual void reinit();
-    [[nodiscard]] virtual BOOL net_Spawn(CSE_Abstract*);
-    virtual void net_Destroy();
-    virtual void shedule_Update(u32);
+    virtual tmc::task<bool> net_Spawn(CSE_Abstract*);
+    virtual tmc::task<void> net_Destroy();
+    virtual tmc::task<void> shedule_Update(u32);
     virtual tmc::task<void> UpdateCL();
     virtual CScriptEntity* cast_script_entity() { return this; }
     virtual DLL_Pure* _construct();

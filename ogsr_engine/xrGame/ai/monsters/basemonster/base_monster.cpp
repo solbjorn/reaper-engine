@@ -299,16 +299,12 @@ tmc::task<void> CBaseMonster::UpdateCL()
     m_pPhysics_support->in_UpdateCL();
 }
 
-void CBaseMonster::shedule_Update(u32 dt)
+tmc::task<void> CBaseMonster::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
-
-    // update_eyes_visibility		();
+    co_await inherited::shedule_Update(dt);
 
     if (m_anti_aim)
-    {
         m_anti_aim->update_schedule();
-    }
 
     m_psy_aura.update_schedule();
     m_fire_aura.update_schedule();
@@ -316,7 +312,6 @@ void CBaseMonster::shedule_Update(u32 dt)
     m_radiation_aura.update_schedule();
 
     control().update_schedule();
-
     Morale.update_schedule(dt);
 
     m_pPhysics_support->in_shedule_Update(dt);
@@ -330,22 +325,20 @@ void CBaseMonster::shedule_Update(u32 dt)
 // Other functions
 //////////////////////////////////////////////////////////////////////
 
-void CBaseMonster::Die(CObject* who)
+tmc::task<void> CBaseMonster::Die(CObject* who)
 {
     if (StateMan)
         StateMan->critical_finalize();
 
-    m_psy_aura.on_monster_death();
-    m_radiation_aura.on_monster_death();
-    m_fire_aura.on_monster_death();
-    m_base_aura.on_monster_death();
+    co_await m_psy_aura.on_monster_death();
+    co_await m_radiation_aura.on_monster_death();
+    co_await m_fire_aura.on_monster_death();
+    co_await m_base_aura.on_monster_death();
 
     if (m_anti_aim)
-    {
         m_anti_aim->on_monster_death();
-    }
 
-    inherited::Die(who);
+    co_await inherited::Die(who);
     sound().clear_playing_sounds();
 
     if (is_special_killer(who))
@@ -787,10 +780,10 @@ bool CBaseMonster::check_start_conditions(ControlCom::EControlType type)
     return true;
 }
 
-void CBaseMonster::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CBaseMonster::OnEvent(NET_Packet& P, u16 type)
 {
-    inherited::OnEvent(P, type);
-    CInventoryOwner::OnEvent(P, type);
+    co_await inherited::OnEvent(P, type);
+    co_await CInventoryOwner::OnEvent(P, type);
 
     u16 id;
     switch (type)

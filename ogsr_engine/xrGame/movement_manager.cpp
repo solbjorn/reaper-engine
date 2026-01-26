@@ -102,13 +102,14 @@ void CMovementManager::reinit()
 
 void CMovementManager::reload(LPCSTR section) { locations().reload(section); }
 
-BOOL CMovementManager::net_Spawn(CSE_Abstract* data) { return (restrictions().net_Spawn(data)); }
+tmc::task<bool> CMovementManager::net_Spawn(CSE_Abstract* data) { co_return co_await restrictions().net_Spawn(data); }
 
-void CMovementManager::net_Destroy()
+tmc::task<void> CMovementManager::net_Destroy()
 {
     level_path_builder().remove();
     detail_path_builder().remove();
-    restrictions().net_Destroy();
+
+    co_await restrictions().net_Destroy();
 }
 
 CMovementManager::EPathType CMovementManager::path_type() const

@@ -30,8 +30,8 @@ public:
 
     virtual void OnZoomIn();
     virtual void OnZoomOut();
-    virtual void net_Destroy();
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
+    tmc::task<void> net_Destroy() override;
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
 
     virtual void save(NET_Packet& output_packet);
     virtual void load(IReader& input_packet);

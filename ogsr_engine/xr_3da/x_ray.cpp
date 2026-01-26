@@ -36,11 +36,7 @@ struct SoundProcessor final : public pureFrame
     RTTI_DECLARE_TYPEINFO(SoundProcessor, pureFrame);
 
 public:
-    tmc::task<void> OnFrame() override
-    {
-        ::Sound->update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop, Device.vCameraRight);
-        co_return;
-    }
+    tmc::task<void> OnFrame() override { co_await ::Sound->update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop, Device.vCameraRight); }
 } g_sound_processor;
 
 struct SoundRenderer final : public pureFrame
@@ -48,11 +44,7 @@ struct SoundRenderer final : public pureFrame
     RTTI_DECLARE_TYPEINFO(SoundRenderer, pureFrame);
 
 public:
-    tmc::task<void> OnFrame() override
-    {
-        ::Sound->render();
-        co_return;
-    }
+    tmc::task<void> OnFrame() override { co_await ::Sound->render(); }
 } g_sound_renderer;
 } // namespace
 
@@ -191,8 +183,8 @@ tmc::task<void> startup(std::atomic<xr::tmc_atomic_wait_t>& code)
     // Destroy APP
     xr_delete(g_SpatialSpacePhysic);
     xr_delete(g_SpatialSpace);
-
     DEL_INSTANCE(g_pGamePersistent);
+
     co_await pApp->co_destroy();
     Engine.Event.Dump();
 
@@ -435,6 +427,7 @@ tmc::task<void> main_async(gsl::czstring cmdline, void* handle, std::atomic<xr::
 
         co_await std::move(in);
         pInput->Attach();
+
         InitConsole();
 
         Engine.External.CreateRendererList();
@@ -475,6 +468,10 @@ tmc::task<void> main_async(gsl::czstring cmdline, void* handle, std::atomic<xr::
         auto la = co_await tmc::fork_clang(LALib.OnCreate(), tmc::current_executor(), xr::tmc_priority_any);
 
         // Initialize APP
+        auto scope = co_await tmc::enter(xr::tmc_cpu_st_executor());
+        ShowWindow(Device.m_hWnd, SW_SHOWNORMAL);
+        co_await scope.exit();
+
         co_await Device.Create();
 
         co_await std::move(la);
@@ -607,8 +604,8 @@ tmc::task<void> CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
             }
         }
 
-        R_ASSERT(g_pGamePersistent);
-        g_pGamePersistent->Disconnect();
+        R_ASSERT(g_pGamePersistent != nullptr);
+        co_await g_pGamePersistent->Disconnect();
     }
 }
 

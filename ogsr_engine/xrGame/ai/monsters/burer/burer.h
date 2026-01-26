@@ -129,12 +129,12 @@ public:
     virtual void Load(LPCSTR section);
     virtual void PostLoad(LPCSTR section);
 
-    virtual void net_Destroy();
+    tmc::task<void> net_Destroy() override;
     virtual void net_Relcase(CObject* O);
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
     tmc::task<void> UpdateCL() override;
     virtual void Hit(SHit* pHDS);
-    virtual void Die(CObject* who);
+    tmc::task<void> Die(CObject* who) override;
     void ProcessTurn();
     void CheckSpecParams(u32) override;
 

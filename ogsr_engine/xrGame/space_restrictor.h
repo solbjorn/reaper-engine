@@ -49,8 +49,8 @@ public:
     inline CSpaceRestrictor();
     ~CSpaceRestrictor() override;
 
-    virtual BOOL net_Spawn(CSE_Abstract* data);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* data) override;
+    tmc::task<void> net_Destroy() override;
     bool inside(const Fsphere& sphere);
     virtual void Center(Fvector& C) const;
     virtual float Radius() const;
@@ -74,7 +74,7 @@ public:
     IC bool IsScheduled() { return b_scheduled; }
 
     virtual void net_Relcase(CObject*);
-    virtual void shedule_Update(u32);
+    tmc::task<void> shedule_Update(u32) override;
     virtual void feel_touch_new(CObject*);
     virtual void feel_touch_delete(CObject*);
     virtual BOOL feel_touch_contact(CObject*);

@@ -24,7 +24,7 @@ tmc::task<bool> CLevel::Load_GameSpecific_Before()
     co_return true;
 }
 
-BOOL CLevel::Load_GameSpecific_After()
+tmc::task<bool> CLevel::Load_GameSpecific_After()
 {
     // loading static particles
     string_path fn_game;
@@ -109,10 +109,8 @@ BOOL CLevel::Load_GameSpecific_After()
 
     if (g_pGamePersistent->pEnvironment)
     {
-        if (CEffect_Rain* rain = g_pGamePersistent->pEnvironment->eff_Rain)
-        {
+        if (CEffect_Rain* rain = g_pGamePersistent->pEnvironment->eff_Rain; rain != nullptr)
             rain->InvalidateState();
-        }
     }
 
     if (pSettings->section_exist("engine_callbacks") && pSettings->line_exist("engine_callbacks", "on_change_weather"))
@@ -123,7 +121,7 @@ BOOL CLevel::Load_GameSpecific_After()
     if (g_pGamePersistent->pEnvironment)
         g_pGamePersistent->pEnvironment->Invalidate();
 
-    return TRUE;
+    co_return true;
 }
 
 struct translation_pair

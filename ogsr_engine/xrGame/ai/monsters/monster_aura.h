@@ -34,7 +34,7 @@ public:
     float calculate() const;
     void update_schedule();
     void play_detector_sound();
-    void on_monster_death();
+    tmc::task<void> on_monster_death();
 
     bool enable_for_dead() { return m_enable_for_dead; }
     float max_distance() { return m_max_distance; }

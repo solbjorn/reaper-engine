@@ -8,10 +8,10 @@
 CTorridZone::CTorridZone() { m_animator = xr_new<CObjectAnimator>(); }
 CTorridZone::~CTorridZone() { xr_delete(m_animator); }
 
-BOOL CTorridZone::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CTorridZone::net_Spawn(CSE_Abstract* DC)
 {
-    if (!inherited::net_Spawn(DC))
-        return (FALSE);
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
 
     CSE_ALifeTorridZone* zone = smart_cast<CSE_ALifeTorridZone*>(DC);
     VERIFY(zone);
@@ -21,7 +21,7 @@ BOOL CTorridZone::net_Spawn(CSE_Abstract* DC)
 
     m_b_always_fastmode = true;
 
-    return true;
+    co_return true;
 }
 
 void CTorridZone::UpdateWorkload(u32 dt)
@@ -32,9 +32,9 @@ void CTorridZone::UpdateWorkload(u32 dt)
     OnMove();
 }
 
-void CTorridZone::shedule_Update(u32 dt)
+tmc::task<void> CTorridZone::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
 
     if (m_idle_sound._feedback())
         m_idle_sound.set_position(XFORM().c);

@@ -36,8 +36,8 @@ public:
 
     virtual void Load(LPCSTR section);
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual void net_Export(CSE_Abstract* E);
 
     tmc::task<void> UpdateCL() override;

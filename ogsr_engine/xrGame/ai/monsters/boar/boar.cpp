@@ -124,10 +124,10 @@ void CAI_Boar::BoneCallback(CBoneInstance* B)
     B->mTransform.mulB_43(M);
 }
 
-BOOL CAI_Boar::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CAI_Boar::net_Spawn(CSE_Abstract* DC)
 {
-    if (!inherited::net_Spawn(DC))
-        return (FALSE);
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
 
     if (!PPhysicsShell()) // нельзя ставить колбеки, если создан физ шел - у него стоят свои колбеки!!!
     {
@@ -138,7 +138,8 @@ BOOL CAI_Boar::net_Spawn(CSE_Abstract* DC)
     _cur_delta = _target_delta = 0.f;
     _velocity = PI;
     look_at_enemy = false;
-    return TRUE;
+
+    co_return true;
 }
 
 tmc::task<void> CAI_Boar::UpdateCL()

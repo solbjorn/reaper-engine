@@ -81,8 +81,8 @@ template <>
 void CObjectScript::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CGameObject>("CGameObject", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CGameObject>), "_construct", &CGameObject::_construct,
-                                  "Visual", &CGameObject::Visual, "net_Spawn", &CGameObject::net_Spawn, "use", &CGameObject::use, "getVisible", &CGameObject::getVisible,
-                                  "getEnabled", &CGameObject::getEnabled, sol::base_classes, xr::sol_bases<CGameObject>());
+                                  "Visual", &CGameObject::Visual, "use", &CGameObject::use, "getVisible", &CGameObject::getVisible, "getEnabled", &CGameObject::getEnabled,
+                                  sol::base_classes, xr::sol_bases<CGameObject>());
 
     lua.new_enum("global_flags",
                  // inventory_item

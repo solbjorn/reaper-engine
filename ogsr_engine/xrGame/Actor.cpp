@@ -167,7 +167,6 @@ CActor::CActor() : CEntityAlive(), current_ik_cam_shift(0)
 CActor::~CActor()
 {
     xr_delete(m_location_manager);
-
     xr_delete(m_memory);
 
     xr_delete(encyclopedia_registry);
@@ -179,11 +178,10 @@ CActor::~CActor()
     for (int i = 0; i < ACTOR_DEFS::eacMaxCam; ++i)
         xr_delete(cameras[i]);
 
-    m_HeavyBreathSnd.destroy();
-    m_BloodSnd.destroy();
+    m_HeavyBreathSnd.queue_destroy();
+    m_BloodSnd.queue_destroy();
 
     xr_delete(m_pActorEffector);
-
     xr_delete(m_pSleepEffector);
 
     xr_delete(m_pPhysics_support);
@@ -609,9 +607,9 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
     }
 }
 
-void CActor::Die(CObject* who)
+tmc::task<void> CActor::Die(CObject* who)
 {
-    inherited::Die(who);
+    co_await inherited::Die(who);
 
     {
         xr_vector<CInventorySlot>::iterator I = inventory().m_slots.begin();
@@ -652,8 +650,8 @@ void CActor::Die(CObject* who)
 
     ::Sound->play_at_pos(sndDie[Random.randI(ACTOR_DEFS::SND_DIE_COUNT)], this, Position());
 
-    m_HeavyBreathSnd.stop();
-    m_BloodSnd.stop();
+    co_await m_HeavyBreathSnd.stop();
+    co_await m_BloodSnd.stop();
 
     start_tutorial("game_over");
     xr_delete(m_sndShockEffector);
@@ -892,7 +890,7 @@ constexpr u32 TASKS_UPDATE_TIME{1};
 float NET_Jump{};
 } // namespace
 
-void CActor::shedule_Update(u32 DT)
+tmc::task<void> CActor::shedule_Update(u32 DT)
 {
     XR_TRACY_ZONE_SCOPED();
 
@@ -946,17 +944,12 @@ void CActor::shedule_Update(u32 DT)
         tasks_update_time += DT;
     }
 
-    if (/* m_holder || */ !getEnabled() || !Ready())
+    if (!getEnabled() || !Ready())
     {
         m_sDefaultObjAction = nullptr;
-        inherited::shedule_Update(DT);
 
-        /*		if (OnServer())
-                {
-                    Check_Weapon_ShowHideState();
-                };
-        */
-        return;
+        co_await inherited::shedule_Update(DT);
+        co_return;
     }
 
     //
@@ -1026,7 +1019,7 @@ void CActor::shedule_Update(u32 DT)
 
     NET_Jump = 0;
 
-    inherited::shedule_Update(DT);
+    co_await inherited::shedule_Update(DT);
 
     // эффектор включаемый при ходьбе
     if (!m_holder)
@@ -1045,17 +1038,13 @@ void CActor::shedule_Update(u32 DT)
         if (conditions().IsLimping() && g_Alive())
         {
             if (!m_HeavyBreathSnd._feedback())
-            {
                 m_HeavyBreathSnd.play_at_pos(this, Fvector().set(0, ACTOR_HEIGHT, 0), sm_Looped | sm_2D);
-            }
             else
-            {
                 m_HeavyBreathSnd.set_position(Fvector().set(0, ACTOR_HEIGHT, 0));
-            }
         }
-        else if (m_HeavyBreathSnd._feedback())
+        else
         {
-            m_HeavyBreathSnd.stop();
+            co_await m_HeavyBreathSnd.stop();
         }
 
         float bs = conditions().BleedingSpeed();
@@ -1074,12 +1063,11 @@ void CActor::shedule_Update(u32 DT)
         }
         else
         {
-            if (m_BloodSnd._feedback())
-                m_BloodSnd.stop();
+            co_await m_BloodSnd.stop();
         }
 
-        if (!g_Alive() && m_BloodSnd._feedback())
-            m_BloodSnd.stop();
+        if (!g_Alive())
+            co_await m_BloodSnd.stop();
     }
 
     // если в режиме HUD, то сама модель актера не рисуется

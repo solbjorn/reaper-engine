@@ -42,7 +42,7 @@ private:
 
 public:
     static tmc::task<std::unique_ptr<CDemoRecord>> co_create(gsl::czstring name = nullptr, f32 life_time = 60.0f * 60.0f * 1000.0f);
-    tmc::task<void> co_destroy();
+    tmc::task<void> co_destroy(std::array<std::byte, 16>&);
     ~CDemoRecord() override;
 
     void MakeCubeMapFace(Fvector& D, Fvector& N);

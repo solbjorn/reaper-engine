@@ -9,6 +9,30 @@ namespace
 {
 CConsole* console() { return Console; }
 
+tmc::task<void> console_show_async(std::array<std::byte, 16>& arg)
+{
+    auto c = *reinterpret_cast<CConsole**>(&arg);
+    co_await c->Show();
+}
+
+void console_show(CConsole* c)
+{
+    auto& arg = Device.add_frame_async(CallMe::fromFunction<&console_show_async>());
+    *reinterpret_cast<CConsole**>(&arg) = c;
+}
+
+tmc::task<void> console_hide_async(std::array<std::byte, 16>& arg)
+{
+    auto c = *reinterpret_cast<CConsole**>(&arg);
+    co_await c->Hide();
+}
+
+void console_hide(CConsole* c)
+{
+    auto& arg = Device.add_frame_async(CallMe::fromFunction<&console_hide_async>());
+    *reinterpret_cast<CConsole**>(&arg) = c;
+}
+
 int get_console_integer(CConsole* c, LPCSTR cmd)
 {
     int val = 0, min = 0, max = 0;
@@ -60,11 +84,9 @@ void console_registrator::script_register(sol::state_view& lua)
 {
     lua.set_function("get_console", &console);
 
-    lua.new_usertype<CConsole>(
-        "CConsole", sol::no_constructor, "disable_command", &disable_cmd, "enable_command", &enable_cmd, "execute",
-        sol::overload(sol::resolve<void(LPCSTR)>(&CConsole::Execute), sol::resolve<void(LPCSTR, LPCSTR)>(&CConsole::Execute)), "execute_script", &CConsole::ExecuteScript, "show",
-        [](CConsole* c) { Device.add_frame_async(CallMe::fromMethod<&CConsole::Show>(c)); }, "hide",
-        [](CConsole* c) { Device.add_frame_async(CallMe::fromMethod<&CConsole::Hide>(c)); }, "get_string", &CConsole::GetString, "get_integer", &get_console_integer, "get_bool",
-        &get_console_bool, "get_float", &get_console_float, "get_token", &CConsole::GetToken, "get_vector", &CConsole::GetFVector, "get_vector4", &CConsole::GetFVector4, "visible",
-        sol::readonly(&CConsole::bVisible));
+    lua.new_usertype<CConsole>("CConsole", sol::no_constructor, "disable_command", &disable_cmd, "enable_command", &enable_cmd, "execute",
+                               sol::overload(sol::resolve<void(LPCSTR)>(&CConsole::Execute), sol::resolve<void(LPCSTR, LPCSTR)>(&CConsole::Execute)), "execute_script",
+                               &CConsole::ExecuteScript, "show", &console_show, "hide", &console_hide, "get_string", &CConsole::GetString, "get_integer", &get_console_integer,
+                               "get_bool", &get_console_bool, "get_float", &get_console_float, "get_token", &CConsole::GetToken, "get_vector", &CConsole::GetFVector, "get_vector4",
+                               &CConsole::GetFVector4, "visible", sol::readonly(&CConsole::bVisible));
 }

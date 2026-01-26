@@ -15,9 +15,9 @@ public:
     CWeaponRG6() = default;
     ~CWeaponRG6() override;
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     virtual void Load(LPCSTR section);
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
 
 protected:
     virtual void FireTrace(const Fvector& P, const Fvector& D);

@@ -21,8 +21,8 @@ public:
     ~CDestroyablePhysicsObject() override;
 
     virtual CPhysicsShellHolder* PPhysicsShellHolder();
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual void Hit(SHit* pHDS);
     virtual void InitServerObject(CSE_Abstract* D);
     virtual CPHCollisionDamageReceiver* PHCollisionDamageReceiver() { return static_cast<CPHCollisionDamageReceiver*>(this); }
@@ -30,7 +30,7 @@ public:
     virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
     virtual CParticlesPlayer* cast_particles_player() { return this; }
     virtual CPHDestroyable* ph_destroyable() { return this; }
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
     virtual bool CanRemoveObject();
     virtual void OnChangeVisual();
 

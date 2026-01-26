@@ -82,16 +82,15 @@ tmc::task<void> CRenderDevice::Reset(bool precache)
 
     if (g_screenmode == 1)
     {
-        co_await tmc::spawn([](auto wnd) -> tmc::task<void> {
-            u32 w, h;
-            GetMonitorResolution(w, h);
+        auto scope = co_await tmc::enter(xr::tmc_cpu_st_executor());
 
-            SetWindowLongPtr(wnd, GWL_STYLE, WS_VISIBLE | WS_POPUP);
-            SetWindowPos(wnd, HWND_TOP, 0, 0, w, h, SWP_FRAMECHANGED);
+        u32 w, h;
+        GetMonitorResolution(w, h);
 
-            co_return;
-        }(m_hWnd))
-            .run_on(xr::tmc_cpu_st_executor());
+        SetWindowLongPtr(m_hWnd, GWL_STYLE, WS_VISIBLE | WS_POPUP);
+        SetWindowPos(m_hWnd, HWND_TOP, 0, 0, w, h, SWP_FRAMECHANGED);
+
+        co_await scope.exit();
     }
 
     pInput->clip_cursor(true);

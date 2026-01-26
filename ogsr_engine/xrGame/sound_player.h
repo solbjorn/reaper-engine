@@ -80,9 +80,7 @@ public:
         void destroy()
         {
             VERIFY(m_sound);
-            if (m_sound->_feedback())
-                m_sound->stop();
-
+            m_sound->queue_stop();
             xr_delete(m_sound);
         }
 

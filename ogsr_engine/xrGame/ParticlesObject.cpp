@@ -136,13 +136,14 @@ void CParticlesObject::Stop(BOOL bDefferedStop)
     m_bStopping = true;
 }
 
-void CParticlesObject::shedule_Update(u32 _dt)
+tmc::task<void> CParticlesObject::shedule_Update(u32 _dt)
 {
-    inherited::shedule_Update(_dt);
+    co_await inherited::shedule_Update(_dt);
 
     // Update
     if (m_bDead)
-        return;
+        co_return;
+
     u32 dt = Device.dwTimeGlobal - dwLastTime;
     if (dt)
     {
@@ -160,6 +161,7 @@ void CParticlesObject::shedule_Update(u32 _dt)
         }
         dwLastTime = Device.dwTimeGlobal;
     }
+
     UpdateSpatial();
 }
 
@@ -178,13 +180,15 @@ void CParticlesObject::PerformAllTheWork()
     UpdateSpatial();
 }
 
-void CParticlesObject::PerformAllTheWork_mt()
+tmc::task<void> CParticlesObject::PerformAllTheWork_mt()
 {
-    if (0 == mt_dt)
-        return; //???
+    if (mt_dt == 0)
+        co_return; //???
+
     IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
     VERIFY(V);
     V->OnFrame(mt_dt);
+
     mt_dt = 0;
 }
 

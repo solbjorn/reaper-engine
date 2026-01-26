@@ -68,12 +68,12 @@ void vision_client::eye_pp_s2()
 
 float vision_client::shedule_Scale() const { return 0.f; }
 
-void vision_client::shedule_Update(u32 dt)
+tmc::task<void> vision_client::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
 
     if (!object().g_Alive())
-        return;
+        co_return;
 
     switch (m_state)
     {

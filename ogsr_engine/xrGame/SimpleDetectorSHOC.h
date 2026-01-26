@@ -50,13 +50,13 @@ public:
     CCustomDetectorSHOC();
     ~CCustomDetectorSHOC() override;
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     virtual void Load(LPCSTR section);
 
     virtual void OnH_A_Chield();
     virtual void OnH_B_Independent(bool just_before_destroy);
 
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
     tmc::task<void> UpdateCL() override;
 
     virtual void feel_touch_new(CObject* O);

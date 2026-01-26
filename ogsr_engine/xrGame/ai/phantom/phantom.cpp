@@ -58,7 +58,7 @@ void CPhantom::Load(LPCSTR section)
         m_state_data[stShoot].sound.create(snd_name, st_Effect, sg_SourceType);
 }
 
-BOOL CPhantom::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CPhantom::net_Spawn(CSE_Abstract* DC)
 {
     CSE_ALifeCreaturePhantom* OBJ = smart_cast<CSE_ALifeCreaturePhantom*>(DC);
     VERIFY(OBJ);
@@ -81,8 +81,8 @@ BOOL CPhantom::net_Spawn(CSE_Abstract* DC)
     SwitchToState(stBirth); // initial state (changed on load method in inherited::)
 
     // inherited
-    if (!inherited::net_Spawn(DC))
-        return FALSE;
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
 
     m_enemy = Level().CurrentEntity();
     VERIFY(m_enemy);
@@ -109,20 +109,21 @@ BOOL CPhantom::net_Spawn(CSE_Abstract* DC)
     VERIFY(K->LL_GetMotionDef(m_state_data[stShoot].motion)->flags & esmStopAtEnd);
 
     // set state
-    SwitchToState_internal(m_TgtState);
+    co_await SwitchToState_internal(m_TgtState);
 
     setVisible(m_CurState > stIdle ? TRUE : FALSE);
     setEnabled(TRUE);
 
-    return TRUE;
+    co_return true;
 }
-void CPhantom::net_Destroy()
+
+tmc::task<void> CPhantom::net_Destroy()
 {
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
 
     // stop looped
     SStateData& sdata = m_state_data[stFly];
-    sdata.sound.stop();
+    co_await sdata.sound.stop();
     CParticlesObject::Destroy(m_fly_particles);
 }
 
@@ -140,8 +141,8 @@ void CPhantom::animation_end_callback(CBlend* B)
     default: break;
     }
 }
-//---------------------------------------------------------------------
-void CPhantom::SwitchToState_internal(EState new_state)
+
+tmc::task<void> CPhantom::SwitchToState_internal(EState new_state)
 {
     if (new_state != m_CurState)
     {
@@ -213,7 +214,7 @@ void CPhantom::SwitchToState_internal(EState new_state)
         case stIdle: {
             UpdateEvent = CallMe::fromMethod<&CPhantom::OnIdleState>(this);
             SStateData& sdata = m_state_data[m_CurState];
-            sdata.sound.stop();
+            co_await sdata.sound.stop();
             CParticlesObject::Destroy(m_fly_particles);
         }
         break;
@@ -263,11 +264,11 @@ void CPhantom::UpdateFlyMedia()
 }
 //---------------------------------------------------------------------
 
-void CPhantom::shedule_Update(u32 DT)
+tmc::task<void> CPhantom::shedule_Update(u32 DT)
 {
     spatial.type &= ~STYPE_VISIBLEFORAI;
 
-    inherited::shedule_Update(DT);
+    co_await inherited::shedule_Update(DT);
 
     IKinematicsAnimated* K = smart_cast<IKinematicsAnimated*>(Visual());
     K->UpdateTracks();
@@ -280,7 +281,7 @@ tmc::task<void> CPhantom::UpdateCL()
     UpdateEvent();
 
     if (m_TgtState != m_CurState)
-        SwitchToState_internal(m_TgtState);
+        co_await SwitchToState_internal(m_TgtState);
 }
 
 void CPhantom::Hit(SHit* pHDS)

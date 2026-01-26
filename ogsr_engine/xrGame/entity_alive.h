@@ -51,17 +51,17 @@ public:
     virtual void save(NET_Packet& output_packet);
     virtual void load(IReader& input_packet);
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual BOOL net_SaveRelevant();
 
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
     virtual void create_anim_mov_ctrl(CBlend* b);
     virtual void destroy_anim_mov_ctrl();
 
     void HitImpulse(float, Fvector&, Fvector&) override;
     virtual void Hit(SHit* pHDS);
-    virtual void Die(CObject* who);
+    tmc::task<void> Die(CObject* who) override;
     virtual void g_WeaponBones(int& L, int& R1, int& R2) = 0;
     void set_lock_corpse(bool b_l_corpse);
     bool is_locked_corpse();

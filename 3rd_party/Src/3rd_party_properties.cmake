@@ -44,11 +44,6 @@ if(LUAJIT_DIR)
   set(warning_options "${warning_options} -Wno-error=format -Wno-error=format-pedantic -Wno-error=format-signedness -Wno-error=microsoft-enum-value")
 endif()
 
-# oneTBB
-if(TBB_VERIFY_DEPENDENCY_SIGNATURE)
-  set(warning_options "${warning_options} -Wno-error=format-nonliteral -Wno-error=microsoft-enum-value")
-endif()
-
 # vorbis
 if(OGG_ROOT)
   set(conformance_options "${conformance_options} -Dalloca=_alloca")

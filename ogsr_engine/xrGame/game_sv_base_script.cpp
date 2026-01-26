@@ -25,36 +25,19 @@
 CUISequencer* g_tutorial{};
 CUISequencer* g_tutorial2{};
 
-namespace xr
-{
 namespace
 {
-class tutorial_async
+tmc::task<void> start_tutorial_async(std::array<std::byte, 16>& arg)
 {
-private:
-    xr_string name_async;
+    auto name = *reinterpret_cast<gsl::zstring*>(&arg);
 
-    tmc::task<void> start_async()
-    {
-        if (name_async.empty())
-            co_return;
+    co_await g_tutorial->Start(name);
+    xr_free(name);
 
-        co_await g_tutorial->Start(name_async.c_str());
-        name_async.clear();
-
-        if (g_tutorial2 != nullptr)
-            g_tutorial->m_pStoredInputReceiver = g_tutorial2->m_pStoredInputReceiver;
-    }
-
-public:
-    void start(gsl::czstring name)
-    {
-        name_async.assign(name);
-        Device.add_frame_async(CallMe::fromMethod<&xr::tutorial_async::start_async>(this));
-    }
-} g_tutorial_async;
+    if (g_tutorial2 != nullptr)
+        g_tutorial->m_pStoredInputReceiver = g_tutorial2->m_pStoredInputReceiver;
+}
 } // namespace
-} // namespace xr
 
 void start_tutorial(gsl::czstring name)
 {
@@ -65,15 +48,19 @@ void start_tutorial(gsl::czstring name)
     }
 
     g_tutorial = xr_new<CUISequencer>();
-    xr::g_tutorial_async.start(name);
+
+    auto& arg = Device.add_frame_async(CallMe::fromFunction<&start_tutorial_async>());
+    *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(name);
 }
 
 namespace
 {
+tmc::task<void> stop_tutorial_async(std::array<std::byte, 16>& arg) { co_await g_tutorial->Stop(); }
+
 void stop_tutorial()
 {
     if (g_tutorial != nullptr)
-        Device.add_frame_async(CallMe::fromMethod<&CUISequencer::Stop>(g_tutorial));
+        Device.add_frame_async(CallMe::fromFunction<&stop_tutorial_async>());
 }
 
 u32 PlayHudMotion(u8 hand, LPCSTR hud_section, LPCSTR anm_name, bool bMixIn = true, float speed = 1.f, bool bOverride_item = false)

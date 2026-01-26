@@ -79,7 +79,7 @@ public:
 
 public:
     virtual BOOL renderable_ShadowReceive() { return TRUE; }
-    virtual void Die(CObject* who);
+    tmc::task<void> Die(CObject* who) override;
     virtual void HitSignal(float amount, Fvector& vLocalDir, CObject* who, s16 element);
     virtual void Hit(SHit* pHDS);
     virtual void PHHit(SHit& H);
@@ -89,8 +89,8 @@ public:
     virtual void PostLoad(LPCSTR);
     virtual DLL_Pure* _construct();
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual void net_Save(NET_Packet& P);
     virtual BOOL net_SaveRelevant();
     virtual void net_Export(CSE_Abstract* E);
@@ -101,7 +101,7 @@ public:
     virtual void load(IReader& input_packet) { inherited::load(input_packet); }
 
     tmc::task<void> UpdateCL() override;
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
 
     virtual void InitThink() {}
     virtual void Think();
@@ -118,7 +118,7 @@ public:
     [[nodiscard]] bool useful(const CItemManager*, const CGameObject* object) const override;
     [[nodiscard]] float evaluate(const CItemManager*, const CGameObject*) const override;
 
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     void OnHUDDraw(ctx_id_t context_id, CCustomHUD* hud, IRenderable* root) override { inherited::OnHUDDraw(context_id, hud, root); }
     virtual u16 PHGetSyncItemsNumber() { return inherited::PHGetSyncItemsNumber(); }
     virtual CPHSynchronize* PHGetSyncItem(u16 item) { return inherited::PHGetSyncItem(item); }

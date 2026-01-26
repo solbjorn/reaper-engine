@@ -138,7 +138,7 @@ void CCar::Load(LPCSTR section)
         self->spatial.type |= STYPE_VISIBLEFORAI;
 }
 
-BOOL CCar::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CCar::net_Spawn(CSE_Abstract* DC)
 {
 #ifdef DEBUG
     InitDebug();
@@ -146,7 +146,7 @@ BOOL CCar::net_Spawn(CSE_Abstract* DC)
 
     CSE_Abstract* e = (CSE_Abstract*)(DC);
     CSE_ALifeCar* co = smart_cast<CSE_ALifeCar*>(e);
-    BOOL R = inherited::net_Spawn(DC);
+    const bool R = co_await inherited::net_Spawn(DC);
 
     PKinematics(Visual())->CalculateBones_Invalidate();
     PKinematics(Visual())->CalculateBones();
@@ -180,7 +180,7 @@ BOOL CCar::net_Spawn(CSE_Abstract* DC)
 
     renderable.visual->_ignore_optimization = true;
 
-    return (CScriptEntity::net_Spawn(DC) && R);
+    co_return co_await CScriptEntity::net_Spawn(DC) && R;
 }
 
 void CCar::ActorObstacleCallback(bool& do_colide, bool, dContact&, SGameMtl* material_1, SGameMtl* material_2)
@@ -211,19 +211,22 @@ void CCar::SpawnInitPhysics(CSE_Abstract* D)
     // m_pPhysicsShell->applyImpulse(Fvector().set(0,-1.f,0), 0.1);// хит по физ. оболочке, чтобы не висела в воздухе //Исправлено лучше в CreateSkeleton
 }
 
-void CCar::net_Destroy()
+tmc::task<void> CCar::net_Destroy()
 {
 #ifdef DEBUG
     DBgClearPlots();
 #endif
+
     IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
     if (m_bone_steer != BI_NONE)
     {
         pKinematics->LL_GetBoneInstance(m_bone_steer).reset_callback();
     }
-    CScriptEntity::net_Destroy();
-    inherited::net_Destroy();
-    CExplosive::net_Destroy();
+
+    co_await CScriptEntity::net_Destroy();
+    co_await inherited::net_Destroy();
+    co_await CExplosive::net_Destroy();
+
     if (m_pPhysicsShell)
     {
         m_pPhysicsShell->Deactivate();
@@ -239,12 +242,14 @@ void CCar::net_Destroy()
     m_breaking_wheels.clear();
     m_doors.clear();
     m_gear_ratious.clear();
-    m_car_sound->Destroy();
+    co_await m_car_sound->Destroy();
+
     CPHUpdateObject::Deactivate();
     CPHSkeleton::RespawnInit();
     m_damage_particles.Clear();
     CPHDestroyable::RespawnInit();
     CPHCollisionDamageReceiver::Clear();
+
     b_breaks = false;
 }
 
@@ -409,9 +414,11 @@ void CCar::SetDefaultNetState(CSE_PHSkeleton* po)
         i->second->SetDefaultNetState();
     }
 }
-void CCar::shedule_Update(u32 dt)
+
+tmc::task<void> CCar::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
+
     if (CPHDestroyable::Destroyed())
         CPHDestroyable::SheduleUpdate(dt);
     else
@@ -459,7 +466,7 @@ tmc::task<void> CCar::UpdateCL()
             m_memory->set_camera(m_car_weapon->ViewCameraPos(), m_car_weapon->ViewCameraDir(), m_car_weapon->ViewCameraNorm());
     }
 
-    ASCUpdate();
+    co_await ASCUpdate();
 
     if (Owner())
         co_return;
@@ -482,6 +489,7 @@ void CCar::VisualUpdate()
     V.set(lin_vel);
 
     m_car_sound->Update();
+
     if (Owner())
     {
         if (m_pPhysicsShell->isEnabled())
@@ -803,6 +811,7 @@ void CCar::ParseDefinitions()
 
     ///////////////////////////////sound///////////////////////////////////////////////////////
     m_car_sound->Init();
+
     ///////////////////////////////fuel///////////////////////////////////////////////////
     m_fuel_tank = ini->r_float("car_definition", "fuel_tank");
     m_fuel = m_fuel_tank;
@@ -810,6 +819,7 @@ void CCar::ParseDefinitions()
     m_fuel_consumption /= 100000.f;
     if (ini->line_exist("car_definition", "exhaust_particles"))
         m_exhaust_particles._set(ini->r_string("car_definition", "exhaust_particles"));
+
     ///////////////////////////////lights///////////////////////////////////////////////////
     m_lights.Init(this);
     m_lights.ParseDefinitions();
@@ -1012,6 +1022,7 @@ void CCar::StartEngine()
 {
     if (m_fuel < EPS || b_engine_on)
         return;
+
     PlayExhausts();
     m_car_sound->Start();
     b_engine_on = true;
@@ -1019,12 +1030,12 @@ void CCar::StartEngine()
     m_current_engine_power = 0.f;
     b_starting = true;
 }
+
 void CCar::StopEngine()
 {
     if (!b_engine_on)
         return;
-    // m_car_sound->Stop();
-    // StopExhausts();
+
     AscCall(ascSndStall);
     AscCall(ascExhoustStop);
     NeutralDrive(); // set zero speed
@@ -1035,8 +1046,6 @@ void CCar::StopEngine()
 
 void CCar::Stall()
 {
-    // m_car_sound->Stall();
-    // StopExhausts();
     AscCall(ascSndStall);
     AscCall(ascExhoustStop);
     NeutralDrive(); // set zero speed
@@ -1044,6 +1053,7 @@ void CCar::Stall()
     UpdatePower(); // set engine friction;
     m_current_rpm = 0.f;
 }
+
 void CCar::ReleasePedals()
 {
     Clutch();
@@ -1304,7 +1314,6 @@ void CCar::Transmission(size_t num)
     {
         if (CurrentTransmission() != num)
         {
-            // m_car_sound					->TransmissionSwitch()		;
             AscCall(ascSndTransmission);
             m_current_transmission_num = num;
             m_current_gear_ratio = m_gear_ratious[num][0];
@@ -1312,10 +1321,8 @@ void CCar::Transmission(size_t num)
             Drive();
         }
     }
-#ifdef DEBUG
-    // Log("Transmission switch %d",(u32)num);
-#endif
 }
+
 void CCar::CircleSwitchTransmission()
 {
     if (0 == CurrentTransmission())
@@ -1658,10 +1665,10 @@ void CCar::ResetKeys()
 
 #undef _USE_MATH_DEFINES
 
-void CCar::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CCar::OnEvent(NET_Packet& P, u16 type)
 {
-    inherited::OnEvent(P, type);
-    CExplosive::OnEvent(P, type);
+    co_await inherited::OnEvent(P, type);
+    co_await CExplosive::OnEvent(P, type);
 
     // обработка сообщений, нужных для работы с багажником машины
     u16 id;
@@ -1679,7 +1686,8 @@ void CCar::OnEvent(NET_Packet& P, u16 type)
         else
         {
             if (!O || !O->H_Parent() || (this != O->H_Parent()))
-                return;
+                co_return;
+
             NET_Packet _P;
             u_EventGen(_P, GE_OWNERSHIP_REJECT, ID());
             _P.w_u16(u16(O->ID()));
@@ -1948,23 +1956,24 @@ void CCar::net_Relcase(CObject* O)
         m_memory->remove_links(O);
 }
 
-void CCar::ASCUpdate()
+tmc::task<void> CCar::ASCUpdate()
 {
     for (u16 i = 0; i < cAsCallsnum; ++i)
     {
         EAsyncCalls c = EAsyncCalls(1 << i);
         if (async_calls.test(u16(c)))
-            ASCUpdate(c);
+            co_await ASCUpdate(c);
     }
 }
 
-void CCar::ASCUpdate(EAsyncCalls c)
+tmc::task<void> CCar::ASCUpdate(EAsyncCalls c)
 {
     async_calls.set(u16(c), FALSE);
+
     switch (c)
     {
     case ascSndTransmission: m_car_sound->TransmissionSwitch(); break;
-    case ascSndStall: m_car_sound->Stop(); break;
+    case ascSndStall: co_await m_car_sound->Stop(); break;
     case ascExhoustStop: StopExhausts(); break;
     default: NODEFAULT;
     }
@@ -1983,9 +1992,9 @@ u32 CCar::ExplodeTime()
         return 0;
 }
 
-void CCar::Die(CObject* who)
+tmc::task<void> CCar::Die(CObject* who)
 {
-    inherited::Die(who);
+    co_await inherited::Die(who);
     CarExplode();
 }
 

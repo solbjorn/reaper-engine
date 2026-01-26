@@ -77,10 +77,10 @@ void CWeaponStatMgun::Load(LPCSTR section)
     camRelaxSpeed = deg2rad(camRelaxSpeed);
 }
 
-BOOL CWeaponStatMgun::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CWeaponStatMgun::net_Spawn(CSE_Abstract* DC)
 {
-    if (!inheritedPH::net_Spawn(DC))
-        return FALSE;
+    if (!co_await inheritedPH::net_Spawn(DC))
+        co_return false;
 
     IKinematics* K = smart_cast<IKinematics*>(Visual());
     CInifile* pUserData = K->LL_UserData();
@@ -123,12 +123,13 @@ BOOL CWeaponStatMgun::net_Spawn(CSE_Abstract* DC)
     processing_activate();
     setVisible(TRUE);
     setEnabled(TRUE);
-    return TRUE;
+
+    co_return true;
 }
 
-void CWeaponStatMgun::net_Destroy()
+tmc::task<void> CWeaponStatMgun::net_Destroy()
 {
-    inheritedPH::net_Destroy();
+    co_await inheritedPH::net_Destroy();
     processing_deactivate();
 }
 

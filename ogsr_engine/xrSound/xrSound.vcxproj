@@ -69,7 +69,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\openal-soft\openal-soft\include\AL;$(SolutionDir)\3rd_party\Src\eax;..\..\3rd_party\Src\Xiph\ogg\ogg\include;..\..\3rd_party\Src\Xiph\vorbis\vorbis-aotuv-lancer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\openal-soft\openal-soft\include\AL;$(SolutionDir)\3rd_party\Src\eax;..\..\3rd_party\Src\Xiph\ogg\ogg\include;..\..\3rd_party\Src\Xiph\vorbis\vorbis-aotuv-lancer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -113,7 +113,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\openal-soft\openal-soft\include\AL;$(SolutionDir)\3rd_party\Src\eax;..\..\3rd_party\Src\Xiph\ogg\ogg\include;..\..\3rd_party\Src\Xiph\vorbis\vorbis-aotuv-lancer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\openal-soft\openal-soft\include\AL;$(SolutionDir)\3rd_party\Src\eax;..\..\3rd_party\Src\Xiph\ogg\ogg\include;..\..\3rd_party\Src\Xiph\vorbis\vorbis-aotuv-lancer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>

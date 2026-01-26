@@ -74,7 +74,7 @@ public:
     void Execute(gsl::czstring) override { Device.add_frame_async(CallMe::fromMethod<&CCC_Quit::execute_async>(this)); }
 
 private:
-    tmc::task<void> execute_async()
+    tmc::task<void> execute_async(std::array<std::byte, 16>&)
     {
         co_await Console->Hide();
 
@@ -446,7 +446,7 @@ public:
     }
 
 private:
-    tmc::task<void> execute_async() { co_await Device.Reset(); }
+    tmc::task<void> execute_async(std::array<std::byte, 16>&) { co_await Device.Reset(); }
 };
 
 class CCC_VidMode : public CCC_Token
@@ -515,34 +515,27 @@ class CCC_Screenmode : public CCC_Token
 {
     RTTI_DECLARE_TYPEINFO(CCC_Screenmode, CCC_Token);
 
-private:
-    xr_string args_async;
-
 public:
     explicit CCC_Screenmode(gsl::czstring N) : CCC_Token{N, &g_screenmode, screen_mode_tokens} {}
     ~CCC_Screenmode() override = default;
 
     void Execute(gsl::czstring args) override
     {
-        args_async.assign(args);
-        Device.add_frame_async(CallMe::fromMethod<&CCC_Screenmode::execute_async>(this));
+        auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_Screenmode::execute_async>(this));
+        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args);
     }
 
 private:
-    tmc::task<void> execute_async()
+    tmc::task<void> execute_async(std::array<std::byte, 16>& arg)
     {
-        if (args_async.empty())
-            co_return;
-
+        auto args = *reinterpret_cast<gsl::zstring*>(&arg);
         const u32 prev_mode = g_screenmode;
-        CCC_Token::Execute(args_async.c_str());
-        args_async.clear();
 
-        co_await tmc::spawn(execute_st(prev_mode)).run_on(xr::tmc_cpu_st_executor());
-    }
+        CCC_Token::Execute(args);
+        xr_free(args);
 
-    tmc::task<void> execute_st(u32 prev_mode)
-    {
+        co_await tmc::resume_on(xr::tmc_cpu_st_executor());
+
         if ((prev_mode != g_screenmode))
         {
             // TODO: If you enable the debug layer for DX11 and switch between fullscreen and windowed a few times,
@@ -573,7 +566,7 @@ private:
             bool fullscreen_to_windowed = (prev_mode == 2) && ((g_screenmode == 0) || (g_screenmode == 1));
             bool reset_required = windowed_to_fullscreen || fullscreen_to_windowed;
             if (Device.b_is_Ready && reset_required)
-                co_await tmc::spawn(Device.Reset()).run_on(tmc::cpu_executor());
+                co_await tmc::spawn_clang(Device.Reset(), tmc::cpu_executor());
 
             if (g_screenmode == 0 || g_screenmode == 1)
             {
@@ -749,9 +742,12 @@ public:
     explicit CCC_HideConsole(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_HideConsole() override = default;
 
-    void Execute(gsl::czstring) override { Device.add_frame_async(CallMe::fromMethod<&CConsole::Hide>(Console)); }
+    void Execute(gsl::czstring) override { Device.add_frame_async(CallMe::fromMethod<&CCC_HideConsole::execute_async>(this)); }
     void Status(TStatus& S) override { S[0] = 0; }
     void Info(TInfo& I) override { xr_sprintf(I, sizeof(I), "hide console"); }
+
+private:
+    tmc::task<void> execute_async(std::array<std::byte, 16>&) { co_await Console->Hide(); }
 };
 
 class CCC_SoundParamsSmoothing : public CCC_Integer

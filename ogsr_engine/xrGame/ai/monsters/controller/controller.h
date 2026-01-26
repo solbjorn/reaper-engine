@@ -78,11 +78,11 @@ public:
     virtual void reload(LPCSTR section);
     virtual void reinit();
     tmc::task<void> UpdateCL() override;
-    virtual void shedule_Update(u32 dt);
-    virtual void Die(CObject* who);
+    tmc::task<void> shedule_Update(u32 dt) override;
+    tmc::task<void> Die(CObject* who) override;
 
-    virtual void net_Destroy();
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
+    tmc::task<void> net_Destroy() override;
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     virtual void net_Relcase(CObject* O);
 
     virtual void CheckSpecParams(u32 spec_params);
@@ -112,8 +112,8 @@ public:
 
     void set_controlled_task(u32 task);
 
-    void play_control_sound_start();
-    void play_control_sound_hit();
+    tmc::task<void> play_control_sound_start(std::array<std::byte, 16>&);
+    tmc::task<void> play_control_sound_hit(std::array<std::byte, 16>&);
 
     void control_hit();
 

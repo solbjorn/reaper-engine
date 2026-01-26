@@ -11,11 +11,11 @@
 CPhysicsSkeletonObject::CPhysicsSkeletonObject() {}
 CPhysicsSkeletonObject::~CPhysicsSkeletonObject() {}
 
-BOOL CPhysicsSkeletonObject::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CPhysicsSkeletonObject::net_Spawn(CSE_Abstract* DC)
 {
     CSE_Abstract* e = (CSE_Abstract*)(DC);
 
-    inherited::net_Spawn(DC);
+    std::ignore = co_await inherited::net_Spawn(DC);
     xr_delete(collidable.model);
 
     collidable.model = xr_new<CCF_Skeleton>(this);
@@ -27,7 +27,7 @@ BOOL CPhysicsSkeletonObject::net_Spawn(CSE_Abstract* DC)
     if (!PPhysicsShell()->isBreakable())
         SheduleUnregister();
 
-    return TRUE;
+    co_return true;
 }
 
 void CPhysicsSkeletonObject::SpawnInitPhysics(CSE_Abstract* D)
@@ -42,9 +42,9 @@ void CPhysicsSkeletonObject::SpawnInitPhysics(CSE_Abstract* D)
     }
 }
 
-void CPhysicsSkeletonObject::net_Destroy()
+tmc::task<void> CPhysicsSkeletonObject::net_Destroy()
 {
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
     CPHSkeleton::RespawnInit();
 }
 
@@ -65,9 +65,9 @@ void CPhysicsSkeletonObject::CreatePhysicsShell(CSE_Abstract* e)
     m_pPhysicsShell = P_build_Shell(this, !po->_flags.test(CSE_PHSkeleton::flActive));
 }
 
-void CPhysicsSkeletonObject::shedule_Update(u32 dt)
+tmc::task<void> CPhysicsSkeletonObject::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
     CPHSkeleton::Update(dt);
 }
 

@@ -68,14 +68,14 @@ void CWeaponMounted::Load(LPCSTR section)
     camRelaxSpeed = deg2rad(camRelaxSpeed);
 }
 
-BOOL CWeaponMounted::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CWeaponMounted::net_Spawn(CSE_Abstract* DC)
 {
     CSE_Abstract* e = (CSE_Abstract*)(DC);
     CSE_ALifeMountedWeapon* mw = smart_cast<CSE_ALifeMountedWeapon*>(e);
     R_ASSERT(mw);
 
-    if (!inherited::net_Spawn(DC))
-        return (FALSE);
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
 
     R_ASSERT(Visual() && smart_cast<IKinematics*>(Visual()));
 
@@ -112,14 +112,14 @@ BOOL CWeaponMounted::net_Spawn(CSE_Abstract* DC)
     setVisible(TRUE);
     setEnabled(TRUE);
 
-    return TRUE;
+    co_return true;
 }
 
-void CWeaponMounted::net_Destroy()
+tmc::task<void> CWeaponMounted::net_Destroy()
 {
     CShootingObject::Light_Destroy();
 
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
     xr_delete(m_pPhysicsShell);
 }
 
@@ -152,7 +152,7 @@ tmc::task<void> CWeaponMounted::UpdateCL()
     }
 }
 
-void CWeaponMounted::shedule_Update(u32 dt) { inherited::shedule_Update(dt); }
+tmc::task<void> CWeaponMounted::shedule_Update(u32 dt) { co_await inherited::shedule_Update(dt); }
 
 void CWeaponMounted::renderable_Render(u32 context_id, IRenderable* root)
 {

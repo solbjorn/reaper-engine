@@ -33,14 +33,15 @@ void CDestroyablePhysicsObject::OnChangeVisual()
 
 CPhysicsShellHolder* CDestroyablePhysicsObject ::PPhysicsShellHolder() { return cast_physics_shell_holder(); }
 
-void CDestroyablePhysicsObject::net_Destroy()
+tmc::task<void> CDestroyablePhysicsObject::net_Destroy()
 {
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
+
     CPHDestroyable::RespawnInit();
     CPHCollisionDamageReceiver::Clear();
 }
 
-BOOL CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
 {
     CSE_Abstract* E = (CSE_Abstract*)DC;
     const CSE_Visual* visual = smart_cast<const CSE_Visual*>(E);
@@ -50,14 +51,15 @@ BOOL CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
         if (N == nullptr || N[0] == '\0')
         {
             Msg("! [%s]: prevent %s[%u] from spawn because it has no visual", __FUNCTION__, E->name_replace()[0] ? E->name_replace() : E->s_name.c_str(), E->ID);
-            return FALSE;
+            co_return false;
         }
     }
 
-    BOOL res = inherited::net_Spawn(DC);
+    const bool res = co_await inherited::net_Spawn(DC);
+
     IKinematics* K = smart_cast<IKinematics*>(Visual());
     CInifile* ini = K->LL_UserData();
-    // R_ASSERT2(ini->section_exist("destroyed"),"destroyable_object must have -destroyed- section in model user data");
+
     CPHDestroyable::Init();
     if (ini && ini->section_exist("destroyed"))
         CPHDestroyable::Load(ini, "destroyed");
@@ -77,7 +79,7 @@ BOOL CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
     CParticlesPlayer::LoadParticles(K);
     RunStartupAnim(DC);
 
-    return res;
+    co_return res;
 }
 
 // void CDestroyablePhysicsObject::Hit							(float P,Fvector &dir,CObject *who,s16 element,Fvector p_in_object_space, float impulse,  ALife::EHitType hit_type)
@@ -155,9 +157,9 @@ void CDestroyablePhysicsObject::InitServerObject(CSE_Abstract* D)
         PO->type = epotSkeleton;
 }
 
-void CDestroyablePhysicsObject::shedule_Update(u32 dt)
+tmc::task<void> CDestroyablePhysicsObject::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
     CPHDestroyable::SheduleUpdate(dt);
 }
 

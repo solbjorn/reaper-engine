@@ -72,10 +72,11 @@ void CPhysicItem::OnH_B_Chield()
     inherited::deactivate_physics_shell();
 }
 
-BOOL CPhysicItem::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CPhysicItem::net_Spawn(CSE_Abstract* DC)
 {
-    if (!inherited::net_Spawn(DC))
-        return (FALSE);
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
+
     smart_cast<IKinematics*>(Visual())->CalculateBones_Invalidate();
     smart_cast<IKinematics*>(Visual())->CalculateBones();
     CSE_Abstract* abstract = (CSE_Abstract*)DC;
@@ -89,10 +90,10 @@ BOOL CPhysicItem::net_Spawn(CSE_Abstract* DC)
     setVisible(TRUE);
     setEnabled(TRUE);
 
-    return (TRUE);
+    co_return true;
 }
 
-void CPhysicItem::net_Destroy() { inherited::net_Destroy(); }
+tmc::task<void> CPhysicItem::net_Destroy() { co_await inherited::net_Destroy(); }
 
 tmc::task<void> CPhysicItem::UpdateCL()
 {

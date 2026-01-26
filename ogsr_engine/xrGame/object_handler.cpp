@@ -65,17 +65,18 @@ void CObjectHandler::reinit(CAI_Stalker* object)
 
 void CObjectHandler::reload(LPCSTR section) { inherited::reload(section); }
 
-BOOL CObjectHandler::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CObjectHandler::net_Spawn(CSE_Abstract* DC)
 {
-    if (!inherited::net_Spawn(DC))
-        return (FALSE);
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
 
     CSE_Abstract* abstract = static_cast<CSE_Abstract*>(DC);
     CSE_ALifeTraderAbstract* trader = smart_cast<CSE_ALifeTraderAbstract*>(abstract);
     VERIFY(trader);
 
     m_infinite_ammo = !!trader->m_trader_flags.test(CSE_ALifeTraderAbstract::eTraderFlagInfiniteAmmo);
-    return (TRUE);
+
+    co_return true;
 }
 
 void CObjectHandler::OnItemTake(CInventoryItem* inventory_item)

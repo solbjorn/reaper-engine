@@ -22,7 +22,7 @@ public:
     ~CZombie() override;
 
     virtual void Load(LPCSTR section);
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     virtual void reinit();
     virtual void reload(LPCSTR section);
 
@@ -30,7 +30,7 @@ public:
 
     virtual bool ability_pitch_correction() { return false; }
 
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
 
     static void BoneCallback(CBoneInstance* B);
     void vfAssignBones();

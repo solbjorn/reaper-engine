@@ -18,7 +18,6 @@
     <Project Path="3rd_party/Src/ode/contrib/msvc7/ode_default/default.vcxproj" Id="1bf75feb-87dd-486c-880b-227987d191c2">
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
-    <Project Path="3rd_party/Src/oneTBB/oneTBB.vcxproj" Id="fd18cc23-5b32-4b39-9e74-80667ff8a9d0" />
     <Project Path="3rd_party/Src/openal-soft/openal-soft.vcxproj" Id="8c67b3ec-af96-48db-b93e-e561c79f48d7">
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
@@ -80,7 +79,6 @@
   <Project Path="ogsr_engine/xrSound/xrSound.vcxproj" Id="ccca7859-eb86-493e-9b53-c4235f45b3c5">
     <BuildDependency Project="3rd_party/Src/Xiph/ogg/ogg.vcxproj" />
     <BuildDependency Project="3rd_party/Src/Xiph/vorbis/vorbis.vcxproj" />
-    <BuildDependency Project="3rd_party/Src/oneTBB/oneTBB.vcxproj" />
     <BuildDependency Project="3rd_party/Src/openal-soft/openal-soft.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xr_3da/XR_3DA.vcxproj" Id="2578c6d8-660d-48ae-9322-7422f8664f06">

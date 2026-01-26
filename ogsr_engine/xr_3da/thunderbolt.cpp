@@ -13,12 +13,11 @@ SThunderboltDesc::SThunderboltDesc() = default;
 SThunderboltDesc::~SThunderboltDesc()
 {
     m_pRender->DestroyModel();
-    //::Render->model_Delete	(l_model);
+
     m_GradientTop->m_pFlare->DestroyShader();
     m_GradientCenter->m_pFlare->DestroyShader();
-    // m_GradientTop.hShader.destroy	();
-    // m_GradientCenter.hShader.destroy();
-    snd.destroy();
+
+    snd.queue_destroy();
 
     xr_delete(m_GradientTop);
     xr_delete(m_GradientCenter);

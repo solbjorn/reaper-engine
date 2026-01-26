@@ -17,8 +17,8 @@ public:
     ~CTorridZone() override;
 
     virtual void UpdateWorkload(u32 dt);
-    virtual void shedule_Update(u32 dt);
-    BOOL net_Spawn(CSE_Abstract* DC);
+    tmc::task<void> shedule_Update(u32 dt) override;
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
 
     virtual bool IsVisibleForZones() { return true; }
     virtual void GoEnabledState();

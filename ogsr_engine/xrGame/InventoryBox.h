@@ -43,19 +43,21 @@ public:
     typedef Based inherited;
     typedef IInventoryBox inherited2;
 
-    virtual void OnEvent(NET_Packet& P, u16 type)
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override
     {
-        inherited::OnEvent(P, type);
+        co_await inherited::OnEvent(P, type);
         ProcessEvent(smart_cast<CGameObject*>(this), P, type);
     }
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC)
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override
     {
-        inherited::net_Spawn(DC);
+        std::ignore = co_await inherited::net_Spawn(DC);
+
         inherited::setVisible(TRUE);
         inherited::setEnabled(TRUE);
         inherited::set_tip_text("inventory_box_use");
-        return TRUE;
+
+        co_return true;
     }
 
     virtual CGameObject& object() { return *smart_cast<CGameObject*>(this); }

@@ -1,11 +1,12 @@
 #include "stdafx.h"
 
 #include "SoundRender_Core.h"
+
 #include "SoundRender_Emitter.h"
 #include "SoundRender_Target.h"
 #include "SoundRender_Source.h"
 
-void CSoundRender_Core::i_start(CSoundRender_Emitter* E) const
+tmc::task<void> CSoundRender_Core::i_start(CSoundRender_Emitter* E) const
 {
     R_ASSERT(E);
 
@@ -27,7 +28,7 @@ void CSoundRender_Core::i_start(CSoundRender_Emitter* E) const
 
     // Stop currently playing
     if (CSoundRender_Emitter* emitter = T->get_emitter())
-        emitter->cancel();
+        co_await emitter->cancel();
 
     // Associate
     E->target = T;
@@ -39,7 +40,7 @@ void CSoundRender_Core::i_start(CSoundRender_Emitter* E) const
     {
         float dist = SoundRender->listener_position().distance_to(E->target->get_emitter()->p_source.position);
         if (dist > E->target->get_emitter()->p_source.max_distance)
-            E->target->get_emitter()->cancel();
+            co_await E->target->get_emitter()->cancel();
     }
 }
 

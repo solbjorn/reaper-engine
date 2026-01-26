@@ -23,7 +23,6 @@ class XR_NOVTABLE CSoundRender_Core : public CSound_manager_interface
 
 protected:
     virtual void _create_data(ref_sound_data& S, LPCSTR fName, esound_type sound_type, u32 game_type);
-    virtual void _destroy_data(ref_sound_data& S);
 
 public:
     struct SListener
@@ -125,14 +124,17 @@ public:
     virtual void attach_tail(ref_sound& S, LPCSTR fName);
 
     virtual void clone(ref_sound& S, const ref_sound& from, esound_type sound_type, u32 game_type);
-    virtual void destroy(ref_sound& S);
-    virtual void stop_emitters();
+    tmc::task<void> destroy(std::array<std::byte, 16>& arg) override;
+    void queue_destroy(ref_sound& S) override;
+    tmc::task<void> stop_emitters() override;
     virtual int pause_emitters(bool val);
 
     virtual void play(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f);
     virtual void play_at_pos(ref_sound& S, CObject* O, const Fvector& pos, u32 flags = 0, float delay = 0.f);
     virtual void play_no_feedback(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f, Fvector* pos = nullptr, float* vol = nullptr, float* freq = nullptr,
                                   Fvector2* range = nullptr);
+    void queue_stop(ref_sound& S, bool deferred, f32 speed_k = 1.0f) override;
+
     virtual void set_master_volume(float f) = 0;
     virtual void set_master_gain(float low_pass, float high_pass);
     virtual void set_geometry_env(IReader* I);
@@ -140,8 +142,8 @@ public:
     virtual void set_geometry_occ(CDB::MODEL* M);
     virtual void set_handler(sound_event* E);
 
-    void update(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R) override;
-    void render() override;
+    tmc::task<void> update(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R) override;
+    tmc::task<void> render() override;
     virtual void statistic(CSound_stats* dest, CSound_stats_ext* ext);
 
     // listener
@@ -167,7 +169,7 @@ public:
 public:
     CSoundRender_Source* i_create_source(LPCSTR name);
     CSoundRender_Emitter* i_play(ref_sound* S, BOOL _loop, float delay);
-    void i_start(CSoundRender_Emitter* E) const;
+    tmc::task<void> i_start(CSoundRender_Emitter* E) const;
     bool i_allow_play(const CSoundRender_Emitter* E) const;
     bool i_locked() const override { return bLocked; }
 
@@ -198,6 +200,8 @@ protected: // EFX
     void release_efx_objects() const;
 
 private:
+    tmc::task<void> stop(std::array<std::byte, 16>& arg);
+
     float occRayTestMtl(const Fvector& pos, const Fvector& dir, float range, Occ* occ);
     float occRayTestSom(const Fvector& pos, const Fvector& dir, float range) const;
 };

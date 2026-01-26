@@ -23,7 +23,7 @@ public:
 
     void init_external(CBaseMonster* obj) { m_object = obj; }
     [[nodiscard]] BOOL feel_touch_contact(CObject*) override { return false; }
-    virtual void schedule_update();
+    tmc::task<void> schedule_update() override;
     virtual void process_objects_in_aura() {}
 
     // свойства поля

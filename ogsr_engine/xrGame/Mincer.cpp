@@ -53,21 +53,25 @@ void CMincer::Load(LPCSTR section)
     // pSettings->r_fvector3(section,whirlwind_center);
 }
 
-BOOL CMincer::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CMincer::net_Spawn(CSE_Abstract* DC)
 {
-    BOOL result = inherited::net_Spawn(DC);
+    const bool result = co_await inherited::net_Spawn(DC);
+
     Fvector C;
     Center(C);
     C.y += m_fTeleHeight;
     m_telekinetics.SetCenter(C);
     m_telekinetics.SetOwnerObject(smart_cast<CGameObject*>(this));
-    return result;
+
+    co_return result;
 }
-void CMincer::net_Destroy()
+
+tmc::task<void> CMincer::net_Destroy()
 {
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
     m_telekinetics.clear_impacts();
 }
+
 void CMincer::feel_touch_new(CObject* O)
 {
     inherited::feel_touch_new(O);
@@ -77,12 +81,10 @@ void CMincer::feel_touch_new(CObject* O)
         Telekinesis().activate(GO, m_fThrowInImpulse, m_fTeleHeight, 100000);
     }
 }
+
 BOOL CMincer::feel_touch_contact(CObject* O) { return inherited::feel_touch_contact(O) && smart_cast<CPhysicsShellHolder*>(O); }
 
-void CMincer::AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist)
-{
-    inherited::AffectThrow(O, GO, throw_in_dir, dist);
-}
+void CMincer::AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist) { inherited::AffectThrow(O, GO, throw_in_dir, dist); }
 
 bool CMincer::BlowoutState()
 {

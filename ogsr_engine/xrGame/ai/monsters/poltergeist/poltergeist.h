@@ -56,18 +56,17 @@ public:
     virtual void reload(LPCSTR section);
     virtual void reinit();
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual void net_Relcase(CObject* O);
 
     tmc::task<void> UpdateCL() override;
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
 
     void set_actor_ignore(bool const actor_ignore) { m_actor_ignore = actor_ignore; }
     bool get_actor_ignore() const { return m_actor_ignore; }
 
-    virtual void Die(CObject* who);
-
+    tmc::task<void> Die(CObject* who) override;
     void OnDie();
 
     virtual CMovementManager* create_movement_manager();
@@ -75,7 +74,7 @@ public:
     virtual void ForceFinalAnimation();
 
     virtual void on_activate();
-    virtual void on_deactivate();
+    tmc::task<void> on_deactivate() override;
     virtual void Hit(SHit* pHDS);
 
     bool detected_enemy();
@@ -113,7 +112,7 @@ public:
 
 private:
     void Hide();
-    void Show();
+    tmc::task<void> Show();
 
     float m_height_change_velocity;
     u32 m_height_change_min_time;
@@ -184,9 +183,9 @@ public:
     virtual void update_schedule();
     virtual void update_frame();
     virtual void on_hide();
-    virtual void on_show();
-    virtual void on_destroy() {}
-    virtual void on_die();
+    virtual tmc::task<void> on_show();
+    virtual tmc::task<void> on_destroy() { co_return; }
+    virtual tmc::task<void> on_die();
     virtual void on_hit(SHit* pHDS);
 };
 
@@ -268,8 +267,8 @@ public:
 
     virtual void load(LPCSTR section);
     virtual void update_schedule();
-    virtual void on_destroy();
-    virtual void on_die();
+    tmc::task<void> on_destroy() override;
+    tmc::task<void> on_die() override;
 
 private:
     void select_state(SFlameElement* elem, EFlameState state);
@@ -328,8 +327,8 @@ public:
     virtual void load(LPCSTR section);
     virtual void update_schedule();
     virtual void update_frame();
-    virtual void on_destroy();
-    virtual void on_die();
+    tmc::task<void> on_destroy() override;
+    tmc::task<void> on_die() override;
 
 private:
     void tele_find_objects(xr_vector<CObject*>& objects, const Fvector& pos);

@@ -510,7 +510,7 @@ tmc::task<void> CEnvironment::OnFrame()
     shared_str t_id = (current_weight < 0.5f) ? Current[0]->tb_id : Current[1]->tb_id;
     eff_Thunderbolt->OnFrame(t_id, CurrentEnv->bolt_period, CurrentEnv->bolt_duration);
 
-    eff_Rain->OnFrame();
+    co_await eff_Rain->OnFrame();
 
     if (g_pGamePersistent->IsMainMenuActive())
         co_return;

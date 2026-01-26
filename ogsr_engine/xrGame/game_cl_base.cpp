@@ -182,7 +182,7 @@ ClientID game_cl_GameState::GetClientIDByOrderID(u32 idx)
 }
 
 float game_cl_GameState::shedule_Scale() const { return 1.0f; }
-void game_cl_GameState::shedule_Update(u32 dt) { ISheduled::shedule_Update(dt); }
+tmc::task<void> game_cl_GameState::shedule_Update(u32 dt) { co_await ISheduled::shedule_Update(dt); }
 
 void game_cl_GameState::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators) { HUD().GetUI()->StartStopMenu(pDialog, bDoHideIndicators); }
 void game_cl_GameState::sv_EventSend(NET_Packet& P) { Level().Send(P, net_flags(TRUE, TRUE)); }

@@ -64,10 +64,10 @@ struct SArtefactActivation
 
     u32 m_owner_id;
 
-    void UpdateActivation();
+    tmc::task<void> UpdateActivation();
     void Load();
-    void Start();
-    void ChangeEffects();
+    tmc::task<void> Start();
+    tmc::task<void> ChangeEffects();
     void UpdateEffects();
     void SpawnAnomaly();
     void PhDataUpdate(dReal step);
@@ -111,12 +111,12 @@ void CArtefact::Load(LPCSTR section)
     m_af_rank = READ_IF_EXISTS(pSettings, r_u8, section, "af_rank", 0);
 }
 
-BOOL CArtefact::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CArtefact::net_Spawn(CSE_Abstract* DC)
 {
     if (READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "can_be_controlled", false))
         m_detectorObj = xr_new<SArtefactDetectorsSupport>(this);
 
-    BOOL result = inherited::net_Spawn(DC);
+    const bool result = co_await inherited::net_Spawn(DC);
 
     SwitchAfParticles(true);
 
@@ -138,16 +138,17 @@ BOOL CArtefact::net_Spawn(CSE_Abstract* DC)
 
     SetState(eHidden);
 
-    return result;
+    co_return result;
 }
 
-void CArtefact::net_Destroy()
+tmc::task<void> CArtefact::net_Destroy()
 {
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
 
     StopLights();
     m_pTrailLight.destroy();
     CPHUpdateObject::Deactivate();
+
     xr_delete(m_activationObj);
     xr_delete(m_detectorObj);
 }
@@ -181,13 +182,14 @@ tmc::task<void> CArtefact::UpdateCL()
 {
     co_await inherited::UpdateCL();
 
-    if (o_fastmode || m_activationObj)
-        UpdateWorkload(Device.dwTimeDelta);
+    if (o_fastmode || m_activationObj != nullptr)
+        co_await UpdateWorkload();
 }
 
-void CArtefact::UpdateWorkload(u32)
+tmc::task<void> CArtefact::UpdateWorkload()
 {
     VERIFY(!ph_world->Processing());
+
     // particles - velocity
     Fvector vel{};
     if (H_Parent())
@@ -196,24 +198,27 @@ void CArtefact::UpdateWorkload(u32)
         if (pPhysicsShellHolder)
             pPhysicsShellHolder->PHGetLinearVell(vel);
     }
+
     CParticlesPlayer::SetParentVel(vel);
 
     //
     UpdateLights();
+
     if (m_activationObj)
     {
         CPHUpdateObject::Activate();
-        m_activationObj->UpdateActivation();
-        return;
+
+        co_await m_activationObj->UpdateActivation();
+        co_return;
     }
 
     // custom-logic
     UpdateCLChild();
 }
 
-void CArtefact::shedule_Update(u32 dt)
+tmc::task<void> CArtefact::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
 
     //////////////////////////////////////////////////////////////////////////
     // check "fast-mode" border
@@ -230,8 +235,9 @@ void CArtefact::shedule_Update(u32 dt)
         else
             o_switch_2_slow();
     }
+
     if (!o_fastmode)
-        UpdateWorkload(dt);
+        co_await UpdateWorkload();
 
     if (!H_Parent() && m_detectorObj)
         m_detectorObj->UpdateOnFrame();
@@ -274,12 +280,13 @@ void CArtefact::UpdateLights()
     m_pTrailLight->set_position(Position());
 }
 
-void CArtefact::ActivateArtefact()
+tmc::task<void> CArtefact::ActivateArtefact()
 {
     VERIFY(m_bCanSpawnZone);
     VERIFY(H_Parent());
+
     m_activationObj = xr_new<SArtefactActivation>(this, H_Parent()->ID());
-    m_activationObj->Start();
+    co_await m_activationObj->Start();
 }
 
 void CArtefact::PhDataUpdate(dReal step)
@@ -493,9 +500,10 @@ void SArtefactActivation::Load()
     m_activation_states[(int)eSpawnZone].Load(activation_seq, "spawning");
 }
 
-void SArtefactActivation::Start()
+tmc::task<void> SArtefactActivation::Start()
 {
     VERIFY(!ph_world->Processing());
+
     m_af->StopLights();
     m_cur_activation_state = eStarting;
     m_cur_state_time = 0.0f;
@@ -507,10 +515,11 @@ void SArtefactActivation::Start()
     P.w_u16(m_af->ID());
     CGameObject::u_EventSend(P);
     m_light->set_active(true);
-    ChangeEffects();
+
+    co_await ChangeEffects();
 }
 
-void SArtefactActivation::UpdateActivation()
+tmc::task<void> SArtefactActivation::UpdateActivation()
 {
     VERIFY(!ph_world->Processing());
     m_cur_state_time += Device.fTimeDelta;
@@ -528,11 +537,12 @@ void SArtefactActivation::UpdateActivation()
         }
 
         m_cur_state_time = 0.0f;
-        ChangeEffects();
+        co_await ChangeEffects();
 
         if (m_cur_activation_state == eSpawnZone)
             SpawnAnomaly();
     }
+
     UpdateEffects();
 }
 
@@ -549,13 +559,13 @@ void SArtefactActivation::PhDataUpdate(dReal)
     }
 }
 
-void SArtefactActivation::ChangeEffects()
+tmc::task<void> SArtefactActivation::ChangeEffects()
 {
     VERIFY(!ph_world->Processing());
+
     SStateDef& state_def = m_activation_states[(int)m_cur_activation_state];
 
-    if (m_snd._feedback())
-        m_snd.stop();
+    co_await m_snd.stop();
 
     if (state_def.m_snd.size())
     {
@@ -670,7 +680,7 @@ void SArtefactActivation::SStateDef::Load(LPCSTR section, LPCSTR name)
 }
 
 SArtefactDetectorsSupport::SArtefactDetectorsSupport(CArtefact* A) : m_parent{A} {}
-SArtefactDetectorsSupport::~SArtefactDetectorsSupport() { m_sound.destroy(); }
+SArtefactDetectorsSupport::~SArtefactDetectorsSupport() { m_sound.queue_destroy(); }
 
 void SArtefactDetectorsSupport::SetVisible(bool b)
 {

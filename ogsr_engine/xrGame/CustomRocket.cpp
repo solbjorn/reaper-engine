@@ -61,22 +61,23 @@ void CCustomRocket::reinit()
     m_vPrevVel.set(0, 0, 0);
 }
 
-BOOL CCustomRocket::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CCustomRocket::net_Spawn(CSE_Abstract* DC)
 {
     m_eState = eInactive;
-    BOOL result = inherited::net_Spawn(DC);
+
+    const bool result = co_await inherited::net_Spawn(DC);
     m_LaunchXForm.set(XFORM());
-    return result;
+
+    co_return result;
 }
 
-void CCustomRocket::net_Destroy()
+tmc::task<void> CCustomRocket::net_Destroy()
 {
-    //	Msg("---------net_Destroy [%d] frame[%d]",ID(), Device.dwFrame);
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
     CPHUpdateObject::Deactivate();
 
     StopEngine();
-    StopFlying();
+    co_await StopFlying();
 }
 
 void CCustomRocket::SetLaunchParams(const Fmatrix& xform, const Fvector& vel, const Fvector& angular_vel)
@@ -306,15 +307,16 @@ void CCustomRocket::Contact(const Fvector& pos, const Fvector& normal)
     m_contact.pos.set(pos);
     m_contact.up.set(normal);
 }
-void CCustomRocket::PlayContact()
+
+tmc::task<void> CCustomRocket::PlayContact()
 {
     if (!m_contact.contact)
-        return;
-    if (eCollide == m_eState)
-        return;
+        co_return;
+    if (m_eState == eCollide)
+        co_return;
 
     StopEngine();
-    StopFlying();
+    co_await StopFlying();
 
     m_eState = eCollide;
 
@@ -369,8 +371,7 @@ void CCustomRocket::OnH_A_Independent()
 tmc::task<void> CCustomRocket::UpdateCL()
 {
     co_await inherited::UpdateCL();
-
-    PlayContact();
+    co_await PlayContact();
 
     switch (m_eState)
     {
@@ -577,13 +578,13 @@ void CCustomRocket::StartFlyParticles()
     VERIFY3(m_pFlyParticles->IsLooped(), "must be a looped particle system for rocket fly: %s", *m_sFlyParticles);
 }
 
-void CCustomRocket::StopFlyParticles()
+tmc::task<void> CCustomRocket::StopFlyParticles()
 {
-    if (m_flyingSound._handle())
-        m_flyingSound.stop();
+    if (m_flyingSound._handle() != nullptr)
+        co_await m_flyingSound.stop();
 
-    if (!m_pFlyParticles)
-        return;
+    if (m_pFlyParticles == nullptr)
+        co_return;
 
     m_pFlyParticles->Stop();
     m_pFlyParticles->SetAutoRemove(true);
@@ -596,10 +597,10 @@ void CCustomRocket::StartFlying()
     StartLights();
 }
 
-void CCustomRocket::StopFlying()
+tmc::task<void> CCustomRocket::StopFlying()
 {
-    StopFlyParticles();
+    co_await StopFlyParticles();
     StopLights();
 }
 
-void CCustomRocket::OnEvent(NET_Packet& P, u16 type) { inherited::OnEvent(P, type); }
+tmc::task<void> CCustomRocket::OnEvent(NET_Packet& P, u16 type) { co_await inherited::OnEvent(P, type); }

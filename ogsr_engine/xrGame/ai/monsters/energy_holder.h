@@ -33,14 +33,14 @@ public:
     virtual void reinit();
     virtual void reload(LPCSTR section, LPCSTR prefix = "", LPCSTR suffix = "");
 
-    virtual void schedule_update();
+    virtual tmc::task<void> schedule_update();
 
     virtual void on_activate() {}
-    virtual void on_deactivate() {}
+    virtual tmc::task<void> on_deactivate() { co_return; }
 
     // активность поля
     void activate();
-    void deactivate();
+    tmc::task<void> deactivate();
     IC bool is_active() { return m_active; }
     IC bool can_activate() { return (m_value > m_activate_value); }
     IC bool should_deactivate() { return (m_value < m_critical_value); }

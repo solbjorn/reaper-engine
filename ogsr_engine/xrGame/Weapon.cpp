@@ -675,10 +675,9 @@ void CWeapon::LoadFireParams(LPCSTR section, LPCSTR prefix)
     CShootingObject::LoadFireParams(section, prefix);
 }
 
-BOOL CWeapon::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CWeapon::net_Spawn(CSE_Abstract* DC)
 {
-    BOOL bResult = inherited::net_Spawn(DC);
-
+    const bool bResult = co_await inherited::net_Spawn(DC);
     auto E = smart_cast<CSE_ALifeItemWeapon*>(DC);
 
     // iAmmoCurrent					= E->a_current;
@@ -732,12 +731,12 @@ BOOL CWeapon::net_Spawn(CSE_Abstract* DC)
     if (m_bLightShotEnabled)
         Light_Create();
 
-    return bResult;
+    co_return bResult;
 }
 
-void CWeapon::net_Destroy()
+tmc::task<void> CWeapon::net_Destroy()
 {
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
 
     // удалить объекты партиклов
     StopFlameParticles();
@@ -795,7 +794,7 @@ void CWeapon::load(IReader& input_packet)
         OnZoomOut();
 }
 
-void CWeapon::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CWeapon::OnEvent(NET_Packet& P, u16 type)
 {
     switch (type)
     {
@@ -810,19 +809,16 @@ void CWeapon::OnEvent(NET_Packet& P, u16 type)
             m_set_next_ammoType_on_reload = NextAmmo;
 
         OnStateSwitch(state, GetState());
+        break;
     }
-    break;
-    default: {
-        inherited::OnEvent(P, type);
-    }
-    break;
+    default: co_await inherited::OnEvent(P, type); break;
     }
 }
 
-void CWeapon::shedule_Update(u32 dT)
+tmc::task<void> CWeapon::shedule_Update(u32 dT)
 {
     // Inherited
-    inherited::shedule_Update(dT);
+    co_await inherited::shedule_Update(dT);
 }
 
 void CWeapon::OnH_B_Independent(bool just_before_destroy)

@@ -26,10 +26,10 @@ public:
     ~CBastArtefact() override;
 
     virtual void Load(LPCSTR section);
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
 
     virtual void Hit(SHit* pHDS);
 

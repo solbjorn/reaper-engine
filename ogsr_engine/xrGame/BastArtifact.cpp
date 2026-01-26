@@ -78,23 +78,22 @@ void CBastArtefact::BastCollision(CEntityAlive* pEntityAlive)
     }
 }
 
-BOOL CBastArtefact::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CBastArtefact::net_Spawn(CSE_Abstract* DC)
 {
-    BOOL result = inherited::net_Spawn(DC);
-    if (!result)
-        return FALSE;
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
 
     m_bStrike = false;
     m_AttakingEntity = nullptr;
     m_pHitedEntity = nullptr;
     m_AliveList.clear();
 
-    return TRUE;
+    co_return true;
 }
 
-void CBastArtefact::net_Destroy()
+tmc::task<void> CBastArtefact::net_Destroy()
 {
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
 
     m_bStrike = false;
     m_AttakingEntity = nullptr;
@@ -116,9 +115,9 @@ void CBastArtefact::Load(LPCSTR section)
     m_sParticleName._set(pSettings->r_string(section, "particle"));
 }
 
-void CBastArtefact::shedule_Update(u32 dt)
+tmc::task<void> CBastArtefact::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
 
     Fvector P;
     P.set(Position());

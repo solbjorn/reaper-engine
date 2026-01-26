@@ -7,7 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "space_restrictor.h"
+
 #include "xrServer_Objects_ALife.h"
 #include "level.h"
 #include "space_restriction_manager.h"
@@ -33,7 +35,7 @@ float CSpaceRestrictor::Radius() const
     return cf->getRadius();
 }
 
-BOOL CSpaceRestrictor::net_Spawn(CSE_Abstract* data)
+tmc::task<bool> CSpaceRestrictor::net_Spawn(CSE_Abstract* data)
 {
     actual(false);
 
@@ -73,32 +75,30 @@ BOOL CSpaceRestrictor::net_Spawn(CSE_Abstract* data)
 
     shape->ComputeBounds();
 
-    BOOL result = inherited::net_Spawn(data);
-
-    if (!result)
-        return (FALSE);
+    if (!co_await inherited::net_Spawn(data))
+        co_return false;
 
     setEnabled(FALSE);
     setVisible(FALSE);
 
     if (!ai().get_level_graph() || RestrictionSpace::ERestrictorTypes(se_shape->m_space_restrictor_type) == RestrictionSpace::eRestrictorTypeNone)
-        return (TRUE);
+        co_return true;
 
     Level().space_restriction_manager().register_restrictor(this, RestrictionSpace::ERestrictorTypes(se_shape->m_space_restrictor_type));
 
-    return (TRUE);
+    co_return true;
 }
 
-void CSpaceRestrictor::net_Destroy()
+tmc::task<void> CSpaceRestrictor::net_Destroy()
 {
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
     ScheduleUnregister();
 
     if (!ai().get_level_graph())
-        return;
+        co_return;
 
     if (RestrictionSpace::ERestrictorTypes(m_space_restrictor_type) == RestrictionSpace::eRestrictorTypeNone)
-        return;
+        co_return;
 
     Level().space_restriction_manager().unregister_restrictor(this);
 }
@@ -252,9 +252,10 @@ void CSpaceRestrictor::ScheduleUnregister()
     }
 }
 
-void CSpaceRestrictor::shedule_Update(u32 dt)
+tmc::task<void> CSpaceRestrictor::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
+
     if (IsScheduled())
     {
         const Fsphere& s = CFORM()->getSphere();

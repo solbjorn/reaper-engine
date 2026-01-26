@@ -1,5 +1,9 @@
 #pragma once
 
+#include "CustomZone.h"
+
+#include "..\Include/xrRender/KinematicsAnimated.h"
+
 class CVisualZone : public CCustomZone
 {
     RTTI_DECLARE_TYPEINFO(CVisualZone, CCustomZone);
@@ -14,8 +18,8 @@ public:
     CVisualZone();
     ~CVisualZone() override;
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual void AffectObjects();
     virtual void SwitchZoneState(EZoneState new_state);
     virtual void Load(LPCSTR section);

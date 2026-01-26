@@ -28,9 +28,9 @@ public:
     virtual void reinit();
     virtual void Load(LPCSTR);
     virtual void reload(LPCSTR section);
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
-    virtual void shedule_Update(u32 time_delta);
+    virtual tmc::task<bool> net_Spawn(CSE_Abstract* DC);
+    virtual tmc::task<void> net_Destroy();
+    virtual tmc::task<void> shedule_Update(u32 time_delta);
     virtual void save(NET_Packet& output_packet);
     virtual void load(IReader& input_packet);
     virtual BOOL net_SaveRelevant();

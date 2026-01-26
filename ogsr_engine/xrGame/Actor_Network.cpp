@@ -52,7 +52,7 @@ CActor* Actor()
     return g_actor;
 }
 
-BOOL CActor::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CActor::net_Spawn(CSE_Abstract* DC)
 {
     m_holder_id = ALife::_OBJECT_ID(-1);
     m_feel_touch_characters = 0;
@@ -110,10 +110,11 @@ BOOL CActor::net_Spawn(CSE_Abstract* DC)
         pGameSP->PdaMenu->UIDiaryWnd->FillNews();
     }
 
-    if (!CInventoryOwner::net_Spawn(DC))
-        return FALSE;
-    if (!inherited::net_Spawn(DC))
-        return FALSE;
+    if (!co_await CInventoryOwner::net_Spawn(DC))
+        co_return false;
+
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
 
     CSE_ALifeTraderAbstract* pTA = smart_cast<CSE_ALifeTraderAbstract*>(e);
     set_money(pTA->m_dwMoney, false);
@@ -213,7 +214,7 @@ BOOL CActor::net_Spawn(CSE_Abstract* DC)
         K->PlayCycle(shared_str{"death_init"});
 
         // остановить звук тяжелого дыхания
-        m_HeavyBreathSnd.stop();
+        co_await m_HeavyBreathSnd.stop();
     }
 
     m_holder_id = E->m_holderID;
@@ -240,12 +241,12 @@ BOOL CActor::net_Spawn(CSE_Abstract* DC)
 
     g_player_hud->load_default();
 
-    return TRUE;
+    co_return true;
 }
 
-void CActor::net_Destroy()
+tmc::task<void> CActor::net_Destroy()
 {
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
 
     if (m_holder_id != ALife::_OBJECT_ID(-1))
         Level().client_spawn_manager().remove(m_holder_id, ID());
@@ -256,7 +257,7 @@ void CActor::net_Destroy()
     Level().MapManager().RemoveMapLocationByObjectID(ID());
 
     // TODO: Dima to MadMax : do not comment inventory owner net_Destroy!!!
-    CInventoryOwner::net_Destroy();
+    co_await CInventoryOwner::net_Destroy();
 
     cam_UnsetLadder();
     character_physics_support()->movement()->DestroyCharacter();

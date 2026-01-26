@@ -25,16 +25,16 @@ public:
     virtual CMissile* cast_missile() { return this; }
 
     virtual void Load(LPCSTR section);
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
 
     tmc::task<void> UpdateCL() override;
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
 
     virtual void OnH_A_Chield();
     virtual void OnH_B_Independent(bool just_before_destroy);
 
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
 
     virtual void OnAnimationEnd(u32 state);
     virtual void OnMotionMark(u32 state, const motion_marks& M);

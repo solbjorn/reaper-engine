@@ -56,14 +56,14 @@ void CProjector::BoneCallbackY(CBoneInstance* B)
     B->mTransform.mulB_43(M);
 }
 
-BOOL CProjector::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CProjector::net_Spawn(CSE_Abstract* DC)
 {
     CSE_Abstract* e = (CSE_Abstract*)(DC);
     CSE_ALifeObjectProjector* slight = smart_cast<CSE_ALifeObjectProjector*>(e);
     R_ASSERT(slight);
 
-    if (!inherited::net_Spawn(DC))
-        return (FALSE);
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
 
     R_ASSERT(Visual() && smart_cast<IKinematics*>(Visual()));
 
@@ -111,10 +111,10 @@ BOOL CProjector::net_Spawn(CSE_Abstract* DC)
 
     //////////////////////////////////////////////////////////////////////////
 
-    return TRUE;
+    co_return true;
 }
 
-void CProjector::shedule_Update(u32 dt) { inherited::shedule_Update(dt); }
+tmc::task<void> CProjector::shedule_Update(u32 dt) { co_await inherited::shedule_Update(dt); }
 
 void CProjector::TurnOn()
 {

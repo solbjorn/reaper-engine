@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "controller_psy_hit.h"
+
 #include "../BaseMonster/base_monster.h"
 #include "controller.h"
 #include "../control_animation_base.h"
@@ -267,36 +268,25 @@ void CControllerPsyHit::update_frame()
 void CControllerPsyHit::set_sound_state(ESoundState state)
 {
     CController* monster = smart_cast<CController*>(m_object);
-    if (state == ePrepare)
-    {
-        monster->m_sound_tube_prepare.play_at_pos(Actor(), Fvector().set(0.f, 0.f, 0.f), sm_2D);
-    }
-    else if (state == eStart)
-    {
-        if (monster->m_sound_tube_prepare._feedback())
-            monster->m_sound_tube_prepare.stop();
 
-        monster->m_sound_tube_start.play_at_pos(Actor(), Fvector().set(0.f, 0.f, 0.f), sm_2D);
-        monster->m_sound_tube_pull.play_at_pos(Actor(), Fvector().set(0.f, 0.f, 0.f), sm_2D);
-    }
-    else if (state == eHit)
+    switch (state)
     {
-        if (monster->m_sound_tube_start._feedback())
-            monster->m_sound_tube_start.stop();
-        if (monster->m_sound_tube_pull._feedback())
-            monster->m_sound_tube_pull.stop();
-
-        // monster->m_sound_tube_hit_left.play_at_pos(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
-        // monster->m_sound_tube_hit_right.play_at_pos(Actor(), Fvector().set(1.f, 0.f, 1.f), sm_2D);
-    }
-    else if (state == eNone)
-    {
-        if (monster->m_sound_tube_start._feedback())
-            monster->m_sound_tube_start.stop();
-        if (monster->m_sound_tube_pull._feedback())
-            monster->m_sound_tube_pull.stop();
-        if (monster->m_sound_tube_prepare._feedback())
-            monster->m_sound_tube_prepare.stop();
+    case ePrepare: monster->m_sound_tube_prepare.play_at_pos(Actor(), {}, sm_2D); break;
+    case eStart:
+        monster->m_sound_tube_prepare.queue_stop();
+        monster->m_sound_tube_start.play_at_pos(Actor(), {}, sm_2D);
+        monster->m_sound_tube_pull.play_at_pos(Actor(), {}, sm_2D);
+        break;
+    case eHit:
+        monster->m_sound_tube_start.queue_stop();
+        monster->m_sound_tube_pull.queue_stop();
+        break;
+    case eNone:
+        monster->m_sound_tube_start.queue_stop();
+        monster->m_sound_tube_pull.queue_stop();
+        monster->m_sound_tube_prepare.queue_stop();
+        break;
+    default: break;
     }
 
     m_sound_state = state;

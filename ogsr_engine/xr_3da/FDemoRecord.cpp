@@ -160,7 +160,7 @@ tmc::task<std::unique_ptr<CDemoRecord>> CDemoRecord::co_create(gsl::czstring nam
     co_return demo;
 }
 
-tmc::task<void> CDemoRecord::co_destroy()
+tmc::task<void> CDemoRecord::co_destroy(std::array<std::byte, 16>&)
 {
     co_await IR_Release(); // release input
 

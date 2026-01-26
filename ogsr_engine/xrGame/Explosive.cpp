@@ -66,6 +66,8 @@ CExplosive::CExplosive()
     m_vExplodeSize.set(0.001f, 0.001f, 0.001f);
 }
 
+CExplosive::~CExplosive() { sndExplode.queue_destroy(); }
+
 void CExplosive::LightCreate()
 {
     m_pLight._set(::Render->light_create());
@@ -74,8 +76,6 @@ void CExplosive::LightCreate()
 }
 
 void CExplosive::LightDestroy() { m_pLight.destroy(); }
-
-CExplosive::~CExplosive() { sndExplode.destroy(); }
 
 void CExplosive::Load(LPCSTR section) { Load(pSettings, section); }
 
@@ -140,11 +140,13 @@ void CExplosive::Load(CInifile* ini, LPCSTR section)
         m_bDynamicParticles = ini->r_bool(section, "dynamic_explosion_particles");
 }
 
-void CExplosive::net_Destroy()
+tmc::task<void> CExplosive::net_Destroy()
 {
     m_blasted_objects.clear();
     StopLight();
     m_explosion_flags.assign(0);
+
+    co_return;
 }
 
 struct SExpQParams
@@ -557,7 +559,7 @@ void CExplosive::HideExplosive()
     m_bAlreadyHidden = true;
 }
 
-void CExplosive::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CExplosive::OnEvent(NET_Packet& P, u16 type)
 {
     switch (type)
     {
@@ -578,6 +580,8 @@ void CExplosive::OnEvent(NET_Packet& P, u16 type)
         break;
     }
     }
+
+    co_return;
 }
 
 void CExplosive::ExplodeParams(const Fvector& pos, const Fvector& dir)

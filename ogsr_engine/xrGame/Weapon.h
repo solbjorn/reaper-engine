@@ -43,8 +43,8 @@ public:
     // Generic
     virtual void Load(LPCSTR section);
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual void net_Export(CSE_Abstract* E);
 
     virtual CWeapon* cast_weapon() { return this; }
@@ -56,7 +56,7 @@ public:
     virtual BOOL net_SaveRelevant() { return inherited::net_SaveRelevant(); }
 
     tmc::task<void> UpdateCL() override;
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
 
     void renderable_Render(u32 context_id, IRenderable* root) override;
     virtual void render_hud_mode() override;
@@ -67,7 +67,7 @@ public:
     virtual void OnH_A_Chield();
     virtual void OnH_B_Independent(bool just_before_destroy);
     virtual void OnH_A_Independent();
-    virtual void OnEvent(NET_Packet& P, u16 type); // {inherited::OnEvent(P,type);}
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     virtual void OnBeforeDrop() override;
 
     virtual void Hit(SHit* pHDS);

@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "attachment_owner.h"
+
 #include "attachable_item.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "inventory_item.h"
@@ -34,19 +35,15 @@ void CAttachmentOwner::reload(LPCSTR section)
 
 void CAttachmentOwner::reinit() { VERIFY(m_attached_objects.empty()); }
 
-void CAttachmentOwner::net_Destroy()
+tmc::task<void> CAttachmentOwner::net_Destroy()
 {
 #ifdef DEBUG
     if (!attached_objects().empty())
-    {
         Msg("Object %s has attached items :", *smart_cast<CGameObject*>(this)->cName());
-        //		xr_vector<CAttachableItem*>::const_iterator	I = attached_objects().begin();
-        //		xr_vector<CAttachableItem*>::const_iterator	E = attached_objects().end();
-        //		for ( ; I != E; ++I)
-        //			Msg					("* %s",*(*I)->item().object().cName());
-    }
 #endif
+
     R_ASSERT(attached_objects().empty());
+    co_return;
 }
 
 void CAttachmentOwner::renderable_Render(u32 context_id, IRenderable* root)

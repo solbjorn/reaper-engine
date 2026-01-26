@@ -39,9 +39,9 @@ public:
     virtual void OnH_B_Chield();
     virtual void OnH_A_Chield();
     tmc::task<void> UpdateCL() override;
-    virtual void OnEvent(NET_Packet& P, u16 type);
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual void net_Export(CSE_Abstract* E);
     virtual void save(NET_Packet& output_packet);
     virtual void load(IReader& input_packet);

@@ -31,7 +31,7 @@ public:
     ~CUIGameSP() override;
 
     tmc::task<void> reset_ui() override;
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
     virtual void Render();
     virtual void SetClGame(game_cl_GameState* g);
     virtual bool IR_OnKeyboardPress(int dik);

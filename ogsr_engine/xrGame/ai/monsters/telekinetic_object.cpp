@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
-#include "../../physicsshellholder.h"
 #include "telekinetic_object.h"
+
+#include "../../physicsshellholder.h"
 #include "PhysicsShell.h"
 #include "PHInterpolation.h"
 #include "PHElement.h"
@@ -198,8 +199,9 @@ void CTelekineticObject::fire_t(const Fvector& target, float time)
         sound_throw.play_at_pos(object, object->Position());
 
     if (sound_hold._handle() && sound_hold._feedback())
-        sound_hold.stop();
+        sound_hold.queue_stop();
 }
+
 void CTelekineticObject::fire(const Fvector& target, float power)
 {
     // state				= TS_Fire;

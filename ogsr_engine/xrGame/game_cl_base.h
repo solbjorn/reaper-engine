@@ -73,7 +73,7 @@ public:
     virtual CUIGameCustom* createGameUI() { return nullptr; }
 
     void StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators);
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
 
     void u_EventGen(NET_Packet& P, u16 type, u16 dest);
     void u_EventSend(NET_Packet& P);

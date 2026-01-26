@@ -47,15 +47,15 @@ public:
 
     virtual DLL_Pure* _construct();
     virtual void Load(LPCSTR section);
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     virtual void net_Export(CSE_Abstract*);
-    virtual void net_Destroy();
+    tmc::task<void> net_Destroy() override;
 
     virtual void save(NET_Packet& output_packet);
     virtual void load(IReader& input_packet);
     virtual BOOL net_SaveRelevant() { return inherited::net_SaveRelevant(); }
 
-    virtual void Die(CObject* who);
+    tmc::task<void> Die(CObject* who) override;
     virtual void Think();
     virtual void HitSignal(float, Fvector&, CObject*, s16) {}
     virtual void HitImpulse(float, Fvector&, Fvector&) {}
@@ -66,10 +66,10 @@ public:
     virtual void g_WeaponBones(int& L, int& R1, int& R2);
     virtual float ffGetFov() const { return 150.f; }
     virtual float ffGetRange() const { return 30.f; }
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     virtual void feel_touch_new(CObject* O);
     virtual void DropItemSendMessage(CObject* O);
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
 
     virtual BOOL UsedAI_Locations();
 

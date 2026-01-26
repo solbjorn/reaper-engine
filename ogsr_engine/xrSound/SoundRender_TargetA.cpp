@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "SoundRender_TargetA.h"
+
 #include "SoundRender_Emitter.h"
 #include "SoundRender_Source.h"
 
@@ -70,10 +71,10 @@ void CSoundRender_TargetA::start(CSoundRender_Emitter* E)
     sampleRate = wvf.nSamplesPerSec;
 }
 
-void CSoundRender_TargetA::render()
+tmc::task<void> CSoundRender_TargetA::render()
 {
-    inherited::render();
-    submit_all_buffers();
+    co_await inherited::render();
+    co_await submit_all_buffers();
 
     A_CHK(alSourceQueueBuffers(pSource, sdef_target_count_submit, pBuffers));
     A_CHK(alSourcePlay(pSource));
@@ -90,22 +91,22 @@ void CSoundRender_TargetA::stop()
     inherited::stop();
 }
 
-void CSoundRender_TargetA::rewind()
+tmc::task<void> CSoundRender_TargetA::rewind()
 {
-    inherited::rewind();
+    co_await inherited::rewind();
 
     A_CHK(alSourceStop(pSource));
     A_CHK(alSourcei(pSource, AL_BUFFER, NULL));
 
-    submit_all_buffers();
+    co_await submit_all_buffers();
 
     A_CHK(alSourceQueueBuffers(pSource, sdef_target_count_submit, pBuffers));
     A_CHK(alSourcePlay(pSource));
 }
 
-void CSoundRender_TargetA::update()
+tmc::task<void> CSoundRender_TargetA::update()
 {
-    inherited::update();
+    co_await inherited::update();
 
     if (bAlSoft)
     {
@@ -118,7 +119,7 @@ void CSoundRender_TargetA::update()
         if (error != AL_NO_ERROR)
         {
             Msg("!![%s]Error checking source state! OpenAL Error: [%s]", __FUNCTION__, alGetString(error));
-            return;
+            co_return;
         }
 
         while (processed > 0)
@@ -126,7 +127,7 @@ void CSoundRender_TargetA::update()
             ALuint BufferID;
             A_CHK(alSourceUnqueueBuffers(pSource, 1, &BufferID));
 
-            submit_buffer(BufferID);
+            co_await submit_buffer(BufferID);
 
             A_CHK(alSourceQueueBuffers(pSource, 1, &BufferID));
             processed--;
@@ -134,7 +135,7 @@ void CSoundRender_TargetA::update()
             if (error != AL_NO_ERROR)
             {
                 Msg("!![%s]Error buffering data! OpenAL Error: [%s]", __FUNCTION__, alGetString(error));
-                return;
+                co_return;
             }
         }
 
@@ -146,14 +147,14 @@ void CSoundRender_TargetA::update()
             /* If no buffers are queued, playback is finished */
             alGetSourcei(pSource, AL_BUFFERS_QUEUED, &queued);
             if (queued == 0)
-                return;
+                co_return;
 
             alSourcePlay(pSource);
             ALenum error = alGetError();
             if (error != AL_NO_ERROR)
             {
                 Msg("!![%s]Error restarting playback! OpenAL Error: [%s]", __FUNCTION__, alGetString(error));
-                return;
+                co_return;
             }
         }
     }
@@ -170,7 +171,7 @@ void CSoundRender_TargetA::update()
                 ALuint BufferID;
                 A_CHK(alSourceUnqueueBuffers(pSource, 1, &BufferID));
 
-                submit_buffer(BufferID);
+                co_await submit_buffer(BufferID);
 
                 A_CHK(alSourceQueueBuffers(pSource, 1, &BufferID));
                 processed--;
@@ -249,16 +250,16 @@ void CSoundRender_TargetA::fill_parameters(CSoundRender_Core* core)
     }
 }
 
-void CSoundRender_TargetA::submit_buffer(ALuint BufferID) const
+tmc::task<void> CSoundRender_TargetA::submit_buffer(ALuint BufferID) const
 {
-    R_ASSERT(m_pEmitter);
+    R_ASSERT(m_pEmitter != nullptr);
 
-    const auto [data, dataSize] = m_pEmitter->obtain_block();
-    A_CHK(alBufferData(BufferID, dataFormat, data, dataSize, sampleRate));
+    const auto block = co_await m_pEmitter->obtain_block();
+    A_CHK(alBufferData(BufferID, dataFormat, block.data(), block.size(), sampleRate));
 }
 
-void CSoundRender_TargetA::submit_all_buffers() const
+tmc::task<void> CSoundRender_TargetA::submit_all_buffers() const
 {
     for (const auto buffer : pBuffers)
-        submit_buffer(buffer);
+        co_await submit_buffer(buffer);
 }

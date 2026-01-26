@@ -117,12 +117,12 @@ public:
 
     virtual void Load(LPCSTR section);
     void init();
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual BOOL renderable_ShadowGenerate() { return FALSE; }
     virtual BOOL renderable_ShadowReceive() { return FALSE; }
     void renderable_Render(u32 context_id, IRenderable* root) override;
-    virtual void shedule_Update(u32 DT);
+    tmc::task<void> shedule_Update(u32 DT) override;
     tmc::task<void> UpdateCL() override;
 
     virtual CEntity* cast_entity() { return this; }
@@ -135,7 +135,7 @@ public:
     void HitSignal(float, Fvector&, CObject*, s16) override;
     void HitImpulse(float, Fvector&, Fvector&) override;
     virtual void Hit(SHit* pHDS);
-    virtual void Die(CObject* who);
+    tmc::task<void> Die(CObject* who) override;
     virtual float ffGetFov() const { return 150.f; }
     virtual float ffGetRange() const { return 30.f; }
 

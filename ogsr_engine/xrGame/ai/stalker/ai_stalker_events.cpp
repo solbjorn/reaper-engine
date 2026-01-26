@@ -25,10 +25,10 @@ using namespace MonsterSpace;
 
 #define SILENCE
 
-void CAI_Stalker::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CAI_Stalker::OnEvent(NET_Packet& P, u16 type)
 {
-    inherited::OnEvent(P, type);
-    CInventoryOwner::OnEvent(P, type);
+    co_await inherited::OnEvent(P, type);
+    co_await CInventoryOwner::OnEvent(P, type);
 
     switch (type)
     {

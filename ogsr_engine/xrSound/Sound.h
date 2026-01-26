@@ -154,14 +154,17 @@ public:
 
     IC void clone(const ref_sound& from, esound_type sound_type, u32 game_type);
 
-    IC void destroy();
+    inline tmc::task<void> destroy();
+    inline void queue_destroy();
 
     IC void play(CObject* O, u32 flags = 0, float delay = 0.f);
     IC void play_at_pos(CObject* O, const Fvector& pos, u32 flags = 0, float delay = 0.f);
     IC void play_no_feedback(CObject* O, u32 flags = 0, float delay = 0.f, Fvector* pos = nullptr, float* vol = nullptr, float* freq = nullptr, Fvector2* range = nullptr);
 
-    IC void stop();
-    IC void stop_deffered(float speed_k);
+    inline tmc::task<void> stop();
+    inline void queue_stop();
+    inline tmc::task<void> stop_deffered(f32 speed_k = 1.0f);
+    inline void queue_stop_deferred(f32 speed_k = 1.0f);
 
     IC void set_position(const Fvector& pos);
     IC void set_frequency(float freq);
@@ -292,7 +295,7 @@ public:
     virtual void set_priority(float vol) = 0;
     virtual void set_time(float t) = 0; //--#SM+#--
     virtual void set_gain(float low_gain, float high_gain) = 0;
-    virtual void stop(BOOL bDeffered, float speed_k = 1.f) = 0;
+    virtual tmc::task<void> stop(bool bDeffered, f32 speed_k = 1.0f) = 0;
     virtual const CSound_params* get_params() = 0;
     virtual u32 play_time() = 0;
 };
@@ -355,7 +358,6 @@ public:
 protected:
     friend class ref_sound_data;
     virtual void _create_data(ref_sound_data& S, LPCSTR fName, esound_type sound_type, u32 game_type) = 0;
-    virtual void _destroy_data(ref_sound_data& S) = 0;
 
 public:
     ~CSound_manager_interface() override = 0;
@@ -369,14 +371,16 @@ public:
     virtual void create(ref_sound& S, LPCSTR fName, esound_type sound_type, u32 game_type) = 0;
     virtual void attach_tail(ref_sound& S, LPCSTR fName) = 0;
     virtual void clone(ref_sound& S, const ref_sound& from, esound_type sound_type, u32 game_type) = 0;
-    virtual void destroy(ref_sound& S) = 0;
-    virtual void stop_emitters() = 0;
+    virtual tmc::task<void> destroy(std::array<std::byte, 16>& arg) = 0;
+    virtual void queue_destroy(ref_sound& S) = 0;
+    virtual tmc::task<void> stop_emitters() = 0;
     virtual int pause_emitters(bool val) = 0;
 
     virtual void play(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f) = 0;
     virtual void play_at_pos(ref_sound& S, CObject* O, const Fvector& pos, u32 flags = 0, float delay = 0.f) = 0;
     virtual void play_no_feedback(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f, Fvector* pos = nullptr, float* vol = nullptr, float* freq = nullptr,
                                   Fvector2* range = nullptr) = 0;
+    virtual void queue_stop(ref_sound& S, bool deferred, f32 speed_k = 1.0f) = 0;
 
     virtual void set_master_volume(float f = 1.f) = 0;
     virtual void set_master_gain(float low_pass, float high_pass) = 0;
@@ -386,8 +390,8 @@ public:
     virtual void set_geometry_occ(CDB::MODEL* M) = 0;
     virtual void set_handler(sound_event* E) = 0;
 
-    virtual void update(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R) = 0;
-    virtual void render() = 0;
+    virtual tmc::task<void> update(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R) = 0;
+    virtual tmc::task<void> render() = 0;
     virtual void statistic(CSound_stats* s0, CSound_stats_ext* s1) = 0;
 
     virtual float get_occlusion_to(const Fvector& hear_pt, const Fvector& snd_pt, float dispersion = 0.2f) = 0;
@@ -410,7 +414,7 @@ extern CSound_manager_interface* Sound;
 /// ********* Sound ********* (utils, accessors, helpers)
 
 IC ref_sound_data::ref_sound_data(LPCSTR fName, esound_type sound_type, u32 game_type) { ::Sound->_create_data(*this, fName, sound_type, game_type); }
-IC ref_sound_data::~ref_sound_data() { ::Sound->_destroy_data(*this); }
+IC ref_sound_data::~ref_sound_data() { R_ASSERT(feedback == nullptr); }
 
 IC void ref_sound::create(LPCSTR name, esound_type sound_type, u32 game_type)
 {
@@ -430,10 +434,16 @@ IC void ref_sound::clone(const ref_sound& from, esound_type sound_type, u32 game
     ::Sound->clone(*this, from, sound_type, game_type);
 }
 
-IC void ref_sound::destroy()
+inline tmc::task<void> ref_sound::destroy()
 {
     VERIFY(!::Sound->i_locked());
-    ::Sound->destroy(*this);
+    co_await ::Sound->destroy(*reinterpret_cast<std::array<std::byte, 16>*>(this));
+}
+
+inline void ref_sound::queue_destroy()
+{
+    VERIFY(!::Sound->i_locked());
+    ::Sound->queue_destroy(*this);
 }
 
 IC void ref_sound::play(CObject* O, u32 flags, float d)
@@ -503,18 +513,36 @@ inline void ref_sound::set_gain(float low_gain, float high_gain)
         _feedback()->set_gain(low_gain, high_gain);
 }
 
-IC void ref_sound::stop()
+inline tmc::task<void> ref_sound::stop()
 {
     VERIFY(!::Sound->i_locked());
-    if (_feedback())
-        _feedback()->stop(FALSE);
+
+    if (_feedback() != nullptr)
+        co_await _feedback()->stop(false);
 }
 
-IC void ref_sound::stop_deffered(float speed_k = 1.f)
+inline void ref_sound::queue_stop()
 {
     VERIFY(!::Sound->i_locked());
-    if (_feedback())
-        _feedback()->stop(true, speed_k);
+
+    if (_feedback() != nullptr)
+        ::Sound->queue_stop(*this, false);
+}
+
+inline tmc::task<void> ref_sound::stop_deffered(f32 speed_k)
+{
+    VERIFY(!::Sound->i_locked());
+
+    if (_feedback() != nullptr)
+        co_await _feedback()->stop(true, speed_k);
+}
+
+inline void ref_sound::queue_stop_deferred(f32 speed_k)
+{
+    VERIFY(!::Sound->i_locked());
+
+    if (_feedback() != nullptr)
+        ::Sound->queue_stop(*this, true, speed_k);
 }
 
 IC const CSound_params* ref_sound::get_params()

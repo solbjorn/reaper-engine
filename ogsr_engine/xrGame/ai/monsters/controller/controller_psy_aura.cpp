@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "controller_psy_aura.h"
+
 #include "controller.h"
 #include "../../../actor.h"
 #include "../../../level.h"
@@ -46,10 +47,8 @@ BOOL CPPEffectorControllerAura::update()
         }
         else if (m_factor < 0)
         {
-            if (m_snd_left._feedback())
-                m_snd_left.stop();
-            if (m_snd_right._feedback())
-                m_snd_right.stop();
+            m_snd_left.queue_stop();
+            m_snd_right.queue_stop();
 
             return FALSE;
         }

@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
-#include "SoundRender_Core.h"
 #include "SoundRender_Emitter.h"
+
+#include "SoundRender_Core.h"
 #include "SoundRender_Source.h"
 #include "SoundRender_Target.h"
 
@@ -40,14 +41,14 @@ void CSoundRender_Emitter::start(ref_sound* _owner, BOOL _loop, float delay)
     ovf = source()->open();
 }
 
-void CSoundRender_Emitter::i_stop()
+tmc::task<void> CSoundRender_Emitter::i_stop()
 {
     bRewind = FALSE;
 
-    if (target)
-        stop_target();
+    if (target != nullptr)
+        co_await stop_target();
 
-    wait_prefill();
+    co_await wait_prefill();
 
     if (owner_data)
     {
@@ -63,7 +64,7 @@ void CSoundRender_Emitter::i_stop()
     fStoppingSpeed_k = 1.f;
 }
 
-void CSoundRender_Emitter::stop(BOOL bDeffered, float speed_k)
+tmc::task<void> CSoundRender_Emitter::stop(bool bDeffered, f32 speed_k)
 {
     if (bDeffered)
     {
@@ -71,7 +72,9 @@ void CSoundRender_Emitter::stop(BOOL bDeffered, float speed_k)
         fStoppingSpeed_k = speed_k;
     }
     else
-        i_stop();
+    {
+        co_await i_stop();
+    }
 }
 
 void CSoundRender_Emitter::rewind()
@@ -94,18 +97,18 @@ void CSoundRender_Emitter::pause(BOOL bVal, int id)
     }
 }
 
-void CSoundRender_Emitter::cancel()
+tmc::task<void> CSoundRender_Emitter::cancel()
 {
     canceling = true;
 
     switch (m_current_state)
     {
     case stPlaying:
-        stop_target();
+        co_await stop_target();
         m_current_state = stSimulating;
         break;
     case stPlayingLooped:
-        stop_target();
+        co_await stop_target();
         m_current_state = stSimulatingLooped;
         break;
     default: FATAL("Non playing ref_sound forced out of render queue");
@@ -114,10 +117,10 @@ void CSoundRender_Emitter::cancel()
     canceling = false;
 }
 
-void CSoundRender_Emitter::stop_target()
+tmc::task<void> CSoundRender_Emitter::stop_target()
 {
-    R_ASSERT(target);
-    wait_prefill();
+    R_ASSERT(target != nullptr);
+    co_await wait_prefill();
 
     target->stop();
     target = nullptr;

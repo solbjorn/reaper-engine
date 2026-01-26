@@ -67,8 +67,9 @@ CMainMenu::~CMainMenu()
     xr_delete(g_btnHint);
     xr_delete(m_startDialog);
     g_pGamePersistent->m_pMainMenu = nullptr;
+
     delete_data(m_pMB_ErrDlgs);
-    CurrentSound.destroy();
+    CurrentSound.queue_destroy();
 }
 
 void CMainMenu::ReadTextureInfo()
@@ -474,9 +475,20 @@ tmc::task<void> CMainMenu::OnDeviceReset()
 
 LPCSTR CMainMenu::GetGSVer() { return Core.GetEngineVersion(); }
 
-void CMainMenu::PlaySound(LPCSTR path)
+void CMainMenu::PlaySound(gsl::czstring path)
 {
-    CurrentSound.destroy();
+    auto& arg = Device.add_frame_async(CallMe::fromMethod<&CMainMenu::play_sound_async>(this));
+    *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(path);
+}
+
+tmc::task<void> CMainMenu::play_sound_async(std::array<std::byte, 16>& arg)
+{
+    auto path = *reinterpret_cast<gsl::zstring*>(&arg);
+
+    co_await CurrentSound.destroy();
+
     CurrentSound.create(path, st_Music, sg_SourceType);
+    xr_free(path);
+
     CurrentSound.play(nullptr, sm_2D);
 }

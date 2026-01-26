@@ -269,10 +269,10 @@ void CPoltergeist::Hide()
         conditions().LoadImmunities(pSettings->r_string(cNameSect().c_str(), "immunities_sect"), pSettings);
 }
 
-void CPoltergeist::Show()
+tmc::task<void> CPoltergeist::Show()
 {
     if (!state_invisible)
-        return;
+        co_return;
 
     state_invisible = false;
 
@@ -284,7 +284,7 @@ void CPoltergeist::Show()
     character_physics_support()->movement()->SetPosition(Position());
     character_physics_support()->movement()->CreateCharacter();
 
-    ability()->on_show();
+    co_await ability()->on_show();
 
     if (pSettings->line_exist(cNameSect().c_str(), "visible_immunities_sect"))
         conditions().LoadImmunities(pSettings->r_string(cNameSect().c_str(), "visible_immunities_sect"), pSettings);
@@ -315,26 +315,24 @@ void CPoltergeist::ForceFinalAnimation()
         anim().SetCurAnim(eAnimMiscAction_01);
 }
 
-void CPoltergeist::shedule_Update(u32 dt)
+tmc::task<void> CPoltergeist::shedule_Update(u32 dt)
 {
     if (!check_work_condition())
-    {
         remove_pp_effector();
-    }
 
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
     CTelekinesis::schedule_update();
-    Energy::schedule_update();
+    co_await Energy::schedule_update();
 
     UpdateHeight();
-
     ability()->update_schedule();
 }
 
-BOOL CPoltergeist::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CPoltergeist::net_Spawn(CSE_Abstract* DC)
 {
-    if (!inherited::net_Spawn(DC))
-        return (FALSE);
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
+
     VERIFY(character_physics_support());
     VERIFY(character_physics_support()->movement());
     character_physics_support()->movement()->DestroyCharacter();
@@ -346,17 +344,19 @@ BOOL CPoltergeist::net_Spawn(CSE_Abstract* DC)
         ability()->on_hide();
     }
     else
+    {
         OnDie();
+    }
 
-    return (TRUE);
+    co_return true;
 }
 
-void CPoltergeist::net_Destroy()
+tmc::task<void> CPoltergeist::net_Destroy()
 {
-    inherited::net_Destroy();
-    Energy::disable();
+    co_await inherited::net_Destroy();
 
-    ability()->on_destroy();
+    Energy::disable();
+    co_await ability()->on_destroy();
 }
 
 void CPoltergeist::OnDie()
@@ -380,12 +380,12 @@ void CPoltergeist::OnDie()
     CTelekinesis::deactivate();
 }
 
-void CPoltergeist::Die(CObject* who)
+tmc::task<void> CPoltergeist::Die(CObject* who)
 {
-    inherited::Die(who);
-    OnDie();
+    co_await inherited::Die(who);
 
-    ability()->on_die();
+    OnDie();
+    co_await ability()->on_die();
 }
 
 void CPoltergeist::Hit(SHit* pHDS)
@@ -425,12 +425,12 @@ void CPoltergeist::on_activate()
     time_height_updated = 0;
 }
 
-void CPoltergeist::on_deactivate()
+tmc::task<void> CPoltergeist::on_deactivate()
 {
     if (m_disable_hide)
-        return;
+        co_return;
 
-    Show();
+    co_await Show();
 }
 
 CMovementManager* CPoltergeist::create_movement_manager()

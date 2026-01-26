@@ -40,23 +40,24 @@ CPda::CPda()
     TurnOff();
 }
 
-BOOL CPda::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CPda::net_Spawn(CSE_Abstract* DC)
 {
-    inherited::net_Spawn(DC);
+    std::ignore = co_await inherited::net_Spawn(DC);
+
     auto pda = smart_cast<CSE_ALifeItemPDA*>(DC);
     R_ASSERT(pda);
     m_idOriginalOwner = pda->m_original_owner;
     m_SpecificChracterOwner = pda->m_specific_character;
 
-    return TRUE;
+    co_return true;
 }
 
-void CPda::net_Destroy()
+tmc::task<void> CPda::net_Destroy()
 {
     if (this_is_3d_pda)
-        inherited::net_Destroy();
+        co_await inherited::net_Destroy();
     else
-        CInventoryItemObject::net_Destroy();
+        co_await CInventoryItemObject::net_Destroy();
 
     TurnOff();
     feel_touch.clear();
@@ -88,12 +89,13 @@ void CPda::Load(LPCSTR section)
     m_fZoomRotateTime = READ_IF_EXISTS(pSettings, r_float, hud_sect, "zoom_rotate_time", 0.25f);
 }
 
-void CPda::shedule_Update(u32 dt)
+tmc::task<void> CPda::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
 
     if (!H_Parent())
-        return;
+        co_return;
+
     Position().set(H_Parent()->Position());
 
     if (IsOn() && Level().CurrentEntity() && Level().CurrentEntity()->ID() == H_Parent()->ID())
@@ -102,7 +104,7 @@ void CPda::shedule_Update(u32 dt)
         if (!EA || !EA->g_Alive())
         {
             TurnOff();
-            return;
+            co_return;
         }
 
         m_changed = false;
@@ -117,6 +119,7 @@ void CPda::shedule_Update(u32 dt)
                 if (pGameSP)
                     pGameSP->PdaMenu->PdaContentsChanged(pda_section::contacts);
             }
+
             m_changed = false;
         }
     }

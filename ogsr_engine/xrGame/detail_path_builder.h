@@ -34,13 +34,13 @@ public:
         m_object->m_wait_for_distributed_computation = true;
         m_level_path = &level_path;
         m_path_vertex_index = path_vertex_index;
+
         Device.add_to_seq_parallel(CallMe::fromMethod<&CDetailPathBuilder::process_detail>(this));
     }
 
     void process()
     {
         m_object->detail().build_path(*m_level_path, m_path_vertex_index);
-
         m_object->on_build_path();
 
         if (m_object->detail().failed())
@@ -49,10 +49,12 @@ public:
             m_object->m_path_state = CMovementManager::ePathStatePathVerification;
     }
 
-    void process_detail()
+    tmc::task<void> process_detail()
     {
         m_object->m_wait_for_distributed_computation = false;
+
         process();
+        co_return;
     }
 
     IC void remove()

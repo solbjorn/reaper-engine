@@ -52,8 +52,8 @@ tmc::task<void> CLevel::remove_objects()
         ++(Device.dwFrame);
         psDeviceFlags.set(rsDisableObjectsAsCrows, TRUE);
 
-        ClientReceive();
-        ProcessGameEvents();
+        co_await ClientReceive();
+        co_await ProcessGameEvents();
 
         co_await Objects.Update(true);
     }
@@ -95,7 +95,7 @@ tmc::task<void> CLevel::remove_objects()
     }
 
     g_pGamePersistent->destroy_particles(false);
-    ::Sound->stop_emitters();
+    co_await ::Sound->stop_emitters();
 
     Device.m_pRender->ResourcesGetMemoryUsage(usage);
 
@@ -231,20 +231,24 @@ constexpr int ConnectionTimeOut{60000}; // 1 min
 
 pureFrame* g_pNetProcessor = &NET_processor;
 
-BOOL CLevel::Connect2Server(LPCSTR options)
+tmc::task<bool> CLevel::Connect2Server(gsl::czstring options)
 {
     NET_Packet P;
     m_bConnectResultReceived = false;
     m_bConnectResult = true;
+
     if (!Connect(options))
-        return FALSE;
+        co_return false;
+
     //---------------------------------------------------------------------------
     m_bConnectResultReceived = true;
     u32 EndTime = GetTickCount() + ConnectionTimeOut;
+
     while (!m_bConnectResultReceived)
     {
-        ClientReceive();
+        co_await ClientReceive();
         Sleep(5);
+
         if (Server)
             Server->Update();
         //-----------------------------------------
@@ -261,11 +265,13 @@ BOOL CLevel::Connect2Server(LPCSTR options)
 
             OnConnectResult(&P);
         }
+
         if (net_isFails_Connect())
         {
             OnConnectRejected();
             Disconnect();
-            return FALSE;
+
+            co_return false;
         }
         //-----------------------------------------
     }
@@ -276,7 +282,8 @@ BOOL CLevel::Connect2Server(LPCSTR options)
     {
         OnConnectRejected();
         Disconnect();
-        return FALSE;
+
+        co_return false;
     }
 
     net_Syncronised = TRUE;
@@ -285,7 +292,8 @@ BOOL CLevel::Connect2Server(LPCSTR options)
     P.w_begin(M_CLIENT_REQUEST_CONNECTION_DATA);
     Send(P, net_flags(TRUE, TRUE, TRUE, TRUE));
     //---------------------------------------------------------------------------
-    return TRUE;
+
+    co_return true;
 }
 
 void CLevel::OnBuildVersionChallenge()

@@ -374,7 +374,7 @@ tmc::task<void> CRender::Render()
 
         Target->phase_accumulator(RCache);
 
-        co_await tmc::spawn(LP_normal.vis_update()).run_on(xr::tmc_cpu_st_executor());
+        co_await tmc::spawn_clang(LP_normal.vis_update(), xr::tmc_cpu_st_executor());
         LP_normal.sort();
 
         co_await render_lights(LP_normal);

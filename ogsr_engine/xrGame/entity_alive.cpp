@@ -179,9 +179,9 @@ void CEntityAlive::reload(LPCSTR section)
     m_fFood = 100 * pSettings->r_float(section, "ph_mass");
 }
 
-void CEntityAlive::shedule_Update(u32 dt)
+tmc::task<void> CEntityAlive::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
 
     // condition update with the game time pass
     conditions().UpdateConditionTime();
@@ -197,26 +197,16 @@ void CEntityAlive::shedule_Update(u32 dt)
     if (Local() && !g_Alive() && !AlreadyDie())
     {
         if (conditions().GetWhoHitLastTime())
-        {
-            //			Msg			("%6d : KillEntity from CEntityAlive (using who hit last time) for object %s",Device.dwTimeGlobal,*cName());
             KillEntity(conditions().GetWhoHitLastTimeID());
-        }
         else
-        {
-            //			Msg			("%6d : KillEntity from CEntityAlive for object %s",Device.dwTimeGlobal,*cName());
             KillEntity(ID());
-        }
     }
 }
 
-BOOL CEntityAlive::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CEntityAlive::net_Spawn(CSE_Abstract* DC)
 {
-    // установить команду в соответствии с community
-    /*	if(monster_community->team() != 255)
-            id_Team = monster_community->team();*/
-
     conditions().reinit();
-    inherited::net_Spawn(DC);
+    std::ignore = co_await inherited::net_Spawn(DC);
 
     m_BloodWounds.clear();
     m_ParticleWounds.clear();
@@ -229,10 +219,10 @@ BOOL CEntityAlive::net_Spawn(CSE_Abstract* DC)
         StartBloodDrops(pWound);
     }
 
-    return (TRUE);
+    co_return true;
 }
 
-void CEntityAlive::net_Destroy() { inherited::net_Destroy(); }
+tmc::task<void> CEntityAlive::net_Destroy() { co_await inherited::net_Destroy(); }
 
 void CEntityAlive::HitImpulse(float, Fvector&, Fvector&) {}
 
@@ -280,10 +270,10 @@ void CEntityAlive::Hit(SHit* pHDS)
     }
 }
 
-void CEntityAlive::Die(CObject* who)
+tmc::task<void> CEntityAlive::Die(CObject* who)
 {
     RELATION_REGISTRY().Action(smart_cast<CEntityAlive*>(who), this, RELATION_REGISTRY::KILL);
-    inherited::Die(who);
+    co_await inherited::Die(who);
 
     const CGameObject* who_object = smart_cast<const CGameObject*>(who);
     callback(GameObject::eDeath)(lua_game_object(), who_object ? who_object->lua_game_object() : nullptr);

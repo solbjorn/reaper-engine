@@ -75,11 +75,10 @@ void HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line, ref_sound& snd, int type,
 
 void HUD_SOUND::DestroySound(HUD_SOUND& hud_snd)
 {
-    xr_vector<SSnd>::iterator it = hud_snd.sounds.begin();
-    for (; it != hud_snd.sounds.end(); ++it)
-        (*it).snd.destroy();
-    hud_snd.sounds.clear();
+    for (auto& sound : hud_snd.sounds)
+        sound.snd.queue_destroy();
 
+    hud_snd.sounds.clear();
     hud_snd.m_activeSnd = nullptr;
 }
 
@@ -117,7 +116,7 @@ void HUD_SOUND::PlaySound(HUD_SOUND& hud_snd, const Fvector& position, const COb
 void HUD_SOUND::StopSound(HUD_SOUND& hud_snd)
 {
     for (auto& sound : hud_snd.sounds)
-        sound.snd.stop();
+        sound.snd.queue_stop();
 
     hud_snd.m_activeSnd = nullptr;
 }

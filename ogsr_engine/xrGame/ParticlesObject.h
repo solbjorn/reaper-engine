@@ -28,12 +28,12 @@ public:
 
     virtual bool shedule_Needed() { return true; }
     virtual float shedule_Scale() const;
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
     void renderable_Render(u32 context_id, IRenderable* root) override;
 
 private:
     void PerformAllTheWork();
-    void PerformAllTheWork_mt();
+    tmc::task<void> PerformAllTheWork_mt();
 
 public:
     Fvector& Position() const;

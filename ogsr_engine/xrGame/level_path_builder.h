@@ -47,16 +47,17 @@ public:
             m_object->m_path_state = CMovementManager::ePathStateContinueLevelPath;
     }
 
-    void process_level()
+    tmc::task<void> process_level()
     {
         m_object->m_wait_for_distributed_computation_2 = false;
+
         process();
+        co_return;
     }
 
     IC void remove()
     {
         m_object->m_wait_for_distributed_computation_2 = false;
-
         Device.remove_from_seq_parallel(CallMe::fromMethod<&CLevelPathBuilder::process_level>(this));
     }
 };

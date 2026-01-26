@@ -26,13 +26,13 @@ public:
     virtual bool Action(s32 cmd, u32 flags);
     virtual void SwitchState(u32 S);
     virtual void OnStateSwitch(u32 S, u32 oldState);
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     virtual void OnH_A_Chield();
     virtual void OnH_B_Chield();
     virtual void OnH_B_Independent(bool just_before_destroy);
     virtual void OnH_A_Independent();
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual bool Activate(bool = false);
     virtual void Deactivate(bool = false);
     tmc::task<void> UpdateCL() override;

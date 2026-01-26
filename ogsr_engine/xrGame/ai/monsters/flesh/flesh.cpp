@@ -1,5 +1,7 @@
 #include "stdafx.h"
+
 #include "flesh.h"
+
 #include "../../../ai_space.h"
 #include "flesh_state_manager.h"
 #include "../monster_velocity_space.h"
@@ -17,12 +19,12 @@ CAI_Flesh::CAI_Flesh()
 
 CAI_Flesh::~CAI_Flesh() { xr_delete(StateMan); }
 
-BOOL CAI_Flesh::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CAI_Flesh::net_Spawn(CSE_Abstract* DC)
 {
-    if (!inherited::net_Spawn(DC))
-        return (FALSE);
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
 
-    return TRUE;
+    co_return true;
 }
 
 void CAI_Flesh::Load(LPCSTR section)

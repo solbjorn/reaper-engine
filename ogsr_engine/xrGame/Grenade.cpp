@@ -18,7 +18,13 @@
 namespace
 {
 constexpr float default_grenade_detonation_threshold_hit{100.0f};
+
+tmc::task<void> prev_slot_async(std::array<std::byte, 16>& arg)
+{
+    auto actor = *reinterpret_cast<CActor**>(&arg);
+    co_await actor->OnPrevWeaponSlot();
 }
+} // namespace
 
 CGrenade::CGrenade()
 {
@@ -49,9 +55,10 @@ void CGrenade::Hit(SHit* pHDS)
     inherited::Hit(pHDS);
 }
 
-BOOL CGrenade::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CGrenade::net_Spawn(CSE_Abstract* DC)
 {
-    BOOL ret = inherited::net_Spawn(DC);
+    const bool ret = co_await inherited::net_Spawn(DC);
+
     Fvector box;
     BoundingBox().getsize(box);
     float max_size = _max(_max(box.x, box.y), box.z);
@@ -59,16 +66,17 @@ BOOL CGrenade::net_Spawn(CSE_Abstract* DC)
     box.mul(3.f);
     CExplosive::SetExplosionSize(box);
     m_thrown = false;
-    return ret;
+
+    co_return ret;
 }
 
-void CGrenade::net_Destroy()
+tmc::task<void> CGrenade::net_Destroy()
 {
     m_destroy_callback(this);
     m_destroy_callback = CallMe::Delegate<void(CGrenade*)>();
 
-    inherited::net_Destroy();
-    CExplosive::net_Destroy();
+    co_await inherited::net_Destroy();
+    co_await CExplosive::net_Destroy();
 }
 
 void CGrenade::OnH_B_Independent(bool just_before_destroy) { inherited::OnH_B_Independent(just_before_destroy); }
@@ -169,10 +177,10 @@ void CGrenade::Destroy()
 
 bool CGrenade::Useful() const { return m_dwDestroyTime == 0xffffffff && CExplosive::Useful() && TestServerFlag(CSE_ALifeObject::flCanSave); }
 
-void CGrenade::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CGrenade::OnEvent(NET_Packet& P, u16 type)
 {
-    inherited::OnEvent(P, type);
-    CExplosive::OnEvent(P, type);
+    co_await inherited::OnEvent(P, type);
+    co_await CExplosive::OnEvent(P, type);
 }
 
 void CGrenade::PutNextToSlot()
@@ -204,7 +212,8 @@ void CGrenade::PutNextToSlot()
         }
         else if (auto actor = smart_cast<CActor*>(m_pCurrentInventory->GetOwner()); actor != nullptr)
         {
-            Device.add_frame_async(CallMe::fromMethod<&CActor::OnPrevWeaponSlot>(actor));
+            auto& arg = Device.add_frame_async(CallMe::fromFunction<&prev_slot_async>());
+            *reinterpret_cast<CActor**>(&arg) = actor;
         }
     }
 }

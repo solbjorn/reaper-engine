@@ -25,21 +25,21 @@ CScriptZone::~CScriptZone() = default;
 
 void CScriptZone::reinit() { inherited::reinit(); }
 
-BOOL CScriptZone::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CScriptZone::net_Spawn(CSE_Abstract* DC)
 {
     feel_touch.clear();
 
-    if (!inherited::net_Spawn(DC))
-        return (FALSE);
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
 
-    return (TRUE);
+    co_return true;
 }
 
-void CScriptZone::net_Destroy() { inherited::net_Destroy(); }
+tmc::task<void> CScriptZone::net_Destroy() { co_await inherited::net_Destroy(); }
 
-void CScriptZone::shedule_Update(u32 dt)
+tmc::task<void> CScriptZone::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
 
     const Fsphere& s = CFORM()->getSphere();
     Fvector P;

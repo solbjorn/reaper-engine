@@ -1,10 +1,10 @@
 #include "StdAfx.h"
 
 #include "MMSound.h"
+
 #include "xrUIXmlParser.h"
 
-CMMSound::CMMSound() {}
-
+CMMSound::CMMSound() = default;
 CMMSound::~CMMSound() { all_Stop(); }
 
 void CMMSound::Init(CUIXml& xml_doc, LPCSTR path)
@@ -41,11 +41,7 @@ void CMMSound::whell_Play()
         m_whell.play(nullptr, sm_Looped | sm_2D);
 }
 
-void CMMSound::whell_Stop()
-{
-    if (m_whell._feedback())
-        m_whell.stop();
-}
+void CMMSound::whell_Stop() { m_whell.queue_stop(); }
 
 void CMMSound::whell_Click()
 {
@@ -84,13 +80,13 @@ void CMMSound::music_Update()
 
 void CMMSound::music_Stop()
 {
-    m_music_l.stop();
-    m_music_r.stop();
+    m_music_l.queue_stop();
+    m_music_r.queue_stop();
 }
 
 void CMMSound::all_Stop()
 {
     music_Stop();
-    m_whell.stop();
-    m_whell_click.stop();
+    m_whell.queue_stop();
+    m_whell_click.queue_stop();
 }

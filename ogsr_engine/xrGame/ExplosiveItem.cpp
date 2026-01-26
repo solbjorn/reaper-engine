@@ -20,15 +20,12 @@ void CExplosiveItem::Load(LPCSTR section)
     VERIFY(pSettings->line_exist(section, "set_timer_particles"));
 }
 
-void CExplosiveItem::net_Destroy()
+tmc::task<void> CExplosiveItem::net_Destroy()
 {
-    inherited::net_Destroy();
-    CExplosive::net_Destroy();
+    co_await inherited::net_Destroy();
+    co_await CExplosive::net_Destroy();
 }
 
-// void CExplosiveItem::Hit(float P, Fvector &dir,	CObject* who, s16 element,
-//						Fvector position_in_object_space, float impulse,
-//						ALife::EHitType hit_type)
 void CExplosiveItem::Hit(SHit* pHDS)
 {
     //	inherited::Hit(P,dir,who,element,position_in_object_space,impulse,hit_type);
@@ -44,10 +41,10 @@ void CExplosiveItem::Hit(SHit* pHDS)
 
 void CExplosiveItem::StartTimerEffects() { CParticlesPlayer::StartParticles(pSettings->r_string<shared_str>(cNameSect(), "set_timer_particles"), Fvector().set(0, 1, 0), ID()); }
 
-void CExplosiveItem::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CExplosiveItem::OnEvent(NET_Packet& P, u16 type)
 {
-    CExplosive::OnEvent(P, type);
-    inherited::OnEvent(P, type);
+    co_await CExplosive::OnEvent(P, type);
+    co_await inherited::OnEvent(P, type);
 }
 
 tmc::task<void> CExplosiveItem::UpdateCL()
@@ -56,9 +53,10 @@ tmc::task<void> CExplosiveItem::UpdateCL()
     co_await inherited::UpdateCL();
 }
 
-void CExplosiveItem::shedule_Update(u32 dt)
+tmc::task<void> CExplosiveItem::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
+
     if (CDelayedActionFuse::isActive() && CDelayedActionFuse::Update(GetCondition()))
     {
         Fvector normal;

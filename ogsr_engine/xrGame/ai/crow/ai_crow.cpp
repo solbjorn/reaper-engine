@@ -64,8 +64,8 @@ void CAI_Crow::SSound::SetPosition(const Fvector& pos)
 
 void CAI_Crow::SSound::Unload()
 {
-    for (int i = 0; i < (int)m_Sounds.size(); ++i)
-        ::Sound->destroy(m_Sounds[i]);
+    for (auto& snd : m_Sounds)
+        snd.queue_destroy();
 }
 
 namespace
@@ -127,9 +127,10 @@ void CAI_Crow::Load(LPCSTR section)
     fIdleSoundTime = fIdleSoundDelta + fIdleSoundDelta * Random.randF(-.5f, .5f);
 }
 
-BOOL CAI_Crow::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CAI_Crow::net_Spawn(CSE_Abstract* DC)
 {
-    BOOL R = inherited::net_Spawn(DC);
+    const bool R = co_await inherited::net_Spawn(DC);
+
     setVisible(TRUE);
     setEnabled(TRUE);
 
@@ -168,12 +169,12 @@ BOOL CAI_Crow::net_Spawn(CSE_Abstract* DC)
 
     renderable.visual->_ignore_optimization = true;
 
-    return R;
+    co_return R;
 }
 
-void CAI_Crow::net_Destroy()
+tmc::task<void> CAI_Crow::net_Destroy()
 {
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
 
     m_Anims.m_death.m_Animations.clear();
     m_Anims.m_death_dead.m_Animations.clear();
@@ -272,9 +273,10 @@ void CAI_Crow::state_DeathFall()
     }
 }
 
-void CAI_Crow::Die(CObject* who)
+tmc::task<void> CAI_Crow::Die(CObject* who)
 {
-    inherited::Die(who);
+    co_await inherited::Die(who);
+
     processing_activate(); // enable UpdateCL for dead crows - especially for physics support
                            // and do it especially before Creating physics shell or it definitely throws processing enable/disable calls: underflow
     CreateSkeleton();
@@ -316,12 +318,12 @@ void CAI_Crow::renderable_Render(u32 context_id, IRenderable* root)
     o_workload_rframe = Device.dwFrame;
 }
 
-void CAI_Crow::shedule_Update(u32 DT)
+tmc::task<void> CAI_Crow::shedule_Update(u32 DT)
 {
     float fDT = float(DT) / 1000.F;
     spatial.type &= ~STYPE_VISIBLEFORAI;
 
-    inherited::shedule_Update(DT);
+    co_await inherited::shedule_Update(DT);
 
     if (st_target != st_current)
     {

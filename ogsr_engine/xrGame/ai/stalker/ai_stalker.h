@@ -167,9 +167,9 @@ public:
     virtual void reload(LPCSTR section);
     virtual void LoadSounds(LPCSTR section);
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     virtual void net_Export(CSE_Abstract* E);
-    virtual void net_Destroy();
+    tmc::task<void> net_Destroy() override;
     virtual void net_Save(NET_Packet& P);
     virtual BOOL net_SaveRelevant();
     virtual void net_Relcase(CObject* O);
@@ -179,7 +179,7 @@ public:
     virtual void load(IReader& input_packet);
 
     tmc::task<void> UpdateCL() override;
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
     virtual void Think();
     void SelectAnimation(const Fvector&, const Fvector&, float) override;
     virtual BOOL UsedAI_Locations();
@@ -187,9 +187,9 @@ public:
     virtual void g_WeaponBones(int& L, int& R1, int& R2);
     void g_fireParams(CHudItem*, Fvector& P, Fvector& D, const bool = false) override;
     virtual void HitSignal(float P, Fvector& vLocalDir, CObject* who, s16 element);
-    virtual void Die(CObject* who);
+    tmc::task<void> Die(CObject* who) override;
 
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     virtual void feel_touch_new(CObject* O);
 
     void renderable_Render(u32 context_id, IRenderable* root) override;
@@ -373,7 +373,7 @@ private:
 public:
     IC bool group_behaviour() const;
     virtual void update_range_fov(float& new_range, float& new_fov, float start_range, float start_fov);
-    void update_object_handler();
+    tmc::task<void> update_object_handler();
     bool zoom_state() const;
     void react_on_grenades();
     void react_on_member_death();

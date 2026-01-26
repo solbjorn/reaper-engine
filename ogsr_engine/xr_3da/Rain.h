@@ -91,12 +91,13 @@ public:
 
     void Render();
     tmc::task<void> Calculate(tmc::manual_reset_event& event);
-    void OnFrame();
+    tmc::task<void> OnFrame();
 
     void InvalidateState()
     {
         if (state != stIdle)
-            snd_Ambient.stop();
+            snd_Ambient.queue_stop();
+
         rain_volume = 0.0f;
         state = stIdle;
     }

@@ -32,12 +32,12 @@ CCustomDetectorSHOC::~CCustomDetectorSHOC()
     m_ZoneInfoMap.clear();
 }
 
-BOOL CCustomDetectorSHOC::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CCustomDetectorSHOC::net_Spawn(CSE_Abstract* DC)
 {
     m_pCurrentActor = nullptr;
     m_pCurrentInvOwner = nullptr;
 
-    return inherited::net_Spawn(DC);
+    co_return co_await inherited::net_Spawn(DC);
 }
 
 void CCustomDetectorSHOC::Load(LPCSTR section)
@@ -90,14 +90,15 @@ void CCustomDetectorSHOC::Load(LPCSTR section)
     m_detect_actor_radiation = READ_IF_EXISTS(pSettings, r_bool, section, "detect_actor_radiation", false);
 }
 
-void CCustomDetectorSHOC::shedule_Update(u32 dt)
+tmc::task<void> CCustomDetectorSHOC::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
 
     if (!IsWorking())
-        return;
-    if (!H_Parent())
-        return;
+        co_return;
+
+    if (H_Parent() == nullptr)
+        co_return;
 
     Position().set(H_Parent()->Position());
 

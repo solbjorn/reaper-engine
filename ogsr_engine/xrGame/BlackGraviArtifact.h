@@ -25,7 +25,7 @@ public:
     CBlackGraviArtefact();
     ~CBlackGraviArtefact() override;
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
 
     virtual void Load(LPCSTR section);
 

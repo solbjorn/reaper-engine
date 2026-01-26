@@ -230,9 +230,10 @@ void CScriptEntity::vfFinishAction(CScriptEntityAction* tpEntityAction)
 {
     if (m_current_sound)
     {
-        m_current_sound->destroy();
+        m_current_sound->queue_destroy();
         xr_delete(m_current_sound);
     }
+
     if (!tpEntityAction->m_tParticleAction.m_bAutoRemove)
         CParticlesObject::Destroy(tpEntityAction->m_tParticleAction.m_tpParticleSystem);
 }
@@ -537,7 +538,11 @@ bool CScriptEntity::bfAssignMovement(CScriptEntityAction* tpEntityAction)
     return (!l_tMovementAction.m_bCompleted);
 }
 
-void CScriptEntity::net_Destroy() { m_initialized = false; }
+tmc::task<void> CScriptEntity::net_Destroy()
+{
+    m_initialized = false;
+    co_return;
+}
 
 LPCSTR CScriptEntity::GetPatrolPathName()
 {
@@ -558,20 +563,22 @@ LPCSTR CScriptEntity::GetPatrolPathName()
     return *m_tpActionQueue.back()->m_tMovementAction.m_path_name;
 }
 
-BOOL CScriptEntity::net_Spawn(CSE_Abstract*)
+tmc::task<bool> CScriptEntity::net_Spawn(CSE_Abstract*)
 {
     m_initialized = true;
 
     object().setVisible(TRUE);
     object().setEnabled(TRUE);
 
-    return true;
+    co_return true;
 }
 
-void CScriptEntity::shedule_Update(u32)
+tmc::task<void> CScriptEntity::shedule_Update(u32)
 {
     if (m_bScriptControl)
         ProcessScripts();
+
+    co_return;
 }
 
 namespace

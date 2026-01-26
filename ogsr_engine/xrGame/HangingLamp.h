@@ -49,9 +49,9 @@ public:
     void TurnOn();
     void TurnOff();
     virtual void Load(LPCSTR section);
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
-    virtual void shedule_Update(u32 dt); // Called by sheduler
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
+    tmc::task<void> shedule_Update(u32 dt) override; // Called by sheduler
     tmc::task<void> UpdateCL() override; // Called each frame, so no need for dt
 
     virtual void SpawnInitPhysics(CSE_Abstract* D);

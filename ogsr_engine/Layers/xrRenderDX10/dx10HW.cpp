@@ -341,28 +341,20 @@ tmc::task<void> CHW::Reset(HWND wnd, u32& dwWidth, u32& dwHeight)
         cd_fs.RefreshRate = selectRefresh(cd.Width, cd.Height, cd.Format);
     }
 
-    co_await tmc::spawn(reset_st(wnd)).run_on(xr::tmc_cpu_st_executor());
-
-    dwWidth = cd.Width;
-    dwHeight = cd.Height;
-}
-
-tmc::task<void> CHW::reset_st(HWND wnd)
-{
-    const auto& cd = m_ChainDesc;
-    const auto& fs = m_ChainDescFullscreen;
+    co_await tmc::resume_on(xr::tmc_cpu_st_executor());
 
     DXGI_MODE_DESC mode{};
     mode.Width = cd.Width;
     mode.Height = cd.Height;
     mode.Format = cd.Format;
-    mode.RefreshRate = fs.RefreshRate;
+    mode.RefreshRate = cd_fs.RefreshRate;
     CHK_DX(m_pSwapChain->ResizeTarget(&mode));
 
-    CHK_DX(m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, get_swapchain_flags(fs.Windowed, m_SupportsVRR)));
+    CHK_DX(m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, get_swapchain_flags(cd_fs.Windowed, m_SupportsVRR)));
     updateWindowProps(wnd);
 
-    co_return;
+    dwWidth = cd.Width;
+    dwHeight = cd.Height;
 }
 
 void CHW::selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed)

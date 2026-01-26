@@ -47,17 +47,17 @@ void CBaseGraviZone ::Load(LPCSTR section)
         m_sTeleParticlesSmall._set(nullptr);
 }
 
-BOOL CBaseGraviZone ::net_Spawn(CSE_Abstract* DC) { return inherited::net_Spawn(DC); }
+tmc::task<bool> CBaseGraviZone::net_Spawn(CSE_Abstract* DC) { co_return co_await inherited::net_Spawn(DC); }
 
-void CBaseGraviZone ::net_Destroy()
+tmc::task<void> CBaseGraviZone::net_Destroy()
 {
     Telekinesis().deactivate();
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
 }
 
-void CBaseGraviZone ::shedule_Update(u32 dt)
+tmc::task<void> CBaseGraviZone::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
     Telekinesis().schedule_update();
 }
 

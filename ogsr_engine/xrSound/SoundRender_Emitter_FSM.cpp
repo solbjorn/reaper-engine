@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "SoundRender_Emitter.h"
+
 #include "SoundRender_Core.h"
 #include "SoundRender_Source.h"
 #include "SoundRender_Target.h"
@@ -24,14 +25,14 @@ inline u32 calc_cursor(const float& fTimeStarted, float& fTime, const float& fTi
 }
 } // namespace
 
-void CSoundRender_Emitter::update(float fTime, float dt)
+tmc::task<void> CSoundRender_Emitter::update(f32 fTime, f32 dt)
 {
     VERIFY2(!!(owner_data) || (!(owner_data) && (m_current_state == stStopped)), "owner");
     VERIFY2(owner_data ? *(int*)(&owner_data->feedback) : 1, "owner");
 
     if (bRewind)
     {
-        wait_prefill();
+        co_await wait_prefill();
 
         const float time = SoundRender->Timer.GetElapsed_sec();
         const float diff = time - fTimeStarted;
@@ -43,8 +44,8 @@ void CSoundRender_Emitter::update(float fTime, float dt)
         if (target)
         {
             fill_all_blocks();
-            target->rewind();
-            dispatch_prefill();
+            co_await target->rewind();
+            co_await dispatch_prefill();
         }
         bRewind = FALSE;
     }
@@ -72,8 +73,8 @@ void CSoundRender_Emitter::update(float fTime, float dt)
         {
             m_current_state = stPlaying;
             set_cursor(0);
-            SoundRender->i_start(this);
-            dispatch_prefill();
+            co_await SoundRender->i_start(this);
+            co_await dispatch_prefill();
         }
         else
             m_current_state = stSimulating;
@@ -98,8 +99,8 @@ void CSoundRender_Emitter::update(float fTime, float dt)
         {
             m_current_state = stPlayingLooped;
             set_cursor(0);
-            SoundRender->i_start(this);
-            dispatch_prefill();
+            co_await SoundRender->i_start(this);
+            co_await dispatch_prefill();
         }
         else
             m_current_state = stSimulatingLooped;
@@ -107,7 +108,7 @@ void CSoundRender_Emitter::update(float fTime, float dt)
     case stPlaying:
         if (iPaused)
         {
-            stop_target();
+            co_await stop_target();
             m_current_state = stSimulating;
 
             fTimeStarted += dt;
@@ -118,7 +119,7 @@ void CSoundRender_Emitter::update(float fTime, float dt)
         if (fTime >= fTimeToStop)
         {
             // STOP
-            stop_target();
+            co_await stop_target();
             m_current_state = stStopped;
         }
         else
@@ -126,7 +127,7 @@ void CSoundRender_Emitter::update(float fTime, float dt)
             if (!update_culling(dt))
             {
                 // switch to: SIMULATE
-                stop_target();
+                co_await stop_target();
                 m_current_state = stSimulating;
             }
             else
@@ -158,15 +159,15 @@ void CSoundRender_Emitter::update(float fTime, float dt)
             {
                 // switch to: PLAY
                 m_current_state = stPlaying;
-                SoundRender->i_start(this);
-                dispatch_prefill();
+                co_await SoundRender->i_start(this);
+                co_await dispatch_prefill();
             }
         }
         break;
     case stPlayingLooped:
         if (iPaused)
         {
-            stop_target();
+            co_await stop_target();
             m_current_state = stSimulatingLooped;
 
             fTimeStarted += dt;
@@ -176,7 +177,7 @@ void CSoundRender_Emitter::update(float fTime, float dt)
         if (!update_culling(dt))
         {
             // switch to: SIMULATE
-            stop_target();
+            co_await stop_target();
             m_current_state = stSimulatingLooped; // switch state
         }
         else
@@ -199,8 +200,8 @@ void CSoundRender_Emitter::update(float fTime, float dt)
             const u32 ptr = calc_cursor(fTimeStarted, fTime, get_length_sec(), p_source.freq, source()->m_wformat); //--#SM+#--
             set_cursor(ptr);
 
-            SoundRender->i_start(this);
-            dispatch_prefill();
+            co_await SoundRender->i_start(this);
+            co_await dispatch_prefill();
         }
         break;
     }
@@ -255,7 +256,7 @@ void CSoundRender_Emitter::update(float fTime, float dt)
 
     // if deffered stop active and volume==0 -> physically stop sound
     if (bStopping && fis_zero(fade_volume))
-        i_stop();
+        co_await i_stop();
 
     VERIFY2(!!(owner_data) || (!(owner_data) && (m_current_state == stStopped)), "owner");
     VERIFY2(owner_data ? *(int*)(owner_data->feedback) : 1, "owner");
@@ -277,16 +278,16 @@ void CSoundRender_Emitter::update(float fTime, float dt)
     }
 }
 
-void CSoundRender_Emitter::render()
+tmc::task<void> CSoundRender_Emitter::render()
 {
     target->fill_parameters(SoundRender);
 
     if (target->get_Rendering())
-        target->update();
+        co_await target->update();
     else
-        target->render();
+        co_await target->render();
 
-    dispatch_prefill();
+    co_await dispatch_prefill();
 }
 
 static IC void volume_lerp(float& c, float t, float s, float dt)
@@ -379,7 +380,7 @@ float CSoundRender_Emitter::att() const
 
 float CSoundRender_Emitter::applyOccVolume() const
 {
-    float vol = p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic);
+    float vol = p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic * psSoundVMusicFactor);
 
     if (!b2D)
     {

@@ -29,17 +29,17 @@ CPS_Instance::~CPS_Instance()
     shedule_unregister(true);
 }
 
-void CPS_Instance::shedule_Update(u32 dt)
+tmc::task<void> CPS_Instance::shedule_Update(u32 dt)
 {
     if (renderable.pROS)
         ::Render->ros_destroy(renderable.pROS); //. particles doesn't need ROS
 
-    ISheduled::shedule_Update(dt);
+    co_await ISheduled::shedule_Update(dt);
     m_iLifeTime -= dt;
 
     // remove???
     if (m_bDead)
-        return;
+        co_return;
 
     if (m_bAutoRemove && m_iLifeTime <= 0)
         PSI_destroy();

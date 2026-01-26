@@ -245,9 +245,6 @@ class CCC_GameLanguage : public CCC_Token
 {
     RTTI_DECLARE_TYPEINFO(CCC_GameLanguage, CCC_Token);
 
-private:
-    xr_string args_async;
-
 public:
     explicit CCC_GameLanguage(gsl::czstring N) : CCC_Token{N, &LanguageID, LanguagesToken.data()}
     {
@@ -278,18 +275,17 @@ public:
 
     void Execute(gsl::czstring args) override
     {
-        args_async.assign(args);
-        Device.add_frame_async(CallMe::fromMethod<&CCC_GameLanguage::execute_async>(this));
+        auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_GameLanguage::execute_async>(this));
+        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args);
     }
 
 private:
-    tmc::task<void> execute_async()
+    tmc::task<void> execute_async(std::array<std::byte, 16>& arg)
     {
-        if (args_async.empty())
-            co_return;
+        auto args = *reinterpret_cast<gsl::zstring*>(&arg);
 
-        CCC_Token::Execute(args_async.c_str());
-        args_async.clear();
+        CCC_Token::Execute(args);
+        xr_free(args);
 
         co_await CStringTable::ReloadLanguage();
 
@@ -485,9 +481,6 @@ class CCC_DemoRecord : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DemoRecord, IConsole_Command);
 
-private:
-    xr_string args_async;
-
 public:
     explicit CCC_DemoRecord(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_DemoRecord() override = default;
@@ -500,24 +493,23 @@ public:
             return;
         }
 
-        args_async.assign(args);
-        Device.add_frame_async(CallMe::fromMethod<&CCC_DemoRecord::execute_async>(this));
+        auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_DemoRecord::execute_async>(this));
+        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args);
     }
 
 private:
-    tmc::task<void> execute_async()
+    tmc::task<void> execute_async(std::array<std::byte, 16>& arg)
     {
-        if (args_async.empty())
-            co_return;
-
         co_await Console->Hide();
 
         if (MainMenu()->IsActive())
             co_await MainMenu()->Activate(false);
 
+        auto args = *reinterpret_cast<gsl::zstring*>(&arg);
         string_path fn_;
-        xr_strconcat(fn_, args_async.c_str(), ".xrdemo");
-        args_async.clear();
+
+        xr_strconcat(fn_, args, ".xrdemo");
+        xr_free(args);
 
         string_path fn;
         std::ignore = FS.update_path(fn, "$game_saves$", fn_);
@@ -529,9 +521,6 @@ private:
 class CCC_DemoPlay : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DemoPlay, IConsole_Command);
-
-private:
-    xr_string args_async;
 
 public:
     explicit CCC_DemoPlay(LPCSTR N) : IConsole_Command{N, true} {}
@@ -545,30 +534,27 @@ public:
             return;
         }
 
-        args_async.assign(args);
-        Device.add_frame_async(CallMe::fromMethod<&CCC_DemoPlay::execute_async>(this));
+        auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_DemoPlay::execute_async>(this));
+        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args);
     }
 
 private:
-    tmc::task<void> execute_async()
+    tmc::task<void> execute_async(std::array<std::byte, 16>& arg)
     {
-        if (args_async.empty())
-            co_return;
-
         co_await Console->Hide();
 
-        gsl::czstring args = args_async.c_str();
+        auto args = *reinterpret_cast<gsl::zstring*>(&arg);
         string_path fn;
         u32 loops{};
 
-        if (gsl::zstring comma = std::strchr(const_cast<gsl::zstring>(args), ','); comma != nullptr)
+        if (gsl::zstring comma = std::strchr(args, ','); comma != nullptr)
         {
             loops = std::atoi(comma + 1);
             *comma = '\0';
         }
 
         xr_strconcat(fn, args, ".xrdemo");
-        args_async.clear();
+        xr_free(args);
 
         std::ignore = FS.update_path(fn, "$game_saves$", fn);
         g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoPlay>(fn, 1.0f, loops));
@@ -595,9 +581,6 @@ class CCC_ALifeSave : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_ALifeSave, IConsole_Command);
 
-private:
-    xr_string args_async;
-
 public:
     explicit CCC_ALifeSave(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_ALifeSave() override = default;
@@ -617,25 +600,23 @@ public:
             return;
         }
 
-        args_async.assign(named ? args : "quick");
-        Device.add_frame_async(CallMe::fromMethod<&CCC_ALifeSave::execute_async>(this));
+        auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_ALifeSave::execute_async>(this));
+        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(named ? args : "quick");
     }
 
 private:
-    tmc::task<void> execute_async()
+    tmc::task<void> execute_async(std::array<std::byte, 16>& arg)
     {
-        if (args_async.empty())
-            co_return;
-
 #ifdef DEBUG
         CTimer timer;
         timer.Start();
 #endif
 
+        auto args = *reinterpret_cast<gsl::zstring*>(&arg);
         string_path S;
         S[0] = '\0';
 
-        if (std::is_eq(xr_strcmp(args_async, "quick")))
+        if (std::is_eq(xr_strcmp(args, "quick")))
         {
             xr_strconcat(S, Core.UserName, "_", "quicksave");
 
@@ -648,7 +629,7 @@ private:
         }
         else
         {
-            xr_strcpy(S, args_async.c_str());
+            xr_strcpy(S, args);
 
             NET_Packet net_packet;
             net_packet.w_begin(M_SAVE_GAME);
@@ -658,7 +639,7 @@ private:
             Level().Send(net_packet, net_flags(TRUE));
         }
 
-        args_async.clear();
+        xr_free(args);
 
 #ifdef DEBUG
         Msg("Game save overhead  : %f milliseconds", timer.GetElapsed_sec() * 1000.f);
@@ -691,9 +672,6 @@ class CCC_ALifeLoadFrom : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_ALifeLoadFrom, IConsole_Command);
 
-private:
-    xr_string args_async;
-
 public:
     explicit CCC_ALifeLoadFrom(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_ALifeLoadFrom() override = default;
@@ -715,16 +693,13 @@ public:
             return;
         }
 
-        args_async.assign(args);
-        Device.add_frame_async(CallMe::fromMethod<&CCC_ALifeLoadFrom::execute_async>(this));
+        auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_ALifeLoadFrom::execute_async>(this));
+        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args);
     }
 
 private:
-    tmc::task<void> execute_async()
+    tmc::task<void> execute_async(std::array<std::byte, 16>& arg)
     {
-        if (args_async.empty())
-            co_return;
-
         if (MainMenu()->IsActive())
             co_await MainMenu()->Activate(false);
 
@@ -734,11 +709,13 @@ private:
         if (Device.Paused())
             Device.Pause(false, true, true, "CCC_ALifeLoadFrom");
 
+        auto args = *reinterpret_cast<gsl::zstring*>(&arg);
+
         NET_Packet net_packet;
         net_packet.w_begin(M_LOAD_GAME);
-        net_packet.w_stringZ(args_async.c_str());
+        net_packet.w_stringZ(args);
 
-        args_async.clear();
+        xr_free(args);
         Level().Send(net_packet, net_flags(true));
     }
 
@@ -1245,26 +1222,20 @@ class CCC_MainMenu : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_MainMenu, IConsole_Command);
 
-private:
-    xr_string args_async;
-
 public:
     explicit CCC_MainMenu(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_MainMenu() override = default;
 
     void Execute(gsl::czstring args) override
     {
-        args_async.assign(args != nullptr && args[0] != '\0' ? args : "toggle");
-        Device.add_frame_async(CallMe::fromMethod<&CCC_MainMenu::execute_async>(this));
+        auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_MainMenu::execute_async>(this));
+        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args != nullptr && args[0] != '\0' ? args : "toggle");
     }
 
 private:
-    tmc::task<void> execute_async()
+    tmc::task<void> execute_async(std::array<std::byte, 16>& arg)
     {
-        if (args_async.empty())
-            co_return;
-
-        const auto args = std::string_view{args_async};
+        auto args = *reinterpret_cast<gsl::zstring*>(&arg);
         bool bWhatToDo{true};
 
         if (std::is_eq(xr_strcmp(args, "toggle")))
@@ -1274,7 +1245,7 @@ private:
         else if (std::is_eq(xr_strcmp(args, "off")) || std::is_eq(xr_strcmp(args, "0")))
             bWhatToDo = false;
 
-        args_async.clear();
+        xr_free(args);
         co_await MainMenu()->Activate(bWhatToDo);
     }
 };

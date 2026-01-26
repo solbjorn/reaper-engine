@@ -10,13 +10,15 @@
 
 SHeliMovementState::~SHeliMovementState() = default;
 
-void SHeliMovementState::net_Destroy()
+tmc::task<void> SHeliMovementState::net_Destroy()
 {
     if (need_to_del_path && currPatrolPath)
     {
         CPatrolPath* tmp = const_cast<CPatrolPath*>(currPatrolPath);
         xr_delete(tmp);
     }
+
+    co_return;
 }
 
 void SHeliMovementState::Load(LPCSTR section)

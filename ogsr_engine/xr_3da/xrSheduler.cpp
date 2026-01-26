@@ -189,7 +189,7 @@ void CSheduler::Unregister(ISheduled* A, bool force)
     Registration.emplace_back(false, !!A->shedule.b_RT, A);
 }
 
-void CSheduler::ProcessStep(gsl::index cycles_limit)
+tmc::task<void> CSheduler::ProcessStep(gsl::index cycles_limit)
 {
     // Normal priority
     const bool prefetch = Device.dwPrecacheFrame > 0;
@@ -220,7 +220,7 @@ void CSheduler::ProcessStep(gsl::index cycles_limit)
         const u32 elapsed = dwTime - curr.dwTimeOfLastExecute;
 
         m_current_step_obj = curr.Object;
-        curr.Object->shedule_Update(std::clamp(elapsed, 1u, std::max(curr.Object->shedule.t_max, 1000u)));
+        co_await curr.Object->shedule_Update(std::clamp(elapsed, 1u, std::max(curr.Object->shedule.t_max, 1000u)));
 
         if (m_current_step_obj == nullptr)
             continue;
@@ -238,7 +238,7 @@ void CSheduler::ProcessStep(gsl::index cycles_limit)
     Items.insert(Items.end(), std::make_move_iterator(ItemsProcessed.begin()), std::make_move_iterator(ItemsProcessed.end()));
 }
 
-void CSheduler::Update()
+tmc::task<void> CSheduler::Update()
 {
     XR_TRACY_ZONE_SCOPED();
 
@@ -268,12 +268,12 @@ void CSheduler::Update()
             continue;
         }
 
-        curr.Object->shedule_Update(dwTime - curr.dwTimeOfLastExecute);
+        co_await curr.Object->shedule_Update(dwTime - curr.dwTimeOfLastExecute);
         curr.dwTimeOfLastExecute = dwTime;
     }
 
     // Normal (sheduled)
-    ProcessStep(cycles_limit);
+    co_await ProcessStep(cycles_limit);
 
     stats.fShedulerLoad = psShedulerCurrent;
     m_processing_now = false;

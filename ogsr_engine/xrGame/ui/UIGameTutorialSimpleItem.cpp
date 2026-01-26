@@ -21,14 +21,17 @@
 //-----------------------------------------------------------------------------
 // Tutorial Item
 //-----------------------------------------------------------------------------
+
 CUISequenceSimpleItem::~CUISequenceSimpleItem()
 {
     SubItemVecIt _I = m_subitems.begin();
     SubItemVecIt _E = m_subitems.end();
     for (; _I != _E; ++_I)
         _I->Stop();
+
     m_subitems.clear();
-    m_sound.stop();
+    m_sound.queue_stop();
+
     delete_data(m_UIWindow);
 }
 
@@ -271,7 +274,7 @@ bool CUISequenceSimpleItem::Stop(bool bForce)
         return false;
 
     m_owner->MainWnd()->DetachChild(m_UIWindow);
-    m_sound.stop();
+    m_sound.queue_stop();
 
     if (m_flags.test(etiNeedPauseOn) && !m_flags.test(etiStoredPauseState))
         Device.Pause(FALSE, TRUE, FALSE, "simpleitem_stop");

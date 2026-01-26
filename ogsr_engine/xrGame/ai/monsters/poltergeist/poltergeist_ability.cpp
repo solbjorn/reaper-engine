@@ -49,13 +49,14 @@ void CPolterSpecialAbility::on_hide()
     m_particles_object_electro = m_object->PlayParticles(shared_str{m_particles_idle}, m_object->Position(), Fvector{0.0f, 0.1f, 0.0f}, false);
 }
 
-void CPolterSpecialAbility::on_show()
+tmc::task<void> CPolterSpecialAbility::on_show()
 {
     if (m_particles_object)
         CParticlesObject::Destroy(m_particles_object);
     if (m_particles_object_electro)
         CParticlesObject::Destroy(m_particles_object_electro);
-    m_sound_base.stop();
+
+    co_await m_sound_base.stop();
 }
 
 void CPolterSpecialAbility::update_frame()
@@ -66,7 +67,7 @@ void CPolterSpecialAbility::update_frame()
         m_particles_object_electro->SetXFORM(m_object->XFORM());
 }
 
-void CPolterSpecialAbility::on_die()
+tmc::task<void> CPolterSpecialAbility::on_die()
 {
     Fvector particles_position = m_object->m_current_position;
     particles_position.y += m_object->target_height;
@@ -76,7 +77,8 @@ void CPolterSpecialAbility::on_die()
 
     CParticlesObject::Destroy(m_particles_object_electro);
     CParticlesObject::Destroy(m_particles_object);
-    m_sound_base.stop();
+
+    co_await m_sound_base.stop();
 }
 
 void CPolterSpecialAbility::on_hit(SHit* pHDS)

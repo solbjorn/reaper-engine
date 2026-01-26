@@ -49,18 +49,20 @@ void CPsyDog::Load(LPCSTR section)
     m_time_phantom_respawn = READ_IF_EXISTS(pSettings, r_u32, section, "Time_Phantom_Respawn", 1000);
 }
 
-BOOL CPsyDog::net_Spawn(CSE_Abstract* dc)
+tmc::task<bool> CPsyDog::net_Spawn(CSE_Abstract* dc)
 {
-    if (!inherited::net_Spawn(dc))
-        return FALSE;
+    if (!co_await inherited::net_Spawn(dc))
+        co_return false;
 
-    return TRUE;
+    co_return true;
 }
+
 void CPsyDog::reinit()
 {
     inherited::reinit();
     m_aura->reinit();
 }
+
 void CPsyDog::reload(LPCSTR section) { inherited::reload(section); }
 
 //////////////////////////////////////////////////////////////////////////
@@ -149,16 +151,18 @@ void CPsyDog::Think()
     }
 }
 
-void CPsyDog::net_Destroy()
+tmc::task<void> CPsyDog::net_Destroy()
 {
     m_aura->on_death();
     delete_all_phantoms();
-    inherited::net_Destroy();
+
+    co_await inherited::net_Destroy();
 }
 
-void CPsyDog::Die(CObject* who)
+tmc::task<void> CPsyDog::Die(CObject* who)
 {
-    inherited::Die(who);
+    co_await inherited::Die(who);
+
     m_aura->on_death();
     delete_all_phantoms();
 }
@@ -173,10 +177,10 @@ u8 CPsyDog::get_phantoms_count() { return u8(m_storage.size()); }
 CPsyDogPhantom::CPsyDogPhantom() {}
 CPsyDogPhantom::~CPsyDogPhantom() {}
 
-BOOL CPsyDogPhantom::net_Spawn(CSE_Abstract* dc)
+tmc::task<bool> CPsyDogPhantom::net_Spawn(CSE_Abstract* dc)
 {
-    if (!inherited::net_Spawn(dc))
-        return FALSE;
+    if (!co_await inherited::net_Spawn(dc))
+        co_return false;
 
     CSE_ALifeMonsterBase* se_monster = smart_cast<CSE_ALifeMonsterBase*>(dc);
     m_parent_id = se_monster->m_spec_object_id;
@@ -199,7 +203,7 @@ BOOL CPsyDogPhantom::net_Spawn(CSE_Abstract* dc)
 
     m_time_spawned = time();
 
-    return (TRUE);
+    co_return true;
 }
 
 const u32 pmt_time_wait_parent = 10000;
@@ -276,7 +280,7 @@ void CPsyDogPhantom::Hit(SHit* pHDS)
         destroy_me();
 }
 
-void CPsyDogPhantom::net_Destroy()
+tmc::task<void> CPsyDogPhantom::net_Destroy()
 {
     Fvector center;
     Center(center);
@@ -293,12 +297,12 @@ void CPsyDogPhantom::net_Destroy()
         destroy_from_parent();
     }
 
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
 }
 
-void CPsyDogPhantom::Die(CObject* who)
+tmc::task<void> CPsyDogPhantom::Die(CObject* who)
 {
-    inherited::Die(who);
+    co_await inherited::Die(who);
     destroy_me();
 }
 

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "inventory_item_object.h"
 #include "..\xr_3da\feel_touch.h"
 #include "HudSound.h"
@@ -157,13 +158,13 @@ public:
     CCustomDetector() = default;
     ~CCustomDetector() override;
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     virtual void Load(LPCSTR section) override;
 
     virtual void OnH_A_Chield() override;
     virtual void OnH_B_Independent(bool just_before_destroy) override;
 
-    virtual void shedule_Update(u32 dt) override;
+    tmc::task<void> shedule_Update(u32 dt) override;
     tmc::task<void> UpdateCL() override;
 
     bool IsWorking() const;

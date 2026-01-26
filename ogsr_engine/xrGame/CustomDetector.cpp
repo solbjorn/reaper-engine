@@ -182,10 +182,11 @@ CCustomDetector::~CCustomDetector()
     xr_delete(m_ui);
 }
 
-BOOL CCustomDetector::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CCustomDetector::net_Spawn(CSE_Abstract* DC)
 {
     TurnDetectorInternal(false);
-    return inherited::net_Spawn(DC);
+
+    co_return co_await inherited::net_Spawn(DC);
 }
 
 void CCustomDetector::Load(LPCSTR section)
@@ -202,12 +203,12 @@ void CCustomDetector::Load(LPCSTR section)
     HUD_SOUND::LoadSound(section, "snd_holster", sndHide, SOUND_TYPE_ITEM_HIDING);
 }
 
-void CCustomDetector::shedule_Update(u32 dt)
+tmc::task<void> CCustomDetector::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
 
     if (!IsWorking())
-        return;
+        co_return;
 
     Position().set(H_Parent()->Position());
 
@@ -215,7 +216,7 @@ void CCustomDetector::shedule_Update(u32 dt)
     P.set(H_Parent()->Position());
 
     if (GetCondition() <= 0.01f)
-        return;
+        co_return;
 
     m_artefacts.feel_touch_update(P, m_fAfDetectRadius);
 }

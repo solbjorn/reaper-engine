@@ -16,11 +16,11 @@ public:
     CPhysicsSkeletonObject();
     ~CPhysicsSkeletonObject() override;
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual void Load(LPCSTR section);
     tmc::task<void> UpdateCL() override; // Called each frame, so no need for dt
-    virtual void shedule_Update(u32 dt); //
+    tmc::task<void> shedule_Update(u32 dt) override; //
     virtual void net_Save(NET_Packet& P);
     virtual BOOL net_SaveRelevant();
     virtual BOOL UsedAI_Locations();

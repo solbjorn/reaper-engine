@@ -205,13 +205,13 @@ tmc::task<bool> CLevel::net_start6()
     co_return false;
 }
 
-void CLevel::InitializeClientGame(NET_Packet& P)
+tmc::task<void> CLevel::InitializeClientGame(NET_Packet& P)
 {
     string256 game_type_name;
     P.r_stringZ(game_type_name);
 
     if (game && std::is_eq(xr_strcmp(game_type_name, game->type_name())))
-        return;
+        co_return;
 
     xr_delete(game);
     Msg("- Game configuring : Started ");
@@ -221,5 +221,5 @@ void CLevel::InitializeClientGame(NET_Packet& P)
     game->Init();
     m_bGameConfigStarted = TRUE;
 
-    R_ASSERT(Load_GameSpecific_After());
+    R_ASSERT(co_await Load_GameSpecific_After());
 }

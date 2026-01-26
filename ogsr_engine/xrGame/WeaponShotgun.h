@@ -15,7 +15,7 @@ public:
 
     virtual void Load(LPCSTR section);
 
-    virtual void net_Destroy();
+    tmc::task<void> net_Destroy() override;
     virtual void net_Export(CSE_Abstract* E);
 
     virtual void Reload();

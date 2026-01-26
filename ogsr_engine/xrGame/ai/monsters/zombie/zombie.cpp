@@ -118,14 +118,14 @@ void CZombie::vfAssignBones()
     Bones.AddBone(bone_head, AXIS_Y);
 }
 
-BOOL CZombie::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CZombie::net_Spawn(CSE_Abstract* DC)
 {
-    if (!inherited::net_Spawn(DC))
-        return (FALSE);
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
 
     vfAssignBones();
 
-    return (TRUE);
+    co_return true;
 }
 
 #define TIME_FAKE_DEATH 5000
@@ -161,9 +161,9 @@ void CZombie::Hit(SHit* pHDS)
     last_hit_frame = Device.dwFrame;
 }
 
-void CZombie::shedule_Update(u32 dt)
+tmc::task<void> CZombie::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
 
     if (time_dead_start != 0)
     {

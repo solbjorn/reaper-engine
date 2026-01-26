@@ -81,12 +81,6 @@ void CRenderDevice::ConnectToRender()
 
 tmc::task<void> CRenderDevice::Create()
 {
-    co_await tmc::spawn([](auto wnd) -> tmc::task<void> {
-        ShowWindow(wnd, SW_SHOWNORMAL);
-        co_return;
-    }(m_hWnd))
-        .run_on(xr::tmc_cpu_st_executor());
-
     if (b_is_Ready)
         co_return; // prevent double call
 
@@ -108,29 +102,28 @@ tmc::task<void> CRenderDevice::Create()
     fASPECT = 1.f;
     co_await m_pRender->Create(m_hWnd, dwWidth, dwHeight, fWidth_2, fHeight_2);
 
-    co_await tmc::spawn([](auto wnd) -> tmc::task<void> {
-        if (g_screenmode == 1)
-        {
-            u32 w, h;
-            GetMonitorResolution(w, h);
+    auto scope = co_await tmc::enter(xr::tmc_cpu_st_executor());
 
-            SetWindowLongPtr(wnd, GWL_STYLE, WS_VISIBLE | WS_POPUP);
-            SetWindowPos(wnd, HWND_TOP, 0, 0, w, h, SWP_FRAMECHANGED);
-        }
+    if (g_screenmode == 1)
+    {
+        u32 w, h;
+        GetMonitorResolution(w, h);
 
-        DisableProcessWindowsGhosting();
+        SetWindowLongPtr(m_hWnd, GWL_STYLE, WS_VISIBLE | WS_POPUP);
+        SetWindowPos(m_hWnd, HWND_TOP, 0, 0, w, h, SWP_FRAMECHANGED);
+    }
 
-        RECT winRect;
-        GetClientRect(wnd, &winRect);
+    DisableProcessWindowsGhosting();
 
-        MapWindowPoints(wnd, nullptr, reinterpret_cast<POINT*>(&winRect), 2);
-        ClipCursor(&winRect);
+    RECT winRect;
+    GetClientRect(m_hWnd, &winRect);
 
-        SetActiveWindow(wnd);
-        co_return;
-    }(m_hWnd))
-        .run_on(xr::tmc_cpu_st_executor());
+    MapWindowPoints(m_hWnd, nullptr, reinterpret_cast<POINT*>(&winRect), 2);
+    ClipCursor(&winRect);
 
+    SetActiveWindow(m_hWnd);
+
+    co_await scope.exit();
     co_await _Create();
 
     PreCache(0, false, false);

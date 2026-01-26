@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "poltergeist.h"
+
 #include "xrmessages.h"
 #include "../../../ai_object_location.h"
 #include "level_graph.h"
@@ -215,35 +216,30 @@ void CPolterFlame::update_schedule()
     }
 }
 
-void CPolterFlame::on_destroy()
+tmc::task<void> CPolterFlame::on_destroy()
 {
-    inherited::on_destroy();
-
-    auto I = m_flames.begin();
-    auto E = m_flames.end();
+    co_await inherited::on_destroy();
 
     // Пройти по всем объектам и проверить на хит врага
-    for (; I != E; ++I)
+    for (auto& flame : m_flames)
     {
-        if ((*I)->sound._feedback())
-            (*I)->sound.stop();
-        if ((*I)->particles_object)
-            CParticlesObject::Destroy((*I)->particles_object);
+        co_await flame->sound.stop();
 
-        xr_delete((*I));
+        if (flame->particles_object != nullptr)
+            CParticlesObject::Destroy(flame->particles_object);
+
+        xr_delete(flame);
     }
 
     m_flames.clear();
 
-    if (m_scan_sound._feedback())
-        m_scan_sound.stop();
+    co_await m_scan_sound.stop();
 }
 
-void CPolterFlame::on_die()
+tmc::task<void> CPolterFlame::on_die()
 {
-    inherited::on_die();
-    if (m_scan_sound._feedback())
-        m_scan_sound.stop();
+    co_await inherited::on_die();
+    co_await m_scan_sound.stop();
 }
 
 #define FIND_POINT_ATTEMPT_COUNT 5

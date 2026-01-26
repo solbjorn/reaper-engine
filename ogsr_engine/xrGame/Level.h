@@ -123,9 +123,8 @@ public:
     void SetControlEntity(CObject* O) { pCurrentControlEntity = O; }
 
 private:
-    BOOL Connect2Server(LPCSTR options);
+    tmc::task<bool> Connect2Server(gsl::czstring options);
 
-private:
     bool m_bConnectResultReceived;
     bool m_bConnectResult;
     xr_string m_sConnectResult;
@@ -160,7 +159,7 @@ public:
     bool PrefetchSound(LPCSTR name);
     bool PrefetchManySounds(LPCSTR prefix);
     bool PrefetchManySoundsLater(LPCSTR prefix);
-    void PrefetchDeferredSounds();
+    tmc::task<void> PrefetchDeferredSounds();
     void CancelPrefetchManySounds(LPCSTR prefix);
 
 protected:
@@ -184,9 +183,6 @@ protected:
     void net_OnChangeSelfName(NET_Packet* P);
 
 public:
-    // sounds
-    xr_vector<ref_sound*> static_Sounds;
-
     // startup options
     shared_str m_caServerOptions;
     shared_str m_caClientOptions;
@@ -199,7 +195,7 @@ public:
     virtual void net_Update();
 
     tmc::task<bool> Load_GameSpecific_Before() override;
-    virtual BOOL Load_GameSpecific_After();
+    tmc::task<bool> Load_GameSpecific_After() override;
 
     void Load_GameSpecific_CFORM_Serialize(IWriter& writer) override;
     bool Load_GameSpecific_CFORM_Deserialize(IReader& reader) override;
@@ -209,10 +205,10 @@ public:
     tmc::task<void> OnEvent(EVENT E, u64 P1, u64) override;
     tmc::task<void> OnFrame() override;
     tmc::task<void> OnRender() override;
-    void cl_Process_Event(u16 dest, u16 type, NET_Packet& P);
-    void cl_Process_Spawn(NET_Packet& P);
-    void ProcessGameEvents();
-    void ProcessGameSpawns();
+    tmc::task<void> cl_Process_Event(u16 dest, u16 type, NET_Packet& P);
+    tmc::task<void> cl_Process_Spawn(NET_Packet& P);
+    tmc::task<void> ProcessGameEvents();
+    tmc::task<void> ProcessGameSpawns();
     void ProcessGameSpawnsDestroy(u16 dest, u16 type);
 
     // Input
@@ -235,21 +231,21 @@ public:
     int get_RPID(LPCSTR name);
 
     // Game
-    void InitializeClientGame(NET_Packet& P);
-    void ClientReceive();
+    tmc::task<void> InitializeClientGame(NET_Packet& P);
+    tmc::task<void> ClientReceive();
     void ClientSend();
     void ClientSave();
 
     void Send(NET_Packet& P, u32 = DPNSEND_GUARANTEED, u32 = 0) override;
 
     void g_cl_Spawn(LPCSTR name, u8 rp, u16 flags, Fvector pos); // only ask server
-    void g_sv_Spawn(CSE_Abstract* E); // server reply/command spawning
+    tmc::task<void> g_sv_Spawn(CSE_Abstract* E); // server reply/command spawning
 
     IC CSpaceRestrictionManager& space_restriction_manager();
     IC CSeniorityHierarchyHolder& seniority_holder();
     IC CClientSpawnManager& client_spawn_manager();
     IC CDebugRenderer& debug_renderer();
-    void script_gc(); // GC-cycle
+    tmc::task<void> script_gc(); // GC-cycle
 
     IC CPHCommander& ph_commander();
     IC CPHCommander& ph_commander_scripts();

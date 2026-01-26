@@ -1,14 +1,15 @@
 #include "stdafx.h"
 
 #include "psy_aura.h"
+
 #include "BaseMonster/base_monster.h"
 
 CPsyAura::CPsyAura() = default;
 CPsyAura::~CPsyAura() = default;
 
-void CPsyAura::schedule_update()
+tmc::task<void> CPsyAura::schedule_update()
 {
-    inherited::schedule_update();
+    co_await inherited::schedule_update();
 
     if (is_active())
     {

@@ -344,14 +344,14 @@ void CAI_Bloodsucker::CheckSpecParams(u32 spec_params)
     }
 }
 
-BOOL CAI_Bloodsucker::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CAI_Bloodsucker::net_Spawn(CSE_Abstract* DC)
 {
-    if (!inherited::net_Spawn(DC))
-        return (FALSE);
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
 
     vfAssignBones();
 
-    return (TRUE);
+    co_return true;
 }
 
 float CAI_Bloodsucker::get_full_visibility_radius()
@@ -478,9 +478,9 @@ tmc::task<void> CAI_Bloodsucker::UpdateCL()
     }
 }
 
-void CAI_Bloodsucker::shedule_Update(u32 dt)
+tmc::task<void> CAI_Bloodsucker::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
 
     if (!g_Alive())
     {
@@ -495,10 +495,10 @@ void CAI_Bloodsucker::shedule_Update(u32 dt)
         sound().play(eAlien);
 }
 
-void CAI_Bloodsucker::Die(CObject* who)
+tmc::task<void> CAI_Bloodsucker::Die(CObject* who)
 {
     stop_invisible_predator();
-    inherited::Die(who);
+    co_await inherited::Die(who);
 }
 
 void CAI_Bloodsucker::post_fsm_update()

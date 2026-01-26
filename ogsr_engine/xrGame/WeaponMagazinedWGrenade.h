@@ -17,8 +17,8 @@ public:
 
     virtual void Load(LPCSTR section);
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual void net_Export(CSE_Abstract* E);
 
     virtual void OnDrawUI();
@@ -44,7 +44,7 @@ public:
     virtual void state_Fire(float dt);
     virtual void OnShot();
     virtual void SwitchState(u32 S);
-    virtual void OnEvent(NET_Packet& P, u16 type);
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     virtual void ReloadMagazine();
 
     virtual bool Action(s32 cmd, u32 flags);

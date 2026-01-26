@@ -17,9 +17,9 @@
 CInfoDocument::CInfoDocument() = default;
 CInfoDocument::~CInfoDocument() = default;
 
-BOOL CInfoDocument::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CInfoDocument::net_Spawn(CSE_Abstract* DC)
 {
-    BOOL res = inherited::net_Spawn(DC);
+    const bool res = co_await inherited::net_Spawn(DC);
 
     CSE_Abstract* l_tpAbstract = static_cast<CSE_Abstract*>(DC);
     CSE_ALifeItemDocument* l_tpALifeItemDocument = smart_cast<CSE_ALifeItemDocument*>(l_tpAbstract);
@@ -54,13 +54,13 @@ BOOL CInfoDocument::net_Spawn(CSE_Abstract* DC)
         }
     }
 
-    return (res);
+    co_return res;
 }
 
 void CInfoDocument::Load(LPCSTR section) { inherited::Load(section); }
-void CInfoDocument::net_Destroy() { inherited::net_Destroy(); }
+tmc::task<void> CInfoDocument::net_Destroy() { co_await inherited::net_Destroy(); }
 
-void CInfoDocument::shedule_Update(u32 dt) { inherited::shedule_Update(dt); }
+tmc::task<void> CInfoDocument::shedule_Update(u32 dt) { co_await inherited::shedule_Update(dt); }
 tmc::task<void> CInfoDocument::UpdateCL() { co_await inherited::UpdateCL(); }
 
 void CInfoDocument::OnH_A_Chield()

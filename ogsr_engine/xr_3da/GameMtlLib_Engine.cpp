@@ -6,8 +6,8 @@ namespace
 {
 void DestroySounds(xr_vector<ref_sound>& lst)
 {
-    for (auto it : lst)
-        it.destroy();
+    for (auto& it : lst)
+        it.queue_destroy();
 }
 
 void CreateSounds(xr_vector<ref_sound>& lst, const char* buf)

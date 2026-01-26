@@ -14,7 +14,7 @@ public:
 
     virtual void Load(LPCSTR section);
 
-    virtual void net_Destroy();
+    tmc::task<void> net_Destroy() override;
     virtual void OnH_B_Chield();
 
     virtual void OnAnimationEnd(u32 state);

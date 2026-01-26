@@ -31,7 +31,7 @@ private:
     bool m_first_time{true};
 
 public:
-    void update();
+    tmc::task<void> update();
 
 protected:
     tmc::task<void> new_game(gsl::czstring save_name);
@@ -44,7 +44,7 @@ public:
 
     virtual shared_str shedule_Name() const { return shared_str("alife_simulator"); }
     virtual float shedule_Scale() const;
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
     virtual bool shedule_Needed() { return true; }
     void update_switch();
     void update_scheduled(bool init_ef = true);

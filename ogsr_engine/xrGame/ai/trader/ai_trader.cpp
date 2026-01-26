@@ -112,18 +112,18 @@ void CAI_Trader::LookAtActor(CBoneInstance* B)
 
 //////////////////////////////////////////////////////////////////////////
 
-BOOL CAI_Trader::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CAI_Trader::net_Spawn(CSE_Abstract* DC)
 {
     CSE_Abstract* e = (CSE_Abstract*)(DC);
     CSE_ALifeTrader* l_tpTrader = smart_cast<CSE_ALifeTrader*>(e);
     R_ASSERT(l_tpTrader);
 
     // проспавнить PDA у InventoryOwner
-    if (!CInventoryOwner::net_Spawn(DC))
-        return (FALSE);
+    if (!co_await CInventoryOwner::net_Spawn(DC))
+        co_return false;
 
-    if (!inherited::net_Spawn(DC) || !CScriptEntity::net_Spawn(DC))
-        return (FALSE);
+    if (!co_await inherited::net_Spawn(DC) || !co_await CScriptEntity::net_Spawn(DC))
+        co_return false;
 
     setVisible(TRUE);
     setEnabled(TRUE);
@@ -137,15 +137,15 @@ BOOL CAI_Trader::net_Spawn(CSE_Abstract* DC)
     shedule.t_min = 100;
     shedule.t_max = 2500; // This equaltiy is broken by Dima :-( // 30 * NET_Latency / 4;
 
-    return (TRUE);
+    co_return true;
 }
 
 void CAI_Trader::net_Export(CSE_Abstract*) { R_ASSERT(Local()); }
 
-void CAI_Trader::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CAI_Trader::OnEvent(NET_Packet& P, u16 type)
 {
-    inherited::OnEvent(P, type);
-    CInventoryOwner::OnEvent(P, type);
+    co_await inherited::OnEvent(P, type);
+    co_await CInventoryOwner::OnEvent(P, type);
 
     u16 id;
     CObject* Obj;
@@ -226,9 +226,9 @@ void CAI_Trader::DropItemSendMessage(CObject* O)
     u_EventSend(P);
 }
 
-void CAI_Trader::shedule_Update(u32 dt)
+tmc::task<void> CAI_Trader::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
     UpdateInventoryOwner();
 
     if (GetScriptControl())
@@ -257,8 +257,7 @@ void CAI_Trader::g_fireParams(CHudItem*, Fvector& P, Fvector& D, const bool)
 }
 
 void CAI_Trader::Think() {}
-
-void CAI_Trader::Die(CObject* who) { inherited::Die(who); }
+tmc::task<void> CAI_Trader::Die(CObject* who) { co_await inherited::Die(who); }
 
 void CAI_Trader::Hit(SHit* pHDS)
 {
@@ -268,10 +267,10 @@ void CAI_Trader::Hit(SHit* pHDS)
         inherited::Hit(&HDS);
 }
 
-void CAI_Trader::net_Destroy()
+tmc::task<void> CAI_Trader::net_Destroy()
 {
-    inherited::net_Destroy();
-    CScriptEntity::net_Destroy();
+    co_await inherited::net_Destroy();
+    co_await CScriptEntity::net_Destroy();
 }
 
 tmc::task<void> CAI_Trader::UpdateCL()

@@ -39,9 +39,9 @@ CEntityConditionSimple* CEntity::create_entity_condition(CEntityConditionSimple*
     return m_entity_condition;
 }
 
-void CEntity::OnEvent(NET_Packet& P, u16 type)
+tmc::task<void> CEntity::OnEvent(NET_Packet& P, u16 type)
 {
-    inherited::OnEvent(P, type);
+    co_await inherited::OnEvent(P, type);
 
     switch (type)
     {
@@ -62,13 +62,13 @@ void CEntity::OnEvent(NET_Packet& P, u16 type)
                 Msg("%s %s", *cName(), "Crashed...");
         }
 
-        Die(who);
+        co_await Die(who);
     }
     break;
     }
 }
 
-void CEntity::Die(CObject*)
+tmc::task<void> CEntity::Die(CObject*)
 {
     if (!AlreadyDie())
         set_death_time();
@@ -81,6 +81,8 @@ void CEntity::Die(CObject*)
         m_registered_member = false;
         Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).unregister_member(this);
     }
+
+    co_return;
 }
 
 // обновление состояния
@@ -150,7 +152,7 @@ void CEntity::Load(LPCSTR section)
     m_forget_killer_time = READ_IF_EXISTS(pSettings, r_u32, section, "forget_killer_time", FORGET_KILLER_TIME) * 1000;
 }
 
-BOOL CEntity::net_Spawn(CSE_Abstract* DC)
+tmc::task<bool> CEntity::net_Spawn(CSE_Abstract* DC)
 {
     m_level_death_time = 0;
     m_game_death_time = 0;
@@ -169,7 +171,9 @@ BOOL CEntity::net_Spawn(CSE_Abstract* DC)
             m_killer_id = ALife::_OBJECT_ID(-1);
     }
     else
+    {
         SetfHealth(1.0f);
+    }
 
     // load damage params
     if (!E)
@@ -220,10 +224,9 @@ BOOL CEntity::net_Spawn(CSE_Abstract* DC)
         m_game_death_time = E->m_game_death_time;
     }
 
-    if (!inherited::net_Spawn(DC))
-        return (FALSE);
+    if (!co_await inherited::net_Spawn(DC))
+        co_return false;
 
-    //	SetfHealth			(E->fHealth);
     IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
     CInifile* ini{};
 
@@ -236,10 +239,11 @@ BOOL CEntity::net_Spawn(CSE_Abstract* DC)
 
         CParticlesPlayer::LoadParticles(pKinematics);
     }
-    return TRUE;
+
+    co_return true;
 }
 
-void CEntity::net_Destroy()
+tmc::task<void> CEntity::net_Destroy()
 {
     if (m_registered_member)
     {
@@ -247,7 +251,7 @@ void CEntity::net_Destroy()
         Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).unregister_member(this);
     }
 
-    inherited::net_Destroy();
+    co_await inherited::net_Destroy();
 }
 
 void CEntity::KillEntity(u16 whoID)
@@ -324,9 +328,10 @@ DLL_Pure* CEntity::_construct()
     return this;
 }
 
-void CEntity::shedule_Update(u32 dt)
+tmc::task<void> CEntity::shedule_Update(u32 dt)
 {
-    inherited::shedule_Update(dt);
+    co_await inherited::shedule_Update(dt);
+
     if (!getDestroy() && !g_Alive() && (m_killer_id != u16(-1)))
     {
         if (Device.dwTimeGlobal > m_level_death_time + m_forget_killer_time)

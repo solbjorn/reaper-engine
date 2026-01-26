@@ -22,15 +22,18 @@
 CPhysicsShellHolder::CPhysicsShellHolder() { init(); }
 CPhysicsShellHolder::~CPhysicsShellHolder() { xr_delete(m_ph_sound_player); }
 
-void CPhysicsShellHolder::net_Destroy()
+tmc::task<void> CPhysicsShellHolder::net_Destroy()
 {
     // удалить партиклы из ParticlePlayer
     CParticlesPlayer::net_DestroyParticles();
+
     CCharacterPhysicsSupport* char_support = character_physics_support();
     if (char_support)
         char_support->destroy_imotion();
-    inherited::net_Destroy();
+
+    co_await inherited::net_Destroy();
     b_sheduled = false;
+
     deactivate_physics_shell();
     xr_delete(m_pPhysicsShell);
 }
@@ -42,13 +45,15 @@ void CPhysicsShellHolder::net_Destroy()
     stNotDefitnite
 };
 static u8 st_enable_state = (u8)stNotDefitnite;
-BOOL CPhysicsShellHolder::net_Spawn(CSE_Abstract* DC)
+
+tmc::task<bool> CPhysicsShellHolder::net_Spawn(CSE_Abstract* DC)
 {
     CParticlesPlayer::net_SpawnParticles();
     st_enable_state = (u8)stNotDefitnite;
     b_sheduled = true;
-    BOOL ret = inherited::net_Spawn(DC); // load
-                                         // create_physic_shell			();
+
+    const bool ret = co_await inherited::net_Spawn(DC); // load
+
     if (PPhysicsShell() && PPhysicsShell()->isFullActive())
     {
         PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
@@ -61,7 +66,8 @@ BOOL CPhysicsShellHolder::net_Spawn(CSE_Abstract* DC)
         ApplySpawnIniToPhysicShell(pSettings, PPhysicsShell(), false);
         st_enable_state = (u8)stNotDefitnite;
     }
-    return ret;
+
+    co_return ret;
 }
 
 void CPhysicsShellHolder::Load(LPCSTR section)

@@ -18,7 +18,7 @@
 #include "HudManager.h"
 #include "UIGameSP.h"
 
-void CLevel::ClientReceive()
+tmc::task<void> CLevel::ClientReceive()
 {
     m_dwRPC = 0;
     m_dwRPS = 0;
@@ -40,19 +40,19 @@ void CLevel::ClientReceive()
                 Msg("Unconventional M_SPAWN received : cgf[%s] | bReady[%s]", (m_bGameConfigStarted) ? "true" : "false", (bReady) ? "true" : "false");
                 break;
             }
-            /*/
-            cl_Process_Spawn(*P);
-            /*/
+
             game_events->insert(*P);
+
             if (g_bDebugEvents)
-                ProcessGameEvents();
-            //*/
+                co_await ProcessGameEvents();
         }
         break;
         case M_EVENT:
             game_events->insert(*P);
+
             if (g_bDebugEvents)
-                ProcessGameEvents();
+                co_await ProcessGameEvents();
+
             break;
         case M_EVENT_PACK: {
             NET_Packet tmpP;
@@ -63,8 +63,9 @@ void CLevel::ClientReceive()
                 tmpP.timeReceive = P->timeReceive;
 
                 game_events->insert(tmpP);
+
                 if (g_bDebugEvents)
-                    ProcessGameEvents();
+                    co_await ProcessGameEvents();
             }
         }
         break;
@@ -72,7 +73,7 @@ void CLevel::ClientReceive()
             game->net_import_update(*P);
         }
         break;
-        case M_SV_CONFIG_NEW_CLIENT: InitializeClientGame(*P); break;
+        case M_SV_CONFIG_NEW_CLIENT: co_await InitializeClientGame(*P); break;
         case M_SV_CONFIG_GAME: game->net_import_state(*P); break;
         case M_SV_CONFIG_FINISHED:
             game_configured = TRUE;
@@ -157,8 +158,6 @@ void CLevel::ClientReceive()
 
         net_msg_Release();
     }
-
-    //	if (!g_bDebugEvents) ProcessGameSpawns();
 }
 
 void CLevel::OnMessage(void* data, u32 size) { IPureClient::OnMessage(data, size); }

@@ -101,21 +101,27 @@ void CHelicopter::UpdateHeliParticles()
         }
     }
 }
-void CHelicopter::ExplodeHelicopter()
+
+void CHelicopter::ExplodeHelicopter() { Device.add_frame_async(CallMe::fromMethod<&CHelicopter::explode_async>(this)); }
+
+tmc::task<void> CHelicopter::explode_async(std::array<std::byte, 16>&)
 {
     m_ready_explode = false;
     m_exploded = true;
+
     if (m_pParticle)
     {
         m_pParticle->Stop();
         CParticlesObject::Destroy(m_pParticle);
     }
+
     if (CPHDestroyable::CanDestroy())
         CPHDestroyable::Destroy(ID(), "physic_destroyable_object");
 
     CExplosive::SetInitiator(ID());
-    CExplosive::GenExplodeEvent(Position(), Fvector().set(0.f, 1.f, 0.f));
-    m_brokenSound.stop();
+    CExplosive::GenExplodeEvent(Position(), Fvector{0.0f, 1.0f, 0.0f});
+
+    co_await m_brokenSound.stop();
 }
 
 void CHelicopter::SetDestPosition(Fvector* pos)
@@ -252,12 +258,14 @@ void CollisionCallbackDead(bool& do_colide, bool bo1, dContact& c, SGameMtl*, SG
 
 void CHelicopter::DieHelicopter()
 {
-    if (state() == CHelicopter::eDead)
-        return;
+    if (state() != CHelicopter::eDead)
+        Device.add_frame_async(CallMe::fromMethod<&CHelicopter::die_async>(this));
+}
 
-    CEntity::Die(nullptr);
-
-    m_engineSound.stop();
+tmc::task<void> CHelicopter::die_async(std::array<std::byte, 16>&)
+{
+    co_await CEntity::Die(nullptr);
+    co_await m_engineSound.stop();
 
     m_brokenSound.create(pSettings->r_string(*cNameSect(), "broken_snd"), st_Effect, sg_SourceType);
     m_brokenSound.play_at_pos(nullptr, XFORM().c, sm_Looped);
@@ -295,9 +303,11 @@ void CHelicopter::DieHelicopter()
     PPhysicsShell()->Enable();
     K->CalculateBones_Invalidate();
     K->CalculateBones();
+
     setState(CHelicopter::eDead);
-    m_engineSound.stop();
+    co_await m_engineSound.stop();
     processing_deactivate();
+
     m_dead = true;
 }
 

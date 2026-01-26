@@ -34,11 +34,11 @@ private:
 public:
     ~CLevelChanger() override;
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
     virtual void Center(Fvector& C) const;
     virtual float Radius() const;
-    virtual void shedule_Update(u32 dt);
+    tmc::task<void> shedule_Update(u32 dt) override;
     virtual void feel_touch_new(CObject* O);
     virtual BOOL feel_touch_contact(CObject* O);
 

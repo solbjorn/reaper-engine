@@ -26,7 +26,7 @@ private:
     EState m_CurState;
     EState m_TgtState;
 
-    void SwitchToState_internal(EState new_state);
+    tmc::task<void> SwitchToState_internal(EState new_state);
     void SwitchToState(EState new_state) { m_TgtState = new_state; }
     void OnIdleState();
     void OnFlyState();
@@ -71,14 +71,14 @@ public:
     ~CPhantom() override;
 
     virtual void Load(LPCSTR section);
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void net_Destroy();
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> net_Destroy() override;
 
     virtual void net_Export(CSE_Abstract* E);
     virtual void save(NET_Packet& output_packet);
     virtual void load(IReader& input_packet);
 
-    virtual void shedule_Update(u32 DT);
+    tmc::task<void> shedule_Update(u32 DT) override;
     tmc::task<void> UpdateCL() override;
 
     void HitSignal(float, Fvector&, CObject*, s16) override {}

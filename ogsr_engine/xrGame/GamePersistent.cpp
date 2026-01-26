@@ -156,14 +156,15 @@ tmc::task<void> CGamePersistent::Start(gsl::czstring op)
     m_intro_event = CallMe::fromMethod<&CGamePersistent::start_game_intro>(this);
 }
 
-void CGamePersistent::Disconnect()
+tmc::task<void> CGamePersistent::Disconnect()
 {
     // destroy ambient particles
     CParticlesObject::Destroy(ambient_particles);
 
-    __super::Disconnect();
+    co_await IGame_Persistent::Disconnect();
+
     // stop all played emitters
-    ::Sound->stop_emitters();
+    co_await ::Sound->stop_emitters();
     m_game_params.m_e_game_type = GAME_ANY;
 }
 
@@ -597,7 +598,7 @@ tmc::task<void> CGamePersistent::OnFrame()
     co_await IGame_Persistent::OnFrame();
 
     if (!Device.Paused())
-        Engine.Sheduler.Update();
+        co_await Engine.Sheduler.Update();
 
     // update weathers ambient
     if (!Device.Paused())

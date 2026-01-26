@@ -121,7 +121,7 @@ public:
     // stream executors
     virtual void Exec_Action(float);
     virtual void Exec_Look(float dt);
-    void Exec_Visibility();
+    tmc::task<void> Exec_Visibility();
     void eye_pp_s0();
     void eye_pp_s1();
     void eye_pp_s2();
@@ -138,12 +138,12 @@ public:
 
 public:
     virtual DLL_Pure* _construct();
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
-    virtual void Die(CObject* who);
+    tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
+    tmc::task<void> Die(CObject* who) override;
 
     virtual void HitSignal(float, Fvector&, CObject*);
     virtual void g_WeaponBones(int&, int&, int&) {}
-    virtual void shedule_Update(u32 DT);
+    tmc::task<void> shedule_Update(u32 DT) override;
     tmc::task<void> UpdateCL() override;
 
     virtual void net_Export(CSE_Abstract*);
@@ -174,8 +174,8 @@ public:
     virtual Feel::Sound* dcast_FeelSound() { return this; }
     virtual void Hit(SHit* pHDS);
 
-    virtual void OnEvent(NET_Packet& P, u16 type);
-    virtual void net_Destroy();
+    tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
+    tmc::task<void> net_Destroy() override;
     virtual BOOL UsedAI_Locations();
     ///////////////////////////////////////////////////////////////////////
     virtual u16 PHGetSyncItemsNumber() { return inherited ::PHGetSyncItemsNumber(); }
@@ -245,7 +245,7 @@ public:
     virtual void update_range_fov(float& new_range, float& new_fov, float start_range, float start_fov);
 
 public:
-    void update_sound_player();
+    tmc::task<void> update_sound_player();
     virtual void on_restrictions_change();
     virtual LPCSTR visual_name(CSE_Abstract* server_entity);
 

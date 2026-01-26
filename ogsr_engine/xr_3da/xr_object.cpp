@@ -162,7 +162,7 @@ void CObject::Load(LPCSTR section)
     setVisible(false);
 }
 
-BOOL CObject::net_Spawn(CSE_Abstract*)
+tmc::task<bool> CObject::net_Spawn(CSE_Abstract*)
 {
     PositionStack.clear();
 
@@ -196,20 +196,23 @@ BOOL CObject::net_Spawn(CSE_Abstract*)
 
     MakeMeCrow();
 
-    return TRUE;
+    co_return true;
 }
 
-void CObject::net_Destroy()
+tmc::task<void> CObject::net_Destroy()
 {
     VERIFY(getDestroy());
+
     xr_delete(collidable.model);
+
     if (register_schedule())
         shedule_unregister();
 
     spatial_unregister();
-    //	setDestroy					(true);
     // remove visual
     cNameVisual_set({});
+
+    co_return;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -317,20 +320,14 @@ tmc::task<void> CObject::UpdateCL()
     co_return;
 }
 
-void CObject::shedule_Update(u32 T)
+tmc::task<void> CObject::shedule_Update(u32 T)
 {
-    // consistency check
-    // Msg						("-SUB-:[%x][%s] CObject::shedule_Update",smart_cast<void*>(this),*cName());
-    ISheduled::shedule_Update(T);
+    co_await ISheduled::shedule_Update(T);
     spatial_update(base_spu_epsP * 1, base_spu_epsR * 1);
 
     // Always make me crow on shedule-update
     // Makes sure that update-cl called at least with freq of shedule-update
     MakeMeCrow();
-    /*
-    if (AlwaysTheCrow())																	MakeMeCrow	();
-    else if (Device.vCameraPosition.distance_to_sqr(Position()) < CROW_RADIUS*CROW_RADIUS)	MakeMeCrow	();
-    */
 }
 
 void CObject::spatial_register()

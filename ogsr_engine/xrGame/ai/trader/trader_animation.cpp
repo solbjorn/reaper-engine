@@ -79,10 +79,8 @@ void CTraderAnimation::remove_sound()
 {
     VERIFY(m_sound);
 
-    if (m_sound->_feedback())
-        m_sound->stop();
-
-    m_sound->destroy();
+    m_sound->queue_stop();
+    m_sound->queue_destroy();
     xr_delete(m_sound);
 }
 

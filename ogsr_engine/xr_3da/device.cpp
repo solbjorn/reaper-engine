@@ -176,7 +176,9 @@ tmc::task<bool> CRenderDevice::BeforeFrame()
         if (co_await g_loading_events.front()())
             g_loading_events.pop_front();
 
+        co_await process_frame_async();
         co_await pApp->LoadDraw();
+
         co_return false;
     }
 
@@ -223,10 +225,7 @@ tmc::task<void> CRenderDevice::OnCameraUpdated()
 tmc::task<void> CRenderDevice::ProcessFrame()
 {
     if (!co_await BeforeFrame())
-    {
-        co_await process_frame_async();
         co_return;
-    }
 
     XR_TRACY_ZONE_SCOPED();
 
@@ -342,11 +341,12 @@ tmc::task<void> CRenderDevice::process_second()
     auto size = seqParallel.size();
     while (size-- > 0)
     {
-        seqParallel.front()();
+        co_await seqParallel.front()();
         seqParallel.pop_front();
     }
 
     co_await seqFrameMT.process();
+    co_await process_frame_async();
 
 #ifdef LOG_SECOND_THREAD_STATS
     co_return std::chrono::high_resolution_clock::now() - SecondThreadTasksStartTime;
@@ -357,6 +357,7 @@ tmc::task<void> CRenderDevice::message_loop()
 {
     MSG msg;
     PeekMessage(&msg, nullptr, 0U, 0U, PM_NOREMOVE);
+
     while (msg.message != WM_QUIT)
     {
         if (PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
@@ -364,11 +365,11 @@ tmc::task<void> CRenderDevice::message_loop()
             TranslateMessage(&msg);
             DispatchMessage(&msg);
 
-            co_await tmc::spawn(process_frame_async()).run_on(tmc::cpu_executor());
+            co_await tmc::spawn_clang(process_frame_async(), tmc::cpu_executor());
             continue;
         }
 
-        co_await tmc::spawn(ProcessFrame()).run_on(tmc::cpu_executor());
+        co_await tmc::spawn_clang(ProcessFrame(), tmc::cpu_executor());
         XR_TRACY_FRAME_MARK();
     }
 }
@@ -418,11 +419,12 @@ tmc::task<void> CRenderDevice::Run()
 
     // Message cycle
     co_await seqAppStart.process();
-
     m_pRender->ClearTarget();
-    co_await tmc::spawn(message_loop()).run_on(xr::tmc_cpu_st_executor());
+
+    co_await tmc::spawn_clang(message_loop(), xr::tmc_cpu_st_executor());
 
     co_await seqAppEnd.process();
+    co_await process_frame_async();
 }
 
 namespace
@@ -534,13 +536,9 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, [[maybe_unused]] L
 
 BOOL CRenderDevice::Paused() { return g_pauseMngr->Paused(); }
 
-tmc::task<void> CRenderDevice::OnWM_Activate()
+tmc::task<void> CRenderDevice::OnWM_Activate(std::array<std::byte, 16>& arg)
 {
-    if (wparam_async == std::numeric_limits<u64>::max())
-        co_return;
-
-    const auto wParam = wparam_async;
-    wparam_async = std::numeric_limits<u64>::max();
+    const auto wParam = *reinterpret_cast<u64*>(&arg);
 
     const u16 fActive = LOWORD(wParam);
     const BOOL fMinimized = (BOOL)HIWORD(wParam);

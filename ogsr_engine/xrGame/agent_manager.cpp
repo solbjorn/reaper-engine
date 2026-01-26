@@ -98,9 +98,9 @@ void CAgentManager::update_impl()
 
 #ifdef USE_SCHEDULER_IN_AGENT_MANAGER
 
-void CAgentManager::shedule_Update(u32 time_delta)
+tmc::task<void> CAgentManager::shedule_Update(u32 time_delta)
 {
-    ISheduled::shedule_Update(time_delta);
+    co_await ISheduled::shedule_Update(time_delta);
     update_impl();
 }
 

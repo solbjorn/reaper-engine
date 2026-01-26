@@ -23,7 +23,7 @@ void CBolt::OnH_A_Chield()
         SetInitiator(o->ID());
 }
 
-void CBolt::OnEvent(NET_Packet& P, u16 type) { inherited::OnEvent(P, type); }
+tmc::task<void> CBolt::OnEvent(NET_Packet& P, u16 type) { co_await inherited::OnEvent(P, type); }
 
 bool CBolt::Activate(bool now)
 {

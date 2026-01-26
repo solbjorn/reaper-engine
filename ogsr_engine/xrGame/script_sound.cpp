@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "script_sound.h"
+
 #include "script_game_object.h"
 #include "gameobject.h"
 #include "ai_space.h"
@@ -29,7 +30,7 @@ CScriptSound::CScriptSound(LPCSTR caSoundName, ESoundTypes game_type, esound_typ
 CScriptSound::~CScriptSound()
 {
     THROW3(!m_sound._feedback(), "playing sound is not completed, but is destroying", m_sound._handle() ? m_sound._handle()->file_name() : "unknown");
-    m_sound.destroy();
+    m_sound.queue_destroy();
 }
 
 Fvector CScriptSound::GetPosition() const

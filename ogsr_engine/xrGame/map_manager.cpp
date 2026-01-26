@@ -231,13 +231,11 @@ CMapLocation* CMapManager::GetMapLocation(const shared_str& spot_type, u16 id)
     return nullptr;
 }
 
-void CMapManager::Update()
+tmc::task<void> CMapManager::Update()
 {
-    Locations_it it = Locations().begin();
-    for (; it != Locations().end(); ++it)
-    {
-        (*it).actual = (*it).location->Update();
-    }
+    for (auto& loc : Locations())
+        loc.actual = loc.location->Update();
+
     std::sort(Locations().begin(), Locations().end());
 
     while ((!Locations().empty()) && (!Locations().back().actual))
@@ -245,6 +243,8 @@ void CMapManager::Update()
         delete_data(Locations().back().location);
         Locations().pop_back();
     }
+
+    co_return;
 }
 
 void CMapManager::DisableAllPointers()

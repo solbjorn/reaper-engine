@@ -83,7 +83,7 @@ public:
 
     virtual void PreStart(LPCSTR op);
     virtual tmc::task<void> Start(gsl::czstring op);
-    virtual void Disconnect();
+    virtual tmc::task<void> Disconnect();
 
     IGame_ObjectPool ObjectPool;
     IMainMenu* m_pMainMenu{};
