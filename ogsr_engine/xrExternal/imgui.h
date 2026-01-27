@@ -6,6 +6,8 @@
 
 #define IMGUI_ENABLE_FREETYPE
 #define IMGUI_ENABLE_FREETYPE_PLUTOSVG
+#define IMGUI_ENABLE_STB_TRUETYPE
+#define IMGUI_USE_WCHAR32
 
 #include <imgui.h>
 #include <backends/imgui_impl_dx11.h>

@@ -9,7 +9,7 @@
 	url = https://github.com/microsoft/DirectXTex.git
 [submodule "3rd_party/Src/FreeType/freetype/freetype"]
 	path = 3rd_party/Src/FreeType/freetype/freetype
-	url = https://gitlab.freedesktop.org/freetype/freetype.git
+	url = https://github.com/freetype/freetype.git
 [submodule "3rd_party/Src/FreeType/harfbuzz/harfbuzz"]
 	path = 3rd_party/Src/FreeType/harfbuzz/harfbuzz
 	url = https://github.com/harfbuzz/harfbuzz.git
@@ -27,10 +27,10 @@
 	url = https://github.com/solbjorn/OpCoDe.git
 [submodule "3rd_party/Src/Xiph/ogg/ogg"]
 	path = 3rd_party/Src/Xiph/ogg/ogg
-	url = https://gitlab.xiph.org/xiph/ogg.git
+	url = https://github.com/xiph/ogg.git
 [submodule "3rd_party/Src/Xiph/theora/theora"]
 	path = 3rd_party/Src/Xiph/theora/theora
-	url = https://gitlab.xiph.org/xiph/theora.git
+	url = https://github.com/xiph/theora.git
 [submodule "3rd_party/Src/Xiph/vorbis/vorbis-aotuv-lancer"]
 	path = 3rd_party/Src/Xiph/vorbis/vorbis-aotuv-lancer
 	url = https://github.com/enzo1982/vorbis-aotuv-lancer.git

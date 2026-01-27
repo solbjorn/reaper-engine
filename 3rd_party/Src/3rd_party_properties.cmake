@@ -24,7 +24,7 @@ endif()
 
 # harfbuzz
 if(HB_HAVE_FREETYPE)
-  set(warning_options "${warning_options} -Wno-error=microsoft-enum-value")
+  set(warning_options "${warning_options} -Wno-error=microsoft-enum-value -Wno-error=microsoft-exception-spec")
 endif()
 
 # hwloc
