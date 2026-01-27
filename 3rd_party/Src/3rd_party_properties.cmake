@@ -22,6 +22,11 @@ if(ABSL_PROPAGATE_CXX_STD)
   set(warning_options "${warning_options} -Wno-error=format -Wno-error=format-signedness")
 endif()
 
+# harfbuzz
+if(HB_HAVE_FREETYPE)
+  set(warning_options "${warning_options} -Wno-error=microsoft-enum-value")
+endif()
+
 # hwloc
 if(HWLOC_SKIP_LSTOPO)
   set(conformance_options "${conformance_options} -DO_RDONLY=_O_RDONLY -DS_IFREG=_S_IFREG -Dfstat=_fstat -Dstat=_stat")

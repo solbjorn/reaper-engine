@@ -4,6 +4,9 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 
+#define IMGUI_ENABLE_FREETYPE
+#define IMGUI_ENABLE_FREETYPE_PLUTOSVG
+
 #include <imgui.h>
 #include <backends/imgui_impl_dx11.h>
 

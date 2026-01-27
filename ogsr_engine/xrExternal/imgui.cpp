@@ -28,6 +28,16 @@ XR_DIAG_POP();
 
 #include <backends/imgui_impl_dx11.cpp>
 
+// FreeType backend
+
+#define PLUTOSVG_BUILD_STATIC
+#define PLUTOVG_BUILD_STATIC
+
+#include <misc/freetype/imgui_freetype.cpp>
+
+#undef PLUTOVG_BUILD_STATIC
+#undef PLUTOSVG_BUILD_STATIC
+
 // ImGuizmo
 
 #ifndef IMGUI_DISABLE

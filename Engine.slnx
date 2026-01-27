@@ -47,6 +47,19 @@
       <BuildDependency Project="3rd_party/Src/Xiph/ogg/ogg.vcxproj" />
     </Project>
   </Folder>
+  <Folder Name="/3rd_party/FreeType/">
+    <Project Path="3rd_party/Src/FreeType/freetype/freetype.vcxproj" Id="604b9414-5807-4926-836e-11d645cc9fb8">
+      <BuildDependency Project="3rd_party/Src/FreeType/harfbuzz/harfbuzz.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/FreeType/harfbuzz/harfbuzz.vcxproj" Id="f336602b-c018-4669-9ada-c57eae98e4cd">
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/FreeType/plutosvg/plutosvg.vcxproj" Id="9d8a30b9-0cfd-4be4-bd71-62c97fef2f19">
+      <BuildDependency Project="3rd_party/Src/FreeType/freetype/freetype.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/FreeType/plutovg/plutovg.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/FreeType/plutovg/plutovg.vcxproj" Id="863e00ea-4d4f-41a2-a14b-f1a9c45e5621" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path="ogsr_engine/xray.natvis" />
   </Folder>
@@ -65,6 +78,7 @@
     <BuildDependency Project="3rd_party/Src/xxHash/xxHash.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrExternal/xrExternal.vcxproj" Id="6d4e1cd0-9d48-4210-982e-93827a58256e">
+    <BuildDependency Project="3rd_party/Src/FreeType/plutosvg/plutosvg.vcxproj" />
     <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     <BuildDependency Project="3rd_party/Src/luajit2/luajit2.vcxproj" />
     <BuildDependency Project="3rd_party/Src/tmc/hwloc/hwloc.vcxproj" />
