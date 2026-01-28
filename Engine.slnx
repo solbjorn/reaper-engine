@@ -9,6 +9,13 @@
     <Project Path="3rd_party/Src/OpCoDe/OpCoDe.vcxproj" Id="8b7e63c3-85be-4671-999e-6c72d67f062d">
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
+    <Project Path="3rd_party/Src/SFML/SFML.vcxproj" Id="0c43e141-7193-490a-b40f-ec5e92fc7b2c">
+      <BuildDependency Project="3rd_party/Src/FreeType/freetype/freetype.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/FreeType/harfbuzz/harfbuzz.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/Xiph/flac/flac.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/Xiph/vorbis/vorbis.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
     <Project Path="3rd_party/Src/abseil/abseil.vcxproj" Id="639aecff-564b-474a-9eeb-b6a516288315">
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
@@ -36,15 +43,20 @@
     <Project Path="3rd_party/Src/zstd/zstd.vcxproj" Id="f612c458-7afd-4d2b-804e-af9ef62218b4" />
   </Folder>
   <Folder Name="/3rd_party/Xiph.org/">
+    <Project Path="3rd_party/Src/Xiph/flac/flac.vcxproj" Id="702304bc-1ab0-4e93-8fc0-a3225cde1de3">
+      <BuildDependency Project="3rd_party/Src/Xiph/ogg/ogg.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
     <Project Path="3rd_party/Src/Xiph/ogg/ogg.vcxproj" Id="1659bf1b-6fcd-46e4-b5d4-0b760598cb2e">
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
     <Project Path="3rd_party/Src/Xiph/theora/theora.vcxproj" Id="d6aea327-48bc-45c8-b0e9-bf775e451904">
+      <BuildDependency Project="3rd_party/Src/Xiph/ogg/ogg.vcxproj" />
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
     <Project Path="3rd_party/Src/Xiph/vorbis/vorbis.vcxproj" Id="0f3163c6-fae6-4fbd-bf88-037eb0420daf">
-      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
       <BuildDependency Project="3rd_party/Src/Xiph/ogg/ogg.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
   </Folder>
   <Folder Name="/3rd_party/FreeType/">
@@ -71,6 +83,7 @@
     <BuildDependency Project="3rd_party/Src/OpCoDe/OpCoDe.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrCore/xrCore.vcxproj" Id="a0f7d1fb-59a7-4717-a7e4-96f37e91998e">
+    <BuildDependency Project="3rd_party/Src/SFML/SFML.vcxproj" />
     <BuildDependency Project="3rd_party/Src/abseil/abseil.vcxproj" />
     <BuildDependency Project="3rd_party/Src/libsquashfs/libsquashfs.vcxproj" />
     <BuildDependency Project="3rd_party/Src/mimalloc/mimalloc.vcxproj" />
@@ -78,6 +91,7 @@
     <BuildDependency Project="3rd_party/Src/xxHash/xxHash.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrExternal/xrExternal.vcxproj" Id="6d4e1cd0-9d48-4210-982e-93827a58256e">
+    <BuildDependency Project="3rd_party/Src/FreeType/freetype/freetype.vcxproj" />
     <BuildDependency Project="3rd_party/Src/FreeType/plutosvg/plutosvg.vcxproj" />
     <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     <BuildDependency Project="3rd_party/Src/luajit2/luajit2.vcxproj" />
@@ -91,7 +105,6 @@
     <BuildDependency Project="3rd_party/Src/ode/contrib/msvc7/ode_default/default.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrSound/xrSound.vcxproj" Id="ccca7859-eb86-493e-9b53-c4235f45b3c5">
-    <BuildDependency Project="3rd_party/Src/Xiph/ogg/ogg.vcxproj" />
     <BuildDependency Project="3rd_party/Src/Xiph/vorbis/vorbis.vcxproj" />
     <BuildDependency Project="3rd_party/Src/openal-soft/openal-soft.vcxproj" />
   </Project>

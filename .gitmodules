@@ -25,6 +25,12 @@
 [submodule "3rd_party/Src/OpCoDe/OpCoDe"]
 	path = 3rd_party/Src/OpCoDe/OpCoDe
 	url = https://github.com/solbjorn/OpCoDe.git
+[submodule "3rd_party/Src/SFML/SFML"]
+	path = 3rd_party/Src/SFML/SFML
+	url = https://github.com/SFML/SFML.git
+[submodule "3rd_party/Src/Xiph/flac/flac"]
+	path = 3rd_party/Src/Xiph/flac/flac
+	url = https://github.com/xiph/flac.git
 [submodule "3rd_party/Src/Xiph/ogg/ogg"]
 	path = 3rd_party/Src/Xiph/ogg/ogg
 	url = https://github.com/xiph/ogg.git

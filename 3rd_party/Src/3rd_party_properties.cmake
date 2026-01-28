@@ -6,7 +6,7 @@ if(NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
   set(CMAKE_PCH_PROLOGUE "")
 endif()
 
-set(conformance_options "/Brepro /bigobj /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__STDC__ /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /Zc:checkGwOdr /Zc:templateScope /DNOMINMAX -fno-delayed-template-parsing -fstrict-aliasing /D_CRT_STDIO_ISO_WIDE_SPECIFIERS -fno-ms-compatibility -fgnuc-version=0")
+set(conformance_options "/Brepro /bigobj /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__STDC__ /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /Zc:checkGwOdr /Zc:templateScope /DNOMINMAX -fno-delayed-template-parsing -fstrict-aliasing /D_CRT_STDIO_ISO_WIDE_SPECIFIERS -fno-ms-compatibility -fgnuc-version=0 /utf-8")
 
 set(llvm_options "-march=skylake -mavx2 /FIintrin.h -flto -fmerge-all-constants -fforce-emit-vtables -fwhole-program-vtables /clang:-fcoro-aligned-allocation")
 
@@ -17,9 +17,19 @@ if(DEFINED BUILD_TOOLS)
   set(conformance_options "${conformance_options} -D_FORCENAMELESSUNION")
 endif()
 
+# SFML
+if(SFML_USE_SYSTEM_DEPS)
+  set(conformance_options "${conformance_options} -D_WIN32_WINDOWS=0x0A00")
+endif()
+
 # abseil
 if(ABSL_PROPAGATE_CXX_STD)
   set(warning_options "${warning_options} -Wno-error=format -Wno-error=format-signedness")
+endif()
+
+# flac
+if(DEFINED BUILD_CXXLIBS)
+  set(conformance_options "${conformance_options} -DS_IWRITE=_S_IWRITE -Dfileno=_fileno -Dgetenv=getenv -Doff_t=_off_t -Dstrdup=_strdup -Dutimbuf=_utimbuf")
 endif()
 
 # harfbuzz
@@ -50,7 +60,7 @@ if(LUAJIT_DIR)
 endif()
 
 # vorbis
-if(OGG_ROOT)
+if(CMAKE_POLICY_VERSION_MINIMUM)
   set(conformance_options "${conformance_options} -Dalloca=_alloca")
   set(warning_options "${warning_options} -Wno-error=incompatible-pointer-types")
 endif()

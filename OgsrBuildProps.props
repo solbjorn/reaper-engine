@@ -19,7 +19,7 @@
   </PropertyGroup-->
 
   <PropertyGroup Label="UserMacros">
-    <ConformanceOptions>/Brepro /bigobj /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__STDC__ /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /Zc:checkGwOdr /Zc:templateScope /EHsc /DNOMINMAX -fno-delayed-template-parsing -fstrict-aliasing /D_CRT_STDIO_ISO_WIDE_SPECIFIERS -fno-ms-compatibility -fgnuc-version=0 /clang:-std=c++23</ConformanceOptions>
+    <ConformanceOptions>/Brepro /bigobj /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__STDC__ /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /Zc:checkGwOdr /Zc:templateScope /EHsc /DNOMINMAX -fno-delayed-template-parsing -fstrict-aliasing /D_CRT_STDIO_ISO_WIDE_SPECIFIERS -fno-ms-compatibility -fgnuc-version=0 /clang:-std=c++23 /utf-8</ConformanceOptions>
     <LLVMOptions>-march=skylake -mavx2 /FIintrin.h -flto -fmerge-all-constants -fforce-emit-vtables -fwhole-program-vtables /clang:-fcoro-aligned-allocation /clang:-fopenmp</LLVMOptions>
     <libcxxOptions>/clang:-stdlib=libc++ /clang:-stdlib++-isystem /clang:$(SolutionDir)\3rd_party\Src\llvm\_Build\$(Configuration)\$(PlatformShortName)\include\c++\v1 /D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS /D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST /D_LIBCPP_REMOVE_TRANSITIVE_INCLUDES -Dfdopen=_fdopen</libcxxOptions>
     <libcxxPath>$(SolutionDir)\3rd_party\Src\llvm\_Build\$(Configuration)\$(PlatformShortName)\lib</libcxxPath>
