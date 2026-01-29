@@ -3,7 +3,7 @@
     <Platform Name="x64" />
   </Configurations>
   <Folder Name="/3rd_party/">
-    <Project Path="3rd_party/Src/DirectXTex/DirectXTex.vcxproj" Id="286cc988-2191-467a-9f6d-abb7954d4f78">
+    <Project Path="3rd_party/Src/DirectX/DirectXTex/DirectXTex.vcxproj" Id="286cc988-2191-467a-9f6d-abb7954d4f78">
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
     <Project Path="3rd_party/Src/OpCoDe/OpCoDe.vcxproj" Id="8b7e63c3-85be-4671-999e-6c72d67f062d">
@@ -19,12 +19,12 @@
     <Project Path="3rd_party/Src/abseil/abseil.vcxproj" Id="639aecff-564b-474a-9eeb-b6a516288315">
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
+    <Project Path="3rd_party/Src/legacy/ode/ode.vcxproj" Id="1bf75feb-87dd-486c-880b-227987d191c2">
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
     <Project Path="3rd_party/Src/llvm/llvm.vcxproj" Id="a2f5a99e-1330-4dc5-90da-c55d0fcc6bdf" />
     <Project Path="3rd_party/Src/luajit2/luajit2.vcxproj" Id="632aeeb6-dc06-4e15-9551-b2b09a4b73c5" />
     <Project Path="3rd_party/Src/mimalloc/mimalloc.vcxproj" Id="c0e0a539-f615-4317-b12c-24b77195b41a" />
-    <Project Path="3rd_party/Src/ode/contrib/msvc7/ode_default/default.vcxproj" Id="1bf75feb-87dd-486c-880b-227987d191c2">
-      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
-    </Project>
     <Project Path="3rd_party/Src/openal-soft/openal-soft.vcxproj" Id="8c67b3ec-af96-48db-b93e-e561c79f48d7">
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
@@ -34,13 +34,26 @@
     <Project Path="3rd_party/Src/tmc/hwloc/hwloc.vcxproj" Id="a3f8db74-fed0-4ed3-9e51-f5b4e5ac9713" />
   </Folder>
   <Folder Name="/3rd_party/Compression/">
-    <Project Path="3rd_party/Src/libsquashfs/libsquashfs.vcxproj" Id="e61c7c61-0119-4d89-9604-bd3b7c5f2aca">
-      <BuildDependency Project="3rd_party/Src/lz4/lz4.vcxproj" />
-      <BuildDependency Project="3rd_party/Src/zstd/zstd.vcxproj" />
+    <Project Path="3rd_party/Src/compression/lz4/lz4.vcxproj" Id="d1e1660f-36eb-49a1-aae1-d3913d72c1e1" />
+    <Project Path="3rd_party/Src/compression/squashfs/squashfs.vcxproj" Id="e61c7c61-0119-4d89-9604-bd3b7c5f2aca">
+      <BuildDependency Project="3rd_party/Src/compression/lz4/lz4.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/compression/zstd/zstd.vcxproj" />
     </Project>
-    <Project Path="3rd_party/Src/lz4/lz4.vcxproj" Id="d1e1660f-36eb-49a1-aae1-d3913d72c1e1" />
-    <Project Path="3rd_party/Src/xxHash/xxHash.vcxproj" Id="d466a3a1-7cd5-4e89-8310-2515731edf67" />
-    <Project Path="3rd_party/Src/zstd/zstd.vcxproj" Id="f612c458-7afd-4d2b-804e-af9ef62218b4" />
+    <Project Path="3rd_party/Src/compression/xxHash/xxHash.vcxproj" Id="d466a3a1-7cd5-4e89-8310-2515731edf67" />
+    <Project Path="3rd_party/Src/compression/zstd/zstd.vcxproj" Id="f612c458-7afd-4d2b-804e-af9ef62218b4" />
+  </Folder>
+  <Folder Name="/3rd_party/FreeType/">
+    <Project Path="3rd_party/Src/FreeType/freetype/freetype.vcxproj" Id="604b9414-5807-4926-836e-11d645cc9fb8">
+      <BuildDependency Project="3rd_party/Src/FreeType/harfbuzz/harfbuzz.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/FreeType/harfbuzz/harfbuzz.vcxproj" Id="f336602b-c018-4669-9ada-c57eae98e4cd">
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/FreeType/plutosvg/plutosvg.vcxproj" Id="9d8a30b9-0cfd-4be4-bd71-62c97fef2f19">
+      <BuildDependency Project="3rd_party/Src/FreeType/freetype/freetype.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/FreeType/plutovg/plutovg.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/FreeType/plutovg/plutovg.vcxproj" Id="863e00ea-4d4f-41a2-a14b-f1a9c45e5621" />
   </Folder>
   <Folder Name="/3rd_party/Xiph.org/">
     <Project Path="3rd_party/Src/Xiph/flac/flac.vcxproj" Id="702304bc-1ab0-4e93-8fc0-a3225cde1de3">
@@ -59,36 +72,24 @@
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
   </Folder>
-  <Folder Name="/3rd_party/FreeType/">
-    <Project Path="3rd_party/Src/FreeType/freetype/freetype.vcxproj" Id="604b9414-5807-4926-836e-11d645cc9fb8">
-      <BuildDependency Project="3rd_party/Src/FreeType/harfbuzz/harfbuzz.vcxproj" />
-    </Project>
-    <Project Path="3rd_party/Src/FreeType/harfbuzz/harfbuzz.vcxproj" Id="f336602b-c018-4669-9ada-c57eae98e4cd">
-      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
-    </Project>
-    <Project Path="3rd_party/Src/FreeType/plutosvg/plutosvg.vcxproj" Id="9d8a30b9-0cfd-4be4-bd71-62c97fef2f19">
-      <BuildDependency Project="3rd_party/Src/FreeType/freetype/freetype.vcxproj" />
-      <BuildDependency Project="3rd_party/Src/FreeType/plutovg/plutovg.vcxproj" />
-    </Project>
-    <Project Path="3rd_party/Src/FreeType/plutovg/plutovg.vcxproj" Id="863e00ea-4d4f-41a2-a14b-f1a9c45e5621" />
-  </Folder>
   <Folder Name="/Solution Items/">
     <File Path="ogsr_engine/xray.natvis" />
   </Folder>
   <Project Path="ogsr_engine/Layers/xrRenderPC_R4/xrRender_R4.vcxproj" Id="ac9b12ed-a2d7-4337-a981-5bd8430e96d8">
-    <BuildDependency Project="3rd_party/Src/DirectXTex/DirectXTex.vcxproj" />
-    <BuildDependency Project="3rd_party/Src/xxHash/xxHash.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/DirectX/DirectXTex/DirectXTex.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/compression/xxHash/xxHash.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrCDB/xrCDB.vcxproj" Id="a19b1df2-82ec-4364-8bdf-85d13a1c89b5">
     <BuildDependency Project="3rd_party/Src/OpCoDe/OpCoDe.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/compression/xxHash/xxHash.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrCore/xrCore.vcxproj" Id="a0f7d1fb-59a7-4717-a7e4-96f37e91998e">
     <BuildDependency Project="3rd_party/Src/SFML/SFML.vcxproj" />
     <BuildDependency Project="3rd_party/Src/abseil/abseil.vcxproj" />
-    <BuildDependency Project="3rd_party/Src/libsquashfs/libsquashfs.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/compression/squashfs/squashfs.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/compression/xxHash/xxHash.vcxproj" />
     <BuildDependency Project="3rd_party/Src/mimalloc/mimalloc.vcxproj" />
     <BuildDependency Project="3rd_party/Src/tinyxml2/tinyxml2.vcxproj" />
-    <BuildDependency Project="3rd_party/Src/xxHash/xxHash.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrExternal/xrExternal.vcxproj" Id="6d4e1cd0-9d48-4210-982e-93827a58256e">
     <BuildDependency Project="3rd_party/Src/FreeType/freetype/freetype.vcxproj" />
@@ -98,11 +99,11 @@
     <BuildDependency Project="3rd_party/Src/tmc/hwloc/hwloc.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrGame/xrGame.vcxproj" Id="200652a6-043e-4634-8837-87983b3bd5e0">
-    <BuildDependency Project="3rd_party/Src/zstd/zstd.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/compression/zstd/zstd.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrParticles/xrParticles.vcxproj" Id="94a1c366-3d19-48e6-8170-4adc2e70df97" />
   <Project Path="ogsr_engine/xrPhysics/xrPhysics.vcxproj" Id="dfe83c79-b305-40b1-b566-00f78a6d2568">
-    <BuildDependency Project="3rd_party/Src/ode/contrib/msvc7/ode_default/default.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/legacy/ode/ode.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrSound/xrSound.vcxproj" Id="ccca7859-eb86-493e-9b53-c4235f45b3c5">
     <BuildDependency Project="3rd_party/Src/Xiph/vorbis/vorbis.vcxproj" />
@@ -110,5 +111,6 @@
   </Project>
   <Project Path="ogsr_engine/xr_3da/XR_3DA.vcxproj" Id="2578c6d8-660d-48ae-9322-7422f8664f06">
     <BuildDependency Project="3rd_party/Src/Xiph/theora/theora.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/compression/xxHash/xxHash.vcxproj" />
   </Project>
 </Solution>

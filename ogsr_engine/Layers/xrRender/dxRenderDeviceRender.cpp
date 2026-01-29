@@ -9,7 +9,7 @@
 #define USE_RENDERDOC
 
 #ifdef USE_RENDERDOC
-#include <../RenderDoc/renderdoc_app.h>
+#include <app/renderdoc_app.h>
 
 namespace
 {
