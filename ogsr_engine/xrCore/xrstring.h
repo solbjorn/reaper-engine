@@ -160,9 +160,9 @@ public:
             return *this;
         }
 
-        const auto n = gsl::narrow_cast<size_t>(sz + 1);
-        std::string result(n, ' ');
-        std::vsnprintf(result.data(), n, format, args_copy);
+        const auto n = gsl::narrow_cast<size_t>(sz);
+        std::string result(n, '\0');
+        std::vsnprintf(result.data(), n + 1, format, args_copy);
 
         va_end(args_copy);
         va_end(args);

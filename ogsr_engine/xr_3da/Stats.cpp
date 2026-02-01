@@ -466,16 +466,10 @@ void CStats::OnDeviceCreate()
 
     pFont = xr_new<CGameFont>("stat_font", CGameFont::fsDeviceIndependent);
     pFontHW = xr_new<CGameFont>("stat_font", CGameFont::fsDeviceIndependent);
-
-#ifdef DEBUG
-    if (!g_bDisableRedText)
-        SetLogCB(_LogCallback);
-#endif
 }
 
 void CStats::OnDeviceDestroy()
 {
-    SetLogCB(nullptr);
     xr_delete(pFont);
     xr_delete(pFontHW);
 }

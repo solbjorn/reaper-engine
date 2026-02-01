@@ -472,15 +472,15 @@ void CHW::DumpVideoMemoryUsage() const
 
     if (m_pAdapter3 && SUCCEEDED(m_pAdapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo)))
     {
-        Msg("\n\tDedicated VRAM: %zu MB (%zu bytes)\n\tDedicated Memory: %zu MB (%zu bytes)\n\tShared Memory: %zu MB (%zu bytes)\n\tCurrentUsage: %zu MB (%zu bytes)\n\tBudget: "
-            "%zu MB (%zu bytes)",
+        Msg("\tDedicated VRAM: %zu MB (%zu bytes)\n\tDedicated Memory: %zu MB (%zu bytes)\n\tShared Memory: %zu MB (%zu bytes)\n\tCurrentUsage: %zu MB (%zu bytes)\n\tBudget: %zu "
+            "MB (%zu bytes)",
             Desc.DedicatedVideoMemory / 1024 / 1024, Desc.DedicatedVideoMemory, Desc.DedicatedSystemMemory / 1024 / 1024, Desc.DedicatedSystemMemory,
             Desc.SharedSystemMemory / 1024 / 1024, Desc.SharedSystemMemory, videoMemoryInfo.CurrentUsage / 1024 / 1024, videoMemoryInfo.CurrentUsage,
             videoMemoryInfo.Budget / 1024 / 1024, videoMemoryInfo.Budget);
     }
     else
     {
-        Msg("\n\tDedicated VRAM: %zu MB (%zu bytes)\n\tDedicated Memory: %zu MB (%zu bytes)\n\tShared Memory: %zu MB (%zu bytes)", Desc.DedicatedVideoMemory / 1024 / 1024,
+        Msg("\tDedicated VRAM: %zu MB (%zu bytes)\n\tDedicated Memory: %zu MB (%zu bytes)\n\tShared Memory: %zu MB (%zu bytes)", Desc.DedicatedVideoMemory / 1024 / 1024,
             Desc.DedicatedVideoMemory, Desc.DedicatedSystemMemory / 1024 / 1024, Desc.DedicatedSystemMemory, Desc.SharedSystemMemory / 1024 / 1024, Desc.SharedSystemMemory);
     }
 }

@@ -86,7 +86,7 @@ tmc::task<bool> IGame_Level::Load(u32)
 
     // Objects
     g_pGamePersistent->Environment().mods_load();
-    R_ASSERT(Load_GameSpecific_Before());
+    R_ASSERT(co_await Load_GameSpecific_Before());
     Objects.Load();
 
     // Done

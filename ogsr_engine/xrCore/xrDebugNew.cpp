@@ -25,6 +25,8 @@ bool error_after_dialog{};
 
 static void ShowErrorMessage(const char* msg, const bool show_msg = false)
 {
+    xr::log_flush();
+
     tmc::post(xr::tmc_cpu_st_executor(), [] -> tmc::task<void> {
         ShowWindow(gGameWindow, SW_HIDE);
         co_return;
@@ -234,8 +236,11 @@ void xrDebug::do_exit(const std::string& message)
 
 void xrDebug::backend(const char* expression, const char* description, const char* argument0, const char* argument1, const char* file, gsl::index line, const char* function)
 {
-    static std::recursive_mutex CS;
-    std::scoped_lock<decltype(CS)> lock(CS);
+    static std::atomic<bool> hit{false};
+    bool exp{false};
+
+    if (!hit.compare_exchange_strong(exp, true))
+        return;
 
     string4096 assertion_info;
     gather_info(expression, description, argument0, argument1, file, line, function, assertion_info);
@@ -407,6 +412,8 @@ static void save_mini_dump(_EXCEPTION_POINTERS* pExceptionInfo)
     {
         Msg("Exception catched in function [%s]", __FUNCTION__);
     }
+
+    xr::log_flush();
 }
 #endif
 
@@ -620,8 +627,5 @@ void xrDebug::_initialize()
 
     orig = SetUnhandledExceptionFilter(UnhandledFilter);
 
-    // PreventSetUnhandledExceptionFilter();
-
-    // Выключаем окно "Прекращена работа программы...". У нас своё окно для сообщений об ошибках есть.
-    // SetErrorMode(GetErrorMode() | SEM_NOGPFAULTERRORBOX);
+    xr::detail::log_init();
 }

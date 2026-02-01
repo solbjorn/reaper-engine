@@ -85,13 +85,13 @@
 #include "xrMemory.h"
 
 #include "_stl_extensions.h"
-#include "log.h"
 #include "xrsharedmem.h"
 #include "xrstring.h"
 #include "xr_resource.h"
 
 DEFINE_VECTOR(shared_str, RStringVec, RStringVecIt);
 
+#include "log.h"
 #include "FS.h"
 #include "xr_trims.h"
 #include "xr_ini.h"
@@ -155,7 +155,7 @@ public:
                              disable_dialog_break = 1ull << 41, actor_thirst = 1ull << 42, no_progress_bar_animation = 1ull << 43;
     };
 
-    void _initialize(LPCSTR ApplicationName, LogCallback cb = nullptr, BOOL init_fs = TRUE, LPCSTR fs_fname = nullptr);
+    void _initialize(gsl::czstring ApplicationName, bool init_fs = true, gsl::czstring fs_fname = nullptr);
     void _destroy();
 
     constexpr const char* GetBuildConfiguration();

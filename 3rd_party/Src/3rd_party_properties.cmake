@@ -55,7 +55,7 @@ if(LUAJIT_DIR)
 endif()
 
 # squashfs
-if(LZ4_INC)
+if(EXISTS "${CMAKE_SOURCE_DIR}/squashfs-tools-ng")
   set(conformance_options "${conformance_options} -Dstrdup=_strdup")
 endif()
 

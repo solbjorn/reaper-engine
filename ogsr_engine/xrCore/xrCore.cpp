@@ -18,7 +18,7 @@ bool gModulesLoaded = false;
 
 static u32 init_counter = 0;
 
-void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, LPCSTR fs_fname)
+void xrCore::_initialize(gsl::czstring _ApplicationName, bool init_fs, gsl::czstring fs_fname)
 {
     strcpy_s(ApplicationName, _ApplicationName);
     if (0 == init_counter)
@@ -107,9 +107,9 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, 
             Log("[AppVeyor] build version: [" APPVEYOR_BUILD_VERSION "], repo: [" APPVEYOR_REPO_NAME "]");
 
 #ifdef __clang__
-        Log("[" _CRT_STRINGIZE_(__clang_version__) "]: [" _CRT_STRINGIZE(__clang_version__) "], [" _CRT_STRINGIZE_(__cplusplus) "]: [" _CRT_STRINGIZE(__cplusplus) "]");
+        Log("Clang/LLVM version: [" __clang_version__ "], C++ standard version: [" _CRT_STRINGIZE(__cplusplus) "]");
 #else
-        Log("[" _CRT_STRINGIZE_(_MSC_FULL_VER) "]: [" _CRT_STRINGIZE(_MSC_FULL_VER) "], [" _CRT_STRINGIZE_(_MSVC_LANG) "]: [" _CRT_STRINGIZE(_MSVC_LANG) "]");
+        Log("MSVC version: [" _CRT_STRINGIZE(_MSC_FULL_VER) "], MSVC++ standard version: [" _CRT_STRINGIZE(_MSVC_LANG) "]");
 #endif
 
         Msg("Working Directory: [%s]", WorkingPath);
@@ -121,7 +121,6 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, 
 #endif // DEBUG
     }
 
-    SetLogCB(cb);
     init_counter++;
 }
 

@@ -53,16 +53,30 @@
       copy /Y "absl\base\absl_malloc_internal.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_malloc_internal.lib"
       copy /Y "absl\base\absl_raw_logging_internal.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_raw_logging_internal.lib"
       copy /Y "absl\base\absl_spinlock_wait.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_spinlock_wait.lib"
+      copy /Y "absl\base\absl_strerror.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_strerror.lib"
       copy /Y "absl\base\absl_throw_delegate.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_throw_delegate.lib"
       md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\container
       copy /Y "absl\container\absl_hashtablez_sampler.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\container\absl_hashtablez_sampler.lib"
       copy /Y "absl\container\absl_raw_hash_set.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\container\absl_raw_hash_set.lib"
       md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\debugging
       copy /Y "absl\debugging\absl_borrowed_fixup_buffer.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\debugging\absl_borrowed_fixup_buffer.lib"
+      copy /Y "absl\debugging\absl_examine_stack.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\debugging\absl_examine_stack.lib"
       copy /Y "absl\debugging\absl_stacktrace.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\debugging\absl_stacktrace.lib"
+      copy /Y "absl\debugging\absl_symbolize.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\debugging\absl_symbolize.lib"
       md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash
       copy /Y "absl\hash\absl_city.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash\absl_city.lib"
       copy /Y "absl\hash\absl_hash.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash\absl_hash.lib"
+      md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\log
+      copy /Y "absl\log\absl_log_globals.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\log\absl_log_globals.lib"
+      copy /Y "absl\log\absl_log_initialize.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\log\absl_log_initialize.lib"
+      copy /Y "absl\log\absl_log_internal_format.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\log\absl_log_internal_format.lib"
+      copy /Y "absl\log\absl_log_internal_globals.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\log\absl_log_internal_globals.lib"
+      copy /Y "absl\log\absl_log_internal_log_sink_set.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\log\absl_log_internal_log_sink_set.lib"
+      copy /Y "absl\log\absl_log_internal_message.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\log\absl_log_internal_message.lib"
+      copy /Y "absl\log\absl_log_internal_nullguard.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\log\absl_log_internal_nullguard.lib"
+      copy /Y "absl\log\absl_log_internal_proto.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\log\absl_log_internal_proto.lib"
+      copy /Y "absl\log\absl_log_internal_structured_proto.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\log\absl_log_internal_structured_proto.lib"
+      copy /Y "absl\log\absl_log_sink.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\log\absl_log_sink.lib"
       md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\numeric
       copy /Y "absl\numeric\absl_int128.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\numeric\absl_int128.lib"
       md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random
@@ -76,6 +90,10 @@
       copy /Y "absl\random\absl_random_internal_seed_material.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_internal_seed_material.lib"
       copy /Y "absl\random\absl_random_seed_gen_exception.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_seed_gen_exception.lib"
       copy /Y "absl\random\absl_random_seed_sequences.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_seed_sequences.lib"
+      md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\strings
+      copy /Y "absl\strings\absl_str_format_internal.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\strings\absl_str_format_internal.lib"
+      copy /Y "absl\strings\absl_strings.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\strings\absl_strings.lib"
+      copy /Y "absl\strings\absl_strings_internal.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\strings\absl_strings_internal.lib"
       md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\synchronization
       copy /Y "absl\synchronization\absl_kernel_timeout_internal.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\synchronization\absl_kernel_timeout_internal.lib"
       copy /Y "absl\synchronization\absl_synchronization.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\synchronization\absl_synchronization.lib"

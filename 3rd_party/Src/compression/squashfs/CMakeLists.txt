@@ -103,23 +103,13 @@ else()
     add_library(squashfs STATIC ${sqfs_sources})
 endif()
 
-if (NOT LZ4_INC)
-    message(SEND_ERROR "LZ4_INC must be set")
-endif()
-
-if (NOT ZSTD_INC)
-    message(SEND_ERROR "ZSTD_INC must be set")
-endif()
+find_package(lz4 REQUIRED)
+find_package(zstd REQUIRED)
 
 target_include_directories(squashfs PRIVATE "${CMAKE_SOURCE_DIR}/inc")
 target_include_directories(squashfs PRIVATE "${CMAKE_SOURCE_DIR}/squashfs-tools-ng/include")
-target_include_directories(squashfs PRIVATE "${LZ4_INC}")
-target_include_directories(squashfs PRIVATE "${ZSTD_INC}")
 
-find_library(LZ4_LIB lz4)
-target_link_libraries(squashfs ${LZ4_LIB})
-find_library(ZSTD_LIB zstd)
-target_link_libraries(squashfs ${ZSTD_LIB})
+target_link_libraries(squashfs PRIVATE lz4::lz4 zstd::libzstd)
 
 set_target_properties(squashfs PROPERTIES PREFIX "" POSITION_INDEPENDENT_CODE ON)
 target_compile_definitions(squashfs PRIVATE WITH_LZ4 WITH_ZSTD)

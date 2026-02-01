@@ -252,15 +252,18 @@ public:
 
     tmc::task<void> process_frame_async()
     {
-        if (seq_frame_async.empty())
-            co_return;
-
         XR_TRACY_ZONE_SCOPED();
+
+        if (seq_frame_async.empty())
+            goto out;
 
         for (auto& pair : seq_frame_async)
             co_await pair.first(pair.second);
 
         seq_frame_async.clear();
+
+    out:
+        xr::log_flush();
     }
 
     bool on_message(UINT uMsg, WPARAM wParam, LRESULT& result);

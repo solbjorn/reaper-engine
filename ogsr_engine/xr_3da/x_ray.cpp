@@ -415,7 +415,7 @@ tmc::task<void> main_async(gsl::czstring cmdline, void* handle, std::atomic<xr::
     if (gsl::czstring key{"-fsltx"}, param = std::strstr(cmdline, key); param != nullptr)
         sscanf(param + xr_strlen(key) + 1, "%[^ ] ", fsgame);
 
-    Core._initialize("xray", nullptr, TRUE, fsgame[0] ? fsgame : nullptr);
+    Core._initialize("xray", true, fsgame[0] ? fsgame : nullptr);
     InitSettings();
 
     {

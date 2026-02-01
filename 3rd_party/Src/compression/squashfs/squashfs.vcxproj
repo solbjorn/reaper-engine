@@ -44,7 +44,7 @@
       set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DBUILD_SHARED_LIBS=OFF -DLZ4_INC="$(SolutionDir)\3rd_party\Src\compression\lz4\lz4\lib" -DZSTD_INC="$(SolutionDir)\3rd_party\Src\compression\zstd\zstd\lib" -DCMAKE_LIBRARY_PATH="$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)" ..\
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\compression\lz4\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\compression\zstd\_Build\$(Configuration)\$(PlatformShortName)" -DBUILD_SHARED_LIBS=OFF ..\
       cmake --build . --config $(Configuration)
       copy /Y "squashfs.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\squashfs.lib"
     </NMakeBuildCommandLine>
