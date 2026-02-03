@@ -103,30 +103,22 @@ void setup_reader(IReader* _r, _open_file& _of) { _of._reader = _r; }
 template <typename T>
 void _register_open_file(T* _r, LPCSTR _fname)
 {
-    xrCriticalSection _lock;
-    _lock.Enter();
-
     shared_str f{_fname};
     _check_open_file(f);
 
     _open_file& _of = find_free_item(f);
     setup_reader(_r, _of);
     _of._used += 1;
-
-    _lock.Leave();
 }
 
 template <typename T>
 void _unregister_open_file(T* _r)
 {
-    xrCriticalSection _lock;
-    _lock.Enter();
-
     auto it = std::find_if(g_open_files.begin(), g_open_files.end(), eq_pointer<T>(_r));
     VERIFY(it != g_open_files.end());
+
     _open_file& _of = *it;
     _of._reader = nullptr;
-    _lock.Leave();
 }
 } // namespace
 

@@ -2,12 +2,14 @@
 
 #include "device.h"
 
+#include "IGame_Level.h"
+#include "IGame_Persistent.h"
+#include "Render.h"
+#include "XR_IOConsole.h"
 #include "x_ray.h"
-#include "render.h"
 #include "xr_input.h"
 
-#include "IGame_Level.h"
-#include "igame_persistent.h"
+#include "sleep.h"
 
 #include <mmsystem.h>
 #include <winternl.h>
@@ -28,17 +30,14 @@ tmc::task<bool> CRenderDevice::RenderBegin()
     switch (co_await m_pRender->GetDeviceState())
     {
     case DeviceState::Normal: break;
-
     case DeviceState::Lost:
         // If the device was lost, do not render until we get it back
-        Sleep(33);
+        co_await tmc::spawn_clang(xr::sleep(std::chrono::milliseconds{33}), xr::tmc_cpu_st_executor());
         co_return false;
-
     case DeviceState::NeedReset:
         // Check if the device is ready to be reset
         co_await Reset();
         co_return false;
-
     default: NODEFAULT;
     }
 
@@ -162,7 +161,7 @@ tmc::task<bool> CRenderDevice::BeforeFrame()
 {
     if (!b_is_Ready)
     {
-        Sleep(100);
+        co_await tmc::spawn_clang(xr::sleep(std::chrono::milliseconds{100}), xr::tmc_cpu_st_executor());
         co_return false;
     }
 
@@ -284,46 +283,41 @@ tmc::task<void> CRenderDevice::ProcessFrame()
 #ifdef LOG_SECOND_THREAD_STATS
     const auto FrameEndTime = std::chrono::high_resolution_clock::now();
     const auto SecondThreadTasksElapsedTime = co_await std::move(second);
-
     const std::chrono::duration<f64, std::milli> FrameElapsedTime = FrameEndTime - FrameStartTime;
-#else
-    co_await std::move(second);
-#endif
 
-    float curFPSLimit = ps_framelimiter;
-    if (g_pGamePersistent->IsMainMenuActive() || Paused())
-    {
-        if (!refresh_rate) [[unlikely]]
-            refresh_rate = GetMonitorRefresh();
-
-        curFPSLimit = ps_framelimiter ? std::min<float>(ps_framelimiter, refresh_rate) : refresh_rate;
-    }
-
-    if (curFPSLimit > 0 && !m_SecondViewport.IsSVPFrame())
-    {
-        const std::chrono::duration<f64, std::milli> FpsLimitMs{std::floor(1000.f / (curFPSLimit + 1))};
-        const std::chrono::duration<f64, std::milli> total = std::chrono::high_resolution_clock::now() - FrameStartTime;
-
-        if (total < FpsLimitMs)
-        {
-            const auto TimeToSleep = FpsLimitMs - total;
-            Sleep(iFloor(TimeToSleep.count()));
-        }
-    }
-
-#ifdef LOG_SECOND_THREAD_STATS
-    bool show_stats = SecondThreadTasksElapsedTime > FrameElapsedTime;
-    if (show_stats && !dwPrecacheFrame) [[unlikely]]
+    if (SecondThreadTasksElapsedTime > FrameElapsedTime && dwPrecacheFrame == 0) [[unlikely]]
     {
         const std::chrono::duration<f64, std::milli> SecondThreadFreeTime = FrameElapsedTime - SecondThreadTasksElapsedTime;
 
         Msg("##[%s] Second thread work time is too long! Avail: [%f]ms, used: [%f]ms, free: [%f]ms", __FUNCTION__, FrameElapsedTime.count(), SecondThreadTasksElapsedTime.count(),
             SecondThreadFreeTime.count());
     }
+#else
+    co_await std::move(second);
 #endif
 
+    f32 curFPSLimit = gsl::narrow_cast<f32>(ps_framelimiter);
+    if (g_pGamePersistent->IsMainMenuActive() || Paused())
+    {
+        if (fis_zero(refresh_rate)) [[unlikely]]
+            refresh_rate = GetMonitorRefresh();
+
+        curFPSLimit = ps_framelimiter > 0 ? std::min(curFPSLimit, refresh_rate) : refresh_rate;
+    }
+
+    co_await tmc::resume_on(xr::tmc_cpu_st_executor());
+
+    if (curFPSLimit >= 1.0f && !m_SecondViewport.IsSVPFrame())
+    {
+        const std::chrono::duration<f64, std::milli> FpsLimitMs{1000.0 / curFPSLimit};
+        const auto diff = std::chrono::floor<std::chrono::nanoseconds>(FpsLimitMs) - (std::chrono::high_resolution_clock::now() - FrameStartTime);
+
+        if (diff > std::chrono::nanoseconds{100})
+            co_await xr::sleep(diff);
+    }
+
     if (!b_is_Active)
-        Sleep(1);
+        co_await xr::sleep(std::chrono::milliseconds{1});
 }
 
 #ifdef LOG_SECOND_THREAD_STATS
@@ -534,7 +528,20 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, [[maybe_unused]] L
     }
 }
 
-BOOL CRenderDevice::Paused() { return g_pauseMngr->Paused(); }
+bool CRenderDevice::Paused() { return g_pauseMngr->Paused(); }
+
+tmc::task<void> CRenderDevice::execute_async(gsl::czstring cmd)
+{
+    const auto expected = std::ssize(seq_frame_async) + 1;
+
+    Console->Execute(cmd);
+    R_ASSERT(std::ssize(seq_frame_async) == expected);
+
+    auto& back = seq_frame_async.back();
+    co_await back.first(back.second);
+
+    seq_frame_async.pop_back();
+}
 
 tmc::task<void> CRenderDevice::OnWM_Activate(std::array<std::byte, 16>& arg)
 {

@@ -97,15 +97,15 @@ tmc::task<void> CLevel::ClientReceive()
                     CSavedGameWrapper wrapper(saved_name);
                     if (wrapper.level_id() == ai().level_graph().level_id())
                     {
-                        Engine.Event.Defer("Game:QuickLoad", size_t(xr_strdup(saved_name)), 0);
-
+                        co_await Engine.Event.Defer("Game:QuickLoad", reinterpret_cast<uintptr_t>(xr_strdup(saved_name)));
                         break;
                     }
                 }
             }
 
-            Engine.Event.Defer("KERNEL:disconnect");
-            Engine.Event.Defer("KERNEL:start", size_t(xr_strdup(*m_caServerOptions)), size_t(xr_strdup(*m_caClientOptions)));
+            co_await Engine.Event.Defer("KERNEL:disconnect");
+            co_await Engine.Event.Defer("KERNEL:start", reinterpret_cast<uintptr_t>(xr_strdup(m_caServerOptions.c_str())),
+                                        reinterpret_cast<uintptr_t>(xr_strdup(m_caClientOptions.c_str())));
         }
         break;
         case M_SAVE_GAME: {
@@ -137,15 +137,16 @@ tmc::task<void> CLevel::ClientReceive()
                 P->r_stringZ(LevelName);
                 P->r_stringZ(GameType);
 
-                string4096 NewServerOptions{};
+                string4096 NewServerOptions;
                 sprintf_s(NewServerOptions, "%s/%s", LevelName, GameType);
                 if (m_SO)
                     strcat_s(NewServerOptions, m_SO);
 
                 m_caServerOptions._set(NewServerOptions);
 
-                Engine.Event.Defer("KERNEL:disconnect");
-                Engine.Event.Defer("KERNEL:start", size_t(xr_strdup(*m_caServerOptions)), size_t(xr_strdup(*m_caClientOptions)));
+                co_await Engine.Event.Defer("KERNEL:disconnect");
+                co_await Engine.Event.Defer("KERNEL:start", reinterpret_cast<uintptr_t>(xr_strdup(m_caServerOptions.c_str())),
+                                            reinterpret_cast<uintptr_t>(xr_strdup(m_caClientOptions.c_str())));
             }
         }
         break;

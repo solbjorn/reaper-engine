@@ -78,8 +78,8 @@ private:
     {
         co_await Console->Hide();
 
-        Engine.Event.Defer("KERNEL:disconnect");
-        Engine.Event.Defer("KERNEL:quit");
+        co_await Engine.Event.Defer("KERNEL:disconnect");
+        co_await Engine.Event.Defer("KERNEL:quit");
     }
 };
 
@@ -205,16 +205,28 @@ class CCC_E_Signal : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_E_Signal, IConsole_Command);
 
 public:
-    explicit CCC_E_Signal(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_E_Signal(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_E_Signal() override = default;
 
-    void Execute(LPCSTR args) override
+    void Execute(gsl::czstring args) override
     {
         char Event[128], Param[128];
-        Event[0] = 0;
-        Param[0] = 0;
+        Event[0] = '\0';
+        Param[0] = '\0';
         sscanf(args, "%[^,],%s", Event, Param);
-        Engine.Event.Signal(Event, (u64)Param);
+
+        auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_E_Signal::execute_async>(this));
+        *reinterpret_cast<std::pair<gsl::zstring, gsl::zstring>*>(&arg) = std::make_pair(xr_strdup(Event), xr_strdup(Param));
+    }
+
+private:
+    tmc::task<void> execute_async(std::array<std::byte, 16>& arg)
+    {
+        auto& args = *reinterpret_cast<std::pair<gsl::zstring, gsl::zstring>*>(&arg);
+        co_await Engine.Event.Signal(args.first, reinterpret_cast<uintptr_t>(args.second));
+
+        xr_free(args.first);
+        xr_free(args.second);
     }
 };
 #endif // DEBUG
@@ -399,23 +411,27 @@ class CCC_Start : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_Start, IConsole_Command);
 
 private:
-    std::string parse(const std::string& str)
+    xr_string parse(gsl::czstring str)
     {
-        static std::regex Reg("\\(([^)]+)\\)");
-        std::smatch results;
-        ASSERT_FMT(std::regex_search(str, results, Reg), "Failed parsing string: [%s]", str.c_str());
+        static const std::regex Reg{"\\(([^)]+)\\)"};
+        std::cmatch results;
+
+        ASSERT_FMT(std::regex_search(str, results, Reg), "Failed parsing string: [%s]", str);
         return results[1].str();
     }
 
 public:
-    explicit CCC_Start(const char* N) : IConsole_Command{N} {}
+    explicit CCC_Start(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_Start() override = default;
 
-    void Execute(const char* args) override
+    void Execute(gsl::czstring args) override
     {
-        auto str = parse(args);
-        Engine.Event.Defer("KERNEL:start", u64(xr_strdup(str.c_str())), u64(xr_strdup("localhost")));
+        auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_Start::execute_async>(this));
+        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(parse(args).c_str());
     }
+
+private:
+    tmc::task<void> execute_async(std::array<std::byte, 16>& arg) { co_await Engine.Event.Defer("KERNEL:start", *reinterpret_cast<const uintptr_t*>(&arg)); }
 };
 
 class CCC_Disconnect : public IConsole_Command
@@ -423,10 +439,13 @@ class CCC_Disconnect : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_Disconnect, IConsole_Command);
 
 public:
-    explicit CCC_Disconnect(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_Disconnect(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_Disconnect() override = default;
 
-    void Execute(LPCSTR) override { Engine.Event.Defer("KERNEL:disconnect"); }
+    void Execute(gsl::czstring) override { Device.add_frame_async(CallMe::fromMethod<&CCC_Disconnect::execute_async>(this)); }
+
+private:
+    tmc::task<void> execute_async(std::array<std::byte, 16>&) { co_await Engine.Event.Defer("KERNEL:disconnect"); }
 };
 
 //-----------------------------------------------------------------------

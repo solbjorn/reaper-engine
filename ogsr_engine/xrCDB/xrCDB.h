@@ -94,7 +94,6 @@ class MODEL : Noncopyable
     };
 
 private:
-    mutable xrCriticalSection cs;
     Opcode::Model* tree{};
     u32 status{S_INIT}; // 0=ready, 1=init, 2=building
 
@@ -119,12 +118,7 @@ public:
     void syncronize() const
     {
         if (S_READY != status)
-        {
             Log("! WARNING: syncronized CDB::query");
-
-            cs.Enter();
-            cs.Leave();
-        }
     }
 
     void build_internal(std::span<const Fvector> V, std::span<const TRI> T, build_callback* bc = nullptr, void* bcp = nullptr);

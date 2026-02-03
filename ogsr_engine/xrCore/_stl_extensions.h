@@ -13,6 +13,7 @@ XR_DIAG_POP();
 #include <absl/hash/hash.h>
 
 XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wmisleading-indentation");
 XR_DIAG_IGNORE("-Wsign-conversion");
 
 #include <plf_bitset.h>

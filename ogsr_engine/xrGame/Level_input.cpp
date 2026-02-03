@@ -121,7 +121,7 @@ tmc::task<void> CLevel::IR_OnKeyboardPress(gsl::index key)
         }
         else
         {
-            Console->Execute("main_menu");
+            co_await Device.execute_async("main_menu");
         }
 
         co_return;
@@ -169,7 +169,7 @@ tmc::task<void> CLevel::IR_OnKeyboardPress(gsl::index key)
 
     if (_curr == kQUICK_SAVE)
     {
-        Console->Execute("save");
+        co_await Device.execute_async("save");
         co_return;
     }
     else if (_curr == kQUICK_LOAD)
@@ -185,7 +185,8 @@ tmc::task<void> CLevel::IR_OnKeyboardPress(gsl::index key)
             co_return;
 
         strconcat(sizeof(command), command, "load ", saved_game);
-        Console->Execute(command);
+
+        co_await Device.execute_async(command);
         co_return;
     }
 

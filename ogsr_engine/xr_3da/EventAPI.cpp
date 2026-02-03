@@ -6,30 +6,32 @@
 
 class CEvent
 {
+private:
     friend class CEventAPI;
 
-private:
-    char* Name;
+    gsl::zstring Name;
+    gsl::index dwRefCount{1};
+
     xr_vector<IEventReceiver*> Handlers;
-    u32 dwRefCount;
 
 public:
-    explicit CEvent(gsl::czstring S);
-    ~CEvent();
+    explicit CEvent(gsl::czstring S)
+    {
+        Name = xr_strdup(S);
+        _strupr(Name);
+    }
 
-    LPCSTR GetFull() { return Name; }
-    u32 RefCount() { return dwRefCount; }
-
-    [[nodiscard]] bool Equal(const CEvent& E) const { return std::is_eq(xr::strcasecmp(Name, E.Name)); }
+    ~CEvent() { xr_free(Name); }
 
     void Attach(IEventReceiver* H)
     {
         if (std::find(Handlers.begin(), Handlers.end(), H) == Handlers.end())
             Handlers.push_back(H);
     }
-    void Detach(IEventReceiver* H)
+
+    void Detach(const IEventReceiver* H)
     {
-        xr_vector<IEventReceiver*>::iterator I = std::find(Handlers.begin(), Handlers.end(), H);
+        auto I = std::find(Handlers.begin(), Handlers.end(), H);
         if (I != Handlers.end())
             Handlers.erase(I);
     }
@@ -41,160 +43,130 @@ public:
     }
 };
 
-CEvent::CEvent(const char* S)
-{
-    Name = xr_strdup(S);
-    _strupr(Name);
-    dwRefCount = 1;
-}
-CEvent::~CEvent() { xr_free(Name); }
-
 void CEventAPI::Dump()
 {
-    std::ranges::sort(Events, [](CEvent* E1, CEvent* E2) { return E1->GetFull() < E2->GetFull(); });
-    for (u32 i = 0; i < Events.size(); i++)
-        Msg("* [%u32] %s", Events[i]->RefCount(), Events[i]->GetFull());
+    std::ranges::sort(Events, [](const auto a, const auto b) { return std::is_lt(xr::strcasecmp(a->Name, b->Name)); });
+
+    for (const auto event : Events)
+        Msg("* [%zd] %s", event->dwRefCount, event->Name);
 }
 
-EVENT CEventAPI::Create(const char* N)
+CEvent* CEventAPI::Create(gsl::czstring N)
 {
-    CS.Enter();
-    CEvent E(N);
-    for (xr_vector<CEvent*>::iterator I = Events.begin(); I != Events.end(); I++)
+    for (auto event : Events)
     {
-        if ((*I)->Equal(E))
-        {
-            EVENT F = *I;
-            F->dwRefCount++;
-            CS.Leave();
-            return F;
-        }
+        if (std::is_neq(xr::strcasecmp(event->Name, N)))
+            continue;
+
+        event->dwRefCount++;
+
+        return event;
     }
 
-    EVENT X = xr_new<CEvent>(N);
+    CEvent* X = xr_new<CEvent>(N);
     Events.push_back(X);
-    CS.Leave();
+
     return X;
 }
-void CEventAPI::Destroy(EVENT& E)
+
+void CEventAPI::Destroy(CEvent*& E)
 {
-    CS.Enter();
-    E->dwRefCount--;
-    if (E->dwRefCount == 0)
-    {
-        xr_vector<CEvent*>::iterator I = std::find(Events.begin(), Events.end(), E);
-        R_ASSERT(I != Events.end());
-        Events.erase(I);
-        xr_delete(E);
-    }
-    CS.Leave();
+    if (--E->dwRefCount != 0)
+        return;
+
+    auto I = std::find(Events.begin(), Events.end(), E);
+    R_ASSERT(I != Events.end());
+
+    Events.erase(I);
+    xr_delete(E);
 }
 
-EVENT CEventAPI::Handler_Attach(const char* N, IEventReceiver* H)
+CEvent* CEventAPI::handler_attach_locked(gsl::czstring N, IEventReceiver* H)
 {
-    CS.Enter();
-    EVENT E = Create(N);
+    R_ASSERT(lock.is_locked());
+
+    CEvent* E = Create(N);
     E->Attach(H);
-    CS.Leave();
+
     return E;
 }
 
-void CEventAPI::Handler_Detach(EVENT& E, IEventReceiver* H)
+tmc::task<CEvent*> CEventAPI::Handler_Attach(gsl::czstring N, IEventReceiver* H)
 {
-    if (!E)
+    auto scope = co_await lock.lock_scope();
+    co_return handler_attach_locked(N, H);
+}
+
+void CEventAPI::handler_detach_locked(CEvent*& E, const IEventReceiver* H)
+{
+    if (E == nullptr)
         return;
 
-    CS.Enter();
+    R_ASSERT(lock.is_locked());
+
     E->Detach(H);
     Destroy(E);
-    CS.Leave();
 }
 
-tmc::task<void> CEventAPI::Signal(EVENT E, u64 P1, u64 P2)
+tmc::task<void> CEventAPI::Handler_Detach(CEvent*& E, const IEventReceiver* H)
 {
-    CS.Enter();
-    co_await E->Signal(P1, P2);
-    CS.Leave();
+    if (E == nullptr)
+        co_return;
+
+    auto scope = co_await lock.lock_scope();
+    handler_detach_locked(E, H);
 }
 
+#ifdef DEBUG
 tmc::task<void> CEventAPI::Signal(gsl::czstring N, u64 P1, u64 P2)
 {
-    CS.Enter();
-    EVENT E = Create(N);
-    co_await Signal(E, P1, P2);
-    Destroy(E);
-    CS.Leave();
-}
+    auto scope = co_await lock.lock_scope();
 
-void CEventAPI::Defer(EVENT E, u64 P1, u64 P2)
+    CEvent* E = Create(N);
+    co_await E->Signal(P1, P2);
+    Destroy(E);
+}
+#endif
+
+tmc::task<void> CEventAPI::Defer(gsl::czstring N, u64 P1, u64 P2)
 {
-    CS.Enter();
+    auto scope = co_await lock.lock_scope();
+
+    CEvent* E = Create(N);
     E->dwRefCount++;
-    Events_Deferred.emplace_back();
-    Events_Deferred.back().E = E;
-    Events_Deferred.back().P1 = P1;
-    Events_Deferred.back().P2 = P2;
-    CS.Leave();
-}
 
-void CEventAPI::Defer(LPCSTR N, u64 P1, u64 P2)
-{
-    CS.Enter();
-    EVENT E = Create(N);
-    Defer(E, P1, P2);
+    Events_Deferred.emplace_back(E, P1, P2);
     Destroy(E);
-    CS.Leave();
 }
 
 tmc::task<void> CEventAPI::OnFrame()
 {
-    CS.Enter();
+    auto scope = co_await lock.lock_scope();
 
     if (Events_Deferred.empty())
-    {
-        CS.Leave();
         co_return;
-    }
 
     for (auto& event : Events_Deferred)
     {
-        co_await Signal(event.E, event.P1, event.P2);
+        co_await event.E->Signal(event.P1, event.P2);
         Destroy(event.E);
     }
 
     Events_Deferred.clear();
-    CS.Leave();
 }
 
-bool CEventAPI::Peek(gsl::czstring EName) const
+bool CEventAPI::peek_locked(gsl::czstring EName)
 {
-    CS.Enter();
+    R_ASSERT(lock.is_locked());
 
     if (Events_Deferred.empty())
-    {
-        CS.Leave();
         return false;
-    }
 
     for (const auto& def : Events_Deferred)
     {
-        if (std::is_eq(xr::strcasecmp(def.E->GetFull(), EName)))
-        {
-            CS.Leave();
+        if (std::is_eq(xr::strcasecmp(def.E->Name, EName)))
             return true;
-        }
     }
 
-    CS.Leave();
-
     return false;
-}
-
-void CEventAPI::_destroy()
-{
-    Dump();
-    if (Events.empty())
-        Events.clear();
-    if (Events_Deferred.empty())
-        Events_Deferred.clear();
 }

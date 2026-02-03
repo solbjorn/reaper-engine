@@ -19,8 +19,6 @@ IGame_Level::IGame_Level()
     g_pGameLevel = this;
 }
 
-// #include "resourcemanager.h"
-
 IGame_Level::~IGame_Level()
 {
     xr_delete(pLevel);

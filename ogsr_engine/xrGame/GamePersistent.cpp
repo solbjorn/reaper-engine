@@ -64,7 +64,6 @@ CGamePersistent::CGamePersistent()
         Msg("- playing in demo mode '%s'", fname);
         pDemoFile = FS.r_open(fname);
         Device.seqFrame.Add(this);
-        eDemoStart = Engine.Event.Handler_Attach("GAME:demo", this);
         uTime2Change = 0;
     }
     else
@@ -72,16 +71,30 @@ CGamePersistent::CGamePersistent()
         pDemoFile = nullptr;
         eDemoStart = nullptr;
     }
+}
 
-    eQuickLoad = Engine.Event.Handler_Attach("Game:QuickLoad", this);
+tmc::task<void> CGamePersistent::co_init()
+{
+    co_await IGame_Persistent::co_init();
+
+    if (std::strstr(Core.Params, "-demomode") != nullptr)
+        eDemoStart = co_await Engine.Event.Handler_Attach("GAME:demo", this);
+
+    eQuickLoad = co_await Engine.Event.Handler_Attach("Game:QuickLoad", this);
+}
+
+tmc::task<void> CGamePersistent::co_destroy()
+{
+    co_await Engine.Event.Handler_Detach(eDemoStart, this);
+    co_await Engine.Event.Handler_Detach(eQuickLoad, this);
+
+    co_await IGame_Persistent::co_destroy();
 }
 
 CGamePersistent::~CGamePersistent()
 {
     FS.r_close(pDemoFile);
     Device.seqFrame.Remove(this);
-    Engine.Event.Handler_Detach(eDemoStart, this);
-    Engine.Event.Handler_Detach(eQuickLoad, this);
 }
 
 void CGamePersistent::RegisterModel(IRenderVisual* V)
@@ -449,7 +462,7 @@ tmc::task<void> CGamePersistent::start_logo_intro()
     {
         m_intro_event = CallMe::Delegate<tmc::task<void>()>{};
         co_await Console->Show();
-        Console->Execute("main_menu on");
+        co_await Device.execute_async("main_menu on");
 
         co_return;
     }
@@ -471,14 +484,13 @@ tmc::task<void> CGamePersistent::start_logo_intro()
 
 tmc::task<void> CGamePersistent::update_logo_intro()
 {
-    if (m_intro && (false == m_intro->IsActive()))
-    {
-        m_intro_event = CallMe::Delegate<tmc::task<void>()>{};
-        xr_delete(m_intro);
-        Console->Execute("main_menu on");
-    }
+    if (m_intro == nullptr || m_intro->IsActive())
+        co_return;
 
-    co_return;
+    m_intro_event = CallMe::Delegate<tmc::task<void>()>{};
+    xr_delete(m_intro);
+
+    co_await Device.execute_async("main_menu on");
 }
 
 tmc::task<void> CGamePersistent::start_game_intro()
@@ -620,9 +632,10 @@ tmc::task<void> CGamePersistent::OnFrame()
             sscanf(params, "%[^,],%[^,],%[^,],%u", o_server, o_client, o_demo, &o_time);
 
             // Start _new level + demo
-            Engine.Event.Defer("KERNEL:disconnect");
-            Engine.Event.Defer("KERNEL:start", size_t(xr_strdup(_Trim(o_server))), size_t(xr_strdup(_Trim(o_client))));
-            Engine.Event.Defer("GAME:demo", size_t(xr_strdup(_Trim(o_demo))), u64(o_time));
+            co_await Engine.Event.Defer("KERNEL:disconnect");
+            co_await Engine.Event.Defer("KERNEL:start", reinterpret_cast<uintptr_t>(xr_strdup(_Trim(o_server))), reinterpret_cast<uintptr_t>(xr_strdup(_Trim(o_client))));
+            co_await Engine.Event.Defer("GAME:demo", reinterpret_cast<uintptr_t>(xr_strdup(_Trim(o_demo))), o_time);
+
             uTime2Change = 0xffffffff; // Block changer until Event received
         }
     }
@@ -633,7 +646,7 @@ tmc::task<void> CGamePersistent::OnFrame()
 #endif
 }
 
-tmc::task<void> CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
+tmc::task<void> CGamePersistent::OnEvent(CEvent* E, u64 P1, u64 P2)
 {
     if (E == eQuickLoad)
     {
@@ -656,7 +669,8 @@ tmc::task<void> CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
         string256 cmd;
         LPCSTR demo = LPCSTR(P1);
         sprintf_s(cmd, "demo_play %s", demo);
-        Console->Execute(cmd);
+
+        co_await Device.execute_async(cmd);
 
         auto dmem = const_cast<gsl::zstring>(demo);
         xr_free(dmem);

@@ -327,7 +327,7 @@ void CHUDManager::RenderUI()
     }
 }
 
-tmc::task<void> CHUDManager::OnEvent(EVENT, u64, u64) { co_return; }
+tmc::task<void> CHUDManager::OnEvent(CEvent*, u64, u64) { co_return; }
 collide::rq_result& CHUDManager::GetCurrentRayQuery() { return m_pHUDTarget->RQ; }
 
 void CHUDManager::SetCrosshairDisp(float dispf, float disps) { m_pHUDTarget->HUDCrosshair.SetDispersion(psHUD_Flags.test(HUD_CROSSHAIR_DYNAMIC) ? dispf : disps); }

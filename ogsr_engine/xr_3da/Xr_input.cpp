@@ -214,8 +214,9 @@ tmc::task<void> CInput::KeyUpdate()
     if (!b_altF4 && iGetAsyncKeyState(DIK_F4) && (iGetAsyncKeyState(DIK_RMENU) || iGetAsyncKeyState(DIK_LMENU)))
     {
         b_altF4 = TRUE;
-        Engine.Event.Defer("KERNEL:disconnect");
-        Engine.Event.Defer("KERNEL:quit");
+
+        co_await Engine.Event.Defer("KERNEL:disconnect");
+        co_await Engine.Event.Defer("KERNEL:quit");
     }
 }
 

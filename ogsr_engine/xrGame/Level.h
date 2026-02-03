@@ -86,11 +86,11 @@ protected:
     // level name
     shared_str m_name;
     // Local events
-    EVENT eChangeRP;
-    EVENT eDemoPlay;
-    EVENT eChangeTrack;
-    EVENT eEnvironment;
-    EVENT eEntitySpawn;
+    CEvent* eChangeRP;
+    CEvent* eDemoPlay;
+    CEvent* eChangeTrack;
+    CEvent* eEnvironment;
+    CEvent* eEntitySpawn;
     //---------------------------------------------
     CStatGraph* pStatGraphS{};
     u32 m_dwSPC; // SendedPacketsCount
@@ -202,7 +202,7 @@ public:
     void Load_GameSpecific_CFORM(std::span<CDB::TRI> T) override;
 
     // Events
-    tmc::task<void> OnEvent(EVENT E, u64 P1, u64) override;
+    tmc::task<void> OnEvent(CEvent* E, u64 P1, u64) override;
     tmc::task<void> OnFrame() override;
     tmc::task<void> OnRender() override;
     tmc::task<void> cl_Process_Event(u16 dest, u16 type, NET_Packet& P);

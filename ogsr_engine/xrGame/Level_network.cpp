@@ -20,6 +20,8 @@
 
 #include "xrServer_Objects.h"
 
+#include "sleep.h"
+
 #ifdef DEBUG
 void show_animation_stats();
 #endif // DEBUG
@@ -247,7 +249,7 @@ tmc::task<bool> CLevel::Connect2Server(gsl::czstring options)
     while (!m_bConnectResultReceived)
     {
         co_await ClientReceive();
-        Sleep(5);
+        co_await tmc::spawn_clang(xr::sleep(std::chrono::milliseconds{5}), xr::tmc_cpu_st_executor());
 
         if (Server)
             Server->Update();

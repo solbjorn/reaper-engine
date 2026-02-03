@@ -20,10 +20,10 @@ public:
 
     u32 ll_dwReference;
 
-    EVENT eQuit;
-    EVENT eStart;
-    EVENT eStartLoad;
-    EVENT eDisconnect;
+    CEvent* eQuit;
+    CEvent* eStart;
+    CEvent* eStartLoad;
+    CEvent* eDisconnect;
 
     void Level_Append(LPCSTR lname);
 
@@ -47,7 +47,7 @@ public:
 
     void SetLoadStageTitle(pcstr ls_title);
 
-    tmc::task<void> OnEvent(EVENT E, u64 P1, u64 P2) override;
+    tmc::task<void> OnEvent(CEvent* E, u64 P1, u64 P2) override;
 
 private:
     // Other

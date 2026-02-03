@@ -46,7 +46,7 @@ void nanosleep(std::chrono::nanoseconds count)
 } // namespace detail
 
 // Based on https://blog.bearcats.nl/perfect-sleep-function/
-void sleep(std::chrono::nanoseconds count)
+tmc::task<void> sleep(std::chrono::nanoseconds count)
 {
     auto curr = std::chrono::high_resolution_clock::now();
     decltype(curr) target = curr + count;
@@ -80,10 +80,12 @@ void sleep(std::chrono::nanoseconds count)
         curr = std::chrono::high_resolution_clock::now();
     }
 
-    while (curr < target)
+    while (target - curr >= std::chrono::nanoseconds{100})
     {
         YieldProcessor();
         curr = std::chrono::high_resolution_clock::now();
     }
+
+    co_return;
 }
 } // namespace xr

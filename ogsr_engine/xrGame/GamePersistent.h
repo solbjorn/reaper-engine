@@ -30,7 +30,7 @@ public:
     bool GameAutopaused{};
 
     CUISequencer* m_intro{};
-    EVENT eQuickLoad;
+    CEvent* eQuickLoad;
 
     CallMe::Delegate<tmc::task<void>()> m_intro_event;
 
@@ -50,9 +50,10 @@ public:
     ui_core* m_pUI_core{};
     IReader* pDemoFile;
     u32 uTime2Change;
-    EVENT eDemoStart;
+    CEvent* eDemoStart;
 
     CGamePersistent();
+    tmc::task<void> co_destroy() override;
     ~CGamePersistent() override;
 
     void PreStart(LPCSTR op) override;
@@ -67,7 +68,7 @@ public:
     tmc::task<void> OnGameStart() override;
     virtual void OnGameEnd();
     tmc::task<void> OnFrame() override;
-    tmc::task<void> OnEvent(EVENT E, u64 P1, u64 P2) override;
+    tmc::task<void> OnEvent(CEvent* E, u64 P1, u64 P2) override;
 
     virtual void UpdateGameType();
 
@@ -82,6 +83,9 @@ public:
     virtual void SetTip();
 
     [[nodiscard]] bool OnKeyboardPress();
+
+protected:
+    tmc::task<void> co_init() override;
 };
 
 IC CGamePersistent& GamePersistent() { return *smart_cast<CGamePersistent*>(g_pGamePersistent); }

@@ -8,6 +8,7 @@
 #include "XR_IOConsole.h"
 #include "Render.h"
 #include "ps_instance.h"
+#include "std_classes.h"
 #include "CustomHUD.h"
 #include "perlin.h"
 
@@ -42,6 +43,24 @@ IGame_Persistent::IGame_Persistent()
     pEnvironment = xr_new<CEnvironment>();
 
     m_pGShaderConstants = ShadersExternalData(); //--#SM+#--
+}
+
+tmc::task<std::unique_ptr<IGame_Persistent>> IGame_Persistent::co_create()
+{
+    auto pers = absl::WrapUnique(smart_cast<IGame_Persistent*>(NEW_INSTANCE(CLSID_GAME_PERSISTANT)));
+
+    co_await pers->co_init();
+    co_return pers;
+}
+
+tmc::task<void> IGame_Persistent::co_init() { co_await Environment().OnDeviceCreate(); }
+
+tmc::task<void> IGame_Persistent::co_destroy()
+{
+    auto pers = this;
+    DEL_INSTANCE(pers);
+
+    co_return;
 }
 
 IGame_Persistent::~IGame_Persistent()

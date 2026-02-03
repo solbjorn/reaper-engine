@@ -191,7 +191,7 @@ public:
     }
 
     void Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason);
-    BOOL Paused();
+    [[nodiscard]] static bool Paused();
 
     // Scene control
     tmc::task<void> ProcessFrame();
@@ -265,6 +265,8 @@ public:
     out:
         xr::log_flush();
     }
+
+    tmc::task<void> execute_async(gsl::czstring cmd);
 
     bool on_message(UINT uMsg, WPARAM wParam, LRESULT& result);
 

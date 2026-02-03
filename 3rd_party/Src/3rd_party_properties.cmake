@@ -32,6 +32,11 @@ if(DEFINED BUILD_CXXLIBS)
   set(conformance_options "${conformance_options} -DS_IWRITE=_S_IWRITE -Dfileno=_fileno -Dgetenv=getenv -Doff_t=_off_t -Dstrdup=_strdup -Dutimbuf=_utimbuf")
 endif()
 
+# freetype
+if(FT_ENABLE_ERROR_STRINGS)
+  set(conformance_options "${conformance_options} -DFT_CONFIG_OPTION_SUBPIXEL_RENDERING")
+endif()
+
 # harfbuzz
 if(HB_HAVE_FREETYPE)
   set(warning_options "${warning_options} -Wno-error=microsoft-enum-value -Wno-error=microsoft-exception-spec")

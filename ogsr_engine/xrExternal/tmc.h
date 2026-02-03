@@ -3,7 +3,7 @@
 
 #define TMC_NODISCARD_AWAIT
 #define TMC_PRIORITY_COUNT 3
-// #define TMC_TRIVIAL_TASK
+#define TMC_TRIVIAL_TASK
 #define TMC_USE_HWLOC
 
 #ifndef TMC_IMPL

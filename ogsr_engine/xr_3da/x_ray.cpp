@@ -150,14 +150,6 @@ tmc::task<void> exec_user_script()
     co_await Device.process_frame_async();
 }
 
-tmc::task<void> pre_startup()
-{
-    pApp = (co_await CApplication::co_create()).release();
-    g_pGamePersistent = smart_cast<IGame_Persistent*>(NEW_INSTANCE(CLSID_GAME_PERSISTANT));
-
-    co_await g_pGamePersistent->Environment().OnDeviceCreate();
-}
-
 void destroy_splash()
 {
     // Destroy LOGO
@@ -183,8 +175,8 @@ tmc::task<void> startup(std::atomic<xr::tmc_atomic_wait_t>& code)
     // Destroy APP
     xr_delete(g_SpatialSpacePhysic);
     xr_delete(g_SpatialSpace);
-    DEL_INSTANCE(g_pGamePersistent);
 
+    co_await g_pGamePersistent->co_destroy();
     co_await pApp->co_destroy();
     Engine.Event.Dump();
 
@@ -475,7 +467,8 @@ tmc::task<void> main_async(gsl::czstring cmdline, void* handle, std::atomic<xr::
         co_await Device.Create();
 
         co_await std::move(la);
-        co_await xr::pre_startup();
+        pApp = (co_await CApplication::co_create()).release();
+        g_pGamePersistent = (co_await IGame_Persistent::co_create()).release();
 
         co_await std::move(sp);
         co_await xr::startup(code);
@@ -509,12 +502,6 @@ CApplication::CApplication()
 {
     ll_dwReference = 0;
 
-    // events
-    eQuit = Engine.Event.Handler_Attach("KERNEL:quit", this);
-    eStart = Engine.Event.Handler_Attach("KERNEL:start", this);
-    eStartLoad = Engine.Event.Handler_Attach("KERNEL:load", this);
-    eDisconnect = Engine.Event.Handler_Attach("KERNEL:disconnect", this);
-
     // levels
     Level_Current = 0;
     Level_Scan();
@@ -530,6 +517,12 @@ tmc::task<std::unique_ptr<CApplication>> CApplication::co_create()
 {
     auto app = absl::WrapUnique(new (xr_alloc<CApplication>(1)) CApplication{});
 
+    // events
+    app->eQuit = co_await Engine.Event.Handler_Attach("KERNEL:quit", app.get());
+    app->eStart = co_await Engine.Event.Handler_Attach("KERNEL:start", app.get());
+    app->eStartLoad = co_await Engine.Event.Handler_Attach("KERNEL:load", app.get());
+    app->eDisconnect = co_await Engine.Event.Handler_Attach("KERNEL:disconnect", app.get());
+
     co_await Console->Show();
     co_return app;
 }
@@ -537,6 +530,12 @@ tmc::task<std::unique_ptr<CApplication>> CApplication::co_create()
 tmc::task<void> CApplication::co_destroy()
 {
     co_await Console->Hide();
+
+    // events
+    co_await Engine.Event.Handler_Detach(eDisconnect, this);
+    co_await Engine.Event.Handler_Detach(eStartLoad, this);
+    co_await Engine.Event.Handler_Detach(eStart, this);
+    co_await Engine.Event.Handler_Detach(eQuit, this);
 
     auto app = this;
     xr_delete(app);
@@ -547,15 +546,9 @@ CApplication::~CApplication()
     Device.seqFrameMT.Remove(&g_sound_renderer);
     Device.seqFrame.Remove(&g_sound_processor);
     Device.seqFrame.Remove(this);
-
-    // events
-    Engine.Event.Handler_Detach(eDisconnect, this);
-    Engine.Event.Handler_Detach(eStartLoad, this);
-    Engine.Event.Handler_Detach(eStart, this);
-    Engine.Event.Handler_Detach(eQuit, this);
 }
 
-tmc::task<void> CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
+tmc::task<void> CApplication::OnEvent(CEvent* E, u64 P1, u64 P2)
 {
     if (E == eQuit)
     {
@@ -569,11 +562,12 @@ tmc::task<void> CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
     else if (E == eStart)
     {
         LPSTR op_server = LPSTR(P1);
-        LPSTR op_client = LPSTR(P2);
-        R_ASSERT(!g_pGameLevel);
-        R_ASSERT(g_pGamePersistent);
+        auto op_client = reinterpret_cast<gsl::zstring>(gsl::narrow_cast<uintptr_t>(P2)) ?: xr_strdup("localhost");
 
-        Console->Execute("main_menu off");
+        R_ASSERT(g_pGameLevel == nullptr);
+        R_ASSERT(g_pGamePersistent != nullptr);
+
+        co_await Device.execute_async("main_menu off");
         co_await Console->Hide();
 
         g_pGamePersistent->PreStart(op_server);
@@ -589,19 +583,18 @@ tmc::task<void> CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
     }
     else if (E == eDisconnect)
     {
-        if (g_pGameLevel)
+        if (g_pGameLevel != nullptr)
         {
-            Console->Execute("main_menu off");
+            co_await Device.execute_async("main_menu off");
             co_await Console->Hide();
 
             co_await g_pGameLevel->net_Stop();
             DEL_INSTANCE(g_pGameLevel);
+
             co_await Console->Show();
 
-            if ((FALSE == Engine.Event.Peek("KERNEL:quit")) && (FALSE == Engine.Event.Peek("KERNEL:start")))
-            {
-                Console->Execute("main_menu on");
-            }
+            if (!Engine.Event.peek_locked("KERNEL:quit") && !Engine.Event.peek_locked("KERNEL:start"))
+                co_await Device.execute_async("main_menu on");
         }
 
         R_ASSERT(g_pGamePersistent != nullptr);

@@ -57,6 +57,8 @@
 #include "ui/UIPDAWnd.h"
 #include "ui/UIBtnHint.h"
 
+extern CAI_Space* g_ai_space;
+
 CPHWorld* ph_world{};
 
 //////////////////////////////////////////////////////////////////////
@@ -70,11 +72,11 @@ CLevel::CLevel() : IPureClient{Device.GetTimerGlobal()}
     //	game						= xr_new<game_cl_GameState>();
     game_events = xr_new<NET_Queue_Event>();
 
-    eChangeRP = Engine.Event.Handler_Attach("LEVEL:ChangeRP", this);
-    eDemoPlay = Engine.Event.Handler_Attach("LEVEL:PlayDEMO", this);
-    eChangeTrack = Engine.Event.Handler_Attach("LEVEL:PlayMusic", this);
-    eEnvironment = Engine.Event.Handler_Attach("LEVEL:Environment", this);
-    eEntitySpawn = Engine.Event.Handler_Attach("LEVEL:spawn", this);
+    eChangeRP = Engine.Event.handler_attach_locked("LEVEL:ChangeRP", this);
+    eDemoPlay = Engine.Event.handler_attach_locked("LEVEL:PlayDEMO", this);
+    eChangeTrack = Engine.Event.handler_attach_locked("LEVEL:PlayMusic", this);
+    eEnvironment = Engine.Event.handler_attach_locked("LEVEL:Environment", this);
+    eEntitySpawn = Engine.Event.handler_attach_locked("LEVEL:spawn", this);
 
     m_pBulletManager = xr_new<CBulletManager>();
     m_map_manager = xr_new<CMapManager>();
@@ -94,57 +96,21 @@ CLevel::CLevel() : IPureClient{Device.GetTimerGlobal()}
     m_ph_commander = xr_new<CPHCommander>();
     m_ph_commander_scripts = xr_new<CPHCommander>();
 
-    //---------------------------------------------------------
-
-    //	if ( !strstr( Core.Params, "-tdemo " ) && !strstr(Core.Params,"-tdemof "))
-    //	{
-    //		Demo_PrepareToStore();
-    //	};
-    //---------------------------------------------------------
-    //	m_bDemoPlayMode = FALSE;
-    //	m_aDemoData.clear();
-    //	m_bDemoStarted	= FALSE;
-
-    /*
-    if (strstr(Core.Params,"-tdemo ") || strstr(Core.Params,"-tdemof ")) {
-        string1024				f_name;
-        if (strstr(Core.Params,"-tdemo "))
-        {
-            sscanf					(strstr(Core.Params,"-tdemo ")+7,"%[^ ] ",f_name);
-            m_bDemoPlayByFrame = FALSE;
-
-            Demo_Load	(f_name);
-        }
-        else
-        {
-            sscanf					(strstr(Core.Params,"-tdemof ")+8,"%[^ ] ",f_name);
-            m_bDemoPlayByFrame = TRUE;
-
-            m_lDemoOfs = 0;
-            Demo_Load_toFrame(f_name, 100, m_lDemoOfs);
-        };
-    }
-    */
-    //---------------------------------------------------------
-
     g_player_hud = xr_new<player_hud>();
     g_player_hud->load_default();
 }
 
-extern CAI_Space* g_ai_space;
-
 CLevel::~CLevel()
 {
     xr_delete(g_player_hud);
-    //	g_pGameLevel		= NULL;
+
     Msg("- Destroying level");
 
-    Engine.Event.Handler_Detach(eEntitySpawn, this);
-
-    Engine.Event.Handler_Detach(eEnvironment, this);
-    Engine.Event.Handler_Detach(eChangeTrack, this);
-    Engine.Event.Handler_Detach(eDemoPlay, this);
-    Engine.Event.Handler_Detach(eChangeRP, this);
+    Engine.Event.handler_detach_locked(eEntitySpawn, this);
+    Engine.Event.handler_detach_locked(eEnvironment, this);
+    Engine.Event.handler_detach_locked(eChangeTrack, this);
+    Engine.Event.handler_detach_locked(eDemoPlay, this);
+    Engine.Event.handler_detach_locked(eChangeRP, this);
 
     if (ph_world)
     {
@@ -611,7 +577,7 @@ tmc::task<void> CLevel::OnRender()
 #endif
 }
 
-tmc::task<void> CLevel::OnEvent(EVENT E, u64 P1, u64)
+tmc::task<void> CLevel::OnEvent(CEvent* E, u64 P1, u64)
 {
     if (E == eEntitySpawn)
     {

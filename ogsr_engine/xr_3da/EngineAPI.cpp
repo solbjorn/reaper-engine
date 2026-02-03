@@ -34,7 +34,7 @@ void CEngineAPI::Destroy()
     pCreate = nullptr;
     pDestroy = nullptr;
 
-    Engine.Event._destroy();
+    Engine.Event.Dump();
     XRC.r_clear_compact();
 
     // destroy quality token here

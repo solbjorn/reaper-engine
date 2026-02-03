@@ -14,6 +14,8 @@
 #include "string_table.h"
 #include "xrServer.h"
 
+#include "sleep.h"
+
 tmc::task<bool> CLevel::net_start_client1()
 {
     pApp->LoadBegin();
@@ -59,8 +61,9 @@ tmc::task<bool> CLevel::net_start_client3()
         }
 
         m_name._set(level_name);
+
         // Load level
-        R_ASSERT2(Load(level_id), "Loading failed.");
+        R_ASSERT2(co_await Load(level_id), "Loading failed.");
     }
 
     co_return true;
@@ -91,7 +94,7 @@ tmc::task<bool> CLevel::net_start_client4()
             if (Server)
                 Server->Update();
 
-            Sleep(5);
+            co_await tmc::spawn_clang(xr::sleep(std::chrono::milliseconds{5}), xr::tmc_cpu_st_executor());
         }
     }
 

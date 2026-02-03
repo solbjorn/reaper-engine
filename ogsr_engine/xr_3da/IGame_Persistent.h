@@ -117,6 +117,8 @@ public:
     virtual float MtlTransparent(u32 mtl_idx) = 0;
 
     IGame_Persistent();
+    static tmc::task<std::unique_ptr<IGame_Persistent>> co_create();
+    virtual tmc::task<void> co_destroy();
     ~IGame_Persistent() override;
 
     u32 GameType() { return m_game_params.m_e_game_type; }
@@ -125,6 +127,9 @@ public:
     virtual void SetTip() = 0;
 
     virtual void models_savePrefetch();
+
+protected:
+    virtual tmc::task<void> co_init();
 };
 
 class XR_NOVTABLE IMainMenu : public virtual RTTI::Enable

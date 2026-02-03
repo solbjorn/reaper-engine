@@ -25,7 +25,7 @@ void nanosleep(std::chrono::nanoseconds count);
     return std::__backoff_results::__continue_poll;
 }
 
-void sleep(std::chrono::nanoseconds count);
+tmc::task<void> sleep(std::chrono::nanoseconds count);
 } // namespace xr
 
 #endif // !__XRCORE_SLEEP_H

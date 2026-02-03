@@ -62,7 +62,7 @@ public:
     CHUDManager();
     ~CHUDManager() override;
 
-    tmc::task<void> OnEvent(EVENT, u64, u64) override;
+    tmc::task<void> OnEvent(CEvent*, u64, u64) override;
 
     virtual void Load();
 
