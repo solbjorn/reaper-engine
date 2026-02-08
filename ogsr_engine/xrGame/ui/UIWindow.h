@@ -55,12 +55,12 @@ public:
     // поднять на вершину списка всех родителей окна и его самого
     void BringAllToTop();
 
-    virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
+    [[nodiscard]] virtual bool OnMouse(f32 x, f32 y, EUIMessages mouse_action);
     virtual void OnMouseMove();
     virtual void OnMouseScroll(float);
     virtual bool OnDbClick();
-    virtual bool OnMouseDown(int);
-    virtual void OnMouseUp(int);
+    [[nodiscard]] virtual bool OnMouseDown(sf::Mouse::Button);
+    virtual void OnMouseUp(sf::Mouse::Button);
     virtual void OnFocusReceive();
     virtual void OnFocusLost();
     virtual void UpdateFocus(bool = false);
@@ -79,8 +79,8 @@ public:
     CUIWindow* GetMessageTarget();
 
     // реакция на клавиатуру
-    virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
-    virtual bool OnKeyboardHold(int dik);
+    [[nodiscard]] virtual bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action);
+    [[nodiscard]] virtual bool OnKeyboardHold(xr::key_id dik);
     virtual void SetKeyboardCapture(CUIWindow* pChildWindow, bool capture_status);
 
     // обработка сообщений не предусмотреных стандартными обработчиками

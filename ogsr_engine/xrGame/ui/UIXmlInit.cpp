@@ -305,24 +305,17 @@ void CUIXmlInit::InitAccel(CUIXml& xml_doc, const char* path, int index, CUIButt
 {
     LPCSTR accel = xml_doc.ReadAttrib(path, index, "accel", nullptr);
     if (accel)
-    {
-        const int acc = keyname_to_dik(accel);
-        pWnd->SetAccelerator(acc, 0);
-    }
+        pWnd->SetAccelerator(keyname_to_dik(accel), 0);
+
     accel = xml_doc.ReadAttrib(path, index, "accel_ext", nullptr);
     if (accel)
-    {
-        const int acc = keyname_to_dik(accel);
-        pWnd->SetAccelerator(acc, 1);
-    }
+        pWnd->SetAccelerator(keyname_to_dik(accel), 1);
 
     LPCSTR action_name = xml_doc.ReadAttrib(path, index, "accel_action", nullptr);
     if (action_name)
     {
-        if (const EGameActions action = action_name_to_id(action_name); action != kNOTBINDED)
-        {
+        if (const auto action = action_name_to_id(action_name); action != EGameActions::kNOTBINDED)
             pWnd->SetAcceleratorAction(action);
-        }
     }
 }
 
@@ -341,21 +334,16 @@ bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, const char* path, int index, CUI3
 
     LPCSTR accel = xml_doc.ReadAttrib(path, index, "accel", nullptr);
     if (accel)
-    {
-        int acc = keyname_to_dik(accel);
-        pWnd->SetAccelerator(acc, 0);
-    }
+        pWnd->SetAccelerator(keyname_to_dik(accel), 0);
+
     accel = xml_doc.ReadAttrib(path, index, "accel_ext", nullptr);
     if (accel)
-    {
-        int acc = keyname_to_dik(accel);
-        pWnd->SetAccelerator(acc, 1);
-    }
+        pWnd->SetAccelerator(keyname_to_dik(accel), 1);
 
     float shadowOffsetX = xml_doc.ReadAttribFlt(path, index, "shadow_offset_x", 0);
     float shadowOffsetY = xml_doc.ReadAttribFlt(path, index, "shadow_offset_y", 0);
 
-    pWnd->SetShadowOffset(Fvector2().set(shadowOffsetX, shadowOffsetY));
+    pWnd->SetShadowOffset(Fvector2{shadowOffsetX, shadowOffsetY});
 
     // init hint static
     string256 hint;

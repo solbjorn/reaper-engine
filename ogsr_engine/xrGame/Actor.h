@@ -494,9 +494,9 @@ public:
     // User input/output
     //////////////////////////////////////////////////////////////////////////
     virtual void IR_OnMouseMove(int x, int y);
-    tmc::task<void> IR_OnKeyboardPress(gsl::index dik) override;
-    virtual void IR_OnKeyboardRelease(int dik);
-    tmc::task<void> IR_OnKeyboardHold(gsl::index dik) override;
+    tmc::task<void> IR_OnKeyboardPress(xr::key_id dik) override;
+    void IR_OnKeyboardRelease(xr::key_id dik) override;
+    tmc::task<void> IR_OnKeyboardHold(xr::key_id dik) override;
     tmc::task<void> IR_OnMouseWheel(gsl::index direction) override;
     virtual float GetLookFactor();
 

@@ -84,26 +84,26 @@ namespace
 {
 tmc::task<void> press_action_async(std::array<std::byte, 16>& arg)
 {
-    const auto& pair = *reinterpret_cast<std::pair<CActor*, gsl::index>*>(&arg);
+    const auto& pair = *reinterpret_cast<std::pair<CActor*, xr::key_id>*>(&arg);
     co_await pair.first->IR_OnKeyboardPress(pair.second);
 }
 
-void press_action(CActor* actor, gsl::index key)
+void press_action(CActor* actor, xr::key_id key)
 {
     auto& arg = Device.add_frame_async(CallMe::fromFunction<&press_action_async>());
-    *reinterpret_cast<std::pair<CActor*, gsl::index>*>(&arg) = std::make_pair(actor, key);
+    *reinterpret_cast<std::pair<CActor*, xr::key_id>*>(&arg) = std::make_pair(actor, key);
 }
 
 tmc::task<void> hold_action_async(std::array<std::byte, 16>& arg)
 {
-    const auto& pair = *reinterpret_cast<std::pair<CActor*, gsl::index>*>(&arg);
+    const auto& pair = *reinterpret_cast<std::pair<CActor*, xr::key_id>*>(&arg);
     co_await pair.first->IR_OnKeyboardHold(pair.second);
 }
 
-void hold_action(CActor* actor, gsl::index key)
+void hold_action(CActor* actor, xr::key_id key)
 {
     auto& arg = Device.add_frame_async(CallMe::fromFunction<&hold_action_async>());
-    *reinterpret_cast<std::pair<CActor*, gsl::index>*>(&arg) = std::make_pair(actor, key);
+    *reinterpret_cast<std::pair<CActor*, xr::key_id>*>(&arg) = std::make_pair(actor, key);
 }
 } // namespace
 

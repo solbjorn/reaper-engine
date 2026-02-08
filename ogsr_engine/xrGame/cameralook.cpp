@@ -51,21 +51,25 @@ void CCameraLook::Update(Fvector& point, Fvector&)
     vPosition.add(point);
 }
 
-void CCameraLook::Move(int cmd, float val, float factor)
+void CCameraLook::Move(EGameActions cmd, f32 val, f32 factor)
 {
     switch (cmd)
     {
-    case kSHOWHUD: dist -= val ? val : (rot_speed.z * Device.fTimeDelta); break;
-    case kHIDEHUD: dist += val ? val : (rot_speed.z * Device.fTimeDelta); break;
-    case kDOWN: pitch -= val ? val : (rot_speed.x * Device.fTimeDelta / factor); break;
-    case kUP: pitch += val ? val : (rot_speed.x * Device.fTimeDelta / factor); break;
-    case kLEFT: yaw -= val ? val : (rot_speed.y * Device.fTimeDelta / factor); break;
-    case kRIGHT: yaw += val ? val : (rot_speed.y * Device.fTimeDelta / factor); break;
+    case EGameActions::kSHOWHUD: dist -= val ? val : (rot_speed.z * Device.fTimeDelta); break;
+    case EGameActions::kHIDEHUD: dist += val ? val : (rot_speed.z * Device.fTimeDelta); break;
+    case EGameActions::kDOWN: pitch -= val ? val : (rot_speed.x * Device.fTimeDelta / factor); break;
+    case EGameActions::kUP: pitch += val ? val : (rot_speed.x * Device.fTimeDelta / factor); break;
+    case EGameActions::kLEFT: yaw -= val ? val : (rot_speed.y * Device.fTimeDelta / factor); break;
+    case EGameActions::kRIGHT: yaw += val ? val : (rot_speed.y * Device.fTimeDelta / factor); break;
+    default: break;
     }
+
     if (bClampYaw)
         clamp(yaw, lim_yaw[0], lim_yaw[1]);
+
     if (bClampPitch)
         clamp(pitch, lim_pitch[0], lim_pitch[1]);
+
     clamp(dist, lim_zoom[0], lim_zoom[1]);
 }
 
@@ -84,7 +88,7 @@ void CCameraLook::OnActivate(CCameraBase* old_cam)
 
 namespace
 {
-int cam_dik = DIK_LSHIFT;
+xr::key_id cam_dik{sf::Keyboard::Scancode::LShift};
 }
 
 Fvector CCameraLook2::m_cam_offset;
@@ -92,11 +96,12 @@ Fvector CCameraLook2::m_cam_offset;
 void CCameraLook2::OnActivate(CCameraBase* old_cam)
 {
     CCameraLook::OnActivate(old_cam);
-    for (int i = 0; i < 2048; ++i)
+
+    for (auto& key : xr::key_ids())
     {
-        if (is_binded(kEXT_1, i))
+        if (is_binded(EGameActions::kEXT_1, key.dik))
         {
-            cam_dik = i;
+            cam_dik = key.dik;
             break;
         }
     }
@@ -105,7 +110,8 @@ void CCameraLook2::OnActivate(CCameraBase* old_cam)
 void CCameraLook2::Update(Fvector& point, Fvector&)
 {
     if (!m_locked_enemy)
-    { // autoaim
+    {
+        // autoaim
         if (pInput->iGetAsyncKeyState(cam_dik))
         {
             const CVisualMemoryManager::VISIBLES& vVisibles = Actor()->memory().visual().objects();

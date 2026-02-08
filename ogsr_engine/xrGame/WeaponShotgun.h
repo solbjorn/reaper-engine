@@ -31,7 +31,7 @@ public:
     virtual void UpdateSounds();
     tmc::task<void> UpdateCL() override;
 
-    virtual bool Action(s32 cmd, u32 flags);
+    [[nodiscard]] bool Action(EGameActions cmd, u32 flags) override;
 
 #ifdef DUPLET_STATE_SWITCH
     bool is_duplet_enabled = false;

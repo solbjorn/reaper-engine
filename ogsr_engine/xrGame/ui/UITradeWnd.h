@@ -37,8 +37,8 @@ public:
 
     void DisableAll();
     void EnableAll();
-    virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
-    virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
+    [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
+    [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
 
     void ActivatePropertiesBox();
 

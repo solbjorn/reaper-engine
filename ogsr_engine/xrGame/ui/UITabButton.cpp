@@ -10,6 +10,7 @@
 #include "StdAfx.h"
 
 #include "UITabButton.h"
+
 #include "../HUDManager.h"
 
 CUITabButton::CUITabButton()
@@ -32,17 +33,17 @@ void CUITabButton::ShowAssociatedWindow(bool bShow){
         this->m_pAssociatedWindow->Show(bShow);
 }
 */
-bool CUITabButton::OnMouse(float x, float y, EUIMessages mouse_action) { return CUIWindow::OnMouse(x, y, mouse_action); }
+bool CUITabButton::OnMouse(f32 x, f32 y, EUIMessages mouse_action) { return CUIWindow::OnMouse(x, y, mouse_action); }
 
-bool CUITabButton::OnMouseDown(int mouse_btn)
+bool CUITabButton::OnMouseDown(sf::Mouse::Button mouse_btn)
 {
-    if (mouse_btn == MOUSE_1)
+    if (mouse_btn == sf::Mouse::Button::Left)
     {
         GetMessageTarget()->SendMessage(this, TAB_CHANGED);
         return true;
     }
-    else
-        return false;
+
+    return false;
 }
 
 void CUITabButton::Update() { CUI3tButton::Update(); }

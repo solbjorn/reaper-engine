@@ -22,8 +22,8 @@ public:
     virtual void Update();
     virtual void Draw();
 
-    virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
-    virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
+    [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
+    [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
     void SetVisibleMagnifier(bool f);
     tmc::task<void> OnDeviceReset() override;

@@ -50,8 +50,8 @@ public:
     void NeedUpdateQuestions();
     // инициализации начального диалога собеседника
     void InitOthersStartDialog();
-    tmc::task<bool> IR_OnKeyboardPress(gsl::index dik) override;
-    virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
+    tmc::task<bool> IR_OnKeyboardPress(xr::key_id dik) override;
+    [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
     void SwitchToTrade();
     void AddAnswerScript(LPCSTR text, bool is_actor = false);
     void AddIconedMessage(LPCSTR text, LPCSTR texture_name, Frect texture_rect, LPCSTR templ_name);

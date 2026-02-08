@@ -19,6 +19,8 @@
 #include "../CustomDetector.h"
 #include "../player_hud.h"
 
+#include "../../xr_3da/xr_input.h"
+
 CUICellItem* CUIInventoryWnd::CurrentItem() { return m_pCurrentCellItem; }
 
 PIItem CUIInventoryWnd::CurrentIItem() { return (m_pCurrentCellItem) ? (PIItem)m_pCurrentCellItem->m_pData : nullptr; }
@@ -460,15 +462,13 @@ bool CUIInventoryWnd::OnItemDrop(CUICellItem* itm)
     return true;
 }
 
-#include "../../xr_3da/xr_input.h"
-
 bool CUIInventoryWnd::OnItemDbClick(CUICellItem* itm)
 {
     auto __item = (PIItem)itm->m_pData;
 
     auto old_owner = itm->OwnerList();
 
-    bool shift = !!pInput->iGetAsyncKeyState(DIK_LSHIFT) || !!pInput->iGetAsyncKeyState(DIK_RSHIFT);
+    const bool shift = pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RShift});
 
     if (!shift && TryUseItem(__item))
         return true;

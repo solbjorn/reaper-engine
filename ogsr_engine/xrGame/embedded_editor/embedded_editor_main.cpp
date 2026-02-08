@@ -33,126 +33,130 @@ namespace
 constexpr u32 AutoRepeatDelay{300};
 constexpr u32 AutoRepeatRate{15};
 
-constexpr std::array<std::pair<gsl::index, ImGuiKey>, 109> imgui_key_arr{{
-    {DIK_TAB, ImGuiKey_Tab},
-    {DIK_LEFT, ImGuiKey_LeftArrow},
-    {DIK_RIGHT, ImGuiKey_RightArrow},
-    {DIK_UP, ImGuiKey_UpArrow},
-    {DIK_DOWN, ImGuiKey_DownArrow},
-    {DIK_PRIOR, ImGuiKey_PageUp},
-    {DIK_NEXT, ImGuiKey_PageDown},
-    {DIK_HOME, ImGuiKey_Home},
-    {DIK_END, ImGuiKey_End},
-    {DIK_INSERT, ImGuiKey_Insert},
-    {DIK_DELETE, ImGuiKey_Delete},
-    {DIK_BACK, ImGuiKey_Backspace},
-    {DIK_SPACE, ImGuiKey_Space},
-    {DIK_RETURN, ImGuiKey_Enter},
-    {DIK_NUMPADENTER, ImGuiKey_KeypadEnter},
-    {DIK_ESCAPE, ImGuiKey_Escape},
-
-    {DIK_APOSTROPHE, ImGuiKey_Apostrophe},
-    {DIK_COMMA, ImGuiKey_Comma},
-    {DIK_MINUS, ImGuiKey_Minus},
-    {DIK_PERIOD, ImGuiKey_Period},
-    {DIK_SLASH, ImGuiKey_Slash},
-    {DIK_SEMICOLON, ImGuiKey_Semicolon},
-    {DIK_EQUALS, ImGuiKey_Equal},
-    {DIK_LBRACKET, ImGuiKey_LeftBracket},
-    {DIK_BACKSLASH, ImGuiKey_Backslash},
-    {DIK_RBRACKET, ImGuiKey_RightBracket},
-    {DIK_GRAVE, ImGuiKey_GraveAccent},
-
-    {DIK_CAPITAL, ImGuiKey_CapsLock},
-    {DIK_SCROLL, ImGuiKey_ScrollLock},
-    {DIK_NUMLOCK, ImGuiKey_NumLock},
-    {DIK_SYSRQ, ImGuiKey_PrintScreen},
-    {DIK_PAUSE, ImGuiKey_Pause},
-
-    {DIK_NUMPAD0, ImGuiKey_Keypad0},
-    {DIK_NUMPAD1, ImGuiKey_Keypad1},
-    {DIK_NUMPAD2, ImGuiKey_Keypad2},
-    {DIK_NUMPAD3, ImGuiKey_Keypad3},
-    {DIK_NUMPAD4, ImGuiKey_Keypad4},
-    {DIK_NUMPAD5, ImGuiKey_Keypad5},
-    {DIK_NUMPAD6, ImGuiKey_Keypad6},
-    {DIK_NUMPAD7, ImGuiKey_Keypad7},
-    {DIK_NUMPAD8, ImGuiKey_Keypad8},
-    {DIK_NUMPAD9, ImGuiKey_Keypad9},
-
-    {DIK_DECIMAL, ImGuiKey_KeypadDecimal},
-    {DIK_DIVIDE, ImGuiKey_KeypadDivide},
-    {DIK_MULTIPLY, ImGuiKey_KeypadMultiply},
-    {DIK_SUBTRACT, ImGuiKey_KeypadSubtract},
-    {DIK_ADD, ImGuiKey_KeypadAdd},
-    {DIK_LSHIFT, ImGuiKey_LeftShift},
-    {DIK_LCONTROL, ImGuiKey_LeftCtrl},
-    {DIK_LMENU, ImGuiKey_LeftAlt},
-    {DIK_LWIN, ImGuiKey_LeftSuper},
-    {DIK_RSHIFT, ImGuiKey_RightShift},
-    {DIK_RCONTROL, ImGuiKey_RightCtrl},
-    {DIK_RMENU, ImGuiKey_RightAlt},
-    {DIK_RWIN, ImGuiKey_RightSuper},
-    {DIK_APPS, ImGuiKey_Menu},
-
-    {DIK_0, ImGuiKey_0},
-    {DIK_1, ImGuiKey_1},
-    {DIK_2, ImGuiKey_2},
-    {DIK_3, ImGuiKey_3},
-    {DIK_4, ImGuiKey_4},
-    {DIK_5, ImGuiKey_5},
-    {DIK_6, ImGuiKey_6},
-    {DIK_7, ImGuiKey_7},
-    {DIK_8, ImGuiKey_8},
-    {DIK_9, ImGuiKey_9},
-
-    {DIK_A, ImGuiKey_A},
-    {DIK_B, ImGuiKey_B},
-    {DIK_C, ImGuiKey_C},
-    {DIK_D, ImGuiKey_D},
-    {DIK_E, ImGuiKey_E},
-    {DIK_F, ImGuiKey_F},
-    {DIK_G, ImGuiKey_G},
-    {DIK_H, ImGuiKey_H},
-    {DIK_I, ImGuiKey_I},
-    {DIK_J, ImGuiKey_J},
-    {DIK_K, ImGuiKey_K},
-    {DIK_L, ImGuiKey_L},
-    {DIK_M, ImGuiKey_M},
-    {DIK_N, ImGuiKey_N},
-    {DIK_O, ImGuiKey_O},
-    {DIK_P, ImGuiKey_P},
-    {DIK_Q, ImGuiKey_Q},
-    {DIK_R, ImGuiKey_R},
-    {DIK_S, ImGuiKey_S},
-    {DIK_T, ImGuiKey_T},
-    {DIK_U, ImGuiKey_U},
-    {DIK_V, ImGuiKey_V},
-    {DIK_W, ImGuiKey_W},
-    {DIK_X, ImGuiKey_X},
-    {DIK_Y, ImGuiKey_Y},
-    {DIK_Z, ImGuiKey_Z},
-
-    {DIK_F1, ImGuiKey_F1},
-    {DIK_F2, ImGuiKey_F2},
-    {DIK_F3, ImGuiKey_F3},
-    {DIK_F4, ImGuiKey_F4},
-    {DIK_F5, ImGuiKey_F5},
-    {DIK_F6, ImGuiKey_F6},
-    {DIK_F7, ImGuiKey_F7},
-    {DIK_F8, ImGuiKey_F8},
-    {DIK_F9, ImGuiKey_F9},
-    {DIK_F10, ImGuiKey_F10},
-    {DIK_F11, ImGuiKey_F11},
-    {DIK_F12, ImGuiKey_F12},
-    {DIK_F13, ImGuiKey_F13},
-    {DIK_F14, ImGuiKey_F14},
-    {DIK_F15, ImGuiKey_F15},
-
-    {DIK_WEBBACK, ImGuiKey_AppBack},
-    {DIK_WEBFORWARD, ImGuiKey_AppForward},
+constexpr std::array<std::pair<xr::key_id, ImGuiKey>, 119> imgui_key_arr{{
+#define XR_KEY(k, i) {xr::key_id{sf::Keyboard::Scancode::k}, ImGuiKey_##i}
+    XR_KEY(A, A),
+    XR_KEY(B, B),
+    XR_KEY(C, C),
+    XR_KEY(D, D),
+    XR_KEY(E, E),
+    XR_KEY(F, F),
+    XR_KEY(G, G),
+    XR_KEY(H, H),
+    XR_KEY(I, I),
+    XR_KEY(J, J),
+    XR_KEY(K, K),
+    XR_KEY(L, L),
+    XR_KEY(M, M),
+    XR_KEY(N, N),
+    XR_KEY(O, O),
+    XR_KEY(P, P),
+    XR_KEY(Q, Q),
+    XR_KEY(R, R),
+    XR_KEY(S, S),
+    XR_KEY(T, T),
+    XR_KEY(U, U),
+    XR_KEY(V, V),
+    XR_KEY(W, W),
+    XR_KEY(X, X),
+    XR_KEY(Y, Y),
+    XR_KEY(Z, Z),
+    XR_KEY(Num1, 1),
+    XR_KEY(Num2, 2),
+    XR_KEY(Num3, 3),
+    XR_KEY(Num4, 4),
+    XR_KEY(Num5, 5),
+    XR_KEY(Num6, 6),
+    XR_KEY(Num7, 7),
+    XR_KEY(Num8, 8),
+    XR_KEY(Num9, 9),
+    XR_KEY(Num0, 0),
+    XR_KEY(Enter, Enter),
+    XR_KEY(Escape, Escape),
+    XR_KEY(Backspace, Backspace),
+    XR_KEY(Tab, Tab),
+    XR_KEY(Space, Space),
+    XR_KEY(Hyphen, Minus),
+    XR_KEY(Equal, Equal),
+    XR_KEY(LBracket, LeftBracket),
+    XR_KEY(RBracket, RightBracket),
+    XR_KEY(Backslash, Backslash),
+    XR_KEY(Semicolon, Semicolon),
+    XR_KEY(Apostrophe, Apostrophe),
+    XR_KEY(Grave, GraveAccent),
+    XR_KEY(Comma, Comma),
+    XR_KEY(Period, Period),
+    XR_KEY(Slash, Slash),
+    XR_KEY(F1, F1),
+    XR_KEY(F2, F2),
+    XR_KEY(F3, F3),
+    XR_KEY(F4, F4),
+    XR_KEY(F5, F5),
+    XR_KEY(F6, F6),
+    XR_KEY(F7, F7),
+    XR_KEY(F8, F8),
+    XR_KEY(F9, F9),
+    XR_KEY(F10, F10),
+    XR_KEY(F11, F11),
+    XR_KEY(F12, F12),
+    XR_KEY(F13, F13),
+    XR_KEY(F14, F14),
+    XR_KEY(F15, F15),
+    XR_KEY(F16, F16),
+    XR_KEY(F17, F17),
+    XR_KEY(F18, F18),
+    XR_KEY(F19, F19),
+    XR_KEY(F20, F20),
+    XR_KEY(F21, F21),
+    XR_KEY(F22, F22),
+    XR_KEY(F23, F23),
+    XR_KEY(F24, F24),
+    XR_KEY(CapsLock, CapsLock),
+    XR_KEY(PrintScreen, PrintScreen),
+    XR_KEY(ScrollLock, ScrollLock),
+    XR_KEY(Pause, Pause),
+    XR_KEY(Insert, Insert),
+    XR_KEY(Home, Home),
+    XR_KEY(PageUp, PageUp),
+    XR_KEY(Delete, Delete),
+    XR_KEY(End, End),
+    XR_KEY(PageDown, PageDown),
+    XR_KEY(Right, RightArrow),
+    XR_KEY(Left, LeftArrow),
+    XR_KEY(Down, DownArrow),
+    XR_KEY(Up, UpArrow),
+    XR_KEY(NumLock, NumLock),
+    XR_KEY(NumpadDivide, KeypadDivide),
+    XR_KEY(NumpadMultiply, KeypadMultiply),
+    XR_KEY(NumpadMinus, KeypadSubtract),
+    XR_KEY(NumpadPlus, KeypadAdd),
+    XR_KEY(NumpadEnter, KeypadEnter),
+    XR_KEY(NumpadDecimal, KeypadDecimal),
+    XR_KEY(Numpad1, Keypad1),
+    XR_KEY(Numpad2, Keypad2),
+    XR_KEY(Numpad3, Keypad3),
+    XR_KEY(Numpad4, Keypad4),
+    XR_KEY(Numpad5, Keypad5),
+    XR_KEY(Numpad6, Keypad6),
+    XR_KEY(Numpad7, Keypad7),
+    XR_KEY(Numpad8, Keypad8),
+    XR_KEY(Numpad9, Keypad9),
+    XR_KEY(Numpad0, Keypad0),
+    XR_KEY(NonUsBackslash, Oem102),
+    XR_KEY(Menu, Menu),
+    XR_KEY(LControl, LeftCtrl),
+    XR_KEY(LShift, LeftShift),
+    XR_KEY(LAlt, LeftAlt),
+    XR_KEY(LSystem, LeftSuper),
+    XR_KEY(RControl, RightCtrl),
+    XR_KEY(RShift, RightShift),
+    XR_KEY(RAlt, RightAlt),
+    XR_KEY(RSystem, RightSuper),
+    XR_KEY(Back, AppBack),
+    XR_KEY(Forward, AppForward),
+#undef XR_KEY
 }};
-xr_unordered_map<gsl::index, ImGuiKey> imgui_key_map;
+xr_unordered_map<xr::key_id, ImGuiKey> imgui_key_map;
 
 void imgui_key_map_init()
 {
@@ -164,10 +168,12 @@ void imgui_key_map_init()
 
 void ImGui_UpdateKeyModifiers(ImGuiIO& io)
 {
-    io.AddKeyEvent(ImGuiMod_Ctrl, !!pInput->iGetAsyncKeyState(DIK_LCONTROL) || !!pInput->iGetAsyncKeyState(DIK_RCONTROL));
-    io.AddKeyEvent(ImGuiMod_Shift, !!pInput->iGetAsyncKeyState(DIK_LSHIFT) || !!pInput->iGetAsyncKeyState(DIK_RSHIFT));
-    io.AddKeyEvent(ImGuiMod_Alt, !!pInput->iGetAsyncKeyState(DIK_LMENU) || !!pInput->iGetAsyncKeyState(DIK_RMENU));
-    io.AddKeyEvent(ImGuiMod_Super, !!pInput->iGetAsyncKeyState(DIK_LWIN) || !!pInput->iGetAsyncKeyState(DIK_RWIN));
+    io.AddKeyEvent(ImGuiMod_Ctrl,
+                   pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LControl}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RControl}));
+    io.AddKeyEvent(ImGuiMod_Shift, pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RShift}));
+    io.AddKeyEvent(ImGuiMod_Alt, pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LAlt}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RAlt}));
+    io.AddKeyEvent(ImGuiMod_Super,
+                   pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LSystem}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RSystem}));
 }
 
 void ImGui_ResetKeys()
@@ -363,8 +369,8 @@ void imgui_ingame_editor::update()
     XR_TRACY_ZONE_SCOPED();
 
     b_needResetInput = true;
-    b_isAltHold = !!pInput->iGetAsyncKeyState(DIK_LMENU) || !!pInput->iGetAsyncKeyState(DIK_RMENU);
-    b_isShiftHold = !!pInput->iGetAsyncKeyState(DIK_LSHIFT) || !!pInput->iGetAsyncKeyState(DIK_RSHIFT);
+    b_isAltHold = pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LAlt}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RAlt});
+    b_isShiftHold = pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RShift});
 
     auto& io = ImGui::GetIO();
     const bool is_editor_active = IsEditorActive();
@@ -432,9 +438,9 @@ void imgui_ingame_editor::update()
 #endif
 }
 
-bool imgui_ingame_editor::key_press(gsl::index key)
+bool imgui_ingame_editor::key_press(xr::key_id key)
 {
-    if (key == DIK_F10)
+    if (key == xr::key_id{sf::Keyboard::Scancode::F10})
     {
         target_stage = EditorStage{(std::to_underlying(target_stage) + 1) % std::to_underlying(EditorStage::Count)};
         return true;
@@ -443,35 +449,30 @@ bool imgui_ingame_editor::key_press(gsl::index key)
     if (!IsEditorActive())
         return false;
 
-    if (get_binded_action(gsl::narrow_cast<s32>(key)) == kCONSOLE)
+    if (get_binded_action(key) == EGameActions::kCONSOLE)
         show_console_window = !show_console_window;
 
     auto& io = ImGui::GetIO();
     ImGui_UpdateKeyModifiers(io);
 
-    switch (key)
-    {
-    case DIK_F10: break;
-    case MOUSE_1:
-    case MOUSE_2:
-    case MOUSE_3:
-    case MOUSE_4:
-    case MOUSE_5: io.AddMouseButtonEvent(gsl::narrow_cast<s32>(gsl::index{ImGuiMouseButton_Left} + key - MOUSE_1), true); break;
-    default:
-        if (const auto conv = imgui_key_map.find(key); conv != imgui_key_map.end())
-            io.AddKeyEvent(conv->second, true);
+    if (key.is<sf::Mouse::Button>())
+        io.AddMouseButtonEvent(s32{ImGuiMouseButton_Left} + std::to_underlying(key.get<sf::Mouse::Button>()) - std::to_underlying(sf::Mouse::Button::Left), true);
 
-        if (const auto ch = pInput->DikToChar(gsl::narrow_cast<s32>(key), false))
-            io.AddInputCharacter(ch);
+    if (const auto conv = imgui_key_map.find(key); conv != imgui_key_map.end())
+        io.AddKeyEvent(conv->second, true);
 
-        i_key_holding[key] = Device.dwTimeContinual + AutoRepeatDelay;
-        break;
-    }
+    if (!key.is<sf::Keyboard::Scancode>())
+        return true;
+
+    if (const auto ch = pInput->DikToChar(key.get<sf::Keyboard::Scancode>(), false); ch != 0)
+        io.AddInputCharacter(ch);
+
+    i_key_holding[key] = Device.dwTimeContinual + AutoRepeatDelay;
 
     return true;
 }
 
-bool imgui_ingame_editor::key_release(gsl::index key)
+bool imgui_ingame_editor::key_release(xr::key_id key)
 {
     if (!IsEditorActive())
         return false;
@@ -479,48 +480,35 @@ bool imgui_ingame_editor::key_release(gsl::index key)
     auto& io = ImGui::GetIO();
     ImGui_UpdateKeyModifiers(io);
 
-    switch (key)
-    {
-    case DIK_F10: break;
-    case MOUSE_1:
-    case MOUSE_2:
-    case MOUSE_3:
-    case MOUSE_4:
-    case MOUSE_5: io.AddMouseButtonEvent(gsl::narrow_cast<s32>(gsl::index{ImGuiMouseButton_Left} + key - MOUSE_1), false); break;
-    default:
-        if (const auto conv = imgui_key_map.find(key); conv != imgui_key_map.end())
-            io.AddKeyEvent(conv->second, false);
+    if (key == xr::key_id{sf::Keyboard::Scancode::F10})
+        return true;
 
+    if (key.is<sf::Mouse::Button>())
+        io.AddMouseButtonEvent(s32{ImGuiMouseButton_Left} + std::to_underlying(key.get<sf::Mouse::Button>()) - std::to_underlying(sf::Mouse::Button::Left), false);
+
+    if (const auto conv = imgui_key_map.find(key); conv != imgui_key_map.end())
+        io.AddKeyEvent(conv->second, false);
+
+    if (key.is<sf::Keyboard::Scancode>())
         i_key_holding.erase(key);
-        break;
-    }
 
     return true;
 }
 
-bool imgui_ingame_editor::key_hold(gsl::index key)
+bool imgui_ingame_editor::key_hold(xr::key_id key)
 {
     if (!IsEditorActive())
         return false;
 
-    switch (key)
+    if (key == xr::key_id{sf::Keyboard::Scancode::F10} || !key.is<sf::Keyboard::Scancode>())
+        return true;
+
+    if (auto iter = i_key_holding.find(key); iter != i_key_holding.end() && Device.dwTimeContinual > iter->second)
     {
-    case DIK_F10:
-    case MOUSE_1:
-    case MOUSE_2:
-    case MOUSE_3:
-    case MOUSE_4:
-    case MOUSE_5: break;
-    default:
-        if (auto iter = i_key_holding.find(key); iter != i_key_holding.end() && Device.dwTimeContinual > iter->second)
-        {
-            if (const auto ch = pInput->DikToChar(gsl::narrow_cast<s32>(key), false))
-                ImGui::GetIO().AddInputCharacter(ch);
+        if (const auto ch = pInput->DikToChar(key.get<sf::Keyboard::Scancode>(), false); ch != 0)
+            ImGui::GetIO().AddInputCharacter(ch);
 
-            iter->second = Device.dwTimeContinual + AutoRepeatRate;
-        }
-
-        break;
+        iter->second = Device.dwTimeContinual + AutoRepeatRate;
     }
 
     return true;

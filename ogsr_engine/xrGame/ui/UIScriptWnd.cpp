@@ -41,7 +41,7 @@ bool CUIDialogWndEx::Load(LPCSTR) { return true; }
 
 void CUIDialogWndEx::AddCallback(LPCSTR control_id, s16 event, sol::function function) { m_callbacks.emplace_back(std::move(function), shared_str{control_id}, event); }
 
-bool CUIDialogWndEx::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIDialogWndEx::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 {
     bool ret = inherited::OnKeyboard(dik, keyboard_action);
 

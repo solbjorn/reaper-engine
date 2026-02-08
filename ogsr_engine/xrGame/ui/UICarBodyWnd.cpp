@@ -642,7 +642,7 @@ void CUICarBodyWnd::DropItemsfromCell(bool b_all)
     PlaySnd(eInventorySndAction::eInvDropItem);
 }
 
-bool CUICarBodyWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUICarBodyWnd::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 {
     if (m_b_need_update)
         return true;
@@ -653,7 +653,7 @@ bool CUICarBodyWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
             std::ignore = m_pUIPropertiesBox->OnKeyboard(dik, keyboard_action);
     }
 
-    if (keyboard_action == WINDOW_KEY_PRESSED && is_binded(kUSE, dik))
+    if (keyboard_action == WINDOW_KEY_PRESSED && is_binded(EGameActions::kUSE, dik))
     {
         GetHolder()->StartStopMenu(this, true);
         return true;
@@ -665,7 +665,7 @@ bool CUICarBodyWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
     return false;
 }
 
-bool CUICarBodyWnd::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUICarBodyWnd::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
     if (m_b_need_update)
         return true;
@@ -680,9 +680,7 @@ bool CUICarBodyWnd::OnMouse(float x, float y, EUIMessages mouse_action)
     }
 
     if (CUIWindow::OnMouse(x, y, mouse_action))
-    {
         return true;
-    }
 
     return false;
 }
@@ -831,28 +829,21 @@ bool CUICarBodyWnd::OnItemDrop(CUICellItem* itm)
     if (old_owner == new_owner || !old_owner || !new_owner)
         return false;
 
-    if (Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT))
-    {
+    if (Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::RShift}))
         MoveItems(itm);
-    }
     else
-    {
         MoveItem(itm);
-    }
 
     return true;
 }
 
 bool CUICarBodyWnd::OnItemDbClick(CUICellItem* itm)
 {
-    if (Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT))
-    {
+    if (Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::RShift}))
         MoveItems(itm);
-    }
     else
-    {
         MoveItem(itm);
-    }
+
     return true;
 }
 

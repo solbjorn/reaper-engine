@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "UIListBoxItem.h"
+
 #include "UIScrollView.h"
 #include "../object_broker.h"
 
@@ -18,7 +19,6 @@ CUIListBoxItem::CUIListBoxItem()
 CUIListBoxItem::~CUIListBoxItem() { delete_data(fields); }
 
 void CUIListBoxItem::SetTAG(u32 value) { tag = value; }
-
 u32 CUIListBoxItem::GetTAG() { return tag; }
 
 void CUIListBoxItem::Draw()
@@ -39,24 +39,26 @@ void CUIListBoxItem::OnFocusReceive()
 }
 
 void CUIListBoxItem::InitDefault() { InitTexture("ui_listline"); }
+
 bool CUIListBoxItem::OnDbClick()
 {
     smart_cast<CUIScrollView*>(GetParent()->GetParent())->SetSelected(this);
     GetMessageTarget()->SendMessage(this, LIST_ITEM_DB_CLICKED, &tag);
+
     return false;
 }
 
-bool CUIListBoxItem::OnMouseDown(int mouse_btn)
+bool CUIListBoxItem::OnMouseDown(sf::Mouse::Button mouse_btn)
 {
-    if (mouse_btn == MOUSE_1)
-    {
-        smart_cast<CUIScrollView*>(GetParent()->GetParent())->SetSelected(this);
-        GetMessageTarget()->SendMessage(this, LIST_ITEM_SELECT, this);
-        GetMessageTarget()->SendMessage(this, LIST_ITEM_CLICKED, this);
-        return true;
-    }
-    else
+    if (mouse_btn != sf::Mouse::Button::Left)
         return false;
+
+    smart_cast<CUIScrollView*>(GetParent()->GetParent())->SetSelected(this);
+
+    GetMessageTarget()->SendMessage(this, LIST_ITEM_SELECT, this);
+    GetMessageTarget()->SendMessage(this, LIST_ITEM_CLICKED, this);
+
+    return true;
 }
 
 void CUIListBoxItem::SetSelected(bool b)

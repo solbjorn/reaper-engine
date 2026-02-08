@@ -316,9 +316,9 @@ void CUIActorStaticticHeader::Init(CUIXml* xml, LPCSTR path, int idx_in_xml)
     xml->SetLocalRoot(_stored_root);
 }
 
-bool CUIActorStaticticHeader::OnMouseDown(int mouse_btn)
+bool CUIActorStaticticHeader::OnMouseDown(sf::Mouse::Button mouse_btn)
 {
-    if (mouse_btn == MOUSE_1 && std::is_neq(xr_strcmp(m_id, "total")))
+    if (mouse_btn == sf::Mouse::Button::Left && std::is_neq(xr_strcmp(m_id, "total")))
     {
         m_actorInfoWnd->MasterList().SetSelected(this);
         return true;

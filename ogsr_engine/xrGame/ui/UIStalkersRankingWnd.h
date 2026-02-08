@@ -63,7 +63,7 @@ public:
 
     void Init(CUIXml* xml, LPCSTR path, int idx);
     virtual void SetSelected(bool b);
-    virtual bool OnMouseDown(int mouse_btn);
+    [[nodiscard]] bool OnMouseDown(sf::Mouse::Button mouse_btn) override;
 };
 
 class CUIStalkerRankingElipsisItem : public CUIStalkerRankingInfoItem
@@ -77,7 +77,7 @@ public:
     ~CUIStalkerRankingElipsisItem() override = default;
 
     virtual void SetSelected(bool);
-    virtual bool OnMouseDown(int);
+    [[nodiscard]] bool OnMouseDown(sf::Mouse::Button) override;
 };
 
 void add_human_to_top_list(u16 id);

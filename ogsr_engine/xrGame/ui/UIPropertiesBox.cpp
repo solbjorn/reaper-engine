@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIPropertiesBox.h"
+
 #include "../hudmanager.h"
 #include "../level.h"
 #include "UIListBoxItem.h"
@@ -102,11 +103,11 @@ void CUIPropertiesBox::Hide()
         GetParent()->SetMouseCapture(this, false);
 }
 
-bool CUIPropertiesBox::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUIPropertiesBox::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
     bool cursor_on_box;
 
-    if (x >= 0 && x < GetWidth() && y >= 0 && y < GetHeight())
+    if (x >= 0.0f && x < GetWidth() && y >= 0.0f && y < GetHeight())
         cursor_on_box = true;
     else
         cursor_on_box = false;
@@ -135,7 +136,7 @@ CUIListBoxItem* CUIPropertiesBox::GetClickedItem() { return m_UIListWnd.GetSelec
 void CUIPropertiesBox::Update() { inherited::Update(); }
 void CUIPropertiesBox::Draw() { inherited::Draw(); }
 
-bool CUIPropertiesBox::OnKeyboard(int, EUIMessages)
+bool CUIPropertiesBox::OnKeyboard(xr::key_id, EUIMessages)
 {
     Hide();
     return true;

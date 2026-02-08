@@ -29,9 +29,9 @@ public:
     // CUIWindow methods
     virtual void Init(float x, float y, float width, float height);
     virtual void Update();
-    virtual bool OnMouseDown(int mouse_btn);
+    [[nodiscard]] bool OnMouseDown(sf::Mouse::Button mouse_btn) override;
     virtual void OnFocusLost();
-    virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
+    [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
     // IUITextControl
     virtual void SetText(const char* text);
 

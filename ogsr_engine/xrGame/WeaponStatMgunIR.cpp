@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "WeaponStatMgun.h"
+
 #include "xr_level_controller.h"
 
 void CWeaponStatMgun::OnMouseMove(int dx, int dy)
@@ -25,26 +26,28 @@ void CWeaponStatMgun::OnMouseMove(int dx, int dy)
     }
 }
 
-void CWeaponStatMgun::OnKeyboardPress(int dik)
+void CWeaponStatMgun::OnKeyboardPress(EGameActions cmd)
 {
     if (Remote())
         return;
 
-    switch (dik)
+    switch (cmd)
     {
-    case kWPN_FIRE: FireStart(); break;
+    case EGameActions::kWPN_FIRE: FireStart(); break;
+    default: break;
     }
 }
 
-void CWeaponStatMgun::OnKeyboardRelease(int dik)
+void CWeaponStatMgun::OnKeyboardRelease(EGameActions cmd)
 {
     if (Remote())
         return;
 
-    switch (dik)
+    switch (cmd)
     {
-    case kWPN_FIRE: FireEnd(); break;
+    case EGameActions::kWPN_FIRE: FireEnd(); break;
+    default: break;
     }
 }
 
-void CWeaponStatMgun::OnKeyboardHold(int) {}
+void CWeaponStatMgun::OnKeyboardHold(EGameActions) {}

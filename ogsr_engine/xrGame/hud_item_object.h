@@ -23,7 +23,7 @@ public:
     virtual CHudItem* cast_hud_item() { return this; }
 
     virtual void Load(LPCSTR section);
-    virtual bool Action(s32 cmd, u32 flags);
+    [[nodiscard]] bool Action(EGameActions cmd, u32 flags) override;
     virtual void SwitchState(u32 S);
     virtual void OnStateSwitch(u32 S, u32 oldState);
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;

@@ -95,7 +95,7 @@ public:
     IC float GetMaxZoom() const { return m_max_zoom; }
 
     virtual void Init(shared_str name, CInifile& gameLtx, LPCSTR sh_name);
-    virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
+    [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
 
     CUIMapWnd* MapWnd() const { return m_mapWnd; }
 
@@ -128,7 +128,7 @@ public:
 
     virtual void Draw();
     virtual void Update();
-    virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
+    [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
 

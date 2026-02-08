@@ -49,7 +49,7 @@ public:
     virtual void Throw();
     virtual void Destroy();
 
-    virtual bool Action(s32 cmd, u32 flags);
+    [[nodiscard]] bool Action(EGameActions cmd, u32 flags) override;
 
     virtual void State(u32 state, u32 oldState);
     virtual void OnStateSwitch(u32 S, u32 oldState);

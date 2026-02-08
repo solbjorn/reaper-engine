@@ -1,10 +1,11 @@
 #include "stdafx.h"
 
 #include "uilistwnd.h"
+
 #include "UIFrameLineWnd.h"
 
-#include "../xr_3da/xr_input.h"
 #include "../Level.h"
+#include "../xr_3da/xr_input.h"
 
 CUIListWnd::CUIListWnd()
 {
@@ -446,9 +447,9 @@ int CUIListWnd::FindItemWithValue(int iValue)
     return -1;
 }
 
-bool CUIListWnd::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUIListWnd::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
-    bool with_shift = Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT);
+    const bool with_shift = Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::RShift});
 
     switch (mouse_action)
     {
@@ -478,8 +479,7 @@ bool CUIListWnd::OnMouse(float x, float y, EUIMessages mouse_action)
     return inherited::OnMouse(x, y, mouse_action);
 }
 
-bool CUIListWnd::OnKeyboard(int dik, EUIMessages keyboard_action) { return inherited::OnKeyboard(dik, keyboard_action); }
-//////////////////////////////////////////////////////////////////////////
+bool CUIListWnd::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) { return inherited::OnKeyboard(dik, keyboard_action); }
 
 void CUIListWnd::UpdateScrollBar()
 {
@@ -545,11 +545,12 @@ void CUIListWnd::Update()
 {
     if (m_bUpdateMouseMove)
     {
-        OnMouse(cursor_pos.x, cursor_pos.y, WINDOW_MOUSE_MOVE);
+        std::ignore = OnMouse(cursor_pos.x, cursor_pos.y, WINDOW_MOUSE_MOVE);
         m_bUpdateMouseMove = false;
     }
 
     inherited::Update();
+
     if (m_ActiveBackgroundFrame)
         m_ActiveBackgroundFrame->Update();
 }

@@ -30,8 +30,8 @@ public:
     virtual void Init(float x, float y, float width, float height);
     virtual void Init(float x, float y, float width, float height, float item_height);
 
-    virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
-    virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
+    [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
+    [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
     virtual void Draw();

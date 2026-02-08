@@ -1,15 +1,16 @@
 #include "stdafx.h"
 
-#include "..\xr_3da\xr_ioconsole.h"
-#include "..\xr_3da\xr_input.h"
-#include "..\xr_3da\xr_ioc_cmd.h"
 #include "xr_level_controller.h"
+
 #include "string_table.h"
 
-#include <dinput.h>
+#include "../xr_3da/xr_input.h"
+#include "../xr_3da/xr_ioc_cmd.h"
 
-xr_vector<_action> actions = {
-#define DEF_ACTION(a1, a2) {a1, a2, #a2}
+#include <SFML/Window/Joystick.hpp>
+
+xr_vector<_action> actions{{
+#define DEF_ACTION(a1, a2) {a1, #a2}
     DEF_ACTION("left", kLEFT),
     DEF_ACTION("right", kRIGHT),
     DEF_ACTION("up", kUP),
@@ -80,274 +81,312 @@ xr_vector<_action> actions = {
     DEF_ACTION("hide_hud", kHIDEHUD),
     DEF_ACTION("show_hud", kSHOWHUD),
 #undef DEF_ACTION
-};
+}};
 
 xr_vector<_binding> g_key_bindings;
 
 namespace
 {
-_keyboard keyboards[] = {{"kESCAPE", DIK_ESCAPE},
-                         {"k1", DIK_1},
-                         {"k2", DIK_2},
-                         {"k3", DIK_3},
-                         {"k4", DIK_4},
-                         {"k5", DIK_5},
-                         {"k6", DIK_6},
-                         {"k7", DIK_7},
-                         {"k8", DIK_8},
-                         {"k9", DIK_9},
-                         {"k0", DIK_0},
-                         {"kMINUS", DIK_MINUS},
-                         {"kEQUALS", DIK_EQUALS},
-                         {"kBACK", DIK_BACK},
-                         {"kTAB", DIK_TAB},
-                         {"kQ", DIK_Q},
-                         {"kW", DIK_W},
-                         {"kE", DIK_E},
-                         {"kR", DIK_R},
-                         {"kT", DIK_T},
-                         {"kY", DIK_Y},
-                         {"kU", DIK_U},
-                         {"kI", DIK_I},
-                         {"kO", DIK_O},
-                         {"kP", DIK_P},
-                         {"kLBRACKET", DIK_LBRACKET},
-                         {"kRBRACKET", DIK_RBRACKET},
-                         {"kRETURN", DIK_RETURN},
-                         {"kLCONTROL", DIK_LCONTROL},
-                         {"kA", DIK_A},
-                         {"kS", DIK_S},
-                         {"kD", DIK_D},
-                         {"kF", DIK_F},
-                         {"kG", DIK_G},
-                         {"kH", DIK_H},
-                         {"kJ", DIK_J},
-                         {"kK", DIK_K},
-                         {"kL", DIK_L},
-                         {"kSEMICOLON", DIK_SEMICOLON},
-                         {"kAPOSTROPHE", DIK_APOSTROPHE},
-                         {"kGRAVE", DIK_GRAVE},
-                         {"kLSHIFT", DIK_LSHIFT},
-                         {"kBACKSLASH", DIK_BACKSLASH},
-                         {"kZ", DIK_Z},
-                         {"kX", DIK_X},
-                         {"kC", DIK_C},
-                         {"kV", DIK_V},
-                         {"kB", DIK_B},
-                         {"kN", DIK_N},
-                         {"kM", DIK_M},
-                         {"kCOMMA", DIK_COMMA},
-                         {"kPERIOD", DIK_PERIOD},
-                         {"kSLASH", DIK_SLASH},
-                         {"kRSHIFT", DIK_RSHIFT},
-                         {"kMULTIPLY", DIK_MULTIPLY},
-                         {"kLMENU", DIK_LMENU},
-                         {"kSPACE", DIK_SPACE},
-                         {"kCAPITAL", DIK_CAPITAL},
-                         {"kF1", DIK_F1},
-                         {"kF2", DIK_F2},
-                         {"kF3", DIK_F3},
-                         {"kF4", DIK_F4},
-                         {"kF5", DIK_F5},
-                         {"kF6", DIK_F6},
-                         {"kF7", DIK_F7},
-                         {"kF8", DIK_F8},
-                         {"kF9", DIK_F9},
-                         {"kF10", DIK_F10},
-                         {"kNUMLOCK", DIK_NUMLOCK},
-                         {"kSCROLL", DIK_SCROLL},
-                         {"kNUMPAD7", DIK_NUMPAD7},
-                         {"kNUMPAD8", DIK_NUMPAD8},
-                         {"kNUMPAD9", DIK_NUMPAD9},
-                         {"kSUBTRACT", DIK_SUBTRACT},
-                         {"kNUMPAD4", DIK_NUMPAD4},
-                         {"kNUMPAD5", DIK_NUMPAD5},
-                         {"kNUMPAD6", DIK_NUMPAD6},
-                         {"kADD", DIK_ADD},
-                         {"kNUMPAD1", DIK_NUMPAD1},
-                         {"kNUMPAD2", DIK_NUMPAD2},
-                         {"kNUMPAD3", DIK_NUMPAD3},
-                         {"kNUMPAD0", DIK_NUMPAD0},
-                         {"kDECIMAL", DIK_DECIMAL},
-                         {"kF11", DIK_F11},
-                         {"kF12", DIK_F12},
-                         {"kF13", DIK_F13},
-                         {"kF14", DIK_F14},
-                         {"kF15", DIK_F15},
-                         {"kKANA", DIK_KANA},
-                         {"kCONVERT", DIK_CONVERT},
-                         {"kNOCONVERT", DIK_NOCONVERT},
-                         {"kYEN", DIK_YEN},
-                         {"kNUMPADEQUALS", DIK_NUMPADEQUALS},
-                         {"kCIRCUMFLEX", DIK_CIRCUMFLEX},
-                         {"kAT", DIK_AT},
-                         {"kCOLON", DIK_COLON},
-                         {"kUNDERLINE", DIK_UNDERLINE},
-                         {"kKANJI", DIK_KANJI},
-                         {"kSTOP", DIK_STOP},
-                         {"kAX", DIK_AX},
-                         {"kUNLABELED", DIK_UNLABELED},
-                         {"kNUMPADENTER", DIK_NUMPADENTER},
-                         {"kRCONTROL", DIK_RCONTROL},
-                         {"kNUMPADCOMMA", DIK_NUMPADCOMMA},
-                         {"kDIVIDE", DIK_DIVIDE},
-                         {"kSYSRQ", DIK_SYSRQ},
-                         {"kRMENU", DIK_RMENU},
-                         {"kHOME", DIK_HOME},
-                         {"kUP", DIK_UP},
-                         {"kPRIOR", DIK_PRIOR},
-                         {"kLEFT", DIK_LEFT},
-                         {"kRIGHT", DIK_RIGHT},
-                         {"kEND", DIK_END},
-                         {"kDOWN", DIK_DOWN},
-                         {"kNEXT", DIK_NEXT},
-                         {"kINSERT", DIK_INSERT},
-                         {"kDELETE", DIK_DELETE},
-                         {"kLWIN", DIK_LWIN},
-                         {"kRWIN", DIK_RWIN},
-                         {"kAPPS", DIK_APPS},
-                         {"kPAUSE", DIK_PAUSE},
-                         {"mouse1", MOUSE_1},
-                         {"mouse2", MOUSE_2},
-                         {"mouse3", MOUSE_3},
-                         {"mouse4", MOUSE_4},
-                         {"mouse5", MOUSE_5},
-                         {"mouse6", MOUSE_6},
-                         {"mouse7", MOUSE_7},
-                         {"mouse8", MOUSE_8},
-                         {nullptr, 0}};
+std::array<_keyboard, sf::Keyboard::ScancodeCount + sf::Mouse::ButtonCount + sf::Joystick::ButtonCount> keyboards{{
+#define XR_KEY(k) \
+    _keyboard \
+    { \
+        "Keyboard::" #k, xr::key_id { sf::Keyboard::Scancode::k } \
+    }
+    XR_KEY(A),
+    XR_KEY(B),
+    XR_KEY(C),
+    XR_KEY(D),
+    XR_KEY(E),
+    XR_KEY(F),
+    XR_KEY(G),
+    XR_KEY(H),
+    XR_KEY(I),
+    XR_KEY(J),
+    XR_KEY(K),
+    XR_KEY(L),
+    XR_KEY(M),
+    XR_KEY(N),
+    XR_KEY(O),
+    XR_KEY(P),
+    XR_KEY(Q),
+    XR_KEY(R),
+    XR_KEY(S),
+    XR_KEY(T),
+    XR_KEY(U),
+    XR_KEY(V),
+    XR_KEY(W),
+    XR_KEY(X),
+    XR_KEY(Y),
+    XR_KEY(Z),
+    XR_KEY(Num1),
+    XR_KEY(Num2),
+    XR_KEY(Num3),
+    XR_KEY(Num4),
+    XR_KEY(Num5),
+    XR_KEY(Num6),
+    XR_KEY(Num7),
+    XR_KEY(Num8),
+    XR_KEY(Num9),
+    XR_KEY(Num0),
+    XR_KEY(Enter),
+    XR_KEY(Escape),
+    XR_KEY(Backspace),
+    XR_KEY(Tab),
+    XR_KEY(Space),
+    XR_KEY(Hyphen),
+    XR_KEY(Equal),
+    XR_KEY(LBracket),
+    XR_KEY(RBracket),
+    XR_KEY(Backslash),
+    XR_KEY(Semicolon),
+    XR_KEY(Apostrophe),
+    XR_KEY(Grave),
+    XR_KEY(Comma),
+    XR_KEY(Period),
+    XR_KEY(Slash),
+    XR_KEY(F1),
+    XR_KEY(F2),
+    XR_KEY(F3),
+    XR_KEY(F4),
+    XR_KEY(F5),
+    XR_KEY(F6),
+    XR_KEY(F7),
+    XR_KEY(F8),
+    XR_KEY(F9),
+    XR_KEY(F10),
+    XR_KEY(F11),
+    XR_KEY(F12),
+    XR_KEY(F13),
+    XR_KEY(F14),
+    XR_KEY(F15),
+    XR_KEY(F16),
+    XR_KEY(F17),
+    XR_KEY(F18),
+    XR_KEY(F19),
+    XR_KEY(F20),
+    XR_KEY(F21),
+    XR_KEY(F22),
+    XR_KEY(F23),
+    XR_KEY(F24),
+    XR_KEY(CapsLock),
+    XR_KEY(PrintScreen),
+    XR_KEY(ScrollLock),
+    XR_KEY(Pause),
+    XR_KEY(Insert),
+    XR_KEY(Home),
+    XR_KEY(PageUp),
+    XR_KEY(Delete),
+    XR_KEY(End),
+    XR_KEY(PageDown),
+    XR_KEY(Right),
+    XR_KEY(Left),
+    XR_KEY(Down),
+    XR_KEY(Up),
+    XR_KEY(NumLock),
+    XR_KEY(NumpadDivide),
+    XR_KEY(NumpadMultiply),
+    XR_KEY(NumpadMinus),
+    XR_KEY(NumpadPlus),
+    XR_KEY(NumpadEqual),
+    XR_KEY(NumpadEnter),
+    XR_KEY(NumpadDecimal),
+    XR_KEY(Numpad1),
+    XR_KEY(Numpad2),
+    XR_KEY(Numpad3),
+    XR_KEY(Numpad4),
+    XR_KEY(Numpad5),
+    XR_KEY(Numpad6),
+    XR_KEY(Numpad7),
+    XR_KEY(Numpad8),
+    XR_KEY(Numpad9),
+    XR_KEY(Numpad0),
+    XR_KEY(NonUsBackslash),
+    XR_KEY(Application),
+    XR_KEY(Execute),
+    XR_KEY(ModeChange),
+    XR_KEY(Help),
+    XR_KEY(Menu),
+    XR_KEY(Select),
+    XR_KEY(Redo),
+    XR_KEY(Undo),
+    XR_KEY(Cut),
+    XR_KEY(Copy),
+    XR_KEY(Paste),
+    XR_KEY(VolumeMute),
+    XR_KEY(VolumeUp),
+    XR_KEY(VolumeDown),
+    XR_KEY(MediaPlayPause),
+    XR_KEY(MediaStop),
+    XR_KEY(MediaNextTrack),
+    XR_KEY(MediaPreviousTrack),
+    XR_KEY(LControl),
+    XR_KEY(LShift),
+    XR_KEY(LAlt),
+    XR_KEY(LSystem),
+    XR_KEY(RControl),
+    XR_KEY(RShift),
+    XR_KEY(RAlt),
+    XR_KEY(RSystem),
+    XR_KEY(Back),
+    XR_KEY(Forward),
+    XR_KEY(Refresh),
+    XR_KEY(Stop),
+    XR_KEY(Search),
+    XR_KEY(Favorites),
+    XR_KEY(HomePage),
+    XR_KEY(LaunchApplication1),
+    XR_KEY(LaunchApplication2),
+    XR_KEY(LaunchMail),
+    XR_KEY(LaunchMediaSelect),
+#undef XR_KEY
+
+#define XR_KEY(k) \
+    _keyboard \
+    { \
+        "Mouse::" #k, xr::key_id { sf::Mouse::Button::k } \
+    }
+    XR_KEY(Left),
+    XR_KEY(Right),
+    XR_KEY(Middle),
+    XR_KEY(Extra1),
+    XR_KEY(Extra2),
+#undef XR_KEY
+
+#define XR_KEY(k) \
+    _keyboard \
+    { \
+        "Joystick::Button" #k, xr::key_id { xr::key_id::joystick::button##k } \
+    }
+    XR_KEY(1),
+    XR_KEY(2),
+    XR_KEY(3),
+    XR_KEY(4),
+    XR_KEY(5),
+    XR_KEY(6),
+    XR_KEY(7),
+    XR_KEY(8),
+    XR_KEY(9),
+    XR_KEY(10),
+    XR_KEY(11),
+    XR_KEY(12),
+    XR_KEY(13),
+    XR_KEY(14),
+    XR_KEY(15),
+    XR_KEY(16),
+    XR_KEY(17),
+    XR_KEY(18),
+    XR_KEY(19),
+    XR_KEY(20),
+    XR_KEY(21),
+    XR_KEY(22),
+    XR_KEY(23),
+    XR_KEY(24),
+    XR_KEY(25),
+    XR_KEY(26),
+    XR_KEY(27),
+    XR_KEY(28),
+    XR_KEY(29),
+    XR_KEY(30),
+    XR_KEY(31),
+    XR_KEY(32),
+#undef XR_KEY
+}};
+static_assert(std::to_underlying(xr::key_id::joystick::button32) + 1 == sf::Joystick::ButtonCount);
 
 void initialize_bindings()
 {
 #ifdef DEBUG
-    int i1 = 0;
-    while (true)
+    for (auto [i1, _k1] : xr::enumerate_views(std::as_const(keyboards)))
     {
-        _keyboard& _k1 = keyboards[i1];
-        if (!_k1.key_name)
-            break;
-
-        int i2 = i1;
-        while (true)
+        for (auto i2{i1}; i2 < std::ssize(keyboards); ++i2)
         {
-            _keyboard& _k2 = keyboards[i2];
-            if (!_k2.key_name)
-                break;
+            const auto& _k2 = keyboards[i2];
 
             if (_k1.dik == _k2.dik && i1 != i2)
-            {
                 Msg("%s==%s", _k1.key_name, _k2.key_name);
-            }
-            ++i2;
         }
-        ++i1;
     }
 #endif
 
-    constexpr LPCSTR keyboard_section = "custom_keyboard_action";
+    constexpr gsl::czstring keyboard_section = "custom_keyboard_action";
 
     if (pSettings->section_exist(keyboard_section))
     {
-        u32 action_count = pSettings->line_count(keyboard_section);
-
-        LPCSTR name;
-        LPCSTR value;
-
-        size_t id = actions.size();
+        const auto action_count = pSettings->line_count(keyboard_section);
 
         for (u32 i = 0; i < action_count; ++i)
         {
+            gsl::czstring name, value;
             std::ignore = pSettings->r_line(keyboard_section, i, &name, &value);
 
-            _action n;
-            n.id = (EGameActions)id++;
-            n.action_name = name;
-            n.export_name = value;
-            actions.push_back(n);
+            actions.emplace_back(name, value);
         }
     }
 
-    // last action
-    _action nL;
-    nL.id = kLASTACTION;
-    nL.action_name = nullptr;
-    nL.export_name = nullptr;
-    actions.push_back(nL);
-
-    for (size_t idx = 0; idx < actions.size(); ++idx)
-    {
-        if (actions[idx].id != kLASTACTION)
-        {
-            _binding b;
-            b.m_action = &actions[idx];
-            g_key_bindings.emplace_back(std::move(b));
-        }
-    }
+    for (auto& act : actions)
+        g_key_bindings.emplace_back(&act);
 }
 
 void remap_keys()
 {
-    int idx = 0;
-    string128 buff;
-    while (keyboards[idx].key_name)
+    for (auto& key : keyboards)
     {
-        buff[0] = 0;
-        _keyboard& kb = keyboards[idx];
-        bool res = pInput->get_dik_name(kb.dik, buff, 128);
-        if (res)
-            kb.key_local_name = buff;
-        else
-            kb.key_local_name = kb.key_name;
+        if (!key.dik.is<sf::Keyboard::Scancode>())
+        {
+        alias:
+            key.key_local_name =
+                std::string_view{key.key_name} | std::views::split(std::string_view{"::"}) | std::views::join_with(std::string_view{" "}) | std::ranges::to<xr_string>();
+            continue;
+        }
 
-        //.		Msg("[%s]-[%s]",kb.key_name, kb.key_local_name.c_str());
-        ++idx;
+        const auto desc = sf::Keyboard::getDescription(key.dik.get<sf::Keyboard::Scancode>()).toUtf8();
+        key.key_local_name.assign(reinterpret_cast<gsl::czstring>(desc.data()), desc.size());
+
+        if (key.key_local_name == "Unknown")
+            goto alias;
     }
 }
 } // namespace
 
-EGameActions action_name_to_id(LPCSTR _name)
+namespace xr
 {
-    _action* action = action_name_to_ptr(_name);
-    if (action)
-        return action->id;
+EGameActions action_id(const _action& act) { return EGameActions{gsl::narrow_cast<s32>(&act - actions.data())}; }
+std::span<const _keyboard> key_ids() { return keyboards; }
+} // namespace xr
 
-    return kNOTBINDED;
+EGameActions action_name_to_id(gsl::czstring _name)
+{
+    const auto action = action_name_to_ptr(_name);
+    if (action != nullptr)
+        return xr::action_id(*action);
+
+    return EGameActions::kNOTBINDED;
 }
 
-_action* action_name_to_ptr(LPCSTR _name)
+_action* action_name_to_ptr(gsl::czstring _name)
 {
-    int idx = 0;
-    while (actions[idx].action_name)
-    {
-        if (std::is_eq(xr::strcasecmp(_name, actions[idx].action_name)))
-            return &actions[idx];
-
-        ++idx;
-    }
+    const auto it = std::ranges::find_if(actions, [_name](const auto& act) { return std::is_eq(xr::strcasecmp(_name, act.action_name)); });
+    if (it != actions.end())
+        return &*it;
 
     Msg("! cant find corresponding [id] for action_name [%s]", _name);
     return nullptr;
 }
 
-LPCSTR dik_to_keyname(int _dik)
+gsl::czstring dik_to_keyname(xr::key_id _dik)
 {
-    _keyboard* kb = dik_to_ptr(_dik, true);
-    if (kb)
+    const auto kb = dik_to_ptr(_dik, true);
+    if (kb != nullptr)
         return kb->key_name;
 
     return nullptr;
 }
 
-_keyboard* dik_to_ptr(int _dik, bool bSafe)
+_keyboard* dik_to_ptr(xr::key_id _dik, bool bSafe)
 {
-    int idx = 0;
-    while (keyboards[idx].key_name)
-    {
-        _keyboard& kb = keyboards[idx];
-        if (kb.dik == _dik)
-            return &keyboards[idx];
-        ++idx;
-    }
+    if (const auto it = std::ranges::find(keyboards, _dik, &_keyboard::dik); it != keyboards.end())
+        return &*it;
 
     if (!bSafe)
         Msg("! cant find corresponding [_keyboard] for dik");
@@ -357,103 +396,93 @@ _keyboard* dik_to_ptr(int _dik, bool bSafe)
 
 namespace
 {
-_keyboard* keyname_to_ptr(LPCSTR _name)
+[[nodiscard]] _keyboard* keyname_to_ptr(gsl::czstring _name)
 {
-    int idx = 0;
-    while (keyboards[idx].key_name)
-    {
-        _keyboard& kb = keyboards[idx];
-        if (std::is_eq(xr::strcasecmp(_name, kb.key_name)))
-            return &keyboards[idx];
-
-        ++idx;
-    }
+    const auto it = std::ranges::find_if(keyboards, [_name](const auto& key) { return std::is_eq(xr::strcasecmp(_name, key.key_name)); });
+    if (it != keyboards.end())
+        return &*it;
 
     Msg("! cant find corresponding [_keyboard*] for keyname %s", _name);
     return nullptr;
 }
 } // namespace
 
-int keyname_to_dik(LPCSTR _name)
+xr::key_id keyname_to_dik(gsl::czstring _name)
 {
-    _keyboard* kb = keyname_to_ptr(_name);
-    if (kb)
+    const auto kb = keyname_to_ptr(_name);
+    if (kb != nullptr)
         return kb->dik;
 
-    return 0;
+    return xr::key_id{sf::Keyboard::Scancode::Unknown};
 }
 
-bool is_binded(EGameActions _action_id, int _dik)
+bool is_binded(EGameActions _action_id, xr::key_id _dik)
 {
-    if (_action_id == kNOTBINDED)
+    if (_action_id == EGameActions::kNOTBINDED)
         return false;
 
-    _binding* pbinding = &g_key_bindings.at(_action_id);
+    const auto pbinding = &g_key_bindings[std::to_underlying(_action_id)];
 
-    if (pbinding->m_keyboard[0] && pbinding->m_keyboard[0]->dik == _dik)
+    if (pbinding->m_keyboard[0] != nullptr && pbinding->m_keyboard[0]->dik == _dik)
         return true;
 
-    if (pbinding->m_keyboard[1] && pbinding->m_keyboard[1]->dik == _dik)
+    if (pbinding->m_keyboard[1] != nullptr && pbinding->m_keyboard[1]->dik == _dik)
         return true;
 
     return false;
 }
 
-int get_action_dik(EGameActions _action_id)
+xr::key_id get_action_dik(EGameActions _action_id)
 {
-    _binding* pbinding = &g_key_bindings.at(_action_id);
+    const auto pbinding = &g_key_bindings[std::to_underlying(_action_id)];
 
-    if (pbinding->m_keyboard[0])
+    if (pbinding->m_keyboard[0] != nullptr)
         return pbinding->m_keyboard[0]->dik;
 
-    if (pbinding->m_keyboard[1])
+    if (pbinding->m_keyboard[1] != nullptr)
         return pbinding->m_keyboard[1]->dik;
 
-    return 0;
+    return xr::key_id{sf::Keyboard::Scancode::Unknown};
 }
 
-EGameActions get_binded_action(int _dik)
+EGameActions get_binded_action(xr::key_id _dik)
 {
-    for (const auto& binding : g_key_bindings)
-    {
-        if (binding.m_keyboard[0] && binding.m_keyboard[0]->dik == _dik)
-            return binding.m_action->id;
+    const auto it = std::ranges::find_if(g_key_bindings, [_dik](const auto& binding) {
+        if (binding.m_keyboard[0] != nullptr && binding.m_keyboard[0]->dik == _dik)
+            return true;
 
-        if (binding.m_keyboard[1] && binding.m_keyboard[1]->dik == _dik)
-            return binding.m_action->id;
-    }
+        if (binding.m_keyboard[1] != nullptr && binding.m_keyboard[1]->dik == _dik)
+            return true;
 
-    return kNOTBINDED;
+        return false;
+    });
+
+    if (it != g_key_bindings.end())
+        return xr::action_id(*it->m_action);
+
+    return EGameActions::kNOTBINDED;
 }
 
-void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff_sz)
+void GetActionAllBinding(gsl::czstring _action, gsl::zstring dst_buff, gsl::index dst_buff_sz)
 {
     const EGameActions action_id = action_name_to_id(_action);
+    const _binding* pbinding{};
 
-    _binding* pbinding{};
-    if (action_id == kNOTBINDED)
-    {
+    if (action_id == EGameActions::kNOTBINDED)
         Msg("!![%s] Action [%s] not found! Fix it or remove from text!", __FUNCTION__, _action);
-        pbinding = &g_key_bindings.front();
-    }
     else
-    {
-        pbinding = &g_key_bindings.at(action_id);
-    }
+        pbinding = &g_key_bindings[std::to_underlying(action_id)];
 
     string128 prim;
     string128 sec;
-    prim[0] = 0;
-    sec[0] = 0;
+    prim[0] = '\0';
+    sec[0] = '\0';
 
-    if (pbinding->m_keyboard[0])
-    {
+    if (pbinding != nullptr && pbinding->m_keyboard[0] != nullptr)
         strcpy_s(prim, pbinding->m_keyboard[0]->key_local_name.c_str());
-    }
-    if (pbinding->m_keyboard[1])
-    {
+
+    if (pbinding != nullptr && pbinding->m_keyboard[1] != nullptr)
         strcpy_s(sec, pbinding->m_keyboard[1]->key_local_name.c_str());
-    }
 
     sprintf_s(dst_buff, dst_buff_sz, "%s%s%s", prim[0] ? prim : "", (sec[0] && prim[0]) ? " , " : "", sec[0] ? sec : "");
 }
@@ -472,10 +501,10 @@ private:
     int m_work_idx;
 
 public:
-    explicit CCC_Bind(LPCSTR N, int idx) : IConsole_Command{N}, m_work_idx{idx} {}
+    explicit CCC_Bind(gsl::czstring N, int idx) : IConsole_Command{N}, m_work_idx{idx} {}
     ~CCC_Bind() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(gsl::czstring args) override
     {
         string256 action;
         string256 key;
@@ -502,14 +531,14 @@ public:
             return;
 
         const EGameActions action_id = action_name_to_id(action);
-        if (action_id == kNOTBINDED)
+        if (action_id == EGameActions::kNOTBINDED)
             return;
 
         _keyboard* pkeyboard = keyname_to_ptr(key);
         if (!pkeyboard)
             return;
 
-        auto& curr_pbinding = g_key_bindings.at(action_id);
+        auto& curr_pbinding = g_key_bindings[std::to_underlying(action_id)];
 
         curr_pbinding.m_keyboard[m_work_idx] = pkeyboard;
 
@@ -528,7 +557,7 @@ public:
         CStringTable::ReparseKeyBindings();
     }
 
-    virtual void Save(IWriter* F)
+    void Save(IWriter* F) override
     {
         if (m_work_idx == 0)
             F->w_printf("unbindall\r\n");
@@ -549,14 +578,12 @@ private:
     int m_work_idx;
 
 public:
-    explicit CCC_UnBind(LPCSTR N, int idx) : IConsole_Command{N, true}, m_work_idx{idx} {}
+    explicit CCC_UnBind(gsl::czstring N, int idx) : IConsole_Command{N, true}, m_work_idx{idx} {}
     ~CCC_UnBind() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(gsl::czstring args) override
     {
-        int action_id = action_name_to_id(args);
-        _binding* pbinding = &g_key_bindings.at(action_id);
-        pbinding->m_keyboard[m_work_idx] = nullptr;
+        g_key_bindings[std::to_underlying(action_name_to_id(args))].m_keyboard[m_work_idx] = nullptr;
 
         CStringTable::ReparseKeyBindings();
     }
@@ -567,14 +594,16 @@ class CCC_ListActions : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_ListActions, IConsole_Command);
 
 public:
-    explicit CCC_ListActions(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_ListActions(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_ListActions() override = default;
 
-    void Execute(LPCSTR) override
+    void Execute(gsl::czstring) override
     {
         Log("- --- Action list start ---");
+
         for (const auto& pbinding : g_key_bindings)
             Msg("- %s", pbinding.m_action->action_name);
+
         Log("- --- Action list end   ---");
     }
 };
@@ -584,10 +613,10 @@ class CCC_UnBindAll : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_UnBindAll, IConsole_Command);
 
 public:
-    explicit CCC_UnBindAll(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_UnBindAll(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_UnBindAll() override = default;
 
-    void Execute(LPCSTR) override
+    void Execute(gsl::czstring) override
     {
         for (auto& pbinding : g_key_bindings)
         {
@@ -596,13 +625,13 @@ public:
         }
 
         bindConsoleCmds.clear();
-        //.		Console->Execute("cfg_load default_controls.ltx");
 
         string_path _cfg;
         string_path cmd;
 
         std::ignore = FS.update_path(_cfg, "$game_config$", "default_controls.ltx");
-        strconcat(sizeof(cmd), cmd, "cfg_load", " ", _cfg);
+        xr_strconcat(cmd, "cfg_load", " ", _cfg);
+
         Console->Execute(cmd);
     }
 };
@@ -612,21 +641,19 @@ class CCC_BindList : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_BindList, IConsole_Command);
 
 public:
-    explicit CCC_BindList(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_BindList(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_BindList() override = default;
 
-    void Execute(LPCSTR) override
+    void Execute(gsl::czstring) override
     {
         Log("- --- Bind list start ---");
-        string512 buff;
 
         for (const auto& pbinding : g_key_bindings)
         {
-            sprintf_s(buff, "[%s] primary is[%s] secondary is[%s]", pbinding.m_action->action_name,
-                      (pbinding.m_keyboard[0]) ? pbinding.m_keyboard[0]->key_local_name.c_str() : "NULL",
-                      (pbinding.m_keyboard[1]) ? pbinding.m_keyboard[1]->key_local_name.c_str() : "NULL");
-            Log(buff);
+            Msg("[%s] primary is[%s] secondary is[%s]", pbinding.m_action->action_name, pbinding.m_keyboard[0] != nullptr ? pbinding.m_keyboard[0]->key_local_name.c_str() : "None",
+                pbinding.m_keyboard[1] != nullptr ? pbinding.m_keyboard[1]->key_local_name.c_str() : "None");
         }
+
         Log("- --- Bind list end   ---");
     }
 };
@@ -636,20 +663,19 @@ class CCC_BindConsoleCmd : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_BindConsoleCmd, IConsole_Command);
 
 public:
-    explicit CCC_BindConsoleCmd(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_BindConsoleCmd(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_BindConsoleCmd() override = default;
 
-    void Execute(LPCSTR args) override
+    void Execute(gsl::czstring args) override
     {
         string512 console_command;
         string256 key;
 
-        int cnt = _GetItemCount(args, ' ');
+        const auto cnt = _GetItemCount(args, ' ');
         std::ignore = _GetItems(args, 0, cnt - 1, console_command, ' ');
         std::ignore = _GetItem(args, cnt - 1, key, ' ');
 
-        int dik = keyname_to_dik(key);
-        bindConsoleCmds.bind(dik, console_command);
+        bindConsoleCmds.bind(keyname_to_dik(key), console_command);
     }
 
     void Save(IWriter* F) override { bindConsoleCmds.save(F); }
@@ -660,22 +686,18 @@ class CCC_UnBindConsoleCmd : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_UnBindConsoleCmd, IConsole_Command);
 
 public:
-    explicit CCC_UnBindConsoleCmd(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_UnBindConsoleCmd(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_UnBindConsoleCmd() override = default;
 
-    virtual void Execute(LPCSTR args)
-    {
-        int _dik = keyname_to_dik(args);
-        bindConsoleCmds.unbind(_dik);
-    }
+    void Execute(gsl::czstring args) override { bindConsoleCmds.unbind(keyname_to_dik(args)); }
 };
 } // namespace
 
-void ConsoleBindCmds::bind(int dik, LPCSTR N) { m_bindConsoleCmds[dik].cmd._set(N); }
+void ConsoleBindCmds::bind(xr::key_id dik, gsl::czstring N) { m_bindConsoleCmds[dik]._set(N); }
 
-void ConsoleBindCmds::unbind(int dik)
+void ConsoleBindCmds::unbind(xr::key_id dik)
 {
-    xr_map<int, _conCmd>::iterator it = m_bindConsoleCmds.find(dik);
+    auto it = m_bindConsoleCmds.find(dik);
     if (it == m_bindConsoleCmds.end())
         return;
 
@@ -684,30 +706,27 @@ void ConsoleBindCmds::unbind(int dik)
 
 void ConsoleBindCmds::clear() { m_bindConsoleCmds.clear(); }
 
-bool ConsoleBindCmds::execute(int dik)
+bool ConsoleBindCmds::execute(xr::key_id dik) const
 {
-    xr_map<int, _conCmd>::iterator it = m_bindConsoleCmds.find(dik);
+    const auto it = m_bindConsoleCmds.find(dik);
     if (it == m_bindConsoleCmds.end())
         return false;
 
-    Console->Execute(it->second.cmd.c_str());
+    Console->Execute(it->second.c_str());
+
     return true;
 }
 
-void ConsoleBindCmds::save(IWriter* F)
+void ConsoleBindCmds::save(IWriter* F) const
 {
-    xr_map<int, _conCmd>::iterator it = m_bindConsoleCmds.begin();
-
-    for (; it != m_bindConsoleCmds.end(); ++it)
-    {
-        LPCSTR keyname = dik_to_keyname(it->first);
-        F->w_printf("bind_console %s %s\n", *it->second.cmd, keyname);
-    }
+    for (const auto& bind : m_bindConsoleCmds)
+        F->w_printf("bind_console %s %s\n", bind.second.c_str(), dik_to_keyname(bind.first));
 }
 
 void CCC_RegisterInput()
 {
     initialize_bindings();
+
     CMD2(CCC_Bind, "bind", 0);
     CMD2(CCC_Bind, "bind_sec", 1);
     CMD2(CCC_UnBind, "unbind", 0);

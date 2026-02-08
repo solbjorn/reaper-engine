@@ -18,8 +18,6 @@
 #include "../level.h"
 #include "../alife_registry_wrappers.h"
 
-#include <dinput.h>
-
 #define TALK_XML "talk.xml"
 #define TRADE_CHARACTER_XML "trade_character.xml"
 
@@ -172,7 +170,7 @@ void CUITalkDialogWnd::AddQuestion(LPCSTR str, LPCSTR value, int number)
             }
         }
 
-        itm->m_text->SetAccelerator(DIK_ESCAPE + number, 0);
+        itm->m_text->SetAccelerator(xr::key_id{sf::Keyboard::Scancode{std::to_underlying(sf::Keyboard::Scancode::Num1) - 1 + number}}, 0);
     }
 
     itm->Init(value, question_text.c_str());

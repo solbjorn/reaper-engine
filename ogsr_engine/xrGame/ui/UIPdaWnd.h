@@ -71,9 +71,9 @@ public:
     virtual void Update();
     virtual void Show();
     virtual void Hide();
-    virtual bool OnMouse(float x, float y, EUIMessages mouse_action) override;
+    [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
     void MouseMovement(float x, float y);
-    virtual bool OnKeyboard(int dik, EUIMessages keyboard_action) override;
+    [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
 
     void SetActiveSubdialog(EPdaTabs section);
     virtual bool StopAnyMove() { return false; }

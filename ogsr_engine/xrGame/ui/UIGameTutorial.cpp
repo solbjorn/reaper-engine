@@ -46,9 +46,9 @@ void CUISequenceItem::Load(CUIXml* xml, int idx)
     xml->SetLocalRoot(_stored_root);
 }
 
-bool CUISequenceItem::AllowKey(int dik)
+bool CUISequenceItem::AllowKey(xr::key_id dik)
 {
-    xr_vector<int>::iterator it = std::find(m_disabled_actions.begin(), m_disabled_actions.end(), get_binded_action(dik));
+    const auto it = std::find(m_disabled_actions.begin(), m_disabled_actions.end(), get_binded_action(dik));
     if (it == m_disabled_actions.end())
         return true;
 
@@ -212,24 +212,6 @@ bool CUISequencer::GrabInput()
     return false;
 }
 
-tmc::task<void> CUISequencer::IR_OnMousePress(gsl::index btn)
-{
-    if (m_bActive && !GrabInput() && m_pStoredInputReceiver)
-        co_await m_pStoredInputReceiver->IR_OnMousePress(btn);
-}
-
-void CUISequencer::IR_OnMouseRelease(int btn)
-{
-    if (m_bActive && !GrabInput() && m_pStoredInputReceiver)
-        m_pStoredInputReceiver->IR_OnMouseRelease(btn);
-}
-
-tmc::task<void> CUISequencer::IR_OnMouseHold(gsl::index btn)
-{
-    if (m_bActive && !GrabInput() && m_pStoredInputReceiver)
-        co_await m_pStoredInputReceiver->IR_OnMouseHold(btn);
-}
-
 void CUISequencer::IR_OnMouseMove(int x, int y)
 {
     if (m_bActive && !GrabInput() && m_pStoredInputReceiver)
@@ -242,13 +224,13 @@ void CUISequencer::IR_OnMouseStop(int x, int y)
         m_pStoredInputReceiver->IR_OnMouseStop(x, y);
 }
 
-void CUISequencer::IR_OnKeyboardRelease(int dik)
+void CUISequencer::IR_OnKeyboardRelease(xr::key_id dik)
 {
     if (m_bActive && !GrabInput() && m_pStoredInputReceiver)
         m_pStoredInputReceiver->IR_OnKeyboardRelease(dik);
 }
 
-tmc::task<void> CUISequencer::IR_OnKeyboardHold(gsl::index dik)
+tmc::task<void> CUISequencer::IR_OnKeyboardHold(xr::key_id dik)
 {
     if (m_bActive && !GrabInput() && m_pStoredInputReceiver)
         co_await m_pStoredInputReceiver->IR_OnKeyboardHold(dik);
@@ -260,7 +242,7 @@ tmc::task<void> CUISequencer::IR_OnMouseWheel(gsl::index direction)
         co_await m_pStoredInputReceiver->IR_OnMouseWheel(direction);
 }
 
-tmc::task<void> CUISequencer::IR_OnKeyboardPress(gsl::index dik)
+tmc::task<void> CUISequencer::IR_OnKeyboardPress(xr::key_id dik)
 {
     if (!m_bActive)
         co_return;
@@ -272,7 +254,7 @@ tmc::task<void> CUISequencer::IR_OnKeyboardPress(gsl::index dik)
     if (m_items.size())
         b &= m_items.front()->AllowKey(dik);
 
-    if (b && is_binded(kQUIT, dik))
+    if (b && is_binded(EGameActions::kQUIT, dik))
     {
         co_await Stop();
         co_return;
@@ -290,25 +272,25 @@ tmc::task<void> CUISequencer::IR_OnActivate()
     if (!pInput)
         co_return;
 
-    for (u32 i = 0; i < CInput::COUNT_KB_BUTTONS; i++)
+    for (auto& key : xr::key_ids())
     {
-        if (IR_GetKeyState(i))
+        if (IR_GetKeyState(key.dik))
         {
-            switch (get_binded_action(i))
+            switch (get_binded_action(key.dik))
             {
-            case kFWD:
-            case kBACK:
-            case kL_STRAFE:
-            case kR_STRAFE:
-            case kLEFT:
-            case kRIGHT:
-            case kUP:
-            case kDOWN:
-            case kCROUCH:
-            case kACCEL:
-            case kL_LOOKOUT:
-            case kR_LOOKOUT:
-            case kWPN_FIRE: co_await IR_OnKeyboardPress(i); break;
+            case EGameActions::kFWD:
+            case EGameActions::kBACK:
+            case EGameActions::kL_STRAFE:
+            case EGameActions::kR_STRAFE:
+            case EGameActions::kLEFT:
+            case EGameActions::kRIGHT:
+            case EGameActions::kUP:
+            case EGameActions::kDOWN:
+            case EGameActions::kCROUCH:
+            case EGameActions::kACCEL:
+            case EGameActions::kL_LOOKOUT:
+            case EGameActions::kR_LOOKOUT:
+            case EGameActions::kWPN_FIRE: co_await IR_OnKeyboardPress(key.dik); break;
             default: break;
             }
         }

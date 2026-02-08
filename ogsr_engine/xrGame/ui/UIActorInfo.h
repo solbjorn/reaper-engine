@@ -63,7 +63,7 @@ public:
     ~CUIActorStaticticHeader() override = default;
 
     void Init(CUIXml* xml, LPCSTR path, int idx_in_xml);
-    virtual bool OnMouseDown(int mouse_btn);
+    [[nodiscard]] bool OnMouseDown(sf::Mouse::Button mouse_btn) override;
     virtual void SetSelected(bool b);
 
     shared_str m_id;

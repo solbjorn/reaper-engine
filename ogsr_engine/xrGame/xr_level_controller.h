@@ -1,8 +1,10 @@
 #pragma once
 
-enum EGameActions : u32
+#include "../xr_3da/IInputReceiver.h"
+
+enum class EGameActions : s32
 {
-    kLEFT,
+    kLEFT = 0,
     kRIGHT,
     kUP,
     kDOWN,
@@ -71,81 +73,67 @@ enum EGameActions : u32
     kHIDEHUD,
     kSHOWHUD,
 
-    kLASTACTION = u32(-3),
-    kNOTBINDED = u32(-2),
+    kNOTBINDED = std::numeric_limits<s32>::max(),
 };
 
 struct _keyboard
 {
-    LPCSTR key_name;
-    int dik;
+    gsl::czstring key_name;
+    xr::key_id dik;
     xr_string key_local_name;
 
-    _keyboard(LPCSTR name, int d) : key_name{name}, dik{d} {}
+    constexpr explicit _keyboard(gsl::czstring name, xr::key_id d) : key_name{name}, dik{d} {}
 };
 
 struct _action
 {
-    LPCSTR action_name;
-    EGameActions id;
-    LPCSTR export_name;
+    gsl::czstring action_name;
+    gsl::czstring export_name;
 };
 
-LPCSTR dik_to_keyname(int _dik);
-int keyname_to_dik(LPCSTR _name);
-_keyboard* dik_to_ptr(int _dik, bool bSafe);
+[[nodiscard]] gsl::czstring dik_to_keyname(xr::key_id _dik);
+[[nodiscard]] xr::key_id keyname_to_dik(gsl::czstring _name);
+[[nodiscard]] _keyboard* dik_to_ptr(xr::key_id _dik, bool bSafe);
 
-EGameActions action_name_to_id(LPCSTR _name);
-_action* action_name_to_ptr(LPCSTR _name);
+[[nodiscard]] EGameActions action_name_to_id(gsl::czstring _name);
+[[nodiscard]] _action* action_name_to_ptr(gsl::czstring _name);
 
 extern xr_vector<_action> actions;
+
+namespace xr
+{
+[[nodiscard]] EGameActions action_id(const _action& act);
+[[nodiscard]] std::span<const _keyboard> key_ids();
+} // namespace xr
 
 struct _binding
 {
     _action* m_action;
-    _keyboard* m_keyboard[2];
+    std::array<_keyboard*, 2> m_keyboard{};
+
+    constexpr explicit _binding(_action* act) : m_action{act} {}
 };
 
 extern xr_vector<_binding> g_key_bindings;
 
-bool is_binded(EGameActions action_id, int dik);
-int get_action_dik(EGameActions action_id);
-EGameActions get_binded_action(int dik);
+[[nodiscard]] bool is_binded(EGameActions action_id, xr::key_id dik);
+[[nodiscard]] xr::key_id get_action_dik(EGameActions action_id);
+[[nodiscard]] EGameActions get_binded_action(xr::key_id dik);
 
-extern void CCC_RegisterInput();
-
-struct _conCmd
-{
-    shared_str cmd;
-};
+void CCC_RegisterInput();
 
 class ConsoleBindCmds
 {
 public:
-    xr_map<int, _conCmd> m_bindConsoleCmds;
+    xr_map<xr::key_id, shared_str> m_bindConsoleCmds;
 
-    void bind(int dik, LPCSTR N);
-    void unbind(int dik);
-    bool execute(int dik);
+    void bind(xr::key_id dik, gsl::czstring N);
+    void unbind(xr::key_id dik);
+    [[nodiscard]] bool execute(xr::key_id dik) const;
     void clear();
-    void save(IWriter* F);
+    void save(IWriter* F) const;
 };
 
-void GetActionAllBinding(LPCSTR action, char* dst_buff, int dst_buff_sz);
+void GetActionAllBinding(gsl::czstring action, gsl::zstring dst_buff, gsl::index dst_buff_sz);
 
 extern ConsoleBindCmds bindConsoleCmds;
-
-#ifndef MOUSE_1
-#define MOUSE_1 MOUSE_1
-
-// 0xed - max vavue in DIK* enum
-constexpr inline gsl::index MOUSE_1{0xed + 100};
-constexpr inline gsl::index MOUSE_2{0xed + 101};
-constexpr inline gsl::index MOUSE_3{0xed + 102};
-
-constexpr inline gsl::index MOUSE_4{0xed + 103};
-constexpr inline gsl::index MOUSE_5{0xed + 104};
-constexpr inline gsl::index MOUSE_6{0xed + 105};
-constexpr inline gsl::index MOUSE_7{0xed + 106};
-constexpr inline gsl::index MOUSE_8{0xed + 107};
-#endif

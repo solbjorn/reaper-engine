@@ -95,9 +95,9 @@ public:
     void ShowHint(CUIWindow* parent, LPCSTR text);
     void HideHint(CUIWindow* parent);
     void Hint(const shared_str& text);
-    virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
-    virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
-    virtual bool OnKeyboardHold(int dik);
+    [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
+    [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
+    [[nodiscard]] bool OnKeyboardHold(xr::key_id dik) override;
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 

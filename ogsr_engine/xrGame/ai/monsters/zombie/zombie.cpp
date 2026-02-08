@@ -206,23 +206,3 @@ void CZombie::fake_death_stand_up()
 
     com_man().ta_pointbreak();
 }
-
-/*
-#ifdef DEBUG
-void CZombie::debug_on_key(int key)
-{
-    switch (key){
-    case DIK_MINUS:
-        {
-            fake_death_fall_down();
-        }
-        break;
-    case DIK_EQUALS:
-        {
-            fake_death_stand_up();
-        }
-        break;
-    }
-}
-#endif
-*/

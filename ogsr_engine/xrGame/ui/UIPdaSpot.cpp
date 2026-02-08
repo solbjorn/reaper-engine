@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIPdaSpot.h"
+
 #include "Level.h"
 #include "map_manager.h"
 #include "map_location.h"
@@ -9,8 +10,6 @@
 #include "UIXmlInit.h"
 #include "UI3tButton.h"
 #include "string_table.h"
-
-#include <dinput.h>
 
 CUIPdaSpot::CUIPdaSpot()
 {
@@ -132,30 +131,34 @@ void CUIPdaSpot::Exit()
     this->Hide();
 }
 
-bool CUIPdaSpot::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIPdaSpot::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 {
     if (base_class::OnKeyboard(dik, keyboard_action))
         return true;
 
-    switch (dik)
+    if (!dik.is<sf::Keyboard::Scancode>())
+        return false;
+
+    switch (dik.get<sf::Keyboard::Scancode>())
     {
-    case DIK_RETURN:
-    case DIK_NUMPADENTER: {
+    case sf::Keyboard::Scancode::Enter:
+    case sf::Keyboard::Scancode::NumpadEnter:
         if (IsShown())
         {
             OnApply(nullptr, nullptr);
             return true;
         }
-    }
-    break;
-    case DIK_ESCAPE: {
+
+        break;
+    case sf::Keyboard::Scancode::Escape:
         if (IsShown())
         {
             Exit();
             return true;
         }
-    }
-    break;
+
+        break;
+    default: break;
     }
 
     return false;

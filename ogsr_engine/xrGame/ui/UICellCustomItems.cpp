@@ -99,9 +99,9 @@ void CUIInventoryCellItem::OnFocusLost()
     }
 }
 
-bool CUIInventoryCellItem::OnMouse(float x, float y, EUIMessages action)
+bool CUIInventoryCellItem::OnMouse(f32 x, f32 y, EUIMessages action)
 {
-    bool r = inherited::OnMouse(x, y, action);
+    const bool r = inherited::OnMouse(x, y, action);
 
     g_actor->callback(GameObject::eOnCellItemMouse)(object()->object().lua_game_object(), x, y, action);
 

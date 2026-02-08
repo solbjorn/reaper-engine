@@ -67,7 +67,7 @@ public:
     void Activate_deffered(u32 slot, u32 _frame);
     PIItem ActiveItem() const { return m_iActiveSlot == NO_ACTIVE_SLOT ? nullptr : m_slots[m_iActiveSlot].m_pIItem; }
     PIItem ItemFromSlot(u32 slot) const;
-    bool Action(s32 cmd, u32 flags);
+    [[nodiscard]] bool Action(EGameActions cmd, u32 flags);
     void Update();
     // Ищет на поясе аналогичный IItem
     PIItem Same(const PIItem pIItem, bool bSearchRuck) const;

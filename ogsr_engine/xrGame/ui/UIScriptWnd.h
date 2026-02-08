@@ -45,7 +45,7 @@ public:
     void ClearCallbacks();
 
     virtual void Update();
-    virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
+    [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
 
     template <typename T>
     IC T* GetControl(LPCSTR name);

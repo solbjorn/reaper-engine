@@ -18,12 +18,6 @@
 #include "../../../ai_object_location.h"
 #include "../../../actor.h"
 
-/*
-#ifdef DEBUG
-#	include <dinput.h>
-#endif
-*/
-
 CAI_Dog::CAI_Dog()
 {
     StateMan = xr_new<CStateManagerDog>(this);
@@ -362,31 +356,3 @@ bool CAI_Dog::can_use_agressive_jump(const CObject* enemy)
 
     return enemy->Position().y - Position().y > delta_y;
 }
-
-/*
-#ifdef DEBUG
-void CAI_Dog::debug_on_key(int key)
-{
-    IKinematicsAnimated *skel = smart_cast<IKinematicsAnimated *>(Visual());
-
-    switch (key){
-    case DIK_1:
-        Msg("Ohhhhhhhhhhhhhhh! Here it is!");
-        // strafe left
-        //com_man().seq_run(skel->ID_Cycle_Safe("stand_turn_ls_0"));
-        break;
-    case DIK_2:
-        // strafe right
-        com_man().seq_run(skel->ID_Cycle_Safe("stand_turn_ls_0"));
-        break;
-    case DIK_3:
-        // threaten
-        com_man().seq_run(skel->ID_Cycle_Safe("stand_threaten_0"));
-        break;
-    case DIK_0:
-        Msg("Ohhhhhhhhhhhhhhh! Here it is!");
-        break;
-    }
-}
-#endif
-*/

@@ -22,9 +22,9 @@ public:
     virtual void Init(float x, float y, float width, float height);
     void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr) override;
 
-    [[nodiscard]] bool OnMouse(float, float, EUIMessages mouse_action);
-    [[nodiscard]] bool OnKeyboard(u32 dik, EUIMessages keyboard_action);
-    [[nodiscard]] bool OnKeyboardHold(u32);
+    [[nodiscard]] bool OnMouse(f32, f32, EUIMessages mouse_action) override;
+    [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
+    [[nodiscard]] bool OnKeyboardHold(xr::key_id) override;
     virtual void OnFocusLost();
 
     virtual void Update();
@@ -48,7 +48,7 @@ public:
     virtual void SetTextPosY(float y);
 
 protected:
-    bool KeyPressed(u32 dik);
+    [[nodiscard]] bool KeyPressed(sf::Keyboard::Scancode dik);
 
     virtual void AddChar(const u16 c);
 
@@ -61,7 +61,7 @@ protected:
     u32 m_textColor[2];
 
     // DIK клавиши, кот. нажата и удерживается, 0 если такой нет
-    u32 m_iKeyPressAndHold;
+    sf::Keyboard::Scancode m_iKeyPressAndHold{sf::Keyboard::Scancode::Unknown};
     bool m_bHoldWaitMode;
 
     //	u32	m_cursorColor;

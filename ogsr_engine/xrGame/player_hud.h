@@ -403,5 +403,5 @@ extern float g_bHudAdjustDeltaRot;
 extern int g_bHudAdjustItemIdx;
 extern int g_bHudAdjustMode;
 
-void hud_adjust_mode_keyb(int dik);
+void hud_adjust_mode_keyb(xr::key_id dik);
 void hud_draw_adjust_mode();

@@ -268,12 +268,10 @@ void CUIMMShniaga::Update()
     CUIWindow::Update();
 }
 
-bool CUIMMShniaga::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUIMMShniaga::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
     if (WINDOW_LBUTTON_DOWN == mouse_action)
-    {
         OnBtnClick();
-    }
 
     return CUIWindow::OnMouse(x, y, mouse_action);
 }
@@ -288,28 +286,30 @@ void CUIMMShniaga::OnBtnClick()
         GetMessageTarget()->SendMessage(m_selected, BUTTON_CLICKED);
 }
 
-#include <dinput.h>
-
-bool CUIMMShniaga::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIMMShniaga::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 {
-    if (WINDOW_KEY_PRESSED == keyboard_action)
+    if (WINDOW_KEY_PRESSED == keyboard_action && dik.is<sf::Keyboard::Scancode>())
     {
-        switch (dik)
+        switch (dik.get<sf::Keyboard::Scancode>())
         {
-        case DIK_UP:
+        case sf::Keyboard::Scancode::Up:
             if (m_selected_btn > 0)
                 SelectBtn(m_selected_btn - 1);
+
             return true;
-        case DIK_DOWN:
+        case sf::Keyboard::Scancode::Down:
             if (m_selected_btn < BtnCount() - 1)
                 SelectBtn(m_selected_btn + 1);
+
             return true;
-        case DIK_RETURN:
-        case DIK_NUMPADENTER: OnBtnClick(); return true;
-        case DIK_ESCAPE:
-            if (1 == m_page)
+        case sf::Keyboard::Scancode::Enter:
+        case sf::Keyboard::Scancode::NumpadEnter: OnBtnClick(); return true;
+        case sf::Keyboard::Scancode::Escape:
+            if (m_page == 1)
                 ShowMain();
+
             return true;
+        default: break;
         }
     }
 

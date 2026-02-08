@@ -170,15 +170,12 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
                 //						l_tpWeaponMagazined->SetQueueSize(l_tObjectAction.m_dwQueueSize);
                 //					else
                 //						l_tpWeaponMagazined->SetQueueSize(1);
-                //					inventory().Action(kWPN_FIRE,	CMD_START);
             }
             else
             {
-                //					inventory().Action(kWPN_FIRE,	CMD_STOP);
                 if (l_tpWeapon->GetAmmoCurrent())
                 {
                     //						CObjectHandler::set_goal	(eObjectActionFire1,l_tObjectAction.m_tpObject);
-                    //						inventory().Action(kWPN_RELOAD, CMD_START);
                 }
                 else
                     l_tObjectAction.m_bCompleted = true;
@@ -198,15 +195,12 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
                 //						l_tpWeaponMagazined->SetQueueSize(l_tObjectAction.m_dwQueueSize);
                 //					else
                 //						l_tpWeaponMagazined->SetQueueSize(1);
-                //					inventory().Action(kWPN_FIRE,	CMD_START);
             }
             else
             {
-                //					inventory().Action(kWPN_FIRE,	CMD_STOP);
                 if (l_tpWeapon->GetAmmoCurrent())
                 {
                     //						CObjectHandler::set_goal	(eObjectActionFire1,l_tObjectAction.m_tpObject);
-                    //						inventory().Action(kWPN_RELOAD, CMD_START);
                 }
                 else
                     l_tObjectAction.m_bCompleted = true;
@@ -224,10 +218,8 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
         CObjectHandler::set_goal(MonsterSpace::eObjectActionReload1, l_tpInventoryItem);
         if (inventory().ActiveItem()->object().ID() == l_tObjectAction.m_tpObject->ID())
         {
-            //				inventory().Action(kWPN_FIRE,	CMD_STOP);
             if (CWeapon::eReload != l_tpWeapon->GetState())
             {
-                //					inventory().Action(kWPN_RELOAD,	CMD_START);
             }
             else
                 l_tObjectAction.m_bCompleted = true;
@@ -235,15 +227,6 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
         else
             ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "cannot reload active item because it is not selected!");
 
-        //			if (inventory().ActiveItem()) {
-        //				inventory().Action(kWPN_FIRE,	CMD_STOP);
-        //				if (CWeapon::eReload != l_tpWeapon->STATE)
-        //					inventory().Action(kWPN_RELOAD,	CMD_START);
-        //				else
-        //					l_tObjectAction.m_bCompleted = true;
-        //			}
-        //			else
-        //				ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,"cannot reload active item because it is not selected!");
         break;
     }
     case MonsterSpace::eObjectActionActivate: {

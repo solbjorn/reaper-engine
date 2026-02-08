@@ -23,8 +23,6 @@
 #include "ui/UICarBodyWnd.h"
 #include "ui/UIMessageBox.h"
 
-#include <dinput.h>
-
 CUIGameSP::CUIGameSP()
 {
     InventoryMenu = xr_new<CUIInventoryWnd>();
@@ -68,64 +66,65 @@ void CUIGameSP::SetClGame(game_cl_GameState* g)
     R_ASSERT(m_game);
 }
 
-bool CUIGameSP::IR_OnKeyboardPress(int dik)
+tmc::task<bool> CUIGameSP::IR_OnKeyboardPress(xr::key_id dik)
 {
-    if (inherited::IR_OnKeyboardPress(dik))
-        return true;
+    if (co_await inherited::IR_OnKeyboardPress(dik))
+        co_return true;
 
     if (Device.Paused())
-        return false;
+        co_return false;
 
     CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
     if (!pActor)
-        return false;
+        co_return false;
     if (pActor && !pActor->g_Alive())
-        return false;
+        co_return false;
 
     hud_adjust_mode_keyb(dik);
     if (attach_adjust_mode_keyb(dik))
-        return true;
+        co_return true;
 
     if (Core.Features.test(xrCore::Feature::busy_actor_restrictions))
     {
         const auto active_hud = smart_cast<CHudItem*>(pActor->inventory().ActiveItem());
         if (active_hud != nullptr && active_hud->GetState() != CHudItem::eIdle)
-            return false;
+            co_return false;
     }
 
-    auto bind = get_binded_action(dik);
+    const auto bind = get_binded_action(dik);
     switch (bind)
     {
-    case kINVENTORY:
+    case EGameActions::kINVENTORY:
         if (!MainInputReceiver() || MainInputReceiver() == InventoryMenu)
         {
             auto Pda = pActor->GetPDA();
             if (!Pda || !Pda->Is3DPDA() || !psActorFlags.test(AF_3D_PDA) || !PdaMenu->IsShown())
             {
                 m_game->StartStopMenu(InventoryMenu, true);
-                return true;
+                co_return true;
             }
         }
-        break;
 
-    case kACTIVE_JOBS:
-    case kMAP:
-    case kCONTACTS: {
+        break;
+    case EGameActions::kACTIVE_JOBS:
+    case EGameActions::kMAP:
+    case EGameActions::kCONTACTS: {
         auto Pda = pActor->GetPDA();
         if ((!Pda || !Pda->Is3DPDA() || !psActorFlags.test(AF_3D_PDA)) && (!MainInputReceiver() || MainInputReceiver() == PdaMenu))
         {
             if (g_actor_allow_pda)
             {
-                PdaMenu->SetActiveSubdialog(bind == kACTIVE_JOBS ? eptQuests : (bind == kMAP ? eptMap : eptContacts));
+                PdaMenu->SetActiveSubdialog(bind == EGameActions::kACTIVE_JOBS ? eptQuests : (bind == EGameActions::kMAP ? eptMap : eptContacts));
                 m_game->StartStopMenu(PdaMenu, true);
-                return true;
+
+                co_return true;
             }
         }
-    }
-    break;
 
-    case kWPN_FIRE:
-    case kWPN_ZOOM: {
+        break;
+    }
+    case EGameActions::kWPN_FIRE:
+    case EGameActions::kWPN_ZOOM: {
         auto Pda = pActor->GetPDA();
         if (Pda && Pda->Is3DPDA() && psActorFlags.test(AF_3D_PDA) && PdaMenu->IsShown() && (!MainInputReceiver() || MainInputReceiver() != PdaMenu))
         {
@@ -135,32 +134,34 @@ bool CUIGameSP::IR_OnKeyboardPress(int dik)
 
             HUD().GetUI()->SetMainInputReceiver(PdaMenu, false, IRFlags);
             Pda->m_bZoomed = true;
-            return true;
-        }
-    }
-    break;
 
-    case kSCORES: {
+            co_return true;
+        }
+
+        break;
+    }
+    case EGameActions::kSCORES: {
         SDrawStaticStruct* ss = AddCustomStatic("main_task", true);
         SGameTaskObjective* o = pActor->GameTaskManager().ActiveObjective();
         if (!o)
             ss->m_static->SetTextST("st_no_active_task");
         else
             ss->m_static->SetTextST(*(o->description));
+
+        break;
     }
-    break;
     default: break;
     }
 
-    return false;
+    co_return false;
 }
 
-bool CUIGameSP::IR_OnKeyboardRelease(int dik)
+bool CUIGameSP::IR_OnKeyboardRelease(xr::key_id dik)
 {
     if (inherited::IR_OnKeyboardRelease(dik))
         return true;
 
-    if (is_binded(kSCORES, dik))
+    if (is_binded(EGameActions::kSCORES, dik))
         RemoveCustomStatic("main_task");
 
     return false;
@@ -169,6 +170,7 @@ bool CUIGameSP::IR_OnKeyboardRelease(int dik)
 void CUIGameSP::Render()
 {
     inherited::Render();
+
     hud_draw_adjust_mode();
     attach_draw_adjust_mode();
 }
@@ -284,21 +286,22 @@ void CChangeLevelWnd::OnCancel()
     }
 }
 
-bool CChangeLevelWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CChangeLevelWnd::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 {
     if (keyboard_action == WINDOW_KEY_PRESSED)
     {
-        if (dik == DIK_RETURN || dik == DIK_NUMPADENTER)
+        if (dik == xr::key_id{sf::Keyboard::Scancode::Enter} || dik == xr::key_id{sf::Keyboard::Scancode::NumpadEnter})
         {
             OnOk();
             return true;
         }
-        else if (is_binded(kQUIT, dik))
+        else if (is_binded(EGameActions::kQUIT, dik))
         {
             OnCancel();
             return true;
         }
     }
+
     return inherited::OnKeyboard(dik, keyboard_action);
 }
 

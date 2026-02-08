@@ -82,7 +82,7 @@ public:
 };
 
 // attachable_item.cpp
-bool attach_adjust_mode_keyb(int dik);
+bool attach_adjust_mode_keyb(xr::key_id dik);
 void attach_draw_adjust_mode();
 
 // console_commands.cpp

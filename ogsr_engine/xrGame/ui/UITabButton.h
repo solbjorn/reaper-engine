@@ -27,8 +27,8 @@ public:
     //.	virtual CUIFrameWindow* GetAssociatedWindow();
     //.	virtual void ShowAssociatedWindow(bool bShow = true);
     void SendMessage(CUIWindow* pWnd, s16 msg, void* = nullptr) override;
-    [[nodiscard]] bool OnMouse(float x, float y, EUIMessages mouse_action) override;
-    [[nodiscard]] bool OnMouseDown(int mouse_btn) override;
+    [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
+    [[nodiscard]] bool OnMouseDown(sf::Mouse::Button mouse_btn) override;
     void Update() override;
 
     //.protected:

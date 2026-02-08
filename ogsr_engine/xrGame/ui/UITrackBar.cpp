@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "UITrackBar.h"
+
 #include "UIFrameLineWnd.h"
 #include "UI3tButton.h"
 #include "UITextureMaster.h"
@@ -26,18 +27,19 @@ CUITrackBar::CUITrackBar()
     //.	m_pSlider->SetOwner				(this);
 }
 
-bool CUITrackBar::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUITrackBar::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
-    CUIWindow::OnMouse(x, y, mouse_action);
+    std::ignore = CUIWindow::OnMouse(x, y, mouse_action);
 
     if (m_bCursorOverWindow)
     {
-        if (pInput->iGetAsyncBtnState(0))
+        if (pInput->iGetAsyncKeyState(xr::key_id{sf::Mouse::Button::Left}))
         {
             UpdatePosRelativeToMouse();
             return true;
         }
     }
+
     return false;
 }
 

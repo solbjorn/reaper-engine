@@ -155,10 +155,7 @@ public:
 #ifdef DEBUG
     virtual CBaseMonster::SDebugInfo show_debug_info();
 
-#ifdef DEBUG
-    void debug_on_key(int key);
-#endif
-
+    void debug_on_key(xr::key_id key) override;
 #endif
 
     //-------------------------------------------------------------------

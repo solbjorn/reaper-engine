@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "object_actions.h"
+
 #include "inventory.h"
 #include "ai/stalker/ai_stalker.h"
 #include "xr_level_controller.h"
@@ -23,14 +24,14 @@
 // CObjectActionCommand
 //////////////////////////////////////////////////////////////////////////
 
-CObjectActionCommand::CObjectActionCommand(CInventoryItem* item, CAI_Stalker* owner, CPropertyStorage* storage, u32 command, LPCSTR action_name)
-    : inherited(item, owner, storage, action_name), m_command(command)
+CObjectActionCommand::CObjectActionCommand(CInventoryItem* item, CAI_Stalker* owner, CPropertyStorage* storage, EGameActions command, gsl::czstring action_name)
+    : inherited{item, owner, storage, action_name}, m_command{command}
 {}
 
 void CObjectActionCommand::initialize()
 {
     inherited::initialize();
-    object().inventory().Action(m_command, CMD_START);
+    std::ignore = object().inventory().Action(m_command, CMD_START);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -156,7 +157,7 @@ void CObjectActionReload::initialize()
         try_advance_ammo(*weapon);
     }
 
-    object().inventory().Action(kWPN_RELOAD, CMD_START);
+    std::ignore = object().inventory().Action(EGameActions::kWPN_RELOAD, CMD_START);
 }
 
 void CObjectActionReload::execute()
@@ -183,7 +184,7 @@ void CObjectActionReload::execute()
             return;
     }
 
-    object().inventory().Action(kWPN_RELOAD, CMD_START);
+    std::ignore = object().inventory().Action(EGameActions::kWPN_RELOAD, CMD_START);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -203,9 +204,9 @@ void CObjectActionFire::initialize()
     VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
     if (!m_object->can_kill_member())
-        object().inventory().Action(kWPN_FIRE, CMD_START);
+        std::ignore = object().inventory().Action(EGameActions::kWPN_FIRE, CMD_START);
     else
-        object().inventory().Action(kWPN_FIRE, CMD_STOP);
+        std::ignore = object().inventory().Action(EGameActions::kWPN_FIRE, CMD_STOP);
 }
 
 void CObjectActionFire::execute()
@@ -220,16 +221,19 @@ void CObjectActionFire::execute()
     {
         CWeapon* weapon = smart_cast<CWeapon*>(object().inventory().ActiveItem());
         if (!weapon || (weapon->GetState() != CWeapon::eFire))
-            object().inventory().Action(kWPN_FIRE, CMD_START);
+            std::ignore = object().inventory().Action(EGameActions::kWPN_FIRE, CMD_START);
     }
     else
-        object().inventory().Action(kWPN_FIRE, CMD_STOP);
+    {
+        std::ignore = object().inventory().Action(EGameActions::kWPN_FIRE, CMD_STOP);
+    }
 }
 
 void CObjectActionFire::finalize()
 {
     inherited::finalize();
-    object().inventory().Action(kWPN_FIRE, CMD_STOP);
+
+    std::ignore = object().inventory().Action(EGameActions::kWPN_FIRE, CMD_STOP);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -643,8 +647,9 @@ CObjectActionThreaten::CObjectActionThreaten(CAI_Stalker* item, CAI_Stalker* own
 void CObjectActionThreaten::execute()
 {
     inherited::execute();
+
     if (completed())
-        object().inventory().Action(kWPN_FIRE, CMD_STOP);
+        std::ignore = object().inventory().Action(EGameActions::kWPN_FIRE, CMD_STOP);
 }
 
 //////////////////////////////////////////////////////////////////////////

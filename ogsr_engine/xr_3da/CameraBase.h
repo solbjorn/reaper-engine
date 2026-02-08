@@ -8,6 +8,7 @@
 
 // refs
 class CObject;
+enum class EGameActions : s32;
 
 class CCameraBase : public virtual RTTI::Enable
 {
@@ -63,7 +64,7 @@ public:
 
     virtual void OnActivate(CCameraBase*) {}
     virtual void OnDeactivate() {}
-    virtual void Move(int, float = 0.0f, float = 1.0f) {}
+    virtual void Move(EGameActions, f32 = 0.0f, f32 = 1.0f) {}
     virtual void Update(Fvector&, Fvector&) {}
 
     virtual void Get(Fvector& P, Fvector& D, Fvector& N) const

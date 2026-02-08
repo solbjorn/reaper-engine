@@ -153,31 +153,28 @@ void CUIPdaWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
     }
 }
 
-bool CUIPdaWnd::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUIPdaWnd::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
     switch (mouse_action)
     {
     case WINDOW_LBUTTON_DOWN:
-    // case WINDOW_RBUTTON_DOWN:
     case WINDOW_LBUTTON_UP:
-        // case WINDOW_RBUTTON_UP:
+        if (auto pda = Actor()->GetPDA())
         {
-            if (auto pda = Actor()->GetPDA())
-            {
-                if (pda->IsPending())
-                    return true;
+            if (pda->IsPending())
+                return true;
 
-                if (mouse_action == WINDOW_LBUTTON_DOWN)
-                    bButtonL = true;
-                // else if (mouse_action == WINDOW_RBUTTON_DOWN)
-                //	bButtonR = true;
-                else if (mouse_action == WINDOW_LBUTTON_UP)
-                    bButtonL = false;
-                // else if (mouse_action == WINDOW_RBUTTON_UP)
-                //	bButtonR = false;
-            }
-            break;
+            if (mouse_action == WINDOW_LBUTTON_DOWN)
+                bButtonL = true;
+            // else if (mouse_action == WINDOW_RBUTTON_DOWN)
+            //	bButtonR = true;
+            else if (mouse_action == WINDOW_LBUTTON_UP)
+                bButtonL = false;
+            // else if (mouse_action == WINDOW_RBUTTON_UP)
+            //	bButtonR = false;
         }
+
+        break;
     case WINDOW_RBUTTON_DOWN:
         if (auto pda = Actor()->GetPDA(); pda && pda->Is3DPDA() && psActorFlags.test(AF_3D_PDA))
         {
@@ -185,11 +182,12 @@ bool CUIPdaWnd::OnMouse(float x, float y, EUIMessages mouse_action)
             HUD().GetUI()->SetMainInputReceiver(nullptr, false);
             return true;
         }
+
         break;
     default: break;
     }
 
-    CUIDialogWnd::OnMouse(x, y, mouse_action);
+    std::ignore = CUIDialogWnd::OnMouse(x, y, mouse_action);
 
     return true; // always true because StopAnyMove() == false
 }
@@ -554,7 +552,7 @@ void RearrangeTabButtons(CUITabControl* pTab, xr_vector<Fvector2>& vec_sign_plac
     }
 }
 
-bool CUIPdaWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIPdaWnd::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 {
     if (WINDOW_KEY_PRESSED == keyboard_action && IsShown())
     {
@@ -563,9 +561,9 @@ bool CUIPdaWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
             CPda* pda = Actor()->GetPDA();
             if (pda && pda->Is3DPDA())
             {
-                EGameActions action = get_binded_action(dik);
+                const auto action = get_binded_action(dik);
 
-                if (action == kQUIT) // "Hack" to make Esc key open main menu instead of simply hiding the PDA UI
+                if (action == EGameActions::kQUIT) // "Hack" to make Esc key open main menu instead of simply hiding the PDA UI
                 {
                     if (pda->GetState() == CPda::eHiding || pda->GetState() == CPda::eHidden)
                     {
@@ -576,6 +574,7 @@ bool CUIPdaWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
                     {
                         pda->m_bZoomed = false;
                         HUD().GetUI()->SetMainInputReceiver(nullptr, false);
+
                         return true;
                     }
                     else
@@ -587,5 +586,6 @@ bool CUIPdaWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
             }
         }
     }
+
     return inherited::OnKeyboard(dik, keyboard_action);
 }

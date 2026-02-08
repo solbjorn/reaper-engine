@@ -99,12 +99,12 @@ void line_edit_control::update_key_states()
 {
     m_key_state.zero();
 
-    set_key_state(ks_LShift, !!pInput->iGetAsyncKeyState(DIK_LSHIFT));
-    set_key_state(ks_RShift, !!pInput->iGetAsyncKeyState(DIK_RSHIFT));
-    set_key_state(ks_LCtrl, !!pInput->iGetAsyncKeyState(DIK_LCONTROL));
-    set_key_state(ks_RCtrl, !!pInput->iGetAsyncKeyState(DIK_RCONTROL));
-    set_key_state(ks_LAlt, !!pInput->iGetAsyncKeyState(DIK_LALT));
-    set_key_state(ks_RAlt, !!pInput->iGetAsyncKeyState(DIK_RALT));
+    set_key_state(ks_LShift, pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}));
+    set_key_state(ks_RShift, pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RShift}));
+    set_key_state(ks_LCtrl, pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LControl}));
+    set_key_state(ks_RCtrl, pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RControl}));
+    set_key_state(ks_LAlt, pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LAlt}));
+    set_key_state(ks_RAlt, pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RAlt}));
     set_key_state(ks_CapsLock, text_editor::get_caps_lock_state());
 }
 
@@ -166,199 +166,193 @@ void line_edit_control::init(u32 str_buffer_size, init_mode mode)
 
     clear_states();
 
-    for (u32 i = 0; i < DIK_COUNT; ++i)
-    {
-        xr_delete(m_actions[i]);
-        m_actions[i] = nullptr;
-    }
+    for (auto& act : m_actions)
+        xr_delete(act);
 
     if (mode == im_read_only)
     {
-        assign_callback(DIK_A, ks_Ctrl, CallMe::fromMethod<&line_edit_control::select_all_buf>(this));
-        assign_callback(DIK_C, ks_Ctrl, CallMe::fromMethod<&line_edit_control::copy_to_clipboard>(this));
-        assign_callback(DIK_INSERT, ks_Ctrl, CallMe::fromMethod<&line_edit_control::copy_to_clipboard>(this));
+        assign_callback(sf::Keyboard::Scancode::A, ks_Ctrl, CallMe::fromMethod<&line_edit_control::select_all_buf>(this));
+        assign_callback(sf::Keyboard::Scancode::C, ks_Ctrl, CallMe::fromMethod<&line_edit_control::copy_to_clipboard>(this));
+        assign_callback(sf::Keyboard::Scancode::Insert, ks_Ctrl, CallMe::fromMethod<&line_edit_control::copy_to_clipboard>(this));
 
-        assign_callback(DIK_HOME, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_home>(this));
-        assign_callback(DIK_END, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_end>(this));
-        assign_callback(DIK_LEFT, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_left>(this));
-        assign_callback(DIK_RIGHT, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_right>(this));
-        assign_callback(DIK_LEFT, ks_Ctrl, CallMe::fromMethod<&line_edit_control::move_pos_left_word>(this));
-        assign_callback(DIK_RIGHT, ks_Ctrl, CallMe::fromMethod<&line_edit_control::move_pos_right_word>(this));
+        assign_callback(sf::Keyboard::Scancode::Home, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_home>(this));
+        assign_callback(sf::Keyboard::Scancode::End, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_end>(this));
+        assign_callback(sf::Keyboard::Scancode::Left, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_left>(this));
+        assign_callback(sf::Keyboard::Scancode::Right, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_right>(this));
+        assign_callback(sf::Keyboard::Scancode::Left, ks_Ctrl, CallMe::fromMethod<&line_edit_control::move_pos_left_word>(this));
+        assign_callback(sf::Keyboard::Scancode::Right, ks_Ctrl, CallMe::fromMethod<&line_edit_control::move_pos_right_word>(this));
     }
     else
     {
         assign_char_pairs(mode);
 
-        assign_callback(DIK_INSERT, ks_free, CallMe::fromMethod<&line_edit_control::flip_insert_mode>(this));
-        assign_callback(DIK_A, ks_Ctrl, CallMe::fromMethod<&line_edit_control::select_all_buf>(this));
-        assign_callback(DIK_Z, ks_Ctrl, CallMe::fromMethod<&line_edit_control::undo_buf>(this));
+        assign_callback(sf::Keyboard::Scancode::Insert, ks_free, CallMe::fromMethod<&line_edit_control::flip_insert_mode>(this));
+        assign_callback(sf::Keyboard::Scancode::A, ks_Ctrl, CallMe::fromMethod<&line_edit_control::select_all_buf>(this));
+        assign_callback(sf::Keyboard::Scancode::Z, ks_Ctrl, CallMe::fromMethod<&line_edit_control::undo_buf>(this));
 
-        assign_callback(DIK_C, ks_Ctrl, CallMe::fromMethod<&line_edit_control::copy_to_clipboard>(this));
-        assign_callback(DIK_V, ks_Ctrl, CallMe::fromMethod<&line_edit_control::paste_from_clipboard>(this));
-        assign_callback(DIK_X, ks_Ctrl, CallMe::fromMethod<&line_edit_control::cut_to_clipboard>(this));
+        assign_callback(sf::Keyboard::Scancode::C, ks_Ctrl, CallMe::fromMethod<&line_edit_control::copy_to_clipboard>(this));
+        assign_callback(sf::Keyboard::Scancode::V, ks_Ctrl, CallMe::fromMethod<&line_edit_control::paste_from_clipboard>(this));
+        assign_callback(sf::Keyboard::Scancode::X, ks_Ctrl, CallMe::fromMethod<&line_edit_control::cut_to_clipboard>(this));
 
-        assign_callback(DIK_INSERT, ks_Ctrl, CallMe::fromMethod<&line_edit_control::copy_to_clipboard>(this));
-        assign_callback(DIK_INSERT, ks_Shift, CallMe::fromMethod<&line_edit_control::paste_from_clipboard>(this));
-        assign_callback(DIK_DELETE, ks_Shift, CallMe::fromMethod<&line_edit_control::cut_to_clipboard>(this));
+        assign_callback(sf::Keyboard::Scancode::Insert, ks_Ctrl, CallMe::fromMethod<&line_edit_control::copy_to_clipboard>(this));
+        assign_callback(sf::Keyboard::Scancode::Insert, ks_Shift, CallMe::fromMethod<&line_edit_control::paste_from_clipboard>(this));
+        assign_callback(sf::Keyboard::Scancode::Delete, ks_Shift, CallMe::fromMethod<&line_edit_control::cut_to_clipboard>(this));
 
-        assign_callback(DIK_HOME, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_home>(this));
-        assign_callback(DIK_END, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_end>(this));
-        assign_callback(DIK_LEFT, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_left>(this));
-        assign_callback(DIK_RIGHT, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_right>(this));
-        assign_callback(DIK_LEFT, ks_Ctrl, CallMe::fromMethod<&line_edit_control::move_pos_left_word>(this));
-        assign_callback(DIK_RIGHT, ks_Ctrl, CallMe::fromMethod<&line_edit_control::move_pos_right_word>(this));
+        assign_callback(sf::Keyboard::Scancode::Home, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_home>(this));
+        assign_callback(sf::Keyboard::Scancode::End, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_end>(this));
+        assign_callback(sf::Keyboard::Scancode::Left, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_left>(this));
+        assign_callback(sf::Keyboard::Scancode::Right, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_right>(this));
+        assign_callback(sf::Keyboard::Scancode::Left, ks_Ctrl, CallMe::fromMethod<&line_edit_control::move_pos_left_word>(this));
+        assign_callback(sf::Keyboard::Scancode::Right, ks_Ctrl, CallMe::fromMethod<&line_edit_control::move_pos_right_word>(this));
 
-        assign_callback(DIK_BACK, ks_free, CallMe::fromMethod<&line_edit_control::delete_selected_back>(this));
-        assign_callback(DIK_DELETE, ks_free, CallMe::fromMethod<&line_edit_control::delete_selected_forward>(this));
-        assign_callback(DIK_BACK, ks_Ctrl, CallMe::fromMethod<&line_edit_control::delete_word_back>(this));
-        assign_callback(DIK_DELETE, ks_Ctrl, CallMe::fromMethod<&line_edit_control::delete_word_forward>(this));
+        assign_callback(sf::Keyboard::Scancode::Backspace, ks_free, CallMe::fromMethod<&line_edit_control::delete_selected_back>(this));
+        assign_callback(sf::Keyboard::Scancode::Delete, ks_free, CallMe::fromMethod<&line_edit_control::delete_selected_forward>(this));
+        assign_callback(sf::Keyboard::Scancode::Backspace, ks_Ctrl, CallMe::fromMethod<&line_edit_control::delete_word_back>(this));
+        assign_callback(sf::Keyboard::Scancode::Delete, ks_Ctrl, CallMe::fromMethod<&line_edit_control::delete_word_forward>(this));
 
-        assign_callback(DIK_LSHIFT, ks_Ctrl, CallMe::fromMethod<&line_edit_control::SwitchKL>(this));
-        assign_callback(DIK_LSHIFT, ks_Alt, CallMe::fromMethod<&line_edit_control::SwitchKL>(this));
+        assign_callback(sf::Keyboard::Scancode::LShift, ks_Ctrl, CallMe::fromMethod<&line_edit_control::SwitchKL>(this));
+        assign_callback(sf::Keyboard::Scancode::LShift, ks_Alt, CallMe::fromMethod<&line_edit_control::SwitchKL>(this));
     } // if mode
 
-    create_key_state(DIK_LSHIFT, ks_LShift);
-    create_key_state(DIK_RSHIFT, ks_RShift);
-    create_key_state(DIK_LCONTROL, ks_LCtrl);
-    create_key_state(DIK_RCONTROL, ks_RCtrl);
-    create_key_state(DIK_LALT, ks_LAlt);
-    create_key_state(DIK_RALT, ks_RAlt);
+    create_key_state(sf::Keyboard::Scancode::LShift, ks_LShift);
+    create_key_state(sf::Keyboard::Scancode::RShift, ks_RShift);
+    create_key_state(sf::Keyboard::Scancode::LControl, ks_LCtrl);
+    create_key_state(sf::Keyboard::Scancode::RControl, ks_RCtrl);
+    create_key_state(sf::Keyboard::Scancode::LAlt, ks_LAlt);
+    create_key_state(sf::Keyboard::Scancode::RAlt, ks_RAlt);
 }
 
 void line_edit_control::assign_char_pairs(init_mode mode)
 {
-    create_char_pair(DIK_NUMPAD0, '0', '0');
-    create_char_pair(DIK_NUMPAD1, '1', '1');
-    create_char_pair(DIK_NUMPAD2, '2', '2');
-    create_char_pair(DIK_NUMPAD3, '3', '3');
-    create_char_pair(DIK_NUMPAD4, '4', '4');
-    create_char_pair(DIK_NUMPAD5, '5', '5');
-    create_char_pair(DIK_NUMPAD6, '6', '6');
-    create_char_pair(DIK_NUMPAD7, '7', '7');
-    create_char_pair(DIK_NUMPAD8, '8', '8');
-    create_char_pair(DIK_NUMPAD9, '9', '9');
+    create_char_pair(sf::Keyboard::Scancode::Numpad0, '0', '0');
+    create_char_pair(sf::Keyboard::Scancode::Numpad1, '1', '1');
+    create_char_pair(sf::Keyboard::Scancode::Numpad2, '2', '2');
+    create_char_pair(sf::Keyboard::Scancode::Numpad3, '3', '3');
+    create_char_pair(sf::Keyboard::Scancode::Numpad4, '4', '4');
+    create_char_pair(sf::Keyboard::Scancode::Numpad5, '5', '5');
+    create_char_pair(sf::Keyboard::Scancode::Numpad6, '6', '6');
+    create_char_pair(sf::Keyboard::Scancode::Numpad7, '7', '7');
+    create_char_pair(sf::Keyboard::Scancode::Numpad8, '8', '8');
+    create_char_pair(sf::Keyboard::Scancode::Numpad9, '9', '9');
 
     if (mode == im_number_only)
     {
-        create_char_pair(DIK_0, '0', '0');
-        create_char_pair(DIK_1, '1', '1');
-        create_char_pair(DIK_2, '2', '2');
-        create_char_pair(DIK_3, '3', '3');
-        create_char_pair(DIK_4, '4', '4');
-        create_char_pair(DIK_5, '5', '5');
-        create_char_pair(DIK_6, '6', '6');
-        create_char_pair(DIK_7, '7', '7');
-        create_char_pair(DIK_8, '8', '8');
-        create_char_pair(DIK_9, '9', '9');
-        create_char_pair(DIK_NUMPADMINUS, '-', '-');
-        create_char_pair(DIK_MINUS, '-', '-');
-        create_char_pair(DIK_NUMPADPLUS, '+', '+');
-        create_char_pair(DIK_EQUALS, '+', '+');
+        create_char_pair(sf::Keyboard::Scancode::Num0, '0', '0');
+        create_char_pair(sf::Keyboard::Scancode::Num1, '1', '1');
+        create_char_pair(sf::Keyboard::Scancode::Num2, '2', '2');
+        create_char_pair(sf::Keyboard::Scancode::Num3, '3', '3');
+        create_char_pair(sf::Keyboard::Scancode::Num4, '4', '4');
+        create_char_pair(sf::Keyboard::Scancode::Num5, '5', '5');
+        create_char_pair(sf::Keyboard::Scancode::Num6, '6', '6');
+        create_char_pair(sf::Keyboard::Scancode::Num7, '7', '7');
+        create_char_pair(sf::Keyboard::Scancode::Num8, '8', '8');
+        create_char_pair(sf::Keyboard::Scancode::Num9, '9', '9');
+        create_char_pair(sf::Keyboard::Scancode::NumpadMinus, '-', '-');
+        create_char_pair(sf::Keyboard::Scancode::Hyphen, '-', '-');
+        create_char_pair(sf::Keyboard::Scancode::NumpadPlus, '+', '+');
+        create_char_pair(sf::Keyboard::Scancode::Equal, '+', '+');
         return;
     }
 
     if (mode != im_file_name_mode)
     {
-        create_char_pair(DIK_0, '0', ')', true);
-        create_char_pair(DIK_1, '1', '!', true);
-        create_char_pair(DIK_2, '2', '@', true);
-        create_char_pair(DIK_3, '3', '#', true);
-        create_char_pair(DIK_4, '4', '$', true);
-        create_char_pair(DIK_5, '5', '%', true);
-        create_char_pair(DIK_6, '6', '^', true);
-        create_char_pair(DIK_7, '7', '&', true);
-        create_char_pair(DIK_8, '8', '*', true);
-        create_char_pair(DIK_9, '9', '(', true);
+        create_char_pair(sf::Keyboard::Scancode::Num0, '0', ')', true);
+        create_char_pair(sf::Keyboard::Scancode::Num1, '1', '!', true);
+        create_char_pair(sf::Keyboard::Scancode::Num2, '2', '@', true);
+        create_char_pair(sf::Keyboard::Scancode::Num3, '3', '#', true);
+        create_char_pair(sf::Keyboard::Scancode::Num4, '4', '$', true);
+        create_char_pair(sf::Keyboard::Scancode::Num5, '5', '%', true);
+        create_char_pair(sf::Keyboard::Scancode::Num6, '6', '^', true);
+        create_char_pair(sf::Keyboard::Scancode::Num7, '7', '&', true);
+        create_char_pair(sf::Keyboard::Scancode::Num8, '8', '*', true);
+        create_char_pair(sf::Keyboard::Scancode::Num9, '9', '(', true);
 
-        create_char_pair(DIK_BACKSLASH, '\\', '|', true);
-        create_char_pair(DIK_LBRACKET, '[', '{', true);
-        create_char_pair(DIK_RBRACKET, ']', '}', true);
-        create_char_pair(DIK_APOSTROPHE, '\'', '\"', true);
-        create_char_pair(DIK_COMMA, ',', '<', true);
-        create_char_pair(DIK_PERIOD, '.', '>', true);
-        create_char_pair(DIK_EQUALS, '=', '+', true);
-        create_char_pair(DIK_SEMICOLON, ';', ':', true);
-        create_char_pair(DIK_SLASH, '/', '?', true);
+        create_char_pair(sf::Keyboard::Scancode::Backslash, '\\', '|', true);
+        create_char_pair(sf::Keyboard::Scancode::LBracket, '[', '{', true);
+        create_char_pair(sf::Keyboard::Scancode::RBracket, ']', '}', true);
+        create_char_pair(sf::Keyboard::Scancode::Apostrophe, '\'', '\"', true);
+        create_char_pair(sf::Keyboard::Scancode::Comma, ',', '<', true);
+        create_char_pair(sf::Keyboard::Scancode::Period, '.', '>', true);
+        create_char_pair(sf::Keyboard::Scancode::Equal, '=', '+', true);
+        create_char_pair(sf::Keyboard::Scancode::Semicolon, ';', ':', true);
+        create_char_pair(sf::Keyboard::Scancode::Slash, '/', '?', true);
 
-        create_char_pair(DIK_NUMPADSTAR, '*', '*');
-        create_char_pair(DIK_NUMPADSLASH, '/', '/');
+        create_char_pair(sf::Keyboard::Scancode::NumpadMultiply, '*', '*');
+        create_char_pair(sf::Keyboard::Scancode::NumpadDivide, '/', '/');
     }
     else
     {
-        create_char_pair(DIK_0, '0', '0');
-        create_char_pair(DIK_1, '1', '1');
-        create_char_pair(DIK_2, '2', '2');
-        create_char_pair(DIK_3, '3', '3');
-        create_char_pair(DIK_4, '4', '4');
-        create_char_pair(DIK_5, '5', '5');
-        create_char_pair(DIK_6, '6', '6');
-        create_char_pair(DIK_7, '7', '7');
-        create_char_pair(DIK_8, '8', '8');
-        create_char_pair(DIK_9, '9', '9');
+        create_char_pair(sf::Keyboard::Scancode::Num0, '0', '0');
+        create_char_pair(sf::Keyboard::Scancode::Num1, '1', '1');
+        create_char_pair(sf::Keyboard::Scancode::Num2, '2', '2');
+        create_char_pair(sf::Keyboard::Scancode::Num3, '3', '3');
+        create_char_pair(sf::Keyboard::Scancode::Num4, '4', '4');
+        create_char_pair(sf::Keyboard::Scancode::Num5, '5', '5');
+        create_char_pair(sf::Keyboard::Scancode::Num6, '6', '6');
+        create_char_pair(sf::Keyboard::Scancode::Num7, '7', '7');
+        create_char_pair(sf::Keyboard::Scancode::Num8, '8', '8');
+        create_char_pair(sf::Keyboard::Scancode::Num9, '9', '9');
     }
 
-    create_char_pair(DIK_NUMPADMINUS, '-', '-');
-    create_char_pair(DIK_NUMPADPLUS, '+', '+');
-    create_char_pair(DIK_NUMPADPERIOD, '.', '.');
+    create_char_pair(sf::Keyboard::Scancode::NumpadMinus, '-', '-');
+    create_char_pair(sf::Keyboard::Scancode::NumpadPlus, '+', '+');
+    create_char_pair(sf::Keyboard::Scancode::NumpadDecimal, '.', '.');
 
-    create_char_pair(DIK_MINUS, '-', '_', true);
-    create_char_pair(DIK_SPACE, ' ', ' ');
-    create_char_pair(DIK_GRAVE, '`', '~', true);
+    create_char_pair(sf::Keyboard::Scancode::Hyphen, '-', '_', true);
+    create_char_pair(sf::Keyboard::Scancode::Space, ' ', ' ');
+    create_char_pair(sf::Keyboard::Scancode::Grave, '`', '~', true);
 
-    create_char_pair(DIK_A, 'a', 'A', true);
-    create_char_pair(DIK_B, 'b', 'B', true);
-    create_char_pair(DIK_C, 'c', 'C', true);
-    create_char_pair(DIK_D, 'd', 'D', true);
-    create_char_pair(DIK_E, 'e', 'E', true);
-    create_char_pair(DIK_F, 'f', 'F', true);
-    create_char_pair(DIK_G, 'g', 'G', true);
-    create_char_pair(DIK_H, 'h', 'H', true);
-    create_char_pair(DIK_I, 'i', 'I', true);
-    create_char_pair(DIK_J, 'j', 'J', true);
-    create_char_pair(DIK_K, 'k', 'K', true);
-    create_char_pair(DIK_L, 'l', 'L', true);
-    create_char_pair(DIK_M, 'm', 'M', true);
-    create_char_pair(DIK_N, 'n', 'N', true);
-    create_char_pair(DIK_O, 'o', 'O', true);
-    create_char_pair(DIK_P, 'p', 'P', true);
-    create_char_pair(DIK_Q, 'q', 'Q', true);
-    create_char_pair(DIK_R, 'r', 'R', true);
-    create_char_pair(DIK_S, 's', 'S', true);
-    create_char_pair(DIK_T, 't', 'T', true);
-    create_char_pair(DIK_U, 'u', 'U', true);
-    create_char_pair(DIK_V, 'v', 'V', true);
-    create_char_pair(DIK_W, 'w', 'W', true);
-    create_char_pair(DIK_X, 'x', 'X', true);
-    create_char_pair(DIK_Y, 'y', 'Y', true);
-    create_char_pair(DIK_Z, 'z', 'Z', true);
+    create_char_pair(sf::Keyboard::Scancode::A, 'a', 'A', true);
+    create_char_pair(sf::Keyboard::Scancode::B, 'b', 'B', true);
+    create_char_pair(sf::Keyboard::Scancode::C, 'c', 'C', true);
+    create_char_pair(sf::Keyboard::Scancode::D, 'd', 'D', true);
+    create_char_pair(sf::Keyboard::Scancode::E, 'e', 'E', true);
+    create_char_pair(sf::Keyboard::Scancode::F, 'f', 'F', true);
+    create_char_pair(sf::Keyboard::Scancode::G, 'g', 'G', true);
+    create_char_pair(sf::Keyboard::Scancode::H, 'h', 'H', true);
+    create_char_pair(sf::Keyboard::Scancode::I, 'i', 'I', true);
+    create_char_pair(sf::Keyboard::Scancode::J, 'j', 'J', true);
+    create_char_pair(sf::Keyboard::Scancode::K, 'k', 'K', true);
+    create_char_pair(sf::Keyboard::Scancode::L, 'l', 'L', true);
+    create_char_pair(sf::Keyboard::Scancode::M, 'm', 'M', true);
+    create_char_pair(sf::Keyboard::Scancode::N, 'n', 'N', true);
+    create_char_pair(sf::Keyboard::Scancode::O, 'o', 'O', true);
+    create_char_pair(sf::Keyboard::Scancode::P, 'p', 'P', true);
+    create_char_pair(sf::Keyboard::Scancode::Q, 'q', 'Q', true);
+    create_char_pair(sf::Keyboard::Scancode::R, 'r', 'R', true);
+    create_char_pair(sf::Keyboard::Scancode::S, 's', 'S', true);
+    create_char_pair(sf::Keyboard::Scancode::T, 't', 'T', true);
+    create_char_pair(sf::Keyboard::Scancode::U, 'u', 'U', true);
+    create_char_pair(sf::Keyboard::Scancode::V, 'v', 'V', true);
+    create_char_pair(sf::Keyboard::Scancode::W, 'w', 'W', true);
+    create_char_pair(sf::Keyboard::Scancode::X, 'x', 'X', true);
+    create_char_pair(sf::Keyboard::Scancode::Y, 'y', 'Y', true);
+    create_char_pair(sf::Keyboard::Scancode::Z, 'z', 'Z', true);
 }
 
-void line_edit_control::create_key_state(u32 const dik, key_state state)
+void line_edit_control::create_key_state(sf::Keyboard::Scancode dik, key_state state)
 {
-    Base* prev = m_actions[dik];
+    Base* prev = m_actions[std::to_underlying(dik)];
     // if ( m_actions[dik] )
     //{
     //  xr_delete( m_actions[dik] );
     // }
-    m_actions[dik] = xr_new<text_editor::key_state_base>(state, prev);
+    m_actions[std::to_underlying(dik)] = xr_new<text_editor::key_state_base>(state, prev);
 }
 
-void line_edit_control::create_char_pair(u32 const dik, char c, char c_shift, bool translate)
+void line_edit_control::create_char_pair(sf::Keyboard::Scancode dik, char c, char c_shift, bool translate)
 {
-    if (m_actions[dik])
-    {
-        xr_delete(m_actions[dik]);
-    }
-
-    m_actions[dik] = xr_new<text_editor::type_pair>(dik, c, c_shift, translate);
+    xr_delete(m_actions[std::to_underlying(dik)]);
+    m_actions[std::to_underlying(dik)] = xr_new<text_editor::type_pair>(dik, c, c_shift, translate);
 }
 
-void line_edit_control::assign_callback(u32 const dik, key_state state, Callback const& callback)
+void line_edit_control::assign_callback(sf::Keyboard::Scancode dik, key_state state, Callback const& callback)
 {
-    VERIFY(dik < DIK_COUNT);
-    Base* prev_action = m_actions[dik];
-    m_actions[dik] = xr_new<text_editor::callback_base>(callback, state);
-    m_actions[dik]->on_assign(prev_action);
+    VERIFY(std::to_underlying(dik) < sf::Keyboard::ScancodeCount);
+
+    Base* prev_action = m_actions[std::to_underlying(dik)];
+    m_actions[std::to_underlying(dik)] = xr_new<text_editor::callback_base>(callback, state);
+    m_actions[std::to_underlying(dik)]->on_assign(prev_action);
 }
 
 void line_edit_control::insert_character(char c)
@@ -394,9 +388,9 @@ void line_edit_control::set_edit(LPCSTR str)
 
 // ========================================================
 
-tmc::task<void> line_edit_control::on_key_press(gsl::index dik)
+tmc::task<void> line_edit_control::on_key_press(xr::key_id dik)
 {
-    if (DIK_COUNT <= dik)
+    if (!dik.is<sf::Keyboard::Scancode>())
         co_return;
 
     if (!m_hold_mode)
@@ -411,11 +405,13 @@ tmc::task<void> line_edit_control::on_key_press(gsl::index dik)
     clear_inserted();
     compute_positions();
 
-    if (m_actions[dik])
-        co_await m_actions[dik]->on_key_press(this);
+    const auto key = dik.get<sf::Keyboard::Scancode>();
+
+    if (m_actions[std::to_underlying(key)] != nullptr)
+        co_await m_actions[std::to_underlying(key)]->on_key_press(this);
 
     // ===========
-    if (dik == DIK_LCONTROL || dik == DIK_RCONTROL)
+    if (key == sf::Keyboard::Scancode::LControl || key == sf::Keyboard::Scancode::RControl)
         m_mark = false;
 
     m_edit_str[m_buffer_size - 1] = 0;
@@ -435,20 +431,24 @@ tmc::task<void> line_edit_control::on_key_press(gsl::index dik)
     update_bufs();
 }
 
-tmc::task<void> line_edit_control::on_key_hold(gsl::index dik)
+tmc::task<void> line_edit_control::on_key_hold(xr::key_id dik)
 {
+    if (!dik.is<sf::Keyboard::Scancode>())
+        co_return;
+
     update_key_states();
     update_bufs();
 
-    switch (dik)
+    switch (dik.get<sf::Keyboard::Scancode>())
     {
-    case DIK_TAB:
-    case DIK_LSHIFT:
-    case DIK_RSHIFT:
-    case DIK_LCONTROL:
-    case DIK_RCONTROL:
-    case DIK_LALT:
-    case DIK_RALT: co_return;
+    case sf::Keyboard::Scancode::Tab:
+    case sf::Keyboard::Scancode::LShift:
+    case sf::Keyboard::Scancode::RShift:
+    case sf::Keyboard::Scancode::LControl:
+    case sf::Keyboard::Scancode::RControl:
+    case sf::Keyboard::Scancode::LAlt:
+    case sf::Keyboard::Scancode::RAlt: co_return;
+    default: break;
     }
 
     if (m_repeat_mode && m_last_key_time > 3.0f * g_console_sensitive)
@@ -463,8 +463,11 @@ tmc::task<void> line_edit_control::on_key_hold(gsl::index dik)
     }
 }
 
-void line_edit_control::on_key_release()
+void line_edit_control::on_key_release(xr::key_id dik)
 {
+    if (!dik.is<sf::Keyboard::Scancode>())
+        return;
+
     m_accel = 1.0f;
     m_rep_time = 0.0f;
     m_last_key_time = 0.0f;

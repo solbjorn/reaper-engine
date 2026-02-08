@@ -26,7 +26,7 @@ public:
     virtual void release();
     virtual void install(CActor*);
     virtual void install();
-    virtual bool authorized(int cmd);
+    [[nodiscard]] bool authorized(EGameActions cmd) override;
 
     void look_point(const Fvector& point);
     bool is_turning();

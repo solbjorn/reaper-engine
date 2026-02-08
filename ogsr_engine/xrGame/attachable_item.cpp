@@ -150,42 +150,46 @@ void CAttachableItem::SaveAttachableParams()
     Msg("--[%s] data saved to [%s]", __FUNCTION__, pCfg.fname());
 }
 
-bool attach_adjust_mode_keyb(int dik)
+bool attach_adjust_mode_keyb(xr::key_id dik)
 {
     if (!CAttachableItem::m_dbgItem)
         return false;
 
-    if (pInput->iGetAsyncKeyState(DIK_LSHIFT) && pInput->iGetAsyncKeyState(DIK_RETURN))
+    if (pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) && pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::Enter}))
     {
         CAttachableItem::m_dbgItem->SaveAttachableParams();
         return true;
     }
 
-    const bool b_move = pInput->iGetAsyncKeyState(DIK_LSHIFT);
-    const bool b_rot = pInput->iGetAsyncKeyState(DIK_LMENU);
+    const bool b_move = pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift});
+    const bool b_rot = pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LAlt});
 
     if (!b_move && !b_rot)
         return false;
 
-    const int axis = pInput->iGetAsyncKeyState(DIK_Z) ? 0 : (pInput->iGetAsyncKeyState(DIK_X) ? 1 : (pInput->iGetAsyncKeyState(DIK_C) ? 2 : -1));
+    const int axis = pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::Z}) ?
+        0 :
+        (pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::X}) ? 1 : (pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::C}) ? 2 : -1));
 
     if (axis == -1)
         return false;
 
-    if (dik == DIK_PGUP)
+    if (dik == xr::key_id{sf::Keyboard::Scancode::PageUp})
     {
         if (b_move)
             CAttachableItem::m_dbgItem->mov(axis, adj_delta_pos);
         else
             CAttachableItem::m_dbgItem->rot(axis, adj_delta_rot);
+
         return true;
     }
-    else if (dik == DIK_PGDN)
+    else if (dik == xr::key_id{sf::Keyboard::Scancode::PageDown})
     {
         if (b_move)
             CAttachableItem::m_dbgItem->mov(axis, -adj_delta_pos);
         else
             CAttachableItem::m_dbgItem->rot(axis, -adj_delta_rot);
+
         return true;
     }
 

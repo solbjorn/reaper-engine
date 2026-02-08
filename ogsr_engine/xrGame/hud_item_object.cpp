@@ -26,10 +26,11 @@ void CHudItemObject::Load(LPCSTR section)
     CHudItem::Load(section);
 }
 
-bool CHudItemObject::Action(s32 cmd, u32 flags)
+bool CHudItemObject::Action(EGameActions cmd, u32 flags)
 {
     if (CInventoryItemObject::Action(cmd, flags))
         return (true);
+
     return (CHudItem::Action(cmd, flags));
 }
 

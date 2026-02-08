@@ -1,6 +1,7 @@
 #pragma once
 
 class CActor;
+enum class EGameActions : s32;
 
 class CActorInputHandler : public virtual RTTI::Enable
 {
@@ -16,7 +17,7 @@ public:
     virtual void install(CActor*);
     virtual void release();
 
-    virtual bool authorized(int) { return true; }
+    [[nodiscard]] virtual bool authorized(EGameActions) { return true; }
     virtual float mouse_scale_factor() { return 1.f; }
 
 protected:

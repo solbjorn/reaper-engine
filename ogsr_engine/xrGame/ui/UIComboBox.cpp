@@ -17,8 +17,6 @@
 
 #include "../string_table.h"
 
-#include <dinput.h>
-
 #define CB_HEIGHT 23.0f
 
 CUIComboBox::CUIComboBox()
@@ -222,27 +220,24 @@ void CUIComboBox::SetFont(CGameFont* pFont)
     m_text.SetFont(pFont);
 }
 
-bool CUIComboBox::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIComboBox::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 {
     if (CUIWindow::OnKeyboard(dik, keyboard_action))
         return true;
 
-    switch (dik)
+    if (dik != xr::key_id{sf::Keyboard::Scancode::Escape})
+        return false;
+
+    if (m_eState == LIST_EXPANDED)
     {
-    case DIK_ESCAPE: {
-        if (m_eState == LIST_EXPANDED)
-        {
-            ShowList(false);
-            return true;
-        }
-    }
-    break;
+        ShowList(false);
+        return true;
     }
 
     return false;
 }
 
-bool CUIComboBox::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUIComboBox::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
     if (CUIWindow::OnMouse(x, y, mouse_action))
         return true;
@@ -262,6 +257,7 @@ bool CUIComboBox::OnMouse(float x, float y, EUIMessages mouse_action)
             ShowList(false);
             return true;
         }
+
         break;
     case LIST_FONDED:
         if (mouse_action == WINDOW_LBUTTON_DOWN)
@@ -269,6 +265,7 @@ bool CUIComboBox::OnMouse(float x, float y, EUIMessages mouse_action)
             OnBtnClicked();
             return true;
         }
+
         break;
     default: break;
     }

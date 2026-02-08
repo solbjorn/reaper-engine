@@ -508,7 +508,7 @@ void CUITradeWnd::PerformTrade()
     SetCurrentItem(nullptr);
 }
 
-bool CUITradeWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUITradeWnd::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 {
     if (m_pUIPropertiesBox->GetVisible())
         std::ignore = m_pUIPropertiesBox->OnKeyboard(dik, keyboard_action);
@@ -519,7 +519,7 @@ bool CUITradeWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
     return false;
 }
 
-bool CUITradeWnd::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUITradeWnd::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
     if (mouse_action == WINDOW_RBUTTON_DOWN)
     {
@@ -530,7 +530,7 @@ bool CUITradeWnd::OnMouse(float x, float y, EUIMessages mouse_action)
         }
     }
 
-    CUIWindow::OnMouse(x, y, mouse_action);
+    std::ignore = CUIWindow::OnMouse(x, y, mouse_action);
 
     return true; // always returns true, because ::StopAnyMove() == true;
 }
@@ -690,14 +690,10 @@ bool CUITradeWnd::OnItemDrop(CUICellItem* itm)
     if (old_owner == new_owner || !old_owner || !new_owner)
         return false;
 
-    if (Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT))
-    {
+    if (Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::RShift}))
         MoveItems(itm);
-    }
     else
-    {
         MoveItem(itm);
-    }
 
     return true;
 }
@@ -706,14 +702,10 @@ bool CUITradeWnd::OnItemDbClick(CUICellItem* itm)
 {
     SetCurrentItem(itm);
 
-    if (Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT))
-    {
+    if (Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::RShift}))
         MoveItems(itm);
-    }
     else
-    {
         MoveItem(itm);
-    }
 
     return true;
 }

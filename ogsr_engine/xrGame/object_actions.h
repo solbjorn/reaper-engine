@@ -88,10 +88,10 @@ protected:
     typedef CObjectActionBase<CInventoryItem> inherited;
 
 protected:
-    u32 m_command;
+    EGameActions m_command;
 
 public:
-    explicit CObjectActionCommand(CInventoryItem* item, CAI_Stalker* owner, CPropertyStorage* storage, u32 command, LPCSTR action_name = "");
+    explicit CObjectActionCommand(CInventoryItem* item, CAI_Stalker* owner, CPropertyStorage* storage, EGameActions command, gsl::czstring action_name = "");
     ~CObjectActionCommand() override = default;
 
     virtual void initialize();

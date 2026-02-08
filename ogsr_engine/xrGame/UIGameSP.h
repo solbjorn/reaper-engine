@@ -34,8 +34,8 @@ public:
     tmc::task<void> shedule_Update(u32 dt) override;
     virtual void Render();
     virtual void SetClGame(game_cl_GameState* g);
-    virtual bool IR_OnKeyboardPress(int dik);
-    virtual bool IR_OnKeyboardRelease(int dik);
+    tmc::task<bool> IR_OnKeyboardPress(xr::key_id dik) override;
+    [[nodiscard]] bool IR_OnKeyboardRelease(xr::key_id dik) override;
 
     void StartTalk();
     void StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers);
@@ -81,7 +81,7 @@ public:
     virtual bool WorkInPause() const { return true; }
     virtual void Show();
     virtual void Hide();
-    virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
+    [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
 };
 
 extern bool g_block_pause;

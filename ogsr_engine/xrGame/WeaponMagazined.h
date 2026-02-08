@@ -116,7 +116,7 @@ public:
     virtual void InitAddons();
     virtual void InitZoomParams(LPCSTR section, bool useTexture);
 
-    virtual bool Action(s32 cmd, u32 flags);
+    [[nodiscard]] bool Action(EGameActions cmd, u32 flags) override;
     virtual void UnloadMagazine(bool spawn_ammo = true);
 
     virtual void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);

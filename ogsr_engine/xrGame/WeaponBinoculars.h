@@ -36,7 +36,7 @@ public:
     virtual void save(NET_Packet& output_packet);
     virtual void load(IReader& input_packet);
 
-    virtual bool Action(s32 cmd, u32 flags);
+    [[nodiscard]] bool Action(EGameActions cmd, u32 flags) override;
     tmc::task<void> UpdateCL() override;
     virtual void OnDrawUI();
     virtual bool use_crosshair() const { return false; }

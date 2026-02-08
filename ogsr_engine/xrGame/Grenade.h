@@ -35,7 +35,7 @@ public:
     virtual void Throw();
     virtual void Destroy();
 
-    virtual bool Action(s32 cmd, u32 flags);
+    [[nodiscard]] bool Action(EGameActions cmd, u32 flags) override;
     virtual bool Useful() const;
     virtual void State(u32 state, u32 oldState);
 

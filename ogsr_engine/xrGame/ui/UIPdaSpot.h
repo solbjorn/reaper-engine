@@ -36,6 +36,6 @@ public:
     void OnApply(CUIWindow* w, void* d);
     void OnExit(CUIWindow*, void*);
     void Exit();
-    virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
+    [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 };

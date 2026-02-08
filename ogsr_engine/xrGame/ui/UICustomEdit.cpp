@@ -1,16 +1,15 @@
 #include "stdafx.h"
 
-#include "../../xr_3da/xr_input.h"
 #include "UICustomEdit.h"
+
 #include "../../xr_3da/LightAnimLibrary.h"
+#include "../../xr_3da/xr_input.h"
 
 CUICustomEdit::CUICustomEdit()
 {
     m_max_symb_count = u32(-1);
 
     m_bInputFocus = false;
-
-    m_iKeyPressAndHold = 0;
     m_bHoldWaitMode = false;
 
     m_lines.SetVTextAlignment(valCenter);
@@ -53,11 +52,11 @@ void CUICustomEdit::SendMessage(CUIWindow*, s16 msg, void*)
     if (msg == WINDOW_KEYBOARD_CAPTURE_LOST)
     {
         m_bInputFocus = false;
-        m_iKeyPressAndHold = 0;
+        m_iKeyPressAndHold = sf::Keyboard::Scancode::Unknown;
     }
 }
 
-bool CUICustomEdit::OnMouse(float, float, EUIMessages mouse_action)
+bool CUICustomEdit::OnMouse(f32, f32, EUIMessages mouse_action)
 {
     if (m_bFocusByDbClick)
     {
@@ -65,7 +64,7 @@ bool CUICustomEdit::OnMouse(float, float, EUIMessages mouse_action)
         {
             GetParent()->SetKeyboardCapture(this, true);
             m_bInputFocus = true;
-            m_iKeyPressAndHold = 0;
+            m_iKeyPressAndHold = sf::Keyboard::Scancode::Unknown;
 
             m_lines.MoveCursorToEnd();
         }
@@ -75,7 +74,7 @@ bool CUICustomEdit::OnMouse(float, float, EUIMessages mouse_action)
     {
         GetParent()->SetKeyboardCapture(this, true);
         m_bInputFocus = true;
-        m_iKeyPressAndHold = 0;
+        m_iKeyPressAndHold = sf::Keyboard::Scancode::Unknown;
 
         m_lines.MoveCursorToEnd();
     }
@@ -83,26 +82,29 @@ bool CUICustomEdit::OnMouse(float, float, EUIMessages mouse_action)
     return false;
 }
 
-bool CUICustomEdit::OnKeyboardHold(u32) { return true; }
+bool CUICustomEdit::OnKeyboardHold(xr::key_id) { return true; }
 
-bool CUICustomEdit::OnKeyboard(u32 dik, EUIMessages keyboard_action)
+bool CUICustomEdit::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 {
     if (!m_bInputFocus)
         return false;
 
+    if (!dik.is<sf::Keyboard::Scancode>())
+        return false;
+
     if (keyboard_action == WINDOW_KEY_PRESSED)
     {
-        m_iKeyPressAndHold = dik;
+        m_iKeyPressAndHold = dik.get<sf::Keyboard::Scancode>();
         m_bHoldWaitMode = true;
 
-        if (KeyPressed(dik))
+        if (KeyPressed(m_iKeyPressAndHold))
             return true;
     }
     else if (keyboard_action == WINDOW_KEY_RELEASED)
     {
-        if (m_iKeyPressAndHold == dik)
+        if (m_iKeyPressAndHold == dik.get<sf::Keyboard::Scancode>())
         {
-            m_iKeyPressAndHold = 0;
+            m_iKeyPressAndHold = sf::Keyboard::Scancode::Unknown;
             m_bHoldWaitMode = false;
         }
 
@@ -112,23 +114,20 @@ bool CUICustomEdit::OnKeyboard(u32 dik, EUIMessages keyboard_action)
     return false;
 }
 
-bool CUICustomEdit::KeyPressed(u32 dik)
+bool CUICustomEdit::KeyPressed(sf::Keyboard::Scancode dik)
 {
     bool bChanged = false;
 
     switch (dik)
     {
-    case DIK_TAB: {
+    case sf::Keyboard::Scancode::Tab:
         // Табы нельзя добавлять здесь, такого символа в шрифтах нет, он не отображается в игре.
         // А проблемы доставить может при получении введенного текста через GetText() в скрипте,
         // когда полученный текст будет отличаться от отображаемого из-за наличия в нём табов.
         return true;
-    }
-    case DIK_LEFT:
-    case DIKEYBOARD_LEFT: m_lines.DecCursorPos(); break;
-    case DIK_RIGHT:
-    case DIKEYBOARD_RIGHT: m_lines.IncCursorPos(); break;
-    case DIK_ESCAPE:
+    case sf::Keyboard::Scancode::Left: m_lines.DecCursorPos(); break;
+    case sf::Keyboard::Scancode::Right: m_lines.IncCursorPos(); break;
+    case sf::Keyboard::Scancode::Escape:
         if (xr_strlen(GetText()) > 0)
         {
             SetText("");
@@ -137,24 +136,29 @@ bool CUICustomEdit::KeyPressed(u32 dik)
         else
         {
             GetParent()->SetKeyboardCapture(this, false);
+
             m_bInputFocus = false;
-            m_iKeyPressAndHold = 0;
+            m_iKeyPressAndHold = sf::Keyboard::Scancode::Unknown;
         }
+
         break;
-    case DIK_RETURN:
-    case DIK_NUMPADENTER:
+    case sf::Keyboard::Scancode::Enter:
+    case sf::Keyboard::Scancode::NumpadEnter:
         GetParent()->SetKeyboardCapture(this, false);
+
         m_bInputFocus = false;
-        m_iKeyPressAndHold = 0;
+        m_iKeyPressAndHold = sf::Keyboard::Scancode::Unknown;
+
         GetMessageTarget()->SendMessage(this, EDIT_TEXT_COMMIT, nullptr);
         break;
-    case DIK_BACKSPACE:
+    case sf::Keyboard::Scancode::Backspace:
         m_lines.DelLeftChar();
+
         bChanged = true;
         break;
-    case DIK_DELETE:
-    case DIKEYBOARD_DELETE:
+    case sf::Keyboard::Scancode::Delete:
         m_lines.DelCurrentChar();
+
         bChanged = true;
         break;
     default:
@@ -207,7 +211,7 @@ void CUICustomEdit::Update()
 
         u32 cur_time = GetTickCount();
 
-        if (m_iKeyPressAndHold)
+        if (m_iKeyPressAndHold != sf::Keyboard::Scancode::Unknown)
         {
             if (m_bHoldWaitMode)
             {
@@ -222,12 +226,14 @@ void CUICustomEdit::Update()
                 if (cur_time - last_time > HOLD_REPEAT_TIME)
                 {
                     last_time = cur_time;
-                    KeyPressed(m_iKeyPressAndHold);
+                    std::ignore = KeyPressed(m_iKeyPressAndHold);
                 }
             }
         }
         else
+        {
             last_time = cur_time;
+        }
     }
 
     m_lines.SetTextColor(m_textColor[IsEnabled() ? 0 : 1]);

@@ -335,7 +335,7 @@ void CUIWindow::GetAbsoluteRect(Frect& r)
 // координаты курсора всегда, кроме начального вызова
 // задаются относительно текущего окна
 
-bool CUIWindow::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUIWindow::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
     Frect wndRect = GetWndRect();
 
@@ -356,7 +356,7 @@ bool CUIWindow::OnMouse(float x, float y, EUIMessages mouse_action)
     // сообщение направляем ему сразу
     if (GetMouseCapturer())
     {
-        GetMouseCapturer()->OnMouse(cursor_pos.x - GetMouseCapturer()->GetWndRect().left, cursor_pos.y - GetMouseCapturer()->GetWndRect().top, mouse_action);
+        std::ignore = GetMouseCapturer()->OnMouse(cursor_pos.x - GetMouseCapturer()->GetWndRect().left, cursor_pos.y - GetMouseCapturer()->GetWndRect().top, mouse_action);
         return true;
     }
 
@@ -367,20 +367,34 @@ bool CUIWindow::OnMouse(float x, float y, EUIMessages mouse_action)
     case WINDOW_MOUSE_WHEEL_DOWN: OnMouseScroll(WINDOW_MOUSE_WHEEL_DOWN); break;
     case WINDOW_MOUSE_WHEEL_UP: OnMouseScroll(WINDOW_MOUSE_WHEEL_UP); break;
     case WINDOW_LBUTTON_DOWN:
-        if (OnMouseDown(MOUSE_1))
+        if (OnMouseDown(sf::Mouse::Button::Left))
             return true;
+
         break;
     case WINDOW_RBUTTON_DOWN:
-        if (OnMouseDown(MOUSE_2))
+        if (OnMouseDown(sf::Mouse::Button::Right))
             return true;
+
         break;
     case WINDOW_CBUTTON_DOWN:
-        if (OnMouseDown(MOUSE_3))
+        if (OnMouseDown(sf::Mouse::Button::Middle))
             return true;
+
+        break;
+    case WINDOW_EBUTTON_DOWN:
+        if (OnMouseDown(sf::Mouse::Button::Extra1))
+            return true;
+
+        break;
+    case WINDOW_XBUTTON_DOWN:
+        if (OnMouseDown(sf::Mouse::Button::Extra2))
+            return true;
+
         break;
     case WINDOW_LBUTTON_DB_CLICK:
         if (OnDbClick())
             return true;
+
         break;
     default: break;
     }
@@ -442,8 +456,8 @@ bool CUIWindow::OnDbClick()
     return false;
 }
 
-bool CUIWindow::OnMouseDown(int) { return false; }
-void CUIWindow::OnMouseUp(int) {}
+bool CUIWindow::OnMouseDown(sf::Mouse::Button) { return false; }
+void CUIWindow::OnMouseUp(sf::Mouse::Button) {}
 
 void CUIWindow::OnFocusReceive()
 {
@@ -487,16 +501,11 @@ void CUIWindow::SetMouseCapture(CUIWindow* pChildWindow, bool capture_status)
 CUIWindow* CUIWindow::GetMouseCapturer() { return m_pMouseCapturer; }
 
 // реакция на клавиатуру
-bool CUIWindow::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIWindow::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 {
     // если есть дочернее окно,захватившее клавиатуру, то сообщение направляем ему сразу
-    if (m_pKeyboardCapturer)
-    {
-        if (m_pKeyboardCapturer->OnKeyboard(dik, keyboard_action))
-        {
-            return true;
-        }
-    }
+    if (m_pKeyboardCapturer != nullptr && m_pKeyboardCapturer->OnKeyboard(dik, keyboard_action))
+        return true;
 
     size_t processed = 0;
     auto iter = m_ChildWndList.rbegin();
@@ -508,13 +517,8 @@ bool CUIWindow::OnKeyboard(int dik, EUIMessages keyboard_action)
 
         ASSERT_FMT_DBG(Wnd, "!![%s][%s] Child wnd is nullptr! Something strange!", __FUNCTION__, this->WindowName_script());
 
-        if (Wnd && Wnd->IsEnabled())
-        {
-            if (Wnd->OnKeyboard(dik, keyboard_action))
-            {
-                return true;
-            }
-        }
+        if (Wnd != nullptr && Wnd->IsEnabled() && Wnd->OnKeyboard(dik, keyboard_action))
+            return true;
 
         if (size != m_ChildWndList.size())
         {
@@ -530,11 +534,10 @@ bool CUIWindow::OnKeyboard(int dik, EUIMessages keyboard_action)
     return false;
 }
 
-bool CUIWindow::OnKeyboardHold(int dik)
+bool CUIWindow::OnKeyboardHold(xr::key_id dik)
 {
-    if (m_pKeyboardCapturer)
-        if (m_pKeyboardCapturer->OnKeyboardHold(dik))
-            return true;
+    if (m_pKeyboardCapturer != nullptr && m_pKeyboardCapturer->OnKeyboardHold(dik))
+        return true;
 
     size_t processed = 0;
     auto iter = m_ChildWndList.rbegin();
@@ -546,13 +549,8 @@ bool CUIWindow::OnKeyboardHold(int dik)
 
         ASSERT_FMT_DBG(Wnd, "!![%s][%s] Child wnd is nullptr! Something strange!", __FUNCTION__, this->WindowName_script());
 
-        if (Wnd && Wnd->IsEnabled())
-        {
-            if (Wnd->OnKeyboardHold(dik))
-            {
-                return true;
-            }
-        }
+        if (Wnd != nullptr && Wnd->IsEnabled() && Wnd->OnKeyboardHold(dik))
+            return true;
 
         if (size != m_ChildWndList.size())
         {

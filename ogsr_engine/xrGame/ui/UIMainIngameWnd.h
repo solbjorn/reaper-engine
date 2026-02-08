@@ -38,7 +38,7 @@ public:
     virtual void Draw();
     virtual void Update();
 
-    bool OnKeyboardPress(int dik);
+    [[nodiscard]] bool OnKeyboardPress(xr::key_id dik);
 
 protected:
     CUIStatic UIStaticHealth;

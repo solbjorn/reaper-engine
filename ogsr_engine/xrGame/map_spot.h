@@ -22,7 +22,7 @@ public:
     CMapLocation* MapLocation() { return m_map_location; }
     virtual LPCSTR GetHint();
     virtual void Update();
-    virtual bool OnMouseDown(int mouse_btn);
+    [[nodiscard]] bool OnMouseDown(sf::Mouse::Button mouse_btn) override;
     virtual void OnFocusLost();
 };
 

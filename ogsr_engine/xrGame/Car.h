@@ -572,10 +572,10 @@ public:
     virtual void net_Relcase(CObject* O);
     // Input
     virtual void OnMouseMove(int x, int y);
-    virtual void OnKeyboardPress(int dik);
-    virtual void OnKeyboardRelease(int dik);
-    virtual void OnKeyboardHold(int dik);
-    virtual void vfProcessInputKey(int iCommand, bool bPressed);
+    void OnKeyboardPress(EGameActions cmd) override;
+    void OnKeyboardRelease(EGameActions cmd) override;
+    void OnKeyboardHold(EGameActions cmd) override;
+    virtual void vfProcessInputKey(EGameActions iCommand, bool bPressed);
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     virtual void OnAfterExplosion();
     virtual void OnBeforeExplosion();
@@ -583,7 +583,7 @@ public:
     void ActivateExplosionBox(const Fvector&, Fvector&) override {}
     virtual void ResetScriptData(void* P = nullptr);
 
-    virtual void Action(int id, u32 flags);
+    void Action(EGameActions id, u32 flags) override;
     virtual void SetParam(int id, Fvector2 val);
     virtual void SetParam(int id, Fvector val);
     bool HasWeapon();

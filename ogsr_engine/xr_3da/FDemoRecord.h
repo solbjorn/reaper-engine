@@ -53,15 +53,12 @@ public:
     void MakeScreenshot();
     void MakeLevelMapScreenshot(bool bHQ);
 
-    tmc::task<void> IR_OnKeyboardPress(gsl::index dik) override;
-    tmc::task<void> IR_OnKeyboardHold(gsl::index dik) override;
-    void IR_OnKeyboardRelease(int dik) override;
+    tmc::task<void> IR_OnKeyboardPress(xr::key_id dik) override;
+    tmc::task<void> IR_OnKeyboardHold(xr::key_id dik) override;
+    void IR_OnKeyboardRelease(xr::key_id dik) override;
 
-    tmc::task<void> IR_OnMousePress(gsl::index btn) override;
-    void IR_OnMouseRelease(int btn) override;
-
+    void IR_OnMouseHold(sf::Mouse::Button btn);
     void IR_OnMouseMove(int dx, int dy) override;
-    tmc::task<void> IR_OnMouseHold(gsl::index btn) override;
 
     BOOL ProcessCam(SCamEffectorInfo& info) override;
 

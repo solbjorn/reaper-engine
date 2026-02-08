@@ -278,8 +278,8 @@ void CPseudoGigant::on_threaten_execute()
     // развернуть камеру
     if (pA->cam_Active())
     {
-        pA->cam_Active()->Move(Random.randI(2) ? kRIGHT : kLEFT, Random.randF(0.3f * hit_value));
-        pA->cam_Active()->Move(Random.randI(2) ? kUP : kDOWN, Random.randF(0.3f * hit_value));
+        pA->cam_Active()->Move(Random.randI(2) ? EGameActions::kRIGHT : EGameActions::kLEFT, Random.randF(0.3f * hit_value));
+        pA->cam_Active()->Move(Random.randI(2) ? EGameActions::kUP : EGameActions::kDOWN, Random.randF(0.3f * hit_value));
     }
 
     Actor()->lock_accel_for(m_time_kick_actor_slow_down);

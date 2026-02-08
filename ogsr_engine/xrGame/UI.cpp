@@ -126,7 +126,7 @@ tmc::task<bool> CUI::IR_OnMouseWheel(gsl::index direction)
             co_return true;
     }
 
-    if (pUIGame && pUIGame->IR_OnMouseWheel(direction))
+    if (pUIGame != nullptr && co_await pUIGame->IR_OnMouseWheel(direction))
         co_return true;
 
     if (MainInputReceiver())
@@ -135,7 +135,7 @@ tmc::task<bool> CUI::IR_OnMouseWheel(gsl::index direction)
     co_return false;
 }
 
-tmc::task<bool> CUI::IR_OnKeyboardHold(gsl::index dik)
+tmc::task<bool> CUI::IR_OnKeyboardHold(xr::key_id dik)
 {
     if (MainInputReceiver())
     {
@@ -149,7 +149,7 @@ tmc::task<bool> CUI::IR_OnKeyboardHold(gsl::index dik)
     co_return false;
 }
 
-tmc::task<bool> CUI::IR_OnKeyboardPress(gsl::index dik)
+tmc::task<bool> CUI::IR_OnKeyboardPress(xr::key_id dik)
 {
     if (MainInputReceiver())
     {
@@ -160,7 +160,7 @@ tmc::task<bool> CUI::IR_OnKeyboardPress(gsl::index dik)
     if (UIMainIngameWnd->OnKeyboardPress(dik))
         co_return true;
 
-    if (pUIGame != nullptr && pUIGame->IR_OnKeyboardPress(dik))
+    if (pUIGame != nullptr && co_await pUIGame->IR_OnKeyboardPress(dik))
         co_return true;
 
     if (MainInputReceiver())
@@ -169,7 +169,7 @@ tmc::task<bool> CUI::IR_OnKeyboardPress(gsl::index dik)
     co_return false;
 }
 
-bool CUI::IR_OnKeyboardRelease(int dik)
+bool CUI::IR_OnKeyboardRelease(xr::key_id dik)
 {
     if (MainInputReceiver())
     {

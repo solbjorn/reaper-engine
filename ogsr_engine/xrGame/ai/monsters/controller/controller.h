@@ -159,20 +159,6 @@ public:
 private:
     float m_stamina_hit;
 
-    /*
-    #ifdef DEBUG
-        virtual CBaseMonster::SDebugInfo show_debug_info();
-
-    #endif
-
-    private:
-    #ifdef DEBUG
-            virtual void	debug_on_key		(int key);
-
-            Fvector			P1,P2;
-    #endif
-    */
-
 public:
     virtual bool run_home_point_when_enemy_inaccessible() const { return false; }
 

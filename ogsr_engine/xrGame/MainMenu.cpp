@@ -220,53 +220,29 @@ tmc::task<void> CMainMenu::Activate(bool bActivate)
 bool CMainMenu::IsActive() { return !!m_Flags.test(flActive); }
 bool CMainMenu::CanSkipSceneRendering() { return IsActive() && !m_Flags.test(flGameSaveScreenshot); }
 
-tmc::task<void> CMainMenu::IR_OnMousePress(gsl::index btn)
-{
-    if (!IsActive())
-        co_return;
-
-    co_await IR_OnKeyboardPress(mouse_button_2_key[btn]);
-}
-
-void CMainMenu::IR_OnMouseRelease(int btn)
-{
-    if (!IsActive())
-        return;
-
-    IR_OnKeyboardRelease(mouse_button_2_key[btn]);
-}
-
-tmc::task<void> CMainMenu::IR_OnMouseHold(gsl::index btn)
-{
-    if (!IsActive())
-        co_return;
-
-    co_await IR_OnKeyboardHold(mouse_button_2_key[btn]);
-}
-
 void CMainMenu::IR_OnMouseMove(int x, int y)
 {
     if (!IsActive())
         return;
 
     if (MainInputReceiver())
-        MainInputReceiver()->IR_OnMouseMove(x, y);
+        std::ignore = MainInputReceiver()->IR_OnMouseMove(x, y);
 }
 
 void CMainMenu::IR_OnMouseStop(int, int) {}
 
-tmc::task<void> CMainMenu::IR_OnKeyboardPress(gsl::index dik)
+tmc::task<void> CMainMenu::IR_OnKeyboardPress(xr::key_id dik)
 {
     if (!IsActive())
         co_return;
 
-    if (is_binded(kCONSOLE, dik))
+    if (is_binded(EGameActions::kCONSOLE, dik))
     {
         co_await Console->Show();
         co_return;
     }
 
-    if (DIK_F12 == dik)
+    if (dik == xr::key_id{sf::Keyboard::Scancode::F12})
     {
         Render->Screenshot();
         co_return;
@@ -276,16 +252,16 @@ tmc::task<void> CMainMenu::IR_OnKeyboardPress(gsl::index dik)
         std::ignore = co_await MainInputReceiver()->IR_OnKeyboardPress(dik);
 }
 
-void CMainMenu::IR_OnKeyboardRelease(int dik)
+void CMainMenu::IR_OnKeyboardRelease(xr::key_id dik)
 {
     if (!IsActive())
         return;
 
     if (MainInputReceiver())
-        MainInputReceiver()->IR_OnKeyboardRelease(dik);
+        std::ignore = MainInputReceiver()->IR_OnKeyboardRelease(dik);
 }
 
-tmc::task<void> CMainMenu::IR_OnKeyboardHold(gsl::index dik)
+tmc::task<void> CMainMenu::IR_OnKeyboardHold(xr::key_id dik)
 {
     if (!IsActive())
         co_return;

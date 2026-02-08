@@ -245,18 +245,20 @@ void CWeaponStatMgun::renderable_Render(u32 context_id, IRenderable* root)
 
 void CWeaponStatMgun::SetDesiredDir(float h, float p) { m_destEnemyDir.setHP(h, p); }
 
-void CWeaponStatMgun::Action(int id, u32 flags)
+void CWeaponStatMgun::Action(EGameActions id, u32 flags)
 {
     inheritedHolder::Action(id, flags);
+
     switch (id)
     {
-    case kWPN_FIRE: {
+    case EGameActions::kWPN_FIRE:
         if (flags == CMD_START)
             FireStart();
         else
             FireEnd();
-    }
-    break;
+
+        break;
+    default: break;
     }
 }
 

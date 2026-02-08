@@ -81,9 +81,9 @@ public:
 
     // control functions
     void OnMouseMove(int x, int y) override;
-    void OnKeyboardPress(int dik) override;
-    void OnKeyboardRelease(int dik) override;
-    void OnKeyboardHold(int) override;
+    void OnKeyboardPress(EGameActions cmd) override;
+    void OnKeyboardRelease(EGameActions cmd) override;
+    void OnKeyboardHold(EGameActions) override;
 
     virtual CInventory* GetInventory() { return nullptr; }
 

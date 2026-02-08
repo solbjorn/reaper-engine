@@ -786,31 +786,31 @@ namespace
 {
 tmc::task<void> send_event_key_press_async(std::array<std::byte, 16>& arg)
 {
-    const auto key = *reinterpret_cast<gsl::index*>(&arg);
+    const auto key = *reinterpret_cast<xr::key_id*>(&arg);
     co_await Level().IR_OnKeyboardPress(key);
 }
 
-void send_event_key_press(gsl::index key)
+void send_event_key_press(xr::key_id key)
 {
     auto& arg = Device.add_frame_async(CallMe::fromFunction<&send_event_key_press_async>());
-    *reinterpret_cast<gsl::index*>(&arg) = key;
+    *reinterpret_cast<xr::key_id*>(&arg) = key;
 }
 
-void send_event_key_release(int dik) // Отпускание клавиши
+void send_event_key_release(xr::key_id dik) // Отпускание клавиши
 {
     Level().IR_OnKeyboardRelease(dik);
 }
 
 tmc::task<void> send_event_key_hold_async(std::array<std::byte, 16>& arg)
 {
-    const auto key = *reinterpret_cast<gsl::index*>(&arg);
+    const auto key = *reinterpret_cast<xr::key_id*>(&arg);
     co_await Level().IR_OnKeyboardHold(key);
 }
 
-void send_event_key_hold(gsl::index key)
+void send_event_key_hold(xr::key_id key)
 {
     auto& arg = Device.add_frame_async(CallMe::fromFunction<&send_event_key_hold_async>());
-    *reinterpret_cast<gsl::index*>(&arg) = key;
+    *reinterpret_cast<xr::key_id*>(&arg) = key;
 }
 
 tmc::task<void> send_event_mouse_wheel_async(std::array<std::byte, 16>& arg)

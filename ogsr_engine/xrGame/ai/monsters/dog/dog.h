@@ -60,11 +60,6 @@ private:
 
     LPCSTR get_current_animation();
     static void animation_end(CBlend* B);
-    /*
-    #ifdef DEBUG
-        virtual void	debug_on_key		(int key);
-    #endif
-    */
 
     pcstr anim_extra_1;
     pcstr anim_extra_2;

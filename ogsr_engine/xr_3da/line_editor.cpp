@@ -16,7 +16,7 @@ line_editor::~line_editor() = default;
 
 void line_editor::on_frame() { m_control.on_frame(); }
 
-tmc::task<void> line_editor::IR_OnKeyboardPress(gsl::index dik) { co_await m_control.on_key_press(dik); }
-tmc::task<void> line_editor::IR_OnKeyboardHold(gsl::index dik) { co_await m_control.on_key_hold(dik); }
-void line_editor::IR_OnKeyboardRelease(int) { m_control.on_key_release(); }
+tmc::task<void> line_editor::IR_OnKeyboardPress(xr::key_id dik) { co_await m_control.on_key_press(dik); }
+tmc::task<void> line_editor::IR_OnKeyboardHold(xr::key_id dik) { co_await m_control.on_key_hold(dik); }
+void line_editor::IR_OnKeyboardRelease(xr::key_id dik) { m_control.on_key_release(dik); }
 } // namespace text_editor

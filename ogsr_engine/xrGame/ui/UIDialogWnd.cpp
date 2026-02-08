@@ -32,7 +32,7 @@ void CUIDialogWnd::Hide()
     inherited::Show(false);
 }
 
-tmc::task<bool> CUIDialogWnd::IR_OnKeyboardHold(gsl::index dik)
+tmc::task<bool> CUIDialogWnd::IR_OnKeyboardHold(xr::key_id dik)
 {
     if (!IR_process())
         co_return false;
@@ -49,7 +49,7 @@ tmc::task<bool> CUIDialogWnd::IR_OnKeyboardHold(gsl::index dik)
             if (!IR)
                 co_return false;
 
-            co_await IR->IR_OnKeyboardHold(get_binded_action(dik));
+            co_await IR->IR_OnKeyboardHold(dik);
         }
     }
 
@@ -58,21 +58,33 @@ tmc::task<bool> CUIDialogWnd::IR_OnKeyboardHold(gsl::index dik)
 
 #define DOUBLE_CLICK_TIME 250
 
-tmc::task<bool> CUIDialogWnd::IR_OnKeyboardPress(gsl::index dik)
+tmc::task<bool> CUIDialogWnd::IR_OnKeyboardPress(xr::key_id dik)
 {
     if (!IR_process())
         co_return false;
 
     // mouse click
-    if (dik == MOUSE_1 || dik == MOUSE_2 || dik == MOUSE_3)
+    if (dik.is<sf::Mouse::Button>())
     {
         Fvector2 cp = GetUICursor()->GetCursorPosition();
-        EUIMessages action = (dik == MOUSE_1) ? WINDOW_LBUTTON_DOWN : (dik == MOUSE_2) ? WINDOW_RBUTTON_DOWN : WINDOW_CBUTTON_DOWN;
+        EUIMessages action;
+
+        switch (dik.get<sf::Mouse::Button>())
+        {
+        case sf::Mouse::Button::Left: action = WINDOW_LBUTTON_DOWN; break;
+        case sf::Mouse::Button::Right: action = WINDOW_RBUTTON_DOWN; break;
+        case sf::Mouse::Button::Middle: action = WINDOW_CBUTTON_DOWN; break;
+        case sf::Mouse::Button::Extra1: action = WINDOW_EBUTTON_DOWN; break;
+        case sf::Mouse::Button::Extra2: action = WINDOW_XBUTTON_DOWN; break;
+        }
+
         if (action == WINDOW_LBUTTON_DOWN)
         {
             u32 dwCurTime = Device.dwTimeContinual;
+
             if (dwCurTime - m_dwLastClickTime < DOUBLE_CLICK_TIME)
                 action = WINDOW_LBUTTON_DB_CLICK;
+
             m_dwLastClickTime = dwCurTime;
         }
 
@@ -92,23 +104,33 @@ tmc::task<bool> CUIDialogWnd::IR_OnKeyboardPress(gsl::index dik)
             if (!IR)
                 co_return false;
 
-            co_await IR->IR_OnKeyboardPress(get_binded_action(dik));
+            co_await IR->IR_OnKeyboardPress(dik);
         }
     }
 
     co_return false;
 }
 
-bool CUIDialogWnd::IR_OnKeyboardRelease(int dik)
+bool CUIDialogWnd::IR_OnKeyboardRelease(xr::key_id dik)
 {
     if (!IR_process())
         return false;
 
     // mouse click
-    if (dik == MOUSE_1 || dik == MOUSE_2 || dik == MOUSE_3)
+    if (dik.is<sf::Mouse::Button>())
     {
         Fvector2 cp = GetUICursor()->GetCursorPosition();
-        EUIMessages action = (dik == MOUSE_1) ? WINDOW_LBUTTON_UP : (dik == MOUSE_2) ? WINDOW_RBUTTON_UP : WINDOW_CBUTTON_UP;
+        EUIMessages action;
+
+        switch (dik.get<sf::Mouse::Button>())
+        {
+        case sf::Mouse::Button::Left: action = WINDOW_LBUTTON_UP; break;
+        case sf::Mouse::Button::Right: action = WINDOW_RBUTTON_UP; break;
+        case sf::Mouse::Button::Middle: action = WINDOW_CBUTTON_UP; break;
+        case sf::Mouse::Button::Extra1: action = WINDOW_EBUTTON_UP; break;
+        case sf::Mouse::Button::Extra2: action = WINDOW_XBUTTON_UP; break;
+        }
+
         if (OnMouse(cp.x, cp.y, action))
             return true;
     }
@@ -124,7 +146,8 @@ bool CUIDialogWnd::IR_OnKeyboardRelease(int dik)
             IInputReceiver* IR = smart_cast<IInputReceiver*>(smart_cast<CGameObject*>(O));
             if (!IR)
                 return (false);
-            IR->IR_OnKeyboardRelease(get_binded_action(dik));
+
+            IR->IR_OnKeyboardRelease(dik);
         }
     }
     return false;
@@ -138,9 +161,9 @@ tmc::task<bool> CUIDialogWnd::IR_OnMouseWheel(gsl::index direction)
     Fvector2 pos = GetUICursor()->GetCursorPosition();
 
     if (direction > 0)
-        OnMouse(pos.x, pos.y, WINDOW_MOUSE_WHEEL_UP);
+        std::ignore = OnMouse(pos.x, pos.y, WINDOW_MOUSE_WHEEL_UP);
     else
-        OnMouse(pos.x, pos.y, WINDOW_MOUSE_WHEEL_DOWN);
+        std::ignore = OnMouse(pos.x, pos.y, WINDOW_MOUSE_WHEEL_DOWN);
 
     co_return true;
 }
@@ -155,7 +178,7 @@ bool CUIDialogWnd::IR_OnMouseMove(int dx, int dy)
         GetUICursor()->UpdateCursorPosition(dx, dy);
         Fvector2 cPos = GetUICursor()->GetCursorPosition();
 
-        OnMouse(cPos.x, cPos.y, WINDOW_MOUSE_MOVE);
+        std::ignore = OnMouse(cPos.x, cPos.y, WINDOW_MOUSE_MOVE);
     }
     else if (!StopAnyMove() && g_pGameLevel)
     {
@@ -173,19 +196,22 @@ bool CUIDialogWnd::IR_OnMouseMove(int dx, int dy)
     return true;
 }
 
-bool CUIDialogWnd::OnKeyboardHold(int dik)
+bool CUIDialogWnd::OnKeyboardHold(xr::key_id dik)
 {
     if (!IR_process())
         return false;
+
     return inherited::OnKeyboardHold(dik);
 }
 
-bool CUIDialogWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIDialogWnd::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 {
     if (!IR_process())
         return false;
+
     if (inherited::OnKeyboard(dik, keyboard_action))
         return true;
+
     return false;
 }
 
@@ -196,6 +222,7 @@ bool CUIDialogWnd::IR_process()
 
     if (Device.Paused() && !WorkInPause())
         return false;
+
     return true;
 }
 

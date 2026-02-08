@@ -33,7 +33,7 @@ private:
     bool b_isShiftHold{};
     bool b_needResetInput{};
 
-    xr_map<gsl::index, s64> i_key_holding;
+    xr_map<xr::key_id, s64> i_key_holding;
 
     Fvector2 mouse_pos{};
     f32 mouse_shift_sens{0.4f};
@@ -61,9 +61,9 @@ public:
     [[nodiscard]] bool opened() override;
     void update() override;
 
-    [[nodiscard]] bool key_hold(gsl::index key) override;
-    [[nodiscard]] bool key_press(gsl::index key) override;
-    [[nodiscard]] bool key_release(gsl::index key) override;
+    [[nodiscard]] bool key_hold(xr::key_id key) override;
+    [[nodiscard]] bool key_press(xr::key_id key) override;
+    [[nodiscard]] bool key_release(xr::key_id key) override;
 
     [[nodiscard]] bool mouse_move(gsl::index dx, gsl::index dy) override;
     [[nodiscard]] bool mouse_wheel(gsl::index dir) override;

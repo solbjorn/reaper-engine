@@ -10,6 +10,7 @@
 #include "StdAfx.h"
 
 #include "UI3tButton.h"
+
 #include "UIXmlInit.h"
 
 CUI3tButton::CUI3tButton()
@@ -40,7 +41,7 @@ void CUI3tButton::OnClick()
     PlaySoundT();
 }
 
-bool CUI3tButton::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUI3tButton::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
     if (m_bCheckMode)
         return CUIWindow::OnMouse(x, y, mouse_action);
@@ -48,11 +49,11 @@ bool CUI3tButton::OnMouse(float x, float y, EUIMessages mouse_action)
         return CUIButton::OnMouse(x, y, mouse_action);
 }
 
-bool CUI3tButton::OnMouseDown(int mouse_btn)
+bool CUI3tButton::OnMouseDown(sf::Mouse::Button mouse_btn)
 {
     if (m_bCheckMode)
     {
-        if (mouse_btn == MOUSE_1)
+        if (mouse_btn == sf::Mouse::Button::Left)
         {
             if (m_eButtonState == BUTTON_NORMAL)
                 m_eButtonState = BUTTON_PUSHED;

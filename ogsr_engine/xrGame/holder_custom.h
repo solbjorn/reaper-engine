@@ -4,10 +4,11 @@
 
 #include "script_export_space.h"
 
-class CInventory;
-class CGameObject;
-class CCameraBase;
 class CActor;
+class CCameraBase;
+class CGameObject;
+class CInventory;
+enum class EGameActions : s32;
 
 class XR_NOVTABLE CHolderCustom : public virtual RTTI::Enable
 {
@@ -30,9 +31,9 @@ public:
     virtual CHolderCustom* cast_holder_custom() { return this; }
     bool Engaged() { return !!m_owner; }
     virtual void OnMouseMove(int x, int y) = 0;
-    virtual void OnKeyboardPress(int dik) = 0;
-    virtual void OnKeyboardRelease(int dik) = 0;
-    virtual void OnKeyboardHold(int dik) = 0;
+    virtual void OnKeyboardPress(EGameActions cmd) = 0;
+    virtual void OnKeyboardRelease(EGameActions cmd) = 0;
+    virtual void OnKeyboardHold(EGameActions cmd) = 0;
     // Inventory for the car
     virtual CInventory* GetInventory() = 0;
 
@@ -46,7 +47,7 @@ public:
     virtual Fvector ExitPosition() = 0;
     [[nodiscard]] virtual Fvector ExitVelocity() { return Fvector{}; }
     virtual CCameraBase* Camera() = 0;
-    virtual void Action(int, u32) {}
+    virtual void Action(EGameActions, u32) {}
     virtual void SetParam(int, Fvector2) {}
     virtual void SetParam(int, Fvector) {}
 

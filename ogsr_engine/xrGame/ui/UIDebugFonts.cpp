@@ -9,10 +9,10 @@
 #include "StdAfx.h"
 
 #ifdef DEBUG
-
 #include "UIDebugFonts.h"
-#include <dinput.h>
+
 #include "../hudmanager.h"
+#include "../string_table.h"
 
 CUIDebugFonts::CUIDebugFonts()
 {
@@ -32,17 +32,16 @@ void CUIDebugFonts::Init(float x, float y, float width, float height)
     m_background.InitTexture("ui\\ui_debug_font");
 }
 
-bool CUIDebugFonts::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIDebugFonts::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 {
-    if (DIK_ESCAPE == dik)
+    if (dik == xr::key_id{sf::Keyboard::Scancode::Escape}))
         this->GetHolder()->StartStopMenu(this, true);
 
-    if (DIK_F12 == dik)
+    if (dik == xr::key_id{sf::Keyboard::Scancode::F12}))
         return false;
 
     return true;
 }
-#include "../string_table.h"
 
 void CUIDebugFonts::FillUpList()
 {
@@ -71,5 +70,4 @@ void CUIDebugFonts::FillUpList()
         AttachChild(pItem);
     }
 }
-
 #endif

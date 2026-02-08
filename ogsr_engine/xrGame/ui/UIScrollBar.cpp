@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "uiscrollbar.h"
+
 #include "UI3tButton.h"
 #include "UIScrollBox.h"
 #include "UIXmlInit.h"
@@ -179,9 +180,9 @@ namespace
 u32 last_hold_time{};
 }
 
-bool CUIScrollBar::OnKeyboardHold(int dik)
+bool CUIScrollBar::OnKeyboardHold(xr::key_id dik)
 {
-    if (dik == MOUSE_1 && (last_hold_time + 100) < Device.dwTimeContinual)
+    if (dik == xr::key_id{sf::Mouse::Button::Left} && (last_hold_time + 100) < Device.dwTimeContinual)
     {
         Fvector2 cursor_pos = GetUICursor()->GetCursorPosition();
         Frect dec_rect;
@@ -204,10 +205,11 @@ bool CUIScrollBar::OnKeyboardHold(int dik)
             return true;
         }
     }
+
     return false;
 }
 
-bool CUIScrollBar::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUIScrollBar::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
     switch (mouse_action)
     {

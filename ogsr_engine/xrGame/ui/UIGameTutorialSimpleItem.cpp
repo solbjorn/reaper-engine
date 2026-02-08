@@ -85,20 +85,17 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
     m_flags.set(etiNeedPauseSound, std::is_eq(xr::strcasecmp(str2, "on")));
 
     str = xml->Read("guard_key", 0, nullptr);
-    m_continue_dik_guard = -1;
+    m_continue_dik_guard = xr::key_id{sf::Keyboard::Scancode::Unknown};
 
-    if (str != nullptr && std::is_eq(xr::strcasecmp(str, "any")))
-    {
-        m_continue_dik_guard = 9999;
-        str = nullptr;
-    }
     if (str != nullptr)
     {
-        EGameActions cmd = action_name_to_id(str);
-        m_continue_dik_guard = get_action_dik(cmd);
+        if (std::is_neq(xr::strcasecmp(str, "any")))
+            m_continue_dik_guard = get_action_dik(action_name_to_id(str));
+        else
+            m_continue_dik_guard = xr::key_id{xr::key_id::joystick{9999}};
     }
 
-    m_flags.set(etiCanBeStopped, (m_continue_dik_guard == -1));
+    m_flags.set(etiCanBeStopped, m_continue_dik_guard == xr::key_id{sf::Keyboard::Scancode::Unknown});
     m_flags.set(etiGrabInput, 1 == xml->ReadInt("grab_input", 0, 1));
 
     int actions_count = xml->GetNodesNum(nullptr, 0, "action");
@@ -295,15 +292,16 @@ bool CUISequenceSimpleItem::Stop(bool bForce)
     return true;
 }
 
-void CUISequenceSimpleItem::OnKeyboardPress(int dik)
+void CUISequenceSimpleItem::OnKeyboardPress(xr::key_id dik)
 {
     if (!m_flags.test(etiCanBeStopped))
     {
-        VERIFY(m_continue_dik_guard != -1);
-        if (m_continue_dik_guard == -1)
+        VERIFY(m_continue_dik_guard != xr::key_id{sf::Keyboard::Scancode::Unknown});
+
+        if (m_continue_dik_guard == xr::key_id{sf::Keyboard::Scancode::Unknown})
             m_flags.set(etiCanBeStopped, TRUE); // not binded action :(
 
-        if (m_continue_dik_guard == 9999 || dik == m_continue_dik_guard)
+        if (m_continue_dik_guard == xr::key_id{xr::key_id::joystick{9999}} || dik == m_continue_dik_guard)
             m_flags.set(etiCanBeStopped, TRUE); // match key
     }
 

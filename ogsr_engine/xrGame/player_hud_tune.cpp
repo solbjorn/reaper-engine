@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "player_hud.h"
+
 #include "level.h"
 #include "debug_renderer.h"
 #include "../xr_3da/xr_input.h"
@@ -29,19 +30,19 @@ enum HUD_ADJUST_MODE : int
     _HUD_ADJUST_MODES_COUNT_
 };
 
-constexpr std::array<std::tuple<int, const char*>, _HUD_ADJUST_MODES_COUNT_> ADJUST_MODES_DB{{
-    {DIK_NUMPAD0, ""},
-    {DIK_NUMPAD1, "adjusting HUD POSITION"},
-    {DIK_NUMPAD2, "adjusting HUD ROTATION"},
-    {DIK_NUMPAD3, "adjusting ITEM POSITION"},
-    {DIK_NUMPAD4, "adjusting ITEM ROTATION"},
-    {DIK_NUMPAD5, "adjusting FIRE POINT"},
-    {DIK_NUMPAD6, "adjusting FIRE POINT 2"},
-    {DIK_NUMPAD7, "adjusting SHELL POINT"},
-    {DIK_NUMPAD8, "adjusting pos STEP"},
-    {DIK_NUMPAD9, "adjusting rot STEP"},
-    {DIK_1, "adjusting LASER POINT"},
-    {DIK_2, "adjusting FLASHLIGHT POINT"},
+constexpr std::array<std::tuple<xr::key_id, gsl::czstring>, _HUD_ADJUST_MODES_COUNT_> ADJUST_MODES_DB{{
+    {xr::key_id{sf::Keyboard::Scancode::Numpad0}, ""},
+    {xr::key_id{sf::Keyboard::Scancode::Numpad1}, "adjusting HUD POSITION"},
+    {xr::key_id{sf::Keyboard::Scancode::Numpad2}, "adjusting HUD ROTATION"},
+    {xr::key_id{sf::Keyboard::Scancode::Numpad3}, "adjusting ITEM POSITION"},
+    {xr::key_id{sf::Keyboard::Scancode::Numpad4}, "adjusting ITEM ROTATION"},
+    {xr::key_id{sf::Keyboard::Scancode::Numpad5}, "adjusting FIRE POINT"},
+    {xr::key_id{sf::Keyboard::Scancode::Numpad6}, "adjusting FIRE POINT 2"},
+    {xr::key_id{sf::Keyboard::Scancode::Numpad7}, "adjusting SHELL POINT"},
+    {xr::key_id{sf::Keyboard::Scancode::Numpad8}, "adjusting pos STEP"},
+    {xr::key_id{sf::Keyboard::Scancode::Numpad9}, "adjusting rot STEP"},
+    {xr::key_id{sf::Keyboard::Scancode::Num1}, "adjusting LASER POINT"},
+    {xr::key_id{sf::Keyboard::Scancode::Num2}, "adjusting FLASHLIGHT POINT"},
 }};
 } // namespace
 
@@ -52,31 +53,35 @@ float g_bHudAdjustDeltaRot = 0.05f;
 
 namespace
 {
-bool is_attachable_item_tuning_mode()
+[[nodiscard]] bool is_attachable_item_tuning_mode()
 {
-    return pInput->iGetAsyncKeyState(DIK_LSHIFT) || pInput->iGetAsyncKeyState(DIK_Z) || pInput->iGetAsyncKeyState(DIK_X) || pInput->iGetAsyncKeyState(DIK_C);
+    return pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::Z}) ||
+        pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::X}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::C});
 }
 
 void tune_remap(const Ivector& in_values, Ivector& out_values)
 {
-    if (pInput->iGetAsyncKeyState(DIK_LSHIFT))
+    if (pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}))
     {
         out_values = in_values;
     }
-    else if (pInput->iGetAsyncKeyState(DIK_Z))
-    { // strict by X
+    else if (pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::Z}))
+    {
+        // strict by X
         out_values.x = in_values.y;
         out_values.y = 0;
         out_values.z = 0;
     }
-    else if (pInput->iGetAsyncKeyState(DIK_X))
-    { // strict by Y
+    else if (pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::X}))
+    {
+        // strict by Y
         out_values.x = 0;
         out_values.y = in_values.y;
         out_values.z = 0;
     }
-    else if (pInput->iGetAsyncKeyState(DIK_C))
-    { // strict by Z
+    else if (pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::C}))
+    {
+        // strict by Z
         out_values.x = 0;
         out_values.y = 0;
         out_values.z = in_values.y;
@@ -365,11 +370,11 @@ void hud_draw_adjust_mode()
         return;
 
     const char* _text{};
-    if (pInput->iGetAsyncKeyState(DIK_LSHIFT))
+    if (pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}))
         _text =
             "press SHIFT+NUM 0-return|1-hud_pos|2-hud_rot|3-itm_pos|4-itm_rot|5-fire_point|6-fire_point2|7-shell_point|8-pos_step|9-rot_step    ||||||    press "
             "SHIFT+1-laser_point|2-flashlight_point";
-    else if (pInput->iGetAsyncKeyState(DIK_LCONTROL))
+    else if (pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LControl}))
         _text = "press CTRL+NUM 0-item idx 1|1-item idx 2";
     else
         _text = std::get<1>(ADJUST_MODES_DB.at(g_bHudAdjustMode));
@@ -388,14 +393,15 @@ void hud_draw_adjust_mode()
     }
 }
 
-void hud_adjust_mode_keyb(int dik)
+void hud_adjust_mode_keyb(xr::key_id dik)
 {
     if (!g_bHudAdjustMode) // Включать этот режим только через консоль
         return;
 
-    if (pInput->iGetAsyncKeyState(DIK_LSHIFT))
+    if (pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}))
     {
         int mode{};
+
         for (const auto& [key, str] : ADJUST_MODES_DB)
         {
             if (key == dik)
@@ -403,14 +409,15 @@ void hud_adjust_mode_keyb(int dik)
                 g_bHudAdjustMode = mode;
                 return;
             }
+
             mode++;
         }
     }
-    else if (pInput->iGetAsyncKeyState(DIK_LCONTROL))
+    else if (pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LControl}))
     {
-        if (dik == DIK_NUMPAD0)
+        if (dik == xr::key_id{sf::Keyboard::Scancode::Numpad0})
             g_bHudAdjustItemIdx = 0;
-        else if (dik == DIK_NUMPAD1)
+        else if (dik == xr::key_id{sf::Keyboard::Scancode::Numpad1})
             g_bHudAdjustItemIdx = 1;
     }
 }

@@ -21,7 +21,7 @@ protected:
     CUIDragDropListEx* m_pParentList{};
     Ivector2 m_grid_size;
     Fvector2 m_cell_size;
-    int m_accelerator;
+    xr::key_id m_accelerator;
 
     CUIProgressBar* m_pConditionState{};
     bool m_condition_auto_width{};
@@ -32,8 +32,8 @@ public:
     CUICellItem();
     ~CUICellItem() override;
 
-    virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
-    [[nodiscard]] bool OnMouse(float, float, EUIMessages mouse_action) override;
+    [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
+    [[nodiscard]] bool OnMouse(f32, f32, EUIMessages mouse_action) override;
     virtual void Draw();
     virtual void Update();
     virtual void UpdateItemText();
@@ -47,8 +47,8 @@ public:
     bool HasChild(CUICellItem* item);
     virtual bool EqualTo(CUICellItem* itm);
     IC const Ivector2& GetGridSize() { return m_grid_size; } // size in grid
-    IC void SetAccelerator(int dik) { m_accelerator = dik; }
-    IC int GetAccelerator() const { return m_accelerator; }
+    void SetAccelerator(xr::key_id dik) { m_accelerator = dik; }
+    [[nodiscard]] xr::key_id GetAccelerator() const { return m_accelerator; }
 
     virtual CUIDragItem* CreateDragItem();
 
@@ -89,7 +89,7 @@ public:
 
     virtual void Init(const ui_shader& sh, const Frect& rect, const Frect& text_rect);
     CUIStatic* wnd() { return &m_static; }
-    [[nodiscard]] bool OnMouse(float x, float y, EUIMessages mouse_action) override;
+    [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
     virtual void Draw();
     tmc::task<void> OnRender() override;
     tmc::task<void> OnFrame() override;

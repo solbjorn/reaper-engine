@@ -8,8 +8,9 @@
 
 #include "stdafx.h"
 
-#include "ai_space.h"
 #include "script_engine.h"
+
+#include "ai_space.h"
 
 #include "../xr_3da/xr_input.h"
 
@@ -76,12 +77,15 @@ void msg_and_fail(LPCSTR msg) { R_ASSERT(false, msg); }
 
 void take_screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name) { ::Render->Screenshot(mode, name); }
 
-bool GetLAlt() { return !!pInput->iGetAsyncKeyState(DIK_LMENU); }
-bool GetRAlt() { return !!pInput->iGetAsyncKeyState(DIK_RMENU); }
-bool GetAlt() { return !!pInput->iGetAsyncKeyState(DIK_LMENU) || !!pInput->iGetAsyncKeyState(DIK_RMENU); }
-} // namespace
+[[nodiscard]] bool GetLAlt() { return pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LAlt}); }
+[[nodiscard]] bool GetRAlt() { return pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RAlt}); }
+[[nodiscard]] bool GetAlt() { return pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LAlt}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RAlt}); }
 
-bool GetShift() { return !!pInput->iGetAsyncKeyState(DIK_LSHIFT) || !!pInput->iGetAsyncKeyState(DIK_RSHIFT); }
+[[nodiscard]] bool GetShift()
+{
+    return pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RShift});
+}
+} // namespace
 
 void CScriptEngine::script_register(sol::state_view& lua)
 {

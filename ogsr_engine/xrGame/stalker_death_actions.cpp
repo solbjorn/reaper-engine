@@ -7,7 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_death_actions.h"
+
 #include "ai/stalker/ai_stalker.h"
 #include "stalker_decision_space.h"
 #include "script_game_object.h"
@@ -59,7 +61,7 @@ void CStalkerActionDead::initialize()
     if (!fire())
         return;
 
-    object().inventory().Action(kWPN_FIRE, CMD_START);
+    std::ignore = object().inventory().Action(EGameActions::kWPN_FIRE, CMD_START);
 
     u16 active_slot = object().inventory().GetActiveSlot();
     if (active_slot == SECOND_WEAPON_SLOT)

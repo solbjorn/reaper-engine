@@ -169,7 +169,7 @@ public:
     // UIWindow overriding
     virtual void Draw();
     virtual void Update();
-    virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
+    [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 
     void enable_highlight(const bool);

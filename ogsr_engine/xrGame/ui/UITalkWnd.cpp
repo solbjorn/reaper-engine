@@ -367,10 +367,9 @@ void CUITalkWnd::SwitchToTrade()
     }
 }
 
-tmc::task<bool> CUITalkWnd::IR_OnKeyboardPress(gsl::index dik)
+tmc::task<bool> CUITalkWnd::IR_OnKeyboardPress(xr::key_id dik)
 {
-    EGameActions cmd = get_binded_action(dik);
-    if (cmd == kUSE)
+    if (get_binded_action(dik) == EGameActions::kUSE)
     {
         if ((Core.Features.test(xrCore::Feature::disable_dialog_break) && m_pCurrentDialog) || (m_pOthersInvOwner && m_pOthersInvOwner->NeedOsoznanieMode()))
             co_return true;
@@ -382,18 +381,18 @@ tmc::task<bool> CUITalkWnd::IR_OnKeyboardPress(gsl::index dik)
     co_return co_await inherited::IR_OnKeyboardPress(dik);
 }
 
-bool CUITalkWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUITalkWnd::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 {
     if (m_pOthersInvOwner && m_pOthersInvOwner->NeedOsoznanieMode())
-    {
         return true;
-    }
-    else if (Core.Features.test(xrCore::Feature::disable_dialog_break) && m_pCurrentDialog && keyboard_action == WINDOW_KEY_PRESSED)
+
+    if (Core.Features.test(xrCore::Feature::disable_dialog_break) && m_pCurrentDialog && keyboard_action == WINDOW_KEY_PRESSED)
     {
-        EGameActions cmd = get_binded_action(dik);
-        if (cmd == kUSE || cmd == kQUIT)
+        const auto cmd = get_binded_action(dik);
+        if (cmd == EGameActions::kUSE || cmd == EGameActions::kQUIT)
             return true;
     }
+
     return inherited::OnKeyboard(dik, keyboard_action);
 }
 

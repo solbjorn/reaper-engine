@@ -256,29 +256,30 @@ void CWeaponShotgun::UpdateSounds()
 void CWeaponShotgun::SwitchDuplet() { is_duplet_enabled = !is_duplet_enabled; }
 #endif
 
-bool CWeaponShotgun::Action(s32 cmd, u32 flags)
+bool CWeaponShotgun::Action(EGameActions cmd, u32 flags)
 {
 #ifdef DUPLET_STATE_SWITCH
-
     if (is_duplet_enabled)
     {
         switch (cmd)
         {
-        case kWPN_FIRE: {
+        case EGameActions::kWPN_FIRE:
             if (flags & CMD_START)
             {
                 if (IsPending())
                     return false;
+
                 Fire2Start();
             }
             else
+            {
                 Fire2End();
+            }
 
             return true;
-        }
+        default: break;
         }
     }
-
 #endif // !DUPLET_STATE_SWITCH
 
     if (inherited::Action(cmd, flags))
@@ -288,33 +289,32 @@ bool CWeaponShotgun::Action(s32 cmd, u32 flags)
     {
         switch (cmd)
         {
-        case kWPN_FIRE:
-        case kWPN_NEXT:
-        // case kWPN_RELOAD:
-        case kWPN_ZOOM:
+        case EGameActions::kWPN_FIRE:
+        case EGameActions::kWPN_NEXT:
+        case EGameActions::kWPN_ZOOM:
             // остановить перезарядку
             m_stop_triStateReload = true;
             return true;
+        default: break;
         }
     }
 
 #ifndef DUPLET_STATE_SWITCH
-
     // если оружие чем-то занято, то ничего не делать
     if (IsPending())
         return false;
 
     switch (cmd)
     {
-    case kWPN_ZOOM: {
+    case EGameActions::kWPN_ZOOM:
         if (flags & CMD_START)
             Fire2Start();
         else
             Fire2End();
-    }
-        return true;
-    }
 
+        return true;
+    default: break;
+    }
 #endif // !DUPLET_STATE_SWITCH
 
     return false;

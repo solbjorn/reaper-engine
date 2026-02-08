@@ -187,24 +187,24 @@ tmc::task<void> game_cl_GameState::shedule_Update(u32 dt) { co_await ISheduled::
 void game_cl_GameState::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators) { HUD().GetUI()->StartStopMenu(pDialog, bDoHideIndicators); }
 void game_cl_GameState::sv_EventSend(NET_Packet& P) { Level().Send(P, net_flags(TRUE, TRUE)); }
 
-bool game_cl_GameState::IR_OnKeyboardPress(int dik)
+tmc::task<bool> game_cl_GameState::IR_OnKeyboardPress(xr::key_id dik)
 {
     if (local_player && !local_player->IsSkip())
-        return OnKeyboardPress(get_binded_action(dik));
-    else
-        return false;
+        co_return OnKeyboardPress(get_binded_action(dik));
+
+    co_return false;
 }
 
-bool game_cl_GameState::IR_OnKeyboardRelease(int dik)
+bool game_cl_GameState::IR_OnKeyboardRelease(xr::key_id dik)
 {
     if (local_player && !local_player->IsSkip())
         return OnKeyboardRelease(get_binded_action(dik));
-    else
-        return false;
+
+    return false;
 }
 
 bool game_cl_GameState::IR_OnMouseMove(int, int) { return false; }
-bool game_cl_GameState::IR_OnMouseWheel(int) { return false; }
+tmc::task<bool> game_cl_GameState::IR_OnMouseWheel(gsl::index) { co_return false; }
 
 void game_cl_GameState::u_EventGen(NET_Packet& P, u16 type, u16 dest)
 {

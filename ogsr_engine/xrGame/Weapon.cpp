@@ -1120,28 +1120,32 @@ void CWeapon::UpdatePosition(const Fmatrix& trans)
     VERIFY(!fis_zero(DET(renderable.xform)));
 }
 
-bool CWeapon::Action(s32 cmd, u32 flags)
+bool CWeapon::Action(EGameActions cmd, u32 flags)
 {
     if (inherited::Action(cmd, flags))
         return true;
 
     switch (cmd)
     {
-    case kWPN_FIRE: {
+    case EGameActions::kWPN_FIRE: {
         // если оружие чем-то занято, то ничего не делать
         {
             if (flags & CMD_START)
             {
                 if (IsPending())
                     return false;
+
                 FireStart();
             }
             else
+            {
                 FireEnd();
+            }
         }
-    }
+
         return true;
-    case kWPN_NEXT: {
+    }
+    case EGameActions::kWPN_NEXT: {
         if (IsPending())
             return false;
 
@@ -1162,14 +1166,13 @@ bool CWeapon::Action(s32 cmd, u32 flags)
             if (l_newType != m_ammoType)
             {
                 m_set_next_ammoType_on_reload = l_newType;
-
                 Reload();
             }
         }
-    }
-        return true;
 
-    case kWPN_ZOOM: {
+        return true;
+    }
+    case EGameActions::kWPN_ZOOM: {
         const u32 state = GetState();
         const bool bPending = IsPending();
         if (IsZoomEnabled() && (state == eFire || state == eFire2 || state == eMagEmpty || state == eIdle || !bPending))
@@ -1198,25 +1201,30 @@ bool CWeapon::Action(s32 cmd, u32 flags)
             return true;
         }
         else
+        {
             return false;
+        }
     }
-
-    case kWPN_ZOOM_INC:
-    case kWPN_ZOOM_DEC: {
+    case EGameActions::kWPN_ZOOM_INC:
+    case EGameActions::kWPN_ZOOM_DEC: {
         if (IsZoomEnabled() && IsZoomed() && m_bScopeDynamicZoom && IsScopeAttached() && (flags & CMD_START))
         {
             // если в режиме ПГ - не будем давать использовать динамический зум
             if (IsGrenadeMode())
                 return false;
 
-            ZoomChange(cmd == kWPN_ZOOM_INC);
+            ZoomChange(cmd == EGameActions::kWPN_ZOOM_INC);
 
             return true;
         }
         else
+        {
             return false;
+        }
     }
+    default: break;
     }
+
     return false;
 }
 

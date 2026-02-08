@@ -148,7 +148,7 @@ public:
     [[nodiscard]] constexpr bool equal(const ref_smem<T>& that) const { return *this == that; }
 
     template <typename H>
-    friend constexpr H AbslHashValue(H h, const ref_smem<T>& mem)
+    [[nodiscard]] friend constexpr H AbslHashValue(H h, const ref_smem<T>& mem)
     {
         return H::combine(std::move(h), std::span<const T>{mem});
     }

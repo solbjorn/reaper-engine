@@ -97,6 +97,3 @@ namespace xr
 
 // script_engine_export.cpp
 void export_classes(sol::state_view& lua);
-
-// script_engine_script.cpp
-bool GetShift();

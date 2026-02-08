@@ -1,26 +1,10 @@
 #pragma once
 
-#define DIRECTINPUT_VERSION 0x0800
-#include <dinput.h>
+#include "IInputReceiver.h"
 
-class IInputReceiver;
-
-#ifndef MOUSE_1
-#define MOUSE_1 MOUSE_1
-
-// 0xed - max vavue in DIK* enum
-constexpr inline gsl::index MOUSE_1{0xed + 100};
-constexpr inline gsl::index MOUSE_2{0xed + 101};
-constexpr inline gsl::index MOUSE_3{0xed + 102};
-
-constexpr inline gsl::index MOUSE_4{0xed + 103};
-constexpr inline gsl::index MOUSE_5{0xed + 104};
-constexpr inline gsl::index MOUSE_6{0xed + 105};
-constexpr inline gsl::index MOUSE_7{0xed + 106};
-constexpr inline gsl::index MOUSE_8{0xed + 107};
-#endif
-
-constexpr inline std::array<gsl::index, 8> mouse_button_2_key{MOUSE_1, MOUSE_2, MOUSE_3, MOUSE_4, MOUSE_5, MOUSE_6, MOUSE_7, MOUSE_8};
+struct _DIDATAFORMAT;
+struct IDirectInput8W;
+struct IDirectInputDevice8W;
 
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //описание класса
@@ -37,49 +21,34 @@ class CInput : public pureFrame, public pureAppActivate, public pureAppDeactivat
 public:
     enum
     {
-        COUNT_MOUSE_BUTTONS = 3,
         COUNT_MOUSE_AXIS = 3,
-        COUNT_KB_BUTTONS = 256
-    };
-    struct sxr_mouse
-    {
-        DIDEVCAPS capabilities;
-        DIDEVICEINSTANCE deviceInfo;
-        DIDEVICEOBJECTINSTANCE objectInfo;
-        u32 mouse_dt;
-    };
-    struct sxr_key
-    {
-        DIDEVCAPS capabilities;
-        DIDEVICEINSTANCE deviceInfo;
-        DIDEVICEOBJECTINSTANCE objectInfo;
     };
 
 private:
-    LPDIRECTINPUT8 pDI{}; // The DInput object
-    LPDIRECTINPUTDEVICE8 pMouse{}; // The DIDevice7 interface
-    LPDIRECTINPUTDEVICE8 pKeyboard{}; // The DIDevice7 interface
+    IDirectInput8W* pDI{}; // The DInput object
+    IDirectInputDevice8W* pMouse{}; // The DIDevice7 interface
+    IDirectInputDevice8W* pKeyboard{}; // The DIDevice7 interface
 
     u32 timeStamp[COUNT_MOUSE_AXIS]{};
     u32 timeSave[COUNT_MOUSE_AXIS]{};
     int offs[COUNT_MOUSE_AXIS]{};
-    BOOL mouseState[COUNT_MOUSE_BUTTONS]{};
-    uint8_t KBState[COUNT_KB_BUTTONS]{};
+    xr::bitset<sf::Mouse::ButtonCount> mouseState;
+    xr::bitset<sf::Keyboard::ScancodeCount> KBState;
 
-    HRESULT CreateInputDevice(LPDIRECTINPUTDEVICE8* device, GUID guidDevice, const DIDATAFORMAT* pdidDataFormat, u32 buf_size);
+    HRESULT CreateInputDevice(IDirectInputDevice8W** device, GUID guidDevice, const _DIDATAFORMAT* pdidDataFormat, u32 buf_size);
 
     //	xr_stack<IInputReceiver*>	cbStack;
     xr_vector<IInputReceiver*> cbStack;
 
     tmc::task<void> MouseUpdate();
     tmc::task<void> RecheckMouseButtons(std::array<u8, 8> state, bool editor);
-    tmc::task<void> isButtonsOnHold(std::array<bool, COUNT_MOUSE_BUTTONS> mouse_prev, bool editor);
+    tmc::task<void> isButtonsOnHold(xr::bitset<sf::Mouse::ButtonCount> mouse_prev, bool editor);
     tmc::task<void> KeyUpdate();
     bool is_exclusive_mode;
 
+    u32 mouse_dt{25};
+
 public:
-    sxr_mouse mouse_property;
-    sxr_key key_property;
     u32 dwCurTime;
 
 private:
@@ -97,26 +66,22 @@ public:
 
     tmc::task<void> iCapture(IInputReceiver* pc);
     tmc::task<void> iRelease(IInputReceiver* pc);
-    BOOL iGetAsyncKeyState(int dik);
-    BOOL iGetAsyncBtnState(int btn);
+    [[nodiscard]] bool iGetAsyncKeyState(xr::key_id dik) const;
     void iGetLastMouseDelta(Ivector2& p) { p.set(offs[0], offs[1]); }
 
     tmc::task<void> OnFrame() override;
     tmc::task<void> OnAppActivate() override;
     tmc::task<void> OnAppDeactivate() override;
 
-    IInputReceiver* CurrentIR();
+    [[nodiscard]] IInputReceiver* CurrentIR() const;
 
     void exclusive_mode(const bool exclusive);
     bool exclusive_mode() const { return is_exclusive_mode; }
 
-public:
-    bool get_dik_name(int dik, LPSTR dest, int dest_sz);
-
     // Возвращает символ по коду клавиши. Учитывается переключение языка, зажатый shift и caps lock
     // ( caps lock учитывается только в неэксклюзивном режиме, из-за его особенностей )
     // В случае неудачи функция возвращает 0.
-    u16 DikToChar(const int dik, const bool utf);
+    [[nodiscard]] u16 DikToChar(sf::Keyboard::Scancode dik, bool utf) const;
 
     void clip_cursor(bool clip);
 };

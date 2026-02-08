@@ -985,18 +985,18 @@ void CWeaponMagazined::switch2_Showing()
     PlayAnimShow();
 }
 
-bool CWeaponMagazined::Action(s32 cmd, u32 flags)
+bool CWeaponMagazined::Action(EGameActions cmd, u32 flags)
 {
     if (inherited::Action(cmd, flags))
         return true;
 
     // если оружие чем-то занято, то ничего не делать
-    if (IsPending() && cmd != kWPN_FIREMODE_PREV && cmd != kWPN_FIREMODE_NEXT)
+    if (IsPending() && cmd != EGameActions::kWPN_FIREMODE_PREV && cmd != EGameActions::kWPN_FIREMODE_NEXT)
         return false;
 
     switch (cmd)
     {
-    case kWPN_RELOAD: {
+    case EGameActions::kWPN_RELOAD:
         if (!psActorFlags.test(AF_LOCK_RELOAD) || (!ParentIsActor() || !(g_actor->get_state() & ACTOR_DEFS::mcSprint)))
         {
             if (flags & CMD_START)
@@ -1005,43 +1005,45 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
                     Reload();
             }
         }
-    }
+
         return true;
-    case kWPN_FIREMODE_PREV: {
+    case EGameActions::kWPN_FIREMODE_PREV:
         if (flags & CMD_START)
         {
             OnPrevFireMode(flags & CMD_OPT);
             return true;
         }
-    }
-    break;
-    case kWPN_FIREMODE_NEXT: {
+
+        break;
+    case EGameActions::kWPN_FIREMODE_NEXT:
         if (flags & CMD_START)
         {
             OnNextFireMode(flags & CMD_OPT);
             return true;
         }
-    }
-    break;
-    case kLASER_ON: {
+
+        break;
+    case EGameActions::kLASER_ON:
         if ((flags & CMD_START) && has_laser && GetState() == eIdle)
         {
             LaserSwitch = true;
             DeviceSwitch();
+
             return true;
         }
-    }
-    break;
-    case kFLASHLIGHT: {
+
+        break;
+    case EGameActions::kFLASHLIGHT:
         if ((flags & CMD_START) && has_flashlight && GetState() == eIdle)
         {
             TorchSwitch = true;
             DeviceSwitch();
+
             return true;
         }
-    }
-    break;
-    case kTORCH: {
+
+        break;
+    case EGameActions::kTORCH: {
         auto pActorTorch = smart_cast<CActor*>(H_Parent())->inventory().ItemFromSlot(TORCH_SLOT);
         if ((flags & CMD_START) && pActorTorch && GetState() == eIdle)
         {
@@ -1050,9 +1052,10 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
 
             return true;
         }
+
+        break;
     }
-    break;
-    case kNIGHT_VISION: {
+    case EGameActions::kNIGHT_VISION: {
         auto pActorNv = smart_cast<CActor*>(H_Parent())->inventory().ItemFromSlot(IS_OGSR_GA ? NIGHT_VISION_SLOT : TORCH_SLOT);
         if ((flags & CMD_START) && pActorNv && GetState() == eIdle)
         {
@@ -1061,8 +1064,10 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
 
             return true;
         }
+
+        break;
     }
-    break;
+    default: break;
     }
 
     return false;

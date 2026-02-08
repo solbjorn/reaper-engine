@@ -49,6 +49,7 @@
       cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build2\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\Xiph\flac\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\Xiph\ogg\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\Xiph\vorbis\_Build\$(Configuration)\$(PlatformShortName)" -DBUILD_SHARED_LIBS=OFF -DOpenGL_GL_PREFERENCE=GLVND -DSFML_BUILD_NETWORK=OFF -DSFML_USE_SYSTEM_DEPS=ON ..\SFML
       cmake --build . --config $(Configuration)
       copy /Y "lib\sfml-system-s.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\sfml-system-s.lib"
+      copy /Y "lib\sfml-window-s.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\sfml-window-s.lib"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
       RD /S/Q _Build

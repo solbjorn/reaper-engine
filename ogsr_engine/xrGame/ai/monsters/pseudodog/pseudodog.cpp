@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "pseudodog.h"
+
 #include "pseudodog_state_manager.h"
 #include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../../sound_player.h"
@@ -157,13 +158,5 @@ void CAI_PseudoDog::HitEntityInJump(const CEntity* pEntity)
     SAAParam& params = anim().AA_GetParams("run_jamp_1");
     HitEntity(pEntity, params.hit_power, params.impulse, params.impulse_dir);
 }
-
-/*
-#ifdef DEBUG
-void CAI_PseudoDog::debug_on_key(int key)
-{
-}
-#endif
-*/
 
 IStateManagerBase* CAI_PseudoDog::create_state_manager() { return xr_new<CStateManagerPseudodog>(this); }

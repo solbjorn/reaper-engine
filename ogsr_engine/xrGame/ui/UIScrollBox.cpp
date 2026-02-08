@@ -13,7 +13,7 @@ void CUIScrollBox::SetHorizontal() { m_bIsHorizontal = true; }
 
 void CUIScrollBox::SetVertical() { m_bIsHorizontal = false; }
 
-bool CUIScrollBox::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUIScrollBox::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
     bool cursor_over;
 
@@ -46,6 +46,7 @@ bool CUIScrollBox::OnMouse(float x, float y, EUIMessages mouse_action)
 
         GetMessageTarget()->SendMessage(this, SCROLLBOX_MOVE);
     }
+
     return true;
 }
 

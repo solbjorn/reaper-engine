@@ -22,6 +22,8 @@
 #include "inventoryOwner.h"
 #include "Entity_alive.h"
 
+#include "xr_level_controller.h"
+
 namespace
 {
 constexpr float FASTMODE_DISTANCE{50.f}; // distance to camera from sphere, when zone switches to fast update sequence
@@ -355,27 +357,28 @@ void CArtefact::UpdateXForm()
     }
 }
 
-#include "xr_level_controller.h"
-
-bool CArtefact::Action(s32 cmd, u32 flags)
+bool CArtefact::Action(EGameActions cmd, u32 flags)
 {
     switch (cmd)
     {
-    case kWPN_FIRE: {
+    case EGameActions::kWPN_FIRE: {
         if (flags & CMD_START && m_bCanSpawnZone)
         {
             SwitchState(eActivating);
             return true;
         }
+
         if (flags & CMD_STOP && m_bCanSpawnZone && GetState() == eActivating)
         {
             SwitchState(eIdle);
             return true;
         }
+
+        break;
     }
-    break;
     default: break;
     }
+
     return inherited::Action(cmd, flags);
 }
 

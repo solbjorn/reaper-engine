@@ -37,15 +37,14 @@
 #include "PHDebug.h"
 #endif
 
-#include <dinput.h>
-
 bool g_bAutoClearCrouch = true;
 
-tmc::task<void> CActor::IR_OnKeyboardPress(gsl::index cmd)
+tmc::task<void> CActor::IR_OnKeyboardPress(xr::key_id dik)
 {
-    if (g_bHudAdjustMode && pInput->iGetAsyncKeyState(DIK_LSHIFT))
+    if (g_bHudAdjustMode && pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}))
     {
-        if (pInput->iGetAsyncKeyState(DIK_RETURN) || pInput->iGetAsyncKeyState(DIK_BACKSPACE) || pInput->iGetAsyncKeyState(DIK_DELETE))
+        if (pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::Enter}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::Backspace}) ||
+            pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::Delete}))
             g_player_hud->tune(Ivector{});
 
         co_return;
@@ -56,27 +55,22 @@ tmc::task<void> CActor::IR_OnKeyboardPress(gsl::index cmd)
 
     if (IsTalking())
         co_return;
+
+    const auto cmd = get_binded_action(dik);
+
     if (m_input_external_handler && !m_input_external_handler->authorized(cmd))
         co_return;
 
-    switch (cmd)
-    {
-    case kWPN_FIRE: {
-        if (inventory().ActiveItem() && inventory().ActiveItem()->StopSprintOnFire())
-            mstate_wishful &= ~ACTOR_DEFS::mcSprint;
-    }
-    break;
-    default: {
-    }
-    break;
-    }
+    if (cmd == EGameActions::kWPN_FIRE && inventory().ActiveItem() != nullptr && inventory().ActiveItem()->StopSprintOnFire())
+        mstate_wishful &= ~ACTOR_DEFS::mcSprint;
 
     if (!g_Alive())
         co_return;
 
-    if (m_holder && kUSE != cmd)
+    if (m_holder != nullptr && cmd != EGameActions::kUSE)
     {
         m_holder->OnKeyboardPress(cmd);
+
         if (m_holder->allowWeapon() && inventory().Action(cmd, CMD_START))
             co_return;
 
@@ -89,28 +83,25 @@ tmc::task<void> CActor::IR_OnKeyboardPress(gsl::index cmd)
 
     switch (cmd)
     {
-    case kJUMP: {
-        mstate_wishful |= ACTOR_DEFS::mcJump;
-    }
-    break;
-    case kCROUCH_TOGGLE: {
+    case EGameActions::kJUMP: mstate_wishful |= ACTOR_DEFS::mcJump; break;
+    case EGameActions::kCROUCH_TOGGLE:
         g_bAutoClearCrouch = !g_bAutoClearCrouch;
         if (!g_bAutoClearCrouch)
             mstate_wishful |= ACTOR_DEFS::mcCrouch;
-    }
-    break;
-    case kSPRINT_TOGGLE: {
+
+        break;
+    case EGameActions::kSPRINT_TOGGLE:
         if (mstate_wishful & ACTOR_DEFS::mcSprint)
             mstate_wishful &= ~ACTOR_DEFS::mcSprint;
         else
             mstate_wishful |= ACTOR_DEFS::mcSprint;
-    }
-    break;
-    case kCAM_1: cam_Set(ACTOR_DEFS::eacFirstEye); break;
-    case kCAM_2: cam_Set(ACTOR_DEFS::eacLookAt); break;
-    case kCAM_3: cam_Set(ACTOR_DEFS::eacFreeLook); break;
-    case kNIGHT_VISION:
-    case kTORCH: {
+
+        break;
+    case EGameActions::kCAM_1: cam_Set(ACTOR_DEFS::eacFirstEye); break;
+    case EGameActions::kCAM_2: cam_Set(ACTOR_DEFS::eacLookAt); break;
+    case EGameActions::kCAM_3: cam_Set(ACTOR_DEFS::eacFreeLook); break;
+    case EGameActions::kNIGHT_VISION:
+    case EGameActions::kTORCH: {
         auto act_it = inventory().ActiveItem();
 
         if (Core.Features.test(xrCore::Feature::busy_actor_restrictions))
@@ -123,28 +114,29 @@ tmc::task<void> CActor::IR_OnKeyboardPress(gsl::index cmd)
         auto pTorch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
         if (pTorch != nullptr && smart_cast<CWeaponMagazined*>(act_it) == nullptr && smart_cast<CWeaponKnife*>(act_it) == nullptr && smart_cast<CMissile*>(act_it) == nullptr)
         {
-            if (cmd == kNIGHT_VISION)
+            if (cmd == EGameActions::kNIGHT_VISION)
                 pTorch->SwitchNightVision();
             else
                 pTorch->Switch();
         }
     }
     break;
-    case kWPN_8: {
+    case EGameActions::kWPN_8:
         if (auto det = smart_cast<CCustomDetector*>(inventory().ItemFromSlot(DETECTOR_SLOT)))
             det->ToggleDetector(g_player_hud->attached_item(0) != nullptr);
-    }
-    break;
-    case kUSE: ActorUse(); break;
-    case kDROP:
+
+        break;
+    case EGameActions::kUSE: ActorUse(); break;
+    case EGameActions::kDROP:
         b_DropActivated = TRUE;
         f_DropPower = 0;
-        break;
-    case kNEXT_SLOT: co_await OnNextWeaponSlot(); break;
-    case kPREV_SLOT: co_await OnPrevWeaponSlot(); break;
 
-    case kUSE_BANDAGE:
-    case kUSE_MEDKIT: {
+        break;
+    case EGameActions::kNEXT_SLOT: co_await OnNextWeaponSlot(); break;
+    case EGameActions::kPREV_SLOT: co_await OnPrevWeaponSlot(); break;
+
+    case EGameActions::kUSE_BANDAGE:
+    case EGameActions::kUSE_MEDKIT: {
         if (Core.Features.test(xrCore::Feature::busy_actor_restrictions))
         {
             const auto active_hud = smart_cast<CHudItem*>(inventory().ActiveItem());
@@ -154,7 +146,7 @@ tmc::task<void> CActor::IR_OnKeyboardPress(gsl::index cmd)
 
         if (!(GetTrade()->IsInTradeState()))
         {
-            PIItem itm = inventory().item((cmd == kUSE_BANDAGE) ? CLSID_IITEM_BANDAGE : CLSID_IITEM_MEDKIT);
+            PIItem itm = inventory().item((cmd == EGameActions::kUSE_BANDAGE) ? CLSID_IITEM_BANDAGE : CLSID_IITEM_MEDKIT);
             if (itm)
             {
                 inventory().Eat(itm);
@@ -167,6 +159,7 @@ tmc::task<void> CActor::IR_OnKeyboardPress(gsl::index cmd)
         }
     }
     break;
+    default: break;
     }
 }
 
@@ -178,7 +171,7 @@ tmc::task<void> CActor::IR_OnMouseWheel(gsl::index direction)
         co_return;
     }
 
-    if (inventory().Action((direction > 0) ? kWPN_ZOOM_DEC : kWPN_ZOOM_INC, CMD_START))
+    if (inventory().Action((direction > 0) ? EGameActions::kWPN_ZOOM_DEC : EGameActions::kWPN_ZOOM_INC, CMD_START))
         co_return;
 
     if (psActorFlags.test(AF_MOUSE_WHEEL_SWITCH_SLOTS))
@@ -191,70 +184,73 @@ tmc::task<void> CActor::IR_OnMouseWheel(gsl::index direction)
     else
     {
         if (direction > 0)
-            inventory().Action(kWPN_FIREMODE_NEXT, CMD_START | CMD_OPT);
+            std::ignore = inventory().Action(EGameActions::kWPN_FIREMODE_NEXT, CMD_START | CMD_OPT);
         else
-            inventory().Action(kWPN_FIREMODE_PREV, CMD_START | CMD_OPT);
+            std::ignore = inventory().Action(EGameActions::kWPN_FIREMODE_PREV, CMD_START | CMD_OPT);
     }
 }
 
-void CActor::IR_OnKeyboardRelease(int cmd)
+void CActor::IR_OnKeyboardRelease(xr::key_id dik)
 {
-    if (g_bHudAdjustMode && pInput->iGetAsyncKeyState(DIK_LSHIFT))
+    if (g_bHudAdjustMode && pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}))
         return;
 
     if (Remote())
         return;
 
-    //	if (conditions().IsSleeping())	return;
+    const auto cmd = get_binded_action(dik);
+
     if (m_input_external_handler && !m_input_external_handler->authorized(cmd))
         return;
 
-    if (g_Alive())
+    if (!g_Alive())
+        return;
+
+    if (cmd == EGameActions::kUSE)
+        PickupModeOff();
+
+    if (m_holder != nullptr)
     {
-        //		int dik = get_action_dik((EGameActions)cmd);
-        //		if ((dik != DIK_LALT) && (dik != DIK_RALT) && (dik != DIK_F4) /*&& psCallbackFlags.test(CF_KEY_RELEASE)*/)
-        //			this->callback(GameObject::eOnKeyRelease)(cmd);
-        if (cmd == kUSE)
-            PickupModeOff();
+        m_holder->OnKeyboardRelease(cmd);
 
-        if (m_holder)
-        {
-            m_holder->OnKeyboardRelease(cmd);
-
-            if (m_holder->allowWeapon() && inventory().Action(cmd, CMD_STOP))
-                return;
-            return;
-        }
-        else if (inventory().Action(cmd, CMD_STOP))
+        if (m_holder->allowWeapon() && inventory().Action(cmd, CMD_STOP))
             return;
 
-        switch (cmd)
-        {
-        case kJUMP: mstate_wishful &= ~ACTOR_DEFS::mcJump; break;
-        case kDROP:
-            if (GAME_PHASE_INPROGRESS == Game().Phase())
-                g_PerformDrop();
-            break;
-        case kCROUCH: g_bAutoClearCrouch = true;
-        }
+        return;
+    }
+    else if (inventory().Action(cmd, CMD_STOP))
+    {
+        return;
+    }
+
+    switch (cmd)
+    {
+    case EGameActions::kJUMP: mstate_wishful &= ~ACTOR_DEFS::mcJump; break;
+    case EGameActions::kDROP:
+        if (Game().Phase() == GAME_PHASE_INPROGRESS)
+            g_PerformDrop();
+
+        break;
+    case EGameActions::kCROUCH: g_bAutoClearCrouch = true; break;
+    default: break;
     }
 }
 
-tmc::task<void> CActor::IR_OnKeyboardHold(gsl::index cmd)
+tmc::task<void> CActor::IR_OnKeyboardHold(xr::key_id dik)
 {
-    if (g_bHudAdjustMode && pInput->iGetAsyncKeyState(DIK_LSHIFT))
+    if (g_bHudAdjustMode && pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}))
     {
-        if (pInput->iGetAsyncKeyState(DIK_UP))
+        if (pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::Up}))
             g_player_hud->tune(Ivector{0, -1, 0});
-        else if (pInput->iGetAsyncKeyState(DIK_DOWN))
+        else if (pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::Down}))
             g_player_hud->tune(Ivector{0, 1, 0});
-        else if (pInput->iGetAsyncKeyState(DIK_LEFT))
+        else if (pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::Left}))
             g_player_hud->tune(Ivector{-1, 0, 0});
-        else if (pInput->iGetAsyncKeyState(DIK_RIGHT))
+        else if (pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::Right}))
             g_player_hud->tune(Ivector{1, 0, 0});
-        else if (pInput->iGetAsyncKeyState(DIK_PGUP))
+        else if (pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::PageUp}))
             g_player_hud->tune(Ivector{0, 0, 1});
-        else if (pInput->iGetAsyncKeyState(DIK_PGDN))
+        else if (pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::PageDown}))
             g_player_hud->tune(Ivector{0, 0, -1});
 
         co_return;
@@ -262,6 +258,8 @@ tmc::task<void> CActor::IR_OnKeyboardHold(gsl::index cmd)
 
     if (Remote() || !g_Alive())
         co_return;
+
+    const auto cmd = get_binded_action(dik);
 
     if (m_input_external_handler && !m_input_external_handler->authorized(cmd))
         co_return;
@@ -276,26 +274,28 @@ tmc::task<void> CActor::IR_OnKeyboardHold(gsl::index cmd)
     }
 
     float LookFactor = GetLookFactor();
+
     switch (cmd)
     {
-    case kUP:
-    case kDOWN: cam_Active()->Move((cmd == kUP) ? kDOWN : kUP, 0, LookFactor); break;
-    case kSHOWHUD:
-    case kHIDEHUD: cam_Active()->Move(cmd); break;
-    case kLEFT:
-    case kRIGHT:
+    case EGameActions::kUP:
+    case EGameActions::kDOWN: cam_Active()->Move((cmd == EGameActions::kUP) ? EGameActions::kDOWN : EGameActions::kUP, 0, LookFactor); break;
+    case EGameActions::kSHOWHUD:
+    case EGameActions::kHIDEHUD: cam_Active()->Move(cmd); break;
+    case EGameActions::kLEFT:
+    case EGameActions::kRIGHT:
         if (cam_active != ACTOR_DEFS::eacFreeLook)
             cam_Active()->Move(cmd, 0, LookFactor);
 
         break;
-    case kACCEL: mstate_wishful |= ACTOR_DEFS::mcAccel; break;
-    case kL_STRAFE: mstate_wishful |= ACTOR_DEFS::mcLStrafe; break;
-    case kR_STRAFE: mstate_wishful |= ACTOR_DEFS::mcRStrafe; break;
-    case kL_LOOKOUT: mstate_wishful |= ACTOR_DEFS::mcLLookout; break;
-    case kR_LOOKOUT: mstate_wishful |= ACTOR_DEFS::mcRLookout; break;
-    case kFWD: mstate_wishful |= ACTOR_DEFS::mcFwd; break;
-    case kBACK: mstate_wishful |= ACTOR_DEFS::mcBack; break;
-    case kCROUCH: mstate_wishful |= ACTOR_DEFS::mcCrouch; break;
+    case EGameActions::kACCEL: mstate_wishful |= ACTOR_DEFS::mcAccel; break;
+    case EGameActions::kL_STRAFE: mstate_wishful |= ACTOR_DEFS::mcLStrafe; break;
+    case EGameActions::kR_STRAFE: mstate_wishful |= ACTOR_DEFS::mcRStrafe; break;
+    case EGameActions::kL_LOOKOUT: mstate_wishful |= ACTOR_DEFS::mcLLookout; break;
+    case EGameActions::kR_LOOKOUT: mstate_wishful |= ACTOR_DEFS::mcRLookout; break;
+    case EGameActions::kFWD: mstate_wishful |= ACTOR_DEFS::mcFwd; break;
+    case EGameActions::kBACK: mstate_wishful |= ACTOR_DEFS::mcBack; break;
+    case EGameActions::kCROUCH: mstate_wishful |= ACTOR_DEFS::mcCrouch; break;
+    default: break;
     }
 }
 
@@ -331,12 +331,12 @@ void CActor::IR_OnMouseMove(int dx, int dy)
     if (dx)
     {
         float d = float(dx) * scale;
-        cam_Active()->Move((d < 0) ? kLEFT : kRIGHT, _abs(d));
+        cam_Active()->Move((d < 0) ? EGameActions::kLEFT : EGameActions::kRIGHT, _abs(d));
     }
     if (dy)
     {
         float d = ((psMouseInvert.test(1)) ? -1 : 1) * float(dy) * scale * 3.f / 4.f;
-        cam_Active()->Move((d > 0) ? kUP : kDOWN, _abs(d));
+        cam_Active()->Move((d > 0) ? EGameActions::kUP : EGameActions::kDOWN, _abs(d));
     }
 }
 
@@ -454,7 +454,7 @@ void CActor::ActorUse()
                 return;
             }
             // обыск трупа
-            else if (!Level().IR_GetKeyState(DIK_LSHIFT))
+            else if (!Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}))
             {
                 // только если находимся в режиме single
                 CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
@@ -468,13 +468,11 @@ void CActor::ActorUse()
         CPhysicsShellHolder* object = smart_cast<CPhysicsShellHolder*>(RQ.O);
         if (object && object->getVisible())
         {
-            if (Level().IR_GetKeyState(DIK_LSHIFT))
+            if (Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}))
             {
                 if (object->ActorCanCapture())
                 {
-                    // Msg("--[%s] Actor Captured object: [%s]", __FUNCTION__, object->cName().c_str());
                     character_physics_support()->movement()->PHCaptureObject(object, (u16)RQ.element);
-
                     return;
                 }
             }
@@ -491,10 +489,6 @@ void CActor::ActorUse()
     }
 
     PickupModeOn();
-
-    /*if (g_Alive())
-        PickupModeUpdate();*/
-
     PickupModeUpdate_COD();
 }
 
@@ -534,9 +528,9 @@ tmc::task<void> CActor::OnNextWeaponSlot()
         if (inventory().ItemFromSlot(SlotsToCheck[i]))
         {
             if (SlotsToCheck[i] == PDA_SLOT)
-                co_await IR_OnKeyboardPress(kACTIVE_JOBS);
+                co_await IR_OnKeyboardPress(get_action_dik(EGameActions::kACTIVE_JOBS));
             else
-                co_await IR_OnKeyboardPress(kWPN_1 + i);
+                co_await IR_OnKeyboardPress(get_action_dik(EGameActions{std::to_underlying(EGameActions::kWPN_1) + gsl::narrow_cast<s32>(i)}));
 
             co_return;
         }
@@ -567,9 +561,9 @@ tmc::task<void> CActor::OnPrevWeaponSlot()
         if (inventory().ItemFromSlot(SlotsToCheck[i]))
         {
             if (SlotsToCheck[i] == PDA_SLOT)
-                co_await IR_OnKeyboardPress(kACTIVE_JOBS);
+                co_await IR_OnKeyboardPress(get_action_dik(EGameActions::kACTIVE_JOBS));
             else
-                co_await IR_OnKeyboardPress(kWPN_1 + i);
+                co_await IR_OnKeyboardPress(get_action_dik(EGameActions{std::to_underlying(EGameActions::kWPN_1) + i}));
 
             co_return;
         }
@@ -601,7 +595,7 @@ void CActor::set_input_external_handler(CActorInputHandler* handler)
 
     // release fire button
     if (handler)
-        IR_OnKeyboardRelease(kWPN_FIRE);
+        IR_OnKeyboardRelease(get_action_dik(EGameActions::kWPN_FIRE));
 
     // set handler
     m_input_external_handler = handler;

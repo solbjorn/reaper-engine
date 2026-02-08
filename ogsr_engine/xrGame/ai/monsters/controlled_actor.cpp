@@ -1,5 +1,7 @@
 #include "stdafx.h"
+
 #include "controlled_actor.h"
+
 #include "../../actor.h"
 #include "../../../xr_3da/CameraBase.h"
 #include "../../xr_level_controller.h"
@@ -75,9 +77,9 @@ void CControlledActor::update_turn()
         speed = SPEED_MIN + speed_factor * (SPEED_MAX - SPEED_MIN);
 
         if (from_right(cam_target_yaw, cam_current_yaw))
-            m_actor->cam_Active()->Move(kLEFT, speed * Device.fTimeDelta);
+            m_actor->cam_Active()->Move(EGameActions::kLEFT, speed * Device.fTimeDelta);
         else
-            m_actor->cam_Active()->Move(kRIGHT, speed * Device.fTimeDelta);
+            m_actor->cam_Active()->Move(EGameActions::kRIGHT, speed * Device.fTimeDelta);
     }
 
     // PITCH
@@ -95,9 +97,9 @@ void CControlledActor::update_turn()
         speed = SPEED_MIN + speed_factor * (SPEED_MAX - SPEED_MIN);
 
         if (from_right(cam_target_pitch, cam_current_pitch))
-            m_actor->cam_Active()->Move(kDOWN, speed * Device.fTimeDelta);
+            m_actor->cam_Active()->Move(EGameActions::kDOWN, speed * Device.fTimeDelta);
         else
-            m_actor->cam_Active()->Move(kUP, speed * Device.fTimeDelta);
+            m_actor->cam_Active()->Move(EGameActions::kUP, speed * Device.fTimeDelta);
     }
 }
 
@@ -111,11 +113,12 @@ bool CControlledActor::is_turning() { return (!m_turned_yaw || !m_turned_pitch);
 
 bool CControlledActor::is_installed() { return !!m_actor; }
 
-bool CControlledActor::authorized(int cmd)
+bool CControlledActor::authorized(EGameActions cmd)
 {
-    if (cmd == kWPN_1)
+    if (cmd == EGameActions::kWPN_1)
         return true;
-    if (cmd == kWPN_FIRE)
+
+    if (cmd == EGameActions::kWPN_FIRE)
     {
         if (m_actor->inventory().GetActiveSlot() == 0)
             return true;

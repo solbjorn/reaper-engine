@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "UIStalkersRankingWnd.h"
+
 #include "UIXmlInit.h"
 #include "UIPdaAux.h"
 #include "UIFrameWindow.h"
@@ -270,9 +271,9 @@ void CUIStalkerRankingInfoItem::SetSelected(bool b)
     }
 }
 
-bool CUIStalkerRankingInfoItem::OnMouseDown(int mouse_btn)
+bool CUIStalkerRankingInfoItem::OnMouseDown(sf::Mouse::Button mouse_btn)
 {
-    if (mouse_btn == MOUSE_1)
+    if (mouse_btn == sf::Mouse::Button::Left)
     {
         m_StalkersRankingWnd->GetTopList().SetSelected(this);
         return true;
@@ -284,4 +285,4 @@ bool CUIStalkerRankingInfoItem::OnMouseDown(int mouse_btn)
 CUIStalkerRankingElipsisItem::CUIStalkerRankingElipsisItem(CUIStalkersRankingWnd* w) : inherited(w) {}
 
 void CUIStalkerRankingElipsisItem::SetSelected(bool) {}
-bool CUIStalkerRankingElipsisItem::OnMouseDown(int) { return false; }
+bool CUIStalkerRankingElipsisItem::OnMouseDown(sf::Mouse::Button) { return false; }

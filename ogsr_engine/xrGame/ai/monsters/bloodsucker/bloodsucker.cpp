@@ -27,10 +27,6 @@
 #include "../../../PHDestroyable.h"
 #include "../../../CharacterPhysicsSupport.h"
 
-#ifdef DEBUG
-#include <dinput.h>
-#endif // DEBUG
-
 namespace detail
 {
 namespace bloodsucker
@@ -551,7 +547,7 @@ void CAI_Bloodsucker::predator_start()
 
     control().animation().restart();
 
-    CParticlesPlayer::StartParticles(shared_str{invisible_particle_name}, Fvector().set(0.0f, 0.1f, 0.0f), ID());
+    CParticlesPlayer::StartParticles(shared_str{invisible_particle_name}, Fvector{0.0f, 0.1f, 0.0f}, ID());
     sound().play(CAI_Bloodsucker::eChangeVisibility);
 
     m_predator = true;
@@ -584,8 +580,8 @@ void CAI_Bloodsucker::move_actor_cam(float angle)
 {
     if (Actor()->cam_Active())
     {
-        Actor()->cam_Active()->Move(Random.randI(2) ? kRIGHT : kLEFT, angle);
-        Actor()->cam_Active()->Move(Random.randI(2) ? kUP : kDOWN, angle);
+        Actor()->cam_Active()->Move(Random.randI(2) ? EGameActions::kRIGHT : EGameActions::kLEFT, angle);
+        Actor()->cam_Active()->Move(Random.randI(2) ? EGameActions::kUP : EGameActions::kDOWN, angle);
     }
 }
 
@@ -665,18 +661,16 @@ CBaseMonster::SDebugInfo CAI_Bloodsucker::show_debug_info()
     return CBaseMonster::SDebugInfo();
 }
 
-void CAI_Bloodsucker::debug_on_key(int key)
+void CAI_Bloodsucker::debug_on_key(xr::key_id key)
 {
-    switch (key)
+    if (!key.is<sf::Keyboard::Scancode>())
+        return;
+
+    switch (key.get<sf::Keyboard::Scancode>())
     {
-    case DIK_MINUS:
-        Actor()->cam_Active()->Move(Random.randI(2) ? kRIGHT : kLEFT, PI_DIV_2);
-        // set_alien_control(true);
-        break;
-    case DIK_EQUALS:
-        Actor()->cam_Active()->Move(Random.randI(2) ? kUP : kDOWN, PI_DIV_2);
-        // set_alien_control(false);
-        break;
+    case sf::Keyboard::Scancode::Hyphen: Actor()->cam_Active()->Move(Random.randI(2) ? EGameActions::kRIGHT : EGameActions::kLEFT, PI_DIV_2); break;
+    case sf::Keyboard::Scancode::Equal: Actor()->cam_Active()->Move(Random.randI(2) ? EGameActions::kUP : EGameActions::kDOWN, PI_DIV_2); break;
+    default: break;
     }
 }
 #endif //_DEBUG

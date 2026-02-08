@@ -24,7 +24,7 @@ public:
     virtual void SaveValue();
     virtual bool IsChanged();
 
-    virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
+    [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
     virtual void OnTabChange(int iCur, int iPrev);
     virtual void OnStaticFocusReceive(CUIWindow* pWnd);
     virtual void OnStaticFocusLost(CUIWindow* pWnd);

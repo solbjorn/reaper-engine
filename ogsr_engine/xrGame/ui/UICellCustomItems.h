@@ -26,7 +26,7 @@ public:
     // Real Wolf: Для коллбеков. 25.07.2014.
     virtual void OnFocusReceive();
     virtual void OnFocusLost();
-    virtual bool OnMouse(float, float, EUIMessages);
+    [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages action) override;
 };
 
 class CUIAmmoCellItem : public CUIInventoryCellItem

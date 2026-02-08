@@ -27,13 +27,14 @@ void CWeaponBinoculars::Load(LPCSTR section)
     HUD_SOUND::LoadSound(section, "snd_zoomout", sndZoomOut, SOUND_TYPE_ITEM_USING);
 }
 
-bool CWeaponBinoculars::Action(s32 cmd, u32 flags)
+bool CWeaponBinoculars::Action(EGameActions cmd, u32 flags)
 {
     if (!Core.Features.test(xrCore::Feature::binoc_firing))
     {
         switch (cmd)
         {
-        case kWPN_FIRE: return inherited::Action(kWPN_ZOOM, flags);
+        case EGameActions::kWPN_FIRE: return inherited::Action(EGameActions::kWPN_ZOOM, flags);
+        default: break;
         }
     }
 

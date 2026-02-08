@@ -171,46 +171,40 @@ void CWeaponMounted::OnMouseMove(int dx, int dy)
     if (dx)
     {
         float d = float(dx) * scale;
-        C->Move((d < 0) ? kLEFT : kRIGHT, _abs(d));
+        C->Move((d < 0) ? EGameActions::kLEFT : EGameActions::kRIGHT, _abs(d));
     }
     if (dy)
     {
         float d = ((psMouseInvert.test(1)) ? -1 : 1) * float(dy) * scale * 3.f / 4.f;
-        C->Move((d > 0) ? kUP : kDOWN, _abs(d));
+        C->Move((d > 0) ? EGameActions::kUP : EGameActions::kDOWN, _abs(d));
     }
 }
 
-void CWeaponMounted::OnKeyboardPress(int dik)
+void CWeaponMounted::OnKeyboardPress(EGameActions cmd)
 {
     if (Remote())
         return;
 
-    switch (dik)
+    switch (cmd)
     {
-    case kWPN_FIRE: FireStart(); break;
+    case EGameActions::kWPN_FIRE: FireStart(); break;
+    default: break;
     }
 }
 
-void CWeaponMounted::OnKeyboardRelease(int dik)
+void CWeaponMounted::OnKeyboardRelease(EGameActions cmd)
 {
     if (Remote())
         return;
 
-    switch (dik)
+    switch (cmd)
     {
-    case kWPN_FIRE: FireEnd(); break;
+    case EGameActions::kWPN_FIRE: FireEnd(); break;
+    default: break;
     }
 }
 
-void CWeaponMounted::OnKeyboardHold(int)
-{
-    if (Remote())
-        return;
-
-    //	switch(dik)
-    //	{
-    //	}
-}
+void CWeaponMounted::OnKeyboardHold(EGameActions) {}
 
 void CWeaponMounted::cam_Update(float, float)
 {

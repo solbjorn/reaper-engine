@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "IInputReceiver.h"
+
 namespace text_editor
 {
 class base;
@@ -50,12 +52,12 @@ public:
 
     void init(u32 str_buffer_size, init_mode mode = im_standart);
     void clear_states();
-    tmc::task<void> on_key_press(gsl::index dik);
-    tmc::task<void> on_key_hold(gsl::index dik);
-    void on_key_release();
+    tmc::task<void> on_key_press(xr::key_id dik);
+    tmc::task<void> on_key_hold(xr::key_id dik);
+    void on_key_release(xr::key_id dik);
     void on_frame();
 
-    void assign_callback(u32 const dik, key_state state, Callback const& callback);
+    void assign_callback(sf::Keyboard::Scancode, key_state state, Callback const& callback);
 
     void insert_character(char c);
 
@@ -104,8 +106,8 @@ private:
     tmc::task<void> SwitchKL();
 
     void assign_char_pairs(init_mode mode);
-    void create_key_state(u32 const dik, key_state state);
-    void create_char_pair(u32 const dik, char c, char c_shift, bool translate = false);
+    void create_key_state(sf::Keyboard::Scancode, key_state state);
+    void create_char_pair(sf::Keyboard::Scancode, char c, char c_shift, bool translate = false);
 
     void clear_inserted();
     bool empty_inserted() const;
@@ -117,12 +119,7 @@ private:
     void clamp_cur_pos();
 
 private:
-    enum
-    {
-        DIK_COUNT = 256
-    };
-
-    Base* m_actions[DIK_COUNT]{};
+    Base* m_actions[sf::Keyboard::ScancodeCount]{};
 
     char* m_edit_str{};
     char* m_undo_buf{};

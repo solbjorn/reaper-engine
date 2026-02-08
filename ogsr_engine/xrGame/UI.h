@@ -34,9 +34,9 @@ public:
     void Load(CUIGameCustom* pGameUI);
     void UnLoad();
 
-    tmc::task<bool> IR_OnKeyboardHold(gsl::index dik);
-    tmc::task<bool> IR_OnKeyboardPress(gsl::index dik);
-    bool IR_OnKeyboardRelease(int dik);
+    tmc::task<bool> IR_OnKeyboardHold(xr::key_id dik);
+    tmc::task<bool> IR_OnKeyboardPress(xr::key_id dik);
+    [[nodiscard]] bool IR_OnKeyboardRelease(xr::key_id dik);
     bool IR_OnMouseMove(int, int);
     tmc::task<bool> IR_OnMouseWheel(gsl::index direction);
 

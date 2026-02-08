@@ -7,6 +7,8 @@
 #include "../object_broker.h"
 #include "../xr_level_controller.h"
 
+#include "../../xr_3da/XR_IOConsole.h"
+
 CUIEditKeyBind::CUIEditKeyBind(bool bPrim) : m_bPrimary{bPrim}
 {
     m_pAnimation = xr_new<CUIColorAnimatorWrapper>(shared_str{"ui_map_area_anim"});
@@ -79,15 +81,16 @@ void CUIEditKeyBind::OnFocusLost()
     m_lines.SetTextColor((subst_alpha(m_lines.GetTextColor(), color_get_A(0xffffffff))));
 }
 
-bool CUIEditKeyBind::OnMouseDown(int mouse_btn)
+bool CUIEditKeyBind::OnMouseDown(sf::Mouse::Button mouse_btn)
 {
     if (m_bEditMode)
     {
         string64 message;
 
-        m_keyboard = dik_to_ptr(mouse_btn, true);
+        m_keyboard = dik_to_ptr(xr::key_id{mouse_btn}, true);
         if (!m_keyboard)
             return true;
+
         SetText(m_keyboard->key_local_name.c_str());
         OnFocusLost();
         m_bChanged = true;
@@ -100,16 +103,17 @@ bool CUIEditKeyBind::OnMouseDown(int mouse_btn)
         return true;
     }
 
-    if (mouse_btn == MOUSE_1)
+    if (mouse_btn == sf::Mouse::Button::Left)
         m_bEditMode = m_bCursorOverWindow;
 
     return CUILabel::OnMouseDown(mouse_btn);
 }
 
-bool CUIEditKeyBind::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIEditKeyBind::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 {
-    if (dik == MOUSE_1 || dik == MOUSE_2 || dik == MOUSE_3)
+    if (dik.is<sf::Mouse::Button>())
         return false;
+
     if (CUILabel::OnKeyboard(dik, keyboard_action))
         return true;
 
@@ -124,11 +128,14 @@ bool CUIEditKeyBind::OnKeyboard(int dik, EUIMessages keyboard_action)
         strcat_s(message, "=");
         strcat_s(message, m_keyboard->key_name);
         SetText(m_keyboard->key_local_name.c_str());
+
         OnFocusLost();
         m_bChanged = true;
         SendMessage2Group("key_binding", message);
+
         return true;
     }
+
     return false;
 }
 
@@ -153,7 +160,7 @@ void CUIEditKeyBind::Register(const char* entry, const char* group)
 
 void CUIEditKeyBind::SetCurrentValue()
 {
-    _binding* pbinding = &g_key_bindings.at(m_action->id);
+    const auto pbinding = &g_key_bindings[std::to_underlying(xr::action_id(*m_action))];
 
     int idx = (m_bPrimary) ? 0 : 1;
     m_keyboard = pbinding->m_keyboard[idx];
@@ -171,8 +178,6 @@ void CUIEditKeyBind::SaveValue()
     BindAction2Key();
     m_bChanged = false;
 }
-
-#include "..\..\xr_3da\xr_ioconsole.h"
 
 void CUIEditKeyBind::BindAction2Key()
 {

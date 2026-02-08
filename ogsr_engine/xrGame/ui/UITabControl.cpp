@@ -3,6 +3,7 @@
 #include "StdAfx.h"
 
 #include "UITabControl.h"
+
 #include "UITabButton.h"
 
 CUITabControl::CUITabControl() = default;
@@ -148,7 +149,7 @@ void CUITabControl::SetNewActiveTab(const int iNewTab)
     m_iPrevPushedIndex = m_iPushedIndex;
 }
 
-bool CUITabControl::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUITabControl::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 {
     if (GetAcceleratorsMode() && WINDOW_KEY_PRESSED == keyboard_action)
     {

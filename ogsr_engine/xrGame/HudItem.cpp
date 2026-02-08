@@ -219,7 +219,7 @@ void CHudItem::renderable_Render(u32 context_id, IRenderable* root)
     }
 }
 
-bool CHudItem::Action(s32, u32) { return false; }
+bool CHudItem::Action(EGameActions, u32) { return false; }
 
 void CHudItem::SwitchState(u32 S)
 {

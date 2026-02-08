@@ -67,7 +67,7 @@ public:
     virtual void Fire2Start();
     virtual void FireStart();
 
-    virtual bool Action(s32 cmd, u32 flags);
+    [[nodiscard]] bool Action(EGameActions cmd, u32 flags) override;
 
     virtual void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
 

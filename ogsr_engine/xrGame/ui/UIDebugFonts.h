@@ -21,7 +21,7 @@ public:
     ~CUIDebugFonts() override;
 
     virtual void Init(float x, float y, float width, float height);
-    virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
+    [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
     void FillUpList();
 
 protected:

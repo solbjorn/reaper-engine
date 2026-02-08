@@ -319,13 +319,13 @@ void CUIDragDropListEx::ReinitScroll()
     m_container->SetWndPos(m_container->GetWndPos().x, float(-m_vScrollBar->GetScrollPos()));
 }
 
-bool CUIDragDropListEx::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUIDragDropListEx::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
     bool b = inherited::OnMouse(x, y, mouse_action);
 
     if (m_vScrollBar->IsShown())
     {
-        bool with_shift = Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT);
+        const bool with_shift = Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::RShift});
 
         switch (mouse_action)
         {

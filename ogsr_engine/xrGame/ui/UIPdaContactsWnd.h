@@ -61,5 +61,5 @@ public:
     ~CUIPdaContactItem() override;
 
     virtual void SetSelected(bool b);
-    virtual bool OnMouseDown(int mouse_btn);
+    [[nodiscard]] bool OnMouseDown(sf::Mouse::Button mouse_btn) override;
 };

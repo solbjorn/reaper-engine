@@ -921,13 +921,13 @@ void ImGuiGameConsole::AddCmdHistory(gsl::czstring str)
     m_last_cmd = std::move(sh);
 }
 
-void ImGuiGameConsole::Prev_cmd() // DIK_UP + Ctrl
+void ImGuiGameConsole::Prev_cmd() // Ctrl + Up
 {
     prev_cmd_history_idx();
     SelectCommand();
 }
 
-void ImGuiGameConsole::Next_cmd() // DIK_DOWN + Ctrl
+void ImGuiGameConsole::Next_cmd() // Ctrl + Down
 {
     next_cmd_history_idx();
     SelectCommand();

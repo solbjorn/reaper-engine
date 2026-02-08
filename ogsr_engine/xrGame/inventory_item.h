@@ -109,7 +109,7 @@ public:
     virtual bool IsSingleHanded() const { return true; }
     virtual bool Activate(bool = false); // !!! Переопределить. (см. в Inventory.cpp)
     virtual void Deactivate(bool = false); // !!! Переопределить. (см. в Inventory.cpp)
-    virtual bool Action(s32, u32) { return false; } // true если известная команда, иначе false
+    [[nodiscard]] virtual bool Action(EGameActions, u32) { return false; } // true если известная команда, иначе false
 
     virtual void OnH_B_Chield();
     virtual void OnH_A_Chield();

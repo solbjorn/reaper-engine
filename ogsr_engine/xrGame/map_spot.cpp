@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "map_spot.h"
+
 #include "map_location.h"
 
 #include "ui/UIXmlInit.h"
@@ -49,9 +50,9 @@ void CMapSpot::Update()
     }
 }
 
-bool CMapSpot::OnMouseDown(int mouse_btn)
+bool CMapSpot::OnMouseDown(sf::Mouse::Button mouse_btn)
 {
-    if (mouse_btn == MOUSE_1)
+    if (mouse_btn == sf::Mouse::Button::Left)
     {
         GetMessageTarget()->SendMessage(this, MAP_SELECT_SPOT2);
         return true;

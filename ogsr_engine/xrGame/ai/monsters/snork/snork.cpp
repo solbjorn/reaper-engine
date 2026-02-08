@@ -12,17 +12,6 @@
 #include "../control_movement_base.h"
 #include "PHMovementControl.h"
 
-/*
-#ifdef DEBUG
-#	include <dinput.h>
-#	include "../../../actor.h"
-#	include "../../../ai_object_location.h"
-#	include "../../../level_debug.h"
-#	include "cover_point.h"
-#	include "../monster_cover_manager.h"
-#endif
-*/
-
 CSnork::CSnork()
 {
     StateMan = xr_new<CStateManagerSnork>(this);
@@ -288,21 +277,3 @@ void CSnork::on_activate_control(ControlCom::EControlType type)
         // m_sound_start_threaten.play_at_pos(this, get_head_position(this));
     }
 }
-//////////////////////////////////////////////////////////////////////////
-
-/*
-#ifdef DEBUG
-#include "Actor.h"
-#include "ai_object_location.h"
-void CSnork::debug_on_key(int key)
-{
-    CActor *actor = Actor();
-    if (!actor) return;
-
-    switch (key){
-    case DIK_1:
-        m_target_node = actor->ai_location().level_vertex_id();
-    }
-}
-#endif
-*/

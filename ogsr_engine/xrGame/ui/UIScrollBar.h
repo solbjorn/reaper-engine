@@ -64,8 +64,8 @@ public:
     virtual void Init(float x, float y, float length, bool bIsHorizontal, LPCSTR profile = "default");
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
-    virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
-    virtual bool OnKeyboardHold(int dik);
+    [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
+    [[nodiscard]] bool OnKeyboardHold(xr::key_id dik) override;
 
     virtual void Draw();
 

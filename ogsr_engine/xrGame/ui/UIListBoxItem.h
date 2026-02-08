@@ -15,7 +15,7 @@ public:
     virtual void SetSelected(bool b);
     //	virtual void	Update();
     virtual void Draw();
-    virtual bool OnMouseDown(int mouse_btn);
+    [[nodiscard]] bool OnMouseDown(sf::Mouse::Button mouse_btn) override;
     virtual bool OnDbClick();
     virtual void OnFocusReceive();
     virtual CGameFont* GetFont();

@@ -14,7 +14,7 @@ public:
     CUIButton();
     ~CUIButton() override;
 
-    virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
+    [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
     virtual void OnClick();
 
     // прорисовка окна
@@ -24,7 +24,7 @@ public:
 
     virtual void Update();
     virtual void Enable(bool status);
-    virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
+    [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
     virtual void OnFocusLost();
 
     // режимы в которых можно нажимать кнопку
@@ -58,22 +58,20 @@ public:
     void SetButtonAsSwitch(bool bAsSwitch) { m_bIsSwitch = bAsSwitch; }
 
     // Работа с акселератором
-    // Код акселератора берется из файла dinput.h, из DirectX SDK.
-    // Например: кнопка A - код 0x1E(DIK_A)
 
-    void SetAccelerator(int iAccel, int idx)
+    void SetAccelerator(xr::key_id iAccel, int idx)
     {
         VERIFY(idx == 0 || idx == 1);
         m_uAccelerator[idx] = iAccel;
     }
 
-    int GetAccelerator(int idx) const
+    [[nodiscard]] xr::key_id GetAccelerator(int idx) const
     {
         VERIFY(idx == 0 || idx == 1);
         return m_uAccelerator[idx];
     }
 
-    IC bool IsAccelerator(int dik) const { return (m_uAccelerator[0] == dik) || m_uAccelerator[1] == dik || is_binded(m_uAcceleratorAction, dik); }
+    [[nodiscard]] bool IsAccelerator(xr::key_id dik) const { return (m_uAccelerator[0] == dik) || m_uAccelerator[1] == dik || is_binded(m_uAcceleratorAction, dik); }
 
     void SetAcceleratorAction(EGameActions a) { m_uAcceleratorAction = a; }
 
@@ -91,8 +89,8 @@ protected:
     bool m_bButtonClicked;
     E_PRESS_MODE m_ePressMode;
     Fvector2 m_PushOffset;
-    int m_uAccelerator[2];
-    EGameActions m_uAcceleratorAction{kNOTBINDED};
+    std::array<xr::key_id, 2> m_uAccelerator;
+    EGameActions m_uAcceleratorAction{EGameActions::kNOTBINDED};
     Fvector2 m_ShadowOffset;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();

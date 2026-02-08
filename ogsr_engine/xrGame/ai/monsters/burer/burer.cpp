@@ -255,10 +255,8 @@ void CBurer::StaminaHit()
         auto item = smart_cast<CPhysicsShellHolder*>(Actor()->inventory().ActiveItem());
         item->SetActivationSpeedOverride(normalize(dir) * m_weapon_drop_velocity);
 
-        if (!Actor()->inventory().Action((u16)kDROP, CMD_STOP))
-        {
+        if (!Actor()->inventory().Action(EGameActions::kDROP, CMD_STOP))
             Actor()->g_PerformDrop();
-        }
     }
 }
 

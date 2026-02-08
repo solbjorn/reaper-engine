@@ -4,6 +4,8 @@
 
 #include "xr_input.h"
 
+#include <SFML/Window/Joystick.hpp>
+
 tmc::task<void> IInputReceiver::IR_Capture()
 {
     VERIFY(pInput);
@@ -22,45 +24,54 @@ void IInputReceiver::IR_GetLastMouseDelta(Ivector2& p)
     pInput->iGetLastMouseDelta(p);
 }
 
-void IInputReceiver::IR_OnDeactivate(void)
+void IInputReceiver::IR_OnDeactivate()
 {
-    int i;
-    for (i = 0; i < CInput::COUNT_KB_BUTTONS; i++)
-        if (IR_GetKeyState(i))
-            IR_OnKeyboardRelease(i);
-    for (i = 0; i < CInput::COUNT_MOUSE_BUTTONS; i++)
-        if (IR_GetBtnState(i))
-            IR_OnMouseRelease(i);
-    IR_OnMouseStop(DIMOFS_X, 0);
-    IR_OnMouseStop(DIMOFS_Y, 0);
+    for (s32 i{0}; i < s32{sf::Keyboard::ScancodeCount}; ++i)
+    {
+        if (IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode{i}}))
+            IR_OnKeyboardRelease(xr::key_id{sf::Keyboard::Scancode{i}});
+    }
+
+    for (s32 i{0}; i < s32{sf::Mouse::ButtonCount}; ++i)
+    {
+        if (IR_GetKeyState(xr::key_id{sf::Mouse::Button{i}}))
+            IR_OnKeyboardRelease(xr::key_id{sf::Mouse::Button{i}});
+    }
+
+    for (s32 i{0}; i < s32{sf::Joystick::ButtonCount}; ++i)
+    {
+        if (IR_GetKeyState(xr::key_id{xr::key_id::joystick{i}}))
+            IR_OnKeyboardRelease(xr::key_id{xr::key_id::joystick{i}});
+    }
+
+    IR_OnMouseStop(0, 0);
+    IR_OnMouseStop(4, 0);
 }
 
-BOOL IInputReceiver::IR_GetKeyState(int dik)
+bool IInputReceiver::IR_GetKeyState(xr::key_id dik) const
 {
     VERIFY(pInput);
     return pInput->iGetAsyncKeyState(dik);
 }
 
-BOOL IInputReceiver::IR_GetBtnState(int btn)
-{
-    VERIFY(pInput);
-    return pInput->iGetAsyncBtnState(btn);
-}
-
 void IInputReceiver::IR_GetMousePosScreen(Ivector2& p) { GetCursorPos((LPPOINT)&p); }
+
 void IInputReceiver::IR_GetMousePosReal(HWND hwnd, Ivector2& p)
 {
     IR_GetMousePosScreen(p);
     if (hwnd)
         ScreenToClient(hwnd, (LPPOINT)&p);
 }
+
 void IInputReceiver::IR_GetMousePosReal(Ivector2& p) { IR_GetMousePosReal(Device.m_hWnd, p); }
+
 void IInputReceiver::IR_GetMousePosIndependent(Fvector2& f)
 {
     Ivector2 p;
     IR_GetMousePosReal(p);
     f.set(2.f * float(p.x) / float(Device.dwWidth) - 1.f, 2.f * float(p.y) / float(Device.dwHeight) - 1.f);
 }
+
 void IInputReceiver::IR_GetMousePosIndependentCrop(Fvector2& f)
 {
     IR_GetMousePosIndependent(f);

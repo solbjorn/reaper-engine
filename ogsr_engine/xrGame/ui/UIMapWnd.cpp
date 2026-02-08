@@ -27,8 +27,6 @@
 
 #include "..\..\xr_3da\xr_input.h" //remove me !!!
 
-#include <dinput.h> //remove me !!!
-
 namespace
 {
 constexpr int SCROLLBARS_SHIFT{5};
@@ -350,27 +348,30 @@ void CUIMapWnd::Draw()
         m_hint->Draw_();
 }
 
-bool CUIMapWnd::OnKeyboardHold(int dik)
+bool CUIMapWnd::OnKeyboardHold(xr::key_id dik)
 {
     if (inherited::OnKeyboardHold(dik))
         return true;
 
-    switch (dik)
-    {
-    case DIK_UP:
-    case DIK_DOWN:
-    case DIK_LEFT:
-    case DIK_RIGHT: {
-        Fvector2 pos_delta;
-        pos_delta.set(0.0f, 0.0f);
+    if (!dik.is<sf::Keyboard::Scancode>())
+        return false;
 
-        if (dik == DIK_UP)
+    const auto key = dik.get<sf::Keyboard::Scancode>();
+    switch (key)
+    {
+    case sf::Keyboard::Scancode::Up:
+    case sf::Keyboard::Scancode::Down:
+    case sf::Keyboard::Scancode::Left:
+    case sf::Keyboard::Scancode::Right: {
+        Fvector2 pos_delta{};
+
+        if (key == sf::Keyboard::Scancode::Up)
             pos_delta.y += 1.0f;
-        if (dik == DIK_DOWN)
+        else if (key == sf::Keyboard::Scancode::Down)
             pos_delta.y -= 1.0f;
-        if (dik == DIK_LEFT)
+        else if (key == sf::Keyboard::Scancode::Left)
             pos_delta.x += 1.0f;
-        if (dik == DIK_RIGHT)
+        else if (key == sf::Keyboard::Scancode::Right)
             pos_delta.x -= 1.0f;
 
         GlobalMap()->MoveWndDelta(pos_delta);
@@ -379,38 +380,42 @@ bool CUIMapWnd::OnKeyboardHold(int dik)
 
         return true;
     }
+    default: break;
     }
 
     return false;
 }
 
-bool CUIMapWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIMapWnd::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 {
     if (inherited::OnKeyboard(dik, keyboard_action))
         return true;
 
     const auto bind = get_binded_action(dik);
 
-    if (bind == kHIDEHUD)
+    if (bind == EGameActions::kHIDEHUD)
     {
         SetZoom(GetZoom() / 1.5f);
         ResetActionPlanner();
+
         return true;
     }
-    else if (bind == kSHOWHUD)
+    else if (bind == EGameActions::kSHOWHUD)
     {
         SetZoom(GetZoom() * 1.5f);
         ResetActionPlanner();
+
         return true;
     }
 
     return false;
 }
 
-bool CUIMapWnd::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUIMapWnd::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
     if (inherited::OnMouse(x, y, mouse_action))
         return true;
+
     Fvector2 cursor_pos = GetUICursor()->GetCursorPosition();
 
     if (GlobalMap() && !GlobalMap()->Locked() && ActiveMapRect().in(cursor_pos))
@@ -418,7 +423,7 @@ bool CUIMapWnd::OnMouse(float x, float y, EUIMessages mouse_action)
         switch (mouse_action)
         {
         case WINDOW_MOUSE_MOVE:
-            if (pInput->iGetAsyncBtnState(0))
+            if (pInput->iGetAsyncKeyState(xr::key_id{sf::Mouse::Button::Left}))
             {
                 GlobalMap()->MoveWndDelta(GetUICursor()->GetCursorPositionDelta());
                 UpdateScroll();
@@ -426,6 +431,7 @@ bool CUIMapWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 
                 return true;
             }
+
             break;
         default: break;
         }

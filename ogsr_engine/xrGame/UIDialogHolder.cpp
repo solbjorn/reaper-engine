@@ -77,8 +77,8 @@ void CDialogHolder::StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
         if (A)
         {
             A->PickupModeOff();
-            A->IR_OnKeyboardRelease(kWPN_ZOOM);
-            A->IR_OnKeyboardRelease(kWPN_FIRE);
+            A->IR_OnKeyboardRelease(get_action_dik(EGameActions::kWPN_ZOOM));
+            A->IR_OnKeyboardRelease(get_action_dik(EGameActions::kWPN_FIRE));
         }
     }
 }

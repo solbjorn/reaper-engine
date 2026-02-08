@@ -240,20 +240,21 @@ void CWeaponMagazinedWGrenade::PerformSwitchGL()
     iAmmoElapsed2 = std::ssize(m_magazine2);
 }
 
-bool CWeaponMagazinedWGrenade::Action(s32 cmd, u32 flags)
+bool CWeaponMagazinedWGrenade::Action(EGameActions cmd, u32 flags)
 {
-    if (m_bGrenadeMode && (cmd == kWPN_FIREMODE_PREV || cmd == kWPN_FIREMODE_NEXT))
+    if (m_bGrenadeMode && (cmd == EGameActions::kWPN_FIREMODE_PREV || cmd == EGameActions::kWPN_FIREMODE_NEXT))
         return false;
 
     if (inherited::Action(cmd, flags))
         return true;
 
-    if (cmd == kWPN_FUNC)
+    if (cmd == EGameActions::kWPN_FUNC)
     {
         if (!IsZoomed() && GetState() == eIdle)
         {
             if (flags & CMD_START)
                 SwitchState(eSwitch);
+
             return true;
         }
     }

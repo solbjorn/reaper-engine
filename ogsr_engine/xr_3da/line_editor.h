@@ -26,9 +26,9 @@ public:
     void on_frame();
 
 protected:
-    tmc::task<void> IR_OnKeyboardPress(gsl::index dik) override;
-    tmc::task<void> IR_OnKeyboardHold(gsl::index dik) override;
-    void IR_OnKeyboardRelease(int) override;
+    tmc::task<void> IR_OnKeyboardPress(xr::key_id dik) override;
+    tmc::task<void> IR_OnKeyboardHold(xr::key_id dik) override;
+    void IR_OnKeyboardRelease(xr::key_id dik) override;
 
 private:
     line_edit_control m_control;

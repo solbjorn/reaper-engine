@@ -568,31 +568,31 @@ PIItem CInventory::ItemFromSlot(u32 slot) const
     return m_slots[slot].m_pIItem;
 }
 
-bool CInventory::Action(s32 cmd, u32 flags)
+bool CInventory::Action(EGameActions cmd, u32 flags)
 {
     if (m_iActiveSlot < m_slots.size() && m_slots[m_iActiveSlot].m_pIItem && m_slots[m_iActiveSlot].m_pIItem->Action(cmd, flags))
         return true;
 
     switch (cmd)
     {
-    case kWPN_1:
-    case kWPN_2:
-    case kWPN_3:
-    case kWPN_4:
-    case kWPN_5:
-    case kWPN_6: {
+    case EGameActions::kWPN_1:
+    case EGameActions::kWPN_2:
+    case EGameActions::kWPN_3:
+    case EGameActions::kWPN_4:
+    case EGameActions::kWPN_5:
+    case EGameActions::kWPN_6: {
         if (flags & CMD_START)
         {
-            if (GetActiveSlot() == cmd - kWPN_1 && ActiveItem())
+            if (gsl::narrow_cast<s32>(GetActiveSlot()) == std::to_underlying(cmd) - std::to_underlying(EGameActions::kWPN_1) && ActiveItem() != nullptr)
                 std::ignore = Activate(NO_ACTIVE_SLOT);
             else
-                std::ignore = Activate(cmd - kWPN_1, eKeyAction);
+                std::ignore = Activate(std::to_underlying(cmd) - std::to_underlying(EGameActions::kWPN_1), eKeyAction);
         }
     }
     break;
-    case kACTIVE_JOBS:
-    case kMAP:
-    case kCONTACTS: {
+    case EGameActions::kACTIVE_JOBS:
+    case EGameActions::kMAP:
+    case EGameActions::kCONTACTS: {
         if (flags & CMD_START)
         {
             auto Pda = m_pOwner->GetPDA();
@@ -609,12 +609,13 @@ bool CInventory::Action(s32 cmd, u32 flags)
                 if (pGameSP->InventoryMenu->IsShown())
                     break;
 
-                pGameSP->PdaMenu->SetActiveSubdialog(cmd == kACTIVE_JOBS ? eptQuests : (cmd == kMAP ? eptMap : eptContacts));
+                pGameSP->PdaMenu->SetActiveSubdialog(cmd == EGameActions::kACTIVE_JOBS ? eptQuests : (cmd == EGameActions::kMAP ? eptMap : eptContacts));
                 std::ignore = Activate(PDA_SLOT, eKeyAction);
             }
         }
     }
     break;
+    default: break;
     }
 
     return false;

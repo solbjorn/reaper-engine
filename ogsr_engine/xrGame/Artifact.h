@@ -119,7 +119,7 @@ public:
     void Hide(bool = false) override;
     void Show(bool = false) override;
     virtual void UpdateXForm();
-    virtual bool Action(s32 cmd, u32 flags);
+    [[nodiscard]] bool Action(EGameActions cmd, u32 flags) override;
     virtual void PlayAnimIdle();
     virtual void OnStateSwitch(u32 S, u32 oldState);
     virtual void OnAnimationEnd(u32 state);

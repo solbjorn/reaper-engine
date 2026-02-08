@@ -55,7 +55,7 @@ public:
 
     void Init(); // need parent to be initialized
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
-    virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
+    [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
     virtual void Draw();
     virtual void Update();
     void AddWindow(CUIWindow* pWnd, bool auto_delete, bool top = false);

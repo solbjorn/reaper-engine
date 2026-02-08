@@ -36,13 +36,13 @@ public:
     virtual void Hide();
     virtual void Update();
 
-    virtual tmc::task<bool> IR_OnKeyboardPress(gsl::index dik);
-    virtual bool IR_OnKeyboardRelease(int dik);
-    virtual bool IR_OnMouseMove(int dx, int dy);
+    virtual tmc::task<bool> IR_OnKeyboardPress(xr::key_id dik);
+    [[nodiscard]] virtual bool IR_OnKeyboardRelease(xr::key_id dik);
+    [[nodiscard]] virtual bool IR_OnMouseMove(int dx, int dy);
     virtual tmc::task<bool> IR_OnMouseWheel(gsl::index direction);
-    virtual tmc::task<bool> IR_OnKeyboardHold(gsl::index dik);
-    virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
-    virtual bool OnKeyboardHold(int dik);
+    virtual tmc::task<bool> IR_OnKeyboardHold(xr::key_id dik);
+    [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
+    [[nodiscard]] bool OnKeyboardHold(xr::key_id dik) override;
 
     CDialogHolder* GetHolder() { return m_pHolder; }
     void SetHolder(CDialogHolder* h) { m_pHolder = h; }

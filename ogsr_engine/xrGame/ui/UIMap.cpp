@@ -249,14 +249,14 @@ bool CUICustomMap::NeedShowPointer(Frect r)
 
 void CUICustomMap::SendMessage(CUIWindow* pWnd, s16 msg, void* pData) { CUIWndCallback::OnEvent(pWnd, msg, pData); }
 
-bool CUIGlobalMap::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUIGlobalMap::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
     if (inherited::OnMouse(x, y, mouse_action))
         return true;
 
     if (mouse_action == WINDOW_MOUSE_MOVE)
     {
-        if (MapWnd() && !pInput->iGetAsyncBtnState(0))
+        if (MapWnd() && !pInput->iGetAsyncKeyState(xr::key_id{sf::Mouse::Button::Left}))
         {
             MapWnd()->Hint(MapName());
             return true;
@@ -499,10 +499,11 @@ void CUILevelMap::Update()
     }
 }
 
-bool CUILevelMap::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUILevelMap::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
     if (inherited::OnMouse(x, y, mouse_action))
         return true;
+
     if (MapWnd()->GlobalMap()->Locked())
         return true;
 
@@ -546,7 +547,7 @@ bool CUILevelMap::OnMouse(float x, float y, EUIMessages mouse_action)
     }
     else if (mouse_action == WINDOW_MOUSE_MOVE)
     {
-        if (MapWnd() && !pInput->iGetAsyncBtnState(0))
+        if (MapWnd() && !pInput->iGetAsyncKeyState(xr::key_id{sf::Mouse::Button::Left}))
         {
             MapWnd()->Hint(MapName());
             return true;

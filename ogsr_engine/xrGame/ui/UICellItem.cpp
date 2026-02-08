@@ -20,8 +20,6 @@ CUICellItem* CUICellItem::m_mouse_selected_item{};
 
 CUICellItem::CUICellItem()
 {
-    SetAccelerator(0);
-
     if (Core.Features.test(xrCore::Feature::show_inv_item_condition))
         init();
 }
@@ -34,18 +32,19 @@ void CUICellItem::Draw()
     inherited::Draw();
 }
 
-bool CUICellItem::OnMouse(float, float, EUIMessages mouse_action)
+bool CUICellItem::OnMouse(f32, f32, EUIMessages mouse_action)
 {
     if (mouse_action == WINDOW_LBUTTON_DOWN)
     {
         // GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_LBUTTON_CLICK, NULL );
         GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_SELECTED, nullptr);
         m_mouse_selected_item = this;
+
         return false;
     }
     else if (mouse_action == WINDOW_MOUSE_MOVE)
     {
-        if (pInput->iGetAsyncBtnState(0) && m_mouse_selected_item && m_mouse_selected_item == this)
+        if (pInput->iGetAsyncKeyState(xr::key_id{sf::Mouse::Button::Left}) && m_mouse_selected_item && m_mouse_selected_item == this)
         {
             GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_DRAG, nullptr);
             return true;
@@ -66,7 +65,7 @@ bool CUICellItem::OnMouse(float, float, EUIMessages mouse_action)
     return false;
 }
 
-bool CUICellItem::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUICellItem::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 {
     if (WINDOW_KEY_PRESSED == keyboard_action)
     {
@@ -260,13 +259,14 @@ void CUIDragItem::Init(const ui_shader& sh, const Frect& rect, const Frect& text
     m_pos_offset.sub(rect.lt, GetUICursor()->GetCursorPosition());
 }
 
-bool CUIDragItem::OnMouse(float, float, EUIMessages mouse_action)
+bool CUIDragItem::OnMouse(f32, f32, EUIMessages mouse_action)
 {
     if (mouse_action == WINDOW_LBUTTON_UP)
     {
         m_pParent->GetMessageTarget()->SendMessage(m_pParent, DRAG_DROP_ITEM_DROP, nullptr);
         return true;
     }
+
     return false;
 }
 

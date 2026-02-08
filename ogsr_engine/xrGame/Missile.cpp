@@ -571,15 +571,16 @@ void CMissile::Destroy()
         DestroyObject();
 }
 
-bool CMissile::Action(s32 cmd, u32 flags)
+bool CMissile::Action(EGameActions cmd, u32 flags)
 {
     if (inherited::Action(cmd, flags))
         return true;
 
     switch (cmd)
     {
-    case kWPN_FIRE: {
+    case EGameActions::kWPN_FIRE: {
         m_constpower = true;
+
         if (flags & CMD_START)
         {
             if (GetState() == eIdle)
@@ -588,19 +589,20 @@ bool CMissile::Action(s32 cmd, u32 flags)
                 SwitchState(eThrowStart);
             }
         }
+
         return true;
     }
-    case kWPN_ZOOM: {
+    case EGameActions::kWPN_ZOOM: {
         m_constpower = false;
+
         if (flags & CMD_START)
         {
             m_throw = false;
+
             if (GetState() == eIdle)
                 SwitchState(eThrowStart);
             else if (GetState() == eReady)
-            {
                 m_throw = true;
-            }
         }
         else if (GetState() == eReady || GetState() == eThrowStart || GetState() == eIdle)
         {
@@ -608,27 +610,32 @@ bool CMissile::Action(s32 cmd, u32 flags)
             if (GetState() == eReady)
                 SwitchState(eThrow);
         }
+
         return true;
     }
-    case kTORCH: {
+    case EGameActions::kTORCH: {
         auto pActorTorch = smart_cast<CActor*>(H_Parent())->inventory().ItemFromSlot(TORCH_SLOT);
         if ((flags & CMD_START) && pActorTorch && GetState() == eIdle)
         {
             HeadLampSwitch = true;
             SwitchState(eDeviceSwitch);
         }
+
         return true;
     }
-    case kNIGHT_VISION: {
+    case EGameActions::kNIGHT_VISION: {
         auto pActorNv = smart_cast<CActor*>(H_Parent())->inventory().ItemFromSlot(IS_OGSR_GA ? NIGHT_VISION_SLOT : TORCH_SLOT);
         if ((flags & CMD_START) && pActorNv && GetState() == eIdle)
         {
             NightVisionSwitch = true;
             SwitchState(eDeviceSwitch);
         }
+
         return true;
     }
+    default: break;
     }
+
     return false;
 }
 

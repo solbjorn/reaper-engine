@@ -445,10 +445,8 @@ public:
     virtual SDebugInfo show_debug_info();
 
     void debug_fsm();
-#endif
 
-#ifdef DEBUG
-    virtual void debug_on_key(int key) {}
+    virtual void debug_on_key(xr::key_id key) {}
 #endif
     //////////////////////////////////////////////////////////////////////////
 

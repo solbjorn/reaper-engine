@@ -267,7 +267,7 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked()
         case INVENTORY_DETACH_SCOPE_ADDON: DetachAddon(*(smart_cast<CWeapon*>(CurrentIItem()))->GetScopeName()); break;
         case INVENTORY_DETACH_SILENCER_ADDON: DetachAddon(*(smart_cast<CWeapon*>(CurrentIItem()))->GetSilencerName()); break;
         case INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON: DetachAddon(*(smart_cast<CWeapon*>(CurrentIItem()))->GetGrenadeLauncherName()); break;
-        case INVENTORY_RELOAD_MAGAZINE: (smart_cast<CWeapon*>(CurrentIItem()))->Action(kWPN_RELOAD, CMD_START); break;
+        case INVENTORY_RELOAD_MAGAZINE: std::ignore = (smart_cast<CWeapon*>(CurrentIItem()))->Action(EGameActions::kWPN_RELOAD, CMD_START); break;
         case INVENTORY_UNLOAD_MAGAZINE: {
             auto ProcessUnload = [](void* pWpn) {
                 auto WpnMagaz = static_cast<CWeaponMagazined*>(pWpn);

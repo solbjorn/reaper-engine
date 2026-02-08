@@ -69,15 +69,12 @@ public:
     [[nodiscard]] bool IsLanguageChanged() const { return languageChanged; }
     void SetLanguageChanged(bool status) { languageChanged = status; }
 
-    tmc::task<void> IR_OnMousePress(gsl::index btn) override;
-    virtual void IR_OnMouseRelease(int btn);
-    tmc::task<void> IR_OnMouseHold(gsl::index btn) override;
     virtual void IR_OnMouseMove(int x, int y);
     virtual void IR_OnMouseStop(int, int);
 
-    tmc::task<void> IR_OnKeyboardPress(gsl::index dik) override;
-    virtual void IR_OnKeyboardRelease(int dik);
-    tmc::task<void> IR_OnKeyboardHold(gsl::index dik) override;
+    tmc::task<void> IR_OnKeyboardPress(xr::key_id dik) override;
+    void IR_OnKeyboardRelease(xr::key_id dik) override;
+    tmc::task<void> IR_OnKeyboardHold(xr::key_id dik) override;
 
     tmc::task<void> IR_OnMouseWheel(gsl::index direction) override;
 

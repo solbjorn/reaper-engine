@@ -342,17 +342,17 @@ BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 
         float speed = m_fSpeed1, ang_speed = m_fAngSpeed1;
 
-        if (IR_GetKeyState(DIK_LSHIFT))
+        if (IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}))
         {
             speed = m_fSpeed0;
             ang_speed = m_fAngSpeed0;
         }
-        else if (IR_GetKeyState(DIK_LALT))
+        else if (IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::LAlt}))
         {
             speed = m_fSpeed2;
             ang_speed = m_fAngSpeed2;
         }
-        else if (IR_GetKeyState(DIK_LCONTROL))
+        else if (IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::LControl}))
         {
             speed = m_fSpeed3;
             ang_speed = m_fAngSpeed3;
@@ -411,9 +411,9 @@ BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
     return TRUE;
 }
 
-tmc::task<void> CDemoRecord::IR_OnKeyboardPress(gsl::index dik)
+tmc::task<void> CDemoRecord::IR_OnKeyboardPress(xr::key_id dik)
 {
-    if (dik == DIK_MULTIPLY)
+    if (dik == xr::key_id{sf::Keyboard::Scancode::NumpadMultiply})
     {
         m_b_redirect_input_to_level = !m_b_redirect_input_to_level;
         co_return;
@@ -425,33 +425,31 @@ tmc::task<void> CDemoRecord::IR_OnKeyboardPress(gsl::index dik)
         co_return;
     }
 
-    if (dik == DIK_GRAVE)
-        co_await Console->Show();
-    if (dik == DIK_SPACE)
-        RecordKey();
-    if (dik == DIK_BACK)
-        MakeCubemap();
-    if (dik == DIK_F11)
-        MakeLevelMapScreenshot(IR_GetKeyState(DIK_LCONTROL));
-    if (dik == DIK_F12)
-        MakeScreenshot();
-    if (dik == DIK_ESCAPE)
-        fLifeTime = -1;
+    if (!dik.is<sf::Keyboard::Scancode>())
+        co_return;
 
-    if (dik == DIK_RETURN)
+    switch (dik.get<sf::Keyboard::Scancode>())
     {
+    case sf::Keyboard::Scancode::Grave: co_await Console->Show(); break;
+    case sf::Keyboard::Scancode::Space: RecordKey(); break;
+    case sf::Keyboard::Scancode::Backspace: MakeCubemap(); break;
+    case sf::Keyboard::Scancode::F11: MakeLevelMapScreenshot(IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::LControl})); break;
+    case sf::Keyboard::Scancode::F12: MakeScreenshot(); break;
+    case sf::Keyboard::Scancode::Escape: fLifeTime = -1; break;
+    case sf::Keyboard::Scancode::Enter:
         if (auto entity = g_pGameLevel->CurrentEntity())
         {
             entity->ForceTransformAndDirection(m_Camera);
             fLifeTime = -1;
         }
-    }
 
-    if (dik == DIK_PAUSE)
-        Device.Pause(!Device.Paused(), true, true, "demo_record");
+        break;
+    case sf::Keyboard::Scancode::Pause: Device.Pause(!Device.Paused(), true, true, "demo_record"); break;
+    default: break;
+    }
 }
 
-tmc::task<void> CDemoRecord::IR_OnKeyboardHold(gsl::index dik)
+tmc::task<void> CDemoRecord::IR_OnKeyboardHold(xr::key_id dik)
 {
     if (m_b_redirect_input_to_level)
     {
@@ -459,40 +457,47 @@ tmc::task<void> CDemoRecord::IR_OnKeyboardHold(gsl::index dik)
         co_return;
     }
 
+    if (dik.is<sf::Mouse::Button>())
+        IR_OnMouseHold(dik.get<sf::Mouse::Button>());
+
+    if (!dik.is<sf::Keyboard::Scancode>())
+        co_return;
+
     Fvector vT_delta{}, vR_delta{};
 
-    switch (dik)
+    switch (dik.get<sf::Keyboard::Scancode>())
     {
-    case DIK_A:
-    case DIK_NUMPAD1:
-    case DIK_LEFT: vT_delta.x -= 1.0f; break; // Slide Left
-    case DIK_D:
-    case DIK_NUMPAD3:
-    case DIK_RIGHT: vT_delta.x += 1.0f; break; // Slide Right
+    case sf::Keyboard::Scancode::A:
+    case sf::Keyboard::Scancode::Numpad1:
+    case sf::Keyboard::Scancode::Left: vT_delta.x -= 1.0f; break; // Slide Left
+    case sf::Keyboard::Scancode::D:
+    case sf::Keyboard::Scancode::Numpad3:
+    case sf::Keyboard::Scancode::Right: vT_delta.x += 1.0f; break; // Slide Right
 
-    case DIK_S: vT_delta.y -= 1.0f; break; // Slide Up
-    case DIK_W:
+    case sf::Keyboard::Scancode::S: vT_delta.y -= 1.0f; break; // Slide Up
+    case sf::Keyboard::Scancode::W:
         vT_delta.y += 1.0f;
         break; // Slide Down
 
     // rotate
-    case DIK_NUMPAD2: vR_delta.x -= 1.0f; break; // Pitch Down
-    case DIK_NUMPAD8: vR_delta.x += 1.0f; break; // Pitch Up
+    case sf::Keyboard::Scancode::Numpad2: vR_delta.x -= 1.0f; break; // Pitch Down
+    case sf::Keyboard::Scancode::Numpad8: vR_delta.x += 1.0f; break; // Pitch Up
 
-    case DIK_E:
-    case DIK_NUMPAD6: vR_delta.y += 1.0f; break; // Turn Left
-    case DIK_Q:
-    case DIK_NUMPAD4: vR_delta.y -= 1.0f; break; // Turn Right
+    case sf::Keyboard::Scancode::E:
+    case sf::Keyboard::Scancode::Numpad6: vR_delta.y += 1.0f; break; // Turn Left
+    case sf::Keyboard::Scancode::Q:
+    case sf::Keyboard::Scancode::Numpad4: vR_delta.y -= 1.0f; break; // Turn Right
 
-    case DIK_NUMPAD9: vR_delta.z -= 2.0f; break; // Rotate Right
-    case DIK_NUMPAD7: vR_delta.z += 2.0f; break; // Rotate Left
+    case sf::Keyboard::Scancode::Numpad9: vR_delta.z -= 2.0f; break; // Rotate Right
+    case sf::Keyboard::Scancode::Numpad7: vR_delta.z += 2.0f; break; // Rotate Left
+    default: break;
     }
 
     update_whith_timescale(m_vT, vT_delta);
     update_whith_timescale(m_vR, vR_delta);
 }
 
-void CDemoRecord::IR_OnKeyboardRelease(int dik)
+void CDemoRecord::IR_OnKeyboardRelease(xr::key_id dik)
 {
     if (m_b_redirect_input_to_level)
     {
@@ -520,41 +525,18 @@ void CDemoRecord::IR_OnMouseMove(int dx, int dy)
     update_whith_timescale(m_vR, vR_delta);
 }
 
-tmc::task<void> CDemoRecord::IR_OnMouseHold(gsl::index btn)
+void CDemoRecord::IR_OnMouseHold(sf::Mouse::Button btn)
 {
-    if (m_b_redirect_input_to_level)
-    {
-        co_await g_pGameLevel->IR_OnMouseHold(btn);
-        co_return;
-    }
-
     Fvector vT_delta{};
 
     switch (btn)
     {
-    case 0: vT_delta.z += 1.0f; break; // Move Forward
-    case 1: vT_delta.z -= 1.0f; break; // Move Backward
+    case sf::Mouse::Button::Left: vT_delta.z += 1.0f; break; // Move Forward
+    case sf::Mouse::Button::Right: vT_delta.z -= 1.0f; break; // Move Backward
+    default: break;
     }
 
     update_whith_timescale(m_vT, vT_delta);
-}
-
-tmc::task<void> CDemoRecord::IR_OnMousePress(gsl::index btn)
-{
-    if (m_b_redirect_input_to_level)
-    {
-        co_await g_pGameLevel->IR_OnMousePress(btn);
-        co_return;
-    }
-}
-
-void CDemoRecord::IR_OnMouseRelease(int btn)
-{
-    if (m_b_redirect_input_to_level)
-    {
-        g_pGameLevel->IR_OnMouseRelease(btn);
-        return;
-    }
 }
 
 void CDemoRecord::RecordKey()

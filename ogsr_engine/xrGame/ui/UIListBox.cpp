@@ -25,7 +25,7 @@ CUIListBox::CUIListBox()
 
 void CUIListBox::SetSelectionTexture(LPCSTR texture) { m_selection_texture._set(texture); }
 
-bool CUIListBox::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUIListBox::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
     if (CUIWindow::OnMouse(x, y, mouse_action))
         return true;

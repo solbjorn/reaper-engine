@@ -1,11 +1,12 @@
 #ifndef IGame_PersistentH
 #define IGame_PersistentH
 
-#include "../xrCDB/ISpatial.h"
 #include "Environment.h"
 #include "IGame_ObjectPool.h"
-
+#include "IInputReceiver.h"
 #include "ShadersExternalData.h" //--#SM+#--
+
+#include "../xrCDB/ISpatial.h"
 
 class IRenderVisual;
 class IMainMenu;
@@ -159,9 +160,9 @@ public:
     [[nodiscard]] virtual bool opened() = 0;
     virtual void update() = 0;
 
-    [[nodiscard]] virtual bool key_hold(gsl::index key) = 0;
-    [[nodiscard]] virtual bool key_press(gsl::index key) = 0;
-    [[nodiscard]] virtual bool key_release(gsl::index key) = 0;
+    [[nodiscard]] virtual bool key_hold(xr::key_id key) = 0;
+    [[nodiscard]] virtual bool key_press(xr::key_id key) = 0;
+    [[nodiscard]] virtual bool key_release(xr::key_id key) = 0;
 
     [[nodiscard]] virtual bool mouse_move(gsl::index dx, gsl::index dy) = 0;
     [[nodiscard]] virtual bool mouse_wheel(gsl::index dir) = 0;

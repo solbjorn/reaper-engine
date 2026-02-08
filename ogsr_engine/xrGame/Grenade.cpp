@@ -266,7 +266,7 @@ tmc::task<void> CGrenade::UpdateCL()
     co_await CExplosive::UpdateCL();
 }
 
-bool CGrenade::Action(s32 cmd, u32 flags)
+bool CGrenade::Action(EGameActions cmd, u32 flags)
 {
     if (inherited::Action(cmd, flags))
         return true;
@@ -274,7 +274,7 @@ bool CGrenade::Action(s32 cmd, u32 flags)
     switch (cmd)
     {
     // переключение типа гранаты
-    case kWPN_NEXT:
+    case EGameActions::kWPN_NEXT:
         if (flags & CMD_START)
         {
             const u32 state = GetState();
@@ -300,6 +300,7 @@ bool CGrenade::Action(s32 cmd, u32 flags)
         }
 
         return true;
+    default: break;
     }
 
     return false;

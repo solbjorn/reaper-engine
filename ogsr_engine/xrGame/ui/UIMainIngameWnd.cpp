@@ -54,8 +54,6 @@
 #include "..\..\xr_3da\xr_input.h"
 #endif
 
-#include <dinput.h>
-
 using namespace InventoryUtilities;
 
 #define DEFAULT_MAP_SCALE 1.f
@@ -439,12 +437,12 @@ void CUIMainIngameWnd::Update()
     CUIWindow::Update();
 }
 
-bool CUIMainIngameWnd::OnKeyboardPress(int dik)
+bool CUIMainIngameWnd::OnKeyboardPress(xr::key_id dik)
 {
-    const bool shift = Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT);
+    const bool shift = Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::RShift});
     const auto bind = get_binded_action(dik);
 
-    if (bind == kHIDEHUD)
+    if (bind == EGameActions::kHIDEHUD)
     {
         if (shift)
         {
@@ -455,9 +453,10 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
             HUD().GetUI()->HideGameIndicators();
             HUD().GetUI()->hud_disabled_by_user = true;
         }
+
         return true;
     }
-    else if (bind == kSHOWHUD)
+    else if (bind == EGameActions::kSHOWHUD)
     {
         if (shift)
         {
@@ -468,6 +467,7 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
             HUD().GetUI()->ShowGameIndicators();
             HUD().GetUI()->hud_disabled_by_user = false;
         }
+
         return true;
     }
 

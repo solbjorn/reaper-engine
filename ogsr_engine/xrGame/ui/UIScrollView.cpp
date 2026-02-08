@@ -215,12 +215,12 @@ void CUIScrollView::OnScrollV(CUIWindow*, void*)
     m_targetScrollPosition = -static_cast<float>(s_pos);
 }
 
-bool CUIScrollView::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUIScrollView::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
     if (inherited::OnMouse(x, y, mouse_action))
         return true;
 
-    bool with_shift = Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT);
+    const bool with_shift = Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::RShift});
 
     switch (mouse_action)
     {
@@ -245,7 +245,7 @@ bool CUIScrollView::OnMouse(float x, float y, EUIMessages mouse_action)
 
         return true;
     case WINDOW_MOUSE_MOVE:
-        if (pInput->iGetAsyncBtnState(0))
+        if (pInput->iGetAsyncKeyState(xr::key_id{sf::Mouse::Button::Left}))
         {
             Fvector2 curr_pad_pos = m_pad->GetWndPos();
             curr_pad_pos.y += GetUICursor()->GetCursorPositionDelta().y;

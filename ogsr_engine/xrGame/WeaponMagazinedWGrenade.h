@@ -47,7 +47,7 @@ public:
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     virtual void ReloadMagazine();
 
-    virtual bool Action(s32 cmd, u32 flags);
+    [[nodiscard]] bool Action(EGameActions cmd, u32 flags) override;
 
     virtual void UpdateSounds();
     virtual void StopHUDSounds();

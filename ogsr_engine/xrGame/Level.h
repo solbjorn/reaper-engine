@@ -212,12 +212,9 @@ public:
     void ProcessGameSpawnsDestroy(u16 dest, u16 type);
 
     // Input
-    tmc::task<void> IR_OnKeyboardPress(gsl::index btn) override;
-    virtual void IR_OnKeyboardRelease(int btn);
-    tmc::task<void> IR_OnKeyboardHold(gsl::index btn) override;
-    tmc::task<void> IR_OnMousePress(gsl::index btn) override;
-    virtual void IR_OnMouseRelease(int btn);
-    tmc::task<void> IR_OnMouseHold(gsl::index btn) override;
+    tmc::task<void> IR_OnKeyboardPress(xr::key_id btn) override;
+    void IR_OnKeyboardRelease(xr::key_id btn) override;
+    tmc::task<void> IR_OnKeyboardHold(xr::key_id btn) override;
     virtual void IR_OnMouseMove(int, int);
     virtual void IR_OnMouseStop(int, int);
     tmc::task<void> IR_OnMouseWheel(gsl::index direction) override;

@@ -173,7 +173,7 @@ public:
     }
 
     template <typename H>
-    friend constexpr H AbslHashValue(H h, const shared_str& str)
+    [[nodiscard]] friend constexpr H AbslHashValue(H h, const shared_str& str)
     {
         return H::combine(std::move(h), std::string_view{str});
     }

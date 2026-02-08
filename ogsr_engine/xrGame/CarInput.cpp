@@ -1,15 +1,10 @@
 #include "stdafx.h"
 
-#ifdef DEBUG
-#include "ode_include.h"
-#include "../xr_3da/StatGraph.h"
-#include "PHDebug.h"
-#endif
+#include "Car.h"
 
 #include "alife_space.h"
 #include "hit.h"
 #include "phdestroyable.h"
-#include "car.h"
 #include "actor.h"
 #include "cameralook.h"
 #include "camerafirsteye.h"
@@ -21,6 +16,12 @@
 #include "Torch.h"
 #include "inventory.h"
 
+#ifdef DEBUG
+#include "ode_include.h"
+#include "../xr_3da/StatGraph.h"
+#include "PHDebug.h"
+#endif
+
 void CCar::OnMouseMove(int dx, int dy)
 {
     if (Remote())
@@ -31,12 +32,12 @@ void CCar::OnMouseMove(int dx, int dy)
     if (dx)
     {
         float d = float(dx) * scale;
-        C->Move((d < 0) ? kLEFT : kRIGHT, _abs(d));
+        C->Move((d < 0) ? EGameActions::kLEFT : EGameActions::kRIGHT, _abs(d));
     }
     if (dy)
     {
         float d = ((psMouseInvert.test(1)) ? -1 : 1) * float(dy) * scale * 3.f / 4.f;
-        C->Move((d > 0) ? kUP : kDOWN, _abs(d));
+        C->Move((d > 0) ? EGameActions::kUP : EGameActions::kDOWN, _abs(d));
     }
 }
 
@@ -47,20 +48,19 @@ bool CCar::bfAssignMovement(CScriptEntityAction* tpEntityAction)
 
     u32 l_tInput = tpEntityAction->m_tMovementAction.m_tInputKeys;
 
-    vfProcessInputKey(kFWD, !!(l_tInput & CScriptMovementAction::eInputKeyForward));
-    vfProcessInputKey(kBACK, !!(l_tInput & CScriptMovementAction::eInputKeyBack));
-    vfProcessInputKey(kL_STRAFE, !!(l_tInput & CScriptMovementAction::eInputKeyLeft));
-    vfProcessInputKey(kR_STRAFE, !!(l_tInput & CScriptMovementAction::eInputKeyRight));
-    vfProcessInputKey(kACCEL, !!(l_tInput & CScriptMovementAction::eInputKeyShiftUp));
-    vfProcessInputKey(kCROUCH, !!(l_tInput & CScriptMovementAction::eInputKeyShiftDown));
-    vfProcessInputKey(kJUMP, !!(l_tInput & CScriptMovementAction::eInputKeyBreaks));
+    vfProcessInputKey(EGameActions::kFWD, !!(l_tInput & CScriptMovementAction::eInputKeyForward));
+    vfProcessInputKey(EGameActions::kBACK, !!(l_tInput & CScriptMovementAction::eInputKeyBack));
+    vfProcessInputKey(EGameActions::kL_STRAFE, !!(l_tInput & CScriptMovementAction::eInputKeyLeft));
+    vfProcessInputKey(EGameActions::kR_STRAFE, !!(l_tInput & CScriptMovementAction::eInputKeyRight));
+    vfProcessInputKey(EGameActions::kACCEL, !!(l_tInput & CScriptMovementAction::eInputKeyShiftUp));
+    vfProcessInputKey(EGameActions::kCROUCH, !!(l_tInput & CScriptMovementAction::eInputKeyShiftDown));
+    vfProcessInputKey(EGameActions::kJUMP, !!(l_tInput & CScriptMovementAction::eInputKeyBreaks));
+
     if (!!(l_tInput & CScriptMovementAction::eInputKeyEngineOn))
         StartEngine();
+
     if (!!(l_tInput & CScriptMovementAction::eInputKeyEngineOff))
         StopEngine();
-
-    // if (_abs(tpEntityAction->m_tMovementAction.m_fSpeed) > EPS_L)
-    // m_current_rpm = _abs(tpEntityAction->m_tMovementAction.m_fSpeed*m_current_gear_ratio);
 
     return (true);
 }
@@ -135,7 +135,7 @@ bool CCar::bfAssignObject(CScriptEntityAction* tpEntityAction)
     return false;
 }
 
-void CCar::vfProcessInputKey(int iCommand, bool bPressed)
+void CCar::vfProcessInputKey(EGameActions iCommand, bool bPressed)
 {
     if (bPressed)
         OnKeyboardPress(iCommand);
@@ -143,34 +143,38 @@ void CCar::vfProcessInputKey(int iCommand, bool bPressed)
         OnKeyboardRelease(iCommand);
 }
 
-void CCar::OnKeyboardPress(int cmd)
+void CCar::OnKeyboardPress(EGameActions cmd)
 {
     if (Remote())
         return;
 
     switch (cmd)
     {
-    case kCAM_1: OnCameraChange(ectFirst); break;
-    case kCAM_2: OnCameraChange(ectChase); break;
-    case kCAM_3: OnCameraChange(ectFree); break;
-    case kACCEL: TransmissionUp(); break;
-    case kCROUCH: TransmissionDown(); break;
-    case kFWD: PressForward(); break;
-    case kBACK: PressBack(); break;
-    case kR_STRAFE:
+    case EGameActions::kCAM_1: OnCameraChange(ectFirst); break;
+    case EGameActions::kCAM_2: OnCameraChange(ectChase); break;
+    case EGameActions::kCAM_3: OnCameraChange(ectFree); break;
+    case EGameActions::kACCEL: TransmissionUp(); break;
+    case EGameActions::kCROUCH: TransmissionDown(); break;
+    case EGameActions::kFWD: PressForward(); break;
+    case EGameActions::kBACK: PressBack(); break;
+    case EGameActions::kR_STRAFE:
         PressRight();
+
         if (OwnerActor())
             OwnerActor()->steer_Vehicle(1);
+
         break;
-    case kL_STRAFE:
+    case EGameActions::kL_STRAFE:
         PressLeft();
+
         if (OwnerActor())
             OwnerActor()->steer_Vehicle(-1);
+
         break;
-    case kJUMP: PressBreaks(); break;
-    case kENGINE: SwitchEngine(); break;
-    case kTORCH: m_lights.SwitchHeadLights(); break;
-    case kNIGHT_VISION: {
+    case EGameActions::kJUMP: PressBreaks(); break;
+    case EGameActions::kENGINE: SwitchEngine(); break;
+    case EGameActions::kTORCH: m_lights.SwitchHeadLights(); break;
+    case EGameActions::kNIGHT_VISION: {
         auto* Act = OwnerActor();
         if (Act)
         {
@@ -180,78 +184,63 @@ void CCar::OnKeyboardPress(int cmd)
                 pTorch->SwitchNightVision();
             }
         }
+
+        break;
     }
-    break;
-    case kUSE: break;
+    default: break;
     }
 }
 
-void CCar::OnKeyboardRelease(int cmd)
+void CCar::OnKeyboardRelease(EGameActions cmd)
 {
     if (Remote())
         return;
 
     switch (cmd)
     {
-    case kACCEL: break;
-    case kFWD: ReleaseForward(); break;
-    case kBACK: ReleaseBack(); break;
-    case kL_STRAFE:
+    case EGameActions::kACCEL: break;
+    case EGameActions::kFWD: ReleaseForward(); break;
+    case EGameActions::kBACK: ReleaseBack(); break;
+    case EGameActions::kL_STRAFE:
         ReleaseLeft();
+
         if (OwnerActor())
             OwnerActor()->steer_Vehicle(0);
+
         break;
-    case kR_STRAFE:
+    case EGameActions::kR_STRAFE:
         ReleaseRight();
+
         if (OwnerActor())
             OwnerActor()->steer_Vehicle(0);
+
         break;
-    case kJUMP: ReleaseBreaks(); break;
+    case EGameActions::kJUMP: ReleaseBreaks(); break;
+    default: break;
     }
 }
 
-void CCar::OnKeyboardHold(int cmd)
+void CCar::OnKeyboardHold(EGameActions cmd)
 {
     if (Remote())
         return;
 
     switch (cmd)
     {
-    case kSHOWHUD:
-    case kHIDEHUD:
-    case kUP:
-    case kDOWN:
-    case kLEFT:
-    case kRIGHT:
-        active_camera->Move(cmd);
-        break;
-        /*
-            case kFWD:
-                if (ectFree==active_camera->tag)	active_camera->Move(kUP);
-                else								m_vCamDeltaHP.y += active_camera->rot_speed.y*Device.fTimeDelta;
-                break;
-            case kBACK:
-                if (ectFree==active_camera->tag)	active_camera->Move(kDOWN);
-                else								m_vCamDeltaHP.y -= active_camera->rot_speed.y*Device.fTimeDelta;
-                break;
-            case kL_STRAFE:
-                if (ectFree==active_camera->tag)	active_camera->Move(kLEFT);
-                else								m_vCamDeltaHP.x -= active_camera->rot_speed.x*Device.fTimeDelta;
-                break;
-            case kR_STRAFE:
-                if (ectFree==active_camera->tag)	active_camera->Move(kRIGHT);
-                else								m_vCamDeltaHP.x += active_camera->rot_speed.x*Device.fTimeDelta;
-                break;
-        */
+    case EGameActions::kSHOWHUD:
+    case EGameActions::kHIDEHUD:
+    case EGameActions::kUP:
+    case EGameActions::kDOWN:
+    case EGameActions::kLEFT:
+    case EGameActions::kRIGHT: active_camera->Move(cmd); break;
+    default: break;
     }
-    //	clamp(m_vCamDeltaHP.x, -PI_DIV_2,	PI_DIV_2);
-    //	clamp(m_vCamDeltaHP.y, active_camera->lim_pitch.x,	active_camera->lim_pitch.y);
 }
 
-void CCar::Action(int id, u32 flags)
+void CCar::Action(EGameActions id, u32 flags)
 {
     if (m_car_weapon)
-        m_car_weapon->Action(id, flags);
+        m_car_weapon->Action(std::to_underlying(id), flags);
 }
 
 void CCar::SetParam(int id, Fvector2 val)

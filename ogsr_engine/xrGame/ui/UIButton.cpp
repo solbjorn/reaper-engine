@@ -24,9 +24,6 @@ CUIButton::CUIButton()
     m_PushOffset.set(PUSH_OFFSET_RIGHT, PUSH_OFFSET_DOWN);
 
     m_HighlightColor = 0xFFFFFFFF;
-    m_uAccelerator[0] = 0;
-    m_uAccelerator[1] = 0;
-
     m_bEnableTextHighlighting = true;
 
     m_ShadowOffset.set(0.0f, 0.0f);
@@ -55,7 +52,7 @@ void CUIButton::Enable(bool status)
         m_bCursorOverWindow = false;
 }
 
-bool CUIButton::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUIButton::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
     m_bButtonClicked = false;
 
@@ -106,29 +103,28 @@ bool CUIButton::OnMouse(float x, float y, EUIMessages mouse_action)
                 m_eButtonState = BUTTON_NORMAL;
             }
         }
-        break;
 
+        break;
     case DOWN_PRESS:
         if (mouse_action == WINDOW_MOUSE_MOVE)
         {
             if (m_bCursorOverWindow)
-            {
                 m_eButtonState = BUTTON_PUSHED;
-            }
             else
-            {
                 m_eButtonState = BUTTON_NORMAL;
-            }
         }
         else if (mouse_action == WINDOW_LBUTTON_DOWN || mouse_action == WINDOW_LBUTTON_DB_CLICK)
+        {
             if (m_bCursorOverWindow)
             {
                 OnClick();
                 return true;
             }
+        }
 
         break;
     }
+
     return false;
 }
 
@@ -239,11 +235,12 @@ void CUIButton::Update()
 void CUIButton::OnFocusLost()
 {
     inherited::OnFocusLost();
+
     if (g_btnHint->Owner() == this)
         g_btnHint->Discard();
 }
 
-bool CUIButton::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIButton::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 {
     if (WINDOW_KEY_PRESSED == keyboard_action)
     {
@@ -253,5 +250,6 @@ bool CUIButton::OnKeyboard(int dik, EUIMessages keyboard_action)
             return true;
         }
     }
+
     return inherited::OnKeyboard(dik, keyboard_action);
 }

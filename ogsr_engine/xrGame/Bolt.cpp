@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "bolt.h"
+
 #include "ParticlesObject.h"
 #include "PhysicsShell.h"
 #include "xr_level_controller.h"
@@ -45,10 +46,11 @@ void CBolt::Throw()
 
 bool CBolt::Useful() const { return Core.Features.test(xrCore::Feature::pickup_bolts); }
 
-bool CBolt::Action(s32 cmd, u32 flags)
+bool CBolt::Action(EGameActions cmd, u32 flags)
 {
     if (inherited::Action(cmd, flags))
         return true;
+
     return false;
 }
 

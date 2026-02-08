@@ -58,13 +58,13 @@ public:
     virtual void net_import_update(NET_Packet& P);
     virtual void net_import_GameTime(NET_Packet& P); // update GameTime only for remote clients
 
-    [[nodiscard]] bool IR_OnKeyboardPress(int dik);
-    [[nodiscard]] bool IR_OnKeyboardRelease(int dik);
+    tmc::task<bool> IR_OnKeyboardPress(xr::key_id dik);
+    [[nodiscard]] bool IR_OnKeyboardRelease(xr::key_id dik);
     [[nodiscard]] bool IR_OnMouseMove(int, int);
-    [[nodiscard]] bool IR_OnMouseWheel(int);
+    tmc::task<bool> IR_OnMouseWheel(gsl::index);
 
-    virtual bool OnKeyboardPress(int) { return false; }
-    virtual bool OnKeyboardRelease(int) { return false; }
+    [[nodiscard]] virtual bool OnKeyboardPress(EGameActions) { return false; }
+    [[nodiscard]] virtual bool OnKeyboardRelease(EGameActions) { return false; }
 
     game_PlayerState* GetPlayerByGameID(u32 GameID);
     game_PlayerState* GetPlayerByOrderID(u32 id);

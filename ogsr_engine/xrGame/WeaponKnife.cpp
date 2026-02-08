@@ -272,39 +272,47 @@ void CWeaponKnife::Fire2Start()
         Actor()->set_state_wishful(Actor()->get_state_wishful() & ~ACTOR_DEFS::mcSprint);
 }
 
-bool CWeaponKnife::Action(s32 cmd, u32 flags)
+bool CWeaponKnife::Action(EGameActions cmd, u32 flags)
 {
     if (inherited::Action(cmd, flags))
         return true;
+
     switch (cmd)
     {
-    case kWPN_ZOOM:
+    case EGameActions::kWPN_ZOOM:
         if (flags & CMD_START)
             Fire2Start();
         else
             Fire2End();
+
         return true;
-    case kTORCH: {
+    case EGameActions::kTORCH: {
         auto pActorTorch = smart_cast<CActor*>(H_Parent())->inventory().ItemFromSlot(TORCH_SLOT);
         if ((flags & CMD_START) && pActorTorch && GetState() == eIdle)
         {
             HeadLampSwitch = true;
             SwitchState(eDeviceSwitch);
+
             return true;
         }
+
+        break;
     }
-    break;
-    case kNIGHT_VISION: {
+    case EGameActions::kNIGHT_VISION: {
         auto pActorNv = smart_cast<CActor*>(H_Parent())->inventory().ItemFromSlot(IS_OGSR_GA ? NIGHT_VISION_SLOT : TORCH_SLOT);
         if ((flags & CMD_START) && pActorNv && GetState() == eIdle)
         {
             NightVisionSwitch = true;
             SwitchState(eDeviceSwitch);
+
             return true;
         }
+
+        break;
     }
-    break;
+    default: break;
     }
+
     return false;
 }
 

@@ -44,12 +44,6 @@
 #include "controller_psy_aura.h"
 #include "../../../hudmanager.h"
 
-/*
-#ifdef DEBUG
-#	include <dinput.h>
-#endif
-*/
-
 const u32 _pmt_psy_attack_delay = 2000;
 const float _pmt_psy_attack_min_angle = deg(5);
 
@@ -646,12 +640,11 @@ void CController::HitEntity(const CEntity* pEntity, float fDamage, float impulse
     if (pEntity == Actor() && !GodMode())
     {
         Actor()->conditions().PowerHit(m_stamina_hit, false);
+
         if (Actor()->conditions().GetPower() < m_stamina_hit)
         {
-            if (!Actor()->inventory().Action((u16)kDROP, CMD_STOP))
-            {
+            if (!Actor()->inventory().Action(EGameActions::kDROP, CMD_STOP))
                 Actor()->g_PerformDrop();
-            }
         }
     }
 
@@ -659,89 +652,3 @@ void CController::HitEntity(const CEntity* pEntity, float fDamage, float impulse
 }
 
 bool CController::tube_ready() const { return m_psy_hit && m_psy_hit->tube_ready(); }
-
-/*
-#ifdef DEBUG
-CBaseMonster::SDebugInfo CController::show_debug_info()
-{
-    CBaseMonster::SDebugInfo info = inherited::show_debug_info();
-    if (!info.active) return CBaseMonster::SDebugInfo();
-
-
-    // Draw Controlled Lines
-    DBG().level_info(this).clear();
-
-    Fvector my_pos = Position();
-    my_pos.y += 1.5f;
-
-
-    for (u32 i=0; i < m_controlled_objects.size(); i++)
-    {
-        Fvector enemy_pos = m_controlled_objects[i]->Position();
-
-        Fvector dir;
-        dir.sub(enemy_pos, Position());
-        dir.div(2.f);
-        Fvector new_pos;
-        new_pos.add(Position(),dir);
-        new_pos.y += 10.f;
-
-        enemy_pos.y += 1.0f;
-
-        DBG().level_info(this).add_item(my_pos,	new_pos, D3DCOLOR_XRGB(0,255,255));
-        DBG().level_info(this).add_item(enemy_pos, new_pos, D3DCOLOR_XRGB(0,255,255));
-    }
-
-    return CBaseMonster::SDebugInfo();
-}
-#endif
-
-#ifdef DEBUG
-void CController::debug_on_key(int key)
-{
-    switch (key){
-    case DIK_MINUS:
-        //m_sound_aura_left_channel.play_at_pos(Level().CurrentEntity(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
-        //m_sound_aura_right_channel.play_at_pos(Level().CurrentEntity(), Fvector().set(1.f, 0.f, 1.f), sm_2D);
-
-        if (m_psy_hit->check_start_conditions()) {
-            control().activate(ControlCom::eComCustom1);
-        }
-        //P1.set		(Actor()->Position());
-        //
-        //DBG().level_info(this).remove_item	(u32(0));
-        //DBG().level_info(this).add_item(P1,0.5f,COLOR_BLUE,0);
-
-
-        //if (!fsimilar(P1.square_magnitude(),0.f) &&
-        //	!fsimilar(P2.square_magnitude(),0.f)) {
-        //	const CCoverPoint *cover = CoverMan->find_cover(P1,P2,10.f,40.f);
-        //	if (cover) {
-        //		DBG().level_info(this).remove_item	(3);
-        //		DBG().level_info(this).add_item		(cover->position(),0.8f,COLOR_RED,3);
-        //	}
-        //}
-
-
-        break;
-    case DIK_EQUALS:
-        P2.set		(Actor()->Position());
-        DBG().level_info(this).remove_item	(1);
-        DBG().level_info(this).add_item(P2,0.5f,COLOR_GREEN,1);
-
-        if (!fsimilar(P1.square_magnitude(),0.f) &&
-            !fsimilar(P2.square_magnitude(),0.f)) {
-            const CCoverPoint *cover = CoverMan->find_cover(P1,P2,10.f,40.f);
-            if (cover) {
-                DBG().level_info(this).remove_item	(3);
-                DBG().level_info(this).add_item		(cover->position(),0.8f,COLOR_RED,3);
-            }
-        }
-
-        //m_sound_aura_hit_left_channel.play_at_pos(Level().CurrentEntity(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
-        //m_sound_aura_hit_right_channel.play_at_pos(Level().CurrentEntity(), Fvector().set(1.f, 0.f, 1.f), sm_2D);
-        break;
-    }
-}
-#endif
-*/

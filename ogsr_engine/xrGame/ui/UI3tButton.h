@@ -53,8 +53,8 @@ public:
     virtual void Update();
 
     // virtual void Enable(bool bEnable);
-    virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
-    virtual bool OnMouseDown(int mouse_btn);
+    [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
+    [[nodiscard]] bool OnMouseDown(sf::Mouse::Button mouse_btn) override;
     void SetCheckMode(bool mode) { m_bCheckMode = mode; }
 
     virtual void SetStretchTexture(bool stretch_texture);

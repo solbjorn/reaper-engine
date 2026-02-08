@@ -36,15 +36,12 @@ public:
     bool IsActive() { return m_bActive; }
 
     // IInputReceiver
-    tmc::task<void> IR_OnMousePress(gsl::index btn) override;
-    virtual void IR_OnMouseRelease(int btn);
-    tmc::task<void> IR_OnMouseHold(gsl::index btn) override;
     virtual void IR_OnMouseMove(int x, int y);
     virtual void IR_OnMouseStop(int x, int y);
 
-    tmc::task<void> IR_OnKeyboardPress(gsl::index dik);
-    virtual void IR_OnKeyboardRelease(int dik);
-    tmc::task<void> IR_OnKeyboardHold(gsl::index dik) override;
+    tmc::task<void> IR_OnKeyboardPress(xr::key_id dik) override;
+    void IR_OnKeyboardRelease(xr::key_id dik) override;
+    tmc::task<void> IR_OnKeyboardHold(xr::key_id dik) override;
 
     tmc::task<void> IR_OnMouseWheel(gsl::index direction) override;
     tmc::task<void> IR_OnActivate() override;
@@ -55,7 +52,7 @@ class XR_NOVTABLE CUISequenceItem : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CUISequenceItem);
 
 public:
-    xr_vector<int> m_disabled_actions;
+    xr_vector<EGameActions> m_disabled_actions;
 
 protected:
     enum
@@ -85,11 +82,11 @@ public:
 
     virtual void Update() = 0;
     virtual void OnRender() = 0;
-    virtual void OnKeyboardPress(int dik) = 0;
+    virtual void OnKeyboardPress(xr::key_id dik) = 0;
 
     virtual bool IsPlaying() = 0;
 
-    bool AllowKey(int dik);
+    [[nodiscard]] bool AllowKey(xr::key_id dik);
     bool GrabInput() { return !!m_flags.test(etiGrabInput); }
 };
 
@@ -122,7 +119,8 @@ public:
     float m_time_length;
     string64 m_pda_section;
     Fvector2 m_desired_cursor_pos;
-    int m_continue_dik_guard;
+    xr::key_id m_continue_dik_guard;
+
     struct SActionItem
     {
         EGameActions m_action;
@@ -141,7 +139,7 @@ public:
 
     virtual void Update();
     virtual void OnRender() {}
-    virtual void OnKeyboardPress(int dik);
+    void OnKeyboardPress(xr::key_id dik) override;
 
     virtual bool IsPlaying();
 };
@@ -176,7 +174,7 @@ public:
 
     virtual void Update();
     virtual void OnRender();
-    void OnKeyboardPress(int) override {}
+    void OnKeyboardPress(xr::key_id) override {}
 
     virtual bool IsPlaying();
 };

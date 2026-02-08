@@ -7,8 +7,8 @@
 
 #include "stdafx.h"
 
-#include "line_edit_control.h"
 #include "edit_actions.h"
+
 #include "xr_input.h"
 
 namespace text_editor
@@ -46,13 +46,13 @@ tmc::task<void> callback_base::on_key_press(line_edit_control* const control)
 
 // -------------------------------------------------------------------------------------------------
 
-type_pair::type_pair(u32 dik, char c, char c_shift, bool b_translate) { init(dik, c, c_shift, b_translate); }
+type_pair::type_pair(sf::Keyboard::Scancode dik, char c, char c_shift, bool b_translate) { init(dik, c, c_shift, b_translate); }
 type_pair::~type_pair() = default;
 
-void type_pair::init(u32 dik, char c, char c_shift, bool b_translate)
+void type_pair::init(sf::Keyboard::Scancode dik, char c, char c_shift, bool b_translate)
 {
-    m_translate = b_translate;
     m_dik = dik;
+    m_translate = b_translate;
     m_char = c;
     m_char_shift = c_shift;
 }

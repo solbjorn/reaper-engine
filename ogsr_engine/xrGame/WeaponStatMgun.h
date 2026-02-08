@@ -79,9 +79,9 @@ public:
     // HolderCustom
     [[nodiscard]] bool Use(const Fvector&, const Fvector&, const Fvector&) override { return !Owner(); }
     void OnMouseMove(int x, int y) override;
-    void OnKeyboardPress(int dik) override;
-    void OnKeyboardRelease(int dik) override;
-    void OnKeyboardHold(int) override;
+    void OnKeyboardPress(EGameActions cmd) override;
+    void OnKeyboardRelease(EGameActions cmd) override;
+    void OnKeyboardHold(EGameActions) override;
     virtual CInventory* GetInventory() { return nullptr; }
     void cam_Update(float, float = 90.0f) override;
 
@@ -95,6 +95,6 @@ public:
 
     virtual CCameraBase* Camera() { return camera; }
 
-    virtual void Action(int id, u32 flags);
+    void Action(EGameActions id, u32 flags) override;
     virtual void SetParam(int id, Fvector2 val);
 };

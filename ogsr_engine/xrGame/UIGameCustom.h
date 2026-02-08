@@ -83,10 +83,10 @@ public:
     virtual void OnFrame();
     virtual tmc::task<void> reset_ui();
 
-    virtual bool IR_OnKeyboardPress(int);
-    virtual bool IR_OnKeyboardRelease(int);
+    virtual tmc::task<bool> IR_OnKeyboardPress(xr::key_id);
+    [[nodiscard]] virtual bool IR_OnKeyboardRelease(xr::key_id);
     virtual bool IR_OnMouseMove(int, int);
-    virtual bool IR_OnMouseWheel(int);
+    virtual tmc::task<bool> IR_OnMouseWheel(gsl::index);
 
     void AddDialogToRender(CUIWindow* pDialog);
     void RemoveDialogToRender(CUIWindow* pDialog);

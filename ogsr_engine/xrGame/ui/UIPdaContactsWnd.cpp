@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIPdaContactsWnd.h"
+
 #include "UIPdaAux.h"
 #include "../Pda.h"
 #include "UIXmlInit.h"
@@ -157,12 +158,13 @@ void CUIPdaContactItem::SetSelected(bool b)
     }
 }
 
-bool CUIPdaContactItem::OnMouseDown(int mouse_btn)
+bool CUIPdaContactItem::OnMouseDown(sf::Mouse::Button mouse_btn)
 {
-    if (mouse_btn == MOUSE_1)
+    if (mouse_btn == sf::Mouse::Button::Left)
     {
         m_cw->UIListWnd->SetSelected(this);
         return true;
     }
+
     return false;
 }

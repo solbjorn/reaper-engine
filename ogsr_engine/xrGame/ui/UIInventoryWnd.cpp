@@ -34,8 +34,6 @@
 
 #include <format>
 
-#include <dinput.h>
-
 #define INVENTORY_ITEM_XML "inventory_item.xml"
 #define INVENTORY_XML "inventory_new.xml"
 
@@ -276,7 +274,7 @@ CUIInventoryWnd::~CUIInventoryWnd()
     ClearAllLists();
 }
 
-bool CUIInventoryWnd::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUIInventoryWnd::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
     if (m_b_need_reinit)
         return true;
@@ -290,7 +288,7 @@ bool CUIInventoryWnd::OnMouse(float x, float y, EUIMessages mouse_action)
         }
     }
 
-    CUIWindow::OnMouse(x, y, mouse_action);
+    std::ignore = CUIWindow::OnMouse(x, y, mouse_action);
 
     return true; // always returns true, because ::StopAnyMove() == true;
 }
@@ -481,7 +479,7 @@ void CUIInventoryWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
     lst->m_f_item_rbutton_click = CallMe::fromMethod<&CUIInventoryWnd::OnItemRButtonClick>(this);
 }
 
-bool CUIInventoryWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIInventoryWnd::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 {
     if (m_b_need_reinit)
         return true;
@@ -489,28 +487,30 @@ bool CUIInventoryWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
     if (UIPropertiesBox.GetVisible())
         std::ignore = UIPropertiesBox.OnKeyboard(dik, keyboard_action);
 
-    if (is_binded(kDROP, dik))
+    if (is_binded(EGameActions::kDROP, dik))
     {
         if (WINDOW_KEY_PRESSED == keyboard_action)
             DropCurrentItem(false);
+
         return true;
     }
 
+#ifdef DEBUG
     if (WINDOW_KEY_PRESSED == keyboard_action)
     {
-#ifdef DEBUG
-        if (DIK_NUMPAD7 == dik && CurrentIItem())
+        if (dik == xr::key_id{sf::Keyboard::Scancode::Numpad7} && CurrentIItem() != nullptr)
         {
             CurrentIItem()->ChangeCondition(-0.05f);
             UIItemInfo.InitItem(CurrentIItem());
         }
-        else if (DIK_NUMPAD8 == dik && CurrentIItem())
+        else if (dik == xr::key_id{sf::Keyboard::Scancode::Numpad8} && CurrentIItem() != nullptr)
         {
             CurrentIItem()->ChangeCondition(0.05f);
             UIItemInfo.InitItem(CurrentIItem());
         }
-#endif
     }
+#endif
+
     if (inherited::OnKeyboard(dik, keyboard_action))
         return true;
 

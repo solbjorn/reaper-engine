@@ -8,6 +8,8 @@
 #ifndef EDIT_ACTIONS_H_INCLUDED
 #define EDIT_ACTIONS_H_INCLUDED
 
+#include "line_edit_control.h"
+
 namespace text_editor
 {
 class line_edit_control;
@@ -54,14 +56,14 @@ class type_pair : public base
     RTTI_DECLARE_TYPEINFO(type_pair, base);
 
 public:
-    explicit type_pair(u32 dik, char c, char c_shift, bool b_translate);
+    explicit type_pair(sf::Keyboard::Scancode dik, char c, char c_shift, bool b_translate);
     ~type_pair() override;
 
-    void init(u32 dik, char c, char c_shift, bool b_translate);
+    void init(sf::Keyboard::Scancode dik, char c, char c_shift, bool b_translate);
     tmc::task<void> on_key_press(line_edit_control* const control) override;
 
 private:
-    u32 m_dik;
+    sf::Keyboard::Scancode m_dik;
     bool m_translate;
     char m_char;
     char m_char_shift;

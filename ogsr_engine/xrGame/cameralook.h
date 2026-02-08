@@ -16,7 +16,7 @@ public:
     ~CCameraLook() override;
 
     virtual void Load(LPCSTR section);
-    virtual void Move(int cmd, float val = 0.0f, float factor = 1.0f);
+    void Move(EGameActions cmd, f32 val = 0.0f, f32 factor = 1.0f) override;
 
     virtual void OnActivate(CCameraBase* old_cam);
     void Update(Fvector& point, Fvector&) override;

@@ -10,11 +10,12 @@
 class CSE_Abstract;
 class CPhysicItem;
 class NET_Packet;
-struct HUD_SOUND;
 class CInventoryItem;
-struct attachable_hud_item;
 class motion_marks;
 class CMotionDef;
+enum class EGameActions : s32;
+struct HUD_SOUND;
+struct attachable_hud_item;
 
 class XR_NOVTABLE CHUDState : public virtual RTTI::Enable
 {
@@ -117,7 +118,7 @@ public:
     virtual void StopHUDSounds() {}
 
     // для предачи команд владельцем
-    [[nodiscard]] virtual bool Action(s32, u32);
+    [[nodiscard]] virtual bool Action(EGameActions, u32);
 
     virtual void OnDrawUI() {}
 
