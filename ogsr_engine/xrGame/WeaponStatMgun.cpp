@@ -150,19 +150,16 @@ tmc::task<void> CWeaponStatMgun::UpdateCL()
 
     if (OwnerActor() && OwnerActor()->IsMyCamera())
     {
-        cam_Update(Device.fTimeDelta, g_fov);
-        OwnerActor()->Cameras().UpdateFromCamera(Camera());
+        co_await cam_Update(Device.fTimeDelta, g_fov);
+
+        co_await OwnerActor()->Cameras().UpdateFromCamera(Camera());
         OwnerActor()->Cameras().ApplyDevice();
     }
 }
 
-// void CWeaponStatMgun::Hit(	float P, Fvector &dir,	CObject* who,
-//							s16 element,Fvector p_in_object_space,
-//							float impulse, ALife::EHitType hit_type)
 void CWeaponStatMgun::Hit(SHit* pHDS)
 {
     if (!Owner())
-        //		inheritedPH::Hit(P,dir,who,element,p_in_object_space,impulse,hit_type);
         inheritedPH::Hit(pHDS);
 }
 
@@ -206,13 +203,14 @@ void CWeaponStatMgun::UpdateBarrelDir()
     m_cur_y_rot = angle_inertion_var(m_cur_y_rot, m_tgt_y_rot, 0.5f, 3.5f, PI_DIV_6, Device.fTimeDelta);
 }
 
-void CWeaponStatMgun::cam_Update(float, float)
+tmc::task<void> CWeaponStatMgun::cam_Update(f32, f32)
 {
     Fvector P, Da{};
 
     IKinematics* K = smart_cast<IKinematics*>(Visual());
     K->CalculateBones_Invalidate();
     K->CalculateBones();
+
     const Fmatrix& C = K->LL_GetTransform(m_camera_bone);
     XFORM().transform_tiny(P, C.c);
 
@@ -234,7 +232,7 @@ void CWeaponStatMgun::cam_Update(float, float)
     }
 
     Camera()->Update(P, Da);
-    Level().Cameras().UpdateFromCamera(Camera());
+    co_await Level().Cameras().UpdateFromCamera(Camera());
 }
 
 void CWeaponStatMgun::renderable_Render(u32 context_id, IRenderable* root)

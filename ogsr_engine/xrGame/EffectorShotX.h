@@ -13,7 +13,7 @@ public:
     explicit CCameraShotEffectorX(float max_angle, float relax_time, float max_angle_horz, float step_angle_horz, float angle_frac = 0.7f);
     ~CCameraShotEffectorX() override;
 
-    [[nodiscard]] BOOL ProcessCam(SCamEffectorInfo&) override;
+    tmc::task<bool> ProcessCam(SCamEffectorInfo&) override;
     virtual void GetDeltaAngle(Fvector& delta_angle);
     virtual void Shot(float angle);
     virtual void Clear();

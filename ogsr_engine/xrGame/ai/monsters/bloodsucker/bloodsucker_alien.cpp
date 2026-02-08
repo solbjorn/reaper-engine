@@ -91,7 +91,7 @@ public:
     explicit CAlienEffector(ECamEffectorType type, CAI_Bloodsucker* obj);
     ~CAlienEffector() override = default;
 
-    virtual BOOL ProcessCam(SCamEffectorInfo& info);
+    tmc::task<bool> ProcessCam(SCamEffectorInfo& info) override;
 };
 
 #define DELTA_ANGLE_X 10 * PI / 180
@@ -118,7 +118,7 @@ CAlienEffector::CAlienEffector(ECamEffectorType type, CAI_Bloodsucker* obj) : in
     m_current_fov = MIN_FOV;
 }
 
-BOOL CAlienEffector::ProcessCam(SCamEffectorInfo& info)
+tmc::task<bool> CAlienEffector::ProcessCam(SCamEffectorInfo& info)
 {
     // Инициализация
     Fmatrix Mdef;
@@ -183,7 +183,7 @@ BOOL CAlienEffector::ProcessCam(SCamEffectorInfo& info)
     info.n.set(mR.j);
     info.p.set(mR.c);
 
-    return TRUE;
+    co_return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

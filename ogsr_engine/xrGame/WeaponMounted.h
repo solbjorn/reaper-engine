@@ -87,7 +87,7 @@ public:
 
     virtual CInventory* GetInventory() { return nullptr; }
 
-    void cam_Update(float, float = 90.0f) override;
+    tmc::task<void> cam_Update(f32, f32 = 90.0f) override;
 
     [[nodiscard]] bool Use(const Fvector&, const Fvector&, const Fvector&) override;
     virtual bool attach_Actor(CGameObject* actor);

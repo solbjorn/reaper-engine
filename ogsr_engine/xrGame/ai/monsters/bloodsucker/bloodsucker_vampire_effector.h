@@ -43,5 +43,5 @@ public:
     explicit CVampireCameraEffector(float time, const Fvector& src, const Fvector& tgt);
     ~CVampireCameraEffector() override = default;
 
-    virtual BOOL ProcessCam(SCamEffectorInfo& info);
+    tmc::task<bool> ProcessCam(SCamEffectorInfo& info) override;
 };

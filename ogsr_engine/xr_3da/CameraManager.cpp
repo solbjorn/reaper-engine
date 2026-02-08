@@ -280,22 +280,24 @@ void CCameraManager::OnEffectorReleased(SBaseEffector* e)
         xr_delete(e);
 }
 
-void CCameraManager::UpdateFromCamera(const CCameraBase* C)
+tmc::task<void> CCameraManager::UpdateFromCamera(const CCameraBase* C)
 {
-    Update(C->vPosition, C->vDirection, C->vNormal, C->f_fov, C->f_aspect, g_pGamePersistent->Environment().CurrentEnv->far_plane, C->m_Flags.flags);
+    co_await Update(C->vPosition, C->vDirection, C->vNormal, C->f_fov, C->f_aspect, g_pGamePersistent->Environment().CurrentEnv->far_plane, C->m_Flags.flags);
 }
 
-void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N, float fFOV_Dest, float fASPECT_Dest, float fFAR_Dest, u32 flags)
+tmc::task<void> CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N, f32 fFOV_Dest, f32 fASPECT_Dest, f32 fFAR_Dest, u32 flags)
 {
 #ifdef DEBUG
     VERIFY(dbg_upd_frame != Device.dwFrame); // already updated !!!
     dbg_upd_frame = Device.dwFrame;
 #endif
+
     // camera
     if (flags & CCameraBase::flPositionRigid)
         m_cam_info.p.set(P);
     else
         m_cam_info.p.inertion(P, psCamInert);
+
     if (flags & CCameraBase::flDirectionRigid)
     {
         m_cam_info.d.set(D);
@@ -317,6 +319,7 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
     float src = 10 * Device.fTimeDelta;
     clamp(src, 0.f, 1.f);
     float dst = 1 - src;
+
     m_cam_info.fFov = m_cam_info.fFov * dst + fFOV_Dest * src;
     m_cam_info.fNear = VIEWPORT_NEAR;
     m_cam_info.fFar = m_cam_info.fFar * dst + fFAR_Dest * src;
@@ -329,21 +332,16 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 
         // что бы изначально прицел включался быстро, а при изменении приближения был эффект наезда камеры
         if (fis_zero(fFovSecond))
-        {
             fFovSecond = fov;
-        }
         else
-        {
             fFovSecond = fFovSecond * dst + fov * src;
-        }
     }
     else
     {
         fFovSecond = 0;
     }
 
-    UpdateCamEffectors();
-
+    co_await UpdateCamEffectors();
     UpdatePPEffectors();
 
     if (!m_cam_info.dont_apply && m_bAutoApply)
@@ -352,7 +350,7 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
     UpdateDeffered();
 }
 
-bool CCameraManager::ProcessCameraEffector(CEffectorCam* eff)
+tmc::task<bool> CCameraManager::ProcessCameraEffector(CEffectorCam* eff)
 {
     // Do NOT delete effector here! It's unsafe because:
     // 1. Leads to failed iterators in UpdateCamEffectors
@@ -360,36 +358,36 @@ bool CCameraManager::ProcessCameraEffector(CEffectorCam* eff)
     // The best way - return 'false' when the effector should be deleted, and delete it in ProcessCameraEffector
 
     bool res = false;
-    if (eff->Valid() && eff->ProcessCam(m_cam_info))
-    {
+
+    if (eff->Valid() && co_await eff->ProcessCam(m_cam_info))
         res = true;
-    }
     else if (eff->AllowProcessingIfInvalid())
-    {
         eff->ProcessIfInvalid(m_cam_info);
-    }
-    return res;
+
+    co_return res;
 }
 
-void CCameraManager::UpdateCamEffectors()
+tmc::task<void> CCameraManager::UpdateCamEffectors()
 {
     if (m_EffectorsCam.empty() || Device.m_SecondViewport.IsSVPFrame())
-        return;
+        co_return;
 
     auto r_it = m_EffectorsCam.rbegin();
     while (r_it != m_EffectorsCam.rend())
     {
-        if (ProcessCameraEffector(*r_it))
-            ++r_it;
-        else
+        if (co_await ProcessCameraEffector(*r_it))
         {
-            // Dereferencing reverse iterator returns previous element of the list, r_it.base() returns current element
-            // So, we should use base()-1 iterator to delete just processed element. 'Previous' element would be
-            // automatically changed after deletion, so r_it would dereferencing to another value, no need to change it
-            OnEffectorReleased(*r_it);
-            auto r_to_del = r_it.base();
-            m_EffectorsCam.erase(--r_to_del);
+            ++r_it;
+            continue;
         }
+
+        // Dereferencing reverse iterator returns previous element of the list, r_it.base() returns current element
+        // So, we should use base()-1 iterator to delete just processed element. 'Previous' element would be
+        // automatically changed after deletion, so r_it would dereferencing to another value, no need to change it
+        OnEffectorReleased(*r_it);
+
+        auto r_to_del = r_it.base();
+        m_EffectorsCam.erase(--r_to_del);
     }
 
     m_cam_info.d.normalize();

@@ -145,8 +145,9 @@ tmc::task<void> CWeaponMounted::UpdateCL()
 
         if (OwnerActor() && OwnerActor()->IsMyCamera())
         {
-            cam_Update(Device.fTimeDelta, g_fov);
-            OwnerActor()->Cameras().UpdateFromCamera(Camera());
+            co_await cam_Update(Device.fTimeDelta, g_fov);
+
+            co_await OwnerActor()->Cameras().UpdateFromCamera(Camera());
             OwnerActor()->Cameras().ApplyDevice();
         }
     }
@@ -206,7 +207,7 @@ void CWeaponMounted::OnKeyboardRelease(EGameActions cmd)
 
 void CWeaponMounted::OnKeyboardHold(EGameActions) {}
 
-void CWeaponMounted::cam_Update(float, float)
+tmc::task<void> CWeaponMounted::cam_Update(f32, f32)
 {
     Fvector P, Da;
     Da.set(0, 0, 0);
@@ -214,16 +215,14 @@ void CWeaponMounted::cam_Update(float, float)
     IKinematics* K = smart_cast<IKinematics*>(Visual());
     K->CalculateBones_Invalidate();
     K->CalculateBones();
+
     const Fmatrix& C = K->LL_GetTransform(camera_bone);
     XFORM().transform_tiny(P, C.c);
 
     CActor* A = OwnerActor();
-    //	if(OwnerActor()){
     if (A)
     {
         // rotate head
-        /*		OwnerActor()->Orientation().yaw			= -Camera()->yaw;
-                OwnerActor()->Orientation().pitch		= -Camera()->pitch;*/
         CCameraBase* cam = Camera();
         A->Orientation().yaw = -cam->yaw;
         A->Orientation().pitch = cam->pitch; // alpet: ??????? ????????? ???????????? ????????, ???????? ??? ???? ?? 3-?? ????
@@ -237,8 +236,9 @@ void CWeaponMounted::cam_Update(float, float)
             A->XFORM().c = p;
         }
     }
+
     Camera()->Update(P, Da);
-    Level().Cameras().UpdateFromCamera(Camera());
+    co_await Level().Cameras().UpdateFromCamera(Camera());
 }
 
 bool CWeaponMounted::Use(const Fvector&, const Fvector&, const Fvector&) { return !Owner(); }

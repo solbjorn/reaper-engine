@@ -13,6 +13,8 @@
 #include "CameraManager.h"
 #include "x_ray.h"
 
+#include "sleep.h"
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -91,15 +93,19 @@ CDemoPlay::~CDemoPlay()
         Console->Execute("hud_draw 1");
 }
 
-void CDemoPlay::stat_Start()
+tmc::task<void> CDemoPlay::stat_Start()
 {
     if (stat_started)
-        return;
+        co_return;
+
     stat_started = TRUE;
-    Sleep(1);
+
+    co_await tmc::spawn_clang(xr::sleep(std::chrono::milliseconds{1}), xr::tmc_cpu_st_executor());
+
     stat_StartFrame = Device.dwFrame;
     stat_Timer_frame.Start();
     stat_Timer_total.Start();
+
     stat_table.clear();
     stat_table.reserve(1024);
     fStartTime = 0;
@@ -195,12 +201,13 @@ void spline1(float t, const Fvector4* p, Fvector4* ret)
 }
 } // namespace
 
-BOOL CDemoPlay::ProcessCam(SCamEffectorInfo& info)
+tmc::task<bool> CDemoPlay::ProcessCam(SCamEffectorInfo& info)
 {
     // skeep a few frames before counting
-    if (Device.dwPrecacheFrame)
-        return TRUE;
-    stat_Start();
+    if (Device.dwPrecacheFrame > 0)
+        co_return true;
+
+    co_await stat_Start();
 
     // Per-frame statistics
     {
@@ -216,11 +223,13 @@ BOOL CDemoPlay::ProcessCam(SCamEffectorInfo& info)
         m_pMotion->_Evaluate(m_MParam->Frame(), info.p, R);
         m_MParam->Update(Device.fTimeDelta, 1.f, true);
         fLifeTime -= Device.fTimeDelta;
+
         if (m_MParam->bWrapped)
         {
             stat_Stop();
-            stat_Start();
+            co_await stat_Start();
         }
+
         mRotate.setXYZi(R.x, R.y, R.z);
         info.d.set(mRotate.k);
         info.n.set(mRotate.j);
@@ -230,7 +239,7 @@ BOOL CDemoPlay::ProcessCam(SCamEffectorInfo& info)
         if (seq.empty())
         {
             g_pGameLevel->Cameras().RemoveCamEffector(cefDemo);
-            return TRUE;
+            co_return true;
         }
 
         fStartTime += Device.fTimeDelta;
@@ -243,13 +252,10 @@ BOOL CDemoPlay::ProcessCam(SCamEffectorInfo& info)
 
         if (frame >= m_count)
         {
-            dwCyclesLeft--;
-            if (0 == dwCyclesLeft)
-                return FALSE;
+            if (--dwCyclesLeft == 0)
+                co_return false;
+
             fStartTime = 0;
-            // just continue
-            // stat_Stop			();
-            // stat_Start			();
         }
 
         int f1 = frame;
@@ -284,5 +290,6 @@ BOOL CDemoPlay::ProcessCam(SCamEffectorInfo& info)
 
         fLifeTime -= Device.fTimeDelta;
     }
-    return TRUE;
+
+    co_return true;
 }

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "Actor.h"
+
 #include "../xr_3da/camerabase.h"
 
 #include "hit.h"
@@ -152,13 +153,8 @@ ICF BOOL test_point(xrXRC& xrc, const Fmatrix& xform, const Fmatrix33& mat, cons
 // Alex ADD: smooth crouch fix
 float cam_HeightInterpolationSpeed = 8.f;
 
-void CActor::cam_Update(float dt, float fFOV)
+tmc::task<void> CActor::cam_Update(f32 dt, f32 fFOV)
 {
-    /* перенесено ниже
-        if(m_holder)
-            return;
-    */
-
     // HUD FOV Update --#SM+#--
     if (this == Level().CurrentControlEntity())
     {
@@ -306,7 +302,7 @@ void CActor::cam_Update(float dt, float fFOV)
     C->f_fov = fFOV;
 
     if (m_holder)
-        return;
+        co_return;
 
     // Подобие коллизии камеры
     float _viewport_near = VIEWPORT_NEAR;
@@ -346,21 +342,14 @@ void CActor::cam_Update(float dt, float fFOV)
         cameras[ACTOR_DEFS::eacFirstEye]->f_fov = fFOV;
     }
 
-    // if (psActorFlags.test(AF_PSP)) // всегда true
-    {
-        Cameras().UpdateFromCamera(C);
-    }
-    // else
-    //{
-    //     Cameras().UpdateFromCamera(cameras[eacFirstEye]);
-    // }
+    co_await Cameras().UpdateFromCamera(C);
 
     fCurAVelocity = vPrevCamDir.sub(cameras[ACTOR_DEFS::eacFirstEye]->vDirection).magnitude() / Device.fTimeDelta;
     vPrevCamDir = cameras[ACTOR_DEFS::eacFirstEye]->vDirection;
 
     if (Level().CurrentEntity() == this)
     {
-        Level().Cameras().UpdateFromCamera(C); // Level().Cameras() работает в режиме m_bAutoApply
+        co_await Level().Cameras().UpdateFromCamera(C); // Level().Cameras() работает в режиме m_bAutoApply
 
         bool demo = !!Level().Cameras().GetCamEffector(cefDemo); // в режиме демо рекорда камер ГГ должна устанавливать только эффекты
 

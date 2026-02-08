@@ -126,7 +126,7 @@ public:
     void eye_pp_s1();
     void eye_pp_s2();
 
-    virtual void UpdateCamera();
+    virtual tmc::task<void> UpdateCamera();
 
 public:
     CCustomMonster();

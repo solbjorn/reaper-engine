@@ -111,7 +111,7 @@ void CEffectorZoomInertion::CalcNextPoint()
     m_vTargetVel.sub(m_vTargetPoint, m_vLastPoint);
 }
 
-BOOL CEffectorZoomInertion::ProcessCam(SCamEffectorInfo& info)
+tmc::task<bool> CEffectorZoomInertion::ProcessCam(SCamEffectorInfo& info)
 {
     bool camera_moved = false;
 
@@ -119,12 +119,6 @@ BOOL CEffectorZoomInertion::ProcessCam(SCamEffectorInfo& info)
     if (!info.d.similar(m_vOldCameraDir, m_fCameraMoveEpsilon))
         camera_moved = true;
 
-    /*
-    Fvector dir;
-    dir.sub(m_vCurrentPoint,m_vTargetPoint);*/
-
-    ///	if(dir.magnitude()<m_fEpsilon || m_dwTimePassed>m_dwDeltaTime)
-    //	if (m_dwTimePassed>m_dwDeltaTime)
     if (m_dwTimePassed == 0)
     {
         m_vLastPoint.set(m_vCurrentPoint);
@@ -150,7 +144,7 @@ BOOL CEffectorZoomInertion::ProcessCam(SCamEffectorInfo& info)
 
     m_dwTimePassed += Device.dwTimeDelta;
 
-    return TRUE;
+    co_return true;
 }
 
 static Fvector get_current_point(CEffectorZoomInertion* E) { return E->m_vCurrentPoint; }

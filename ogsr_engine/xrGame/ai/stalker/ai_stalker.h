@@ -387,7 +387,7 @@ public:
     void on_weapon_hide(CWeapon*) override;
     IC CWeaponShotEffector& weapon_shot_effector() const;
     IC Fvector weapon_shot_effector_direction(const Fvector& current) const;
-    virtual void UpdateCamera();
+    tmc::task<void> UpdateCamera() override;
     virtual bool can_attach(const CInventoryItem* inventory_item) const;
     virtual bool use_simplified_visual() const { return already_dead(); }
 

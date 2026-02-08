@@ -83,7 +83,7 @@ public:
     void OnKeyboardRelease(EGameActions cmd) override;
     void OnKeyboardHold(EGameActions) override;
     virtual CInventory* GetInventory() { return nullptr; }
-    void cam_Update(float, float = 90.0f) override;
+    tmc::task<void> cam_Update(f32, f32 = 90.0f) override;
 
     void renderable_Render(u32 context_id, IRenderable* root) override;
 

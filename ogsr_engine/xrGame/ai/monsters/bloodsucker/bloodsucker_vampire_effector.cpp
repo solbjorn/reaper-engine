@@ -74,11 +74,11 @@ CVampireCameraEffector::CVampireCameraEffector(float time, const Fvector& src, c
     dangle_current.set(0.f, 0.f, 0.f);
 }
 
-BOOL CVampireCameraEffector::ProcessCam(SCamEffectorInfo& info)
+tmc::task<bool> CVampireCameraEffector::ProcessCam(SCamEffectorInfo& info)
 {
     fLifeTime -= Device.fTimeDelta;
     if (fLifeTime < 0)
-        return FALSE;
+        co_return false;
 
     // процент оставшегося времени
     float time_left_perc = fLifeTime / m_time_total;
@@ -93,7 +93,6 @@ BOOL CVampireCameraEffector::ProcessCam(SCamEffectorInfo& info)
 
     //////////////////////////////////////////////////////////////////////////
     // using formula: y = k - 2*k*abs(x-1/2)   k - max distance
-    // float	cur_dist = m_dist * (1 - 2*_abs((1-time_left_perc) - 0.5f));
     float time_passed = 1 - time_left_perc;
     float cur_dist = m_dist * (_sqrt(0.5f * 0.5f - (time_passed - 0.5f) * (time_passed - 0.5f)));
 
@@ -141,5 +140,5 @@ BOOL CVampireCameraEffector::ProcessCam(SCamEffectorInfo& info)
     info.n.set(mR.j);
     info.p.set(mR.c);
 
-    return TRUE;
+    co_return true;
 }

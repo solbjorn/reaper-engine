@@ -280,11 +280,9 @@ void CDemoRecord::MakeCubeMapFace(Fvector& D, Fvector& N)
     m_Stage++;
 }
 
-BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
+tmc::task<bool> CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 {
     info.dont_apply = false;
-    // if (!file)
-    //     return TRUE;
 
     if (m_bMakeScreenshot)
     {
@@ -369,14 +367,6 @@ BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
         m_HPB.y -= m_vR.x;
         m_HPB.z += m_vR.z;
 
-        // if (g_position.set_position)
-        //{
-        //     m_Position.set(g_position.p);
-        //     g_position.set_position = false;
-        // }
-        // else
-        //     g_position.p.set(m_Position);
-
         // move
         Fvector vmove;
 
@@ -408,7 +398,8 @@ BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
         m_vT.set(0, 0, 0);
         m_vR.set(0, 0, 0);
     }
-    return TRUE;
+
+    co_return true;
 }
 
 tmc::task<void> CDemoRecord::IR_OnKeyboardPress(xr::key_id dik)

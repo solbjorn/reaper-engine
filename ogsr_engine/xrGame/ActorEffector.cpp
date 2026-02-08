@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "ActorEffector.h"
+
 #include "PostprocessAnimator.h"
 #include "../xr_3da/effectorPP.h"
 #include "../xr_3da/ObjectAnimator.h"
@@ -173,10 +174,10 @@ BOOL CAnimatorCamEffector::Valid()
     return inherited::Valid();
 }
 
-BOOL CAnimatorCamEffector::ProcessCam(SCamEffectorInfo& info)
+tmc::task<bool> CAnimatorCamEffector::ProcessCam(SCamEffectorInfo& info)
 {
-    if (!inherited::ProcessCam(info))
-        return FALSE;
+    if (!co_await inherited::ProcessCam(info))
+        co_return false;
 
     const Fmatrix& m = m_objectAnimator->XFORM();
     m_objectAnimator->Update(Device.fTimeDelta);
@@ -189,7 +190,7 @@ BOOL CAnimatorCamEffector::ProcessCam(SCamEffectorInfo& info)
         Mdef.k = info.d;
         Mdef.i.crossproduct(info.n, info.d);
         Mdef.c = info.p;
-        //		Msg("fr[%d] %2.3f,%2.3f,%2.3f", Device.dwFrame,m.c.x,m.c.y,m.c.z);
+
         Fmatrix mr;
         mr.mul(Mdef, m);
         info.d = mr.k;
@@ -202,16 +203,17 @@ BOOL CAnimatorCamEffector::ProcessCam(SCamEffectorInfo& info)
         info.n = m.j;
         info.p = m.c;
     }
+
     if (m_fov > 0.0f)
         info.fFov = m_fov;
 
-    return TRUE;
+    co_return true;
 }
 
-BOOL CAnimatorCamLerpEffector::ProcessCam(SCamEffectorInfo& info)
+tmc::task<bool> CAnimatorCamLerpEffector::ProcessCam(SCamEffectorInfo& info)
 {
-    if (!CEffectorCam::ProcessCam(info))
-        return FALSE;
+    if (!co_await CEffectorCam::ProcessCam(info))
+        co_return false;
 
     const Fmatrix& m = m_objectAnimator->XFORM();
     m_objectAnimator->Update(Device.fTimeDelta);
@@ -247,7 +249,7 @@ BOOL CAnimatorCamLerpEffector::ProcessCam(SCamEffectorInfo& info)
     if (m_fov > 0.0f)
         info.fFov = m_fov;
 
-    return TRUE;
+    co_return true;
 }
 
 CAnimatorCamLerpEffectorConst::CAnimatorCamLerpEffectorConst() : m_factor(0.0f) { SetFactorFunc(CallMe::fromMethod<&CAnimatorCamLerpEffectorConst::GetFactor>(this)); }
@@ -342,7 +344,7 @@ CControllerPsyHitCamEffector::CControllerPsyHitCamEffector(const Fvector& src_po
     m_direction.normalize();
 }
 
-BOOL CControllerPsyHitCamEffector::ProcessCam(SCamEffectorInfo& info)
+tmc::task<bool> CControllerPsyHitCamEffector::ProcessCam(SCamEffectorInfo& info)
 {
     Fmatrix Mdef;
     Mdef.identity();
@@ -397,13 +399,13 @@ BOOL CControllerPsyHitCamEffector::ProcessCam(SCamEffectorInfo& info)
     info.n.set(mR.j);
     info.p.set(mR.c);
 
-    return TRUE;
+    co_return true;
 }
 
-void CActorCameraManager::UpdateCamEffectors()
+tmc::task<void> CActorCameraManager::UpdateCamEffectors()
 {
     m_cam_info_hud = m_cam_info;
-    inherited::UpdateCamEffectors();
+    co_await inherited::UpdateCamEffectors();
 
     m_cam_info_hud.d.normalize();
     m_cam_info_hud.n.normalize();
@@ -430,26 +432,25 @@ void cam_effector_add(const SCamEffectorInfo& diff, SCamEffectorInfo& dest)
 }
 } // namespace
 
-bool CActorCameraManager::ProcessCameraEffector(CEffectorCam* eff)
+tmc::task<bool> CActorCameraManager::ProcessCameraEffector(CEffectorCam* eff)
 {
     SCamEffectorInfo prev = m_cam_info;
 
-    bool res = inherited::ProcessCameraEffector(eff);
-    if (res)
+    if (!co_await inherited::ProcessCameraEffector(eff))
+        co_return false;
+
+    if (eff->GetHudAffect())
     {
-        if (eff->GetHudAffect())
-        {
-            SCamEffectorInfo affected = m_cam_info;
-            SCamEffectorInfo diff;
+        SCamEffectorInfo affected = m_cam_info;
+        SCamEffectorInfo diff;
 
-            cam_effector_sub(affected, prev, diff);
-
-            cam_effector_add(diff, m_cam_info_hud); // m_cam_info_hud += difference
-        }
-
-        m_cam_info_hud.fFov = m_cam_info.fFov;
-        m_cam_info_hud.fFar = m_cam_info.fFar;
-        m_cam_info_hud.fAspect = m_cam_info.fAspect;
+        cam_effector_sub(affected, prev, diff);
+        cam_effector_add(diff, m_cam_info_hud); // m_cam_info_hud += difference
     }
-    return res;
+
+    m_cam_info_hud.fFov = m_cam_info.fFov;
+    m_cam_info_hud.fFar = m_cam_info.fFar;
+    m_cam_info_hud.fAspect = m_cam_info.fAspect;
+
+    co_return true;
 }

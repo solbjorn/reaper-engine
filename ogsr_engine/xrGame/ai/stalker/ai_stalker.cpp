@@ -719,18 +719,20 @@ DLL_Pure* CAI_Stalker::_construct()
 
 bool CAI_Stalker::use_center_to_aim() const { return !wounded() && movement().body_state() != MonsterSpace::eBodyStateCrouch; }
 
-void CAI_Stalker::UpdateCamera()
+tmc::task<void> CAI_Stalker::UpdateCamera()
 {
     float new_range = eye_range, new_fov = eye_fov;
     Fvector temp = eye_matrix.k;
+
     if (g_Alive())
     {
         update_range_fov(new_range, new_fov, memory().visual().current_state().m_max_view_distance * eye_range, eye_fov);
+
         if (weapon_shot_effector().IsActive())
             temp = weapon_shot_effector_direction(temp);
     }
 
-    g_pGameLevel->Cameras().Update(eye_matrix.c, temp, eye_matrix.j, new_fov, .75f, new_range, 0);
+    co_await g_pGameLevel->Cameras().Update(eye_matrix.c, temp, eye_matrix.j, new_fov, 0.75f, new_range, 0);
 }
 
 bool CAI_Stalker::can_attach(const CInventoryItem* inventory_item) const

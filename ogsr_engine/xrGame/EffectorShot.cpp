@@ -174,6 +174,7 @@ void CWeaponShotEffector::ApplyDeltaAngles(float* pitch, float* yaw)
 //-----------------------------------------------------------------------------
 // Camera shot effector
 //-----------------------------------------------------------------------------
+
 CCameraShotEffector::CCameraShotEffector(float max_angle, float relax_speed, float max_angle_horz, float step_angle_horz, float angle_frac) : CEffectorCam(eCEShot, 100000.f)
 {
     CWeaponShotEffector::Initialize(max_angle, relax_speed, max_angle_horz, step_angle_horz, angle_frac);
@@ -183,21 +184,25 @@ CCameraShotEffector::CCameraShotEffector(float max_angle, float relax_speed, flo
 CCameraShotEffector::~CCameraShotEffector() {}
 
 // В ЗП здесь сделано по-другому
-BOOL CCameraShotEffector::ProcessCam(SCamEffectorInfo& info)
+tmc::task<bool> CCameraShotEffector::ProcessCam(SCamEffectorInfo& info)
 {
-    if (bActive)
-    {
-        float h, p;
-        info.d.getHP(h, p);
-        if (bSingleShoot)
-        {
-            if (bSSActive)
-                info.d.setHP(h + fLastDeltaHorz, p + fLastDeltaVert);
-        }
-        else
-            info.d.setHP(h + fAngleHorz, p + fAngleVert);
+    if (!bActive)
+        co_return true;
 
-        Update();
+    f32 h, p;
+    info.d.getHP(h, p);
+
+    if (bSingleShoot)
+    {
+        if (bSSActive)
+            info.d.setHP(h + fLastDeltaHorz, p + fLastDeltaVert);
     }
-    return TRUE;
+    else
+    {
+        info.d.setHP(h + fAngleHorz, p + fAngleVert);
+    }
+
+    Update();
+
+    co_return true;
 }

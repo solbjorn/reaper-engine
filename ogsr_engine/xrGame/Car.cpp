@@ -435,7 +435,7 @@ tmc::task<void> CCar::shedule_Update(u32 dt)
 #endif
 }
 
-void CCar::UpdateEx(float fov)
+tmc::task<void> CCar::UpdateEx(f32 fov)
 {
 #ifdef DEBUG
     DbgUbdateCl();
@@ -445,8 +445,9 @@ void CCar::UpdateEx(float fov)
 
     if (OwnerActor() && OwnerActor()->IsMyCamera())
     {
-        cam_Update(Device.fTimeDelta, fov);
-        OwnerActor()->Cameras().UpdateFromCamera(Camera());
+        co_await cam_Update(Device.fTimeDelta, fov);
+
+        co_await OwnerActor()->Cameras().UpdateFromCamera(Camera());
         OwnerActor()->Cameras().ApplyDevice();
     }
 }

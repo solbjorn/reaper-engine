@@ -574,8 +574,8 @@ tmc::task<void> CGamePersistent::OnFrame()
             if (!g_actor || (g_actor->ID() != Level().CurrentViewEntity()->ID()))
             {
                 CCustomMonster* custom_monster = smart_cast<CCustomMonster*>(Level().CurrentViewEntity());
-                if (custom_monster) // can be spectator in multiplayer
-                    custom_monster->UpdateCamera();
+                if (custom_monster != nullptr) // can be spectator in multiplayer
+                    co_await custom_monster->UpdateCamera();
             }
             else
             {
@@ -587,7 +587,7 @@ tmc::task<void> CGamePersistent::OnFrame()
                     else
                         C = Actor()->Holder()->Camera();
 
-                    Actor()->Cameras().UpdateFromCamera(C);
+                    co_await Actor()->Cameras().UpdateFromCamera(C);
                     Actor()->Cameras().ApplyDevice();
                 }
             }
@@ -601,7 +601,7 @@ tmc::task<void> CGamePersistent::OnFrame()
             else
                 C = Actor()->Holder()->Camera();
 
-            Actor()->Cameras().UpdateFromCamera(C);
+            co_await Actor()->Cameras().UpdateFromCamera(C);
             Actor()->Cameras().ApplyDevice();
         }
 #endif // MASTER_GOLD

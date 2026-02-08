@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "EffectorFall.h"
+
 #include "CameraEffector.h"
 #include "GamePersistent.h"
 
@@ -14,12 +15,13 @@ CEffectorFall::CEffectorFall(float power, float life_time) : CEffectorCam(eCEFal
     fPhase = 0;
 }
 
-BOOL CEffectorFall::ProcessCam(SCamEffectorInfo& info)
+tmc::task<bool> CEffectorFall::ProcessCam(SCamEffectorInfo& info)
 {
     fPhase += FALL_SPEED * Device.fTimeDelta;
     if (fPhase < 1)
         info.p.y -= FALL_MAXDIST * fPower * _sin(M_PI * fPhase + M_PI);
     else
         fLifeTime = -1;
-    return TRUE;
+
+    co_return true;
 }

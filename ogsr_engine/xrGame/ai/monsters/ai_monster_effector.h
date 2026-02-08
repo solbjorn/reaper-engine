@@ -49,5 +49,5 @@ public:
     explicit CMonsterEffectorHit(float time, float amp, float periods, float power);
     ~CMonsterEffectorHit() override = default;
 
-    virtual BOOL ProcessCam(SCamEffectorInfo& info);
+    tmc::task<bool> ProcessCam(SCamEffectorInfo& info) override;
 };

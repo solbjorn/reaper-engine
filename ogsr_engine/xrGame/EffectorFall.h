@@ -14,5 +14,5 @@ public:
     explicit CEffectorFall(float power, float life_time = 1.0f);
     ~CEffectorFall() override = default;
 
-    virtual BOOL ProcessCam(SCamEffectorInfo& info);
+    tmc::task<bool> ProcessCam(SCamEffectorInfo& info) override;
 };

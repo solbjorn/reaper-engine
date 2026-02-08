@@ -32,12 +32,12 @@ private:
     u32 stat_StartFrame{};
     xr_vector<float> stat_table;
 
-    void stat_Start();
+    tmc::task<void> stat_Start();
     void stat_Stop();
 
 public:
     explicit CDemoPlay(const char* name, float ms, u32 cycles, float life_time = 60.0f * 60.0f * 1000.0f);
     ~CDemoPlay() override;
 
-    virtual BOOL ProcessCam(SCamEffectorInfo& info);
+    tmc::task<bool> ProcessCam(SCamEffectorInfo& info) override;
 };

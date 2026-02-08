@@ -540,7 +540,7 @@ public:
     virtual Fvector ExitPosition() { return m_exit_position; }
     [[nodiscard]] Fvector ExitVelocity() override;
     void GetVelocity(Fvector& vel) { m_pPhysicsShell->get_LinearVel(vel); }
-    void cam_Update(float, float fov) override;
+    tmc::task<void> cam_Update(f32, f32 fov) override;
     void detach_Actor();
     bool attach_Actor(CGameObject* actor) override;
     bool is_Door(u16 id, xr_map<u16, std::unique_ptr<SDoor>>::iterator& i);
@@ -553,13 +553,14 @@ public:
     bool Exit(const Fvector& pos, const Fvector& dir);
     bool Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos);
     u16 DriverAnimationType();
+
     // Core events
     virtual DLL_Pure* _construct();
     virtual void Load(LPCSTR section);
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
     tmc::task<void> UpdateCL() override;
-    virtual void UpdateEx(float fov); // called by owner
+    tmc::task<void> UpdateEx(f32 fov) override; // called by owner
 
     tmc::task<void> shedule_Update(u32 dt) override;
     void renderable_Render(u32 context_id, IRenderable* root) override;

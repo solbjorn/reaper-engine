@@ -25,6 +25,6 @@ public:
     CEffectorBobbing();
     ~CEffectorBobbing() override;
 
-    virtual BOOL ProcessCam(SCamEffectorInfo& info);
+    tmc::task<bool> ProcessCam(SCamEffectorInfo& info) override;
     void SetState(u32 st, bool limping, bool ZoomMode);
 };

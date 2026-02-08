@@ -47,7 +47,7 @@ public:
     void Load();
     void SetParams(float disp);
 
-    virtual BOOL ProcessCam(SCamEffectorInfo& info);
+    tmc::task<bool> ProcessCam(SCamEffectorInfo& info) override;
     virtual void Init(CWeaponMagazined* pWeapon);
 
     virtual CEffectorZoomInertion* cast_effector_zoom_inertion() { return this; }

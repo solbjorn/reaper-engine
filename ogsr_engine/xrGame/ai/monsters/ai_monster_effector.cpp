@@ -55,11 +55,11 @@ CMonsterEffectorHit::CMonsterEffectorHit(float time, float amp, float periods, f
     offset.set(Random.randF(1, 2), Random.randF(1, 6), Random.randF(1, 6));
 }
 
-BOOL CMonsterEffectorHit::ProcessCam(SCamEffectorInfo& info)
+tmc::task<bool> CMonsterEffectorHit::ProcessCam(SCamEffectorInfo& info)
 {
     fLifeTime -= Device.fTimeDelta;
     if (fLifeTime < 0)
-        return FALSE;
+        co_return false;
 
     // процент оставшегося времени
     float time_left_perc = fLifeTime / total;
@@ -90,5 +90,5 @@ BOOL CMonsterEffectorHit::ProcessCam(SCamEffectorInfo& info)
     info.d.set(mR.k);
     info.n.set(mR.j);
 
-    return TRUE;
+    co_return true;
 }

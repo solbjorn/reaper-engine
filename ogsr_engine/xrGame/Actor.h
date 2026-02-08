@@ -364,7 +364,7 @@ public:
 
 protected:
     void cam_Set(ACTOR_DEFS::EActorCameras style);
-    void cam_Update(float dt, float fFOV);
+    tmc::task<void> cam_Update(f32 dt, f32 fFOV);
     void camUpdateLadder(float dt);
     void cam_SetLadder();
     void cam_UnsetLadder();

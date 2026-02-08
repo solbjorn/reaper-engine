@@ -24,10 +24,10 @@ public:
     IC ECamEffectorType GetType() { return eType; }
     virtual BOOL Valid() { return fLifeTime > 0.0f; }
 
-    virtual BOOL ProcessCam(SCamEffectorInfo&)
+    virtual tmc::task<bool> ProcessCam(SCamEffectorInfo&)
     {
         fLifeTime -= Device.fTimeDelta;
-        return Valid();
+        co_return Valid();
     }
 
     virtual void ProcessIfInvalid(SCamEffectorInfo&) {}

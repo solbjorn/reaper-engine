@@ -16,8 +16,8 @@ public:
 protected:
     using inherited = CCameraManager;
 
-    virtual void UpdateCamEffectors();
-    virtual bool ProcessCameraEffector(CEffectorCam* eff);
+    tmc::task<void> UpdateCamEffectors() override;
+    tmc::task<bool> ProcessCameraEffector(CEffectorCam* eff) override;
 
 public:
     CActorCameraManager() : inherited{false} {}
@@ -71,7 +71,7 @@ public:
     ~CAnimatorCamEffector() override;
 
     void Start(LPCSTR fn);
-    virtual BOOL ProcessCam(SCamEffectorInfo& info);
+    tmc::task<bool> ProcessCam(SCamEffectorInfo& info) override;
     void SetCyclic(bool b) { m_bCyclic = b; }
     virtual BOOL Valid();
     float GetAnimatorLength() { return fLifeTime; }
@@ -109,7 +109,7 @@ public:
     ~CAnimatorCamLerpEffector() override = default;
 
     void SetFactorFunc(GET_KOEFF_FUNC f) { m_func = f; }
-    virtual BOOL ProcessCam(SCamEffectorInfo& info);
+    tmc::task<bool> ProcessCam(SCamEffectorInfo& info) override;
 };
 
 class CAnimatorCamLerpEffectorConst : public CAnimatorCamLerpEffector
@@ -195,7 +195,7 @@ public:
     explicit CControllerPsyHitCamEffector(const Fvector& src_pos, const Fvector& target_pos, float time, float base_fov, float dest_fov);
     ~CControllerPsyHitCamEffector() override = default;
 
-    [[nodiscard]] BOOL ProcessCam(SCamEffectorInfo& info) override;
+    tmc::task<bool> ProcessCam(SCamEffectorInfo& info) override;
 };
 
 //////////////////////////////////////////////////////////////////////////

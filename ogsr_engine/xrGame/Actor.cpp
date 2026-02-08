@@ -760,8 +760,9 @@ tmc::task<void> CActor::UpdateCL()
             }
         }
     }
-    if (m_holder)
-        m_holder->UpdateEx(currentFOV());
+
+    if (m_holder != nullptr)
+        co_await m_holder->UpdateEx(currentFOV());
 
     m_snd_noise -= 0.3f * Device.fTimeDelta;
 
@@ -780,7 +781,7 @@ tmc::task<void> CActor::UpdateCL()
     CWeapon* pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());
 
     Device.Statistic->TEST1.Begin();
-    cam_Update(float(Device.dwTimeDelta) / 1000.0f, currentFOV());
+    co_await cam_Update(gsl::narrow_cast<f32>(Device.dwTimeDelta) / 1000.0f, currentFOV());
     co_await Device.OnCameraUpdated();
     Device.Statistic->TEST1.End();
 

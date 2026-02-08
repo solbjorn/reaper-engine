@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "pseudo_gigant_step_effector.h"
 
 CPseudogigantStepEffector::CPseudogigantStepEffector(float time, float amp, float periods, float power) : CEffectorCam(eCEPseudoGigantStep, time)
@@ -10,11 +11,11 @@ CPseudogigantStepEffector::CPseudogigantStepEffector(float time, float amp, floa
     this->power = power;
 }
 
-BOOL CPseudogigantStepEffector::ProcessCam(SCamEffectorInfo& info)
+tmc::task<bool> CPseudogigantStepEffector::ProcessCam(SCamEffectorInfo& info)
 {
     fLifeTime -= Device.fTimeDelta;
     if (fLifeTime < 0)
-        return FALSE;
+        co_return false;
 
     // процент оставшегося времени
     float time_left_perc = fLifeTime / total;
@@ -46,5 +47,5 @@ BOOL CPseudogigantStepEffector::ProcessCam(SCamEffectorInfo& info)
     info.d.set(mR.k);
     info.n.set(mR.j);
 
-    return TRUE;
+    co_return true;
 }

@@ -60,7 +60,7 @@ public:
     void IR_OnMouseHold(sf::Mouse::Button btn);
     void IR_OnMouseMove(int dx, int dy) override;
 
-    BOOL ProcessCam(SCamEffectorInfo& info) override;
+    tmc::task<bool> ProcessCam(SCamEffectorInfo& info) override;
 
     tmc::task<void> OnRender() override
     {

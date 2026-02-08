@@ -116,9 +116,9 @@ protected:
     SPPInfo pp_affected;
     void UpdateDeffered();
 
-    virtual void UpdateCamEffectors();
+    virtual tmc::task<void> UpdateCamEffectors();
     virtual void UpdatePPEffectors();
-    virtual bool ProcessCameraEffector(CEffectorCam* eff);
+    virtual tmc::task<bool> ProcessCameraEffector(CEffectorCam* eff);
     void OnEffectorReleased(SBaseEffector* e);
 
 public:
@@ -146,8 +146,8 @@ public:
     IC void camera_Matrix(Fmatrix& M) { M.set(m_cam_info.r, m_cam_info.n, m_cam_info.d, m_cam_info.p); }
     inline void SetVPNear(const float val) { m_cam_info.fNear = val; }
 
-    void Update(const Fvector& P, const Fvector& D, const Fvector& N, float fFOV_Dest, float fASPECT_Dest, float fFAR_Dest, u32 flags);
-    void UpdateFromCamera(const CCameraBase* C);
+    tmc::task<void> Update(const Fvector& P, const Fvector& D, const Fvector& N, f32 fFOV_Dest, f32 fASPECT_Dest, f32 fFAR_Dest, u32 flags);
+    tmc::task<void> UpdateFromCamera(const CCameraBase* C);
     void ApplyDevice(bool effectOnly = false);
     static void ResetPP();
 

@@ -60,7 +60,7 @@ public:
     explicit CCameraShotEffector(float max_angle, float relax_speed, float max_angle_horz, float step_angle_horz, float angle_frac);
     ~CCameraShotEffector() override;
 
-    virtual BOOL ProcessCam(SCamEffectorInfo& info);
+    tmc::task<bool> ProcessCam(SCamEffectorInfo& info) override;
 
     virtual void SetActor(CActor* pActor) { m_pActor = pActor; }
 

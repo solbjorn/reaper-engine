@@ -27,7 +27,7 @@ public:
     CActor* OwnerActor() { return m_ownerActor; }
     CActor* OwnerActor() const { return m_ownerActor; }
 
-    virtual void UpdateEx(float) {} // called by owner
+    virtual tmc::task<void> UpdateEx(f32) { co_return; } // called by owner
     virtual CHolderCustom* cast_holder_custom() { return this; }
     bool Engaged() { return !!m_owner; }
     virtual void OnMouseMove(int x, int y) = 0;
@@ -37,7 +37,7 @@ public:
     // Inventory for the car
     virtual CInventory* GetInventory() = 0;
 
-    virtual void cam_Update(float dt, float fov = 90.0f) = 0;
+    virtual tmc::task<void> cam_Update(f32 dt, f32 fov = 90.0f) = 0;
 
     virtual bool Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos) = 0;
     virtual bool attach_Actor(CGameObject* actor);

@@ -18,5 +18,5 @@ public:
     explicit CPseudogigantStepEffector(float time, float amp, float periods, float power);
     ~CPseudogigantStepEffector() override = default;
 
-    virtual BOOL ProcessCam(SCamEffectorInfo& info);
+    tmc::task<bool> ProcessCam(SCamEffectorInfo& info) override;
 };
