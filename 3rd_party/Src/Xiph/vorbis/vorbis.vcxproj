@@ -49,8 +49,9 @@
       cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\Xiph\ogg\_Build\$(Configuration)\$(PlatformShortName)" -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..\vorbis-aotuv-lancer
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)
-      copy /Y "lib\vorbis.lib" "..\..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\vorbis.lib"
-      copy /Y "lib\vorbisfile.lib" "..\..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\vorbisfile.lib"
+      copy /Y "lib\vorbis.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\vorbis.lib"
+      copy /Y "lib\vorbisenc.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\vorbisenc.lib"
+      copy /Y "lib\vorbisfile.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\vorbisfile.lib"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
       RD /S/Q _Build

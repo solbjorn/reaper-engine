@@ -20,6 +20,7 @@ endif()
 # SFML
 if(SFML_USE_SYSTEM_DEPS)
   set(conformance_options "${conformance_options} -D_WIN32_WINDOWS=0x0A00")
+  set(warning_options "${warning_options} -Wno-error=format-signedness")
 endif()
 
 # abseil

@@ -10,6 +10,7 @@
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
     <Project Path="3rd_party/Src/SFML/SFML.vcxproj" Id="0c43e141-7193-490a-b40f-ec5e92fc7b2c">
+      <BuildDependency Project="3rd_party/Src/FreeType/SheenBidi/SheenBidi.vcxproj" />
       <BuildDependency Project="3rd_party/Src/FreeType/freetype/freetype.vcxproj" />
       <BuildDependency Project="3rd_party/Src/FreeType/harfbuzz/harfbuzz.vcxproj" />
       <BuildDependency Project="3rd_party/Src/Xiph/flac/flac.vcxproj" />
@@ -43,6 +44,9 @@
     <Project Path="3rd_party/Src/compression/zstd/zstd.vcxproj" Id="f612c458-7afd-4d2b-804e-af9ef62218b4" />
   </Folder>
   <Folder Name="/3rd_party/FreeType/">
+    <Project Path="3rd_party/Src/FreeType/SheenBidi/SheenBidi.vcxproj" Id="c651434c-b5c3-4713-bb06-f62190a37a87">
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
     <Project Path="3rd_party/Src/FreeType/freetype/freetype.vcxproj" Id="604b9414-5807-4926-836e-11d645cc9fb8">
       <BuildDependency Project="3rd_party/Src/FreeType/harfbuzz/harfbuzz.vcxproj" />
     </Project>

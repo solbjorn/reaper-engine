@@ -12,12 +12,12 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{0C43E141-7193-490A-B40F-EC5E92FC7B2C}</ProjectGuid>
+    <ProjectGuid>{C651434C-B5C3-4713-BB06-F62190A37A87}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
-    <ProjectName>SFML</ProjectName>
+    <ProjectName>SheenBidi</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <Import Project="..\3rd_party_lib_properties.props" />
+  <Import Project="..\..\3rd_party_lib_properties.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -39,17 +39,17 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\sfml-system-s.lib</NMakeOutput>
+    <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\SheenBidi.lib</NMakeOutput>
     <NMakeBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin"
+      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
       set "LIBCXX_OPTIONS=$(libcxxOptions)"
       set "LIBCXX_PATH=$(libcxxPath)"
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\FreeType\SheenBidi\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build2\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\Xiph\flac\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\Xiph\ogg\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\Xiph\vorbis\_Build\$(Configuration)\$(PlatformShortName)" -DBUILD_SHARED_LIBS=OFF -DOpenGL_GL_PREFERENCE=GLVND -DSFML_USE_SYSTEM_DEPS=ON -DSFML_USE_SYSTEM_MBEDTLS=OFF -DSFML_USE_SYSTEM_SHEENBIDI=ON ..\SFML
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\FreeType\SheenBidi\_Build\$(Configuration)\$(PlatformShortName)" -DBUILD_SHARED_LIBS=OFF -DSB_CONFIG_EXPERIMENTAL_TEXT_API=ON ..\SheenBidi
       cmake --build . --config $(Configuration)
-      copy /Y "lib\sfml-system-s.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\sfml-system-s.lib"
-      copy /Y "lib\sfml-window-s.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\sfml-window-s.lib"
+      cmake --install . --config $(Configuration)
+      copy /Y "$(Configuration)\$(PlatformShortName)\lib\SheenBidi.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\SheenBidi.lib"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
       RD /S/Q _Build

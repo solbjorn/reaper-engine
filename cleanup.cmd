@@ -1,6 +1,7 @@
 RD /s /q 3rd_party\_LIB
 RD /s /q 3rd_party\_TEMP
 RD /s /q 3rd_party\Src\DirectX\DirectXTex\_Build
+RD /s /q 3rd_party\Src\FreeType\SheenBidi\_Build
 RD /s /q 3rd_party\Src\FreeType\freetype\_Build
 RD /s /q 3rd_party\Src\FreeType\freetype\_Build2
 RD /s /q 3rd_party\Src\FreeType\harfbuzz\_Build
