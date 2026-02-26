@@ -162,6 +162,8 @@ public:
 // Just two static storage
 void CRender::create()
 {
+    texture_init_ktx();
+
     Device.seqFrame.Add(this, REG_PRIORITY_HIGH + 0x12345678);
 
     m_skinning = -1;

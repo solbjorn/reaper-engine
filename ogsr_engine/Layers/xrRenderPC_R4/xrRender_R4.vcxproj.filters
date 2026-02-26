@@ -719,6 +719,12 @@
     <ClCompile Include="..\xrRenderDX10\dx10Texture.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx10Texture_ext.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx10Texture_ktx.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
     <ClCompile Include="..\xrRender\PSLibrary.cpp">
       <Filter>Core</Filter>
     </ClCompile>

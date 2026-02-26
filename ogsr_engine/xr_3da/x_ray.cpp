@@ -12,6 +12,7 @@
 
 #include "igame_level.h"
 #include "igame_persistent.h"
+#include "Render.h"
 
 #include "xr_input.h"
 #include "xr_ioconsole.h"
@@ -751,7 +752,8 @@ static bool validate_logo_path(string_path& path, pcstr level_name, int num = -1
 {
     generate_logo_path(path, level_name, num);
     string_path temp;
-    return FS.exist(temp, "$game_textures$", path, ".dds") || FS.exist(temp, "$level$", path, ".dds");
+
+    return xr::texture_exists(temp, std::array{xr::fsgame::game_textures, xr::fsgame::level}, path);
 }
 
 void CApplication::Level_Set(u32 L)

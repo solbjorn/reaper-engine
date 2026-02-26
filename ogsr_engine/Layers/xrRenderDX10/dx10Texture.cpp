@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "stream_reader.h"
+
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wc++98-compat-extra-semi");
 
@@ -7,96 +9,100 @@ XR_DIAG_IGNORE("-Wc++98-compat-extra-semi");
 
 XR_DIAG_POP();
 
-void fix_texture_name(char* fn)
+namespace xr
 {
-    char* _ext = strext(fn);
-    if (_ext &&
-        (std::is_eq(xr::strcasecmp(_ext, ".tga")) || std::is_eq(xr::strcasecmp(_ext, ".dds")) || std::is_eq(xr::strcasecmp(_ext, ".bmp")) ||
-         std::is_eq(xr::strcasecmp(_ext, ".ogm"))))
-        *_ext = '\0';
-}
-
 namespace
 {
-[[nodiscard]] inline int get_texture_load_lod([[maybe_unused]] const char* fn)
+enum class format : s32
 {
-#ifdef USE_REDUCE_LOD_TEXTURE_LIST
-    xr_strlwr(fn);
-    auto& sect = pSettings->r_section("reduce_lod_texture_list");
+    none = 0,
+    dds,
+    exr,
+    ktx,
+    sf
+};
 
-    for (const auto& data : sect.Data)
+class istream final : public DirectX::InputStream
+{
+private:
+    const std::unique_ptr<CStreamReader> file;
+
+public:
+    explicit istream(gsl::czstring path) : file{absl::WrapUnique(FS.rs_open(path))} { R_ASSERT(file); }
+    ~istream() override = default;
+
+    [[nodiscard]] bool Read(void* data, size_t size) override
     {
-        if (strstr(fn, data.first.c_str()))
+        const auto real = std::min(gsl::narrow_cast<gsl::index>(size), file->elapsed());
+        file->r(data, real);
+        return gsl::narrow_cast<size_t>(real) == size;
+    }
+
+    [[nodiscard]] bool Seek(size_t position) override
+    {
+        const auto real = std::min(gsl::narrow_cast<gsl::index>(position), file->length());
+        file->seek(real);
+        return gsl::narrow_cast<size_t>(real) == position;
+    }
+
+    [[nodiscard]] size_t Size() override { return gsl::narrow_cast<size_t>(file->length()); }
+};
+
+[[nodiscard]] xr::format find_texture(string_path& fn, std::span<const std::string_view> places, std::string_view fname)
+{
+    static constexpr std::array<std::pair<std::string_view, format>, 4> formats{
+        {{".dds", xr::format::dds}, {".exr", xr::format::exr}, {".ktx", xr::format::ktx}, {".ktx2", xr::format::ktx}}};
+
+    for (auto& ext : xr::fsgame::formats::texture)
+    {
+        for (auto& place : places)
         {
-            if (psTextureLOD < 1)
-            {
-                return 0;
-            }
-            else
-            {
-                if (psTextureLOD < 3)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return 2;
-                }
-            }
+            if (!FS.exist(fn, place.data(), fname.data(), ext.data()))
+                continue;
+
+            if (const auto it = std::ranges::find(formats, ext, &decltype(formats)::value_type::first); it != formats.end())
+                return it->second;
+
+            return xr::format::sf;
         }
     }
-#endif
 
-    if (psTextureLOD < 2)
-    {
-        return 0;
-    }
-    else
-    {
-        if (psTextureLOD < 4)
-        {
-            return 1;
-        }
-        else
-        {
-            return 2;
-        }
-    }
-}
-
-[[nodiscard]] constexpr u32 calc_texture_size(int lod, size_t mip_cnt, size_t orig_size)
-{
-    if (1 == mip_cnt)
-        return orig_size;
-
-    int _lod = lod;
-    f32 res = gsl::narrow_cast<f32>(orig_size);
-
-    while (_lod > 0)
-    {
-        --_lod;
-        res -= res / 1.333f;
-    }
-
-    return gsl::narrow_cast<u32>(std::floor(res));
-}
-
-constexpr void reduce(size_t& w, size_t& h, size_t& l, int skip)
-{
-    while ((l > 1) && skip)
-    {
-        w /= 2;
-        h /= 2;
-        l -= 1;
-
-        skip--;
-    }
-    if (w < 1)
-        w = 1;
-    if (h < 1)
-        h = 1;
+    return xr::format::none;
 }
 } // namespace
+
+bool texture_exists(string_path& fn, std::span<const std::string_view> places, std::string_view fname)
+{
+    return xr::find_texture(fn, places, fname) != xr::format::none;
+}
+} // namespace xr
+
+void fix_texture_name(gsl::zstring fn)
+{
+    gsl::zstring _ext = strext(fn);
+    if (_ext == nullptr)
+        return;
+
+    const std::string_view fext{_ext};
+
+    for (auto& ext : xr::fsgame::formats::texture)
+    {
+        if (std::is_neq(xr::strcasecmp(fext, ext)))
+            continue;
+
+        *_ext = '\0';
+        return;
+    }
+
+    for (const auto& ext : std::array<std::string_view, 4>{".seq", ".ogm", ".avi", ".thm"})
+    {
+        if (std::is_neq(xr::strcasecmp(fext, ext)))
+            continue;
+
+        *_ext = '\0';
+        return;
+    }
+}
 
 ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 {
@@ -108,75 +114,76 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
     xr_strcpy(fname, fRName);
     fix_texture_name(fname);
 
-    if (strstr(fname, "_bump") && !FS.exist(fn, "$level$", fname, ".dds") && !FS.exist(fn, "$game_textures$", fname, ".dds"))
-    {
-        Msg("! Fallback to default bump map: [%s]", fname);
+    const std::string_view fview{fname};
+    const bool bump = fview.contains("_bump");
+    xr::format fmt;
 
-        if (strstr(fname, "_bump#"))
-            R_ASSERT(FS.exist(fn, "$game_textures$", "ed\\ed_dummy_bump#", ".dds"), "ed_dummy_bump#");
-        else
-            R_ASSERT(FS.exist(fn, "$game_textures$", "ed\\ed_dummy_bump", ".dds"), "ed_dummy_bump");
+    if (bump)
+    {
+        if (fmt = xr::find_texture(fn, std::array{xr::fsgame::level, xr::fsgame::game_textures}, fview); fmt == xr::format::none)
+        {
+            Msg("! Fallback to default bump map: [%s]", fname);
+
+            if (fview.contains("_bump#"))
+                fmt = xr::find_texture(fn, std::array{xr::fsgame::game_textures}, "ed\\ed_dummy_bump#");
+            else
+                fmt = xr::find_texture(fn, std::array{xr::fsgame::game_textures}, "ed\\ed_dummy_bump");
+
+            R_ASSERT(fmt != xr::format::none);
+        }
     }
-    else if (!FS.exist(fn, "$level$", fname, ".dds") && !FS.exist(fn, "$game_saves$", fname, ".dds") && !FS.exist(fn, "$game_textures$", fname, ".dds"))
+    else if (fmt = xr::find_texture(fn, std::array{xr::fsgame::level, xr::fsgame::game_textures, xr::fsgame::game_saves}, fview); fmt == xr::format::none)
     {
         Msg("! Can't find texture [%s]", fname);
 
-        R_ASSERT(FS.exist(fn, "$game_textures$", "ed\\ed_not_existing_texture", ".dds"));
+        fmt = xr::find_texture(fn, std::array{xr::fsgame::game_textures}, "ed\\ed_not_existing_texture");
+        R_ASSERT(fmt != xr::format::none);
     }
 
-    // Load and get header
-    IReader* File = FS.r_open(fn);
-    R_ASSERT(File);
-#ifdef DEBUG
-    Msg("* Loaded: %s[%zu]", fn, File->length());
-#endif
-    int img_loaded_lod{};
-    ID3DBaseTexture* pTexture2D{};
-    DirectX::TexMetadata IMG{};
+    switch (fmt)
+    {
+    case xr::format::dds: return texture_load_dds(fn, ret_msize);
+    case xr::format::exr: return texture_load_exr(fn, ret_msize);
+    case xr::format::ktx: return texture_load_ktx(fn, ret_msize);
+    case xr::format::sf: return texture_load_sf(fn, ret_msize, bump || Resources->m_textures_description.contains(fview));
+    default: NODEFAULT;
+    }
+}
+
+ID3DBaseTexture* CRender::texture_load_dds(const string_path& path, u32& size)
+{
     DirectX::DDS_FLAGS dds_flags{DirectX::DDS_FLAGS_PERMISSIVE};
-    bool allowFallback = true;
+    bool allowFallback{true};
+    xr::istream is{path};
 
     do
     {
-        DirectX::ScratchImage texture{};
-        if (const auto hr = LoadFromDDSMemory(static_cast<const std::byte*>(File->pointer()), File->length(), dds_flags, &IMG, texture); FAILED(hr))
+        std::ignore = is.Seek(0);
+
+        DirectX::ScratchImage texture;
+        DirectX::TexMetadata meta;
+
+        if (const auto hr = DirectX::LoadFromDDSStream(is, dds_flags, &meta, texture); FAILED(hr))
         {
-            Msg("! Failed to load DDS texture from memory: [%s], hr: [0x%lx]", fn, gsl::narrow_cast<unsigned long>(hr));
-            break;
+            Msg("! Failed to load DDS texture: [%s], error: [%ld]", path, hr);
+            return nullptr;
         }
 
-        // Check for LMAP and compress if needed
-        size_t mip_lod{};
-        img_loaded_lod = get_texture_load_lod(fn);
-        if (img_loaded_lod && !IMG.IsCubemap() /* && !IMG.IsVolumemap()*/)
-        {
-            const auto old_mipmap_cnt = IMG.mipLevels;
-            reduce(IMG.width, IMG.height, IMG.mipLevels, img_loaded_lod);
-            mip_lod = old_mipmap_cnt - IMG.mipLevels;
-        }
+        ID3DBaseTexture* pTexture2D;
 
-        // DirectX requires compressed texture size to be
-        // a multiple of 4. Make sure to meet this requirement.
-        if (DirectX::IsCompressed(IMG.format))
-        {
-            IMG.width = (IMG.width + 3u) & ~0x3u;
-            IMG.height = (IMG.height + 3u) & ~0x3u;
-        }
-
-        const auto hr = CreateTextureEx(HW.pDevice, texture.GetImages() + mip_lod, texture.GetImageCount(), IMG, D3D_USAGE_IMMUTABLE, D3D_BIND_SHADER_RESOURCE, 0, IMG.miscFlags,
-                                        DirectX::CREATETEX_DEFAULT, &pTexture2D);
-
+        const auto hr = DirectX::CreateTextureEx(HW.pDevice, texture.GetImages(), texture.GetImageCount(), meta, D3D_USAGE_IMMUTABLE, D3D_BIND_SHADER_RESOURCE, 0, meta.miscFlags,
+                                                 DirectX::CREATETEX_DEFAULT, &pTexture2D);
         if (SUCCEEDED(hr))
         {
             // Получилось. Считаем сколько весит текстура и сваливаем.
-            ret_msize = calc_texture_size(img_loaded_lod, IMG.mipLevels, File->length());
-            break;
+            size = texture.GetImages()[0].slicePitch * meta.arraySize * meta.depth;
+            return pTexture2D;
         }
 
         if (!allowFallback)
         {
-            Msg("! Failed CreateTextureEx: [%s], hr: [0x%lx]", fn, gsl::narrow_cast<unsigned long>(hr));
-            break; // Уже была вторая попытка, прекращаем.
+            Msg("! Failed to create DDS texture: [%s], error: [%ld]", path, hr);
+            return nullptr; // Уже была вторая попытка, прекращаем.
         }
 
         // Помянем, не получилось загрузить текстуру...
@@ -184,8 +191,4 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
         dds_flags |= DirectX::DDS_FLAGS::DDS_FLAGS_NO_16BPP | DirectX::DDS_FLAGS_FORCE_RGB;
         allowFallback = false;
     } while (true);
-
-    FS.r_close(File);
-
-    return pTexture2D;
 }

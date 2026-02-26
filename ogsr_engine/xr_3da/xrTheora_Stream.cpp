@@ -241,7 +241,7 @@ BOOL CTheoraStream::Load(const char* fname)
     VERIFY(source == nullptr);
 
     // open source
-    source = FS.rs_open(nullptr, fname);
+    source = FS.rs_open(fname);
     VERIFY(source);
 
     // parse headers

@@ -3,9 +3,6 @@
     <Platform Name="x64" />
   </Configurations>
   <Folder Name="/3rd_party/">
-    <Project Path="3rd_party/Src/DirectX/DirectXTex/DirectXTex.vcxproj" Id="286cc988-2191-467a-9f6d-abb7954d4f78">
-      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
-    </Project>
     <Project Path="3rd_party/Src/OpCoDe/OpCoDe.vcxproj" Id="8b7e63c3-85be-4671-999e-6c72d67f062d">
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
@@ -35,6 +32,7 @@
     <Project Path="3rd_party/Src/tmc/hwloc/hwloc.vcxproj" Id="a3f8db74-fed0-4ed3-9e51-f5b4e5ac9713" />
   </Folder>
   <Folder Name="/3rd_party/Compression/">
+    <Project Path="3rd_party/Src/compression/deflate/deflate.vcxproj" Id="6d458944-c86f-4162-9af2-e50a3f0a1da6" />
     <Project Path="3rd_party/Src/compression/lz4/lz4.vcxproj" Id="d1e1660f-36eb-49a1-aae1-d3913d72c1e1" />
     <Project Path="3rd_party/Src/compression/squashfs/squashfs.vcxproj" Id="e61c7c61-0119-4d89-9604-bd3b7c5f2aca">
       <BuildDependency Project="3rd_party/Src/compression/lz4/lz4.vcxproj" />
@@ -59,6 +57,27 @@
     </Project>
     <Project Path="3rd_party/Src/FreeType/plutovg/plutovg.vcxproj" Id="863e00ea-4d4f-41a2-a14b-f1a9c45e5621" />
   </Folder>
+  <Folder Name="/3rd_party/OpenImageIO/">
+    <Project Path="3rd_party/Src/DirectX/DirectXTex/DirectXTex.vcxproj" Id="286cc988-2191-467a-9f6d-abb7954d4f78">
+      <BuildDependency Project="3rd_party/Src/OpenImageIO/openexr/openexr.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/OpenImageIO/Imath/Imath.vcxproj" Id="25f5549b-002b-40af-a1fb-34b166e89cb9">
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/OpenImageIO/OpenJPH/OpenJPH.vcxproj" Id="60bbbe12-b3b4-4171-8835-e89ab9960305">
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/OpenImageIO/ktx/ktx.vcxproj" Id="d4e6d165-806e-4e9b-817e-fd6b93417270">
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/OpenImageIO/openexr/openexr.vcxproj" Id="1d202efe-16a1-4b9c-b4fa-4cf7c3abdddd">
+      <BuildDependency Project="3rd_party/Src/OpenImageIO/Imath/Imath.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/OpenImageIO/OpenJPH/OpenJPH.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/compression/deflate/deflate.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
+  </Folder>
   <Folder Name="/3rd_party/Xiph.org/">
     <Project Path="3rd_party/Src/Xiph/flac/flac.vcxproj" Id="702304bc-1ab0-4e93-8fc0-a3225cde1de3">
       <BuildDependency Project="3rd_party/Src/Xiph/ogg/ogg.vcxproj" />
@@ -81,6 +100,8 @@
   </Folder>
   <Project Path="ogsr_engine/Layers/xrRenderPC_R4/xrRender_R4.vcxproj" Id="ac9b12ed-a2d7-4337-a981-5bd8430e96d8">
     <BuildDependency Project="3rd_party/Src/DirectX/DirectXTex/DirectXTex.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/OpenImageIO/ktx/ktx.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/OpenImageIO/openexr/openexr.vcxproj" />
     <BuildDependency Project="3rd_party/Src/compression/xxHash/xxHash.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrCDB/xrCDB.vcxproj" Id="a19b1df2-82ec-4364-8bdf-85d13a1c89b5">

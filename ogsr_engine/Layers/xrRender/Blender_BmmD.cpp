@@ -182,14 +182,11 @@ void CBlender_BmmD::Compile(CBlender_Compile& C)
         {
             LPSTR LodTexture = strconcat(sizeof(mask), mask, C.L_textures[0].c_str(), "_lod_textures");
             string_path fn;
-            if (FS.exist(fn, "$game_textures$", LodTexture, ".dds"))
-            {
+
+            if (xr::texture_exists(fn, std::array{xr::fsgame::game_textures}, LodTexture))
                 C.r_dx10Texture("s_lod_texture", LodTexture);
-            }
             else
-            {
                 C.r_dx10Texture("s_lod_texture", "terrain\\default_lod_textures");
-            }
         }
 
         C.r_dx10Sampler("smp_base");

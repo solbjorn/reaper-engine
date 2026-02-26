@@ -46,7 +46,7 @@
       set "LIBCXX_PATH=$(libcxxPath)"
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DBUILD_TOOLS=OFF -DBUILD_SAMPLE=OFF ..\DirectXTex
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(LLVMInstallDir);$(SolutionDir)\3rd_party\Src\OpenImageIO\Imath\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\OpenImageIO\OpenJPH\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\OpenImageIO\openexr\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\compression\deflate\_Build\$(Configuration)\$(PlatformShortName)" -DBUILD_SAMPLE=OFF -DBUILD_TOOLS=OFF -DENABLE_OPENEXR_SUPPORT=ON ..\DirectXTex
       cmake --build . --config $(Configuration)
       copy /Y "lib\DirectXTex.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\DirectXTex.lib"
     </NMakeBuildCommandLine>

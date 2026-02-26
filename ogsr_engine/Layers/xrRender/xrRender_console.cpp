@@ -274,7 +274,6 @@ float ps_r2_gloss_min = 0.0f;
 
 // textures
 #ifdef DEBUG
-int psTextureLOD = 0;
 u32 psCurrentBPP = 32;
 #endif
 

@@ -42,6 +42,8 @@ public:
     tmc::task<void> Load();
     void UnLoad();
 
+    [[nodiscard]] constexpr auto contains(std::string_view name) const { return m_texture_details.contains(name); }
+
     shared_str GetBumpName(const shared_str& tex_name) const;
     float GetMaterial(const shared_str& tex_name) const;
     void GetTextureUsage(const shared_str& tex_name, BOOL& bDiffuse, BOOL& bBump) const;

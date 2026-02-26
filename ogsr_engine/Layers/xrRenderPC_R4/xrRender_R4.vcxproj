@@ -58,7 +58,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <StringPooling>false</StringPooling>
-      <AdditionalIncludeDirectories>./;..\..\xrCore;$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\DirectX\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectX\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\compression\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\renderdoc\renderdoc\api;$(SolutionDir)\3rd_party\Src\sol2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;..\..\xrCore;$(SolutionDir)\3rd_party\Src\OpenImageIO\Imath\_Build\$(Configuration)\$(PlatformShortName)\include\Imath;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\external\basis_universal\encoder;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\external\dfdutils;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\other_include;$(SolutionDir)\3rd_party\Src\OpenImageIO\openexr\_Build\$(Configuration)\$(PlatformShortName)\include\OpenEXR;$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\DirectX\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectX\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\compression\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\renderdoc\renderdoc\api;$(SolutionDir)\3rd_party\Src\sol2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OmitFramePointers>false</OmitFramePointers>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -83,7 +83,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>./;..\..\xrCore;$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\DirectX\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectX\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\compression\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\renderdoc\renderdoc\api;$(SolutionDir)\3rd_party\Src\sol2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;..\..\xrCore;$(SolutionDir)\3rd_party\Src\OpenImageIO\Imath\_Build\$(Configuration)\$(PlatformShortName)\include\Imath;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\external\basis_universal\encoder;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\external\dfdutils;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\other_include;$(SolutionDir)\3rd_party\Src\OpenImageIO\openexr\_Build\$(Configuration)\$(PlatformShortName)\include\OpenEXR;$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\DirectX\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectX\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\compression\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\renderdoc\renderdoc\api;$(SolutionDir)\3rd_party\Src\sol2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
@@ -317,6 +317,8 @@
     <ClCompile Include="..\xrRenderDX10\dx10StateUtils.cpp" />
     <ClCompile Include="..\xrRenderDX10\dx10Texture.cpp" />
     <ClCompile Include="..\xrRenderDX10\dx10TextureUtils.cpp" />
+    <ClCompile Include="..\xrRenderDX10\dx10Texture_ext.cpp" />
+    <ClCompile Include="..\xrRenderDX10\dx10Texture_ktx.cpp" />
     <ClCompile Include="..\xrRenderDX10\MSAA\dx10MSAABlender.cpp" />
     <ClCompile Include="..\xrRenderDX10\StateManager\dx10SamplerStateCache.cpp" />
     <ClCompile Include="..\xrRenderDX10\StateManager\dx10ShaderResourceStateCache.cpp" />

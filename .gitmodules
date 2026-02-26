@@ -6,7 +6,7 @@
 	url = https://github.com/microsoft/DirectXMesh.git
 [submodule "3rd_party/Src/DirectX/DirectXTex/DirectXTex"]
 	path = 3rd_party/Src/DirectX/DirectXTex/DirectXTex
-	url = https://github.com/microsoft/DirectXTex.git
+	url = https://github.com/solbjorn/DirectXTex.git
 [submodule "3rd_party/Src/FreeType/SheenBidi/SheenBidi"]
 	path = 3rd_party/Src/FreeType/SheenBidi/SheenBidi
 	url = https://github.com/Tehreer/SheenBidi.git
@@ -28,6 +28,18 @@
 [submodule "3rd_party/Src/OpCoDe/OpCoDe"]
 	path = 3rd_party/Src/OpCoDe/OpCoDe
 	url = https://github.com/solbjorn/OpCoDe.git
+[submodule "3rd_party/Src/OpenImageIO/Imath/Imath"]
+	path = 3rd_party/Src/OpenImageIO/Imath/Imath
+	url = https://github.com/AcademySoftwareFoundation/Imath.git
+[submodule "3rd_party/Src/OpenImageIO/OpenJPH/OpenJPH"]
+	path = 3rd_party/Src/OpenImageIO/OpenJPH/OpenJPH
+	url = https://github.com/aous72/OpenJPH.git
+[submodule "3rd_party/Src/OpenImageIO/ktx/KTX-Software"]
+	path = 3rd_party/Src/OpenImageIO/ktx/KTX-Software
+	url = https://github.com/KhronosGroup/KTX-Software.git
+[submodule "3rd_party/Src/OpenImageIO/openexr/openexr"]
+	path = 3rd_party/Src/OpenImageIO/openexr/openexr
+	url = https://github.com/AcademySoftwareFoundation/openexr.git
 [submodule "3rd_party/Src/SFML/SFML"]
 	path = 3rd_party/Src/SFML/SFML
 	url = https://github.com/solbjorn/SFML.git
@@ -50,6 +62,9 @@
 [submodule "3rd_party/Src/callme"]
 	path = 3rd_party/Src/callme
 	url = https://github.com/solbjorn/callme.git
+[submodule "3rd_party/Src/compression/libdeflate/libdeflate"]
+	path = 3rd_party/Src/compression/deflate/libdeflate
+	url = https://github.com/ebiggers/libdeflate.git
 [submodule "3rd_party/Src/compression/lz4/lz4"]
 	path = 3rd_party/Src/compression/lz4/lz4
 	url = https://github.com/lz4/lz4.git

@@ -12,11 +12,11 @@ XR_DIAG_IGNORE("-Wnrvo");
 
 XR_DIAG_POP();
 
-#include <imgui_demo.cpp>
-
 XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wc++98-compat-extra-semi");
 XR_DIAG_IGNORE("-Wextra-semi-stmt");
 
+#include <imgui_demo.cpp>
 #include <imgui_draw.cpp>
 
 XR_DIAG_POP();

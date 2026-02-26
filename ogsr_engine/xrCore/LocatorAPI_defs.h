@@ -1,5 +1,23 @@
 #pragma once
 
+namespace xr
+{
+namespace fsgame
+{
+namespace formats
+{
+constexpr inline std::array<std::string_view, 17> texture{".dds", ".exr", ".ktx", ".ktx2", ".qoi", ".png", ".tga", ".jpg", ".bmp",
+                                                          ".gif", ".psd", ".hdr", ".pic",  ".pbm", ".pgm", ".pnm", ".ppm"};
+constexpr inline std::array<std::string_view, 4> sound{".ogg", ".flac", ".mp3", ".wav"};
+} // namespace formats
+
+constexpr inline std::string_view game_textures{"$game_textures$"};
+
+constexpr inline std::string_view level{"$level$"};
+constexpr inline std::string_view game_saves{"$game_saves$"};
+} // namespace fsgame
+} // namespace xr
+
 enum FS_List : u32
 {
     FS_ListFiles = (1 << 0),

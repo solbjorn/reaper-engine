@@ -19,18 +19,6 @@ public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, scale, scale, scale, 1.0f / r__dtex_range); }
 };
 
-namespace
-{
-void fix_texture_thm_name(LPSTR fn)
-{
-    LPSTR _ext = strext(fn);
-    if (_ext &&
-        (std::is_eq(xr::strcasecmp(_ext, ".tga")) || std::is_eq(xr::strcasecmp(_ext, ".thm")) || std::is_eq(xr::strcasecmp(_ext, ".dds")) ||
-         std::is_eq(xr::strcasecmp(_ext, ".bmp")) || std::is_eq(xr::strcasecmp(_ext, ".ogm"))))
-        *_ext = '\0';
-}
-} // namespace
-
 tmc::task<void> CTextureDescrMngr::LoadLTX(gsl::czstring initial)
 {
     FS_FileSet flist;
@@ -149,7 +137,7 @@ tmc::task<void> CTextureDescrMngr::LoadTHM(gsl::czstring initial)
                                      IReader* F = FS.r_open(fn);
 
                                      xr_strcpy(fn, it.name.c_str());
-                                     fix_texture_thm_name(fn);
+                                     fix_texture_name(fn);
                                      R_ASSERT(F->find_chunk_thm(THM_CHUNK_TYPE, fn));
 
                                      std::ignore = F->r_u32();

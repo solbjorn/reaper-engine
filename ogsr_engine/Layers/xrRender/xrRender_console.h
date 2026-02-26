@@ -212,10 +212,8 @@ extern float ps_particle_update_coeff;
 
 // textures
 #ifdef DEBUG
-extern int psTextureLOD;
 extern u32 psCurrentBPP;
 #else
-constexpr int psTextureLOD = 0;
 constexpr u32 psCurrentBPP = 32;
 #endif
 

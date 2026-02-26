@@ -360,4 +360,12 @@ extern GRASS_SHADER_DATA grass_shader_data;
 extern Fvector4 ps_ssfx_grass_interactive;
 extern Fvector4 ps_ssfx_int_grass_params_2;
 
+// dx10Texture.cpp
+namespace xr
+{
+[[nodiscard]] bool texture_exists(string_path& fn, std::span<const std::string_view> places, std::string_view fname);
+}
+
+void fix_texture_name(gsl::zstring fn);
+
 #endif

@@ -186,9 +186,10 @@ public:
     void _initialize(u32 flags, LPCSTR target_folder = nullptr, LPCSTR fs_name = nullptr);
     void _destroy();
 
-    [[nodiscard]] CStreamReader* rs_open(LPCSTR initial, LPCSTR N);
-    [[nodiscard]] IReader* r_open(LPCSTR initial, LPCSTR N);
-    [[nodiscard]] IC IReader* r_open(LPCSTR N) { return r_open(nullptr, N); }
+    [[nodiscard]] IReader* r_open(gsl::czstring initial, gsl::czstring N);
+    [[nodiscard]] IReader* r_open(gsl::czstring N) { return r_open(nullptr, N); }
+    [[nodiscard]] CStreamReader* rs_open(gsl::czstring initial, gsl::czstring N);
+    [[nodiscard]] CStreamReader* rs_open(gsl::czstring N) { return rs_open(nullptr, N); }
     void r_close(IReader*& S);
     void r_close(CStreamReader*& fs);
 

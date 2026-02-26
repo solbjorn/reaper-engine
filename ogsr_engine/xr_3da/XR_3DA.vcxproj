@@ -18,7 +18,7 @@
   <PropertyGroup Label="UserMacros">
     <AbseilBase>absl\base\absl_base.lib;absl\base\absl_malloc_internal.lib;absl\base\absl_raw_logging_internal.lib;absl\base\absl_spinlock_wait.lib;absl\base\absl_strerror.lib;absl\base\absl_throw_delegate.lib</AbseilBase>
     <AbseilContainer>absl\container\absl_hashtablez_sampler.lib;absl\container\absl_raw_hash_set.lib</AbseilContainer>
-    <AbseilDebugging>absl\debugging\absl_borrowed_fixup_buffer.lib;absl\debugging\absl_examine_stack.lib;absl\debugging\absl_stacktrace.lib;absl\debugging\absl_symbolize.lib</AbseilDebugging>
+    <AbseilDebugging>absl\debugging\absl_examine_stack.lib;absl\debugging\absl_stacktrace.lib;absl\debugging\absl_symbolize.lib</AbseilDebugging>
     <AbseilHash>absl\hash\absl_city.lib;absl\hash\absl_hash.lib</AbseilHash>
     <AbseilLog>absl\log\absl_log_globals.lib;absl\log\absl_log_initialize.lib;absl\log\absl_log_internal_format.lib;absl\log\absl_log_internal_globals.lib;absl\log\absl_log_internal_log_sink_set.lib;absl\log\absl_log_internal_message.lib;absl\log\absl_log_internal_nullguard.lib;absl\log\absl_log_internal_proto.lib;absl\log\absl_log_internal_structured_proto.lib;absl\log\absl_log_sink.lib</AbseilLog>
     <AbseilNumeric>absl\numeric\absl_int128.lib</AbseilNumeric>
@@ -106,8 +106,7 @@
       <Culture>0x0422</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>llvmlibc.lib;libc++.lib;$(AbseilLibs);DirectXTex.lib;OpenAL32.lib;avrt.lib;d3d11.lib;d3dcompiler.lib;dinput8.lib;dwrite.lib;dxgi.lib;dxguid.lib;freetype.lib;harfbuzz.lib;hwloc.lib;libomp.lib;luajit.lib;lz4.lib;ode.lib;ogg.lib;plutosvg.lib;plutovg.lib;sfml-system-s.lib;sfml-window-s.lib;squashfs.lib;theora.lib;tinyxml2.lib;vfw32.lib;vorbis.lib;vorbisfile.lib;winmm.lib;xxhash.lib;zstd_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(LLVMInstallDir)\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>llvmlibc.lib;libc++.lib;$(AbseilLibs);DirectXTex.lib;Iex-4_0.lib;IlmThread-4_0.lib;OpenAL32.lib;OpenCL.lib;OpenEXR-4_0.lib;OpenEXRCore-4_0.lib;avrt.lib;d3d11.lib;d3dcompiler.lib;deflatestatic.lib;dinput8.lib;dwrite.lib;dxgi.lib;dxguid.lib;freetype.lib;harfbuzz.lib;hwloc.lib;ktx.lib;libomp.lib;luajit.lib;lz4.lib;ode.lib;ogg.lib;openjph.0.26.lib;plutosvg.lib;plutovg.lib;sfml-graphics-s.lib;sfml-system-s.lib;sfml-window-s.lib;squashfs.lib;theora.lib;tinyxml2.lib;vfw32.lib;vorbis.lib;vorbisfile.lib;winmm.lib;xxhash.lib;zstd_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>%(AdditionalOptions) /force:multiple</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -177,8 +176,7 @@
       <Culture>0x0422</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>llvmlibc.lib;libc++.lib;$(AbseilLibs);DirectXTex.lib;OpenAL32.lib;avrt.lib;d3d11.lib;d3dcompiler.lib;dinput8.lib;dwrite.lib;dxgi.lib;dxguid.lib;freetype.lib;harfbuzz.lib;hwloc.lib;libomp.lib;luajit.lib;lz4.lib;ode.lib;ogg.lib;plutosvg.lib;plutovg.lib;sfml-system-s.lib;sfml-window-s.lib;squashfs.lib;theora.lib;tinyxml2.lib;vfw32.lib;vorbis.lib;vorbisfile.lib;winmm.lib;xxhash.lib;zstd_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(LLVMInstallDir)\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>llvmlibc.lib;libc++.lib;$(AbseilLibs);DirectXTex.lib;Iex-4_0.lib;IlmThread-4_0.lib;OpenAL32.lib;OpenCL.lib;OpenEXR-4_0.lib;OpenEXRCore-4_0.lib;avrt.lib;d3d11.lib;d3dcompiler.lib;deflatestatic.lib;dinput8.lib;dwrite.lib;dxgi.lib;dxguid.lib;freetype.lib;harfbuzz.lib;hwloc.lib;ktx.lib;libomp.lib;luajit.lib;lz4.lib;ode.lib;ogg.lib;openjph.0.26.lib;plutosvg.lib;plutovg.lib;sfml-graphics-s.lib;sfml-system-s.lib;sfml-window-s.lib;squashfs.lib;theora.lib;tinyxml2.lib;vfw32.lib;vorbis.lib;vorbisfile.lib;winmm.lib;xxhash.lib;zstd_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>%(AdditionalOptions) /force:multiple</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>

@@ -11,10 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
+    <ProjectName>Imath</ProjectName>
     <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{A3F8DB74-FED0-4ED3-9E51-F5B4E5AC9713}</ProjectGuid>
+    <ProjectGuid>{25F5549B-002B-40AF-A1FB-34B166E89CB9}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
-    <ProjectName>hwloc</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(SolutionDir)\3rd_party\Src\3rd_party_lib_properties.props" />
@@ -39,15 +39,17 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\hwloc.lib</NMakeOutput>
+    <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\Imath-3_2.lib</NMakeOutput>
     <NMakeBuildCommandLine>
       set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
+      set "LIBCXX_OPTIONS=$(libcxxOptions)"
+      set "LIBCXX_PATH=$(libcxxPath)"
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DHWLOC_ENABLE_TESTING=OFF -DHWLOC_SKIP_LSTOPO=ON -DHWLOC_SKIP_TOOLS=ON -DHWLOC_WITH_OPENCL=ON -DOpenCL_INCLUDE_DIR="$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\external\basis_universal\OpenCL" -DOpenCL_LIBRARY="$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\external\basis_universal\OpenCL\lib\OpenCL64.lib" ..\hwloc\contrib\windows-cmake
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DIMATH_ENABLE_LARGE_STACK=ON ..\Imath
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)
-      copy /Y "$(Configuration)\$(PlatformShortName)\lib\hwloc.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\hwloc.lib"
+      copy /Y "$(Configuration)\$(PlatformShortName)\lib\Imath-3_2.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\Imath-3_2.lib"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
       RD /S/Q _Build

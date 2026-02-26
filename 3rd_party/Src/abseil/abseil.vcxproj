@@ -59,7 +59,6 @@
       copy /Y "absl\container\absl_hashtablez_sampler.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\container\absl_hashtablez_sampler.lib"
       copy /Y "absl\container\absl_raw_hash_set.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\container\absl_raw_hash_set.lib"
       md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\debugging
-      copy /Y "absl\debugging\absl_borrowed_fixup_buffer.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\debugging\absl_borrowed_fixup_buffer.lib"
       copy /Y "absl\debugging\absl_examine_stack.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\debugging\absl_examine_stack.lib"
       copy /Y "absl\debugging\absl_stacktrace.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\debugging\absl_stacktrace.lib"
       copy /Y "absl\debugging\absl_symbolize.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\debugging\absl_symbolize.lib"

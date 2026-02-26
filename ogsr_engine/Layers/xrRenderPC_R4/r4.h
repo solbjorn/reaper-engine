@@ -137,6 +137,12 @@ private:
     tmc::task<void> render_lights_shadowed(light_Package& LP);
     tmc::task<void> render_lights(light_Package& LP);
 
+    static void texture_init_ktx();
+    [[nodiscard]] static ID3DBaseTexture* texture_load_dds(const string_path& path, u32& size);
+    [[nodiscard]] static ID3DBaseTexture* texture_load_exr(const string_path& path, u32& size);
+    [[nodiscard]] static ID3DBaseTexture* texture_load_ktx(const string_path& path, u32& size);
+    [[nodiscard]] static ID3DBaseTexture* texture_load_sf(const string_path& path, u32& size, bool mip);
+
 public:
     ShaderElement* rimp_select_sh_static(dxRender_Visual* pVisual, float cdist_sq, u32 phase);
     ShaderElement* rimp_select_sh_dynamic(IRenderable* root, dxRender_Visual* pVisual, float cdist_sq, u32 phase);
@@ -245,5 +251,3 @@ protected:
 
 extern CRender RImplementation;
 extern u32 reset_frame;
-
-void fix_texture_name(char* fn);

@@ -17,9 +17,14 @@ if(DEFINED BUILD_TOOLS)
   set(conformance_options "${conformance_options} -D_FORCENAMELESSUNION")
 endif()
 
+# OpenJPH
+if(OJPH_DISABLE_AVX512)
+  set(warning_options "${warning_options} -Wno-error=format-signedness")
+endif()
+
 # SFML
 if(SFML_USE_SYSTEM_DEPS)
-  set(conformance_options "${conformance_options} -D_WIN32_WINDOWS=0x0A00")
+  set(conformance_options "${conformance_options} -D_WIN32_WINDOWS=0x0A00 -DHB_DISABLE_DEPRECATED")
   set(warning_options "${warning_options} -Wno-error=format-signedness")
 endif()
 
@@ -35,17 +40,24 @@ endif()
 
 # freetype
 if(FT_ENABLE_ERROR_STRINGS)
-  set(conformance_options "${conformance_options} -DFT_CONFIG_OPTION_SUBPIXEL_RENDERING")
+  set(conformance_options "${conformance_options} -DFT_CONFIG_OPTION_SUBPIXEL_RENDERING -DHB_DISABLE_DEPRECATED")
 endif()
 
 # harfbuzz
 if(HB_HAVE_FREETYPE)
+  set(conformance_options "${conformance_options} -DHB_DISABLE_DEPRECATED")
   set(warning_options "${warning_options} -Wno-error=microsoft-enum-value -Wno-error=microsoft-exception-spec")
 endif()
 
 # hwloc
 if(HWLOC_SKIP_LSTOPO)
   set(conformance_options "${conformance_options} -DO_RDONLY=_O_RDONLY -DS_IFREG=_S_IFREG -Dfstat=_fstat -Dstat=_stat")
+endif()
+
+# ktx
+if(DEFINED KTX_FEATURE_TESTS)
+  set(conformance_options "${conformance_options} -DS_IFCHR=_S_IFCHR -DS_IFMT=_S_IFMT")
+  set(warning_options "${warning_options} -Wno-error=format-signedness")
 endif()
 
 # llvm-libc, libc++
@@ -58,6 +70,12 @@ endif()
 # luajit2
 if(LUAJIT_DIR)
   set(warning_options "${warning_options} -Wno-error=format -Wno-error=format-pedantic -Wno-error=format-signedness -Wno-error=microsoft-enum-value")
+endif()
+
+# openexr
+if(OPENEXR_ENABLE_LARGE_STACK)
+  set(conformance_options "${conformance_options} /FIuse_ansi.h")
+  set(warning_options "${warning_options} -Wno-error=format -Wno-error=format-signedness -Wno-error=parentheses")
 endif()
 
 # squashfs

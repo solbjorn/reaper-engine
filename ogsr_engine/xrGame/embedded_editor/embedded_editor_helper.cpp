@@ -349,12 +349,7 @@ bool SelectFile(gsl::czstring label, gsl::czstring initial, shared_str& file_nam
                     &current_files, std::ssize(current_files), ImVec2{-4.0f, -ImGui::GetFrameHeightWithSpacing()}))
             {
                 xr_strconcat(currValue, engine_dir.c_str(), current_files[gsl::narrow_cast<size_t>(curr_name_index)].c_str());
-
-                // fix_texture_name
-                if (gsl::zstring ext = strext(currValue); ext != nullptr &&
-                    (std::is_eq(xr::strcasecmp(ext, ".tga")) || std::is_eq(xr::strcasecmp(ext, ".dds")) || std::is_eq(xr::strcasecmp(ext, ".bmp")) ||
-                     std::is_eq(xr::strcasecmp(ext, ".ogm"))))
-                    *ext = '\0';
+                fix_texture_name(currValue);
 
                 file_name._set(currValue);
                 changed = true;
