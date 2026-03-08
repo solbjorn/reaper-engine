@@ -244,9 +244,6 @@ public:
 
 private:
     xr_vector<D3D_SHADER_MACRO> m_ShaderOptions;
-
-protected:
-    virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name);
 };
 
 extern CRender RImplementation;

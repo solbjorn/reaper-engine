@@ -48,7 +48,7 @@ public:
         return F->testAABB(&mM[0].x, mask);
     }
 
-    constexpr void _prim(u32 prim) const
+    constexpr void _prim(size_t prim) const
     {
         const auto id = gsl::narrow<s32>(prim);
         const auto& tri = tris[id];

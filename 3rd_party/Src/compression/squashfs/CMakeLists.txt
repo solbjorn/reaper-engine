@@ -45,6 +45,7 @@ set(sqfs_sources
     squashfs-tools-ng/lib/sqfs/src/block_processor/ostream.c
     squashfs-tools-ng/lib/sqfs/src/block_writer.c
     squashfs-tools-ng/lib/sqfs/src/comp/compressor.c
+    squashfs-tools-ng/lib/sqfs/src/comp/gzip.c
     squashfs-tools-ng/lib/sqfs/src/comp/internal.h
     squashfs-tools-ng/lib/sqfs/src/comp/lz4.c
     squashfs-tools-ng/lib/sqfs/src/comp/zstd.c
@@ -103,16 +104,17 @@ else()
     add_library(squashfs STATIC ${sqfs_sources})
 endif()
 
+find_package(ZLIB REQUIRED)
 find_package(lz4 REQUIRED)
 find_package(zstd REQUIRED)
 
 target_include_directories(squashfs PRIVATE "${CMAKE_SOURCE_DIR}/inc")
 target_include_directories(squashfs PRIVATE "${CMAKE_SOURCE_DIR}/squashfs-tools-ng/include")
 
-target_link_libraries(squashfs PRIVATE lz4::lz4 zstd::libzstd)
+target_link_libraries(squashfs PRIVATE ZLIB::ZLIB lz4::lz4 zstd::libzstd)
 
 set_target_properties(squashfs PROPERTIES PREFIX "" POSITION_INDEPENDENT_CODE ON)
-target_compile_definitions(squashfs PRIVATE WITH_LZ4 WITH_ZSTD)
+target_compile_definitions(squashfs PRIVATE WITH_GZIP WITH_LZ4 WITH_ZSTD)
 
 if (NOT BUILD_SHARED_LIBS)
     target_compile_definitions(squashfs PRIVATE SQFS_STATIC)

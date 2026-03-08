@@ -12,12 +12,12 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{604B9414-5807-4926-836E-11D645CC9FB8}</ProjectGuid>
+    <ProjectGuid>{707EEB1B-409E-4C88-934D-9FAF4154CAEC}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
-    <ProjectName>freetype</ProjectName>
+    <ProjectName>bzip2</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <Import Project="..\..\3rd_party_lib_properties.props" />
+  <Import Project="$(SolutionDir)\3rd_party\Src\3rd_party_lib_properties.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -39,24 +39,15 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\freetype.lib</NMakeOutput>
+    <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\bz2_static.lib</NMakeOutput>
     <NMakeBuildCommandLine>
       set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
-      set "LIBCXX_OPTIONS=$(libcxxOptions)"
-      set "LIBCXX_PATH=$(libcxxPath)"
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\FreeType\harfbuzz\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\OpenImageIO\png\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\compression\brotli\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\compression\bzip2\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\compression\zlib\_Build\$(Configuration)\$(PlatformShortName)" -DBUILD_SHARED_LIBS=OFF -DBZIP2_LIBRARIES="$(SolutionDir)\3rd_party\Src\compression\bzip2\_Build\$(Configuration)\$(PlatformShortName)\lib\bz2_static.lib" -DBZIP2_LIBRARY="$(SolutionDir)\3rd_party\Src\compression\bzip2\_Build\$(Configuration)\$(PlatformShortName)\lib\bz2_static.lib" -DFT_DYNAMIC_HARFBUZZ=OFF -DFT_ENABLE_ERROR_STRINGS=ON -DFT_REQUIRE_BROTLI=ON -DFT_REQUIRE_BZIP2=ON -DFT_REQUIRE_HARFBUZZ=ON -DFT_REQUIRE_PNG=ON -DFT_REQUIRE_ZLIB=ON -DPNG_LIBRARY="$(SolutionDir)\3rd_party\Src\OpenImageIO\png\_Build\$(Configuration)\$(PlatformShortName)\lib\libpng18_static.lib" ..\freetype
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DENABLE_LIB_ONLY=ON -DENABLE_SHARED_LIB=OFF -DENABLE_STATIC_LIB=ON ..\bzip2
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)
-      copy /Y "$(Configuration)\$(PlatformShortName)\lib\freetype.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\freetype.lib"
-      cd ..
-      md _Build2
-      cd _Build2
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\FreeType\graphite\_Build\$(Configuration)\$(PlatformShortName)" -DBUILD_SHARED_LIBS=OFF -DHB_HAVE_DIRECTWRITE=ON -DHB_HAVE_FREETYPE=ON -DHB_HAVE_GRAPHITE2=ON ..\..\harfbuzz\harfbuzz
-      cmake --build . --config $(Configuration)
-      cmake --install . --config $(Configuration)
-      copy /Y "$(Configuration)\$(PlatformShortName)\lib\harfbuzz.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\harfbuzz.lib"
+      copy /Y "bz2_static.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\bz2_static.lib"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
       RD /S/Q _Build

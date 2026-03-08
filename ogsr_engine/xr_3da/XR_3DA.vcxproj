@@ -106,7 +106,7 @@
       <Culture>0x0422</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>llvmlibc.lib;libc++.lib;$(AbseilLibs);DirectXTex.lib;Iex-4_0.lib;IlmThread-4_0.lib;OpenAL32.lib;OpenCL.lib;OpenEXR-4_0.lib;OpenEXRCore-4_0.lib;avrt.lib;d3d11.lib;d3dcompiler.lib;deflatestatic.lib;dinput8.lib;dwrite.lib;dxgi.lib;dxguid.lib;freetype.lib;harfbuzz.lib;hwloc.lib;ktx.lib;libomp.lib;luajit.lib;lz4.lib;ode.lib;ogg.lib;openjph.0.26.lib;plutosvg.lib;plutovg.lib;sfml-graphics-s.lib;sfml-system-s.lib;sfml-window-s.lib;squashfs.lib;theora.lib;tinyxml2.lib;vfw32.lib;vorbis.lib;vorbisfile.lib;winmm.lib;xxhash.lib;zstd_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>llvmlibc.lib;libc++.lib;$(AbseilLibs);DirectXTex.lib;Iex-4_0.lib;IlmThread-4_0.lib;OpenAL32.lib;OpenCL.lib;OpenEXR-4_0.lib;OpenEXRCore-4_0.lib;avrt.lib;brotlicommon.lib;brotlidec.lib;bz2_static.lib;d3d11.lib;d3dcompiler.lib;deflatestatic.lib;dinput8.lib;dwrite.lib;dxgi.lib;dxguid.lib;freetype.lib;graphite2.lib;harfbuzz.lib;hwloc.lib;ktx.lib;libomp.lib;libpng18_static.lib;luajit.lib;lz4.lib;ode.lib;ogg.lib;openjph.0.26.lib;plutosvg.lib;plutovg.lib;sfml-graphics-s.lib;sfml-system-s.lib;sfml-window-s.lib;squashfs.lib;theora.lib;tinyxml2.lib;vfw32.lib;vorbis.lib;vorbisfile.lib;winmm.lib;xxhash.lib;zlibstatic.lib;zstd_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>%(AdditionalOptions) /force:multiple</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -176,7 +176,7 @@
       <Culture>0x0422</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>llvmlibc.lib;libc++.lib;$(AbseilLibs);DirectXTex.lib;Iex-4_0.lib;IlmThread-4_0.lib;OpenAL32.lib;OpenCL.lib;OpenEXR-4_0.lib;OpenEXRCore-4_0.lib;avrt.lib;d3d11.lib;d3dcompiler.lib;deflatestatic.lib;dinput8.lib;dwrite.lib;dxgi.lib;dxguid.lib;freetype.lib;harfbuzz.lib;hwloc.lib;ktx.lib;libomp.lib;luajit.lib;lz4.lib;ode.lib;ogg.lib;openjph.0.26.lib;plutosvg.lib;plutovg.lib;sfml-graphics-s.lib;sfml-system-s.lib;sfml-window-s.lib;squashfs.lib;theora.lib;tinyxml2.lib;vfw32.lib;vorbis.lib;vorbisfile.lib;winmm.lib;xxhash.lib;zstd_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>llvmlibc.lib;libc++.lib;$(AbseilLibs);DirectXTex.lib;Iex-4_0.lib;IlmThread-4_0.lib;OpenAL32.lib;OpenCL.lib;OpenEXR-4_0.lib;OpenEXRCore-4_0.lib;avrt.lib;brotlicommon.lib;brotlidec.lib;bz2_static.lib;d3d11.lib;d3dcompiler.lib;deflatestatic.lib;dinput8.lib;dwrite.lib;dxgi.lib;dxguid.lib;freetype.lib;graphite2.lib;harfbuzz.lib;hwloc.lib;ktx.lib;libomp.lib;libpng18_static.lib;luajit.lib;lz4.lib;ode.lib;ogg.lib;openjph.0.26.lib;plutosvg.lib;plutovg.lib;sfml-graphics-s.lib;sfml-system-s.lib;sfml-window-s.lib;squashfs.lib;theora.lib;tinyxml2.lib;vfw32.lib;vorbis.lib;vorbisfile.lib;winmm.lib;xxhash.lib;zlibstatic.lib;zstd_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>%(AdditionalOptions) /force:multiple</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>

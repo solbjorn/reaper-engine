@@ -376,7 +376,7 @@ ID3DBaseTexture* CRender::texture_load_ktx(const string_path& path, u32& size)
                 return nullptr;
             }
         }
-        else if (ktx::ktxTexture2_GetColorModel_e(tex2) == ktx::KHR_DF_MODEL_ASTC)
+        else if (const auto mdl = ktx::ktxTexture2_GetColorModel_e(tex2); mdl == ktx::KHR_DF_MODEL_ASTC || mdl == ktx::KHR_DF_MODEL_UASTC_HDR_4x4)
         {
             if (const auto res = ktx::ktxTexture2_DecodeAstc(tex2); res != ktx::KTX_SUCCESS)
             {

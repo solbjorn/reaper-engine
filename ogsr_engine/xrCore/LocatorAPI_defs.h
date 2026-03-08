@@ -6,8 +6,8 @@ namespace fsgame
 {
 namespace formats
 {
-constexpr inline std::array<std::string_view, 17> texture{".dds", ".exr", ".ktx", ".ktx2", ".qoi", ".png", ".tga", ".jpg", ".bmp",
-                                                          ".gif", ".psd", ".hdr", ".pic",  ".pbm", ".pgm", ".pnm", ".ppm"};
+constexpr inline std::array<std::string_view, 18> texture{".dds", ".exr", ".ktx", ".ktx2", ".qoi", ".png", ".tga", ".jpg", ".jpeg",
+                                                          ".bmp", ".gif", ".psd", ".hdr",  ".pic", ".pbm", ".pgm", ".pnm", ".ppm"};
 constexpr inline std::array<std::string_view, 4> sound{".ogg", ".flac", ".mp3", ".wav"};
 } // namespace formats
 

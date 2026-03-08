@@ -33,6 +33,12 @@ if(ABSL_PROPAGATE_CXX_STD)
   set(warning_options "${warning_options} -Wno-error=format -Wno-error=format-signedness")
 endif()
 
+# bzip2
+if(ENABLE_LIB_ONLY)
+  set(conformance_options "${conformance_options} -DO_BINARY=_O_BINARY -Dfdopen=_fdopen -Dfileno=_fileno -Dsetmode=_setmode")
+  set(warning_options "${warning_options} -Wno-error=format-signedness")
+endif()
+
 # flac
 if(DEFINED BUILD_CXXLIBS)
   set(conformance_options "${conformance_options} -DS_IWRITE=_S_IWRITE -Dfileno=_fileno -Dgetenv=getenv -Doff_t=_off_t -Dstrdup=_strdup -Dutimbuf=_utimbuf")
@@ -40,12 +46,18 @@ endif()
 
 # freetype
 if(FT_ENABLE_ERROR_STRINGS)
-  set(conformance_options "${conformance_options} -DFT_CONFIG_OPTION_SUBPIXEL_RENDERING -DHB_DISABLE_DEPRECATED")
+  set(conformance_options "${conformance_options} -DFT_CONFIG_OPTION_SUBPIXEL_RENDERING -DHB_DISABLE_DEPRECATED -DPCF_CONFIG_OPTION_LONG_FAMILY_NAMES")
+endif()
+
+# graphite
+if(EXISTS "${CMAKE_SOURCE_DIR}/Graphite.cmake")
+  set(conformance_options "${conformance_options} -DGRAPHITE2_STATIC")
+  set(warning_options "${warning_options} -Wno-error=format-signedness")
 endif()
 
 # harfbuzz
 if(HB_HAVE_FREETYPE)
-  set(conformance_options "${conformance_options} -DHB_DISABLE_DEPRECATED")
+  set(conformance_options "${conformance_options} -DGRAPHITE2_STATIC -DHB_DISABLE_DEPRECATED")
   set(warning_options "${warning_options} -Wno-error=microsoft-enum-value -Wno-error=microsoft-exception-spec")
 endif()
 
@@ -87,6 +99,12 @@ endif()
 if(CMAKE_POLICY_VERSION_MINIMUM)
   set(conformance_options "${conformance_options} -Dalloca=_alloca")
   set(warning_options "${warning_options} -Wno-error=incompatible-pointer-types")
+endif()
+
+# zlib
+if(ZLIB_COMPAT)
+  set(conformance_options "${conformance_options} -DO_APPEND=_O_APPEND -DO_CREAT=_O_CREAT -DO_RDONLY=_O_RDONLY -DO_TRUNC=_O_TRUNC -DO_WRONLY=_O_WRONLY -Dclose=_close -Dopen=_open -Dread=_read -Dwrite=_write")
+  set(warning_options "${warning_options} -Wno-error=missing-format-attribute")
 endif()
 
 # zstd

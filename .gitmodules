@@ -13,6 +13,9 @@
 [submodule "3rd_party/Src/FreeType/freetype/freetype"]
 	path = 3rd_party/Src/FreeType/freetype/freetype
 	url = https://github.com/freetype/freetype.git
+[submodule "3rd_party/Src/FreeType/graphite/graphite"]
+	path = 3rd_party/Src/FreeType/graphite/graphite
+	url = https://github.com/silnrsi/graphite.git
 [submodule "3rd_party/Src/FreeType/harfbuzz/harfbuzz"]
 	path = 3rd_party/Src/FreeType/harfbuzz/harfbuzz
 	url = https://github.com/harfbuzz/harfbuzz.git
@@ -40,6 +43,9 @@
 [submodule "3rd_party/Src/OpenImageIO/openexr/openexr"]
 	path = 3rd_party/Src/OpenImageIO/openexr/openexr
 	url = https://github.com/AcademySoftwareFoundation/openexr.git
+[submodule "3rd_party/Src/OpenImageIO/png/libpng"]
+	path = 3rd_party/Src/OpenImageIO/png/libpng
+	url = https://github.com/pnggroup/libpng.git
 [submodule "3rd_party/Src/SFML/SFML"]
 	path = 3rd_party/Src/SFML/SFML
 	url = https://github.com/solbjorn/SFML.git
@@ -62,7 +68,13 @@
 [submodule "3rd_party/Src/callme"]
 	path = 3rd_party/Src/callme
 	url = https://github.com/solbjorn/callme.git
-[submodule "3rd_party/Src/compression/libdeflate/libdeflate"]
+[submodule "3rd_party/Src/compression/brotli/brotli"]
+	path = 3rd_party/Src/compression/brotli/brotli
+	url = https://github.com/google/brotli.git
+[submodule "3rd_party/Src/compression/bzip2/bzip2"]
+	path = 3rd_party/Src/compression/bzip2/bzip2
+	url = https://github.com/libarchive/bzip2.git
+[submodule "3rd_party/Src/compression/deflate/libdeflate"]
 	path = 3rd_party/Src/compression/deflate/libdeflate
 	url = https://github.com/ebiggers/libdeflate.git
 [submodule "3rd_party/Src/compression/lz4/lz4"]
@@ -74,6 +86,9 @@
 [submodule "3rd_party/Src/compression/xxHash/xxHash"]
 	path = 3rd_party/Src/compression/xxHash/xxHash
 	url = https://github.com/Cyan4973/xxHash.git
+[submodule "3rd_party/Src/compression/zlib/zlib-ng"]
+	path = 3rd_party/Src/compression/zlib/zlib-ng
+	url = https://github.com/zlib-ng/zlib-ng.git
 [submodule "3rd_party/Src/compression/zstd/zstd"]
 	path = 3rd_party/Src/compression/zstd/zstd
 	url = https://github.com/facebook/zstd.git

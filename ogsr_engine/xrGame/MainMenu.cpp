@@ -397,7 +397,7 @@ tmc::task<void> CMainMenu::Screenshot(IRender_interface::ScreenshotMode mode, gs
         Device.seqRender.Add(g_pGameLevel);
     }
 
-    m_screenshotFrame = Device.dwFrame + 1;
+    m_screenshotFrame = Device.dwFrame + 2;
     m_Flags.set(flRestoreConsole, Console->bVisible);
 
     co_await Console->Hide();

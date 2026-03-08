@@ -267,9 +267,6 @@ public:
 
     // Constructor/destructor
     ~IRender_interface() override = 0;
-
-protected:
-    virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name) = 0;
 };
 
 inline IRender_interface::~IRender_interface() = default;

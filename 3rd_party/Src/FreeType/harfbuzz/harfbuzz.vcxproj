@@ -46,13 +46,13 @@
       set "LIBCXX_PATH=$(libcxxPath)"
       md _Build2
       cd _Build2
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DBUILD_SHARED_LIBS=OFF -DFT_DISABLE_HARFBUZZ=ON -DFT_DYNAMIC_HARFBUZZ=OFF -DFT_ENABLE_ERROR_STRINGS=ON ..\..\freetype\freetype
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\OpenImageIO\png\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\compression\brotli\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\compression\bzip2\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\compression\zlib\_Build\$(Configuration)\$(PlatformShortName)" -DBUILD_SHARED_LIBS=OFF -DBZIP2_LIBRARIES="$(SolutionDir)\3rd_party\Src\compression\bzip2\_Build\$(Configuration)\$(PlatformShortName)\lib\bz2_static.lib" -DBZIP2_LIBRARY="$(SolutionDir)\3rd_party\Src\compression\bzip2\_Build\$(Configuration)\$(PlatformShortName)\lib\bz2_static.lib" -DFT_DISABLE_HARFBUZZ=ON -DFT_DYNAMIC_HARFBUZZ=OFF -DFT_ENABLE_ERROR_STRINGS=ON -DFT_REQUIRE_BROTLI=ON -DFT_REQUIRE_BZIP2=ON -DFT_REQUIRE_PNG=ON -DFT_REQUIRE_ZLIB=ON -DPNG_LIBRARY="$(SolutionDir)\3rd_party\Src\OpenImageIO\png\_Build\$(Configuration)\$(PlatformShortName)\lib\libpng18_static.lib" ..\..\freetype\freetype
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)
       cd ..
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\FreeType\harfbuzz\_Build2\$(Configuration)\$(PlatformShortName)" -DBUILD_SHARED_LIBS=OFF -DHB_HAVE_DIRECTWRITE=ON -DHB_HAVE_FREETYPE=ON ..\harfbuzz
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\FreeType\harfbuzz\_Build2\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\FreeType\graphite\_Build\$(Configuration)\$(PlatformShortName)" -DBUILD_SHARED_LIBS=OFF -DHB_HAVE_DIRECTWRITE=ON -DHB_HAVE_FREETYPE=ON -DHB_HAVE_GRAPHITE2=ON ..\harfbuzz
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)
     </NMakeBuildCommandLine>

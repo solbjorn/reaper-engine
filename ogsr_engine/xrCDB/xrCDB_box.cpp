@@ -269,7 +269,7 @@ public:
         return true;
     }
 
-    constexpr void _prim(u32 prim)
+    constexpr void _prim(size_t prim)
     {
         const auto id = gsl::narrow<s32>(prim);
         const TRI& T = tris[id];
