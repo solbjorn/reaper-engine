@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "ScriptXmlInit.h"
+
 #include "ui\UIXmlInit.h"
 #include "ui\UITextureMaster.h"
 #include "ui\UICheckButton.h"
@@ -37,7 +38,7 @@ void _attach_child(CUIWindow* _child, CUIWindow* _parent)
 
 CScriptXmlInit::CScriptXmlInit() = default;
 
-void CScriptXmlInit::ParseFile(LPCSTR xml_file) { m_xml.Init(CONFIG_PATH, UI_PATH, xml_file); }
+void CScriptXmlInit::ParseFile(LPCSTR xml_file) { std::ignore = m_xml.Init(CONFIG_PATH, UI_PATH, xml_file); }
 void CScriptXmlInit::ParseShTexInfo(LPCSTR xml_file) { CUITextureMaster::ParseShTexInfo(xml_file); }
 
 void CScriptXmlInit::InitWindow(LPCSTR path, int index, CUIWindow* pWnd) { CUIXmlInit::InitWindow(m_xml, path, index, pWnd); }

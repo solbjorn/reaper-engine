@@ -78,7 +78,7 @@ void CUIArtefactDetectorElite::construct(CEliteDetector* p)
         AttachChild(m_wrk_area);
 
         xr_sprintf(buff, "%s", p->ui_xml_tag());
-        XML_NODE* pStoredRoot = uiXml.GetLocalRoot();
+        const auto pStoredRoot = uiXml.GetLocalRoot();
         uiXml.SetLocalRoot(uiXml.NavigateToNode(buff, 0));
 
         const int num = uiXml.GetNodesNum(buff, 0, "palette");

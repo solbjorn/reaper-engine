@@ -33,7 +33,7 @@ RD /s /q 3rd_party\Src\llvm\_Build
 RD /s /q 3rd_party\Src\luajit2\_Build
 RD /s /q 3rd_party\Src\mimalloc\_Build
 RD /s /q 3rd_party\Src\openal-soft\_Build
-RD /s /q 3rd_party\Src\tinyxml2\_Build
+RD /s /q 3rd_party\Src\pugixml\_Build
 RD /s /q 3rd_party\Src\tmc\hwloc\_Build
 RD /s /q ogsr_engine\_LIB
 RD /s /q ogsr_engine\_TEMP

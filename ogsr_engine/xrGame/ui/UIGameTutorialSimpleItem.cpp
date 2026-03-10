@@ -58,7 +58,7 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 {
     CUISequenceItem::Load(xml, idx);
 
-    XML_NODE* _stored_root = xml->GetLocalRoot();
+    const auto _stored_root = xml->GetLocalRoot();
     xml->SetLocalRoot(xml->NavigateToNode("item", idx));
 
     LPCSTR m_snd_name = xml->Read("sound", 0, "");
@@ -112,7 +112,8 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
     // ui-components
     m_UIWindow = xr_new<CUIWindow>();
     m_UIWindow->SetAutoDelete(false);
-    XML_NODE* _lsr = xml->GetLocalRoot();
+
+    const auto _lsr = xml->GetLocalRoot();
     CUIXmlInit xml_init;
     xml_init.InitWindow(*xml, "main_wnd", 0, m_UIWindow);
     //.	xml_init.InitAutoStaticGroup	(*xml, "main_wnd",		m_UIWindow);
@@ -124,7 +125,7 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
     string64 sname;
     for (int i = 0; i < cnt; ++i)
     {
-        XML_NODE* _sr = xml->GetLocalRoot();
+        const auto _sr = xml->GetLocalRoot();
         xml->SetLocalRoot(xml->NavigateToNode("main_wnd", 0));
 
         sprintf_s(sname, "auto_static_%d", i);
@@ -141,6 +142,7 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 
         xml->SetLocalRoot(_sr);
     }
+
     xml->SetLocalRoot(_stored_root);
 }
 

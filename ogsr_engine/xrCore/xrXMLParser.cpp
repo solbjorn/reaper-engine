@@ -2,18 +2,24 @@
 
 #include "xrXMLParser.h"
 
-CXml::CXml() = default;
-CXml::~CXml() { ClearInternal(); }
-
-void CXml::ClearInternal() { m_Doc.Clear(); }
+namespace xr
+{
+namespace detail
+{
+void xml_init()
+{
+    pugi::set_memory_management_functions([](size_t size) { return xr_malloc(gsl::narrow_cast<gsl::index>(size)); }, [](void* ptr) { xr_free(ptr); });
+}
+} // namespace detail
+} // namespace xr
 
 namespace
 {
-void ParseFile(LPCSTR path, CMemoryWriter& W, IReader* F, CXml* xml, LPCSTR current_xml_filename)
+void ParseFile(gsl::czstring path, CMemoryWriter& W, IReader* F, CXml* xml, gsl::czstring current_xml_filename)
 {
     xr_string str;
 
-    const auto loadFile = [&](LPCSTR file_name) {
+    const auto loadFile = [&](gsl::czstring file_name) {
         IReader* I = nullptr;
 
         if (file_name == strstr(file_name, "ui\\"))
@@ -77,17 +83,21 @@ void ParseFile(LPCSTR path, CMemoryWriter& W, IReader* F, CXml* xml, LPCSTR curr
 }
 } // namespace
 
-bool CXml::Init(LPCSTR path_alias, LPCSTR path, LPCSTR _xml_filename)
+CXml::CXml() = default;
+CXml::~CXml() = default;
+
+bool CXml::Init(gsl::czstring path_alias, gsl::czstring path, gsl::czstring _xml_filename)
 {
     const shared_str fn = correct_file_name(path, _xml_filename);
 
     string_path str;
     sprintf(str, "%s\\%s", path, *fn);
+
     return Init(path_alias, str);
 }
 
 // инициализация и загрузка XML файла
-bool CXml::Init(LPCSTR path, LPCSTR xml_filename)
+bool CXml::Init(gsl::czstring path, gsl::czstring xml_filename)
 {
     strcpy_s(m_xml_file_name, xml_filename);
     // Load and parse xml file
@@ -103,24 +113,20 @@ bool CXml::Init(LPCSTR path, LPCSTR xml_filename)
     W.w_stringZ("");
     FS.r_close(F);
 
-    m_Doc.Parse(reinterpret_cast<gsl::czstring>(W.pointer()));
-    if (m_Doc.Error())
-    {
-        string1024 str;
-        sprintf(str, "XML file:%s value:%s errDescr:%s", m_xml_file_name, m_Doc.Value(), m_Doc.ErrorStr());
-        R_ASSERT(false, str);
-    }
+    const auto ret = m_Doc.load_string(reinterpret_cast<gsl::czstring>(W.pointer()));
+    if (!ret)
+        FATAL("XML file: %s, value: -%d, errDescr: %s at %zd bytes", m_xml_file_name, ret.status, ret.description(), ret.offset);
 
-    m_root = m_Doc.FirstChildElement();
+    m_root = m_Doc.first_child();
 
     return true;
 }
 
-XML_NODE* CXml::NavigateToNode(XML_NODE* start_node, LPCSTR path, int index)
+pugi::xml_node CXml::NavigateToNode(pugi::xml_node start_node, gsl::czstring path, gsl::index index) const
 {
     R_ASSERT(start_node && path, "NavigateToNode failed in XML file ", m_xml_file_name);
-    XML_NODE* node{};
-    XML_NODE* node_parent{};
+    pugi::xml_node node;
+    pugi::xml_node node_parent;
     string_path buf_str{};
 
     VERIFY(xr_strlen(path) < 200);
@@ -128,17 +134,17 @@ XML_NODE* CXml::NavigateToNode(XML_NODE* start_node, LPCSTR path, int index)
 
     const char seps[] = ":";
     char* token;
-    int tmp = 0;
+    gsl::index tmp{0};
 
     // разбить путь на отдельные подпути
     token = strtok(buf_str, seps);
 
     if (token)
     {
-        node = start_node->FirstChildElement(token);
+        node = start_node.child(token);
 
         while (tmp++ < index && node)
-            node = node->NextSiblingElement(token);
+            node = node.next_sibling(token);
     }
 
     while (token)
@@ -150,7 +156,7 @@ XML_NODE* CXml::NavigateToNode(XML_NODE* start_node, LPCSTR path, int index)
             if (node)
             {
                 node_parent = node;
-                node = node_parent->FirstChildElement(token);
+                node = node_parent.child(token);
             }
         }
     }
@@ -158,218 +164,88 @@ XML_NODE* CXml::NavigateToNode(XML_NODE* start_node, LPCSTR path, int index)
     return node;
 }
 
-XML_NODE* CXml::NavigateToNode(LPCSTR path, int index) { return NavigateToNode(GetLocalRoot() ? GetLocalRoot() : GetRoot(), path, index); }
+pugi::xml_node CXml::NavigateToNode(gsl::czstring path, gsl::index index) const { return NavigateToNode(GetLocalRoot() ? GetLocalRoot() : GetRoot(), path, index); }
 
-XML_NODE* CXml::NavigateToNodeWithAttribute(LPCSTR tag_name, LPCSTR attrib_name, LPCSTR attrib_value)
+pugi::xml_node CXml::NavigateToNodeWithAttribute(gsl::czstring tag_name, gsl::czstring attrib_name, gsl::czstring attrib_value) const
 {
-    XML_NODE* root = GetLocalRoot() ? GetLocalRoot() : GetRoot();
-    const int tabsCount = GetNodesNum(root, tag_name);
+    pugi::xml_node root = GetLocalRoot() ? GetLocalRoot() : GetRoot();
+    const auto tabsCount = GetNodesNum(root, tag_name);
 
-    for (int i = 0; i < tabsCount; ++i)
+    for (gsl::index i{0}; i < tabsCount; ++i)
     {
-        LPCSTR result = ReadAttrib(root, tag_name, i, attrib_name, "");
+        gsl::czstring result = ReadAttrib(root, tag_name, i, attrib_name, nullptr);
         if (result != nullptr && std::is_eq(xr_strcmp(result, attrib_value)))
             return NavigateToNode(root, tag_name, i);
     }
 
-    return nullptr;
+    return pugi::xml_node{};
 }
 
-bool CXml::HasNode(LPCSTR path, int index)
+bool CXml::HasNode(gsl::czstring path, gsl::index index) const { return !!NavigateToNode(path, index); }
+bool CXml::HasNodeAttribute(gsl::czstring path, gsl::index index, gsl::czstring attrib) const { return !!attribute(NavigateToNode(path, index), attrib); }
+
+pugi::xml_text CXml::text(gsl::czstring path, gsl::index index) const { return text(NavigateToNode(path, index)); }
+gsl::czstring CXml::Read(gsl::czstring path, gsl::index index, gsl::czstring default_str_val) const { return text(path, index).as_string(default_str_val); }
+
+pugi::xml_text CXml::text(pugi::xml_node start_node, gsl::czstring path, gsl::index index) const { return text(NavigateToNode(start_node, path, index)); }
+
+gsl::czstring CXml::Read(pugi::xml_node start_node, gsl::czstring path, gsl::index index, gsl::czstring default_str_val) const
 {
-    const XML_NODE* node = NavigateToNode(path, index);
-    return !!node;
+    return text(start_node, path, index).as_string(default_str_val);
 }
 
-bool CXml::HasNodeAttribute(LPCSTR path, int index, LPCSTR attrib)
+pugi::xml_text CXml::text(pugi::xml_node node) const { return node.text(); }
+gsl::czstring CXml::Read(pugi::xml_node node, gsl::czstring default_str_val) const { return text(node).as_string(default_str_val); }
+
+s32 CXml::ReadInt(pugi::xml_node node, s32 default_int_val) const { return text(node).as_int(default_int_val); }
+s32 CXml::ReadInt(gsl::czstring path, gsl::index index, s32 default_int_val) const { return text(path, index).as_int(default_int_val); }
+s32 CXml::ReadInt(pugi::xml_node start_node, gsl::czstring path, gsl::index index, s32 default_int_val) const { return text(start_node, path, index).as_int(default_int_val); }
+
+f32 CXml::ReadFlt(gsl::czstring path, gsl::index index, f32 default_flt_val) const { return text(path, index).as_float(default_flt_val); }
+f32 CXml::ReadFlt(pugi::xml_node start_node, gsl::czstring path, gsl::index index, f32 default_flt_val) const { return text(start_node, path, index).as_float(default_flt_val); }
+f32 CXml::ReadFlt(pugi::xml_node node, f32 default_flt_val) const { return text(node).as_float(default_flt_val); }
+
+pugi::xml_attribute CXml::attribute(pugi::xml_node start_node, gsl::czstring path, gsl::index index, gsl::czstring attrib) const
 {
-    XML_NODE* node = NavigateToNode(path, index);
-    const LPCSTR result = ReadAttrib(node, attrib, nullptr);
-    return !!result;
+    return NavigateToNode(start_node, path, index).attribute(attrib);
 }
 
-LPCSTR CXml::Read(LPCSTR path, int index, LPCSTR default_str_val)
+gsl::czstring CXml::ReadAttrib(pugi::xml_node start_node, gsl::czstring path, gsl::index index, gsl::czstring attrib, gsl::czstring default_str_val) const
 {
-    XML_NODE* node = NavigateToNode(path, index);
-    LPCSTR result = Read(node, default_str_val);
-    return result;
+    return attribute(start_node, path, index, attrib).as_string(default_str_val);
 }
 
-LPCSTR CXml::Read(XML_NODE* start_node, LPCSTR path, int index, LPCSTR default_str_val)
+pugi::xml_attribute CXml::attribute(gsl::czstring path, gsl::index index, gsl::czstring attrib) const { return NavigateToNode(path, index).attribute(attrib); }
+
+gsl::czstring CXml::ReadAttrib(gsl::czstring path, gsl::index index, gsl::czstring attrib, gsl::czstring default_str_val) const
 {
-    XML_NODE* node = NavigateToNode(start_node, path, index);
-    LPCSTR result = Read(node, default_str_val);
-    return result;
+    return attribute(path, index, attrib).as_string(default_str_val);
 }
 
-LPCSTR CXml::Read(XML_NODE* node, LPCSTR default_str_val)
-{
-    if (!node)
-        return default_str_val;
-    else
-    {
-        node = node->FirstChild();
-        if (!node)
-            return default_str_val;
+pugi::xml_attribute CXml::attribute(pugi::xml_node node, gsl::czstring attrib) const { return node.attribute(attrib); }
+gsl::czstring CXml::ReadAttrib(pugi::xml_node node, gsl::czstring attrib, gsl::czstring default_str_val) const { return attribute(node, attrib).as_string(default_str_val); }
 
-        const XML_TEXT* text = node->ToText();
-        if (text)
-            return text->Value();
-        else
-            return default_str_val;
-    }
+s32 CXml::ReadAttribInt(pugi::xml_node node, gsl::czstring attrib, s32 default_int_val) const { return attribute(node, attrib).as_int(default_int_val); }
+s32 CXml::ReadAttribInt(gsl::czstring path, gsl::index index, gsl::czstring attrib, s32 default_int_val) const { return attribute(path, index, attrib).as_int(default_int_val); }
+
+s32 CXml::ReadAttribInt(pugi::xml_node start_node, gsl::czstring path, gsl::index index, gsl::czstring attrib, s32 default_int_val) const
+{
+    return attribute(start_node, path, index, attrib).as_int(default_int_val);
 }
 
-int CXml::ReadInt(XML_NODE* node, int default_int_val)
-{
-    LPCSTR result_str = Read(node, nullptr);
-    if (!result_str)
-        return default_int_val;
+f32 CXml::ReadAttribFlt(gsl::czstring path, gsl::index index, gsl::czstring attrib, f32 default_flt_val) const { return attribute(path, index, attrib).as_float(default_flt_val); }
 
-    return std::atoi(result_str);
+f32 CXml::ReadAttribFlt(pugi::xml_node start_node, gsl::czstring path, gsl::index index, gsl::czstring attrib, f32 default_flt_val) const
+{
+    return attribute(start_node, path, index, attrib).as_float(default_flt_val);
 }
 
-int CXml::ReadInt(LPCSTR path, int index, int default_int_val)
+f32 CXml::ReadAttribFlt(pugi::xml_node node, gsl::czstring attrib, f32 default_flt_val) const { return attribute(node, attrib).as_float(default_flt_val); }
+
+gsl::index CXml::GetNodesNum(gsl::czstring path, gsl::index index, gsl::czstring tag_name) const
 {
-    LPCSTR result_str = Read(path, index, nullptr);
-    if (!result_str)
-        return default_int_val;
-
-    return std::atoi(result_str);
-}
-
-int CXml::ReadInt(XML_NODE* start_node, LPCSTR path, int index, int default_int_val)
-{
-    LPCSTR result_str = Read(start_node, path, index, nullptr);
-    if (!result_str)
-        return default_int_val;
-
-    return std::atoi(result_str);
-}
-
-float CXml::ReadFlt(LPCSTR path, int index, float default_flt_val)
-{
-    LPCSTR result_str = Read(path, index, nullptr);
-    if (!result_str)
-        return default_flt_val;
-
-    return std::strtof(result_str, nullptr);
-}
-
-float CXml::ReadFlt(XML_NODE* start_node, LPCSTR path, int index, float default_flt_val)
-{
-    LPCSTR result_str = Read(start_node, path, index, nullptr);
-    if (!result_str)
-        return default_flt_val;
-
-    return std::strtof(result_str, nullptr);
-}
-
-float CXml::ReadFlt(XML_NODE* node, float default_flt_val)
-{
-    LPCSTR result_str = Read(node, nullptr);
-    if (!result_str)
-        return default_flt_val;
-
-    return std::strtof(result_str, nullptr);
-}
-
-LPCSTR CXml::ReadAttrib(XML_NODE* start_node, LPCSTR path, int index, LPCSTR attrib, LPCSTR default_str_val)
-{
-    XML_NODE* node = NavigateToNode(start_node, path, index);
-    LPCSTR result = ReadAttrib(node, attrib, default_str_val);
-
-    return result;
-}
-
-LPCSTR CXml::ReadAttrib(LPCSTR path, int index, LPCSTR attrib, LPCSTR default_str_val)
-{
-    XML_NODE* node = NavigateToNode(path, index);
-    LPCSTR result = ReadAttrib(node, attrib, default_str_val);
-    return result;
-}
-
-LPCSTR CXml::ReadAttrib(XML_NODE* node, LPCSTR attrib, LPCSTR default_str_val)
-{
-    if (node == nullptr)
-        return default_str_val;
-
-    LPCSTR result_str{};
-
-    // Кастаем ниже по иерархии
-    const XML_ELEM* el = node->ToElement();
-    if (el)
-    {
-        result_str = el->Attribute(attrib);
-        if (result_str)
-            return result_str;
-        else
-            return default_str_val;
-    }
-    else
-    {
-        return default_str_val;
-    }
-}
-
-int CXml::ReadAttribInt(XML_NODE* node, LPCSTR attrib, int default_int_val)
-{
-    LPCSTR result_str = ReadAttrib(node, attrib, nullptr);
-    if (!result_str)
-        return default_int_val;
-
-    return std::atoi(result_str);
-}
-
-int CXml::ReadAttribInt(LPCSTR path, int index, LPCSTR attrib, int default_int_val)
-{
-    LPCSTR result_str = ReadAttrib(path, index, attrib, nullptr);
-    if (!result_str)
-        return default_int_val;
-
-    return std::atoi(result_str);
-}
-
-int CXml::ReadAttribInt(XML_NODE* start_node, LPCSTR path, int index, LPCSTR attrib, int default_int_val)
-{
-    LPCSTR result_str = ReadAttrib(start_node, path, index, attrib, nullptr);
-    if (!result_str)
-        return default_int_val;
-
-    return std::atoi(result_str);
-}
-
-float CXml::ReadAttribFlt(LPCSTR path, int index, LPCSTR attrib, float default_flt_val)
-{
-    LPCSTR result_str = ReadAttrib(path, index, attrib, nullptr);
-    if (!result_str)
-        return default_flt_val;
-
-    return std::strtof(result_str, nullptr);
-}
-
-float CXml::ReadAttribFlt(XML_NODE* start_node, LPCSTR path, int index, LPCSTR attrib, float default_flt_val)
-{
-    LPCSTR result_str = ReadAttrib(start_node, path, index, attrib, nullptr);
-    if (!result_str)
-        return default_flt_val;
-
-    return std::strtof(result_str, nullptr);
-}
-
-float CXml::ReadAttribFlt(XML_NODE* node, LPCSTR attrib, float default_flt_val)
-{
-    LPCSTR result_str = ReadAttrib(node, attrib, nullptr);
-    if (!result_str)
-        return default_flt_val;
-
-    return std::strtof(result_str, nullptr);
-}
-
-int CXml::GetNodesNum(LPCSTR path, int index, LPCSTR tag_name)
-{
-    XML_NODE* root = GetLocalRoot() ? GetLocalRoot() : GetRoot();
-    XML_NODE* node{};
+    pugi::xml_node root = GetLocalRoot() ? GetLocalRoot() : GetRoot();
+    pugi::xml_node node;
 
     if (path)
     {
@@ -388,75 +264,59 @@ int CXml::GetNodesNum(LPCSTR path, int index, LPCSTR tag_name)
     return GetNodesNum(node, tag_name);
 }
 
-int CXml::GetNodesNum(XML_NODE* node, LPCSTR tag_name)
+gsl::index CXml::GetNodesNum(pugi::xml_node node, gsl::czstring tag_name) const
 {
     if (!node)
         return 0;
 
-    XML_NODE* el{};
-
-    if (!tag_name)
-        el = node->FirstChild();
-    else
-        el = node->FirstChildElement(tag_name);
-
-    int result = 0;
+    pugi::xml_node el = tag_name != nullptr ? node.child(tag_name) : node.first_child();
+    gsl::index result{0};
 
     while (el)
     {
+        el = tag_name != nullptr ? el.next_sibling(tag_name) : el.next_sibling();
         ++result;
-        if (!tag_name)
-            el = el->NextSibling();
-        else
-            el = el->NextSiblingElement(tag_name);
     }
 
     return result;
 }
 
 // нахождение элемента по его атрибуту
-XML_NODE* CXml::SearchForAttribute(LPCSTR path, int index, LPCSTR tag_name, LPCSTR attrib, LPCSTR attrib_value_pattern)
+pugi::xml_node CXml::SearchForAttribute(gsl::czstring path, gsl::index index, gsl::czstring tag_name, gsl::czstring attrib, gsl::czstring attrib_value_pattern) const
 {
-    XML_NODE* start_node = NavigateToNode(path, index);
-    XML_NODE* result = SearchForAttribute(start_node, tag_name, attrib, attrib_value_pattern);
-    return result;
+    return SearchForAttribute(NavigateToNode(path, index), tag_name, attrib, attrib_value_pattern);
 }
 
-XML_NODE* CXml::SearchForAttribute(XML_NODE* start_node, LPCSTR tag_name, LPCSTR attrib, LPCSTR attrib_value_pattern)
+pugi::xml_node CXml::SearchForAttribute(pugi::xml_node start_node, gsl::czstring tag_name, gsl::czstring attrib, gsl::czstring attrib_value_pattern) const
 {
     while (start_node)
     {
-        XML_ELEM* el = start_node->ToElement();
-        if (el)
-        {
-            LPCSTR attribStr = el->Attribute(attrib);
-            LPCSTR valueStr = el->Value();
+        std::string_view attribStr{start_node.attribute(attrib).value()};
+        std::string_view valueStr{start_node.value()};
 
-            if (attribStr != nullptr && std::is_eq(xr_strcmp(attribStr, attrib_value_pattern)) && valueStr != nullptr && std::is_eq(xr_strcmp(valueStr, tag_name)))
-                return el;
-        }
+        if (std::is_eq(xr_strcmp(attribStr, attrib_value_pattern)) && std::is_eq(xr_strcmp(valueStr, tag_name)))
+            return start_node;
 
-        XML_NODE* newEl = start_node->FirstChildElement(tag_name);
-        newEl = SearchForAttribute(newEl, tag_name, attrib, attrib_value_pattern);
+        pugi::xml_node newEl = SearchForAttribute(start_node.child(tag_name), tag_name, attrib, attrib_value_pattern);
         if (newEl)
             return newEl;
 
-        start_node = start_node->NextSiblingElement(tag_name);
+        start_node = start_node.next_sibling(tag_name);
     }
 
-    return nullptr;
+    return pugi::xml_node{};
 }
 
 #ifdef DEBUG // debug & mixed
-LPCSTR CXml::CheckUniqueAttrib(XML_NODE* start_node, LPCSTR tag_name, LPCSTR attrib_name)
+gsl::czstring CXml::CheckUniqueAttrib(pugi::xml_node start_node, gsl::czstring tag_name, gsl::czstring attrib_name)
 {
     m_AttribValues.clear();
 
-    int tags_num = GetNodesNum(start_node, tag_name);
+    const auto tags_num = GetNodesNum(start_node, tag_name);
 
-    for (int i = 0; i < tags_num; i++)
+    for (gsl::index i{0}; i < tags_num; i++)
     {
-        LPCSTR attrib = ReadAttrib(start_node, tag_name, i, attrib_name, nullptr);
+        gsl::czstring attrib = ReadAttrib(start_node, tag_name, i, attrib_name, nullptr);
 
         xr_vector<shared_str>::iterator it = std::find(m_AttribValues.begin(), m_AttribValues.end(), attrib);
 

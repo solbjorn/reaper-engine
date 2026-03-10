@@ -225,7 +225,7 @@ void CUIInventoryWnd::Init()
     // Load sounds
     if (uiXml.NavigateToNode("action_sounds", 0))
     {
-        XML_NODE* stored_root = uiXml.GetLocalRoot();
+        const auto stored_root = uiXml.GetLocalRoot();
         uiXml.SetLocalRoot(uiXml.NavigateToNode("action_sounds", 0));
 
         create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvSndOpen)], uiXml.Read("snd_open", 0, nullptr));

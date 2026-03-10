@@ -21,7 +21,7 @@ public:
     ~CPhraseScript() override;
 
     // загрузка из XML файла
-    virtual void Load(CUIXml* ui_xml, XML_NODE* phrase_node);
+    virtual void Load(CUIXml* ui_xml, pugi::xml_node phrase_node);
 
     // вызов с одним параметром (info_portion)
     [[nodiscard]] virtual bool Precondition(const CGameObject* pSpeaker, LPCSTR dialog_id, LPCSTR phrase_id) const;
@@ -48,7 +48,7 @@ public:
 protected:
     // загрузка содержания последовательности тагов в контейнер строк
     template <typename T>
-    void LoadSequence(CUIXml* ui_xml, XML_NODE* phrase_node, LPCSTR tag, T& str_vector);
+    void LoadSequence(CUIXml* ui_xml, pugi::xml_node phrase_node, LPCSTR tag, T& str_vector);
 
     // манипуляции с информацией во время вызовов Precondition и Action
     [[nodiscard]] virtual bool CheckInfo(const CInventoryOwner* pOwner) const;

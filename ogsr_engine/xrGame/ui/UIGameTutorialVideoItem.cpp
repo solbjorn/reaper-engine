@@ -30,7 +30,7 @@ void CUISequenceVideoItem::Load(CUIXml* xml, int idx)
 {
     CUISequenceItem::Load(xml, idx);
 
-    XML_NODE* _stored_root = xml->GetLocalRoot();
+    const auto _stored_root = xml->GetLocalRoot();
     xml->SetLocalRoot(xml->NavigateToNode("item", idx));
 
     LPCSTR str = xml->Read("pause_state", 0, "ignore");

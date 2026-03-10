@@ -30,7 +30,7 @@ void CUITextureMaster::WriteLog()
 void CUITextureMaster::ParseShTexInfo(LPCSTR xml_file)
 {
     CUIXml xml;
-    xml.Init(CONFIG_PATH, UI_PATH, xml_file);
+    std::ignore = xml.Init(CONFIG_PATH, UI_PATH, xml_file);
 
     int files_num = xml.GetNodesNum("", 0, "file");
     if (files_num > 0)
@@ -38,11 +38,10 @@ void CUITextureMaster::ParseShTexInfo(LPCSTR xml_file)
         // ЗП формат
         for (int fi = 0; fi < files_num; ++fi)
         {
-            XML_NODE* root_node = xml.GetLocalRoot();
-
+            const auto root_node = xml.GetLocalRoot();
             shared_str file{xml.ReadAttrib("file", fi, "name")};
 
-            XML_NODE* node = xml.NavigateToNode("file", fi);
+            const auto node = xml.NavigateToNode("file", fi);
             int num = xml.GetNodesNum(node, "texture");
             for (int i = 0; i < num; i++)
             {

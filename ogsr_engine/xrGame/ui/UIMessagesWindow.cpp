@@ -9,6 +9,7 @@
 #include "StdAfx.h"
 
 #include "UIMessagesWindow.h"
+
 #include "../level.h"
 #include "UIGameLog.h"
 #include "xrUIXmlParser.h"
@@ -24,8 +25,7 @@ CUIMessagesWindow::~CUIMessagesWindow() {}
 void CUIMessagesWindow::Init(float, float, float, float)
 {
     CUIXml xml;
-
-    xml.Init(CONFIG_PATH, UI_PATH, "messages_window.xml");
+    std::ignore = xml.Init(CONFIG_PATH, UI_PATH, "messages_window.xml");
 
     m_pGameLog = xr_new<CUIGameLog>();
     m_pGameLog->SetAutoDelete(true);

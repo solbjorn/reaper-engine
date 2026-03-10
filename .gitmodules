@@ -119,6 +119,9 @@
 [submodule "3rd_party/Src/plf_bitsets"]
 	path = 3rd_party/Src/plf_bitsets
 	url = https://github.com/mattreecebentley/plf_bitsets.git
+[submodule "3rd_party/Src/pugixml/pugixml"]
+	path = 3rd_party/Src/pugixml/pugixml
+	url = https://github.com/zeux/pugixml.git
 [submodule "3rd_party/Src/renderdoc"]
 	path = 3rd_party/Src/renderdoc
 	url = https://github.com/baldurk/renderdoc.git
@@ -128,9 +131,6 @@
 [submodule "3rd_party/Src/sol2"]
 	path = 3rd_party/Src/sol2
 	url = https://github.com/reworks-org/sol2.git
-[submodule "3rd_party/Src/tinyxml2/tinyxml2"]
-	path = 3rd_party/Src/tinyxml2/tinyxml2
-	url = https://github.com/leethomason/tinyxml2.git
 [submodule "3rd_party/Src/tmc/TooManyCooks"]
 	path = 3rd_party/Src/tmc/TooManyCooks
 	url = https://github.com/tzcnt/TooManyCooks.git

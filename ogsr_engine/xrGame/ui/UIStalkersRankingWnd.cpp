@@ -28,10 +28,9 @@ TOP_LIST g_all_statistic_humans;
 void CUIStalkersRankingWnd::Init()
 {
     CUIXml uiXml;
-    uiXml.Init(CONFIG_PATH, UI_PATH, STALKERS_RANKING_XML);
+    std::ignore = uiXml.Init(CONFIG_PATH, UI_PATH, STALKERS_RANKING_XML);
 
     CUIXmlInit xml_init;
-
     xml_init.InitWindow(uiXml, "main_wnd", 0, this);
 
     UICharIconFrame = xr_new<CUIFrameWindow>();
@@ -117,7 +116,7 @@ int get_actor_ranking()
 void CUIStalkersRankingWnd::FillList()
 {
     CUIXml uiXml;
-    uiXml.Init(CONFIG_PATH, UI_PATH, STALKERS_RANKING_XML);
+    std::ignore = uiXml.Init(CONFIG_PATH, UI_PATH, STALKERS_RANKING_XML);
 
     UIList->Clear();
 
@@ -231,7 +230,7 @@ CUIStalkerRankingInfoItem::CUIStalkerRankingInfoItem(CUIStalkersRankingWnd* w) :
 
 void CUIStalkerRankingInfoItem::Init(CUIXml* xml, LPCSTR path, int idx)
 {
-    XML_NODE* _stored_root = xml->GetLocalRoot();
+    const auto _stored_root = xml->GetLocalRoot();
 
     CUIXmlInit xml_init;
     xml_init.InitWindow(*xml, path, idx, this);

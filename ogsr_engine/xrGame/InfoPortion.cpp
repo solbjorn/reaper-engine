@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "InfoPortion.h"
+
 #include "gameobject.h"
 #include "encyclopedia_article.h"
 #include "gametask.h"
@@ -24,13 +25,11 @@ void INFO_DATA::save(IWriter& stream) const
     save_data(receive_time, stream);
 }
 
-SInfoPortionData::SInfoPortionData() {}
+SInfoPortionData::SInfoPortionData() = default;
+SInfoPortionData::~SInfoPortionData() = default;
 
-SInfoPortionData::~SInfoPortionData() {}
-
-CInfoPortion::CInfoPortion() {}
-
-CInfoPortion::~CInfoPortion() {}
+CInfoPortion::CInfoPortion() = default;
+CInfoPortion::~CInfoPortion() = default;
 
 void CInfoPortion::Load(shared_str info_id)
 {
@@ -46,7 +45,7 @@ void CInfoPortion::load_shared(LPCSTR)
     pXML->SetLocalRoot(pXML->GetRoot());
 
     // loading from XML
-    XML_NODE* pNode = pXML->NavigateToNode(id_to_index::tag_name, item_data.pos_in_file);
+    const auto pNode = pXML->NavigateToNode(id_to_index::tag_name, item_data.pos_in_file);
     THROW3(pNode, "info_portion id=", *item_data.id);
 
     // список названий диалогов

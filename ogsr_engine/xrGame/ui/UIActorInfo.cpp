@@ -28,9 +28,9 @@ CUIActorInfoWnd::CUIActorInfoWnd() = default;
 void CUIActorInfoWnd::Init()
 {
     CUIXml uiXml;
-    CUIXmlInit xml_init;
-    uiXml.Init(CONFIG_PATH, UI_PATH, ACTOR_STATISTIC_XML);
+    std::ignore = uiXml.Init(CONFIG_PATH, UI_PATH, ACTOR_STATISTIC_XML);
 
+    CUIXmlInit xml_init;
     xml_init.InitWindow(uiXml, "main_wnd", 0, this);
 
     // Декоративное оформление
@@ -101,7 +101,7 @@ void CUIActorInfoWnd::Show(bool status)
 void CUIActorInfoWnd::FillPointsInfo()
 {
     CUIXml uiXml;
-    uiXml.Init(CONFIG_PATH, UI_PATH, ACTOR_STATISTIC_XML);
+    std::ignore = uiXml.Init(CONFIG_PATH, UI_PATH, ACTOR_STATISTIC_XML);
 
     UIMasterList->Clear();
 
@@ -180,14 +180,15 @@ void CUIActorInfoWnd::FillMasterPart(CUIXml* xml, const shared_str& key_name)
 void CUIActorInfoWnd::FillPointsDetail(const shared_str& id)
 {
     UIDetailList->Clear();
+
     CUIXml uiXml;
-    uiXml.Init(CONFIG_PATH, UI_PATH, ACTOR_STATISTIC_XML);
+    std::ignore = uiXml.Init(CONFIG_PATH, UI_PATH, ACTOR_STATISTIC_XML);
     uiXml.SetLocalRoot(uiXml.NavigateToNode("actor_stats_wnd", 0));
 
     string512 path;
     sprintf_s(path, "detail_part_%s", id.c_str());
 
-    XML_NODE* n = uiXml.NavigateToNode(path, 0);
+    const auto n = uiXml.NavigateToNode(path, 0);
     if (!n)
         sprintf_s(path, "detail_part_def");
 
@@ -251,11 +252,12 @@ void CUIActorInfoWnd::FillPointsDetail(const shared_str& id)
         UIDetailList->AddWindow(itm, true);
     }
 }
+
 void CUIActorInfoWnd::Reset() { inherited::Reset(); }
 
 void CUIActorInfoWnd::FillReputationDetails(CUIXml* xml, LPCSTR path)
 {
-    XML_NODE* _list_node = xml->NavigateToNode("relation_communities_list", 0);
+    const auto _list_node = xml->NavigateToNode("relation_communities_list", 0);
     int cnt = xml->GetNodesNum("relation_communities_list", 0, "r");
 
     CHARACTER_COMMUNITY comm;
@@ -292,7 +294,7 @@ CUIActorStaticticHeader::CUIActorStaticticHeader(CUIActorInfoWnd* w) : m_actorIn
 
 void CUIActorStaticticHeader::Init(CUIXml* xml, LPCSTR path, int idx_in_xml)
 {
-    XML_NODE* _stored_root = xml->GetLocalRoot();
+    const auto _stored_root = xml->GetLocalRoot();
 
     CUIXmlInit xml_init;
     xml_init.InitWindow(*xml, path, idx_in_xml, this);
@@ -339,7 +341,7 @@ void CUIActorStaticticHeader::SetSelected(bool b)
 
 void CUIActorStaticticDetail::Init(CUIXml* xml, LPCSTR path, int idx)
 {
-    XML_NODE* _stored_root = xml->GetLocalRoot();
+    const auto _stored_root = xml->GetLocalRoot();
 
     CUIXmlInit xml_init;
     xml_init.InitWindow(*xml, path, idx, this);

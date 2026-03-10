@@ -6,6 +6,7 @@
 #include "stdafx.h"
 
 #include "encyclopedia_article.h"
+
 #include "ui/xrUIXmlParser.h"
 #include "ui/UIXmlInit.h"
 #include "ui/UIInventoryUtilities.h"
@@ -37,12 +38,6 @@ CEncyclopediaArticle::~CEncyclopediaArticle()
         data()->image.GetParent()->DetachChild(&(data()->image));
 }
 
-/*
-void CEncyclopediaArticle::Load	(ARTICLE_STR_ID str_id)
-{
-    Load	(id_to_index::IdToIndex(str_id));
-}
-*/
 void CEncyclopediaArticle::Load(shared_str id)
 {
     m_ArticleId = id;
@@ -52,12 +47,11 @@ void CEncyclopediaArticle::Load(shared_str id)
 void CEncyclopediaArticle::load_shared(LPCSTR)
 {
     const ITEM_DATA& item_data = *id_to_index::GetById(m_ArticleId);
-
     CUIXml* pXML = item_data._xml;
     pXML->SetLocalRoot(pXML->GetRoot());
 
     // loading from XML
-    XML_NODE* pNode = pXML->NavigateToNode(id_to_index::tag_name, item_data.pos_in_file);
+    const auto pNode = pXML->NavigateToNode(id_to_index::tag_name, item_data.pos_in_file);
     THROW3(pNode, "encyclopedia article id=", *item_data.id);
 
     // текст

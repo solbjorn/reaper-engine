@@ -1,21 +1,12 @@
 #pragma once
 
+#include <pugixml.hpp>
+
 constexpr inline LPCSTR GAMEDATA_PATH = "$game_data$";
 constexpr inline LPCSTR CONFIG_PATH = "$game_config$";
 constexpr inline LPCSTR UI_PATH = "ui";
 constexpr inline LPCSTR GAME_PATH = "gameplay";
 constexpr inline LPCSTR STRING_TABLE_PATH = "text";
-
-XR_DIAG_PUSH();
-XR_DIAG_IGNORE("-Winconsistent-missing-destructor-override");
-XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
-
-#include <tinyxml2.h>
-
-XR_DIAG_POP();
-
-using XML_NODE = tinyxml2::XMLNode;
-using XML_ATTRIBUTE = tinyxml2::XMLAttribute;
 
 class CXml : public virtual RTTI::Enable
 {
@@ -27,67 +18,65 @@ public:
     CXml();
     ~CXml() override;
 
-    void ClearInternal();
-
-    bool Init(LPCSTR path_alias, LPCSTR path, LPCSTR xml_filename);
-    bool Init(LPCSTR path_alias, LPCSTR xml_filename);
+    [[nodiscard]] bool Init(gsl::czstring path_alias, gsl::czstring path, gsl::czstring xml_filename);
+    [[nodiscard]] bool Init(gsl::czstring path_alias, gsl::czstring xml_filename);
 
     // чтение элементов
-    LPCSTR Read(LPCSTR path, int index, LPCSTR default_str_val);
-    LPCSTR Read(XML_NODE* start_node, LPCSTR path, int index, LPCSTR default_str_val);
-    LPCSTR Read(XML_NODE* node, LPCSTR default_str_val);
+    [[nodiscard]] gsl::czstring Read(gsl::czstring path, gsl::index index, gsl::czstring default_str_val) const;
+    [[nodiscard]] gsl::czstring Read(pugi::xml_node start_node, gsl::czstring path, gsl::index index, gsl::czstring default_str_val) const;
+    [[nodiscard]] gsl::czstring Read(pugi::xml_node node, gsl::czstring default_str_val) const;
 
-    int ReadInt(LPCSTR path, int index, int default_int_val);
-    int ReadInt(XML_NODE* start_node, LPCSTR path, int index, int default_int_val);
-    int ReadInt(XML_NODE* node, int default_int_val);
+    [[nodiscard]] s32 ReadInt(gsl::czstring path, gsl::index index, s32 default_int_val) const;
+    [[nodiscard]] s32 ReadInt(pugi::xml_node start_node, gsl::czstring path, gsl::index index, s32 default_int_val) const;
+    [[nodiscard]] s32 ReadInt(pugi::xml_node node, s32 default_int_val) const;
 
-    float ReadFlt(LPCSTR path, int index, float default_flt_val);
-    float ReadFlt(XML_NODE* start_node, LPCSTR path, int index, float default_flt_val);
-    float ReadFlt(XML_NODE* node, float default_flt_val);
+    [[nodiscard]] f32 ReadFlt(gsl::czstring path, gsl::index index, f32 default_flt_val) const;
+    [[nodiscard]] f32 ReadFlt(pugi::xml_node start_node, gsl::czstring path, gsl::index index, f32 default_flt_val) const;
+    [[nodiscard]] f32 ReadFlt(pugi::xml_node node, f32 default_flt_val) const;
 
-    LPCSTR ReadAttrib(LPCSTR path, int index, LPCSTR attrib, LPCSTR default_str_val = "");
-    LPCSTR ReadAttrib(XML_NODE* start_node, LPCSTR path, int index, LPCSTR attrib, LPCSTR default_str_val = "");
-    LPCSTR ReadAttrib(XML_NODE* node, LPCSTR attrib, LPCSTR default_str_val);
+    [[nodiscard]] gsl::czstring ReadAttrib(gsl::czstring path, gsl::index index, gsl::czstring attrib, gsl::czstring default_str_val = "") const;
+    [[nodiscard]] gsl::czstring ReadAttrib(pugi::xml_node start_node, gsl::czstring path, gsl::index index, gsl::czstring attrib, gsl::czstring default_str_val = "") const;
+    [[nodiscard]] gsl::czstring ReadAttrib(pugi::xml_node node, gsl::czstring attrib, gsl::czstring default_str_val) const;
 
-    int ReadAttribInt(LPCSTR path, int index, LPCSTR attrib, int default_int_val = 0);
-    int ReadAttribInt(XML_NODE* start_node, LPCSTR path, int index, LPCSTR attrib, int default_int_val = 0);
-    int ReadAttribInt(XML_NODE* node, LPCSTR attrib, int default_int_val);
+    [[nodiscard]] s32 ReadAttribInt(gsl::czstring path, gsl::index index, gsl::czstring attrib, s32 default_int_val = 0) const;
+    [[nodiscard]] s32 ReadAttribInt(pugi::xml_node start_node, gsl::czstring path, gsl::index index, gsl::czstring attrib, s32 default_int_val = 0) const;
+    [[nodiscard]] s32 ReadAttribInt(pugi::xml_node node, gsl::czstring attrib, s32 default_int_val) const;
 
-    float ReadAttribFlt(LPCSTR path, int index, LPCSTR attrib, float default_flt_val = 0.0f);
-    float ReadAttribFlt(XML_NODE* start_node, LPCSTR path, int index, LPCSTR attrib, float default_flt_val = 0.0f);
-    float ReadAttribFlt(XML_NODE* node, LPCSTR attrib, float default_flt_val = 0.0f);
+    [[nodiscard]] f32 ReadAttribFlt(gsl::czstring path, gsl::index index, gsl::czstring attrib, f32 default_flt_val = 0.0f) const;
+    [[nodiscard]] f32 ReadAttribFlt(pugi::xml_node start_node, gsl::czstring path, gsl::index index, gsl::czstring attrib, f32 default_flt_val = 0.0f) const;
+    [[nodiscard]] f32 ReadAttribFlt(pugi::xml_node node, gsl::czstring attrib, f32 default_flt_val = 0.0f) const;
 
-    XML_NODE* SearchForAttribute(LPCSTR path, int index, LPCSTR tag_name, LPCSTR attrib, LPCSTR attrib_value_pattern);
-    XML_NODE* SearchForAttribute(XML_NODE* start_node, LPCSTR tag_name, LPCSTR attrib, LPCSTR attrib_value_pattern);
+    [[nodiscard]] pugi::xml_node SearchForAttribute(gsl::czstring path, gsl::index index, gsl::czstring tag_name, gsl::czstring attrib, gsl::czstring attrib_value_pattern) const;
+    [[nodiscard]] pugi::xml_node SearchForAttribute(pugi::xml_node start_node, gsl::czstring tag_name, gsl::czstring attrib, gsl::czstring attrib_value_pattern) const;
 
     // возвращает количество узлов с заданым именем
-    int GetNodesNum(LPCSTR path, int index, LPCSTR tag_name);
-    int GetNodesNum(XML_NODE* node, LPCSTR tag_name);
+    [[nodiscard]] gsl::index GetNodesNum(gsl::czstring path, gsl::index index, gsl::czstring tag_name) const;
+    [[nodiscard]] gsl::index GetNodesNum(pugi::xml_node node, gsl::czstring tag_name) const;
 
 #ifdef DEBUG // debug & mixed
     // проверка того, что аттрибуты у тегов уникальны
     //(если не NULL, то уникальность нарушена и возврашается имя
     // повторяющегося атрибута)
-    LPCSTR CheckUniqueAttrib(XML_NODE* start_node, LPCSTR tag_name, LPCSTR attrib_name);
+    [[nodiscard]] gsl::czstring CheckUniqueAttrib(pugi::xml_node start_node, gsl::czstring tag_name, gsl::czstring attrib_name);
 #endif
 
     // переместиться по XML дереву
     // путь задается в форме PARENT:CHILD:CHIDLS_CHILD
     //  node_index - номер, если узлов с одним именем несколько
-    XML_NODE* NavigateToNode(LPCSTR path, int index = 0);
-    XML_NODE* NavigateToNode(XML_NODE* start_node, LPCSTR path, int index = 0);
-    XML_NODE* NavigateToNodeWithAttribute(LPCSTR tag_name, LPCSTR attrib_name, LPCSTR attrib_value);
-    bool HasNode(LPCSTR path, int index);
-    bool HasNodeAttribute(LPCSTR path, int index, LPCSTR attrib);
+    [[nodiscard]] pugi::xml_node NavigateToNode(gsl::czstring path, gsl::index index = 0) const;
+    [[nodiscard]] pugi::xml_node NavigateToNode(pugi::xml_node start_node, gsl::czstring path, gsl::index index = 0) const;
+    [[nodiscard]] pugi::xml_node NavigateToNodeWithAttribute(gsl::czstring tag_name, gsl::czstring attrib_name, gsl::czstring attrib_value) const;
+    [[nodiscard]] bool HasNode(gsl::czstring path, gsl::index index) const;
+    [[nodiscard]] bool HasNodeAttribute(gsl::czstring path, gsl::index index, gsl::czstring attrib) const;
 
-    void SetLocalRoot(XML_NODE* pLocalRoot) { m_pLocalRoot = pLocalRoot; }
-    XML_NODE* GetLocalRoot() { return m_pLocalRoot; }
+    void SetLocalRoot(pugi::xml_node pLocalRoot) { m_pLocalRoot = pLocalRoot; }
+    [[nodiscard]] pugi::xml_node GetLocalRoot() const { return m_pLocalRoot; }
 
-    XML_NODE* GetRoot() { return m_root; }
+    [[nodiscard]] pugi::xml_node GetRoot() const { return m_root; }
 
 protected:
-    XML_NODE* m_root{};
-    XML_NODE* m_pLocalRoot{};
+    pugi::xml_node m_root;
+    pugi::xml_node m_pLocalRoot;
 
 #ifdef DEBUG // debug & mixed
     // буфферный вектор для проверки уникальность аттрибутов
@@ -95,11 +84,24 @@ protected:
 #endif
 
 public:
-    virtual shared_str correct_file_name(LPCSTR, LPCSTR fn) { return shared_str{fn}; }
+    [[nodiscard]] virtual shared_str correct_file_name(gsl::czstring, gsl::czstring fn) const { return shared_str{fn}; }
 
 private:
-    using XML_ELEM = tinyxml2::XMLElement;
-    using XML_TEXT = tinyxml2::XMLText;
+    pugi::xml_document m_Doc;
 
-    tinyxml2::XMLDocument m_Doc;
+    [[nodiscard]] pugi::xml_text text(pugi::xml_node node) const;
+    [[nodiscard]] pugi::xml_text text(gsl::czstring path, gsl::index index) const;
+    [[nodiscard]] pugi::xml_text text(pugi::xml_node start_node, gsl::czstring path, gsl::index index) const;
+
+    [[nodiscard]] pugi::xml_attribute attribute(pugi::xml_node node, gsl::czstring attrib) const;
+    [[nodiscard]] pugi::xml_attribute attribute(gsl::czstring path, gsl::index index, gsl::czstring attrib) const;
+    [[nodiscard]] pugi::xml_attribute attribute(pugi::xml_node start_node, gsl::czstring path, gsl::index index, gsl::czstring attrib) const;
 };
+
+namespace xr
+{
+namespace detail
+{
+void xml_init();
+}
+} // namespace xr

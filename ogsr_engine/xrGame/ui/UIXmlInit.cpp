@@ -691,7 +691,7 @@ CUIXmlInit::StaticsVec CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR p
     int items_num = xml_doc.GetNodesNum(path, index, "auto_static");
 
     StaticsVec tmpVec;
-    XML_NODE* _stored_root = xml_doc.GetLocalRoot();
+    const auto _stored_root = xml_doc.GetLocalRoot();
     xml_doc.SetLocalRoot(xml_doc.NavigateToNode(path, index));
 
     CUIStatic* pUIStatic{};
@@ -819,7 +819,7 @@ bool CUIXmlInit::InitTabControl(CUIXml& xml_doc, LPCSTR path, int index, CUITabC
     int tabsCount = xml_doc.GetNodesNum(path, index, "button");
     int radio = xml_doc.ReadAttribInt(path, index, "radio");
 
-    XML_NODE* tab_node = xml_doc.NavigateToNode(path, index);
+    const auto tab_node = xml_doc.NavigateToNode(path, index);
     xml_doc.SetLocalRoot(tab_node);
 
     CUITabButton* newButton;
@@ -973,8 +973,8 @@ bool CUIXmlInit::InitTextBanner(CUIXml& xml_doc, const char* path, int index, CU
 
     int animationsCount = xml_doc.GetNodesNum(path, index, "animation");
 
-    XML_NODE* tab_node = xml_doc.NavigateToNode(path, index);
-    XML_NODE* old_node = xml_doc.GetLocalRoot();
+    const auto tab_node = xml_doc.NavigateToNode(path, index);
+    const auto old_node = xml_doc.GetLocalRoot();
     xml_doc.SetLocalRoot(tab_node);
 
     for (int i = 0; i < animationsCount; ++i)
@@ -1006,7 +1006,7 @@ bool CUIXmlInit::InitMultiTextStatic(CUIXml& xml_doc, const char* path, int inde
     int phrasesCount = xml_doc.GetNodesNum(path, index, "phrase");
 
     strconcat(sizeof(buf), buf, path, ":phrase");
-    XML_NODE* tab_node = xml_doc.NavigateToNode(path, index);
+    const auto tab_node = xml_doc.NavigateToNode(path, index);
     xml_doc.SetLocalRoot(tab_node);
 
     CUIMultiTextStatic::SinglePhrase* p;
@@ -1310,7 +1310,7 @@ bool CUIXmlInit::InitScrollView(CUIXml& xml_doc, const char* path, int index, CU
     /////////////////////////////////////////////////////////////////////
     int tabsCount = xml_doc.GetNodesNum(path, index, "text");
 
-    XML_NODE* _stored_root = xml_doc.GetLocalRoot();
+    const auto _stored_root = xml_doc.GetLocalRoot();
     xml_doc.SetLocalRoot(xml_doc.NavigateToNode(path, index));
 
     CUIStatic* newStatic;

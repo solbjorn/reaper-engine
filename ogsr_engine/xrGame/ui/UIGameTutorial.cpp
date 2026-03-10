@@ -13,8 +13,9 @@
 
 void CUISequenceItem::Load(CUIXml* xml, int idx)
 {
-    XML_NODE* _stored_root = xml->GetLocalRoot();
+    const auto _stored_root = xml->GetLocalRoot();
     xml->SetLocalRoot(xml->NavigateToNode("item", idx));
+
     int disabled_cnt = xml->GetNodesNum(xml->GetLocalRoot(), "disabled_key");
     for (int i = 0; i < disabled_cnt; ++i)
     {
@@ -87,7 +88,7 @@ tmc::task<void> CUISequencer::Start(gsl::czstring tutor_name)
     m_UIWindow = xr_new<CUIWindow>();
 
     CUIXml uiXml;
-    uiXml.Init(CONFIG_PATH, UI_PATH, "game_tutorials.xml");
+    std::ignore = uiXml.Init(CONFIG_PATH, UI_PATH, "game_tutorials.xml");
 
     int items_count = uiXml.GetNodesNum(tutor_name, 0, "item");
     VERIFY(items_count > 0);

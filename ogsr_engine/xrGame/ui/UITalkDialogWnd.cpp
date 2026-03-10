@@ -96,7 +96,7 @@ void CUITalkDialogWnd::Init(float x, float y, float width, float height)
     // Load sounds
     if (m_uiXml->NavigateToNode("action_sounds", 0))
     {
-        XML_NODE* stored_root = m_uiXml->GetLocalRoot();
+        const auto stored_root = m_uiXml->GetLocalRoot();
         m_uiXml->SetLocalRoot(m_uiXml->NavigateToNode("action_sounds", 0));
 
         create_ui_snd(sounds[std::to_underlying(eSndAction::eTalkSndOpen)], m_uiXml->Read("snd_open", 0, nullptr));

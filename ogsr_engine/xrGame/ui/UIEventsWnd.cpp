@@ -87,7 +87,7 @@ void CUIEventsWnd::Init()
     m_currFilter = ETaskFilters::eActiveTask;
     SetDescriptionMode(true);
 
-    m_ui_task_item_xml.Init(CONFIG_PATH, UI_PATH, "job_item.xml");
+    std::ignore = m_ui_task_item_xml.Init(CONFIG_PATH, UI_PATH, "job_item.xml");
 }
 
 void CUIEventsWnd::Update()

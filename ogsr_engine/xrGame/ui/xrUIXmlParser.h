@@ -12,7 +12,7 @@ public:
     CUIXml();
     ~CUIXml() override;
 
-    virtual shared_str correct_file_name(LPCSTR path, LPCSTR fn);
+    [[nodiscard]] shared_str correct_file_name(gsl::czstring path, gsl::czstring fn) const override;
 };
 
 void dump_list_xmls();

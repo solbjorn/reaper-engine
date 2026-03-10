@@ -6,7 +6,7 @@
 #include "../ui_base.h"
 #endif
 
-shared_str CUIXml::correct_file_name(LPCSTR path, LPCSTR fn)
+shared_str CUIXml::correct_file_name(gsl::czstring path, gsl::czstring fn) const
 {
 #ifdef XRGAME_EXPORTS
     if (std::is_eq(xr_strcmp(path, "ui")) || std::is_eq(xr_strcmp(path, "UI")))

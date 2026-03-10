@@ -131,7 +131,7 @@ CUIMainIngameWnd::~CUIMainIngameWnd()
 void CUIMainIngameWnd::Init()
 {
     CUIXml uiXml;
-    uiXml.Init(CONFIG_PATH, UI_PATH, MAININGAME_XML);
+    std::ignore = uiXml.Init(CONFIG_PATH, UI_PATH, MAININGAME_XML);
 
     CUIXmlInit xml_init;
     CUIWindow::Init(0, 0, UI_BASE_WIDTH, UI_BASE_HEIGHT);

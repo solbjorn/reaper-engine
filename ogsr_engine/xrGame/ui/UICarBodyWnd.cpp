@@ -55,10 +55,9 @@ CUICarBodyWnd::~CUICarBodyWnd()
 void CUICarBodyWnd::Init()
 {
     CUIXml uiXml;
-    uiXml.Init(CONFIG_PATH, UI_PATH, CAR_BODY_XML);
+    std::ignore = uiXml.Init(CONFIG_PATH, UI_PATH, CAR_BODY_XML);
 
     CUIXmlInit xml_init;
-
     xml_init.InitWindow(uiXml, "main", 0, this);
 
     m_pUIStaticTop = xr_new<CUIStatic>();
@@ -149,7 +148,7 @@ void CUICarBodyWnd::Init()
     // Load sounds
     if (uiXml.NavigateToNode("action_sounds", 0))
     {
-        XML_NODE* stored_root = uiXml.GetLocalRoot();
+        const auto stored_root = uiXml.GetLocalRoot();
         uiXml.SetLocalRoot(uiXml.NavigateToNode("action_sounds", 0));
 
         create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvSndOpen)], uiXml.Read("snd_open", 0, nullptr));

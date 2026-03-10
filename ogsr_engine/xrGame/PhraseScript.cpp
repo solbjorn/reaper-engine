@@ -16,7 +16,7 @@ CPhraseScript::CPhraseScript() = default;
 CPhraseScript::~CPhraseScript() = default;
 
 // загрузка из XML файла
-void CPhraseScript::Load(CUIXml* uiXml, XML_NODE* phrase_node)
+void CPhraseScript::Load(CUIXml* uiXml, pugi::xml_node phrase_node)
 {
     m_sScriptTextFunc._set(uiXml->Read(phrase_node, "script_text", 0, ""));
 
@@ -31,7 +31,7 @@ void CPhraseScript::Load(CUIXml* uiXml, XML_NODE* phrase_node)
 }
 
 template <typename T>
-void CPhraseScript::LoadSequence(CUIXml* uiXml, XML_NODE* phrase_node, LPCSTR tag, T& str_vector)
+void CPhraseScript::LoadSequence(CUIXml* uiXml, pugi::xml_node phrase_node, LPCSTR tag, T& str_vector)
 {
     const gsl::index tag_num = uiXml->GetNodesNum(phrase_node, tag);
 

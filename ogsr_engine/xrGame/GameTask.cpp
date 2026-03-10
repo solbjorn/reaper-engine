@@ -65,11 +65,12 @@ void CGameTask::Load(const TASK_ID& id)
     if (!g_gameTaskXml)
     {
         g_gameTaskXml = xr_new<CUIXml>();
-        g_gameTaskXml->Init(CONFIG_PATH, "gameplay", "game_tasks.xml");
+        std::ignore = g_gameTaskXml->Init(CONFIG_PATH, "gameplay", "game_tasks.xml");
     }
-    XML_NODE* task_node = g_gameTaskXml->NavigateToNodeWithAttribute("game_task", "id", *id);
 
+    const auto task_node = g_gameTaskXml->NavigateToNodeWithAttribute("game_task", "id", *id);
     THROW3(task_node, "game task id=", *id);
+
     g_gameTaskXml->SetLocalRoot(task_node);
     m_Title._set(g_gameTaskXml->Read(g_gameTaskXml->GetLocalRoot(), "title", 0, nullptr));
     m_priority = g_gameTaskXml->ReadAttribInt(g_gameTaskXml->GetLocalRoot(), "prio", -1);
@@ -85,10 +86,10 @@ void CGameTask::Load(const TASK_ID& id)
 #endif // DEBUG
     int tag_num = g_gameTaskXml->GetNodesNum(g_gameTaskXml->GetLocalRoot(), "objective");
     m_Objectives.clear();
+
     for (int i = 0; i < tag_num; i++)
     {
-        XML_NODE* l_root{};
-        l_root = g_gameTaskXml->NavigateToNode("objective", i);
+        const auto l_root = g_gameTaskXml->NavigateToNode("objective", i);
         g_gameTaskXml->SetLocalRoot(l_root);
 
         m_Objectives.emplace_back(this, i);

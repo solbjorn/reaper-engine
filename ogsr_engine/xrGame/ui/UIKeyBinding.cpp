@@ -39,7 +39,7 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, LPCSTR path_ui)
 {
     string256 buf;
     CUIXml xml_doc;
-    xml_doc.Init(CONFIG_PATH, UI_PATH, "ui_keybinding.xml");
+    std::ignore = xml_doc.Init(CONFIG_PATH, UI_PATH, "ui_keybinding.xml");
 
     int groupsCount = xml_doc.GetNodesNum("", 0, "group");
 
@@ -56,7 +56,7 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, LPCSTR path_ui)
 
         // add group items
         int commandsCount = xml_doc.GetNodesNum("group", i, "command");
-        XML_NODE* tab_node = xml_doc.NavigateToNode("group", i);
+        const auto tab_node = xml_doc.NavigateToNode("group", i);
         xml_doc.SetLocalRoot(tab_node);
 
         for (int j = 0; j < commandsCount; j++)

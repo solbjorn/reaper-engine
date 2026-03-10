@@ -136,8 +136,7 @@ void CUIMMShniaga::CreateList(xr_vector<CUIStatic*>& lst, CUIXml& xml_doc, LPCST
     R_ASSERT(pF);
 
     int nodes_num = xml_doc.GetNodesNum(path, 0, "btn");
-
-    XML_NODE* tab_node = xml_doc.NavigateToNode(path, 0);
+    const auto tab_node = xml_doc.NavigateToNode(path, 0);
     xml_doc.SetLocalRoot(tab_node);
 
     for (int i = 0; i < nodes_num; ++i)

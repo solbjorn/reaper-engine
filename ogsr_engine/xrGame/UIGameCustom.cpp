@@ -30,8 +30,9 @@ CUIGameCustom::CUIGameCustom()
     shedule.t_max = 20;
     shedule_register();
     m_pgameCaptions = xr_new<CUICaption>();
+
     m_msgs_xml = xr_new<CUIXml>();
-    m_msgs_xml->Init(CONFIG_PATH, UI_PATH, "ui_custom_msgs.xml");
+    std::ignore = m_msgs_xml->Init(CONFIG_PATH, UI_PATH, "ui_custom_msgs.xml");
 
     InventoryUtilities::CreateShaders();
 }

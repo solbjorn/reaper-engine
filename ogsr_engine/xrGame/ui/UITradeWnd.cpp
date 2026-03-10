@@ -192,7 +192,7 @@ void CUITradeWnd::Init()
     // Load sounds
     if (uiXml.NavigateToNode("action_sounds", 0))
     {
-        XML_NODE* stored_root = uiXml.GetLocalRoot();
+        const auto stored_root = uiXml.GetLocalRoot();
         uiXml.SetLocalRoot(uiXml.NavigateToNode("action_sounds", 0));
 
         create_ui_snd(sounds[std::to_underlying(eInventorySndAction::eInvProperties)], uiXml.Read("snd_properties", 0, nullptr));

@@ -26,7 +26,7 @@
     <Project Path="3rd_party/Src/openal-soft/openal-soft.vcxproj" Id="8c67b3ec-af96-48db-b93e-e561c79f48d7">
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
-    <Project Path="3rd_party/Src/tinyxml2/tinyxml2.vcxproj" Id="ddc9ea5d-33c3-4b1c-a8c4-f2ec3d0e1c07">
+    <Project Path="3rd_party/Src/pugixml/pugixml.vcxproj" Id="f254d5d1-d566-4af3-b402-4df3a717daf2">
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
     <Project Path="3rd_party/Src/tmc/hwloc/hwloc.vcxproj" Id="a3f8db74-fed0-4ed3-9e51-f5b4e5ac9713" />
@@ -130,7 +130,7 @@
     <BuildDependency Project="3rd_party/Src/compression/squashfs/squashfs.vcxproj" />
     <BuildDependency Project="3rd_party/Src/compression/xxHash/xxHash.vcxproj" />
     <BuildDependency Project="3rd_party/Src/mimalloc/mimalloc.vcxproj" />
-    <BuildDependency Project="3rd_party/Src/tinyxml2/tinyxml2.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/pugixml/pugixml.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrExternal/xrExternal.vcxproj" Id="6d4e1cd0-9d48-4210-982e-93827a58256e">
     <BuildDependency Project="3rd_party/Src/FreeType/freetype/freetype.vcxproj" />
