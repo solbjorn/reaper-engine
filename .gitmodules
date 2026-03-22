@@ -10,6 +10,12 @@
 [submodule "3rd_party/Src/FreeType/SheenBidi/SheenBidi"]
 	path = 3rd_party/Src/FreeType/SheenBidi/SheenBidi
 	url = https://github.com/Tehreer/SheenBidi.git
+[submodule "3rd_party/Src/FreeType/Skribidi/Skribidi"]
+	path = 3rd_party/Src/FreeType/Skribidi/Skribidi
+	url = https://github.com/memononen/Skribidi.git
+[submodule "3rd_party/Src/FreeType/budouxc/budouxc"]
+	path = 3rd_party/Src/FreeType/budouxc/budouxc
+	url = https://github.com/memononen/budouxc.git
 [submodule "3rd_party/Src/FreeType/freetype/freetype"]
 	path = 3rd_party/Src/FreeType/freetype/freetype
 	url = https://github.com/freetype/freetype.git
@@ -25,6 +31,9 @@
 [submodule "3rd_party/Src/FreeType/plutovg/plutovg"]
 	path = 3rd_party/Src/FreeType/plutovg/plutovg
 	url = https://github.com/sammycage/plutovg.git
+[submodule "3rd_party/Src/FreeType/unibreak/libunibreak"]
+	path = 3rd_party/Src/FreeType/unibreak/libunibreak
+	url = https://github.com/adah1972/libunibreak.git
 [submodule "3rd_party/Src/GSL"]
 	path = 3rd_party/Src/GSL
 	url = https://github.com/microsoft/GSL.git
@@ -55,6 +64,9 @@
 [submodule "3rd_party/Src/Xiph/ogg/ogg"]
 	path = 3rd_party/Src/Xiph/ogg/ogg
 	url = https://github.com/xiph/ogg.git
+[submodule "3rd_party/Src/Xiph/opus/opus"]
+	path = 3rd_party/Src/Xiph/opus/opus
+	url = https://github.com/xiph/opus.git
 [submodule "3rd_party/Src/Xiph/theora/theora"]
 	path = 3rd_party/Src/Xiph/theora/theora
 	url = https://github.com/xiph/theora.git
@@ -113,9 +125,22 @@
 	path = 3rd_party/Src/mimalloc/mimalloc
 	url = https://github.com/microsoft/mimalloc.git
 	branch = dev3
-[submodule "3rd_party/Src/openal-soft/openal-soft"]
-	path = 3rd_party/Src/openal-soft/openal-soft
+[submodule "3rd_party/Src/sound/lame/lame"]
+	path = 3rd_party/Src/sound/lame/lame
+	url = https://github.com/solbjorn/lame.git
+[submodule "3rd_party/Src/sound/mpg123/mpg123"]
+	path = 3rd_party/Src/sound/mpg123/mpg123
+	url = https://github.com/madebr/mpg123.git
+	branch = master
+[submodule "3rd_party/Src/sound/openal-soft/openal-soft"]
+	path = 3rd_party/Src/sound/openal-soft/openal-soft
 	url = https://github.com/kcat/openal-soft.git
+[submodule "3rd_party/Src/sound/portaudio/portaudio"]
+	path = 3rd_party/Src/sound/portaudio/portaudio
+	url = https://github.com/PortAudio/portaudio.git
+[submodule "3rd_party/Src/sound/sndfile/libsndfile"]
+	path = 3rd_party/Src/sound/sndfile/libsndfile
+	url = https://github.com/libsndfile/libsndfile.git
 [submodule "3rd_party/Src/plf_bitsets"]
 	path = 3rd_party/Src/plf_bitsets
 	url = https://github.com/mattreecebentley/plf_bitsets.git

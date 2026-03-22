@@ -38,7 +38,7 @@ void CSoundRender_Emitter::start(ref_sound* _owner, BOOL _loop, float delay)
     for (auto& buf : temp_buf)
         buf.resize(source()->bytesPerBuffer);
 
-    ovf = source()->open();
+    snd = source()->open();
 }
 
 tmc::task<void> CSoundRender_Emitter::i_stop()
@@ -52,7 +52,7 @@ tmc::task<void> CSoundRender_Emitter::i_stop()
 
     if (owner_data)
     {
-        source()->close(ovf);
+        source()->close(snd);
         Event_ReleaseOwner();
 
         VERIFY(this == owner_data->feedback);
@@ -125,6 +125,6 @@ tmc::task<void> CSoundRender_Emitter::stop_target()
     target->stop();
     target = nullptr;
 
-    source()->close(ovf);
-    ovf = nullptr;
+    source()->close(snd);
+    snd = nullptr;
 }

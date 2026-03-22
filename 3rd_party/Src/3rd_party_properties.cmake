@@ -8,7 +8,7 @@ endif()
 
 set(conformance_options "/Brepro /bigobj /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__STDC__ /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /Zc:checkGwOdr /Zc:templateScope /DNOMINMAX -fno-delayed-template-parsing -fstrict-aliasing /D_CRT_STDIO_ISO_WIDE_SPECIFIERS -fno-ms-compatibility -fgnuc-version=0 /utf-8")
 
-set(llvm_options "-march=skylake -mavx2 /FIintrin.h -flto -fmerge-all-constants -fforce-emit-vtables -fwhole-program-vtables /clang:-fcoro-aligned-allocation")
+set(llvm_options "-march=skylake -mavx2 -mvpclmulqdq /FIintrin.h -flto -fmerge-all-constants -fforce-emit-vtables -fwhole-program-vtables /clang:-fcoro-aligned-allocation")
 
 set(warning_options "-Wextra -Wmost -Wno-error=unused-command-line-argument -Werror=format -Wformat-nonliteral -Werror=format-pedantic -Werror=format-signedness -Werror=format-type-confusion -Werror=microsoft -Werror=move -Werror=nan-infinity-disabled -Werror=parentheses -Werror=strict-aliasing -Werror=tautological-compare -Werror=typename-missing -Werror=weak-vtables")
 
@@ -26,6 +26,12 @@ endif()
 if(SFML_USE_SYSTEM_DEPS)
   set(conformance_options "${conformance_options} -D_WIN32_WINDOWS=0x0A00 -DHB_DISABLE_DEPRECATED")
   set(warning_options "${warning_options} -Wno-error=format-signedness")
+endif()
+
+# Skribidi
+if(DEFINED SKRIBIDI_EXAMPLE)
+  set(conformance_options "${conformance_options} -DHB_DISABLE_DEPRECATED")
+  set(warning_options "${warning_options} -Wno-error=deprecated-declarations -Wno-error=logical-op-parentheses -Wno-error=missing-format-attribute -Wno-error=sign-compare -Wno-error=unused-function -Wno-error=unused-parameter -Wno-error=unused-variable")
 endif()
 
 # abseil
@@ -72,6 +78,12 @@ if(DEFINED KTX_FEATURE_TESTS)
   set(warning_options "${warning_options} -Wno-error=format-signedness")
 endif()
 
+# lame
+if(EXISTS "${CMAKE_SOURCE_DIR}/lame")
+  set(conformance_options "${conformance_options} -Doff_t=_off_t")
+  set(warning_options "${warning_options} -Wno-error=incompatible-pointer-types -Wno-error=tautological-pointer-compare")
+endif()
+
 # llvm-libc, libc++
 if(LLVM_ENABLE_RUNTIMES)
   set(conformance_options "${conformance_options} -DO_BINARY=_O_BINARY -DO_CREAT=_O_CREAT -DO_RDONLY=_O_RDONLY -DO_WRONLY=_O_WRONLY -Dfdopen=_fdopen -Dfileno=_fileno -Doff_t=_off_t")
@@ -84,10 +96,33 @@ if(LUAJIT_DIR)
   set(warning_options "${warning_options} -Wno-error=format -Wno-error=format-pedantic -Wno-error=format-signedness -Wno-error=microsoft-enum-value")
 endif()
 
+# mpg123
+if(DEFINED BUILD_LIBOUT123)
+  set(conformance_options "${conformance_options} -DO_RDONLY=_O_RDONLY -Doff_t=_off_t -Dread=_read -Dwrite=_write")
+  set(warning_options "${warning_options} -Wno-error=format-signedness")
+endif()
+
 # openexr
 if(OPENEXR_ENABLE_LARGE_STACK)
   set(conformance_options "${conformance_options} /FIuse_ansi.h")
   set(warning_options "${warning_options} -Wno-error=format -Wno-error=format-signedness -Wno-error=parentheses")
+endif()
+
+# opus
+if(OPUS_CUSTOM_MODES)
+  set(conformance_options "${conformance_options} -D__builtin_ctz=opus__builtin_ctz -DENABLE_QEXT -Dalloca=_alloca")
+  set(warning_options "${warning_options} -Wno-error=microsoft-redeclare-static")
+endif()
+
+# portaudio
+if(PA_USE_ASIO)
+  set(conformance_options "${conformance_options} -Dalloca=_alloca -UNOMINMAX")
+endif()
+
+# sndfile
+if(EXISTS "${CMAKE_SOURCE_DIR}/sndfile.pc.in")
+  set(conformance_options "${conformance_options} -DFLAC__NO_DLL -Daccess=_access -Dclose=_close -Dfstat=_fstat -Dfstat64=_fstat64 -Dlseek=_lseek -Dmemccpy=_memccpy -Doff_t=_off_t -Dopen=_open -Dpipe=_pipe -Dread=_read -Dstat=_stat -Dwrite=_write")
+  set(warning_options "${warning_options} -Wno-error=format-signedness")
 endif()
 
 # squashfs

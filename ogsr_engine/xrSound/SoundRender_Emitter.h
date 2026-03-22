@@ -5,7 +5,10 @@
 #include "SoundRender_Core.h"
 #include "soundrender_environment.h"
 
-struct OggVorbis_File;
+namespace sf
+{
+typedef struct sf_private_tag SNDFILE;
+}
 
 class CSoundRender_Emitter : public CSound_emitter
 {
@@ -75,7 +78,7 @@ public:
     void move_cursor(int offset);
 
 private:
-    OggVorbis_File* ovf{};
+    sf::SNDFILE* snd{};
 
     tmc::manual_reset_event event{true};
     xr_vector<u8> temp_buf[sdef_target_count_prefill];

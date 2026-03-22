@@ -22,6 +22,7 @@ XR_DIAG_POP();
 #define BASISU_SUPPORT_SSE 1
 
 XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wdeprecated-anon-enum-enum-conversion");
 XR_DIAG_IGNORE("-Wextra-semi");
 XR_DIAG_IGNORE("-Wextra-semi-stmt");
 XR_DIAG_IGNORE("-Wfloat-equal");

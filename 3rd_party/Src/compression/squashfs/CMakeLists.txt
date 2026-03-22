@@ -108,7 +108,7 @@ find_package(ZLIB REQUIRED)
 find_package(lz4 REQUIRED)
 find_package(zstd REQUIRED)
 
-target_include_directories(squashfs PRIVATE "${CMAKE_SOURCE_DIR}/inc")
+target_include_directories(squashfs PRIVATE "${CMAKE_SOURCE_DIR}/include")
 target_include_directories(squashfs PRIVATE "${CMAKE_SOURCE_DIR}/squashfs-tools-ng/include")
 
 target_link_libraries(squashfs PRIVATE ZLIB::ZLIB lz4::lz4 zstd::libzstd)

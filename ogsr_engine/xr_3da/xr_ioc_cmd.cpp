@@ -886,7 +886,6 @@ void CCC_Register()
     CMD1(CCC_SND_Restart, "snd_restart");
 
     CMD3(CCC_Mask, "snd_efx", &psSoundFlags, ss_EFX);
-    CMD3(CCC_Mask, "snd_use_float32", &psSoundFlags, ss_UseFloat32);
     CMD4(CCC_Integer, "snd_targets", &psSoundTargets, 128, 1024);
 
     CMD4(CCC_Float, "snd_rolloff", &psSoundRolloff, 0.1f, 2.f);

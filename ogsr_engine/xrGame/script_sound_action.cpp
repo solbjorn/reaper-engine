@@ -9,10 +9,11 @@
 #include "stdafx.h"
 
 #include "script_sound_action.h"
+
 #include "ai_space.h"
 #include "script_engine.h"
 
-CScriptSoundAction::~CScriptSoundAction() {}
+CScriptSoundAction::~CScriptSoundAction() = default;
 
 void CScriptSoundAction::SetSound(LPCSTR caSoundToPlay)
 {
@@ -21,7 +22,7 @@ void CScriptSoundAction::SetSound(LPCSTR caSoundToPlay)
     m_bStartedToPlay = false;
     string_path l_caFileName;
 
-    if (FS.exist(l_caFileName, "$game_sounds$", *m_caSoundToPlay, ".ogg"))
+    if (xr::sound_exists(l_caFileName, m_caSoundToPlay))
     {
         m_bStartedToPlay = false;
         m_bCompleted = false;

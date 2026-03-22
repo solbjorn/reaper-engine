@@ -591,14 +591,16 @@ static void iterate_sounds(LPCSTR prefix, u32 max_count, sol::function function,
         string_path fn, s;
         LPSTR S = (LPSTR)&s;
         std::ignore = _GetItem(prefix, j, S);
-        if (FS.exist(fn, "$game_sounds$", S, ".ogg"))
+
+        if (xr::sound_exists(fn, S))
             callback(prefix);
 
         for (u32 i = 0; i < max_count; ++i)
         {
             string_path name;
             sprintf_s(name, "%s%d", S, i);
-            if (FS.exist(fn, "$game_sounds$", name, ".ogg"))
+
+            if (xr::sound_exists(fn, name))
                 callback(name);
         }
     }

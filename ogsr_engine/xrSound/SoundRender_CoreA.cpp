@@ -255,7 +255,6 @@ void CSoundRender_CoreA::_initialize(int stage)
     if (stage == 0)
     {
         init_device_list();
-
         return;
     }
 
@@ -283,12 +282,9 @@ void CSoundRender_CoreA::_initialize(int stage)
         Msg("!![%s] OpenAL AL_STOP_SOURCES_ON_DISCONNECT_SOFT error: %s", __FUNCTION__, alGetString(err));
     }
 
-    supports_float_pcm = alIsExtensionPresent("AL_EXT_FLOAT32") // first is OpenAL Soft,
-        || alIsExtensionPresent("AL_EXT_float32"); // second is macOS
-    supports_float_pcm &= psSoundFlags.test(ss_UseFloat32);
+    R_ASSERT(alIsExtensionPresent("AL_EXT_FLOAT32") || alIsExtensionPresent("AL_EXT_float32"), "The audio backend doesn't support PCM data in IEEE 754 floating-point format");
 
     const bool is_al_soft = deviceDesc.is_al_soft;
-
     init_device_properties(is_al_soft);
 
     inherited::_initialize(stage);

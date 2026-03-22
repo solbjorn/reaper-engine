@@ -12,12 +12,12 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{8C67B3EC-AF96-48DB-B93E-E561C79F48D7}</ProjectGuid>
+    <ProjectGuid>{2E26D854-2878-4053-92D0-C19A68E32E3D}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
-    <ProjectName>openal-soft</ProjectName>
+    <ProjectName>unibreak</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <Import Project="..\3rd_party_lib_properties.props" />
+  <Import Project="$(SolutionDir)\3rd_party\Src\3rd_party_lib_properties.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -39,19 +39,15 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\OpenAL32.lib</NMakeOutput>
+    <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\unibreak.lib</NMakeOutput>
     <NMakeBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
-      set "LIBCXX_OPTIONS=$(libcxxOptions)"
-      set "LIBCXX_PATH=$(libcxxPath)"
+      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin"
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DALSOFT_ENABLE_MODULES=OFF -DALSOFT_EXAMPLES=OFF -DALSOFT_UTILS=OFF -DBUILD_SHARED_LIBS=OFF -DLIBTYPE=STATIC ..\openal-soft
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" ..
       cmake --build . --config $(Configuration)
-      copy /Y "OpenAL32.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\OpenAL32.lib"
-      md "$(SolutionDir)\bin_$(PlatformShortName)"
-      copy /Y "..\configs\alsoft.ini" "$(SolutionDir)\bin_$(PlatformShortName)\alsoft.ini"
-      copy /Y "..\configs\CIAIR_48000.mhr" "$(SolutionDir)\bin_$(PlatformShortName)\CIAIR_48000.mhr"
+      cmake --install . --config $(Configuration)
+      copy /Y "$(Configuration)\$(PlatformShortName)\lib\unibreak.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\unibreak.lib"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
       RD /S/Q _Build

@@ -47,7 +47,6 @@
       cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DMI_OPT_ARCH=ON -DMI_OPT_SIMD=ON -DMI_WIN_DIRECT_TLS=ON -DMI_BUILD_STATIC=OFF -DMI_BUILD_OBJECT=OFF -DMI_BUILD_TESTS=OFF ..\mimalloc
       cmake --build . --config $(Configuration)
       copy /Y "mimalloc.dll.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\mimalloc.dll.lib"
-      copy /Y "mimalloc.dll.pdb" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\mimalloc.dll.pdb"
       md "$(SolutionDir)\bin_$(PlatformShortName)"
       copy /Y "mimalloc.dll" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc.dll"
       copy /Y "mimalloc.dll.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc.pdb"

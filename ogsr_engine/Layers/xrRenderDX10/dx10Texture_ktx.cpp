@@ -28,7 +28,6 @@ ktx::KTX_error_code _ktxUnpackETC(const ktx::GLubyte* srcETC, const ktx::GLenum 
                                   ktx::GLenum* format, ktx::GLenum* internalFormat, ktx::GLenum* type, ktx::GLint R16Formats, ktx::GLboolean supportsSRGB);
 
 ktx::ktx_bool_t ktxTexture_isActiveStream(ktx::ktxTexture* This);
-ktx::ktx_bool_t ktxTexture2_IsHDR(ktx::ktxTexture2* This);
 }
 
 #undef KHRONOS_STATIC

@@ -41,8 +41,8 @@
   <PropertyGroup>
     <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_base.lib</NMakeOutput>
     <NMakeBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
-      set "LIBCXX_OPTIONS=$(libcxxOptions) /FI$(SolutionDir)\3rd_party\Src\abseil\override.h"
+      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin"
+      set "LIBCXX_OPTIONS=$(libcxxOptions) /FI$(SolutionDir)\3rd_party\Src\abseil\include\override.h"
       set "LIBCXX_PATH=$(libcxxPath)"
       md _Build
       cd _Build

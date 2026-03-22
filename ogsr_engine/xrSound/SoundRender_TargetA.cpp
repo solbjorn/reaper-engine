@@ -61,14 +61,8 @@ void CSoundRender_TargetA::start(CSoundRender_Emitter* E)
     inherited::start(E);
 
     const auto& wvf = m_pEmitter->source()->m_wformat;
-    const bool mono = wvf.nChannels == 1;
-
-    if (wvf.wFormatTag == WAVE_FORMAT_IEEE_FLOAT)
-        dataFormat = mono ? AL_FORMAT_MONO_FLOAT32 : AL_FORMAT_STEREO_FLOAT32;
-    else
-        dataFormat = mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
-
-    sampleRate = wvf.nSamplesPerSec;
+    dataFormat = wvf.channels == 1 ? AL_FORMAT_MONO_FLOAT32 : AL_FORMAT_STEREO_FLOAT32;
+    sampleRate = wvf.samplerate;
 }
 
 tmc::task<void> CSoundRender_TargetA::render()

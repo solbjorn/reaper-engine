@@ -6,11 +6,13 @@ namespace fsgame
 {
 namespace formats
 {
-constexpr inline std::array<std::string_view, 18> texture{".dds", ".exr", ".ktx", ".ktx2", ".qoi", ".png", ".tga", ".jpg", ".jpeg",
-                                                          ".bmp", ".gif", ".psd", ".hdr",  ".pic", ".pbm", ".pgm", ".pnm", ".ppm"};
-constexpr inline std::array<std::string_view, 4> sound{".ogg", ".flac", ".mp3", ".wav"};
+constexpr inline std::array<std::string_view, 18> texture{".exr", ".ktx2", ".ktx", ".dds", ".qoi", ".png", ".tga", ".jpg", ".jpeg",
+                                                          ".bmp", ".gif",  ".psd", ".hdr", ".pic", ".pbm", ".pgm", ".pnm", ".ppm"};
+constexpr inline std::array<std::string_view, 6> font{".otf", ".ttf", ".woff2", ".woff", ".otc", ".ttc"};
+constexpr inline std::array<std::string_view, 6> sound{".flac", ".opus", ".ogg", ".oga", ".mp3", ".wav"};
 } // namespace formats
 
+constexpr inline std::string_view game_sounds{"$game_sounds$"};
 constexpr inline std::string_view game_textures{"$game_textures$"};
 
 constexpr inline std::string_view level{"$level$"};

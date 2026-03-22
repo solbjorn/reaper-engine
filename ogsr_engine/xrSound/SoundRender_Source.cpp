@@ -3,236 +3,267 @@
 #include "SoundRender_Core.h"
 #include "SoundRender_Source.h"
 
-XR_DIAG_PUSH();
-XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
+#include "../xrCore/stream_reader.h"
 
-#include <vorbis/vorbisfile.h>
+namespace sf
+{
+#include <sndfile.h>
+}
 
-XR_DIAG_POP();
-
-CSoundRender_Source::~CSoundRender_Source() { unload(); }
-
+namespace xr
+{
 namespace
 {
-bool ov_can_continue_read(long res)
+constexpr sf::SF_VIRTUAL_IO vio{
+    // get_filelen
+    [] [[nodiscard]] (void* user_data) { return sf::sf_count_t{static_cast<CStreamReader*>(user_data)->length()}; },
+
+    // seek
+    [] [[nodiscard]] (sf::sf_count_t offset, s32 whence, void* user_data) {
+        auto& file = *static_cast<CStreamReader*>(user_data);
+        gsl::index real;
+
+        switch (whence)
+        {
+        case sf::SF_SEEK_SET: real = offset; break;
+        case sf::SF_SEEK_CUR: real = file.tell() + offset; break;
+        case sf::SF_SEEK_END: real = file.length() + offset; break;
+        default: NODEFAULT;
+        }
+
+        real = std::min(real, file.length());
+        file.seek(real);
+
+        return sf::sf_count_t{real};
+    },
+
+    // read
+    [] [[nodiscard]] (void* ptr, sf::sf_count_t count, void* user_data) {
+        auto& file = *static_cast<CStreamReader*>(user_data);
+        const auto real = std::min(count, file.elapsed());
+
+        file.r(ptr, real);
+
+        return sf::sf_count_t{real};
+    },
+
+    // write
+    [] [[nodiscard]] (const void*, sf::sf_count_t, void*) -> sf::sf_count_t { FATAL("Can't write to a read-only stream"); },
+    // tell
+    [] [[nodiscard]] (void* user_data) { return sf::sf_count_t{static_cast<CStreamReader*>(user_data)->tell()}; },
+};
+
+[[nodiscard]] constexpr CStreamReader* sf_stream(const sf::SNDFILE* snd) { return *reinterpret_cast<CStreamReader* const*>(reinterpret_cast<const std::byte*>(snd) + 8056); }
+
+[[nodiscard]] bool find_sound(string_path& fn, std::span<const std::string_view> places, std::string_view path)
 {
-    switch (res)
+    for (auto& ext : xr::fsgame::formats::sound)
     {
-    case 0:
-        return false;
-        // info
-    case OV_HOLE:
-        Msg("Vorbisfile encoutered missing or corrupt data in the bitstream. Recovery is normally automatic and this return code is for informational purposes only.");
-        return true;
-    case OV_EBADLINK:
-        Msg("The given link exists in the Vorbis data stream, but is not decipherable due to garbacge or corruption.");
-        return true;
-        // error
-    case OV_FALSE: Msg("Not true, or no data available"); return false;
-    case OV_EREAD: Msg("Read error while fetching compressed data for decode"); return false;
-    case OV_EFAULT: Msg("Internal inconsistency in decode state. Continuing is likely not possible."); return false;
-    case OV_EIMPL: Msg("Feature not implemented"); return false;
-    case OV_EINVAL: Msg("Either an invalid argument, or incompletely initialized argument passed to libvorbisfile call"); return false;
-    case OV_ENOTVORBIS: Msg("The given file/data was not recognized as Ogg Vorbis data."); return false;
-    case OV_EBADHEADER: Msg("The file/data is apparently an Ogg Vorbis stream, but contains a corrupted or undecipherable header."); return false;
-    case OV_EVERSION: Msg("The bitstream format revision of the given stream is not supported."); return false;
-    case OV_ENOSEEK: Msg("The given stream is not seekable"); return false;
+        for (auto& place : places)
+        {
+            if (FS.exist(fn, place.data(), path.data(), ext.data()))
+                return true;
+        }
     }
+
     return false;
 }
 } // namespace
 
-void CSoundRender_Source::decompress(void* dest, u32 byte_offset, u32 size, OggVorbis_File* ovf) const
-{
-    // seek
-    const auto sample_offset = ogg_int64_t(byte_offset / m_wformat.nBlockAlign);
-    const auto cur_pos = ov_pcm_tell(ovf);
-    if (cur_pos != sample_offset)
-        ov_pcm_seek(ovf, sample_offset);
+bool sound_exists(string_path& fn, std::string_view path) { return find_sound(fn, std::array{xr::fsgame::game_sounds}, path); }
+} // namespace xr
 
-    // decompress
-    if (m_wformat.wFormatTag == WAVE_FORMAT_IEEE_FLOAT)
-        i_decompress(ovf, static_cast<float*>(dest), size);
-    else
-        i_decompress(ovf, static_cast<char*>(dest), size);
+CSoundRender_Source::~CSoundRender_Source() { unload(); }
+
+void CSoundRender_Source::decompress(void* dest, s64 byte_offset, s64 size, sf::SNDFILE* snd) const
+{
+    const auto sample_offset = byte_offset / m_wformat.item_size;
+    const auto cur_pos = sf::sf_seek(snd, 0, sf::SF_SEEK_CUR);
+
+    if (cur_pos != sample_offset && sf::sf_seek(snd, sample_offset, sf::SF_SEEK_SET) < 0)
+        Msg("! %s File: [%s]", sf::sf_strerror(snd), pname.c_str());
+
+    if (const auto frames = size / m_wformat.item_size; sf::sf_readf_float(snd, static_cast<f32*>(dest), frames) < frames)
+        Msg("! %s File: [%s]", sf::sf_strerror(snd), pname.c_str());
 }
 
-void CSoundRender_Source::i_decompress(OggVorbis_File* ovf, char* _dest, u32 size) const
+sf::SNDFILE* CSoundRender_Source::open() const
 {
-    long TotalRet = 0;
+    auto file = FS.rs_open(pname.c_str());
+    ASSERT_FMT(file != nullptr && file->length() > 0, "Can't open sound file: [%s]", pname.c_str());
 
-    // Read loop
-    while (TotalRet < static_cast<long>(size))
+    sf::SF_INFO info{};
+    auto snd = sf::sf_open_virtual(const_cast<sf::SF_VIRTUAL_IO*>(&xr::vio), sf::SFM_READ, &info, file);
+    if (snd == nullptr)
     {
-        const auto ret = ov_read(ovf, _dest + TotalRet, size - TotalRet, 0, 2, 1, nullptr);
-        if (ret <= 0 && !ov_can_continue_read(ret))
-            break;
-        TotalRet += ret;
+        Msg("! %s File: [%s]", sf::sf_strerror(snd), pname.c_str());
+        file->close();
     }
+
+    return snd;
 }
 
-void CSoundRender_Source::i_decompress(OggVorbis_File* ovf, float* _dest, u32 size) const
+void CSoundRender_Source::close(sf::SNDFILE*& snd) const
 {
-    s32 left = s32(size / m_wformat.nBlockAlign);
-    while (left)
-    {
-        float** pcm;
-        long samples = ov_read_float(ovf, &pcm, left, nullptr);
+    if (snd == nullptr)
+        return;
 
-        if (samples <= 0 && !ov_can_continue_read(samples))
-            break;
+    auto file = xr::sf_stream(snd);
 
-        if (samples > left)
-            samples = left;
+    if (const auto ret = sf::sf_close(snd); ret != 0)
+        Msg("! %s File: [%s]", sf::sf_error_number(ret), pname.c_str());
 
-        for (long j = 0; j < samples; j++)
-            for (long i = 0; i < m_wformat.nChannels; i++)
-                *_dest++ = clampr(pcm[i][j], -1.0f, 1.0f);
-
-        left -= samples;
-    }
-}
-
-static constexpr ov_callbacks g_ov_callbacks = {
-    // read
-    [](void* ptr, size_t size, size_t nmemb, void* datasource) -> size_t {
-        IReader* F = (IReader*)datasource;
-        const size_t exist_block = _max(0, iFloor(F->elapsed() / (float)size));
-        const size_t read_block = std::min(exist_block, nmemb);
-        F->r(ptr, read_block * size);
-        return read_block;
-    },
-    // seek
-    [](void* datasource, ogg_int64_t offset, int whence) -> int {
-        // SEEK_SET 0 File beginning
-        // SEEK_CUR 1 Current file pointer position
-        // SEEK_END 2 End-of-file
-        switch (whence)
-        {
-        case SEEK_SET: ((IReader*)datasource)->seek(offset); break;
-        case SEEK_CUR: ((IReader*)datasource)->advance(offset); break;
-        case SEEK_END: ((IReader*)datasource)->seek(offset + ((IReader*)datasource)->length()); break;
-        }
-        return 0;
-    },
-    // close
-    [](void* datasource) -> int {
-        auto* file = static_cast<IReader*>(datasource);
-        FS.r_close(file);
-        return 0;
-    },
-    // tell
-    [](void* datasource) -> long {
-        const auto file = static_cast<IReader*>(datasource);
-        return static_cast<long>(file->tell());
-    },
-};
-
-OggVorbis_File* CSoundRender_Source::open() const
-{
-    const auto file = FS.r_open(pname.c_str());
-    R_ASSERT3(file && file->length(), "Can't open wave file:", pname.c_str());
-
-    const auto ovf = xr_new<OggVorbis_File>();
-    ov_open_callbacks(file, ovf, nullptr, 0, g_ov_callbacks);
-
-    return ovf;
-}
-
-void CSoundRender_Source::close(OggVorbis_File*& ovf) const
-{
-    ov_clear(ovf);
-    xr_delete(ovf);
+    file->close();
+    snd = nullptr;
 }
 
 void CSoundRender_Source::LoadWave(LPCSTR pName)
 {
     pname._set(pName);
 
-    // Load file into memory and parse WAV-format
-    OggVorbis_File* ovf = xr_new<OggVorbis_File>();
-    IReader* wave = FS.r_open(pname.c_str());
+    auto file = FS.rs_open(pName);
+    ASSERT_FMT(file != nullptr && file->length() > 0, "Can't open sound file: [%s]", pName);
 
-    R_ASSERT3(ovf && wave && wave->length(), "Can't open wave file:", pname.c_str());
-    ov_open_callbacks(wave, ovf, nullptr, 0, g_ov_callbacks);
+    sf::SF_INFO info{};
+    auto snd = sf::sf_open_virtual(const_cast<sf::SF_VIRTUAL_IO*>(&xr::vio), sf::SFM_READ, &info, file);
 
-    const vorbis_info* ovi = ov_info(ovf, -1);
-    // verify
-    R_ASSERT3(ovi, "Invalid source info:", pName);
+    ASSERT_FMT(snd != nullptr, "%s File: [%s]", sf::sf_strerror(snd), pName);
+    R_ASSERT(xr::sf_stream(snd) == file);
 
-    std::memset(&m_wformat, 0, sizeof(WAVEFORMATEX));
+    m_wformat.samplerate = info.samplerate;
+    m_wformat.channels = info.channels;
+    m_wformat.item_size = sizeof(f32) * info.channels;
 
-    m_wformat.nSamplesPerSec = ovi->rate;
-    m_wformat.nChannels = u16(ovi->channels);
+    const auto byterate = info.samplerate * m_wformat.item_size;
+    bytesPerBuffer = sdef_target_block * byterate / 1000;
 
-    if (SoundRender->supports_float_pcm)
-    {
-        m_wformat.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
-        m_wformat.wBitsPerSample = 32;
-    }
-    else
-    {
-        m_wformat.wFormatTag = WAVE_FORMAT_PCM;
-        m_wformat.wBitsPerSample = 16;
-    }
+    dwBytesTotal = info.frames * m_wformat.item_size;
+    fTimeTotal = gsl::narrow_cast<f32>(dwBytesTotal) / gsl::narrow_cast<f32>(byterate);
 
-    m_wformat.nBlockAlign = m_wformat.wBitsPerSample / 8 * m_wformat.nChannels;
-    m_wformat.nAvgBytesPerSec = m_wformat.nSamplesPerSec * m_wformat.nBlockAlign;
-    bytesPerBuffer = sdef_target_block * m_wformat.nAvgBytesPerSec / 1000;
-
-    const s64 pcm_total = ov_pcm_total(ovf, -1);
-    dwBytesTotal = u32(pcm_total * m_wformat.nBlockAlign);
-    fTimeTotal = dwBytesTotal / float(m_wformat.nAvgBytesPerSec);
-
-    const vorbis_comment* ovm = ov_comment(ovf, -1);
-    if (ovm->comments)
-    {
-        IReader F(ovm->user_comments[0], ovm->comment_lengths[0]);
-
-        u32 vers{};
-        if (F.elapsed() <= static_cast<int>(sizeof vers))
-            Msg("! Invalid ogg-comment, file: [%s]", pName);
-        else
-            vers = F.r_u32();
-
-        if (vers == 0x0001)
-        {
-            m_fMinDist = F.r_float();
-            m_fMaxDist = F.r_float();
-            m_fBaseVolume = 1.f;
-            m_uGameType = F.r_u32();
-            m_fMaxAIDist = m_fMaxDist;
-        }
-        else if (vers == 0x0002)
-        {
-            m_fMinDist = F.r_float();
-            m_fMaxDist = F.r_float();
-            m_fBaseVolume = F.r_float();
-            m_uGameType = F.r_u32();
-            m_fMaxAIDist = m_fMaxDist;
-        }
-        else if (vers == OGG_COMMENT_VERSION)
-        {
-            m_fMinDist = F.r_float();
-            m_fMaxDist = F.r_float();
-            m_fBaseVolume = F.r_float();
-            m_uGameType = F.r_u32();
-            m_fMaxAIDist = F.r_float();
-        }
-        else
-        {
-            Msg("! Invalid ogg-comment version, file: [%s]", pName);
-        }
-    }
-    else
-    {
-        Msg("! Missing ogg-comment, file: [%s]", pName);
-    }
+    const auto fallback = (info.format & sf::SF_FORMAT_SUBMASK) == sf::SF_FORMAT_VORBIS;
+    if (!parse_comment(snd, fallback) && fallback)
+        parse_legacy_comment(*file);
 
     R_ASSERT3(m_fMaxAIDist >= 0.1f && m_fMaxDist >= 0.1f, "Invalid max distance.", pName);
 
-    ov_clear(ovf);
-    xr_delete(ovf);
+    close(snd);
+}
+
+bool CSoundRender_Source::parse_comment(sf::SNDFILE* snd, bool fallback)
+{
+    auto comment = sf::sf_get_string(snd, sf::SF_STR_COMMENT);
+    if (comment == nullptr)
+    {
+        if (!fallback)
+            Msg("! Missing UTF-8 comment, file: [%s]", pname.c_str());
+
+        return false;
+    }
+
+    IReader rd{comment, xr_strlen(comment) + 1};
+    const auto ini = std::make_unique<CInifile>(&rd, pname.c_str());
+
+    if (!ini->section_exist("sound"))
+    {
+    inv:
+        if (!fallback)
+            Msg("! Invalid UTF-8 comment, file: [%s]", pname.c_str());
+
+        return false;
+    }
+
+    for (auto& line : std::array<std::string_view, 5>{"min_dist", "max_dist", "base_volume", "game_type", "max_ai_dist"})
+    {
+        if (!ini->line_exist("sound", line.data()))
+            goto inv;
+    }
+
+    m_fMinDist = ini->r_float("sound", "min_dist");
+    m_fMaxDist = ini->r_float("sound", "max_dist");
+    m_fBaseVolume = ini->r_float("sound", "base_volume");
+    m_uGameType = ini->r_u32("sound", "game_type");
+    m_fMaxAIDist = ini->r_float("sound", "max_ai_dist");
+
+    return true;
+}
+
+void CSoundRender_Source::parse_legacy_comment(CStreamReader& file)
+{
+    if (file.length() < 128)
+    {
+    miss:
+        Msg("! Missing legacy comment, file: [%s]", pname.c_str());
+        return;
+    }
+
+    const auto orig = file.tell();
+    const auto rewind = gsl::finally([&file, orig] { file.seek(orig); });
+
+    // Read page 1 segment number and skip their sizes
+    file.seek(84);
+    file.advance(file.r_u8());
+
+    // Check page 1 magic (0x3 "vorbis")
+    static constexpr std::array<u8, 7> magic{0x3, 0x76, 0x6f, 0x72, 0x62, 0x69, 0x73};
+    std::array<std::byte, 24> buf;
+    file.r(buf.data(), 7);
+
+    if (std::memcmp(buf.data(), magic.data(), magic.size()) != 0)
+    {
+    inv:
+        Msg("! Invalid legacy comment, file: [%s]", pname.c_str());
+        return;
+    }
+
+    // Read vendor string size and skip it
+    file.advance(file.r_u32());
+
+    // The number of OGG comments, must be at least 1
+    if (file.r_u32() == 0)
+        goto miss;
+
+    // Read the size of comment 0 and validate
+    const auto sz = file.r_u32();
+    if (sz < 16)
+        goto inv;
+
+    file.r(buf.data(), std::min(size_t{sz}, buf.size()));
+    IReader comment{buf.data(), sz};
+
+    switch (comment.r_u32())
+    {
+    case 0x1:
+        m_fMinDist = comment.r_float();
+        m_fMaxDist = comment.r_float();
+        m_fBaseVolume = 1.0f;
+        m_uGameType = comment.r_u32();
+        m_fMaxAIDist = m_fMaxDist;
+
+        break;
+    case 0x2:
+        if (sz < 20)
+            goto inv;
+
+        m_fMinDist = comment.r_float();
+        m_fMaxDist = comment.r_float();
+        m_fBaseVolume = comment.r_float();
+        m_uGameType = comment.r_u32();
+        m_fMaxAIDist = m_fMaxDist;
+
+        break;
+    case OGG_COMMENT_VERSION:
+        if (sz < 24)
+            goto inv;
+
+        m_fMinDist = comment.r_float();
+        m_fMaxDist = comment.r_float();
+        m_fBaseVolume = comment.r_float();
+        m_uGameType = comment.r_u32();
+        m_fMaxAIDist = comment.r_float();
+
+        break;
+    default: Msg("! Invalid legacy comment version, file: [%s]", pname.c_str()); break;
+    }
 }
 
 void CSoundRender_Source::load(LPCSTR name)
@@ -245,13 +276,11 @@ void CSoundRender_Source::load(LPCSTR name)
 
     fname._set(N);
 
-    strconcat(sizeof(fn), fn, N, ".ogg");
-    if (!FS.exist("$level$", fn))
-        std::ignore = FS.update_path(fn, "$game_sounds$", fn);
-
-    ASSERT_FMT_DBG(FS.exist(fn), "! Can't find sound [%s.ogg]", N);
-    if (!FS.exist(fn))
-        std::ignore = FS.update_path(fn, "$game_sounds$", "$no_sound.ogg");
+    if (!xr::find_sound(fn, std::array{xr::fsgame::level, xr::fsgame::game_sounds}, fname))
+    {
+        Msg("! Can't find sound [%s]", N);
+        R_ASSERT(xr::find_sound(fn, std::array{xr::fsgame::game_sounds}, "$no_sound"));
+    }
 
     LoadWave(fn);
 }

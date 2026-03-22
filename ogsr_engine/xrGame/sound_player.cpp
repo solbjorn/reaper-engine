@@ -254,7 +254,7 @@ void CSoundPlayer::CSoundCollection::load()
         std::ignore = _GetItem(*m_params.m_sound_prefix, j, temp);
         strconcat(sizeof(s), s, *m_params.m_sound_player_prefix, temp);
 
-        if (FS.exist(fn, "$game_sounds$", s, ".ogg"))
+        if (xr::sound_exists(fn, s))
         {
             ref_sound* temp = add(m_params.m_type, s);
             if (temp)
@@ -265,7 +265,8 @@ void CSoundPlayer::CSoundCollection::load()
         {
             string256 name;
             sprintf_s(name, "%s%d", s, i);
-            if (FS.exist(fn, "$game_sounds$", name, ".ogg"))
+
+            if (xr::sound_exists(fn, name))
             {
                 ref_sound* temp = add(m_params.m_type, name);
                 if (temp)

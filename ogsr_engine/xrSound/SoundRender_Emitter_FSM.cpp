@@ -11,7 +11,7 @@ namespace
 constexpr float psSoundCull{0.01f};
 constexpr float TIME_TO_STOP_INFINITE{std::numeric_limits<float>::max()};
 
-inline u32 calc_cursor(const float& fTimeStarted, float& fTime, const float& fTimeTotal, const float& fFreq, const WAVEFORMATEX& wfx)
+constexpr u32 calc_cursor(f32 fTimeStarted, f32& fTime, f32 fTimeTotal, f32 fFreq, const CSoundRender_Source::info& wfx)
 {
     if (fTime < fTimeStarted)
         fTime = fTimeStarted; // Андрюха посоветовал, ассерт что ниже вылетел из за паузы как то хитро
@@ -20,8 +20,9 @@ inline u32 calc_cursor(const float& fTimeStarted, float& fTime, const float& fTi
     {
         fTime -= fTimeTotal / fFreq;
     }
-    const u32 curr_sample_num = iFloor((fTime - fTimeStarted) * fFreq * wfx.nSamplesPerSec);
-    return curr_sample_num * (wfx.wBitsPerSample / 8) * wfx.nChannels;
+    const u32 curr_sample_num = iFloor((fTime - fTimeStarted) * fFreq * wfx.samplerate);
+
+    return curr_sample_num * wfx.item_size;
 }
 } // namespace
 

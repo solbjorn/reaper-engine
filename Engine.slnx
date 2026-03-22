@@ -23,9 +23,6 @@
     <Project Path="3rd_party/Src/llvm/llvm.vcxproj" Id="a2f5a99e-1330-4dc5-90da-c55d0fcc6bdf" />
     <Project Path="3rd_party/Src/luajit2/luajit2.vcxproj" Id="632aeeb6-dc06-4e15-9551-b2b09a4b73c5" />
     <Project Path="3rd_party/Src/mimalloc/mimalloc.vcxproj" Id="c0e0a539-f615-4317-b12c-24b77195b41a" />
-    <Project Path="3rd_party/Src/openal-soft/openal-soft.vcxproj" Id="8c67b3ec-af96-48db-b93e-e561c79f48d7">
-      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
-    </Project>
     <Project Path="3rd_party/Src/pugixml/pugixml.vcxproj" Id="f254d5d1-d566-4af3-b402-4df3a717daf2">
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
@@ -49,6 +46,13 @@
     <Project Path="3rd_party/Src/FreeType/SheenBidi/SheenBidi.vcxproj" Id="c651434c-b5c3-4713-bb06-f62190a37a87">
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
+    <Project Path="3rd_party/Src/FreeType/Skribidi/Skribidi.vcxproj" Id="c1d77b5d-0c7c-4f60-8aa0-1a9c3e9adf4e">
+      <BuildDependency Project="3rd_party/Src/FreeType/SheenBidi/SheenBidi.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/FreeType/budouxc/budouxc.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/FreeType/freetype/freetype.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/FreeType/unibreak/unibreak.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/FreeType/budouxc/budouxc.vcxproj" Id="9547a077-04ba-477b-8b11-49c0fc49b586" />
     <Project Path="3rd_party/Src/FreeType/freetype/freetype.vcxproj" Id="604b9414-5807-4926-836e-11d645cc9fb8">
       <BuildDependency Project="3rd_party/Src/FreeType/harfbuzz/harfbuzz.vcxproj" />
     </Project>
@@ -68,6 +72,7 @@
       <BuildDependency Project="3rd_party/Src/FreeType/plutovg/plutovg.vcxproj" />
     </Project>
     <Project Path="3rd_party/Src/FreeType/plutovg/plutovg.vcxproj" Id="863e00ea-4d4f-41a2-a14b-f1a9c45e5621" />
+    <Project Path="3rd_party/Src/FreeType/unibreak/unibreak.vcxproj" Id="2e26d854-2878-4053-92d0-c19a68e32e3d" />
   </Folder>
   <Folder Name="/3rd_party/OpenImageIO/">
     <Project Path="3rd_party/Src/DirectX/DirectXTex/DirectXTex.vcxproj" Id="286cc988-2191-467a-9f6d-abb7954d4f78">
@@ -94,21 +99,39 @@
       <BuildDependency Project="3rd_party/Src/compression/zlib/zlib.vcxproj" />
     </Project>
   </Folder>
+  <Folder Name="/3rd_party/Sound/">
+    <Project Path="3rd_party/Src/sound/lame/lame.vcxproj" Id="1cc38585-11ed-4213-bf14-94211d31675e">
+      <BuildDependency Project="3rd_party/Src/sound/mpg123/mpg123.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/sound/mpg123/mpg123.vcxproj" Id="de2f2b07-6c80-48b4-be0c-14d223e7baff" />
+    <Project Path="3rd_party/Src/sound/openal-soft/openal-soft.vcxproj" Id="8c67b3ec-af96-48db-b93e-e561c79f48d7">
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/sound/portaudio/portaudio.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/sound/portaudio/portaudio.vcxproj" Id="31283b30-7f57-499e-91a4-03be70e6f2ed">
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/sound/sndfile/sndfile.vcxproj" Id="cf9015f8-1d89-4dd8-8a9c-1f9a751c6db9">
+      <BuildDependency Project="3rd_party/Src/Xiph/flac/flac.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/Xiph/ogg/ogg.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/Xiph/opus/opus.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/Xiph/vorbis/vorbis.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/sound/lame/lame.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/sound/mpg123/mpg123.vcxproj" />
+    </Project>
+  </Folder>
   <Folder Name="/3rd_party/Xiph.org/">
     <Project Path="3rd_party/Src/Xiph/flac/flac.vcxproj" Id="702304bc-1ab0-4e93-8fc0-a3225cde1de3">
       <BuildDependency Project="3rd_party/Src/Xiph/ogg/ogg.vcxproj" />
       <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
-    <Project Path="3rd_party/Src/Xiph/ogg/ogg.vcxproj" Id="1659bf1b-6fcd-46e4-b5d4-0b760598cb2e">
-      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
-    </Project>
+    <Project Path="3rd_party/Src/Xiph/ogg/ogg.vcxproj" Id="1659bf1b-6fcd-46e4-b5d4-0b760598cb2e" />
+    <Project Path="3rd_party/Src/Xiph/opus/opus.vcxproj" Id="ce98731e-8075-447f-ad1b-fbc86ca3d81c" />
     <Project Path="3rd_party/Src/Xiph/theora/theora.vcxproj" Id="d6aea327-48bc-45c8-b0e9-bf775e451904">
       <BuildDependency Project="3rd_party/Src/Xiph/ogg/ogg.vcxproj" />
-      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
     <Project Path="3rd_party/Src/Xiph/vorbis/vorbis.vcxproj" Id="0f3163c6-fae6-4fbd-bf88-037eb0420daf">
       <BuildDependency Project="3rd_party/Src/Xiph/ogg/ogg.vcxproj" />
-      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
     </Project>
   </Folder>
   <Folder Name="/Solution Items/">
@@ -116,8 +139,10 @@
   </Folder>
   <Project Path="ogsr_engine/Layers/xrRenderPC_R4/xrRender_R4.vcxproj" Id="ac9b12ed-a2d7-4337-a981-5bd8430e96d8">
     <BuildDependency Project="3rd_party/Src/DirectX/DirectXTex/DirectXTex.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/FreeType/Skribidi/Skribidi.vcxproj" />
     <BuildDependency Project="3rd_party/Src/OpenImageIO/ktx/ktx.vcxproj" />
     <BuildDependency Project="3rd_party/Src/OpenImageIO/openexr/openexr.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/OpenImageIO/png/png.vcxproj" />
     <BuildDependency Project="3rd_party/Src/compression/xxHash/xxHash.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrCDB/xrCDB.vcxproj" Id="a19b1df2-82ec-4364-8bdf-85d13a1c89b5">
@@ -147,8 +172,8 @@
     <BuildDependency Project="3rd_party/Src/legacy/ode/ode.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrSound/xrSound.vcxproj" Id="ccca7859-eb86-493e-9b53-c4235f45b3c5">
-    <BuildDependency Project="3rd_party/Src/Xiph/vorbis/vorbis.vcxproj" />
-    <BuildDependency Project="3rd_party/Src/openal-soft/openal-soft.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/sound/openal-soft/openal-soft.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/sound/sndfile/sndfile.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xr_3da/XR_3DA.vcxproj" Id="2578c6d8-660d-48ae-9322-7422f8664f06">
     <BuildDependency Project="3rd_party/Src/Xiph/theora/theora.vcxproj" />

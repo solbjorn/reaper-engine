@@ -150,10 +150,10 @@ void CSoundRender_Emitter::move_cursor(int offset) { set_cursor(get_cursor(true)
 
 void CSoundRender_Emitter::fill_data(void* dest, u32 offset, u32 size)
 {
-    if (!ovf)
-        ovf = source()->open();
+    if (snd == nullptr)
+        snd = source()->open();
 
-    source()->decompress(dest, offset, size, ovf);
+    source()->decompress(dest, offset, size, snd);
 }
 
 void CSoundRender_Emitter::fill_block(void* ptr, u32 size)

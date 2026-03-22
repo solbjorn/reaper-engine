@@ -21,7 +21,8 @@ CScriptSound::CScriptSound(LPCSTR caSoundName, ESoundTypes game_type, esound_typ
 
     string_path l_caFileName;
     VERIFY(::Sound);
-    if (FS.exist(l_caFileName, "$game_sounds$", caSoundName, ".ogg"))
+
+    if (xr::sound_exists(l_caFileName, m_caSoundToPlay))
         m_sound.create(caSoundName, kind, game_type);
     else
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "File not found \"%s\"!", l_caFileName);

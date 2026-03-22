@@ -37,7 +37,6 @@ enum : u32
 {
     /* 1ul << 1ul, */
     ss_EFX = 1ul << 2ul, //!< Use EAX or EFX
-    ss_UseFloat32 = 1ul << 3ul, //!< Use 32-bit float sound instead of 16-bit
 };
 
 enum : u32
@@ -190,7 +189,7 @@ public:
     virtual float length_sec() const = 0;
     virtual u32 game_type() const = 0;
     virtual LPCSTR file_name() const = 0;
-    virtual u32 bytes_total() const = 0;
+    [[nodiscard]] virtual s64 bytes_total() const = 0;
 };
 
 inline CSound_source::~CSound_source() = default;
@@ -564,6 +563,12 @@ IC void ref_sound::set_params(CSound_params* p)
         _feedback()->set_range(p->min_distance, p->max_distance);
         _feedback()->set_volume(p->volume);
     }
+}
+
+// SoundRender_Source.cpp
+namespace xr
+{
+[[nodiscard]] bool sound_exists(string_path& fn, std::string_view path);
 }
 
 #endif

@@ -201,19 +201,24 @@ bool CLevel::PrefetchManySounds(LPCSTR prefix)
 {
     bool created = false;
     string_path fn;
-    if (FS.exist(fn, "$game_sounds$", prefix, ".ogg"))
+
+    if (xr::sound_exists(fn, prefix))
         created = PrefetchSound(prefix) || created;
+
     u32 i = 0;
     while (true)
     {
         string256 name;
         sprintf_s(name, "%s%d", prefix, i);
-        if (FS.exist(fn, "$game_sounds$", name, ".ogg"))
+
+        if (xr::sound_exists(fn, name))
             created = PrefetchSound(name) || created;
         else if (i > 0)
             break;
+
         i++;
     }
+
     return created;
 }
 

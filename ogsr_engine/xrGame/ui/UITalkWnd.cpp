@@ -400,18 +400,21 @@ void CUITalkWnd::PlaySnd(LPCSTR text)
 {
     if (xr_strlen(text) == 0)
         return;
+
     StopSnd();
 
-    string_path fn;
-    strconcat(sizeof(fn), fn, "characters_voice\\dialogs\\", text, ".ogg");
-    if (FS.exist("$game_sounds$", fn))
+    string_path fname, fn;
+    xr_strconcat(fname, "characters_voice\\dialogs\\", text);
+
+    if (!xr::sound_exists(fn, fname))
+        return;
+
+    VERIFY(m_pActor != nullptr);
+
+    if (!m_pActor->OnDialogSoundHandlerStart(m_pOthersInvOwner, fname))
     {
-        VERIFY(m_pActor);
-        if (!m_pActor->OnDialogSoundHandlerStart(m_pOthersInvOwner, fn))
-        {
-            m_sound.create(fn, st_Effect, sg_SourceType);
-            m_sound.play(nullptr, sm_2D);
-        }
+        m_sound.create(fname, st_Effect, sg_SourceType);
+        m_sound.play(nullptr, sm_2D);
     }
 }
 

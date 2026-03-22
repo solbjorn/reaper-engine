@@ -30,9 +30,8 @@ void CMMSound::Init(CUIXml& xml_doc, LPCSTR path)
 
 bool CMMSound::check_file(LPCSTR fname)
 {
-    string_path _path;
-    strconcat(sizeof(_path), _path, fname, ".ogg");
-    return FS.exist("$game_sounds$", _path) ? true : false;
+    string_path path;
+    return xr::sound_exists(path, fname);
 }
 
 void CMMSound::whell_Play()
@@ -58,12 +57,13 @@ void CMMSound::music_Play()
 
     int i = Random.randI(m_play_list.size());
 
-    string_path _path;
-    string_path _path2;
-    strconcat(sizeof(_path), _path, m_play_list[i].c_str(), "_l.ogg");
-    strconcat(sizeof(_path2), _path2, m_play_list[i].c_str(), "_r.ogg");
-    VERIFY(FS.exist("$game_sounds$", _path));
-    VERIFY(FS.exist("$game_sounds$", _path2));
+    string_path _path, _path2;
+    xr_strconcat(_path, m_play_list[i].c_str(), "_l");
+    xr_strconcat(_path2, m_play_list[i].c_str(), "_r");
+
+    string_path fn;
+    VERIFY(xr::sound_exists(fn, _path));
+    VERIFY(xr::sound_exists(fn, _path2));
 
     m_music_l.create(_path, st_Music, sg_SourceType);
     m_music_r.create(_path2, st_Music, sg_SourceType);

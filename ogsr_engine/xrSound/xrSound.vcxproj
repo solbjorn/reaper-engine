@@ -69,11 +69,10 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\openal-soft\openal-soft\include\AL;$(SolutionDir)\3rd_party\Src\legacy\eax;..\..\3rd_party\Src\Xiph\ogg\ogg\include;..\..\3rd_party\Src\Xiph\vorbis\vorbis-aotuv-lancer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\legacy\eax;$(SolutionDir)\3rd_party\Src\sound\openal-soft\openal-soft\include\AL;$(SolutionDir)\3rd_party\Src\sound\sndfile\libsndfile\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>OpenAL32.lib;vorbis.lib;vorbisfile.lib;ogg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
@@ -113,12 +112,11 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\openal-soft\openal-soft\include\AL;$(SolutionDir)\3rd_party\Src\legacy\eax;..\..\3rd_party\Src\Xiph\ogg\ogg\include;..\..\3rd_party\Src\Xiph\vorbis\vorbis-aotuv-lancer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\legacy\eax;$(SolutionDir)\3rd_party\Src\sound\openal-soft\openal-soft\include\AL;$(SolutionDir)\3rd_party\Src\sound\sndfile\libsndfile\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>OpenAL32.lib;vorbis.lib;vorbisfile.lib;ogg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>

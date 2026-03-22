@@ -71,7 +71,6 @@ public:
     BOOL bEAX{}; // Boolean variable to indicate presence of EAX Extension
     BOOL bDeferredEAX{};
     bool bEFX{}; // boolean variable to indicate presence of EFX Extension
-    bool supports_float_pcm{};
     BOOL bReady{};
 
     CTimer Timer{};
