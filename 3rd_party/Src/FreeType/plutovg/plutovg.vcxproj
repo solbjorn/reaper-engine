@@ -11,8 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{863E00EA-4D4F-41A2-A14B-F1A9C45E5621}</ProjectGuid>
+    <ProjectGuid>{863e00ea-4d4f-41a2-a14b-f1a9c45e5621}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
     <ProjectName>plutovg</ProjectName>
   </PropertyGroup>
@@ -41,9 +40,10 @@
   <PropertyGroup>
     <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\plutovg.lib</NMakeOutput>
     <NMakeBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
+      set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
       md _Build
       cd _Build
+      echo * > .gitignore
       cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DBUILD_SHARED_LIBS=OFF -DPLUTOVG_BUILD_EXAMPLES=OFF ..\plutovg
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)

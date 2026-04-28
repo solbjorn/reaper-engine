@@ -11,8 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{B9D1539C-B53D-4380-AD75-0044D1C8D47A}</ProjectGuid>
+    <ProjectGuid>{b9d1539c-b53d-4380-ad75-0044d1c8d47a}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
     <ProjectName>png</ProjectName>
   </PropertyGroup>
@@ -41,9 +40,10 @@
   <PropertyGroup>
     <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\libpng18_static.lib</NMakeOutput>
     <NMakeBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
+      set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
       md _Build
       cd _Build
+      echo * > .gitignore
       cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\compression\zlib\_Build\$(Configuration)\$(PlatformShortName)" -DPNG_SHARED=OFF -DPNG_TESTS=OFF -DPNG_TOOLS=OFF ..\libpng
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)

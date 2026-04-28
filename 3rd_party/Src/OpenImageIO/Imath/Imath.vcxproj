@@ -11,10 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>Imath</ProjectName>
-    <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{25F5549B-002B-40AF-A1FB-34B166E89CB9}</ProjectGuid>
+    <ProjectGuid>{25f5549b-002b-40af-a1fb-34b166e89cb9}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
+    <ProjectName>Imath</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(SolutionDir)\3rd_party\Src\3rd_party_lib_properties.props" />
@@ -41,11 +40,12 @@
   <PropertyGroup>
     <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\Imath-3_2.lib</NMakeOutput>
     <NMakeBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
+      set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
       set "LIBCXX_OPTIONS=$(libcxxOptions)"
       set "LIBCXX_PATH=$(libcxxPath)"
       md _Build
       cd _Build
+      echo * > .gitignore
       cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DIMATH_ENABLE_LARGE_STACK=ON ..\Imath
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)

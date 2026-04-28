@@ -11,10 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>OpenJPH</ProjectName>
-    <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{60BBBE12-B3B4-4171-8835-E89AB9960305}</ProjectGuid>
+    <ProjectGuid>{60bbbe12-b3b4-4171-8835-e89ab9960305}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
+    <ProjectName>OpenJPH</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(SolutionDir)\3rd_party\Src\3rd_party_lib_properties.props" />
@@ -41,15 +40,16 @@
   <PropertyGroup>
     <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\openjph.0.26.lib</NMakeOutput>
     <NMakeBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
+      set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
       set "LIBCXX_OPTIONS=$(libcxxOptions)"
       set "LIBCXX_PATH=$(libcxxPath)"
       md _Build
       cd _Build
+      echo * > .gitignore
       cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DBUILD_SHARED_LIBS=OFF -DOJPH_BUILD_EXECUTABLES=OFF -DOJPH_DISABLE_AVX512=ON ..\OpenJPH
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)
-      copy /Y "$(Configuration)\$(PlatformShortName)\lib\openjph.0.26.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\openjph.0.26.lib"
+      copy /Y "$(Configuration)\$(PlatformShortName)\lib\openjph.0.27.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\openjph.0.27.lib"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
       RD /S/Q _Build

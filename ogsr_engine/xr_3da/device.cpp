@@ -19,8 +19,9 @@ CLoadScreenRenderer load_screen_renderer;
 
 BOOL g_bRendering = FALSE;
 
-int g_3dscopes_fps_factor = 2; // На каком кадре с момента прошлого рендера во второй вьюпорт мы начнём новый (не может быть меньше 2 - каждый второй кадр, чем больше
-                               // тем более низкий FPS во втором вьюпорте)
+// На каком кадре с момента прошлого рендера во второй вьюпорт мы начнём новый (не может быть меньше 2 - каждый второй кадр, чем больше тем более низкий FPS во
+// втором вьюпорте)
+int g_3dscopes_fps_factor = 2;
 
 BOOL g_bLoaded = FALSE;
 float refresh_rate = 0;
@@ -210,7 +211,8 @@ tmc::task<void> CRenderDevice::OnCameraUpdated()
     mFullTransform.mul(mProject, mView);
 
     mViewHud.build_camera_dir({}, vCameraDirection, vCameraTop);
-    mProjectHud.build_projection(deg2rad(psHUD_FOV <= 1.f ? psHUD_FOV * fFOV : psHUD_FOV), fASPECT, HUD_VIEWPORT_NEAR, g_pGamePersistent->Environment().CurrentEnv->far_plane);
+    mProjectHud.build_projection(deg2rad(psHUD_FOV <= 1.f ? psHUD_FOV * fFOV : psHUD_FOV), fASPECT, HUD_VIEWPORT_NEAR,
+                                 g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
     mInvView.invert(mView);
     mInvFullTransform.invert_44(mFullTransform);
@@ -289,8 +291,8 @@ tmc::task<void> CRenderDevice::ProcessFrame()
     {
         const std::chrono::duration<f64, std::milli> SecondThreadFreeTime = FrameElapsedTime - SecondThreadTasksElapsedTime;
 
-        Msg("##[%s] Second thread work time is too long! Avail: [%f]ms, used: [%f]ms, free: [%f]ms", __FUNCTION__, FrameElapsedTime.count(), SecondThreadTasksElapsedTime.count(),
-            SecondThreadFreeTime.count());
+        Msg("##[%s] Second thread work time is too long! Avail: [%f]ms, used: [%f]ms, free: [%f]ms", __FUNCTION__, FrameElapsedTime.count(),
+            SecondThreadTasksElapsedTime.count(), SecondThreadFreeTime.count());
     }
 #else
     co_await std::move(second);
@@ -370,7 +372,7 @@ tmc::task<void> CRenderDevice::message_loop()
 
 static void LogOsVersion()
 {
-    static auto RtlGetVersion = reinterpret_cast<NTSTATUS(WINAPI*)(LPOSVERSIONINFOEXW)>(GetProcAddress(GetModuleHandle("ntdll"), "RtlGetVersion"));
+    static auto RtlGetVersion = reinterpret_cast<NTSTATUS(WINAPI*)(LPOSVERSIONINFOEXW)>(GetProcAddress(GetModuleHandleA("ntdll"), "RtlGetVersion"));
 
     if (RtlGetVersion)
     {

@@ -4,7 +4,7 @@
 
 void CFileStreamReader::construct(LPCSTR file_name, gsl::index window_size)
 {
-    m_file_handle = CreateFile(file_name, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, nullptr);
+    m_file_handle = CreateFileA(file_name, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, nullptr);
     VERIFY(m_file_handle != INVALID_HANDLE_VALUE);
 
     LARGE_INTEGER sz;

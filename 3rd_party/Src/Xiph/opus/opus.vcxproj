@@ -11,8 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{CE98731E-8075-447F-AD1B-FBC86CA3D81C}</ProjectGuid>
+    <ProjectGuid>{ce98731e-8075-447f-ad1b-fbc86ca3d81c}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
     <ProjectName>opus</ProjectName>
   </PropertyGroup>
@@ -41,12 +40,13 @@
   <PropertyGroup>
     <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\opus.lib</NMakeOutput>
     <NMakeBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin"
+      set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
       cd opus
       call autogen.bat
       cd ..
       md _Build
       cd _Build
+      echo * > .gitignore
       cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DOPUS_CUSTOM_MODES=ON -DOPUS_DEEP_PLC=ON -DOPUS_DRED=ON -DOPUS_OSCE=ON -DOPUS_X86_PRESUME_AVX2=ON -DOPUS_X86_PRESUME_SSE4_1=ON ..\opus
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)

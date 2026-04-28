@@ -11,13 +11,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{D6AEA327-48BC-45C8-B0E9-BF775E451904}</ProjectGuid>
+    <ProjectGuid>{d6aea327-48bc-45c8-b0e9-bf775e451904}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
     <ProjectName>theora</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <Import Project="..\..\3rd_party_lib_properties.props" />
+  <Import Project="$(SolutionDir)\3rd_party\Src\3rd_party_lib_properties.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -41,12 +40,14 @@
   <PropertyGroup>
     <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\theora.lib</NMakeOutput>
     <NMakeBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
+      set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
+      set "LIBC_OPTIONS=/FI$(SolutionDir)\3rd_party\Src\Xiph\theora\include\override.h"
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DOGG_ROOT="$(SolutionDir)\3rd_party\Src\Xiph\ogg\ogg" ..
+      echo * > .gitignore
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\Xiph\ogg\_Build\$(Configuration)\$(PlatformShortName)" -DUSE_X86=ON ..
       cmake --build . --config $(Configuration)
-      copy /Y "theora.lib" "..\..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\theora.lib"
+      copy /Y "theora.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\theora.lib"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
       RD /S/Q _Build

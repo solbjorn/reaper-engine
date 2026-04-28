@@ -138,14 +138,15 @@ void log_pool::flush()
         vec.clear();
     });
 
-    std::ranges::stable_sort(msgs, [](const auto& a, const auto& b) { return std::string_view{a.second.data(), a.first} < std::string_view{b.second.data(), b.first}; });
+    std::ranges::stable_sort(
+        msgs, [](const auto& a, const auto& b) { return std::string_view{a.second.data(), a.first} < std::string_view{b.second.data(), b.first}; });
     const auto open = logfs.is_open();
 
     for (auto&& msg : msgs)
     {
         // Visual Studio
         if (IsDebuggerPresent())
-            OutputDebugString(msg.second.c_str() + msg.first);
+            OutputDebugStringA(msg.second.c_str() + msg.first);
 
         // Log file
         if (open)
@@ -215,14 +216,15 @@ void add_one(xr::log_pool::msg_vec& vec, xr_string&& split)
 
         if (CPU::ID.on_cpu())
             tlen = xr_sprintf(tid.data(), tid.size(), "[%s%02zuP%1zu]",
-                              CPU::ID.threads[tmc::current_thread_index()].group.cpu_kind == tmc::topology::cpu_kind::PERFORMANCE ? "PE" : "EF", tmc::current_thread_index(),
-                              tmc::current_priority());
+                              CPU::ID.threads[tmc::current_thread_index()].group.cpu_kind == tmc::topology::cpu_kind::PERFORMANCE ? "PE" : "EF",
+                              tmc::current_thread_index(), tmc::current_priority());
         else if (CPU::ID.on_st())
             tlen = xr_sprintf(tid.data(), tid.size(), "[ST00P%1zu]", tmc::current_priority());
         else
             tlen = xr_sprintf(tid.data(), tid.size(), "[EX%s]", std::format("{0}", std::this_thread::get_id()).c_str());
 
-        split = std::format("{0} {1} {2}\n", std::string_view{curTime, gsl::narrow_cast<size_t>(slen)}, std::string_view{tid.data(), gsl::narrow_cast<size_t>(tlen)}, split);
+        split = std::format("{0} {1} {2}\n", std::string_view{curTime, gsl::narrow_cast<size_t>(slen)},
+                            std::string_view{tid.data(), gsl::narrow_cast<size_t>(tlen)}, split);
 
         return gsl::narrow_cast<size_t>(slen + 1 + tlen + 1);
     };
@@ -260,8 +262,9 @@ void Log(const xr_string& str)
     {
         if (not_first_line && have_color)
         {
+            // Если надо, перед каждой строкой вставляем спец-символ цвета, чтобы в консоли цветными были все строки текста, а не только первая.
             str = ' ' + str;
-            str = color_s + str; // Если надо, перед каждой строкой вставляем спец-символ цвета, чтобы в консоли цветными были все строки текста, а не только первая.
+            str = color_s + str;
         }
 
         xr::add_one(obj.value, std::move(str));
@@ -296,8 +299,8 @@ void Log(const char* msg, const Fvector& dop) { Msg("%s (%f,%f,%f)", msg, dop.x,
 
 void Log(const char* msg, const Fmatrix& dop)
 {
-    Msg("%s:\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f", msg, dop.vm[0].x, dop.vm[0].y, dop.vm[0].z, dop.vm[0].w, dop.vm[1].x, dop.vm[1].y, dop.vm[1].z, dop.vm[1].w,
-        dop.vm[2].x, dop.vm[2].y, dop.vm[2].z, dop.vm[2].w, dop.vm[3].x, dop.vm[3].y, dop.vm[3].z, dop.vm[3].w);
+    Msg("%s:\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f", msg, dop.vm[0].x, dop.vm[0].y, dop.vm[0].z, dop.vm[0].w, dop.vm[1].x, dop.vm[1].y,
+        dop.vm[1].z, dop.vm[1].w, dop.vm[2].x, dop.vm[2].y, dop.vm[2].z, dop.vm[2].w, dop.vm[3].x, dop.vm[3].y, dop.vm[3].z, dop.vm[3].w);
 }
 
 void CreateLog(BOOL nl)

@@ -20,6 +20,9 @@
 # Top-level Directory.build.props to allow specifying custom LLVM paths
 /Directory.build.props
 
+# clangd
+/compile_commands.json
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db

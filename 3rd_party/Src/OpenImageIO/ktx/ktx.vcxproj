@@ -11,10 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>ktx</ProjectName>
-    <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{D4E6D165-806E-4E9B-817E-FD6B93417270}</ProjectGuid>
+    <ProjectGuid>{d4e6d165-806e-4e9b-817e-fd6b93417270}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
+    <ProjectName>ktx</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(SolutionDir)\3rd_party\Src\3rd_party_lib_properties.props" />
@@ -41,11 +40,12 @@
   <PropertyGroup>
     <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\ktx.lib</NMakeOutput>
     <NMakeBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin"
+      set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
       set "LIBCXX_OPTIONS=$(libcxxOptions) /FIexception"
       set "LIBCXX_PATH=$(libcxxPath)"
       md _Build
       cd _Build
+      echo * > .gitignore
       cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DBUILD_SHARED_LIBS=OFF -DCPU_ARCHITECTURE=x86_64 -DASTCENC_ISA_AVX2=ON -DBASISU_OPENCL=ON -DBASISU_SSE=ON -DKTX_FEATURE_TESTS=OFF ..\KTX-Software
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)

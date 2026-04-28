@@ -11,10 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>openexr</ProjectName>
-    <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{1D202EFE-16A1-4b9C-B4FA-4CF7C3ABDDDD}</ProjectGuid>
+    <ProjectGuid>{1d202efe-16a1-4b9c-b4fa-4cf7c3abdddd}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
+    <ProjectName>openexr</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(SolutionDir)\3rd_party\Src\3rd_party_lib_properties.props" />
@@ -41,11 +40,12 @@
   <PropertyGroup>
     <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\OpenEXR-4_0.lib</NMakeOutput>
     <NMakeBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
+      set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
       set "LIBCXX_OPTIONS=$(libcxxOptions)"
       set "LIBCXX_PATH=$(libcxxPath)"
       md _Build
       cd _Build
+      echo * > .gitignore
       cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\OpenImageIO\Imath\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\OpenImageIO\OpenJPH\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\compression\deflate\_Build\$(Configuration)\$(PlatformShortName)" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DOPENEXR_BUILD_EXAMPLES=OFF -DOPENEXR_BUILD_TOOLS=OFF -DOPENEXR_ENABLE_LARGE_STACK=ON ..\openexr
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)

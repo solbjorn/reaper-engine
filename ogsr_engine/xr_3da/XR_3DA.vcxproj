@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -11,7 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{2578C6D8-660D-48AE-9322-7422F8664F06}</ProjectGuid>
+    <ProjectGuid>{2578c6d8-660d-48ae-9322-7422f8664f06}</ProjectGuid>
+    <RootNamespace>XR_3DA</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="..\Engine_properties.props" />
@@ -30,14 +32,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <UseDebugLibraries>true</UseDebugLibraries>
   </PropertyGroup>
@@ -51,25 +51,15 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup>
-    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkIncremental>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>xrEngine</TargetName>
     <EmbedManifest>false</EmbedManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>xrEngine</TargetName>
+    <EmbedManifest>false</EmbedManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Midl>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TypeLibraryName>x:\XR_3DA.tlb</TypeLibraryName>
-    </Midl>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -78,11 +68,9 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\xrCore\;$(SolutionDir)\3rd_party\Src\compression\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\Xiph\ogg\ogg\include;$(SolutionDir)\3rd_party\Src\Xiph\theora\theora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\xrCore\;$(SolutionDir)\3rd_party\Src\Xiph\ogg\ogg\include;$(SolutionDir)\3rd_party\Src\Xiph\theora\theora\include;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
-      <ExceptionHandling>
-      </ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -92,39 +80,24 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-      <BrowseInformation>
-      </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0422</Culture>
-    </ResourceCompile>
     <Link>
-      <AdditionalDependencies>llvmlibc.lib;libc++.lib;$(AbseilLibs);DirectXTex.lib;FLAC.lib;Iex-4_0.lib;IlmThread-4_0.lib;OpenAL32.lib;OpenCL.lib;OpenEXR-4_0.lib;OpenEXRCore-4_0.lib;SheenBidi.lib;avrt.lib;budouxc.lib;brotlicommon.lib;brotlidec.lib;bz2_static.lib;d3d11.lib;d3dcompiler.lib;deflatestatic.lib;dinput8.lib;dwrite.lib;dxgi.lib;dxguid.lib;freetype.lib;graphite2.lib;harfbuzz.lib;hwloc.lib;ktx.lib;mp3lame.lib;libomp.lib;libpng18_static.lib;luajit.lib;lz4.lib;mpg123.lib;ode.lib;ogg.lib;openjph.0.26.lib;opus.lib;plutosvg.lib;plutovg.lib;portaudio.lib;pugixml.lib;sfml-graphics-s.lib;sfml-system-s.lib;sfml-window-s.lib;skribidi.lib;sndfile.lib;squashfs.lib;theora.lib;unibreak.lib;vfw32.lib;vorbis.lib;winmm.lib;xxhash.lib;zlibstatic.lib;zstd_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>llvmlibc.lib;libc++.lib;$(AbseilLibs);DirectXTex.lib;FLAC.lib;FLAC++.lib;Iex-4_0.lib;IlmThread-4_0.lib;OpenAL32.lib;OpenCL.lib;OpenEXR-4_0.lib;OpenEXRCore-4_0.lib;SheenBidi.lib;archive.lib;avrt.lib;budouxc.lib;brotlicommon.lib;brotlidec.lib;brotlienc.lib;bz2_static.lib;cpptrace.lib;crypt32.lib;d3d11.lib;d3dcompiler.lib;deflatestatic.lib;dinput8.lib;dwarfs_common.lib;dwarfs_decompressor.lib;dwarfs_reader.lib;dwrite.lib;dxgi.lib;dxguid.lib;fmt.lib;freetype.lib;graphite2.lib;harfbuzz.lib;hwloc.lib;ktx.lib;libboost_chrono.lib;libboost_filesystem.lib;libcrypto.lib;libomp.lib;libpng18_static.lib;luajit.lib;lz4.lib;lzma.lib;minizip.lib;mp3lame.lib;mpg123.lib;ode.lib;ogg.lib;openjph.0.27.lib;opus.lib;plutosvg.lib;plutovg.lib;portaudio.lib;ppmd.lib;psapi.lib;pugixml.lib;sfml-graphics-s.lib;sfml-system-s.lib;sfml-window-s.lib;skribidi.lib;sndfile.lib;squashfs.lib;theora.lib;unibreak.lib;vfw32.lib;vorbis.lib;winmm.lib;ws2_32.lib;xmllite.lib;xxhash.lib;zlibstatic.lib;zstd_static.lib;zxc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>%(AdditionalOptions) /force:multiple</AdditionalOptions>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)xrEngine.pdb</ProgramDatabaseFile>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>
-      </MapFileName>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <FixedBaseAddress>false</FixedBaseAddress>
     </Link>
     <PostBuildEvent>
       <Command>
         copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
         copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
-        "$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\bin\minject.exe" -i -f "$(OutDir)\xrEngine.exe"
+        "$(SolutionDir)\3rd_party\Src\system\mimalloc\mimalloc\bin\minject.exe" -i -f "$(OutDir)\xrEngine.exe"
         copy /Y ".\manifest.xml" "$(OutDir)\xrEngine.exe.manifest"
       </Command>
     </PostBuildEvent>
@@ -133,12 +106,6 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Midl>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TypeLibraryName>x:\XR_3DA.tlb</TypeLibraryName>
-    </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
@@ -147,11 +114,9 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\xrCore\;$(SolutionDir)\3rd_party\Src\compression\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\Xiph\ogg\ogg\include;$(SolutionDir)\3rd_party\Src\Xiph\theora\theora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\xrCore\;$(SolutionDir)\3rd_party\Src\Xiph\ogg\ogg\include;$(SolutionDir)\3rd_party\Src\Xiph\theora\theora\include;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>false</StringPooling>
-      <ExceptionHandling>
-      </ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
@@ -161,43 +126,22 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-      <BrowseInformation>
-      </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0422</Culture>
-    </ResourceCompile>
     <Link>
-      <AdditionalDependencies>llvmlibc.lib;libc++.lib;$(AbseilLibs);DirectXTex.lib;FLAC.lib;Iex-4_0.lib;IlmThread-4_0.lib;OpenAL32.lib;OpenCL.lib;OpenEXR-4_0.lib;OpenEXRCore-4_0.lib;SheenBidi.lib;avrt.lib;budouxc.lib;brotlicommon.lib;brotlidec.lib;bz2_static.lib;d3d11.lib;d3dcompiler.lib;deflatestatic.lib;dinput8.lib;dwrite.lib;dxgi.lib;dxguid.lib;freetype.lib;graphite2.lib;harfbuzz.lib;hwloc.lib;ktx.lib;mp3lame.lib;libomp.lib;libpng18_static.lib;luajit.lib;lz4.lib;mpg123.lib;ode.lib;ogg.lib;openjph.0.26.lib;opus.lib;plutosvg.lib;plutovg.lib;portaudio.lib;pugixml.lib;sfml-graphics-s.lib;sfml-system-s.lib;sfml-window-s.lib;skribidi.lib;sndfile.lib;squashfs.lib;theora.lib;unibreak.lib;vfw32.lib;vorbis.lib;winmm.lib;xxhash.lib;zlibstatic.lib;zstd_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>%(AdditionalOptions) /force:multiple</AdditionalOptions>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalDependencies>llvmlibc.lib;libc++.lib;$(AbseilLibs);DirectXTex.lib;FLAC.lib;FLAC++.lib;Iex-4_0.lib;IlmThread-4_0.lib;OpenAL32.lib;OpenCL.lib;OpenEXR-4_0.lib;OpenEXRCore-4_0.lib;SheenBidi.lib;archive.lib;avrt.lib;budouxc.lib;brotlicommon.lib;brotlidec.lib;brotlienc.lib;bz2_static.lib;cpptrace.lib;crypt32.lib;d3d11.lib;d3dcompiler.lib;deflatestatic.lib;dinput8.lib;dwarfs_common.lib;dwarfs_decompressor.lib;dwarfs_reader.lib;dwrite.lib;dxgi.lib;dxguid.lib;fmt.lib;freetype.lib;graphite2.lib;harfbuzz.lib;hwloc.lib;ktx.lib;libboost_chrono.lib;libboost_filesystem.lib;libcrypto.lib;libomp.lib;libpng18_static.lib;luajit.lib;lz4.lib;lzma.lib;minizip.lib;mp3lame.lib;mpg123.lib;ode.lib;ogg.lib;openjph.0.27.lib;opus.lib;plutosvg.lib;plutovg.lib;portaudio.lib;ppmd.lib;psapi.lib;pugixml.lib;sfml-graphics-s.lib;sfml-system-s.lib;sfml-window-s.lib;skribidi.lib;sndfile.lib;squashfs.lib;theora.lib;unibreak.lib;vfw32.lib;vorbis.lib;winmm.lib;ws2_32.lib;xmllite.lib;xxhash.lib;zlibstatic.lib;zstd_static.lib;zxc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)xrEngine.pdb</ProgramDatabaseFile>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>
-      </MapFileName>
       <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>
-      </OptimizeReferences>
-      <EnableCOMDATFolding>
-      </EnableCOMDATFolding>
-      <LinkTimeCodeGeneration>
-      </LinkTimeCodeGeneration>
-      <FixedBaseAddress>false</FixedBaseAddress>
     </Link>
     <PostBuildEvent>
       <Command>
         copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
         copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
-        "$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\bin\minject.exe" -i -f "$(OutDir)\xrEngine.exe"
+        "$(SolutionDir)\3rd_party\Src\system\mimalloc\mimalloc\bin\minject.exe" -i -f "$(OutDir)\xrEngine.exe"
         copy /Y ".\manifest.xml" "$(OutDir)\xrEngine.exe.manifest"
       </Command>
     </PostBuildEvent>
@@ -380,36 +324,28 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Layers\xrRenderPC_R4\xrRender_R4.vcxproj">
-      <Project>{AC9B12ED-A2D7-4337-A981-5BD8430E96D8}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Project>{ac9b12ed-a2d7-4337-a981-5bd8430e96d8}</Project>
     </ProjectReference>
     <ProjectReference Include="..\xrCDB\xrCDB.vcxproj">
       <Project>{a19b1df2-82ec-4364-8bdf-85d13a1c89b5}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\xrCore\xrCore.vcxproj">
       <Project>{a0f7d1fb-59a7-4717-a7e4-96f37e91998e}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\xrExternal\xrExternal.vcxproj">
       <Project>{6d4e1cd0-9d48-4210-982e-93827a58256e}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\xrGame\xrGame.vcxproj">
-      <Project>{200652A6-043E-4634-8837-87983B3BD5E0}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Project>{200652a6-043e-4634-8837-87983b3bd5e0}</Project>
     </ProjectReference>
     <ProjectReference Include="..\xrParticles\xrParticles.vcxproj">
       <Project>{94a1c366-3d19-48e6-8170-4adc2e70df97}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\xrPhysics\xrPhysics.vcxproj">
-      <Project>{DFE83C79-B305-40B1-B566-00F78A6D2568}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Project>{dfe83c79-b305-40b1-b566-00f78a6d2568}</Project>
     </ProjectReference>
     <ProjectReference Include="..\xrSound\xrSound.vcxproj">
       <Project>{ccca7859-eb86-493e-9b53-c4235f45b3c5}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

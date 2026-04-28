@@ -11,8 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{52B143BB-9ECE-4B19-9BE8-F040210DF494}</ProjectGuid>
+    <ProjectGuid>{52b143bb-9ece-4b19-9be8-f040210df494}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
     <ProjectName>brotli</ProjectName>
   </PropertyGroup>
@@ -39,16 +38,18 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\brotlidec.lib</NMakeOutput>
+    <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\brotlicommon.lib</NMakeOutput>
     <NMakeBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
+      set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
       md _Build
       cd _Build
+      echo * > .gitignore
       cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DBUILD_SHARED_LIBS=OFF -DBROTLI_BUILD_TOOLS=OFF ..\brotli
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)
       copy /Y "brotlicommon.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\brotlicommon.lib"
       copy /Y "brotlidec.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\brotlidec.lib"
+      copy /Y "brotlienc.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\brotlienc.lib"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
       RD /S/Q _Build

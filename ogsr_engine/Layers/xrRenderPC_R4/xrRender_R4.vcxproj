@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{AC9B12ED-A2D7-4337-A981-5BD8430E96D8}</ProjectGuid>
+    <ProjectGuid>{ac9b12ed-a2d7-4337-a981-5bd8430e96d8}</ProjectGuid>
     <RootNamespace>xrRender_R4</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -19,12 +19,13 @@
   <Import Project="..\..\Engine_lib_properties.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
     <UseDebugLibraries>true</UseDebugLibraries>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -38,7 +39,6 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <_ProjectFileVersion>14.0.25420.1</_ProjectFileVersion>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkIncremental>
   </PropertyGroup>
@@ -46,9 +46,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>
-      </ExceptionHandling>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <FunctionLevelLinking>false</FunctionLevelLinking>
@@ -58,19 +56,13 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <StringPooling>false</StringPooling>
-      <AdditionalIncludeDirectories>./;..\..\xrCore;$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build2\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\FreeType\Skribidi\Skribidi\include;$(SolutionDir)\3rd_party\Src\OpenImageIO\Imath\_Build\$(Configuration)\$(PlatformShortName)\include\Imath;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\external\basis_universal\encoder;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\external\dfdutils;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\other_include;$(SolutionDir)\3rd_party\Src\OpenImageIO\openexr\_Build\$(Configuration)\$(PlatformShortName)\include\OpenEXR;$(SolutionDir)\3rd_party\Src\OpenImageIO\png\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\DirectX\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectX\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\compression\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\renderdoc\renderdoc\api;$(SolutionDir)\3rd_party\Src\sol2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;..\..\xrCore;$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build2\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\FreeType\Skribidi\Skribidi\include;$(SolutionDir)\3rd_party\Src\OpenImageIO\Imath\_Build\$(Configuration)\$(PlatformShortName)\include\Imath;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\external\basis_universal\encoder;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\external\dfdutils;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\other_include;$(SolutionDir)\3rd_party\Src\OpenImageIO\openexr\_Build\$(Configuration)\$(PlatformShortName)\include\OpenEXR;$(SolutionDir)\3rd_party\Src\OpenImageIO\png\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\DirectX\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectX\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\renderdoc\renderdoc\api;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OmitFramePointers>false</OmitFramePointers>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xrEngine.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;</AdditionalDependencies>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>
-      </MapFileName>
       <SubSystem>Windows</SubSystem>
-      <ImageHasSafeExceptionHandlers>
-      </ImageHasSafeExceptionHandlers>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -83,11 +75,9 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>./;..\..\xrCore;$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build2\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\FreeType\Skribidi\Skribidi\include;$(SolutionDir)\3rd_party\Src\OpenImageIO\Imath\_Build\$(Configuration)\$(PlatformShortName)\include\Imath;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\external\basis_universal\encoder;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\external\dfdutils;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\other_include;$(SolutionDir)\3rd_party\Src\OpenImageIO\openexr\_Build\$(Configuration)\$(PlatformShortName)\include\OpenEXR;$(SolutionDir)\3rd_party\Src\OpenImageIO\png\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\DirectX\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectX\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\compression\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\renderdoc\renderdoc\api;$(SolutionDir)\3rd_party\Src\sol2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>./;..\..\xrCore;$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build2\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\FreeType\Skribidi\Skribidi\include;$(SolutionDir)\3rd_party\Src\OpenImageIO\Imath\_Build\$(Configuration)\$(PlatformShortName)\include\Imath;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\external\basis_universal\encoder;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\external\dfdutils;$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\other_include;$(SolutionDir)\3rd_party\Src\OpenImageIO\openexr\_Build\$(Configuration)\$(PlatformShortName)\include\OpenEXR;$(SolutionDir)\3rd_party\Src\OpenImageIO\png\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\DirectX\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectX\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\renderdoc\renderdoc\api;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
-      <ExceptionHandling>
-      </ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -95,23 +85,14 @@
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AssemblerOutput>
-      </AssemblerOutput>
       <WarningLevel>Level4</WarningLevel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xrEngine.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;</AdditionalDependencies>
-      <MapFileName>
-      </MapFileName>
       <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <LinkTimeCodeGeneration>
-      </LinkTimeCodeGeneration>
-      <ImageHasSafeExceptionHandlers>
-      </ImageHasSafeExceptionHandlers>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -489,15 +470,12 @@
   <ItemGroup>
     <ProjectReference Include="..\..\xrCDB\xrCDB.vcxproj">
       <Project>{a19b1df2-82ec-4364-8bdf-85d13a1c89b5}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\xrCore\xrCore.vcxproj">
       <Project>{a0f7d1fb-59a7-4717-a7e4-96f37e91998e}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\xrParticles\xrParticles.vcxproj">
       <Project>{94a1c366-3d19-48e6-8170-4adc2e70df97}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

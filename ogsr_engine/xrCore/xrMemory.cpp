@@ -16,7 +16,7 @@ XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
 
 XR_DIAG_POP();
 
-#pragma comment(lib, "mimalloc.dll.lib")
+#pragma comment(lib, "mimalloc.lib")
 #endif
 
 #include <psapi.h>

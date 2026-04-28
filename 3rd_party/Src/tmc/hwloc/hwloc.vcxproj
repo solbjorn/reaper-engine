@@ -11,8 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{A3F8DB74-FED0-4ED3-9E51-F5B4E5AC9713}</ProjectGuid>
+    <ProjectGuid>{a3f8db74-fed0-4ed3-9e51-f5b4e5ac9713}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
     <ProjectName>hwloc</ProjectName>
   </PropertyGroup>
@@ -41,9 +40,10 @@
   <PropertyGroup>
     <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\hwloc.lib</NMakeOutput>
     <NMakeBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
+      set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
       md _Build
       cd _Build
+      echo * > .gitignore
       cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DHWLOC_ENABLE_TESTING=OFF -DHWLOC_SKIP_LSTOPO=ON -DHWLOC_SKIP_TOOLS=ON -DHWLOC_WITH_OPENCL=ON -DOpenCL_INCLUDE_DIR="$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\external\basis_universal\OpenCL" -DOpenCL_LIBRARY="$(SolutionDir)\3rd_party\Src\OpenImageIO\ktx\KTX-Software\external\basis_universal\OpenCL\lib\OpenCL64.lib" ..\hwloc\contrib\windows-cmake
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)

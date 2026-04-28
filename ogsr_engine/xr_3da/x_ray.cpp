@@ -324,11 +324,11 @@ int WinMain_impl(HINSTANCE hInstance, char* lpCmdLine)
     if (!strstr(lpCmdLine, "-multi_instances"))
     { // Check for another instance
         constexpr const char* STALKER_PRESENCE_MUTEX = "STALKER-SoC";
-        hCheckPresenceMutex = OpenMutex(READ_CONTROL, FALSE, STALKER_PRESENCE_MUTEX);
+        hCheckPresenceMutex = OpenMutexA(READ_CONTROL, FALSE, STALKER_PRESENCE_MUTEX);
         if (hCheckPresenceMutex == nullptr)
         {
             // New mutex
-            hCheckPresenceMutex = CreateMutex(nullptr, FALSE, STALKER_PRESENCE_MUTEX);
+            hCheckPresenceMutex = CreateMutexA(nullptr, FALSE, STALKER_PRESENCE_MUTEX);
             if (hCheckPresenceMutex == nullptr)
                 // Shit happens
                 return 2;

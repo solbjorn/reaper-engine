@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{6D4E1CD0-9D48-4210-982E-93827A58256E}</ProjectGuid>
+    <ProjectGuid>{6d4e1cd0-9d48-4210-982e-93827a58256e}</ProjectGuid>
     <RootNamespace>xrExternal</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -19,12 +19,12 @@
   <Import Project="..\Engine_lib_properties.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <UseDebugLibraries>true</UseDebugLibraries>
   </PropertyGroup>
@@ -39,7 +39,6 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkIncremental>
   </PropertyGroup>
@@ -52,11 +51,9 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>%(AdditionalOptions) -Wconversion -Wnarrowing -Wold-style-cast -Wsigned-enum-bitfield</AdditionalOptions>
       <StringPooling>true</StringPooling>
-      <ExceptionHandling>
-      </ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -65,30 +62,18 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-      <BrowseInformation>
-      </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build\$(Configuration)\$(PlatformShortName)\include\freetype2;$(SolutionDir)\3rd_party\Src\FreeType\plutosvg\_Build\$(Configuration)\$(PlatformShortName)\include\plutosvg;$(SolutionDir)\3rd_party\Src\FreeType\plutovg\_Build\$(Configuration)\$(PlatformShortName)\include\plutovg;$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\tmc\hwloc\_Build\$(Configuration)\$(PlatformShortName)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <UndefinePreprocessorDefinitions>
-      </UndefinePreprocessorDefinitions>
-      <CompileAsManaged>
-      </CompileAsManaged>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>
-      </MapFileName>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <LinkTimeCodeGeneration>
-      </LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -100,11 +85,9 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <PreprocessorDefinitions>_WINDOWS;_USRDLL;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>%(AdditionalOptions) -Wconversion -Wnarrowing -Wold-style-cast -Wsigned-enum-bitfield</AdditionalOptions>
       <StringPooling>false</StringPooling>
-      <ExceptionHandling>
-      </ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
@@ -113,16 +96,9 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-      <BrowseInformation>
-      </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build\$(Configuration)\$(PlatformShortName)\include\freetype2;$(SolutionDir)\3rd_party\Src\FreeType\plutosvg\_Build\$(Configuration)\$(PlatformShortName)\include\plutosvg;$(SolutionDir)\3rd_party\Src\FreeType\plutovg\_Build\$(Configuration)\$(PlatformShortName)\include\plutovg;$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\tmc\hwloc\_Build\$(Configuration)\$(PlatformShortName)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <UndefinePreprocessorDefinitions>
-      </UndefinePreprocessorDefinitions>
-      <CompileAsManaged>
-      </CompileAsManaged>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -130,16 +106,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>
-      </MapFileName>
       <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>
-      </OptimizeReferences>
-      <EnableCOMDATFolding>
-      </EnableCOMDATFolding>
-      <LinkTimeCodeGeneration>
-      </LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -171,16 +171,17 @@ STRING_VALUE CStringTable::translate(const STRING_ID& str_id)
 {
     STRING_VALUE res = str_id;
 
-    if (!pData)
+    if (pData == nullptr || str_id.empty())
         return res;
 
-    res = pData->m_StringTable[str_id];
-    if (!res)
+    if (const auto item = pData->m_StringTable.find(str_id); item == pData->m_StringTable.end())
     {
-        if (WriteErrorsToLog && *str_id != nullptr && xr_strlen(*str_id) > 0)
-            Msg("!![%s] [%s] has no entry!", __FUNCTION__, *str_id);
-
-        res = str_id;
+        if (WriteErrorsToLog)
+            Msg("!![%s] [%s] has no entry!", __FUNCTION__, str_id.c_str());
+    }
+    else
+    {
+        res = item->second;
     }
 
     return res;

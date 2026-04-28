@@ -11,10 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>deflate</ProjectName>
-    <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{6D458944-C86F-4162-9AF2-E50A3F0A1DA6}</ProjectGuid>
+    <ProjectGuid>{6d458944-c86f-4162-9af2-e50a3f0a1da6}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
+    <ProjectName>deflate</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(SolutionDir)\3rd_party\Src\3rd_party_lib_properties.props" />
@@ -41,9 +40,10 @@
   <PropertyGroup>
     <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\deflatestatic.lib</NMakeOutput>
     <NMakeBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
+      set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
       md _Build
       cd _Build
+      echo * > .gitignore
       cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DLIBDEFLATE_BUILD_GZIP=OFF -DLIBDEFLATE_BUILD_SHARED_LIB=OFF ..\libdeflate
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)

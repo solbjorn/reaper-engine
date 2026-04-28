@@ -11,8 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{9D8A30B9-0CFD-4BE4-BD71-62C97FEF2F19}</ProjectGuid>
+    <ProjectGuid>{9d8a30b9-0cfd-4be4-bd71-62c97fef2f19}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
     <ProjectName>plutosvg</ProjectName>
   </PropertyGroup>
@@ -41,9 +40,10 @@
   <PropertyGroup>
     <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\plutosvg.lib</NMakeOutput>
     <NMakeBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
+      set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
       md _Build
       cd _Build
+      echo * > .gitignore
       cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\FreeType\plutovg\_Build\$(Configuration)\$(PlatformShortName)" -DBUILD_SHARED_LIBS=OFF -DPLUTOSVG_BUILD_EXAMPLES=OFF -DPLUTOSVG_ENABLE_FREETYPE=ON ..\plutosvg
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)

@@ -99,4 +99,12 @@ XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
 #include <ImSequencer.cpp>
 
 XR_DIAG_POP();
+
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wold-style-cast");
+XR_DIAG_IGNORE("-Wsign-conversion");
+
+#include <ImVectorEditor.cpp>
+
+XR_DIAG_POP();
 #endif // !IMGUI_DISABLE

@@ -6,14 +6,22 @@ if(NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
   set(CMAKE_PCH_PROLOGUE "")
 endif()
 
-set(conformance_options "/Brepro /bigobj /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__STDC__ /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /Zc:checkGwOdr /Zc:templateScope /DNOMINMAX -fno-delayed-template-parsing -fstrict-aliasing /D_CRT_STDIO_ISO_WIDE_SPECIFIERS -fno-ms-compatibility -fgnuc-version=0 /utf-8")
+set(conformance_options "/Brepro /bigobj /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__STDC__ /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /Zc:checkGwOdr /Zc:forScope /Zc:templateScope /Zc:wchar_t /DNOMINMAX /DSTRICT -fno-delayed-template-parsing -fstrict-aliasing /D_CRT_STDIO_ISO_WIDE_SPECIFIERS -fno-ms-compatibility -fgnuc-version=0 /utf-8")
 
-set(llvm_options "-march=skylake -mavx2 -mvpclmulqdq /FIintrin.h -flto -fmerge-all-constants -fforce-emit-vtables -fwhole-program-vtables /clang:-fcoro-aligned-allocation")
+set(llvm_options "-march=skylake -mavx2 -mvpclmulqdq -flto -fmerge-all-constants -fforce-emit-vtables -fwhole-program-vtables /clang:-fcoro-aligned-allocation")
 
 set(warning_options "-Wextra -Wmost -Wno-error=unused-command-line-argument -Werror=format -Wformat-nonliteral -Werror=format-pedantic -Werror=format-signedness -Werror=format-type-confusion -Werror=microsoft -Werror=move -Werror=nan-infinity-disabled -Werror=parentheses -Werror=strict-aliasing -Werror=tautological-compare -Werror=typename-missing -Werror=weak-vtables")
 
+# hwloc, omp, and ASIO SDK don't behave
+# dwarfs does, and is handled differently below
+if(NOT (HWLOC_SKIP_LSTOPO OR LLVM_ENABLE_RUNTIMES OR PA_USE_ASIO OR DEFINED WITH_FUSE_DRIVER))
+  cmake_policy(SET CMP0204 NEW)
+  add_compile_definitions(_UNICODE)
+  add_compile_definitions(UNICODE)
+endif()
+
 # DirectXTex
-if(DEFINED BUILD_TOOLS)
+if(ENABLE_OPENEXR_SUPPORT)
   set(conformance_options "${conformance_options} -D_FORCENAMELESSUNION")
 endif()
 
@@ -39,14 +47,41 @@ if(ABSL_PROPAGATE_CXX_STD)
   set(warning_options "${warning_options} -Wno-error=format -Wno-error=format-signedness")
 endif()
 
+# archive
+if(DEFINED ENABLE_CPIO)
+  set(conformance_options "${conformance_options} -DHAVE_VPRINTF -DHAVE_WMEMCMP -DHAVE_WMEMCPY -DHAVE_WMEMMOVE -DLZMA_API_STATIC -DS_IFCHR=_S_IFCHR -DS_IFDIR=_S_IFDIR -DS_IFMT=_S_IFMT -DS_IFREG=_S_IFREG -Ddev_t=_dev_t -Dino_t=_ino_t -Doff_t=_off_t -Dstat=_stat")
+endif()
+
+# assert
+if(LIBASSERT_USE_ENCHANTUM)
+  set(conformance_options "${conformance_options} -DLIBASSERT_PREFIX_ASSERTIONS -DLIBASSERT_SAFE_COMPARISONS -DLIBASSERT_USE_FMT")
+endif()
+
+# boost
+if(BOOST_INCLUDE_LIBRARIES)
+  set(conformance_options "${conformance_options} -DBOOST_FILESYSTEM_NO_LIB -DBOOST_NO_CXX23_HDR_SPANSTREAM -DBOOST_NO_CXX23_HDR_STACKTRACE -DBOOST_NO_CXX23_HDR_STDFLOAT -Denviron=_environ -Dstat=_stat")
+  set(warning_options "${warning_options} -Wno-error=microsoft-cpp-macro")
+endif()
+
 # bzip2
 if(ENABLE_LIB_ONLY)
   set(conformance_options "${conformance_options} -DO_BINARY=_O_BINARY -Dfdopen=_fdopen -Dfileno=_fileno -Dsetmode=_setmode")
   set(warning_options "${warning_options} -Wno-error=format-signedness")
 endif()
 
+# cpptrace
+if(CPPTRACE_DISABLE_CXX_20_MODULES)
+  set(conformance_options "${conformance_options} -Doff_t=_off_t")
+endif()
+
+# dwarfs
+if(DEFINED WITH_FUSE_DRIVER)
+  set(conformance_options "${conformance_options} -D_UNICODE -DUNICODE=UNICODE -DBOOST_NO_CXX23_HDR_SPANSTREAM -DBOOST_NO_CXX23_HDR_STACKTRACE -DBOOST_NO_CXX23_HDR_STDFLOAT -DFLAC__NO_DLL -DLZMA_API_STATIC -DZXC_STATIC_DEFINE -Dclose=_close -Ddev_t=_dev_t -Dgetpid=_getpid -Doff_t=_off_t -Dread=_read -Dumask=_umask")
+  set(warning_options "${warning_options} -Wno-c++98-compat")
+endif()
+
 # flac
-if(DEFINED BUILD_CXXLIBS)
+if(DEFINED INSTALL_MANPAGES)
   set(conformance_options "${conformance_options} -DS_IWRITE=_S_IWRITE -Dfileno=_fileno -Dgetenv=getenv -Doff_t=_off_t -Dstrdup=_strdup -Dutimbuf=_utimbuf")
 endif()
 
@@ -69,7 +104,7 @@ endif()
 
 # hwloc
 if(HWLOC_SKIP_LSTOPO)
-  set(conformance_options "${conformance_options} -DO_RDONLY=_O_RDONLY -DS_IFREG=_S_IFREG -Dfstat=_fstat -Dstat=_stat")
+  set(conformance_options "${conformance_options} -DHWLOC_HAVE_MSVC_CPUIDEX -DO_RDONLY=_O_RDONLY -DS_IFREG=_S_IFREG -Dfstat=_fstat -Dstat=_stat")
 endif()
 
 # ktx
@@ -87,6 +122,7 @@ endif()
 # llvm-libc, libc++
 if(LLVM_ENABLE_RUNTIMES)
   set(conformance_options "${conformance_options} -DO_BINARY=_O_BINARY -DO_CREAT=_O_CREAT -DO_RDONLY=_O_RDONLY -DO_WRONLY=_O_WRONLY -Dfdopen=_fdopen -Dfileno=_fileno -Doff_t=_off_t")
+  set(warning_options "${warning_options} -Wno-error=microsoft-enum-value")
 else()
   set(llvm_options "${llvm_options} /clang:-fopenmp")
 endif()
@@ -94,6 +130,12 @@ endif()
 # luajit2
 if(LUAJIT_DIR)
   set(warning_options "${warning_options} -Wno-error=format -Wno-error=format-pedantic -Wno-error=format-signedness -Wno-error=microsoft-enum-value")
+endif()
+
+# minizip
+if(DEFINED MZ_FETCH_LIBS)
+  set(conformance_options "${conformance_options} -Dstrdup=_strdup")
+  set(warning_options "${warning_options} -Wno-error=format-signedness")
 endif()
 
 # mpg123
@@ -110,8 +152,7 @@ endif()
 
 # opus
 if(OPUS_CUSTOM_MODES)
-  set(conformance_options "${conformance_options} -D__builtin_ctz=opus__builtin_ctz -DENABLE_QEXT -Dalloca=_alloca")
-  set(warning_options "${warning_options} -Wno-error=microsoft-redeclare-static")
+  set(conformance_options "${conformance_options} -DENABLE_OPUS_CUSTOM_API -DENABLE_QEXT -Dalloca=_alloca")
 endif()
 
 # portaudio
@@ -121,7 +162,7 @@ endif()
 
 # sndfile
 if(EXISTS "${CMAKE_SOURCE_DIR}/sndfile.pc.in")
-  set(conformance_options "${conformance_options} -DFLAC__NO_DLL -Daccess=_access -Dclose=_close -Dfstat=_fstat -Dfstat64=_fstat64 -Dlseek=_lseek -Dmemccpy=_memccpy -Doff_t=_off_t -Dopen=_open -Dpipe=_pipe -Dread=_read -Dstat=_stat -Dwrite=_write")
+  set(conformance_options "${conformance_options} -DENABLE_OPUS_CUSTOM_API -DENABLE_QEXT -DFLAC__NO_DLL -Daccess=_access -Dclose=_close -Dfstat=_fstat -Dfstat64=_fstat64 -Dlseek=_lseek -Dmemccpy=_memccpy -Doff_t=_off_t -Dopen=_open -Dpipe=_pipe -Dread=_read -Dstat=_stat -Dwrite=_write")
   set(warning_options "${warning_options} -Wno-error=format-signedness")
 endif()
 
@@ -148,17 +189,17 @@ if(ZSTD_BUILD_TESTS)
   set(warning_options "${warning_options} -Wno-format-signedness")
 endif()
 
-set(CMAKE_ASM_MASM_FLAGS_RELEASE ${CMAKE_ASM_MASM_FLAGS_RELEASE} -m64)
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MP /O2 /Ob2 /Oi /Oy /Ot /GL /Gy /Gw /W4 /GF /GS /Zi /GT ${conformance_options} ${llvm_options} ${warning_options} /D_WIN32_WINNT=0x0A00 /DWINVER=0x0A00 /D_MSVC_STL_HARDENING=1 /DNDEBUG /D_ITERATOR_DEBUG_LEVEL=0")
+set(CMAKE_ASM_FLAGS_RELEASE "${CMAKE_ASM_FLAGS_RELEASE} /DWIN32 /D_WINDOWS /MP /O2 /Ob2 /Oi /Oy /Ot /GL /Gy /Gw /W4 /GF /GS /Zi /GT ${conformance_options} ${llvm_options} ${warning_options} /D_WIN32_WINNT=0x0A00 /DWINVER=0x0A00 /D_MSVC_STL_HARDENING=1 /DNDEBUG /D_ITERATOR_DEBUG_LEVEL=0")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MP /O2 /Ob2 /Oi /Oy /Ot /GL /Gy /Gw /W4 /GF /GS /Zi /GT ${conformance_options} ${llvm_options} $ENV{LIBC_OPTIONS} ${warning_options} /D_WIN32_WINNT=0x0A00 /DWINVER=0x0A00 /D_MSVC_STL_HARDENING=1 /DNDEBUG /D_ITERATOR_DEBUG_LEVEL=0")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MP /O2 /Ob2 /Oi /Oy /Ot /GL /Gy /Gw /W4 /GF /GS /Zi /GT ${conformance_options} ${llvm_options} $ENV{LIBCXX_OPTIONS} ${warning_options} /D_WIN32_WINNT=0x0A00 /DWINVER=0x0A00 /D_MSVC_STL_HARDENING=1 /DNDEBUG /D_ITERATOR_DEBUG_LEVEL=0")
 
 set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /Brepro /DEBUG /RELEASE /OPT:REF /OPT:ICF /INCREMENTAL:NO /LTCG /opt:lldlto=3 /opt:lldltocgo=3")
 set(CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE} /Brepro /DEBUG /RELEASE /OPT:REF /OPT:ICF /INCREMENTAL:NO /LTCG /opt:lldlto=3 /opt:lldltocgo=3")
 set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /Brepro /DEBUG /RELEASE /OPT:REF /OPT:ICF /INCREMENTAL:NO /LTCG /opt:lldlto=3 /opt:lldltocgo=3")
 
-set(CMAKE_ASM_MASM_FLAGS_DEBUG ${CMAKE_ASM_MASM_FLAGS_DEBUG} -m64)
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MP /O2 /Ob2 /Oi /Oy /Ot /GL /Gy /Gw /W4 /GF /GS /Zi /GT ${conformance_options} ${llvm_options} ${warning_options} /D_WIN32_WINNT=0x0A00 /DWINVER=0x0A00 /D_MSVC_STL_HARDENING=1 /D_ITERATOR_DEBUG_LEVEL=2")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MP /O2 /Ob2 /Oi /Oy /Ot /GL /Gy /Gw /W4 /GF /GS /Zi /GT ${conformance_options} ${llvm_options} $ENV{LIBCXX_OPTIONS} ${warning_options} /D_WIN32_WINNT=0x0A00 /DWINVER=0x0A00 /D_MSVC_STL_HARDENING=1 /D_ITERATOR_DEBUG_LEVEL=2")
+set(CMAKE_ASM_FLAGS_DEBUG "${CMAKE_ASM_FLAGS_DEBUG} /DWIN32 /D_WINDOWS /MP /Od -fno-builtin /Oy /Ot /GL /Gy /Gw /W4 /GF /GS /Zi /GT ${conformance_options} ${llvm_options} ${warning_options} /D_WIN32_WINNT=0x0A00 /DWINVER=0x0A00 /D_MSVC_STL_HARDENING=1 /D_ITERATOR_DEBUG_LEVEL=2")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MP /Od -fno-builtin /Oy /Ot /GL /Gy /Gw /W4 /GF /GS /Zi /GT ${conformance_options} ${llvm_options} $ENV{LIBC_OPTIONS} ${warning_options} /D_WIN32_WINNT=0x0A00 /DWINVER=0x0A00 /D_MSVC_STL_HARDENING=1 /D_ITERATOR_DEBUG_LEVEL=2")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MP /Od -fno-builtin /Oy /Ot /GL /Gy /Gw /W4 /GF /GS /Zi /GT ${conformance_options} ${llvm_options} $ENV{LIBCXX_OPTIONS} ${warning_options} /D_WIN32_WINNT=0x0A00 /DWINVER=0x0A00 /D_MSVC_STL_HARDENING=1 /D_ITERATOR_DEBUG_LEVEL=2")
 
 set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /Brepro /DEBUG /OPT:REF /OPT:ICF /INCREMENTAL:NO /LTCG")
 set(CMAKE_MODULE_LINKER_FLAGS_DEBUG "${CMAKE_MODULE_LINKER_FLAGS_DEBUG} /Brepro /DEBUG /OPT:REF /OPT:ICF /INCREMENTAL:NO /LTCG")

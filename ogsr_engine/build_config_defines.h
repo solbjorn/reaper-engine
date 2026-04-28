@@ -69,3 +69,9 @@
 // of smart_cast<>() will be rechecked against the result of dynamic_cast<>()
 // to make sure every class has its own RTTI, not inherited from a parent.
 // #define XR_RTTI_DEBUG
+
+// Default password for encrypted [lib]archive (7-Zip, Rar) archives
+#define XR_ARC_PASSWORD ""
+
+// Default password for encrypted ZIP archives
+#define XR_ZIP_PASSWORD ""

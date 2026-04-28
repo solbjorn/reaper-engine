@@ -42,11 +42,11 @@ public:
             _fclose_nolock(hf);
 
             // release RO attrib
-            u32 dwAttr = GetFileAttributes(*fName);
+            u32 dwAttr = GetFileAttributesA(fName.c_str());
             if (dwAttr != INVALID_FILE_ATTRIBUTES && (dwAttr & FILE_ATTRIBUTE_READONLY))
             {
                 dwAttr &= ~u32{FILE_ATTRIBUTE_READONLY};
-                SetFileAttributes(*fName, dwAttr);
+                SetFileAttributesA(fName.c_str(), dwAttr);
             }
         }
     }

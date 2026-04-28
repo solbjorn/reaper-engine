@@ -11,8 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{0C43E141-7193-490A-B40F-EC5E92FC7B2C}</ProjectGuid>
+    <ProjectGuid>{0c43e141-7193-490a-b40f-ec5e92fc7b2c}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
     <ProjectName>SFML</ProjectName>
   </PropertyGroup>
@@ -41,12 +40,13 @@
   <PropertyGroup>
     <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\sfml-system-s.lib</NMakeOutput>
     <NMakeBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin"
+      set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
       set "LIBCXX_OPTIONS=$(libcxxOptions)"
       set "LIBCXX_PATH=$(libcxxPath)"
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\FreeType\SheenBidi\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build2\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\Xiph\flac\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\Xiph\ogg\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\Xiph\vorbis\_Build\$(Configuration)\$(PlatformShortName)" -DBUILD_SHARED_LIBS=OFF -DOpenGL_GL_PREFERENCE=GLVND -DSFML_USE_SYSTEM_DEPS=ON -DSFML_USE_SYSTEM_LIBSSH2_MBEDTLS=OFF -DSFML_USE_SYSTEM_SHEENBIDI=ON ..\SFML
+      echo * > .gitignore
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build2\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\Xiph\flac\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\Xiph\ogg\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\Xiph\vorbis\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\compression\zlib\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\i18n\SheenBidi\_Build\$(Configuration)\$(PlatformShortName)" -DBUILD_SHARED_LIBS=OFF -DENABLE_ZLIB_COMPRESSION=ON -DOpenGL_GL_PREFERENCE=GLVND -DSFML_USE_SYSTEM_DEPS=ON -DSFML_USE_SYSTEM_LIBSSH2_MBEDTLS=OFF -DSFML_USE_SYSTEM_SHEENBIDI=ON ..\SFML
       cmake --build . --config $(Configuration)
       copy /Y "lib\sfml-graphics-s.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\sfml-graphics-s.lib"
       copy /Y "lib\sfml-system-s.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\sfml-system-s.lib"

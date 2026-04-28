@@ -41,13 +41,13 @@ static void ShowErrorMessage(const char* msg, const bool show_msg = false)
     if (show_msg)
     {
         tmc::post(xr::tmc_cpu_st_executor(), [](gsl::czstring msg) -> tmc::task<void> {
-            MessageBox(gGameWindow, msg, "FATAL ERROR", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+            MessageBoxA(gGameWindow, msg, "FATAL ERROR", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
             co_return;
         }(msg));
     }
     else
     {
-        ShellExecute(nullptr, "open", logFName, nullptr, nullptr, SW_SHOW);
+        ShellExecuteA(nullptr, "open", logFName, nullptr, nullptr, SW_SHOW);
     }
 }
 
@@ -55,7 +55,7 @@ static const char* GetThreadName()
 {
     if (IsWindows10OrGreater())
     {
-        static const HMODULE KernelLib = GetModuleHandle("kernel32.dll");
+        static const HMODULE KernelLib = GetModuleHandleA("kernel32.dll");
         using FuncGetThreadDescription = HRESULT (*)(HANDLE, PWSTR*);
 
         static const auto pGetThreadDescription = reinterpret_cast<FuncGetThreadDescription>(GetProcAddress(KernelLib, "GetThreadDescription"));
@@ -68,7 +68,8 @@ static const char* GetThreadName()
                 {
                     static string64 ResThreadName{};
 
-                    WideCharToMultiByte(CP_OEMCP, 0, wThreadName, gsl::narrow_cast<s32>(wcslen(wThreadName)), ResThreadName, sizeof(ResThreadName), nullptr, nullptr);
+                    WideCharToMultiByte(CP_OEMCP, 0, wThreadName, gsl::narrow_cast<s32>(wcslen(wThreadName)), ResThreadName, sizeof(ResThreadName), nullptr,
+                                        nullptr);
                     LocalFree(wThreadName);
 
                     if (xr_strlen(ResThreadName) > 0)
@@ -122,8 +123,8 @@ LONG DbgLogExceptionFilter(const char* header, _EXCEPTION_POINTERS* pExceptionIn
 
 namespace
 {
-void gather_info(const char* expression, const char* description, const char* argument0, const char* argument1, const char* file, gsl::index line, const char* function,
-                 char* assertion_info)
+void gather_info(const char* expression, const char* description, const char* argument0, const char* argument1, const char* file, gsl::index line,
+                 const char* function, char* assertion_info)
 {
     xr_string unhandled;
 
@@ -234,7 +235,8 @@ void xrDebug::do_exit(const std::string& message)
     std::unreachable();
 }
 
-void xrDebug::backend(const char* expression, const char* description, const char* argument0, const char* argument1, const char* file, gsl::index line, const char* function)
+void xrDebug::backend(const char* expression, const char* description, const char* argument0, const char* argument1, const char* file, gsl::index line,
+                      const char* function)
 {
     static std::atomic<bool> hit{false};
     bool exp{false};
@@ -245,12 +247,15 @@ void xrDebug::backend(const char* expression, const char* description, const cha
     string4096 assertion_info;
     gather_info(expression, description, argument0, argument1, file, line, function, assertion_info);
 
-    /* KRodin: у меня этот способ не работает - происходит исключение внутри функции save_mini_dump(). Если сильно надо будет тут получать минидампы - придумать другой способ.
-    #ifdef USE_OWN_MINI_DUMP
-        if ( !IsDebuggerPresent() )
-            save_mini_dump(nullptr);
-    #endif
+    // KRodin: у меня этот способ не работает - происходит исключение внутри функции save_mini_dump(). Если сильно надо будет тут получать
+    // минидампы - придумать другой способ.
+    /*
+#ifdef USE_OWN_MINI_DUMP
+    if ( !IsDebuggerPresent() )
+        save_mini_dump(nullptr);
+#endif
     */
+
     auto endline = "\r\n";
     auto buffer = assertion_info + xr_strlen(assertion_info);
     buffer += sprintf(buffer, "%sPress OK to abort execution%s", endline, endline);
@@ -270,7 +275,7 @@ const char* xrDebug::DXerror2string(const HRESULT code) const { return error2str
 const char* xrDebug::error2string(const DWORD code) const
 {
     static string1024 desc_storage;
-    FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, code, 0, desc_storage, sizeof(desc_storage) - 1, nullptr);
+    FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, code, 0, desc_storage, sizeof(desc_storage) - 1, nullptr);
     return desc_storage;
 }
 
@@ -377,12 +382,12 @@ static void save_mini_dump(_EXCEPTION_POINTERS* pExceptionInfo)
         }
 
         // create the file
-        auto hFile = ::CreateFile(szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+        auto hFile = ::CreateFileA(szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
         if (INVALID_HANDLE_VALUE == hFile)
         {
             // try to place into current directory
             std::memmove(szDumpPath, szDumpPath + 5, gsl::narrow_cast<size_t>(xr_strlen(szDumpPath)));
-            hFile = ::CreateFile(szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+            hFile = ::CreateFileA(szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
         }
         if (hFile != INVALID_HANDLE_VALUE)
         {
@@ -491,8 +496,8 @@ void format_message(char* buffer)
         }
 
         void* message{};
-        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, nullptr, error_code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                      reinterpret_cast<char*>(&message), 0, nullptr);
+        FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, nullptr, error_code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                       reinterpret_cast<char*>(&message), 0, nullptr);
 
         sprintf(buffer, "[error][0x%lx] : [%s]", error_code, static_cast<gsl::czstring>(message));
         LocalFree(message);

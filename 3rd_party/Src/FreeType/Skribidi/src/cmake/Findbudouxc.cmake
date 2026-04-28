@@ -7,7 +7,7 @@
 # BUDOUXC_LIBRARY
 #
 
-find_path(BUDOUXC_INCLUDE_DIR include/budoux.h)
+find_path(BUDOUXC_INCLUDE_DIR budoux.h)
 find_library(BUDOUXC_LIBRARY NAMES budouxc)
 
 include(FindPackageHandleStandardArgs)

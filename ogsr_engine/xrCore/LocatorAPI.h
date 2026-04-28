@@ -10,12 +10,6 @@
 
 class CStreamReader;
 
-namespace sqfs
-{
-struct sqfs_dir_iterator_t;
-struct sqfs_file_t;
-} // namespace sqfs
-
 class CLocatorAPI
 {
     friend class FS_Path;
@@ -24,24 +18,12 @@ public:
     struct file
     {
         const char* name; // low-case name
-
         gsl::index vfs; // VFS_STANDARD_FILE - standart file
+
         s64 size_real;
+        u64 cb;
+        s64 modif;
 
-        union
-        {
-            // SquashFS
-            u64 inode;
-
-            // DB
-            struct
-            {
-                u32 ptr; // pointer inside vfs
-                u32 size_compressed; // if (size_real==size_compressed) - uncompressed
-            };
-        };
-
-        s64 modif; // for editor
         bool folder;
     };
 
@@ -60,67 +42,76 @@ private:
         gsl::index vfs_idx{VFS_STANDARD_FILE};
         s64 size{};
 
+        enum class format : s32
+        {
+            dwfs,
+            sqfs,
+            zip,
+            ar,
+            db,
+            unknown,
+        };
+
     private:
-        class xr_sqfs;
-        class xr_sqfs_stream;
+        format fmt;
+        u32 key{};
 
-        enum class container
-        {
-            STANDARD,
-            SQFS,
-            DB,
-        };
-        container type{container::STANDARD};
-
-        union
-        {
-            // SquashFS
-            xr_sqfs* fs;
-
-            // DB
-            struct
-            {
-                void* hSrcMap{};
-                CInifile* header{};
-                u32 key{};
-            };
-        };
-
+        uintptr_t cb{};
+        std::unique_ptr<CInifile> header;
         void* hSrcFile{};
 
     public:
-        archive() = default;
+        archive() = delete;
+        explicit archive(format fmt) : fmt{fmt} {}
 
         // Implementation wrappers
         void open();
         [[nodiscard]] IC bool autoload();
         [[nodiscard]] IC gsl::czstring entry_point() const;
         IC void index(CLocatorAPI& loc, gsl::czstring fs_entry_point) const;
-        [[nodiscard]] IC IReader* read(gsl::czstring fname, const struct file& desc, u32 gran) const;
-        [[nodiscard]] IC CStreamReader* stream(gsl::czstring fname, const struct file& desc) const;
-        IC void cleanup();
+        [[nodiscard]] IC IReader* read(const struct file& desc, u32 gran) const;
+        [[nodiscard]] IC CStreamReader* stream(const struct file& desc) const;
         void close();
 
     private:
+        // DwarFS
+        void open_dwfs();
+        void autoload_dwfs();
+        void index_dwfs(CLocatorAPI& loc, gsl::czstring fs_entry_point) const;
+        [[nodiscard]] IReader* read_dwfs(const struct file& desc, u32) const;
+        [[nodiscard]] CStreamReader* stream_dwfs(const struct file& desc) const;
+        void close_dwfs();
+
         // SquashFS
         void open_sqfs();
-        [[nodiscard]] bool autoload_sqfs();
-        [[nodiscard]] gsl::czstring entry_point_sqfs() const;
-        void index_dir_sqfs(CLocatorAPI& loc, gsl::czstring path, sqfs::sqfs_dir_iterator_t& it) const;
+        void autoload_sqfs();
         void index_sqfs(CLocatorAPI& loc, gsl::czstring fs_entry_point) const;
-        [[nodiscard]] IReader* read_sqfs(gsl::czstring, const struct file& desc, u32) const;
-        [[nodiscard]] CStreamReader* stream_sqfs(gsl::czstring, const struct file& desc) const;
-        void cleanup_sqfs();
+        [[nodiscard]] IReader* read_sqfs(const struct file& desc, u32) const;
+        [[nodiscard]] CStreamReader* stream_sqfs(const struct file& desc) const;
         void close_sqfs();
+
+        // ZIP
+        void open_zip();
+        void autoload_zip();
+        void index_zip(CLocatorAPI& loc, gsl::czstring fs_entry_point) const;
+        [[nodiscard]] IReader* read_zip(const struct file& desc, u32) const;
+        [[nodiscard]] CStreamReader* stream_zip(const struct file& desc) const;
+        void close_zip();
+
+        // [lib]archive
+        void open_ar();
+        void autoload_ar();
+        void index_ar(CLocatorAPI& loc, gsl::czstring fs_entry_point) const;
+        [[nodiscard]] IReader* read_ar(const struct file& desc, u32) const;
+        [[nodiscard]] CStreamReader* stream_ar(const struct file& desc) const;
+        void close_ar();
 
         // DB
         void open_db();
-        [[nodiscard]] bool autoload_db();
-        [[nodiscard]] gsl::czstring entry_point_db() const;
-        void index_db(CLocatorAPI& loc, gsl::czstring entry_point) const;
-        [[nodiscard]] IReader* read_db(gsl::czstring fname, const struct file& desc, u32 gran) const;
-        [[nodiscard]] CStreamReader* stream_db(gsl::czstring fname, const struct file& desc) const;
-        void cleanup_db();
+        void autoload_db();
+        void index_db(CLocatorAPI& loc, gsl::czstring fs_entry_point) const;
+        [[nodiscard]] IReader* read_db(const struct file& desc, u32 gran) const;
+        [[nodiscard]] CStreamReader* stream_db(const struct file& desc) const;
         void close_db();
     };
 
@@ -138,9 +129,9 @@ private:
     files_set files;
     archives_vec archives;
 
-    void Register(LPCSTR name, gsl::index vfs, u32 ptr, s64 size_real, u32 size_compressed, s64 modif);
+    void Register(gsl::czstring entry, gsl::czstring name, gsl::index vfs, u64 cb, s64 size, s64 modif);
     void LoadArchive(archive& A);
-    void ProcessArchive(LPCSTR path);
+    void ProcessArchive(gsl::czstring path, CLocatorAPI::archive::format fmt);
     void ProcessOne(LPCSTR path, const _FINDDATA_T& F, bool bNoRecurse);
     [[nodiscard]] bool RecurseScanPhysicalPath(const char* path, const bool log_if_found, bool bNoRecurse);
 
@@ -171,8 +162,8 @@ private:
     template <typename T>
     void file_from_cache(T*& R, LPSTR fname, const file& desc, LPCSTR&);
 
-    void file_from_archive(IReader*& R, LPCSTR fname, const file& desc);
-    void file_from_archive(CStreamReader*& R, LPCSTR fname, const file& desc);
+    void file_from_archive(IReader*& R, const file& desc);
+    void file_from_archive(CStreamReader*& R, const file& desc);
 
     [[nodiscard]] bool check_for_file(LPCSTR path, LPCSTR _fname, string_path& fname, const file*& desc);
 

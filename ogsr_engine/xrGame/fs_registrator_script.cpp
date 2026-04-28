@@ -51,7 +51,8 @@ struct FS_item
         const auto newtime = xr::localtime(modif);
         xr_string buff(256, ' ');
 
-        sprintf_s(buff.data(), buff.size(), "%02d:%02d:%4d %02d:%02d", newtime.tm_mday, newtime.tm_mon + 1, newtime.tm_year + 1900, newtime.tm_hour, newtime.tm_min);
+        sprintf_s(buff.data(), buff.size(), "%02d:%02d:%4d %02d:%02d", newtime.tm_mday, newtime.tm_mon + 1, newtime.tm_year + 1900, newtime.tm_hour,
+                  newtime.tm_min);
         return buff;
     }
 };
@@ -144,7 +145,11 @@ void FS_file_list_ex::Sort(u32 flags)
 
 static FS_file_list_ex file_list_open_ex(CLocatorAPI*, LPCSTR path, u32 flags, LPCSTR mask) { return FS_file_list_ex(path, flags, mask); }
 static FS_file_list file_list_open_script(CLocatorAPI* fs, LPCSTR initial, u32 flags) { return FS_file_list(fs->file_list_open(initial, flags)); }
-static FS_file_list file_list_open_script_2(CLocatorAPI* fs, LPCSTR initial, LPCSTR folder, u32 flags) { return FS_file_list(fs->file_list_open(initial, folder, flags)); }
+
+static FS_file_list file_list_open_script_2(CLocatorAPI* fs, LPCSTR initial, LPCSTR folder, u32 flags)
+{
+    return FS_file_list(fs->file_list_open(initial, folder, flags));
+}
 
 [[nodiscard]] static xr_string get_file_age_str(CLocatorAPI* fs, LPCSTR nm)
 {
@@ -231,15 +236,17 @@ static std::string get_last_write_time_string_short(const stdfs::directory_entry
 
 static void script_register_stdfs(sol::state_view& lua)
 {
-    auto fs = lua.create_named_table("stdfs", "VerifyPath", &VerifyPath, "directory_iterator", &directory_iterator, "recursive_directory_iterator", &recursive_directory_iterator);
+    auto fs = lua.create_named_table("stdfs", "VerifyPath", &VerifyPath, "directory_iterator", &directory_iterator, "recursive_directory_iterator",
+                                     &recursive_directory_iterator);
 
     using self = stdfs::directory_entry;
     fs.new_usertype<self>("path", sol::no_constructor, sol::call_constructor, sol::constructors<self(const char*)>(),
                           // TODO: при необходимости можно будет добавить возможность изменения некоторых свойств.
-                          "full_path_name", sol::property(&get_full_path), "full_filename", sol::property(&get_full_filename), "short_filename", sol::property(&get_short_filename),
-                          "extension", sol::property(&get_extension), "last_write_time", sol::property(&get_last_write_time), "last_write_time_string",
-                          sol::property(&get_last_write_time_string), "last_write_time_string_short", sol::property(&get_last_write_time_string_short), "exists",
-                          sol::resolve<bool() const>(&self::exists), "is_regular_file", sol::resolve<bool() const>(&self::is_regular_file), "is_directory",
+                          "full_path_name", sol::property(&get_full_path), "full_filename", sol::property(&get_full_filename), "short_filename",
+                          sol::property(&get_short_filename), "extension", sol::property(&get_extension), "last_write_time",
+                          sol::property(&get_last_write_time), "last_write_time_string", sol::property(&get_last_write_time_string),
+                          "last_write_time_string_short", sol::property(&get_last_write_time_string_short), "exists", sol::resolve<bool() const>(&self::exists),
+                          "is_regular_file", sol::resolve<bool() const>(&self::is_regular_file), "is_directory",
                           sol::resolve<bool() const>(&self::is_directory), "file_size", sol::resolve<uintmax_t() const>(&self::file_size));
 }
 
@@ -253,34 +260,39 @@ void fs_registrator::script_register(sol::state_view& lua)
     script_register_stdfs(lua);
     //
 
-    lua.new_usertype<FS_item>("FS_item", sol::no_constructor, "NameFull", &FS_item::NameFull, "NameShort", &FS_item::NameShort, "Size", &FS_item::Size, "ModifDigitOnly",
-                              &FS_item::ModifDigitOnly, "Modif", &FS_item::Modif);
+    lua.new_usertype<FS_item>("FS_item", sol::no_constructor, "NameFull", &FS_item::NameFull, "NameShort", &FS_item::NameShort, "Size", &FS_item::Size,
+                              "ModifDigitOnly", &FS_item::ModifDigitOnly, "Modif", &FS_item::Modif);
 
-    lua.new_usertype<FS_file_list_ex>("FS_file_list_ex", sol::no_constructor, "Size", &FS_file_list_ex::Size, "GetAt", &FS_file_list_ex::GetAt, "Sort", &FS_file_list_ex::Sort,
-                                      "GetAll", &FS_file_list_ex::GetAll);
-    lua.new_usertype<FS_file_list>("FS_file_list", sol::no_constructor, "Size", &FS_file_list::Size, "GetAt", &FS_file_list::GetAt, "Free", &FS_file_list::Free);
+    lua.new_usertype<FS_file_list_ex>("FS_file_list_ex", sol::no_constructor, "Size", &FS_file_list_ex::Size, "GetAt", &FS_file_list_ex::GetAt, "Sort",
+                                      &FS_file_list_ex::Sort, "GetAll", &FS_file_list_ex::GetAll);
+    lua.new_usertype<FS_file_list>("FS_file_list", sol::no_constructor, "Size", &FS_file_list::Size, "GetAt", &FS_file_list::GetAt, "Free",
+                                   &FS_file_list::Free);
 
-    lua.new_usertype<CLocatorAPI::file>("fs_file", sol::no_constructor, "name", sol::readonly(&CLocatorAPI::file::name), "vfs", sol::readonly(&CLocatorAPI::file::vfs), "ptr",
-                                        sol::readonly(&CLocatorAPI::file::ptr), "size_real", sol::readonly(&CLocatorAPI::file::size_real), "size_compressed",
-                                        sol::readonly(&CLocatorAPI::file::size_compressed), "modif", sol::readonly(&CLocatorAPI::file::modif));
+    lua.new_usertype<CLocatorAPI::file>("fs_file", sol::no_constructor, "name", sol::readonly(&CLocatorAPI::file::name), "vfs",
+                                        sol::readonly(&CLocatorAPI::file::vfs), "size_real", sol::readonly(&CLocatorAPI::file::size_real), "modif",
+                                        sol::readonly(&CLocatorAPI::file::modif));
 
     lua.new_usertype<CLocatorAPI>(
         "FS", sol::no_constructor,
 
         // FS_sort_mode
-        "FS_sort_by_name_up", sol::var(FS_file_list_ex::eSortByNameUp), "FS_sort_by_name_down", sol::var(FS_file_list_ex::eSortByNameDown), "FS_sort_by_size_up",
-        sol::var(FS_file_list_ex::eSortBySizeUp), "FS_sort_by_size_down", sol::var(FS_file_list_ex::eSortBySizeDown), "FS_sort_by_modif_up",
-        sol::var(FS_file_list_ex::eSortByModifUp), "FS_sort_by_modif_down", sol::var(FS_file_list_ex::eSortByModifDown),
+        "FS_sort_by_name_up", sol::var(FS_file_list_ex::eSortByNameUp), "FS_sort_by_name_down", sol::var(FS_file_list_ex::eSortByNameDown),
+        "FS_sort_by_size_up", sol::var(FS_file_list_ex::eSortBySizeUp), "FS_sort_by_size_down", sol::var(FS_file_list_ex::eSortBySizeDown),
+        "FS_sort_by_modif_up", sol::var(FS_file_list_ex::eSortByModifUp), "FS_sort_by_modif_down", sol::var(FS_file_list_ex::eSortByModifDown),
         // FS_List
-        "FS_ListFiles", sol::var(FS_ListFiles), "FS_ListFolders", sol::var(FS_ListFolders), "FS_ClampExt", sol::var(FS_ClampExt), "FS_RootOnly", sol::var(FS_RootOnly),
-        "FS_NoLower", sol::var(FS_NoLower),
+        "FS_ListFiles", sol::var(FS_ListFiles), "FS_ListFolders", sol::var(FS_ListFolders), "FS_ClampExt", sol::var(FS_ClampExt), "FS_RootOnly",
+        sol::var(FS_RootOnly), "FS_NoLower", sol::var(FS_NoLower),
 
-        "path_exist", &CLocatorAPI::path_exist, "update_path", &update_path_script, "get_path", &CLocatorAPI::get_path, "append_path", &CLocatorAPI::append_path,
+        "path_exist", &CLocatorAPI::path_exist, "update_path", &update_path_script, "get_path", &CLocatorAPI::get_path, "append_path",
+        &CLocatorAPI::append_path,
 
-        "file_delete", sol::overload(sol::resolve<void(LPCSTR, LPCSTR)>(&CLocatorAPI::file_delete), sol::resolve<void(LPCSTR)>(&CLocatorAPI::file_delete)), "application_dir",
-        &get_engine_dir, "file_rename", &CLocatorAPI::file_rename, "file_length", &CLocatorAPI::file_length, "file_copy", &CLocatorAPI::file_copy,
+        "file_delete", sol::overload(sol::resolve<void(LPCSTR, LPCSTR)>(&CLocatorAPI::file_delete), sol::resolve<void(LPCSTR)>(&CLocatorAPI::file_delete)),
+        "application_dir", &get_engine_dir, "file_rename", &CLocatorAPI::file_rename, "file_length", &CLocatorAPI::file_length, "file_copy",
+        &CLocatorAPI::file_copy,
 
-        "exist", sol::overload(sol::resolve<const CLocatorAPI::file*(LPCSTR)>(&CLocatorAPI::exist), sol::resolve<const CLocatorAPI::file*(LPCSTR, LPCSTR)>(&CLocatorAPI::exist)),
+        "exist",
+        sol::overload(sol::resolve<const CLocatorAPI::file*(LPCSTR)>(&CLocatorAPI::exist),
+                      sol::resolve<const CLocatorAPI::file*(LPCSTR, LPCSTR)>(&CLocatorAPI::exist)),
         "get_file_age", &CLocatorAPI::get_file_age, "get_file_age_str", &get_file_age_str,
 
         "r_open", sol::overload(sol::resolve<IReader*(LPCSTR, LPCSTR)>(&CLocatorAPI::r_open), sol::resolve<IReader*(LPCSTR)>(&CLocatorAPI::r_open)), "r_close",

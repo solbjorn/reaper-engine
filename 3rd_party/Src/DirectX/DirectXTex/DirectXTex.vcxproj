@@ -11,13 +11,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>DirectXTex</ProjectName>
-    <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{286CC988-2191-467A-9F6D-ABB7954D4F78}</ProjectGuid>
+    <ProjectGuid>{286cc988-2191-467a-9f6d-abb7954d4f78}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
+    <ProjectName>DirectXTex</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <Import Project="..\..\3rd_party_lib_properties.props" />
+  <Import Project="$(SolutionDir)\3rd_party\Src\3rd_party_lib_properties.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -41,12 +40,13 @@
   <PropertyGroup>
     <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\DirectXTex.lib</NMakeOutput>
     <NMakeBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
+      set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
       set "LIBCXX_OPTIONS=$(libcxxOptions)"
       set "LIBCXX_PATH=$(libcxxPath)"
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(LLVMInstallDir);$(SolutionDir)\3rd_party\Src\OpenImageIO\Imath\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\OpenImageIO\OpenJPH\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\OpenImageIO\openexr\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\OpenImageIO\png\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\compression\deflate\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\compression\zlib\_Build\$(Configuration)\$(PlatformShortName)" -DBUILD_SAMPLE=OFF -DBUILD_TOOLS=OFF -DENABLE_LIBPNG_SUPPORT=ON -DENABLE_OPENEXR_SUPPORT=ON -DPNG_LIBRARY="$(SolutionDir)\3rd_party\Src\OpenImageIO\png\_Build\$(Configuration)\$(PlatformShortName)\lib\libpng18_static.lib" ..\DirectXTex
+      echo * > .gitignore
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\OpenImageIO\Imath\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\OpenImageIO\OpenJPH\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\OpenImageIO\openexr\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\OpenImageIO\png\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\compression\deflate\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\compression\zlib\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\system\llvm\_Build\$(Configuration)\$(PlatformShortName)" -DBUILD_SAMPLE=OFF -DBUILD_TOOLS=OFF -DENABLE_LIBPNG_SUPPORT=ON -DENABLE_OPENEXR_SUPPORT=ON -DPNG_LIBRARY="$(SolutionDir)\3rd_party\Src\OpenImageIO\png\_Build\$(Configuration)\$(PlatformShortName)\lib\libpng18_static.lib" ..\DirectXTex
       cmake --build . --config $(Configuration)
       copy /Y "lib\DirectXTex.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\DirectXTex.lib"
     </NMakeBuildCommandLine>

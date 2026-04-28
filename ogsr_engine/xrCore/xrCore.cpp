@@ -44,7 +44,7 @@ void xrCore::_initialize(gsl::czstring _ApplicationName, bool init_fs, gsl::czst
         timeBeginPeriod(1);
         xr::detail::timer_create();
 
-        strcpy_s(Params, sizeof(Params), GetCommandLine());
+        strcpy_s(Params, sizeof(Params), GetCommandLineA());
 
         CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 
@@ -53,7 +53,7 @@ void xrCore::_initialize(gsl::czstring _ApplicationName, bool init_fs, gsl::czst
 
         // application path
         string_path fn, dr, di;
-        GetModuleFileName(nullptr, fn, sizeof(fn));
+        GetModuleFileNameA(nullptr, fn, sizeof(fn));
         _splitpath(fn, dr, di, nullptr, nullptr);
         strconcat(sizeof(ApplicationPath), ApplicationPath, dr, di);
 
@@ -64,16 +64,16 @@ void xrCore::_initialize(gsl::czstring _ApplicationName, bool init_fs, gsl::czst
             // Рабочий каталог для процесса надо устанавливать принудительно
             // в папку с движком, независимо откуда запустили. Иначе начинаются
             // чудеса типа игнорирования движком символов для стектрейсинга.
-            SetCurrentDirectory(ApplicationPath);
-            GetCurrentDirectory(sizeof(WorkingPath), WorkingPath);
+            SetCurrentDirectoryA(ApplicationPath);
+            GetCurrentDirectoryA(sizeof(WorkingPath), WorkingPath);
         }
 
         // User/Comp Name
         DWORD sz_user = sizeof(UserName);
-        GetUserName(UserName, &sz_user);
+        GetUserNameA(UserName, &sz_user);
 
         DWORD sz_comp = sizeof(CompName);
-        GetComputerName(CompName, &sz_comp);
+        GetComputerNameA(CompName, &sz_comp);
 
         SProcessMemInfo memCounters;
         GetProcessMemInfo(memCounters);

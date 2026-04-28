@@ -84,7 +84,7 @@ public:
 
         while (true)
         {
-            index = storage.next_one(index);
+            index = storage.next_one(index + 1);
             if (index >= std::min(base + 64, storage.size()))
                 break;
 

@@ -41,9 +41,6 @@ message(STATUS "CMake C++ compiler: ${CMAKE_CXX_COMPILER_ID}")
 message(STATUS "CMake system name: ${CMAKE_SYSTEM_NAME}")
 message(STATUS "CMake host system processor: ${CMAKE_HOST_SYSTEM_PROCESSOR}")
 
-# static link
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-
 if(MSVC)
 	# Make Release mode emit PDB for compiled artifacts
 	add_compile_options("$<$<CONFIG:RELEASE>:/Zi>")

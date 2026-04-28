@@ -8,7 +8,7 @@
 
 namespace ATL
 {
-inline errno_t AtlCrtErrorCheck(const char*) { return 0; }
+[[nodiscard]] constexpr errno_t AtlCrtErrorCheck(gsl::czstring) { return 0; }
 } // namespace ATL
 
 #define __ATLBASE_H__
@@ -16,11 +16,9 @@ inline errno_t AtlCrtErrorCheck(const char*) { return 0; }
 
 #undef _FORCENAMELESSUNION
 
-#pragma comment(lib, "Windowscodecs")
-
-constexpr const char* c_szSplashClass = "SplashWindow";
-
-static IStream* CreateStreamOnResource(LPCTSTR lpName, LPCTSTR lpType)
+namespace
+{
+[[nodiscard]] IStream* CreateStreamOnResource(LPCTSTR lpName, LPCTSTR lpType)
 {
     IStream* ipStream = nullptr;
 
@@ -59,27 +57,27 @@ static IStream* CreateStreamOnResource(LPCTSTR lpName, LPCTSTR lpType)
     GlobalFree(hgblResourceData);
     return nullptr;
 }
+} // namespace
 
 HWND ShowSplash(HINSTANCE hInstance)
 {
-    WNDCLASS wc{};
+    static constexpr std::wstring_view c_szSplashClass{L"SplashWindow"};
+
+    WNDCLASSW wc{};
     wc.lpfnWndProc = DefWindowProc;
     wc.hInstance = hInstance;
     wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-    wc.lpszClassName = c_szSplashClass;
-    RegisterClass(&wc);
+    wc.lpszClassName = c_szSplashClass.data();
+    RegisterClassW(&wc);
 
     // image
+    std::wstring splash_path(2 * max_path, L'\0');
+    splash_path.resize(GetModuleFileNameW(nullptr, splash_path.data(), splash_path.size()));
+
+    splash_path = splash_path.erase(splash_path.find_last_of(L'\\'), splash_path.size() - 1);
+    splash_path += L"\\splash.png";
+
     CImage img; // объект изображения
-
-    CHAR path[MAX_PATH];
-
-    GetModuleFileName(nullptr, path, MAX_PATH);
-
-    std::string splash_path{path};
-    splash_path = splash_path.erase(splash_path.find_last_of('\\'), splash_path.size() - 1);
-    splash_path += "\\splash.png";
-
     img.Load(splash_path.c_str()); // загрузка сплеша
 
     int splashWidth; // фиксируем ширину картинки
@@ -89,7 +87,7 @@ HWND ShowSplash(HINSTANCE hInstance)
     {
         img.Destroy();
 
-        img.Load(CreateStreamOnResource(MAKEINTRESOURCE(IDB_PNG1), "PNG")); // загружаем сплеш
+        img.Load(CreateStreamOnResource(MAKEINTRESOURCE(IDB_PNG1), L"PNG")); // загружаем сплеш
         splashWidth = img.GetWidth();
         splashHeight = img.GetHeight();
     }
@@ -99,8 +97,8 @@ HWND ShowSplash(HINSTANCE hInstance)
         splashHeight = img.GetHeight();
     }
 
-    const HWND hwndOwner = CreateWindow(c_szSplashClass, nullptr, WS_POPUP, 0, 0, 0, 0, nullptr, nullptr, hInstance, nullptr);
-    const HWND hWnd = CreateWindowEx(WS_EX_LAYERED, c_szSplashClass, nullptr, WS_POPUP, 0, 0, 0, 0, hwndOwner, nullptr, hInstance, nullptr);
+    const HWND hwndOwner = CreateWindowW(c_szSplashClass.data(), nullptr, WS_POPUP, 0, 0, 0, 0, nullptr, nullptr, hInstance, nullptr);
+    const HWND hWnd = CreateWindowExW(WS_EX_LAYERED, c_szSplashClass.data(), nullptr, WS_POPUP, 0, 0, 0, 0, hwndOwner, nullptr, hInstance, nullptr);
 
     if (!hWnd)
         return nullptr;

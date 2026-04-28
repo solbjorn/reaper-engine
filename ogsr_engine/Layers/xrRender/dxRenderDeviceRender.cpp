@@ -141,9 +141,9 @@ tmc::task<void> dxRenderDeviceRender::Create(HWND hWnd, u32& dwWidth, u32& dwHei
 #ifdef USE_RENDERDOC
     if (!g_renderdoc_api)
     {
-        static HMODULE hModule = GetModuleHandle("renderdoc.dll");
+        static HMODULE hModule = GetModuleHandleA("renderdoc.dll");
         if (!hModule)
-            hModule = LoadLibrary("renderdoc.dll");
+            hModule = LoadLibraryA("renderdoc.dll");
         if (hModule)
         {
             const auto RENDERDOC_GetAPI = reinterpret_cast<pRENDERDOC_GetAPI>(GetProcAddress(hModule, "RENDERDOC_GetAPI"));

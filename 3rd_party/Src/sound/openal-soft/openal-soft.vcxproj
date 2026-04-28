@@ -11,8 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{8C67B3EC-AF96-48DB-B93E-E561C79F48D7}</ProjectGuid>
+    <ProjectGuid>{8c67b3ec-af96-48db-b93e-e561c79f48d7}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
     <ProjectName>openal-soft</ProjectName>
   </PropertyGroup>
@@ -41,12 +40,13 @@
   <PropertyGroup>
     <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\OpenAL32.lib</NMakeOutput>
     <NMakeBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin"
-      set "LIBCXX_OPTIONS=$(libcxxOptions) /FI$(SolutionDir)\3rd_party\Src\sound\openal-soft\include\override.h"
+      set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
+      set "LIBCXX_OPTIONS=$(libcxxOptions)"
       set "LIBCXX_PATH=$(libcxxPath)"
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\sound\portaudio\_Build\$(Configuration)\$(PlatformShortName)" -DALSOFT_BACKEND_DSOUND=OFF -DALSOFT_BACKEND_WINMM=OFF -DALSOFT_ENABLE_MODULES=OFF -DALSOFT_EXAMPLES=OFF -DALSOFT_REQUIRE_PORTAUDIO=ON -DALSOFT_REQUIRE_SSE4_1=ON -DALSOFT_UTILS=OFF -DBUILD_SHARED_LIBS=OFF -DLIBTYPE=STATIC ..\openal-soft
+      echo * > .gitignore
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\sound\portaudio\_Build\$(Configuration)\$(PlatformShortName)" -DALSOFT_BACKEND_DSOUND=OFF -DALSOFT_BACKEND_WINMM=OFF -DALSOFT_DLOPEN=OFF -DALSOFT_ENABLE_MODULES=OFF -DALSOFT_EXAMPLES=OFF -DALSOFT_REQUIRE_PORTAUDIO=ON -DALSOFT_REQUIRE_SSE4_1=ON -DALSOFT_UTILS=OFF -DBUILD_SHARED_LIBS=OFF -DLIBTYPE=STATIC ..\openal-soft
       cmake --build . --config $(Configuration)
       copy /Y "OpenAL32.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\OpenAL32.lib"
       md "$(SolutionDir)\bin_$(PlatformShortName)"

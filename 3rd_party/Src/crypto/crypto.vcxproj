@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4a9a3601-fa0a-4bfc-a5ff-0531cc9e0cd1}</ProjectGuid>
+    <Keyword>MakeFileProj</Keyword>
+    <ProjectName>crypto</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="$(SolutionDir)\3rd_party\Src\3rd_party_lib_properties.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\libcrypto.lib</NMakeOutput>
+    <NMakeBuildCommandLine>
+      set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
+      md _Build
+      cd _Build
+      echo * > .gitignore
+      if not exist "$(SolutionDir)\3rd_party\Src\crypto\_Build\$(Configuration)\$(PlatformShortName)\lib\libcrypto.lib" (
+        set "CC=clang"
+        perl ..\openssl\Configure --config="$(SolutionDir)\3rd_party\Src\crypto\configs\50-win-clangasm.conf" --prefix="$(SolutionDir)\3rd_party\Src\crypto\_Build\$(Configuration)\$(PlatformShortName)" --openssldir="$(SolutionDir)\3rd_party\Src\crypto\_Build\$(Configuration)\$(PlatformShortName)\etc\ssl" --release --with-brotli-include="$(SolutionDir)\3rd_party\Src\compression\brotli\_Build\$(Configuration)\$(PlatformShortName)\include" --with-brotli-lib="$(SolutionDir)\3rd_party\Src\compression\brotli\_Build\$(Configuration)\$(PlatformShortName)\lib" --with-zlib-include="$(SolutionDir)\3rd_party\Src\compression\zlib\_Build\$(Configuration)\$(PlatformShortName)\include" --with-zlib-lib="$(SolutionDir)\3rd_party\Src\compression\zlib\_Build\$(Configuration)\$(PlatformShortName)\lib\zlibstatic.lib" --with-zstd-include="$(SolutionDir)\3rd_party\Src\compression\zstd\_Build\$(Configuration)\$(PlatformShortName)\include" --with-zstd-lib="$(SolutionDir)\3rd_party\Src\compression\zstd\_Build\$(Configuration)\$(PlatformShortName)\lib\zstdstatic.lib" AR=llvm-lib CC=clang-cl CFLAGS="/DWIN32 /D_WINDOWS /W3 /MD /O2 /Ob2 /DNDEBUG /MP /O2 /Ob2 /Oi /Oy /Ot /GL /Gy /Gw /W4 /GF /GS /Zi /GT /Brepro /bigobj /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__STDC__ /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /Zc:checkGwOdr /Zc:forScope /Zc:templateScope /Zc:wchar_t /DNOMINMAX /DSTRICT -fno-delayed-template-parsing -fstrict-aliasing /D_CRT_STDIO_ISO_WIDE_SPECIFIERS -fno-ms-compatibility -fgnuc-version=0 /utf-8 /D_UNICODE /DUNICODE -DS_IFREG=_S_IFREG -Doff_t=_off_t -Dstat=_stat -march=skylake -mavx2 -mvpclmulqdq -flto -fmerge-all-constants -fforce-emit-vtables -fwhole-program-vtables /clang:-fcoro-aligned-allocation /clang:-fopenmp -Wextra -Wmost -Wno-error=unused-command-line-argument -Werror=format -Wformat-nonliteral -Werror=format-pedantic -Werror=format-signedness -Werror=format-type-confusion -Werror=microsoft -Werror=move -Werror=nan-infinity-disabled -Werror=parentheses -Werror=strict-aliasing -Werror=tautological-compare -Werror=typename-missing -Werror=weak-vtables -Wno-error=tautological-constant-out-of-range-compare /D_WIN32_WINNT=0x0A00 /DWINVER=0x0A00 /D_MSVC_STL_HARDENING=1 /DNDEBUG /D_ITERATOR_DEBUG_LEVEL=0" LD=lld-link LDFLAGS="/Brepro /DEBUG /RELEASE /OPT:REF /OPT:ICF /INCREMENTAL:NO /LTCG /opt:lldlto=3 /opt:lldltocgo=3" MT=llvm-mt RC=llvm-rc enable-brotli enable-ec_nistp_64_gcc_128 enable-zlib enable-zstd no-apps no-deprecated no-docs no-dso no-legacy no-module no-shared no-unit-test VC-WIN64A-CLANGASM
+        ..\bin\jom
+        nmake install
+      )
+      md "$(Configuration)\$(PlatformShortName)\lib\pkgconfig"
+      call powershell -Command "(gc exporters\libcrypto.pc) -replace '\\', '/' | Out-File -encoding ASCII $(Configuration)\$(PlatformShortName)\lib\pkgconfig\libcrypto.pc"
+      call powershell -Command "(gc exporters\libssl.pc) -replace '\\', '/' | Out-File -encoding ASCII $(Configuration)\$(PlatformShortName)\lib\pkgconfig\libssl.pc"
+      call powershell -Command "(gc exporters\openssl.pc) -replace '\\', '/' | Out-File -encoding ASCII $(Configuration)\$(PlatformShortName)\lib\pkgconfig\openssl.pc"
+      copy /Y "$(Configuration)\$(PlatformShortName)\lib\libcrypto.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\libcrypto.lib"
+    </NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>
+      RD /S/Q _Build
+      $(NMakeBuildCommandLine)
+    </NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>RD /S/Q _Build</NMakeCleanCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <NMakePreprocessorDefinitions>NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -441,7 +441,7 @@ CVirtualFileReader::CVirtualFileReader(gsl::czstring cFileName)
     Pos = 0;
 
     // Open the file
-    hSrcFile = CreateFile(cFileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
+    hSrcFile = CreateFileA(cFileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
     R_ASSERT3(hSrcFile != INVALID_HANDLE_VALUE, cFileName, Debug.error2string(GetLastError()));
 
     LARGE_INTEGER sz;

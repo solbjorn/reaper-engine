@@ -10,16 +10,15 @@
 
 #include <filesystem>
 
-namespace sqfs
+namespace ssl
 {
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wold-style-cast");
-XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
 
-#include <sqfs/super.h>
+#include <openssl/crypto.h>
 
 XR_DIAG_POP();
-} // namespace sqfs
+} // namespace ssl
 
 #include <direct.h>
 #include <fcntl.h>
@@ -161,6 +160,8 @@ CLocatorAPI::CLocatorAPI()
     dwAllocGranularity = sys_inf.dwAllocationGranularity;
     m_iLockRescan = 0;
     dwOpenCounter = 0;
+
+    R_ASSERT(ssl::OPENSSL_init_crypto(OPENSSL_INIT_LOAD_CRYPTO_STRINGS | OPENSSL_INIT_ADD_ALL_CIPHERS | OPENSSL_INIT_ADD_ALL_DIGESTS, nullptr) > 0);
 }
 
 CLocatorAPI::~CLocatorAPI()
@@ -169,10 +170,20 @@ CLocatorAPI::~CLocatorAPI()
     _dump_open_files(1);
 }
 
-void CLocatorAPI::Register(LPCSTR name, gsl::index vfs, u32 ptr, s64 size_real, u32 size_compressed, s64 modif)
+void CLocatorAPI::Register(gsl::czstring entry, gsl::czstring name, gsl::index vfs, u64 cb, s64 size, s64 modif)
 {
-    string256 temp_file_name;
-    strcpy_s(temp_file_name, name);
+    string_path temp_file_name;
+    xr_strconcat(temp_file_name, entry, name);
+
+    for (auto pos = &temp_file_name[0];; ++pos)
+    {
+        pos = std::strchr(pos, '/');
+        if (pos == nullptr)
+            break;
+
+        *pos = '\\';
+    }
+
     xr_strlwr(temp_file_name);
 
     // Register file
@@ -180,9 +191,8 @@ void CLocatorAPI::Register(LPCSTR name, gsl::index vfs, u32 ptr, s64 size_real, 
     //	desc.name			= xr_strlwr(xr_strdup(name));
     desc.name = temp_file_name;
     desc.vfs = vfs;
-    desc.ptr = ptr;
-    desc.size_real = size_real;
-    desc.size_compressed = size_compressed;
+    desc.size_real = size;
+    desc.cb = cb;
     desc.modif = modif;
 
     //	if file already exist - update info
@@ -220,9 +230,8 @@ void CLocatorAPI::Register(LPCSTR name, gsl::index vfs, u32 ptr, s64 size_real, 
         {
             desc.name = xr_strdup(path);
             desc.vfs = VFS_STANDARD_FILE;
-            desc.ptr = 0;
             desc.size_real = 0;
-            desc.size_compressed = 0;
+            desc.cb = 0;
             desc.modif = modif;
             desc.folder = true;
 
@@ -236,15 +245,15 @@ void CLocatorAPI::Register(LPCSTR name, gsl::index vfs, u32 ptr, s64 size_real, 
     }
 }
 
-/* Archives */
+// Archives
 
 void CLocatorAPI::archive::open()
 {
     // Open the file
-    if (hSrcFile && hSrcMap)
+    if (hSrcFile != nullptr && cb != 0)
         return;
 
-    hSrcFile = CreateFile(*path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
+    hSrcFile = CreateFileA(path.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
     R_ASSERT(hSrcFile != INVALID_HANDLE_VALUE);
 
     LARGE_INTEGER sz;
@@ -255,52 +264,96 @@ void CLocatorAPI::archive::open()
     u32 dwPtr = SetFilePointer(hSrcFile, 0, nullptr, FILE_BEGIN);
     R_ASSERT3(dwPtr != INVALID_SET_FILE_POINTER, *path, Debug.error2string(GetLastError()));
 
-    u32 magic = u32(-1);
-    DWORD read_byte;
-    bool res = ReadFile(hSrcFile, &magic, 4, &read_byte, nullptr);
-    R_ASSERT3(res && read_byte == sizeof(u32), *path, Debug.error2string(GetLastError()));
-
-    if (magic == SQFS_MAGIC)
-        open_sqfs();
-    else
-        open_db();
+    switch (fmt)
+    {
+    case format::dwfs: open_dwfs(); break;
+    case format::sqfs: open_sqfs(); break;
+    case format::zip: open_zip(); break;
+    case format::ar: open_ar(); break;
+    case format::db: open_db(); break;
+    default: NODEFAULT;
+    }
 }
 
-IC bool CLocatorAPI::archive::autoload() { return type == container::SQFS ? autoload_sqfs() : autoload_db(); }
-IC gsl::czstring CLocatorAPI::archive::entry_point() const { return type == container::SQFS ? entry_point_sqfs() : entry_point_db(); }
+IC bool CLocatorAPI::archive::autoload()
+{
+    switch (fmt)
+    {
+    case format::dwfs: autoload_dwfs(); break;
+    case format::sqfs: autoload_sqfs(); break;
+    case format::zip: autoload_zip(); break;
+    case format::ar: autoload_ar(); break;
+    case format::db: autoload_db(); break;
+    default: NODEFAULT;
+    }
+
+    if (!header || !header->section_exist("header"))
+    {
+        header.reset();
+        return true;
+    }
+
+    return header->line_exist("header", "auto_load") ? header->r_bool("header", "auto_load") : true;
+}
+
+IC gsl::czstring CLocatorAPI::archive::entry_point() const
+{
+    if (!header || !header->line_exist("header", "entry_point"))
+        return nullptr;
+
+    return header->r_string("header", "entry_point");
+}
 
 IC void CLocatorAPI::archive::index(CLocatorAPI& loc, gsl::czstring fs_entry_point) const
 {
-    if (type == container::SQFS)
-        index_sqfs(loc, fs_entry_point);
-    else
-        index_db(loc, fs_entry_point);
+    switch (fmt)
+    {
+    case format::dwfs: index_dwfs(loc, fs_entry_point); break;
+    case format::sqfs: index_sqfs(loc, fs_entry_point); break;
+    case format::zip: index_zip(loc, fs_entry_point); break;
+    case format::ar: index_ar(loc, fs_entry_point); break;
+    case format::db: index_db(loc, fs_entry_point); break;
+    default: NODEFAULT;
+    }
 }
 
-IC IReader* CLocatorAPI::archive::read(gsl::czstring fname, const struct file& desc, u32 gran) const
+IC IReader* CLocatorAPI::archive::read(const struct file& desc, u32 gran) const
 {
-    return type == container::SQFS ? read_sqfs(fname, desc, gran) : read_db(fname, desc, gran);
+    switch (fmt)
+    {
+    case format::dwfs: return read_dwfs(desc, gran);
+    case format::sqfs: return read_sqfs(desc, gran);
+    case format::zip: return read_zip(desc, gran);
+    case format::ar: return read_ar(desc, gran);
+    case format::db: return read_db(desc, gran);
+    default: NODEFAULT;
+    }
 }
 
-IC CStreamReader* CLocatorAPI::archive::stream(gsl::czstring fname, const struct file& desc) const
+IC CStreamReader* CLocatorAPI::archive::stream(const struct file& desc) const
 {
-    return type == container::SQFS ? stream_sqfs(fname, desc) : stream_db(fname, desc);
-}
-
-IC void CLocatorAPI::archive::cleanup()
-{
-    if (type == container::SQFS)
-        cleanup_sqfs();
-    else
-        cleanup_db();
+    switch (fmt)
+    {
+    case format::dwfs: return stream_dwfs(desc);
+    case format::sqfs: return stream_sqfs(desc);
+    case format::zip: return stream_zip(desc);
+    case format::ar: return stream_ar(desc);
+    case format::db: return stream_db(desc);
+    default: NODEFAULT;
+    }
 }
 
 void CLocatorAPI::archive::close()
 {
-    if (type == container::SQFS)
-        close_sqfs();
-    else
-        close_db();
+    switch (fmt)
+    {
+    case format::dwfs: close_dwfs(); break;
+    case format::sqfs: close_sqfs(); break;
+    case format::zip: close_zip(); break;
+    case format::ar: close_ar(); break;
+    case format::db: close_db(); break;
+    default: NODEFAULT;
+    }
 
     CloseHandle(hSrcFile);
     hSrcFile = nullptr;
@@ -344,19 +397,17 @@ void CLocatorAPI::LoadArchive(archive& A)
     A.index(*this, fs_entry_point);
 }
 
-void CLocatorAPI::ProcessArchive(LPCSTR _path)
+void CLocatorAPI::ProcessArchive(gsl::czstring path, CLocatorAPI::archive::format fmt)
 {
-    // find existing archive
-    shared_str path{_path};
+    const std::string_view pv{path};
 
-    for (archives_it it = archives.begin(); it != archives.end(); ++it)
-        if (it->path == path)
-            return;
+    if (std::ranges::find_if(archives, [pv](const auto& arc) { return std::is_eq(xr_strcmp(arc.path, pv)); }) != archives.end())
+        return;
 
     // open archive
-    auto& A = archives.emplace_back();
+    auto& A = archives.emplace_back(fmt);
     A.vfs_idx = std::ssize(archives) - 1;
-    A.path = path;
+    A.path._set(path);
 
     A.open();
 
@@ -390,20 +441,52 @@ void CLocatorAPI::ProcessOne(LPCSTR path, const _FINDDATA_T& F, bool bNoRecurse)
         strcat_s(N, "\\");
 
         std::ignore = RecurseScanPhysicalPath(N, false, bNoRecurse);
+        return;
     }
-    else
+
+    constexpr auto match_arch = [] [[nodiscard]] (gsl::czstring ext) {
+        static constexpr std::array<std::pair<std::string_view, CLocatorAPI::archive::format>, 5> formats{{{".dw", CLocatorAPI::archive::format::dwfs},
+                                                                                                           {".sq", CLocatorAPI::archive::format::sqfs},
+                                                                                                           {".z", CLocatorAPI::archive::format::zip},
+                                                                                                           {".xdb", CLocatorAPI::archive::format::db},
+                                                                                                           {".db", CLocatorAPI::archive::format::db}}};
+
+        if (ext == nullptr)
+            return CLocatorAPI::archive::format::unknown;
+
+        const std::string_view our{ext};
+
+        if (std::ranges::find_if(xr::fsgame::formats::archive, [our](auto fmt) { return our.starts_with(fmt); }) == xr::fsgame::formats::archive.end())
+            return CLocatorAPI::archive::format::unknown;
+
+        if (const auto it = std::ranges::find_if(formats, [our](auto& fmt) { return our.starts_with(fmt.first); }); it != formats.end())
+            return it->second;
+
+        return CLocatorAPI::archive::format::ar;
+    };
+
+    if (!m_Flags.is(flTargetFolderOnly))
     {
-        if (!m_Flags.is(flTargetFolderOnly) && strext(N) != nullptr &&
-            (std::string_view{strext(N)}.starts_with(".db") || std::string_view{strext(N)}.starts_with(".sq") || std::string_view{strext(N)}.starts_with(".xdb")))
+        gsl::czstring ext = strext(N);
+
+        if (ext != nullptr && ext - &N[0] >= 4)
         {
-            Msg("--Found base arch: [%s], size: [%lld]", N, F.size);
-            ProcessArchive(N);
+            const std::string_view pref{&ext[-4], 4};
+
+            if (std::is_eq(xr_strcmp(pref, ".tar")))
+                ext = pref.data();
         }
-        else
+
+        if (const auto fmt = match_arch(ext); fmt != CLocatorAPI::archive::format::unknown)
         {
-            Register(N, VFS_STANDARD_FILE, 0, F.size, 0, F.time_write);
+            Msg("-- Found base arch: [%s], size: [%lld]", N, F.size);
+
+            ProcessArchive(N, fmt);
+            return;
         }
     }
+
+    Register("", N, VFS_STANDARD_FILE, 0, F.size, F.time_write);
 }
 
 namespace
@@ -498,7 +581,7 @@ bool CLocatorAPI::RecurseScanPhysicalPath(const char* path, const bool log_if_fo
 
     // insert self
     if (path && path[0])
-        Register(path, VFS_STANDARD_FILE, 0, 0, 0, 0);
+        Register("", path, VFS_STANDARD_FILE, 0, 0, 0);
 
     return true;
 }
@@ -547,7 +630,7 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
             if (strstr(Core.Params, "-use-work-dir"))
             {
                 string_path currentDir;
-                GetCurrentDirectory(std::size(currentDir) - 1, currentDir);
+                GetCurrentDirectoryA(std::size(currentDir) - 1, currentDir);
                 currentDir[std::size(currentDir) - 1] = '\0';
 
                 std::ignore = append_path("$fs_root$", currentDir, nullptr, FALSE);
@@ -641,7 +724,8 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
             m_Flags.set(flCacheFiles, FALSE);
 #endif // DEBUG
 
-            CHECK_OR_EXIT(I.second, "The file 'fsgame.ltx' is corrupted (it contains duplicated lines).\nPlease reinstall the game or fix the problem manually.");
+            CHECK_OR_EXIT(I.second,
+                          "The file 'fsgame.ltx' is corrupted (it contains duplicated lines).\nPlease reinstall the game or fix the problem manually.");
         }
         r_close(pFSltx);
         R_ASSERT(path_exist("$app_data_root$"));
@@ -709,10 +793,7 @@ void CLocatorAPI::_destroy()
     pathes.clear();
 
     for (auto& arc : archives)
-    {
-        arc.cleanup();
         arc.close();
-    }
 
     archives.clear();
 }
@@ -935,17 +1016,8 @@ void CLocatorAPI::file_from_cache(T*& R, LPSTR fname, const file& desc, LPCSTR&)
     file_from_cache_impl(R, fname, desc);
 }
 
-void CLocatorAPI::file_from_archive(IReader*& R, LPCSTR fname, const file& desc)
-{
-    // Archived one
-    R = archives[gsl::narrow_cast<size_t>(desc.vfs)].read(fname, desc, dwAllocGranularity);
-}
-
-void CLocatorAPI::file_from_archive(CStreamReader*& R, LPCSTR fname, const file& desc)
-{
-    CStreamReader* reader = archives[gsl::narrow_cast<size_t>(desc.vfs)].stream(fname, desc);
-    R = reader;
-}
+void CLocatorAPI::file_from_archive(IReader*& R, const file& desc) { R = archives[gsl::narrow_cast<size_t>(desc.vfs)].read(desc, dwAllocGranularity); }
+void CLocatorAPI::file_from_archive(CStreamReader*& R, const file& desc) { R = archives[gsl::narrow_cast<size_t>(desc.vfs)].stream(desc); }
 
 bool CLocatorAPI::check_for_file(LPCSTR path, LPCSTR _fname, string_path& fname, const file*& desc)
 {
@@ -987,7 +1059,7 @@ T* CLocatorAPI::r_open_impl(LPCSTR path, LPCSTR _fname)
     if (VFS_STANDARD_FILE == desc->vfs)
         file_from_cache(R, fname, *desc, source_name);
     else
-        file_from_archive(R, fname, *desc);
+        file_from_archive(R, *desc);
 
     if (m_Flags.test(flDumpFileActivity))
         _register_open_file(R, fname);
@@ -996,7 +1068,6 @@ T* CLocatorAPI::r_open_impl(LPCSTR path, LPCSTR _fname)
 }
 
 CStreamReader* CLocatorAPI::rs_open(LPCSTR path, LPCSTR _fname) { return (r_open_impl<CStreamReader>(path, _fname)); }
-
 IReader* CLocatorAPI::r_open(LPCSTR path, LPCSTR _fname) { return (r_open_impl<IReader>(path, _fname)); }
 
 void CLocatorAPI::r_close(IReader*& fs)
@@ -1053,7 +1124,7 @@ void CLocatorAPI::w_close(IWriter*& S)
         {
             struct _stat64 st;
             _stat64(fname, &st);
-            Register(fname, VFS_STANDARD_FILE, 0, st.st_size, 0, st.st_mtime);
+            Register("", fname, VFS_STANDARD_FILE, 0, st.st_size, st.st_mtime);
         }
     }
 }

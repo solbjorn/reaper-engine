@@ -9,7 +9,7 @@ DiscordRPC Discord;
 
 void DiscordRPC::Init()
 {
-    m_hDiscordDLL = LoadLibrary(DISCORD_LIBRARY_DLL);
+    m_hDiscordDLL = LoadLibraryA(DISCORD_LIBRARY_DLL);
     if (!m_hDiscordDLL)
     {
         Msg("!![%s]Failed to load [%s], error: %s", __FUNCTION__, DISCORD_LIBRARY_DLL, Debug.error2string(GetLastError()));

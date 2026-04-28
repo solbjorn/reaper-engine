@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{A0F7D1FB-59A7-4717-A7E4-96F37E91998E}</ProjectGuid>
+    <ProjectGuid>{a0f7d1fb-59a7-4717-a7e4-96f37e91998e}</ProjectGuid>
     <RootNamespace>xrCore</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -19,12 +19,12 @@
   <Import Project="..\Engine_lib_properties.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <UseDebugLibraries>true</UseDebugLibraries>
   </PropertyGroup>
@@ -39,7 +39,6 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkIncremental>
   </PropertyGroup>
@@ -52,11 +51,9 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";SQFS_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>%(AdditionalOptions) -Wconversion -Wnarrowing -Wold-style-cast -Wsigned-enum-bitfield</AdditionalOptions>
       <StringPooling>true</StringPooling>
-      <ExceptionHandling>
-      </ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -65,29 +62,17 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-      <BrowseInformation>
-      </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\tmc\cpputils\include;$(SolutionDir)\3rd_party\Src\compression\squashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\pugixml\pugixml\src;$(SolutionDir)\3rd_party\Src\compression\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <UndefinePreprocessorDefinitions>
-      </UndefinePreprocessorDefinitions>
-      <CompileAsManaged>
-      </CompileAsManaged>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\archiving\archive\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\archiving\dwarfs\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\archiving\minizip\_Build\$(Configuration)\$(PlatformShortName)\include\minizip;$(SolutionDir)\3rd_party\Src\archiving\squashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\crypto\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\logging\cpptrace\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\system\boost\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\system\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tmc\cpputils\include;$(SolutionDir)\3rd_party\Src\utility\json\include;$(SolutionDir)\3rd_party\Src\utility\pugixml\pugixml\src;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>
-      </MapFileName>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <LinkTimeCodeGeneration>
-      </LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -99,11 +84,9 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <PreprocessorDefinitions>_WINDOWS;_USRDLL;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";SQFS_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>%(AdditionalOptions) -Wconversion -Wnarrowing -Wold-style-cast -Wsigned-enum-bitfield</AdditionalOptions>
       <StringPooling>false</StringPooling>
-      <ExceptionHandling>
-      </ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
@@ -112,32 +95,16 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-      <BrowseInformation>
-      </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\tmc\cpputils\include;$(SolutionDir)\3rd_party\Src\compression\squashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\pugixml\pugixml\src;$(SolutionDir)\3rd_party\Src\compression\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <UndefinePreprocessorDefinitions>
-      </UndefinePreprocessorDefinitions>
-      <CompileAsManaged>
-      </CompileAsManaged>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\archiving\archive\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\archiving\dwarfs\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\archiving\minizip\_Build\$(Configuration)\$(PlatformShortName)\include\minizip;$(SolutionDir)\3rd_party\Src\archiving\squashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\crypto\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\logging\cpptrace\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\system\boost\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\system\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tmc\cpputils\include;$(SolutionDir)\3rd_party\Src\utility\json\include;$(SolutionDir)\3rd_party\Src\utility\pugixml\pugixml\src;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>
-      </MapFileName>
       <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>
-      </OptimizeReferences>
-      <EnableCOMDATFolding>
-      </EnableCOMDATFolding>
-      <LinkTimeCodeGeneration>
-      </LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -163,8 +130,11 @@
     <ClCompile Include="FS.cpp" />
     <ClCompile Include="LocatorAPI.cpp" />
     <ClCompile Include="LocatorAPI_defs.cpp" />
+    <ClCompile Include="arc_ar.cpp" />
     <ClCompile Include="arc_db.cpp" />
+    <ClCompile Include="arc_dwfs.cpp" />
     <ClCompile Include="arc_sqfs.cpp" />
+    <ClCompile Include="arc_zip.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="Xr_ini.cpp" />
     <ClCompile Include="sleep.cpp" />
@@ -244,7 +214,6 @@
   <ItemGroup>
     <ProjectReference Include="..\xrExternal\xrExternal.vcxproj">
       <Project>{6d4e1cd0-9d48-4210-982e-93827a58256e}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

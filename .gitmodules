@@ -7,15 +7,9 @@
 [submodule "3rd_party/Src/DirectX/DirectXTex/DirectXTex"]
 	path = 3rd_party/Src/DirectX/DirectXTex/DirectXTex
 	url = https://github.com/solbjorn/DirectXTex.git
-[submodule "3rd_party/Src/FreeType/SheenBidi/SheenBidi"]
-	path = 3rd_party/Src/FreeType/SheenBidi/SheenBidi
-	url = https://github.com/Tehreer/SheenBidi.git
 [submodule "3rd_party/Src/FreeType/Skribidi/Skribidi"]
 	path = 3rd_party/Src/FreeType/Skribidi/Skribidi
 	url = https://github.com/memononen/Skribidi.git
-[submodule "3rd_party/Src/FreeType/budouxc/budouxc"]
-	path = 3rd_party/Src/FreeType/budouxc/budouxc
-	url = https://github.com/memononen/budouxc.git
 [submodule "3rd_party/Src/FreeType/freetype/freetype"]
 	path = 3rd_party/Src/FreeType/freetype/freetype
 	url = https://github.com/freetype/freetype.git
@@ -31,15 +25,6 @@
 [submodule "3rd_party/Src/FreeType/plutovg/plutovg"]
 	path = 3rd_party/Src/FreeType/plutovg/plutovg
 	url = https://github.com/sammycage/plutovg.git
-[submodule "3rd_party/Src/FreeType/unibreak/libunibreak"]
-	path = 3rd_party/Src/FreeType/unibreak/libunibreak
-	url = https://github.com/adah1972/libunibreak.git
-[submodule "3rd_party/Src/GSL"]
-	path = 3rd_party/Src/GSL
-	url = https://github.com/microsoft/GSL.git
-[submodule "3rd_party/Src/OpCoDe/OpCoDe"]
-	path = 3rd_party/Src/OpCoDe/OpCoDe
-	url = https://github.com/solbjorn/OpCoDe.git
 [submodule "3rd_party/Src/OpenImageIO/Imath/Imath"]
 	path = 3rd_party/Src/OpenImageIO/Imath/Imath
 	url = https://github.com/AcademySoftwareFoundation/Imath.git
@@ -74,12 +59,18 @@
 	path = 3rd_party/Src/Xiph/vorbis/vorbis-aotuv-lancer
 	url = https://github.com/enzo1982/vorbis-aotuv-lancer.git
 	branch = aotuv-lancer
-[submodule "3rd_party/Src/abseil/abseil-cpp"]
-	path = 3rd_party/Src/abseil/abseil-cpp
-	url = https://github.com/abseil/abseil-cpp.git
-[submodule "3rd_party/Src/callme"]
-	path = 3rd_party/Src/callme
-	url = https://github.com/solbjorn/callme.git
+[submodule "3rd_party/Src/archiving/archive/libarchive"]
+	path = 3rd_party/Src/archiving/archive/libarchive
+	url = https://github.com/libarchive/libarchive.git
+[submodule "3rd_party/Src/archiving/dwarfs/dwarfs"]
+	path = 3rd_party/Src/archiving/dwarfs/dwarfs
+	url = https://github.com/mhx/dwarfs.git
+[submodule "3rd_party/Src/archiving/minizip/minizip-ng"]
+	path = 3rd_party/Src/archiving/minizip/minizip-ng
+	url = https://github.com/zlib-ng/minizip-ng.git
+[submodule "3rd_party/Src/archiving/squashfs/squashfs-tools-ng"]
+	path = 3rd_party/Src/archiving/squashfs/squashfs-tools-ng
+	url = https://github.com/AgentD/squashfs-tools-ng.git
 [submodule "3rd_party/Src/compression/brotli/brotli"]
 	path = 3rd_party/Src/compression/brotli/brotli
 	url = https://github.com/google/brotli.git
@@ -92,18 +83,36 @@
 [submodule "3rd_party/Src/compression/lz4/lz4"]
 	path = 3rd_party/Src/compression/lz4/lz4
 	url = https://github.com/lz4/lz4.git
-[submodule "3rd_party/Src/compression/squashfs/squashfs-tools-ng"]
-	path = 3rd_party/Src/compression/squashfs/squashfs-tools-ng
-	url = https://github.com/AgentD/squashfs-tools-ng.git
-[submodule "3rd_party/Src/compression/xxHash/xxHash"]
-	path = 3rd_party/Src/compression/xxHash/xxHash
-	url = https://github.com/Cyan4973/xxHash.git
+[submodule "3rd_party/Src/compression/lzma/xz"]
+	path = 3rd_party/Src/compression/lzma/xz
+	url = https://github.com/tukaani-project/xz.git
 [submodule "3rd_party/Src/compression/zlib/zlib-ng"]
 	path = 3rd_party/Src/compression/zlib/zlib-ng
 	url = https://github.com/zlib-ng/zlib-ng.git
 [submodule "3rd_party/Src/compression/zstd/zstd"]
 	path = 3rd_party/Src/compression/zstd/zstd
 	url = https://github.com/facebook/zstd.git
+[submodule "3rd_party/Src/compression/zxc/zxc"]
+	path = 3rd_party/Src/compression/zxc/zxc
+	url = https://github.com/hellobertrand/zxc.git
+[submodule "3rd_party/Src/crypto/openssl"]
+	path = 3rd_party/Src/crypto/openssl
+	url = https://github.com/openssl/openssl.git
+[submodule "3rd_party/Src/i18n/SheenBidi/SheenBidi"]
+	path = 3rd_party/Src/i18n/SheenBidi/SheenBidi
+	url = https://github.com/Tehreer/SheenBidi.git
+[submodule "3rd_party/Src/i18n/budouxc/budouxc"]
+	path = 3rd_party/Src/i18n/budouxc/budouxc
+	url = https://github.com/memononen/budouxc.git
+[submodule "3rd_party/Src/i18n/date"]
+	path = 3rd_party/Src/i18n/date
+	url = https://github.com/HowardHinnant/date.git
+[submodule "3rd_party/Src/i18n/unibreak/libunibreak"]
+	path = 3rd_party/Src/i18n/unibreak/libunibreak
+	url = https://github.com/adah1972/libunibreak.git
+[submodule "3rd_party/Src/i18n/utfcpp"]
+	path = 3rd_party/Src/i18n/utfcpp
+	url = https://github.com/nemtrif/utfcpp.git
 [submodule "3rd_party/Src/imgui/ImGuizmo"]
 	path = 3rd_party/Src/imgui/ImGuizmo
 	url = https://github.com/CedricGuillemet/ImGuizmo.git
@@ -114,17 +123,27 @@
 [submodule "3rd_party/Src/imgui/sol2_ImGui_Bindings"]
 	path = 3rd_party/Src/imgui/sol2_ImGui_Bindings
 	url = https://github.com/mblackman/sol2_ImGui_Bindings.git
-[submodule "3rd_party/Src/llvm/llvm-project"]
-	path = 3rd_party/Src/llvm/llvm-project
-	url = https://github.com/llvm/llvm-project.git
-	branch = release/22.x
+[submodule "3rd_party/Src/legacy/OpCoDe/OpCoDe"]
+	path = 3rd_party/Src/legacy/OpCoDe/OpCoDe
+	url = https://github.com/solbjorn/OpCoDe.git
+[submodule "3rd_party/Src/logging/assert/libassert"]
+	path = 3rd_party/Src/logging/assert/libassert
+	url = https://github.com/jeremy-rifkin/libassert.git
+[submodule "3rd_party/Src/logging/cpptrace/cpptrace"]
+	path = 3rd_party/Src/logging/cpptrace/cpptrace
+	url = https://github.com/jeremy-rifkin/cpptrace.git
+[submodule "3rd_party/Src/logging/fmt/fmt"]
+	path = 3rd_party/Src/logging/fmt/fmt
+	url = https://github.com/fmtlib/fmt.git
+[submodule "3rd_party/Src/logging/re2/re2"]
+	path = 3rd_party/Src/logging/re2/re2
+	url = https://github.com/google/re2.git
+[submodule "3rd_party/Src/logging/scn/scnlib"]
+	path = 3rd_party/Src/logging/scn/scnlib
+	url = https://github.com/eliaskosunen/scnlib.git
 [submodule "3rd_party/Src/luajit2/luajit2"]
 	path = 3rd_party/Src/luajit2/luajit2
 	url = https://github.com/openresty/luajit2.git
-[submodule "3rd_party/Src/mimalloc/mimalloc"]
-	path = 3rd_party/Src/mimalloc/mimalloc
-	url = https://github.com/microsoft/mimalloc.git
-	branch = dev3
 [submodule "3rd_party/Src/sound/lame/lame"]
 	path = 3rd_party/Src/sound/lame/lame
 	url = https://github.com/solbjorn/lame.git
@@ -141,21 +160,27 @@
 [submodule "3rd_party/Src/sound/sndfile/libsndfile"]
 	path = 3rd_party/Src/sound/sndfile/libsndfile
 	url = https://github.com/libsndfile/libsndfile.git
-[submodule "3rd_party/Src/plf_bitsets"]
-	path = 3rd_party/Src/plf_bitsets
-	url = https://github.com/mattreecebentley/plf_bitsets.git
-[submodule "3rd_party/Src/pugixml/pugixml"]
-	path = 3rd_party/Src/pugixml/pugixml
-	url = https://github.com/zeux/pugixml.git
 [submodule "3rd_party/Src/renderdoc"]
 	path = 3rd_party/Src/renderdoc
 	url = https://github.com/baldurk/renderdoc.git
-[submodule "3rd_party/Src/rtti"]
-	path = 3rd_party/Src/rtti
-	url = https://github.com/solbjorn/rtti.git
 [submodule "3rd_party/Src/sol2"]
 	path = 3rd_party/Src/sol2
 	url = https://github.com/reworks-org/sol2.git
+[submodule "3rd_party/Src/system/abseil/abseil-cpp"]
+	path = 3rd_party/Src/system/abseil/abseil-cpp
+	url = https://github.com/abseil/abseil-cpp.git
+[submodule "3rd_party/Src/system/boost/boost"]
+	path = 3rd_party/Src/system/boost/boost
+	url = https://github.com/boostorg/boost.git
+	branch = develop
+[submodule "3rd_party/Src/system/llvm/llvm-project"]
+	path = 3rd_party/Src/system/llvm/llvm-project
+	url = https://github.com/llvm/llvm-project.git
+	branch = release/22.x
+[submodule "3rd_party/Src/system/mimalloc/mimalloc"]
+	path = 3rd_party/Src/system/mimalloc/mimalloc
+	url = https://github.com/microsoft/mimalloc.git
+	branch = dev3
 [submodule "3rd_party/Src/tmc/TooManyCooks"]
 	path = 3rd_party/Src/tmc/TooManyCooks
 	url = https://github.com/tzcnt/TooManyCooks.git
@@ -165,6 +190,27 @@
 [submodule "3rd_party/Src/tmc/hwloc/hwloc"]
 	path = 3rd_party/Src/tmc/hwloc/hwloc
 	url = https://github.com/open-mpi/hwloc.git
-[submodule "3rd_party/Src/tracy"]
-	path = 3rd_party/Src/tracy
+[submodule "3rd_party/Src/utility/GSL"]
+	path = 3rd_party/Src/utility/GSL
+	url = https://github.com/microsoft/GSL.git
+[submodule "3rd_party/Src/utility/callme"]
+	path = 3rd_party/Src/utility/callme
+	url = https://github.com/solbjorn/callme.git
+[submodule "3rd_party/Src/utility/json"]
+	path = 3rd_party/Src/utility/json
+	url = https://github.com/nlohmann/json.git
+[submodule "3rd_party/Src/utility/plf_bitsets"]
+	path = 3rd_party/Src/utility/plf_bitsets
+	url = https://github.com/mattreecebentley/plf_bitsets.git
+[submodule "3rd_party/Src/utility/pugixml/pugixml"]
+	path = 3rd_party/Src/utility/pugixml/pugixml
+	url = https://github.com/zeux/pugixml.git
+[submodule "3rd_party/Src/utility/rtti"]
+	path = 3rd_party/Src/utility/rtti
+	url = https://github.com/solbjorn/rtti.git
+[submodule "3rd_party/Src/utility/tracy"]
+	path = 3rd_party/Src/utility/tracy
 	url = https://github.com/wolfpld/tracy.git
+[submodule "3rd_party/Src/utility/xxHash/xxHash"]
+	path = 3rd_party/Src/utility/xxHash/xxHash
+	url = https://github.com/Cyan4973/xxHash.git

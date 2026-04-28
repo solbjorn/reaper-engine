@@ -11,8 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{C1D77B5D-0C7C-4F60-8AA0-1A9C3E9ADF4E}</ProjectGuid>
+    <ProjectGuid>{c1d77b5d-0c7c-4f60-8aa0-1a9c3e9adf4e}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
     <ProjectName>Skribidi</ProjectName>
   </PropertyGroup>
@@ -41,10 +40,11 @@
   <PropertyGroup>
     <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\skribidi.lib</NMakeOutput>
     <NMakeBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin"
+      set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\FreeType\SheenBidi\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\FreeType\budouxc\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build2\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\FreeType\unibreak\_Build\$(Configuration)\$(PlatformShortName)" -DSKRIBIDI_EXAMPLE=OFF -DSKRIBIDI_UNIT_TESTS=OFF ..
+      echo * > .gitignore
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build2\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\i18n\SheenBidi\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\i18n\budouxc\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\i18n\unibreak\_Build\$(Configuration)\$(PlatformShortName)" -DSKRIBIDI_EXAMPLE=OFF -DSKRIBIDI_UNIT_TESTS=OFF ..
       cmake --build . --config $(Configuration)
       copy /Y "src\skribidi.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\skribidi.lib"
     </NMakeBuildCommandLine>

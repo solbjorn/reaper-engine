@@ -6,10 +6,18 @@
 #include "stream_reader.h"
 #include "trivial_encryptor.h"
 
+namespace xr
+{
+namespace detail
+{
+class opaque_mapping;
+}
+
 namespace
 {
 // 2947 format support is limited to the exclusions listed in this array
-// (vanilla SoC RU archives), the rest must be in either SquashFS or XDB
+// (vanilla SoC RU archives), the rest must be in DwarFS, SquashFS, ZIP,
+// a [lib]archive-backed format, or XDB.
 constexpr struct
 {
     std::string_view ext;
@@ -27,34 +35,47 @@ constexpr struct
     EXCL_RU(a, 32500627),  EXCL_RU(b, 55194918),  EXCL_RU(c, 160948),    EXCL_RU(d, 101014)
 #undef EXCL_RU
 };
+} // namespace
+} // namespace xr
 
+template <>
+struct std::default_delete<xr::detail::opaque_mapping>
+{
+    constexpr void operator()(xr::detail::opaque_mapping* ptr) const noexcept { ::CloseHandle(ptr); }
+};
+
+namespace xr
+{
+namespace
+{
 IReader* open_chunk(void* ptr, u32 ID, gsl::czstring archiveName, s64 archiveSize, u32 key = 0)
 {
     u32 dwType = INVALID_SET_FILE_POINTER;
     unsigned long read_byte{};
     gsl::index dwSize{};
 
-    u32 dwPtr = SetFilePointer(ptr, 0, nullptr, FILE_BEGIN);
+    u32 dwPtr = ::SetFilePointer(ptr, 0, nullptr, FILE_BEGIN);
     R_ASSERT3(dwPtr != INVALID_SET_FILE_POINTER, archiveName, Debug.error2string(GetLastError()));
 
     while (true)
     {
-        bool res = ReadFile(ptr, &dwType, 4, &read_byte, nullptr);
+        bool res = ::ReadFile(ptr, &dwType, 4, &read_byte, nullptr);
         R_ASSERT3(res && read_byte == 4, archiveName, Debug.error2string(GetLastError()));
 
         u32 tempSize = 0;
-        res = ReadFile(ptr, &tempSize, 4, &read_byte, nullptr);
-        dwSize = tempSize;
+        res = ::ReadFile(ptr, &tempSize, 4, &read_byte, nullptr);
         R_ASSERT3(res && read_byte == 4, archiveName, Debug.error2string(GetLastError()));
+        dwSize = tempSize;
 
         if ((dwType & ~CFS_CompressMark) == ID)
         {
             std::byte* src_data = xr_alloc<std::byte>(dwSize);
-            res = ReadFile(ptr, src_data, gsl::narrow_cast<u32>(dwSize), &read_byte, nullptr);
+            res = ::ReadFile(ptr, src_data, gsl::narrow_cast<u32>(dwSize), &read_byte, nullptr);
             R_ASSERT3(res && read_byte == dwSize, archiveName, Debug.error2string(GetLastError()));
+
             if (dwType & CFS_CompressMark)
             {
-                BYTE* dest{};
+                ::BYTE* dest{};
                 gsl::index dest_sz{};
 
                 if (key != 0)
@@ -62,8 +83,8 @@ IReader* open_chunk(void* ptr, u32 ID, gsl::czstring archiveName, s64 archiveSiz
 
                 bool result = _decompressLZ(&dest, &dest_sz, src_data, dwSize, archiveSize);
                 CHECK_OR_EXIT(result, make_string("[%s] Can't decompress archive [%s]", __FUNCTION__, archiveName));
-
                 xr_free(src_data);
+
                 return xr_new<CTempReader>(dest, dest_sz, 0z);
             }
             else
@@ -73,24 +94,30 @@ IReader* open_chunk(void* ptr, u32 ID, gsl::czstring archiveName, s64 archiveSiz
         }
         else
         {
-            dwPtr = SetFilePointer(ptr, gsl::narrow<s32>(dwSize), nullptr, FILE_CURRENT);
+            dwPtr = ::SetFilePointer(ptr, gsl::narrow<s32>(dwSize), nullptr, FILE_CURRENT);
             R_ASSERT3(dwPtr != INVALID_SET_FILE_POINTER, archiveName, Debug.error2string(GetLastError()));
         }
     }
 }
+
+static_assert(sizeof(std::unique_ptr<xr::detail::opaque_mapping>) == sizeof(uintptr_t));
+
+[[nodiscard]] constexpr auto& db_cb(uintptr_t& cb) { return *reinterpret_cast<std::unique_ptr<xr::detail::opaque_mapping>*>(&cb); }
+[[nodiscard]] constexpr const auto& db_cb(const uintptr_t& cb) { return *reinterpret_cast<const std::unique_ptr<xr::detail::opaque_mapping>*>(&cb); }
 } // namespace
+} // namespace xr
 
 void CLocatorAPI::archive::open_db()
 {
-    type = container::DB;
+    auto map = ::CreateFileMapping(hSrcFile, nullptr, PAGE_READONLY, 0, 0, nullptr);
+    R_ASSERT(map != INVALID_HANDLE_VALUE);
 
-    hSrcMap = CreateFileMapping(hSrcFile, nullptr, PAGE_READONLY, 0, 0, nullptr);
-    R_ASSERT(hSrcMap != INVALID_HANDLE_VALUE);
+    xr::db_cb(cb).reset(static_cast<xr::detail::opaque_mapping*>(map));
 }
 
-bool CLocatorAPI::archive::autoload_db()
+void CLocatorAPI::archive::autoload_db()
 {
-    for (const auto& excl : excls)
+    for (const auto& excl : xr::excls)
     {
         if (std::is_eq(xr_strcmp(strext(*path), excl.ext)) && size == excl.size)
         {
@@ -99,32 +126,23 @@ bool CLocatorAPI::archive::autoload_db()
         }
     }
 
-    // Read header
-    bool load = true;
+    IReader* hdr = key == 0 ? xr::open_chunk(hSrcFile, CFS_HeaderChunkID, path.c_str(), size) : nullptr;
+    if (hdr == nullptr)
+        return;
 
-    IReader* hdr = !key ? open_chunk(hSrcFile, CFS_HeaderChunkID, path.c_str(), size) : nullptr;
-    if (hdr)
-    {
-        header = xr_new<CInifile>(hdr, "archive_header");
-        hdr->close();
-        load = header->r_bool("header", "auto_load");
-    }
-
-    return load;
+    header = std::make_unique<CInifile>(hdr, path.c_str());
+    hdr->close();
 }
-
-gsl::czstring CLocatorAPI::archive::entry_point_db() const { return header ? header->r_string("header", "entry_point") : nullptr; }
 
 void CLocatorAPI::archive::index_db(CLocatorAPI& loc, gsl::czstring fs_entry_point) const
 {
-    IReader* hdr = open_chunk(hSrcFile, 1, path.c_str(), size, key);
+    IReader* hdr = xr::open_chunk(hSrcFile, 1, path.c_str(), size, key);
     R_ASSERT(hdr);
-    RStringVec fv;
 
     while (!hdr->eof())
     {
         std::array<std::byte, 1024> buffer_start;
-        string_path name, full;
+        string_path name;
 
         gsl::index buffer_size = hdr->r_u16();
         VERIFY(buffer_size < sizeof(name) + 4 * sizeof(u32));
@@ -136,8 +154,9 @@ void CLocatorAPI::archive::index_db(CLocatorAPI& loc, gsl::czstring fs_entry_poi
         u32 size_real = *reinterpret_cast<u32*>(&*buffer);
         buffer += sizeof(size_real);
 
-        u32 size_compr = *reinterpret_cast<u32*>(&*buffer);
-        buffer += sizeof(size_compr);
+        // Compressed size, must be equal to the real size
+        R_ASSERT(*reinterpret_cast<u32*>(&*buffer) == size_real);
+        buffer += sizeof(u32);
 
         // Skip unused checksum
         buffer += sizeof(u32);
@@ -147,69 +166,54 @@ void CLocatorAPI::archive::index_db(CLocatorAPI& loc, gsl::czstring fs_entry_poi
         name[name_length] = '\0';
         buffer += buffer_size - gsl::index{4 * sizeof(u32)};
 
-        R_ASSERT2(size_compr == size_real, make_string("error indexing %s\\%s: per-file compression support is deprecated and was removed", *path, name));
-
         u32 ptr = *reinterpret_cast<u32*>(&*buffer);
         buffer += sizeof(ptr);
 
-        strconcat(sizeof(full), full, fs_entry_point, name);
-        loc.Register(full, vfs_idx, ptr, size_real, size_compr, 0);
+        loc.Register(fs_entry_point, &name[0], vfs_idx, ptr, size_real, 0);
     }
 
     hdr->close();
 }
 
-IReader* CLocatorAPI::archive::read_db(gsl::czstring fname, const struct file& desc, u32 gran) const
+IReader* CLocatorAPI::archive::read_db(const struct file& desc, u32 gran) const
 {
-    gsl::index start = (desc.ptr / gran) * gran;
-    gsl::index end = (desc.ptr + desc.size_compressed) / gran;
+    const auto desc_ptr = gsl::narrow_cast<u32>(desc.cb);
+    const gsl::index start = (desc_ptr / gran) * gran;
 
-    if ((desc.ptr + desc.size_compressed) % gran)
+    gsl::index end = (desc_ptr + desc.size_real) / gran;
+    if ((desc_ptr + desc.size_real) % gran)
         end += 1;
 
     end *= gran;
     if (end > size)
         end = size;
 
-    gsl::index sz = end - start;
+    const gsl::index sz = end - start;
 
-    std::byte* ptr = static_cast<std::byte*>(MapViewOfFile(hSrcMap, FILE_MAP_READ, 0, gsl::narrow<unsigned long>(start), gsl::narrow_cast<size_t>(sz)));
+    auto ptr = static_cast<std::byte*>(::MapViewOfFile(xr::db_cb(cb).get(), FILE_MAP_READ, 0, gsl::narrow<unsigned long>(start), gsl::narrow_cast<size_t>(sz)));
     if (!ptr)
     {
-        VERIFY3(ptr, "cannot create file mapping on file", fname);
+        VERIFY3(ptr, "cannot create file mapping on file", desc.name);
         return nullptr;
     }
 
 #ifdef DEBUG
     string512 temp;
-    sprintf_s(temp, "%s:%s", *path, fname);
+    sprintf_s(temp, "%s:%s", path.c_str(), desc.name);
 
     register_file_mapping(ptr, sz, temp);
 #endif // DEBUG
 
-    gsl::index ptr_offs = desc.ptr - start;
+    const gsl::index ptr_offs = desc_ptr - start;
 
     return xr_new<CPackReader>(ptr, ptr + ptr_offs, desc.size_real);
 }
 
-CStreamReader* CLocatorAPI::archive::stream_db(gsl::czstring fname, const struct file& desc) const
+CStreamReader* CLocatorAPI::archive::stream_db(const struct file& desc) const
 {
-    R_ASSERT2(desc.size_compressed == desc.size_real, make_string("cannot use stream reading for compressed data %s, do not compress data to be streamed", fname));
-
     CMapStreamReader* R = xr_new<CMapStreamReader>();
-    R->construct(hSrcMap, desc.ptr, desc.size_compressed, size, BIG_FILE_READER_WINDOW_SIZE);
-
+    R->construct(xr::db_cb(cb).get(), gsl::narrow_cast<u32>(desc.cb), desc.size_real, size, BIG_FILE_READER_WINDOW_SIZE);
     return R;
 }
 
-void CLocatorAPI::archive::cleanup_db()
-{
-    xr_delete(header);
-    header = nullptr;
-}
-
-void CLocatorAPI::archive::close_db()
-{
-    CloseHandle(hSrcMap);
-    hSrcMap = nullptr;
-}
+void CLocatorAPI::archive::close_db() { xr::db_cb(cb).reset(); }

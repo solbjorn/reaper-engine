@@ -11,8 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{F612C458-7AFD-4D2B-804E-AF9EF62218B4}</ProjectGuid>
+    <ProjectGuid>{f612c458-7afd-4d2b-804e-af9ef62218b4}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
     <ProjectName>zstd</ProjectName>
   </PropertyGroup>
@@ -41,12 +40,14 @@
   <PropertyGroup>
     <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\zstd_static.lib</NMakeOutput>
     <NMakeBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
+      set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
       md _Build
       cd _Build
+      echo * > .gitignore
       cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DZSTD_BUILD_SHARED=OFF -DZSTD_BUILD_PROGRAMS=OFF -DZSTD_BUILD_TESTS=ON ..\zstd\build\cmake
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)
+      copy /Y "$(Configuration)\$(PlatformShortName)\lib\zstd_static.lib" "$(Configuration)\$(PlatformShortName)\lib\zstd.lib"
       copy /Y "lib\zstd_static.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\zstd_static.lib"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>

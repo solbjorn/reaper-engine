@@ -319,7 +319,7 @@ public:
 
         BOOL b_allow = TRUE;
         if (FS.exist(cfg_full_name))
-            b_allow = SetFileAttributes(cfg_full_name, FILE_ATTRIBUTE_NORMAL);
+            b_allow = SetFileAttributesA(cfg_full_name, FILE_ATTRIBUTE_NORMAL);
 
         if (b_allow)
         {
@@ -559,10 +559,10 @@ private:
         {
             // TODO: If you enable the debug layer for DX11 and switch between fullscreen and windowed a few times,
             // you'll occasionally see the following error in the output:
-            // DXGI ERROR: IDXGISwapChain::Present: The application has not called ResizeBuffers or re-created the SwapChain after a fullscreen or windowed transition. Flip model
-            // swapchains (DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL and DXGI_SWAP_EFFECT_FLIP_DISCARD) are required to do so. [ MISCELLANEOUS ERROR #117: ] This shouldn't happen if we're
-            // calling reset on FS/Windowed transitions, I tried logging where Present() is called as well as where ResizeBuffers and SetFullscreenState are called, and the debug
-            // output looks like this:
+            // DXGI ERROR: IDXGISwapChain::Present: The application has not called ResizeBuffers or re-created the SwapChain after a fullscreen or windowed
+            // transition. Flip model swapchains (DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL and DXGI_SWAP_EFFECT_FLIP_DISCARD) are required to do so. [ MISCELLANEOUS
+            // ERROR #117: ] This shouldn't happen if we're calling reset on FS/Windowed transitions, I tried logging where Present() is called as well as where
+            // ResizeBuffers and SetFullscreenState are called, and the debug output looks like this:
             //
             // Present()
             // SetFullscreenState()

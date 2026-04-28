@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -11,21 +11,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{200652A6-043E-4634-8837-87983B3BD5E0}</ProjectGuid>
+    <ProjectGuid>{200652a6-043e-4634-8837-87983b3bd5e0}</ProjectGuid>
     <RootNamespace>xrGame</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="..\Engine_lib_properties.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <UseDebugLibraries>true</UseDebugLibraries>
   </PropertyGroup>
@@ -40,17 +39,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Midl>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TypeLibraryName>x:\xrGame.tlb</TypeLibraryName>
-    </Midl>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -59,11 +51,8 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;XRGAME_EXPORTS;dSINGLE;MSVC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;XRGAME_EXPORTS;dSINGLE;MSVC;dNODEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <SmallerTypeCheck>false</SmallerTypeCheck>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -73,42 +62,20 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-      <AssemblerOutput>
-      </AssemblerOutput>
-      <BrowseInformation>
-      </BrowseInformation>
-      <WarningLevel>Level3</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrPhysics;$(SolutionDir)\3rd_party\Src\legacy\imdexlib;$(SolutionDir)\3rd_party\Src\legacy\ode;$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\pugixml\pugixml\src;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\compression\zstd\zstd\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrPhysics;$(SolutionDir)\3rd_party\Src\legacy\imdexlib;$(SolutionDir)\3rd_party\Src\legacy\ode;$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\compression\zstd\zstd\lib;$(SolutionDir)\3rd_party\Src\utility\pugixml\pugixml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0419</Culture>
-    </ResourceCompile>
     <Link>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>
-      </MapFileName>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <LinkTimeCodeGeneration>
-      </LinkTimeCodeGeneration>
-      <AdditionalDependencies>xrEngine.lib;ode.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Midl>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TypeLibraryName>x:\xrGame.tlb</TypeLibraryName>
-    </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
@@ -117,11 +84,8 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <PreprocessorDefinitions>_WINDOWS;_USRDLL;XRGAME_EXPORTS;dSINGLE;MSVC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;XRGAME_EXPORTS;dSINGLE;MSVC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>false</StringPooling>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <SmallerTypeCheck>false</SmallerTypeCheck>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
@@ -131,36 +95,16 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-      <AssemblerOutput>
-      </AssemblerOutput>
-      <BrowseInformation>
-      </BrowseInformation>
-      <WarningLevel>Level3</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrPhysics;$(SolutionDir)\3rd_party\Src\legacy\imdexlib;$(SolutionDir)\3rd_party\Src\legacy\ode;$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\pugixml\pugixml\src;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\compression\zstd\zstd\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrPhysics;$(SolutionDir)\3rd_party\Src\legacy\imdexlib;$(SolutionDir)\3rd_party\Src\legacy\ode;$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\compression\zstd\zstd\lib;$(SolutionDir)\3rd_party\Src\utility\pugixml\pugixml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0419</Culture>
-    </ResourceCompile>
     <Link>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>
-      </MapFileName>
       <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>
-      </OptimizeReferences>
-      <EnableCOMDATFolding>
-      </EnableCOMDATFolding>
-      <LinkTimeCodeGeneration>
-      </LinkTimeCodeGeneration>
-      <AdditionalDependencies>xrEngine.lib;ode.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -2244,23 +2188,18 @@
   <ItemGroup>
     <ProjectReference Include="..\xrCDB\xrCDB.vcxproj">
       <Project>{a19b1df2-82ec-4364-8bdf-85d13a1c89b5}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\xrCore\xrCore.vcxproj">
       <Project>{a0f7d1fb-59a7-4717-a7e4-96f37e91998e}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\xrParticles\xrParticles.vcxproj">
       <Project>{94a1c366-3d19-48e6-8170-4adc2e70df97}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\xrPhysics\xrPhysics.vcxproj">
       <Project>{dfe83c79-b305-40b1-b566-00f78a6d2568}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\xrSound\xrSound.vcxproj">
       <Project>{ccca7859-eb86-493e-9b53-c4235f45b3c5}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -86,8 +86,8 @@ void _processor_info::print_topology()
 
     for (const auto& group : topo.groups)
     {
-        Msg("*  Group %zu: NUMA %zu, kind: %s, SMT: %zu", group.index, group.numa_index, group.cpu_kind == tmc::topology::cpu_kind::PERFORMANCE ? "performance" : "efficiency",
-            group.smt_level);
+        Msg("*  Group %zu: NUMA %zu, kind: %s, SMT: %zu", group.index, group.numa_index,
+            group.cpu_kind == tmc::topology::cpu_kind::PERFORMANCE ? "performance" : "efficiency", group.smt_level);
 
         gsl::zstring pos = out.data() + xr_sprintf(out.data(), out.size(), "*   Cores: %zu", group.core_indexes[0]);
 
@@ -173,7 +173,8 @@ bool _processor_info::getCPULoad(f64& val)
 void _processor_info::MTCPULoad()
 {
     using NTQUERYSYSTEMINFORMATION = NTSTATUS(NTAPI*)(SYSTEM_INFORMATION_CLASS, PVOID, ULONG, PULONG);
-    static const auto m_pNtQuerySystemInformation = reinterpret_cast<NTQUERYSYSTEMINFORMATION>(GetProcAddress(GetModuleHandle("ntdll.dll"), "NtQuerySystemInformation"));
+    static const auto m_pNtQuerySystemInformation =
+        reinterpret_cast<NTQUERYSYSTEMINFORMATION>(GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtQuerySystemInformation"));
 
     if (!NT_SUCCESS(m_pNtQuerySystemInformation(SystemProcessorPerformanceInformation, perfomanceInfo.get(),
                                                 sizeof(SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION) * m_dwNumberOfProcessors, nullptr)))
@@ -188,7 +189,8 @@ void _processor_info::MTCPULoad()
         auto& cpuPerfInfo = perfomanceInfo[i];
         cpuPerfInfo.KernelTime.QuadPart -= cpuPerfInfo.IdleTime.QuadPart;
 
-        fUsage[i] = 100.0f - 0.01f * gsl::narrow_cast<f32>(cpuPerfInfo.IdleTime.QuadPart - m_idleTime[i].QuadPart) / gsl::narrow_cast<f32>(dwTickCount - m_dwCount);
+        fUsage[i] =
+            100.0f - 0.01f * gsl::narrow_cast<f32>(cpuPerfInfo.IdleTime.QuadPart - m_idleTime[i].QuadPart) / gsl::narrow_cast<f32>(dwTickCount - m_dwCount);
         fUsage[i] = std::clamp(fUsage[i], 0.0f, 100.0f);
 
         m_idleTime[i] = cpuPerfInfo.IdleTime;
