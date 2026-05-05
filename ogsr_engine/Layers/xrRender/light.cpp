@@ -98,27 +98,25 @@ void light::set_active(bool a)
     {
         if (flags.bActive)
             return;
+
         flags.bActive = true;
         spatial_register();
         spatial_move();
-        // Msg								("!!! L-register: %X",u32(this));
 
 #ifdef DEBUG
-        constexpr Fvector zero = {0, -1000, 0};
+        static constexpr Fvector zero{0.0f, -1000.0f, 0.0f};
         if (position.similar(zero))
-        {
-            Msg("- Uninitialized light position.");
-        }
+            Log("- Uninitialized light position.");
 #endif // DEBUG
     }
     else
     {
         if (!flags.bActive)
             return;
+
         flags.bActive = false;
         spatial_move();
         spatial_unregister();
-        // Msg								("!!! L-unregister: %X",u32(this));
     }
 }
 
@@ -295,10 +293,10 @@ void light::xform_calc()
 namespace
 {
 //								+X,				-X,				+Y,				-Y,			+Z,				-Z
-constexpr std::array<Fvector, 6> cmNorm{
-    {Fvector{0.0f, 1.0f, 0.0f}, Fvector{0.0f, 1.0f, 0.0f}, Fvector{0.0f, 0.0f, -1.0f}, Fvector{0.0f, 0.0f, 1.0f}, Fvector{0.0f, 1.0f, 0.0f}, Fvector{0.0f, 1.0f, 0.0f}}};
-constexpr std::array<Fvector, 6> cmDir{
-    {Fvector{1.0f, 0.0f, 0.0f}, Fvector{-1.0f, 0.0f, 0.0f}, Fvector{0.0f, 1.0f, 0.0f}, Fvector{0.0f, -1.0f, 0.0f}, Fvector{0.0f, 0.0f, 1.0f}, Fvector{0.0f, 0.0f, -1.0f}}};
+constexpr std::array<Fvector, 6> cmNorm{{Fvector{0.0f, 1.0f, 0.0f}, Fvector{0.0f, 1.0f, 0.0f}, Fvector{0.0f, 0.0f, -1.0f}, Fvector{0.0f, 0.0f, 1.0f},
+                                         Fvector{0.0f, 1.0f, 0.0f}, Fvector{0.0f, 1.0f, 0.0f}}};
+constexpr std::array<Fvector, 6> cmDir{{Fvector{1.0f, 0.0f, 0.0f}, Fvector{-1.0f, 0.0f, 0.0f}, Fvector{0.0f, 1.0f, 0.0f}, Fvector{0.0f, -1.0f, 0.0f},
+                                        Fvector{0.0f, 0.0f, 1.0f}, Fvector{0.0f, 0.0f, -1.0f}}};
 } // namespace
 
 void light::export_to(light_Package& package)

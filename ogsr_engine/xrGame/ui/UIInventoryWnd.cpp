@@ -32,8 +32,6 @@
 
 #include "../xr_level_controller.h"
 
-#include <format>
-
 #define INVENTORY_ITEM_XML "inventory_item.xml"
 #define INVENTORY_XML "inventory_new.xml"
 
@@ -316,8 +314,8 @@ void CUIInventoryWnd::Update()
         CInventoryOwner* pOurInvOwner = smart_cast<CInventoryOwner*>(pEntityAlive);
 
         // update money
-        static const char* StMoneyDescr = CStringTable().translate(shared_str{"ui_st_money_descr"}).c_str();
-        UIMoneyWnd.SetText(std::format("{} {}", pOurInvOwner->get_money(), StMoneyDescr).c_str());
+        static const auto StMoneyDescr = CStringTable().translate(shared_str{"ui_st_money_descr"});
+        UIMoneyWnd.SetText(xr::format("{} {}", pOurInvOwner->get_money(), StMoneyDescr).c_str());
 
         if (m_b_need_update_stats)
         {

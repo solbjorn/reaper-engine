@@ -147,8 +147,9 @@ void CBulletManager::Clear() // Вызывается при загрузке и 
     m_Events.clear();
 }
 
-SBullet& CBulletManager::AddBullet(const Fvector& position, const Fvector& direction, float starting_speed, float power, float impulse, u16 sender_id, u16 sendersweapon_id,
-                                   ALife::EHitType e_hit_type, float maximum_distance, const CCartridge& cartridge, bool SendHit, bool AimBullet)
+SBullet& CBulletManager::AddBullet(const Fvector& position, const Fvector& direction, float starting_speed, float power, float impulse, u16 sender_id,
+                                   u16 sendersweapon_id, ALife::EHitType e_hit_type, float maximum_distance, const CCartridge& cartridge, bool SendHit,
+                                   bool AimBullet)
 {
     VERIFY(u16(-1) != cartridge.bullet_material_idx);
     //	u32 CurID = Level().CurrentControlEntity()->ID();
@@ -261,7 +262,6 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, SBullet* bullet
 
         Fvector air_resistance = bullet->dir;
         air_resistance.mul(-bullet->air_resistance * delta_time_sec);
-        ///		Msg("Speed - %f; ar - %f, %f", bullet->dir.magnitude(), air_resistance.magnitude(), air_resistance.magnitude()/bullet->dir.magnitude()*100);
 
         bullet->dir.add(air_resistance);
         bullet->dir.y -= m_fGravityConst * delta_time_sec;
@@ -375,21 +375,6 @@ void CBulletManager::Render()
         {
             length = Device.vCameraPosition.distance_to(bullet.pos) - 0.3f;
         }
-        /*
-        //---------------------------------------------
-        Fvector vT, v0, v1;
-        vT.mad(Device.vCameraPosition, Device.vCameraDirection, _sqrt(dist2segSqr));
-        v0.mad(vT, Device.vCameraTop, width*.5f);
-        v1.mad(vT, Device.vCameraTop, -width*.5f);
-        Fvector v0r, v1r;
-        Device.mFullTransform.transform(v0r, v0);
-        Device.mFullTransform.transform(v1r, v1);
-        float ViewWidth = v1r.distance_to(v0r);
-*/
-        //		float dist = _sqrt(dist2segSqr);
-        //		Msg("dist - [%f]; ViewWidth - %f, [%f]", dist, ViewWidth, ViewWidth*float(Device.dwHeight));
-        //		Msg("dist - [%f]", dist);
-        //---------------------------------------------
 
         Fvector center;
         center.mad(bullet.pos, bullet.dir, -length * .5f);

@@ -51,7 +51,8 @@ struct CSoundObject;
 struct CHitObject;
 } // namespace MemorySpace
 
-const CCoverPoint* CScriptGameObject::best_cover(const Fvector& position, const Fvector& enemy_position, f32 radius, f32 min_enemy_distance, f32 max_enemy_distance)
+const CCoverPoint* CScriptGameObject::best_cover(const Fvector& position, const Fvector& enemy_position, f32 radius, f32 min_enemy_distance,
+                                                 f32 max_enemy_distance)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
     ASSERT_FMT(stalker != nullptr, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
@@ -60,8 +61,8 @@ const CCoverPoint* CScriptGameObject::best_cover(const Fvector& position, const 
     return ai().cover_manager().best_cover(position, radius, *stalker->m_ce_best);
 }
 
-const CCoverPoint* CScriptGameObject::best_cover(const Fvector& position, const Fvector& enemy_position, f32 radius, f32 min_enemy_distance, f32 max_enemy_distance,
-                                                 sol::function callback)
+const CCoverPoint* CScriptGameObject::best_cover(const Fvector& position, const Fvector& enemy_position, f32 radius, f32 min_enemy_distance,
+                                                 f32 max_enemy_distance, sol::function callback)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
     ASSERT_FMT(stalker != nullptr, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
@@ -312,14 +313,18 @@ LPCSTR CScriptGameObject::GetPatrolPathName()
         CScriptEntity* script_monster = smart_cast<CScriptEntity*>(&object());
         if (!script_monster)
         {
-            Msg("!![%s] cannot access class member GetPatrolPathName! Object: [%s]", __FUNCTION__, this->cName().c_str());
+            Msg("!![{}] cannot access class member GetPatrolPathName! Object: [{}]", __FUNCTION__, this->cName());
             return ("");
         }
         else
+        {
             return (script_monster->GetPatrolPathName());
+        }
     }
     else
-        return (*stalker->movement().patrol().path_name());
+    {
+        return stalker->movement().patrol().path_name().c_str();
+    }
 }
 
 void CScriptGameObject::add_animation(gsl::czstring animation, bool hand_usage, bool use_movement_controller)
@@ -371,8 +376,8 @@ void CScriptGameObject::set_actor_relation_flags(Flags32 flags)
     stalker->m_actor_relation_flags = flags;
 }
 
-void CScriptGameObject::set_patrol_path(LPCSTR path_name, const PatrolPathManager::EPatrolStartType patrol_start_type, const PatrolPathManager::EPatrolRouteType patrol_route_type,
-                                        bool random)
+void CScriptGameObject::set_patrol_path(LPCSTR path_name, const PatrolPathManager::EPatrolStartType patrol_start_type,
+                                        const PatrolPathManager::EPatrolRouteType patrol_route_type, bool random)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
     if (!stalker)
@@ -974,21 +979,30 @@ void CScriptGameObject::buy_supplies(CInifile* ini_file, gsl::czstring section)
     inventory_owner->buy_supplies(*ini_file, section);
 }
 
-void sell_condition(CInifile* ini_file, gsl::czstring section) { default_trade_parameters().process(CTradeParameters::action_sell(nullptr), *ini_file, shared_str{section}); }
+void sell_condition(CInifile* ini_file, gsl::czstring section)
+{
+    default_trade_parameters().process(CTradeParameters::action_sell(nullptr), *ini_file, shared_str{section});
+}
 
 void sell_condition(f32 friend_factor, f32 enemy_factor)
 {
     default_trade_parameters().default_factors(CTradeParameters::action_sell(nullptr), CTradeFactors(friend_factor, enemy_factor));
 }
 
-void buy_condition(CInifile* ini_file, gsl::czstring section) { default_trade_parameters().process(CTradeParameters::action_buy(nullptr), *ini_file, shared_str{section}); }
+void buy_condition(CInifile* ini_file, gsl::czstring section)
+{
+    default_trade_parameters().process(CTradeParameters::action_buy(nullptr), *ini_file, shared_str{section});
+}
 
 void buy_condition(f32 friend_factor, f32 enemy_factor)
 {
     default_trade_parameters().default_factors(CTradeParameters::action_buy(nullptr), CTradeFactors(friend_factor, enemy_factor));
 }
 
-void show_condition(CInifile* ini_file, gsl::czstring section) { default_trade_parameters().process(CTradeParameters::action_show(nullptr), *ini_file, shared_str{section}); }
+void show_condition(CInifile* ini_file, gsl::czstring section)
+{
+    default_trade_parameters().process(CTradeParameters::action_show(nullptr), *ini_file, shared_str{section});
+}
 
 LPCSTR CScriptGameObject::sound_prefix() const
 {
@@ -1041,7 +1055,7 @@ float CScriptGameObject::GetMaxWeight() const
     auto e = smart_cast<CInventoryOwner*>(&object());
     if (!e)
     {
-        Msg("!!CInventoryOwner : cannot access class member GetMaxWalkWeight!");
+        Log("!!CInventoryOwner : cannot access class member GetMaxWalkWeight!");
         return 0;
     }
 
@@ -1053,9 +1067,10 @@ float CScriptGameObject::GetMaxWalkWeight() const
     auto e = smart_cast<CActor*>(&object());
     if (!e)
     {
-        Msg("!!CActor : cannot access class member GetMaxWalkWeight!");
+        Log("!!CActor : cannot access class member GetMaxWalkWeight!");
         return 0;
     }
+
     float max_w = e->conditions().m_MaxWalkWeight + e->ArtefactsAddWeight();
     auto outfit = e->GetOutfit();
     if (outfit)
@@ -1069,7 +1084,7 @@ float CScriptGameObject::GetInventoryWeight() const
     auto e = smart_cast<CInventoryOwner*>(&object());
     if (!e)
     {
-        Msg("!!CInventoryOwner : cannot access class member GetMaxWalkWeight!");
+        Log("!!CInventoryOwner : cannot access class member GetMaxWalkWeight!");
         return 0;
     }
 
@@ -1081,9 +1096,10 @@ u32 CScriptGameObject::CalcItemPrice(CScriptGameObject* item, bool b_buying) con
     auto inventory_owner = smart_cast<CInventoryOwner*>(&object());
     if (!inventory_owner)
     {
-        Msg("!!CInventoryOwner : cannot access class member CalcItemPrice!");
+        Log("!!CInventoryOwner : cannot access class member CalcItemPrice!");
         return 0;
     }
+
     auto inventory_item = smart_cast<CInventoryItem*>(&item->object());
     if (!inventory_item)
     {
@@ -1109,14 +1125,14 @@ float CScriptGameObject::GetShapeRadius() const
 {
     if (!g_pGameLevel)
     {
-        Msg("Error! CScriptGameObject::GetShapeRadius : game level doesn't exist.");
+        Log("Error! CScriptGameObject::GetShapeRadius : game level doesn't exist.");
         return 0.0;
     }
 
     auto obj = smart_cast<CSpaceRestrictor*>(&object());
     if (!obj)
     {
-        Msg("Error! CScriptGameObject::GetShapeRadius : incorrect object type.");
+        Log("Error! CScriptGameObject::GetShapeRadius : incorrect object type.");
         return 0.0;
     }
 
@@ -1127,14 +1143,14 @@ u16 CScriptGameObject::GetAmmoBoxCurr() const
 {
     if (!g_pGameLevel)
     {
-        Msg("Error! CScriptGameObject::GetAmmoBoxCurr : game level doesn't exist.");
+        Log("Error! CScriptGameObject::GetAmmoBoxCurr : game level doesn't exist.");
         return 0;
     }
 
     auto obj = smart_cast<CWeaponAmmo*>(&object());
     if (!obj)
     {
-        Msg("Error! CScriptGameObject::GetAmmoBoxCurr : incorrect object type.");
+        Log("Error! CScriptGameObject::GetAmmoBoxCurr : incorrect object type.");
         return 0;
     }
 
@@ -1145,14 +1161,14 @@ u16 CScriptGameObject::GetAmmoBoxSize() const
 {
     if (!g_pGameLevel)
     {
-        Msg("Error! CScriptGameObject::GetAmmoBoxSize : game level doesn't exist.");
+        Log("Error! CScriptGameObject::GetAmmoBoxSize : game level doesn't exist.");
         return 0;
     }
 
     auto obj = smart_cast<CWeaponAmmo*>(&object());
     if (!obj)
     {
-        Msg("Error! CScriptGameObject::GetAmmoBoxSize : incorrect object type.");
+        Log("Error! CScriptGameObject::GetAmmoBoxSize : incorrect object type.");
         return 0;
     }
 
@@ -1163,14 +1179,14 @@ void CScriptGameObject::SetAmmoBoxSize(u16 size)
 {
     if (!g_pGameLevel)
     {
-        Msg("Error! CScriptGameObject::SetAmmoBoxSize : game level doesn't exist.");
+        Log("Error! CScriptGameObject::SetAmmoBoxSize : game level doesn't exist.");
         return;
     }
 
     auto obj = smart_cast<CWeaponAmmo*>(&object());
     if (!obj)
     {
-        Msg("Error! CScriptGameObject::SetAmmoBoxSize : incorrect object type.");
+        Log("Error! CScriptGameObject::SetAmmoBoxSize : incorrect object type.");
         return;
     }
 
@@ -1181,14 +1197,14 @@ void CScriptGameObject::SetAmmoBoxCurr(u16 curr)
 {
     if (!g_pGameLevel)
     {
-        Msg("Error! CScriptGameObject::SetAmmoBoxCurr : game level doesn't exist.");
+        Log("Error! CScriptGameObject::SetAmmoBoxCurr : game level doesn't exist.");
         return;
     }
 
     auto obj = smart_cast<CWeaponAmmo*>(&object());
     if (!obj)
     {
-        Msg("Error! CScriptGameObject::SetAmmoBoxCurr : incorrect object type.");
+        Log("Error! CScriptGameObject::SetAmmoBoxCurr : incorrect object type.");
         return;
     }
 
@@ -1199,15 +1215,15 @@ const char* CScriptGameObject::GetVisualName() const
 {
     if (!g_pGameLevel)
     {
-        Msg("Error! CScriptGameObject::GetVisualName : game level doesn't exist.");
+        Log("Error! CScriptGameObject::GetVisualName : game level doesn't exist.");
         return "";
     }
 
     return *object().cNameVisual();
 }
 
-const CCoverPoint* CScriptGameObject::angle_cover(const Fvector& position, f32 radius, const Fvector& enemy_position, f32 min_enemy_distance, f32 max_enemy_distance,
-                                                  u32 enemy_vertex_id)
+const CCoverPoint* CScriptGameObject::angle_cover(const Fvector& position, f32 radius, const Fvector& enemy_position, f32 min_enemy_distance,
+                                                  f32 max_enemy_distance, u32 enemy_vertex_id)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
     ASSERT_FMT(stalker != nullptr, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
@@ -1216,8 +1232,8 @@ const CCoverPoint* CScriptGameObject::angle_cover(const Fvector& position, f32 r
     return ai().cover_manager().best_cover(position, radius, *stalker->m_ce_angle);
 }
 
-const CCoverPoint* CScriptGameObject::angle_cover(const Fvector& position, f32 radius, const Fvector& enemy_position, f32 min_enemy_distance, f32 max_enemy_distance,
-                                                  u32 enemy_vertex_id, sol::function callback)
+const CCoverPoint* CScriptGameObject::angle_cover(const Fvector& position, f32 radius, const Fvector& enemy_position, f32 min_enemy_distance,
+                                                  f32 max_enemy_distance, u32 enemy_vertex_id, sol::function callback)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
     ASSERT_FMT(stalker != nullptr, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());

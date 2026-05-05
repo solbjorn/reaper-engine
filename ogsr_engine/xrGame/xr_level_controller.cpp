@@ -304,7 +304,7 @@ void initialize_bindings()
             const auto& _k2 = keyboards[i2];
 
             if (_k1.dik == _k2.dik && i1 != i2)
-                Msg("%s==%s", _k1.key_name, _k2.key_name);
+                Msg("{}=={}", _k1.key_name, _k2.key_name);
         }
     }
 #endif
@@ -335,14 +335,12 @@ void remap_keys()
         if (!key.dik.is<sf::Keyboard::Scancode>())
         {
         alias:
-            key.key_local_name =
-                std::string_view{key.key_name} | std::views::split(std::string_view{"::"}) | std::views::join_with(std::string_view{" "}) | std::ranges::to<xr_string>();
+            key.key_local_name = std::string_view{key.key_name} | std::views::split(std::string_view{"::"}) | std::views::join_with(std::string_view{" "}) |
+                std::ranges::to<xr_string>();
             continue;
         }
 
-        const auto desc = sf::Keyboard::getDescription(key.dik.get<sf::Keyboard::Scancode>()).toUtf8();
-        key.key_local_name.assign(reinterpret_cast<gsl::czstring>(desc.data()), desc.size());
-
+        *reinterpret_cast<sf::U8String*>(&key.key_local_name) = sf::Keyboard::getDescription(key.dik.get<sf::Keyboard::Scancode>()).toUtf8();
         if (key.key_local_name == "Unknown")
             goto alias;
     }
@@ -370,7 +368,8 @@ _action* action_name_to_ptr(gsl::czstring _name)
     if (it != actions.end())
         return &*it;
 
-    Msg("! cant find corresponding [id] for action_name [%s]", _name);
+    Msg("! cant find corresponding [id] for action_name [{}]", _name);
+
     return nullptr;
 }
 
@@ -389,7 +388,7 @@ _keyboard* dik_to_ptr(xr::key_id _dik, bool bSafe)
         return &*it;
 
     if (!bSafe)
-        Msg("! cant find corresponding [_keyboard] for dik");
+        Log("! cant find corresponding [_keyboard] for dik");
 
     return nullptr;
 }
@@ -402,7 +401,8 @@ namespace
     if (it != keyboards.end())
         return &*it;
 
-    Msg("! cant find corresponding [_keyboard*] for keyname %s", _name);
+    Msg("! cant find corresponding [_keyboard*] for keyname {}", _name);
+
     return nullptr;
 }
 } // namespace
@@ -469,7 +469,7 @@ void GetActionAllBinding(gsl::czstring _action, gsl::zstring dst_buff, gsl::inde
     const _binding* pbinding{};
 
     if (action_id == EGameActions::kNOTBINDED)
-        Msg("!![%s] Action [%s] not found! Fix it or remove from text!", __FUNCTION__, _action);
+        Msg("!![{}] Action [{}] not found! Fix it or remove from text!", __FUNCTION__, _action);
     else
         pbinding = &g_key_bindings[std::to_underlying(action_id)];
 
@@ -602,7 +602,7 @@ public:
         Log("- --- Action list start ---");
 
         for (const auto& pbinding : g_key_bindings)
-            Msg("- %s", pbinding.m_action->action_name);
+            Msg("- {}", pbinding.m_action->action_name);
 
         Log("- --- Action list end   ---");
     }
@@ -650,7 +650,8 @@ public:
 
         for (const auto& pbinding : g_key_bindings)
         {
-            Msg("[%s] primary is[%s] secondary is[%s]", pbinding.m_action->action_name, pbinding.m_keyboard[0] != nullptr ? pbinding.m_keyboard[0]->key_local_name.c_str() : "None",
+            Msg("[{}] primary is[{}] secondary is[{}]", pbinding.m_action->action_name,
+                pbinding.m_keyboard[0] != nullptr ? pbinding.m_keyboard[0]->key_local_name.c_str() : "None",
                 pbinding.m_keyboard[1] != nullptr ? pbinding.m_keyboard[1]->key_local_name.c_str() : "None");
         }
 

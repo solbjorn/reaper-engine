@@ -58,7 +58,8 @@ BOOL CSoundRender_CoreA::EAXTestSupport(BOOL bDeferred)
         return FALSE;
     if (!EAXQuerySupport(bDeferred, &DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_REVERBDELAY, &ep.flReverbDelay, sizeof(float)))
         return FALSE;
-    if (!EAXQuerySupport(bDeferred, &DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_ENVIRONMENTDIFFUSION, &ep.flEnvironmentDiffusion, sizeof(float)))
+    if (!EAXQuerySupport(bDeferred, &DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_ENVIRONMENTDIFFUSION, &ep.flEnvironmentDiffusion,
+                         sizeof(float)))
         return FALSE;
     if (!EAXQuerySupport(bDeferred, &DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_AIRABSORPTIONHF, &ep.flAirAbsorptionHF, sizeof(float)))
         return FALSE;
@@ -71,7 +72,7 @@ bool CSoundRender_CoreA::reopen_device(const char* deviceName) const
 {
     if (alcIsExtensionPresent(pDevice, "ALC_SOFT_reopen_device"))
     {
-        Msg("- snd has ALC_SOFT_reopen_device");
+        Log("- snd has ALC_SOFT_reopen_device");
 
         typedef ALCboolean(ALC_APIENTRY * alcReopenDeviceSOFT_t)(ALCdevice*, const ALCchar*, const ALCint*);
 
@@ -91,7 +92,7 @@ void CSoundRender_CoreA::_restart()
     if (!(bPresent && bReady))
         return;
 
-    Msg("SOUND: restarting...");
+    Log("SOUND: restarting...");
 
     inherited::_restart();
 
@@ -131,9 +132,8 @@ void CSoundRender_CoreA::_restart()
         }
         else
         {
-            Msg("! snd cannot reset device. Restart game to apply changes!");
-
-            Msg("! snd last error %s", alcGetString(pDevice, alcGetError(pDevice)));
+            Log("! snd cannot reset device. Restart game to apply changes!");
+            Msg("! snd last error {}", alcGetString(pDevice, alcGetError(pDevice)));
         }
     }
 }
@@ -144,8 +144,9 @@ bool CSoundRender_CoreA::init_context(const ALDeviceDesc& deviceDesc)
     pDevice = alcOpenDevice(deviceDesc.name);
     if (!pDevice)
     {
-        Msg("SOUND: OpenAL: Failed to create device.");
+        Log("SOUND: OpenAL: Failed to create device.");
         bPresent = FALSE;
+
         return false;
     }
 
@@ -159,8 +160,9 @@ bool CSoundRender_CoreA::init_context(const ALDeviceDesc& deviceDesc)
         alcCloseDevice(pDevice);
         pDevice = nullptr;
 
-        Msg("SOUND: OpenAL: Failed to create context.");
+        Log("SOUND: OpenAL: Failed to create context.");
         bPresent = FALSE;
+
         return false;
     }
 
@@ -173,7 +175,7 @@ bool CSoundRender_CoreA::init_context(const ALDeviceDesc& deviceDesc)
     // clear errors
     alGetError();
 
-    Msg("~[%s] OpenAL version: %s", __FUNCTION__, alGetString(AL_VERSION));
+    Msg("~[{}] OpenAL version: {}", __FUNCTION__, alGetString(AL_VERSION));
 
     return true;
 }
@@ -187,7 +189,7 @@ bool CSoundRender_CoreA::init_device_list()
     {
         xr_delete(pDeviceList);
 
-        Msg("SOUND: OpenAL: Can't create sound device.");
+        Log("SOUND: OpenAL: Can't create sound device.");
         bPresent = FALSE;
 
         return false;
@@ -205,10 +207,9 @@ void CSoundRender_CoreA::init_device_properties(const bool& is_al_soft)
         if (efx)
         {
             InitAlEFXAPI();
-
             bEFX = EFXTestSupport();
 
-            Msg("[OpenAL] EFX: %s", bEFX ? "present" : "absent");
+            Msg("[OpenAL] EFX: {}", bEFX ? "present" : "absent");
         }
     }
     else
@@ -242,8 +243,8 @@ void CSoundRender_CoreA::init_device_properties(const bool& is_al_soft)
                 bEAX = EAXTestSupport(FALSE);
             }
 
-            Msg("[OpenAL] EAX 2.0 extension: %s", bEAX ? "present" : "absent");
-            Msg("[OpenAL] EAX 2.0 deferred: %s", bDeferredEAX ? "present" : "absent");
+            Msg("[OpenAL] EAX 2.0 extension: {}", bEAX ? "present" : "absent");
+            Msg("[OpenAL] EAX 2.0 deferred: {}", bDeferredEAX ? "present" : "absent");
         }
     }
 }
@@ -279,10 +280,11 @@ void CSoundRender_CoreA::_initialize(int stage)
     ALenum err = alGetError();
     if (err != AL_NO_ERROR)
     {
-        Msg("!![%s] OpenAL AL_STOP_SOURCES_ON_DISCONNECT_SOFT error: %s", __FUNCTION__, alGetString(err));
+        Msg("!![{}] OpenAL AL_STOP_SOURCES_ON_DISCONNECT_SOFT error: {}", __FUNCTION__, alGetString(err));
     }
 
-    R_ASSERT(alIsExtensionPresent("AL_EXT_FLOAT32") || alIsExtensionPresent("AL_EXT_float32"), "The audio backend doesn't support PCM data in IEEE 754 floating-point format");
+    R_ASSERT(alIsExtensionPresent("AL_EXT_FLOAT32") || alIsExtensionPresent("AL_EXT_float32"),
+             "The audio backend doesn't support PCM data in IEEE 754 floating-point format");
 
     const bool is_al_soft = deviceDesc.is_al_soft;
     init_device_properties(is_al_soft);
@@ -310,7 +312,7 @@ void CSoundRender_CoreA::_initialize(int stage)
             }
             else
             {
-                Msg("! SOUND: OpenAL: Max targets - [%u]", tit);
+                Msg("! SOUND: OpenAL: Max targets - [{}]", tit);
 
                 T->_destroy();
                 xr_delete(T);

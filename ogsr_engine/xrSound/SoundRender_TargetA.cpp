@@ -33,7 +33,8 @@ bool CSoundRender_TargetA::_initialize()
         return TRUE;
     }
 
-    Msg("! sound: OpenAL: Can't create source. Error: %s.", (LPCSTR)alGetString(error));
+    Msg("! sound: OpenAL: Can't create source. Error: {}.", alGetString(error));
+
     return FALSE;
 }
 
@@ -112,7 +113,7 @@ tmc::task<void> CSoundRender_TargetA::update()
         ALenum error = alGetError();
         if (error != AL_NO_ERROR)
         {
-            Msg("!![%s]Error checking source state! OpenAL Error: [%s]", __FUNCTION__, alGetString(error));
+            Msg("!![{}]Error checking source state! OpenAL Error: [{}]", __FUNCTION__, alGetString(error));
             co_return;
         }
 
@@ -128,7 +129,7 @@ tmc::task<void> CSoundRender_TargetA::update()
             ALenum error = alGetError();
             if (error != AL_NO_ERROR)
             {
-                Msg("!![%s]Error buffering data! OpenAL Error: [%s]", __FUNCTION__, alGetString(error));
+                Msg("!![{}]Error buffering data! OpenAL Error: [{}]", __FUNCTION__, alGetString(error));
                 co_return;
             }
         }
@@ -147,7 +148,7 @@ tmc::task<void> CSoundRender_TargetA::update()
             ALenum error = alGetError();
             if (error != AL_NO_ERROR)
             {
-                Msg("!![%s]Error restarting playback! OpenAL Error: [%s]", __FUNCTION__, alGetString(error));
+                Msg("!![{}]Error restarting playback! OpenAL Error: [{}]", __FUNCTION__, alGetString(error));
                 co_return;
             }
         }

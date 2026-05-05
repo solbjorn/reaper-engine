@@ -465,15 +465,18 @@ void CWallmarksEngine::Render()
                 }
                 catch (...)
                 {
-                    Msg("! Failed to render dynamic wallmark");
+                    Log("! Failed to render dynamic wallmark");
                     w_verts = w_save;
                 }
             }
+
 #ifdef DEBUG
             W->used_in_render = u32(-1);
 #endif
         }
+
         slot->skeleton_items.clear();
+
         // Flush stream
         FlushStream(hGeom, slot->shader, w_offset, w_verts, w_start, TRUE);
     }

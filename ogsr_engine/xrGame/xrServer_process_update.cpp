@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "xrServer.h"
+
 #include "xrServer_Objects.h"
 
 namespace
@@ -14,9 +15,10 @@ void xrServer::Process_update(NET_Packet& P, ClientID sender)
     R_ASSERT2(CL, "Process_update client not found");
 
     if (g_Dump_Update_Read)
-        Msg("---- UPDATE_Read --- ");
+        Log("---- UPDATE_Read --- ");
 
     R_ASSERT(CL->flags.bLocal);
+
     // while has information
     while (!P.r_eof())
     {
@@ -31,17 +33,17 @@ void xrServer::Process_update(NET_Packet& P, ClientID sender)
 
         if (E)
         {
-            // Msg				("sv_import: %d '%s'",E->ID,E->name_replace());
             E->net_Ready = TRUE;
             E->UPDATE_Read(P);
 
             if (g_Dump_Update_Read)
-                Msg("* %s : %u - %u", E->name(), size, P.r_tell() - _pos);
+                Msg("* {} : {} - {}", E->name(), size, P.r_tell() - _pos);
 
             if ((P.r_tell() - _pos) != size)
             {
                 string16 tmp;
                 CLSID2TEXT(E->m_tClassID, tmp);
+
                 Debug.fatal(DEBUG_INFO, "Beer from the creator of '%s'", tmp);
             }
         }
@@ -52,7 +54,7 @@ void xrServer::Process_update(NET_Packet& P, ClientID sender)
     }
 
     if (g_Dump_Update_Read)
-        Msg("-------------------- ");
+        Log("-------------------- ");
 }
 
 void xrServer::Process_save(NET_Packet& P, ClientID sender)
@@ -83,12 +85,12 @@ void xrServer::Process_save(NET_Packet& P, ClientID sender)
             P.r_advance(size);
         s32 _pos_end = P.r_tell();
         s32 _size = size;
-        // Msg("!![%s] load/save info, object: [%s], size: [%d], _pos_end-_pos_start: [%d], ID_to_entity(ID) is [%s]", __FUNCTION__, E ? E->name_replace() : "unknown", _size,
-        // _pos_end - _pos_start, E ? "true" : "false");
+
         if (_size != (_pos_end - _pos_start))
         {
-            Msg("!![%s] load/save mismatch, object: [%s], size: [%d], _pos_end-_pos_start: [%d], ID_to_entity(ID) is [%s]", __FUNCTION__, E ? E->name_replace() : "unknown", _size,
-                _pos_end - _pos_start, E ? "true" : "false");
+            Msg("!![{}] load/save mismatch, object: [{}], size: [{}], _pos_end-_pos_start: [{}], ID_to_entity(ID) is [{}]", __FUNCTION__,
+                E ? E->name_replace() : "unknown", _size, _pos_end - _pos_start, E ? "true" : "false");
+
             s32 _rollback = _pos_start + _size;
             P.r_seek(_rollback);
         }

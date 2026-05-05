@@ -100,8 +100,8 @@ float ps_r2_ssaLOD_A = 64.f;
 float ps_r2_ssaLOD_B = 48.f;
 
 // R2-specific
-Flags32 ps_r2_ls_flags{R2FLAG_SUN | R2FLAG_MBLUR | R3FLAG_DYN_WET_SURF | R3FLAG_VOLUMETRIC_SMOKE | R2FLAG_DOF | R2FLAG_STEEP_PARALLAX | R2FLAG_SUN_FOCUS | R2FLAG_SUN_TSM |
-                       R2FLAG_TONEMAP | R2FLAG_VOLUMETRIC_LIGHTS};
+Flags32 ps_r2_ls_flags{R2FLAG_SUN | R2FLAG_MBLUR | R3FLAG_DYN_WET_SURF | R3FLAG_VOLUMETRIC_SMOKE | R2FLAG_DOF | R2FLAG_STEEP_PARALLAX | R2FLAG_SUN_FOCUS |
+                       R2FLAG_SUN_TSM | R2FLAG_TONEMAP | R2FLAG_VOLUMETRIC_LIGHTS};
 
 Flags32 ps_r2_ls_flags_ext{R2FLAGEXT_ENABLE_TESSELLATION | R2FLAGEXT_FONT_SHADOWS};
 
@@ -494,30 +494,30 @@ public:
 
     void Execute(LPCSTR) override
     {
-        Msg("memory usage  mb \t \t video    \t managed      \t system");
+        Log("memory usage  mb \t \t video    \t managed      \t system");
 
         float vb_video = (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_vertex][D3DPOOL_DEFAULT] / 1024 / 1024;
         float vb_managed = (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_vertex][D3DPOOL_MANAGED] / 1024 / 1024;
         float vb_system = (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_vertex][D3DPOOL_SYSTEMMEM] / 1024 / 1024;
-        Msg("vertex buffer\t \t %f \t %f \t %f ", vb_video, vb_managed, vb_system);
+        Msg("vertex buffer\t \t {} \t {} \t {} ", vb_video, vb_managed, vb_system);
 
         float ib_video = (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_index][D3DPOOL_DEFAULT] / 1024 / 1024;
         float ib_managed = (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_index][D3DPOOL_MANAGED] / 1024 / 1024;
         float ib_system = (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_index][D3DPOOL_SYSTEMMEM] / 1024 / 1024;
-        Msg("index buffer\t \t %f \t %f \t %f ", ib_video, ib_managed, ib_system);
+        Msg("index buffer\t \t {} \t {} \t {} ", ib_video, ib_managed, ib_system);
 
         float rt_video = (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_rtarget][D3DPOOL_DEFAULT] / 1024 / 1024;
         float rt_managed = (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_rtarget][D3DPOOL_MANAGED] / 1024 / 1024;
         float rt_system = (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_rtarget][D3DPOOL_SYSTEMMEM] / 1024 / 1024;
-        Msg("rtarget\t \t %f \t %f \t %f ", rt_video, rt_managed, rt_system);
+        Msg("rtarget\t \t {} \t {} \t {} ", rt_video, rt_managed, rt_system);
 
-        Msg("total\t \t %f \t %f \t %f \n", vb_video + ib_video + rt_video, vb_managed + ib_managed + rt_managed, vb_system + ib_system + rt_system);
+        Msg("total\t \t {} \t {} \t {} \n", vb_video + ib_video + rt_video, vb_managed + ib_managed + rt_managed, vb_system + ib_system + rt_system);
 
         xr::render_memory_usage usage;
         RImplementation.ResourcesGetMemoryUsage(usage);
 
-        Msg("textures loaded size: %f Mb (%zd bytes)", gsl::narrow_cast<f32>(usage.m_base + usage.m_lmaps) / 1024.0f / 1024.0f, usage.m_base + usage.m_lmaps);
-        Msg("Lua memory usage: %f Mb (%zd bytes)", gsl::narrow_cast<f32>(usage.lua) / 1024.0f / 1024.0f, usage.lua);
+        Msg("textures loaded size: {} Mb ({} bytes)", gsl::narrow_cast<f32>(usage.m_base + usage.m_lmaps) / 1024.0f / 1024.0f, usage.m_base + usage.m_lmaps);
+        Msg("Lua memory usage: {} Mb ({} bytes)", gsl::narrow_cast<f32>(usage.lua) / 1024.0f / 1024.0f, usage.lua);
 
         HW.DumpVideoMemoryUsage();
     }
@@ -568,12 +568,12 @@ public:
             return;
         }
 
-        Msg("Exporting particles...");
+        Log("Exporting particles...");
 
         RImplementation.PSLibrary.Reload();
         RImplementation.PSLibrary.Save2(0 == xr_strcmp(args, "1"));
 
-        Msg("Exporting particles Done!");
+        Log("Exporting particles Done!");
     }
 };
 
@@ -593,14 +593,14 @@ public:
             return;
         }
 
-        Msg("Importing particles...");
+        Log("Importing particles...");
 
         RImplementation.PSLibrary.OnDestroy();
         RImplementation.PSLibrary.Load2();
         RImplementation.PSLibrary.ExportAllAsNew();
         RImplementation.PSLibrary.OnCreate();
 
-        Msg("Importing particles Done!");
+        Log("Importing particles Done!");
     }
 };
 } // namespace

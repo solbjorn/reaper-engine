@@ -178,8 +178,8 @@ namespace
 {
 bool accessible_epsilon(CBaseMonster* const object, Fvector const pos, float epsilon)
 {
-    Fvector const offsets[] = {Fvector().set(0.f, 0.f, 0.f), Fvector().set(-epsilon, 0.f, 0.f), Fvector().set(+epsilon, 0.f, 0.f), Fvector().set(0.f, 0.f, -epsilon),
-                               Fvector().set(0.f, 0.f, +epsilon)};
+    Fvector const offsets[] = {Fvector().set(0.f, 0.f, 0.f), Fvector().set(-epsilon, 0.f, 0.f), Fvector().set(+epsilon, 0.f, 0.f),
+                               Fvector().set(0.f, 0.f, -epsilon), Fvector().set(0.f, 0.f, +epsilon)};
 
     for (u32 i = 0; i < sizeof(offsets) / sizeof(offsets[0]); ++i)
     {
@@ -812,7 +812,7 @@ tmc::task<void> CBaseMonster::OnEvent(NET_Packet& P, u16 type)
 
         if (!O)
         {
-            Msg("! [%s] Error: No object to reject/sell [%u]", __FUNCTION__, id);
+            Msg("! [{}] Error: No object to reject/sell [{}]", __FUNCTION__, id);
             break;
         }
 

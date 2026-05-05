@@ -12,11 +12,12 @@
 #include "graph_engine_space.h"
 
 #define TEMPLATE_SPECIALIZATION \
-    template <typename _operator_condition, typename _operator, typename _condition_state, typename _condition_evaluator, typename _operator_id_type, bool _reverse_search, \
-              typename _operator_ptr, typename _condition_evaluator_ptr>
+    template <typename _operator_condition, typename _operator, typename _condition_state, typename _condition_evaluator, typename _operator_id_type, \
+              bool _reverse_search, typename _operator_ptr, typename _condition_evaluator_ptr>
 
 #define CProblemSolverAbstract \
-    CProblemSolver<_operator_condition, _operator, _condition_state, _condition_evaluator, _operator_id_type, _reverse_search, _operator_ptr, _condition_evaluator_ptr>
+    CProblemSolver<_operator_condition, _operator, _condition_state, _condition_evaluator, _operator_id_type, _reverse_search, _operator_ptr, \
+                   _condition_evaluator_ptr>
 
 TEMPLATE_SPECIALIZATION
 IC CProblemSolverAbstract::CProblemSolver() { init(); }
@@ -95,7 +96,7 @@ IC void CProblemSolverAbstract::validate_properties(const CState& conditions) co
     {
         if (evaluators().find(cond.condition()) == evaluators().end())
         {
-            Msg("! cannot find corresponding evaluator to the property with id %d", cond.condition());
+            Msg("! cannot find corresponding evaluator to the property with id {}", cond.condition());
             THROW(evaluators().find(cond.condition()) != evaluators().end());
         }
     }
@@ -154,8 +155,8 @@ TEMPLATE_SPECIALIZATION
 IC const typename CProblemSolverAbstract::EVALUATORS& CProblemSolverAbstract::evaluators() const { return (m_evaluators); }
 
 TEMPLATE_SPECIALIZATION
-IC bool CProblemSolverAbstract::evaluate_condition(typename xr_vector<_operator_condition>::const_iterator& I, typename xr_vector<_operator_condition>::const_iterator& E,
-                                                   const condition_type& condition_id) const
+IC bool CProblemSolverAbstract::evaluate_condition(typename xr_vector<_operator_condition>::const_iterator& I,
+                                                   typename xr_vector<_operator_condition>::const_iterator& E, const condition_type& condition_id) const
 {
     auto eva = evaluator(condition_id);
     if (eva)
@@ -184,7 +185,8 @@ TEMPLATE_SPECIALIZATION
 inline bool CProblemSolverAbstract::is_accessible(const _index_type&) const { return m_applied; }
 
 TEMPLATE_SPECIALIZATION
-IC const typename CProblemSolverAbstract::_index_type& CProblemSolverAbstract::value(const _index_type& vertex_index, const_iterator& i, bool reverse_search) const
+IC const typename CProblemSolverAbstract::_index_type& CProblemSolverAbstract::value(const _index_type& vertex_index, const_iterator& i,
+                                                                                     bool reverse_search) const
 {
     if (reverse_search)
     {

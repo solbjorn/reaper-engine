@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "alife_spawn_registry.h"
+
 #include "object_broker.h"
 #include "game_base.h"
 #include "ai_space.h"
@@ -27,7 +28,7 @@ CALifeSpawnRegistry::~CALifeSpawnRegistry()
 
 void CALifeSpawnRegistry::save(IWriter& memory_stream)
 {
-    Msg("* Saving spawns...");
+    Log("* Saving spawns...");
     memory_stream.open_chunk(SPAWN_CHUNK_DATA);
 
     memory_stream.open_chunk(0);
@@ -47,7 +48,7 @@ void CALifeSpawnRegistry::load(IReader& file_stream, LPCSTR game_name)
     R_ASSERT(FS.exist(game_name));
 
     IReader *chunk, *chunk0;
-    Msg("* Loading spawn registry...");
+    Log("* Loading spawn registry...");
     R_ASSERT2(file_stream.find_chunk(SPAWN_CHUNK_DATA), "Cannot find chunk SPAWN_CHUNK_DATA!");
     chunk0 = file_stream.open_chunk(SPAWN_CHUNK_DATA);
 
@@ -71,7 +72,7 @@ void CALifeSpawnRegistry::load(IReader& file_stream, LPCSTR game_name)
 
 void CALifeSpawnRegistry::load(LPCSTR spawn_name)
 {
-    Msg("* Loading spawn registry...");
+    Log("* Loading spawn registry...");
 
     m_spawn_name._set(spawn_name);
     string_path file_name;
@@ -142,46 +143,24 @@ void CALifeSpawnRegistry::load(IReader& file_stream, xrGUID* save_guid)
 
         if (FS.exist(fname))
         {
-            Msg("Start load of custom waypoints...");
+            Log("Start load of custom waypoints...");
 
             CInifile way_inifile = CInifile(fname);
             ai().patrol_path_storage_ini(way_inifile);
 
-            Msg("End load of custom waypoints...");
+            Log("End load of custom waypoints...");
         }
     }
 
     R_ASSERT(header().graph_guid() == ai().game_graph().header().guid(), "Spawn doesn't correspond to the graph : REBUILD SPAWN!");
 
-    Msg("build_story_spawns start...");
+    Log("build_story_spawns start...");
 
     build_story_spawns();
     build_root_spawns();
 
-    Msg("* %u spawn points are successfully loaded", m_spawns.vertex_count());
+    Msg("* {} spawn points are successfully loaded", m_spawns.vertex_count());
 }
-
-// void CALifeSpawnRegistry::save_updates		(IWriter &stream)
-//{
-//	SPAWN_GRAPH::vertex_iterator			I = m_spawns.vertices().begin();
-//	SPAWN_GRAPH::vertex_iterator			E = m_spawns.vertices().end();
-//	for ( ; I != E; ++I) {
-//		stream.open_chunk					((*I).second->vertex_id());
-//		(*I).second->data()->save_update	(stream);
-//		stream.close_chunk					();
-//	}
-// }
-//
-// void CALifeSpawnRegistry::load_updates		(IReader &stream)
-//{
-//	u32								vertex_id;
-//	for (IReader *chunk = stream.open_chunk_iterator(vertex_id); chunk; chunk = stream.open_chunk_iterator(vertex_id,chunk)) {
-//		VERIFY						(u32(ALife::_SPAWN_ID(-1)) > vertex_id);
-//		const SPAWN_GRAPH::CVertex	*vertex = m_spawns.vertex(ALife::_SPAWN_ID(vertex_id));
-//		VERIFY						(vertex);
-//		vertex->data()->load_update	(*chunk);
-//	}
-// }
 
 void CALifeSpawnRegistry::build_root_spawns()
 {
@@ -230,8 +209,7 @@ void CALifeSpawnRegistry::build_story_spawns()
             // Особо умные могут назначить одинаковые спавн айди куче разных объектов.
             ASSERT_FMT(m_spawn_story_ids.find(object->m_spawn_story_id) == m_spawn_story_ids.end(), "!!Twoy allspawn - xyina, davai po novoy!");
 #endif
-            // Msg("--[%s] Adding spawn_id to object: [%s] spawn_story_id: [%u] story_id: [%u] object_id: [%u]", __FUNCTION__, object->name_replace(), object->m_spawn_story_id,
-            // object->m_story_id, id);
+
             m_spawn_story_ids.emplace(object->m_spawn_story_id, id);
         }
 #ifdef USE_STORY_ID_AS_SPAWN_ID
@@ -240,8 +218,6 @@ void CALifeSpawnRegistry::build_story_spawns()
             // Особо умные могут назначить одинаковые спавн/стори айди куче разных объектов либо разные одному и тому же.
             ASSERT_FMT(m_spawn_story_ids.find(object->m_story_id) == m_spawn_story_ids.end(), "!!Twoy allspawn - xyina, davai po novoy!");
 
-            // Msg("~~[%s] Adding spawn_id (story_id) to object: [%s] spawn_story_id: [%u] story_id: [%u] object_id: [%u]", __FUNCTION__, object->name_replace(),
-            // object->m_spawn_story_id, object->m_story_id, id);
             m_spawn_story_ids.emplace(object->m_story_id, id);
         }
 #endif
@@ -254,9 +230,10 @@ ALife::_SPAWN_ID CALifeSpawnRegistry::spawn_id(const ALife::_SPAWN_STORY_ID& spa
     if (it != m_spawn_story_ids.end())
         return it->second;
 
-    // KRodin: В оригинале при ненахождении стори айди, возвращался рандомный мусор, на мой взгляд лучше вернуть -1 и в лог написать, потому что там стоял VERIFY. Хотя я не уверен
-    // что надо писать...
-    Msg("!![%s] Spawn story id [%u] cannot be found!", __FUNCTION__, spawn_story_id);
+    // KRodin: В оригинале при ненахождении стори айди, возвращался рандомный мусор, на мой взгляд лучше вернуть -1 и в лог написать, потому что там стоял
+    // VERIFY. Хотя я не уверен что надо писать...
+    Msg("!![{}] Spawn story id [{}] cannot be found!", __FUNCTION__, spawn_story_id);
+
     return ALife::_SPAWN_ID(-1);
 }
 
@@ -266,6 +243,7 @@ ALife::_SPAWN_ID CALifeSpawnRegistry::spawn_id(const char* obj_name) const
     if (it != m_spawn_ids_by_name.end())
         return it->second;
 
-    // KRodin: а вот тут надо в лог писать или нет? Хз, надеюсь т.к. метод новый, код с его использованием будут писать более адекватно и поэтому вывод в лог не нужен.
+    // KRodin: а вот тут надо в лог писать или нет? Хз, надеюсь т.к. метод новый, код с его использованием будут писать более адекватно и поэтому вывод в лог не
+    // нужен.
     return ALife::_SPAWN_ID(-1);
 }

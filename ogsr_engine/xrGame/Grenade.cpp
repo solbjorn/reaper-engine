@@ -113,7 +113,7 @@ void CGrenade::State(u32 state, u32 oldState)
             if (Local())
             {
 #ifdef DEBUG
-                Msg("Destroying local grenade[%d][%d]", ID(), Device.dwFrame);
+                Msg("Destroying local grenade[{}][{}]", ID(), Device.dwFrame);
 #endif
                 DestroyObject();
             }

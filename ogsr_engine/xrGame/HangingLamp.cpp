@@ -118,8 +118,9 @@ tmc::task<bool> CHangingLamp::net_Spawn(CSE_Abstract* DC)
     // light_render->set_flare(!!lamp->flags.is(CSE_ALifeObjectHangingLamp::flUseFlare));
     // light_render->set_lsf_params(lamp->m_speed, lamp->m_amount, lamp->m_smap_jitter);
 
-    // Simp: для поинта не вижу смысла по дефолту включать волюметрик, ибо один поинт - это шесть отдельных источников света направленных в разные стороны. Слишком накладно по 6
-    // волюметриков на светильник. Да и вообще лучше придумать настройки чтоб каждую лампу индивидуально настроить можно было. Пока только настройку через скрипты добавил.
+    // Simp: для поинта не вижу смысла по дефолту включать волюметрик, ибо один поинт - это шесть отдельных источников света направленных в разные стороны.
+    // Слишком накладно по 6 волюметриков на светильник. Да и вообще лучше придумать настройки чтоб каждую лампу индивидуально настроить можно было. Пока только
+    // настройку через скрипты добавил.
     light_render->set_volumetric(lamp->flags.is(CSE_ALifeObjectHangingLamp::flVolumetricLight) /*|| light_render->get_type() == IRender_Light::SPOT*/);
     light_render->set_volumetric_quality(1.f);
     light_render->set_volumetric_intensity(0.1f);
@@ -164,7 +165,7 @@ tmc::task<bool> CHangingLamp::net_Spawn(CSE_Abstract* DC)
     }
 
     if (lamp->flags.is(CSE_ALifeObjectHangingLamp::flPhysic) && !Visual())
-        Msg("! WARNING: lamp, obj name [%s],flag physics set, but has no visual", *cName());
+        Msg("! WARNING: lamp, obj name [{}],flag physics set, but has no visual", cName());
 
     if (Alive())
     {
@@ -434,11 +435,11 @@ void CHangingLamp::SetLSFParams(float, float, float)
 void CHangingLamp::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CHangingLamp>(
-        "hanging_lamp", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CHangingLamp>), "factory", &xr::client_factory<CHangingLamp>, "turn_on",
-        &CHangingLamp::TurnOn, "turn_off", &CHangingLamp::TurnOff, "set_lsf_params", &CHangingLamp::SetLSFParams, "set_volumetric",
-        [](CHangingLamp* self, const bool val) { self->light_render->set_volumetric(val); }, "set_volumetric_quality",
+        "hanging_lamp", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CHangingLamp>), "factory",
+        &xr::client_factory<CHangingLamp>, "turn_on", &CHangingLamp::TurnOn, "turn_off", &CHangingLamp::TurnOff, "set_lsf_params", &CHangingLamp::SetLSFParams,
+        "set_volumetric", [](CHangingLamp* self, const bool val) { self->light_render->set_volumetric(val); }, "set_volumetric_quality",
         [](CHangingLamp* self, const float val) { self->light_render->set_volumetric_quality(val); }, "set_volumetric_intensity",
         [](CHangingLamp* self, const float val) { self->light_render->set_volumetric_intensity(val); }, "set_volumetric_distance",
-        [](CHangingLamp* self, const float val) { self->light_render->set_volumetric_distance(val); }, "health", sol::readonly(&CHangingLamp::fHealth), sol::base_classes,
-        xr::sol_bases<CHangingLamp>());
+        [](CHangingLamp* self, const float val) { self->light_render->set_volumetric_distance(val); }, "health", sol::readonly(&CHangingLamp::fHealth),
+        sol::base_classes, xr::sol_bases<CHangingLamp>());
 }

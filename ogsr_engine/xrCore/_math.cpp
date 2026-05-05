@@ -38,7 +38,7 @@ s64 QPC()
 
 void _initialize_cpu()
 {
-    Msg("* Detected CPU: %s [%s], F%u/M%u/S%u", CPU::ID.brand, CPU::ID.vendor, CPU::ID.family, CPU::ID.model, CPU::ID.stepping);
+    Msg("* Detected CPU: {} [{}], F{}/M{}/S{}", CPU::ID.brand, CPU::ID.vendor, CPU::ID.family, CPU::ID.model, CPU::ID.stepping);
 
     string256 features;
     xr_strcpy(features, "* CPU features: RDTSC");

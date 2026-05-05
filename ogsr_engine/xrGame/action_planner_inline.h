@@ -9,7 +9,8 @@
 #pragma once
 
 #define TEMPLATE_SPECIALIZATION \
-    template <typename _object_type, bool _reverse_search, typename _world_operator, typename _condition_evaluator, typename _world_operator_ptr, typename _condition_evaluator_ptr>
+    template <typename _object_type, bool _reverse_search, typename _world_operator, typename _condition_evaluator, typename _world_operator_ptr, \
+              typename _condition_evaluator_ptr>
 
 #define CPlanner CActionPlanner<_object_type, _reverse_search, _world_operator, _condition_evaluator, _world_operator_ptr, _condition_evaluator_ptr>
 
@@ -47,10 +48,12 @@ void CPlanner::update()
         {
             show_current_world_state();
             show_target_world_state();
-            Msg("%6d : Solution for object %s [%d vertices searched]", Device.dwTimeGlobal, object_name(),
+
+            Msg("{:6} : Solution for object {} [{} vertices searched]", Device.dwTimeGlobal, object_name(),
                 ai().graph_engine().solver_algorithm().data_storage().get_visited_node_count());
+
             for (int i = 0; i < (int)this->solution().size(); ++i)
-                Msg("%s", action2string(this->solution()[i]));
+                Log(action2string(this->solution()[i]));
         }
     }
 #endif
@@ -61,13 +64,12 @@ void CPlanner::update()
         // printing current world state
         show();
 
-        Msg("! ERROR : there is no action sequence, which can transfer current world state to the target one");
-        Msg("Time : %6d", Device.dwTimeGlobal);
-        Msg("Object : %s", object_name());
+        Log("! ERROR : there is no action sequence, which can transfer current world state to the target one");
+        Msg("Time : {:6}", Device.dwTimeGlobal);
+        Msg("Object : {}", object_name());
 
         show_current_world_state();
         show_target_world_state();
-        //		VERIFY2						(!m_failed,"Problem solver couldn't build a valid path - verify your conditions, effects and goals!");
     }
 #endif
 
@@ -77,12 +79,14 @@ void CPlanner::update()
     {
         if (initialized())
         {
-            Msg("! [CPlanner::update]: %s has solution().empty()", m_object->cName().c_str());
+            Msg("! [CPlanner::update]: {} has solution().empty()", m_object->cName());
+
             if (current_action_id() != _action_id_type(-1))
             {
                 current_action().finalize();
                 m_current_action_id = _action_id_type(-1);
             }
+
             m_initialized = false;
         }
     }
@@ -181,7 +185,8 @@ IC void CPlanner::set_use_log(bool value)
 TEMPLATE_SPECIALIZATION
 IC void CPlanner::show_current_world_state()
 {
-    Msg("Current world state :");
+    Log("Current world state :");
+
     for (const auto& it : this->evaluators())
     {
         auto J = std::lower_bound(this->current_state().conditions().cbegin(), this->current_state().conditions().cend(), CWorldProperty(it.first, false));
@@ -189,7 +194,7 @@ IC void CPlanner::show_current_world_state()
         if ((J != this->current_state().conditions().end()) && ((*J).condition() == it.first))
         {
             temp = (*J).value() ? '+' : '-';
-            Msg("%5c : [%d][%s]", temp, it.first, property2string(it.first));
+            Msg("{:5} : [{}][{}]", temp, it.first, property2string(it.first));
         }
     }
 }
@@ -197,7 +202,8 @@ IC void CPlanner::show_current_world_state()
 TEMPLATE_SPECIALIZATION
 IC void CPlanner::show_target_world_state()
 {
-    Msg("Target world state :");
+    Log("Target world state :");
+
     for (const auto& it : this->evaluators())
     {
         auto J = std::lower_bound(this->target_state().conditions().cbegin(), this->target_state().conditions().cend(), CWorldProperty(it.first, false));
@@ -205,7 +211,7 @@ IC void CPlanner::show_target_world_state()
         if ((J != this->target_state().conditions().end()) && ((*J).condition() == it.first))
         {
             temp = (*J).value() ? '+' : '-';
-            Msg("%5c : [%d][%s]", temp, it.first, property2string(it.first));
+            Msg("{:5} : [{}][{}]", temp, it.first, property2string(it.first));
         }
     }
 }
@@ -215,7 +221,7 @@ IC void CPlanner::show(LPCSTR offset)
 {
     string256 temp;
     strconcat(sizeof(temp), temp, offset, "    ");
-    Msg("\n%sEVALUATORS : %d\n", offset, this->evaluators().size());
+    Msg("\n{}EVALUATORS : {}\n", offset, this->evaluators().size());
 
     for (const auto& it : this->evaluators())
     {
@@ -223,25 +229,24 @@ IC void CPlanner::show(LPCSTR offset)
         char current = '?';
 
         if ((J != this->current_state().conditions().end()) && ((*J).condition() == it.first))
-        {
             current = (*J).value() ? '+' : '-';
-        }
 
-        Msg("%sevaluator   [%d][%s][%c]", offset, it.first, property2string(it.first), current);
+        Msg("{}evaluator   [{}][{}][{}]", offset, it.first, property2string(it.first), current);
     }
 
-    Msg("\n%sOPERATORS : %d\n", offset, this->operators().size());
+    Msg("\n{}OPERATORS : {}\n", offset, this->operators().size());
+
     for (const auto& it : this->operators())
     {
-        Msg("%soperator    [%d][%s]", offset, it.m_operator_id, it.m_operator->m_action_name);
+        Msg("{}operator    [{}][{}]", offset, it.m_operator_id, it.m_operator->m_action_name);
 
         for (const auto& it2 : it.m_operator->conditions().conditions())
-            Msg("%s	condition [%d][%s] = %s", offset, it2.condition(), property2string(it2.condition()), it2.value() ? "TRUE" : "FALSE");
+            Msg("{}\tcondition [{}][{}] = {}", offset, it2.condition(), property2string(it2.condition()), it2.value() ? "TRUE" : "FALSE");
         for (const auto& it2 : it.m_operator->effects().conditions())
-            Msg("%s	effect    [%d][%s] = %s", offset, it2.condition(), property2string(it2.condition()), it2.value() ? "TRUE" : "FALSE");
+            Msg("{}\teffect    [{}][{}] = {}", offset, it2.condition(), property2string(it2.condition()), it2.value() ? "TRUE" : "FALSE");
 
         it.m_operator->show(temp);
-        Msg(" ");
+        Log(" ");
     }
 }
 #endif

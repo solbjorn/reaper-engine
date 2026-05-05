@@ -190,17 +190,13 @@ public:
 
     ICF CBoneInstance& LL_GetBoneInstance(u16 bone_id)
     {
-        // Msg("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id);
-
-        R_ASSERT(bone_id < LL_BoneCount(), make_string("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id));
+        R_ASSERT(bone_id < LL_BoneCount(), xr::format("visual_name: {}, bone_id: {}", dbg_name, bone_id));
         R_ASSERT(bone_instances);
         return bone_instances[bone_id];
     }
     ICF const CBoneInstance& LL_GetBoneInstance(u16 bone_id) const
     {
-        // Msg("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id);
-
-        R_ASSERT(bone_id < LL_BoneCount(), make_string("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id));
+        R_ASSERT(bone_id < LL_BoneCount(), xr::format("visual_name: {}, bone_id: {}", dbg_name, bone_id));
         R_ASSERT(bone_instances);
         return bone_instances[bone_id];
     }
@@ -226,7 +222,7 @@ public:
         VERIFY(bones);
         u32 sz = sizeof(vecBones);
         u32 sz1 = sizeof(((*bones)[bone_id])->children);
-        Msg("sz: %u, sz1: %u", sz, sz1);
+        Msg("sz: {}, sz1: {}", sz, sz1);
         CBoneData* bd = ((*bones)[bone_id]);
         return bd;
     }

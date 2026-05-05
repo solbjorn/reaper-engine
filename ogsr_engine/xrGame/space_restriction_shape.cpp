@@ -7,7 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "space_restriction_shape.h"
+
 #include "ai_space.h"
 #include "level_graph.h"
 #include "space_restrictor.h"
@@ -56,8 +58,9 @@ void CSpaceRestrictionShape::fill_shape(const CCF_Shape::shape_def& shape)
         break;
     }
     case 1: {
-        Fvector points[8] = {Fvector().set(-.5f, -.5f, -.5f), Fvector().set(-.5f, -.5f, +.5f), Fvector().set(-.5f, +.5f, -.5f), Fvector().set(-.5f, +.5f, +.5f),
-                             Fvector().set(+.5f, -.5f, -.5f), Fvector().set(+.5f, -.5f, +.5f), Fvector().set(+.5f, +.5f, -.5f), Fvector().set(+.5f, +.5f, +.5f)};
+        Fvector points[8] = {Fvector().set(-.5f, -.5f, -.5f), Fvector().set(-.5f, -.5f, +.5f), Fvector().set(-.5f, +.5f, -.5f),
+                             Fvector().set(-.5f, +.5f, +.5f), Fvector().set(+.5f, -.5f, -.5f), Fvector().set(+.5f, -.5f, +.5f),
+                             Fvector().set(+.5f, +.5f, -.5f), Fvector().set(+.5f, +.5f, +.5f)};
         start = Fvector().set(flt_max, flt_max, flt_max);
         dest = Fvector().set(flt_min, flt_min, flt_min);
         Fmatrix Q;
@@ -129,53 +132,6 @@ void CSpaceRestrictionShape::test_correctness()
 
     // compare
     m_correct = (m_test_storage.size() == nodes.size());
-
-    //////////////////////////////////////////////////////////////////////////
-    // SHOW NODES THAT NOT FLOODED
-    //////////////////////////////////////////////////////////////////////////
-
-    // if (!m_correct && (xr_strcmp(*m_restrictor->cName(), "agr_factory_hold_restrictor") == 0)) {
-    //	bool flood_less = m_test_storage.size() > nodes.size();
-
-    //	Msg("NOT Correct restrictor: [%s], flood less = [%u] Dump unique nodes: ", *m_restrictor->cName(), flood_less);
-
-    //	xr_vector<u32>::iterator src_b, src_e, tgt_b, tgt_e;
-    //
-    //	u32 index = 1;
-    //	if (m_test_storage.size() > nodes.size()) {
-    //		src_b = m_test_storage.begin();
-    //		src_e = m_test_storage.end();
-    //		tgt_b = nodes.begin();
-    //		tgt_e = nodes.end();
-    //	} else {
-    //		src_b = nodes.begin();
-    //		src_e = nodes.end();
-    //		tgt_b = m_test_storage.begin();
-    //		tgt_e = m_test_storage.end();
-    //	}
-    //
-    //	xr_vector<u32>::iterator I = src_b;
-    //	xr_vector<u32>::iterator E = src_e;
-
-    //	for (; I != E; ++I) {
-    //		xr_vector<u32>::iterator II = tgt_b;
-    //		xr_vector<u32>::iterator EE = tgt_e;
-
-    //		bool b_found = false;
-    //		for (; II != EE; ++II) {
-    //			if ((*I) == (*II)) {
-    //				b_found = true;
-    //				break;
-    //			}
-    //		}
-
-    //		if (!b_found) {
-    //			Msg("Node%u :: index[%u]:: position[%f,%f,%f]", index, (*I), VPUSH(ai().level_graph().vertex_position((*I))));
-    //			index ++;
-    //		}
-
-    //	}
-    //}
 }
 #endif
 

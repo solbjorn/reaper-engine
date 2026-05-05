@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "ai_stalker.h"
+
 #include "../../pda.h"
 #include "../../inventory.h"
 #include "xrmessages.h"
@@ -42,19 +43,20 @@ tmc::task<void> CAI_Stalker::OnEvent(NET_Packet& P, u16 type)
         R_ASSERT(O);
 
 #ifndef SILENCE
-        Msg("Trying to take - %s (%d)", *O->cName(), O->ID());
+        Msg("Trying to take - {} ({})", O->cName(), O->ID());
 #endif
         CGameObject* _O = smart_cast<CGameObject*>(O);
         if (inventory().CanTakeItem(smart_cast<CInventoryItem*>(_O)))
-        { // GetScriptControl()
+        {
             O->H_SetParent(this);
             inventory().Take(_O, true, false);
             if (!inventory().ActiveItem() && GetScriptControl() && smart_cast<CShootingObject*>(O))
                 CObjectHandler::set_goal(eObjectActionIdle, _O);
 
             on_after_take(_O);
+
 #ifndef SILENCE
-            Msg("TAKE - %s (%d)", *O->cName(), O->ID());
+            Msg("TAKE - {} ({})", O->cName(), O->ID());
 #endif
         }
         else
@@ -66,7 +68,7 @@ tmc::task<void> CAI_Stalker::OnEvent(NET_Packet& P, u16 type)
             u_EventSend(_P);
 
 #ifndef SILENCE
-            Msg("TAKE - can't take! - Dropping for valid server information %s (%d)", *O->cName(), O->ID());
+            Msg("TAKE - can't take! - Dropping for valid server information {} ({})", O->cName(), O->ID());
 #endif
         }
         break;
@@ -80,7 +82,7 @@ tmc::task<void> CAI_Stalker::OnEvent(NET_Packet& P, u16 type)
 
         if (!O)
         {
-            Msg("! [%s] Error: No object to reject/sell [%u]", __FUNCTION__, id);
+            Msg("! [{}] Error: No object to reject/sell [{}]", __FUNCTION__, id);
             break;
         }
 
@@ -140,8 +142,9 @@ void CAI_Stalker::feel_touch_new(CObject* O)
     if (!wounded() && !critically_wounded() && I && I->useful_for_NPC() && can_take(I))
     {
 #ifndef SILENCE
-        Msg("Taking item %s (%d)!", I->object().cName().c_str(), I->object().ID());
+        Msg("Taking item {} ({})!", I->object().cName(), I->object().ID());
 #endif
+
         NET_Packet P;
         u_EventGen(P, GE_OWNERSHIP_TAKE, ID());
         P.w_u16(u16(I->object().ID()));
@@ -155,8 +158,9 @@ void CAI_Stalker::DropItemSendMessage(CObject* O)
         return;
 
 #ifndef SILENCE
-    Msg("Dropping item!");
+    Log("Dropping item!");
 #endif
+
     // We doesn't have similar weapon - pick up it
     NET_Packet P;
     u_EventGen(P, GE_OWNERSHIP_REJECT, ID());

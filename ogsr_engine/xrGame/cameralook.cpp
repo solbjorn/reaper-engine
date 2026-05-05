@@ -137,16 +137,12 @@ void CCameraLook2::Update(Fvector& point, Fvector&)
                     _nearest_dst = d;
                 }
             }
-            //.			if(m_locked_enemy) Msg("enemy is %s", *m_locked_enemy->cNameSect() );
         }
     }
     else
     {
         if (!pInput->iGetAsyncKeyState(cam_dik))
-        {
             m_locked_enemy = nullptr;
-            //.			Msg				("enemy is NILL");
-        }
     }
 
     if (m_locked_enemy)

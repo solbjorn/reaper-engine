@@ -10,7 +10,8 @@
 
 #define TEMPLATE_SPECIALIZATION template <typename _DataStorage, typename _dist_type, typename _index_type, typename _iteration_type>
 
-#define CGameVertexPathManager CPathManager<CGameGraph, _DataStorage, SGameVertex<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>
+#define CGameVertexPathManager \
+    CPathManager<CGameGraph, _DataStorage, SGameVertex<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>
 
 TEMPLATE_SPECIALIZATION
 IC void CGameVertexPathManager::setup(const _Graph* _graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path, const _index_type& _start_node_index,
@@ -33,7 +34,7 @@ IC bool CGameVertexPathManager::is_accessible(const _index_type& vertex_id) cons
 
 #ifdef DEBUG
     if (m_evaluator->m_vertex_types->empty())
-        Msg("! warning : empty vertex types");
+        Log("! warning : empty vertex types");
 #endif
 
     for (const auto& it : *(m_evaluator->m_vertex_types))

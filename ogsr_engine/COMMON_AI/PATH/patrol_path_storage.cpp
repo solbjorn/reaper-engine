@@ -66,7 +66,7 @@ void CPatrolPathStorage::append_from_ini(CInifile& way_inifile)
         i++;
     }
 
-    Msg("Loaded %zd items from custom_waypoints, %zd from all.spawn was replaced!", i, r);
+    Msg("Loaded {} items from custom_waypoints, {} from all.spawn was replaced!", i, r);
 }
 
 void CPatrolPathStorage::load(IReader& stream)
@@ -151,13 +151,16 @@ const CPatrolPath* CPatrolPathStorage::safe_path(shared_str patrol_name, bool no
     for (auto& it2 : (*it).second->vertices())
     {
         auto& pp = it2.second->data();
-        if (on_level || (ai().game_graph().valid_vertex_id(pp.m_game_vertex_id) && ai().game_graph().vertex(pp.m_game_vertex_id)->level_id() == ai().level_graph().level_id()))
+        if (on_level ||
+            (ai().game_graph().valid_vertex_id(pp.m_game_vertex_id) &&
+             ai().game_graph().vertex(pp.m_game_vertex_id)->level_id() == ai().level_graph().level_id()))
         {
             if (!ai().level_graph().valid_vertex_id(pp.m_level_vertex_id))
             {
                 u32 prev_vertex_id = pp.m_level_vertex_id;
                 pp.m_level_vertex_id = ai().level_graph().nearest_vertex_id(pp.m_position);
-                Msg("* [%s]: path[%s] pp[%s] level_vertex_id[%u] -> %u", __FUNCTION__, patrol_name.c_str(), pp.m_name.c_str(), prev_vertex_id, pp.m_level_vertex_id);
+
+                Msg("* [{}]: path[{}] pp[{}] level_vertex_id[{}] -> {}", __FUNCTION__, patrol_name, pp.m_name, prev_vertex_id, pp.m_level_vertex_id);
             }
         }
         else

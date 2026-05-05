@@ -155,7 +155,8 @@ ALife::ERelationType CScriptGameObject::GetRelationType(CScriptGameObject* who)
     CEntityAlive* l_tpEntityAlive2 = smart_cast<CEntityAlive*>(&who->object());
     if (!l_tpEntityAlive2)
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "%s cannot apply GetRelationType method for non-alive object!", *who->object().cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "%s cannot apply GetRelationType method for non-alive object!",
+                                        *who->object().cName());
         return ALife::eRelationTypeDummy;
     }
 
@@ -174,7 +175,8 @@ bool CScriptGameObject::IsRelationEnemy(CScriptGameObject* who)
     CEntityAlive* l_tpEntityAlive2 = smart_cast<CEntityAlive*>(&who->object());
     if (!l_tpEntityAlive2)
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "%s cannot apply GetRelationType method for non-alive object!", *who->object().cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "%s cannot apply GetRelationType method for non-alive object!",
+                                        *who->object().cName());
         return false;
     }
 
@@ -187,9 +189,10 @@ IC T* CScriptGameObject::action_planner()
     auto manager = smart_cast<CAI_Stalker*>(&object());
     if (!manager)
     {
-        Msg("!!CAI_Stalker : cannot access class member action_planner! Object: [%s]", object().Name());
+        Msg("!!CAI_Stalker : cannot access class member action_planner! Object: [{}]", object().Name());
         return nullptr;
     }
+
     return &manager->brain();
 }
 

@@ -72,7 +72,7 @@ void CALifeObjectRegistry::save(IWriter& memory_stream)
     if (g_actor)
         g_actor->callback(GameObject::eBeforeSave)();
 
-    Msg("* Saving objects...");
+    Log("* Saving objects...");
     memory_stream.open_chunk(OBJECT_CHUNK_DATA);
 
     u32 position = memory_stream.tell();
@@ -99,7 +99,7 @@ void CALifeObjectRegistry::save(IWriter& memory_stream)
 
     memory_stream.close_chunk();
 
-    Msg("* %u objects are successfully saved", object_count);
+    Msg("* {} objects are successfully saved", object_count);
 
     // Real Wolf: колбек после сохранения всех объектов. 01.08.2014.
     if (g_actor)
@@ -122,7 +122,7 @@ CSE_ALifeDynamicObject* CALifeObjectRegistry::get_object(IReader& file_stream)
 
 #ifdef DEBUG
     if (psAI_Flags.test(aiALife))
-        Msg("Loading object %s", s_name);
+        Msg("Loading object {}", s_name);
 #endif
 
     // create entity
@@ -145,7 +145,7 @@ CSE_ALifeDynamicObject* CALifeObjectRegistry::get_object(IReader& file_stream)
 
 void CALifeObjectRegistry::load(IReader& file_stream)
 {
-    Msg("* Loading objects...");
+    Log("* Loading objects...");
     R_ASSERT2(file_stream.find_chunk(OBJECT_CHUNK_DATA), "Can't find chunk OBJECT_CHUNK_DATA!");
 
     m_objects.clear();
@@ -155,5 +155,5 @@ void CALifeObjectRegistry::load(IReader& file_stream)
     for (u32 i = 0; i < count; i++)
         add(get_object(file_stream));
 
-    Msg("* %u objects are successfully loaded", count);
+    Msg("* {} objects are successfully loaded", count);
 }

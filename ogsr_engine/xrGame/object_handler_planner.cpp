@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "object_handler_planner.h"
+
 #include "object_property_evaluators.h"
 #include "object_actions.h"
 #include "ai_monster_space.h"
@@ -49,8 +50,8 @@ IC ObjectHandlerSpace::EWorldProperties CObjectHandlerPlanner::object_property(M
 #endif
 }
 
-void CObjectHandlerPlanner::set_goal(MonsterSpace::EObjectAction object_action, CGameObject* game_object, u32 min_queue_size, u32 max_queue_size, u32 min_queue_interval,
-                                     u32 max_queue_interval)
+void CObjectHandlerPlanner::set_goal(MonsterSpace::EObjectAction object_action, CGameObject* game_object, u32 min_queue_size, u32 max_queue_size,
+                                     u32 min_queue_interval, u32 max_queue_interval)
 {
     EWorldProperties goal = object_property(object_action);
     u32 condition_id = goal;
@@ -68,10 +69,12 @@ void CObjectHandlerPlanner::set_goal(MonsterSpace::EObjectAction object_action, 
 #ifdef DEBUG
     if (m_use_log)
     {
-        Msg("%6d : Active item %s", Device.dwTimeGlobal, object().inventory().ActiveItem() ? *object().inventory().ActiveItem()->object().cName() : "no active items");
-        Msg("%6d : Goal %s", Device.dwTimeGlobal, property2string(condition_id));
+        Msg("{:6} : Active item {}", Device.dwTimeGlobal,
+            object().inventory().ActiveItem() ? std::string_view{object().inventory().ActiveItem()->object().cName()} : std::string_view{"no active items"});
+        Msg("{:6} : Goal {}", Device.dwTimeGlobal, property2string(condition_id));
     }
 #endif
+
     CState condition;
     condition.add_condition(CWorldProperty(condition_id, true));
     set_target_state(condition);

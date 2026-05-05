@@ -1,12 +1,88 @@
 #pragma once
 
+#include <SFML/System/String.hpp>
+
+#ifdef XR_USE_FMT
+
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wextra-semi");
+XR_DIAG_IGNORE("-Wnan-infinity-disabled");
+XR_DIAG_IGNORE("-Wnewline-eof");
+XR_DIAG_IGNORE("-Wnrvo");
+
+#include <enchantum/fmt_format.hpp>
+
+XR_DIAG_POP();
+
+#include <fmt/std.h>
+
+namespace xr
+{
+using fmt::format;
+using fmt::format_string;
+} // namespace xr
+
+[[nodiscard]] constexpr auto format_as(const shared_str& str) { return std::string_view{str}; }
+
+namespace sf
+{
+[[nodiscard]] constexpr auto format_as(const sf::String& str)
+{
+    auto utf = str.toUtf8();
+    return *reinterpret_cast<xr_string*>(&utf);
+}
+} // namespace sf
+
+#else // !XR_USE_FMT
+
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wextra-semi");
+XR_DIAG_IGNORE("-Wnewline-eof");
+XR_DIAG_IGNORE("-Wnrvo");
+
+#include <enchantum/std_format.hpp>
+
+XR_DIAG_POP();
+
+namespace xr
+{
+using std::format;
+using std::format_string;
+} // namespace xr
+
+template <>
+struct std::formatter<shared_str> : std::formatter<std::string_view>
+{
+    [[nodiscard]] constexpr auto format(const shared_str& str, std::format_context& ctx) const
+    {
+        return std::formatter<std::string_view>::format(std::string_view{str}, ctx);
+    }
+};
+
+template <>
+struct std::formatter<sf::String> : std::formatter<xr_string>
+{
+    [[nodiscard]] constexpr auto format(const sf::String& str, std::format_context& ctx) const
+    {
+        auto utf = str.toUtf8();
+        return std::formatter<xr_string>::format(*reinterpret_cast<xr_string*>(&utf), ctx);
+    }
+};
+
+#endif // !XR_USE_FMT
+
 #define VPUSH(a) a.x, a.y, a.z
 
-void XR_PRINTF(1, 2) Msg(const char* format, ...);
-void Log(const xr_string& msg);
-void Log(const char* msg);
-void Log(const char* msg, const Fvector& dop);
-void Log(const char* msg, const Fmatrix& dop);
+void Log(std::string_view msg);
+
+template <typename... Args>
+constexpr void Msg(xr::format_string<Args...> fmt, Args&&... args)
+{
+    Log(xr::format(fmt, std::forward<Args>(args)...));
+}
+
+void Log(gsl::czstring msg, const Fvector& dop);
+void Log(gsl::czstring msg, const Fmatrix& dop);
 
 void CreateLog(BOOL no_log = FALSE);
 

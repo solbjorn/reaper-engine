@@ -62,7 +62,7 @@ void CGameMtlLibrary::Load()
     string_path name;
     if (!FS.exist(name, _game_data_, GAMEMTL_FILENAME))
     {
-        Msg("! Can't find game material file: [%s]", name);
+        Msg("! Can't find game material file: [{}]", name);
         return;
     }
 
@@ -120,7 +120,7 @@ void CGameMtlLibrary::Load()
 
         if (idx_1 >= mtlCount || idx_2 >= mtlCount)
         {
-            Msg("~ Wrong material pars: mtl0=[%d] mtl1=[%d]", mtlPair->mtl0, mtlPair->mtl1);
+            Msg("~ Wrong material pars: mtl0=[{}] mtl1=[{}]", mtlPair->mtl0, mtlPair->mtl1);
             continue;
         }
 

@@ -522,19 +522,14 @@ void CPHSimpleCharacter::PhTune(dReal step)
     if ((ud->pushing_neg || ud->pushing_b_neg) && !b_death_pos)
     {
         b_death_pos = true;
-        // #ifdef DEBUG
-        //		Msg("death pos %f2.2,%f2.2,%f2.2",ud->last_pos[0],ud->last_pos[1],ud->last_pos[2]);
-        // #endif
+
         Fvector pos;
         pos.set(cast_fv(dBodyGetPosition(m_body)));
         Fvector d;
         d.set(cast_fv(dBodyGetLinearVel(m_body)));
         d.mul(fixed_step);
         pos.sub(d);
-        /*if(!ud->pushing_b_neg)
-        {
-            Fvector movement;movement.sub(cast_fv(dGeomGetPosition(m_wheel)),cast_fv(ud->last_pos));
-        }*/
+
         dVectorSet(m_death_position, cast_fp(pos));
     }
 
@@ -590,7 +585,8 @@ void CPHSimpleCharacter::PhTune(dReal step)
         }
     }
 
-    if ((b_jumping && b_good_graund) || (m_elevator_state.ClimbingState() && b_valide_wall_contact)) // b_good_graund=b_valide_ground_contact&&m_ground_contact_normal[1]>M_SQRT1_2
+    if ((b_jumping && b_good_graund) ||
+        (m_elevator_state.ClimbingState() && b_valide_wall_contact)) // b_good_graund=b_valide_ground_contact&&m_ground_contact_normal[1]>M_SQRT1_2
         b_jumping = false;
 
     // deside if control lost
@@ -612,9 +608,8 @@ void CPHSimpleCharacter::PhTune(dReal step)
     {
         b_lose_control = true;
         dBodySetLinearVel(m_body, m_jump_accel.x, m_jump_accel.y, m_jump_accel.z); // vel[1]+
-        // Log("jmp",m_jump_accel);
         dVectorSet(m_jump_depart_position, dBodyGetPosition(m_body));
-        // m_jump_accel=m_acceleration;
+
         b_jump = false;
         b_jumping = true;
         m_elevator_state.Depart();
@@ -647,10 +642,12 @@ void CPHSimpleCharacter::PhTune(dReal step)
 #ifdef DEBUG
         if (ph_dbg_draw_mask.test(phDbgCharacterControl))
         {
-            DBG_DrawLine(cast_fv(dBodyGetPosition(m_body)), Fvector().add(cast_fv(dBodyGetPosition(m_body)), Fvector().mul(cast_fv(sidedir), 1.f)), D3DCOLOR_XRGB(0, 0, 255));
-            DBG_DrawLine(cast_fv(dBodyGetPosition(m_body)), Fvector().add(cast_fv(dBodyGetPosition(m_body)), Fvector().mul(cast_fv(m_control_force), 1.f / 19.6f)),
+            DBG_DrawLine(cast_fv(dBodyGetPosition(m_body)), Fvector().add(cast_fv(dBodyGetPosition(m_body)), Fvector().mul(cast_fv(sidedir), 1.f)),
                          D3DCOLOR_XRGB(0, 0, 255));
-            DBG_DrawLine(cast_fv(dBodyGetPosition(m_body)), Fvector().add(cast_fv(dBodyGetPosition(m_body)), Fvector().mul(cast_fv(dBodyGetForce(m_body)), 1.f / 19.6f)),
+            DBG_DrawLine(cast_fv(dBodyGetPosition(m_body)),
+                         Fvector().add(cast_fv(dBodyGetPosition(m_body)), Fvector().mul(cast_fv(m_control_force), 1.f / 19.6f)), D3DCOLOR_XRGB(0, 0, 255));
+            DBG_DrawLine(cast_fv(dBodyGetPosition(m_body)),
+                         Fvector().add(cast_fv(dBodyGetPosition(m_body)), Fvector().mul(cast_fv(dBodyGetForce(m_body)), 1.f / 19.6f)),
                          D3DCOLOR_XRGB(255, 0, 0));
         }
 #endif
@@ -696,8 +693,8 @@ void CPHSimpleCharacter::PhTune(dReal step)
 #ifdef DEBUG
     if (ph_dbg_draw_mask.test(phDbgCharacterControl))
     {
-        DBG_DrawLine(cast_fv(dBodyGetPosition(m_body)), Fvector().add(cast_fv(dBodyGetPosition(m_body)), Fvector().mul(cast_fv(dBodyGetForce(m_body)), 1.f / 19.6f)),
-                     D3DCOLOR_XRGB(255, 0, 128));
+        DBG_DrawLine(cast_fv(dBodyGetPosition(m_body)),
+                     Fvector().add(cast_fv(dBodyGetPosition(m_body)), Fvector().mul(cast_fv(dBodyGetForce(m_body)), 1.f / 19.6f)), D3DCOLOR_XRGB(255, 0, 128));
     }
 #endif
 }
@@ -743,10 +740,10 @@ bool CPHSimpleCharacter::ValidateWalkOnObject()
     {
         // if( dDOT(m_wall_contact_normal,m_ground_contact_normal)<.999999f)
         // dVector3
-        // diff={m_wall_contact_normal[0]-m_ground_contact_normal[0],m_wall_contact_normal[1]-m_ground_contact_normal[1],m_wall_contact_normal[2]-m_ground_contact_normal[2]}; if(
-        // dDOT(diff,diff)>0.001f)
-        if (((m_wall_contact_position[0] - m_ground_contact_position[0]) * m_control_force[0] + (m_wall_contact_position[2] - m_ground_contact_position[2]) * m_control_force[2]) >
-                0.05f &&
+        // diff={m_wall_contact_normal[0]-m_ground_contact_normal[0],m_wall_contact_normal[1]-m_ground_contact_normal[1],m_wall_contact_normal[2]-m_ground_contact_normal[2]};
+        // if( dDOT(diff,diff)>0.001f)
+        if (((m_wall_contact_position[0] - m_ground_contact_position[0]) * m_control_force[0] +
+             (m_wall_contact_position[2] - m_ground_contact_position[2]) * m_control_force[2]) > 0.05f &&
             m_wall_contact_position[1] - m_ground_contact_position[1] > 0.01f)
             b_clamb_jump = true;
     }
@@ -1038,10 +1035,12 @@ void CPHSimpleCharacter::SetVelocity(Fvector vel)
     {
         float mag = _sqrt(sq_mag);
         vel.mul(default_l_limit / mag);
+
 #ifdef DEBUG
-        Msg("set velocity magnitude is too large %f", mag);
+        Msg("set velocity magnitude is too large {}", mag);
 #endif
     }
+
     dBodySetLinearVel(m_body, vel.x, vel.y, vel.z);
 }
 
@@ -1305,7 +1304,8 @@ u16 CPHSimpleCharacter::RetriveContactBone()
 {
     Fvector dir;
     m_collision_damage_info.HitDir(dir);
-    collide::ray_defs Q(m_collision_damage_info.HitPos(), dir, m_radius, CDB::OPT_ONLYNEAREST | CDB::OPT_CULL, collide::rqtBoth); // CDB::OPT_ONLYFIRST CDB::OPT_ONLYNEAREST
+    collide::ray_defs Q(m_collision_damage_info.HitPos(), dir, m_radius, CDB::OPT_ONLYNEAREST | CDB::OPT_CULL,
+                        collide::rqtBoth); // CDB::OPT_ONLYFIRST CDB::OPT_ONLYNEAREST
     RQR.r_clear();
     u16 contact_bone = 0;
     CObject* object = smart_cast<CObject*>(m_phys_ref_object);
@@ -1818,12 +1818,15 @@ bool CPHSimpleCharacter::UpdateRestrictionType(CPHCharacter* ach)
     ph_world->UnFreeze();
     // if(!state)Disable();
     m_new_restriction_type = old;
+
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(ph_m1_DbgActorRestriction))
-        Msg("restriction can not change change small -> large");
+        Log("restriction can not change change small -> large");
 #endif
+
     return false;
 }
+
 bool CPHSimpleCharacter::TouchRestrictor(ERestrictionType rttype)
 {
     b_collision_restrictor_touch = true;

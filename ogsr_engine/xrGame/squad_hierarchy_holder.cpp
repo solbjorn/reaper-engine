@@ -7,7 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "squad_hierarchy_holder.h"
+
 #include "group_hierarchy_holder.h"
 #include "object_broker.h"
 #include "seniority_hierarchy_space.h"
@@ -20,11 +22,13 @@ CGroupHierarchyHolder& CSquadHierarchyHolder::group(u32 group_id) const
 {
     if (group_id >= m_groups.size())
     {
-        Msg("* [%s]: [team:%u][squad:%u] group_id[%u]: resize m_groups: %zu -> %u", __FUNCTION__, team().id(), id(), group_id, m_groups.size(), group_id + 1);
+        Msg("* [{}]: [team:{}][squad:{}] group_id[{}]: resize m_groups: {} -> {}", __FUNCTION__, team().id(), id(), group_id, m_groups.size(), group_id + 1);
         m_groups.resize(group_id + 1, nullptr);
     }
+
     if (!m_groups[group_id])
         m_groups[group_id] = xr_new<CGroupHierarchyHolder>(const_cast<CSquadHierarchyHolder*>(this), group_id);
+
     return (*m_groups[group_id]);
 }
 

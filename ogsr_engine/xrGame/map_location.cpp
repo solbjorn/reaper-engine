@@ -170,8 +170,8 @@ void CMapLocation::InitUserSpot(const shared_str& level_name, const Fvector& pos
 {
     m_cached.m_LevelName = level_name;
     m_position_global = pos;
-    m_cached.m_graphID = GameGraph::_GRAPH_ID(
-        -1); // Насколько я вижу в коде, таким меткам геймвертекс вообще не нужен. Он нужен только тем меткам, на которые может указывать стрелка, т.е. квестовым.
+    // Насколько я вижу в коде, таким меткам геймвертекс вообще не нужен. Он нужен только тем меткам, на которые может указывать стрелка, т.е. квестовым.
+    m_cached.m_graphID = GameGraph::_GRAPH_ID(-1);
     m_cached.m_Position.set(pos.x, pos.z);
     m_cached.m_Direction.set(0.f, 0.f);
 }
@@ -325,7 +325,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp)
             obj = ai().alife().objects().object(m_objectID, true);
             if (!obj)
             {
-                Msg("- Critical: CMapLocation::UpdateSpot binded to non-existent object id=%d", m_objectID);
+                Msg("- Critical: CMapLocation::UpdateSpot binded to non-existent object id={}", m_objectID);
                 return;
             }
         }
@@ -423,28 +423,29 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp)
 
             if (!bDone)
             {
-                Msg("Error. Path from actor to selected map spot does not contain level changer :(");
-                Msg("Path:");
+                Log("Error. Path from actor to selected map spot does not contain level changer :(");
+                Log("Path:");
+
                 xr_vector<u32>::iterator it = map_point_path.begin();
                 xr_vector<u32>::iterator it_e = map_point_path.end();
                 for (; it != it_e; ++it)
-                {
-                    //					Msg("%d-%s",(*it),ai().game_graph().vertex(*it));
-                    Msg("[%d] level[%s]", (*it), *ai().game_graph().header().level(ai().game_graph().vertex(*it)->level_id()).name());
-                }
-                Msg("Available LevelChangers:");
+                    Msg("[{}] level[{}]", (*it), ai().game_graph().header().level(ai().game_graph().vertex(*it)->level_id()).name());
+
+                Log("Available LevelChangers:");
+
                 xr_vector<CLevelChanger*>::iterator lit, lit_e;
                 lit_e = g_lchangers.end();
                 for (lit = g_lchangers.begin(); lit != lit_e; ++lit)
                 {
                     GameGraph::_GRAPH_ID gid = (*lit)->ai_location().game_vertex_id();
-                    Msg("[%d]", gid);
+                    Msg("[{}]", gid);
+
                     Fvector p = ai().game_graph().vertex(gid)->level_point();
-                    Msg("lch_name=%s pos=%f %f %f", *ai().game_graph().header().level(ai().game_graph().vertex(gid)->level_id()).name(), p.x, p.y, p.z);
+                    Msg("lch_name={} pos={} {} {}", ai().game_graph().header().level(ai().game_graph().vertex(gid)->level_id()).name(), p.x, p.y, p.z);
                 }
             }
-
 #endif // DEBUG
+
             if (bDone)
             {
                 Fvector2 position;
@@ -492,11 +493,6 @@ void CMapLocation::UpdateSpotPointer(CUICustomMap* map, CMapSpotPointer* sp, con
 
         float dist_to_target = source.distance_to(target);
         map->SetPointerDistance(dist_to_target);
-
-        // Msg("m_position_on_map x=%f y=%f", m_position_on_map.x, m_position_on_map.y);
-        // Msg("t x=%f y=%f", t.x, t.y);
-        // Msg("CurrentEntity()->Position() x=%f y=%f z=%f", Level().CurrentEntity()->Position().x, Level().CurrentEntity()->Position().y, Level().CurrentEntity()->Position().z);
-        // Msg("dist_to_target = %f", dist_to_target);
     }
 }
 
@@ -736,6 +732,6 @@ void CRelationMapLocation::UpdateLevelMap(CUICustomMap* map)
 void CRelationMapLocation::Dump()
 {
     inherited::Dump();
-    Msg("--CRelationMapLocation m_curr_spot_name=[%s]", *m_curr_spot_name);
+    Msg("--CRelationMapLocation m_curr_spot_name=[{}]", m_curr_spot_name);
 }
 #endif

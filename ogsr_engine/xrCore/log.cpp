@@ -221,10 +221,10 @@ void add_one(xr::log_pool::msg_vec& vec, xr_string&& split)
         else if (CPU::ID.on_st())
             tlen = xr_sprintf(tid.data(), tid.size(), "[ST00P%1zu]", tmc::current_priority());
         else
-            tlen = xr_sprintf(tid.data(), tid.size(), "[EX%s]", std::format("{0}", std::this_thread::get_id()).c_str());
+            tlen = xr_sprintf(tid.data(), tid.size(), "[EX%s]", xr::format("{}", std::this_thread::get_id()).c_str());
 
-        split = std::format("{0} {1} {2}\n", std::string_view{curTime, gsl::narrow_cast<size_t>(slen)},
-                            std::string_view{tid.data(), gsl::narrow_cast<size_t>(tlen)}, split);
+        split = xr::format("{} {} {}\n", std::string_view{curTime, gsl::narrow_cast<size_t>(slen)},
+                           std::string_view{tid.data(), gsl::narrow_cast<size_t>(tlen)}, split);
 
         return gsl::narrow_cast<size_t>(slen + 1 + tlen + 1);
     };
@@ -234,7 +234,7 @@ void add_one(xr::log_pool::msg_vec& vec, xr_string&& split)
 } // namespace
 } // namespace xr
 
-void Log(const xr_string& str)
+void Log(std::string_view str)
 {
     if (str.empty())
         return;
@@ -247,7 +247,7 @@ void Log(const xr_string& str)
     xr_vector<xr_string> substrs;
     size_t beg{};
 
-    for (size_t end{}; (end = str.find("\n", end)) != xr_string::npos; ++end)
+    for (size_t end{}; (end = str.find("\n", end)) != std::string_view::npos; ++end)
     {
         substrs.emplace_back(str.substr(beg, end - beg));
         beg = end + 1;
@@ -272,34 +272,11 @@ void Log(const xr_string& str)
     }
 }
 
-void Log(const char* s) { Log(xr_string{s}); }
-
-void Msg(const char* format, ...)
-{
-    std::va_list args, args_copy;
-
-    va_start(args, format);
-    va_copy(args_copy, args);
-
-    const auto sz = std::vsnprintf(nullptr, 0, format, args);
-    if (sz <= 0)
-        return;
-
-    const auto n = gsl::narrow_cast<size_t>(sz);
-    xr_string out(n, '\0');
-    std::vsnprintf(out.data(), n + 1, format, args_copy);
-
-    va_end(args_copy);
-    va_end(args);
-
-    Log(out);
-}
-
-void Log(const char* msg, const Fvector& dop) { Msg("%s (%f,%f,%f)", msg, dop.x, dop.y, dop.z); }
+void Log(const char* msg, const Fvector& dop) { Msg("{} ({},{},{})", msg, dop.x, dop.y, dop.z); }
 
 void Log(const char* msg, const Fmatrix& dop)
 {
-    Msg("%s:\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f", msg, dop.vm[0].x, dop.vm[0].y, dop.vm[0].z, dop.vm[0].w, dop.vm[1].x, dop.vm[1].y,
+    Msg("{}:\n{},{},{},{}\n{},{},{},{}\n{},{},{},{}\n{},{},{},{}", msg, dop.vm[0].x, dop.vm[0].y, dop.vm[0].z, dop.vm[0].w, dop.vm[1].x, dop.vm[1].y,
         dop.vm[1].z, dop.vm[1].w, dop.vm[2].x, dop.vm[2].y, dop.vm[2].z, dop.vm[2].w, dop.vm[3].x, dop.vm[3].y, dop.vm[3].z, dop.vm[3].w);
 }
 

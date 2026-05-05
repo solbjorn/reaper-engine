@@ -27,10 +27,10 @@ tmc::task<void> CRender::level_Load(IReader* fs)
     xr::render_memory_usage usage;
     ResourcesGetMemoryUsage(usage);
 
-    Msg("~ LevelResources load...");
-    Msg("~ LevelResources - base: %zd, %zd Kb", usage.c_base, usage.m_base / 1024);
-    Msg("~ LevelResources - lmap: %zd, %zd Kb", usage.c_lmaps, usage.m_lmaps / 1024);
-    Msg("~ LevelResources - Lua: %zd Kb", usage.lua / 1024);
+    Log("~ LevelResources load...");
+    Msg("~ LevelResources - base: {}, {} Kb", usage.c_base, usage.m_base / 1024);
+    Msg("~ LevelResources - lmap: {}, {} Kb", usage.c_lmaps, usage.m_lmaps / 1024);
+    Msg("~ LevelResources - Lua: {} Kb", usage.lua / 1024);
 
     // Begin
     pApp->LoadBegin();
@@ -123,10 +123,10 @@ tmc::task<void> CRender::level_Load(IReader* fs)
 
     ResourcesGetMemoryUsage(usage);
 
-    Msg("~ LevelResources load completed!");
-    Msg("~ LevelResources - base: %zd, %zd Kb", usage.c_base, usage.m_base / 1024);
-    Msg("~ LevelResources - lmap: %zd, %zd Kb", usage.c_lmaps, usage.m_lmaps / 1024);
-    Msg("~ LevelResources - Lua: %zd Kb", usage.lua / 1024);
+    Log("~ LevelResources load completed!");
+    Msg("~ LevelResources - base: {}, {} Kb", usage.c_base, usage.m_base / 1024);
+    Msg("~ LevelResources - lmap: {}, {} Kb", usage.c_lmaps, usage.m_lmaps / 1024);
+    Msg("~ LevelResources - Lua: {} Kb", usage.lua / 1024);
 
     // signal loaded
     b_loaded = TRUE;
@@ -142,10 +142,10 @@ void CRender::level_Unload()
     xr::render_memory_usage usage;
     ResourcesGetMemoryUsage(usage);
 
-    Msg("~ LevelResources unload...");
-    Msg("~ LevelResources - base: %zd, %zd Kb", usage.c_base, usage.m_base / 1024);
-    Msg("~ LevelResources - lmap: %zd, %zd Kb", usage.c_lmaps, usage.m_lmaps / 1024);
-    Msg("~ LevelResources - Lua: %zd Kb", usage.lua / 1024);
+    Log("~ LevelResources unload...");
+    Msg("~ LevelResources - base: {}, {} Kb", usage.c_base, usage.m_base / 1024);
+    Msg("~ LevelResources - lmap: {}, {} Kb", usage.c_lmaps, usage.m_lmaps / 1024);
+    Msg("~ LevelResources - Lua: {} Kb", usage.lua / 1024);
 
     // HOM
     HOM.Unload();
@@ -205,10 +205,10 @@ void CRender::level_Unload()
 
     ResourcesGetMemoryUsage(usage);
 
-    Msg("~ LevelResources unload completed!");
-    Msg("~ LevelResources - base: %zd, %zd Kb", usage.c_base, usage.m_base / 1024);
-    Msg("~ LevelResources - lmap: %zd, %zd Kb", usage.c_lmaps, usage.m_lmaps / 1024);
-    Msg("~ LevelResources - Lua: %zd Kb", usage.lua / 1024);
+    Log("~ LevelResources unload completed!");
+    Msg("~ LevelResources - base: {}, {} Kb", usage.c_base, usage.m_base / 1024);
+    Msg("~ LevelResources - lmap: {}, {} Kb", usage.c_lmaps, usage.m_lmaps / 1024);
+    Msg("~ LevelResources - Lua: {} Kb", usage.lua / 1024);
 
     b_loaded = FALSE;
 }
@@ -246,8 +246,9 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
             // count, size
             u32 vCount = fs->r_u32();
             u32 vSize = FVF::ComputeVertexSize(dcl, 0);
+
 #ifndef MASTER_GOLD
-            Msg("* [Loading VB] %d verts, %d Kb", vCount, (vCount * vSize) / 1024);
+            Msg("* [Loading VB] {} verts, {} Kb", vCount, (vCount * vSize) / 1024);
 #endif
 
             // Create and fill
@@ -271,8 +272,9 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
         for (u32 i = 0; i < count; i++)
         {
             u32 iCount = fs->r_u32();
+
 #ifndef MASTER_GOLD
-            Msg("* [Loading IB] %d indices, %d Kb", iCount, (iCount * 2) / 1024);
+            Msg("* [Loading IB] {} indices, {} Kb", iCount, (iCount * 2) / 1024);
 #endif
 
             // Create and fill
@@ -460,7 +462,7 @@ void CRender::Load3DFluid()
 
                 const auto& v = pVolume->getVisData().sphere.P;
 
-                Msg("~ Loading fog volume with profile [%s]. Position x=[%f] y=[%f] z=[%f]", pVolume->getProfileName().c_str(), v.x, v.y, v.z);
+                Msg("~ Loading fog volume with profile [{}]. Position x=[{}] y=[{}] z=[{}]", pVolume->getProfileName(), v.x, v.y, v.z);
 
                 //	Attach to sector's static geometry
                 for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
@@ -471,7 +473,7 @@ void CRender::Load3DFluid()
 
                     if (!pSector)
                     {
-                        Msg("!!Cannot find sector for fog volume. Position x=[%f] y=[%f] z=[%f]!", v.x, v.y, v.z);
+                        Msg("!!Cannot find sector for fog volume. Position x=[{}] y=[{}] z=[{}]!", v.x, v.y, v.z);
 
                         xr_delete(pVolume);
                         continue;

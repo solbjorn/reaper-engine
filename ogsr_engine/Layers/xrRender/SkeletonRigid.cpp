@@ -131,7 +131,7 @@ void check_kinematics(CKinematics* _k, LPCSTR s)
     Fmatrix& MrootBone = K->LL_GetBoneInstance(K->LL_GetBoneRoot()).mTransform;
     if (MrootBone.c.y > 10000)
     {
-        Msg("all bones transform:--------[%s]", s);
+        Msg("all bones transform:--------[{}]", s);
 
         for (u16 ii = 0; ii < K->LL_BoneCount(); ++ii)
         {
@@ -215,7 +215,7 @@ void CKinematics::CLBone(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* 
             {
                 bi.callback()(&bi);
 #ifndef MASTER_GOLD
-                R_ASSERT2(_valid(bi.mTransform), make_string("callback kils bone matrix bone: %s ", bd->name.c_str()));
+                R_ASSERT2(_valid(bi.mTransform), xr::format("callback kils bone matrix bone: {}", bd->name));
 #endif // #ifndef MASTER_GOLD
             }
         }

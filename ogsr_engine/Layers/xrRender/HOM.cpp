@@ -55,11 +55,11 @@ tmc::task<void> CHOM::Load()
     std::ignore = FS.update_path(fName, "$level$", "level.hom");
     if (!FS.exist(fName))
     {
-        Msg(" WARNING: Occlusion map '%s' not found.", fName);
+        Msg(" WARNING: Occlusion map '{}' not found.", fName);
         co_return;
     }
 
-    Msg("* Loading HOM: %s", fName);
+    Msg("* Loading HOM: {}", fName);
     IReader* fs = FS.r_open(fName);
 
     // Load tris and merge them
@@ -92,7 +92,7 @@ tmc::task<void> CHOM::Load()
                                      rT.area = Area(v0, v1, v2);
 
                                      if (rT.area < EPS_L)
-                                         Msg("! Invalid HOM triangle (%f,%f,%f)-(%f,%f,%f)-(%f,%f,%f)", VPUSH(v0), VPUSH(v1), VPUSH(v2));
+                                         Msg("! Invalid HOM triangle ({},{},{})-({},{},{})-({},{},{})", VPUSH(v0), VPUSH(v1), VPUSH(v2));
 
                                      rT.plane.build(v0, v1, v2);
                                      rT.skip = 0;
@@ -126,7 +126,8 @@ void CHOM::Render_DB(CFrustum& base)
     float view_dim = occ_dim_0;
     const Fmatrix m_viewport{view_dim / 2.f,         0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f + 0 + 0,
                              view_dim / 2.f + 0 + 0, 0.0f, 1.0f};
-    constexpr Fmatrix m_viewport_01{1.f / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -1.f / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.f / 2.f + 0 + 0, 1.f / 2.f + 0 + 0, 0.0f, 1.0f};
+    constexpr Fmatrix m_viewport_01{1.f / 2.f,         0.0f, 0.0f, 0.0f, 0.0f, -1.f / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.f / 2.f + 0 + 0,
+                                    1.f / 2.f + 0 + 0, 0.0f, 1.0f};
     m_xform.mul(m_viewport, Device.mFullTransform);
     m_xform_01.mul(m_viewport_01, Device.mFullTransform);
 

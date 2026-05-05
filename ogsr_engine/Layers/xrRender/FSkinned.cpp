@@ -146,7 +146,8 @@ struct vertHW_4W
     float _tc[2];
     u32 _i;
 
-    void set(const Fvector3& P, Fvector3 N, Fvector3 T, Fvector3 B, const Fvector2& tc, int index0, int index1, int index2, int index3, float w0, float w1, float w2)
+    void set(const Fvector3& P, Fvector3 N, Fvector3 T, Fvector3 B, const Fvector2& tc, int index0, int index1, int index2, int index3, float w0, float w1,
+             float w2)
     {
         N.normalize_safe();
         T.normalize_safe();
@@ -228,19 +229,13 @@ void CSkeletonX_ST::Load(const char* N, IReader* data, u32 dwFlags)
 void CSkeletonX_ext::_Load_hw(Fvisual& V, const void* _verts_)
 {
     // Create HW VB in case this is possible
-    //	BOOL	bSoft				= HW.Caps.geometry.bSoftware;
-    //	u32		dwUsage				= /*D3DUSAGE_WRITEONLY |*/ (bSoft?D3DUSAGE_SOFTWAREPROCESSING:0);	// VB may be read by wallmarks code
     switch (RenderMode)
     {
-    case RM_SKINNING_SOFT:
-        // Msg					("skinning: software");
-        V.rm_geom.create(vertRenderFVF, RImplementation.Vertex.Buffer(), V.p_rm_Indices);
-        break;
+    case RM_SKINNING_SOFT: V.rm_geom.create(vertRenderFVF, RImplementation.Vertex.Buffer(), V.p_rm_Indices); break;
     case RM_SINGLE:
     case RM_SKINNING_1B: {
-        { //	Back up vertex data since we can't read vertex buffer in DX10
-            // u32 size = V.vCount * sizeof(vertBoned1W);
-            // u32 crc = crc32(_verts_, size);
+        {
+            // Back up vertex data since we can't read vertex buffer in DX10
             Vertices1W.create(V.vCount, (const vertBoned1W*)_verts_);
         }
 
@@ -392,7 +387,8 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, const void* _verts_)
         {
             Fvector2 uv;
             uv.set(src->u, src->v);
-            dst->set(src->P, src->N, src->T, src->B, uv, int(src->m[0]) * 3, int(src->m[1]) * 3, int(src->m[2]) * 3, int(src->m[3]) * 3, src->w[0], src->w[1], src->w[2]);
+            dst->set(src->P, src->N, src->T, src->B, uv, int(src->m[0]) * 3, int(src->m[1]) * 3, int(src->m[2]) * 3, int(src->m[3]) * 3, src->w[0], src->w[1],
+                     src->w[2]);
             dst++;
             src++;
         }
@@ -422,12 +418,12 @@ void verify_vertex(const vertex_type& v, const Fvisual* V, const CKinematics* Pa
     {
         if (v.get_bone_id(i) >= Parent->LL_BoneCount())
         {
-            Msg("v.get_bone_id(i): %d, Parent->LL_BoneCount() %d ", v.get_bone_id(i), Parent->LL_BoneCount());
-            Msg("&v: %p, &V: %p, indices: %p", &v, V, indices);
-            Msg(" iBase: %d, iCount: %d, V->iBase %d, V->iCount %d, V->vBase: %d,  V->vCount  %d, vertex_idx: %d, idx: %d", iBase, iCount, V->iBase, V->iCount, V->vBase, V->vCount,
-                vertex_idx, idx);
-            Msg(" v.P: %s , v.N: %s, v.T: %s, v.B: %s", get_string(v.P).c_str(), get_string(v.N).c_str(), get_string(v.T).c_str(), get_string(v.B).c_str());
-            Msg("Parent->dbg_name: %s ", Parent->dbg_name.c_str());
+            Msg("v.get_bone_id(i): {}, Parent->LL_BoneCount() {} ", v.get_bone_id(i), Parent->LL_BoneCount());
+            Msg("&v: {}, &V: {}, indices: {}", &v, V, indices);
+            Msg(" iBase: {}, iCount: {}, V->iBase {}, V->iCount {}, V->vBase: {},  V->vCount  {}, vertex_idx: {}, idx: {}", iBase, iCount, V->iBase, V->iCount,
+                V->vBase, V->vCount, vertex_idx, idx);
+            Msg(" v.P: {} , v.N: {}, v.T: {}, v.B: {}", get_string(v.P), get_string(v.N), get_string(v.T), get_string(v.B));
+            Msg("Parent->dbg_name: {} ", Parent->dbg_name);
             FlushLog();
             FATAL("v.get_bone_id(i) >= Parent->LL_BoneCount()");
         }
@@ -526,21 +522,25 @@ void CSkeletonX_PM::AfterLoad(CKinematics* parent, u16 child_idx)
     inherited2::_CollectBoneFaces(this, iBase + SW.offset, SW.num_tris * 3);
 }
 
-BOOL CSkeletonX_ext::_PickBoneHW1W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces)
+BOOL CSkeletonX_ext::_PickBoneHW1W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices,
+                                   CBoneData::FacesVec& faces)
 {
     return pick_bone<vertHW_1W>(Parent, r, dist, S, D, V, indices, faces);
 }
-BOOL CSkeletonX_ext::_PickBoneHW2W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces)
+BOOL CSkeletonX_ext::_PickBoneHW2W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices,
+                                   CBoneData::FacesVec& faces)
 {
     return pick_bone<vertHW_2W>(Parent, r, dist, S, D, V, indices, faces);
 }
 
-BOOL CSkeletonX_ext::_PickBoneHW3W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces)
+BOOL CSkeletonX_ext::_PickBoneHW3W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices,
+                                   CBoneData::FacesVec& faces)
 {
     return pick_bone<vertHW_3W>(Parent, r, dist, S, D, V, indices, faces);
 }
 
-BOOL CSkeletonX_ext::_PickBoneHW4W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces)
+BOOL CSkeletonX_ext::_PickBoneHW4W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices,
+                                   CBoneData::FacesVec& faces)
 {
     return pick_bone<vertHW_4W>(Parent, r, dist, S, D, V, indices, faces);
 }

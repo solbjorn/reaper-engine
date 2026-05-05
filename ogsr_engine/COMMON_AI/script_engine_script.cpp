@@ -79,7 +79,11 @@ void take_screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name) { ::Re
 
 [[nodiscard]] bool GetLAlt() { return pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LAlt}); }
 [[nodiscard]] bool GetRAlt() { return pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RAlt}); }
-[[nodiscard]] bool GetAlt() { return pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LAlt}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RAlt}); }
+
+[[nodiscard]] bool GetAlt()
+{
+    return pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LAlt}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RAlt});
+}
 
 [[nodiscard]] bool GetShift()
 {
@@ -89,17 +93,17 @@ void take_screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name) { ::Re
 
 void CScriptEngine::script_register(sol::state_view& lua)
 {
-    lua.set("log1", sol::resolve<void(LPCSTR)>(&Log), "fail", &msg_and_fail, "screenshot", &take_screenshot);
+    lua.set("log1", sol::resolve<void(std::string_view)>(&Log), "fail", &msg_and_fail, "screenshot", &take_screenshot);
 
     lua.new_enum("modes", "normal", IRender_interface::ScreenshotMode::SM_NORMAL, "cubemap", IRender_interface::ScreenshotMode::SM_FOR_CUBEMAP, "gamesave",
                  IRender_interface::ScreenshotMode::SM_FOR_GAMESAVE, "levelmap", IRender_interface::ScreenshotMode::SM_FOR_LEVELMAP);
 
     lua.new_usertype<profile_timer_script>("profile_timer", sol::no_constructor, sol::call_constructor,
-                                           sol::constructors<profile_timer_script(), profile_timer_script(const profile_timer_script&)>(), sol::meta_function::addition,
-                                           &profile_timer_script::operator+, "start", &profile_timer_script::start, "stop", &profile_timer_script::stop, "time",
-                                           &profile_timer_script::time);
+                                           sol::constructors<profile_timer_script(), profile_timer_script(const profile_timer_script&)>(),
+                                           sol::meta_function::addition, &profile_timer_script::operator+, "start", &profile_timer_script::start, "stop",
+                                           &profile_timer_script::stop, "time", &profile_timer_script::time);
 
     lua.set(
-        "user_name", [] { return Core.UserName; }, "time_global", [] { return Device.dwTimeGlobal; }, "GetShift", &GetShift, "GetLAlt", &GetLAlt, "GetRAlt", &GetRAlt, "GetAlt",
-        &GetAlt, "device", [] { return &Device; }, "__debugbreak", [] { __debugbreak(); });
+        "user_name", [] { return Core.UserName; }, "time_global", [] { return Device.dwTimeGlobal; }, "GetShift", &GetShift, "GetLAlt", &GetLAlt, "GetRAlt",
+        &GetRAlt, "GetAlt", &GetAlt, "device", [] { return &Device; }, "__debugbreak", [] { __debugbreak(); });
 }

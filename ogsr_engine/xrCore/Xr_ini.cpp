@@ -96,7 +96,7 @@ BOOL CInifile::Sect::line_exist(LPCSTR L, LPCSTR* val) const
 LPCSTR CInifile::Sect::r_string(LPCSTR L)
 {
     if (L == nullptr || xr_strlen(L) == 0) //--#SM+#-- [fix for one of "xrDebug - Invalid handler" error log]
-        Msg("!![ERROR] CInifile::Sect::r_string: S = [%s], L = [%s]", Name.c_str(), L);
+        Msg("!![ERROR] CInifile::Sect::r_string: S = [{}], L = [{}]", Name, L);
 
     const auto A = Data.find(L);
     if (A != Data.end())
@@ -161,7 +161,7 @@ CInifile::~CInifile()
     if (!bReadOnly && bSaveAtEnd)
     {
         if (!save_as())
-            Msg("!Can't save inifile: [%s]", fName);
+            Msg("!Can't save inifile: [{}]", fName);
     }
 
     xr_free(fName);
@@ -228,7 +228,7 @@ void CInifile::Load(IReader* F, LPCSTR path, BOOL allow_dup_sections, const CIni
                 auto O = override->DATA.find(Current->Name);
                 if (O != override->DATA.end())
                 {
-                    Msg("~ Override section [%s]", Current->Name.c_str());
+                    Msg("~ Override section [{}]", Current->Name);
 
                     Sect* override = (O->second);
                     for (auto& it : override->Ordered_Data)
@@ -519,7 +519,8 @@ BOOL CInifile::section_exist(const shared_str& S) const { return section_exist(S
 
 CInifile::Sect& CInifile::r_section(LPCSTR S)
 {
-    R_ASSERT(S != nullptr && xr_strlen(S) > 0, "Empty section (null\\'') passed into CInifile::r_section(). See info above ^, check your configs and 'call stack'."); //--#SM+#--
+    R_ASSERT(S != nullptr && S[0] != '\0',
+             "Empty section (null\\'') passed into CInifile::r_section(). See info above ^, check your configs and 'call stack'."); //--#SM+#--
 
     char section[256];
     strcpy_s(section, S);
@@ -534,8 +535,8 @@ CInifile::Sect& CInifile::r_section(LPCSTR S)
 
 LPCSTR CInifile::r_string(LPCSTR S, LPCSTR L)
 {
-    if (S == nullptr || L == nullptr || xr_strlen(S) == 0 || xr_strlen(L) == 0) //--#SM+#-- [fix for one of "xrDebug - Invalid handler" error log]
-        Msg("!![ERROR] CInifile::r_string: S = [%s], L = [%s]", S, L);
+    if (S == nullptr || L == nullptr || S[0] == '\0' || L[0] == '\0') //--#SM+#-- [fix for one of "xrDebug - Invalid handler" error log]
+        Msg("!![ERROR] CInifile::r_string: S = [{}], L = [{}]", S, L);
 
     Sect& I = r_section(S);
     const auto A = I.Data.find(L);
@@ -774,7 +775,7 @@ void CInifile::w_u8(LPCSTR S, LPCSTR L, u8 V)
     w_string(S, L, temp);
 }
 
-void CInifile::w_u8_hex(gsl::czstring sect, gsl::czstring line, u8 val) { w_string(sect, line, std::format("{:#x}", val).c_str()); }
+void CInifile::w_u8_hex(gsl::czstring sect, gsl::czstring line, u8 val) { w_string(sect, line, xr::format("{:#x}", val).c_str()); }
 
 void CInifile::w_u16(LPCSTR S, LPCSTR L, u16 V)
 {
@@ -783,7 +784,7 @@ void CInifile::w_u16(LPCSTR S, LPCSTR L, u16 V)
     w_string(S, L, temp);
 }
 
-void CInifile::w_u16_hex(gsl::czstring sect, gsl::czstring line, u16 val) { w_string(sect, line, std::format("{:#x}", val).c_str()); }
+void CInifile::w_u16_hex(gsl::czstring sect, gsl::czstring line, u16 val) { w_string(sect, line, xr::format("{:#x}", val).c_str()); }
 
 void CInifile::w_u32(LPCSTR S, LPCSTR L, u32 V)
 {
@@ -792,7 +793,7 @@ void CInifile::w_u32(LPCSTR S, LPCSTR L, u32 V)
     w_string(S, L, temp);
 }
 
-void CInifile::w_u32_hex(gsl::czstring sect, gsl::czstring line, u32 val) { w_string(sect, line, std::format("{:#x}", val).c_str()); }
+void CInifile::w_u32_hex(gsl::czstring sect, gsl::czstring line, u32 val) { w_string(sect, line, xr::format("{:#x}", val).c_str()); }
 
 void CInifile::w_s8(LPCSTR S, LPCSTR L, s8 V)
 {

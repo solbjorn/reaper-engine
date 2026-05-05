@@ -39,10 +39,11 @@ void CALifeSurgeManager::spawn_new_spawns()
         timer.Start();
 #endif
         create(object, spawn, *I);
+
 #ifdef DEBUG
         if (psAI_Flags.test(aiALife))
-            Msg("LSS : SURGE : SPAWN : [%s],[%s], level %s, time %f ms", *spawn->s_name, spawn->name_replace(),
-                *ai().game_graph().header().level(ai().game_graph().vertex(spawn->m_tGraphID)->level_id()).name(), timer.GetElapsed_sec() * 1000.f);
+            Msg("LSS : SURGE : SPAWN : [{}],[{}], level {}, time {} ms", spawn->s_name, spawn->name_replace(),
+                ai().game_graph().header().level(ai().game_graph().vertex(spawn->m_tGraphID)->level_id()).name(), timer.GetElapsed_sec() * 1000.f);
 #endif
     }
 }

@@ -89,7 +89,8 @@ IClient* xrServer::client_Find_Get(ClientID ID)
     net_Players.back()->server = this;
     csPlayers.Leave();
 
-    Msg("# Player not found. New player created.");
+    Log("# Player not found. New player created.");
+
     return newCL;
 }
 
@@ -130,10 +131,12 @@ void xrServer::client_Destroy(IClient* C)
                     if (it != m_aDelayedPackets.end())
                     {
                         m_aDelayedPackets.erase(it);
-                        Msg("removing packet from delayed event storage");
+                        Log("removing packet from delayed event storage");
                     }
                     else
+                    {
                         break;
+                    }
                 } while (true);
             }
 
@@ -261,9 +264,9 @@ void xrServer::SendUpdatesToAll()
             if (g_Dump_Update_Write)
             {
                 if (Client->ps)
-                    Msg("---- UPDATE_Write to %s --- ", Client->ps->getName());
+                    Msg("---- UPDATE_Write to {} --- ", Client->ps->getName());
                 else
-                    Msg("---- UPDATE_Write to %s --- ", *(Client->name));
+                    Msg("---- UPDATE_Write to {} --- ", Client->name);
             }
 
             NET_Packet tmpPacket;
@@ -294,43 +297,34 @@ void xrServer::SendUpdatesToAll()
 
                     if (ObjectSize == 0)
                         continue;
+
 #ifdef DEBUG
                     if (g_Dump_Update_Write)
-                        Msg("* %s : %d", Test.name(), ObjectSize);
+                        Msg("* {} : {}", Test.name(), ObjectSize);
 #endif
 
                     if (pCurUpdatePacket->B.count + tmpPacket.B.count >= NET_PacketSizeLimit)
-                    {
                         R_ASSERT(0);
-                        // m_iCurUpdatePacket++;
 
-                        // if (m_aUpdatePackets.size() == m_iCurUpdatePacket) m_aUpdatePackets.emplace_back();
-
-                        // PacketType = M_UPDATE_OBJECTS;
-                        // pCurUpdatePacket = &(m_aUpdatePackets[m_iCurUpdatePacket]);
-                        // pCurUpdatePacket->w_begin(PacketType);
-                    }
                     pCurUpdatePacket->w(tmpPacket.B.data, tmpPacket.B.count);
                 } // all entities
             }
         }
 
-        //.#ifdef DEBUG
         if (g_Dump_Update_Write)
-            Msg("----------------------- ");
-        //.#endif
+            Log("----------------------- ");
+
         for (u32 p = 0; p <= m_iCurUpdatePacket; p++)
         {
             NET_Packet& ToSend = m_aUpdatePackets[p];
             if (ToSend.B.count > 2)
             {
                 if (g_Dump_Update_Write && Client->ps)
-                    Msg("- Server Update[%u] to Client[%s]  : %u", *((u16*)ToSend.B.data), Client->ps->getName(), ToSend.B.count);
+                    Msg("- Server Update[{}] to Client[{}]  : {}", *((u16*)ToSend.B.data), Client->ps->getName(), ToSend.B.count);
 
                 SendTo(Client->ID, ToSend, net_flags(FALSE, TRUE));
             }
         }
-
     } // for each client
 
 #ifdef DEBUG
@@ -352,7 +346,7 @@ u32 xrServer::OnDelayedMessage(NET_Packet& P, ClientID sender) // Non-Zero means
 
     VERIFY(verify_entities());
     xrClientData* CL = ID_to_client(sender);
-    R_ASSERT2(CL, make_string("packet type [%d]", type).c_str());
+    R_ASSERT2(CL, xr::format("packet type [{}]", type));
 
     switch (type)
     {
@@ -514,8 +508,9 @@ CSE_Abstract* xrServer::entity_Create(LPCSTR name) { return F_entity_Create(name
 void xrServer::entity_Destroy(CSE_Abstract*& P)
 {
 #ifdef DEBUG
-    Msg("xrServer::entity_Destroy : [%d][%s][%s]", P->ID, P->name(), P->name_replace());
+    Msg("xrServer::entity_Destroy : [{}][{}][{}]", P->ID, P->name(), P->name_replace());
 #endif
+
     R_ASSERT(P);
     entities.erase(P->ID);
     m_tID_Generator.vfFreeID(P->ID, Device.TimerAsync());
@@ -566,7 +561,8 @@ void xrServer::verify_entity(const CSE_Abstract* entity) const
         VERIFY3((*J).second, "SERVER : Null entity object in the map", entity->name_replace());
         VERIFY3((*J).first == (*J).second->ID, "SERVER : ID mismatch - map key doesn't correspond to the real entity ID", (*J).second->name_replace());
         VERIFY3(std::find((*J).second->children.begin(), (*J).second->children.end(), entity->ID) != (*J).second->children.end(),
-                "SERVER : Parent/Children relationship mismatch - Object has parent, but corresponding parent doesn't have children", (*J).second->name_replace());
+                "SERVER : Parent/Children relationship mismatch - Object has parent, but corresponding parent doesn't have children",
+                (*J).second->name_replace());
     }
 
     xr_vector<u16>::const_iterator I = entity->children.begin();

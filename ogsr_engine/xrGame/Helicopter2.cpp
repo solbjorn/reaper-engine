@@ -128,7 +128,7 @@ void CHelicopter::SetDestPosition(Fvector* pos)
 {
     m_movement.SetDestPosition(pos);
     if (bDebug)
-        Msg("---SetDestPosition %f %f %f", pos->x, pos->y, pos->z);
+        Msg("---SetDestPosition {} {} {}", pos->x, pos->y, pos->z);
 }
 
 float CHelicopter::GetDistanceToDestPosition() { return m_movement.GetDistanceToDestPosition(); }
@@ -161,8 +161,9 @@ void CHelicopter::SetLinearAcc(float LAcc_fw, float LAcc_bw)
 void CHelicopter::SetSpeedInDestPoint(float sp)
 {
     m_movement.SetSpeedInDestPoint(sp);
+
     if (bDebug)
-        Msg("---SetSpeedInDestPoint %f", sp);
+        Msg("---SetSpeedInDestPoint {}", sp);
 }
 
 float CHelicopter::GetSpeedInDestPoint(float) { return m_movement.GetSpeedInDestPoint(); }
@@ -170,8 +171,9 @@ float CHelicopter::GetSpeedInDestPoint(float) { return m_movement.GetSpeedInDest
 void CHelicopter::SetOnPointRangeDist(float d)
 {
     m_movement.onPointRangeDist = d;
+
     if (bDebug)
-        Msg("---SetOnPointRangeDist %f", d);
+        Msg("---SetOnPointRangeDist {}", d);
 }
 
 float CHelicopter::GetOnPointRangeDist() { return m_movement.onPointRangeDist; }
@@ -231,7 +233,8 @@ void CHelicopter::Hit(SHit* pHDS)
 #endif
     }
 
-    // TODO: KRodin: а почему только хиты от актора, сталкеров и аномалий передаются в каллбек? Почему бы не передавать хиты от любвх объектов? Надо подумать над этим.
+    // TODO: KRodin: а почему только хиты от актора, сталкеров и аномалий передаются в каллбек? Почему бы не передавать хиты от любвх объектов? Надо подумать
+    // над этим.
     if (pHDS->who && (pHDS->who->CLS_ID == CLSID_OBJECT_ACTOR || smart_cast<CAI_Stalker*>(pHDS->who) || smart_cast<CCustomZone*>(pHDS->who)))
         callback(GameObject::eHelicopterOnHit)(pHDS->damage(), pHDS->impulse, pHDS->hit_type, pHDS->who->ID());
 
@@ -250,7 +253,8 @@ void CollisionCallbackDead(bool& do_colide, bool bo1, dContact& c, SGameMtl*, SG
 {
     do_colide = true;
 
-    CHelicopter* l_this = bo1 ? smart_cast<CHelicopter*>(retrieveGeomUserData(c.geom.g1)->ph_ref_object) : smart_cast<CHelicopter*>(retrieveGeomUserData(c.geom.g2)->ph_ref_object);
+    CHelicopter* l_this = bo1 ? smart_cast<CHelicopter*>(retrieveGeomUserData(c.geom.g1)->ph_ref_object) :
+                                smart_cast<CHelicopter*>(retrieveGeomUserData(c.geom.g2)->ph_ref_object);
     if (l_this && !l_this->m_exploded)
         l_this->m_ready_explode = true;
 }
@@ -424,7 +428,10 @@ void SHeliBodyState::load(IReader& input_packet)
 
 namespace
 {
-float t_xx(float V0, float V1, float a0, float a1, float d, float fSign) { return (V1 + _sqrt(V1 * V1 - (a1 / (a1 - a0)) * (V1 * V1 - V0 * V0 - 2 * a0 * d)) * fSign) / a1; }
+float t_xx(float V0, float V1, float a0, float a1, float d, float fSign)
+{
+    return (V1 + _sqrt(V1 * V1 - (a1 / (a1 - a0)) * (V1 * V1 - V0 * V0 - 2 * a0 * d)) * fSign) / a1;
+}
 
 float t_1(float t10, float t11)
 {

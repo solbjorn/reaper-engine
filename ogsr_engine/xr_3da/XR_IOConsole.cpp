@@ -567,10 +567,11 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool allow_disabl
 
         if (!m_last_cmd.c_str() || std::is_neq(xr_strcmp(m_last_cmd, edt)))
         {
-            Msg("%s %s", c, edt.c_str());
-            shared_str res{edt.c_str()};
+            Msg("{} {}", c, edt);
+
+            shared_str res{edt};
             add_cmd_history(res);
-            m_last_cmd = res;
+            m_last_cmd = std::move(res);
         }
     }
 
@@ -597,24 +598,25 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool allow_disabl
                 {
                     IConsole_Command::TStatus stat;
                     cc->Status(stat);
-                    Msg("- %s %s", cc->Name(), stat);
+
+                    Msg("- {} {}", cc->Name(), stat);
                 }
             }
             else
             {
                 cc->Execute(last.c_str());
                 if (record_cmd)
-                    cc->add_to_LRU(shared_str{last.c_str()});
+                    cc->add_to_LRU(shared_str{last});
             }
         }
         else
         {
-            Msg("! Command disabled: %s", first.c_str());
+            Msg("! Command disabled: {}", first);
         }
     }
     else
     {
-        Msg("! Unknown command: %s", first.c_str());
+        Msg("! Unknown command: {}", first);
     }
 
     if (record_cmd)

@@ -16,12 +16,12 @@ void CPSLibrary::LoadAll()
         string_path fn;
         if (FS.exist(fn, _game_data_, "particles_cop.xr"))
         {
-            Msg("Load [%s]", fn);
+            Msg("Load [{}]", fn);
             Load(fn);
         }
         else if (FS.exist(fn, _game_data_, "particles.xr"))
         {
-            Msg("Load [%s]", fn);
+            Msg("Load [{}]", fn);
             Load(fn);
         }
     }
@@ -35,7 +35,7 @@ void CPSLibrary::ExportAllAsNew()
     string_path fn;
     std::ignore = FS.update_path(fn, _game_data_, "particles_cop.new_xr"); // dummy file name
 
-    Msg("~ Exported all ltx shaders to [%s] in COP format. Rename file to use it.", fn);
+    Msg("~ Exported all ltx shaders to [{}] in COP format. Rename file to use it.", fn);
     Save(fn);
 }
 
@@ -79,7 +79,7 @@ bool CPSLibrary::Load(const char* nm)
     const bool copFileFormat = strstr(nm, "_cop");
 
     if (copFileFormat)
-        Msg("cop format used for file [%s]", nm);
+        Msg("cop format used for file [{}]", nm);
 
     // second generation
     IReader* OBJ;
@@ -93,9 +93,6 @@ bool CPSLibrary::Load(const char* nm)
             if (def->Load(*O))
             {
                 def->m_copFormat = copFileFormat;
-
-                // if (m_PEDs.contains(def->m_Name))
-                //     Msg("~~CPSLibrary: Duplicate ParticleEffect: [%s]. Last declared will be used.", def->m_Name.c_str());
 
                 m_PEDs[def->m_Name] = std::move(def);
                 loaded_count++;
@@ -121,9 +118,6 @@ bool CPSLibrary::Load(const char* nm)
             auto def = std::make_unique<PS::CPGDef>();
             if (def->Load(*O))
             {
-                // if (m_PGDs.contains(def->m_Name))
-                //    Msg("CPSLibrary: Duplicate ParticleGroup: [%s]. Last declared will be used.", def->m_Name.c_str());
-
                 m_PGDs[def->m_Name] = std::move(def);
                 loaded_count++;
             }
@@ -142,7 +136,7 @@ bool CPSLibrary::Load(const char* nm)
     // final
     FS.r_close(F);
 
-    Msg("Loaded xr_particle files: [%zu]", loaded_count);
+    Msg("Loaded xr_particle files: [{}]", loaded_count);
 
     return bRes;
 }
@@ -183,18 +177,16 @@ void CPSLibrary::Reload()
     OnDestroy();
     OnCreate();
 
-    Msg("PS Library was successfully reloaded.");
+    Log("PS Library was successfully reloaded.");
 }
 
 bool CPSLibrary::Load2()
 {
     if (!FS.path_exist("$game_particles$"))
-    {
         return false;
-    }
 
     bool something_loaded{};
-    Msg("Start load particle files...");
+    Log("Start load particle files...");
 
     FS_FileSet files;
     string_path _path;
@@ -234,7 +226,7 @@ bool CPSLibrary::Load2()
         }
     }
 
-    Msg("Loaded particle files: [%zu]", files.size());
+    Msg("Loaded particle files: [{}]", files.size());
 
     return something_loaded;
 }
@@ -242,7 +234,7 @@ bool CPSLibrary::Load2()
 bool CPSLibrary::Save2(bool override)
 {
     if (!FS.path_exist("$game_particles$"))
-        Msg("! Path $game_particles$ is not configured! Cannot export particles to ltx");
+        Log("! Path $game_particles$ is not configured! Cannot export particles to ltx");
 
     string_path fn;
 

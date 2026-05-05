@@ -46,7 +46,7 @@
       md _Build
       cd _Build
       echo * > .gitignore
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DBOOST_CONTEXT_IMPLEMENTATION="winfib" -DBOOST_FILESYSTEM_NO_DEPRECATED=ON -DBOOST_INCLUDE_LIBRARIES="accumulators;chrono;compat;convert;filesystem;process;program_options;uuid" -DBOOST_INSTALL_LAYOUT=system ..\boost
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DBOOST_CONTEXT_ASSEMBLER="gas" -DBOOST_FILESYSTEM_NO_DEPRECATED=ON -DBOOST_INCLUDE_LIBRARIES="accumulators;chrono;compat;convert;filesystem;process;program_options;uuid" -DBOOST_INSTALL_LAYOUT=system ..\boost
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)
       copy /Y "$(Configuration)\$(PlatformShortName)\lib\libboost_chrono.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\libboost_chrono.lib"

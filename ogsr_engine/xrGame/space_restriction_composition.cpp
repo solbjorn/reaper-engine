@@ -80,11 +80,8 @@ void CSpaceRestrictionComposition::initialize()
     for (u32 i = 0; i < n; ++i)
     {
         LPSTR space_restrictors = _GetItem(*m_space_restrictors, i, element);
-        // Msg("space_restrictors = [%s]", space_restrictors);
         if (!m_space_restriction_holder->restriction(shared_str{space_restrictors})->initialized())
-        {
             return;
-        }
     }
 
     Fsphere* spheres = (Fsphere*)_alloca(n * sizeof(Fsphere));
@@ -92,11 +89,9 @@ void CSpaceRestrictionComposition::initialize()
     for (u32 i = 0; i < n; ++i)
     {
         LPSTR space_restrictors = _GetItem(*m_space_restrictors, i, element);
-        // Msg("space_restrictors 2 = [%s]", space_restrictors);
         SpaceRestrictionHolder::CBaseRestrictionPtr restriction = m_space_restriction_holder->restriction(shared_str{space_restrictors});
 
         merge(restriction);
-
         spheres[i] = restriction->sphere();
     }
 
@@ -171,7 +166,8 @@ void CSpaceRestrictionComposition::test_correctness()
             VERIFY3(!(*I)->object().m_test_storage.empty(), "Restrictor has no border", *(*I)->object().name());
             nodes.clear();
             ai().level_graph().set_mask(border());
-            ai().graph_engine().search(ai().level_graph(), (*I)->object().m_test_storage.back(), (*I)->object().m_test_storage.back(), &nodes, GraphEngineSpace::CFlooder());
+            ai().graph_engine().search(ai().level_graph(), (*I)->object().m_test_storage.back(), (*I)->object().m_test_storage.back(), &nodes,
+                                       GraphEngineSpace::CFlooder());
             ai().level_graph().clear_mask(border());
 
             if (nodes.size() == 65535)
@@ -209,7 +205,8 @@ void CSpaceRestrictionComposition::check_restrictor_type()
 
     CSpaceRestrictor* restrictor = smart_cast<CSpaceRestrictor*>(object);
     VERIFY3(restrictor, "you are trying to use object as a restrictor", *m_space_restrictors);
-    VERIFY2(restrictor->restrictor_type() == RestrictionSpace::eRestrictorTypeNone, "you are trying to restrict yourself with restrictor with type eRestrictorTypeNone");
+    VERIFY2(restrictor->restrictor_type() == RestrictionSpace::eRestrictorTypeNone,
+            "you are trying to restrict yourself with restrictor with type eRestrictorTypeNone");
     VERIFY2(restrictor->restrictor_type() != RestrictionSpace::eRestrictorTypeNone, "impossible situation: wrong net_Spawn branch used");
 }
 #endif // DEBUG

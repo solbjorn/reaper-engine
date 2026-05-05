@@ -38,6 +38,7 @@ RD /s /q 3rd_party\Src\i18n\budouxc\_Build
 RD /s /q 3rd_party\Src\i18n\unibreak\_Build
 RD /s /q 3rd_party\Src\legacy\OpCoDe\_Build
 RD /s /q 3rd_party\Src\logging\assert\_Build
+RD /s /q 3rd_party\Src\logging\assert\_Build2
 RD /s /q 3rd_party\Src\logging\cpptrace\_Build
 RD /s /q 3rd_party\Src\logging\fmt\_Build
 RD /s /q 3rd_party\Src\logging\re2\_Build

@@ -31,8 +31,8 @@ IC T cos_apb(T sina, T cosa, T sinb, T cosb)
 
 IC bool is_negative(float a) { return (!fis_zero(a) && (a < 0.f)); }
 
-IC bool coincide_directions(const Fvector2& start_circle_center, const Fvector2& start_tangent_point, float start_cross_product, const Fvector2& dest_circle_center,
-                            const Fvector2& dest_tangent_point, float dest_cross_product)
+IC bool coincide_directions(const Fvector2& start_circle_center, const Fvector2& start_tangent_point, float start_cross_product,
+                            const Fvector2& dest_circle_center, const Fvector2& dest_tangent_point, float dest_cross_product)
 {
     if (fis_zero(start_cross_product))
     {
@@ -48,8 +48,8 @@ IC bool coincide_directions(const Fvector2& start_circle_center, const Fvector2&
     return (start_cross_product * cp1 >= 0.f);
 }
 
-bool CDetailPathManager::compute_tangent(const STrajectoryPoint& start, const SCirclePoint& start_circle, const STrajectoryPoint& dest, const SCirclePoint& dest_circle,
-                                         SCirclePoint* tangents, const EDirectionType direction_type)
+bool CDetailPathManager::compute_tangent(const STrajectoryPoint& start, const SCirclePoint& start_circle, const STrajectoryPoint& dest,
+                                         const SCirclePoint& dest_circle, SCirclePoint* tangents, const EDirectionType direction_type)
 {
     float start_cp, dest_cp, distance, alpha, start_yaw, dest_yaw, yaw1, yaw2;
     Fvector2 direction;
@@ -153,7 +153,8 @@ bool CDetailPathManager::compute_tangent(const STrajectoryPoint& start, const SC
     return (true);
 }
 
-bool CDetailPathManager::build_circle_trajectory(const STrajectoryPoint& position, xr_vector<DetailPathManager::STravelPathPoint>* path, u32* vertex_id, const u32 velocity)
+bool CDetailPathManager::build_circle_trajectory(const STrajectoryPoint& position, xr_vector<DetailPathManager::STravelPathPoint>* path, u32* vertex_id,
+                                                 const u32 velocity)
 {
     const float min_dist = .1f;
     DetailPathManager::STravelPathPoint t;
@@ -202,12 +203,14 @@ bool CDetailPathManager::build_circle_trajectory(const STrajectoryPoint& positio
 #ifdef DEBUG
         if (m >= 10000)
         {
-            Msg("! [position.radius=%f],[angle=%f],[m=%d]", position.radius, angle, m);
+            Msg("! [position.radius={}],[angle={}],[m={}]", position.radius, angle, m);
             VERIFY(m < 10000);
         }
 #endif
+
         n = !m ? 1 : m;
     }
+
     int k = vertex_id ? 0 : -1;
 
     if (path)
@@ -250,8 +253,8 @@ bool CDetailPathManager::build_circle_trajectory(const STrajectoryPoint& positio
     return (true);
 }
 
-bool CDetailPathManager::build_line_trajectory(const STrajectoryPoint& start, const STrajectoryPoint& dest, u32 vertex_id, xr_vector<DetailPathManager::STravelPathPoint>* path,
-                                               u32 velocity)
+bool CDetailPathManager::build_line_trajectory(const STrajectoryPoint& start, const STrajectoryPoint& dest, u32 vertex_id,
+                                               xr_vector<DetailPathManager::STravelPathPoint>* path, u32 velocity)
 {
     VERIFY(ai().level_graph().valid_vertex_id(vertex_id));
     DetailPathManager::STravelPathPoint t;
@@ -272,8 +275,8 @@ bool CDetailPathManager::build_line_trajectory(const STrajectoryPoint& start, co
                    ai().level_graph().valid_vertex_id(ai().level_graph().check_position_in_direction(vertex_id, start.point, dest.point)));
 }
 
-bool CDetailPathManager::build_trajectory(const STrajectoryPoint& start, const STrajectoryPoint& dest, xr_vector<DetailPathManager::STravelPathPoint>* path, const u32 velocity1,
-                                          const u32 velocity2, const u32 velocity3)
+bool CDetailPathManager::build_trajectory(const STrajectoryPoint& start, const STrajectoryPoint& dest, xr_vector<DetailPathManager::STravelPathPoint>* path,
+                                          const u32 velocity1, const u32 velocity2, const u32 velocity3)
 {
     u32 vertex_id;
 
@@ -290,7 +293,8 @@ bool CDetailPathManager::build_trajectory(const STrajectoryPoint& start, const S
 }
 
 bool CDetailPathManager::build_trajectory(STrajectoryPoint& start, STrajectoryPoint& dest, const SCirclePoint tangents[4][2], const u32 tangent_count,
-                                          xr_vector<DetailPathManager::STravelPathPoint>* path, float& time, const u32 velocity1, const u32 velocity2, const u32 velocity3)
+                                          xr_vector<DetailPathManager::STravelPathPoint>* path, float& time, const u32 velocity1, const u32 velocity2,
+                                          const u32 velocity3)
 {
     time = flt_max;
     SDist dist[4];
@@ -324,8 +328,8 @@ bool CDetailPathManager::build_trajectory(STrajectoryPoint& start, STrajectoryPo
     return (false);
 }
 
-bool CDetailPathManager::compute_trajectory(STrajectoryPoint& start, STrajectoryPoint& dest, xr_vector<DetailPathManager::STravelPathPoint>* path, float& time, const u32 velocity1,
-                                            const u32 velocity2, const u32 velocity3, const EDirectionType direction_type)
+bool CDetailPathManager::compute_trajectory(STrajectoryPoint& start, STrajectoryPoint& dest, xr_vector<DetailPathManager::STravelPathPoint>* path, float& time,
+                                            const u32 velocity1, const u32 velocity2, const u32 velocity3, const EDirectionType direction_type)
 {
     SCirclePoint start_circles[2], dest_circles[2];
     compute_circles(start, start_circles);
@@ -350,8 +354,8 @@ bool CDetailPathManager::compute_trajectory(STrajectoryPoint& start, STrajectory
 }
 
 bool CDetailPathManager::compute_path(STrajectoryPoint& _start, STrajectoryPoint& _dest, xr_vector<DetailPathManager::STravelPathPoint>* m_tpTravelLine,
-                                      const xr_vector<STravelParamsIndex>& start_params, const xr_vector<STravelParamsIndex>& dest_params, const u32 straight_line_index,
-                                      const u32 straight_line_index_negative)
+                                      const xr_vector<STravelParamsIndex>& start_params, const xr_vector<STravelParamsIndex>& dest_params,
+                                      const u32 straight_line_index, const u32 straight_line_index_negative)
 {
     STrajectoryPoint start = _start;
     STrajectoryPoint dest = _dest;
@@ -386,7 +390,8 @@ bool CDetailPathManager::compute_path(STrajectoryPoint& _start, STrajectoryPoint
                 dest.direction.mul(-1.f);
 
             m_temp_path.clear();
-            if (compute_trajectory(start, dest, m_tpTravelLine ? &m_temp_path : nullptr, time, (*I).index, real_straight_line_index, (*i).index, direction_type))
+            if (compute_trajectory(start, dest, m_tpTravelLine ? &m_temp_path : nullptr, time, (*I).index, real_straight_line_index, (*i).index,
+                                   direction_type))
             {
                 if (!m_try_min_time || (time < min_time))
                 {
@@ -433,8 +438,8 @@ void CDetailPathManager::validate_vertex_position(STrajectoryPoint& point) const
     VERIFY(ai().level_graph().inside(point.vertex_id, point.position));
 }
 
-bool CDetailPathManager::init_build(const xr_vector<u32>& level_path, u32 intermediate_index, STrajectoryPoint& start, STrajectoryPoint& dest, u32& straight_line_index,
-                                    u32& straight_line_index_negative)
+bool CDetailPathManager::init_build(const xr_vector<u32>& level_path, u32 intermediate_index, STrajectoryPoint& start, STrajectoryPoint& dest,
+                                    u32& straight_line_index, u32& straight_line_index_negative)
 {
     VERIFY(!level_path.empty());
     VERIFY(level_path.size() > intermediate_index);
@@ -528,7 +533,8 @@ bool CDetailPathManager::fill_key_points(const xr_vector<u32>& level_path, STraj
         }
         else
         {
-            if ((j == n) && !ai().level_graph().valid_vertex_id(ai().level_graph().check_position_in_direction(start_point.vertex_id, start_point.position, dest.position)))
+            if ((j == n) &&
+                !ai().level_graph().valid_vertex_id(ai().level_graph().check_position_in_direction(start_point.vertex_id, start_point.position, dest.position)))
             {
                 m = j;
                 j = (i + j) / 2;
@@ -547,7 +553,8 @@ bool CDetailPathManager::fill_key_points(const xr_vector<u32>& level_path, STraj
             m_key_points.push_back(start_point);
             if (i == n)
             {
-                if (ai().level_graph().valid_vertex_id(ai().level_graph().check_position_in_direction(start_point.vertex_id, start_point.position, dest.position)))
+                if (ai().level_graph().valid_vertex_id(
+                        ai().level_graph().check_position_in_direction(start_point.vertex_id, start_point.position, dest.position)))
                 {
                     m_key_points.push_back(dest);
                     break;
@@ -563,8 +570,8 @@ bool CDetailPathManager::fill_key_points(const xr_vector<u32>& level_path, STraj
     return (true);
 }
 
-IC CDetailPathManager::STravelPoint CDetailPathManager::compute_better_key_point(const STravelPoint& point0, const STravelPoint& point1, const STravelPoint& point2,
-                                                                                 bool reverse_order)
+IC CDetailPathManager::STravelPoint CDetailPathManager::compute_better_key_point(const STravelPoint& point0, const STravelPoint& point1,
+                                                                                 const STravelPoint& point2, bool reverse_order)
 {
     CDetailPathManager::STravelPoint result = point1;
     float dist02 = point2.position.distance_to(point0.position);
@@ -638,8 +645,8 @@ IC bool CDetailPathManager::better_key_point(const STravelPoint& point0, const S
     return (cos_alpha0 < cos_alpha1);
 }
 
-void CDetailPathManager::build_path_via_key_points(STrajectoryPoint& start, STrajectoryPoint& dest, xr_vector<STravelParamsIndex>& finish_params, const u32 straight_line_index,
-                                                   const u32 straight_line_index_negative)
+void CDetailPathManager::build_path_via_key_points(STrajectoryPoint& start, STrajectoryPoint& dest, xr_vector<STravelParamsIndex>& finish_params,
+                                                   const u32 straight_line_index, const u32 straight_line_index_negative)
 {
     STrajectoryPoint s, d;
     s = start;
@@ -660,7 +667,8 @@ void CDetailPathManager::build_path_via_key_points(STrajectoryPoint& start, STra
         else
             d = dest;
 
-        bool succeed = compute_path(s, d, &m_path, m_start_params, last_point ? finish_params : m_start_params, straight_line_index, straight_line_index_negative);
+        bool succeed =
+            compute_path(s, d, &m_path, m_start_params, last_point ? finish_params : m_start_params, straight_line_index, straight_line_index_negative);
         if (!succeed)
         {
             m_path.clear();
@@ -769,8 +777,8 @@ void CDetailPathManager::add_patrol_point()
         v.mul(extrapolate_length());
         t = m_path.back();
         t.position.add(v);
-        ai().level_graph().create_straight_path<false>(m_path.back().vertex_id, ai().level_graph().v2d(m_path.back().position), ai().level_graph().v2d(t.position), m_path,
-                                                       m_path.back(), false, false);
+        ai().level_graph().create_straight_path<false>(m_path.back().vertex_id, ai().level_graph().v2d(m_path.back().position),
+                                                       ai().level_graph().v2d(t.position), m_path, m_path.back(), false, false);
     }
 }
 
@@ -792,13 +800,14 @@ void CDetailPathManager::build_smooth_path(const xr_vector<u32>& level_path, u32
         bool alvi = m_restricted_object->accessible(start.vertex_id);
         bool asp = m_restricted_object->accessible(start_pos);
         VERIFY(ai().level_graph().inside(start.vertex_id, start_pos));
+
         if (!((alvi && asp) || (!asp && !alvi)))
-        {
-            Msg("! vertex [%d], position [%f][%f][%f]", start.vertex_id, VPUSH(start_pos));
-        }
+            Msg("! vertex [{}], position [{}][{}][{}]", start.vertex_id, VPUSH(start_pos));
+
         VERIFY3((alvi && asp) || (!asp && !alvi) || show_restrictions(m_restricted_object), "Invalid restrictions (see log for details) for object ",
                 *m_restricted_object->object().cName());
 #endif
+
         m_restricted_object->add_border(start.vertex_id, dest.vertex_id);
     }
 

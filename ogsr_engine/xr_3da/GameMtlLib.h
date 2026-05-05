@@ -226,7 +226,7 @@ public:
         }
         else
         {
-            Msg("!![%s] material id [%d] not found!", __FUNCTION__, ID);
+            Msg("!![{}] material id [{}] not found!", __FUNCTION__, ID);
             return 0;
         }
     }
@@ -239,7 +239,7 @@ public:
         }
         else
         {
-            Msg("!![%s] material name [%s] not found!", __FUNCTION__, name);
+            Msg("!![{}] material name [{}] not found!", __FUNCTION__, name);
             return 0;
         }
     }
@@ -251,7 +251,7 @@ public:
         }
         else
         {
-            Msg("!![%s] material id [%u] not found!", __FUNCTION__, idx);
+            Msg("!![{}] material id [{}] not found!", __FUNCTION__, idx);
             return materials.front();
         }
     }

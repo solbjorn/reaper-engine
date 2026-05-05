@@ -82,8 +82,6 @@ float CEnemyManager::do_evaluate(const CEntityAlive* object) const { return (m_o
 
 float CEnemyManager::evaluate(const CEntityAlive* object) const
 {
-    //	Msg						("[%6d] enemy manager %s evaluates %s",Device.dwTimeGlobal,*m_object->cName(),*object->cName());
-
     bool actor = (object->CLS_ID == CLSID_OBJECT_ACTOR);
 
     const CAI_Stalker* stalker = smart_cast<const CAI_Stalker*>(object);
@@ -181,13 +179,19 @@ void CEnemyManager::remove_links(CObject* object)
 
 void CEnemyManager::ignore_monster_threshold(const float& ignore_monster_threshold) { m_ignore_monster_threshold = ignore_monster_threshold; }
 
-void CEnemyManager::restore_ignore_monster_threshold() { m_ignore_monster_threshold = READ_IF_EXISTS(pSettings, r_float, *m_object->cNameSect(), "ignore_monster_threshold", 1.f); }
+void CEnemyManager::restore_ignore_monster_threshold()
+{
+    m_ignore_monster_threshold = READ_IF_EXISTS(pSettings, r_float, *m_object->cNameSect(), "ignore_monster_threshold", 1.f);
+}
 
 float CEnemyManager::ignore_monster_threshold() const { return (m_ignore_monster_threshold); }
 
 void CEnemyManager::max_ignore_monster_distance(const float& max_ignore_monster_distance) { m_max_ignore_distance = max_ignore_monster_distance; }
 
-void CEnemyManager::restore_max_ignore_monster_distance() { m_max_ignore_distance = READ_IF_EXISTS(pSettings, r_float, *m_object->cNameSect(), "max_ignore_distance", 0.f); }
+void CEnemyManager::restore_max_ignore_monster_distance()
+{
+    m_max_ignore_distance = READ_IF_EXISTS(pSettings, r_float, *m_object->cNameSect(), "max_ignore_distance", 0.f);
+}
 
 float CEnemyManager::max_ignore_monster_distance() const { return (m_max_ignore_distance); }
 
@@ -289,13 +293,7 @@ void CEnemyManager::process_wounded(bool& only_wounded)
     }
 
     if (only_wounded)
-    {
-#if 0 // def DEBUG
-		if (g_enemy_manager_second_update)
-			Msg					("%6d ONLY WOUNDED LEFT %s",Device.dwTimeGlobal,*m_object->cName());
-#endif // DEBUG
         return;
-    }
 
     remove_wounded();
 }

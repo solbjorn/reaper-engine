@@ -83,16 +83,6 @@ void CLight_Compute_XFORM_and_VIS::compute_xf_spot(light* L)
 
     // make N pixel border
     L->X.S.view.build_camera_dir(L_pos, L_dir, L_up);
-    // float	n			= 2.f						;
-    // float	x			= float(L->X.S.size)		;
-    // float	alpha		= L->cone/2					;
-    // float	tan_beta	= (x+2*n)*tanf(alpha) / x	;
-    // float	g_alpha		= 2*rad2deg		(alpha);
-    // float	g_beta		= 2*rad2deg		(atanf(tan_beta));
-    // Msg				("x(%f) : a(%f), b(%f)",x,g_alpha,g_beta);
-
-    // _min(L->cone + deg2rad(4.5f), PI*0.98f) - Here, it is needed to enlarge the shadow map frustum to include also
-    // displaced pixels and the pixels neighbor to the examining one.
 
     /* Ray Twitty */
     float tan_shift;

@@ -50,7 +50,8 @@ tmc::task<bool> CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
         gsl::czstring N{visual_name(E)};
         if (N == nullptr || N[0] == '\0')
         {
-            Msg("! [%s]: prevent %s[%u] from spawn because it has no visual", __FUNCTION__, E->name_replace()[0] ? E->name_replace() : E->s_name.c_str(), E->ID);
+            Msg("! [{}]: prevent {}[{}] from spawn because it has no visual", __FUNCTION__,
+                E->name_replace()[0] ? std::string_view{E->name_replace()} : std::string_view{E->s_name}, E->ID);
             co_return false;
         }
     }
@@ -82,7 +83,8 @@ tmc::task<bool> CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
     co_return res;
 }
 
-// void CDestroyablePhysicsObject::Hit							(float P,Fvector &dir,CObject *who,s16 element,Fvector p_in_object_space, float impulse,  ALife::EHitType hit_type)
+// void CDestroyablePhysicsObject::Hit							(float P,Fvector &dir,CObject *who,s16 element,Fvector p_in_object_space, float impulse,
+// ALife::EHitType hit_type)
 void CDestroyablePhysicsObject::Hit(SHit* pHDS)
 {
     SHit HDS = *pHDS;

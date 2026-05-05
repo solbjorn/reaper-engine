@@ -30,7 +30,7 @@ void unregister_file_mapping(void* address, const u32& size)
 
     FILE_MAPPINGS::iterator I = g_file_mappings.find(*(u32*)&address);
     VERIFY(I != g_file_mappings.end());
-    //	VERIFY2							((*I).second.first == size,make_string("file mapping sizes are different: %d -> %d",(*I).second.first,size));
+
     g_file_mapped_memory -= (*I).second.first;
     --g_file_mapped_count;
 
@@ -41,12 +41,12 @@ void dump_file_mappings()
 {
     std::scoped_lock<decltype(g_file_mappings_Mutex)> lock(g_file_mappings_Mutex);
 
-    Msg("* active file mappings (%d):", g_file_mappings.size());
+    Msg("* active file mappings ({}):", g_file_mappings.size());
 
     FILE_MAPPINGS::const_iterator I = g_file_mappings.begin();
     FILE_MAPPINGS::const_iterator E = g_file_mappings.end();
     for (; I != E; ++I)
-        Msg("* [0x%08x][%d][%s]", (*I).first, (*I).second.first, (*I).second.second.c_str());
+        Msg("* [{:#010x}][{}][{}]", (*I).first, (*I).second.first, (*I).second.second);
 }
 #endif // DEBUG
 
@@ -246,7 +246,7 @@ IReader* IReader::open_chunk_iterator(u32& ID, IReader* _prev)
     // На всякий случай тут тоже так сделаем по аналогии с find_chunk()
     if (elapsed() < _size)
     {
-        Msg("!![%s] chunk [%u] has invalid size [%zd], return elapsed size [%zd]", __FUNCTION__, ID, _size, elapsed());
+        Msg("!![{}] chunk [{}] has invalid size [{}], return elapsed size [{}]", __FUNCTION__, ID, _size, elapsed());
         _size = elapsed();
     }
 
@@ -284,7 +284,7 @@ void IReader::skip_bom(const char* dbg_name)
         Pos++;
     }
 
-    Msg("! Skip BOM for file [%s]", dbg_name);
+    Msg("! Skip BOM for file [{}]", dbg_name);
 }
 
 void IReader::r(void* p, gsl::index cnt)
@@ -449,7 +449,7 @@ CVirtualFileReader::CVirtualFileReader(gsl::czstring cFileName)
     Size = sz.QuadPart;
 
     if (Size == 0)
-        Msg("~~[%s] Found empty file: [%s]", __FUNCTION__, cFileName);
+        Msg("~~[{}] Found empty file: [{}]", __FUNCTION__, cFileName);
 
     hSrcMap = CreateFileMapping(hSrcFile, nullptr, PAGE_READONLY, 0, 0, nullptr);
     R_ASSERT3(hSrcMap != INVALID_HANDLE_VALUE, cFileName, Debug.error2string(GetLastError()));

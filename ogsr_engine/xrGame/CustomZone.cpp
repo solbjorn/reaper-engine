@@ -206,7 +206,7 @@ void CCustomZone::Load(LPCSTR section)
         if (s32(m_dwBlowoutParticlesTime) > m_StateTime[eZoneStateBlowout])
         {
             m_dwBlowoutParticlesTime = m_StateTime[eZoneStateBlowout];
-            Msg("! ERROR: invalid 'blowout_particles_time' in '%s'", section);
+            Msg("! ERROR: invalid 'blowout_particles_time' in '{}'", section);
         }
     }
     else
@@ -220,7 +220,7 @@ void CCustomZone::Load(LPCSTR section)
         if (s32(m_dwBlowoutLightTime) > m_StateTime[eZoneStateBlowout])
         {
             m_dwBlowoutLightTime = m_StateTime[eZoneStateBlowout];
-            Msg("! ERROR: invalid 'blowout_light_time' in '%s'", section);
+            Msg("! ERROR: invalid 'blowout_light_time' in '{}'", section);
         }
     }
     else
@@ -234,7 +234,7 @@ void CCustomZone::Load(LPCSTR section)
         if (s32(m_dwBlowoutSoundTime) > m_StateTime[eZoneStateBlowout])
         {
             m_dwBlowoutSoundTime = m_StateTime[eZoneStateBlowout];
-            Msg("! ERROR: invalid 'blowout_sound_time' in '%s'", section);
+            Msg("! ERROR: invalid 'blowout_sound_time' in '{}'", section);
         }
     }
     else
@@ -248,7 +248,7 @@ void CCustomZone::Load(LPCSTR section)
         if (s32(m_dwBlowoutExplosionTime) > m_StateTime[eZoneStateBlowout])
         {
             m_dwBlowoutExplosionTime = m_StateTime[eZoneStateBlowout];
-            Msg("! ERROR: invalid 'blowout_explosion_time' in '%s'", section);
+            Msg("! ERROR: invalid 'blowout_explosion_time' in '{}'", section);
         }
     }
     else
@@ -268,7 +268,7 @@ void CCustomZone::Load(LPCSTR section)
         if ((s32)m_dwBlowoutWindTimeEnd < m_StateTime[eZoneStateBlowout])
         {
             m_dwBlowoutWindTimeEnd = u32(m_StateTime[eZoneStateBlowout] - 1);
-            Msg("! ERROR: invalid 'blowout_wind_time_end' in '%s'", section);
+            Msg("! ERROR: invalid 'blowout_wind_time_end' in '{}'", section);
         }
 
         m_fBlowoutWindPowerMax = pSettings->r_float(section, "blowout_wind_power");
@@ -671,7 +671,8 @@ tmc::task<void> CCustomZone::shedule_Update(u32 dt)
                 // If the ID doesn't match... Just remove the grassbender_id.
                 if (grass_shader_data.id[grassbender_id] == ID())
                 {
-                    grass_shader_data.str_target[grassbender_id] += g_pGamePersistent->GrassBenderToValue(grass_shader_data.str_target[grassbender_id], 0.0f, 4.0f, false);
+                    grass_shader_data.str_target[grassbender_id] +=
+                        g_pGamePersistent->GrassBenderToValue(grass_shader_data.str_target[grassbender_id], 0.0f, 4.0f, false);
 
                     // Remove ( Don't worry, GrassBenderToValue() it's going to get the == 0 )
                     if (grass_shader_data.str_target[grassbender_id] <= 0.f)
@@ -750,7 +751,7 @@ void CCustomZone::feel_touch_delete(CObject* O)
 {
 #ifdef DEBUG
     if (bDebug)
-        Msg("%s %s", *O->cName(), "leaving a zone.");
+        Msg("{} {}", O->cName(), "leaving a zone.");
 #endif
 
     if (smart_cast<CActor*>(O))
@@ -1168,7 +1169,8 @@ void CCustomZone::UpdateBlowout()
         BornArtefact(false);
 
         if (m_BendGrass_Blowout)
-            g_pGamePersistent->GrassBendersAddExplosion(ID(), Position(), Fvector{0.0f, -99.0f, 0.0f}, 1.33f, m_BendGrass_Blowout_speed, 1.0f, m_BendGrass_Blowout_radius);
+            g_pGamePersistent->GrassBendersAddExplosion(ID(), Position(), Fvector{0.0f, -99.0f, 0.0f}, 1.33f, m_BendGrass_Blowout_speed, 1.0f,
+                                                        m_BendGrass_Blowout_radius);
     }
 }
 
@@ -1248,10 +1250,10 @@ void CCustomZone::OnOwnershipTake(u16 id)
 {
     CGameObject* GO = smart_cast<CGameObject*>(Level().Objects.net_Find(id));
     VERIFY(GO);
+
     if (!smart_cast<CArtefact*>(GO))
-    {
-        Msg("[%s] zone_name[%s] object_name[%s]", __FUNCTION__, cName().c_str(), GO->cName().c_str());
-    }
+        Msg("[{}] zone_name[{}] object_name[{}]", __FUNCTION__, cName(), GO->cName());
+
     CArtefact* artefact = smart_cast<CArtefact*>(Level().Objects.net_Find(id));
     VERIFY(artefact);
     artefact->H_SetParent(this);
@@ -1350,9 +1352,11 @@ void CCustomZone::SpawnArtefact()
             break;
     }
     R_ASSERT(i < m_ArtefactSpawn.size());
+
 #ifdef DEBUG
-    Msg("--[%s] anom: [%s], art: [%s]", __FUNCTION__, cName().c_str(), *m_ArtefactSpawn[i].section);
+    Msg("--[{}] anom: [{}], art: [{}]", __FUNCTION__, cName(), m_ArtefactSpawn[i].section);
 #endif
+
     Fvector pos;
     Center(pos);
     pos.y = pos.y + 1;
@@ -1365,8 +1369,9 @@ void CCustomZone::SpawnArtefact()
 void CCustomZone::BornArtefact(bool forced)
 {
 #ifdef DEBUG
-    Msg("BornArtefact[%s] prob %f cnt2 %f forced %d", cName().c_str(), m_fArtefactSpawnProbability, (float)m_ArtefactSpawn.size(), forced);
+    Msg("BornArtefact[{}] prob {} cnt2 {} forced {}", cName(), m_fArtefactSpawnProbability, m_ArtefactSpawn.size(), forced);
 #endif
+
     if (!SpawnBlowoutArtefacts || m_ArtefactSpawn.empty())
         return;
     if (Device.dwPrecacheFrame)
@@ -1489,13 +1494,15 @@ void CCustomZone::UpdateWind()
     if (m_dwBlowoutWindTimePeak > (u32)m_iStateTime)
     {
         g_pGamePersistent->Environment().wind_strength_factor = m_fBlowoutWindPowerMax +
-            (m_fStoreWindPower - m_fBlowoutWindPowerMax) * float(m_dwBlowoutWindTimePeak - (u32)m_iStateTime) / float(m_dwBlowoutWindTimePeak - m_dwBlowoutWindTimeStart);
+            (m_fStoreWindPower - m_fBlowoutWindPowerMax) * float(m_dwBlowoutWindTimePeak - (u32)m_iStateTime) /
+                float(m_dwBlowoutWindTimePeak - m_dwBlowoutWindTimeStart);
         clamp(g_pGamePersistent->Environment().wind_strength_factor, 0.f, 1.f);
     }
     else
     {
         g_pGamePersistent->Environment().wind_strength_factor = m_fBlowoutWindPowerMax +
-            (m_fStoreWindPower - m_fBlowoutWindPowerMax) * float((u32)m_iStateTime - m_dwBlowoutWindTimePeak) / float(m_dwBlowoutWindTimeEnd - m_dwBlowoutWindTimePeak);
+            (m_fStoreWindPower - m_fBlowoutWindPowerMax) * float((u32)m_iStateTime - m_dwBlowoutWindTimePeak) /
+                float(m_dwBlowoutWindTimeEnd - m_dwBlowoutWindTimePeak);
         clamp(g_pGamePersistent->Environment().wind_strength_factor, 0.f, 1.f);
     }
 }
@@ -1508,7 +1515,8 @@ u32 CCustomZone::ef_weapon_type() const
     return (m_ef_weapon_type);
 }
 
-void CCustomZone::CreateHit(u16 id_to, u16 id_from, const Fvector& hit_dir, float hit_power, s16 bone_id, const Fvector& pos_in_bone, float hit_impulse, ALife::EHitType hit_type)
+void CCustomZone::CreateHit(u16 id_to, u16 id_from, const Fvector& hit_dir, float hit_power, s16 bone_id, const Fvector& pos_in_bone, float hit_impulse,
+                            ALife::EHitType hit_type)
 {
     {
         if (m_owner_id != u32(-1))
@@ -1687,7 +1695,8 @@ void CCustomZone::GrassZoneUpdate()
     if (IsActive)
     {
         if (m_BendGrass_whenactive_speed >= 0)
-            grass_shader_data.speed[grassbender_id] += g_pGamePersistent->GrassBenderToValue(grass_shader_data.speed[grassbender_id], m_BendGrass_whenactive_speed, 10.0f, true);
+            grass_shader_data.speed[grassbender_id] +=
+                g_pGamePersistent->GrassBenderToValue(grass_shader_data.speed[grassbender_id], m_BendGrass_whenactive_speed, 10.0f, true);
 
         if (m_BendGrass_whenactive_str >= 0)
             grass_shader_data.str_target[grassbender_id] +=
@@ -1695,7 +1704,9 @@ void CCustomZone::GrassZoneUpdate()
     }
     else
     {
-        grass_shader_data.speed[grassbender_id] += g_pGamePersistent->GrassBenderToValue(grass_shader_data.speed[grassbender_id], m_BendGrass_idle_speed, 10.0f, true);
-        grass_shader_data.str_target[grassbender_id] += g_pGamePersistent->GrassBenderToValue(grass_shader_data.str_target[grassbender_id], m_BendGrass_idle_str, 10.0f, true);
+        grass_shader_data.speed[grassbender_id] +=
+            g_pGamePersistent->GrassBenderToValue(grass_shader_data.speed[grassbender_id], m_BendGrass_idle_speed, 10.0f, true);
+        grass_shader_data.str_target[grassbender_id] +=
+            g_pGamePersistent->GrassBenderToValue(grass_shader_data.str_target[grassbender_id], m_BendGrass_idle_str, 10.0f, true);
     }
 }

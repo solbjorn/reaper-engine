@@ -129,7 +129,10 @@ IC const CLevelGraph::CPosition CLevelGraph::vertex_position(const Fvector& posi
     return (vertex_position(_vertex_position, position));
 }
 
-IC bool CLevelGraph::inside(const CLevelGraph::CVertex& vertex, const CLevelGraph::CPosition& vertex_position) const { return (vertex_position.xz() == vertex.position().xz()); }
+IC bool CLevelGraph::inside(const CLevelGraph::CVertex& vertex, const CLevelGraph::CPosition& vertex_position) const
+{
+    return (vertex_position.xz() == vertex.position().xz());
+}
 
 IC bool CLevelGraph::inside(const CLevelGraph::CVertex& vertex, const Fvector& position) const
 {
@@ -162,7 +165,10 @@ IC bool CLevelGraph::inside(const CLevelGraph::CVertex& vertex, const Fvector& p
     return (inside(vertex, vertex_position(position), epsilon));
 }
 
-IC bool CLevelGraph::inside(const CVertex* vertex, const CLevelGraph::CPosition& vertex_position, const float epsilon) const { return (inside(*vertex, vertex_position, epsilon)); }
+IC bool CLevelGraph::inside(const CVertex* vertex, const CLevelGraph::CPosition& vertex_position, const float epsilon) const
+{
+    return (inside(*vertex, vertex_position, epsilon));
+}
 
 IC bool CLevelGraph::inside(const CVertex* vertex, const Fvector& position, const float epsilon) const { return (inside(*vertex, position, epsilon)); }
 
@@ -282,8 +288,8 @@ IC Fvector CLevelGraph::v3d(const Fvector2& vector2d) const { return (Fvector().
 IC Fvector2 CLevelGraph::v2d(const Fvector& vector3d) const { return (Fvector2().set(vector3d.x, vector3d.z)); }
 
 template <bool bAssignY, typename T>
-IC bool CLevelGraph::create_straight_path(u32 start_vertex_id, const Fvector2& start_point, const Fvector2& finish_point, xr_vector<T>& tpaOutputPoints, const T& example,
-                                          bool bAddFirstPoint, bool bClearPath) const
+IC bool CLevelGraph::create_straight_path(u32 start_vertex_id, const Fvector2& start_point, const Fvector2& finish_point, xr_vector<T>& tpaOutputPoints,
+                                          const T& example, bool bAddFirstPoint, bool bClearPath) const
 {
     if (!valid_vertex_position(v3d(finish_point)))
         return (false);
@@ -390,7 +396,8 @@ IC bool CLevelGraph::create_straight_path(u32 start_vertex_id, const Fvector2& s
                 VERIFY(_valid(next2));
                 u32 dwIntersect =
 #endif
-                    intersect_no_check(start_point.x, start_point.y, finish_point.x, finish_point.y, next1.x, next1.y, next2.x, next2.y, &tIntersectPoint.x, &tIntersectPoint.z);
+                    intersect_no_check(start_point.x, start_point.y, finish_point.x, finish_point.y, next1.x, next1.y, next2.x, next2.y, &tIntersectPoint.x,
+                                       &tIntersectPoint.z);
 #ifdef DEBUG
                 VERIFY(dwIntersect);
                 VERIFY(_valid(tIntersectPoint.x));
@@ -418,14 +425,16 @@ IC bool CLevelGraph::create_straight_path(u32 start_vertex_id, const Fvector2& s
                 found = true;
                 prev_vertex_id = cur_vertex_id;
                 cur_vertex_id = next_vertex_id;
+
 #ifdef DEBUG
                 if (tpaOutputPoints.size() > 100000)
                 {
-                    Msg("CLevelGraph::create_straight_path : Loop became infinite (%d,[%f][%f][%f],[%f][%f][%f])", start_vertex_id, VPUSH(v3d(start_point)),
+                    Msg("CLevelGraph::create_straight_path : Loop became infinite ({},[{}][{}][{}],[{}][{}][{}])", start_vertex_id, VPUSH(v3d(start_point)),
                         VPUSH(v3d(finish_point)));
                     R_ASSERT2(false, "Loop became infinite :-( call Dima and SAVE YOUR LOG!");
                 }
 #endif
+
                 break;
             }
         }

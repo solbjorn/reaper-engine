@@ -114,7 +114,6 @@ void CDangerManager::update()
     OBJECTS::const_iterator E = m_objects.end();
     for (; I != E; ++I)
     {
-        //		Msg					("%6d : Danger : [%d][%d]",(*I).time(),(*I).type(),(*I).perceive_type());
         float value = do_evaluate(*I);
         if (result > value)
         {
@@ -261,7 +260,8 @@ void CDangerManager::add(const CSoundObject& object)
             }
         }
 
-        add(CDangerObject(obj, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeBulletRicochet, CDangerObject::eDangerPerceiveTypeSound));
+        add(CDangerObject(obj, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeBulletRicochet,
+                          CDangerObject::eDangerPerceiveTypeSound));
         return;
     }
 
@@ -277,7 +277,8 @@ void CDangerManager::add(const CSoundObject& object)
             }
         }
 
-        add(CDangerObject(obj, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeAttackSound, CDangerObject::eDangerPerceiveTypeSound));
+        add(CDangerObject(obj, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeAttackSound,
+                          CDangerObject::eDangerPerceiveTypeSound));
         return;
     }
 
@@ -297,13 +298,14 @@ void CDangerManager::add(const CSoundObject& object)
             {
                 if (sol::function func; ai().script_engine().function(on_before_add.c_str(), func))
                 {
-                    if (!func(m_object->lua_game_object(), object, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeEntityAttacked,
-                              CDangerObject::eDangerPerceiveTypeSound))
+                    if (!func(m_object->lua_game_object(), object, object.m_object_params.m_position, object.m_level_time,
+                              CDangerObject::eDangerTypeEntityAttacked, CDangerObject::eDangerPerceiveTypeSound))
                         return;
                 }
             }
 
-            add(CDangerObject(obj, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeEntityAttacked, CDangerObject::eDangerPerceiveTypeSound));
+            add(CDangerObject(obj, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeEntityAttacked,
+                              CDangerObject::eDangerPerceiveTypeSound));
         }
 
         return;
@@ -321,7 +323,8 @@ void CDangerManager::add(const CSoundObject& object)
             }
         }
 
-        add(CDangerObject(obj, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeEntityDeath, CDangerObject::eDangerPerceiveTypeSound));
+        add(CDangerObject(obj, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeEntityDeath,
+                          CDangerObject::eDangerPerceiveTypeSound));
         return;
     }
 
@@ -337,7 +340,8 @@ void CDangerManager::add(const CSoundObject& object)
             }
         }
 
-        add(CDangerObject(obj, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeEnemySound, CDangerObject::eDangerPerceiveTypeSound));
+        add(CDangerObject(obj, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeEnemySound,
+                          CDangerObject::eDangerPerceiveTypeSound));
         return;
     }
 }
@@ -359,7 +363,8 @@ void CDangerManager::add(const CHitObject& object)
     {
         if (sol::function func; ai().script_engine().function(on_before_add.c_str(), func))
         {
-            if (!func(m_object->lua_game_object(), object, obj->Position(), object.m_level_time, CDangerObject::eDangerTypeAttacked, CDangerObject::eDangerPerceiveTypeHit))
+            if (!func(m_object->lua_game_object(), object, obj->Position(), object.m_level_time, CDangerObject::eDangerTypeAttacked,
+                      CDangerObject::eDangerPerceiveTypeHit))
                 return;
         }
     }

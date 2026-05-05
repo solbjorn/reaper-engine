@@ -91,7 +91,7 @@ void CSE_ALifeInventoryItem::UPDATE_Write(NET_Packet& tNetPacket)
     num_items.mask = 0;
     num_items.num_items = m_u8NumItems;
 
-    R_ASSERT2(num_items.num_items < (u8(1) << 5), make_string("%d", num_items.num_items));
+    R_ASSERT2(num_items.num_items < (u8(1) << 5), xr::format("{}", +num_items.num_items));
 
     if (State.enabled)
         num_items.mask |= inventory_item_state_enabled;
@@ -136,7 +136,7 @@ void CSE_ALifeInventoryItem::UPDATE_Read(NET_Packet& tNetPacket)
     num_items.common = m_u8NumItems;
     m_u8NumItems = num_items.num_items;
 
-    R_ASSERT2(m_u8NumItems < (u8(1) << 5), make_string("%d", m_u8NumItems));
+    R_ASSERT2(m_u8NumItems < (u8(1) << 5), xr::format("{}", m_u8NumItems));
 
     tNetPacket.r_vec3(State.position);
 
@@ -524,7 +524,6 @@ void CSE_ALifeItemWeaponMagazinedWGL::UPDATE_Read(NET_Packet& P)
     {
         ammo_type2 = P.r_u8();
         a_elapsed2 = P.r_u16();
-        // Msg( "~~[%s][%s] update_read: m_bGrenadeMode: [%u], iAmmoElapsed2: [%u], m_ammoType2: [%u]", __FUNCTION__, this->name(), m_bGrenadeMode, a_elapsed2, ammo_type2 );
     }
 }
 
@@ -536,7 +535,6 @@ void CSE_ALifeItemWeaponMagazinedWGL::UPDATE_Write(NET_Packet& P)
 
     P.w_u8(ammo_type2);
     P.w_u16(a_elapsed2);
-    // Msg( "~~[%s][%s] update_write: m_bGrenadeMode: [%u], iAmmoElapsed2: [%u], m_ammoType2: [%u]", __FUNCTION__, this->name(), m_bGrenadeMode, a_elapsed2, ammo_type2 );
 }
 
 void CSE_ALifeItemWeaponMagazinedWGL::__STATE_Read(NET_Packet& P, u16 size)
@@ -547,7 +545,6 @@ void CSE_ALifeItemWeaponMagazinedWGL::__STATE_Read(NET_Packet& P, u16 size)
     {
         ammo_type2 = P.r_u8();
         a_elapsed2 = P.r_u16();
-        // Msg( "~~[%s][%s] update_read: m_bGrenadeMode: [%u], iAmmoElapsed2: [%u], m_ammoType2: [%u]", __FUNCTION__, this->name(), m_bGrenadeMode, a_elapsed2, ammo_type2 );
     }
     if (!P.r_eof())
     {
@@ -563,7 +560,6 @@ void CSE_ALifeItemWeaponMagazinedWGL::__STATE_Write(NET_Packet& P)
     P.w_u8(ammo_type2);
     P.w_u16(a_elapsed2);
     P.w_u8(m_bGrenadeMode ? 1 : 0);
-    // Msg( "~~[%s][%s] update_write: m_bGrenadeMode: [%u], iAmmoElapsed2: [%u], m_ammoType2: [%u]", __FUNCTION__, this->name(), m_bGrenadeMode, a_elapsed2, ammo_type2 );
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -611,7 +607,10 @@ bool CSE_ALifeItemAmmo::__can_switch_offline() const { return inherited::__can_s
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemDetector
 ////////////////////////////////////////////////////////////////////////////
-CSE_ALifeItemDetector::CSE_ALifeItemDetector(LPCSTR caSection) : CSE_ALifeItem(caSection) { m_ef_detector_type = pSettings->r_u32(caSection, "ef_detector_type"); }
+CSE_ALifeItemDetector::CSE_ALifeItemDetector(LPCSTR caSection) : CSE_ALifeItem(caSection)
+{
+    m_ef_detector_type = pSettings->r_u32(caSection, "ef_detector_type");
+}
 
 CSE_ALifeItemDetector::~CSE_ALifeItemDetector() {}
 
@@ -805,7 +804,10 @@ bool CSE_ALifeItemBolt::used_ai_locations() const { return false; }
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemCustomOutfit
 ////////////////////////////////////////////////////////////////////////////
-CSE_ALifeItemCustomOutfit::CSE_ALifeItemCustomOutfit(LPCSTR caSection) : CSE_ALifeItem(caSection) { m_ef_equipment_type = pSettings->r_u32(caSection, "ef_equipment_type"); }
+CSE_ALifeItemCustomOutfit::CSE_ALifeItemCustomOutfit(LPCSTR caSection) : CSE_ALifeItem(caSection)
+{
+    m_ef_equipment_type = pSettings->r_u32(caSection, "ef_equipment_type");
+}
 
 CSE_ALifeItemCustomOutfit::~CSE_ALifeItemCustomOutfit() {}
 

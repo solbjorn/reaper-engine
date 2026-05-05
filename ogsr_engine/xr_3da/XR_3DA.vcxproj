@@ -18,7 +18,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="..\Engine_properties.props" />
   <PropertyGroup Label="UserMacros">
-    <AbseilBase>absl\base\absl_base.lib;absl\base\absl_malloc_internal.lib;absl\base\absl_raw_logging_internal.lib;absl\base\absl_spinlock_wait.lib;absl\base\absl_strerror.lib;absl\base\absl_throw_delegate.lib</AbseilBase>
+    <AbseilBase>absl\base\absl_base.lib;absl\base\absl_hardening.lib;absl\base\absl_malloc_internal.lib;absl\base\absl_raw_logging_internal.lib;absl\base\absl_spinlock_wait.lib;absl\base\absl_strerror.lib;absl\base\absl_throw_delegate.lib</AbseilBase>
     <AbseilContainer>absl\container\absl_hashtablez_sampler.lib;absl\container\absl_raw_hash_set.lib</AbseilContainer>
     <AbseilDebugging>absl\debugging\absl_examine_stack.lib;absl\debugging\absl_stacktrace.lib;absl\debugging\absl_symbolize.lib</AbseilDebugging>
     <AbseilHash>absl\hash\absl_city.lib;absl\hash\absl_hash.lib</AbseilHash>

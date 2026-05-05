@@ -428,8 +428,8 @@ void CUILevelMap::Init(shared_str name, CInifile& gameLtx, LPCSTR sh_name)
 
     if (FALSE == fsimilar(kw, kh, EPS_L))
     {
-        Msg(" --incorrect global rect definition for map [%s]  kw=%f kh=%f", *MapName(), kw, kh);
-        Msg(" --try x2=%f or  y2=%f", m_GlobalRect.x1 + kh * BoundRect().width(), m_GlobalRect.y1 + kw * BoundRect().height());
+        Msg(" --incorrect global rect definition for map [{}]  kw={} kh={}", MapName(), kw, kh);
+        Msg(" --try x2={} or  y2={}", m_GlobalRect.x1 + kh * BoundRect().width(), m_GlobalRect.y1 + kw * BoundRect().height());
     }
 #endif
 }
@@ -539,9 +539,7 @@ bool CUILevelMap::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 
         Fvector real_position{};
         if (!MapWnd()->ConvertCursorPosToMap(&real_position, this))
-        {
-            Msg("! Cannot get real location from map point");
-        }
+            Log("! Cannot get real location from map point");
 
         g_actor->callback(GameObject::eUIMapClick)(pos, MapName().c_str(), real_position);
     }
@@ -564,8 +562,9 @@ void CUILevelMap::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
     switch (msg)
     {
     case MAP_SELECT_SPOT2: {
+        // Правильнее было бы проверять там, откуда вызвали, но надо кучу инклудов... Да ну нахер возиться.
         const auto* ui_game_sp = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-        if (ui_game_sp->PdaMenu->m_pActiveSection == EPdaTabs::eptMap) // Правильнее было бы проверять там, откуда вызвали, но надо кучу инклудов... Да ну нахер возиться.
+        if (ui_game_sp->PdaMenu->m_pActiveSection == EPdaTabs::eptMap)
             MapWnd()->ActivatePropertiesBox(pWnd);
     }
     break;
@@ -586,9 +585,8 @@ void CUILevelMap::OnFocusLost()
     MapWnd()->HideHint(this);
 }
 
-CUIMiniMap::CUIMiniMap() {}
-
-CUIMiniMap::~CUIMiniMap() {}
+CUIMiniMap::CUIMiniMap() = default;
+CUIMiniMap::~CUIMiniMap() = default;
 
 void CUIMiniMap::Init(shared_str name, CInifile& gameLtx, LPCSTR sh_name)
 {

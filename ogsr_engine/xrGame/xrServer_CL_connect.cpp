@@ -129,8 +129,8 @@ void xrServer::OnBuildVersionRespond(IClient* CL, NET_Packet& P)
     u64 _him = P.r_u64();
 
 #ifdef DEBUG
-    Msg("_our = %d", _our);
-    Msg("_him = %d", _him);
+    Msg("_our = {}", _our);
+    Msg("_him = {}", _him);
 #endif // DEBUG
 
     if (_our != _him)

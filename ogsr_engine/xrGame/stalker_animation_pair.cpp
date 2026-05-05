@@ -7,7 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_animation_pair.h"
+
 #include "../xr_3da/motion.h"
 #include "ai_debug.h"
 #include "ai/stalker/ai_stalker.h"
@@ -35,7 +37,8 @@ void CStalkerAnimationPair::synchronize(IKinematicsAnimated* skeleton_animated, 
 }
 
 #ifndef USE_HEAD_BONE_PART_FAKE
-void CStalkerAnimationPair::play_global_animation(IKinematicsAnimated* skeleton_animated, PlayCallback callback, CAI_Stalker* object, const bool& use_animation_movement_control)
+void CStalkerAnimationPair::play_global_animation(IKinematicsAnimated* skeleton_animated, PlayCallback callback, CAI_Stalker* object,
+                                                  const bool& use_animation_movement_control)
 #else
 void CStalkerAnimationPair::play_global_animation(IKinematicsAnimated* skeleton_animated, PlayCallback callback, CAI_Stalker* object, const u32& bone_part,
                                                   const bool& use_animation_movement_control)
@@ -75,13 +78,6 @@ void CStalkerAnimationPair::play(IKinematicsAnimated* skeleton_animated, PlayCal
     VERIFY(animation());
     if (actual())
     {
-#if 0
-#ifdef DEBUG
-		if (psAI_Flags.is(aiAnimation) && blend())
-			Msg				("%6d [%s][%s][%s][%f]",Device.dwTimeGlobal,m_object_name,m_animation_type_name,*animation()->name(),blend()->timeCurrent);
-#endif
-#endif
-
 #ifdef DEBUG
         m_just_started = false;
 #endif // DEBUG
@@ -134,8 +130,10 @@ void CStalkerAnimationPair::play(IKinematicsAnimated* skeleton_animated, PlayCal
     {
         CMotionDef* motion = skeleton_animated->LL_GetMotionDef(animation());
         VERIFY(motion);
+
         LPCSTR name = skeleton_animated->LL_MotionDefName_dbg(animation()).first;
-        Msg("%6d [%s][%s][%s][%d] - LOOPED: %d", Device.dwTimeGlobal, m_object_name, m_animation_type_name, name, motion->bone_or_part, !(motion->flags & esmStopAtEnd));
+        Msg("{:6} [{}][{}][{}][{}] - LOOPED: {}", Device.dwTimeGlobal, m_object_name, m_animation_type_name, name, motion->bone_or_part,
+            !(motion->flags & esmStopAtEnd));
     }
 #endif
 }
@@ -154,15 +152,6 @@ std::pair<LPCSTR, LPCSTR>* CStalkerAnimationPair::blend_id(IKinematicsAnimated* 
     if (blends.size() < 2)
         return (0);
 
-#if 0
-	VERIFY2					(
-		blends[blends.size() - 2]->motionID != animation(),
-		make_string(
-			"animation is blending with itself (%s)",
-			skeleton_animated->LL_MotionDefName_dbg(animation()).first
-		)
-	);
-#endif
     result = skeleton_animated->LL_MotionDefName_dbg(blends[blends.size() - 2]->motionID);
     return (&result);
 }

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "ResourceManager.h"
+
 #include "blenders\blender.h"
 
 BOOL bShadersXrExport{};
@@ -37,19 +38,19 @@ tmc::task<void> CResourceManager::OnDeviceCreate()
     string_path fname;
     if (FS.exist(fname, _game_data_, "shaders.ltx"))
     {
-        Msg("Loading shader file: [%s]", fname);
+        Msg("Loading shader file: [{}]", fname);
         LoadShaderLtxFile(fname);
     }
     else
     {
         if (FS.exist(fname, _game_data_, "shaders_cop.xr"))
         {
-            Msg("Loading shader file: [%s]", fname);
+            Msg("Loading shader file: [{}]", fname);
             LoadShaderFile(fname);
         }
         else if (FS.exist(fname, _game_data_, "shaders.xr"))
         {
-            Msg("Loading shader file: [%s]", fname);
+            Msg("Loading shader file: [{}]", fname);
             LoadShaderFile(fname);
         }
     }
@@ -95,14 +96,12 @@ void CResourceManager::LoadShaderFile(LPCSTR fname)
             IBlenderXr* B = IBlenderXr::Create(desc.CLS);
             if (!B)
             {
-                Msg("! Renderer doesn't support blender '%s'", desc.cName);
+                Msg("! Renderer doesn't support blender '{}'", desc.cName);
             }
             else
             {
                 if (B->getDescription().version < desc.version)
-                {
-                    Msg("! Version conflict in shader '%s'", desc.cName);
-                }
+                    Msg("! Version conflict in shader '{}'", desc.cName);
 
                 chunk->seek(0);
 
@@ -113,13 +112,12 @@ void CResourceManager::LoadShaderFile(LPCSTR fname)
                 {
                     if (ini.section_exist(desc.cName))
                     {
-                        Msg("~~Found existing section [%s] in [%s]. Replacing!", desc.cName, ini_path);
+                        Msg("~~Found existing section [{}] in [{}]. Replacing!", desc.cName, ini_path);
                         ini.remove_section(desc.cName);
                     }
+
                     B->SaveIni(&ini, desc.cName);
                 }
-
-                // Msg("Loading shader: [%s]", desc.cName);
 
                 std::pair<map_BlenderIt, bool> I = m_blenders.insert_or_assign(xr_strdup(desc.cName), B);
                 ASSERT_FMT(I.second, "CResourceManager::LoadSharedFile - found shader name [%s]", desc.cName);
@@ -151,18 +149,14 @@ void CResourceManager::LoadShaderLtxFile(LPCSTR fname)
         IBlenderXr* B = IBlenderXr::Create(cls);
         if (!B)
         {
-            Msg("! Renderer doesn't support blender '%s'", name.c_str());
+            Msg("! Renderer doesn't support blender '{}'", name);
         }
         else
         {
             if (B->getDescription().version < version)
-            {
-                Msg("! Version conflict in shader '%s'", name.c_str());
-            }
+                Msg("! Version conflict in shader '{}'", name);
 
             B->LoadIni(&ini, name.c_str());
-
-            // Msg("Loading shader: [%s]", desc.cName);
 
             std::pair<map_BlenderIt, bool> I = m_blenders.insert_or_assign(xr_strdup(name.c_str()), B);
             ASSERT_FMT(I.second, "CResourceManager::LoadSharedFile - found shader name [%s]", name.c_str());

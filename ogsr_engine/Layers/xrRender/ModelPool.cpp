@@ -94,7 +94,7 @@ dxRender_Visual* CModelPool::Instance_Load(const char* N, BOOL allow_register)
     // Actual loading
 #ifdef DEBUG
     if (bLogging)
-        Msg("- Uncached model loading: %s", fn);
+        Msg("- Uncached model loading: {}", fn);
 #endif // DEBUG
 
     IReader* data = FS.r_open(fn);
@@ -140,9 +140,11 @@ void CModelPool::Destroy()
     {
         REGISTRY_IT it = Registry.begin();
         dxRender_Visual* V = (dxRender_Visual*)it->first;
+
 #ifdef DEBUG
-        Msg("ModelPool: Destroy object: '%s'", *V->dbg_name);
+        Msg("ModelPool: Destroy object: '{}'", V->dbg_name);
 #endif
+
         DeleteInternal(V, TRUE);
     }
 
@@ -181,7 +183,7 @@ CModelPool::CModelPool()
 
         if (F->elapsed() >= gsl::index{sizeof(u8)} && F->r_u8() == 0)
         {
-            Msg("!![%s] file [%s] broken!", __FUNCTION__, fname);
+            Msg("!![{}] file [{}] broken!", __FUNCTION__, fname);
 
             FS.r_close(F);
             FS.file_delete(fname);
@@ -269,7 +271,7 @@ void CModelPool::refresh_prefetch(const char* low_name, const bool is_hud_visual
     if (now_prefetch2)
         return;
 
-    std::string s(low_name);
+    const std::string_view s{low_name};
     if (m_prefetched.find(s) != m_prefetched.end())
         return;
 
@@ -279,8 +281,7 @@ void CModelPool::refresh_prefetch(const char* low_name, const bool is_hud_visual
     }
     else if (vis_prefetch_ini)
     {
-        shared_str fname;
-        bool is_global = !!FS.exist("$game_meshes$", *fname.sprintf("%s.ogf", low_name));
+        bool is_global = !!FS.exist("$game_meshes$", shared_str{xr::format("{}.ogf", s)}.c_str());
         if (is_global)
             vis_prefetch_ini->w_fvector2("prefetch", low_name, Fvector2{2.f, is_hud_visual ? 2.f : 1.f});
     }
@@ -441,16 +442,16 @@ void CModelPool::Prefetch()
             const auto& low_name = pair.first;
             if (!Instance_Find(low_name.c_str()))
             {
-                shared_str fname;
-                fname.sprintf("%s.ogf", low_name.c_str());
-                if (FS.exist("$game_meshes$", fname.c_str()))
+                if (const auto fname = shared_str{xr::format("{}.ogf", low_name)}; FS.exist("$game_meshes$", fname.c_str()))
                 {
                     dxRender_Visual* V = Create(low_name.c_str());
                     Delete(V, FALSE);
                     cnt++;
                 }
                 else
-                    Msg("! [%s]: %s not found in $game_meshes$", __FUNCTION__, fname.c_str());
+                {
+                    Msg("! [{}]: {} not found in $game_meshes$", __FUNCTION__, fname);
+                }
             }
         }
     }
@@ -458,7 +459,7 @@ void CModelPool::Prefetch()
 
     if (!vis_prefetch_ini || !vis_prefetch_ini->section_exist("prefetch"))
     {
-        Msg("[%s] models prefetching time (%u): [%.2f s.]", __FUNCTION__, cnt, timer.GetElapsed_sec());
+        Msg("[{}] models prefetching time ({}): [{:.3} s.]", __FUNCTION__, cnt, timer.GetElapsed_sec());
         return;
     }
 
@@ -471,9 +472,7 @@ void CModelPool::Prefetch()
 
         if (!Instance_Find(low_name.c_str()))
         {
-            shared_str fname;
-            fname.sprintf("%s.ogf", low_name.c_str());
-            if (FS.exist("$game_meshes$", fname.c_str()))
+            if (const auto fname = shared_str{xr::format("{}.ogf", low_name)}; FS.exist("$game_meshes$", fname.c_str()))
             {
                 RImplementation.hud_loading = val2 == 2.f;
                 dxRender_Visual* V = Create(low_name.c_str());
@@ -482,13 +481,16 @@ void CModelPool::Prefetch()
                 cnt++;
             }
             else
-                Msg("! [%s]: %s not found in $game_meshes$", __FUNCTION__, fname.c_str());
+            {
+                Msg("! [{}]: {} not found in $game_meshes$", __FUNCTION__, fname);
+            }
         }
     }
 
     now_prefetch2 = false;
     Logging(TRUE);
-    Msg("[%s] models prefetching time (%u): [%.2f s.]", __FUNCTION__, cnt, timer.GetElapsed_sec());
+
+    Msg("[{}] models prefetching time ({}): [{:.3} s.]", __FUNCTION__, cnt, timer.GetElapsed_sec());
 }
 
 void CModelPool::ClearPool(BOOL b_complete)
@@ -534,11 +536,11 @@ void CModelPool::dump()
             const auto cur = K->mem_usage(false);
             sz += cur;
 
-            Msg("#%3u: [%3zd/%5zd Kb] - %s", k++, I->refs.load(), cur / 1024, I->name.c_str());
+            Msg("#{:3}: [{:3}/{:5} Kb] - {}", k++, I->refs, cur / 1024, I->name);
         }
     }
 
-    Msg("--- models: %u, mem usage: %zd Kb ", k, sz / 1024);
+    Msg("--- models: {}, mem usage: {} Kb ", k, sz / 1024);
 
     sz = 0;
     k = 0;
@@ -556,11 +558,11 @@ void CModelPool::dump()
             if (b_free)
                 ++free_cnt;
 
-            Msg("#%3u: [%s] [%5zd Kb] - %s", k++, b_free ? "free" : "used", cur / 1024, it->second.c_str());
+            Msg("#{:3}: [{}] [{:5} Kb] - {}", k++, b_free ? "free" : "used", cur / 1024, it->second);
         }
     }
 
-    Msg("--- instances: %u, free %u, mem usage: %zd Kb ", k, free_cnt, sz / 1024);
+    Msg("--- instances: {}, free {}, mem usage: {} Kb ", k, free_cnt, sz / 1024);
     Log("--- model pool --- end.");
 }
 
@@ -615,7 +617,7 @@ void CModelPool::process_vis_prefetch()
     {
         float val1{}, val2{};
         sscanf(val.c_str(), "%f,%f", &val1, &val2);
-        // Msg("--[%s] sscanf returns: [%f,%f]", __FUNCTION__, val1, val2);
+
         const float need = val1 * 0.8f; // скорость уменьшение популярности визуала
         // -0.5..+0.5 - добавить случайность, чтобы не было общего выключения
         const float rnd = Random.randF() - 0.5f;

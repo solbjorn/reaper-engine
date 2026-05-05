@@ -1,6 +1,9 @@
 #ifndef __XRCORE_STD_EXTENSIONS_H
 #define __XRCORE_STD_EXTENSIONS_H
 
+#include <gsl/narrow>
+#include <gsl/zstring>
+
 #include <algorithm>
 #include <memory>
 
@@ -166,7 +169,8 @@ constexpr ICF void xr_memcpy16(void* dst, const void* src)
     if (std::is_constant_evaluated())
         xr_memcpy_const(dst, src, 16);
     else
-        _mm_store_si128(static_cast<__m128i*>(std::assume_aligned<sizeof(__m128i)>(dst)), _mm_load_si128(static_cast<const __m128i*>(std::assume_aligned<sizeof(__m128i)>(src))));
+        _mm_store_si128(static_cast<__m128i*>(std::assume_aligned<sizeof(__m128i)>(dst)),
+                        _mm_load_si128(static_cast<const __m128i*>(std::assume_aligned<sizeof(__m128i)>(src))));
 }
 
 constexpr ICF void xr_memcpy128(void* dst, const void* src, size_t size)

@@ -168,7 +168,7 @@ void CLevel::Load_GameSpecific_CFORM(std::span<CDB::TRI> T)
         if ((*I)->GetID() > max_ID)
             max_ID = (*I)->GetID();
     }
-    // Msg("* Material remapping ID: [Max:%d, StaticMax:%d]",max_ID,max_static_ID);
+
     VERIFY(max_static_ID < 0xFFFF);
 
     if (static_mtl_count < 128)

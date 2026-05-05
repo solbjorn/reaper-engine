@@ -39,7 +39,7 @@ tmc::task<void> CAttachmentOwner::net_Destroy()
 {
 #ifdef DEBUG
     if (!attached_objects().empty())
-        Msg("Object %s has attached items :", *smart_cast<CGameObject*>(this)->cName());
+        Msg("Object {} has attached items :", smart_cast<CGameObject*>(this)->cName());
 #endif
 
     R_ASSERT(attached_objects().empty());

@@ -66,7 +66,10 @@ void CPHSimpleCharacter::UpdateDynamicDamage(dContact* c, u16 obj_material_idx, 
         c_vel = dSqrt(accepted_energy / m_mass * 2.f) * obj_material->fBounceDamageFactor;
     }
     else
+    {
         c_vel = 0.f;
+    }
+
 #ifdef DEBUG
     if (ph_dbg_draw_mask.test(phDbgDispObjCollisionDammage) && c_vel > dbg_vel_collid_damage_to_display)
     {
@@ -77,46 +80,22 @@ void CPHSimpleCharacter::UpdateDynamicDamage(dContact* c, u16 obj_material_idx, 
         float dbg_my_effective_e = Kself * m_collision_damage_factor;
         float dbg_obj_effective_e = Kobj * object_damage_factor;
         float dbg_free_energy = KK;
-        Msg("-----------------------------------------------------------------------------------------");
-        Msg("cd %s -effective vell %f", *PhysicsRefObject()->cName(), c_vel);
-        Msg("cd %s -my_norm_vell %f", *PhysicsRefObject()->cName(), dbg_my_norm_vell);
-        Msg("cd %s -obj_norm_vell %f", *PhysicsRefObject()->cName(), dbg_obj_norm_vell);
-        Msg("cd %s -my_kinetic_e %f", *PhysicsRefObject()->cName(), dbg_my_kinetic_e);
-        Msg("cd %s -obj_kinetic_e %f", *PhysicsRefObject()->cName(), dbg_obj_kinetic_e);
-        Msg("cd %s -my_effective_e %f", *PhysicsRefObject()->cName(), dbg_my_effective_e);
-        Msg("cd %s -obj_effective_e %f", *PhysicsRefObject()->cName(), dbg_obj_effective_e);
-        Msg("cd %s -effective_acceted_e %f", *PhysicsRefObject()->cName(), accepted_energy);
-        Msg("cd %s -real_acceted_e %f", *PhysicsRefObject()->cName(), Kself + Kobj - KK);
-        Msg("cd %s -free_energy %f", *PhysicsRefObject()->cName(), dbg_free_energy);
-        Msg("-----------------------------------------------------------------------------------------");
-        /*
-        static float dbg_my_norm_vell=0.f;
-        static float dbg_obj_norm_vell=0.f;
-        static float dbg_my_kinetic_e=0.f;
-        static float dbg_obj_kinetic_e=0.f;
-        static float dbg_my_effective_e=0.f;
-        static float dbg_obj_effective_e=0.f;
-        static float dbg_free_energy=0.f;
-        if()
-            dbg_my_norm_vell=norm_vel;
-            dbg_obj_norm_vell=norm_obj_vel;
-            dbg_my_kinetic_e=Kself;
-            dbg_obj_kinetic_e=Kobj;
-            dbg_my_effective_e=Kself*m_collision_damage_factor;
-            dbg_obj_effective_e=Kobj*object_damage_factor;
-            dbg_free_energy=KK;
-        DBG_OutText("-----dbg obj collision damage-------");
-        DBG_OutText("my_norm_vell %f",dbg_my_norm_vell);
-        DBG_OutText("obj_norm_vell %f",dbg_obj_norm_vell);
-        DBG_OutText("my_kinetic_e %f",dbg_my_kinetic_e);
-        DBG_OutText("obj_kinetic_e %f", dbg_obj_kinetic_e);
-        DBG_OutText("my_effective_e %f",dbg_my_effective_e);
-        DBG_OutText("obj_effective_e %f",dbg_obj_effective_e);
-        DBG_OutText("free_energy %f",dbg_free_energy);
-        DBG_OutText("-----------------------------------");
-        */
+
+        Log("-----------------------------------------------------------------------------------------");
+        Msg("cd {} -effective vell {}", PhysicsRefObject()->cName(), c_vel);
+        Msg("cd {} -my_norm_vell {}", PhysicsRefObject()->cName(), dbg_my_norm_vell);
+        Msg("cd {} -obj_norm_vell {}", PhysicsRefObject()->cName(), dbg_obj_norm_vell);
+        Msg("cd {} -my_kinetic_e {}", PhysicsRefObject()->cName(), dbg_my_kinetic_e);
+        Msg("cd {} -obj_kinetic_e {}", PhysicsRefObject()->cName(), dbg_obj_kinetic_e);
+        Msg("cd {} -my_effective_e {}", PhysicsRefObject()->cName(), dbg_my_effective_e);
+        Msg("cd {} -obj_effective_e {}", PhysicsRefObject()->cName(), dbg_obj_effective_e);
+        Msg("cd {} -effective_acceted_e {}", PhysicsRefObject()->cName(), accepted_energy);
+        Msg("cd {} -real_acceted_e {}", PhysicsRefObject()->cName(), Kself + Kobj - KK);
+        Msg("cd {} -free_energy {}", PhysicsRefObject()->cName(), dbg_free_energy);
+        Log("-----------------------------------------------------------------------------------------");
     }
 #endif
+
     if (c_vel > m_collision_damage_info.m_contact_velocity)
     {
         CPhysicsShellHolder* obj = bo1 ? retrieveRefObject(c->geom.g2) : retrieveRefObject(c->geom.g1);

@@ -132,6 +132,9 @@
 [submodule "3rd_party/Src/logging/cpptrace/cpptrace"]
 	path = 3rd_party/Src/logging/cpptrace/cpptrace
 	url = https://github.com/jeremy-rifkin/cpptrace.git
+[submodule "3rd_party/Src/logging/enchantum"]
+	path = 3rd_party/Src/logging/enchantum
+	url = https://github.com/ZXShady/enchantum.git
 [submodule "3rd_party/Src/logging/fmt/fmt"]
 	path = 3rd_party/Src/logging/fmt/fmt
 	url = https://github.com/fmtlib/fmt.git

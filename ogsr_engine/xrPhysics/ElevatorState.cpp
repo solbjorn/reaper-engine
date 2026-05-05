@@ -96,10 +96,12 @@ void CElevatorState::SwitchState(Estate new_state)
 {
     if (!StateSwitchInertion(new_state))
         return;
+
 #ifdef DEBUG
     if (ph_dbg_draw_mask.test(phDbgLadder))
-        Msg("%s", dbg_state[new_state]);
+        Msg("{}", dbg_state[new_state]);
 #endif
+
     VERIFY(m_character);
     if ((m_state != clbClimbingUp && m_state != clbClimbingDown) && (new_state == clbClimbingUp || new_state == clbClimbingDown))
         dBodySetGravityMode(m_character->get_body(), 0);
@@ -231,16 +233,9 @@ void CElevatorState::UpdateClimbingCommon(const Fvector& d_to_ax, float to_ax, f
     VERIFY(m_ladder && m_character);
     if (to_ax - m_character->FootRadius() > out_dist)
         SwitchState((clbNoLadder));
+
     if (fis_zero(ca) && d_to_ax.dotproduct(m_ladder->Norm()) < 0.f)
-    {
-#ifdef DEBUG
-        if (ph_dbg_draw_mask.test(phDbgLadder))
-        {
-            //.			Msg("force applied");
-        }
-#endif
         m_character->ApplyForce(d_to_ax, m_character->Mass() * ph_world->Gravity()); //
-    }
 }
 
 bool CElevatorState::GetControlDir(Fvector& dir)
@@ -284,9 +279,7 @@ bool CElevatorState::GetControlDir(Fvector& dir)
         {
 #ifdef DEBUG
             if (ph_dbg_draw_mask.test(phDbgLadder))
-            {
-                Msg("no c dir");
-            }
+                Log("no c dir");
 #endif
             ret = false;
         }

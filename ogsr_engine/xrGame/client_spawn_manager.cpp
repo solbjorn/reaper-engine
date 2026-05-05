@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "client_spawn_manager.h"
+
 #include "ai_space.h"
 #include "script_engine.h"
 #include "level.h"
@@ -75,8 +76,8 @@ void CClientSpawnManager::remove(REQUESTED_REGISTRY& registry, ALife::_OBJECT_ID
     REQUESTED_REGISTRY::iterator I = registry.find(requested_id);
     if (I == registry.end())
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "There is no spawn callback on object with id %d from object with id %d!", requesting_id,
-                                        requested_id);
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "There is no spawn callback on object with id %d from object with id %d!",
+                                        requesting_id, requested_id);
         return;
     }
 
@@ -88,8 +89,8 @@ void CClientSpawnManager::remove(ALife::_OBJECT_ID requesting_id, ALife::_OBJECT
     REQUEST_REGISTRY::iterator I = m_registry.find(requesting_id);
     if (I == m_registry.end())
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "There is no spawn callback on object with id %d from object with id %d!", requesting_id,
-                                        requested_id);
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "There is no spawn callback on object with id %d from object with id %d!",
+                                        requesting_id, requested_id);
         return;
     }
 
@@ -171,14 +172,14 @@ void CClientSpawnManager::dump() const
     if (m_registry.empty())
         return;
 
-    Msg("dumping client spawn manager(%d objects being waited):", m_registry.size());
+    Msg("dumping client spawn manager({} objects being waited):", m_registry.size());
 
     for (auto& req : m_registry)
     {
-        Msg("[%d], i.e. object with id %d left with hanging callbacks on it", req.first, req.first);
+        Msg("[{}], i.e. object with id {} left with hanging callbacks on it", req.first, req.first);
 
         for (auto& item : req.second)
-            Msg("[%d][%d], i.e. object with id %d waits for object with id %d", req.first, item.first, item.first, req.first);
+            Msg("[{}][{}], i.e. object with id {} waits for object with id {}", req.first, item.first, item.first, req.first);
     }
 }
 
@@ -187,10 +188,10 @@ void CClientSpawnManager::dump(ALife::_OBJECT_ID requesting_id) const
     for (auto& req : m_registry)
     {
         if (req.first == requesting_id)
-            Msg("! CClientSpawnManager::dump[hanging id %d]", requesting_id);
+            Msg("! CClientSpawnManager::dump[hanging id {}]", requesting_id);
 
         for (auto& item : req.second)
-            Msg("! CClientSpawnManager::dump[id %d waits for %d]", requesting_id, item.first);
+            Msg("! CClientSpawnManager::dump[id {} waits for {}]", requesting_id, item.first);
     }
 }
 #endif // DEBUG

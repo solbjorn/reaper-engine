@@ -57,9 +57,10 @@ IC float CGameGraph::distance(const _GRAPH_ID tGraphID0, const _GRAPH_ID tGraphI
     for (; i != e; ++i)
         if (value(tGraphID0, i) == tGraphID1)
             return (edge_weight(i));
-    // #pragma todo("KD: не всегда построенный путь для монстра валидный. Пока вывожу в лог и сбрасываю путь в вызвавшей функции.")
-    //	R_ASSERT2					(false,"There is no proper graph point neighbour!");
-    Msg("!![%s] There is no way to get distance from vertex [%u] to vertex [%u]!!!", __FUNCTION__, tGraphID0, tGraphID1);
+
+    // TODO: KD: не всегда построенный путь для монстра валидный. Пока вывожу в лог и сбрасываю путь в вызвавшей функции.
+    Msg("!![{}] There is no way to get distance from vertex [{}] to vertex [{}]!!!", __FUNCTION__, tGraphID0, tGraphID1);
+
     return (_GRAPH_ID(-1));
 }
 
@@ -132,7 +133,7 @@ IC bool GameGraph::CHeader::level_exist(pcstr level_name) const
 IC const GameGraph::SLevel& GameGraph::CHeader::level(const _LEVEL_ID& id) const
 {
     LEVEL_MAP::const_iterator I = levels().find(id);
-    R_ASSERT2(I != levels().end(), make_string("there is no specified level in the game graph : %d", id));
+    R_ASSERT2(I != levels().end(), xr::format("there is no specified level in the game graph : {}", id));
     return ((*I).second);
 }
 
@@ -145,7 +146,7 @@ IC const GameGraph::SLevel& GameGraph::CHeader::level(LPCSTR level_name) const
     }
 
 #ifdef DEBUG
-    Msg("! There is no specified level %s in the game graph!", level_name);
+    Msg("! There is no specified level {} in the game graph!", level_name);
     return (levels().begin()->second);
 #else
     R_ASSERT3(false, "There is no specified level in the game graph!", level_name);

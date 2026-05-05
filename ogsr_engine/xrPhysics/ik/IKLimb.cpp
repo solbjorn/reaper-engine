@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "IKLimb.h"
+
 #include "../Include/xrRender/Kinematics.h"
 #include "GameObject.h"
 #include "game_object_space.h"
@@ -33,7 +34,8 @@ constexpr IVektor gpos_vector{1, 0, 0};
 IC bool null_frame() { return !!Device.Paused(); }
 
 constexpr string256 ik_bones[4] = {"bip01_l_thigh,bip01_l_calf,bip01_l_foot,bip01_l_toe0", "bip01_r_thigh,bip01_r_calf,bip01_r_foot,bip01_r_toe0",
-                                   "bip01_l_upperarm,bip01_l_forearm,bip01_l_hand,bip01_l_finger0", "bip01_r_upperarm,bip01_r_forearm,bip01_r_hand,bip01_r_finger0"};
+                                   "bip01_l_upperarm,bip01_l_forearm,bip01_l_hand,bip01_l_finger0",
+                                   "bip01_r_upperarm,bip01_r_forearm,bip01_r_hand,bip01_r_finger0"};
 } // namespace
 
 IC Fmatrix& SCalculateData::goal(Fmatrix& g) const
@@ -46,8 +48,8 @@ IC Fmatrix& SCalculateData::goal(Fmatrix& g) const
 CIKLimb::CIKLimb() { Invalidate(); }
 
 CIKLimb::CIKLimb(const CIKLimb& l)
-    : m_limb{l.m_limb}, m_K{l.m_K}, m_foot{l.m_foot}, collider{l.collider}, m_id{l.m_id}, m_collide{l.m_collide}, collide_data{l.collide_data}, anim_state{l.anim_state},
-      state_predict{l.state_predict}
+    : m_limb{l.m_limb}, m_K{l.m_K}, m_foot{l.m_foot}, collider{l.collider}, m_id{l.m_id}, m_collide{l.m_collide}, collide_data{l.collide_data},
+      anim_state{l.anim_state}, state_predict{l.state_predict}
 {
     m_bones[0] = l.m_bones[0];
     m_bones[1] = l.m_bones[1];
@@ -106,18 +108,15 @@ void CIKLimb::SetGoal(SCalculateData& cd)
 {
     SetAnimGoal(cd);
     SIKCollideData cld;
+
     if (cd.do_collide)
     {
         GetPickDir(collide_data.m_pick_dir);
         cld = collide_data;
     }
+
     transform(cd.state.b2tob3, 2, 3);
-#if 0
-	if(!state_valide(sv_state))
-	{
-		Msg( "st ! valide:-: time: %d ;time delta: %d ; sv_state.calc_time: %d", Device.dwTimeGlobal, Device.dwTimeDelta,  sv_state.calc_time );
-	}
-#endif
+
     SetNewGoal(cld, cd);
 }
 
@@ -242,7 +241,7 @@ u16 get_ik_bone(IKinematics* K, LPCSTR S, u16 i)
     u16 bone = K->LL_BoneID(sbone);
 
     if (BI_NONE == bone)
-        Msg("!![%s]ik bone: [%s] does not found in visual: [%s]", __FUNCTION__, sbone, smart_cast<IRenderVisual*>(K)->getDebugName().c_str());
+        Msg("!![{}]ik bone: [{}] does not found in visual: [{}]", __FUNCTION__, sbone, smart_cast<IRenderVisual*>(K)->getDebugName());
 
     return bone;
 }
@@ -599,7 +598,8 @@ void CIKLimb::SetNewStepGoal(const SIKCollideData& cld, SCalculateData& cd)
         const ik_goal_matrix foot = tmp;
         const Fmatrix cl_pos = cd.state.collide_pos.get();
         //||
-        if (!clamp_change(Fmatrix().set(cl_pos), foot.get(), unstuck_tolerance_linear, unstuck_tolerance_angular, unstuck_tolerance_linear, unstuck_tolerance_angular) ||
+        if (!clamp_change(Fmatrix().set(cl_pos), foot.get(), unstuck_tolerance_linear, unstuck_tolerance_angular, unstuck_tolerance_linear,
+                          unstuck_tolerance_angular) ||
             (Device.dwTimeGlobal > cd.state.unstuck_time && !clamp_change(Fmatrix().set(cl_pos), foot.get(), 10.f * EPS_L, EPS_L, 10.f * EPS_L, EPS_L)))
         {
             new_foot_matrix(foot, cd);

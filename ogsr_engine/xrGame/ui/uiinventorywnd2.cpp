@@ -222,8 +222,6 @@ void CUIInventoryWnd::DropCurrentItem(bool b_all)
 bool CUIInventoryWnd::ToSlot(CUICellItem* itm, u8 _slot_id, bool force_place)
 {
     PIItem iitem = (PIItem)itm->m_pData;
-    // Msg("~~[CUIInventoryWnd::ToSlot] Name [%s], slot [%u]", iitem->object().cName().c_str(), _slot_id);
-    // LogStackTrace("ST:\n");
     iitem->SetSlot(_slot_id);
     return ToSlot(itm, force_place);
 }
@@ -382,8 +380,8 @@ bool CUIInventoryWnd::OnItemSelected(CUICellItem* itm)
 {
     SetCurrentItem(itm);
 
-    itm->ColorizeItems({m_pUIBagList, m_pUIBeltList, m_pUIPistolList, m_pUIAutomaticList, m_pUIKnifeList, m_pUIHelmetList, m_pUIBIODetList, m_pUINightVisionList, m_pUIDetectorList,
-                        m_pUITorchList, m_pUIBinocularList, m_pUIOutfitList});
+    itm->ColorizeItems({m_pUIBagList, m_pUIBeltList, m_pUIPistolList, m_pUIAutomaticList, m_pUIKnifeList, m_pUIHelmetList, m_pUIBIODetList,
+                        m_pUINightVisionList, m_pUIDetectorList, m_pUITorchList, m_pUIBinocularList, m_pUIOutfitList});
     return false;
 }
 
@@ -428,13 +426,15 @@ bool CUIInventoryWnd::OnItemDrop(CUICellItem* itm)
                     else
                     {
                         if (!DropItem(CurrentIItem(), new_owner) && item->GetSlotsCount() > 0)
-                            Msg("! cannot put item %s into slot %d, allowed slots {%s}", name, i, item->GetSlotsSect());
+                            Msg("! cannot put item {} into slot {}, allowed slots {{{}}}", name, i, item->GetSlotsSect());
                     }
                     break;
                 } // for-if
         }
         else
-            Msg("!#ERROR: item %s to large for slot: (%d x %d) vs (%d x %d) ", name, item_w, item_h, max_size.x, max_size.y);
+        {
+            Msg("!#ERROR: item {} to large for slot: ({} x {}) vs ({} x {}) ", name, item_w, item_h, max_size.x, max_size.y);
+        }
 
         // при невозможности поместить в выбранный слот
         if (!can_put)
@@ -468,7 +468,8 @@ bool CUIInventoryWnd::OnItemDbClick(CUICellItem* itm)
 
     auto old_owner = itm->OwnerList();
 
-    const bool shift = pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RShift});
+    const bool shift =
+        pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RShift});
 
     if (!shift && TryUseItem(__item))
         return true;

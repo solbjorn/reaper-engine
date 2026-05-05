@@ -14,13 +14,10 @@
 #include "../Include/xrRender/RenderVisual.h"
 #include "../Include/xrRender/ParticleCustom.h"
 
-CScriptParticlesCustom::CScriptParticlesCustom(CScriptParticles* owner, LPCSTR caParticlesName) : CParticlesObject{caParticlesName, false, true}, m_owner{owner} {}
+CScriptParticlesCustom::CScriptParticlesCustom(CScriptParticles* owner, LPCSTR caParticlesName) : CParticlesObject{caParticlesName, false, true}, m_owner{owner}
+{}
 
-CScriptParticlesCustom::~CScriptParticlesCustom()
-{
-    //	Msg							("~CScriptParticlesCustom: 0x%08x",*(int*)&m_owner);
-    xr_delete(m_animator);
-}
+CScriptParticlesCustom::~CScriptParticlesCustom() { xr_delete(m_animator); }
 
 void CScriptParticlesCustom::PSI_internal_delete()
 {

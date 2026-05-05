@@ -62,7 +62,8 @@ void CHudItem::Load(LPCSTR section)
 
     m_animation_slot = pSettings->r_u32(section, "animation_slot");
 
-    m_nearwall_on = READ_IF_EXISTS(pSettings, r_bool, section, "nearwall_on", IS_OGSR_GA ? true : READ_IF_EXISTS(pSettings, r_bool, "features", "default_nearwall_on", true));
+    m_nearwall_on = READ_IF_EXISTS(pSettings, r_bool, section, "nearwall_on",
+                                   IS_OGSR_GA ? true : READ_IF_EXISTS(pSettings, r_bool, "features", "default_nearwall_on", true));
     // AimAlt = READ_IF_EXISTS(pSettings, r_bool, section, "use_alt_aim_hud", false);
 
     if (m_nearwall_on)
@@ -88,11 +89,14 @@ void CHudItem::Load(LPCSTR section)
 
         // Параметры изменения коллизии когда игрок стоит вплотную к стене
         m_nearwall_hud_offset_speed = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_hud_offset_speed", 0.1f); // Скорость поднятия\опускания ствола
-        m_nearwall_dist_min =
-            READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_min", std::get<0>(CollisionParams)); // Максимальное расстояние, на которое камера ГГ может упереться к стене
-        m_nearwall_dist_max = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_max", std::get<1>(CollisionParams)); // Расстояние, ближе которого начинаем поднимать ствол
-        m_nearwall_target_hud_offset = READ_IF_EXISTS(pSettings, r_fvector3, section, "nearwall_target_hud_offset", std::get<2>(CollisionParams)); // Максимальный оффсет худа
-        m_nearwall_target_hud_rotate = READ_IF_EXISTS(pSettings, r_fvector3, section, "nearwall_target_hud_rotate", std::get<3>(CollisionParams)); // Максимальный поворот худа
+        m_nearwall_dist_min = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_min",
+                                             std::get<0>(CollisionParams)); // Максимальное расстояние, на которое камера ГГ может упереться к стене
+        m_nearwall_dist_max = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_max",
+                                             std::get<1>(CollisionParams)); // Расстояние, ближе которого начинаем поднимать ствол
+        m_nearwall_target_hud_offset =
+            READ_IF_EXISTS(pSettings, r_fvector3, section, "nearwall_target_hud_offset", std::get<2>(CollisionParams)); // Максимальный оффсет худа
+        m_nearwall_target_hud_rotate =
+            READ_IF_EXISTS(pSettings, r_fvector3, section, "nearwall_target_hud_rotate", std::get<3>(CollisionParams)); // Максимальный поворот худа
         m_nearwall_target_hud_fov = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_target_hud_fov", std::get<4>(CollisionParams));
         m_nearwall_target_aim_hud_fov = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_target_aim_hud_fov", std::get<5>(CollisionParams));
         m_nearwall_speed_mod = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_speed_mod", 10.f);
@@ -112,8 +116,8 @@ void CHudItem::Load(LPCSTR section)
     m_strafe_offset[0][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "strafe_aim_hud_offset_pos", (Fvector{0.f, 0.f, 0.f}));
     m_strafe_offset[1][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "strafe_aim_hud_offset_rot", (Fvector{0.f, 0.f, 3.5f}));
 
-    m_strafe_offset[2][0].set(READ_IF_EXISTS(pSettings, r_bool, section, "strafe_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "strafe_transition_time", 0.25f),
-                              0.f);
+    m_strafe_offset[2][0].set(READ_IF_EXISTS(pSettings, r_bool, section, "strafe_enabled", true),
+                              READ_IF_EXISTS(pSettings, r_float, section, "strafe_transition_time", 0.25f), 0.f);
     m_strafe_offset[2][1].set(READ_IF_EXISTS(pSettings, r_bool, section, "strafe_aim_enabled", true),
                               READ_IF_EXISTS(pSettings, r_float, section, "strafe_aim_transition_time", 0.15f), 0.f);
 
@@ -125,8 +129,8 @@ void CHudItem::Load(LPCSTR section)
     m_lookout_offset[0][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "lookout_aim_hud_offset_pos", (Fvector{0.f, 0.f, 0.f}));
     m_lookout_offset[1][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "lookout_aim_hud_offset_rot", (Fvector{0.f, 0.f, 15.f}));
 
-    m_lookout_offset[2][0].set(READ_IF_EXISTS(pSettings, r_bool, section, "lookout_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "lookout_transition_time", 0.25f),
-                               0.f);
+    m_lookout_offset[2][0].set(READ_IF_EXISTS(pSettings, r_bool, section, "lookout_enabled", true),
+                               READ_IF_EXISTS(pSettings, r_float, section, "lookout_transition_time", 0.25f), 0.f);
     m_lookout_offset[2][1].set(READ_IF_EXISTS(pSettings, r_bool, section, "lookout_aim_enabled", true),
                                READ_IF_EXISTS(pSettings, r_float, section, "lookout_aim_transition_time", 0.15f), 0.f);
     ////////////////////////////////////////////
@@ -137,9 +141,10 @@ void CHudItem::Load(LPCSTR section)
     m_jump_offset[0][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "jump_aim_hud_offset_pos", (Fvector{0.f, 0.03f, 0.01f}));
     m_jump_offset[1][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "jump_aim_hud_offset_rot", (Fvector{0.f, 2.5f, -3.f}));
 
-    m_jump_offset[2][0].set(READ_IF_EXISTS(pSettings, r_bool, section, "jump_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "jump_transition_time", 0.35f), 0.f);
-    m_jump_offset[2][1].set(READ_IF_EXISTS(pSettings, r_bool, section, "jump_aim_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "jump_aim_transition_time", 0.4f),
-                            0.f);
+    m_jump_offset[2][0].set(READ_IF_EXISTS(pSettings, r_bool, section, "jump_enabled", true),
+                            READ_IF_EXISTS(pSettings, r_float, section, "jump_transition_time", 0.35f), 0.f);
+    m_jump_offset[2][1].set(READ_IF_EXISTS(pSettings, r_bool, section, "jump_aim_enabled", true),
+                            READ_IF_EXISTS(pSettings, r_float, section, "jump_aim_transition_time", 0.4f), 0.f);
     ////////////////////////////////////////////
     ////////////////////////////////////////////
     m_fall_offset[0][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "fall_hud_offset_pos", (Fvector{0.f, -0.05f, 0.06f}));
@@ -158,12 +163,14 @@ void CHudItem::Load(LPCSTR section)
     ////////////////////////////////////////////
     m_move_offset[0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "stay_hud_offset_pos", (Fvector{0.f, -0.03f, 0.f}));
     m_move_offset[1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "stay_hud_offset_rot", (Fvector{0.f, 0.5f, -3.f}));
-    m_move_offset[2].set(READ_IF_EXISTS(pSettings, r_bool, section, "move_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "move_transition_time", 0.25f), 0.f);
+    m_move_offset[2].set(READ_IF_EXISTS(pSettings, r_bool, section, "move_enabled", true),
+                         READ_IF_EXISTS(pSettings, r_float, section, "move_transition_time", 0.25f), 0.f);
     ////////////////////////////////////////////
     ////////////////////////////////////////////
     m_walk_offset[0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "walk_hud_offset_pos", (Fvector{-0.02f, -0.02f, -0.03f}));
     m_walk_offset[1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "walk_hud_offset_rot", (Fvector{0.f, 0.05f, -1.f}));
-    m_walk_offset[2].set(READ_IF_EXISTS(pSettings, r_bool, section, "walk_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "walk_transition_time", 0.25f), 0.f);
+    m_walk_offset[2].set(READ_IF_EXISTS(pSettings, r_bool, section, "walk_enabled", true),
+                         READ_IF_EXISTS(pSettings, r_float, section, "walk_transition_time", 0.25f), 0.f);
 
     // Загрузка параметров инерции --#SM+# Begin--
     constexpr float PITCH_OFFSET_R = 0.0f; // Насколько сильно ствол смещается вбок (влево) при вертикальных поворотах камеры
@@ -187,7 +194,10 @@ void CHudItem::Load(LPCSTR section)
     //--#SM+# End--
 }
 
-void CHudItem::PlaySound(HUD_SOUND& hud_snd, const Fvector& position, bool overlap) { HUD_SOUND::PlaySound(hud_snd, position, object().H_Root(), !!GetHUDmode(), false, overlap); }
+void CHudItem::PlaySound(HUD_SOUND& hud_snd, const Fvector& position, bool overlap)
+{
+    HUD_SOUND::PlaySound(hud_snd, position, object().H_Root(), !!GetHUDmode(), false, overlap);
+}
 
 tmc::task<void> CHudItem::net_Destroy()
 {
@@ -365,18 +375,7 @@ void CHudItem::on_b_hud_detach() {}
 void CHudItem::on_a_hud_attach()
 {
     if (m_current_motion_def)
-    {
         PlayHUDMotion_noCB(m_current_motion, false);
-#ifdef DEBUG
-        //		Msg("continue playing [%s][%d]",m_current_motion.c_str(), Device.dwFrame);
-#endif // #ifdef DEBUG
-    }
-    else
-    {
-#ifdef DEBUG
-        //		Msg("no active motion");
-#endif // #ifdef DEBUG
-    }
 }
 
 u32 CHudItem::PlayHUDMotion(const char* M, const bool bMixIn, const u32 state, const bool randomAnim, float speed)
@@ -397,7 +396,6 @@ u32 CHudItem::PlayHUDMotion(const char* M, const bool bMixIn, const u32 state, c
         }
     }
 
-    // Msg("~~[%s] Playing motion [%s] for [%s]", __FUNCTION__, M.c_str(), HudSection().c_str());
     u32 anim_time = PlayHUDMotion_noCB(shared_str{M}, bMixIn, randomAnim, speed);
     if (anim_time > 0)
     {
@@ -420,14 +418,7 @@ u32 CHudItem::PlayHUDMotion(std::initializer_list<const char*> Ms, const bool bM
     for (const auto* M : Ms)
         if (AnimationExist(M))
             return PlayHUDMotion(M, bMixIn, state, randomAnim, speed);
-    /*
-    xr_string dbg_anim_name;
-    for (const auto* M : Ms) {
-        dbg_anim_name += M;
-        dbg_anim_name += ", ";
-    }
-    Msg("~~[%s] Motions [%s] not found for [%s]", __FUNCTION__, dbg_anim_name.c_str(), HudSection().c_str());
-    */
+
     return 0;
 }
 
@@ -481,22 +472,25 @@ void CHudItem::PlayAnimIdle()
         return;
 
     auto wpn = smart_cast<CWeapon*>(this);
-    PlayHUDMotion({(wpn && wpn->IsMisfire()) ?
-                       "anm_idle_jammed" :
-                       ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ? "anm_idle_empty" : "nullptr"),
-                   "anim_idle", "anm_idle"},
-                  true, GetState());
+    PlayHUDMotion(
+        {(wpn && wpn->IsMisfire()) ?
+             "anm_idle_jammed" :
+             ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ? "anm_idle_empty" :
+                                                                                                                                          "nullptr"),
+         "anim_idle", "anm_idle"},
+        true, GetState());
 }
 
 void CHudItem::PlayAnimSprintStart()
 {
     auto wpn = smart_cast<CWeapon*>(this);
     string128 guns_sprint_start_anm;
-    xr_strconcat(guns_sprint_start_anm, "anm_idle_sprint_start",
-                 (wpn && wpn->IsMisfire()) ?
-                     "_jammed" :
-                     ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ? "_empty" : ""),
-                 (wpn && wpn->IsGrenadeLauncherAttached()) ? (wpn && wpn->IsGrenadeMode() ? "_g" : "_w_gl") : "");
+    xr_strconcat(
+        guns_sprint_start_anm, "anm_idle_sprint_start",
+        (wpn && wpn->IsMisfire()) ?
+            "_jammed" :
+            ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ? "_empty" : ""),
+        (wpn && wpn->IsGrenadeLauncherAttached()) ? (wpn && wpn->IsGrenadeMode() ? "_g" : "_w_gl") : "");
     if (AnimationExist(guns_sprint_start_anm))
         PlayHUDMotion(guns_sprint_start_anm, true, GetState());
     else
@@ -510,11 +504,12 @@ void CHudItem::PlayAnimSprintEnd()
 {
     auto wpn = smart_cast<CWeapon*>(this);
     string128 guns_sprint_end_anm;
-    xr_strconcat(guns_sprint_end_anm, "anm_idle_sprint_end",
-                 (wpn && wpn->IsMisfire()) ?
-                     "_jammed" :
-                     ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ? "_empty" : ""),
-                 (wpn && wpn->IsGrenadeLauncherAttached()) ? (wpn && wpn->IsGrenadeMode() ? "_g" : "_w_gl") : "");
+    xr_strconcat(
+        guns_sprint_end_anm, "anm_idle_sprint_end",
+        (wpn && wpn->IsMisfire()) ?
+            "_jammed" :
+            ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ? "_empty" : ""),
+        (wpn && wpn->IsGrenadeLauncherAttached()) ? (wpn && wpn->IsGrenadeMode() ? "_g" : "_w_gl") : "");
     if (AnimationExist(guns_sprint_end_anm))
         PlayHUDMotion(guns_sprint_end_anm, true, GetState());
     else
@@ -600,7 +595,7 @@ bool CHudItem::AnimationExist(const char* anim_name) const
     }
 
 #ifdef DEBUG
-    Msg("~ [WARNING] ------ Animation [%s] does not exist in [%s]", anim_name, HudSection().c_str());
+    Msg("~ [WARNING] ------ Animation [{}] does not exist in [{}]", anim_name, HudSection());
 #endif
 
     return false;
@@ -609,23 +604,25 @@ bool CHudItem::AnimationExist(const char* anim_name) const
 void CHudItem::PlayAnimIdleMoving()
 {
     auto wpn = smart_cast<CWeapon*>(this);
-    PlayHUDMotion(
-        {(wpn && wpn->IsMisfire()) ?
-             "anm_idle_moving_jammed" :
-             ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ? "anm_idle_moving_empty" : "nullptr"),
-         "anm_idle_moving", "anm_idle", "anim_idle_moving", "anim_idle"},
-        true, GetState());
+    PlayHUDMotion({(wpn && wpn->IsMisfire()) ?
+                       "anm_idle_moving_jammed" :
+                       ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ?
+                            "anm_idle_moving_empty" :
+                            "nullptr"),
+                   "anm_idle_moving", "anm_idle", "anim_idle_moving", "anim_idle"},
+                  true, GetState());
 }
 
 void CHudItem::PlayAnimIdleMovingSlow()
 {
     auto wpn = smart_cast<CWeapon*>(this);
-    PlayHUDMotion(
-        {(wpn && wpn->IsMisfire()) ?
-             "anm_idle_moving_slow_jammed" :
-             ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ? "anm_idle_moving_slow_empty" : "nullptr"),
-         "anm_idle_moving_slow", "anm_idle_moving_slow", "anm_idle", "anim_idle_moving", "anim_idle"},
-        true, GetState());
+    PlayHUDMotion({(wpn && wpn->IsMisfire()) ?
+                       "anm_idle_moving_slow_jammed" :
+                       ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ?
+                            "anm_idle_moving_slow_empty" :
+                            "nullptr"),
+                   "anm_idle_moving_slow", "anm_idle_moving_slow", "anm_idle", "anim_idle_moving", "anim_idle"},
+                  true, GetState());
 }
 
 void CHudItem::PlayAnimIdleMovingCrouch()
@@ -633,8 +630,9 @@ void CHudItem::PlayAnimIdleMovingCrouch()
     auto wpn = smart_cast<CWeapon*>(this);
     PlayHUDMotion({(wpn && wpn->IsMisfire()) ?
                        "anm_idle_moving_crouch_jammed" :
-                       ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ? "anm_idle_moving_crouch_empty" :
-                                                                                                                                                    "nullptr"),
+                       ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ?
+                            "anm_idle_moving_crouch_empty" :
+                            "nullptr"),
                    "anm_idle_moving_crouch", "anm_idle_moving", "anm_idle", "anim_idle_moving", "anim_idle"},
                   true, GetState());
 }
@@ -642,10 +640,11 @@ void CHudItem::PlayAnimIdleMovingCrouch()
 void CHudItem::PlayAnimIdleMovingCrouchSlow()
 {
     auto wpn = smart_cast<CWeapon*>(this);
-    PlayHUDMotion({(wpn && wpn->IsMisfire()) ? "anm_idle_moving_crouch_slow_jammed" :
-                                               ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ?
-                                                    "anm_idle_moving_crouch_slow_empty" :
-                                                    "nullptr"),
+    PlayHUDMotion({(wpn && wpn->IsMisfire()) ?
+                       "anm_idle_moving_crouch_slow_jammed" :
+                       ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ?
+                            "anm_idle_moving_crouch_slow_empty" :
+                            "nullptr"),
                    "anm_idle_moving_crouch_slow", "anm_idle_moving_crouch", "anm_idle_moving", "anm_idle", "anim_idle_moving", "anim_idle"},
                   true, GetState());
 }
@@ -653,12 +652,13 @@ void CHudItem::PlayAnimIdleMovingCrouchSlow()
 void CHudItem::PlayAnimIdleSprint()
 {
     auto wpn = smart_cast<CWeapon*>(this);
-    PlayHUDMotion(
-        {(wpn && wpn->IsMisfire()) ?
-             "anm_idle_sprint_jammed" :
-             ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ? "anm_idle_sprint_empty" : "nullptr"),
-         "anm_idle_sprint", "anm_idle", "anim_idle_sprint", "anim_idle"},
-        true, GetState());
+    PlayHUDMotion({(wpn && wpn->IsMisfire()) ?
+                       "anm_idle_sprint_jammed" :
+                       ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ?
+                            "anm_idle_sprint_empty" :
+                            "nullptr"),
+                   "anm_idle_sprint", "anm_idle", "anim_idle_sprint", "anim_idle"},
+                  true, GetState());
 }
 
 bool CHudItem::NeedBlendAnm()
@@ -707,10 +707,10 @@ bool CHudItem::used_cop_fire_point() const
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TODO: Желательно бы сделать визуальную настройку всех этих офсетов через hud_adjust
-// TODO: Придумать более годный способ получения полиции и направления для коллизии болтов, детекторов, биноклей и ножей. У стволов есть shoot_point - там легко считать от него, в
-// отличие от.
-// TODO: Придумать какой-то способ получения нужной позиции для рейтрейса. Сейчас сделал не оптиматьно, по сути худ считается два раза за фрейм (не полностью, но такое решение всё
-// равно выглядит плохо)
+// TODO: Придумать более годный способ получения полиции и направления для коллизии болтов, детекторов, биноклей и ножей. У стволов есть shoot_point - там легко
+// считать от него, в отличие от.
+// TODO: Придумать какой-то способ получения нужной позиции для рейтрейса. Сейчас сделал не оптиматьно, по сути худ считается два раза за фрейм (не полностью,
+// но такое решение всё равно выглядит плохо)
 //              Эти костыли для двойного рассчета можно найти по skip_updated_frame, need_update_collision
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1167,7 +1167,6 @@ void CHudItem::UpdateHudAdditional(Fmatrix& trans, const bool need_update_collis
         trans.getHPB(_angle);
         _angle.add(-summary_rotate);
 
-        // Msg("##[%s] summary_rotate: [%f,%f,%f]", __FUNCTION__, summary_rotate.x, summary_rotate.y, summary_rotate.z);
         trans.setHPB(_angle.x, _angle.y, _angle.z);
         trans.c = _pos;
 
@@ -1185,8 +1184,6 @@ void CHudItem::UpdateHudAdditional(Fmatrix& trans, const bool need_update_collis
         hud_rotation_part.identity();
         hud_rotation_part.rotateZ(current_difference[1].z);
         hud_rotation.mulA_43(hud_rotation_part);
-
-        // Msg("--[%s] summary_offset: [%f,%f,%f]", __FUNCTION__, summary_offset.x, summary_offset.y, summary_offset.z);
 
         hud_rotation.translate_over(summary_offset);
         trans.mulB_43(hud_rotation);
@@ -1376,7 +1373,9 @@ void CHudItem::TimeLockAnimation()
     {
         string128 anm_time_param;
         xr_strconcat(anm_time_param, "lock_time_end_", m_current_motion.c_str());
-        const float time = READ_IF_EXISTS(pSettings, r_float, HudSection(), anm_time_param, 0) * 1000.f; // Читаем с конфига время анимации (например, lock_time_end_anm_reload)
+
+        // Читаем с конфига время анимации (например, lock_time_end_anm_reload)
+        const float time = READ_IF_EXISTS(pSettings, r_float, HudSection(), anm_time_param, 0) * 1000.f;
         const float current_time = Device.dwTimeGlobal - m_dwMotionStartTm;
         if (time && current_time >= time)
         {

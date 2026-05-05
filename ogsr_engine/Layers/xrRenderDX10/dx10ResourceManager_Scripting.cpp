@@ -10,8 +10,6 @@
 #include "../../xrExternal/sol.h"
 #include "../../xr_3da/Render.h"
 
-#include <format>
-
 namespace
 {
 // wrapper
@@ -33,31 +31,32 @@ public:
             m_pC = nullptr;
     }
 
-    //	adopt_sampler&			_texture		(LPCSTR texture)		{ if (C) C->i_Texture	(stage,texture);											return *this;	}
-    //	adopt_sampler&			_projective		(bool _b)				{ if (C) C->i_Projective(stage,_b);													return *this;	}
+    //	adopt_sampler&			_texture		(LPCSTR texture)		{ if (C) C->i_Texture	(stage,texture); return *this;	} 	adopt_sampler&
+    //_projective		(bool _b)				{ if (C) C->i_Projective(stage,_b);													return *this;	}
     adopt_dx10sampler& _clamp()
     {
         if (m_pC)
             m_pC->i_dx10Address(m_SI, D3DTADDRESS_CLAMP);
         return *this;
     }
-    //	adopt_sampler&			_wrap			()						{ if (C) C->i_Address	(stage,D3DTADDRESS_WRAP);									return *this;	}
-    //	adopt_sampler&			_mirror			()						{ if (C) C->i_Address	(stage,D3DTADDRESS_MIRROR);									return *this;	}
-    //	adopt_sampler&			_f_anisotropic	()						{ if (C) C->i_Filter	(stage,D3DTEXF_ANISOTROPIC,D3DTEXF_LINEAR,D3DTEXF_ANISOTROPIC);	return *this;	}
-    //	adopt_sampler&			_f_trilinear	()						{ if (C) C->i_Filter	(stage,D3DTEXF_LINEAR,D3DTEXF_LINEAR,D3DTEXF_LINEAR);		return *this;	}
-    //	adopt_sampler&			_f_bilinear		()						{ if (C) C->i_Filter	(stage,D3DTEXF_LINEAR,D3DTEXF_POINT, D3DTEXF_LINEAR);		return *this;	}
-    //	adopt_sampler&			_f_linear		()						{ if (C) C->i_Filter	(stage,D3DTEXF_LINEAR,D3DTEXF_NONE,  D3DTEXF_LINEAR);		return *this;	}
-    //	adopt_sampler&			_f_none			()						{ if (C) C->i_Filter	(stage,D3DTEXF_POINT, D3DTEXF_NONE,  D3DTEXF_POINT);		return *this;	}
-    //	adopt_sampler&			_fmin_none		()						{ if (C) C->i_Filter_Min(stage,D3DTEXF_NONE);										return *this;	}
-    //	adopt_sampler&			_fmin_point		()						{ if (C) C->i_Filter_Min(stage,D3DTEXF_POINT);										return *this;	}
-    //	adopt_sampler&			_fmin_linear	()						{ if (C) C->i_Filter_Min(stage,D3DTEXF_LINEAR);										return *this;	}
-    //	adopt_sampler&			_fmin_aniso		()						{ if (C) C->i_Filter_Min(stage,D3DTEXF_ANISOTROPIC);								return *this;	}
-    //	adopt_sampler&			_fmip_none		()						{ if (C) C->i_Filter_Mip(stage,D3DTEXF_NONE);										return *this;	}
-    //	adopt_sampler&			_fmip_point		()						{ if (C) C->i_Filter_Mip(stage,D3DTEXF_POINT);										return *this;	}
-    //	adopt_sampler&			_fmip_linear	()						{ if (C) C->i_Filter_Mip(stage,D3DTEXF_LINEAR);										return *this;	}
-    //	adopt_sampler&			_fmag_none		()						{ if (C) C->i_Filter_Mag(stage,D3DTEXF_NONE);										return *this;	}
-    //	adopt_sampler&			_fmag_point		()						{ if (C) C->i_Filter_Mag(stage,D3DTEXF_POINT);										return *this;	}
-    //	adopt_sampler&			_fmag_linear	()						{ if (C) C->i_Filter_Mag(stage,D3DTEXF_LINEAR);										return *this;	}
+    //	adopt_sampler&			_wrap			()						{ if (C) C->i_Address	(stage,D3DTADDRESS_WRAP);
+    // return *this;	} 	adopt_sampler&			_mirror			()						{ if (C) C->i_Address	(stage,D3DTADDRESS_MIRROR);
+    // return *this;	} 	adopt_sampler&			_f_anisotropic	()						{ if (C) C->i_Filter
+    //(stage,D3DTEXF_ANISOTROPIC,D3DTEXF_LINEAR,D3DTEXF_ANISOTROPIC);	return *this;	} 	adopt_sampler&			_f_trilinear	()						{ if
+    //(C) C->i_Filter	(stage,D3DTEXF_LINEAR,D3DTEXF_LINEAR,D3DTEXF_LINEAR);		return *this;	} 	adopt_sampler&			_f_bilinear		()
+    //{ if (C) C->i_Filter	(stage,D3DTEXF_LINEAR,D3DTEXF_POINT, D3DTEXF_LINEAR);		return *this;	} 	adopt_sampler&			_f_linear		()
+    //{ if (C) C->i_Filter	(stage,D3DTEXF_LINEAR,D3DTEXF_NONE,  D3DTEXF_LINEAR);		return *this;	} 	adopt_sampler&			_f_none			()
+    //{ if (C) C->i_Filter	(stage,D3DTEXF_POINT, D3DTEXF_NONE,  D3DTEXF_POINT);		return *this;	} 	adopt_sampler&			_fmin_none		()
+    //{ if (C) C->i_Filter_Min(stage,D3DTEXF_NONE);										return *this;	} 	adopt_sampler&			_fmin_point		()
+    //{ if (C) C->i_Filter_Min(stage,D3DTEXF_POINT);										return *this;	} 	adopt_sampler&			_fmin_linear	()
+    //{ if (C) C->i_Filter_Min(stage,D3DTEXF_LINEAR);										return *this;	} 	adopt_sampler&			_fmin_aniso		()
+    //{ if (C) C->i_Filter_Min(stage,D3DTEXF_ANISOTROPIC);								return *this;	} 	adopt_sampler&			_fmip_none		()
+    //{ if (C) C->i_Filter_Mip(stage,D3DTEXF_NONE);										return *this;	} 	adopt_sampler&			_fmip_point		()
+    //{ if (C) C->i_Filter_Mip(stage,D3DTEXF_POINT);										return *this;	} 	adopt_sampler&			_fmip_linear	()
+    //{ if (C) C->i_Filter_Mip(stage,D3DTEXF_LINEAR);										return *this;	} 	adopt_sampler&			_fmag_none		()
+    //{ if (C) C->i_Filter_Mag(stage,D3DTEXF_NONE);										return *this;	} 	adopt_sampler&			_fmag_point		()
+    //{ if (C) C->i_Filter_Mag(stage,D3DTEXF_POINT);										return *this;	} 	adopt_sampler&			_fmag_linear	()
+    //{ if (C) C->i_Filter_Mag(stage,D3DTEXF_LINEAR);										return *this;	}
 };
 /*
 class	adopt_dx10texture
@@ -256,7 +255,7 @@ void do_file(gsl::czstring caScriptName, gsl::czstring caNameSpaceName)
     if (!l_tpFileReader)
     {
         // заменить на ассерт?
-        Msg("!![CResourceManager::do_file] Cannot open file [%s]", caScriptName);
+        Msg("!![CResourceManager::do_file] Cannot open file [{}]", caScriptName);
         return;
     }
 
@@ -270,7 +269,7 @@ void do_file(gsl::czstring caScriptName, gsl::czstring caNameSpaceName)
 
     if (std::is_neq(xr_strcmp(caNameSpaceName, GlobalNamespace)))
     {
-        script = std::format(FILE_HEADER, caNameSpaceName, strbuf);
+        script = xr::format(FILE_HEADER, caNameSpaceName, strbuf);
         strbuf = script;
     }
 
@@ -290,9 +289,10 @@ void CResourceManager::LS_Load()
     lua->open_libraries();
     const lua_scoped_handler sc;
 
-    lua->set_function("log", sol::resolve<void(gsl::czstring)>(&Log));
+    lua->set_function("log", sol::resolve<void(std::string_view)>(&Log));
 
-    lua->new_usertype<adopt_dx10sampler>("_dx10sampler", sol::no_constructor, sol::call_constructor, sol::constructors<adopt_dx10sampler(const adopt_dx10sampler&)>(), "clamp",
+    lua->new_usertype<adopt_dx10sampler>("_dx10sampler", sol::no_constructor, sol::call_constructor,
+                                         sol::constructors<adopt_dx10sampler(const adopt_dx10sampler&)>(), "clamp",
                                          sol::policies(&adopt_dx10sampler::_clamp, sol::returns_self()));
 
     lua->new_usertype<adopt_compiler>(
@@ -301,22 +301,23 @@ void CResourceManager::LS_Load()
         sol::policies(&adopt_compiler::_options, sol::returns_self()), "emissive", sol::policies(&adopt_compiler::_o_emissive, sol::returns_self()), "distort",
         sol::policies(&adopt_compiler::_o_distort, sol::returns_self()), "wmark", sol::policies(&adopt_compiler::_o_wmark, sol::returns_self()), "fog",
         sol::policies(&adopt_compiler::_fog, sol::returns_self()), "zb", sol::policies(&adopt_compiler::_ZB, sol::returns_self()), "blend",
-        sol::policies(&adopt_compiler::_blend, sol::returns_self()), "aref", sol::policies(&adopt_compiler::_aref, sol::returns_self()), "dx10color_write_enable",
-        sol::policies(&adopt_compiler::_dx10color_write_enable, sol::returns_self()), "color_write_enable",
-        sol::policies(&adopt_compiler::_dx10color_write_enable, sol::returns_self()), "dx10texture", sol::policies(&adopt_compiler::_dx10texture, sol::returns_self()),
-        "dx10stencil", sol::policies(&adopt_compiler::_dx10Stencil, sol::returns_self()), "dx10stencil_ref", sol::policies(&adopt_compiler::_dx10StencilRef, sol::returns_self()),
-        "dx10cullmode", sol::policies(&adopt_compiler::_dx10CullMode, sol::returns_self()), "dx10zfunc", sol::policies(&adopt_compiler::_dx10ZFunc, sol::returns_self()),
+        sol::policies(&adopt_compiler::_blend, sol::returns_self()), "aref", sol::policies(&adopt_compiler::_aref, sol::returns_self()),
+        "dx10color_write_enable", sol::policies(&adopt_compiler::_dx10color_write_enable, sol::returns_self()), "color_write_enable",
+        sol::policies(&adopt_compiler::_dx10color_write_enable, sol::returns_self()), "dx10texture",
+        sol::policies(&adopt_compiler::_dx10texture, sol::returns_self()), "dx10stencil", sol::policies(&adopt_compiler::_dx10Stencil, sol::returns_self()),
+        "dx10stencil_ref", sol::policies(&adopt_compiler::_dx10StencilRef, sol::returns_self()), "dx10cullmode",
+        sol::policies(&adopt_compiler::_dx10CullMode, sol::returns_self()), "dx10zfunc", sol::policies(&adopt_compiler::_dx10ZFunc, sol::returns_self()),
         "dx10sampler", &adopt_compiler::_dx10sampler);
 
-    lua->new_enum("blend", "zero", D3DBLEND_ZERO, "one", D3DBLEND_ONE, "srccolor", D3DBLEND_SRCCOLOR, "invsrccolor", D3DBLEND_INVSRCCOLOR, "srcalpha", D3DBLEND_SRCALPHA,
-                  "invsrcalpha", D3DBLEND_INVSRCALPHA, "destalpha", D3DBLEND_DESTALPHA, "invdestalpha", D3DBLEND_INVDESTALPHA, "destcolor", D3DBLEND_DESTCOLOR, "invdestcolor",
-                  D3DBLEND_INVDESTCOLOR, "srcalphasat", D3DBLEND_SRCALPHASAT);
+    lua->new_enum("blend", "zero", D3DBLEND_ZERO, "one", D3DBLEND_ONE, "srccolor", D3DBLEND_SRCCOLOR, "invsrccolor", D3DBLEND_INVSRCCOLOR, "srcalpha",
+                  D3DBLEND_SRCALPHA, "invsrcalpha", D3DBLEND_INVSRCALPHA, "destalpha", D3DBLEND_DESTALPHA, "invdestalpha", D3DBLEND_INVDESTALPHA, "destcolor",
+                  D3DBLEND_DESTCOLOR, "invdestcolor", D3DBLEND_INVDESTCOLOR, "srcalphasat", D3DBLEND_SRCALPHASAT);
 
-    lua->new_enum("cmp_func", "never", D3DCMP_NEVER, "less", D3DCMP_LESS, "equal", D3DCMP_EQUAL, "lessequal", D3DCMP_LESSEQUAL, "greater", D3DCMP_GREATER, "notequal",
-                  D3DCMP_NOTEQUAL, "greaterequal", D3DCMP_GREATEREQUAL, "always", D3DCMP_ALWAYS);
+    lua->new_enum("cmp_func", "never", D3DCMP_NEVER, "less", D3DCMP_LESS, "equal", D3DCMP_EQUAL, "lessequal", D3DCMP_LESSEQUAL, "greater", D3DCMP_GREATER,
+                  "notequal", D3DCMP_NOTEQUAL, "greaterequal", D3DCMP_GREATEREQUAL, "always", D3DCMP_ALWAYS);
 
-    lua->new_enum("stencil_op", "keep", D3DSTENCILOP_KEEP, "zero", D3DSTENCILOP_ZERO, "replace", D3DSTENCILOP_REPLACE, "incrsat", D3DSTENCILOP_INCRSAT, "decrsat",
-                  D3DSTENCILOP_DECRSAT, "invert", D3DSTENCILOP_INVERT, "incr", D3DSTENCILOP_INCR, "decr", D3DSTENCILOP_DECR);
+    lua->new_enum("stencil_op", "keep", D3DSTENCILOP_KEEP, "zero", D3DSTENCILOP_ZERO, "replace", D3DSTENCILOP_REPLACE, "incrsat", D3DSTENCILOP_INCRSAT,
+                  "decrsat", D3DSTENCILOP_DECRSAT, "invert", D3DSTENCILOP_INVERT, "incr", D3DSTENCILOP_INCR, "decr", D3DSTENCILOP_DECR);
 
     // load shaders
     xr_vector<char*>* folder = FS.file_list_open("$game_shaders$", RImplementation.getShaderPath(), FS_ListFiles | FS_RootOnly);

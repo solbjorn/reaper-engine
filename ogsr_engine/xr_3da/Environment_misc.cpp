@@ -170,7 +170,8 @@ void CEnvAmbient::load(CInifile& ambients_config, CInifile& sound_channels_confi
         m_sound_channels[i] = create_sound_channel(sound_channels_config, _GetItem(channels, i, tmp));
 
     // effects
-    m_effect_period.set(iFloor(ambients_config.r_float(sect, "min_effect_period") * 1000.f), iFloor(ambients_config.r_float(sect, "max_effect_period") * 1000.f));
+    m_effect_period.set(iFloor(ambients_config.r_float(sect, "min_effect_period") * 1000.f),
+                        iFloor(ambients_config.r_float(sect, "max_effect_period") * 1000.f));
     LPCSTR effs = ambients_config.r_string(sect, "effects");
     cnt = _GetItemCount(effs);
     //	R_ASSERT3				(cnt,"effects empty", sect.c_str());
@@ -187,7 +188,7 @@ void CEnvAmbient::load_shoc(const shared_str& sect)
     section = sect;
     string_path tmp;
     // sounds
-    ASSERT_FMT_DBG(pSettings->line_exist(sect, "sounds"), "CEnvAmbient::load: section '%s' not found", section.c_str());
+    ASSERT_FMT_DBG(pSettings->line_exist(sect, "sounds"), "CEnvAmbient::load: section '{}' not found", section);
     if (pSettings->line_exist(sect, "sounds"))
     {
         Fvector2 t = pSettings->r_fvector2(sect, "sound_period");
@@ -276,7 +277,7 @@ CEnvDescriptor::CEnvDescriptor(shared_str const& identifier) : m_identifier{iden
 #define C_CHECK(C) \
     if (C.x < 0 || C.x > 2 || C.y < 0 || C.y > 2 || C.z < 0 || C.z > 2) \
     { \
-        Msg("! Invalid '%s' in env-section '%s'", #C, m_identifier.c_str()); \
+        Msg("! Invalid '{}' in env-section '{}'", #C, m_identifier); \
     } \
     XR_MACRO_END()
 
@@ -451,7 +452,9 @@ void CEnvDescriptor::load_shoc(float exec_tm, LPCSTR S, CEnvironment& environmen
     tb_id = environment.eff_Thunderbolt->AppendDef_shoc(environment, pSettings, pSettings->r_string(m_identifier.c_str(), "thunderbolt"));
     bolt_period = (tb_id.size()) ? pSettings->r_float(m_identifier.c_str(), "bolt_period") : 0.f;
     bolt_duration = (tb_id.size()) ? pSettings->r_float(m_identifier.c_str(), "bolt_duration") : 0.f;
-    env_ambient = pSettings->line_exist(m_identifier.c_str(), "env_ambient") ? environment.AppendEnvAmb(pSettings->r_string<shared_str>(m_identifier, "env_ambient")) : nullptr;
+    env_ambient = pSettings->line_exist(m_identifier.c_str(), "env_ambient") ?
+        environment.AppendEnvAmb(pSettings->r_string<shared_str>(m_identifier, "env_ambient")) :
+        nullptr;
 
     if (pSettings->line_exist(m_identifier.c_str(), "sun_shafts_intensity"))
         m_fSunShaftsIntensity = pSettings->r_float(m_identifier.c_str(), "sun_shafts_intensity");

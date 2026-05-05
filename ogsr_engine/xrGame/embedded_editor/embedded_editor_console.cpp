@@ -600,8 +600,9 @@ void ImGuiGameConsole::Render()
         ImGui::PushStyleColor(ImGuiCol_Text, cmd_font_color);
         ImGui::SetNextItemWidth(-140.0f);
 
-        constexpr ImGuiInputTextFlags input_text_flags{ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit |
-                                                       ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll};
+        constexpr ImGuiInputTextFlags input_text_flags{ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory |
+                                                       ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_EnterReturnsTrue |
+                                                       ImGuiInputTextFlags_EscapeClearsAll};
 
         constexpr auto callback = [](ImGuiInputTextCallbackData* data) { return static_cast<ImGuiGameConsole*>(data->UserData)->InputCallback(data); };
 
@@ -668,8 +669,9 @@ void ImGuiGameConsole::Render()
         // Tips
         if (!m_disable_tips && !m_tips.empty())
         {
-            constexpr ImGuiWindowFlags tips_window_flags{ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse |
-                                                         ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing};
+            constexpr ImGuiWindowFlags tips_window_flags{ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+                                                         ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings |
+                                                         ImGuiWindowFlags_NoFocusOnAppearing};
 
             ImGui::PushStyleColor(ImGuiCol_WindowBg, tips_back_color);
             ImGui::PushStyleColor(ImGuiCol_Text, tips_font_color);
@@ -881,7 +883,7 @@ void ImGuiGameConsole::ExecuteCommand(gsl::czstring cmd_str)
                     IConsole_Command::TStatus stat;
                     cc->Status(stat);
 
-                    Msg("- %s %s", cc->Name(), stat);
+                    Msg("- {} {}", cc->Name(), stat);
                 }
             }
             else
@@ -892,12 +894,12 @@ void ImGuiGameConsole::ExecuteCommand(gsl::czstring cmd_str)
         }
         else
         {
-            Msg("! Unknown command: %s", first.c_str());
+            Msg("! Unknown command: {}", first);
         }
     }
     else
     {
-        Msg("! Unknown command: %s", first.c_str());
+        Msg("! Unknown command: {}", first);
     }
 
     m_edit_string[0] = '\0';
@@ -914,7 +916,7 @@ void ImGuiGameConsole::AddCmdHistory(gsl::czstring str)
 
     static constexpr std::array<char, 2> c{std::to_underlying(Console_mark::mark2), '\0'};
 
-    Msg("%s %s", c.data(), str);
+    Msg("{} {}", c.data(), str);
 
     shared_str sh{str};
     add_cmd_history(sh);

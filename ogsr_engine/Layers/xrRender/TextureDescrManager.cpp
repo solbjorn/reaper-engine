@@ -24,7 +24,7 @@ tmc::task<void> CTextureDescrMngr::LoadLTX(gsl::czstring initial)
     FS_FileSet flist;
     std::ignore = FS.file_list(flist, initial, FS_ListFiles | FS_RootOnly, "*textures*.ltx");
 
-    Msg("Count of *textures*.ltx files in [%s]: [%zu]", initial, flist.size());
+    Msg("Count of *textures*.ltx files in [{}]: [{}]", initial, flist.size());
 
     if (flist.empty())
         co_return;
@@ -101,8 +101,8 @@ tmc::task<void> CTextureDescrMngr::LoadLTX(gsl::czstring initial)
                                              string_path bmode, bparallax;
                                              bmode[0] = '\0';
                                              bparallax[0] = '\0';
-                                             R_ASSERT(sscanf(item.second.c_str(), "bump_mode[%[^]]], material[%f], parallax[%[^]]", bmode, &desc.m_spec->m_material, bparallax) >=
-                                                      2);
+                                             R_ASSERT(sscanf(item.second.c_str(), "bump_mode[%[^]]], material[%f], parallax[%[^]]", bmode,
+                                                             &desc.m_spec->m_material, bparallax) >= 2);
 
                                              if ((bmode[0] == 'u') && (bmode[1] == 's') && (bmode[2] == 'e') && (bmode[3] == ':')) // bump-map specified
                                                  desc.m_spec->m_bump_name._set(bmode + 4);
@@ -120,7 +120,7 @@ tmc::task<void> CTextureDescrMngr::LoadTHM(gsl::czstring initial)
     FS_FileSet flist;
     std::ignore = FS.file_list(flist, initial, FS_ListFiles, "*.thm");
 
-    Msg("Count of .thm files in [%s]: [%zu]", initial, flist.size());
+    Msg("Count of .thm files in [{}]: [{}]", initial, flist.size());
 
     if (flist.empty())
         co_return;
@@ -131,70 +131,72 @@ tmc::task<void> CTextureDescrMngr::LoadTHM(gsl::czstring initial)
     m_detail_scalers.reserve(m_detail_scalers.size() + flist.size());
 
     co_await tmc::spawn_many(flist | std::views::transform([this, initial, &lock](const auto& it) -> tmc::task<void> {
-                                 return [](auto& m_texture_details, auto& m_detail_scalers, gsl::czstring initial, auto& lock, const auto& it) -> tmc::task<void> {
-                                     string_path fn;
-                                     std::ignore = FS.update_path(fn, initial, it.name.c_str());
-                                     IReader* F = FS.r_open(fn);
+                                 return
+                                     [](auto& m_texture_details, auto& m_detail_scalers, gsl::czstring initial, auto& lock, const auto& it) -> tmc::task<void> {
+                                         string_path fn;
+                                         std::ignore = FS.update_path(fn, initial, it.name.c_str());
+                                         IReader* F = FS.r_open(fn);
 
-                                     xr_strcpy(fn, it.name.c_str());
-                                     fix_texture_name(fn);
-                                     R_ASSERT(F->find_chunk_thm(THM_CHUNK_TYPE, fn));
+                                         xr_strcpy(fn, it.name.c_str());
+                                         fix_texture_name(fn);
+                                         R_ASSERT(F->find_chunk_thm(THM_CHUNK_TYPE, fn));
 
-                                     std::ignore = F->r_u32();
-                                     STextureParams tp;
-                                     tp.Load(*F, fn);
-                                     FS.r_close(F);
+                                         std::ignore = F->r_u32();
+                                         STextureParams tp;
+                                         tp.Load(*F, fn);
+                                         FS.r_close(F);
 
-                                     if (
+                                         if (
 #ifdef USE_SHOC_THM_FORMAT
-                                         STextureParams::ttImage == tp.fmt || STextureParams::ttTerrain == tp.fmt || STextureParams::ttNormalMap == tp.fmt
+                                             STextureParams::ttImage == tp.fmt || STextureParams::ttTerrain == tp.fmt || STextureParams::ttNormalMap == tp.fmt
 #else
-                                         STextureParams::ttImage == tp.type || STextureParams::ttTerrain == tp.type || STextureParams::ttNormalMap == tp.type
+                                             STextureParams::ttImage == tp.type || STextureParams::ttTerrain == tp.type ||
+                                             STextureParams::ttNormalMap == tp.type
 #endif
-                                     )
-                                     {
-                                         co_await lock;
-                                         texture_desc& desc = m_texture_details[fn];
-                                         cl_dt_scaler*& dts = m_detail_scalers[fn];
-                                         co_await lock.co_unlock();
-
-                                         if (tp.detail_name.size() && tp.flags.is_any(STextureParams::flDiffuseDetail | STextureParams::flBumpDetail))
+                                         )
                                          {
-                                             if (desc.m_assoc)
-                                                 xr_delete(desc.m_assoc);
+                                             co_await lock;
+                                             texture_desc& desc = m_texture_details[fn];
+                                             cl_dt_scaler*& dts = m_detail_scalers[fn];
+                                             co_await lock.co_unlock();
 
-                                             desc.m_assoc = xr_new<texture_assoc>();
-                                             desc.m_assoc->detail_name = tp.detail_name;
+                                             if (tp.detail_name.size() && tp.flags.is_any(STextureParams::flDiffuseDetail | STextureParams::flBumpDetail))
+                                             {
+                                                 if (desc.m_assoc)
+                                                     xr_delete(desc.m_assoc);
 
-                                             if (dts)
-                                                 dts->scale = tp.detail_scale;
-                                             else
-                                                 dts = xr_new<cl_dt_scaler>(tp.detail_scale);
+                                                 desc.m_assoc = xr_new<texture_assoc>();
+                                                 desc.m_assoc->detail_name = tp.detail_name;
 
-                                             if (tp.flags.is(STextureParams::flDiffuseDetail))
-                                                 desc.m_assoc->usage.set(texture_assoc::flDiffuseDetail);
+                                                 if (dts)
+                                                     dts->scale = tp.detail_scale;
+                                                 else
+                                                     dts = xr_new<cl_dt_scaler>(tp.detail_scale);
 
-                                             if (tp.flags.is(STextureParams::flBumpDetail))
-                                                 desc.m_assoc->usage.set(texture_assoc::flBumpDetail);
+                                                 if (tp.flags.is(STextureParams::flDiffuseDetail))
+                                                     desc.m_assoc->usage.set(texture_assoc::flDiffuseDetail);
+
+                                                 if (tp.flags.is(STextureParams::flBumpDetail))
+                                                     desc.m_assoc->usage.set(texture_assoc::flBumpDetail);
+                                             }
+                                             if (desc.m_spec)
+                                                 xr_delete(desc.m_spec);
+
+                                             desc.m_spec = xr_new<texture_spec>();
+                                             desc.m_spec->m_material = (float)(tp.material) + (tp.material < 4 ? tp.material_weight : 0);
+                                             desc.m_spec->m_use_steep_parallax = false;
+
+                                             if (tp.bump_mode == STextureParams::tbmUse)
+                                             {
+                                                 desc.m_spec->m_bump_name = tp.bump_name;
+                                             }
+                                             else if (tp.bump_mode == STextureParams::tbmUseParallax)
+                                             {
+                                                 desc.m_spec->m_bump_name = tp.bump_name;
+                                                 desc.m_spec->m_use_steep_parallax = true;
+                                             }
                                          }
-                                         if (desc.m_spec)
-                                             xr_delete(desc.m_spec);
-
-                                         desc.m_spec = xr_new<texture_spec>();
-                                         desc.m_spec->m_material = (float)(tp.material) + (tp.material < 4 ? tp.material_weight : 0);
-                                         desc.m_spec->m_use_steep_parallax = false;
-
-                                         if (tp.bump_mode == STextureParams::tbmUse)
-                                         {
-                                             desc.m_spec->m_bump_name = tp.bump_name;
-                                         }
-                                         else if (tp.bump_mode == STextureParams::tbmUseParallax)
-                                         {
-                                             desc.m_spec->m_bump_name = tp.bump_name;
-                                             desc.m_spec->m_use_steep_parallax = true;
-                                         }
-                                     }
-                                 }(m_texture_details, m_detail_scalers, initial, lock, it);
+                                     }(m_texture_details, m_detail_scalers, initial, lock, it);
                              }))
         .with_priority(xr::tmc_priority_any);
 }
@@ -219,7 +221,7 @@ tmc::task<void> CTextureDescrMngr::Load()
     m_detail_scalers.rehash(0);
 
 #ifdef DEBUG
-    Msg("load time=%d ms", TT.GetElapsed_ms());
+    Msg("load time={} ms", TT.GetElapsed_ms());
 #endif // #ifdef DEBUG
 }
 

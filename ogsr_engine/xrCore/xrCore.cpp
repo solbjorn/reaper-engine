@@ -104,7 +104,7 @@ void xrCore::_initialize(gsl::czstring _ApplicationName, bool init_fs, gsl::czst
 
         FS._initialize(flags, nullptr, fs_fname);
 
-        Msg("[OGSR Engine (%s)] build date: [" __DATE__ " " __TIME__ "]", GetBuildConfiguration());
+        Msg("[OGSR Engine ({})] build date: [" __DATE__ " " __TIME__ "]", GetBuildConfiguration());
         if (xr_strlen(APPVEYOR_BUILD_VERSION) > 0)
             Log("[AppVeyor] build version: [" APPVEYOR_BUILD_VERSION "], repo: [" APPVEYOR_REPO_NAME "]");
 
@@ -114,12 +114,12 @@ void xrCore::_initialize(gsl::czstring _ApplicationName, bool init_fs, gsl::czst
         Log("MSVC version: [" _CRT_STRINGIZE(_MSC_FULL_VER) "], MSVC++ standard version: [" _CRT_STRINGIZE(_MSVC_LANG) "]");
 #endif
 
-        Msg("Working Directory: [%s]", WorkingPath);
-        Msg("CommandLine: [%s]", Core.Params);
+        Msg("Working Directory: [{}]", WorkingPath);
+        Msg("CommandLine: [{}]", Core.Params);
 
 #ifdef DEBUG
-        Msg("CRT heap 0x%08x", _get_heap_handle());
-        Msg("Process heap 0x%08x", GetProcessHeap());
+        Msg("CRT heap {:#010x}", _get_heap_handle());
+        Msg("Process heap {:#010x}", GetProcessHeap());
 #endif // DEBUG
     }
 

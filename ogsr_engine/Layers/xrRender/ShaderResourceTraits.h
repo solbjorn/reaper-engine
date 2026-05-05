@@ -153,5 +153,5 @@ inline void CResourceManager::DestroyShader(const T* sh)
         return;
     }
 
-    Msg("! ERROR: Failed to find compiled shader '%s'", *sh->cName);
+    Msg("! ERROR: Failed to find compiled shader '{}'", sh->cName);
 }

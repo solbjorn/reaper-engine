@@ -79,8 +79,6 @@ tmc::task<bool> IGame_Level::Load(u32)
 
     // Render-level Load
     co_await Render->level_Load(LL_Stream);
-    // tscreate.FrameEnd			();
-    //  Msg						("* S-CREATE: %f ms, %d times",tscreate.result,tscreate.count);
 
     // Objects
     g_pGamePersistent->Environment().mods_load();

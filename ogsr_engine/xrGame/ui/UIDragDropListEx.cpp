@@ -325,7 +325,8 @@ bool CUIDragDropListEx::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 
     if (m_vScrollBar->IsShown())
     {
-        const bool with_shift = Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::RShift});
+        const bool with_shift =
+            Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::RShift});
 
         switch (mouse_action)
         {
@@ -411,8 +412,7 @@ void CUIDragDropListEx::SetItem(CUICellItem* itm, Ivector2 cell_pos) // start at
         return;
 
     if (!(m_container->IsRoomFree(cell_pos, itm->GetGridSize())))
-        Msg("!![CUIDragDropListEx::SetItem] !(m_container->IsRoomFree(cell_pos, itm->GetGridSize()))");
-    // R_ASSERT						(m_container->IsRoomFree(cell_pos, itm->GetGridSize()));
+        Log("!![CUIDragDropListEx::SetItem] !(m_container->IsRoomFree(cell_pos, itm->GetGridSize()))");
 
     m_container->PlaceItemAtPos(itm, cell_pos);
 
@@ -651,7 +651,7 @@ Ivector2 CUICellContainer::FindFreeCell(const Ivector2& _size)
             }
         }
 
-        Msg("!![CUICellContainer::FindFreeCell] There are no free room to place item");
+        Log("!![CUICellContainer::FindFreeCell] There are no free room to place item");
     }
 
     return tmp;
@@ -730,8 +730,7 @@ Ivector2 CUICellContainer::TopVisibleCell() { return Ivector2().set(0, iFloor(m_
 CUICell& CUICellContainer::GetCellAt(const Ivector2& pos)
 {
     if (!ValidCell(pos))
-        Msg("!![%s] invalid cell position: [%d , %d]", __FUNCTION__, pos.x, pos.y);
-    // R_ASSERT(ValidCell(pos));
+        Msg("!![{}] invalid cell position: [{} , {}]", __FUNCTION__, pos.x, pos.y);
 
     return m_cells.at(m_cellsCapacity.x * pos.y + pos.x);
 }
@@ -887,7 +886,8 @@ void CUICellContainer::Draw()
     drawLT.set(lt_abs_pos.x + tgt_cells.lt.x * cell_sz.x, lt_abs_pos.y + tgt_cells.lt.y * cell_sz.y);
     UI()->ClientToScreenScaled(drawLT, drawLT.x, drawLT.y);
 
-    constexpr Fvector2 pts[]{Fvector2{0.0f, 0.0f}, Fvector2{1.0f, 0.0f}, Fvector2{1.0f, 1.0f}, Fvector2{0.0f, 0.0f}, Fvector2{1.0f, 1.0f}, Fvector2{0.0f, 1.0f}};
+    constexpr Fvector2 pts[]{Fvector2{0.0f, 0.0f}, Fvector2{1.0f, 0.0f}, Fvector2{1.0f, 1.0f},
+                             Fvector2{0.0f, 0.0f}, Fvector2{1.0f, 1.0f}, Fvector2{0.0f, 1.0f}};
     constexpr float tx{0.125f}, ty{1.0f};
     constexpr Fvector2 uvs[]{Fvector2{0.0f, 0.0f}, Fvector2{tx, 0.0f}, Fvector2{tx, ty}, Fvector2{0.0f, 0.0f}, Fvector2{tx, ty}, Fvector2{0.0f, ty}};
     constexpr Fvector2 tps[]{Fvector2{tx * 0, 0.0f}, Fvector2{tx * 1, 0.0f}, Fvector2{tx * 2, 0.0f}, Fvector2{tx * 3, 0.0f},
@@ -934,8 +934,8 @@ void CUICellContainer::Draw()
             {
                 const Fvector2& p = pts[k];
                 const Fvector2& uv = uvs[k];
-                UIRender->PushPoint(iFloor(rect_offset.x + p.x * hl_len.x) - 0.5f, iFloor(rect_offset.y + p.y * hl_len.y) - 0.5f, 0, m_pParentDragDropList->back_color, tp.x + uv.x,
-                                    tp.y + uv.y);
+                UIRender->PushPoint(iFloor(rect_offset.x + p.x * hl_len.x) - 0.5f, iFloor(rect_offset.y + p.y * hl_len.y) - 0.5f, 0,
+                                    m_pParentDragDropList->back_color, tp.x + uv.x, tp.y + uv.y);
             }
         }
     }

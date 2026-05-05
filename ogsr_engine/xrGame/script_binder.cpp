@@ -55,14 +55,14 @@ void CScriptBinder::reload(LPCSTR section)
     sol::function lua_function;
     if (!ai().script_engine().function(script_func_name, lua_function))
     {
-        Msg("!![CScriptBinder::reload] function [%s] not loaded!", script_func_name);
+        Msg("!![CScriptBinder::reload] function [{}] not loaded!", script_func_name);
         return;
     }
 
     auto game_object = smart_cast<CGameObject*>(this);
     if (!game_object) // Объекта нет - значит тут делать нечего.
     {
-        Msg("!![[CScriptBinder::reload] failed cast to CGameObject!");
+        Log("!![[CScriptBinder::reload] failed cast to CGameObject!");
         return;
     }
 
@@ -93,7 +93,8 @@ tmc::task<void> CScriptBinder::net_Destroy()
     if (m_object != nullptr)
     {
 #ifdef DEBUG
-        Msg("* Core object %s is UNbinded from the script object", smart_cast<CGameObject*>(this) ? *smart_cast<CGameObject*>(this)->cName() : "");
+        Msg("* Core object {} is UNbinded from the script object",
+            smart_cast<CGameObject*>(this) != nullptr ? std::string_view{smart_cast<CGameObject*>(this)->cName()} : std::string_view{});
 #endif // DEBUG
 
         co_await m_object->net_Destroy();
@@ -105,9 +106,12 @@ tmc::task<void> CScriptBinder::net_Destroy()
 void CScriptBinder::set_object(CScriptBinderObject* object)
 {
     VERIFY2(!m_object, "Cannot bind to the object twice!");
+
 #ifdef DEBUG
-    Msg("* Core object %s is binded with the script object", smart_cast<CGameObject*>(this) ? *smart_cast<CGameObject*>(this)->cName() : "");
+    Msg("* Core object {} is binded with the script object",
+        smart_cast<CGameObject*>(this) != nullptr ? std::string_view{smart_cast<CGameObject*>(this)->cName()} : std::string_view{});
 #endif // DEBUG
+
     m_object = object;
 }
 

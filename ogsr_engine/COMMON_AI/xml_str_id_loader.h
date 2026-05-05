@@ -95,7 +95,7 @@ const ITEM_DATA* CSXML_IdToIndex::GetById(const shared_str& str_id, bool no_asse
     {
         int i = 0;
         for (T_VECTOR::iterator it = m_pItemDataVector->begin(); m_pItemDataVector->end() != it; it++, i++)
-            Msg("[%d]=[%s]", i, *(*it).id);
+            Msg("[{}]=[{}]", i, it->id);
 
         R_ASSERT3(no_assert, "item not found, id", *str_id);
         return nullptr;

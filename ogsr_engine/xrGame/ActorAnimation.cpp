@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
 #include "Actor.h"
-#include "actor_anim_defs.h"
 
+#include "actor_anim_defs.h"
 #include "hudmanager.h"
 #include "UI.h"
 #include "weapon.h"
@@ -403,8 +403,10 @@ void CActor::g_SetAnimation(u32 mstate_rl)
 
     //---------------------------------------------------------------
     if (this == Level().CurrentViewEntity())
-        if (((mstate_rl & ACTOR_DEFS::mcSprint) != (mstate_old & ACTOR_DEFS::mcSprint)) || ((mstate_rl & ACTOR_DEFS::mcAnyMove) != (mstate_old & ACTOR_DEFS::mcAnyMove)) ||
-            ((mstate_rl & ACTOR_DEFS::mcCrouch) != (mstate_old & ACTOR_DEFS::mcCrouch)) || ((mstate_rl & ACTOR_DEFS::mcAccel) != (mstate_old & ACTOR_DEFS::mcAccel)))
+        if (((mstate_rl & ACTOR_DEFS::mcSprint) != (mstate_old & ACTOR_DEFS::mcSprint)) ||
+            ((mstate_rl & ACTOR_DEFS::mcAnyMove) != (mstate_old & ACTOR_DEFS::mcAnyMove)) ||
+            ((mstate_rl & ACTOR_DEFS::mcCrouch) != (mstate_old & ACTOR_DEFS::mcCrouch)) ||
+            ((mstate_rl & ACTOR_DEFS::mcAccel) != (mstate_old & ACTOR_DEFS::mcAccel)))
             g_player_hud->OnMovementChanged(static_cast<ACTOR_DEFS::EMoveCommand>(mstate_rl));
     //-----------------------------------------------------------------------
     // Torso
@@ -439,9 +441,10 @@ void CActor::g_SetAnimation(u32 mstate_rl)
                     M_torso = TW->drop;
                     if (!M_torso)
                     {
-                        Msg("! drop animation for %s", *(H->object().cName()));
+                        Msg("! drop animation for {}", H->object().cName());
                         M_torso = ST->m_torso_idle;
                     }
+
                     m_bAnimTorsoPlayed = TRUE;
                 }
                 else

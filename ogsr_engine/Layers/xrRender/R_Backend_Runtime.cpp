@@ -73,7 +73,8 @@ void CBackend::Invalidate()
     m_bChangedRTorZB = false;
     m_pInputSignature = nullptr;
 
-    for (auto [pc, vc, gc, hc, dc, cc] : std::views::zip(m_aPixelConstants, m_aVertexConstants, m_aGeometryConstants, m_aHullConstants, m_aDomainConstants, m_aComputeConstants))
+    for (auto [pc, vc, gc, hc, dc, cc] :
+         std::views::zip(m_aPixelConstants, m_aVertexConstants, m_aGeometryConstants, m_aHullConstants, m_aDomainConstants, m_aComputeConstants))
     {
         pc._set(nullptr);
         vc._set(nullptr);
@@ -175,7 +176,6 @@ void CBackend::set_Textures(STextureList* textures_list)
 #endif
                 if (load_surf)
                 {
-                    PGO(Msg("PGO:tex%d:%s", load_id, load_surf->cName.c_str()));
                     load_surf->bind(*this, load_id);
                     load_surf->last_slice = load_surf->curr_slice;
                 }
@@ -197,10 +197,7 @@ void CBackend::set_Textures(STextureList* textures_list)
                 stat.textures++;
 #endif
                 if (load_surf)
-                {
-                    PGO(Msg("PGO:tex%d:%s", load_id, load_surf->cName.c_str()));
                     load_surf->bind(*this, load_id);
-                }
             }
         }
         else if (load_id < CTexture::rstHull)
@@ -219,10 +216,7 @@ void CBackend::set_Textures(STextureList* textures_list)
                 stat.textures++;
 #endif
                 if (load_surf)
-                {
-                    PGO(Msg("PGO:tex%d:%s", load_id, load_surf->cName.c_str()));
                     load_surf->bind(*this, load_id);
-                }
             }
         }
         else if (load_id < CTexture::rstDomain)
@@ -241,10 +235,7 @@ void CBackend::set_Textures(STextureList* textures_list)
                 stat.textures++;
 #endif
                 if (load_surf)
-                {
-                    PGO(Msg("PGO:tex%d:%s", load_id, load_surf->cName.c_str()));
                     load_surf->bind(*this, load_id);
-                }
             }
         }
         else if (load_id < CTexture::rstCompute)
@@ -263,10 +254,7 @@ void CBackend::set_Textures(STextureList* textures_list)
                 stat.textures++;
 #endif
                 if (load_surf)
-                {
-                    PGO(Msg("PGO:tex%d:%s", load_id, load_surf->cName.c_str()));
                     load_surf->bind(*this, load_id);
-                }
             }
         }
         else if (load_id < CTexture::rstInvalid)
@@ -285,10 +273,7 @@ void CBackend::set_Textures(STextureList* textures_list)
                 stat.textures++;
 #endif
                 if (load_surf)
-                {
-                    PGO(Msg("PGO:tex%d:%s", load_id, load_surf->cName.c_str()));
                     load_surf->bind(*this, load_id);
-                }
             }
         }
         else

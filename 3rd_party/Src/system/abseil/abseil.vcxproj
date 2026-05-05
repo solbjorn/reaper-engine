@@ -51,6 +51,7 @@
       cmake --install . --config $(Configuration)
       md $(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\absl\base
       copy /Y "absl\base\absl_base.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_base.lib"
+      copy /Y "absl\base\absl_hardening.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_hardening.lib"
       copy /Y "absl\base\absl_malloc_internal.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_malloc_internal.lib"
       copy /Y "absl\base\absl_raw_logging_internal.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_raw_logging_internal.lib"
       copy /Y "absl\base\absl_spinlock_wait.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_spinlock_wait.lib"

@@ -95,13 +95,9 @@ public:
     {
         TInfo I;
         Info(I);
-        Msg("~ Invalid syntax in call to '%s'", cName);
-        Msg("~ Valid arguments: %s", I);
 
-        /*
-        g_SASH.OnConsoleInvalidSyntax("~ Invalid syntax in call to '%s'",cName, false);
-        g_SASH.OnConsoleInvalidSyntax("~ Valid arguments: %s", I, true);
-        */
+        Msg("~ Invalid syntax in call to '{}'", cName);
+        Msg("~ Valid arguments: {}", I);
     }
 
     virtual void Execute(LPCSTR args) = 0;
@@ -385,7 +381,8 @@ public:
     void fill_tips(vecTips& tips) override
     {
         TStatus str;
-        xr_sprintf(str, sizeof(str), "(%g, %g, %g)  (current)  [(%g, %g, %g)-(%g, %g, %g)]", value->x, value->y, value->z, min.x, min.y, min.z, max.x, max.y, max.z);
+        xr_sprintf(str, sizeof(str), "(%g, %g, %g)  (current)  [(%g, %g, %g)-(%g, %g, %g)]", value->x, value->y, value->z, min.x, min.y, min.z, max.x, max.y,
+                   max.z);
         tips.emplace_back(str);
 
         IConsole_Command::fill_tips(tips);
@@ -537,13 +534,16 @@ public:
     }
 
     void Status(TStatus& S) override { xr_sprintf(S, sizeof(S), "(%g, %g, %g, %g)", value->x, value->y, value->z, value->w); }
-    void Info(TInfo& I) override { xr_sprintf(I, sizeof(I), "vector4 in range [%g, %g, %g, %g]-[%g, %g, %g, %g]", min.x, min.y, min.z, min.w, max.x, max.y, max.z, max.w); }
+    void Info(TInfo& I) override
+    {
+        xr_sprintf(I, sizeof(I), "vector4 in range [%g, %g, %g, %g]-[%g, %g, %g, %g]", min.x, min.y, min.z, min.w, max.x, max.y, max.z, max.w);
+    }
 
     void fill_tips(vecTips& tips) override
     {
         TStatus str;
-        xr_sprintf(str, sizeof(str), "(%g, %g, %g, %g) (current) [(%g, %g, %g, %g)-(%g, %g, %g, %g)]", value->x, value->y, value->z, value->w, min.x, min.y, min.z, min.w, max.x,
-                   max.y, max.z, max.w);
+        xr_sprintf(str, sizeof(str), "(%g, %g, %g, %g) (current) [(%g, %g, %g, %g)-(%g, %g, %g, %g)]", value->x, value->y, value->z, value->w, min.x, min.y,
+                   min.z, min.w, max.x, max.y, max.z, max.w);
         tips.emplace_back(str);
 
         IConsole_Command::fill_tips(tips);

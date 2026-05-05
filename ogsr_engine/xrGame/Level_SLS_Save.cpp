@@ -1,15 +1,16 @@
 #include "stdafx.h"
 
+#include "Level.h"
+
 #include "HUDmanager.h"
 #include "..\xr_3da\xrLevel.h"
-#include "Level.h"
 #include "xrserver.h"
 
 void CLevel::net_Save(LPCSTR name) // Game Save
 {
     if (!Server)
     {
-        Msg("KERNEL::Can't save game on pure client");
+        Log("KERNEL::Can't save game on pure client");
         return;
     }
 

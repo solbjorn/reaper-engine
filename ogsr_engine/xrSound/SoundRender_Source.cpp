@@ -53,7 +53,10 @@ constexpr sf::SF_VIRTUAL_IO vio{
     [] [[nodiscard]] (void* user_data) { return sf::sf_count_t{static_cast<CStreamReader*>(user_data)->tell()}; },
 };
 
-[[nodiscard]] constexpr CStreamReader* sf_stream(const sf::SNDFILE* snd) { return *reinterpret_cast<CStreamReader* const*>(reinterpret_cast<const std::byte*>(snd) + 8056); }
+[[nodiscard]] constexpr CStreamReader* sf_stream(const sf::SNDFILE* snd)
+{
+    return *reinterpret_cast<CStreamReader* const*>(reinterpret_cast<const std::byte*>(snd) + 8056);
+}
 
 [[nodiscard]] bool find_sound(string_path& fn, std::span<const std::string_view> places, std::string_view path)
 {
@@ -81,10 +84,10 @@ void CSoundRender_Source::decompress(void* dest, s64 byte_offset, s64 size, sf::
     const auto cur_pos = sf::sf_seek(snd, 0, sf::SF_SEEK_CUR);
 
     if (cur_pos != sample_offset && sf::sf_seek(snd, sample_offset, sf::SF_SEEK_SET) < 0)
-        Msg("! %s File: [%s]", sf::sf_strerror(snd), pname.c_str());
+        Msg("! {} File: [{}]", sf::sf_strerror(snd), pname);
 
     if (const auto frames = size / m_wformat.item_size; sf::sf_readf_float(snd, static_cast<f32*>(dest), frames) < frames)
-        Msg("! %s File: [%s]", sf::sf_strerror(snd), pname.c_str());
+        Msg("! {} File: [{}]", sf::sf_strerror(snd), pname);
 }
 
 sf::SNDFILE* CSoundRender_Source::open() const
@@ -96,7 +99,7 @@ sf::SNDFILE* CSoundRender_Source::open() const
     auto snd = sf::sf_open_virtual(const_cast<sf::SF_VIRTUAL_IO*>(&xr::vio), sf::SFM_READ, &info, file);
     if (snd == nullptr)
     {
-        Msg("! %s File: [%s]", sf::sf_strerror(snd), pname.c_str());
+        Msg("! {} File: [{}]", sf::sf_strerror(snd), pname);
         file->close();
     }
 
@@ -111,7 +114,7 @@ void CSoundRender_Source::close(sf::SNDFILE*& snd) const
     auto file = xr::sf_stream(snd);
 
     if (const auto ret = sf::sf_close(snd); ret != 0)
-        Msg("! %s File: [%s]", sf::sf_error_number(ret), pname.c_str());
+        Msg("! {} File: [{}]", sf::sf_error_number(ret), pname);
 
     file->close();
     snd = nullptr;
@@ -155,7 +158,7 @@ bool CSoundRender_Source::parse_comment(sf::SNDFILE* snd, bool fallback)
     if (comment == nullptr)
     {
         if (!fallback)
-            Msg("! Missing UTF-8 comment, file: [%s]", pname.c_str());
+            Msg("! Missing UTF-8 comment, file: [{}]", pname);
 
         return false;
     }
@@ -167,7 +170,7 @@ bool CSoundRender_Source::parse_comment(sf::SNDFILE* snd, bool fallback)
     {
     inv:
         if (!fallback)
-            Msg("! Invalid UTF-8 comment, file: [%s]", pname.c_str());
+            Msg("! Invalid UTF-8 comment, file: [{}]", pname);
 
         return false;
     }
@@ -192,7 +195,7 @@ void CSoundRender_Source::parse_legacy_comment(CStreamReader& file)
     if (file.length() < 128)
     {
     miss:
-        Msg("! Missing legacy comment, file: [%s]", pname.c_str());
+        Msg("! Missing legacy comment, file: [{}]", pname);
         return;
     }
 
@@ -211,7 +214,7 @@ void CSoundRender_Source::parse_legacy_comment(CStreamReader& file)
     if (std::memcmp(buf.data(), magic.data(), magic.size()) != 0)
     {
     inv:
-        Msg("! Invalid legacy comment, file: [%s]", pname.c_str());
+        Msg("! Invalid legacy comment, file: [{}]", pname);
         return;
     }
 
@@ -262,7 +265,7 @@ void CSoundRender_Source::parse_legacy_comment(CStreamReader& file)
         m_fMaxAIDist = comment.r_float();
 
         break;
-    default: Msg("! Invalid legacy comment version, file: [%s]", pname.c_str()); break;
+    default: Msg("! Invalid legacy comment version, file: [{}]", pname); break;
     }
 }
 
@@ -278,7 +281,7 @@ void CSoundRender_Source::load(LPCSTR name)
 
     if (!xr::find_sound(fn, std::array{xr::fsgame::level, xr::fsgame::game_sounds}, fname))
     {
-        Msg("! Can't find sound [%s]", N);
+        Msg("! Can't find sound [{}]", fname);
         R_ASSERT(xr::find_sound(fn, std::array{xr::fsgame::game_sounds}, "$no_sound"));
     }
 

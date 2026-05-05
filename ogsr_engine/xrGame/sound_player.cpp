@@ -71,8 +71,8 @@ u32 CSoundPlayer::add(LPCSTR prefix, u32 max_count, ESoundTypes type, u32 priori
     return sc->m_sounds.size();
 }
 
-CSoundPlayer::CSoundCollection* CSoundPlayer::add_deferred(LPCSTR prefix, u32 max_count, ESoundTypes type, u32 priority, u32 mask, u32 internal_type, LPCSTR bone_name,
-                                                           CSound_UserDataPtr data)
+CSoundPlayer::CSoundCollection* CSoundPlayer::add_deferred(LPCSTR prefix, u32 max_count, ESoundTypes type, u32 priority, u32 mask, u32 internal_type,
+                                                           LPCSTR bone_name, CSound_UserDataPtr data)
 {
     SOUND_COLLECTIONS::iterator I = m_sounds.find(internal_type);
     if (I != m_sounds.end())
@@ -110,7 +110,8 @@ bool CSoundPlayer::check_sound_legacy(u32 internal_type) const
     if (m_sounds.end() == J)
     {
 #ifdef DEBUG
-        ai().script_engine().script_log(eLuaMessageTypeMessage, "Can't find sound with internal type %d (sound_script = %d)", internal_type, StalkerSpace::eStalkerSoundScript);
+        ai().script_engine().script_log(eLuaMessageTypeMessage, "Can't find sound with internal type %d (sound_script = %d)", internal_type,
+                                        StalkerSpace::eStalkerSoundScript);
 #endif
         return (false);
     }
@@ -178,8 +179,8 @@ void CSoundPlayer::play(u32 internal_type, u32 max_start_time, u32 min_start_tim
     CSoundCollectionParamsFull& sound = (*I).second.first;
     if ((*I).second.second->m_sounds.empty())
     {
-        MsgDbg("- There are no sounds in sound collection \"%s%s\" with internal type %d (sound_script = %d)", *sound.m_sound_player_prefix, *sound.m_sound_prefix, internal_type,
-               StalkerSpace::eStalkerSoundScript);
+        MsgDbg("- There are no sounds in sound collection \"{}{}\" with internal type {} (sound_script = {})", sound.m_sound_player_prefix,
+               sound.m_sound_prefix, internal_type, StalkerSpace::eStalkerSoundScript);
         return;
     }
 
@@ -276,7 +277,7 @@ void CSoundPlayer::CSoundCollection::load()
     }
 
     if (m_sounds.empty())
-        MsgDbg("- There are no sounds with prefix %s%s", *m_params.m_sound_player_prefix, *m_params.m_sound_prefix);
+        MsgDbg("- There are no sounds with prefix {}{}", m_params.m_sound_player_prefix, m_params.m_sound_prefix);
 }
 
 CSoundPlayer::CSoundCollection::~CSoundCollection()

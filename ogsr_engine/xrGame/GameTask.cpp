@@ -27,7 +27,7 @@ u16 storyId2GameId(ALife::_STORY_ID);
 ALife::_STORY_ID story_id(LPCSTR story_id)
 {
     const auto I = story_ids.find(story_id);
-    ASSERT_FMT_DBG(I != story_ids.end(), "story_id not found: %s", story_id);
+    ASSERT_FMT_DBG(I != story_ids.end(), "story_id not found: {}", story_id);
 
     return I != story_ids.end() ? ALife::_STORY_ID((*I).second) : INVALID_STORY_ID;
 }
@@ -76,14 +76,14 @@ void CGameTask::Load(const TASK_ID& id)
     m_priority = g_gameTaskXml->ReadAttribInt(g_gameTaskXml->GetLocalRoot(), "prio", -1);
     m_version = g_gameTaskXml->ReadAttribInt(g_gameTaskXml->GetLocalRoot(), "version", 0);
     m_objectives_version = g_gameTaskXml->ReadAttribInt(g_gameTaskXml->GetLocalRoot(), "objectives_version", 0);
-    m_show_all_objectives =
-        !!g_gameTaskXml->ReadAttribInt(g_gameTaskXml->GetLocalRoot(), "show_all_objectives", (Core.Features.test(xrCore::Feature::show_objectives_ondemand) ? 0 : 1));
+    m_show_all_objectives = !!g_gameTaskXml->ReadAttribInt(g_gameTaskXml->GetLocalRoot(), "show_all_objectives",
+                                                           (Core.Features.test(xrCore::Feature::show_objectives_ondemand) ? 0 : 1));
+
 #ifdef DEBUG
     if (m_priority == u32(-1))
-    {
-        Msg("Game Task [%s] has no priority", *id);
-    }
+        Msg("Game Task [{}] has no priority", id);
 #endif // DEBUG
+
     int tag_num = g_gameTaskXml->GetNodesNum(g_gameTaskXml->GetLocalRoot(), "objective");
     m_Objectives.clear();
 
@@ -199,7 +199,7 @@ void CGameTask::Load(const TASK_ID& id)
             gsl::czstring str = g_gameTaskXml->Read(l_root, "function_complete", j, nullptr);
             const bool function_exists = ai().script_engine().function(str, fn);
 
-            ASSERT_FMT_DBG(function_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, str);
+            ASSERT_FMT_DBG(function_exists, "[{}]: Cannot find script function described in task objective: {}", __FUNCTION__, str);
         }
 
         //------function_fail
@@ -210,7 +210,7 @@ void CGameTask::Load(const TASK_ID& id)
             gsl::czstring str = g_gameTaskXml->Read(l_root, "function_fail", j, nullptr);
             const bool function_exists = ai().script_engine().function(str, fn);
 
-            ASSERT_FMT_DBG(function_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, str);
+            ASSERT_FMT_DBG(function_exists, "[{}]: Cannot find script function described in task objective: {}", __FUNCTION__, str);
         }
 
         //------function_skipped
@@ -232,7 +232,7 @@ void CGameTask::Load(const TASK_ID& id)
             gsl::czstring str = g_gameTaskXml->Read(l_root, "function_call_complete", j, nullptr);
             const bool function_exists = ai().script_engine().function(str, fn);
 
-            ASSERT_FMT_DBG(function_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, str);
+            ASSERT_FMT_DBG(function_exists, "[{}]: Cannot find script function described in task objective: {}", __FUNCTION__, str);
         }
 
         //------function_on_fail
@@ -243,7 +243,7 @@ void CGameTask::Load(const TASK_ID& id)
             gsl::czstring str = g_gameTaskXml->Read(l_root, "function_call_fail", j, nullptr);
             const bool function_exists = ai().script_engine().function(str, fn);
 
-            ASSERT_FMT_DBG(function_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, str);
+            ASSERT_FMT_DBG(function_exists, "[{}]: Cannot find script function described in task objective: {}", __FUNCTION__, str);
         }
 
         //------function_on_skipped
@@ -530,7 +530,7 @@ void SScriptObjectiveHelper::init_functions(xr_vector<shared_str>& v_src, xr_vec
     for (auto [str, fn] : std::views::zip(v_src, v_dest))
     {
         const bool function_exists = ai().script_engine().function(str.c_str(), fn);
-        ASSERT_FMT_DBG(function_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, str.c_str());
+        ASSERT_FMT_DBG(function_exists, "[{}]: Cannot find script function described in task objective: {}", __FUNCTION__, str);
     }
 }
 

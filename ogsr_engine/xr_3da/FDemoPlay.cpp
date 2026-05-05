@@ -21,8 +21,8 @@
 
 CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : CEffectorCam(cefDemo, life_time /*,FALSE*/)
 {
-    Msg("*** Playing demo: %s", name);
-    // Console->Execute("hud_weapon 0");
+    Msg("*** Playing demo: {}", name);
+
     if (g_bBenchmark)
         Console->Execute("hud_draw 0");
 
@@ -76,7 +76,8 @@ CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : 
 #endif
 
         FS.r_close(fs);
-        Msg("~ Total key-frames: [%d]", m_count);
+
+        Msg("~ Total key-frames: [{}]", m_count);
     }
 
     stat_started = FALSE;
@@ -88,7 +89,7 @@ CDemoPlay::~CDemoPlay()
     stat_Stop();
     xr_delete(m_pMotion);
     xr_delete(m_MParam);
-    // Console->Execute("hud_weapon 1");
+
     if (g_bBenchmark)
         Console->Execute("hud_draw 1");
 }
@@ -139,7 +140,7 @@ void CDemoPlay::stat_Stop()
     }
     rfps_middlepoint /= float(stat_table.size() - 1);
 
-    Msg("* [DEMO] FPS: average[%f], min[%f], max[%f], middle[%f]", rfps_average, rfps_min, rfps_max, rfps_middlepoint);
+    Msg("* [DEMO] FPS: average[{}], min[{}], max[{}], middle[{}]", rfps_average, rfps_min, rfps_max, rfps_middlepoint);
 
     if (g_bBenchmark)
     {
@@ -184,8 +185,8 @@ void spline1(float t, const Fvector4* p, Fvector4* ret)
     Fvector4 m, mul;
 
     ret->set(0, 0, 0, 0);
-    m.set((0.5f * ((-1.0f * t3) + (2.0f * t2) + (-1.0f * t))), (0.5f * ((3.0f * t3) + (-5.0f * t2) + (0.0f * t) + 2.0f)), (0.5f * ((-3.0f * t3) + (4.0f * t2) + (1.0f * t))),
-          (0.5f * ((1.0f * t3) + (-1.0f * t2) + (0.0f * t))));
+    m.set((0.5f * ((-1.0f * t3) + (2.0f * t2) + (-1.0f * t))), (0.5f * ((3.0f * t3) + (-5.0f * t2) + (0.0f * t) + 2.0f)),
+          (0.5f * ((-3.0f * t3) + (4.0f * t2) + (1.0f * t))), (0.5f * ((1.0f * t3) + (-1.0f * t2) + (0.0f * t))));
 
     mul.mul(p[0], m.x);
     ret->add(mul);

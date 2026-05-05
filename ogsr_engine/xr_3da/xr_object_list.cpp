@@ -64,14 +64,9 @@ CObject* CObjectList::FindObjectByCLS_ID(CLASS_ID cls)
 
 void CObjectList::o_remove(xr_vector<CObject*>& v, CObject* O)
 {
-    //.	if(O->ID()==1026)
-    //.	{
-    //.		Log("ahtung");
-    //.	}
     xr_vector<CObject*>::iterator _i = std::find(v.begin(), v.end(), O);
     VERIFY(_i != v.end());
     v.erase(_i);
-    //.	Msg("---o_remove[%s][%d]", O->cName().c_str(), O->ID() );
 }
 
 void CObjectList::o_activate(CObject* O)
@@ -111,17 +106,13 @@ tmc::task<void> CObjectList::SingleUpdate(CObject* O)
         if (O->H_Parent() && (O->H_Parent()->getDestroy() || O->H_Root()->getDestroy()))
         {
             // Push to destroy-queue if it isn't here already
-            Msg("! ERROR: incorrect destroy sequence for object[%d:%s], section[%s], parent[%d:%s]", O->ID(), *O->cName(), *O->cNameSect(), O->H_Parent()->ID(),
-                *O->H_Parent()->cName());
-            //			if (std::find(destroy_queue.begin(),destroy_queue.end(),O)==destroy_queue.end())
-            //				destroy_queue.push_back	(O);
+            Msg("! ERROR: incorrect destroy sequence for object[{}:{}], section[{}], parent[{}:{}]", O->ID(), O->cName(), O->cNameSect(), O->H_Parent()->ID(),
+                O->H_Parent()->cName());
         }
     }
+
     if (O->getDestroy() && (Device.dwFrame != O->dwFrame_UpdateCL))
-    {
-        //		destroy_queue.push_back(O);
-        Msg("- !!!processing_enabled ->destroy_queue.push_back %s[%d] frame [%u]", O->cName().c_str(), O->ID(), Device.dwFrame);
-    }
+        Msg("- !!!processing_enabled ->destroy_queue.push_back {}[{}] frame [{}]", O->cName(), O->ID(), Device.dwFrame);
 }
 
 namespace
@@ -216,7 +207,7 @@ tmc::task<void> CObjectList::ProcessDestroyQueue()
             CObject* O = destroy_queue[it];
 
 #ifdef DEBUG
-            Msg("Destroying object[%x] [%d][%s] frame[%d]", O, O->ID(), O->cName().c_str(), Device.dwFrame);
+            Msg("Destroying object[{:x}] [{}][{}] frame[{}]", O, O->ID(), O->cName(), Device.dwFrame);
 #endif // DEBUG
 
             O->setDestroy(true);
@@ -233,17 +224,13 @@ void CObjectList::net_Register(CObject* O)
     R_ASSERT(O);
     ASSERT_FMT(map_NETID.find(O->ID()) == map_NETID.end(), "%s ID[%u] already registered", O->cName().c_str(), O->ID());
     map_NETID.try_emplace(O->ID(), O);
-    // Msg			("-------------------------------- Register: %s",O->cName());
 }
 
 void CObjectList::net_Unregister(CObject* O)
 {
     xr_map<u32, CObject*>::iterator it = map_NETID.find(O->ID());
     if ((it != map_NETID.end()) && (it->second == O))
-    {
-        // Msg			("-------------------------------- Unregster: %s",O->cName());
         map_NETID.erase(it);
-    }
 }
 
 CObject* CObjectList::net_Find(u32 ID)
@@ -257,17 +244,17 @@ void CObjectList::Load() { R_ASSERT(map_NETID.empty() && objects_active.empty() 
 tmc::task<void> CObjectList::Unload()
 {
     if (!objects_sleeping.empty() || !objects_active.empty())
-        Msg("! objects-leaked: %zu", objects_sleeping.size() + objects_active.size());
+        Msg("! objects-leaked: {}", objects_sleeping.size() + objects_active.size());
 
     // Destroy objects
     while (!objects_sleeping.empty())
     {
         CObject* O = objects_sleeping.back();
-        Msg("! s[%4d]-[%s]-[%s]", O->ID(), *O->cNameSect(), *O->cName());
+        Msg("! s[{:4}]-[{}]-[{}]", O->ID(), O->cNameSect(), O->cName());
         O->setDestroy(TRUE);
 
 #ifdef DEBUG
-        Msg("Destroying object [%d][%s]", O->ID(), *O->cName());
+        Msg("Destroying object [{}][{}]", O->ID(), O->cName());
 #endif
 
         co_await O->net_Destroy();
@@ -277,11 +264,11 @@ tmc::task<void> CObjectList::Unload()
     while (!objects_active.empty())
     {
         CObject* O = objects_active.back();
-        Msg("! a[%4d]-[%s]-[%s]", O->ID(), *O->cNameSect(), *O->cName());
+        Msg("! a[{:4}]-[{}]-[{}]", O->ID(), O->cNameSect(), O->cName());
         O->setDestroy(TRUE);
 
 #ifdef DEBUG
-        Msg("Destroying object [%d][%s]", O->ID(), *O->cName());
+        Msg("Destroying object [{}][{}]", O->ID(), O->cName());
 #endif
 
         co_await O->net_Destroy();
@@ -292,7 +279,6 @@ tmc::task<void> CObjectList::Unload()
 CObject* CObjectList::Create(LPCSTR name)
 {
     CObject* O = g_pGamePersistent->ObjectPool.create(name);
-    //	Msg("CObjectList::Create [%x]%s", O, name);
     objects_sleeping.push_back(O);
     return O;
 }
@@ -351,10 +337,11 @@ void dump_list(xr_vector<CObject*>& v, LPCSTR reason)
 {
     xr_vector<CObject*>::iterator it = v.begin();
     xr_vector<CObject*>::iterator it_e = v.end();
-    Msg("----------------dump_list [%s]", reason);
+    Msg("----------------dump_list [{}]", reason);
+
     for (; it != it_e; ++it)
-        Msg("name [%s] ID[%d] parent[%s] getDestroy()=[%s]", (*it)->cName().c_str(), (*it)->ID(), ((*it)->H_Parent()) ? (*it)->H_Parent()->cName().c_str() : "",
-            ((*it)->getDestroy()) ? "yes" : "no");
+        Msg("name [{}] ID[{}] parent[{}] getDestroy()=[{}]", (*it)->cName(), (*it)->ID(),
+            ((*it)->H_Parent()) ? std::string_view{(*it)->H_Parent()->cName()} : std::string_view{}, ((*it)->getDestroy()) ? "yes" : "no");
 }
 } // namespace
 
@@ -379,7 +366,7 @@ void CObjectList::register_object_to_destroy(CObject* object_to_destroy)
         CObject* O = it;
         if (!O->getDestroy() && O->H_Parent() == object_to_destroy)
         {
-            Msg("setDestroy called, but not-destroyed child found parent[%d] child[%d] [%u]", object_to_destroy->ID(), O->ID(), Device.dwFrame);
+            Msg("setDestroy called, but not-destroyed child found parent[{}] child[{}] [{}]", object_to_destroy->ID(), O->ID(), Device.dwFrame);
             O->setDestroy(TRUE);
         }
     }
@@ -389,7 +376,7 @@ void CObjectList::register_object_to_destroy(CObject* object_to_destroy)
         CObject* O = it;
         if (!O->getDestroy() && O->H_Parent() == object_to_destroy)
         {
-            Msg("setDestroy called, but not-destroyed child found parent[%d] child[%d] [%u]", object_to_destroy->ID(), O->ID(), Device.dwFrame);
+            Msg("setDestroy called, but not-destroyed child found parent[{}] child[{}] [{}]", object_to_destroy->ID(), O->ID(), Device.dwFrame);
             O->setDestroy(TRUE);
         }
     }

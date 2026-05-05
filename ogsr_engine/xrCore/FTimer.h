@@ -76,7 +76,7 @@ public:
 
     [[nodiscard]] Time Now() const { return Clock::now(); }
 
-    void Dump() const { Msg("* Elapsed time (sec): %f", GetElapsed_sec()); }
+    void Dump() const { Msg("* Elapsed time (sec): {}", GetElapsed_sec()); }
 };
 
 class CTimer : public CTimerBase

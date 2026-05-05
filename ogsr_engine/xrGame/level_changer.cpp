@@ -132,9 +132,10 @@ void CLevelChanger::feel_touch_new(CObject* tpObject)
             }
             else
             {
-                Msg("! [%s]: [%s] pt_move_if_reject not found: m_SilentMode[%u]", __FUNCTION__, cName().c_str(), m_SilentMode);
+                Msg("! [{}]: [{}] pt_move_if_reject not found: m_SilentMode[{}]", __FUNCTION__, cName(), m_SilentMode);
             }
         }
+
         NET_Packet p;
         p.w_begin(M_CHANGE_LEVEL);
         p.w(&m_game_vertex_id, sizeof(m_game_vertex_id));

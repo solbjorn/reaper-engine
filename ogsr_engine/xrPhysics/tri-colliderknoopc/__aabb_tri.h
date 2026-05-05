@@ -332,16 +332,19 @@ IC bool aabb_tri_aabb(Point center, Point extents, const Point* mLeafVerts)
 #ifdef DEBUG
     if (r0 != planeBoxOverlap_slow(normal, d, extents))
     {
-        Msg("planeBoxOverlap != planeBoxOverlap_slow");
-        Msg("normal %f,%f,%f", normal.x, normal.y, normal.z);
-        Msg("dist %f", d);
-        Msg("extents %f,%f,%f", extents.x, extents.y, extents.z);
+        Log("planeBoxOverlap != planeBoxOverlap_slow");
+        Msg("normal {},{},{}", normal.x, normal.y, normal.z);
+        Msg("dist {}", d);
+        Msg("extents {},{},{}", extents.x, extents.y, extents.z);
     }
 #endif
+
     if (!r0)
         return false;
+
     return true;
 }
+
 IC bool __aabb_tri(Point center, Point extents, const Point* mLeafVerts)
 {
     // move everything so that the boxcenter is in (0,0,0)
@@ -384,15 +387,17 @@ IC bool __aabb_tri(Point center, Point extents, const Point* mLeafVerts)
     const Point normal = e0 ^ e1;
     const float d = -normal | v0;
     bool r0 = planeBoxOverlap(normal, d, extents);
+
 #ifdef DEBUG
     if (r0 != planeBoxOverlap_slow(normal, d, extents))
     {
-        Msg("planeBoxOverlap != planeBoxOverlap_slow");
-        Msg("normal %f,%f,%f", normal.x, normal.y, normal.z);
-        Msg("dist %f", d);
-        Msg("extents %f,%f,%f", extents.x, extents.y, extents.z);
+        Log("planeBoxOverlap != planeBoxOverlap_slow");
+        Msg("normal {},{},{}", normal.x, normal.y, normal.z);
+        Msg("dist {}", d);
+        Msg("extents {},{},{}", extents.x, extents.y, extents.z);
     }
 #endif
+
     if (!r0)
         return false;
 

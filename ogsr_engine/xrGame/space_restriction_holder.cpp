@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "space_restriction_holder.h"
+
 #include "object_broker.h"
 #include "space_restrictor.h"
 #include "space_restriction_bridge.h"
@@ -137,11 +138,14 @@ void CSpaceRestrictionHolder::register_restrictor(CSpaceRestrictor* space_restri
     CSpaceRestrictionShape* shape = xr_new<CSpaceRestrictionShape>(space_restrictor, restrictor_type != RestrictionSpace::eDefaultRestrictorTypeNone);
     if (shape->border().empty())
     {
-        Msg("* [%s]: change restrictor_type of %s to eRestrictorTypeNone because border().empty()", __FUNCTION__, space_restrictor->cName().c_str());
+        Msg("* [{}]: change restrictor_type of {} to eRestrictorTypeNone because border().empty()", __FUNCTION__, space_restrictor->cName());
+
         space_restrictor->change_restrictor_type(RestrictionSpace::eRestrictorTypeNone);
         xr_delete(shape);
+
         return;
     }
+
     RESTRICTIONS::iterator I = m_restrictions.find(space_restrictors);
     if (I == m_restrictions.end())
     {

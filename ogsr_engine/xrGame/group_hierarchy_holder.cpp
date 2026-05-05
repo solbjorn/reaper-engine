@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "group_hierarchy_holder.h"
+
 #include "squad_hierarchy_holder.h"
 #include "entity.h"
 #include "agent_manager.h"
@@ -107,7 +108,7 @@ void CGroupHierarchyHolder::unregister_in_group(CEntity* member)
     if (I != m_members.end())
         m_members.erase(I);
     else
-        Msg("!![%s][%s] Specified group member cannot be found!", __FUNCTION__, member->cName().c_str());
+        Msg("!![{}][{}] Specified group member cannot be found!", __FUNCTION__, member->cName());
 }
 
 void CGroupHierarchyHolder::unregister_in_squad([[maybe_unused]] CEntity* member)

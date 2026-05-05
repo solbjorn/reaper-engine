@@ -43,8 +43,6 @@ public:
     constexpr void w_seek(u32 pos, const void* p, u32 count) // random write (only inside allocated region)
     {
         R_ASSERT(p && count && (pos + count < NET_PacketSizeLimit));
-        // ASSERT_FMT_DBG(pos + count <= B.count, "!![%s] pos: [%u], count [%u], B.count: [%u]", __FUNCTION__, pos, count, B.count);
-
         std::memcpy(&B.data[pos], p, count);
     }
 
@@ -220,8 +218,6 @@ public:
     constexpr void r_seek(u32 pos)
     {
         R_ASSERT(pos < NET_PacketSizeLimit);
-        // ASSERT_FMT_DBG(pos < B.count, "!![%s] pos: [%u], B.count: [%u]", __FUNCTION__, pos, B.count);
-
         r_pos = pos;
     }
 
@@ -230,7 +226,6 @@ public:
     constexpr void r(void* p, u32 count)
     {
         R_ASSERT(p && count && (r_pos + count < NET_PacketSizeLimit));
-        // ASSERT_FMT_DBG(r_pos + count <= B.count, "!![%s] r_pos: [%u], count [%u], B.count: [%u]", __FUNCTION__, r_pos, count, B.count);
 
         std::memcpy(p, &B.data[r_pos], count);
         r_pos += count;
@@ -242,8 +237,6 @@ public:
     constexpr void r_advance(u32 size)
     {
         R_ASSERT(r_pos + size < NET_PacketSizeLimit);
-        // ASSERT_FMT_DBG(r_pos + size <= B.count, "!![%s] r_pos: [%u], size [%u], B.count: [%u]", __FUNCTION__, r_pos, size, B.count);
-
         r_pos += size;
     }
 

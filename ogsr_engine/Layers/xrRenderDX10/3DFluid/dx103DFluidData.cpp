@@ -1,12 +1,14 @@
 #include "stdafx.h"
 
 #include "dx103DFluidData.h"
+
 #include "dx103DFluidManager.h"
 
 namespace
 {
 constexpr xr_token simulation_type_token[]{{"Fog", dx103DFluidData::ST_FOG}, {"Fire", dx103DFluidData::ST_FIRE}, {nullptr, 0}};
-constexpr xr_token emitter_type_token[]{{"SimpleGaussian", dx103DFluidEmitters::ET_SimpleGausian}, {"SimpleDraught", dx103DFluidEmitters::ET_SimpleDraught}, {nullptr, 0}};
+constexpr xr_token emitter_type_token[]{
+    {"SimpleGaussian", dx103DFluidEmitters::ET_SimpleGausian}, {"SimpleDraught", dx103DFluidEmitters::ET_SimpleDraught}, {nullptr, 0}};
 } // namespace
 
 dx103DFluidData::dx103DFluidData()
@@ -97,7 +99,7 @@ void dx103DFluidData::ParseProfile(const xr_string& Profile)
 
     CInifile ini(fn, TRUE, TRUE, FALSE);
 
-    Msg("Reading fog volume config: %s", fn);
+    Msg("Reading fog volume config: {}", fn);
 
     m_Settings.m_SimulationType = ST_FOG;
     m_Settings.m_fHemi = 0.2f;

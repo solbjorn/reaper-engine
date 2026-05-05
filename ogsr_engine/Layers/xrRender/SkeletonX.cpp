@@ -116,7 +116,8 @@ void CSkeletonX::_Render(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iO
 #ifdef QUATERNION_SKINNING
                 using namespace DirectX;
                 XMVECTOR scale;
-                XMMatrixDecompose(&scale, reinterpret_cast<XMVECTOR*>(c_bones_array), reinterpret_cast<XMVECTOR*>(c_bones_array + 1), *reinterpret_cast<FXMMATRIX*>(&M));
+                XMMatrixDecompose(&scale, reinterpret_cast<XMVECTOR*>(c_bones_array), reinterpret_cast<XMVECTOR*>(c_bones_array + 1),
+                                  *reinterpret_cast<FXMMATRIX*>(&M));
                 c_bones_array += 2;
 #else
                 Fmatrix trans;
@@ -153,8 +154,8 @@ void CSkeletonX::_Render(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iO
             if (!logged)
             {
                 logged = true;
-                Msg("!![%s] Can't get/create sbones_array for model [%s] vith [%u] bones. Most likely, an incorrect shader is assigned there.", __FUNCTION__,
-                    this->Parent->dbg_name.c_str(), RMS_bonecount);
+                Msg("!![{}] Can't get/create sbones_array for model [{}] vith [{}] bones. Most likely, an incorrect shader is assigned there.", __FUNCTION__,
+                    this->Parent->dbg_name, RMS_bonecount);
             }
         }
 

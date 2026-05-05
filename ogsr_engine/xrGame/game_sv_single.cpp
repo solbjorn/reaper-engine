@@ -81,11 +81,11 @@ BOOL game_sv_Single::OnTouch(u16 eid_who, u16 eid_what, BOOL)
             alife().graph().attach(*e_who, l_tpALifeInventoryItem, l_tpDynamicObject->m_tGraphID, false, false);
 #ifdef DEBUG
         else if (psAI_Flags.test(aiALife))
-        {
-            Msg("Cannot attach object [%s][%s][%d] to object [%s][%s][%d]", e_what->name_replace(), *e_what->s_name, e_what->ID, e_who->name_replace(), *e_who->s_name, e_who->ID);
-        }
+            Msg("Cannot attach object [{}][{}][{}] to object [{}][{}][{}]", e_what->name_replace(), e_what->s_name, e_what->ID, e_who->name_replace(),
+                e_who->s_name, e_who->ID);
 #endif
     }
+
     return TRUE;
 }
 
@@ -128,25 +128,16 @@ void game_sv_Single::OnDetach(u16 eid_who, u16 eid_what)
 #ifdef DEBUG
             else if (psAI_Flags.test(aiALife))
             {
-                Msg("Cannot detach object [%s][%s][%d] from object [%s][%s][%d]", l_tpALifeInventoryItem->base()->name_replace(), *l_tpALifeInventoryItem->base()->s_name.c_str(),
-                    l_tpALifeInventoryItem->base()->ID, l_tpDynamicObject->base()->name_replace(), l_tpDynamicObject->base()->s_name.c_str(), l_tpDynamicObject->ID);
+                Msg("Cannot detach object [{}][{}][{}] from object [{}][{}][{}]", l_tpALifeInventoryItem->base()->name_replace(),
+                    l_tpALifeInventoryItem->base()->s_name, l_tpALifeInventoryItem->base()->ID, l_tpDynamicObject->base()->name_replace(),
+                    l_tpDynamicObject->base()->s_name, l_tpDynamicObject->ID);
             }
 #endif
         }
     }
 }
 
-void game_sv_Single::Update()
-{
-    inherited::Update();
-    /*	switch(phase) 	{
-            case GAME_PHASE_PENDING : {
-                OnRoundStart();
-                switch_Phase(GAME_PHASE_INPROGRESS);
-                break;
-            }
-        }*/
-}
+void game_sv_Single::Update() { inherited::Update(); }
 
 ALife::_TIME_ID game_sv_Single::GetGameTime()
 {

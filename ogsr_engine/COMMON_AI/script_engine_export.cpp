@@ -34,7 +34,7 @@ public:
 #endif
         {
 #ifdef DEBUG
-            Msg("Exporting [%s]", name.data());
+            Msg("Exporting [{}]", name);
 #endif
             handler(lua);
         }

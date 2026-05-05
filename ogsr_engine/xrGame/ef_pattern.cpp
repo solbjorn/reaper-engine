@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "ef_pattern.h"
+
 #include "ef_primary.h"
 #include "ai_space.h"
 #include "object_broker.h"
@@ -36,9 +37,8 @@ void CPatternFunction::vfLoadEF(LPCSTR caFileName)
     string_path caPath;
     if (!FS.exist(caPath, "$game_ai$", caFileName))
     {
-        Msg("! Evaluation function : File not found \"%s\"", caPath);
+        Msg("! Evaluation function : File not found \"{}\"", caPath);
         R_ASSERT(false);
-        return;
     }
 
     IReader* F = FS.r_open(caPath);
@@ -47,9 +47,9 @@ void CPatternFunction::vfLoadEF(LPCSTR caFileName)
     if (EFC_VERSION != m_tEFHeader.dwBuilderVersion)
     {
         FS.r_close(F);
-        Msg("! Evaluation function (%s) : Not supported version of the Evaluation Function Contructor", caPath);
+
+        Msg("! Evaluation function ({}) : Not supported version of the Evaluation Function Contructor", caPath);
         R_ASSERT(false);
-        return;
     }
 
     F->r(&m_dwVariableCount, sizeof(m_dwVariableCount));
@@ -106,8 +106,6 @@ void CPatternFunction::vfLoadEF(LPCSTR caFileName)
     ef_storage().m_fpaBaseFunctions[m_dwFunctionType] = this;
 
     _splitpath(caPath, nullptr, nullptr, m_caName, nullptr);
-
-    // Msg			("* Evaluation function \"%s\" is successfully loaded",m_caName);
 }
 
 float CPatternFunction::ffEvaluate()
@@ -135,7 +133,8 @@ float CPatternFunction::ffGetValue()
             j += sprintf_s(caString + j, sizeof(caString) - j, " %3d", m_dwaVariableValues[i] + 1);
 
         sprintf_s(caString + j, sizeof(caString) - j, ") = %7.2f", value);
-        Msg("- %s", caString);
+        Msg("- {}", caString);
+
         return (value);
     }
 #endif

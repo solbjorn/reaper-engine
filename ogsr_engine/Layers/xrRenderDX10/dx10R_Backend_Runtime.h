@@ -16,7 +16,6 @@ IC void CBackend::set_RT(ID3DRenderTargetView* RT, u32 ID)
 {
     if (RT != pRT[ID])
     {
-        PGO(Msg("PGO:setRT"));
         stat.target_rt++;
         pRT[ID] = RT;
 
@@ -32,7 +31,6 @@ IC void CBackend::set_ZB(ID3DDepthStencilView* ZB)
 {
     if (ZB != pZB)
     {
-        PGO(Msg("PGO:setZB"));
         stat.target_zb++;
         pZB = ZB;
 
@@ -48,16 +46,19 @@ IC void CBackend::ClearRT(ID3DRenderTargetView* rt, const Fcolor& color) { conte
 
 IC void CBackend::ClearZB(ID3DDepthStencilView* zb, float depth) { context()->ClearDepthStencilView(zb, D3D_CLEAR_DEPTH, depth, 0); }
 
-IC void CBackend::ClearZB(ID3DDepthStencilView* zb, float depth, u32 stencil) { context()->ClearDepthStencilView(zb, D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, depth, stencil); }
+IC void CBackend::ClearZB(ID3DDepthStencilView* zb, float depth, u32 stencil)
+{
+    context()->ClearDepthStencilView(zb, D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, depth, stencil);
+}
 
 ICF void CBackend::set_Format(SDeclaration* _decl)
 {
     if (decl != _decl)
     {
-        PGO(Msg("PGO:v_format:%x", _decl));
 #ifdef DEBUG
         stat.decl++;
 #endif
+
         decl = _decl;
     }
 }
@@ -66,8 +67,8 @@ ICF void CBackend::set_PS(ID3DPixelShader* _ps, [[maybe_unused]] LPCSTR _n)
 {
     if (ps != _ps)
     {
-        PGO(Msg("PGO:Pshader:%x", _ps));
         stat.ps++;
+
         ps = _ps;
         context()->PSSetShader(ps, nullptr, 0);
 
@@ -81,9 +82,6 @@ ICF void CBackend::set_GS(ID3DGeometryShader* _gs, [[maybe_unused]] LPCSTR _n)
 {
     if (gs != _gs)
     {
-        PGO(Msg("PGO:Gshader:%x", _ps));
-        //	TODO: DX10: Get statistics for G Shader change
-        // stat.gs			++;
         gs = _gs;
         context()->GSSetShader(gs, nullptr, 0);
 
@@ -97,9 +95,6 @@ ICF void CBackend::set_HS(ID3D11HullShader* _hs, [[maybe_unused]] LPCSTR _n)
 {
     if (hs != _hs)
     {
-        PGO(Msg("PGO:Hshader:%x", _ps));
-        //	TODO: DX10: Get statistics for H Shader change
-        // stat.hs			++;
         hs = _hs;
         context()->HSSetShader(hs, nullptr, 0);
 
@@ -113,9 +108,6 @@ ICF void CBackend::set_DS(ID3D11DomainShader* _ds, [[maybe_unused]] LPCSTR _n)
 {
     if (ds != _ds)
     {
-        PGO(Msg("PGO:Dshader:%x", _ps));
-        //	TODO: DX10: Get statistics for D Shader change
-        // stat.ds			++;
         ds = _ds;
         context()->DSSetShader(ds, nullptr, 0);
 
@@ -129,9 +121,6 @@ ICF void CBackend::set_CS(ID3D11ComputeShader* _cs, [[maybe_unused]] LPCSTR _n)
 {
     if (cs != _cs)
     {
-        PGO(Msg("PGO:Cshader:%x", _ps));
-        //	TODO: DX10: Get statistics for D Shader change
-        // stat.cs			++;
         cs = _cs;
         context()->CSSetShader(cs, nullptr, 0);
 
@@ -147,10 +136,9 @@ ICF void CBackend::set_VS(ID3DVertexShader* _vs, [[maybe_unused]] LPCSTR _n)
 {
     if (vs != _vs)
     {
-        PGO(Msg("PGO:Vshader:%x", _vs));
         stat.vs++;
-        vs = _vs;
 
+        vs = _vs;
         context()->VSSetShader(vs, nullptr, 0);
 
 #ifdef DEBUG
@@ -163,10 +151,10 @@ ICF void CBackend::set_Vertices(ID3DVertexBuffer* _vb, u32 _vb_stride)
 {
     if ((vb != _vb) || (vb_stride != _vb_stride))
     {
-        PGO(Msg("PGO:VB:%x,%d", _vb, _vb_stride));
 #ifdef DEBUG
         stat.vb++;
 #endif
+
         vb = _vb;
         vb_stride = _vb_stride;
 
@@ -179,10 +167,10 @@ ICF void CBackend::set_Indices(ID3DIndexBuffer* _ib)
 {
     if (ib != _ib)
     {
-        PGO(Msg("PGO:IB:%x", _ib));
 #ifdef DEBUG
         stat.ib++;
 #endif
+
         ib = _ib;
         context()->IASetIndexBuffer(ib, DXGI_FORMAT_R16_UINT, 0);
     }
@@ -271,8 +259,6 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 baseV, u32, u32 countV, u32 sta
     //	State manager may alter constants
     constants.flush();
     context()->DrawIndexed(iIndexCount, startI, baseV);
-
-    PGO(Msg("PGO:DIP:%dv/%df", countV, PC));
 }
 
 IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 startV, u32 PC)
@@ -296,8 +282,6 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 startV, u32 PC)
     //	State manager may alter constants
     constants.flush();
     context()->Draw(iVertexCount, startV);
-
-    PGO(Msg("PGO:DIP:%dv/%df", 3 * PC, PC));
 }
 
 IC void CBackend::set_Geometry(SGeometry* _geom)
@@ -376,8 +360,8 @@ IC void CBackend::ApplyVertexLayout()
     {
         ID3DInputLayout* pLayout;
 
-        CHK_DX(HW.pDevice->CreateInputLayout(&decl->dx10_dcl_code[0], decl->dx10_dcl_code.size() - 1, m_pInputSignature->GetBufferPointer(), m_pInputSignature->GetBufferSize(),
-                                             &pLayout));
+        CHK_DX(HW.pDevice->CreateInputLayout(&decl->dx10_dcl_code[0], decl->dx10_dcl_code.size() - 1, m_pInputSignature->GetBufferPointer(),
+                                             m_pInputSignature->GetBufferSize(), &pLayout));
 
         it = decl->vs_to_layout.emplace(m_pInputSignature, pLayout).first;
     }
@@ -450,8 +434,8 @@ IC void CBackend::set_Constants(R_constant_table* C)
         ref_cbuffer aComputeConstants[MaxCBuffers];
 
         for (auto [pc, mpc, vc, mvc, gc, mgc, hc, mhc, dc, mdc, cc, mcc] :
-             std::views::zip(aPixelConstants, m_aPixelConstants, aVertexConstants, m_aVertexConstants, aGeometryConstants, m_aGeometryConstants, aHullConstants, m_aHullConstants,
-                             aDomainConstants, m_aDomainConstants, aComputeConstants, m_aComputeConstants))
+             std::views::zip(aPixelConstants, m_aPixelConstants, aVertexConstants, m_aVertexConstants, aGeometryConstants, m_aGeometryConstants, aHullConstants,
+                             m_aHullConstants, aDomainConstants, m_aDomainConstants, aComputeConstants, m_aComputeConstants))
         {
             std::swap(pc, mpc);
             std::swap(vc, mvc);

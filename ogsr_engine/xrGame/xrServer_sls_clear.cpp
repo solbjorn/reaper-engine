@@ -31,7 +31,6 @@ void xrServer::Perform_destroy(CSE_Abstract* object, u32 mode)
         Perform_destroy(child, mode);
     }
 
-    //	Msg						("SLS-CLEAR : DESTROY [%s][%s]",object->name(),object->name_replace());
     u16 object_id = object->ID;
     entity_Destroy(object);
 
@@ -51,14 +50,6 @@ void xrServer::Perform_destroy(CSE_Abstract* object, u32 mode)
 
 void xrServer::SLS_Clear()
 {
-#if 0
-	Msg									("SLS-CLEAR : %d objects");
-	xrS_entities::const_iterator		I = entities.begin();
-	xrS_entities::const_iterator		E = entities.end();
-	for ( ; I != E; ++I)
-		Msg								("entity to destroy : [%d][%s][%s]",(*I).second->ID,(*I).second->name(),(*I).second->name_replace());
-#endif
-
     u32 mode = net_flags(TRUE, TRUE);
     while (!entities.empty())
     {

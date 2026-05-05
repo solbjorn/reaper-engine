@@ -91,7 +91,7 @@ CSE_Abstract::CSE_Abstract(LPCSTR caSection)
 
         if (!FS.exist(file_name))
         {
-            Msg("! cannot open config file %s", file_name);
+            Msg("! cannot open config file {}", file_name);
         }
         else
         {
@@ -166,19 +166,11 @@ void CSE_Abstract::Spawn_Write(NET_Packet& tNetPacket, BOOL bLocal)
     // client object custom data serialization SAVE
     u16 client_data_size = (u16)client_data.size(); // не может быть больше 256 байт
     tNetPacket.w_u16(client_data_size);
-    //	Msg							("SERVER:saving:save:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");
+
     if (client_data_size > 0)
-    {
         tNetPacket.w(&*client_data.begin(), client_data_size);
-    }
 
     tNetPacket.w(&m_tSpawnID, sizeof(m_tSpawnID));
-    //	tNetPacket.w_float			(m_spawn_probability);
-    //	tNetPacket.w_u32			(m_spawn_flags.get());
-    //	tNetPacket.w_stringZ		(m_spawn_control);
-    //	tNetPacket.w_u32			(m_max_spawn_count);
-    //	tNetPacket.w_u64			(m_min_spawn_interval);
-    //	tNetPacket.w_u64			(m_max_spawn_interval);
 
     // write specific data
     u32 position = tNetPacket.w_tell();
@@ -244,15 +236,18 @@ BOOL CSE_Abstract::Spawn_Read(NET_Packet& tNetPacket)
         u16 client_data_size = (m_wVersion > 93) ? tNetPacket.r_u16() : tNetPacket.r_u8(); // не может быть больше 256 байт
         if (client_data_size > 0)
         {
-            //			Msg					("SERVER:loading:load:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");
             client_data.resize(client_data_size);
             tNetPacket.r(&*client_data.begin(), client_data_size);
         }
         else
+        {
             client_data.clear();
+        }
     }
     else
+    {
         client_data.clear();
+    }
 
     if (m_wVersion > 79)
         tNetPacket.r(&m_tSpawnID, sizeof(m_tSpawnID));
@@ -297,9 +292,6 @@ void CSE_Abstract::load(NET_Packet& tNetPacket)
     u16 client_data_size = (m_wVersion > 93) ? tNetPacket.r_u16() : tNetPacket.r_u8();
     if (client_data_size > 0)
     {
-#ifdef DEBUG
-//		Msg						("SERVER:loading:load:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");
-#endif // DEBUG
         client_data.resize(client_data_size);
         tNetPacket.r(&*client_data.begin(), client_data_size);
     }
@@ -307,8 +299,9 @@ void CSE_Abstract::load(NET_Packet& tNetPacket)
     {
 #ifdef DEBUG
         if (!client_data.empty())
-            Msg("CSE_Abstract::load: client_data is cleared for [%d][%s]", ID, name_replace());
+            Msg("CSE_Abstract::load: client_data is cleared for [{}][{}]", ID, name_replace());
 #endif // DEBUG
+
         client_data.clear();
     }
 }

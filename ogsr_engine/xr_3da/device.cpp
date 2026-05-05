@@ -67,8 +67,8 @@ tmc::task<void> CRenderDevice::RenderEnd()
 
             Memory.mem_compact();
 
-            Msg("* MEMORY USAGE: %zd K", Memory.mem_usage() / 1024);
-            Msg("* End of synchronization A[%d] R[%d]", b_is_Active, b_is_Ready);
+            Msg("* MEMORY USAGE: {} K", Memory.mem_usage() / 1024);
+            Msg("* End of synchronization A[{}] R[{}]", b_is_Active, b_is_Ready);
         }
     }
 
@@ -291,7 +291,7 @@ tmc::task<void> CRenderDevice::ProcessFrame()
     {
         const std::chrono::duration<f64, std::milli> SecondThreadFreeTime = FrameElapsedTime - SecondThreadTasksElapsedTime;
 
-        Msg("##[%s] Second thread work time is too long! Avail: [%f]ms, used: [%f]ms, free: [%f]ms", __FUNCTION__, FrameElapsedTime.count(),
+        Msg("##[{}] Second thread work time is too long! Avail: [{}]ms, used: [{}]ms, free: [{}]ms", __FUNCTION__, FrameElapsedTime.count(),
             SecondThreadTasksElapsedTime.count(), SecondThreadFreeTime.count());
     }
 #else
@@ -381,12 +381,13 @@ static void LogOsVersion()
 
         if (NT_SUCCESS(RtlGetVersion(&osInfo)))
         {
-            Msg("--OS Version major: [%lu] minor: [%lu], build: [%lu]. Server OS: [%s]", osInfo.dwMajorVersion, osInfo.dwMinorVersion, osInfo.dwBuildNumber,
+            Msg("--OS Version major: [{}] minor: [{}], build: [{}]. Server OS: [{}]", osInfo.dwMajorVersion, osInfo.dwMinorVersion, osInfo.dwBuildNumber,
                 osInfo.wProductType != VER_NT_WORKSTATION ? "yes" : "no");
             return;
         }
     }
-    Msg("!![%s] Can't get RtlGetVersion", __FUNCTION__);
+
+    Msg("!![{}] Can't get RtlGetVersion", __FUNCTION__);
 }
 
 tmc::task<void> CRenderDevice::Run()
@@ -473,10 +474,6 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, [[maybe_unused]] L
     if (g_bBenchmark)
         return;
 
-#ifdef DEBUG
-//	Msg("pause [%s] timer=[%s] sound=[%s] reason=%s",bOn?"ON":"OFF", bTimer?"ON":"OFF", bSound?"ON":"OFF", reason);
-#endif // DEBUG
-
     if (bOn)
     {
         if (!Paused())
@@ -496,12 +493,7 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, [[maybe_unused]] L
         }
 
         if (bSound && ::Sound)
-        {
             snd_emitters_ = ::Sound->pause_emitters(true);
-#ifdef DEBUG
-//			Log("snd_emitters_[true]",snd_emitters_);
-#endif // DEBUG
-        }
     }
     else
     {
@@ -516,9 +508,6 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, [[maybe_unused]] L
             if (snd_emitters_ > 0) // avoid crash
             {
                 snd_emitters_ = ::Sound->pause_emitters(false);
-#ifdef DEBUG
-//				Log("snd_emitters_[false]",snd_emitters_);
-#endif // DEBUG
             }
             else
             {

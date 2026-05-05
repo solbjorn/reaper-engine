@@ -137,7 +137,7 @@ void CSoundRender_Core::env_load()
     string_path fn;
     if (FS.exist(fn, "$game_data$", SNDENV_FILENAME_LTX))
     {
-        Msg("Loading of [%s]", SNDENV_FILENAME_LTX);
+        Msg("Loading of [{}]", SNDENV_FILENAME_LTX);
 
         if (!s_environment)
             s_environment = xr_new<SoundEnvironment_LIB>();
@@ -148,7 +148,7 @@ void CSoundRender_Core::env_load()
     }
     else if (FS.exist(fn, "$game_data$", SNDENV_FILENAME_XR))
     {
-        Msg("Loading of [%s]", SNDENV_FILENAME_XR);
+        Msg("Loading of [{}]", SNDENV_FILENAME_XR);
 
         if (!s_environment)
             s_environment = xr_new<SoundEnvironment_LIB>();
@@ -159,11 +159,7 @@ void CSoundRender_Core::env_load()
     if (s_environment)
     {
         for (u32 chunk = 0; chunk < s_environment->Library().size(); chunk++)
-        {
-            shared_str name = s_environment->Library()[chunk]->name;
-
-            Msg("~ env id=[%u] name=[%s]", chunk, name.c_str());
-        }
+            Msg("~ env id=[{}] name=[{}]", chunk, s_environment->Library()[chunk]->name);
     }
 }
 
@@ -253,6 +249,7 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
     // Associate names
     xr_vector<u16> ids;
     IReader* names = I->open_chunk(0);
+
     while (!names->eof())
     {
         string256 n;
@@ -260,8 +257,10 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
         int id = s_environment->GetID(n);
         R_ASSERT(id >= 0);
         ids.push_back(u16(id));
-        Msg("~ set_geometry_env id=%zu name[%s]=environment id[%d]", ids.size() - 1, n, id);
+
+        Msg("~ set_geometry_env id={} name[{}]=environment id[{}]", ids.size() - 1, n, id);
     }
+
     names->close();
 
     // Load geometry
@@ -324,10 +323,11 @@ void CSoundRender_Core::attach_tail(ref_sound& S, const char* fName)
     xr_strcpy(fn, fName);
     if (strext(fn))
         *strext(fn) = 0;
+
     if (S._p->fn_attached[0].size() && S._p->fn_attached[1].size())
     {
 #ifdef DEBUG
-        Msg("! 2 file already in queue [%s][%s]", S._p->fn_attached[0].c_str(), S._p->fn_attached[1].c_str());
+        Msg("! 2 file already in queue [{}][{}]", S._p->fn_attached[0], S._p->fn_attached[1]);
 #endif // #ifdef DEBUG
         return;
     }
@@ -616,15 +616,17 @@ bool CSoundRender_Core::EFXTestSupport()
     ALenum err = alGetError();
     if (err != AL_NO_ERROR)
     {
-        Msg("!![%s] OpenAL error: %s", __FUNCTION__, alGetString(err));
+        Msg("!![{}] OpenAL error: {}", __FUNCTION__, alGetString(err));
+
         if (alIsEffect(effect))
             alDeleteEffects(1, &effect);
+
         return false;
     }
 
     alGenAuxiliaryEffectSlots(1, &slot);
     err = alGetError();
-    ASSERT_FMT_DBG(err == AL_NO_ERROR, "!![%s] OpenAL EFX error: [%s]", __FUNCTION__, alGetString(err));
+    ASSERT_FMT_DBG(err == AL_NO_ERROR, "!![{}] OpenAL EFX error: [{}]", __FUNCTION__, alGetString(err));
 
     return true;
 }
@@ -667,7 +669,7 @@ bool CSoundRender_Core::i_efx_commit_setting()
     ALenum err = alGetError();
     if (err != AL_NO_ERROR)
     {
-        Msg("!![%s] OpenAL EFX commit error: [%s]. EFX will be disabled.", __FUNCTION__, alGetString(err));
+        Msg("!![{}] OpenAL EFX commit error: [{}]. EFX will be disabled.", __FUNCTION__, alGetString(err));
         return false;
     }
 

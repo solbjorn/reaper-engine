@@ -40,7 +40,7 @@ void set_accessible(const CGameGraph* self, u32 vertex_id, bool value) { self->a
     const GameGraph::SLevel* level = ai().game_graph().header().level(level_name, true);
     if (level == nullptr)
     {
-        Msg("! Unknown level %s!", level_name);
+        Msg("! Unknown level {}!", level_name);
         return std::unique_ptr<CGameLevelCrossTable>{};
     }
 
@@ -67,14 +67,16 @@ void CGameGraph::script_register(sol::state_view& lua)
 {
     lua.set("game_graph", &get_game_graph);
 
-    lua.new_usertype<CGameGraph>("CGameGraph", sol::no_constructor, "accessible", sol::overload(&get_accessible, &set_accessible), "valid_vertex_id", &CGameGraph::valid_vertex_id,
-                                 "vertex", &CGameGraph::vertex, "vertex_id", &CGameGraph::vertex_id, "vertex_count", &vertex_count);
+    lua.new_usertype<CGameGraph>("CGameGraph", sol::no_constructor, "accessible", sol::overload(&get_accessible, &set_accessible), "valid_vertex_id",
+                                 &CGameGraph::valid_vertex_id, "vertex", &CGameGraph::vertex, "vertex_id", &CGameGraph::vertex_id, "vertex_count",
+                                 &vertex_count);
 
-    lua.new_usertype<CVertex>("GameGraph__CVertex", sol::no_constructor, "level_point", &CVertex__level_point, "game_point", &CVertex__game_point, "level_id", &CVertex::level_id,
-                              "level_vertex_id", &CVertex::level_vertex_id, "mask", &CVertex__mask_);
+    lua.new_usertype<CVertex>("GameGraph__CVertex", sol::no_constructor, "level_point", &CVertex__level_point, "game_point", &CVertex__game_point, "level_id",
+                              &CVertex::level_id, "level_vertex_id", &CVertex::level_vertex_id, "mask", &CVertex__mask_);
 
     lua.set("cross_table", sol::overload(&get_cross_table_for_level, &get_cross_table));
 
     lua.new_usertype<CGameLevelCrossTable>("CGameLevelCrossTable", sol::no_constructor, "vertex", &CGameLevelCrossTable::vertex);
-    lua.new_usertype<CGameLevelCrossTable::CCell>("CGameLevelCrossTable__CCell", sol::no_constructor, "game_vertex_id", &CGameLevelCrossTable::CCell::game_vertex_id);
+    lua.new_usertype<CGameLevelCrossTable::CCell>("CGameLevelCrossTable__CCell", sol::no_constructor, "game_vertex_id",
+                                                  &CGameLevelCrossTable::CCell::game_vertex_id);
 }

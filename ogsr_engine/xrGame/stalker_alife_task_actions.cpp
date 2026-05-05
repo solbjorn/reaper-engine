@@ -54,7 +54,8 @@ void CStalkerActionSolveZonePuzzle::initialize()
 
 #ifndef GRENADE_TEST
     m_stop_weapon_handling_time = Device.dwTimeGlobal;
-    if (object().inventory().ActiveItem() && object().best_weapon() && (object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
+    if (object().inventory().ActiveItem() && object().best_weapon() &&
+        (object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
         m_stop_weapon_handling_time += xr::random_u32(30000, 60000);
 
     //	object().movement().set_desired_position	(0);
@@ -129,7 +130,6 @@ void CStalkerActionSolveZonePuzzle::execute()
 #else
     const CWeapon* weapon = smart_cast<const CWeapon*>(object().best_weapon());
     VERIFY(weapon);
-    //			Msg										("weapon %s is strapped : %c",*weapon->cName(),weapon->strapped_mode() ? '+' : '-');
 
     static u32 m_time_to_strap = 0;
     static u32 m_time_to_idle = 0;

@@ -17,7 +17,9 @@ u16 CPartition::part_id(const shared_str& name) const
         if (pd.Name == name)
             return i;
     }
-    Msg("!there is no part named [%s]", name.c_str());
+
+    Msg("!there is no part named [{}]", name);
+
     return u16(-1);
 }
 
@@ -95,15 +97,15 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
                 MP->r_stringZ(buf, sizeof(buf));
                 u16 m_idx = u16(MP->r_u32());
                 *b_it = find_bone_id(bones, shared_str{buf});
-                ASSERT_FMT_DBG(*b_it != BI_NONE, "!![%s][%s] Can't find bone: [%s]", __FUNCTION__, N, buf);
+                ASSERT_FMT_DBG(*b_it != BI_NONE, "!![{}][{}] Can't find bone: [{}]", __FUNCTION__, N, buf);
                 if (bRes)
                     rm_bones[m_idx] = u16(*b_it);
             }
             part_bone_cnt = u16(part_bone_cnt + (u16)PART.bones.size());
         }
 
-        ASSERT_FMT_DBG(part_bone_cnt == (u16)bones->size(), "!![%s] Different bone count for [%s]! part_bone_cnt: [%u], bones->size(): [%zu]", __FUNCTION__, N, part_bone_cnt,
-                       bones->size());
+        ASSERT_FMT_DBG(part_bone_cnt == (u16)bones->size(), "!![{}] Different bone count for [{}]! part_bone_cnt: [{}], bones->size(): [{}]", __FUNCTION__, N,
+                       part_bone_cnt, bones->size());
 
         if (bRes)
         {
@@ -119,7 +121,8 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
             {
                 MP->r_stringZ(buf, sizeof(buf));
                 _strlwr(buf);
-                R_ASSERT(MP->elapsed() >= static_cast<int>(sizeof(u32) + sizeof(u16) + sizeof(u16) + sizeof(float) + sizeof(float) + sizeof(float) + sizeof(float)),
+                R_ASSERT(MP->elapsed() >=
+                             static_cast<int>(sizeof(u32) + sizeof(u16) + sizeof(u16) + sizeof(float) + sizeof(float) + sizeof(float) + sizeof(float)),
                          "[%s] Something strange with file [%s]. This file broken!", __FUNCTION__, N);
                 u32 dwFlags = MP->r_u32();
                 CMotionDef& D = m_mdefs[mot_i];
@@ -149,7 +152,7 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
 
     u32 dwCNT = 0;
     std::ignore = MS->r_chunk_safe(0, &dwCNT, sizeof(dwCNT));
-    ASSERT_FMT_DBG(dwCNT < 0x3FFF, "!![%s][%s] dwCNT is [%u]", __FUNCTION__, N, dwCNT); // MotionID 2 bit - slot, 14 bit - motion index
+    ASSERT_FMT_DBG(dwCNT < 0x3FFF, "!![{}][{}] dwCNT is [{}]", __FUNCTION__, N, dwCNT); // MotionID 2 bit - slot, 14 bit - motion index
 
     m_motions.reserve(bones->size());
 
@@ -169,8 +172,8 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
             // sanity check
             xr_strlwr(mname);
             auto I = m_motion_map.find(mname);
-            ASSERT_FMT_DBG(I != m_motion_map.end(), "!![%s][%s] Can't find motion: [%s]", __FUNCTION__, N, mname);
-            ASSERT_FMT_DBG(I->second == m_idx, "!![%s][%s] Invalid motion index: [%s]", __FUNCTION__, N, mname);
+            ASSERT_FMT_DBG(I != m_motion_map.end(), "!![{}][{}] Can't find motion: [{}]", __FUNCTION__, N, mname);
+            ASSERT_FMT_DBG(I->second == m_idx, "!![{}][{}] Invalid motion index: [{}]", __FUNCTION__, N, mname);
         }
 
         u32 dwLen = MS->r_u32();
@@ -218,7 +221,7 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
             }
         }
     }
-    //	Msg("Motions %d/%d %4d/%4d/%d, %s",p_cnt,m_cnt, m_load,m_total,m_r,N);
+
     MS->close();
 
     return bRes;
@@ -309,10 +312,10 @@ void motions_container::dump() const
     for (auto [k, kv] : xr::views_enumerate(container))
     {
         sz += kv.second->mem_usage();
-        Msg("#%3zd: [%3zd/%5zd Kb] - %s", k, kv.second->m_dwReference.load(), kv.second->mem_usage() / 1024, kv.first.c_str());
+        Msg("#{:3}: [{:3}/{:5} Kb] - {}", k, kv.second->m_dwReference, kv.second->mem_usage() / 1024, kv.first);
     }
 
-    Msg("--- items: %zd, mem usage: %zd Kb ", std::ssize(container), sz / 1024);
+    Msg("--- items: {}, mem usage: {} Kb ", std::ssize(container), sz / 1024);
     Log("--- motion container --- end.");
 }
 
@@ -329,25 +332,18 @@ void CMotionDef::Load(IReader* MP, u32 fl, u16 version)
     falloff = MP->r_float();
     flags = (u16)fl;
     constexpr float fQuantizerRangeExt = 1.5f; // Какое-то магическое число
-    /*//Dbg
-        Log("############################################################################");
-        constexpr auto Dequantize = [](u16 V) { return  float(V) / 655.35f; };
-        auto Quantize = [](float V) { s32 t = iFloor(V * 655.35f); clamp(t, 0, 65535); return u16(t); };
-        Msg("!![%s] speed: [%f], power: [%f], accrue: [%f], fallof: [%f]", __FUNCTION__, Dequantize(Quantize(speed)), Dequantize(Quantize(power)), fQuantizerRangeExt *
-       Dequantize(Quantize(accrue)), fQuantizerRangeExt * Dequantize(Quantize(falloff))); Msg("--[%s] speed: [%f], power: [%f], accrue: [%f], fallof: [%f]", __FUNCTION__, speed,
-       power, fQuantizerRangeExt * accrue, fQuantizerRangeExt * falloff); if (!(flags & esmFX) && (Quantize(falloff) >= Quantize(accrue))) Msg("!![%s] fallof set to [%f]",
-       __FUNCTION__, fQuantizerRangeExt * Dequantize(u16(Quantize(accrue) - 1)));
-    */
+
     if (!(flags & esmFX) && (falloff >= accrue))
     {
-        falloff = accrue /* - 0.003f*/; // KRodin: 0.003f наиболее приближённо к тому что было до этого. Разница в результате буквально в тысячных долях. При Quantize/Dequantize
-                                        // точность в любом случае терялась, так что это не сильно важно.
+        // KRodin: 0.003f наиболее приближённо к тому что было до этого. Разница в результате буквально в тысячных долях. При Quantize/Dequantize точность в
+        // любом случае терялась, так что это не сильно важно.
+        falloff = accrue /* - 0.003f*/;
         if (/*negative(falloff)*/ negative(accrue - 0.003f))
-            falloff = 100.f; // И вообще это были какие-то костыли от ПЫС. Если при вычитании falloff становился меньше нуля (при том что он был unsigned!!!), то после
-                             // Quantize/Dequantize всегда получалось 100.
-        // Msg("--[%s] fallof set to [%f]", __FUNCTION__, fQuantizerRangeExt * falloff);
+            // И вообще это были какие-то костыли от ПЫС. Если при вычитании falloff становился меньше нуля (при том что он был unsigned!!!), то после
+            // Quantize/Dequantize всегда получалось 100.
+            falloff = 100.f;
     }
-    // Log("############################################################################");
+
     accrue *= fQuantizerRangeExt;
     falloff *= fQuantizerRangeExt;
 

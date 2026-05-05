@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "physicsshell.h"
+
 #include "PHDynamicData.h"
 #include "Physics.h"
 #include "PHJoint.h"
@@ -13,6 +14,7 @@
 #include "../Include/xrRender/Kinematics.h"
 
 extern CPHWorld* ph_world;
+
 CPhysicsShell::~CPhysicsShell()
 {
     if (ph_world)
@@ -75,7 +77,7 @@ void fix_bones(LPCSTR fixed_bones, CPhysicsShell* shell)
         std::ignore = _GetItem(fixed_bones, i, fixed_bone);
         u16 fixed_bone_id = pKinematics->LL_BoneID(fixed_bone);
 #ifdef DEBUG
-        R_ASSERT2(BI_NONE != fixed_bone_id, make_string("wrong fixed bone [%s] for object with visual [%s]", fixed_bone, pKinematics->getDebugName().c_str()));
+        R_ASSERT2(BI_NONE != fixed_bone_id, xr::format("wrong fixed bone [{}] for object with visual [{}]", fixed_bone, pKinematics->getDebugName()));
 #else
         R_ASSERT(fixed_bone_id != BI_NONE);
 #endif
@@ -97,7 +99,7 @@ CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, BONE_P_MAP
             std::ignore = _GetItem(fixed_bones, i, fixed_bone);
             u16 fixed_bone_id = pKinematics->LL_BoneID(fixed_bone);
             R_ASSERT2(BI_NONE != fixed_bone_id,
-                      make_string("wrong fixed bone [%s] for object [%s] with visual [%s]", fixed_bone, obj->cName().c_str(), obj->cNameVisual().c_str()));
+                      xr::format("wrong fixed bone [{}] for object [{}] with visual [{}]", fixed_bone, obj->cName(), obj->cNameVisual()));
             p_bone_map->try_emplace(fixed_bone_id);
         }
 
@@ -134,7 +136,7 @@ CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, LPCSTR fix
             std::ignore = _GetItem(fixed_bones, i, fixed_bone);
             f_bones.push_back(K->LL_BoneID(fixed_bone));
             R_ASSERT2(BI_NONE != f_bones.back(),
-                      make_string("wrong fixed bone [%s] for object [%s] with visual [%s]", fixed_bone, obj->cName().c_str(), obj->cNameVisual().c_str()));
+                      xr::format("wrong fixed bone [{}] for object [{}] with visual [{}]", fixed_bone, obj->cName(), obj->cNameVisual()));
         }
     }
     return P_build_Shell(obj, not_active_state, f_bones);

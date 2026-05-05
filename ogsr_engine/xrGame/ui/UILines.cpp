@@ -292,7 +292,8 @@ void CUILines::ParseText()
 
             for (size_t idx{}; idx < sub_len;)
             {
-                bool is_wide_char = m_pFont->IsMultibyte() && *reinterpret_cast<const unsigned char*>(&sbl.m_text[idx]) > std::numeric_limits<char>::max() && (idx + 1) < sub_len;
+                bool is_wide_char = m_pFont->IsMultibyte() && *reinterpret_cast<const unsigned char*>(&sbl.m_text[idx]) > std::numeric_limits<char>::max() &&
+                    (idx + 1) < sub_len;
 
                 auto get_str_width = [](CGameFont* pFont, const char ch) {
                     float fDelta = pFont->SizeOf_(ch);
@@ -303,11 +304,8 @@ void CUILines::ParseText()
                     u16 wchar{};
                     const int wchars_num = MultiByteToWideChar(CP_UTF8, 0, ch, 2, reinterpret_cast<LPWSTR>(&wchar), 1);
 
-                    // Msg("--MultiByteToWideChar returned symbol [%u]", wchar);
-
                     if (wchars_num < 1) // Такое бывает на неподдерживаемых языках кроме rus/eng, мб ещё в каких то редких случаях
                     {
-                        // Msg("!!--MultiByteToWideChar returned 0 symbols. Something strange! String: [%s]", ch);
                         is_wide_char = false;
                         return get_str_width(pFont, *ch);
                     }
@@ -315,13 +313,6 @@ void CUILines::ParseText()
                     float fDelta = pFont->SizeOf_(wchar);
                     return fDelta;
                 };
-
-                /*
-                if (is_wide_char)
-                    Msg("--Size of W symbol [%d] is [%f], curr_width: [%f], max_width: [%f]", sbl.m_text[idx], get_Wstr_width(m_pFont, &sbl.m_text[idx]), curr_width, max_width);
-                else
-                    Msg("~~Size of A symbol [%d] is [%f], curr_width: [%f], max_width: [%f]", sbl.m_text[idx], get_str_width(m_pFont, sbl.m_text[idx]), curr_width, max_width);
-                */
 
                 float char_width = is_wide_char ? get_wstr_width(m_pFont, &sbl.m_text[idx]) : get_str_width(m_pFont, sbl.m_text[idx]);
 
@@ -675,8 +666,10 @@ u32 CUILines::GetColorFromText(const xr_string& str) const
         }
     }
     else
-    { // necessary comma not contains
-        Msg("!not valid text-color code detected. [%s]", str.c_str());
+    {
+        // necessary comma not contains
+        Msg("!not valid text-color code detected. [{}]", str);
+
         a = 255;
         r = 200;
         g = 200;

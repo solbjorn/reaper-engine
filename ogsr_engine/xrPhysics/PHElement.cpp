@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 
+#include "PHElement.h"
+
 #include "PHDynamicData.h"
 #include "Physics.h"
 #include "tri-colliderknoopc/dTriList.h"
@@ -23,7 +25,6 @@
 #include "ExtendedGeom.h"
 
 #include "PHShell.h"
-#include "PHElement.h"
 #include "PHElementInline.h"
 
 extern CPHWorld* ph_world;
@@ -404,24 +405,28 @@ void CPHElement::PhDataUpdate(dReal)
     ///////////////scale velocity///////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     VERIFY(dV_valid(linear_velocity));
+
 #ifdef DEBUG
     if (!dV_valid(angular_velocity))
     {
-        Msg("angular vel %f,%f,%f", angular_velocity[0], angular_velocity[1], angular_velocity[2]);
-        Msg("linear vel %f,%f,%f", linear_velocity[0], linear_velocity[1], linear_velocity[2]);
-        Msg("position  %f,%f,%f", dBodyGetPosition(m_body)[0], dBodyGetPosition(m_body)[1], dBodyGetPosition(m_body)[2]);
-        Msg("quaternion  %f,%f,%f,%f", dBodyGetQuaternion(m_body)[0], dBodyGetQuaternion(m_body)[1], dBodyGetQuaternion(m_body)[2], dBodyGetQuaternion(m_body)[3]);
+        Msg("angular vel {},{},{}", angular_velocity[0], angular_velocity[1], angular_velocity[2]);
+        Msg("linear vel {},{},{}", linear_velocity[0], linear_velocity[1], linear_velocity[2]);
+        Msg("position  {},{},{}", dBodyGetPosition(m_body)[0], dBodyGetPosition(m_body)[1], dBodyGetPosition(m_body)[2]);
+        Msg("quaternion  {},{},{},{}", dBodyGetQuaternion(m_body)[0], dBodyGetQuaternion(m_body)[1], dBodyGetQuaternion(m_body)[2],
+            dBodyGetQuaternion(m_body)[3]);
         Msg("matrix");
-        Msg("x  %f,%f,%f", dBodyGetRotation(m_body)[0], dBodyGetRotation(m_body)[4], dBodyGetRotation(m_body)[8]);
-        Msg("y  %f,%f,%f", dBodyGetRotation(m_body)[1], dBodyGetRotation(m_body)[5], dBodyGetRotation(m_body)[9]);
-        Msg("z  %f,%f,%f", dBodyGetRotation(m_body)[2], dBodyGetRotation(m_body)[6], dBodyGetRotation(m_body)[10]);
+        Msg("x  {},{},{}", dBodyGetRotation(m_body)[0], dBodyGetRotation(m_body)[4], dBodyGetRotation(m_body)[8]);
+        Msg("y  {},{},{}", dBodyGetRotation(m_body)[1], dBodyGetRotation(m_body)[5], dBodyGetRotation(m_body)[9]);
+        Msg("z  {},{},{}", dBodyGetRotation(m_body)[2], dBodyGetRotation(m_body)[6], dBodyGetRotation(m_body)[10]);
+
         CPhysicsShellHolder* ph = PhysicsRefObject();
-        Msg("name visual %s", *ph->cNameVisual());
-        Msg("name obj %s", ph->Name());
-        Msg("name section %s", *ph->cNameSect());
+        Msg("name visual {}", ph->cNameVisual());
+        Msg("name obj {}", ph->Name());
+        Msg("name section {}", ph->cNameSect());
         VERIFY2(0, "bad angular velocity");
     }
 #endif
+
     VERIFY(!fis_zero(m_l_scale));
     VERIFY(!fis_zero(m_w_scale));
     dBodySetLinearVel(m_body, linear_velocity[0] / m_l_scale, linear_velocity[1] / m_l_scale, linear_velocity[2] / m_l_scale);
@@ -1011,10 +1016,12 @@ void CPHElement::set_LinearVel(const Fvector& velocity)
         return;
     VERIFY2(_valid(velocity), "not valid arqument velocity");
     Fvector vel = velocity;
+
 #ifdef DEBUG
     if (velocity.magnitude() > m_l_limit)
-        Msg(" CPHElement::set_LinearVel set velocity magnitude is too large %f", velocity.magnitude());
+        Msg(" CPHElement::set_LinearVel set velocity magnitude is too large {}", velocity.magnitude());
 #endif
+
     put_in_range(vel, m_l_limit);
     dBodySetLinearVel(m_body, vel.x, vel.y, vel.z);
     // dVectorSet(m_safe_velocity,dBodyGetLinearVel(m_body));
@@ -1027,10 +1034,12 @@ void CPHElement::set_AngularVel(const Fvector& velocity)
         return;
 
     Fvector vel = velocity;
+
 #ifdef DEBUG
     if (velocity.magnitude() > m_w_limit)
-        Msg("CPHElement::set_AngularVel set velocity magnitude is too large %f", velocity.magnitude());
+        Msg("CPHElement::set_AngularVel set velocity magnitude is too large {}", velocity.magnitude());
 #endif
+
     put_in_range(vel, m_w_limit);
     dBodySetAngularVel(m_body, vel.x, vel.y, vel.z);
 }
@@ -1227,7 +1236,10 @@ void CPHElement::set_DynamicScales(float l_scale /* =default_l_scale */, float w
 
 void CPHElement::set_DisableParams(const SAllDDOParams& params) { CPHDisablingFull::set_DisableParams(params); }
 
-void CPHElement::get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext) { CPHGeometryOwner::get_Extensions(axis, center_prg, lo_ext, hi_ext); }
+void CPHElement::get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext)
+{
+    CPHGeometryOwner::get_Extensions(axis, center_prg, lo_ext, hi_ext);
+}
 
 const Fvector& CPHElement::mass_Center()
 {

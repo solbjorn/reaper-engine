@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "alife_storage_manager.h"
+
 #include "alife_simulator_header.h"
 #include "alife_time_manager.h"
 #include "alife_spawn_registry.h"
@@ -95,9 +96,9 @@ void CALifeStorageManager::save(LPCSTR save_name, bool update_name)
     FS.w_close(writer);
 
 #ifdef DEBUG
-    Msg("* Game %s is successfully saved to file '%s' (%d bytes compressed to %d)", m_save_name, temp, source_count, dest_count + 4);
+    Msg("* Game {} is successfully saved to file '{}' ({} bytes compressed to {})", m_save_name, temp, source_count, dest_count + 4);
 #else // DEBUG
-    Msg("* Game %s is successfully saved to file '%s'", m_save_name, temp);
+    Msg("* Game {} is successfully saved to file '{}'", m_save_name, temp);
 #endif // DEBUG
 
     if (!update_name)
@@ -166,12 +167,13 @@ bool CALifeStorageManager::load(LPCSTR save_name)
     stream = FS.r_open(file_name);
     if (!stream)
     {
-        Msg("* Cannot find saved game %s", file_name);
+        Msg("* Cannot find saved game {}", file_name);
         strcpy_s(m_save_name, save);
+
         return (false);
     }
 
-    R_ASSERT(CSavedGameWrapper::valid_saved_game(*stream), make_string("%s\nSaved game version mismatch or saved game is corrupted", file_name));
+    R_ASSERT(CSavedGameWrapper::valid_saved_game(*stream), xr::format("{}\nSaved game version mismatch or saved game is corrupted", file_name));
 
     unload();
     reload(m_section);
@@ -188,7 +190,7 @@ bool CALifeStorageManager::load(LPCSTR save_name)
 
     VERIFY(graph().actor());
 
-    Msg("* Game %s is successfully loaded from file '%s' (%.3fs)", save_name, file_name, timer.GetElapsed_sec());
+    Msg("* Game {} is successfully loaded from file '{}' ({:.4}s)", save_name, file_name, timer.GetElapsed_sec());
 
     return (true);
 }

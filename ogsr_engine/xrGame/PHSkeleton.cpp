@@ -189,8 +189,6 @@ void CPHSkeleton::SaveNetState(NET_Packet&)
        поместить все напрямую в CSE_PHSkeleton, что и делает
        SyncNetState().
 
-        //Msg("!!Called [CPHSkeleton::SaveNetState]");
-
         CPhysicsShellHolder* obj=PPhysicsShellHolder();
         CPhysicsShell* pPhysicsShell=obj->PPhysicsShell();
         IKinematics* K	=smart_cast<IKinematics*>(obj->Visual());
@@ -240,10 +238,7 @@ void CPHSkeleton::SaveNetState(NET_Packet&)
 
         P.w_u16(bones_number);
         if (bones_number > 64)
-        {
-            Msg("!![CPHSkeleton::SaveNetState] bones_number is [%u]!", bones_number);
             P.w_u64(K != nullptr ? _vm.to_u64(1) : std::numeric_limits<u64>::max());
-        }
 
         for(u16 i=0;i<bones_number;i++)
         {
@@ -308,13 +303,15 @@ void CPHSkeleton::RestoreNetState(CSE_PHSkeleton* /*po*/)
         }
         else
         {
-            MsgDbg("! [%s]: [%s] skip load of bone state due to single root bone with fixed position. Visual[%s]", __FUNCTION__, obj->Name_script(), obj->cNameVisual().c_str());
+            MsgDbg("! [{}]: [{}] skip load of bone state due to single root bone with fixed position. Visual[{}]", __FUNCTION__, obj->Name_script(),
+                   obj->cNameVisual());
         }
     }
     else
     {
-        MsgDbg("~ [%s]: [%s] has different state in saved_bones[%zu] PHGetSyncItemsNumber[%u] Visual[%s] alive[%s]", __FUNCTION__, obj->Name_script(), saved_bones.size(),
-               obj->PHGetSyncItemsNumber(), obj->cNameVisual().c_str(), (obj->cast_entity_alive() && obj->cast_entity_alive()->conditions().GetHealth() > 0.f) ? "yes" : "no");
+        MsgDbg("~ [{}]: [{}] has different state in saved_bones[{}] PHGetSyncItemsNumber[{}] Visual[{}] alive[{}]", __FUNCTION__, obj->Name_script(),
+               saved_bones.size(), obj->PHGetSyncItemsNumber(), obj->cNameVisual(),
+               (obj->cast_entity_alive() && obj->cast_entity_alive()->conditions().GetHealth() > 0.f) ? "yes" : "no");
     }
 
     saved_bones.clear();
@@ -358,17 +355,17 @@ void CPHSkeleton::PHSplit()
 {
     u16 spawned = u16(m_unsplited_shels.size());
     PPhysicsShellHolder()->PPhysicsShell()->SplitProcess(m_unsplited_shels);
+
     u16 i = u16(m_unsplited_shels.size()) - spawned;
-    //	Msg("%o,spawned,%d",this,i);
     for (; i; --i)
         SpawnCopy();
 }
 
 void CPHSkeleton::UnsplitSingle(CPHSkeleton* SO)
 {
-    // Msg("%o,received has %d,",this,m_unsplited_shels.size());
     if (0 == m_unsplited_shels.size())
         return; //. hack
+
     CPhysicsShellHolder* obj = PPhysicsShellHolder();
     CPhysicsShellHolder* O = SO->PPhysicsShellHolder();
     VERIFY2(m_unsplited_shels.size(), "NO_SHELLS !!");

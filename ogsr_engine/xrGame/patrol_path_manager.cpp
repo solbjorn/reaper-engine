@@ -19,33 +19,31 @@
 #include "game_object_space.h"
 #include "level_graph.h"
 
-#if 1 // def DEBUG
 #include "space_restriction_manager.h"
 
 static void show_restrictions(LPCSTR restrictions)
 {
     string256 temp;
     for (int i = 0, n = _GetItemCount(restrictions); i < n; ++i)
-        Msg("     %s", _GetItem(restrictions, i, temp));
+        Msg("     {}", _GetItem(restrictions, i, temp));
 }
 
 bool show_restrictions(CRestrictedObject* object)
 {
-    Msg("DEFAULT OUT RESTRICTIONS :");
+    Log("DEFAULT OUT RESTRICTIONS :");
     show_restrictions(*Level().space_restriction_manager().default_out_restrictions() ? *Level().space_restriction_manager().default_out_restrictions() : "");
 
-    Msg("DEFAULT IN RESTRICTIONS  :");
+    Log("DEFAULT IN RESTRICTIONS  :");
     show_restrictions(*Level().space_restriction_manager().default_in_restrictions() ? *Level().space_restriction_manager().default_in_restrictions() : "");
 
-    Msg("OUT RESTRICTIONS         :");
+    Log("OUT RESTRICTIONS         :");
     show_restrictions(*object->out_restrictions() ? *object->out_restrictions() : "");
 
-    Msg("IN RESTRICTIONS          :");
+    Log("IN RESTRICTIONS          :");
     show_restrictions(*object->in_restrictions() ? *object->in_restrictions() : "");
 
     return (false);
 }
-#endif
 
 CPatrolPathManager::~CPatrolPathManager() = default;
 
@@ -136,9 +134,11 @@ void CPatrolPathManager::select_point(const Fvector& position, u32& dest_vertex_
         }
         default: NODEFAULT;
         }
-        R_ASSERT2(vertex || show_restrictions(m_object), make_string("any vertex in patrol path [%s] in inaccessible for object [%s]", *m_path_name, *m_game_object->cName()));
+
+        R_ASSERT2(vertex || show_restrictions(m_object),
+                  xr::format("any vertex in patrol path [{}] in inaccessible for object [{}]", m_path_name, m_game_object->cName()));
         R_ASSERT2(ai().level_graph().valid_vertex_id(vertex->data().level_vertex_id()),
-                  make_string("patrol path[%s], point on path [%s],object [%s]", *m_path_name, *vertex->data().name(), *m_game_object->cName()));
+                  xr::format("patrol path[{}], point on path [{}],object [{}]", m_path_name, vertex->data().name(), m_game_object->cName()));
 
         if (!m_path->vertex(m_prev_point_index))
             m_prev_point_index = vertex->vertex_id();
@@ -311,7 +311,7 @@ shared_str CPatrolPathManager::path_name() const
 {
     if (!m_path)
     {
-        Msg("!![CPatrolPathManager::path_name] Path not specified (object %s)!", *m_game_object->cName());
+        Msg("!![CPatrolPathManager::path_name] Path not specified (object {})!", m_game_object->cName());
         return shared_str{""};
     }
 
@@ -329,7 +329,8 @@ void CPatrolPathManager::set_previous_point(int point_index)
 
     if (!m_path->vertex(point_index))
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Start point violates path bounds %s (object %s)!", *m_path_name, *m_game_object->cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Start point violates path bounds %s (object %s)!", *m_path_name,
+                                        *m_game_object->cName());
         return;
     }
     VERIFY(m_path);
@@ -346,7 +347,8 @@ void CPatrolPathManager::set_start_point(int point_index)
     }
     if (!m_path->vertex(point_index))
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Start point violates path bounds %s (object %s)!", *m_path_name, *m_game_object->cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Start point violates path bounds %s (object %s)!", *m_path_name,
+                                        *m_game_object->cName());
         return;
     }
 

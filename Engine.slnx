@@ -230,6 +230,7 @@
     <BuildDependency Project="3rd_party/Src/archiving/minizip/minizip.vcxproj" />
     <BuildDependency Project="3rd_party/Src/archiving/squashfs/squashfs.vcxproj" />
     <BuildDependency Project="3rd_party/Src/crypto/crypto.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/logging/fmt/fmt.vcxproj" />
     <BuildDependency Project="3rd_party/Src/system/abseil/abseil.vcxproj" />
     <BuildDependency Project="3rd_party/Src/system/mimalloc/mimalloc.vcxproj" />
     <BuildDependency Project="3rd_party/Src/utility/pugixml/pugixml.vcxproj" />

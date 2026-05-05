@@ -90,7 +90,8 @@ void CResourceManager::_DeleteElement(const ShaderElement* S)
         return;
     if (reclaim(v_elements, S))
         return;
-    Msg("! ERROR: Failed to find compiled 'shader-element'");
+
+    Log("! ERROR: Failed to find compiled 'shader-element'");
 }
 
 Shader* CResourceManager::Create(IBlender* B, const char* s_shader, const char* s_textures) { return _cpp_Create(B, s_shader, s_textures); }
@@ -215,7 +216,8 @@ void CResourceManager::Delete(const Shader* S)
         return;
     if (reclaim(v_shaders, S))
         return;
-    Msg("! ERROR: Failed to find complete shader");
+
+    Log("! ERROR: Failed to find complete shader");
 }
 
 tmc::task<void> CResourceManager::DeferredUpload()
@@ -223,13 +225,13 @@ tmc::task<void> CResourceManager::DeferredUpload()
     if (!Device.b_is_Ready)
         co_return;
 
-    Msg("CResourceManager::DeferredUpload [MT] -> START, size = [%zu]", m_textures.size());
-    Msg("CResourceManager::DeferredUpload VRAM usage before:");
+    Msg("CResourceManager::DeferredUpload [MT] -> START, size = [{}]", m_textures.size());
+    Log("CResourceManager::DeferredUpload VRAM usage before:");
 
     xr::render_memory_usage usage;
 
     _GetMemoryUsage(usage);
-    Msg("textures loaded size: %f Mb (%zd bytes)", gsl::narrow_cast<f32>(usage.m_base + usage.m_lmaps) / 1024.0f / 1024.0f, usage.m_base + usage.m_lmaps);
+    Msg("textures loaded size: {} Mb ({} bytes)", gsl::narrow_cast<f32>(usage.m_base + usage.m_lmaps) / 1024.0f / 1024.0f, usage.m_base + usage.m_lmaps);
 
     HW.DumpVideoMemoryUsage();
 
@@ -240,14 +242,14 @@ tmc::task<void> CResourceManager::DeferredUpload()
                              }))
         .with_priority(xr::tmc_priority_any);
 
-    Msg("CResourceManager::DeferredUpload VRAM usage after:");
+    Log("CResourceManager::DeferredUpload VRAM usage after:");
 
     _GetMemoryUsage(usage);
-    Msg("textures loaded size: %f Mb (%zd bytes)", gsl::narrow_cast<f32>(usage.m_base + usage.m_lmaps) / 1024.0f / 1024.0f, usage.m_base + usage.m_lmaps);
+    Msg("textures loaded size: {} Mb ({} bytes)", gsl::narrow_cast<f32>(usage.m_base + usage.m_lmaps) / 1024.0f / 1024.0f, usage.m_base + usage.m_lmaps);
 
     HW.DumpVideoMemoryUsage();
 
-    Msg("CResourceManager::DeferredUpload -> END");
+    Log("CResourceManager::DeferredUpload -> END");
 }
 
 void CResourceManager::_GetMemoryUsage(xr::render_memory_usage& usage) const
@@ -283,9 +285,9 @@ void CResourceManager::_DumpMemoryUsage() const
 
     // dump
     for (const auto [mem, entry] : mtex)
-        Msg("* %4.1f : [%4zd] %s", gsl::narrow_cast<f32>(mem) / 1024.0f, entry.first, entry.second);
+        Msg("* {:4.1f} : {:4} {}", gsl::narrow_cast<f32>(mem) / 1024.0f, entry.first, entry.second);
 
-    Msg("* %4.1f : Lua", gsl::narrow_cast<f32>(LS_mem()) / 1024.0f);
+    Msg("* {:4.1f} : Lua", gsl::narrow_cast<f32>(LS_mem()) / 1024.0f);
 }
 
 xr_vector<ITexture*> CResourceManager::FindTexture(const char* Name) const

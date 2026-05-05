@@ -94,7 +94,7 @@ CCustomMonster::~CCustomMonster()
         g_pGameLevel->SoundEvent_OnDestDestroy(this);
 
 #ifdef DEBUG
-    Msg("dumping client spawn manager stuff for object with id %d", ID());
+    Msg("dumping client spawn manager stuff for object with id {}", ID());
     Level().client_spawn_manager().dump(ID());
 #endif // DEBUG
 
@@ -114,57 +114,11 @@ void CCustomMonster::Load(LPCSTR section)
     // m_PhysicMovementControl: General
 
     character_physics_support()->movement()->Load(section);
-    // Fbox	bb;
-
-    //// m_PhysicMovementControl: BOX
-    // Fvector	vBOX0_center= pSettings->r_fvector3	(section,"ph_box0_center"	);
-    // Fvector	vBOX0_size	= pSettings->r_fvector3	(section,"ph_box0_size"		);
-    // bb.set	(vBOX0_center,vBOX0_center); bb.grow(vBOX0_size);
-    // m_PhysicMovementControl->SetBox		(0,bb);
-
-    //// m_PhysicMovementControl: BOX
-    // Fvector	vBOX1_center= pSettings->r_fvector3	(section,"ph_box1_center"	);
-    // Fvector	vBOX1_size	= pSettings->r_fvector3	(section,"ph_box1_size"		);
-    // bb.set	(vBOX1_center,vBOX1_center); bb.grow(vBOX1_size);
-    // m_PhysicMovementControl->SetBox		(1,bb);
-
-    //// m_PhysicMovementControl: Foots
-    // Fvector	vFOOT_center= pSettings->r_fvector3	(section,"ph_foot_center"	);
-    // Fvector	vFOOT_size	= pSettings->r_fvector3	(section,"ph_foot_size"		);
-    // bb.set	(vFOOT_center,vFOOT_center); bb.grow(vFOOT_size);
-    // m_PhysicMovementControl->SetFoots	(vFOOT_center,vFOOT_size);
-
-    //// m_PhysicMovementControl: Crash speed and mass
-    // float	cs_min		= pSettings->r_float	(section,"ph_crash_speed_min"	);
-    // float	cs_max		= pSettings->r_float	(section,"ph_crash_speed_max"	);
-    // float	mass		= pSettings->r_float	(section,"ph_mass"				);
-    // m_PhysicMovementControl->SetCrashSpeeds	(cs_min,cs_max);
-    // m_PhysicMovementControl->SetMass		(mass);
-
-    // m_PhysicMovementControl: Frictions
-    /*
-    float af, gf, wf;
-    af					= pSettings->r_float	(section,"ph_friction_air"	);
-    gf					= pSettings->r_float	(section,"ph_friction_ground");
-    wf					= pSettings->r_float	(section,"ph_friction_wall"	);
-    m_PhysicMovementControl->SetFriction	(af,wf,gf);
-
-    // BOX activate
-    m_PhysicMovementControl->ActivateBox	(0);
-    */
-    ////////
 
     Position().y += EPS_L;
 
-    //	m_current			= 0;
-
     eye_fov = pSettings->r_float(section, "eye_fov");
     eye_range = pSettings->r_float(section, "eye_range");
-
-    // Health & Armor
-    //	fArmor					= 0;
-
-    // Msg				("! cmonster size: %d",sizeof(*this));
 
     m_anomaly_detector->load(section);
 }
@@ -513,7 +467,8 @@ void CCustomMonster::update_range_fov(float& new_range, float& new_fov, float st
     // 300=standart, 50=super-fog
 
     new_fov = start_fov;
-    new_range = start_range * (_min(m_far_plane_factor * current_far_plane, standard_far_plane) / standard_far_plane) * (1.f / (1.f + m_fog_density_factor * current_fog_density));
+    new_range = start_range * (_min(m_far_plane_factor * current_far_plane, standard_far_plane) / standard_far_plane) *
+        (1.f / (1.f + m_fog_density_factor * current_fog_density));
     clamp(new_range, 0.f, current_far_plane);
 }
 
@@ -608,19 +563,18 @@ tmc::task<bool> CCustomMonster::net_Spawn(CSE_Abstract* DC)
     eye_matrix.identity();
     movement().m_body.current.yaw = movement().m_body.target.yaw = -E->o_torso.yaw;
     movement().m_body.current.pitch = movement().m_body.target.pitch = 0;
+
     SetfHealth(E->fHealth);
     if (!g_Alive())
-    {
         set_death_time();
-        //		Msg						("%6d : Object [%d][%s][%s] is spawned DEAD",Device.dwTimeGlobal,ID(),*cName(),*cNameSect());
-    }
 
     if (ai().get_level_graph() && UsedAI_Locations() && (e->ID_Parent == 0xffff))
     {
         if (ai().game_graph().valid_vertex_id(E->m_tGraphID))
             ai_location().game_vertex(E->m_tGraphID);
 
-        if (ai().game_graph().valid_vertex_id(E->m_tNextGraphID) && (ai().game_graph().vertex(E->m_tNextGraphID)->level_id() == ai().level_graph().level_id()) &&
+        if (ai().game_graph().valid_vertex_id(E->m_tNextGraphID) &&
+            (ai().game_graph().vertex(E->m_tNextGraphID)->level_id() == ai().level_graph().level_id()) &&
             movement().restrictions().accessible(ai().game_graph().vertex(E->m_tNextGraphID)->level_vertex_id()))
             movement().set_game_dest_vertex(E->m_tNextGraphID);
 
@@ -765,7 +719,10 @@ void CCustomMonster::load_killer_clsids(LPCSTR section)
         m_killer_clsids.push_back(TEXT2CLSID(_GetItem(killers, i, temp)));
 }
 
-bool CCustomMonster::is_special_killer(CObject* obj) { return (obj && (std::find(m_killer_clsids.begin(), m_killer_clsids.end(), obj->CLS_ID) != m_killer_clsids.end())); }
+bool CCustomMonster::is_special_killer(CObject* obj)
+{
+    return (obj && (std::find(m_killer_clsids.begin(), m_killer_clsids.end(), obj->CLS_ID) != m_killer_clsids.end()));
+}
 
 float CCustomMonster::feel_vision_mtl_transp(CObject* O, u32 element) { return (memory().visual().feel_vision_mtl_transp(O, element)); }
 

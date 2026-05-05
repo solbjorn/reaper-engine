@@ -60,7 +60,7 @@ void CHW::CreateD3D()
         DXGI_ADAPTER_DESC desc{};
         m_pAdapter->GetDesc(&desc);
 
-        Msg("* Avail GPU [vendor:%X]-[device:%X]: %S", desc.VendorId, desc.DeviceId, desc.Description);
+        Msg("* Avail GPU [vendor:{:X}]-[device:{:X}]: {}", desc.VendorId, desc.DeviceId, sf::String{desc.Description});
 
         _RELEASE(m_pAdapter);
         ++i;
@@ -73,13 +73,13 @@ void CHW::CreateD3D()
     {
         pFactory6->EnumAdapterByGpuPreference(0, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&m_pAdapter));
 
-        Msg(" !CHW::CreateD3D() use DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE");
+        Log(" !CHW::CreateD3D() use DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE");
 
         _RELEASE(pFactory6);
     }
     else
     {
-        Msg(" !CHW::CreateD3D() use EnumAdapters1(0)");
+        Log(" !CHW::CreateD3D() use EnumAdapters1(0)");
 
         m_pFactory->EnumAdapters1(0, &m_pAdapter);
     }
@@ -143,7 +143,7 @@ tmc::task<void> CHW::CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight)
     DumpVideoMemoryUsage();
 
     //	Warning: Desc.Description is wide string
-    Msg("* Selected GPU [vendor:%X]-[device:%X]: %S", Desc.VendorId, Desc.DeviceId, Desc.Description);
+    Msg("* Selected GPU [vendor:{:X}]-[device:{:X}]: {}", Desc.VendorId, Desc.DeviceId, sf::String{Desc.Description});
 
     Caps.id_vendor = Desc.VendorId;
     Caps.id_device = Desc.DeviceId;
@@ -262,7 +262,7 @@ tmc::task<void> CHW::CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight)
     _SHOW_REF("* CREATE: DeviceREF:", pDevice);
 
     size_t memory = Desc.DedicatedVideoMemory;
-    Msg("*     Texture memory: %zu M", memory / (1024 * 1024));
+    Msg("*     Texture memory: {} M", memory / (1024 * 1024));
 
     //	Create render target and depth-stencil views here
 
@@ -472,16 +472,17 @@ void CHW::DumpVideoMemoryUsage() const
 
     if (m_pAdapter3 && SUCCEEDED(m_pAdapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo)))
     {
-        Msg("\tDedicated VRAM: %zu MB (%zu bytes)\n\tDedicated Memory: %zu MB (%zu bytes)\n\tShared Memory: %zu MB (%zu bytes)\n\tCurrentUsage: %zu MB (%zu bytes)\n\tBudget: %zu "
-            "MB (%zu bytes)",
+        Msg("\tDedicated VRAM: {} MB ({} bytes)\n\tDedicated Memory: {} MB ({} bytes)\n\tShared Memory: {} MB ({} bytes)\n\tCurrentUsage: {} MB ({} "
+            "bytes)\n\tBudget: {} MB ({} bytes)",
             Desc.DedicatedVideoMemory / 1024 / 1024, Desc.DedicatedVideoMemory, Desc.DedicatedSystemMemory / 1024 / 1024, Desc.DedicatedSystemMemory,
             Desc.SharedSystemMemory / 1024 / 1024, Desc.SharedSystemMemory, videoMemoryInfo.CurrentUsage / 1024 / 1024, videoMemoryInfo.CurrentUsage,
             videoMemoryInfo.Budget / 1024 / 1024, videoMemoryInfo.Budget);
     }
     else
     {
-        Msg("\tDedicated VRAM: %zu MB (%zu bytes)\n\tDedicated Memory: %zu MB (%zu bytes)\n\tShared Memory: %zu MB (%zu bytes)", Desc.DedicatedVideoMemory / 1024 / 1024,
-            Desc.DedicatedVideoMemory, Desc.DedicatedSystemMemory / 1024 / 1024, Desc.DedicatedSystemMemory, Desc.SharedSystemMemory / 1024 / 1024, Desc.SharedSystemMemory);
+        Msg("\tDedicated VRAM: {} MB ({} bytes)\n\tDedicated Memory: {} MB ({} bytes)\n\tShared Memory: {} MB ({} bytes)",
+            Desc.DedicatedVideoMemory / 1024 / 1024, Desc.DedicatedVideoMemory, Desc.DedicatedSystemMemory / 1024 / 1024, Desc.DedicatedSystemMemory,
+            Desc.SharedSystemMemory / 1024 / 1024, Desc.SharedSystemMemory);
     }
 }
 
@@ -514,9 +515,8 @@ void CHW::updateWindowProps(HWND m_hWnd) const
             RECT DesktopRect;
 
             GetClientRect(GetDesktopWindow(), &DesktopRect);
-
-            SetRect(&m_rcWindowBounds, (DesktopRect.right - m_ChainDesc.Width) / 2, (DesktopRect.bottom - m_ChainDesc.Height) / 2, (DesktopRect.right + m_ChainDesc.Width) / 2,
-                    (DesktopRect.bottom + m_ChainDesc.Height) / 2);
+            SetRect(&m_rcWindowBounds, (DesktopRect.right - m_ChainDesc.Width) / 2, (DesktopRect.bottom - m_ChainDesc.Height) / 2,
+                    (DesktopRect.right + m_ChainDesc.Width) / 2, (DesktopRect.bottom + m_ChainDesc.Height) / 2);
         }
         else
         {
@@ -613,14 +613,16 @@ void fill_vid_mode_list(CHW* _hw)
     vid_mode_token[_cnt - 1].name = nullptr;
 
 #ifdef DEBUG
-    Msg("Available video modes[%d]:", _tmp.size());
+    Msg("Available video modes[{}]:", _tmp.size());
 #endif // DEBUG
+
     for (u32 i = 0; i < _tmp.size(); ++i)
     {
         vid_mode_token[i].id = i;
         vid_mode_token[i].name = _tmp[i];
+
 #ifdef DEBUG
-        Msg("[%s]", _tmp[i]);
+        Msg("[{}]", _tmp[i]);
 #endif // DEBUG
     }
 }

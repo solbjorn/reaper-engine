@@ -196,12 +196,12 @@ void CPolterTele::tele_find_objects(xr_vector<CObject*>& objects, const Fvector&
     {
         CPhysicsShellHolder* obj = smart_cast<CPhysicsShellHolder*>(m_nearest[i]);
         CCustomMonster* custom_monster = smart_cast<CCustomMonster*>(m_nearest[i]);
-        if (!obj || !obj->PPhysicsShell() || !obj->PPhysicsShell()->isActive() || custom_monster || (obj->spawn_ini() && obj->spawn_ini()->section_exist("ph_heavy")) ||
-            (obj->m_pPhysicsShell->getMass() < m_pmt_object_min_mass) || (obj->m_pPhysicsShell->getMass() > m_pmt_object_max_mass) || (obj == m_object) ||
-            m_object->CTelekinesis::is_active_object(obj) ||
+        if (!obj || !obj->PPhysicsShell() || !obj->PPhysicsShell()->isActive() || custom_monster ||
+            (obj->spawn_ini() && obj->spawn_ini()->section_exist("ph_heavy")) || (obj->m_pPhysicsShell->getMass() < m_pmt_object_min_mass) ||
+            (obj->m_pPhysicsShell->getMass() > m_pmt_object_max_mass) || (obj == m_object) || m_object->CTelekinesis::is_active_object(obj) ||
             (pSettings->line_exist(obj->cNameSect().c_str(), "ph_heavy") && pSettings->r_bool(obj->cNameSect().c_str(), "ph_heavy")) ||
-            (pSettings->line_exist(obj->cNameSect().c_str(), "quest_item") && pSettings->r_bool(obj->cNameSect().c_str(), "quest_item")) || obj->hasFixedBones() ||
-            !obj->m_pPhysicsShell->get_ApplyByGravity())
+            (pSettings->line_exist(obj->cNameSect().c_str(), "quest_item") && pSettings->r_bool(obj->cNameSect().c_str(), "quest_item")) ||
+            obj->hasFixedBones() || !obj->m_pPhysicsShell->get_ApplyByGravity())
             continue;
 
         Fvector center;
@@ -277,7 +277,8 @@ public:
     CPhysicsShellHolder* m_object;
     float m_pmt_object_collision_damage;
 
-    SCollisionHitCallback(CPhysicsShellHolder* object, float pmt_object_collision_damage) : m_object{object}, m_pmt_object_collision_damage{pmt_object_collision_damage}
+    SCollisionHitCallback(CPhysicsShellHolder* object, float pmt_object_collision_damage)
+        : m_object{object}, m_pmt_object_collision_damage{pmt_object_collision_damage}
     {
         VERIFY(object);
     }
@@ -292,7 +293,7 @@ public:
         if (m_object)
             m_object->set_collision_hit_callback(nullptr); // delete this!!
         else
-            Msg("!![%s] CPhysicsShellHolder is nullptr!", __FUNCTION__);
+            Msg("!![{}] CPhysicsShellHolder is nullptr!", __FUNCTION__);
     }
 };
 
@@ -311,9 +312,10 @@ void CPolterTele::tele_fire_objects()
             if (hobj)
                 hobj->set_collision_hit_callback(xr_new<SCollisionHitCallback>(hobj, m_pmt_object_collision_damage));
             else
-                Msg("!![%s] CPhysicsShellHolder is nullptr!", __FUNCTION__);
+                Msg("!![{}] CPhysicsShellHolder is nullptr!", __FUNCTION__);
 
-            m_object->CTelekinesis::fire_t(tele_object.get_object(), enemy_pos, tele_object.get_object()->Position().distance_to(enemy_pos) / m_pmt_fly_velocity);
+            m_object->CTelekinesis::fire_t(tele_object.get_object(), enemy_pos,
+                                           tele_object.get_object()->Position().distance_to(enemy_pos) / m_pmt_fly_velocity);
             return;
         }
     }

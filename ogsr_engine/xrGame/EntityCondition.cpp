@@ -275,13 +275,6 @@ float CEntityCondition::HitPowerEffect(float power_loss)
 
 CWound* CEntityCondition::AddWound(float hit_power, ALife::EHitType hit_type, u16 element)
 {
-    /*
-        if ( element == BI_NONE ) {
-          Msg( "! [%s]: %s: BI_NONE -> 0", __FUNCTION__, m_object->cName().c_str() );
-          element = 0;
-        }
-    */
-
     // максимальное число косточек 64
     VERIFY(element < 64 || BI_NONE == element);
 
@@ -384,7 +377,8 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
     }
 
     if (bDebug)
-        Msg("%s hitted in %s with %f[%f]", m_object->Name(), smart_cast<IKinematics*>(m_object->Visual())->LL_BoneName_dbg(pHDS->boneID), m_fHealthLost * 100.0f, hit_power_org);
+        Msg("{} hitted in {} with {}[{}]", m_object->Name(), smart_cast<IKinematics*>(m_object->Visual())->LL_BoneName_dbg(pHDS->boneID),
+            m_fHealthLost * 100.0f, hit_power_org);
 
     // раны добавляются только живому
     if (bAddWound && GetHealth() > 0)
@@ -489,7 +483,8 @@ constexpr LPCSTR CCV_NAMES[] = {"radiation_v", "radiation_health_v", "morale_v",
 float& CEntityCondition::SConditionChangeV::value(LPCSTR name)
 {
     // CEntityCondition::SConditionChangeV::
-    float* values[] = {&m_fV_Radiation, &m_fV_RadiationHealth, &m_fV_EntityMorale, &m_fV_PsyHealth, &m_fV_Bleeding, &m_fV_WoundIncarnation, &m_fV_HealthRestore};
+    float* values[] = {&m_fV_Radiation, &m_fV_RadiationHealth,  &m_fV_EntityMorale, &m_fV_PsyHealth,
+                       &m_fV_Bleeding,  &m_fV_WoundIncarnation, &m_fV_HealthRestore};
     for (int i = 0; i < PARAMS_COUNT; i++)
         if (strstr(name, CCV_NAMES[i]))
             return *values[i];
@@ -526,8 +521,10 @@ void CEntityCondition::SConditionChangeV::load(LPCSTR sect, LPCSTR prefix)
 
 float CEntityCondition::GetParamByName(LPCSTR name)
 {
-    const static LPCSTR PARAM_NAMES[] = {"health", "power", "radiation", "psy_health", "morale", "max_health", "power_max", "radiation_max", "psy_health_max", "morale_max"};
-    float* values[] = {&health(), &m_fPower, &m_fRadiation, &m_fPsyHealth, &m_fEntityMorale, &max_health(), &m_fPowerMax, &m_fRadiationMax, &m_fPsyHealthMax, &m_fEntityMoraleMax};
+    const static LPCSTR PARAM_NAMES[] = {"health",     "power",     "radiation",     "psy_health",     "morale",
+                                         "max_health", "power_max", "radiation_max", "psy_health_max", "morale_max"};
+    float* values[] = {&health(),     &m_fPower,    &m_fRadiation,    &m_fPsyHealth,    &m_fEntityMorale,
+                       &max_health(), &m_fPowerMax, &m_fRadiationMax, &m_fPsyHealthMax, &m_fEntityMoraleMax};
     for (int i = 0; i < 10; i++)
         if (strstr(name, PARAM_NAMES[i]))
             return *values[i];
@@ -554,15 +551,17 @@ static bool get_entity_sprint(CEntity::SEntityState* S) { return S->bSprint; }
 
 void CEntityCondition::script_register(sol::state_view& lua)
 {
-    lua.new_usertype<CEntity::SEntityState>("SEntityState", sol::no_constructor, "crouch", sol::property(&get_entity_crouch), "fall", sol::property(&get_entity_fall), "jump",
-                                            sol::property(&get_entity_jump), "sprint", sol::property(&get_entity_sprint), "velocity",
-                                            sol::readonly(&CEntity::SEntityState::fVelocity), "a_velocity", sol::readonly(&CEntity::SEntityState::fAVelocity));
+    lua.new_usertype<CEntity::SEntityState>("SEntityState", sol::no_constructor, "crouch", sol::property(&get_entity_crouch), "fall",
+                                            sol::property(&get_entity_fall), "jump", sol::property(&get_entity_jump), "sprint",
+                                            sol::property(&get_entity_sprint), "velocity", sol::readonly(&CEntity::SEntityState::fVelocity), "a_velocity",
+                                            sol::readonly(&CEntity::SEntityState::fAVelocity));
 
     lua.new_usertype<CEntityCondition>(
-        "CEntityCondition", sol::no_constructor, "fdelta_time", &CEntityCondition::fdelta_time, "has_valid_time", sol::readonly(&CEntityCondition::m_bTimeValid), "power",
-        &CEntityCondition::m_fPower, "power_max", &CEntityCondition::m_fPowerMax, "psy_health", &CEntityCondition::m_fPsyHealth, "psy_health_max",
-        &CEntityCondition::m_fPsyHealthMax, "radiation", &CEntityCondition::m_fRadiation, "radiation_max", &CEntityCondition::m_fRadiationMax, "morale",
-        &CEntityCondition::m_fEntityMorale, "morale_max", &CEntityCondition::m_fEntityMoraleMax, "min_wound_size", &CEntityCondition::m_fMinWoundSize, "is_bleeding",
-        sol::readonly(&CEntityCondition::m_bIsBleeding), "power_hit_part", &CEntityCondition::m_fPowerHitPart, "health",
-        sol::property(&CEntityCondition::GetHealth, &set_entity_health), "max_health", sol::property(&CEntityCondition::GetMaxHealth, &set_entity_max_health));
+        "CEntityCondition", sol::no_constructor, "fdelta_time", &CEntityCondition::fdelta_time, "has_valid_time",
+        sol::readonly(&CEntityCondition::m_bTimeValid), "power", &CEntityCondition::m_fPower, "power_max", &CEntityCondition::m_fPowerMax, "psy_health",
+        &CEntityCondition::m_fPsyHealth, "psy_health_max", &CEntityCondition::m_fPsyHealthMax, "radiation", &CEntityCondition::m_fRadiation, "radiation_max",
+        &CEntityCondition::m_fRadiationMax, "morale", &CEntityCondition::m_fEntityMorale, "morale_max", &CEntityCondition::m_fEntityMoraleMax, "min_wound_size",
+        &CEntityCondition::m_fMinWoundSize, "is_bleeding", sol::readonly(&CEntityCondition::m_bIsBleeding), "power_hit_part",
+        &CEntityCondition::m_fPowerHitPart, "health", sol::property(&CEntityCondition::GetHealth, &set_entity_health), "max_health",
+        sol::property(&CEntityCondition::GetMaxHealth, &set_entity_max_health));
 }

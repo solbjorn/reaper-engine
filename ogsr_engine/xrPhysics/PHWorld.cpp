@@ -390,10 +390,13 @@ void CPHWorld::FrameStep(dReal step)
     b_processing = true;
 
     start_time = Device.dwTimeGlobal; // - u32(m_frame_time*1000);
+
     if (g_bDebugDumpPhysicsStep && it_number > 20)
-        Msg("!!!TOO MANY PHYSICS STEPS PER FRAME = %u !!!", it_number);
+        Msg("!!!TOO MANY PHYSICS STEPS PER FRAME = {} !!!", it_number);
+
     for (UINT i = 0; i < it_number; ++i)
         Step();
+
     b_processing = false;
 }
 

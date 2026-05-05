@@ -48,7 +48,7 @@ public:
         pool.acquire_scoped(first_base_cap);
     }
 
-    [[nodiscard]] str_value* insert(gsl::czstring str);
+    [[nodiscard]] str_value* insert(std::string_view str);
     void clean();
     [[nodiscard]] gsl::index stat_economy();
 
@@ -56,11 +56,9 @@ public:
     void dump(std::FILE& f);
 };
 
-str_value* str_container_impl::insert(gsl::czstring str)
+str_value* str_container_impl::insert(std::string_view str)
 {
-    const std::string_view sv{str};
-    const auto xxh = xxh::XXH3_64bits(sv.data(), sv.size());
-
+    const auto xxh = xxh::XXH3_64bits(str.data(), str.size());
     const auto obj = pool.acquire_scoped(base_cap);
     auto& map = obj.value;
 
@@ -68,11 +66,12 @@ str_value* str_container_impl::insert(gsl::czstring str)
     if (iter != map.cend())
         return iter->second.get();
 
-    auto elem = val_t{static_cast<str_value*>(xr_malloc(gsl::index{sizeof(str_value)} + std::ssize(sv) + 1))};
+    auto elem = val_t{static_cast<str_value*>(xr_malloc(gsl::index{sizeof(str_value)} + std::ssize(str) + 1))};
     elem->dwReference = 0;
-    elem->dwLength = std::ssize(sv);
+    elem->dwLength = std::ssize(str);
     elem->hash = xxh;
-    std::memcpy(elem->value, sv.data(), sv.size() + 1);
+    std::memcpy(&elem->value[0], str.data(), str.size());
+    elem->value[str.size()] = '\0';
 
     return map.emplace(xxh, std::move(elem)).first->second.get();
 }
@@ -128,7 +127,7 @@ str_container_impl impl;
 } // namespace
 } // namespace xr
 
-str_value* str_container::dock(gsl::czstring value) { return xr::impl.insert(value); }
+str_value* str_container::dock(std::string_view value) { return xr::impl.insert(value); }
 void str_container::clean() { xr::impl.clean(); }
 gsl::index str_container::stat_economy() { return xr::impl.stat_economy(); }
 

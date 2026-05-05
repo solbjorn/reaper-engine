@@ -19,7 +19,7 @@ CScriptBinderObject::~CScriptBinderObject()
 {
 #ifdef DEBUG
     if (m_object)
-        Msg("Destroying binded object %s", m_object->Name());
+        Msg("Destroying binded object {}", m_object->Name());
 #endif
 }
 

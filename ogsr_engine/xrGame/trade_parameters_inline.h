@@ -73,7 +73,7 @@ IC const CTradeFactors& CTradeParameters::factors(_action_type type, const share
 template <typename _action_type>
 IC void CTradeParameters::process(_action_type type, CInifile& ini_file, const shared_str& section)
 {
-    R_ASSERT2(ini_file.section_exist(section), make_string("cannot find section %s", *section));
+    R_ASSERT2(ini_file.section_exist(section), xr::format("cannot find section {}", section));
 
     CTradeActionParameters& _action = action(type);
     _action.clear();
@@ -96,7 +96,8 @@ IC void CTradeParameters::process(_action_type type, CInifile& ini_file, const s
             string256 str;
             min_condition = (float)atof(_GetItem(*(*I).second, 2, str));
         }
-        _action.enable((*I).first, CTradeFactors((float)atof(_GetItem(*(*I).second, 0, temp0)), (float)atof(_GetItem(*(*I).second, 1, temp1)), min_condition, false));
+        _action.enable((*I).first,
+                       CTradeFactors((float)atof(_GetItem(*(*I).second, 0, temp0)), (float)atof(_GetItem(*(*I).second, 1, temp1)), min_condition, false));
     }
 }
 

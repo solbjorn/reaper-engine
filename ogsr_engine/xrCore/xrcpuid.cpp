@@ -66,27 +66,27 @@ _processor_info::_processor_info()
 
 void _processor_info::print_topology()
 {
-    Msg("* NUMA nodes: %zu", topo.numa_count());
+    Msg("* NUMA nodes: {}", topo.numa_count());
 
     const bool hybrid = topo.is_hybrid();
-    Msg("* Hybrid architecture: %s", hybrid ? "yes" : "no");
-    Msg("* Physical cores: %zu", topo.core_count());
+    Msg("* Hybrid architecture: {}", hybrid ? "yes" : "no");
+    Msg("* Physical cores: {}", topo.core_count());
 
     if (hybrid)
     {
-        Msg("*  Performance cores: %zu", topo.cpu_kind_counts[0]);
-        Msg("*  Efficiency cores: %zu", topo.cpu_kind_counts[1]);
+        Msg("*  Performance cores: {}", topo.cpu_kind_counts[0]);
+        Msg("*  Efficiency cores: {}", topo.cpu_kind_counts[1]);
     }
 
-    Msg("* Logical processors: %zu", topo.pu_count());
-    Msg("*  Container CPU quota: %g", topo.container_cpu_quota);
-    Msg("* Core groups: %zu", topo.group_count());
+    Msg("* Logical processors: {}", topo.pu_count());
+    Msg("*  Container CPU quota: {}", topo.container_cpu_quota);
+    Msg("* Core groups: {}", topo.group_count());
 
     std::array<char, 256> out;
 
     for (const auto& group : topo.groups)
     {
-        Msg("*  Group %zu: NUMA %zu, kind: %s, SMT: %zu", group.index, group.numa_index,
+        Msg("*  Group {}: NUMA {}, kind: {}, SMT: {}", group.index, group.numa_index,
             group.cpu_kind == tmc::topology::cpu_kind::PERFORMANCE ? "performance" : "efficiency", group.smt_level);
 
         gsl::zstring pos = out.data() + xr_sprintf(out.data(), out.size(), "*   Cores: %zu", group.core_indexes[0]);
@@ -97,7 +97,7 @@ void _processor_info::print_topology()
         Log(out.data());
     }
 
-    Msg("* TMC threads: %zu (main) + %zu (ST)", tmc::cpu_executor().thread_count(), xr::tmc_cpu_st_executor().thread_count());
+    Msg("* TMC threads: {} (main) + {} (ST)", tmc::cpu_executor().thread_count(), xr::tmc_cpu_st_executor().thread_count());
 
     if (!hybrid)
         return;
@@ -178,7 +178,7 @@ void _processor_info::MTCPULoad()
 
     if (!NT_SUCCESS(m_pNtQuerySystemInformation(SystemProcessorPerformanceInformation, perfomanceInfo.get(),
                                                 sizeof(SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION) * m_dwNumberOfProcessors, nullptr)))
-        Msg("!![%s] Can't get NtQuerySystemInformation", __FUNCTION__);
+        Msg("!![{}] Can't get NtQuerySystemInformation", __FUNCTION__);
 
     DWORD dwTickCount = GetTickCount();
     if (!m_dwCount)

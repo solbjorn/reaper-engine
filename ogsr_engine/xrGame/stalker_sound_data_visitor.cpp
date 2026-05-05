@@ -7,7 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_sound_data_visitor.h"
+
 #include "ai/stalker/ai_stalker.h"
 #include "stalker_sound_data.h"
 #include "agent_manager.h"
@@ -18,7 +20,7 @@
 #include "enemy_manager.h"
 #include "danger_manager.h"
 
-CStalkerSoundDataVisitor::~CStalkerSoundDataVisitor() {}
+CStalkerSoundDataVisitor::~CStalkerSoundDataVisitor() = default;
 
 void CStalkerSoundDataVisitor::visit(CStalkerSoundData* data)
 {
@@ -47,12 +49,5 @@ void CStalkerSoundDataVisitor::visit(CStalkerSoundData* data)
     if (!object().g_Alive())
         return;
 
-    //Msg("%s : Adding fiction hit by sound info from stalker %s", *object().cName(), *data->object().cName());
-
     object().memory().make_object_visible_somewhen(data->object().memory().enemy().selected());
-
-    //	const MemorySpace::CHitObject	*m = data->object().memory().hit().hit(data->object().memory().enemy().selected());
-    //	if (!m)
-    //		return;
-    //	object().memory().hit().add		(*m);
 }

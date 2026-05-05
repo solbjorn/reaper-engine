@@ -7,7 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "xrServer_Objects_ALife_Monsters.h"
+
 #include "alife_simulator.h"
 #include "specific_character.h"
 #include "ai_space.h"
@@ -25,7 +27,8 @@ void CSE_ALifeTraderAbstract::spawn_supplies()
 {
     CSE_ALifeDynamicObject* dynamic_object = smart_cast<CSE_ALifeDynamicObject*>(this);
     VERIFY(dynamic_object);
-    CSE_Abstract* abstract = dynamic_object->alife().spawn_item("device_pda", base()->o_Position, dynamic_object->m_tNodeID, dynamic_object->m_tGraphID, base()->ID);
+    CSE_Abstract* abstract =
+        dynamic_object->alife().spawn_item("device_pda", base()->o_Position, dynamic_object->m_tNodeID, dynamic_object->m_tGraphID, base()->ID);
     CSE_ALifeItemPDA* pda = smart_cast<CSE_ALifeItemPDA*>(abstract);
     pda->m_original_owner = base()->ID;
 
@@ -38,9 +41,9 @@ void CSE_ALifeTraderAbstract::spawn_supplies()
 
     if (m_SpecificCharacter.size())
     {
-        //если в custom data объекта есть
-        //секция [dont_spawn_character_supplies]
-        //то не вызывать spawn из selected_char.SupplySpawn()
+        // если в custom data объекта есть
+        // секция [dont_spawn_character_supplies]
+        // то не вызывать spawn из selected_char.SupplySpawn()
         bool specific_character_supply = true;
 
         if (xr_strlen(dynamic_object->m_ini_string))
@@ -61,49 +64,7 @@ void CSE_ALifeTraderAbstract::spawn_supplies()
     }
 }
 
-void CSE_ALifeTraderAbstract::vfInitInventory()
-{
-    //	m_fCumulativeItemMass		= 0.f;
-    //	m_iCumulativeItemVolume		= 0;
-}
-
-#if 0 // def DEBUG
-bool CSE_ALifeTraderAbstract::check_inventory_consistency	()
-{
-	int							volume = 0;
-	float						mass = 0.f;
-	xr_vector<ALife::_OBJECT_ID>::const_iterator	I = base()->children.begin();
-	xr_vector<ALife::_OBJECT_ID>::const_iterator	E = base()->children.end();
-	for ( ; I != E; ++I) {
-		CSE_ALifeDynamicObject	*object = ai().alife().objects().object(*I,true);
-		if (!object)
-			continue;
-
-		CSE_ALifeInventoryItem	*item = smart_cast<CSE_ALifeInventoryItem*>(object);
-		if (!item)
-			continue;
-
-		volume					+= item->m_iVolume;
-		mass					+= item->m_fMass;
-	}
-
-	R_ASSERT2					(fis_zero(m_fCumulativeItemMass - mass,EPS_L),base()->name_replace());
-	if (!fis_zero(m_fCumulativeItemMass - mass,EPS_L))
-		return					(false);
-
-	R_ASSERT2					(m_iCumulativeItemVolume == volume,base()->name_replace());
-	if (m_iCumulativeItemVolume != volume)
-		return					(false);
-
-#ifdef DEBUG
-//	if (psAI_Flags.test(aiALife)) {
-//		Msg						("[LSS] [%s] inventory is consistent [%f][%d]",base()->name_replace(),mass,volume);
-//	}
-#endif
-
-	return						(true);
-}
-#endif
+void CSE_ALifeTraderAbstract::vfInitInventory() {}
 
 void CSE_ALifeDynamicObject::attach(CSE_ALifeInventoryItem* tpALifeInventoryItem, bool bALifeRequest, bool bAddChildren)
 {
@@ -169,15 +130,10 @@ void add_online_impl(CSE_ALifeDynamicObject* object, const bool& update_registri
         object->alife().server().entity_Destroy(l_tpAbstract);
 
 #ifdef DEBUG
-        //		if (psAI_Flags.test(aiALife))
-        //			Msg					("[LSS] Spawning item
-        //[%s][%s][%d]",l_tpALifeInventoryItem->base()->name_replace(),*l_tpALifeInventoryItem->base()->s_name,l_tpALifeDynamicObject->ID);
-        Msg("[LSS][%d] Going online [%d][%s][%d] with parent [%d][%s] on '%s'", Device.dwFrame, Device.dwTimeGlobal, l_tpALifeInventoryItem->base()->name_replace(),
-            l_tpALifeInventoryItem->base()->ID, object->ID, object->name_replace(), "*SERVER*");
+        Msg("[LSS][{}] Going online [{}][{}][{}] with parent [{}][{}] on '{}'", Device.dwFrame, Device.dwTimeGlobal,
+            l_tpALifeInventoryItem->base()->name_replace(), l_tpALifeInventoryItem->base()->ID, object->ID, object->name_replace(), "*SERVER*");
 #endif
 
-        //		R_ASSERT3								(ai().level_graph().valid_vertex_id(l_tpALifeDynamicObject->m_tNodeID),"Invalid vertex for object
-        //",l_tpALifeInventoryItem->name_replace());
         l_tpALifeDynamicObject->o_Position = object->o_Position;
         l_tpALifeDynamicObject->m_tNodeID = object->m_tNodeID;
         object->alife().server().Process_spawn(tNetPacket, clientID, FALSE, l_tpALifeInventoryItem->base());
@@ -210,10 +166,9 @@ void add_offline_impl(CSE_ALifeDynamicObject* object, const xr_vector<ALife::_OB
 
         CSE_ALifeInventoryItem* inventory_item = smart_cast<CSE_ALifeInventoryItem*>(child);
         VERIFY2(inventory_item, "Non inventory item object has parent?!");
+
 #ifdef DEBUG
-        //		if (psAI_Flags.test(aiALife))
-        //			Msg					("[LSS] Destroying item [%s][%s][%d]",inventory_item->base()->name_replace(),*inventory_item->base()->s_name,inventory_item->base()->ID);
-        Msg("[LSS][%d] Going offline [%d][%s][%d] with parent [%d][%s] on '%s'", Device.dwFrame, Device.dwTimeGlobal, inventory_item->base()->name_replace(),
+        Msg("[LSS][{}] Going offline [{}][{}][{}] with parent [{}][{}] on '{}'", Device.dwFrame, Device.dwTimeGlobal, inventory_item->base()->name_replace(),
             inventory_item->base()->ID, object->ID, object->name_replace(), "*SERVER*");
 #endif
 
@@ -230,10 +185,12 @@ void add_offline_impl(CSE_ALifeDynamicObject* object, const xr_vector<ALife::_OB
 
 #ifdef DEBUG
         if (!child->client_data.empty())
-            Msg("CSE_ALifeTraderAbstract::add_offline: client_data is cleared for [%d][%s]", child->ID, child->name_replace());
+            Msg("CSE_ALifeTraderAbstract::add_offline: client_data is cleared for [{}][{}]", child->ID, child->name_replace());
 #endif // DEBUG
+
         if (!child->keep_saved_data_anyway())
             child->client_data.clear();
+
         object->alife().graph().add(child, child->m_tGraphID, false);
         object->alife().graph().attach(*object, inventory_item, child->m_tGraphID, true);
     }

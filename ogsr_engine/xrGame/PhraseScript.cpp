@@ -52,7 +52,7 @@ bool CPhraseScript::CheckInfo(const CInventoryOwner* pOwner) const
         {
 #ifdef DEBUG
             if (psAI_Flags.test(aiDialogs))
-                Msg("----rejected: [%s] has info %s", pOwner->Name(), info.c_str());
+                Msg("----rejected: [{}] has info {}", pOwner->Name(), info);
 #endif
 
             return false;
@@ -65,7 +65,7 @@ bool CPhraseScript::CheckInfo(const CInventoryOwner* pOwner) const
         {
 #ifdef DEBUG
             if (psAI_Flags.test(aiDialogs))
-                Msg("----rejected: [%s] dont has info %s", pOwner->Name(), info.c_str());
+                Msg("----rejected: [{}] dont has info {}", pOwner->Name(), info);
 #endif
 
             return false;
@@ -94,7 +94,7 @@ bool CPhraseScript::Precondition(const CGameObject* pSpeakerGO, [[maybe_unused]]
     {
 #ifdef DEBUG
         if (psAI_Flags.test(aiDialogs))
-            Msg("dialog [%s] phrase[%s] rejected by CheckInfo", dialog_id, phrase_id);
+            Msg("dialog [{}] phrase[{}] rejected by CheckInfo", dialog_id, phrase_id);
 #endif
 
         return false;
@@ -116,8 +116,10 @@ bool CPhraseScript::Precondition(const CGameObject* pSpeakerGO, [[maybe_unused]]
             xr_string ConditionString{Cond.c_str()}; //-V808
             ConditionString = "return " + ConditionString;
 
-            sol::function ret_func = loadstring_function(ConditionString.c_str()); // Создаём функцию из строки через loadstring
-            ASSERT_FMT_DBG(ret_func, "Loadstring returns nil for code: %s", ConditionString.c_str()); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
+            // Создаём функцию из строки через loadstring
+            sol::function ret_func = loadstring_function(ConditionString.c_str());
+            // Если это не функция, значит loadstring вернул nil и что-то пошло не так
+            ASSERT_FMT_DBG(ret_func, "Loadstring returns nil for code: {}", ConditionString);
 
             // Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
             // <precondition>my_script.test_func(123, true, nil, ...)</precondition>
@@ -130,7 +132,7 @@ bool CPhraseScript::Precondition(const CGameObject* pSpeakerGO, [[maybe_unused]]
         {
 #ifdef DEBUG
             if (psAI_Flags.test(aiDialogs))
-                Msg("dialog [%s] phrase[%s] rejected by script predicate", dialog_id, phrase_id);
+                Msg("dialog [{}] phrase[{}] rejected by script predicate", dialog_id, phrase_id);
 #endif
 
             break;
@@ -158,8 +160,10 @@ void CPhraseScript::Action(const CGameObject* pSpeakerGO, LPCSTR dialog_id, LPCS
             xr_string ActionString{Act.c_str()}; //-V808
             ActionString = "return " + ActionString;
 
-            sol::function ret_func = loadstring_function(ActionString.c_str()); // Создаём функцию из строки через loadstring
-            ASSERT_FMT_DBG(ret_func, "Loadstring returns nil for code: %s", ActionString.c_str()); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
+            // Создаём функцию из строки через loadstring
+            sol::function ret_func = loadstring_function(ActionString.c_str());
+            // Если это не функция, значит loadstring вернул nil и что-то пошло не так
+            ASSERT_FMT_DBG(ret_func, "Loadstring returns nil for code: {}", ActionString);
 
             // Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
             // <action>my_script.test_func(123, true, nil, ...)</action>
@@ -172,7 +176,8 @@ void CPhraseScript::Action(const CGameObject* pSpeakerGO, LPCSTR dialog_id, LPCS
     TransferInfo(smart_cast<const CInventoryOwner*>(pSpeakerGO));
 }
 
-bool CPhraseScript::Precondition(const CGameObject* pSpeakerGO1, const CGameObject* pSpeakerGO2, LPCSTR dialog_id, LPCSTR phrase_id, LPCSTR next_phrase_id) const
+bool CPhraseScript::Precondition(const CGameObject* pSpeakerGO1, const CGameObject* pSpeakerGO2, LPCSTR dialog_id, LPCSTR phrase_id,
+                                 LPCSTR next_phrase_id) const
 {
     bool predicate_result = true;
 
@@ -180,7 +185,7 @@ bool CPhraseScript::Precondition(const CGameObject* pSpeakerGO1, const CGameObje
     {
 #ifdef DEBUG
         if (psAI_Flags.test(aiDialogs))
-            Msg("dialog [%s] phrase[%s] rejected by CheckInfo", dialog_id, phrase_id);
+            Msg("dialog [{}] phrase[{}] rejected by CheckInfo", dialog_id, phrase_id);
 #endif
 
         return false;
@@ -202,8 +207,10 @@ bool CPhraseScript::Precondition(const CGameObject* pSpeakerGO1, const CGameObje
             xr_string ConditionString{Cond.c_str()}; //-V808
             ConditionString = "return " + ConditionString;
 
-            sol::function ret_func = loadstring_function(ConditionString.c_str()); // Создаём функцию из строки через loadstring
-            ASSERT_FMT_DBG(ret_func, "Loadstring returns nil for code: %s", ConditionString.c_str()); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
+            // Создаём функцию из строки через loadstring
+            sol::function ret_func = loadstring_function(ConditionString.c_str());
+            // Если это не функция, значит loadstring вернул nil и что-то пошло не так
+            ASSERT_FMT_DBG(ret_func, "Loadstring returns nil for code: {}", ConditionString);
 
             // Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
             // <precondition>my_script.test_func(123, true, nil, ...)</precondition>
@@ -216,7 +223,7 @@ bool CPhraseScript::Precondition(const CGameObject* pSpeakerGO1, const CGameObje
         {
 #ifdef DEBUG
             if (psAI_Flags.test(aiDialogs))
-                Msg("dialog [%s] phrase[%s] rejected by script predicate", dialog_id, phrase_id);
+                Msg("dialog [{}] phrase[{}] rejected by script predicate", dialog_id, phrase_id);
 #endif
 
             break;
@@ -246,8 +253,10 @@ void CPhraseScript::Action(const CGameObject* pSpeakerGO1, const CGameObject* pS
             xr_string ActionString{Act.c_str()}; //-V808
             ActionString = "return " + ActionString;
 
-            sol::function ret_func = loadstring_function(ActionString.c_str()); // Создаём функцию из строки через loadstring
-            ASSERT_FMT_DBG(ret_func, "Loadstring returns nil for code: %s", ActionString.c_str()); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
+            // Создаём функцию из строки через loadstring
+            sol::function ret_func = loadstring_function(ActionString.c_str());
+            // Если это не функция, значит loadstring вернул nil и что-то пошло не так
+            ASSERT_FMT_DBG(ret_func, "Loadstring returns nil for code: {}", ActionString);
 
             // Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
             // <action>my_script.test_func(123, true, nil, ...)</action>
@@ -278,8 +287,10 @@ LPCSTR CPhraseScript::GetScriptText(LPCSTR str_to_translate, const CGameObject* 
         xr_string ScriptTextString{m_sScriptTextFunc.c_str()}; //-V808
         ScriptTextString = "return " + ScriptTextString;
 
-        sol::function ret_func = loadstring_function(ScriptTextString.c_str()); // Создаём функцию из строки через loadstring
-        ASSERT_FMT_DBG(ret_func, "Loadstring returns nil for code: %s", ScriptTextString.c_str()); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
+        // Создаём функцию из строки через loadstring
+        sol::function ret_func = loadstring_function(ScriptTextString.c_str());
+        // Если это не функция, значит loadstring вернул nil и что-то пошло не так
+        ASSERT_FMT_DBG(ret_func, "Loadstring returns nil for code: {}", ScriptTextString);
 
         // Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
         // <script_text>my_script.test_func(123, true, nil, ...)</script_text>

@@ -59,11 +59,10 @@ public:
         if (d_cb)
             d_cb(owner, param, m, i);
         m = particles[--p_count]; // не менять правило удаления !!! (dependence ParticleGroup)
-        // Msg( "pDel() : %u" , p_count );
     }
 
-    IC BOOL Add(const pVector& pos, const pVector& posB, const pVector& size, const pVector& rot, const pVector& vel, u32 color, const float age = 0.0f, u16 frame = 0,
-                u16 flags = 0)
+    IC BOOL Add(const pVector& pos, const pVector& posB, const pVector& size, const pVector& rot, const pVector& vel, u32 color, const float age = 0.0f,
+                u16 frame = 0, u16 flags = 0)
     {
         if (p_count >= max_particles)
             return FALSE;
@@ -86,7 +85,7 @@ public:
             if (b_cb)
                 b_cb(owner, param, P, p_count);
             p_count++;
-            // Msg( "pAdd() : %u" , p_count );
+
             return TRUE;
         }
     }

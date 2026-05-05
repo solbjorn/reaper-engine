@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "xrServer.h"
+
 #include "game_sv_single.h"
 #include "alife_simulator.h"
 #include "xrserver_objects.h"
@@ -28,16 +29,18 @@ void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, u
 
     // Parse message
     u16 id_dest = ID;
+
 #ifdef DEBUG
-    Msg("sv destroy object %s [%d]", ent_name_safe(id_dest).c_str(), Device.dwFrame);
+    Msg("sv destroy object {} [{}]", ent_name_safe(id_dest), Device.dwFrame);
 #endif
 
     CSE_Abstract* e_dest = game->get_entity_from_eid(id_dest); // кто должен быть уничтожен
     if (!e_dest)
     {
 #ifdef DEBUG
-        Msg("!SV:ge_destroy: [%d] not found on server", id_dest);
+        Msg("!SV:ge_destroy: [{}] not found on server", id_dest);
 #endif
+
         return;
     }
 

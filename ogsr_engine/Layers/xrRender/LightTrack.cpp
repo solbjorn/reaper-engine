@@ -125,7 +125,7 @@ void CROS_impl::update(IRenderable* O)
     {
         if (!skip)
         {
-            Msg("~ NaN position for obj id=%d sect [%s] name [%s]. Skip!", _object->ID(), _object->cNameSect().c_str(), _object->cName().c_str());
+            Msg("~ NaN position for obj id={} sect [{}] name [{}]. Skip!", _object->ID(), _object->cNameSect(), _object->cName());
             skip = true;
         }
 
@@ -205,14 +205,12 @@ void CROS_impl::update(IRenderable* O)
             value.hemi_cube[i] = std::max(value.hemi_cube[i], minHemiValue);
         }
 
-        //		lacc.x		*= desc.lmap_color.x;
-        //		lacc.y		*= desc.lmap_color.y;
-        //		lacc.z		*= desc.lmap_color.z;
-        //		Msg				("- rgb[%f,%f,%f]",lacc.x,lacc.y,lacc.z);
         accum.add(lacc);
     }
     else
+    {
         accum.set(.1f, .1f, .1f);
+    }
 
     // clamp(hemi_value, 0.0f, 1.0f); //Possibly can change hemi value
     if (bFirstTime)
@@ -323,7 +321,8 @@ void CROS_impl::calc_sky_hemi_value(Fvector& position, CObject* _object)
         sky_rays_uptodate = _min(sky_rays_uptodate, lt_hemisamples);
 
         for (u32 it = 0; it < (u32)ps_r2_dhemi_count; it++)
-        { // five samples per one frame
+        {
+            // five samples per one frame
             u32 sample = 0;
             if (result_count < lt_hemisamples)
             {
@@ -339,14 +338,11 @@ void CROS_impl::calc_sky_hemi_value(Fvector& position, CObject* _object)
             // take sample
             Fvector direction;
             direction.set(hdir[sample][0], hdir[sample][1], hdir[sample][2]).normalize();
-            //.			result[sample]	=	!g_pGameLevel->ObjectSpace.RayTest(position,direction,50.f,collide::rqtBoth,&cache[sample],_object);
             result[sample] = !g_pGameLevel->ObjectSpace.RayTest(position, direction, 50.f, collide::rqtStatic, &cache[sample], _object);
-            //	Msg				("%d:-- %s",sample,result[sample]?"true":"false");
         }
     }
+
     // hemi & sun: update and smooth
-    //	float	l_f				=	dt*lt_smooth;
-    //	float	l_i				=	1.f-l_f;
     int _pass = 0;
     for (int it = 0; it < result_count; it++)
     {

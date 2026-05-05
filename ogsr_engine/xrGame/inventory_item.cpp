@@ -54,15 +54,17 @@ CInventoryItem::~CInventoryItem()
 {
     ASSERT_FMT((int)m_slots.size() >= 0, "m_slots.size() returned negative value inside destructor!"); // alpet: для детекта повреждения объекта
 
-    bool B_GOOD = (!m_pCurrentInventory || (std::find(m_pCurrentInventory->m_all.begin(), m_pCurrentInventory->m_all.end(), this) == m_pCurrentInventory->m_all.end()));
+    bool B_GOOD =
+        (!m_pCurrentInventory || (std::find(m_pCurrentInventory->m_all.begin(), m_pCurrentInventory->m_all.end(), this) == m_pCurrentInventory->m_all.end()));
     if (!B_GOOD)
     {
         CObject* p = object().H_Parent();
-        Msg("inventory ptr is [%s]", m_pCurrentInventory ? "not-null" : "null");
+        Msg("inventory ptr is [{}]", m_pCurrentInventory ? "not-null" : "null");
         if (p)
-            Msg("parent name is [%s]", p->cName().c_str());
+            Msg("parent name is [{}]", p->cName());
 
-        Msg("! ERROR item_id[%d] H_Parent=[%s][%d] [%u]", object().ID(), p ? p->cName().c_str() : "none", p ? p->ID() : -1, Device.dwFrame);
+        Msg("! ERROR item_id[{}] H_Parent=[{}][{}] [{}]", object().ID(), p ? std::string_view{p->cName()} : std::string_view{"none"}, p ? p->ID() : -1,
+            Device.dwFrame);
     }
 }
 
@@ -176,10 +178,12 @@ void CInventoryItem::SetSlot(u8 slot)
         }
 
     if (slot >= (u8)NO_ACTIVE_SLOT) // u8 used for code compatibility
+    {
         selected_slot = NO_ACTIVE_SLOT;
+    }
     else
     {
-        Msg("!#ERROR: slot %d not acceptable for object %s (%s) with slots {%s}", slot, object().Name_script(), Name(), m_slots_sect);
+        Msg("!#ERROR: slot {} not acceptable for object {} ({}) with slots {{{}}}", slot, object().Name_script(), Name(), m_slots_sect);
         return;
     }
 }
@@ -391,7 +395,7 @@ void CInventoryItem::load(IReader& packet)
         else
         {
             std::ignore = packet.r_u8();
-            Msg("! [%s]: move %s from belt, because belt = false", __FUNCTION__, object().cName().c_str());
+            Msg("! [{}]: move {} from belt, because belt = false", __FUNCTION__, object().cName());
             m_eItemPlace = eItemPlaceRuck;
         }
     }

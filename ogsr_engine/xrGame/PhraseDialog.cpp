@@ -91,7 +91,8 @@ bool CPhraseDialog::SayPhrase(DIALOG_SHARED_PTR& phrase_dialog, const shared_str
             CPhraseGraph::CVertex* next_phrase_vertex = phrase_dialog->data()->m_PhraseGraph.vertex(edge.vertex_id());
             THROW(next_phrase_vertex);
             shared_str next_phrase_id = next_phrase_vertex->vertex_id();
-            if (next_phrase_vertex->data()->m_PhraseScript.Precondition(pSpeakerGO2, pSpeakerGO1, *phrase_dialog->m_DialogId, phrase_id.c_str(), next_phrase_id.c_str()))
+            if (next_phrase_vertex->data()->m_PhraseScript.Precondition(pSpeakerGO2, pSpeakerGO1, *phrase_dialog->m_DialogId, phrase_id.c_str(),
+                                                                        next_phrase_id.c_str()))
             {
                 phrase_dialog->m_PhraseVector.push_back(next_phrase_vertex->data());
 #ifdef DEBUG
@@ -99,13 +100,14 @@ bool CPhraseDialog::SayPhrase(DIALOG_SHARED_PTR& phrase_dialog, const shared_str
                 {
                     LPCSTR phrase_text = next_phrase_vertex->data()->GetText();
                     shared_str id = next_phrase_vertex->data()->GetID();
-                    Msg("----added phrase text [%s]phrase_id=[%s] id=[%s] to dialog [%s]", phrase_text, phrase_id.c_str(), id.c_str(), *phrase_dialog->m_DialogId.c_str());
+
+                    Msg("----added phrase text [{}]phrase_id=[{}] id=[{}] to dialog [{}]", phrase_text, phrase_id, id, phrase_dialog->m_DialogId);
                 }
 #endif
             }
         }
 
-        R_ASSERT2(!phrase_dialog->m_PhraseVector.empty(), make_string("No available phrase to say, dialog[%s]", *phrase_dialog->m_DialogId));
+        R_ASSERT2(!phrase_dialog->m_PhraseVector.empty(), xr::format("No available phrase to say, dialog[{}]", phrase_dialog->m_DialogId));
 
         // упорядочить списко по убыванию благосклонности
         std::sort(phrase_dialog->m_PhraseVector.begin(), phrase_dialog->m_PhraseVector.end(), PhraseGoodwillPred);
@@ -157,7 +159,7 @@ void CPhraseDialog::Load(shared_str dialog_id)
 
             sol::function lua_function;
             const bool function_exists = ai().script_engine().function(data()->m_sInitFunction.c_str(), lua_function);
-            ASSERT_FMT_DBG(function_exists, "!![%s] Cannot find precondition [%s]", __FUNCTION__, data()->m_sInitFunction.c_str());
+            ASSERT_FMT_DBG(function_exists, "!![{}] Cannot find precondition [{}]", __FUNCTION__, data()->m_sInitFunction);
 
             if (function_exists)
                 lua_function(this);
@@ -198,7 +200,7 @@ void CPhraseDialog::load_shared(LPCSTR)
 
         sol::function lua_function;
         const bool function_exists = ai().script_engine().function(data()->m_sInitFunction.c_str(), lua_function);
-        ASSERT_FMT_DBG(function_exists, "!![%s] Cannot find precondition [%s]", __FUNCTION__, data()->m_sInitFunction.c_str());
+        ASSERT_FMT_DBG(function_exists, "!![{}] Cannot find precondition [{}]", __FUNCTION__, data()->m_sInitFunction);
 
         if (function_exists)
             lua_function(this);
@@ -262,7 +264,8 @@ void CPhraseDialog::AddPhrase(CUIXml* pXml, pugi::xml_node phrase_node, const sh
     {
         LPCSTR next_phrase_id_str = pXml->Read(phrase_node, "next", i, "");
         const auto next_phrase_node = pXml->NavigateToNodeWithAttribute("phrase", "id", next_phrase_id_str);
-        ASSERT_FMT(next_phrase_node, "!!Can`t find next phrase with id: [%s]! Phrase text: [%s]. Phrase dialog [%s]", next_phrase_id_str, sText, m_DialogId.c_str());
+        ASSERT_FMT(next_phrase_node, "!!Can`t find next phrase with id: [%s]! Phrase text: [%s]. Phrase dialog [%s]", next_phrase_id_str, sText,
+                   m_DialogId.c_str());
 
         AddPhrase(pXml, next_phrase_node, shared_str{next_phrase_id_str}, phrase_id);
     }

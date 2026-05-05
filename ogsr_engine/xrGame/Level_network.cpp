@@ -34,10 +34,10 @@ tmc::task<void> CLevel::remove_objects()
     xr::render_memory_usage usage;
     Device.m_pRender->ResourcesGetMemoryUsage(usage);
 
-    Msg("~ ObjectResources unload...");
-    Msg("~ ObjectResources - base: %zd, %zd Kb", usage.c_base, usage.m_base / 1024);
-    Msg("~ ObjectResources - lmap: %zd, %zd Kb", usage.c_lmaps, usage.m_lmaps / 1024);
-    Msg("~ ObjectResources - Lua: %zd Kb", usage.lua / 1024);
+    Log("~ ObjectResources unload...");
+    Msg("~ ObjectResources - base: {}, {} Kb", usage.c_base, usage.m_base / 1024);
+    Msg("~ ObjectResources - lmap: {}, {} Kb", usage.c_lmaps, usage.m_lmaps / 1024);
+    Msg("~ ObjectResources - Lua: {} Kb", usage.lua / 1024);
 
     co_await Game().reset_ui();
 
@@ -101,10 +101,10 @@ tmc::task<void> CLevel::remove_objects()
 
     Device.m_pRender->ResourcesGetMemoryUsage(usage);
 
-    Msg("~ ObjectResources unload completed!");
-    Msg("~ ObjectResources - base: %zd, %zd Kb", usage.c_base, usage.m_base / 1024);
-    Msg("~ ObjectResources - lmap: %zd, %zd Kb", usage.c_lmaps, usage.m_lmaps / 1024);
-    Msg("~ ObjectResources - Lua: %zd Kb", usage.lua / 1024);
+    Log("~ ObjectResources unload completed!");
+    Msg("~ ObjectResources - base: {}, {} Kb", usage.c_base, usage.m_base / 1024);
+    Msg("~ ObjectResources - lmap: {}, {} Kb", usage.c_lmaps, usage.m_lmaps / 1024);
+    Msg("~ ObjectResources - Lua: {} Kb", usage.lua / 1024);
 
     ai().script_engine().collect_all_garbage();
 
@@ -121,7 +121,7 @@ tmc::task<void> CLevel::remove_objects()
 
 tmc::task<void> CLevel::net_Stop()
 {
-    Msg("- Disconnect");
+    Log("- Disconnect");
     bReady = false;
 
     m_bGameConfigStarted = FALSE;
@@ -166,7 +166,7 @@ void CLevel::ClientSave()
     {
         CObject* O = Objects.o_get_by_iterator(i);
         CGameObject* P = smart_cast<CGameObject*>(O);
-        // Msg( "save:iterating:%d:%s", P->ID(), *P->cName() );
+
         if (P && !P->getDestroy() && P->net_SaveRelevant())
         {
             NET_Packet Packet;
@@ -278,7 +278,7 @@ tmc::task<bool> CLevel::Connect2Server(gsl::czstring options)
         //-----------------------------------------
     }
 
-    Msg("%c client : connection %s - <%s>", m_bConnectResult ? '*' : '!', m_bConnectResult ? "accepted" : "rejected", m_sConnectResult.c_str());
+    Msg("{} client : connection {} - <{}>", m_bConnectResult ? '*' : '!', m_bConnectResult ? "accepted" : "rejected", m_sConnectResult);
 
     if (!m_bConnectResult)
     {

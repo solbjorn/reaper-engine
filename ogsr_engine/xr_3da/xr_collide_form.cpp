@@ -14,7 +14,10 @@
 
 namespace
 {
-inline float DET(const Fmatrix& a) { return ((a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) + a._13 * (a._21 * a._32 - a._22 * a._31))); }
+inline float DET(const Fmatrix& a)
+{
+    return ((a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) + a._13 * (a._21 * a._32 - a._22 * a._31)));
+}
 } // namespace
 
 using namespace collide;
@@ -137,7 +140,7 @@ void CCF_Skeleton::BuildState()
         Fmatrix ME, T, TW;
         const Fmatrix& Mbone = K->LL_GetTransform(element.elem_id);
 
-        VERIFY(DET(Mbone) > EPS, (make_string("0 scale bone matrix, %d \n", element.elem_id) + dbg_object_full_dump_string(owner)).c_str());
+        VERIFY(DET(Mbone) > EPS, xr::format("0 scale bone matrix, {} \n{}", element.elem_id, dbg_object_full_dump_string(owner)));
 
         switch (element.type)
         {
@@ -154,12 +157,13 @@ void CCF_Skeleton::BuildState()
             // check matrix validity
             if (!b)
             {
-                Msg("! ERROR: invalid bone xform . Bone disabled.");
-                Msg("! ERROR: bone_id=[%d], world_pos[%f,%f,%f]", element.elem_id, VPUSH(TW.c));
-                Msg("visual name %s", owner->cNameVisual().c_str());
-                Msg("object name %s", owner->cName().c_str());
+                Log("! ERROR: invalid bone xform . Bone disabled.");
+                Msg("! ERROR: bone_id=[{}], world_pos[{},{},{}]", element.elem_id, VPUSH(TW.c));
+                Msg("visual name {}", owner->cNameVisual());
+                Msg("object name {}", owner->cName());
+
 #ifdef DEBUG
-                Msg(dbg_object_full_dump_string(owner).c_str());
+                Log(dbg_object_full_dump_string(owner));
 #endif // #ifdef DEBUG
 
                 element.elem_id = std::numeric_limits<u16>::max(); //. hack - disable invalid bone

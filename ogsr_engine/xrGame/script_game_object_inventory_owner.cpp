@@ -389,7 +389,7 @@ void CScriptGameObject::TransferMoney(int money, CScriptGameObject* pForWho)
 
     if ((int(pOurOwner->get_money()) - money) < 0)
     {
-        Msg("!!Character [%s] does not have enought money!", this->cName().c_str());
+        Msg("!!Character [{}] does not have enought money!", this->cName());
         return;
     }
 

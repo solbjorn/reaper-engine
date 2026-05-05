@@ -44,14 +44,14 @@ CInifile* reload_system_ini()
         tmp = std::make_unique<CInifile>(fname, true, false);
         tmp->load_file(true);
 
-        Msg("~ Apply system_mods.ltx...");
+        Log("~ Apply system_mods.ltx...");
     }
 
     std::ignore = FS.update_path(fname, "$game_config$", "system.ltx");
 
     pSettings = xr_new<CInifile>(fname, true, false);
     pSettings->load_file(false, tmp.get());
-    CHECK_OR_EXIT(!pSettings->sections().empty(), make_string("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
+    CHECK_OR_EXIT(!pSettings->sections().empty(), xr::format("Cannot find file {}.\nReinstalling application may fix this problem.", fname));
 
     return pSettings;
 }
@@ -81,7 +81,7 @@ CInifile* reload_system_ini()
         // Не понятно почему так происходит, поэтому сделал тут обработку такой ситуации.
         if (F->elapsed() >= gsl::index{sizeof(u8)} && F->r_u8() == 0)
         {
-            Msg("!![%s] file [%s] is broken!", __FUNCTION__, szFileName);
+            Msg("!![{}] file [{}] is broken!", __FUNCTION__, szFileName);
 
             F.reset();
             FS.file_delete(szFileName);
@@ -101,22 +101,24 @@ void CScriptIniFile::script_register(sol::state_view& lua)
         "ini_file", sol::no_constructor, sol::call_constructor,
         sol::factories(sol::resolve<std::unique_ptr<CInifile>(gsl::czstring, bool)>(&initialize_ini_file),
                        sol::resolve<std::unique_ptr<CInifile>(gsl::czstring)>(&initialize_ini_file)),
-        "section_exist", &::section_exist, "line_exist", &::line_exist, "line_count", sol::resolve<gsl::index(gsl::czstring)>(&CInifile::line_count), "remove_line",
-        &CInifile::remove_line, "remove_section", &CInifile::remove_section, "get_as_string", &CInifile::get_as_string, "name", &CInifile::fname, "save", &CInifile::save_as,
-        "iterate_sections", &iterate_sections, "readonly", &CInifile::bReadOnly,
+        "section_exist", &::section_exist, "line_exist", &::line_exist, "line_count", sol::resolve<gsl::index(gsl::czstring)>(&CInifile::line_count),
+        "remove_line", &CInifile::remove_line, "remove_section", &CInifile::remove_section, "get_as_string", &CInifile::get_as_string, "name", &CInifile::fname,
+        "save", &CInifile::save_as, "iterate_sections", &iterate_sections, "readonly", &CInifile::bReadOnly,
 
         "r_line", &::r_line, "r_bool", &::r_bool, "r_string", &::r_string, "r_u32", sol::resolve<u32(gsl::czstring, gsl::czstring)>(&CInifile::r_u32), "r_s32",
         sol::resolve<s32(gsl::czstring, gsl::czstring)>(&CInifile::r_s32), "r_u16", sol::resolve<u16(gsl::czstring, gsl::czstring)>(&CInifile::r_u16), "r_s16",
         sol::resolve<s16(gsl::czstring, gsl::czstring)>(&CInifile::r_s16), "r_u8", sol::resolve<u8(gsl::czstring, gsl::czstring)>(&CInifile::r_u8), "r_s8",
-        sol::resolve<s8(gsl::czstring, gsl::czstring)>(&CInifile::r_s8), "r_u32_hex", sol::resolve<u32(gsl::czstring, gsl::czstring)>(&CInifile::r_u32_hex), "r_u16_hex",
-        sol::resolve<u16(gsl::czstring, gsl::czstring)>(&CInifile::r_u16_hex), "r_u8_hex", sol::resolve<u8(gsl::czstring, gsl::czstring)>(&CInifile::r_u8_hex), "r_float",
-        sol::resolve<f32(gsl::czstring, gsl::czstring)>(&CInifile::r_float), "r_vector2", sol::resolve<Fvector2(gsl::czstring, gsl::czstring)>(&CInifile::r_fvector2), "r_vector",
-        sol::resolve<Fvector3(gsl::czstring, gsl::czstring)>(&CInifile::r_fvector3), "r_vector4", sol::resolve<Fvector4(gsl::czstring, gsl::czstring)>(&CInifile::r_fvector4),
-        "r_clsid", &::r_clsid, "r_string_wb", &::r_string_wb,
+        sol::resolve<s8(gsl::czstring, gsl::czstring)>(&CInifile::r_s8), "r_u32_hex", sol::resolve<u32(gsl::czstring, gsl::czstring)>(&CInifile::r_u32_hex),
+        "r_u16_hex", sol::resolve<u16(gsl::czstring, gsl::czstring)>(&CInifile::r_u16_hex), "r_u8_hex",
+        sol::resolve<u8(gsl::czstring, gsl::czstring)>(&CInifile::r_u8_hex), "r_float", sol::resolve<f32(gsl::czstring, gsl::czstring)>(&CInifile::r_float),
+        "r_vector2", sol::resolve<Fvector2(gsl::czstring, gsl::czstring)>(&CInifile::r_fvector2), "r_vector",
+        sol::resolve<Fvector3(gsl::czstring, gsl::czstring)>(&CInifile::r_fvector3), "r_vector4",
+        sol::resolve<Fvector4(gsl::czstring, gsl::czstring)>(&CInifile::r_fvector4), "r_clsid", &::r_clsid, "r_string_wb", &::r_string_wb,
 
-        "w_bool", &CInifile::w_bool, "w_string", &CInifile::w_string, "w_u32", &CInifile::w_u32, "w_s32", &CInifile::w_s32, "w_u16", &CInifile::w_u16, "w_s16", &CInifile::w_s16,
-        "w_u8", &CInifile::w_u8, "w_s8", &CInifile::w_s8, "w_u32_hex", &CInifile::w_u32_hex, "w_u16_hex", &CInifile::w_u16_hex, "w_u8_hex", &CInifile::w_u8_hex, "w_float",
-        &CInifile::w_float, "w_vector2", &CInifile::w_fvector2, "w_vector", &CInifile::w_fvector3, "w_vector4", &CInifile::w_fvector4);
+        "w_bool", &CInifile::w_bool, "w_string", &CInifile::w_string, "w_u32", &CInifile::w_u32, "w_s32", &CInifile::w_s32, "w_u16", &CInifile::w_u16, "w_s16",
+        &CInifile::w_s16, "w_u8", &CInifile::w_u8, "w_s8", &CInifile::w_s8, "w_u32_hex", &CInifile::w_u32_hex, "w_u16_hex", &CInifile::w_u16_hex, "w_u8_hex",
+        &CInifile::w_u8_hex, "w_float", &CInifile::w_float, "w_vector2", &CInifile::w_fvector2, "w_vector", &CInifile::w_fvector3, "w_vector4",
+        &CInifile::w_fvector4);
 
     lua.set(
         "system_ini", [] { return pSettings; }, "game_ini", [] { return pGameIni; },

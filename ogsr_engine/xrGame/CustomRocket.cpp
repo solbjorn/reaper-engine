@@ -85,12 +85,9 @@ void CCustomRocket::SetLaunchParams(const Fmatrix& xform, const Fvector& vel, co
     VERIFY2(_valid(xform), "SetLaunchParams. Invalid xform argument!");
     m_LaunchXForm = xform;
     m_vLaunchVelocity = vel;
-    //	if(m_pOwner->ID()==Actor()->ID())
-    //	{
-    //		Msg("set p start v:	%f,%f,%f	\n",m_vLaunchVelocity.x,m_vLaunchVelocity.y,m_vLaunchVelocity.z);
-    //	}
     m_vLaunchAngularVelocity = angular_vel;
     m_time_to_explode = Device.fTimeGlobal + pSettings->r_float(cNameSect(), "force_explode_time") / 1000.0f;
+
 #ifdef DEBUG
     gbg_rocket_speed1 = 0;
     gbg_rocket_speed2 = 0;
@@ -104,12 +101,8 @@ void CCustomRocket::activate_physic_shell()
     create_physic_shell();
     if (m_pPhysicsShell->isActive())
         return;
-    VERIFY2(_valid(m_LaunchXForm), "CCustomRocket::activate_physic_shell. Invalid m_LaunchXForm!");
 
-    //	if(m_pOwner->ID()==Actor()->ID())
-    //	{
-    //		Msg("start v:	%f,%f,%f	\n",m_vLaunchVelocity.x,m_vLaunchVelocity.y,m_vLaunchVelocity.z);
-    //	}
+    VERIFY2(_valid(m_LaunchXForm), "CCustomRocket::activate_physic_shell. Invalid m_LaunchXForm!");
     m_pPhysicsShell->Activate(m_LaunchXForm, m_vLaunchVelocity, m_vLaunchAngularVelocity);
     m_pPhysicsShell->Update();
 
@@ -338,13 +331,12 @@ void CCustomRocket::OnH_B_Chield()
 {
     VERIFY(m_eState == eInactive);
     inherited::OnH_B_Chield();
-    //	Msg("! CCustomRocket::OnH_B_Chield called, id[%d] frame[%d]",ID(),Device.dwFrame);
 }
+
 void CCustomRocket::OnH_A_Chield()
 {
     VERIFY(m_eState == eInactive);
     inherited::OnH_A_Chield();
-    //	Msg("! CCustomRocket::OnH_A_Chield called, id[%d] frame[%d]",ID(),Device.dwFrame);
 }
 
 void CCustomRocket::OnH_B_Independent(bool just_before_destroy)
@@ -365,7 +357,6 @@ void CCustomRocket::OnH_A_Independent()
     setVisible(true);
     StartFlying();
     StartEngine();
-    //	Msg("! CCustomRocket::OnH_A_Independent called, id[%d] frame[%d]",ID(),Device.dwFrame);
 }
 
 tmc::task<void> CCustomRocket::UpdateCL()
@@ -448,15 +439,11 @@ void CCustomRocket::UpdateEnginePh()
 
 void CCustomRocket::UpdateEngine()
 {
-    //	VERIFY( getVisible() );
-    //	VERIFY( m_pPhysicsShell);
     if (!m_pPhysicsShell)
-        Msg("! CCustomRocket::UpdateEngine called, but 0==m_pPhysicsShell");
+        Log("! CCustomRocket::UpdateEngine called, but 0==m_pPhysicsShell");
 
     if (!getVisible())
-    {
-        Msg("! CCustomRocket::UpdateEngine called, but false==getVisible() id[%d] frame[%u]", ID(), Device.dwFrame);
-    }
+        Msg("! CCustomRocket::UpdateEngine called, but false==getVisible() id[{}] frame[{}]", ID(), Device.dwFrame);
 
     if (m_dwEngineTime <= 0)
     {

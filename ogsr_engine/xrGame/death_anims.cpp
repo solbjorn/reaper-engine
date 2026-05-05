@@ -27,7 +27,7 @@ rnd_motion* rnd_motion::setup(IKinematicsAnimated* k, const char* s)
             motions.push_back(m);
 #ifdef DEBUG
         else
-            Msg("death_anims: motion: %s not found!", n);
+            Msg("death_anims: motion: {} not found!", n);
 #endif
     }
 
@@ -61,23 +61,28 @@ type_motion* type_motion::setup(IKinematicsAnimated* k, CInifile* ini, const cha
 
         R_ASSERT(xr_strlen(line) < 1023);
         const int num = _GetItemCount(line, '/');
+
 #ifdef DEBUG
-        Msg("death anims: load: no setings in section %s for %s", section, type);
+        Msg("death anims: load: no setings in section {} for {}", section, type);
 #endif
+
         for (int i = 0; num > i; ++i)
         {
             string1024 sdir_anim;
             set_motion(k, u16(i), _GetItem(line, i, sdir_anim, '/'));
+
 #ifdef DEBUG
-            Msg("death anims: load: loaded %s from section %s for %s", sdir_anim, section, type);
+            Msg("death anims: load: loaded {} from section {} for {}", sdir_anim, section, type);
 #endif
         }
     }
 #ifdef DEBUG
     else
-        Msg("death anims: load: no setings in section %s for %s", section, type);
-
+    {
+        Msg("death anims: load: no setings in section {} for {}", section, type);
+    }
 #endif
+
     return this;
 }
 
@@ -198,7 +203,10 @@ bool find_in_parents(const u16 bone_to_find, const u16 from_bone, IKinematics& c
     return false;
 }
 
-inline bool is_bone_head(IKinematics& K, u16 bone) { return bone != BI_NONE && (bone == K.LL_BoneID("bip01_neck") || find_in_parents(K.LL_BoneID("bip01_head"), bone, K)); }
+inline bool is_bone_head(IKinematics& K, u16 bone)
+{
+    return bone != BI_NONE && (bone == K.LL_BoneID("bip01_neck") || find_in_parents(K.LL_BoneID("bip01_head"), bone, K));
+}
 
 // 1.	Инерционное движение вперед от попадания в голову
 class type_motion0 : public type_motion
@@ -242,8 +250,8 @@ public:
         if (Fvector().sub(H.initiator()->Position(), global_hit_position(p, pEntity, H)).magnitude() > 30.f)
             return false;
 
-        // Msg("type_motion0 death...");
         m = motion(front);
+
         return true;
     }
 };
@@ -287,8 +295,8 @@ public:
             return false;
 
         edirection dr = dir(pEntity, H, angle);
-        // Msg("type_motion2 death...");
         m = motion(dr);
+
         return true;
     }
 };
@@ -312,10 +320,11 @@ public:
         if (is_bone_head(*K, H.bone()))
         {
             edirection dr = dir(pEntity, H, angle);
-            // Msg("type_motion3 death...");
             m = motion(dr);
+
             return true;
         }
+
         return false;
     }
 };
@@ -353,9 +362,10 @@ public:
         {
             edirection dr = dir(pEntity, H, angle);
             m = motion(dr);
-            // Msg("type_motion4 death...");
+
             return true;
         }
+
         return false;
     }
 };
@@ -380,9 +390,10 @@ public:
         {
             edirection dr = dir(pEntity, H, angle);
             m = motion(dr);
-            // Msg("type_motion5 death...");
+
             return true;
         }
+
         return false;
     }
 };
@@ -402,7 +413,7 @@ public:
         {
             edirection dr = dir(pEntity, H, angle);
             m = motion(dr);
-            // Msg("type_motion6 death...");
+
             return true;
         }
 
@@ -417,7 +428,7 @@ public:
         {
             edirection dr = dir(pEntity, H, angle);
             m = motion(dr);
-            // Msg("type_motion6 death...");
+
             return true;
         }
 

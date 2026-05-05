@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "ai_monsters_misc.h"
+
 #include "../ai_space.h"
 #include "../custommonster.h"
 #include "../ef_storage.h"
@@ -98,8 +99,8 @@ bool bfGetActionSuccessProbability(GroupHierarchyHolder::MEMBER_REGISTRY& Member
 }
 } // namespace
 
-u32 dwfChooseAction(u32 dwActionRefreshRate, float fMinProbability0, float fMinProbability1, float fMinProbability2, float fMinProbability3, u32 dwTeam, u32 dwSquad, u32 dwGroup,
-                    u32 a0, u32 a1, u32 a2, u32 a3, u32 a4, CEntity* tpEntity, float fGroupDistance)
+u32 dwfChooseAction(u32 dwActionRefreshRate, float fMinProbability0, float fMinProbability1, float fMinProbability2, float fMinProbability3, u32 dwTeam,
+                    u32 dwSquad, u32 dwGroup, u32 a0, u32 a1, u32 a2, u32 a3, u32 a4, CEntity* tpEntity, float fGroupDistance)
 {
     if (fis_zero(fMinProbability0))
         return (0);
@@ -213,7 +214,7 @@ void CAniVector::Load(IKinematicsAnimated* tpKinematics, LPCSTR caBaseName)
 
 #ifdef DEBUG
             if (psAI_Flags.test(aiAnimation))
-                Msg("* Loaded animation %s", S1);
+                Msg("* Loaded animation {}", S1);
 #endif
         }
         else if (!!(tpMotionDef = tpKinematics->ID_FX_Safe(xr_strconcat(S1, caBaseName, _itoa(i, S2, 10)))))
@@ -222,7 +223,7 @@ void CAniVector::Load(IKinematicsAnimated* tpKinematics, LPCSTR caBaseName)
 
 #ifdef DEBUG
             if (psAI_Flags.test(aiAnimation))
-                Msg("* Loaded animation fx %s", S1);
+                Msg("* Loaded animation fx {}", S1);
 #endif
         }
         else if (i < 10)

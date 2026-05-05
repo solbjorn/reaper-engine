@@ -2,12 +2,7 @@
 
 #include "_types.h"
 
-#include <gsl/narrow>
-#include <gsl/zstring>
-
-#include <cstdarg>
-#include <cstdio>
-#include <string>
+#include <gsl/util>
 
 #define DEBUG_INVOKE __debugbreak()
 
@@ -49,32 +44,10 @@ public:
     [[noreturn]] void error(const HRESULT code, const char* e1, const char* file, gsl::index line, const char* function);
     [[noreturn]] void error(const HRESULT code, const char* e1, const char* e2, const char* file, gsl::index line, const char* function);
     [[noreturn]] void XR_PRINTF(5, 6) fatal(const char* file, gsl::index line, const char* function, const char* F, ...);
-    void backend(const char* reason, const char* expression, const char* argument0, const char* argument1, const char* file, gsl::index line, const char* function);
+    void backend(const char* reason, const char* expression, const char* argument0, const char* argument1, const char* file, gsl::index line,
+                 const char* function);
     [[noreturn]] static void do_exit(const std::string& message);
 };
-
-// warning
-// this function can be used for debug purposes only
-IC XR_PRINTF(1, 2) std::string make_string(const char* format, ...)
-{
-    std::va_list args, args_copy;
-
-    va_start(args, format);
-    va_copy(args_copy, args);
-
-    const auto sz = std::vsnprintf(nullptr, 0, format, args);
-    if (sz <= 0)
-        return std::string{};
-
-    const auto n = gsl::narrow_cast<size_t>(sz);
-    std::string result(n, '\0');
-    std::vsnprintf(result.data(), n + 1, format, args_copy);
-
-    va_end(args_copy);
-    va_end(args);
-
-    return result;
-}
 
 extern xrDebug Debug;
 extern HWND gGameWindow;

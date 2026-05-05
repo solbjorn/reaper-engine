@@ -167,7 +167,8 @@ CMapLocation* CMapManager::AddUserLocation(const shared_str& spot_type, const sh
     l->InitUserSpot(level_name, position);
 
     // "KRodin: на данный момент юзерские метки используют дефицитные ID объектов. В конструктор класса CMapLocation можно смело отправлять u16(-1),
-    // а вот хранилище Locations() я бы трогать побоялся, т.к. не уверен, что из него не достают ID и что-то там с ним делают. В идеале конечно надо это всё перепилить.
+    // а вот хранилище Locations() я бы трогать побоялся, т.к. не уверен, что из него не достают ID и что-то там с ним делают. В идеале конечно надо это всё
+    // перепилить.
 
     Locations().emplace_back(SLocationKey(spot_type, _id));
     Locations().back().location = l;
@@ -259,14 +260,15 @@ Locations& CMapManager::Locations() { return m_locations->registry().objects(); 
 #ifdef DEBUG
 void CMapManager::Dump()
 {
-    Msg("begin of map_locations dump");
+    Log("begin of map_locations dump");
+
     Locations_it it = Locations().begin();
     for (; it != Locations().end(); ++it)
     {
-        Msg("spot_type=[%s] object_id=[%d]", *((*it).spot_type), (*it).object_id);
+        Msg("spot_type=[{}] object_id=[{}]", (*it).spot_type, (*it).object_id);
         (*it).location->Dump();
     }
 
-    Msg("end of map_locations dump");
+    Log("end of map_locations dump");
 }
 #endif

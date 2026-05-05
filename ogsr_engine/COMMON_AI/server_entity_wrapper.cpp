@@ -72,7 +72,7 @@ void CServerEntityWrapper::load(IReader& stream)
     m_object->Spawn_Read(net_packet);
 
 #ifdef DEBUG
-    Msg("[SPAWN] %s, (%d)", m_object->name_replace(), m_object->ID);
+    Msg("[SPAWN] {}, ({})", m_object->name_replace(), m_object->ID);
 #endif
 
     chunk = stream.open_chunk(1);

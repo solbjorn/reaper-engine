@@ -14,7 +14,8 @@ xr_vector<CSector*> dbg_sectors;
 void CPortalTraverser::traverse(CSector* start, CFrustum& F, Fvector& vBase, Fmatrix& mXFORM, u32 options)
 {
     static constexpr Fmatrix m_viewport_01{
-        1.0f / 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f / 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f / 2.0f + 0.0f + 0.0f, 1.0f / 2.0f + 0.0f + 0.0f, 0.0f, 1.0f};
+        1.0f / 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f / 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f / 2.0f + 0.0f + 0.0f, 1.0f / 2.0f + 0.0f + 0.0f,
+        0.0f,        1.0f};
 
     if (options & VQ_FADE)
     {
@@ -285,7 +286,6 @@ void CPortalTraverser::traverse_sector(CSector* sector, CFrustum& F, _scissor& R
                     scissor.max.y = R_scissor.max.y;
                 scissor.depth = depth;
 
-                // Msg("scissor: (%f,%f)-(%f,%f)", scissor.min.x, scissor.min.y, scissor.max.x, scissor.max.y);
                 //  Check if box is non-empty
                 if (scissor.min.x >= scissor.max.x)
                     continue;

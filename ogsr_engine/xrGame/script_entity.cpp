@@ -214,8 +214,9 @@ void CScriptEntity::vfUpdateParticles()
     if (xr_strlen(l_tParticleAction.m_caBoneName))
     {
         CParticlesObject* l_tpParticlesObject = l_tParticleAction.m_tpParticleSystem;
-        l_tpParticlesObject->UpdateParent(GetUpdatedMatrix(l_tParticleAction.m_caBoneName, l_tParticleAction.m_tParticlePosition, l_tParticleAction.m_tParticleAngles),
-                                          l_tParticleAction.m_tParticleVelocity);
+        l_tpParticlesObject->UpdateParent(
+            GetUpdatedMatrix(l_tParticleAction.m_caBoneName, l_tParticleAction.m_tParticlePosition, l_tParticleAction.m_tParticleAngles),
+            l_tParticleAction.m_tParticleVelocity);
     }
 }
 
@@ -248,10 +249,6 @@ void CScriptEntity::ProcessScripts()
     {
         l_tpEntityAction = m_tpActionQueue.front();
         VERIFY(l_tpEntityAction);
-#ifdef DEBUG
-//		if (!xr_strcmp("m_stalker_wounded",*object().cName()))
-//			Msg			("%6d Processing action : %s",Device.dwTimeGlobal,*l_tpEntityAction->m_tAnimationAction.m_caAnimationToPlay);
-#endif
 
         if (m_tpCurrentEntityAction != l_tpEntityAction)
             l_tpEntityAction->initialize();
@@ -261,16 +258,11 @@ void CScriptEntity::ProcessScripts()
         if (!l_tpEntityAction->CheckIfActionCompleted())
             break;
 
-#ifdef DEBUG
-//		if (!xr_strcmp("m_stalker_wounded",*object().cName()))
-//			Msg			("%6d Action completed : %s",Device.dwTimeGlobal,*l_tpEntityAction->m_tAnimationAction.m_caAnimationToPlay);
-#endif
-
         vfFinishAction(l_tpEntityAction);
 
 #ifdef DEBUG
         if (psAI_Flags.is(aiLua))
-            Msg("Entity Action removed!!!");
+            Log("Entity Action removed!!!");
 #endif
 
         xr_delete(l_tpEntityAction);
@@ -357,7 +349,8 @@ const Fmatrix CScriptEntity::GetUpdatedMatrix(shared_str caBoneName, const Fvect
 
     if (xr_strlen(caBoneName))
     {
-        CBoneInstance& l_tBoneInstance = smart_cast<IKinematics*>(object().Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(object().Visual())->LL_BoneID(caBoneName));
+        CBoneInstance& l_tBoneInstance =
+            smart_cast<IKinematics*>(object().Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(object().Visual())->LL_BoneID(caBoneName));
         l_tMatrix.mulA_43(l_tBoneInstance.mTransform);
         l_tMatrix.mulA_43(object().XFORM());
     }
@@ -377,9 +370,6 @@ bool CScriptEntity::bfAssignSound(CScriptEntityAction* tpEntityAction)
         {
             if (!l_tSoundAction.m_bStartedToPlay)
             {
-#ifdef DEBUG
-//				Msg									("%6d Starting sound %s",Device.dwTimeGlobal,*l_tSoundAction.m_caSoundToPlay);
-#endif
                 const Fmatrix& l_tMatrix = GetUpdatedMatrix(l_tSoundAction.m_caBoneName, l_tSoundAction.m_tSoundPosition, l_tSoundAction.m_tSoundAngles);
                 m_current_sound->play_at_pos(m_object, l_tMatrix.c, l_tSoundAction.m_bLooped ? sm_Looped : 0);
                 l_tSoundAction.m_bStartedToPlay = true;
@@ -416,7 +406,8 @@ bool CScriptEntity::bfAssignParticles(CScriptEntityAction* tpEntityAction)
     {
         if (!l_tParticleAction.m_bStartedToPlay)
         {
-            const Fmatrix& l_tMatrix = GetUpdatedMatrix(l_tParticleAction.m_caBoneName, l_tParticleAction.m_tParticlePosition, l_tParticleAction.m_tParticleAngles);
+            const Fmatrix& l_tMatrix =
+                GetUpdatedMatrix(l_tParticleAction.m_caBoneName, l_tParticleAction.m_tParticlePosition, l_tParticleAction.m_tParticleAngles);
             l_tParticleAction.m_tpParticleSystem->UpdateParent(l_tMatrix, {});
             l_tParticleAction.m_tpParticleSystem->play_at_pos(l_tMatrix.c);
             l_tParticleAction.m_bStartedToPlay = true;
@@ -466,7 +457,6 @@ bool CScriptEntity::bfAssignMovement(CScriptEntityAction* tpEntityAction)
         R_ASSERT(l_tpGameObject);
 #endif
         m_monster->movement().set_path_type(MovementManager::ePathTypeLevelPath);
-        //			Msg			("%6d Object %s, position [%f][%f][%f]",Device.dwTimeGlobal,*l_tpGameObject->cName(),VPUSH(l_tpGameObject->Position()));
         m_monster->movement().detail().set_dest_position(l_tpGameObject->Position());
         m_monster->movement().set_level_dest_vertex(l_tpGameObject->ai_location().level_vertex_id());
         break;
@@ -489,14 +479,15 @@ bool CScriptEntity::bfAssignMovement(CScriptEntityAction* tpEntityAction)
 
         u32 vertex_id = ai().level_graph().vertex_id(object().ai_location().level_vertex_id(), l_tMovementAction.m_tDestinationPosition);
         if (!ai().level_graph().valid_vertex_id(vertex_id))
-            vertex_id = ai().level_graph().check_position_in_direction(object().ai_location().level_vertex_id(), object().Position(), l_tMovementAction.m_tDestinationPosition);
+            vertex_id = ai().level_graph().check_position_in_direction(object().ai_location().level_vertex_id(), object().Position(),
+                                                                       l_tMovementAction.m_tDestinationPosition);
 
 #ifdef DEBUG
         if (!ai().level_graph().valid_vertex_id(vertex_id))
         {
             string256 S;
-            sprintf_s(S, "Cannot find corresponding level vertex for the specified position [%f][%f][%f] for monster %s", VPUSH(l_tMovementAction.m_tDestinationPosition),
-                      *m_monster->cName());
+            sprintf_s(S, "Cannot find corresponding level vertex for the specified position [%f][%f][%f] for monster %s",
+                      VPUSH(l_tMovementAction.m_tDestinationPosition), *m_monster->cName());
             THROW2(ai().level_graph().valid_vertex_id(vertex_id), S);
         }
 #endif
@@ -513,7 +504,8 @@ bool CScriptEntity::bfAssignMovement(CScriptEntityAction* tpEntityAction)
     case CScriptMovementAction::eGoalTypeNoPathPosition: {
         m_monster->movement().set_path_type(MovementManager::ePathTypeLevelPath);
         if (m_monster->movement().detail().path().empty() ||
-            (m_monster->movement().detail().path()[m_monster->movement().detail().path().size() - 1].position.distance_to(l_tMovementAction.m_tDestinationPosition) > .1f))
+            (m_monster->movement().detail().path()[m_monster->movement().detail().path().size() - 1].position.distance_to(
+                 l_tMovementAction.m_tDestinationPosition) > .1f))
         {
             m_monster->movement().detail().m_path.resize(2);
             m_monster->movement().detail().m_path[0].position = object().Position();
@@ -549,14 +541,14 @@ LPCSTR CScriptEntity::GetPatrolPathName()
 #ifdef DEBUG
     if (!GetScriptControl())
     {
-        Msg("!![CScriptEntity::GetPatrolPathName] Object [%s] is not under script control while you are trying to get patrol path name!", *m_object->cName());
+        Msg("!![CScriptEntity::GetPatrolPathName] Object [{}] is not under script control while you are trying to get patrol path name!", m_object->cName());
         return "";
     }
 #endif
 
     if (m_tpActionQueue.empty())
     {
-        Msg("!![CScriptEntity::GetPatrolPathName] Object [%s] m_tpActionQueue is empty!", *m_object->cName());
+        Msg("!![CScriptEntity::GetPatrolPathName] Object [{}] m_tpActionQueue is empty!", m_object->cName());
         return "";
     }
 
@@ -590,7 +582,8 @@ void ScriptCallBack(CBlend* B)
     if (l_tpScriptMonster->GetCurrentAction() && !B->bone_or_part)
     {
         if (!l_tpScriptMonster->GetCurrentAction()->m_tAnimationAction.m_bCompleted)
-            l_tpScriptMonster->object().callback(GameObject::eActionTypeAnimation)(l_tpScriptMonster->object().lua_game_object(), u32(GameObject::eActionTypeAnimation));
+            l_tpScriptMonster->object().callback(GameObject::eActionTypeAnimation)(l_tpScriptMonster->object().lua_game_object(),
+                                                                                   u32(GameObject::eActionTypeAnimation));
 
         l_tpScriptMonster->m_tpScriptAnimation.invalidate();
         l_tpScriptMonster->GetCurrentAction()->m_tAnimationAction.m_bCompleted = true;
@@ -605,15 +598,11 @@ bool CScriptEntity::bfScriptAnimation()
     if (GetScriptControl() && !GetCurrentAction() && GetActionCount())
         ProcessScripts();
 
-    if (GetScriptControl() && GetCurrentAction() && !GetCurrentAction()->m_tAnimationAction.m_bCompleted && xr_strlen(GetCurrentAction()->m_tAnimationAction.m_caAnimationToPlay))
+    if (GetScriptControl() && GetCurrentAction() && !GetCurrentAction()->m_tAnimationAction.m_bCompleted &&
+        xr_strlen(GetCurrentAction()->m_tAnimationAction.m_caAnimationToPlay))
     {
         if (m_tpScriptAnimation == m_tpNextAnimation)
             return (true);
-
-#ifdef DEBUG
-        // if (!xr_strcmp("m_stalker_wounded",*object().cName()))
-        //	Msg				("%6d Playing animation : %s , Object %s",Device.dwTimeGlobal,*GetCurrentAction()->m_tAnimationAction.m_caAnimationToPlay, *object().cName());
-#endif
 
         m_tpScriptAnimation = m_tpNextAnimation;
         IKinematicsAnimated* skeleton_animated = smart_cast<IKinematicsAnimated*>(object().Visual());

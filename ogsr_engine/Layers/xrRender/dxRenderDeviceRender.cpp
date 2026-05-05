@@ -157,7 +157,8 @@ tmc::task<void> dxRenderDeviceRender::Create(HWND hWnd, u32& dwWidth, u32& dwHei
                 std::ignore = FS.update_path(FolderName, "$app_data_root$", "renderdoc_captures\\");
                 VerifyPath(FolderName);
                 g_renderdoc_api->SetCaptureFilePathTemplate(FolderName);
-                Msg("~~[%s] RenderDoc folder: [%s]", __FUNCTION__, FolderName);
+
+                Msg("~~[{}] RenderDoc folder: [{}]", __FUNCTION__, FolderName);
 
                 RENDERDOC_InputButton CaptureButton[]{eRENDERDOC_Key_Home};
                 g_renderdoc_api->SetCaptureKeys(CaptureButton, std::size(CaptureButton));

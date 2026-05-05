@@ -9,7 +9,8 @@
 
 #include "script_game_object.h"
 
-SHit::SHit(float aPower, Fvector& adir, CObject* awho, u16 aelement, Fvector ap_in_bone_space, float aimpulse, ALife::EHitType ahit_type, float aAP, bool AimBullet)
+SHit::SHit(float aPower, Fvector& adir, CObject* awho, u16 aelement, Fvector ap_in_bone_space, float aimpulse, ALife::EHitType ahit_type, float aAP,
+           bool AimBullet)
 {
     power = aPower;
     dir.set(adir);
@@ -126,17 +127,17 @@ void SHit::Write_Packet(NET_Packet& Packet)
 #ifdef DEBUG
 void SHit::_dump()
 {
-    Msg("SHit::_dump()---begin");
-    Log("power=", power);
-    Log("impulse=", impulse);
-    Log("dir=", dir);
-    Log("whoID=", whoID);
-    Log("weaponID=", weaponID);
-    Log("element=", boneID);
-    Log("p_in_bone_space=", p_in_bone_space);
-    Log("hit_type=", (int)hit_type);
-    Log("ap=", ap);
-    Msg("SHit::_dump()---end");
+    Log("SHit::_dump()---begin");
+    Msg("power={}", power);
+    Msg("impulse={}", impulse);
+    Msg("dir={}", dir);
+    Msg("whoID={}", whoID);
+    Msg("weaponID={}", weaponID);
+    Msg("element={}", boneID);
+    Msg("p_in_bone_space={}", p_in_bone_space);
+    Msg("hit_type={}", hit_type);
+    Msg("ap={}", ap);
+    Log("SHit::_dump()---end");
 }
 #endif
 
@@ -145,9 +146,10 @@ void SHit::set_hit_initiator(CScriptGameObject* script_obj)
     auto obj = smart_cast<CObject*>(&(script_obj->object()));
     if (!obj)
     {
-        Msg("!![SHit::set_hit_initiator] CObject [%s] not found!", script_obj->Name());
+        Msg("!![SHit::set_hit_initiator] CObject [{}] not found!", script_obj->Name());
         return;
     }
+
     who = obj;
 }
 
@@ -159,7 +161,7 @@ CScriptGameObject* SHit::get_hit_initiator() const
         if (obj)
             return obj->lua_game_object();
         else
-            Msg("!![SHit::get_hit_initiator] Cast failed! CObject: [%s]", who->cName().c_str());
+            Msg("!![SHit::get_hit_initiator] Cast failed! CObject: [{}]", who->cName());
     }
 
     return nullptr;

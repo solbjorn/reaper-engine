@@ -141,7 +141,7 @@ void CUIStalkersRankingWnd::FillList()
             }
             else
             {
-                Msg("! [%s]: i[%zd] id[%d] not a CSE_ALifeTraderAbstract", __FUNCTION__, i, id);
+                Msg("! [{}]: i[{}] id[{}] not a CSE_ALifeTraderAbstract", __FUNCTION__, i, id);
             }
 
             ++i;
@@ -223,7 +223,9 @@ void add_human_to_top_list(u16 id)
         g_all_statistic_humans.push_back(id);
     }
     else
-        Msg("! [%s]: id[%d] not a CSE_ALifeTraderAbstract", __FUNCTION__, id);
+    {
+        Msg("! [{}]: id[{}] not a CSE_ALifeTraderAbstract", __FUNCTION__, id);
+    }
 }
 
 CUIStalkerRankingInfoItem::CUIStalkerRankingInfoItem(CUIStalkersRankingWnd* w) : m_StalkersRankingWnd(w), m_humanID(u16(-1)) {}

@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "purchase_list.h"
+
 #include "inventoryowner.h"
 #include "gameobject.h"
 #include "ai_object_location.h"
@@ -34,7 +35,7 @@ void CPurchaseList::process(CInifile& ini_file, LPCSTR section, CInventoryOwner&
     {
         const char* callback = pSettings->r_string("engine_callbacks", "trade_purchase_item_process");
         if (!ai().script_engine().function(callback, lua_function))
-            Msg("Cannot get engine callback %s!", callback);
+            Msg("Cannot get engine callback {}!", callback);
     }
 
     const CGameObject& game_object = *smart_cast<const CGameObject*>(&owner);
@@ -42,7 +43,8 @@ void CPurchaseList::process(CInifile& ini_file, LPCSTR section, CInventoryOwner&
     for (const auto& I : S.Data)
     {
         ASSERT_FMT(I.second.size(), "!![%s] : cannot handle lines in section without values: [%s], first param: [%s]", __FUNCTION__, section, I.first.c_str());
-        ASSERT_FMT(_GetItemCount(I.second.c_str()) > 1, "!![%s] : Invalid second parameter in section [%s], first param: [%s]", __FUNCTION__, section, I.first.c_str());
+        ASSERT_FMT(_GetItemCount(I.second.c_str()) > 1, "!![%s] : Invalid second parameter in section [%s], first param: [%s]", __FUNCTION__, section,
+                   I.first.c_str());
 
         string256 temp0, temp1;
         process(game_object, I.first, atoi(_GetItem(I.second.c_str(), 0, temp0)), (float)atof(_GetItem(I.second.c_str(), 1, temp1)), lua_function);

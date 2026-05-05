@@ -107,11 +107,9 @@ void CWeaponRG6::LaunchGrenade(const Fvector& p1, const Fvector& d1)
                     DBG_DrawLine(p1, Fvector().add(p1, res[1]), D3DCOLOR_XRGB(0, 0, 255));
                 DBG_ClosedCashedDraw(30000);
 #endif
+
                 if (canfire0 != 0)
-                {
-                    //					Msg ("d[%f,%f,%f] - res [%f,%f,%f]", d.x, d.y, d.z, res[0].x, res[0].y, res[0].z);
                     d = res[0];
-                }
             }
         }
 

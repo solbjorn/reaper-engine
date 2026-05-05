@@ -110,7 +110,6 @@ CKinematics::~CKinematics()
 
 void CKinematics::IBoneInstances_Create()
 {
-    // VERIFY2				(bones->size() < 64, "More than 64 bones is a crazy thing!");
     u32 size = bones->size();
     bone_instances = xr_alloc<CBoneInstance>(size);
     for (u32 i = 0; i < size; i++)
@@ -135,7 +134,6 @@ CSkeletonX* CKinematics::LL_GetChild(u32 idx)
 
 void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
 {
-    // Msg				("skeleton: %s",N);
     inherited::Load(N, data, dwFlags);
 
     pUserData = nullptr;
@@ -196,10 +194,6 @@ void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
     visimask.zero();
 
     u32 dwCount = data->r_u32();
-    // Msg				("!!! %d bones",dwCount);
-    // if (dwCount >= 64)	Msg			("!!! More than 64 bones is a crazy thing! (%d), %s",dwCount,N);
-    // VERIFY3			(dwCount <= 64, "More than 64 bones is a crazy thing!",N);
-
     bone_map_N.reserve(dwCount);
 
     for (; dwCount; dwCount--)
@@ -377,8 +371,9 @@ void CKinematics::LL_Validate()
                 if (BD.IK_data.ik_flags.is(SJointIKData::flBreakable))
                     BD.IK_data.ik_flags.set(SJointIKData::flBreakable, FALSE);
             }
+
 #ifdef DEBUG
-            Msg("! ERROR: Invalid breakable object: '%s'", *dbg_name);
+            Msg("! ERROR: Invalid breakable object: '{}'", dbg_name);
 #endif
         }
     }
@@ -860,7 +855,7 @@ CSkeletonWallmark::~CSkeletonWallmark()
 {
     if (used_in_render != u32(-1))
     {
-        Msg("used_in_render=%d", used_in_render);
+        Msg("used_in_render={}", used_in_render);
         VERIFY(used_in_render == u32(-1));
     }
 }
@@ -904,27 +899,30 @@ Fvector3 CKinematics::RC_VisBorderMax(const u32 id)
 
 void CKinematics::RC_Dump()
 {
-    Msg("|********** Dump children meshes **************|");
+    Log("|********** Dump children meshes **************|");
+
     const Fbox& mBox = getVisData().box;
     Fvector3 temp;
     mBox.getsize(temp);
-    Msg("[core] : box[%3.3f,%3.3f,%3.3f]", temp.x, temp.y, temp.z);
+    Msg("[core] : box[{:3.3f},{:3.3f},{:3.3f}]", temp.x, temp.y, temp.z);
     mBox.getcenter(temp);
-    Msg("[core] : center[%3.3f,%3.3f,%3.3f]", temp.x, temp.y, temp.z);
+    Msg("[core] : center[{:3.3f},{:3.3f},{:3.3f}]", temp.x, temp.y, temp.z);
     temp.set(mBox.min);
-    Msg("[core] : min[%3.3f,%3.3f,%3.3f]", temp.x, temp.y, temp.z);
+    Msg("[core] : min[{:3.3f},{:3.3f},{:3.3f}]", temp.x, temp.y, temp.z);
     temp.set(mBox.max);
-    Msg("[core] : max[%3.3f,%3.3f,%3.3f]", temp.x, temp.y, temp.z);
+    Msg("[core] : max[{:3.3f},{:3.3f},{:3.3f}]", temp.x, temp.y, temp.z);
+
     for (u32 i = 0; i < children.size(); i++)
     {
         temp.set(RC_VisBox(i));
-        Msg("[child %u] : box[%3.3f,%3.3f,%3.3f]", i, temp.x, temp.y, temp.z);
+        Msg("[child {}] : box[{:3.3f},{:3.3f},{:3.3f}]", i, temp.x, temp.y, temp.z);
         temp.set(RC_VisCenter(i));
-        Msg("[child %u] : center[%3.3f,%3.3f,%3.3f]", i, temp.x, temp.y, temp.z);
+        Msg("[child {}] : center[{:3.3f},{:3.3f},{:3.3f}]", i, temp.x, temp.y, temp.z);
         temp.set(RC_VisBorderMin(i));
-        Msg("[child %u] : min[%3.3f,%3.3f,%3.3f]", i, temp.x, temp.y, temp.z);
+        Msg("[child {}] : min[{:3.3f},{:3.3f},{:3.3f}]", i, temp.x, temp.y, temp.z);
         temp.set(RC_VisBorderMax(i));
-        Msg("[child %u] : max[%3.3f,%3.3f,%3.3f]", i, temp.x, temp.y, temp.z);
+        Msg("[child {}] : max[{:3.3f},{:3.3f},{:3.3f}]", i, temp.x, temp.y, temp.z);
+
         FHierrarhyVisual* HV = smart_cast<FHierrarhyVisual*>(children.at(i));
         if (HV && HV->children.size())
         {
@@ -932,13 +930,14 @@ void CKinematics::RC_Dump()
             {
                 const Fbox& FB = get_mesh_RC_data(HV, j);
                 FB.getsize(temp);
-                Msg("[child %u->%u] : box[%3.3f,%3.3f,%3.3f]", i, j, temp.x, temp.y, temp.z);
+                Msg("[child {}->{}] : box[{:3.3f},{:3.3f},{:3.3f}]", i, j, temp.x, temp.y, temp.z);
                 FB.getcenter(temp);
-                Msg("[child %u->%u] : center[%3.3f,%3.3f,%3.3f]", i, j, temp.x, temp.y, temp.z);
+                Msg("[child {}->{}] : center[{:3.3f},{:3.3f},{:3.3f}]", i, j, temp.x, temp.y, temp.z);
                 temp.set(FB.min);
-                Msg("[child %u->%u] : min[%3.3f,%3.3f,%3.3f]", i, j, temp.x, temp.y, temp.z);
+                Msg("[child {}->{}] : min[{:3.3f},{:3.3f},{:3.3f}]", i, j, temp.x, temp.y, temp.z);
                 temp.set(FB.max);
-                Msg("[child %u->%u] : max[%3.3f,%3.3f,%3.3f]", i, j, temp.x, temp.y, temp.z);
+                Msg("[child {}->{}] : max[{:3.3f},{:3.3f},{:3.3f}]", i, j, temp.x, temp.y, temp.z);
+
                 FHierrarhyVisual* kHV = smart_cast<FHierrarhyVisual*>(HV->children.at(j));
                 if (kHV && kHV->children.size())
                 {
@@ -946,29 +945,31 @@ void CKinematics::RC_Dump()
                     {
                         const Fbox& kFB = get_mesh_RC_data(kHV, k);
                         kFB.getsize(temp);
-                        Msg("[child %u->%u->%u] : box[%3.3f,%3.3f,%3.3f]", i, j, k, temp.x, temp.y, temp.z);
+                        Msg("[child {}->{}->{}] : box[{:3.3f},{:3.3f},{:3.3f}]", i, j, k, temp.x, temp.y, temp.z);
                         kFB.getcenter(temp);
-                        Msg("[child %u->%u->%u] : center[%3.3f,%3.3f,%3.3f]", i, j, k, temp.x, temp.y, temp.z);
+                        Msg("[child {}->{}->{}] : center[{:3.3f},{:3.3f},{:3.3f}]", i, j, k, temp.x, temp.y, temp.z);
                         temp.set(kFB.min);
-                        Msg("[child %u->%u->%u] : min[%3.3f,%3.3f,%3.3f]", i, j, k, temp.x, temp.y, temp.z);
+                        Msg("[child {}->{}->{}] : min[{:3.3f},{:3.3f},{:3.3f}]", i, j, k, temp.x, temp.y, temp.z);
                         temp.set(kFB.max);
-                        Msg("[child %u->%u->%u] : max[%3.3f,%3.3f,%3.3f]", i, j, k, temp.x, temp.y, temp.z);
+                        Msg("[child {}->{}->{}] : max[{:3.3f},{:3.3f},{:3.3f}]", i, j, k, temp.x, temp.y, temp.z);
                     }
                 }
             }
         }
     }
 
-    Msg("|********** End Dump children meshes **********|");
+    Log("|********** End Dump children meshes **********|");
+    Log("|********** Dump children bones ***************|");
 
-    Msg("|********** Dump children bones ***************|");
     for (u32 i = 0; i < bones->size(); i++)
     {
         CBoneData* B = (*bones)[i];
-        Msg("Bone [%u][%s]:", i, LL_BoneName_dbg(u16(i)));
-        Msg("bind_transform[%3.3f,%3.3f,%3.3f] m2b_transform[%3.3f,%3.3f,%3.3f] center_of_mass[%3.3f,%3.3f,%3.3f]", B->bind_transform.c.x, B->bind_transform.c.y,
-            B->bind_transform.c.z, B->m2b_transform.c.x, B->m2b_transform.c.y, B->m2b_transform.c.z, B->center_of_mass.x, B->center_of_mass.y, B->center_of_mass.z);
+        Msg("Bone [{}][{}]:", i, LL_BoneName_dbg(u16(i)));
+        Msg("bind_transform[{:3.3f},{:3.3f},{:3.3f}] m2b_transform[{:3.3f},{:3.3f},{:3.3f}] center_of_mass[{:3.3f},{:3.3f},{:3.3f}]", B->bind_transform.c.x,
+            B->bind_transform.c.y, B->bind_transform.c.z, B->m2b_transform.c.x, B->m2b_transform.c.y, B->m2b_transform.c.z, B->center_of_mass.x,
+            B->center_of_mass.y, B->center_of_mass.z);
     }
-    Msg("|********** End Dump children bones ***********|");
+
+    Log("|********** End Dump children bones ***********|");
 }
 /************************* End add *************************************/

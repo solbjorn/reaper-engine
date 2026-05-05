@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "xrServer.h"
+
 #include "game_sv_single.h"
 #include "alife_simulator.h"
 #include "xrserver_objects.h"
@@ -36,7 +37,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
     {
         if (!receiver->owner)
         {
-            Msg("!![%s] Cnt't find owner for receiver with id [%u]. May be it already destroyed.", __FUNCTION__, destination);
+            Msg("!![{}] Can't find owner for receiver with id [{}]. May be it already destroyed.", __FUNCTION__, destination);
             return;
         }
 
@@ -115,9 +116,6 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
         CSE_ALifeCreatureAbstract* creature = smart_cast<CSE_ALifeCreatureAbstract*>(e_dest);
         if (creature)
             creature->m_killer_id = id_src;
-
-        //		Msg							("[%d][%s] killed [%d][%s]",id_src,id_src==u16(-1) ? "UNKNOWN" :
-        // game->get_entity_from_eid(id_src)->name_replace(),id_dest,e_dest->name_replace());
 
         break;
     }

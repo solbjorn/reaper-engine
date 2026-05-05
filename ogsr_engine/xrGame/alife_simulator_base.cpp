@@ -62,7 +62,8 @@ void CALifeSimulatorBase::reload(LPCSTR section)
     m_initialized = true;
 }
 
-CSE_Abstract* CALifeSimulatorBase::spawn_item(LPCSTR section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, u16 parent_id, bool registration)
+CSE_Abstract* CALifeSimulatorBase::spawn_item(LPCSTR section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, u16 parent_id,
+                                              bool registration)
 {
     CSE_Abstract* abstract = F_entity_Create(section);
     R_ASSERT3(abstract, "Cannot find item with section", section);
@@ -106,8 +107,6 @@ CSE_Abstract* CALifeSimulatorBase::spawn_item(LPCSTR section, const Fvector& pos
     dynamic_object->spawn_supplies();
     dynamic_object->on_spawn();
 
-    //	Msg							("LSS : SPAWN : [%s],[%s], level
-    //%s",*dynamic_object->s_name,dynamic_object->name_replace(),*ai().game_graph().header().level(ai().game_graph().vertex(dynamic_object->m_tGraphID)->level_id()).name());
     return (dynamic_object);
 }
 
@@ -217,11 +216,6 @@ void CALifeSimulatorBase::create(CSE_ALifeObject* object)
     }
     VERIFY(dynamic_object->m_bOnline);
 
-#ifdef DEBUG
-//	Msg							("Creating object from client spawn
-//[%d][%d][%s][%s]",dynamic_object->ID,dynamic_object->ID_Parent,dynamic_object->name(),dynamic_object->name_replace());
-#endif
-
     if (0xffff != dynamic_object->ID_Parent)
     {
         u16 id = dynamic_object->ID_Parent;
@@ -242,7 +236,7 @@ void CALifeSimulatorBase::release(CSE_Abstract* abstract, bool alife_query)
 {
 #ifdef DEBUG
     if (psAI_Flags.test(aiALife))
-        Msg("[LSS] Releasing object [%s][%s][%d][%x]", abstract->name_replace(), *abstract->s_name, abstract->ID, smart_cast<void*>(abstract));
+        Msg("[LSS] Releasing object [{}][{}][{}][{:#x}]", abstract->name_replace(), abstract->s_name, abstract->ID, smart_cast<void*>(abstract));
 #endif
 
     CSE_ALifeDynamicObject* object = objects().object(abstract->ID);

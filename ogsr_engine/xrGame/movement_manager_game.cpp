@@ -55,35 +55,37 @@ void CMovementManager::process_game_path()
 
         if (game_path().failed())
         {
-            Msg("! Cannot build GAME path! (object %s)", *object().cName());
-            Msg("! CURRENT LEVEL : %s", *Level().name());
-            Fvector temp = ai().game_graph().vertex(object().ai_location().game_vertex_id())->level_point();
-            Msg("! CURRENT game point position : [%f][%f][%f]", VPUSH(temp));
-            const GameGraph::CVertex* vertex = ai().game_graph().vertex(game_dest_vertex_id());
-            Msg("! TARGET LEVEL : %s", *ai().game_graph().header().level(vertex->level_id()).name());
-            temp = vertex->level_point();
-            Msg("! TARGET  game point position : [%f][%f][%f]", VPUSH(temp));
-            const u8* target_vertex_type = ai().game_graph().vertex(game_dest_vertex_id())->vertex_type();
-            Msg("! Target point mask [%d][%d][%d][%d]", target_vertex_type[0], target_vertex_type[1], target_vertex_type[2], target_vertex_type[3]);
+            Msg("! Cannot build GAME path! (object {})", object().cName());
+            Msg("! CURRENT LEVEL : {}", Level().name());
 
-            Msg("! Object masks (%zu) :", m_location_manager->vertex_types().size());
+            Fvector temp = ai().game_graph().vertex(object().ai_location().game_vertex_id())->level_point();
+            Msg("! CURRENT game point position : [{}][{}][{}]", VPUSH(temp));
+
+            const GameGraph::CVertex* vertex = ai().game_graph().vertex(game_dest_vertex_id());
+            Msg("! TARGET LEVEL : {}", ai().game_graph().header().level(vertex->level_id()).name());
+            temp = vertex->level_point();
+
+            Msg("! TARGET  game point position : [{}][{}][{}]", VPUSH(temp));
+            const u8* target_vertex_type = ai().game_graph().vertex(game_dest_vertex_id())->vertex_type();
+            Msg("! Target point mask [{}][{}][{}][{}]", target_vertex_type[0], target_vertex_type[1], target_vertex_type[2], target_vertex_type[3]);
+
+            Msg("! Object masks ({}) :", m_location_manager->vertex_types().size());
+
             auto I = m_location_manager->vertex_types().cbegin();
             auto E = m_location_manager->vertex_types().cend();
             for (; I != E; ++I)
-                Msg("!   [%d][%d][%d][%d]", (*I).tMask[0], (*I).tMask[1], (*I).tMask[2], (*I).tMask[3]);
+                Msg("!   [{}][{}][{}][{}]", (*I).tMask[0], (*I).tMask[1], (*I).tMask[2], (*I).tMask[3]);
+
             break;
         }
 
         m_path_state = ePathStateContinueGamePath;
-
-        //				if (time_over())
-        //					break;
-
         [[fallthrough]];
     }
     case ePathStateContinueGamePath: {
         game_path().select_intermediate_vertex();
-        if (ai().game_graph().vertex(object().ai_location().game_vertex_id())->level_id() != ai().game_graph().vertex(game_path().intermediate_vertex_id())->level_id())
+        if (ai().game_graph().vertex(object().ai_location().game_vertex_id())->level_id() !=
+            ai().game_graph().vertex(game_path().intermediate_vertex_id())->level_id())
         {
             m_path_state = ePathStateTeleport;
             VERIFY(ai().get_alife());
@@ -100,7 +102,8 @@ void CMovementManager::process_game_path()
         [[fallthrough]];
     }
     case ePathStateBuildLevelPath: {
-        VERIFY(ai().game_graph().vertex(object().ai_location().game_vertex_id())->level_id() == ai().game_graph().vertex(game_path().intermediate_vertex_id())->level_id());
+        VERIFY(ai().game_graph().vertex(object().ai_location().game_vertex_id())->level_id() ==
+               ai().game_graph().vertex(game_path().intermediate_vertex_id())->level_id());
 
         u32 dest_level_vertex_id = ai().game_graph().vertex(game_path().intermediate_vertex_id())->level_vertex_id();
 

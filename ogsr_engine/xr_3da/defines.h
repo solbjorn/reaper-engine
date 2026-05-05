@@ -22,7 +22,7 @@ extern BOOL bDebug;
         if (x) \
         { \
             x->AddRef(); \
-            Msg("[%s] refCount of [" #x "]: [%lu]", __FUNCTION__, x->Release()); \
+            Msg("[{}] refCount of [" #x "]: [{}]", __FUNCTION__, x->Release()); \
         } \
     } \
     XR_MACRO_END()

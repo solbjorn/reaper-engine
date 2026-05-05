@@ -31,7 +31,7 @@ public:
         {
             hf = fopen(*fName, "wb");
             if (hf == nullptr)
-                Msg("!Can't write file: '%s'. Error: '%s'.", *fName, _sys_errlist[errno]);
+                Msg("!Can't write file: '{}'. Error: '{}'.", fName, _sys_errlist[errno]);
         }
     }
 

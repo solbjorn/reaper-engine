@@ -23,7 +23,7 @@ u32 CUITextureMaster::m_time = 0;
 void CUITextureMaster::WriteLog()
 {
 #ifdef DEBUG
-    Msg("UI texture manager work time is %d ms", m_time);
+    Msg("UI texture manager work time is {} ms", m_time);
 #endif
 }
 
@@ -55,7 +55,8 @@ void CUITextureMaster::ParseShTexInfo(LPCSTR xml_file)
                 info.rect.y2 = xml.ReadAttribFlt(node, "texture", i, "height") + info.rect.y1;
 
                 gsl::czstring id = xml.ReadAttrib(node, "texture", i, "id");
-                /* avo: fix issue when values were not updated (silently skipped) when same key is encountered more than once. This is how std::map is designed. */
+                /* avo: fix issue when values were not updated (silently skipped) when same key is encountered more than once. This is how std::map is designed.
+                 */
                 if (m_textures.find(id) == m_textures.end())
                     m_textures.emplace(id, info);
                 else
@@ -150,7 +151,7 @@ float CUITextureMaster::GetTextureHeight(const char* texture_name)
     if (it != m_textures.end())
         return (*it).second.rect.height();
 
-    Msg("! CUITextureMaster::GetTextureHeight Can't find texture %s", texture_name);
+    Msg("! CUITextureMaster::GetTextureHeight Can't find texture {}", texture_name);
 
     return 0;
 }
@@ -161,7 +162,7 @@ Frect CUITextureMaster::GetTextureRect(const char* texture_name)
     if (it != m_textures.end())
         return (*it).second.rect;
 
-    Msg("! CUITextureMaster::GetTextureRect Can't find texture %s", texture_name);
+    Msg("! CUITextureMaster::GetTextureRect Can't find texture {}", texture_name);
 
     return Frect{};
 }
@@ -172,7 +173,7 @@ float CUITextureMaster::GetTextureWidth(const char* texture_name)
     if (it != m_textures.end())
         return (*it).second.rect.width();
 
-    Msg("! CUITextureMaster::GetTextureWidth Can't find texture %s", texture_name);
+    Msg("! CUITextureMaster::GetTextureWidth Can't find texture {}", texture_name);
 
     return 0;
 }
@@ -183,7 +184,7 @@ LPCSTR CUITextureMaster::GetTextureFileName(const char* texture_name)
     if (it != m_textures.end())
         return *((*it).second.file);
 
-    Msg("! CUITextureMaster::GetTextureFileName Can't find texture %s", texture_name);
+    Msg("! CUITextureMaster::GetTextureFileName Can't find texture {}", texture_name);
     return nullptr;
 }
 

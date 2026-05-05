@@ -179,7 +179,7 @@ void CGameTaskManager::SetTaskState(const TASK_ID& id, u16 objective_num, ETaskS
     CGameTask* t = HasGameTask(id);
     if (!t)
     {
-        Msg("actor does not has task [%s]", *id);
+        Msg("actor does not has task [{}]", id);
         return;
     }
 
@@ -196,9 +196,10 @@ void CGameTaskManager::UpdateTasks()
     auto act_task = ActiveTask();
     bool need_update_active_task = !act_task || act_task->Objective(0).TaskState() != ETaskState::eTaskStateInProgress;
 
+    // Реверсивный перебор тасков из-за того что походу внутри SetTaskState таски могут удалиться, из-за этого обычный итератор тут крашится.
     size_t processed{};
     auto iter = tasks.rbegin();
-    while (iter != tasks.rend()) // Реверсивный перебор тасков из-за того что походу внутри SetTaskState таски могут удалиться, из-за этого обычный итератор тут крашится.
+    while (iter != tasks.rend())
     {
         const auto size = tasks.size();
 
@@ -225,8 +226,10 @@ void CGameTaskManager::UpdateTasks()
                 act_task = ActiveTask();
                 need_update_active_task = !act_task || act_task->Objective(0).TaskState() != ETaskState::eTaskStateInProgress;
             }
-            // Тут ставим активным только первый objective если он один либо второй, чтоб тут случайно не назначился тот который скрыт опцией show_objectives_ondemand.
-            else if (need_update_active_task && ((i == 0 && t->m_Objectives.size() == 1) || (i == 1 && t->Objective(0).TaskState() == ETaskState::eTaskStateInProgress)))
+            // Тут ставим активным только первый objective если он один либо второй, чтоб тут случайно не назначился тот который скрыт опцией
+            // show_objectives_ondemand.
+            else if (need_update_active_task &&
+                     ((i == 0 && t->m_Objectives.size() == 1) || (i == 1 && t->Objective(0).TaskState() == ETaskState::eTaskStateInProgress)))
             {
                 SetActiveTask(t->m_ID, i);
                 need_update_active_task = false;
@@ -277,14 +280,14 @@ void CGameTaskManager::SetActiveTask(const TASK_ID& id, u16 idx, const bool safe
             g_active_task_objective_id = t->m_Objectives.size() - 1; // Некторые таски могут содержать всего один objective
 
             if (g_active_task_objective_id == 0)
-                Msg("!![%s - 1] g_active_task_objective_idx == 0", __FUNCTION__);
+                Msg("!![{} - 1] g_active_task_objective_idx == 0", __FUNCTION__);
         }
         else
         {
             g_active_task_objective_id = idx;
 
             if (g_active_task_objective_id == 0)
-                Msg("!![%s - 2] g_active_task_objective_idx == 0", __FUNCTION__);
+                Msg("!![{} - 2] g_active_task_objective_idx == 0", __FUNCTION__);
         }
     }
     else
@@ -292,7 +295,7 @@ void CGameTaskManager::SetActiveTask(const TASK_ID& id, u16 idx, const bool safe
         g_active_task_objective_id = idx;
 
         if (g_active_task_objective_id == 0)
-            Msg("!![%s - 3] g_active_task_objective_idx == 0", __FUNCTION__);
+            Msg("!![{} - 3] g_active_task_objective_idx == 0", __FUNCTION__);
     }
 
     Level().MapManager().DisableAllPointers();

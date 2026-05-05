@@ -7,7 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "alife_simulator_base.h"
+
 #include "relation_registry.h"
 #include "alife_registry_wrappers.h"
 #include "xrServer_Objects_ALife_Items.h"
@@ -43,7 +45,8 @@ void CALifeSimulatorBase::register_object(CSE_ALifeDynamicObject* object, bool a
 #ifdef DEBUG
         if (std::find(II->children.begin(), II->children.end(), item->base()->ID) != II->children.end())
         {
-            Msg("[LSS] Specified item [%s][%d] is already attached to the specified object [%s][%d]", item->base()->name_replace(), item->base()->ID, II->name_replace(), II->ID);
+            Msg("[LSS] Specified item [{}][{}] is already attached to the specified object [{}][{}]", item->base()->name_replace(), item->base()->ID,
+                II->name_replace(), II->ID);
             FATAL("[LSS] Cannot recover from the previous error!");
         }
 #endif

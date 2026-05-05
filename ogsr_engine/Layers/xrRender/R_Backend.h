@@ -1,14 +1,6 @@
 #ifndef r_backendH
 #define r_backendH
 
-// #define RBackend_PGO
-
-#ifdef RBackend_PGO
-#define PGO(a) a
-#else
-#define PGO(a)
-#endif
-
 #include "LightTrack.h"
 #include "r_DStreams.h"
 #include "r_constants_cache.h"

@@ -500,24 +500,27 @@ void CAgentEnemyManager::assign_wounded()
 #ifdef DEBUG
         if (!enemy)
         {
-            Msg(" ");
-            Msg(" ");
-            Msg("error will occur now, dumping valuable info");
-            Msg("wounded enemies(%d):", m_enemies.size());
+            Log(" ");
+            Log(" ");
+            Log("error will occur now, dumping valuable info");
+            Msg("wounded enemies({}):", m_enemies.size());
+
             {
                 typedef ENEMIES::iterator iterator;
                 iterator I = m_enemies.begin();
                 iterator E = m_enemies.end();
                 for (; I != E; ++I)
-                    Msg("  [%s][0x%08x][0x%08x][%.2f]", *(*I).m_object->cName(), (*I).m_mask.get(), (*I).m_distribute_mask.get(), (*I).m_probability);
+                    Msg("  [{}][{:#10x}][{:#10x}][{:.3}]", (*I).m_object->cName(), (*I).m_mask.get(), (*I).m_distribute_mask.get(), (*I).m_probability);
             }
-            Msg("combat members(%d):", object().member().combat_members().size());
+
+            Msg("combat members({}):", object().member().combat_members().size());
+
             {
                 typedef CAgentMemberManager::MEMBER_STORAGE::const_iterator const_iterator;
                 const_iterator I = object().member().combat_members().begin();
                 const_iterator E = object().member().combat_members().end();
                 for (; I != E; ++I)
-                    Msg("  [%s][0x%08x][0x%08x]", *(*I)->object().cName(), object().member().mask(&(*I)->object()), (*I)->selected_enemy());
+                    Msg("  [{}][{:#10x}][{:#10x}]", (*I)->object().cName(), object().member().mask(&(*I)->object()), (*I)->selected_enemy());
             }
         }
 #endif
@@ -545,8 +548,6 @@ void CAgentEnemyManager::assign_wounded()
         if (!enemy)
             return;
 
-        //		Msg							("wounded enemy [%s] is assigned to member [%s]",*enemy->m_object->cName(),*processor->cName());
-
         if (wounded_processor(enemy->m_object) == ALife::_OBJECT_ID(-1))
             wounded_processor(enemy->m_object, processor->ID());
 
@@ -555,12 +556,6 @@ void CAgentEnemyManager::assign_wounded()
         VERIFY((assigned | mask) != assigned);
         assigned |= mask;
     }
-
-    //	Msg								("[%6d] assigned = %x",Device.dwTimeGlobal,assigned);
-    //	ENEMIES::iterator				I = m_enemies.begin();
-    //	ENEMIES::iterator				E = m_enemies.end();
-    //	for ( ; I != E; ++I)
-    //		Msg							("[%6d] [%s] = %x",Device.dwTimeGlobal,*(*I).m_object->cName(),(*I).m_distribute_mask.get());
 }
 
 void CAgentEnemyManager::distribute_enemies()
@@ -607,7 +602,10 @@ struct wounded_predicate
     }
 };
 
-void CAgentEnemyManager::remove_links(CObject* object) { m_wounded.erase(std::remove_if(m_wounded.begin(), m_wounded.end(), wounded_predicate(object)), m_wounded.end()); }
+void CAgentEnemyManager::remove_links(CObject* object)
+{
+    m_wounded.erase(std::remove_if(m_wounded.begin(), m_wounded.end(), wounded_predicate(object)), m_wounded.end());
+}
 
 void CAgentEnemyManager::update() {}
 

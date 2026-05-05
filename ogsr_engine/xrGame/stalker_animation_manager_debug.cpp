@@ -81,15 +81,19 @@ void show_animations()
 
     struct predicate
     {
-        static IC bool frame_count(const ANIMATION_STATS_PAIR* const& _1, const ANIMATION_STATS_PAIR* const& _2) { return (_1->second.m_frame_count < _2->second.m_frame_count); }
+        static IC bool frame_count(const ANIMATION_STATS_PAIR* const& _1, const ANIMATION_STATS_PAIR* const& _2)
+        {
+            return (_1->second.m_frame_count < _2->second.m_frame_count);
+        }
     };
 
     const ANIMATION_STATS_PAIR** const e = animations + animation_count;
     std::sort(animations, e, &predicate::frame_count);
 
-    Msg("frames starts animation                        animation_set");
+    Log("frames starts animation                        animation_set");
+
     for (i = animations; i != e; ++i)
-        Msg("%6d %6d %-32s %s", (*i)->second.m_frame_count, (*i)->second.m_start_count, *(*i)->first.first, *(*i)->first.second);
+        Msg("{:6} {:6} {:32} {}", (*i)->second.m_frame_count, (*i)->second.m_start_count, (*i)->first.first, (*i)->first.second);
 }
 
 void show_blends()
@@ -110,9 +114,11 @@ void show_blends()
     const BLEND_STATS_PAIR** const e = blends + blend_count;
     std::sort(blends, e, &predicate::blend_count);
 
-    Msg("       animation_set1                                  animation1    count     animation2                                  animation_set2");
+    Log("       animation_set1                                  animation1    count     animation2                                  animation_set2");
+
     for (i = blends; i != e; ++i)
-        Msg("%-32s %32s ->[%6d]-> %-32s %32s", *(*i)->first.second.second, *(*i)->first.second.first, (*i)->second, *(*i)->first.first.first, *(*i)->first.first.second);
+        Msg("{:32} {:32} ->[{:6}]-> {:32} {:32}", (*i)->first.second.second, (*i)->first.second.first, (*i)->second, (*i)->first.first.first,
+            (*i)->first.first.second);
 }
 
 void show_animation_stats()
@@ -122,7 +128,7 @@ void show_animation_stats()
         return;
 
     show_animations();
-    Msg("--------------------------------------------------");
+    Log("--------------------------------------------------");
     show_blends();
 #endif
 }
@@ -160,8 +166,8 @@ void add_blend(const shared_str& animation_id, const shared_str& animation_set_i
     g_blend_stats.try_emplace(query, 1);
 }
 
-void add_animation_stats(const shared_str& animation_id, const shared_str& animation_set_id, const shared_str& visual_id, const std::pair<LPCSTR, LPCSTR>* blend_id,
-                         bool just_started)
+void add_animation_stats(const shared_str& animation_id, const shared_str& animation_set_id, const shared_str& visual_id,
+                         const std::pair<LPCSTR, LPCSTR>* blend_id, bool just_started)
 {
     add_animation(animation_id, animation_set_id, visual_id, just_started);
     add_blend(animation_id, animation_set_id, visual_id, blend_id);
@@ -178,17 +184,20 @@ void CStalkerAnimationManager::add_animation_stats()
 
     if (script().animation())
     {
-        add_animation_stats(m_skeleton_animated->LL_MotionDefName_dbg(script().animation()), script().blend_id(m_skeleton_animated, blend), script().m_just_started);
+        add_animation_stats(m_skeleton_animated->LL_MotionDefName_dbg(script().animation()), script().blend_id(m_skeleton_animated, blend),
+                            script().m_just_started);
         return;
     }
 
     if (global().animation())
     {
-        add_animation_stats(m_skeleton_animated->LL_MotionDefName_dbg(global().animation()), global().blend_id(m_skeleton_animated, blend), global().m_just_started);
+        add_animation_stats(m_skeleton_animated->LL_MotionDefName_dbg(global().animation()), global().blend_id(m_skeleton_animated, blend),
+                            global().m_just_started);
         return;
     }
 
-    //	add_animation_stats			(m_skeleton_animated->LL_MotionDefName_dbg(head().animation()),head().blend_id(m_skeleton_animated,blend),head().m_just_started);
+    //	add_animation_stats
+    //(m_skeleton_animated->LL_MotionDefName_dbg(head().animation()),head().blend_id(m_skeleton_animated,blend),head().m_just_started);
     add_animation_stats(m_skeleton_animated->LL_MotionDefName_dbg(torso().animation()), torso().blend_id(m_skeleton_animated, blend), torso().m_just_started);
     add_animation_stats(m_skeleton_animated->LL_MotionDefName_dbg(legs().animation()), legs().blend_id(m_skeleton_animated, blend), legs().m_just_started);
 }

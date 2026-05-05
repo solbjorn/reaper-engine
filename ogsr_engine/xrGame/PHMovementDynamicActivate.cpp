@@ -328,13 +328,10 @@ bool CPHMovementControl::ActivateBoxDynamic(DWORD id, int num_it /*=8*/, int num
             dBodySetRotation(b, R);
         }
         SetPosition(pos);
-
-        // Msg("can not activate!");
     }
     else
     {
         ActivateBox(id);
-        // Msg("activate!");
     }
 
     SetOjectContactCallback(saved_callback);

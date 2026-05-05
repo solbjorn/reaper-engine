@@ -1087,7 +1087,8 @@ bool CSE_ALifeMonsterAbstract::need_update(CSE_ALifeDynamicObject* object) { ret
 // CSE_ALifeCreatureActor
 ////////////////////////////////////////////////////////////////////////////
 
-CSE_ALifeCreatureActor::CSE_ALifeCreatureActor(LPCSTR caSection) : CSE_ALifeCreatureAbstract(caSection), CSE_ALifeTraderAbstract(caSection), CSE_PHSkeleton(caSection)
+CSE_ALifeCreatureActor::CSE_ALifeCreatureActor(LPCSTR caSection)
+    : CSE_ALifeCreatureAbstract(caSection), CSE_ALifeTraderAbstract(caSection), CSE_PHSkeleton(caSection)
 {
     if (pSettings->section_exist(caSection) && pSettings->line_exist(caSection, "visual"))
         set_visual(pSettings->r_string(caSection, "visual"));
@@ -1197,7 +1198,7 @@ void CSE_ALifeCreatureActor::UPDATE_Read(NET_Packet& tNetPacket)
     }
 
     ////////////// Import dead body ////////////////////
-    Msg("A mi ni hera tut ne chitaem (m_u16NumItems == %d)", m_u16NumItems);
+    Msg("A mi ni hera tut ne chitaem (m_u16NumItems == {})", m_u16NumItems);
 
     {
         m_BoneDataSize = tNetPacket.r_u8();

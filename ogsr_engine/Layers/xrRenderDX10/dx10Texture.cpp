@@ -13,7 +13,7 @@ namespace xr
 {
 namespace
 {
-enum class format : s32
+enum class texfmt : s32
 {
     none = 0,
     dds,
@@ -48,10 +48,10 @@ public:
     [[nodiscard]] size_t Size() override { return gsl::narrow_cast<size_t>(file->length()); }
 };
 
-[[nodiscard]] xr::format find_texture(string_path& fn, std::span<const std::string_view> places, std::string_view fname)
+[[nodiscard]] xr::texfmt find_texture(string_path& fn, std::span<const std::string_view> places, std::string_view fname)
 {
-    static constexpr std::array<std::pair<std::string_view, format>, 4> formats{
-        {{".dds", xr::format::dds}, {".exr", xr::format::exr}, {".ktx", xr::format::ktx}, {".ktx2", xr::format::ktx}}};
+    static constexpr std::array<std::pair<std::string_view, xr::texfmt>, 4> formats{
+        {{".dds", xr::texfmt::dds}, {".exr", xr::texfmt::exr}, {".ktx", xr::texfmt::ktx}, {".ktx2", xr::texfmt::ktx}}};
 
     for (auto& ext : xr::fsgame::formats::texture)
     {
@@ -63,17 +63,17 @@ public:
             if (const auto it = std::ranges::find(formats, ext, &decltype(formats)::value_type::first); it != formats.end())
                 return it->second;
 
-            return xr::format::sf;
+            return xr::texfmt::sf;
         }
     }
 
-    return xr::format::none;
+    return xr::texfmt::none;
 }
 } // namespace
 
 bool texture_exists(string_path& fn, std::span<const std::string_view> places, std::string_view fname)
 {
-    return xr::find_texture(fn, places, fname) != xr::format::none;
+    return xr::find_texture(fn, places, fname) != xr::texfmt::none;
 }
 } // namespace xr
 
@@ -116,36 +116,36 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 
     const std::string_view fview{fname};
     const bool bump = fview.contains("_bump");
-    xr::format fmt;
+    xr::texfmt fmt;
 
     if (bump)
     {
-        if (fmt = xr::find_texture(fn, std::array{xr::fsgame::level, xr::fsgame::game_textures}, fview); fmt == xr::format::none)
+        if (fmt = xr::find_texture(fn, std::array{xr::fsgame::level, xr::fsgame::game_textures}, fview); fmt == xr::texfmt::none)
         {
-            Msg("! Fallback to default bump map: [%s]", fname);
+            Msg("! Fallback to default bump map: [{}]", fview);
 
             if (fview.contains("_bump#"))
                 fmt = xr::find_texture(fn, std::array{xr::fsgame::game_textures}, "ed\\ed_dummy_bump#");
             else
                 fmt = xr::find_texture(fn, std::array{xr::fsgame::game_textures}, "ed\\ed_dummy_bump");
 
-            R_ASSERT(fmt != xr::format::none);
+            R_ASSERT(fmt != xr::texfmt::none);
         }
     }
-    else if (fmt = xr::find_texture(fn, std::array{xr::fsgame::level, xr::fsgame::game_textures, xr::fsgame::game_saves}, fview); fmt == xr::format::none)
+    else if (fmt = xr::find_texture(fn, std::array{xr::fsgame::level, xr::fsgame::game_textures, xr::fsgame::game_saves}, fview); fmt == xr::texfmt::none)
     {
-        Msg("! Can't find texture [%s]", fname);
+        Msg("! Can't find texture [{}]", fview);
 
         fmt = xr::find_texture(fn, std::array{xr::fsgame::game_textures}, "ed\\ed_not_existing_texture");
-        R_ASSERT(fmt != xr::format::none);
+        R_ASSERT(fmt != xr::texfmt::none);
     }
 
     switch (fmt)
     {
-    case xr::format::dds: return texture_load_dds(fn, ret_msize);
-    case xr::format::exr: return texture_load_exr(fn, ret_msize);
-    case xr::format::ktx: return texture_load_ktx(fn, ret_msize);
-    case xr::format::sf: return texture_load_sf(fn, ret_msize, bump || Resources->m_textures_description.contains(fview));
+    case xr::texfmt::dds: return texture_load_dds(fn, ret_msize);
+    case xr::texfmt::exr: return texture_load_exr(fn, ret_msize);
+    case xr::texfmt::ktx: return texture_load_ktx(fn, ret_msize);
+    case xr::texfmt::sf: return texture_load_sf(fn, ret_msize, bump || Resources->m_textures_description.contains(fview));
     default: NODEFAULT;
     }
 }
@@ -165,14 +165,14 @@ ID3DBaseTexture* CRender::texture_load_dds(const string_path& path, u32& size)
 
         if (const auto hr = DirectX::LoadFromDDSStream(is, dds_flags, &meta, texture); FAILED(hr))
         {
-            Msg("! Failed to load DDS texture: [%s], error: [%ld]", path, hr);
+            Msg("! Failed to load DDS texture: [{}], error: [{}]", path, hr);
             return nullptr;
         }
 
         ID3DBaseTexture* pTexture2D;
 
-        const auto hr = DirectX::CreateTextureEx(HW.pDevice, texture.GetImages(), texture.GetImageCount(), meta, D3D_USAGE_IMMUTABLE, D3D_BIND_SHADER_RESOURCE, 0, meta.miscFlags,
-                                                 DirectX::CREATETEX_DEFAULT, &pTexture2D);
+        const auto hr = DirectX::CreateTextureEx(HW.pDevice, texture.GetImages(), texture.GetImageCount(), meta, D3D_USAGE_IMMUTABLE, D3D_BIND_SHADER_RESOURCE,
+                                                 0, meta.miscFlags, DirectX::CREATETEX_DEFAULT, &pTexture2D);
         if (SUCCEEDED(hr))
         {
             // Получилось. Считаем сколько весит текстура и сваливаем.
@@ -182,7 +182,7 @@ ID3DBaseTexture* CRender::texture_load_dds(const string_path& path, u32& size)
 
         if (!allowFallback)
         {
-            Msg("! Failed to create DDS texture: [%s], error: [%ld]", path, hr);
+            Msg("! Failed to create DDS texture: [{}], error: [{}]", path, hr);
             return nullptr; // Уже была вторая попытка, прекращаем.
         }
 

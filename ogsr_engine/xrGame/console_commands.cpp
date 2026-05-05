@@ -161,9 +161,9 @@ public:
         SProcessMemInfo memCounters;
         GetProcessMemInfo(memCounters);
 
-        Msg("[%llu Mb] physical memory installed, [%llu Mb] available, [%u] percent of memory in use", memCounters.TotalPhysicalMemory / (1024 * 1024),
+        Msg("[{} Mb] physical memory installed, [{} Mb] available, [{}] percent of memory in use", memCounters.TotalPhysicalMemory / (1024 * 1024),
             memCounters.FreePhysicalMemory / (1024 * 1024), memCounters.MemoryLoad);
-        Msg("PageFile total: [%llu Mb], free~ [%llu Mb]", memCounters.TotalPageFile / (1024 * 1024), memCounters.FreePageFile / (1024 * 1024));
+        Msg("PageFile total: [{} Mb], free~ [{} Mb]", memCounters.TotalPageFile / (1024 * 1024), memCounters.FreePageFile / (1024 * 1024));
 
         // PeakWorkingSetSize
         //
@@ -173,17 +173,20 @@ public:
         //
         // The current working set size, in bytes.
 
-        Msg("Engine memory usage (Working Set): [%llu Mb], peak: [%llu Mb]", memCounters.WorkingSetSize / (1024 * 1024), memCounters.PeakWorkingSetSize / (1024 * 1024));
+        Msg("Engine memory usage (Working Set): [{} Mb], peak: [{} Mb]", memCounters.WorkingSetSize / (1024 * 1024),
+            memCounters.PeakWorkingSetSize / (1024 * 1024));
 
         // PagefileUsage
         //
-        // The Commit Charge value in bytes for this process. Commit Charge is the total amount of memory that the memory manager has committed for a running process.
+        // The Commit Charge value in bytes for this process. Commit Charge is the total amount of memory that the memory manager has committed for a running
+        // process.
         //
         // PeakPagefileUsage
         //
         // The peak value in bytes of the Commit Charge during the lifetime of this process.
 
-        Msg("Engine memory usage (Commit Charge): [%llu Mb], peak: [%llu Mb]", memCounters.PagefileUsage / (1024 * 1024), memCounters.PeakPagefileUsage / (1024 * 1024));
+        Msg("Engine memory usage (Commit Charge): [{} Mb], peak: [{} Mb]", memCounters.PagefileUsage / (1024 * 1024),
+            memCounters.PeakPagefileUsage / (1024 * 1024));
 
         Log("--------------------------------------------------------------------------------");
 
@@ -191,17 +194,17 @@ public:
         const auto _eco_strings = str_container::stat_economy();
         const auto _eco_smem = smem_container::stat_economy();
 
-        Msg("* [ D3D ]: textures count [%zd]", usage.c_base + usage.c_lmaps);
-        Msg("* [ D3D ]: textures [%zd Kb]", (usage.m_base + usage.m_lmaps) / 1024);
+        Msg("* [ D3D ]: textures count [{}]", usage.c_base + usage.c_lmaps);
+        Msg("* [ D3D ]: textures [{} Kb]", (usage.m_base + usage.m_lmaps) / 1024);
 
         const auto script = xr::script_engine_initialized() ? ai().script_engine().lua().memory_used() : 0uz;
-        Msg("* [ Lua ]: render [%zd Kb], game [%zu Kb]", usage.lua / 1024, script / 1024);
+        Msg("* [ Lua ]: render [{} Kb], game [{} Kb]", usage.lua / 1024, script / 1024);
 
-        Msg("* [x-ray]: process heap [%zd Kb]", _process_heap / 1024);
-        Msg("* [x-ray]: economy: strings [%zd Kb], smem [%zd Kb]", _eco_strings / 1024, _eco_smem / 1024);
+        Msg("* [x-ray]: process heap [{} Kb]", _process_heap / 1024);
+        Msg("* [x-ray]: economy: strings [{} Kb], smem [{} Kb]", _eco_strings / 1024, _eco_smem / 1024);
 
 #ifdef DEBUG
-        Msg("* [x-ray]: file mapping: memory [%u Kb], count [%u]", g_file_mapped_memory / 1024, g_file_mapped_count);
+        Msg("* [x-ray]: file mapping: memory [{} Kb], count [{}]", g_file_mapped_memory / 1024, g_file_mapped_count);
         dump_file_mappings();
 #endif // DEBUG
     }
@@ -322,27 +325,24 @@ public:
     virtual void Execute(LPCSTR args)
     {
         if (!ai().get_level_graph())
-            Msg("! there is no graph!");
+        {
+            Log("! there is no graph!");
+        }
         else
         {
             int id1 = -1, id2 = -1;
             sscanf(args, "%d %d", &id1, &id2);
             if ((-1 != id1) && (-1 != id2))
+            {
                 if (_max(id1, id2) > (int)ai().game_graph().header().vertex_count() - 1)
-                    Msg("! there are only %d vertexes!", ai().game_graph().header().vertex_count());
+                    Msg("! there are only {} vertexes!", ai().game_graph().header().vertex_count());
                 else if (_min(id1, id2) < 0)
-                    Msg("! invalid vertex number (%d)!", _min(id1, id2));
-                else
-                {
-                    //						Sleep				(1);
-                    //						CTimer				timer;
-                    //						timer.Start			();
-                    //						float				fValue = ai().m_tpAStar->ffFindMinimalPath(id1,id2);
-                    //						Msg					("* %7.2f[%d] : %11I64u cycles (%.3f
-                    // microseconds)",fValue,ai().m_tpAStar->m_tpaNodes.size(),timer.GetElapsed_ticks(),timer.GetElapsed_ms()*1000.f);
-                }
+                    Msg("! invalid vertex number ({})!", _min(id1, id2));
+            }
             else
-                Msg("! not enough parameters!");
+            {
+                Log("! not enough parameters!");
+            }
         }
     }
 };
@@ -360,11 +360,9 @@ public:
         float id1 = 0.0f;
         sscanf(args, "%f", &id1);
         if (id1 < EPS_L)
-            Msg("Invalid time factor! (%.4f)", id1);
+            Msg("Invalid time factor! ({:.5})", id1);
         else
-        {
             Level().Server->game->SetGameTimeFactor(id1);
-        }
     }
 };
 
@@ -381,7 +379,9 @@ public:
             float id1 = 0.0f;
             sscanf(args, "%f", &id1);
             if (id1 < 2.0f)
-                Msg("Invalid online distance! (%.4f)", id1);
+            {
+                Msg("Invalid online distance! ({:.5})", id1);
+            }
             else
             {
                 NET_Packet P;
@@ -391,7 +391,9 @@ public:
             }
         }
         else
+        {
             Log("!Not a single player game!");
+        }
     }
 };
 
@@ -410,12 +412,14 @@ public:
             int id1 = 0;
             sscanf(args, "%d", &id1);
             if (id1 < 1)
-                Msg("Invalid process time! (%d)", id1);
+                Msg("Invalid process time! ({})", id1);
             else
                 tpGame->alife().set_process_time(id1);
         }
         else
+        {
             Log("!Not a single player game!");
+        }
     }
 };
 
@@ -530,7 +534,7 @@ public:
     {
         if (!g_pGameLevel)
         {
-            Msg("! There are no level(s) started");
+            Log("! There are no level(s) started");
             return;
         }
 
@@ -589,14 +593,14 @@ public:
     {
         if (g_actor == nullptr || !Actor()->g_Alive())
         {
-            Msg("cannot make saved game because actor is dead :(");
+            Log("cannot make saved game because actor is dead :(");
             return;
         }
 
         const bool named = args != nullptr && args[0] != '\0';
         if (named && !valid_file_name(args))
         {
-            Msg("invalid file name");
+            Log("invalid file name");
             return;
         }
 
@@ -642,7 +646,7 @@ private:
         xr_free(args);
 
 #ifdef DEBUG
-        Msg("Game save overhead  : %f milliseconds", timer.GetElapsed_sec() * 1000.f);
+        Msg("Game save overhead  : {} milliseconds", timer.GetElapsed_sec() * 1000.f);
 #endif
 
         SDrawStaticStruct* _s = HUD().GetUI()->UIGame()->AddCustomStatic("game_saved", true);
@@ -663,7 +667,7 @@ private:
         co_await MainMenu()->Screenshot(IRender_interface::SM_FOR_GAMESAVE, S1);
 
 #ifdef DEBUG
-        Msg("Screenshot overhead : %f milliseconds", timer.GetElapsed_sec() * 1000.f);
+        Msg("Screenshot overhead : {} milliseconds", timer.GetElapsed_sec() * 1000.f);
 #endif
     }
 };
@@ -680,7 +684,7 @@ public:
     {
         if (!CSavedGameWrapper::valid_saved_game(args))
         {
-            Msg("! Cannot load saved game [%s]: not found or version mismatch or corrupted", args ?: "nullptr");
+            Msg("! Cannot load saved game [{}]: not found or version mismatch or corrupted", args ?: "nullptr");
             return;
         }
 
@@ -738,7 +742,7 @@ public:
 
         if (!*g_last_saved_game)
         {
-            Msg("! cannot load last saved game since it hasn't been specified");
+            Log("! cannot load last saved game since it hasn't been specified");
             return;
         }
 
@@ -827,7 +831,7 @@ public:
         const GameGraph::SLevel* level = ai().game_graph().header().level(S, true);
         if (!level)
         {
-            Msg("! There is no level %s in the game graph", S);
+            Msg("! There is no level {} in the game graph", S);
             return;
         }
 
@@ -876,9 +880,7 @@ public:
         {
             CSE_ALifeCreatureAbstract* obj = smart_cast<CSE_ALifeCreatureAbstract*>(I->second);
             if (obj)
-            {
-                Msg("\"%s\",", obj->name_replace());
-            }
+                Msg("\"{}\",", obj->name_replace());
         }
     }
     virtual void Info(TInfo& I) { strcpy_s(I, "dumps all creature names"); }
@@ -1026,7 +1028,6 @@ public:
     virtual void Status(TStatus& S) { sprintf_s(S, "%3.5f", 1.f / fixed_step); }
 };
 
-// #ifndef MASTER_GOLD
 struct CCC_JumpToLevel : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_JumpToLevel, IConsole_Command);
@@ -1039,7 +1040,7 @@ public:
     {
         if (!ai().get_alife())
         {
-            Msg("! ALife simulator is needed to perform specified command!");
+            Log("! ALife simulator is needed to perform specified command!");
             return;
         }
 
@@ -1055,14 +1056,14 @@ public:
             }
         }
 
-        Msg("! There is no level \"%s\" in the game graph!", level);
+        Msg("! There is no level \"{}\" in the game graph!", level);
     }
 
     void fill_tips(vecTips& tips) override
     {
         if (!ai().get_alife())
         {
-            Msg("! ALife simulator is needed to perform specified command!");
+            Log("! ALife simulator is needed to perform specified command!");
             return;
         }
 
@@ -1084,19 +1085,20 @@ public:
 
         if (!pSettings->section_exist(args))
         {
-            Msg("! Can't find section: %s", args);
+            Msg("! Can't find section: {}", args);
             return;
         }
 
         if (auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game))
-            tpGame->alife().spawn_item(args, Actor()->Position(), Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+            tpGame->alife().spawn_item(args, Actor()->Position(), Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(),
+                                       ALife::_OBJECT_ID(-1));
     }
 
     virtual void fill_tips(vecTips& tips)
     {
         if (!ai().get_alife())
         {
-            Msg("! ALife simulator is needed to perform specified command!");
+            Log("! ALife simulator is needed to perform specified command!");
             return;
         }
 
@@ -1111,11 +1113,8 @@ public:
         }
 
         std::sort(tips.begin(), tips.end());
-
-        // tips.push_back((*itb).second.name());
     }
 };
-// #endif // MASTER_GOLD
 
 class CCC_SpawnToInventory : public IConsole_Command
 {
@@ -1132,7 +1131,7 @@ public:
 
         if (!pSettings->section_exist(args))
         {
-            Msg("! Can't find section: %s", args);
+            Msg("! Can't find section: {}", args);
             return;
         }
 
@@ -1142,7 +1141,8 @@ public:
             packet.w_begin(M_SPAWN);
             packet.w_stringZ(args);
 
-            CSE_Abstract* item = tpGame->alife().spawn_item(args, Actor()->Position(), Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), 0, false);
+            CSE_Abstract* item = tpGame->alife().spawn_item(args, Actor()->Position(), Actor()->ai_location().level_vertex_id(),
+                                                            Actor()->ai_location().game_vertex_id(), 0, false);
             item->Spawn_Write(packet, FALSE);
             tpGame->alife().server().FreeID(item->ID, 0);
             F_entity_Destroy(item);
@@ -1162,7 +1162,7 @@ public:
     {
         if (!ai().get_alife())
         {
-            Msg("! ALife simulator is needed to perform specified command!");
+            Log("! ALife simulator is needed to perform specified command!");
             return;
         }
 
@@ -1171,14 +1171,10 @@ public:
             auto& section = it.first;
 
             if (pSettings->line_exist(section, "class"))
-            {
                 tips.push_back(section);
-            }
         }
 
         std::sort(tips.begin(), tips.end());
-
-        // tips.push_back((*itb).second.name());
     }
 };
 
@@ -1400,7 +1396,7 @@ public:
         if (CAttachableItem::m_dbgItem)
         {
             CAttachableItem::m_dbgItem = nullptr;
-            Msg("~~[%s] switched to off", __FUNCTION__);
+            Msg("~~[{}] switched to off", __FUNCTION__);
             return;
         }
 
@@ -1434,9 +1430,9 @@ public:
         }
 
         if (CAttachableItem::m_dbgItem)
-            Msg("--[%s] switched to ON for [%s]", __FUNCTION__, args);
+            Msg("--[{}] switched to ON for [{}]", __FUNCTION__, args);
         else
-            Msg("!![%s] cannot find attached item [%s]", __FUNCTION__, args);
+            Msg("!![{}] cannot find attached item [{}]", __FUNCTION__, args);
     }
 
     void Info(TInfo& I) override { sprintf_s(I, "allows to change bind rotation and position offsets for attached item, <section_name> given as arguments"); }
@@ -1456,7 +1452,7 @@ public:
         if (CAttachableItem::m_dbgItem)
         {
             CAttachableItem::m_dbgItem = nullptr;
-            Msg("~~[%s] switched to off", __FUNCTION__);
+            Msg("~~[{}] switched to off", __FUNCTION__);
             return;
         }
 
@@ -1487,9 +1483,9 @@ public:
         }
 
         if (CAttachableItem::m_dbgItem)
-            Msg("--[%s] switched to ON for item in slot [%s]", __FUNCTION__, args);
+            Msg("--[{}] switched to ON for item in slot [{}]", __FUNCTION__, args);
         else
-            Msg("!![%s] cannot find attached item in slot [%s]", __FUNCTION__, args);
+            Msg("!![{}] cannot find attached item in slot [{}]", __FUNCTION__, args);
     }
 
     void Info(TInfo& I) override { sprintf_s(I, "allows to change bind rotation and position offsets for attached item, <section_name> given as arguments"); }
@@ -1520,7 +1516,7 @@ public:
     {
         if (!arguments || !*arguments)
         {
-            Msg("! no arguments passed");
+            Log("! no arguments passed");
             return;
         }
 
@@ -1534,7 +1530,7 @@ public:
 
         if (!FS.exist(arguments) && !FS.exist(fn, "$level$", name) && !FS.exist(fn, "$game_meshes$", name))
         {
-            Msg("! Cannot find visual \"%s\"", arguments);
+            Msg("! Cannot find visual \"{}\"", arguments);
             return;
         }
 
@@ -1543,13 +1539,14 @@ public:
         if (!kinematics)
         {
             Render->model_Delete(visual);
-            Msg("! Invalid visual type \"%s\" (not a IKinematics)", arguments);
+            Msg("! Invalid visual type \"{}\" (not a IKinematics)", arguments);
             return;
         }
 
-        Msg("bones for model \"%s\"", arguments);
+        Msg("bones for model \"{}\"", arguments);
+
         for (u16 i = 0, n = kinematics->LL_BoneCount(); i < n; ++i)
-            Msg("%s", *kinematics->LL_GetData(i).name);
+            Log(kinematics->LL_GetData(i).name);
 
         Render->model_Delete(visual);
     }
@@ -1866,7 +1863,8 @@ void CCC_RegisterCommands()
     CMD3(CCC_Mask, "dbg_draw_car_plots_all_trans", &ph_dbg_draw_mask, phDbgDrawCarAllTrnsm);
     CMD3(CCC_Mask, "dbg_draw_ph_zbuffer_disable", &ph_dbg_draw_mask, phDbgDrawZDisable);
     CMD3(CCC_Mask, "dbg_ph_obj_collision_damage", &ph_dbg_draw_mask, phDbgDispObjCollisionDammage);
-    CMD_RADIOGROUPMASK2("dbg_ph_ai_always_phmove", &ph_dbg_draw_mask, phDbgAlwaysUseAiPhMove, "dbg_ph_ai_never_phmove", &ph_dbg_draw_mask, phDbgNeverUseAiPhMove);
+    CMD_RADIOGROUPMASK2("dbg_ph_ai_always_phmove", &ph_dbg_draw_mask, phDbgAlwaysUseAiPhMove, "dbg_ph_ai_never_phmove", &ph_dbg_draw_mask,
+                        phDbgNeverUseAiPhMove);
     CMD3(CCC_Mask, "dbg_ph_ik", &ph_dbg_draw_mask, phDbgIK);
     CMD3(CCC_Mask, "dbg_ph_ik_off", &ph_dbg_draw_mask1, phDbgIKOff);
     CMD3(CCC_Mask, "dbg_draw_ph_ik_goal", &ph_dbg_draw_mask, phDbgDrawIKGoal);

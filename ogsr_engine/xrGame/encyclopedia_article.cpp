@@ -117,7 +117,7 @@ void CEncyclopediaArticle::load_shared(LPCSTR)
     else if (std::is_eq(xr::strcasecmp(atricle_type, "info")))
         data()->articleType = ARTICLE_DATA::eInfoArticle;
     else
-        Msg("incorrect article type definition for [%s]", *item_data.id);
+        Msg("incorrect article type definition for [{}]", item_data.id);
 
     data()->ui_template_name._set(pXML->ReadAttrib(pNode, "ui_template", "common"));
     data()->sort = !!pXML->ReadAttribInt(pNode, "sort", 0);

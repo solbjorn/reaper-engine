@@ -315,7 +315,6 @@ tmc::task<void> CActor::cam_Update(f32 dt, f32 fFOV)
         u32 tri_count = xrc.r_count();
         if (tri_count)
         {
-            // Msg("~~[%s.1] set VIEWPORT_NEAR to 0.01!", __FUNCTION__);
             _viewport_near = 0.01f;
         }
         else
@@ -327,7 +326,6 @@ tmc::task<void> CActor::cam_Update(f32 dt, f32 fFOV)
                 CPHShell* pCPHS = smart_cast<CPHShell*>(ISpatialResult[o_it]);
                 if (pCPHS)
                 {
-                    // Msg("~~[%s.2] set VIEWPORT_NEAR to 0.01!", __FUNCTION__);
                     _viewport_near = 0.01f;
                     break;
                 }
@@ -418,9 +416,12 @@ void CActor::LoadSleepEffector(LPCSTR section)
     m_pSleepEffector->ppi.noise.fps = pSettings->r_float(section, "noise_fps");
     VERIFY(!fis_zero(m_pSleepEffector->ppi.noise.fps));
 
-    sscanf(pSettings->r_string(section, "color_base"), "%f,%f,%f", &m_pSleepEffector->ppi.color_base.r, &m_pSleepEffector->ppi.color_base.g, &m_pSleepEffector->ppi.color_base.b);
-    sscanf(pSettings->r_string(section, "color_gray"), "%f,%f,%f", &m_pSleepEffector->ppi.color_gray.r, &m_pSleepEffector->ppi.color_gray.g, &m_pSleepEffector->ppi.color_gray.b);
-    sscanf(pSettings->r_string(section, "color_add"), "%f,%f,%f", &m_pSleepEffector->ppi.color_add.r, &m_pSleepEffector->ppi.color_add.g, &m_pSleepEffector->ppi.color_add.b);
+    sscanf(pSettings->r_string(section, "color_base"), "%f,%f,%f", &m_pSleepEffector->ppi.color_base.r, &m_pSleepEffector->ppi.color_base.g,
+           &m_pSleepEffector->ppi.color_base.b);
+    sscanf(pSettings->r_string(section, "color_gray"), "%f,%f,%f", &m_pSleepEffector->ppi.color_gray.r, &m_pSleepEffector->ppi.color_gray.g,
+           &m_pSleepEffector->ppi.color_gray.b);
+    sscanf(pSettings->r_string(section, "color_add"), "%f,%f,%f", &m_pSleepEffector->ppi.color_add.r, &m_pSleepEffector->ppi.color_add.g,
+           &m_pSleepEffector->ppi.color_add.b);
 
     m_pSleepEffector->time = pSettings->r_float(section, "time");
     m_pSleepEffector->time_attack = pSettings->r_float(section, "time_attack");

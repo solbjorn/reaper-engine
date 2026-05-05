@@ -9,23 +9,28 @@
 #include "StdAfx.h"
 
 #include "UILine.h"
+
 #include "uilinestd.h"
 
 // #define LOG_ALL_LINES
 #ifdef LOG_ALL_LINES
 int ListLinesCount = 0;
+
 struct DBGList
 {
     CUILine* wnd;
     int num;
 };
+
 xr_vector<DBGList> dbg_list_lines;
+
 void dump_list_lines()
 {
-    Msg("------Total  Lines %d", dbg_list_lines.size());
+    Msg("------Total  Lines {}", dbg_list_lines.size());
+
     xr_vector<DBGList>::iterator _it = dbg_list_lines.begin();
     for (; _it != dbg_list_lines.end(); ++_it)
-        Msg("--leak detected ---- Line = %d", (*_it).num);
+        Msg("--leak detected ---- Line = {}", (*_it).num);
 }
 #else
 void dump_list_lines() {}
@@ -59,8 +64,9 @@ CUILine::~CUILine()
             break;
         }
     }
+
     if (!bOK)
-        Msg("CUILine::~CUILine()!!!!!!!!!!!!!!!!!!!!!!! cannot find window in list");
+        Log("CUILine::~CUILine()!!!!!!!!!!!!!!!!!!!!!!! cannot find window in list");
 #endif
 }
 

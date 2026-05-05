@@ -113,7 +113,8 @@ bool CAI_Stalker::bfAssignWatch(CScriptEntityAction* tpEntityAction)
     default: NODEFAULT;
     }
 
-    if ((CScriptWatchAction::eGoalTypeWatchType != l_tWatchAction.m_tGoalType) && (angle_difference(movement().m_head.target.yaw, movement().m_head.current.yaw) < EPS_L) &&
+    if ((CScriptWatchAction::eGoalTypeWatchType != l_tWatchAction.m_tGoalType) &&
+        (angle_difference(movement().m_head.target.yaw, movement().m_head.current.yaw) < EPS_L) &&
         (angle_difference(movement().m_head.target.pitch, movement().m_head.current.pitch) < EPS_L))
         l_tWatchAction.m_bCompleted = true;
     else
@@ -262,10 +263,11 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
     case MonsterSpace::eObjectActionTake: {
         if (l_tObjectAction.m_tpObject->H_Parent() == this)
         {
-            Msg("!![%s] item [%s] is already in the inventory!", __FUNCTION__, l_tObjectAction.m_tpObject->cName().c_str());
+            Msg("!![{}] item [{}] is already in the inventory!", __FUNCTION__, l_tObjectAction.m_tpObject->cName());
             l_tObjectAction.m_bCompleted = true;
             return false;
         }
+
         feel_touch_new(l_tObjectAction.m_tpObject);
         l_tObjectAction.m_bCompleted = true;
         break;
@@ -273,10 +275,11 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
     case MonsterSpace::eObjectActionDrop: {
         if (l_tObjectAction.m_tpObject->H_Parent() != this)
         {
-            Msg("!![%s] item [%s] is not in the inventory!", __FUNCTION__, l_tObjectAction.m_tpObject->cName().c_str());
+            Msg("!![{}] item [{}] is not in the inventory!", __FUNCTION__, l_tObjectAction.m_tpObject->cName());
             l_tObjectAction.m_bCompleted = true;
             return false;
         }
+
         DropItemSendMessage(l_tObjectAction.m_tpObject);
         break;
     }
@@ -293,9 +296,6 @@ bool CAI_Stalker::bfAssignAnimation(CScriptEntityAction* tpEntityAction)
 
     if (xr_strlen(tpEntityAction->m_tAnimationAction.m_caAnimationToPlay))
     {
-#ifdef DEBUG
-//		Msg				("%6d Assigning animation : %s",Device.dwTimeGlobal,*tpEntityAction->m_tAnimationAction.m_caAnimationToPlay);
-#endif
         animation().torso().reset();
         animation().legs().reset();
     }

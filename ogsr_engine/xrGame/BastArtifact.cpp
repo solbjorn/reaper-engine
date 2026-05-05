@@ -73,8 +73,6 @@ void CBastArtefact::BastCollision(CEntityAlive* pEntityAlive)
         m_bStrike = true;
         Fvector vel;
         vel.set(0, 0, 0);
-        //	this->m_pPhysicsShell->set_LinearVel(vel);
-        //	this->m_pPhysicsShell->set_AngularVel(vel);
     }
 }
 
@@ -126,9 +124,6 @@ tmc::task<void> CBastArtefact::shedule_Update(u32 dt)
 
 void CBastArtefact::UpdateCLChild()
 {
-    // Log						("--- A - CBastArtefact",*cName());
-    // Log						("--- A - CBastArtefact",renderable.xform);
-
     // современем энергия по немногу тоже уменьшается
     if (m_fEnergy > 0)
         m_fEnergy -= m_fEnergyDecreasePerTime * Device.fTimeDelta;

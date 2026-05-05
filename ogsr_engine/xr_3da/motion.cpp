@@ -75,8 +75,9 @@ void COMotion::SaveMotion(const char* buf)
     F.open_chunk(EOBJ_OMOTION);
     Save(F);
     F.close_chunk();
+
     if (!F.save_to(buf))
-        Msg("!Can't save object motion: [%s]", buf);
+        Msg("!Can't save object motion: [{}]", buf);
 }
 
 bool COMotion::LoadMotion(const char* buf)

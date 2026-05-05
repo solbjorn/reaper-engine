@@ -37,8 +37,6 @@
 
 #include "../xr_3da/xr_input.h"
 
-#include <format>
-
 #define TRADE_XML "trade.xml"
 #define TRADE_CHARACTER_XML "trade_character.xml"
 #define TRADE_ITEM_XML "trade_item.xml"
@@ -377,7 +375,8 @@ bool CUITradeWnd::CanMoveToOther(PIItem pItem, bool our)
     if (!m_pOthersInvOwner->trade_parameters().enabled(CTradeParameters::action_buy(nullptr), pItem->object().cNameSect()))
         return false;
 
-    if (pItem->GetCondition() < m_pOthersInvOwner->trade_parameters().factors(CTradeParameters::action_buy(nullptr), pItem->object().cNameSect()).min_condition())
+    if (pItem->GetCondition() <
+        m_pOthersInvOwner->trade_parameters().factors(CTradeParameters::action_buy(nullptr), pItem->object().cNameSect()).min_condition())
         return false;
 
     if (otherInvWeight - r2 + r1 + itmWeight > otherMaxWeight)
@@ -588,11 +587,12 @@ void CUITradeWnd::UpdatePrices()
             m_iOurTradePrice = others_money;
     }
 
-    static const char* StMoneyDescr = CStringTable().translate(shared_str{"ui_st_money_descr"}).c_str();
-    m_uidata->UIOurPriceCaption.GetPhraseByIndex(2)->str._set(std::format("{} {}", m_iOurTradePrice, StMoneyDescr).c_str());
-    m_uidata->UIOthersPriceCaption.GetPhraseByIndex(2)->str._set(std::format("{} {}", m_iOthersTradePrice, StMoneyDescr).c_str());
-    m_uidata->UIOurMoneyStatic.SetText(std::format("{} {}", m_pInvOwner->get_money(), StMoneyDescr).c_str());
-    m_uidata->UIOtherMoneyStatic.SetText(m_pOthersInvOwner->InfinitiveMoney() ? "---" : std::format("{} {}", m_pOthersInvOwner->get_money(), StMoneyDescr).c_str());
+    static const auto StMoneyDescr = CStringTable().translate(shared_str{"ui_st_money_descr"});
+    m_uidata->UIOurPriceCaption.GetPhraseByIndex(2)->str._set(xr::format("{} {}", m_iOurTradePrice, StMoneyDescr));
+    m_uidata->UIOthersPriceCaption.GetPhraseByIndex(2)->str._set(xr::format("{} {}", m_iOthersTradePrice, StMoneyDescr));
+    m_uidata->UIOurMoneyStatic.SetText(xr::format("{} {}", m_pInvOwner->get_money(), StMoneyDescr).c_str());
+    m_uidata->UIOtherMoneyStatic.SetText(m_pOthersInvOwner->InfinitiveMoney() ? "---" :
+                                                                                xr::format("{} {}", m_pOthersInvOwner->get_money(), StMoneyDescr).c_str());
 }
 
 void CUITradeWnd::TransferItems(CUIDragDropListEx* pSellList, CUIDragDropListEx* pBuyList, CTrade* pTrade, bool bBuying)
@@ -713,11 +713,7 @@ bool CUITradeWnd::OnItemDbClick(CUICellItem* itm)
 void CUITradeWnd::MoveItems(CUICellItem* itm)
 {
     if (!itm)
-    {
         return;
-    }
-
-    // Msg("Move all items %d", cnt);
 
     CUIDragDropListEx* old_owner = itm->OwnerList();
     CUIDragDropListEx* to = nullptr;
@@ -747,9 +743,6 @@ void CUITradeWnd::MoveItems(CUICellItem* itm)
     for (u32 i = 0; i < cnt; ++i)
     {
         CUICellItem* child_itm = itm->PopChild();
-
-        // Msg("MoveAllItems child ... %d", i);
-
         to->SetItem(child_itm);
     }
 
@@ -801,8 +794,8 @@ void CUITradeWnd::SetCurrentItem(CUICellItem* itm)
 
     if (m_uidata->UIItemInfo.UICost)
     {
-        static const char* StMoneyDescr = CStringTable().translate(shared_str{"ui_st_money_descr"}).c_str();
-        m_uidata->UIItemInfo.UICost->SetText(std::format("{} {}", m_pOthersTrade->GetItemPrice(CurrentIItem(), bBuying), StMoneyDescr).c_str());
+        static const auto StMoneyDescr = CStringTable().translate(shared_str{"ui_st_money_descr"});
+        m_uidata->UIItemInfo.UICost->SetText(xr::format("{} {}", m_pOthersTrade->GetItemPrice(CurrentIItem(), bBuying), StMoneyDescr).c_str());
     }
 
     auto script_obj = CurrentIItem()->object().lua_game_object();

@@ -9,24 +9,30 @@
 #include "StdAfx.h"
 
 #include "UISubLine.h"
+
 #include "uilinestd.h"
 #include "../ui_base.h"
 
 // #define LOG_ALL_LINES
+
 #ifdef LOG_ALL_LINES
 int ListSubLinesCount = 0;
+
 struct DBGList
 {
     CUISubLine* wnd;
     int num;
 };
+
 xr_vector<DBGList> dbg_list_sublines;
+
 void dump_list_sublines()
 {
-    Msg("------Total  SubLines %d", dbg_list_sublines.size());
+    Msg("------Total  SubLines {}", dbg_list_sublines.size());
+
     xr_vector<DBGList>::iterator _it = dbg_list_sublines.begin();
     for (; _it != dbg_list_sublines.end(); ++_it)
-        Msg("--leak detected ---- SubLine = %d", (*_it).num);
+        Msg("--leak detected ---- SubLine = {}", (*_it).num);
 }
 #else
 void dump_list_sublines() {}
@@ -85,14 +91,15 @@ CUISubLine::~CUISubLine()
             break;
         }
     }
+
     if (!bOK)
-        Msg("CUISubLine::~CUISubLine()!!!!!!!!!!!!!!!!!!!!!!! cannot find window in list");
+        Log("CUISubLine::~CUISubLine()!!!!!!!!!!!!!!!!!!!!!!! cannot find window in list");
 #endif
 }
 
 const CUISubLine* CUISubLine::Cut2Pos(int i)
 {
-    R_ASSERT2(i < (int)m_text.size(), make_string("CUISubLine::Cut2Pos - invalid parameter [%d][%zu]", i, m_text.size()).c_str());
+    R_ASSERT2(i < std::ssize(m_text), xr::format("CUISubLine::Cut2Pos - invalid parameter [{}][{}]", i, m_text.size()));
 
     //	xr_delete(m_pTempLine);
     if (!m_pTempLine)
@@ -106,10 +113,7 @@ const CUISubLine* CUISubLine::Cut2Pos(int i)
     return m_pTempLine;
 }
 
-void CUISubLine::FreeBuffer()
-{
-    //	xr_delete(m_pTempLine);
-}
+void CUISubLine::FreeBuffer() {}
 
 void CUISubLine::Draw(CGameFont* pFont, float x, float y) const
 {

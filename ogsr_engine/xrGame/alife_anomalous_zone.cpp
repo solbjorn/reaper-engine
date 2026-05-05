@@ -118,12 +118,10 @@ void CSE_ALifeAnomalousZone::spawn_artefacts()
 
         if (item < itemCount)
         {
-            Msg("~ [%s] id=%d offline spawn art [%s]", name(), ID, *m_weights[item].first);
+            Msg("~ [{}] id={} offline spawn art [{}]", name(), ID, m_weights[item].first);
 
             Fvector art_pos = position();
-
             art_pos.y = art_pos.y + 1;
-
             art_pos.x = art_pos.x + ::Random.randF(-0.5, 0.5);
             art_pos.z = art_pos.z + ::Random.randF(-0.5, 0.5);
 
@@ -135,18 +133,6 @@ void CSE_ALifeAnomalousZone::spawn_artefacts()
 
             i->m_tSpawnID = m_tSpawnID;
             i->m_bALifeControl = true;
-
-            // ai().alife().spawns().assign_artefact_position(this, i);
-
-            // Fvector t = i->o_Position;
-            // u32 p = i->m_tNodeID;
-            // float q = i->m_fDistance;
-
-            // alife().graph().change(i, m_tGraphID, i->m_tGraphID);
-
-            // i->o_Position = t;
-            // i->m_tNodeID = p;
-            // i->m_fDistance = q;
 
             CSE_ALifeItemArtefact* l_tpALifeItemArtefact = smart_cast<CSE_ALifeItemArtefact*>(i);
             R_ASSERT2(l_tpALifeItemArtefact, "Anomalous zone can't generate non-artefact objects since they don't have an 'anomaly property'!");

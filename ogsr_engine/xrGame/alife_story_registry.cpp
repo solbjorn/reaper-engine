@@ -7,7 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "alife_story_registry.h"
+
 #include "xrServer_Objects_ALife.h"
 #include "ai_space.h"
 #include "game_graph.h"
@@ -20,16 +22,16 @@ void CALifeStoryRegistry::add(ALife::_STORY_ID id, CSE_ALifeDynamicObject* objec
         return;
 
 #ifdef DEBUG
-    Msg("Adding Story item ID [%u], Object [%s] at level [%s]", id, object->name_replace(),
-        *ai().game_graph().header().level(ai().game_graph().vertex(object->m_tGraphID)->level_id()).name());
+    Msg("Adding Story item ID [{}], Object [{}] at level [{}]", id, object->name_replace(),
+        ai().game_graph().header().level(ai().game_graph().vertex(object->m_tGraphID)->level_id()).name());
 #endif
 
     ALife::STORY_P_PAIR_IT I = m_objects.find(id);
     if (I != m_objects.end())
     {
-        ASSERT_FMT(no_assert, "Trying add story id [%u] for Object [%s] at level [%s], but this story id is already using in object [%s] at level [%s]", id, object->name_replace(),
-                   *ai().game_graph().header().level(ai().game_graph().vertex(object->m_tGraphID)->level_id()).name(), I->second->name_replace(),
-                   *ai().game_graph().header().level(ai().game_graph().vertex(I->second->m_tGraphID)->level_id()).name());
+        ASSERT_FMT(no_assert, "Trying add story id [%u] for Object [%s] at level [%s], but this story id is already using in object [%s] at level [%s]", id,
+                   object->name_replace(), *ai().game_graph().header().level(ai().game_graph().vertex(object->m_tGraphID)->level_id()).name(),
+                   I->second->name_replace(), *ai().game_graph().header().level(ai().game_graph().vertex(I->second->m_tGraphID)->level_id()).name());
         return;
     }
 

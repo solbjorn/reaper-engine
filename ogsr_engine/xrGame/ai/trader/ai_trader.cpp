@@ -131,8 +131,9 @@ tmc::task<bool> CAI_Trader::net_Spawn(CSE_Abstract* DC)
     set_money(l_tpTrader->m_dwMoney, false);
 
     // Установка callback на кости
-    // CBoneInstance			*bone_head =	&smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head"));
-    // bone_head->set_callback	(bctCustom,BoneCallback,this);
+    // CBoneInstance			*bone_head =
+    // &smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head")); bone_head->set_callback
+    // (bctCustom,BoneCallback,this);
 
     shedule.t_min = 100;
     shedule.t_max = 2500; // This equaltiy is broken by Dima :-( // 30 * NET_Latency / 4;
@@ -178,7 +179,7 @@ tmc::task<void> CAI_Trader::OnEvent(NET_Packet& P, u16 type)
 
         if (!Obj)
         {
-            Msg("! [%s] Error: No object to reject/sell [%u]", __FUNCTION__, id);
+            Msg("! [{}] Error: No object to reject/sell [{}]", __FUNCTION__, id);
             break;
         }
 
@@ -205,7 +206,8 @@ void CAI_Trader::feel_touch_new(CObject* O)
 
     if (I && I->useful_for_NPC())
     {
-        Msg("Taking item %s!", *I->object().cName());
+        Msg("Taking item {}!", I->object().cName());
+
         NET_Packet P;
         u_EventGen(P, GE_OWNERSHIP_TAKE, ID());
         P.w_u16(u16(I->object().ID()));
@@ -218,7 +220,8 @@ void CAI_Trader::DropItemSendMessage(CObject* O)
     if (!O || !O->H_Parent() || (this != O->H_Parent()))
         return;
 
-    Msg("Dropping item!");
+    Log("Dropping item!");
+
     // We doesn't have similar weapon - pick up it
     NET_Packet P;
     u_EventGen(P, GE_OWNERSHIP_REJECT, ID());

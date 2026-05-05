@@ -62,7 +62,8 @@ struct envc : public SEnumVerticesCallback
     const Fvector& ax;
 
     envc() = delete;
-    envc(const Fmatrix& _i_bind_transform, const Fvector& _ax, Fvector& _pos) : SEnumVerticesCallback{}, pos{_pos}, i_bind_transform{_i_bind_transform}, ax{_ax} {}
+    envc(const Fmatrix& _i_bind_transform, const Fvector& _ax, Fvector& _pos) : SEnumVerticesCallback{}, pos{_pos}, i_bind_transform{_i_bind_transform}, ax{_ax}
+    {}
 
     envc(envc&) = delete;
     envc& operator=(envc&) = delete;
@@ -199,8 +200,8 @@ Fmatrix& CIKFoot::ref_bone_to_foot(Fmatrix& foot, const Fmatrix& ref_bone) const
 
 Fmatrix& CIKFoot::ref_bone_to_foot(Fmatrix& m) const { return ref_bone_to_foot(m, Fmatrix().set(m)); }
 
-ik_goal_matrix::e_collide_state CIKFoot::CollideFoot(float angle, float& out_angle, const Fvector& global_toe, const Fvector& foot_normal, const Fvector& global_bone_pos,
-                                                     const Fplane& p, const Fvector& ax) const
+ik_goal_matrix::e_collide_state CIKFoot::CollideFoot(float angle, float& out_angle, const Fvector& global_toe, const Fvector& foot_normal,
+                                                     const Fvector& global_bone_pos, const Fplane& p, const Fvector& ax) const
 {
     float dfoot_tri = -p.d - p.n.dotproduct(global_bone_pos); // dist from foot bone pos to tri plain
     Fvector axp;
@@ -291,7 +292,8 @@ ik_goal_matrix::e_collide_state CIKFoot::rotate(Fmatrix& xm, const Fplane& p, co
     return cl_state;
 }
 
-bool CIKFoot::GetFootStepMatrix(ik_goal_matrix& m, const Fmatrix& g_anim, const SIKCollideData& cld, bool collide, bool rotation, bool b_make_shift /*=true*/) const
+bool CIKFoot::GetFootStepMatrix(ik_goal_matrix& m, const Fmatrix& g_anim, const SIKCollideData& cld, bool collide, bool rotation,
+                                bool b_make_shift /*=true*/) const
 {
     const Fmatrix global_anim = g_anim;
     Fvector local_point;
@@ -350,13 +352,13 @@ bool CIKFoot::GetFootStepMatrix(ik_goal_matrix& m, const Fmatrix& g_anim, const 
 
     VERIFY(_valid(xm));
     m.set(xm, cl_state);
+
 #ifdef DEBUG
     if (ph_dbg_draw_mask.test(phDbgDrawIKGoal))
-    {
         DBG_DrawPoint(global_point, 0.03f, color_rgba(255, 0, 0, 255));
-    }
+
     if (!fsimilar(_abs(DET(g_anim) - 1.f), _abs(DET(m.get()) - 1.f), 0.001f))
-        Msg("scale g_anim: %f scale m: %f ", DET(g_anim), DET(m.get()));
+        Msg("scale g_anim: {} scale m: {} ", DET(g_anim), DET(m.get()));
 #endif
 
     return true;
@@ -393,8 +395,8 @@ void CIKFoot::SetFootGeom(ik_foot_geom& fg, const Fmatrix& ref_bone, const Fmatr
     Fvector heel;
     Fvector pos_hill;
 
-    // TODO: KRodin: в строке ниже происходит какая-то черная магия, на которую естественно ругается PVS, я не представляю как это работает, и как должно работать, и что будет,
-    // если этот код изменить. Может быть поставить просто Fmatrix{} вместо foot?
+    // TODO: KRodin: в строке ниже происходит какая-то черная магия, на которую естественно ругается PVS, я не представляю как это работает, и как должно
+    // работать, и что будет, если этот код изменить. Может быть поставить просто Fmatrix{} вместо foot?
     Fmatrix foot = (Fmatrix().mul_43(object_matrix, ref_bone_to_foot(foot, ref_bone)));
     foot.transform_tiny(pos_hill, HeelPosition(heel));
     const Fvector v_m = Fvector().add(pos_toe, pos_hill).mul(0.5f);

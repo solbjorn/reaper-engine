@@ -44,7 +44,7 @@ public:
 
 #ifdef DEBUG
             if (A[i] && psAI_Flags.test(aiAnimation))
-                Msg("* Loaded animation %s", S);
+                Msg("* Loaded animation {}", S);
 #endif
         }
     }

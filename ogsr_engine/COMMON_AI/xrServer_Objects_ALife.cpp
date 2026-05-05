@@ -792,7 +792,8 @@ bool CSE_ALifeObjectHangingLamp::validate()
     if (flags.test(flR1) || flags.test(flR2))
         return (true);
 
-    Msg("! Render type is not set properly!");
+    Log("! Render type is not set properly!");
+
     return (false);
 }
 
@@ -833,7 +834,10 @@ bool CSE_ALifeObjectProjector::used_ai_locations() const { return (false); }
 CSE_ALifeSchedulable::CSE_ALifeSchedulable(LPCSTR) {}
 CSE_ALifeSchedulable::~CSE_ALifeSchedulable() = default;
 
-bool CSE_ALifeSchedulable::need_update(CSE_ALifeDynamicObject* object) { return !object || (object->m_bDirectControl && object->used_ai_locations() && !object->m_bOnline); }
+bool CSE_ALifeSchedulable::need_update(CSE_ALifeDynamicObject* object)
+{
+    return !object || (object->m_bDirectControl && object->used_ai_locations() && !object->m_bOnline);
+}
 
 CSE_Abstract* CSE_ALifeSchedulable::init() { return (base()); }
 

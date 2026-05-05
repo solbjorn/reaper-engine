@@ -110,8 +110,8 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
     if (((character_physics_support()->movement()->GetVelocityActual() < 0.2f) && (!(mstate_real & (ACTOR_DEFS::mcFall | ACTOR_DEFS::mcJump)))) ||
         character_physics_support()->movement()->bSleep)
     {
-        // TODO: KRodin: этот код работает некорректно, условие срабатывает при входе-выходе из присяда. Из-за этого происходит 'дергание' анимаций оружия. Код этот не сильно
-        // важен, я думаю если актор застрянет - он все равно не будет двигаться.
+        // TODO: KRodin: этот код работает некорректно, условие срабатывает при входе-выходе из присяда. Из-за этого происходит 'дергание' анимаций оружия.
+        // Код этот не сильно важен, я думаю если актор застрянет - он все равно не будет двигаться.
         // mstate_real &=~ ACTOR_DEFS::mcAnyMove;
     }
 
@@ -431,7 +431,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector& vControlAccel, float& Ju
                     const auto e = xr_new<CAnimatorCamLerpEffectorConst>();
                     constexpr float max_scale = 70.0f;
                     float factor = cam_eff_factor / max_scale;
-                    // Msg("--[%s] adding cam effector [%s], cam_eff_factor: [%f], factor: [%f]", __FUNCTION__, anm_name, cam_eff_factor, factor);
+
                     e->SetFactor(factor);
                     e->SetType(eCEActorMoving);
                     e->SetHudAffect(false);
@@ -586,9 +586,10 @@ void CActor::g_cl_Orientate(u32 mstate_rl, float dt)
     unaffected_r_torso.pitch = r_torso.pitch;
     unaffected_r_torso.roll = r_torso.roll;
 
-    CWeaponMagazined* pWM = smart_cast<CWeaponMagazined*>(inventory().GetActiveSlot() != NO_ACTIVE_SLOT ?
-                                                              inventory().ItemFromSlot(inventory().GetActiveSlot()) /*inventory().m_slots[inventory().GetActiveSlot()].m_pIItem*/ :
-                                                              nullptr);
+    CWeaponMagazined* pWM =
+        smart_cast<CWeaponMagazined*>(inventory().GetActiveSlot() != NO_ACTIVE_SLOT ?
+                                          inventory().ItemFromSlot(inventory().GetActiveSlot()) /*inventory().m_slots[inventory().GetActiveSlot()].m_pIItem*/ :
+                                          nullptr);
     if (pWM && pWM->GetCurrentFireMode() == 1 && cam_active != ACTOR_DEFS::eacFirstEye)
     {
         Fvector dangle = weapon_recoil_last_delta();

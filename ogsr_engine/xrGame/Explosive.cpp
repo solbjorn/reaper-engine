@@ -87,8 +87,8 @@ void CExplosive::Load(CInifile* ini, LPCSTR section)
 
     m_iFragsNum = ini->r_s32(section, "frags");
     // KRodin: в оригинале осколки летели только в верхнюю полусверу после взрыва объекта.
-    // Здесь это поправлено, поэтому число осколков удвоено. Раньше допустим 50 летело только вверх, а теперь будет 50 вверх и 50 вниз, иначе многие гранаты из-за этого могли бы
-    // потерять в убойности.
+    // Здесь это поправлено, поэтому число осколков удвоено. Раньше допустим 50 летело только вверх, а теперь будет 50 вверх и 50 вниз, иначе многие гранаты
+    // из-за этого могли бы потерять в убойности.
     m_iFragsNum *= 2;
 
     m_fFragsRadius = ini->r_float(section, "frags_r");
@@ -204,7 +204,8 @@ ICF static BOOL grenade_hit_callback(collide::rq_result& result, LPVOID params)
     return (ep.shoot_factor > 0.01f);
 }
 
-float CExplosive::ExplosionEffect(collide::rq_results& storage, CExplosive* exp_obj, CPhysicsShellHolder* blasted_obj, const Fvector& expl_centre, const float expl_radius)
+float CExplosive::ExplosionEffect(collide::rq_results& storage, CExplosive* exp_obj, CPhysicsShellHolder* blasted_obj, const Fvector& expl_centre,
+                                  const float expl_radius)
 {
     const Fmatrix& obj_xform = blasted_obj->XFORM();
     Fmatrix inv_obj_form;
@@ -269,27 +270,30 @@ float CExplosive::ExplosionEffect(collide::rq_results& storage, CExplosive* exp_
 #endif
 
 #ifdef DEBUG
-        float l_S = effective_volume * (_abs(l_dir.dotproduct(obj_xform.i)) / l_d.x + _abs(l_dir.dotproduct(obj_xform.j)) / l_d.y + _abs(l_dir.dotproduct(obj_xform.k)) / l_d.z);
+        float l_S = effective_volume *
+            (_abs(l_dir.dotproduct(obj_xform.i)) / l_d.x + _abs(l_dir.dotproduct(obj_xform.j)) / l_d.y + _abs(l_dir.dotproduct(obj_xform.k)) / l_d.z);
         float add_eff = _sqrt(l_S / max_s) * TestPassEffect(l_source_p, l_dir, mag, expl_radius, storage, blasted_obj);
         effect += add_eff;
+
         if (ph_dbg_draw_mask.test(phDbgDrawExplosions))
         {
-            Msg("dist %f,effect R %f", mag, expl_radius);
-            Msg("test pass effect %f", add_eff);
-            Msg("S effect %f", _sqrt(l_S / max_s));
-            Msg("dist/overlap effect, %f", add_eff / _sqrt(l_S / max_s));
+            Msg("dist {},effect R {}", mag, expl_radius);
+            Msg("test pass effect {}", add_eff);
+            Msg("S effect {}", _sqrt(l_S / max_s));
+            Msg("dist/overlap effect, {}", add_eff / _sqrt(l_S / max_s));
         }
 #else
-        float l_S = effective_volume * (_abs(l_dir.dotproduct(obj_xform.i)) / l_d.x + _abs(l_dir.dotproduct(obj_xform.j)) / l_d.y + _abs(l_dir.dotproduct(obj_xform.k)) / l_d.z);
+        float l_S = effective_volume *
+            (_abs(l_dir.dotproduct(obj_xform.i)) / l_d.x + _abs(l_dir.dotproduct(obj_xform.j)) / l_d.y + _abs(l_dir.dotproduct(obj_xform.k)) / l_d.z);
         effect += _sqrt(l_S / max_s) * TestPassEffect(l_source_p, l_dir, mag, expl_radius, storage, blasted_obj);
 #endif
     }
+
 #ifdef DEBUG
     if (ph_dbg_draw_mask.test(phDbgDrawExplosions))
-    {
-        Msg("damage effect %f", effect / TEST_RAYS_PER_OBJECT);
-    }
+        Msg("damage effect {}", effect / TEST_RAYS_PER_OBJECT);
 #endif
+
     return effect / TEST_RAYS_PER_OBJECT;
 }
 
@@ -340,11 +344,11 @@ void CExplosive::Explode()
     }
 #endif
 
-    g_pGamePersistent->GrassBendersAddExplosion(cast_game_object()->ID(), pos, Fvector{0.0f, -99.0f, 0.0f}, 1.33f, ps_ssfx_int_grass_params_2.y, ps_ssfx_int_grass_params_2.x,
-                                                m_fBlastRadius * 2.0f);
+    g_pGamePersistent->GrassBendersAddExplosion(cast_game_object()->ID(), pos, Fvector{0.0f, -99.0f, 0.0f}, 1.33f, ps_ssfx_int_grass_params_2.y,
+                                                ps_ssfx_int_grass_params_2.x, m_fBlastRadius * 2.0f);
 
-    //	Msg("---------CExplosive Explode [%d] frame[%d]",cast_game_object()->ID(), Device.dwFrame);
     OnBeforeExplosion();
+
     // играем звук взрыва
     CObject* who = nullptr;
     if (Initiator() != ALife::_OBJECT_ID(-1))
@@ -399,8 +403,8 @@ void CExplosive::Explode()
         cartridge.bullet_material_idx = GMLib.GetMaterialIdx(WEAPON_MATERIAL_NAME);
         cartridge.m_flags.set(CCartridge::cfTracer, FALSE);
 
-        Level().BulletManager().AddBullet(pos, frag_dir, m_fFragmentSpeed, m_fFragHit, m_fFragHitImpulse, Initiator(), cast_game_object()->ID(), m_eHitTypeFrag, m_fFragsRadius,
-                                          cartridge, SendHits);
+        Level().BulletManager().AddBullet(pos, frag_dir, m_fFragmentSpeed, m_fFragHit, m_fFragHitImpulse, Initiator(), cast_game_object()->ID(), m_eHitTypeFrag,
+                                          m_fFragsRadius, cartridge, SendHits);
     }
 
     if (cast_game_object()->Remote())
@@ -489,8 +493,6 @@ tmc::task<void> CExplosive::UpdateCL()
         m_explosion_flags.set(flExploded, TRUE);
 
         StopLight();
-
-        //		Msg("---------CExplosive OnAfterExplosion [%d] frame[%d]",cast_game_object()->ID(), Device.dwFrame);
     }
     else
     {
@@ -537,12 +539,11 @@ void CExplosive::OnAfterExplosion()
 void CExplosive::OnBeforeExplosion()
 {
     m_bAlreadyHidden = false;
+
     if (m_bHideInExplosion)
-    {
         HideExplosive();
-        //	Msg("---------CExplosive OnBeforeExplosion setVisible(false) [%d] frame[%d]",cast_game_object()->ID(), Device.dwFrame);
-    }
 }
+
 void CExplosive::HideExplosive()
 {
     CGameObject* GO = cast_game_object();

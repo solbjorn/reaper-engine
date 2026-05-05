@@ -48,7 +48,8 @@ void CResourceManager::_DeleteState(const SState* state)
         return;
     if (reclaim(v_states, state))
         return;
-    Msg("! ERROR: Failed to find compiled stateblock");
+
+    Log("! ERROR: Failed to find compiled stateblock");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -79,7 +80,8 @@ void CResourceManager::_DeletePass(const SPass* P)
         return;
     if (reclaim(v_passes, P))
         return;
-    Msg("! ERROR: Failed to find compiled pass");
+
+    Log("! ERROR: Failed to find compiled pass");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -154,8 +156,8 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
         if (strstr(Core.Params, "-shadersdbg"))
             Flags |= D3DCOMPILE_FLAGS_DEBUG;
 
-        HRESULT const _hr =
-            RImplementation.shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry, c_target, Flags, (void*&)_vs);
+        HRESULT const _hr = RImplementation.shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry,
+                                                           c_target, Flags, (void*&)_vs);
 
         FS.r_close(file);
 
@@ -190,7 +192,7 @@ void CResourceManager::_DeleteVS(const SVS* vs)
         return;
     }
 
-    Msg("! ERROR: Failed to find compiled vertex-shader '%s'", *vs->cName);
+    Msg("! ERROR: Failed to find compiled vertex-shader '{}'", vs->cName);
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -256,8 +258,8 @@ SPS* CResourceManager::_CreatePS(LPCSTR _name)
         if (strstr(Core.Params, "-shadersdbg"))
             Flags |= D3DCOMPILE_FLAGS_DEBUG;
 
-        HRESULT const _hr =
-            RImplementation.shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry, c_target, Flags, (void*&)_ps);
+        HRESULT const _hr = RImplementation.shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry,
+                                                           c_target, Flags, (void*&)_ps);
 
         FS.r_close(file);
 
@@ -279,7 +281,7 @@ void CResourceManager::_DeletePS(const SPS* ps)
         return;
     }
 
-    Msg("! ERROR: Failed to find compiled pixel-shader '%s'", *ps->cName);
+    Msg("! ERROR: Failed to find compiled pixel-shader '{}'", ps->cName);
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -342,7 +344,7 @@ void CResourceManager::_DeleteGS(const SGS* gs)
         return;
     }
 
-    Msg("! ERROR: Failed to find compiled geometry shader '%s'", *gs->cName);
+    Msg("! ERROR: Failed to find compiled geometry shader '{}'", gs->cName);
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -381,7 +383,8 @@ void CResourceManager::_DeleteDecl(const SDeclaration* dcl)
         return;
     if (reclaim(v_declarations, dcl))
         return;
-    Msg("! ERROR: Failed to find compiled vertex-declarator");
+
+    Log("! ERROR: Failed to find compiled vertex-declarator");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -407,7 +410,8 @@ void CResourceManager::_DeleteConstantTable(const R_constant_table* C)
         return;
     if (reclaim(v_constant_tables, C))
         return;
-    Msg("! ERROR: Failed to find compiled constant-table");
+
+    Log("! ERROR: Failed to find compiled constant-table");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -446,7 +450,7 @@ void CResourceManager::_DeleteRT(const CRT* RT)
         return;
     }
 
-    Msg("! ERROR: Failed to find render-target '%s'", *RT->cName);
+    Msg("! ERROR: Failed to find render-target '{}'", RT->cName);
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -490,7 +494,8 @@ void CResourceManager::DeleteGeom(const SGeometry* Geom)
         return;
     if (reclaim(v_geoms, Geom))
         return;
-    Msg("! ERROR: Failed to find compiled geometry-declaration");
+
+    Log("! ERROR: Failed to find compiled geometry-declaration");
 }
 
 CTexture* CResourceManager::_CreateTexture(LPCSTR _Name)
@@ -529,7 +534,7 @@ void CResourceManager::_DeleteTexture(const CTexture* T)
         return;
     }
 
-    Msg("! ERROR: Failed to find texture surface '%s'", *T->cName);
+    Msg("! ERROR: Failed to find texture surface '{}'", T->cName);
 }
 
 #ifdef DEBUG
@@ -570,7 +575,8 @@ void CResourceManager::_DeleteTextureList(const STextureList* L)
         return;
     if (reclaim(lst_textures, L))
         return;
-    Msg("! ERROR: Failed to find compiled list of textures");
+
+    Log("! ERROR: Failed to find compiled list of textures");
 }
 
 dx10ConstantBuffer* CResourceManager::_CreateConstantBuffer(ctx_id_t context_id, ID3DShaderReflectionConstantBuffer* pTable)
@@ -601,7 +607,7 @@ void CResourceManager::_DeleteConstantBuffer(const dx10ConstantBuffer* pBuffer)
         if (reclaim(v_constant_buffer[id], pBuffer))
             return;
 
-    Msg("! ERROR: Failed to find compiled constant buffer");
+    Log("! ERROR: Failed to find compiled constant buffer");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -611,7 +617,8 @@ SInputSignature* CResourceManager::_CreateInputSignature(ID3DBlob* pBlob)
 
     for (SInputSignature* sign : v_input_signature)
     {
-        if ((pBlob->GetBufferSize() == sign->signature->GetBufferSize()) && (!(memcmp(pBlob->GetBufferPointer(), sign->signature->GetBufferPointer(), pBlob->GetBufferSize()))))
+        if ((pBlob->GetBufferSize() == sign->signature->GetBufferSize()) &&
+            (!(memcmp(pBlob->GetBufferPointer(), sign->signature->GetBufferPointer(), pBlob->GetBufferSize()))))
         {
             return sign;
         }
@@ -629,5 +636,6 @@ void CResourceManager::_DeleteInputSignature(const SInputSignature* pSignature)
         return;
     if (reclaim(v_input_signature, pSignature))
         return;
-    Msg("! ERROR: Failed to find input signature");
+
+    Log("! ERROR: Failed to find input signature");
 }

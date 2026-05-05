@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
-#include "ResourceManager.h"
 #include "R_DStreams.h"
+
+#include "ResourceManager.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -28,7 +29,7 @@ void _VertexStream::Create()
     mPosition = 0;
     mDiscardID = 0;
 
-    Msg("* DVB created: %uK", mSize / 1024);
+    Msg("* DVB created: {}K", mSize / 1024);
 }
 
 void _VertexStream::Destroy()
@@ -43,7 +44,6 @@ void* _VertexStream::Lock(u32 vl_Count, u32 Stride, u32& vOffset)
     D3D11_MAPPED_SUBRESOURCE MappedSubRes;
 
 #ifdef DEBUG
-    PGO(Msg("PGO:VB_LOCK:%d", vl_Count));
     VERIFY(0 == dbg_lock);
     dbg_lock++;
 #endif
@@ -91,10 +91,10 @@ void* _VertexStream::Lock(u32 vl_Count, u32 Stride, u32& vOffset)
 void _VertexStream::Unlock(u32 Count, u32 Stride)
 {
 #ifdef DEBUG
-    PGO(Msg("PGO:VB_UNLOCK:%d", Count));
     VERIFY(1 == dbg_lock);
     dbg_lock--;
 #endif
+
     mPosition += Count * Stride;
 
     VERIFY(pVB);
@@ -132,7 +132,7 @@ void _IndexStream::Create()
     mPosition = 0;
     mDiscardID = 0;
 
-    Msg("* DIB created: %uK", mSize / 1024);
+    Msg("* DIB created: {}K", mSize / 1024);
 }
 
 void _IndexStream::Destroy()
@@ -146,7 +146,6 @@ u16* _IndexStream::Lock(u32 Count, u32& vOffset)
 {
     D3D11_MAPPED_SUBRESOURCE MappedSubRes;
 
-    PGO(Msg("PGO:IB_LOCK:%d", Count));
     vOffset = 0;
     BYTE* pLockedData{};
 
@@ -177,7 +176,6 @@ u16* _IndexStream::Lock(u32 Count, u32& vOffset)
 
 void _IndexStream::Unlock(u32 RealCount)
 {
-    PGO(Msg("PGO:IB_UNLOCK:%d", RealCount));
     mPosition += RealCount;
     VERIFY(pIB);
 

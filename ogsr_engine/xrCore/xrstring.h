@@ -23,7 +23,7 @@ static_assert(offsetof(str_value, value) == sizeof(str_value));
 class str_container
 {
 public:
-    [[nodiscard]] static str_value* dock(gsl::czstring value);
+    [[nodiscard]] static str_value* dock(std::string_view value);
     static void clean();
     [[nodiscard]] static gsl::index stat_economy();
 
@@ -50,11 +50,11 @@ protected:
     }
 
 public:
-    constexpr shared_str& _set(gsl::czstring str)
+    constexpr shared_str& _set(std::string_view str)
     {
         str_value* v{};
 
-        if (str != nullptr)
+        if (str.data() != nullptr)
             v = str_container::dock(str);
         if (v != nullptr)
             ++v->dwReference;
@@ -64,6 +64,8 @@ public:
 
         return *this;
     }
+
+    constexpr shared_str& _set(gsl::czstring str) { return _set(str != nullptr ? std::string_view{str} : std::string_view{}); }
 
     constexpr shared_str& _set(const shared_str& that)
     {
@@ -91,6 +93,7 @@ public:
 
     // construction
     constexpr shared_str() = default;
+    constexpr explicit shared_str(std::string_view that) { _set(that); }
     constexpr explicit shared_str(gsl::czstring that) { _set(that); }
     constexpr ~shared_str() { _dec(); }
 
@@ -133,7 +136,10 @@ public:
     [[nodiscard]] constexpr gsl::czstring operator*() const { return p_ ? p_->value : nullptr; }
 
     // Чтобы можно было легко кастить в std::string_view как и все остальные строки
-    [[nodiscard]] constexpr operator std::string_view() const { return p_ ? std::string_view{p_->value, gsl::narrow_cast<size_t>(p_->dwLength)} : std::string_view{}; }
+    [[nodiscard]] constexpr operator std::string_view() const
+    {
+        return p_ != nullptr ? std::string_view{p_->value, gsl::narrow_cast<size_t>(p_->dwLength)} : std::string_view{};
+    }
 
     [[nodiscard]] constexpr gsl::czstring c_str() const { return p_ ? p_->value : nullptr; }
     // Используется в погодном редакторе.
@@ -145,32 +151,6 @@ public:
     constexpr void swap(shared_str& that) { std::swap(p_, that.p_); }
 
     [[nodiscard]] constexpr bool equal(const shared_str& that) const { return *this == that; }
-
-    shared_str& XR_PRINTF(2, 3) sprintf(gsl::czstring format, ...)
-    {
-        std::va_list args, args_copy;
-
-        va_start(args, format);
-        va_copy(args_copy, args);
-
-        const auto sz = std::vsnprintf(nullptr, 0, format, args);
-        if (sz <= 0)
-        {
-            p_ = nullptr;
-            return *this;
-        }
-
-        const auto n = gsl::narrow_cast<size_t>(sz);
-        std::string result(n, '\0');
-        std::vsnprintf(result.data(), n + 1, format, args_copy);
-
-        va_end(args_copy);
-        va_end(args);
-
-        _set(result.c_str());
-
-        return *this;
-    }
 
     template <typename H>
     [[nodiscard]] friend constexpr H AbslHashValue(H h, const shared_str& str)
@@ -215,7 +195,8 @@ IC void xr_strlwr(shared_str& src)
 }
 
 template <class K, class V, class Hash = typename absl::container_internal::FlatHashMapPolicy<std::string_view, V>::DefaultHash,
-          class Eq = typename absl::container_internal::FlatHashMapPolicy<std::string_view, V>::DefaultEq, class Allocator = xr_allocator<std::pair<const K, V>>>
+          class Eq = typename absl::container_internal::FlatHashMapPolicy<std::string_view, V>::DefaultEq,
+          class Allocator = xr_allocator<std::pair<const K, V>>>
 using string_unordered_map = absl::flat_hash_map<K, V, Hash, Eq, Allocator>;
 
 namespace xr_string_utils

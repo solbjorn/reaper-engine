@@ -13,13 +13,17 @@
 #include "stdafx.h"
 
 #include "UIColorAnimatorWrapper.h"
+
 #include "../../xr_3da/LightAnimLibrary.h"
 
 //////////////////////////////////////////////////////////////////////////
 
 CUIColorAnimatorWrapper::CUIColorAnimatorWrapper() : currColor{0xffff0000} { prevGlobalTime = Device.dwTimeContinual / 1000.0f; }
 
-CUIColorAnimatorWrapper::CUIColorAnimatorWrapper(u32* colorToModify) : color{colorToModify}, currColor{0xffff0000} { prevGlobalTime = Device.dwTimeContinual / 1000.0f; }
+CUIColorAnimatorWrapper::CUIColorAnimatorWrapper(u32* colorToModify) : color{colorToModify}, currColor{0xffff0000}
+{
+    prevGlobalTime = Device.dwTimeContinual / 1000.0f;
+}
 //////////////////////////////////////////////////////////////////////////
 
 CUIColorAnimatorWrapper::CUIColorAnimatorWrapper(const shared_str& animationName) : colorAnimation{LALib.FindItem(*animationName)}, currColor{0xffff0000}
@@ -56,8 +60,8 @@ void CUIColorAnimatorWrapper::Update()
             if (animationTime < (colorAnimation->iFrameCount / colorAnimation->fFPS))
             {
                 currColor = colorAnimation->CalculateBGR(std::abs(animationTime - kRev), currFrame);
-                // Msg("name: %s, color: %x, frame: %d", *colorAnimation->cName,currColor, currFrame);
                 currColor = color_rgba(color_get_B(currColor), color_get_G(currColor), color_get_R(currColor), color_get_A(currColor));
+
                 // обновим время
                 animationTime += Device.dwTimeContinual / 1000.0f - prevGlobalTime;
             }
@@ -66,6 +70,7 @@ void CUIColorAnimatorWrapper::Update()
                 // В любом случае (при любом ФПС) последним кадром должен быть последний кадр анимации
                 currColor = colorAnimation->CalculateBGR((colorAnimation->iFrameCount - 1) / colorAnimation->fFPS - kRev, currFrame);
                 currColor = color_rgba(color_get_B(currColor), color_get_G(currColor), color_get_R(currColor), color_get_A(currColor));
+
                 // Индицируем конец анимации
                 isDone = true;
             }

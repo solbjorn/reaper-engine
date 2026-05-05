@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "sight_action.h"
+
 #include "ai/stalker/ai_stalker.h"
 #include "sight_manager.h"
 #include "ai_object_location.h"
@@ -93,16 +94,18 @@ bool CSightAction::target_reached() { return (!!fsimilar(object().movement().m_h
 void CSightAction::execute_current_direction()
 {
     object().movement().m_head.target = object().movement().m_head.current;
+
 #ifdef SIGHT_TEST
-    Msg("%6d eSightTypeCurrentDirection", Device.dwTimeGlobal);
+    Msg("{:6} eSightTypeCurrentDirection", Device.dwTimeGlobal);
 #endif
 }
 
 void CSightAction::execute_path_direction()
 {
     object().sight().SetDirectionLook();
+
 #ifdef SIGHT_TEST
-    Msg("%6d eSightTypePathDirection", Device.dwTimeGlobal);
+    Msg("{:6} eSightTypePathDirection", Device.dwTimeGlobal);
 #endif
 }
 
@@ -111,8 +114,9 @@ void CSightAction::execute_direction()
     m_vector3d.getHP(object().movement().m_head.target.yaw, object().movement().m_head.target.pitch);
     object().movement().m_head.target.yaw *= -1;
     object().movement().m_head.target.pitch *= -1;
+
 #ifdef SIGHT_TEST
-    Msg("%6d eSightTypeDirection", Device.dwTimeGlobal);
+    Msg("{:6} eSightTypeDirection", Device.dwTimeGlobal);
 #endif
 }
 
@@ -124,7 +128,7 @@ void CSightAction::execute_position()
         object().sight().SetPointLookAngles(m_vector3d, object().movement().m_head.target.yaw, object().movement().m_head.target.pitch);
 
 #ifdef SIGHT_TEST
-    Msg("%6d %s", Device.dwTimeGlobal, m_torso_look ? "eSightTypeFirePosition" : "eSightTypePosition");
+    Msg("{:6} {}", Device.dwTimeGlobal, m_torso_look ? "eSightTypeFirePosition" : "eSightTypePosition");
 #endif
 }
 
@@ -148,14 +152,11 @@ void CSightAction::execute_object()
     else
         object().sight().SetPointLookAngles(look_pos, object().movement().m_head.target.yaw, object().movement().m_head.target.pitch);
 
-    //	Msg
-    //("execute_object(%f)(%s)my_position[%f][%f][%f],object_position[%f][%f][%f]",object().movement().m_head.target.yaw,*m_object_to_look->cName(),VPUSH(m_object->eye_matrix.c),VPUSH(m_object_to_look->Position()));
-
     if (m_no_pitch)
         object().movement().m_head.target.pitch = 0.f;
 
 #ifdef SIGHT_TEST
-    Msg("%6d %s", Device.dwTimeGlobal, m_torso_look ? "eSightTypeFireObject" : "eSightTypeObject");
+    Msg("{:6} {}", Device.dwTimeGlobal, m_torso_look ? "eSightTypeFireObject" : "eSightTypeObject");
 #endif
 }
 
@@ -165,8 +166,9 @@ void CSightAction::execute_cover()
         object().sight().SetLessCoverLook(m_object->ai_location().level_vertex(), PI, m_path);
     else
         object().sight().SetLessCoverLook(m_object->ai_location().level_vertex(), m_path);
+
 #ifdef SIGHT_TEST
-    Msg("%6d %s [%f] -> [%f]", Device.dwTimeGlobal, m_torso_look ? "eSightTypeFireCover" : "eSightTypeCover", object().movement().m_body.current.yaw,
+    Msg("{:6} {} [{}] -> [{}]", Device.dwTimeGlobal, m_torso_look ? "eSightTypeFireCover" : "eSightTypeCover", object().movement().m_body.current.yaw,
         object().movement().m_body.target.yaw);
 #endif
 }
@@ -179,8 +181,9 @@ void CSightAction::execute_search()
     else
         object().sight().SetLessCoverLook(m_object->ai_location().level_vertex(), m_path);
     object().movement().m_head.target.pitch = PI_DIV_4;
+
 #ifdef SIGHT_TEST
-    Msg("%6d %s", Device.dwTimeGlobal, m_torso_look ? "eSightTypeFireSearch" : "eSightTypeSearch");
+    Msg("{:6} {}", Device.dwTimeGlobal, m_torso_look ? "eSightTypeFireSearch" : "eSightTypeSearch");
 #endif
 }
 

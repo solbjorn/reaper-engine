@@ -137,8 +137,6 @@ void CDetail::Optimize()
     int vt_new = xrSimulate(vec_indices, cache);
     if (vt_new < vt_old)
     {
-        // Msg					("* DM: %d verts, %d indices, VT: %d/%d",number_vertices,number_indices,vt_old,vt_new);
-
         // Copy faces
         std::memcpy(indices, vec_indices.data(), vec_indices.size() * sizeof(u16));
 

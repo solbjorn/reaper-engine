@@ -15,7 +15,6 @@
 #include "../PhysicsShellHolder.h"
 #include "UIWpnParams.h"
 #include "ui_af_params.h"
-#include <format>
 
 CUIItemInfo::CUIItemInfo() = default;
 
@@ -141,8 +140,8 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
     }
     if (UICost)
     {
-        static const char* StMoneyDescr = CStringTable().translate(shared_str{"ui_st_money_descr"}).c_str();
-        UICost->SetText(std::format("{} {}", pInvItem->Cost(), StMoneyDescr).c_str());
+        static const auto StMoneyDescr = CStringTable().translate(shared_str{"ui_st_money_descr"});
+        UICost->SetText(xr::format("{} {}", pInvItem->Cost(), StMoneyDescr).c_str());
     }
 
     if (UICondProgresBar)

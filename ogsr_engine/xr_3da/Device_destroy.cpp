@@ -69,7 +69,7 @@ tmc::task<void> CRenderDevice::Reset(bool precache)
 
     u32 tm_end = TimerAsync();
 
-    Msg("*** RESET [%u ms]", tm_end - tm_start);
+    Msg("*** RESET [{} ms]", tm_end - tm_start);
 
     //	TODO: Remove this! It may hide crash
     // TODO: KRodin: ??? Remove this! It may hide crash ???

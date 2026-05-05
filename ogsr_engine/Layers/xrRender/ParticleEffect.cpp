@@ -55,7 +55,6 @@ CParticleEffect::CParticleEffect()
 
 CParticleEffect::~CParticleEffect()
 {
-    // Log					("--- destroy PE");
     OnDeviceDestroy();
     ParticleManager()->DestroyEffect(m_HandleEffect);
     ParticleManager()->DestroyActionList(m_HandleActionList);
@@ -245,8 +244,8 @@ void CParticleEffect::OnDeviceDestroy()
 
 namespace
 {
-IC void FillSprite(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float sina,
-                   float cosa)
+IC void FillSprite(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr,
+                   float sina, float cosa)
 {
     __m128 Vr, Vt, _T, _R, _pos, _zz, _sa, _ca, a, b, c, d;
 
@@ -302,7 +301,8 @@ IC void FillSprite(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const Fvec
     pv++;
 }
 
-IC void FillSprite(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float sina, float cosa)
+IC void FillSprite(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float sina,
+                   float cosa)
 {
     const Fvector& T = dir;
     Fvector R;
@@ -486,7 +486,8 @@ void CParticleEffect::ParticleRenderStream(PAPI::Particle* particles, FVF::LIT* 
             }
             else
             {
-                FillSprite(pv, Device.vCameraTop, Device.vCameraRight, m.pos, lt, rb, r_x, r_y, color_rgba_f(m.colorR, m.colorG, m.colorB, m.colorA), sina, cosa);
+                FillSprite(pv, Device.vCameraTop, Device.vCameraRight, m.pos, lt, rb, r_x, r_y, color_rgba_f(m.colorR, m.colorG, m.colorB, m.colorA), sina,
+                           cosa);
             }
         }
     }

@@ -110,12 +110,12 @@ tmc::task<void> CGameObject::net_Destroy()
 {
 #ifdef DEBUG
     if (psAI_Flags.test(aiDestroy))
-        Msg("Destroying client object [%d][%s][%x]", ID(), *cName(), this);
+        Msg("Destroying client object [{}][{}][{:#x}]", ID(), cName(), this);
 #endif
 
     VERIFY(m_spawned);
     if (!m_spawned)
-        Msg("!![%s] Already destroyed object detected: [%s]", __FUNCTION__, this->cName().c_str());
+        Msg("!![{}] Already destroyed object detected: [{}]", __FUNCTION__, this->cName());
 
     if (animation_movement_controlled())
         destroy_anim_mov_ctrl();
@@ -191,14 +191,12 @@ tmc::task<void> CGameObject::OnEvent(NET_Packet& P, u16 type)
     break;
     case GE_DESTROY: {
         if (H_Parent())
-        {
-            Msg("GE_DESTROY arrived, but H_Parent() exist. object[%d][%s] parent[%d][%s] [%u]", ID(), cName().c_str(), H_Parent()->ID(), H_Parent()->cName().c_str(),
+            Msg("GE_DESTROY arrived, but H_Parent() exist. object[{}][{}] parent[{}][{}] [{}]", ID(), cName(), H_Parent()->ID(), H_Parent()->cName(),
                 Device.dwFrame);
-        }
+
         if (!Level().is_removing_objects())
-        {
             ASSERT_FMT(ID() != 0, "![%s] cannot destory actor!", __FUNCTION__);
-        }
+
         setDestroy(TRUE);
     }
     break;
@@ -213,7 +211,7 @@ tmc::task<bool> CGameObject::net_Spawn(CSE_Abstract* DC)
 {
     VERIFY(!m_spawned);
     if (m_spawned)
-        Msg("!![%s] Already spawned object detected: [%s]", __FUNCTION__, this->cName().c_str());
+        Msg("!![{}] Already spawned object detected: [{}]", __FUNCTION__, this->cName());
 
     m_spawned = true;
     m_spawn_time = Device.dwFrame;
@@ -256,11 +254,11 @@ tmc::task<bool> CGameObject::net_Spawn(CSE_Abstract* DC)
             if (keep_visual)
             {
                 if (std::is_neq(xr_strcmp(config_visual_file, saved_visual_file)))
-                    Msg("! [%s]: changed visual_name[%s] found in %s, keep original %s instead", __FUNCTION__, saved_visual, cName().c_str(), config_visual);
+                    Msg("! [{}]: changed visual_name[{}] found in {}, keep original {} instead", __FUNCTION__, saved_visual, cName(), config_visual);
             }
             else if (!FS.exist(saved_visual) && !FS.exist("$level$", saved_visual_file) && !FS.exist("$game_meshes$", saved_visual_file))
             {
-                Msg("! [%s]: visual_name[%s] not found in %s, keep original %s instead", __FUNCTION__, saved_visual, cName().c_str(), config_visual);
+                Msg("! [{}]: visual_name[{}] not found in {}, keep original {} instead", __FUNCTION__, saved_visual, cName(), config_visual);
             }
             else
             {
@@ -285,7 +283,7 @@ tmc::task<bool> CGameObject::net_Spawn(CSE_Abstract* DC)
 
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), cName())))
-        Msg("CGameObject::net_Spawn obj %s Position set from CSE_Abstract %f,%f,%f", PH_DBG_ObjectTrack(), Position().x, Position().y, Position().z);
+        Msg("CGameObject::net_Spawn obj {} Position set from CSE_Abstract {},{},{}", PH_DBG_ObjectTrack(), Position().x, Position().y, Position().z);
 #endif
 
     VERIFY(_valid(renderable.xform));
@@ -329,19 +327,14 @@ tmc::task<bool> CGameObject::net_Spawn(CSE_Abstract* DC)
 
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), cName())))
-        Msg("CGameObject::net_Spawn obj %s After Script Binder reinit %f,%f,%f", PH_DBG_ObjectTrack(), Position().x, Position().y, Position().z);
+        Msg("CGameObject::net_Spawn obj {} After Script Binder reinit {},{},{}", PH_DBG_ObjectTrack(), Position().x, Position().y, Position().z);
 #endif
 
     // load custom user data from server
     if (!E->client_data.empty())
     {
-        //		Msg				("client data is present for object [%d][%s], load is processed",ID(),*cName());
         IReader ireader = IReader(&*E->client_data.begin(), E->client_data.size());
         net_Load(ireader); // вызов load(IReader& input_packet)
-    }
-    else
-    {
-        //		Msg				("no client data for object [%d][%s], load is skipped",ID(),*cName());
     }
 
     // if we have a parent
@@ -379,8 +372,9 @@ tmc::task<bool> CGameObject::net_Spawn(CSE_Abstract* DC)
             if (!_valid(Position()))
             {
                 Fvector vertex_pos = ai().level_graph().vertex_position(ai_location().level_vertex_id());
-                Msg("! [%s]: %s has invalid Position[%f,%f,%f] level_vertex_id[%u][%f,%f,%f]", __FUNCTION__, cName().c_str(), Position().x, Position().y, Position().z,
+                Msg("! [{}]: {} has invalid Position[{},{},{}] level_vertex_id[{}][{},{},{}]", __FUNCTION__, cName(), Position().x, Position().y, Position().z,
                     ai_location().level_vertex_id(), vertex_pos.x, vertex_pos.y, vertex_pos.z);
+
                 Position().set(vertex_pos);
                 auto se_obj = alife_object();
                 if (se_obj)
@@ -403,14 +397,14 @@ tmc::task<bool> CGameObject::net_Spawn(CSE_Abstract* DC)
 
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), cName())))
-        Msg("CGameObject::net_Spawn obj %s Before CScriptBinder::net_Spawn %f,%f,%f", PH_DBG_ObjectTrack(), Position().x, Position().y, Position().z);
+        Msg("CGameObject::net_Spawn obj {} Before CScriptBinder::net_Spawn {},{},{}", PH_DBG_ObjectTrack(), Position().x, Position().y, Position().z);
 #endif
 
     const bool ret = co_await CScriptBinder::net_Spawn(DC);
 
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), cName())))
-        Msg("CGameObject::net_Spawn obj %s Before CScriptBinder::net_Spawn %f,%f,%f", PH_DBG_ObjectTrack(), Position().x, Position().y, Position().z);
+        Msg("CGameObject::net_Spawn obj {} Before CScriptBinder::net_Spawn {},{},{}", PH_DBG_ObjectTrack(), Position().x, Position().y, Position().z);
 #endif
 
     co_return ret;
@@ -426,8 +420,8 @@ void CGameObject::net_Save(NET_Packet& net_packet)
 #ifdef DEBUG
     if (psAI_Flags.test(aiSerialize))
     {
-        Msg(">> **** Save script object [%s] *****", *cName());
-        Msg(">> Before save :: packet position = [%u]", net_packet.w_tell());
+        Msg(">> **** Save script object [{}] *****", cName());
+        Msg(">> Before save :: packet position = [{}]", net_packet.w_tell());
     }
 
 #endif
@@ -435,13 +429,9 @@ void CGameObject::net_Save(NET_Packet& net_packet)
     CScriptBinder::save(net_packet);
 
 #ifdef DEBUG
-
     if (psAI_Flags.test(aiSerialize))
-    {
-        Msg(">> After save :: packet position = [%u]", net_packet.w_tell());
-    }
+        Msg(">> After save :: packet position = [{}]", net_packet.w_tell());
 #endif
-
     // ----------------------------------------------------------
 
     net_packet.w_chunk_close16(position);
@@ -455,20 +445,19 @@ void CGameObject::net_Load(IReader& ireader)
 #ifdef DEBUG
     if (psAI_Flags.test(aiSerialize))
     {
-        Msg(">> **** Load script object [%s] *****", *cName());
-        Msg(">> Before load :: reader position = [%i]", ireader.tell());
+        Msg(">> **** Load script object [{}] *****", cName());
+        Msg(">> Before load :: reader position = [{}]", ireader.tell());
     }
-
 #endif
 
     CScriptBinder::load(ireader);
 
 #ifdef DEBUG
     if (psAI_Flags.test(aiSerialize))
-        Msg(">> After load :: reader position = [%i]", ireader.tell());
+        Msg(">> After load :: reader position = [{}]", ireader.tell());
 
     if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), cName())))
-        Msg("CGameObject::net_Load obj %s (loaded) %f,%f,%f", PH_DBG_ObjectTrack(), Position().x, Position().y, Position().z);
+        Msg("CGameObject::net_Load obj {} (loaded) {},{},{}", PH_DBG_ObjectTrack(), Position().x, Position().y, Position().z);
 #endif
 }
 
@@ -771,7 +760,7 @@ CScriptGameObject* CGameObject::lua_game_object() const
 {
     if (!m_spawned)
     {
-        Msg("!! [%s] you are trying to use a destroyed object name=[%s] getDestroy=%d", __FUNCTION__, cName().c_str(), getDestroy());
+        Msg("!! [{}] you are trying to use a destroyed object name=[{}] getDestroy={}", __FUNCTION__, cName(), getDestroy());
         LogStackTrace("!!stack trace:\n", false);
     }
 
@@ -846,8 +835,10 @@ u32 CGameObject::ef_weapon_type() const
 {
     string16 temp;
     CLSID2TEXT(CLS_ID, temp);
+
     R_ASSERT3(false, "Invalid weapon type request, virtual function is not properly overridden!", temp);
-    Msg("!![%s] Invalid weapon type request, virtual function is not properly overridden [%s] ", __FUNCTION__, temp);
+    Msg("!![{}] Invalid weapon type request, virtual function is not properly overridden [{}] ", __FUNCTION__, temp);
+
     return u32(-1);
 }
 
@@ -1053,7 +1044,8 @@ void CGameObject::FeelTouchAddonsUpdate()
     feel_touch_processing = false;
     if (feel_touch_changed)
     {
-        feel_touch_addons.erase(std::remove_if(feel_touch_addons.begin(), feel_touch_addons.end(), [](const auto ft) { return ft->radius < 0.0f; }), feel_touch_addons.end());
+        feel_touch_addons.erase(std::remove_if(feel_touch_addons.begin(), feel_touch_addons.end(), [](const auto ft) { return ft->radius < 0.0f; }),
+                                feel_touch_addons.end());
         feel_touch_changed = false;
     }
 }

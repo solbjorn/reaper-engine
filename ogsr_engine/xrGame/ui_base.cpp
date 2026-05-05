@@ -185,10 +185,12 @@ void ui_core::PushScissor(const Frect& r_tgt, bool overlapped)
 
     if (!(result.x1 >= 0 && result.y1 >= 0 && result.x2 <= UI_BASE_WIDTH && result.y2 <= UI_BASE_HEIGHT))
     {
-        Msg("! r_tgt [%.3f][%.3f][%.3f][%.3f]", r_tgt.x1, r_tgt.y1, r_tgt.x2, r_tgt.y2);
-        Msg("! result [%.3f][%.3f][%.3f][%.3f]", result.x1, result.y1, result.x2, result.y2);
+        Msg("! r_tgt [{:.4}][{:.4}][{:.4}][{:.4}]", r_tgt.x1, r_tgt.y1, r_tgt.x2, r_tgt.y2);
+        Msg("! result [{:.4}][{:.4}][{:.4}][{:.4}]", result.x1, result.y1, result.x2, result.y2);
+
         VERIFY(result.x1 >= 0 && result.y1 >= 0 && result.x2 <= UI_BASE_WIDTH && result.y2 <= UI_BASE_HEIGHT);
     }
+
     m_Scissors.push(result);
 
     result.lt.x = ClientToScreenScaledX(result.lt.x);
@@ -253,8 +255,10 @@ void ui_core::pp_start()
 {
     m_bPostprocess = true;
 
-    m_pp_scale_.set(float(::Render->getTarget()->get_width(R__IMM_CTX_ID)) / float(UI_BASE_WIDTH), float(::Render->getTarget()->get_height(R__IMM_CTX_ID)) / float(UI_BASE_HEIGHT));
-    m_2DFrustumPP.CreateFromRect(Frect().set(0.0f, 0.0f, float(::Render->getTarget()->get_width(R__IMM_CTX_ID)), float(::Render->getTarget()->get_height(R__IMM_CTX_ID))));
+    m_pp_scale_.set(float(::Render->getTarget()->get_width(R__IMM_CTX_ID)) / float(UI_BASE_WIDTH),
+                    float(::Render->getTarget()->get_height(R__IMM_CTX_ID)) / float(UI_BASE_HEIGHT));
+    m_2DFrustumPP.CreateFromRect(
+        Frect().set(0.0f, 0.0f, float(::Render->getTarget()->get_width(R__IMM_CTX_ID)), float(::Render->getTarget()->get_height(R__IMM_CTX_ID))));
 
     m_current_scale = &m_pp_scale_;
 
@@ -308,12 +312,16 @@ shared_str ui_core::get_xml_name(LPCSTR fn)
             if (!strext(fn))
                 strcat_s(str, ".xml");
         }
+
 #ifdef DEBUG
-        Msg("[16-9] get_xml_name for[%s] returns [%s]", fn, str);
+        Msg("[16-9] get_xml_name for[{}] returns [{}]", fn, str);
 #endif
     }
 
     return shared_str{str};
 }
 
-bool ui_core::is_widescreen() { return gsl::narrow_cast<f32>(Device.dwWidth) / gsl::narrow_cast<f32>(Device.dwHeight) > (UI_BASE_WIDTH / UI_BASE_HEIGHT + 0.01f); }
+bool ui_core::is_widescreen()
+{
+    return gsl::narrow_cast<f32>(Device.dwWidth) / gsl::narrow_cast<f32>(Device.dwHeight) > (UI_BASE_WIDTH / UI_BASE_HEIGHT + 0.01f);
+}

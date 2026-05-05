@@ -42,7 +42,7 @@ void CCar::SCarSound::Init()
     }
     else
     {
-        Msg("! Car doesn't contain sound params");
+        Log("! Car doesn't contain sound params");
     }
 
     eCarSound = sndOff;

@@ -100,7 +100,7 @@ void game_cl_GameState::net_import_state(NET_Packet& P)
         {
             IP = I->second;
             IP->net_Import(P);
-            // Msg("!![%s] Called net_import - 1", __FUNCTION__);
+
             players_new.try_emplace(ID, IP);
             players.erase(I);
         }
@@ -108,9 +108,10 @@ void game_cl_GameState::net_import_state(NET_Packet& P)
         {
             IP = createPlayerState();
             IP->net_Import(P);
-            // Msg("!![%s] Called net_import - 2", __FUNCTION__);
+
             players_new.try_emplace(ID, IP);
         }
+
         if (IP->testFlag(GAME_PLAYER_FLAG_LOCAL))
             local_player = IP;
     }
@@ -137,13 +138,12 @@ void game_cl_GameState::net_import_update(NET_Packet& P)
     {
         game_PlayerState* IP = I->second;
         IP->net_Import(P);
-        // Msg("!![%s] Called net_import - 3", __FUNCTION__);
     }
     else
     {
         game_PlayerState* PS = createPlayerState();
         PS->net_Import(P);
-        // Msg("!![%s] Called net_import - 4", __FUNCTION__);
+
         xr_delete(PS);
     }
 

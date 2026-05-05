@@ -28,11 +28,12 @@ xr_vector<DBGList> dbg_list_wnds;
 
 void dump_list_wnd()
 {
-    Msg("------Total  wnds %d", dbg_list_wnds.size());
+    Msg("------Total  wnds {}", dbg_list_wnds.size());
+
     xr_vector<DBGList>::iterator _it = dbg_list_wnds.begin();
     for (; _it != dbg_list_wnds.end(); ++_it)
         if (!(*_it).closed)
-            Msg("--leak detected ---- wnd = %d", (*_it).num);
+            Msg("--leak detected ---- wnd = {}", (*_it).num);
 }
 #else
 void dump_list_wnd() {}
@@ -152,12 +153,13 @@ CUIWindow::~CUIWindow()
         }
         if ((*_it).num == m_dbg_id && (*_it).closed)
         {
-            Msg("--CUIWindow [%d] already deleted", m_dbg_id);
+            Msg("--CUIWindow [{}] already deleted", m_dbg_id);
             bOK = true;
         }
     }
+
     if (!bOK)
-        Msg("CUIWindow::~CUIWindow.[%d] cannot find window in list", m_dbg_id);
+        Msg("CUIWindow::~CUIWindow.[{}] cannot find window in list", m_dbg_id);
 #endif
 }
 
@@ -275,10 +277,7 @@ void CUIWindow::DoDetachChild(CUIWindow* pChild, bool from_destructor)
     pChild->SetParent(nullptr);
 
     if (from_destructor && pChild->IsAutoDelete())
-    {
-        Msg("!![%s] detaching autodelete window from destructor : [%s]", __FUNCTION__, pChild->WindowName_script());
-        // LogStackTrace("");
-    }
+        Msg("!![{}] detaching autodelete window from destructor : [{}]", __FUNCTION__, pChild->WindowName_script());
 
     if (pChild->IsAutoDelete() && !from_destructor)
         xr_delete(pChild);
@@ -356,7 +355,8 @@ bool CUIWindow::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
     // сообщение направляем ему сразу
     if (GetMouseCapturer())
     {
-        std::ignore = GetMouseCapturer()->OnMouse(cursor_pos.x - GetMouseCapturer()->GetWndRect().left, cursor_pos.y - GetMouseCapturer()->GetWndRect().top, mouse_action);
+        std::ignore = GetMouseCapturer()->OnMouse(cursor_pos.x - GetMouseCapturer()->GetWndRect().left, cursor_pos.y - GetMouseCapturer()->GetWndRect().top,
+                                                  mouse_action);
         return true;
     }
 
@@ -492,8 +492,8 @@ void CUIWindow::SetMouseCapture(CUIWindow* pChildWindow, bool capture_status)
     }
     else
     {
-        ASSERT_FMT_DBG((m_pMouseCapturer && m_pMouseCapturer == pChildWindow), "[%s]: [%s] trying to reset m_pMouseCapturer[%s]", __FUNCTION__, pChildWindow->WindowName().c_str(),
-                       m_pMouseCapturer ? m_pMouseCapturer->WindowName().c_str() : "");
+        ASSERT_FMT_DBG((m_pMouseCapturer && m_pMouseCapturer == pChildWindow), "[{}]: [{}] trying to reset m_pMouseCapturer[{}]", __FUNCTION__,
+                       pChildWindow->WindowName(), m_pMouseCapturer != nullptr ? std::string_view{m_pMouseCapturer->WindowName()} : std::string_view{});
         m_pMouseCapturer = nullptr;
     }
 }
@@ -515,7 +515,7 @@ bool CUIWindow::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 
         auto* Wnd = *(iter++);
 
-        ASSERT_FMT_DBG(Wnd, "!![%s][%s] Child wnd is nullptr! Something strange!", __FUNCTION__, this->WindowName_script());
+        ASSERT_FMT_DBG(Wnd, "!![{}][{}] Child wnd is nullptr! Something strange!", __FUNCTION__, this->WindowName_script());
 
         if (Wnd != nullptr && Wnd->IsEnabled() && Wnd->OnKeyboard(dik, keyboard_action))
             return true;
@@ -547,7 +547,7 @@ bool CUIWindow::OnKeyboardHold(xr::key_id dik)
 
         auto* Wnd = *(iter++);
 
-        ASSERT_FMT_DBG(Wnd, "!![%s][%s] Child wnd is nullptr! Something strange!", __FUNCTION__, this->WindowName_script());
+        ASSERT_FMT_DBG(Wnd, "!![{}][{}] Child wnd is nullptr! Something strange!", __FUNCTION__, this->WindowName_script());
 
         if (Wnd != nullptr && Wnd->IsEnabled() && Wnd->OnKeyboardHold(dik))
             return true;
@@ -705,27 +705,17 @@ CUIWindow* CUIWindow::FindChild(const shared_str name, u32 max_nested)
 
 const shared_str CUIWindow::WindowName() const
 {
-    if (0 != m_windowName.size())
+    if (!m_windowName.empty())
         return m_windowName;
 
-    if (!GetParent())
+    if (GetParent() == nullptr)
         return m_windowName;
 
-    WINDOW_LIST& pcl = GetParent()->GetChildWndList();
-    WINDOW_LIST::const_iterator it = pcl.begin();
-    WINDOW_LIST::const_iterator it_e = pcl.end();
+    const auto& pcl = GetParent()->GetChildWndList();
 
-    int index = 0;
-    for (; it != it_e; ++it)
-    {
-        if (this == (*it))
-        {
-            shared_str result;
-            result.sprintf("%s.child_%d", GetParent()->WindowName().c_str(), index);
-            return result;
-        }
-        index++;
-    }
+    if (const auto it = std::ranges::find(pcl, this); it != pcl.cend())
+        return shared_str{xr::format("{}.child_{}", GetParent()->WindowName(), std::distance(pcl.cbegin(), it))};
+
     return m_windowName;
 }
 

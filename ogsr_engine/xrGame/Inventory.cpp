@@ -119,13 +119,13 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
 
     if (pIItem->m_pCurrentInventory)
     {
-        Msg("! ERROR CInventory::Take but object has m_pCurrentInventory");
-        Msg("! Inventory Owner is [%d]", GetOwner()->object_id());
-        Msg("! Object Inventory Owner is [%d]", pIItem->m_pCurrentInventory->GetOwner()->object_id());
+        Log("! ERROR CInventory::Take but object has m_pCurrentInventory");
+        Msg("! Inventory Owner is [{}]", GetOwner()->object_id());
+        Msg("! Object Inventory Owner is [{}]", pIItem->m_pCurrentInventory->GetOwner()->object_id());
 
         CObject* p = pObj->H_Parent();
         if (p)
-            Msg("! object parent is [%s] [%d]", p->cName().c_str(), p->ID());
+            Msg("! object parent is [{}] [{}]", p->cName(), p->ID());
     }
 
     R_ASSERT(CanTakeItem(pIItem));
@@ -146,7 +146,8 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
         result = Belt(pIItem);
         if (!result)
         {
-            Msg("!![%s] cant put in belt item [%s], moving to ruck...", __FUNCTION__, pIItem->object().cName().c_str());
+            Msg("!![{}] cant put in belt item [{}], moving to ruck...", __FUNCTION__, pIItem->object().cName());
+
             pIItem->m_eItemPlace = eItemPlaceRuck;
             R_ASSERT(Ruck(pIItem));
         }
@@ -155,17 +156,18 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
     case eItemPlaceRuck: result = Ruck(pIItem);
 #ifdef DEBUG
         if (!result)
-            Msg("cant put in ruck item %s", *pIItem->object().cName());
+            Msg("cant put in ruck item {}", pIItem->object().cName());
 #endif
 
         break;
     case eItemPlaceSlot:
         if (smart_cast<CActor*>(m_pOwner) && Device.dwPrecacheFrame && m_iActiveSlot == NO_ACTIVE_SLOT && m_iNextActiveSlot == NO_ACTIVE_SLOT)
             bNotActivate = true;
+
         result = Slot(pIItem, bNotActivate);
 #ifdef DEBUG
         if (!result)
-            Msg("cant slot in ruck item %s", *pIItem->object().cName());
+            Msg("cant slot in ruck item {}", pIItem->object().cName());
 #endif
 
         break;
@@ -235,7 +237,7 @@ bool CInventory::DropItem(CGameObject* pObj)
     case eItemPlaceBelt: {
         if (!InBelt(pIItem))
         {
-            Msg("!!CInventory::DropItem: InBelt(pIItem): [%s]", pObj->cName().c_str());
+            Msg("!!CInventory::DropItem: InBelt(pIItem): [{}]", pObj->cName());
             pIItem->m_eItemPlace = eItemPlaceUndefined;
         }
         else
@@ -249,7 +251,7 @@ bool CInventory::DropItem(CGameObject* pObj)
     case eItemPlaceRuck: {
         if (!InRuck(pIItem))
         {
-            Msg("!!CInventory::DropItem: InRuck(pIItem): [%s]", pObj->cName().c_str());
+            Msg("!!CInventory::DropItem: InRuck(pIItem): [{}]", pObj->cName());
             pIItem->m_eItemPlace = eItemPlaceUndefined;
         }
         else
@@ -261,7 +263,7 @@ bool CInventory::DropItem(CGameObject* pObj)
     case eItemPlaceSlot: {
         if (!InSlot(pIItem))
         {
-            Msg("!!CInventory::DropItem: InSlot(pIItem): [%s], id: [%u]", pObj->cName().c_str(), pObj->ID());
+            Msg("!!CInventory::DropItem: InSlot(pIItem): [{}], id: [{}]", pObj->cName(), pObj->ID());
             pIItem->m_eItemPlace = eItemPlaceUndefined;
         }
         else
@@ -302,7 +304,7 @@ bool CInventory::DropItem(CGameObject* pObj)
     }
 
     if (!removed)
-        Msg("! CInventory::Drop item not found in inventory!!!");
+        Log("! CInventory::Drop item not found in inventory!!!");
 
     pIItem->m_pCurrentInventory = nullptr;
 
@@ -319,19 +321,9 @@ bool CInventory::DropItem(CGameObject* pObj)
 bool CInventory::Slot(PIItem pIItem, bool bNotActivate)
 {
     VERIFY(pIItem);
-    //	Msg("To Slot %s[%d]", *pIItem->object().cName(), pIItem->object().ID());
 
     if (!CanPutInSlot(pIItem))
     {
-        /*
-        Msg("there is item %s[%d,%x] in slot %d[%d,%x]",
-                *m_slots[pIItem->GetSlot()].m_pIItem->object().cName(),
-                m_slots[pIItem->GetSlot()].m_pIItem->object().ID(),
-                m_slots[pIItem->GetSlot()].m_pIItem,
-                pIItem->GetSlot(),
-                pIItem->object().ID(),
-                pIItem);
-        */
         if (m_slots[pIItem->GetSlot()].m_pIItem == pIItem && !bNotActivate)
             Activate(pIItem->GetSlot());
 
@@ -623,10 +615,10 @@ bool CInventory::Action(EGameActions cmd, u32 flags)
 
 void CInventory::Update()
 {
-    // Да, KRodin писал это в здравом уме и понимает, что это полная хуйня. Но ни одного нормального решения придумать не удалось. Может потом какие-то мысли появятся.
-    // А проблема вся в том, что арты и костюм выходят в онлайн в хаотичном порядке. И получается, что арты на пояс уже пытаются залезть, а костюма вроде как ещё нет,
-    // соотв. и слотов под арты как бы нет. Вот поэтому до первого апдейта CInventory актора считаем, что все слоты для артов доступны ( см. CInventory::BeltSlotsCount() )
-    // По моим наблюдениям на момент первого апдейта CInventory, все предметы в инвентаре актора уже вышли в онлайн.
+    // Да, KRodin писал это в здравом уме и понимает, что это полная хуйня. Но ни одного нормального решения придумать не удалось. Может потом какие-то мысли
+    // появятся. А проблема вся в том, что арты и костюм выходят в онлайн в хаотичном порядке. И получается, что арты на пояс уже пытаются залезть, а костюма
+    // вроде как ещё нет, соотв. и слотов под арты как бы нет. Вот поэтому до первого апдейта CInventory актора считаем, что все слоты для артов доступны ( см.
+    // CInventory::BeltSlotsCount() ) По моим наблюдениям на момент первого апдейта CInventory, все предметы в инвентаре актора уже вышли в онлайн.
     if (smart_cast<CActor*>(m_pOwner) && (++UpdatesCount == 1))
         smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame())->InventoryMenu->UpdateOutfit();
 
@@ -1133,7 +1125,8 @@ void CInventory::SetSlotsBlocked(u16 mask, bool bBlock, bool now)
                 m_slots[ActiveSlot].m_pIItem->Activate(true);
             }
         }
-        else if (m_slots[PrevActiveSlot].m_pIItem && m_slots[PrevActiveSlot].m_pIItem->cast_hud_item() && m_slots[PrevActiveSlot].m_pIItem->cast_hud_item()->IsHiding())
+        else if (m_slots[PrevActiveSlot].m_pIItem && m_slots[PrevActiveSlot].m_pIItem->cast_hud_item() &&
+                 m_slots[PrevActiveSlot].m_pIItem->cast_hud_item()->IsHiding())
         {
             m_slots[PrevActiveSlot].m_pIItem->Deactivate(true);
             ActiveSlot = NO_ACTIVE_SLOT;

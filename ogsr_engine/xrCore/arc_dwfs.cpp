@@ -71,7 +71,7 @@ void dwfs_logger::write(dwarfs::logger::level_type level, std::string_view outpu
 
     const auto ctx = dwarfs::get_logger_context(loc);
 
-    Msg("%s%s%s", pfx, ctx.c_str(), output.data());
+    Msg("{}{}{}", pfx, ctx, output);
 
     if (level == dwarfs::logger::level_type::FATAL)
         FATAL("DwarFS: %s%s", ctx.c_str(), output.data());

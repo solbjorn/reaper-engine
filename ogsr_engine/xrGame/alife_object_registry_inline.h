@@ -54,7 +54,7 @@ IC CSE_ALifeDynamicObject* CALifeObjectRegistry::object(const ALife::_OBJECT_ID&
     {
 #ifdef DEBUG
         if (!no_assert)
-            Msg("There is no object with id %d!", id);
+            Msg("There is no object with id {}!", id);
 #endif
 
         THROW2(no_assert, "Specified object hasn't been found in the object registry!");
@@ -67,12 +67,11 @@ IC CSE_ALifeDynamicObject* CALifeObjectRegistry::object(const ALife::_OBJECT_ID&
 inline CSE_ALifeDynamicObject* CALifeObjectRegistry::object_by_name(std::string_view name, bool no_assert) const
 {
     const auto it = m_object_ids.find(name);
-
     if (it == m_object_ids.end())
     {
 #ifdef DEBUG
         if (!no_assert)
-            Msg("There is no object with name %s!", name.data());
+            Msg("There is no object with name {}!", name);
 #endif
 
         THROW2(no_assert, "Specified object hasn't been found in the object registry!");

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "DiscordRPC.hpp"
+
 #include "../xr_3da/x_ray.h"
 
 constexpr const char* DISCORD_LIBRARY_DLL{"discord-rpc.dll"};
@@ -12,7 +13,7 @@ void DiscordRPC::Init()
     m_hDiscordDLL = LoadLibraryA(DISCORD_LIBRARY_DLL);
     if (!m_hDiscordDLL)
     {
-        Msg("!![%s]Failed to load [%s], error: %s", __FUNCTION__, DISCORD_LIBRARY_DLL, Debug.error2string(GetLastError()));
+        Msg("!![{}]Failed to load [{}], error: {}", __FUNCTION__, DISCORD_LIBRARY_DLL, Debug.error2string(GetLastError()));
         return;
     }
 
@@ -24,9 +25,11 @@ void DiscordRPC::Init()
 
     if (!Discord_Initialize || !Discord_Shutdown || !Discord_ClearPresence || !Discord_RunCallbacks || !Discord_UpdatePresence)
     {
-        Msg("!![%s] Initialization failed!", __FUNCTION__);
+        Msg("!![{}] Initialization failed!", __FUNCTION__);
+
         FreeLibrary(m_hDiscordDLL);
         m_hDiscordDLL = nullptr;
+
         return;
     }
 

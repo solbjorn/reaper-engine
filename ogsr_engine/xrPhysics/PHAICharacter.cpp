@@ -1,11 +1,11 @@
 #include "stdafx.h"
 
+#include "phaicharacter.h"
+
 #include "PHDynamicData.h"
 #include "Physics.h"
 #include "ExtendedGeom.h"
 #include "tri-colliderKNoOPC\__aabb_tri.h"
-
-#include "phaicharacter.h"
 
 #ifdef DEBUG
 #include "../xr_3da/StatGraph.h"
@@ -85,16 +85,6 @@ bool CPHAICharacter::TryPosition(Fvector pos)
     SetVelocity(cur_vel);
     Fvector pos_new;
     GetPosition(pos_new);
-
-#if 0
-	Fvector	dif;dif .sub( pos, pos_new );
-	float	dif_m = dif.magnitude();
-	if(ret&&dif_m>EPS_L)
-	{
-		Msg("dif vec %f,%f,%f \n",dif.x,dif.y,dif.z);
-		Msg("dif mag %f \n",dif_m);
-	}
-#endif
 
     SetPosition(pos_new);
     m_last_move.sub(pos_new, current_pos).mul(1.f / Device.fTimeDelta);

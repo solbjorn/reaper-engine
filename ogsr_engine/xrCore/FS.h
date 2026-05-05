@@ -352,7 +352,7 @@ public:
         }
         else
         {
-            Msg("!![%s] chunk [%u] has invalid size [%zd], return elapsed size [%zd]", __FUNCTION__, ID, dwSize, impl().elapsed());
+            Msg("!![{}] chunk [{}] has invalid size [{}], return elapsed size [{}]", __FUNCTION__, ID, dwSize, impl().elapsed());
             m_last_pos = 0;
 
             return impl().elapsed();
@@ -418,7 +418,8 @@ public:
                                         break; // found start of next section
                                     length++;
                                 }
-                                Msg("!![%s] THM [%s] chunk [%u] fixed, wrong size = [%zd], correct size = [%zd]", __FUNCTION__, dbg_name, ID, dwSize, length);
+
+                                Msg("!![{}] THM [{}] chunk [{}] fixed, wrong size = [{}], correct size = [{}]", __FUNCTION__, dbg_name, ID, dwSize, length);
                             }
                         }
 
@@ -446,7 +447,7 @@ public:
         }
         else
         {
-            Msg("!![%s] chunk [%u] has invalid size [%zd], return elapsed size [%zd]", __FUNCTION__, ID, dwSize, impl().elapsed());
+            Msg("!![{}] chunk [{}] has invalid size [{}], return elapsed size [{}]", __FUNCTION__, ID, dwSize, impl().elapsed());
             m_last_pos = 0;
 
             return impl().elapsed();

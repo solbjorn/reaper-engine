@@ -21,15 +21,15 @@ IC BOOL dBodyStateValide(const dBodyID body)
     { \
         if (!valid_pos(pos, bounds)) \
         { \
-            Msg(" %s	\n", msg); \
-            Msg(" pos: %f,%f,%f, seems to be invalid", pos.x, pos.y, pos.z); \
-            Msg("Level box: %f,%f,%f-%f,%f,%f,", bounds.x1, bounds.y1, bounds.z1, bounds.x2, bounds.y2, bounds.z2); \
-            Msg("Object: %s", *(obj->Name())); \
-            Msg("Visual: %s", *(obj->cNameVisual())); \
+            Msg(" {}\t\n", msg); \
+            Msg(" pos: {},{},{}, seems to be invalid", pos.x, pos.y, pos.z); \
+            Msg("Level box: {},{},{}-{},{},{},", bounds.x1, bounds.y1, bounds.z1, bounds.x2, bounds.y2, bounds.z2); \
+            Msg("Object: {}", obj->Name()); \
+            Msg("Visual: {}", obj->cNameVisual()); \
             VERIFY(0); \
         } \
     }
-#define VERIFY_BOUNDARIES(pos, bounds, obj) VERIFY_BOUNDARIES2(pos, bounds, obj, "	")
+#define VERIFY_BOUNDARIES(pos, bounds, obj) VERIFY_BOUNDARIES2(pos, bounds, obj, "\t")
 #else
 #define VERIFY_BOUNDARIES(pos, bounds, obj)
 #define VERIFY_BOUNDARIES2(pos, bounds, obj, msg)

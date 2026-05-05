@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "NvTriStripObjects.h"
+
 #include "VertexCache.h"
 
 #include <cassert>
@@ -8,8 +9,8 @@
 
 #define CACHE_INEFFICIENCY 6
 
-NvStripifier::NvStripifier() {}
-NvStripifier::~NvStripifier() {}
+NvStripifier::NvStripifier() = default;
+NvStripifier::~NvStripifier() = default;
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // FindEdgeInfo()
@@ -122,7 +123,6 @@ void NvStripifier::BuildStripifyInfo(NvFaceInfoVec& faceInfos, NvEdgeInfoVec& ed
             {
                 if (edgeInfo01->m_face1)
                     ;
-                // Msg("! WARNING: BuildStripifyInfo: > 2 triangles on an edge... uncertain consequences");
                 else
                     edgeInfo01->m_face1 = faceInfo;
             }
@@ -147,7 +147,6 @@ void NvStripifier::BuildStripifyInfo(NvFaceInfoVec& faceInfos, NvEdgeInfoVec& ed
             {
                 if (edgeInfo12->m_face1)
                     ;
-                // Msg("! WARNING: BuildStripifyInfo: > 2 triangles on an edge... uncertain consequences");
                 else
                     edgeInfo12->m_face1 = faceInfo;
             }
@@ -172,7 +171,6 @@ void NvStripifier::BuildStripifyInfo(NvFaceInfoVec& faceInfos, NvEdgeInfoVec& ed
             {
                 if (edgeInfo20->m_face1)
                     ;
-                // Msg("! WARNING: BuildStripifyInfo: > 2 triangles on an edge... uncertain consequences");
                 else
                     edgeInfo20->m_face1 = faceInfo;
             }
@@ -327,32 +325,38 @@ IC int NvStripifier::GetNextIndex(const WordVec& indices, NvFaceInfo* face)
     {
         if ((fv1 != v0 && fv1 != v1) || (fv2 != v0 && fv2 != v1))
         {
-            Msg("! WARNING: GetNextIndex: Triangle doesn't have all of its vertices");
-            Msg("! WARNING: GetNextIndex: Duplicate triangle probably got us derailed");
+            Log("! WARNING: GetNextIndex: Triangle doesn't have all of its vertices");
+            Log("! WARNING: GetNextIndex: Duplicate triangle probably got us derailed");
         }
+
         return fv0;
     }
+
     if (fv1 != v0 && fv1 != v1)
     {
         if ((fv0 != v0 && fv0 != v1) || (fv2 != v0 && fv2 != v1))
         {
-            Msg("! WARNING: GetNextIndex: Triangle doesn't have all of its vertices");
-            Msg("! WARNING: GetNextIndex: Duplicate triangle probably got us derailed");
+            Log("! WARNING: GetNextIndex: Triangle doesn't have all of its vertices");
+            Log("! WARNING: GetNextIndex: Duplicate triangle probably got us derailed");
         }
+
         return fv1;
     }
+
     if (fv2 != v0 && fv2 != v1)
     {
         if ((fv0 != v0 && fv0 != v1) || (fv1 != v0 && fv1 != v1))
         {
-            Msg("! WARNING: GetNextIndex: Triangle doesn't have all of its vertices");
-            Msg("! WARNING: GetNextIndex: Duplicate triangle probably got us derailed");
+            Log("! WARNING: GetNextIndex: Triangle doesn't have all of its vertices");
+            Log("! WARNING: GetNextIndex: Duplicate triangle probably got us derailed");
         }
+
         return fv2;
     }
 
     // shouldn't get here
-    Msg("! WARNING: GetNextIndex: Duplicate triangle sent");
+    Log("! WARNING: GetNextIndex: Duplicate triangle sent");
+
     return -1;
 }
 
@@ -860,7 +864,8 @@ void NvStripifier::CreateStrips(const NvStripInfoVec& allStrips, IntVec& stripIn
 // in_indices are the input indices of the mesh to stripify
 // in_cacheSize is the target cache size
 //
-void NvStripifier::Stripify(const WordVec& in_indices, const int in_cacheSize, const int in_minStripLength, NvStripInfoVec& outStrips, NvFaceInfoVec& outFaceList)
+void NvStripifier::Stripify(const WordVec& in_indices, const int in_cacheSize, const int in_minStripLength, NvStripInfoVec& outStrips,
+                            NvFaceInfoVec& outFaceList)
 {
     meshJump = 0.0f;
     bFirstTimeResetPoint = true; // used in FindGoodResetPoint()

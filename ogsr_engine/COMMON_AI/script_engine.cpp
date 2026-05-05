@@ -66,15 +66,15 @@ void ScriptCrashHandler(bool dump_lua_locals)
 {
     try
     {
-        Msg("***************************[ScriptCrashHandler]**********************************");
+        Log("***************************[ScriptCrashHandler]**********************************");
         ai().script_engine().print_stack();
         if (dump_lua_locals)
             ai().script_engine().dump_state();
-        Msg("*********************************************************************************");
+        Log("*********************************************************************************");
     }
     catch (...)
     {
-        Msg("Can't dump script call stack - Engine corrupted");
+        Log("Can't dump script call stack - Engine corrupted");
     }
 }
 
@@ -236,7 +236,7 @@ files:
             gsl::czstring nspace = std::strtok(buff, ".");
             const auto it = xray_scripts.find(nspace);
 
-            R_ASSERT2(it == xray_scripts.end(), make_string("ERROR: script namespace \'%s\' conflict: %s vs %s", nspace, it->second.c_str(), fname));
+            R_ASSERT2(it == xray_scripts.end(), xr::format("ERROR: script namespace \'{}\' conflict: {} vs {}", nspace, it->second, fname));
             xray_scripts.emplace(nspace, fname);
         }
     });
@@ -340,7 +340,7 @@ bool CScriptEngine::do_file(gsl::czstring caScriptName, gsl::czstring caNameSpac
     if (!l_tpFileReader)
     {
         // заменить на ассерт?
-        Msg("!![CScriptEngine::do_file] Cannot open file [%s]", caScriptName);
+        Msg("!![CScriptEngine::do_file] Cannot open file [{}]", caScriptName);
         return false;
     }
 
@@ -354,7 +354,7 @@ bool CScriptEngine::do_file(gsl::czstring caScriptName, gsl::czstring caNameSpac
 
     if (std::is_neq(xr_strcmp(caNameSpaceName, GlobalNamespace)))
     {
-        script = std::format(FILE_HEADER, caNameSpaceName, strbuf);
+        script = xr::format(FILE_HEADER, caNameSpaceName, strbuf);
         strbuf = script;
     }
 
@@ -373,23 +373,26 @@ bool CScriptEngine::process_file_if_exists(gsl::czstring file_name, bool warn_if
         if (!LookupScript(S, file_name))
         {
             if (warn_if_not_exist)
-                MsgDbg("[CScriptEngine::process_file_if_exists] Variable %s not found; No script by this name exists, either.", file_name);
+                MsgDbg("[CScriptEngine::process_file_if_exists] Variable {} not found; No script by this name exists, either.", file_name);
             else
             {
                 LogDbg("-------------------------");
-                MsgDbg("[CScriptEngine::process_file_if_exists] WARNING: Access to nonexistent variable or loading nonexistent script '%s'", file_name);
+                MsgDbg("[CScriptEngine::process_file_if_exists] WARNING: Access to nonexistent variable or loading nonexistent script '{}'", file_name);
                 FuncDbg(print_stack());
                 LogDbg("-------------------------");
                 add_no_file(file_name);
             }
             return false;
         }
+
 #ifdef DEBUG
-        MsgDbg("[CScriptEngine::process_file_if_exists] loading script: [%s]", file_name);
+        MsgDbg("[CScriptEngine::process_file_if_exists] loading script: [{}]", file_name);
 #endif
+
         m_reload_modules = false;
         return do_file(S, file_name);
     }
+
     return true;
 }
 
@@ -495,7 +498,7 @@ void CScriptEngine::dump_state()
 
         if (std::is_eq(xr_strcmp(l_tDebugInfo.what, "C")))
         {
-            Msg("%2d : [C  ] %s", i, l_tDebugInfo.name ? l_tDebugInfo.name : "");
+            Msg("{:2} : [C  ] {}", i, l_tDebugInfo.name ? l_tDebugInfo.name : "");
         }
         else
         {
@@ -506,10 +509,10 @@ void CScriptEngine::dump_state()
             else
                 xr_sprintf(temp, "function <%s:%d>", l_tDebugInfo.short_src, l_tDebugInfo.linedefined);
 
-            Msg("%2d : [%3s] %s(%d) : %s", i, l_tDebugInfo.what, l_tDebugInfo.short_src, l_tDebugInfo.currentline, temp);
+            Msg("{:2} : [{:3s}] {}({}) : {}", i, l_tDebugInfo.what, l_tDebugInfo.short_src, l_tDebugInfo.currentline, temp);
         }
 
-        Msg("\tLocals:");
+        Log("\tLocals:");
 
         gsl::czstring name;
         int VarID = 1;
@@ -521,7 +524,7 @@ void CScriptEngine::dump_state()
         }
 
         m_dumpedObjList.clear();
-        Msg("\tEnd");
+        Log("\tEnd");
     }
 
     reentrantGuard = false;
@@ -566,7 +569,7 @@ void CScriptEngine::LogVariable(lua_State* l, gsl::czstring name, int level)
     case LUA_TTABLE:
         if (level <= 3)
         {
-            Msg("%s Table: %s", tabBuffer.get(), name);
+            Msg("{} Table: {}", tabBuffer.get(), name);
             LogTable(l, name, level + 1);
             return;
         }
@@ -589,7 +592,7 @@ void CScriptEngine::LogVariable(lua_State* l, gsl::czstring name, int level)
     default: xr_strcpy(value, "[not available]"); break;
     }
 
-    Msg("%s %s %s : %s", tabBuffer.get(), type, name, value);
+    Msg("{} {} {} : {}", tabBuffer.get(), type, name, value);
 }
 
 #ifdef DEBUG
@@ -617,10 +620,12 @@ void CScriptEngine::script_log(ScriptStorage::ELuaMessageType tLuaMessageType, g
     xr_strcpy(S2, S);
     S1 = S2 + xr_strlen(S);
     vsprintf(S1, caFormat, marker);
-    Msg("-----------------------------------------");
-    Msg("[script_log] %s", S2);
+
+    Log("-----------------------------------------");
+    Msg("[script_log] {}", S2);
     print_stack();
-    Msg("-----------------------------------------");
+    Log("-----------------------------------------");
+
     va_end(marker);
 }
 #endif

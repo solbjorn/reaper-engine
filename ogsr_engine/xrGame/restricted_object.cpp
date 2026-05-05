@@ -48,7 +48,7 @@ static void construct_string(StrType& result, xr_vector<ALife::_OBJECT_ID>& rest
         }
         else
         {
-            Msg("~~[%s]: remove invalid restriction with ID[%u] from %s", __FUNCTION__, *iter, monster->name_replace());
+            Msg("~~[{}]: remove invalid restriction with ID[{}] from {}", __FUNCTION__, *iter, monster->name_replace());
             iter = restrictions.erase(iter);
         }
     }
@@ -202,8 +202,8 @@ IC void CRestrictedObject::remove_object_restriction(ALife::_OBJECT_ID id, const
 }
 
 template <typename P, const bool value, typename StrType>
-static void construct_restriction_string(StrType& temp_restrictions, const xr_vector<ALife::_OBJECT_ID>& restrictions, const shared_str& current_restrictions, const P& p,
-                                         CRestrictedObject* RObj)
+static void construct_restriction_string(StrType& temp_restrictions, const xr_vector<ALife::_OBJECT_ID>& restrictions, const shared_str& current_restrictions,
+                                         const P& p, CRestrictedObject* RObj)
 {
     xr_vector<xr_string> cur_restrs;
     const int cnt = _GetItemCount(current_restrictions.c_str());
@@ -241,8 +241,8 @@ static void construct_restriction_string(StrType& temp_restrictions, const xr_ve
                 s += ",";
             s += it;
         }
-        ASSERT_FMT(s.length() < std::size(temp_restrictions), "!![%s]: resulted string too long: object[%s] temp_restrictions_size[%zu] s.length[%zu]", __FUNCTION__,
-                   RObj->object().cName().c_str(), std::size(temp_restrictions), s.length());
+        ASSERT_FMT(s.length() < std::size(temp_restrictions), "!![%s]: resulted string too long: object[%s] temp_restrictions_size[%zu] s.length[%zu]",
+                   __FUNCTION__, RObj->object().cName().c_str(), std::size(temp_restrictions), s.length());
         strcpy_s(temp_restrictions, s.c_str());
     }
 }

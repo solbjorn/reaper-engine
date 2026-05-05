@@ -19,6 +19,9 @@ XR_DIAG_IGNORE("-Wunused-parameter");
 
 XR_DIAG_POP();
 
+// OPC_IceHook.h
+#undef Log
+
 namespace xxh
 {
 #include <xxhash.h>
@@ -103,7 +106,7 @@ gsl::index MODEL::memory() const
 {
     if (S_BUILD == status)
     {
-        Msg("! xrCDB: model still isn't ready");
+        Log("! xrCDB: model still isn't ready");
         return 0;
     }
 

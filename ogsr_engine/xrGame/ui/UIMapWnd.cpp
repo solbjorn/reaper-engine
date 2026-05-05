@@ -200,17 +200,16 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
         {
             if (it == it2)
                 continue;
+
             CUILevelMap* l2 = smart_cast<CUILevelMap*>(it2->second);
             VERIFY(l2);
+
             if (l->GlobalRect().intersected(l2->GlobalRect()))
-            {
-                Msg(" --error-incorrect map definition global rect of map [%s] intersects with [%s]", *l->MapName(), *l2->MapName());
-            }
+                Msg(" --error-incorrect map definition global rect of map [{}] intersects with [{}]", l->MapName(), l2->MapName());
         }
+
         if (FALSE == l->GlobalRect().intersected(GlobalMap()->BoundRect()))
-        {
-            Msg(" --error-incorrect map definition map [%s] places outside global map", *l->MapName());
-        }
+            Msg(" --error-incorrect map definition map [{}] places outside global map", l->MapName());
     }
 #endif
 
@@ -437,18 +436,11 @@ bool CUIMapWnd::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
         }
     }
 
-    if (((mouse_action == WINDOW_LBUTTON_DOWN) && (m_flags.is_any(lmZoomIn + lmZoomOut))) || (mouse_action == WINDOW_MOUSE_WHEEL_DOWN) || (mouse_action == WINDOW_MOUSE_WHEEL_UP))
+    if (((mouse_action == WINDOW_LBUTTON_DOWN) && (m_flags.is_any(lmZoomIn + lmZoomOut))) || (mouse_action == WINDOW_MOUSE_WHEEL_DOWN) ||
+        (mouse_action == WINDOW_MOUSE_WHEEL_UP))
     {
         bool b_zoom_in = (mouse_action == WINDOW_LBUTTON_DOWN && m_flags.test(lmZoomIn)) || (mouse_action == WINDOW_MOUSE_WHEEL_DOWN);
 
-        if (mouse_action == WINDOW_MOUSE_WHEEL_UP)
-        {
-            //.				Msg("up");
-        }
-        if (mouse_action == WINDOW_MOUSE_WHEEL_DOWN)
-        {
-            //.				Msg("down");
-        }
         CUIGlobalMap* gm = GlobalMap();
         float _prev_zoom = GetZoom();
         if (b_zoom_in)
@@ -513,9 +505,10 @@ u16 CUIMapWnd::GetIdxByName(const shared_str& map_name)
     GameMapsPairIt it = m_GameMaps.find(map_name);
     if (it == m_GameMaps.end())
     {
-        MsgDbg("~ Level Map '%s' not registered", map_name.c_str());
+        MsgDbg("~ Level Map '{}' not registered", map_name);
         return u16(-1);
     }
+
     return (u16)std::distance(m_GameMaps.begin(), it);
 }
 

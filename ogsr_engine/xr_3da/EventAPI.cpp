@@ -48,7 +48,7 @@ void CEventAPI::Dump()
     std::ranges::sort(Events, [](const auto a, const auto b) { return std::is_lt(xr::strcasecmp(a->Name, b->Name)); });
 
     for (const auto event : Events)
-        Msg("* [%zd] %s", event->dwRefCount, event->Name);
+        Msg("* [{}] {}", event->dwRefCount, event->Name);
 }
 
 CEvent* CEventAPI::Create(gsl::czstring N)

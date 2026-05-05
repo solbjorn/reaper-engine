@@ -223,14 +223,12 @@ void CCharacterPhysicsSupport::CreateCharacter()
 
 void CCharacterPhysicsSupport::SpawnInitPhysics(CSE_Abstract*)
 {
-    // if(!m_physics_skeleton)CreateSkeleton(m_physics_skeleton);
-
     if (m_EntityAlife.g_Alive())
     {
 #ifdef DEBUG
         if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), m_EntityAlife.cName())))
         {
-            Msg("CCharacterPhysicsSupport::SpawnInitPhysics obj %s before collision correction %f,%f,%f", PH_DBG_ObjectTrack(), m_EntityAlife.Position().x,
+            Msg("CCharacterPhysicsSupport::SpawnInitPhysics obj {} before collision correction {},{},{}", PH_DBG_ObjectTrack(), m_EntityAlife.Position().x,
                 m_EntityAlife.Position().y, m_EntityAlife.Position().z);
         }
 #endif
@@ -246,12 +244,10 @@ void CCharacterPhysicsSupport::SpawnInitPhysics(CSE_Abstract*)
 #ifdef DEBUG
         if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), m_EntityAlife.cName())))
         {
-            Msg("CCharacterPhysicsSupport::SpawnInitPhysics obj %s after collision correction %f,%f,%f", PH_DBG_ObjectTrack(), m_EntityAlife.Position().x,
+            Msg("CCharacterPhysicsSupport::SpawnInitPhysics obj {} after collision correction {},{},{}", PH_DBG_ObjectTrack(), m_EntityAlife.Position().x,
                 m_EntityAlife.Position().y, m_EntityAlife.Position().z);
         }
 #endif
-
-        // m_PhysicMovementControl.SetMaterial( )
     }
     else
     {
@@ -438,7 +434,8 @@ IC void CCharacterPhysicsSupport::UpdateDeathAnims()
 {
     VERIFY(m_pPhysicsShell->isFullActive());
 
-    if (!m_flags.test(fl_death_anim_on) && !is_imotion(m_interactive_motion)) //! m_flags.test(fl_use_death_motion)//!b_death_anim_on&&m_pPhysicsShell->isFullActive()
+    if (!m_flags.test(fl_death_anim_on) &&
+        !is_imotion(m_interactive_motion)) //! m_flags.test(fl_use_death_motion)//!b_death_anim_on&&m_pPhysicsShell->isFullActive()
     {
         smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual())->PlayCycle(shared_str{"death_init"});
         m_flags.set(fl_death_anim_on, TRUE);
@@ -538,10 +535,12 @@ void CCharacterPhysicsSupport::CreateSkeleton(CPhysicsShell*& pShell)
     pShell->set_DisableParams(disable_params);
 
     pShell->Build();
+
 #ifdef DEBUG
-    Msg("shell for %s[%d] created in %f ms", *m_EntityAlife.cName(), m_EntityAlife.ID(), t.GetElapsed_sec() * 1000.f);
+    Msg("shell for {}[{}] created in {} ms", m_EntityAlife.cName(), m_EntityAlife.ID(), t.GetElapsed_sec() * 1000.f);
 #endif
 }
+
 void CCharacterPhysicsSupport::CreateSkeleton()
 {
     if (m_pPhysicsShell)

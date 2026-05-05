@@ -109,10 +109,10 @@ IC ID3DDepthStencilView* CBackend::get_ZB() { return pZB; }
 
 ICF void CBackend::set_States(ID3DState* _state)
 {
-    PGO(Msg("PGO:state_block"));
 #ifdef DEBUG
     stat.states++;
 #endif
+
     state = _state;
     state->Apply(*this);
 }

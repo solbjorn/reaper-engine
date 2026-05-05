@@ -45,8 +45,9 @@ void CAmebaZone::Affect(SZoneObjectInfo* O)
     char l_pow[255];
     sprintf_s(l_pow, "zone hit. %.1f", Power(distance_to_center(O->object)));
     if (bDebug)
-        Msg("%s %s", *pGameObject->cName(), l_pow);
+        Msg("{} {}", pGameObject->cName(), l_pow);
 #endif
+
     Fvector hit_dir;
     hit_dir.set(::Random.randF(-.5f, .5f), ::Random.randF(.0f, 1.f), ::Random.randF(-.5f, .5f));
     hit_dir.normalize();

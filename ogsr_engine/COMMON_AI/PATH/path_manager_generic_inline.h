@@ -8,7 +8,8 @@
 
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <typename _Graph, typename _DataStorage, typename _Parameters, typename _dist_type, typename _index_type, typename _iteration_type>
+#define TEMPLATE_SPECIALIZATION \
+    template <typename _Graph, typename _DataStorage, typename _Parameters, typename _dist_type, typename _index_type, typename _iteration_type>
 
 #define CGenericPathManager CPathManagerGeneric<_Graph, _DataStorage, _Parameters, _dist_type, _index_type, _iteration_type>
 
@@ -55,7 +56,6 @@ template <typename T>
 IC void CGenericPathManager::create_path(T& vertex)
 {
     VERIFY(data_storage);
-    //		Msg						("Path [IC=xxx][VNC=%d][BV=%f]",data_storage->get_visited_node_count(),data_storage->get_best().f());
     if (path)
         data_storage->get_node_path(*path, &vertex);
 }
@@ -73,7 +73,8 @@ TEMPLATE_SPECIALIZATION
 IC bool CGenericPathManager::is_limit_reached(const _iteration_type iteration_count) const
 {
     VERIFY(data_storage);
-    return ((data_storage->get_best().f() >= max_range) || (iteration_count >= max_iteration_count) || (data_storage->get_visited_node_count() >= max_visited_node_count));
+    return ((data_storage->get_best().f() >= max_range) || (iteration_count >= max_iteration_count) ||
+            (data_storage->get_visited_node_count() >= max_visited_node_count));
 }
 
 TEMPLATE_SPECIALIZATION

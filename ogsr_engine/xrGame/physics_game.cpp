@@ -233,13 +233,13 @@ void TContactShotMark(CDB::TRI* T, dContactGeom* c)
                     CPHFindParticlesComparer find(cast_fv(c->pos), data->ph_ref_object);
                     if (!Level().ph_commander().has_call(&find, &find))
                     {
-                        MsgDbg("! Adding collide particle for obj id=%d", data->ph_ref_object->ID());
-                        std::ignore =
-                            Level().ph_commander().add_call(xr_new<CPHParticlesCondition>(), xr_new<CPHParticlesPlayCall>(*c, b_invert_normal, ps_name, data->ph_ref_object));
+                        MsgDbg("! Adding collide particle for obj id={}", data->ph_ref_object->ID());
+                        std::ignore = Level().ph_commander().add_call(xr_new<CPHParticlesCondition>(),
+                                                                      xr_new<CPHParticlesPlayCall>(*c, b_invert_normal, ps_name, data->ph_ref_object));
                     }
                     else
                     {
-                        MsgDbg("~ Skip collide particle...");
+                        LogDbg("~ Skip collide particle...");
                     }
                 }
             }

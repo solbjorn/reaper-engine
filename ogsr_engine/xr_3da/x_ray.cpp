@@ -61,11 +61,11 @@ static void InitSettings()
     string_path fname;
     std::ignore = FS.update_path(fname, "$game_config$", "system.ltx");
     pSettings = xr_new<CInifile>(fname, TRUE);
-    CHECK_OR_EXIT(!pSettings->sections().empty(), make_string("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
+    CHECK_OR_EXIT(!pSettings->sections().empty(), xr::format("Cannot find file {}.\nReinstalling application may fix this problem.", fname));
 
     std::ignore = FS.update_path(fname, "$game_config$", "game.ltx");
     pGameIni = xr_new<CInifile>(fname, TRUE);
-    CHECK_OR_EXIT(!pGameIni->sections().empty(), make_string("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
+    CHECK_OR_EXIT(!pGameIni->sections().empty(), xr::format("Cannot find file {}.\nReinstalling application may fix this problem.", fname));
 
     IS_OGSR_GA = strstr(READ_IF_EXISTS(pSettings, r_string, "mod_ver", "mod_ver", "nullptr"), "OGSR");
 }
@@ -622,8 +622,8 @@ void CApplication::LoadEnd()
 {
     if (--ll_dwReference == 0)
     {
-        Msg("* phase time: %lld ms", phase_timer.GetElapsed_ms());
-        Msg("* phase cmem: %zd K", Memory.mem_usage() / 1024);
+        Msg("* phase time: {} ms", phase_timer.GetElapsed_ms());
+        Msg("* phase cmem: {} K", Memory.mem_usage() / 1024);
 
         Console->Execute("stat_memory");
         g_appLoaded = TRUE;
@@ -668,8 +668,8 @@ tmc::task<void> CApplication::LoadStage()
 {
     VERIFY(ll_dwReference);
 
-    Msg("* phase time: %lld ms", phase_timer.GetElapsed_ms());
-    Msg("* phase cmem: %zd K", Memory.mem_usage() / 1024);
+    Msg("* phase time: {} ms", phase_timer.GetElapsed_ms());
+    Msg("* phase cmem: {} K", Memory.mem_usage() / 1024);
 
     phase_timer.Start();
 
@@ -681,7 +681,6 @@ tmc::task<void> CApplication::LoadStage()
     co_await LoadDraw();
 
     ++load_stage;
-    // Msg("--LoadStage is [%d]", load_stage);
 }
 
 // Sequential

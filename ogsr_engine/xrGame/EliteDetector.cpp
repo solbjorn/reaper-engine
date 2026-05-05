@@ -108,8 +108,7 @@ void CUIArtefactDetectorElite::construct(CEliteDetector* p)
     }
     else
     {
-        // R_ASSERT3(xml_result, "xml file not found", "ui_detector_artefact.xml");
-        Msg("!![%s] xml file [ui_detector_artefact.xml] not found!", __FUNCTION__);
+        Msg("!![{}] xml file [ui_detector_artefact.xml] not found!", __FUNCTION__);
     }
 
     Fvector _map_attach_p = pSettings->r_fvector3(m_parent->cNameSect(), "ui_p");
@@ -189,14 +188,13 @@ void CUIArtefactDetectorElite::GetUILocatorMatrix(Fmatrix& _m)
 }
 
 void CUIArtefactDetectorElite::Clear() { m_items_to_draw.clear(); }
+
 void CUIArtefactDetectorElite::RegisterItemToDraw(const Fvector& p, const shared_str& palette_idx)
 {
     auto it = m_palette.find(palette_idx);
     if (it == m_palette.end())
-    {
-        // Msg("! RegisterItemToDraw. static not found for [%s]", palette_idx.c_str());
         return;
-    }
+
     CUIStatic* S = m_palette[palette_idx];
     SDrawOneItem itm(S, p);
     m_items_to_draw.push_back(itm);
@@ -204,6 +202,7 @@ void CUIArtefactDetectorElite::RegisterItemToDraw(const Fvector& p, const shared
 
 CScientificDetector::CScientificDetector() { m_artefacts.m_af_rank = 3; }
 CScientificDetector::~CScientificDetector() { m_zones.destroy(); }
+
 void CScientificDetector::Load(LPCSTR section)
 {
     inherited::Load(section);

@@ -136,7 +136,7 @@ void CAttachableItem::SaveAttachableParams()
     gsl::czstring sect_name = object().cNameSect().c_str();
     string_path buff;
 
-    std::ignore = FS.update_path(buff, "$logs$", make_string("_world\\%s.ltx", sect_name).c_str());
+    std::ignore = FS.update_path(buff, "$logs$", xr::format("_world\\{}.ltx", sect_name).c_str());
     CInifile pCfg{buff, false, false, true};
 
     pCfg.w_fvector3(sect_name, "attach_position_offset", m_offset.c);
@@ -147,7 +147,7 @@ void CAttachableItem::SaveAttachableParams()
     sprintf_s(buff, "%f,%f,%f", ypr.y, ypr.x, ypr.z);
     pCfg.w_string(sect_name, "attach_angle_offset", buff);
 
-    Msg("--[%s] data saved to [%s]", __FUNCTION__, pCfg.fname());
+    Msg("--[{}] data saved to [{}]", __FUNCTION__, pCfg.fname());
 }
 
 bool attach_adjust_mode_keyb(xr::key_id dik)

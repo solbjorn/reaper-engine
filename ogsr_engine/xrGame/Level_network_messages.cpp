@@ -37,7 +37,7 @@ tmc::task<void> CLevel::ClientReceive()
         case M_SPAWN: {
             if (!m_bGameConfigStarted || !bReady)
             {
-                Msg("Unconventional M_SPAWN received : cgf[%s] | bReady[%s]", (m_bGameConfigStarted) ? "true" : "false", (bReady) ? "true" : "false");
+                Msg("Unconventional M_SPAWN received : cgf[{}] | bReady[{}]", (m_bGameConfigStarted) ? "true" : "false", (bReady) ? "true" : "false");
                 break;
             }
 
@@ -77,7 +77,7 @@ tmc::task<void> CLevel::ClientReceive()
         case M_SV_CONFIG_GAME: game->net_import_state(*P); break;
         case M_SV_CONFIG_FINISHED:
             game_configured = TRUE;
-            Msg("- Game configuring : Finished ");
+            Log("- Game configuring : Finished ");
             break;
         case M_RELOAD_GAME:
         case M_LOAD_GAME:
@@ -121,7 +121,8 @@ tmc::task<void> CLevel::ClientReceive()
         }
         break;
         case M_CHANGE_LEVEL_GAME: {
-            Msg("- M_CHANGE_LEVEL_GAME Received");
+            Log("- M_CHANGE_LEVEL_GAME Received");
+
             {
                 const char* m_SO = m_caServerOptions.c_str();
                 //					const char* m_CO = m_caClientOptions.c_str();

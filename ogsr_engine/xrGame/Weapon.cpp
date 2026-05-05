@@ -512,8 +512,8 @@ void CWeapon::Load(LPCSTR section)
     if (pSettings->line_exist(hud_sect, "zoom_hide_crosshair"))
         m_bHideCrosshairInZoom = !!pSettings->r_bool(hud_sect, "zoom_hide_crosshair");
 
-    m_bZoomInertionAllow =
-        READ_IF_EXISTS(pSettings, r_bool, hud_sect, "allow_zoom_inertion", IS_OGSR_GA ? true : READ_IF_EXISTS(pSettings, r_bool, "features", "default_allow_zoom_inertion", true));
+    m_bZoomInertionAllow = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "allow_zoom_inertion",
+                                          IS_OGSR_GA ? true : READ_IF_EXISTS(pSettings, r_bool, "features", "default_allow_zoom_inertion", true));
     m_bScopeZoomInertionAllow = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "allow_scope_zoom_inertion",
                                                IS_OGSR_GA ? true : READ_IF_EXISTS(pSettings, r_bool, "features", "default_allow_scope_zoom_inertion", true));
 
@@ -551,9 +551,9 @@ void CWeapon::Load(LPCSTR section)
         has_laser = true;
 
         laserdot_attach_bone._set(READ_IF_EXISTS(pSettings, r_string, section, "laserdot_attach_bone", ""));
-        laserdot_attach_offset =
-            Fvector{READ_IF_EXISTS(pSettings, r_float, section, "laserdot_attach_offset_x", 0.0f), READ_IF_EXISTS(pSettings, r_float, section, "laserdot_attach_offset_y", 0.0f),
-                    READ_IF_EXISTS(pSettings, r_float, section, "laserdot_attach_offset_z", 0.0f)};
+        laserdot_attach_offset = Fvector{READ_IF_EXISTS(pSettings, r_float, section, "laserdot_attach_offset_x", 0.0f),
+                                         READ_IF_EXISTS(pSettings, r_float, section, "laserdot_attach_offset_y", 0.0f),
+                                         READ_IF_EXISTS(pSettings, r_float, section, "laserdot_attach_offset_z", 0.0f)};
         laserdot_world_attach_offset = Fvector{READ_IF_EXISTS(pSettings, r_float, section, "laserdot_world_attach_offset_x", 0.0f),
                                                READ_IF_EXISTS(pSettings, r_float, section, "laserdot_world_attach_offset_y", 0.0f),
                                                READ_IF_EXISTS(pSettings, r_float, section, "laserdot_world_attach_offset_z", 0.0f)};
@@ -585,10 +585,12 @@ void CWeapon::Load(LPCSTR section)
         flashlight_attach_bone._set(pSettings->r_string(section, "torch_light_bone"));
         flashlight_attach_offset = Fvector{pSettings->r_float(section, "torch_attach_offset_x"), pSettings->r_float(section, "torch_attach_offset_y"),
                                            pSettings->r_float(section, "torch_attach_offset_z")};
-        flashlight_omni_attach_offset = Fvector{pSettings->r_float(section, "torch_omni_attach_offset_x"), pSettings->r_float(section, "torch_omni_attach_offset_y"),
-                                                pSettings->r_float(section, "torch_omni_attach_offset_z")};
-        flashlight_world_attach_offset = Fvector{pSettings->r_float(section, "torch_world_attach_offset_x"), pSettings->r_float(section, "torch_world_attach_offset_y"),
-                                                 pSettings->r_float(section, "torch_world_attach_offset_z")};
+        flashlight_omni_attach_offset =
+            Fvector{pSettings->r_float(section, "torch_omni_attach_offset_x"), pSettings->r_float(section, "torch_omni_attach_offset_y"),
+                    pSettings->r_float(section, "torch_omni_attach_offset_z")};
+        flashlight_world_attach_offset =
+            Fvector{pSettings->r_float(section, "torch_world_attach_offset_x"), pSettings->r_float(section, "torch_world_attach_offset_y"),
+                    pSettings->r_float(section, "torch_world_attach_offset_z")};
         flashlight_omni_world_attach_offset =
             Fvector{pSettings->r_float(section, "torch_omni_world_attach_offset_x"), pSettings->r_float(section, "torch_omni_world_attach_offset_y"),
                     pSettings->r_float(section, "torch_omni_world_attach_offset_z")};
@@ -613,9 +615,8 @@ void CWeapon::Load(LPCSTR section)
         flashlight_render->set_texture(READ_IF_EXISTS(pSettings, r_string, m_light_section, "spot_texture", nullptr));
 
         flashlight_omni._set(::Render->light_create());
-        flashlight_omni->set_type(
-            (IRender_Light::LT)(READ_IF_EXISTS(pSettings, r_u8, m_light_section, "omni_type",
-                                               2))); // KRodin: вообще omni это обычно поинт, но поинт светит во все стороны от себя, поэтому тут спот используется по умолчанию.
+        // KRodin: вообще omni это обычно поинт, но поинт светит во все стороны от себя, поэтому тут спот используется по умолчанию.
+        flashlight_omni->set_type((IRender_Light::LT)(READ_IF_EXISTS(pSettings, r_u8, m_light_section, "omni_type", 2)));
         flashlight_omni->set_shadow(false);
         flashlight_omni->set_moveable(true);
 
@@ -679,8 +680,6 @@ tmc::task<bool> CWeapon::net_Spawn(CSE_Abstract* DC)
 {
     const bool bResult = co_await inherited::net_Spawn(DC);
     auto E = smart_cast<CSE_ALifeItemWeapon*>(DC);
-
-    // iAmmoCurrent					= E->a_current;
     iAmmoElapsed = E->a_elapsed;
 
     m_flagsAddOnState = E->m_addon_flags.get();
@@ -691,8 +690,9 @@ tmc::task<bool> CWeapon::net_Spawn(CSE_Abstract* DC)
 
     if (m_ammoType >= m_ammoTypes.size())
     {
-        Msg("! [%s]: %s: wrong m_ammoType[%u/%zu]", __FUNCTION__, cName().c_str(), m_ammoType, m_ammoTypes.size() - 1);
+        Msg("! [{}]: {}: wrong m_ammoType[{}/{}]", __FUNCTION__, cName(), m_ammoType, m_ammoTypes.size() - 1);
         m_ammoType = 0;
+
         auto se_obj = alife_object();
         if (se_obj)
         {
@@ -709,8 +709,9 @@ tmc::task<bool> CWeapon::net_Spawn(CSE_Abstract* DC)
         // что в конфиге размер магазина не нулевой.
         if (iMagazineSize && iAmmoElapsed > (iMagazineSize + 1))
         {
-            Msg("! [%s]: %s: wrong iAmmoElapsed[%d/%d]", __FUNCTION__, cName().c_str(), iAmmoElapsed, iMagazineSize);
+            Msg("! [{}]: {}: wrong iAmmoElapsed[{}/{}]", __FUNCTION__, cName(), iAmmoElapsed, iMagazineSize);
             iAmmoElapsed = iMagazineSize;
+
             auto se_obj = alife_object();
             if (se_obj)
             {
@@ -1432,12 +1433,14 @@ bool CWeapon::IsGrenadeLauncherAttached() const
 
 bool CWeapon::IsScopeAttached() const
 {
-    return (ALife::eAddonAttachable == m_eScopeStatus && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonScope)) || ALife::eAddonPermanent == m_eScopeStatus;
+    return (ALife::eAddonAttachable == m_eScopeStatus && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonScope)) ||
+        ALife::eAddonPermanent == m_eScopeStatus;
 }
 
 bool CWeapon::IsSilencerAttached() const
 {
-    return (ALife::eAddonAttachable == m_eSilencerStatus && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer)) || ALife::eAddonPermanent == m_eSilencerStatus;
+    return (ALife::eAddonAttachable == m_eSilencerStatus && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer)) ||
+        ALife::eAddonPermanent == m_eSilencerStatus;
 }
 
 bool CWeapon::GrenadeLauncherAttachable() const { return (ALife::eAddonAttachable == m_eGrenadeLauncherStatus); }
@@ -1781,8 +1784,8 @@ void CWeapon::reload(LPCSTR section)
 
 void CWeapon::create_physic_shell()
 {
-    // xrKrodin: Временный? "фикс" для оружия из ганслингера, валяющегося на земле. По непонятным причинам (много костей или хз от чего ещё) в некоторых случаях при рассчетах
-    // физики происходят краши в ode которые исправить невозможно.
+    // xrKrodin: Временный? "фикс" для оружия из ганслингера, валяющегося на земле. По непонятным причинам (много костей или хз от чего ещё) в некоторых случаях
+    // при рассчетах физики происходят краши в ode которые исправить невозможно.
     if (is_gunslinger_weapon || IS_OGSR_GA)
     {
         auto vis = smart_cast<IKinematics*>(Visual());
@@ -2162,14 +2165,15 @@ void CWeapon::OnBulletHit()
         ChangeCondition(-conditionDecreasePerShotOnHit);
 }
 
-// По ef_weapon_type тут проверяем, пулемёт ли это. Это костыль чтоб при смене типа патронов не играла анимация reload_empty, которая выглядит в данном случае неправильно.
+// По ef_weapon_type тут проверяем, пулемёт ли это. Это костыль чтоб при смене типа патронов не играла анимация reload_empty, которая выглядит в данном случае
+// неправильно.
 bool CWeapon::IsPartlyReloading() const { return (ef_weapon_type() == 10 || m_set_next_ammoType_on_reload == u32(-1)) && GetAmmoElapsed() > 0 && !IsMisfire(); }
 
 void CWeapon::SaveAttachableParams()
 {
     const char* sect_name = cNameSect().c_str();
     string_path buff;
-    std::ignore = FS.update_path(buff, "$logs$", make_string("_world\\%s.ltx", sect_name).c_str());
+    std::ignore = FS.update_path(buff, "$logs$", xr::format("_world\\{}.ltx", sect_name).c_str());
 
     CInifile pHudCfg(buff, FALSE, FALSE, TRUE);
 
@@ -2192,7 +2196,7 @@ void CWeapon::SaveAttachableParams()
         pHudCfg.w_string(sect_name, "strap_orientation", buff);
     }
 
-    Msg("--[%s] data saved to [%s]", __FUNCTION__, pHudCfg.fname());
+    Msg("--[{}] data saved to [{}]", __FUNCTION__, pHudCfg.fname());
 }
 
 void CWeapon::UpdateVisualBullets()
@@ -2219,9 +2223,6 @@ void CWeapon::HUD_VisualBulletUpdate()
         return;
 
     bool hide = true;
-
-    // Msg("Print %d bullets", last_hide_bullet);
-
     if (last_hide_bullet == bullet_cnt)
         hide = false;
 
@@ -2262,7 +2263,7 @@ void CWeapon::update_visual_bullet_textures(const bool forced)
         const auto textures = Device.m_pRender->GetResourceManager()->FindTexture(tex_name.c_str());
         if (textures.empty())
         {
-            Msg("!![%s] can't find texture [%s] for [%s]", __FUNCTION__, tex_name.c_str(), cNameSect().c_str());
+            Msg("!![{}] can't find texture [{}] for [{}]", __FUNCTION__, tex_name, cNameSect());
             continue;
         }
 
@@ -2270,7 +2271,6 @@ void CWeapon::update_visual_bullet_textures(const bool forced)
         tex->Unload();
         tex->Load(bullet_texrure_name.c_str());
         current_bullet_texture = bullet_texrure_name;
-        // Msg("--[%s] replaced texture [%s] --> [%s] for [%s]", __FUNCTION__, tex_name.c_str(), current_bullet_texture.c_str(), cNameSect().c_str());
     }
 }
 

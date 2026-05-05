@@ -82,9 +82,6 @@ void CUIPdaSpot::InitControls()
 
 void CUIPdaSpot::OnAdd(CUIWindow* ui, void* d)
 {
-    // MsgDbg("--[%s] adding user location: type: [%s], lname: [%s], pos: [%.5f, %.5f, %.5f]. Text: '%s'", __FUNCTION__, m_spotType.c_str(), m_levelName, m_position.x,
-    // m_position.y, m_position.z, m_editBox->GetText());
-
     CMapLocation* ml = Level().MapManager().AddUserLocation(m_spotType, shared_str{m_levelName}, m_position);
     ml->SetHint(shared_str{m_editBox->GetText()});
     ml->SetSerializable(true);

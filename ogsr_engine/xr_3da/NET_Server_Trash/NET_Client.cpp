@@ -105,8 +105,6 @@ void IPureClient::Disconnect() // Вызывается при выходе из 
 
 void IPureClient::OnMessage(void* data, u32 size) // Сюда приходят сообщения из IPureServer::SendTo и IPureServer::SendBroadcast_LL
 {
-    /// Msg("~~[%s] data: [%p], size: [%u]", __FUNCTION__, data, size);
-
     // One of the messages - decompress it
     NET_Packet* P = net_Queue.CreateGet();
 

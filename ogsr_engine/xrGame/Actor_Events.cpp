@@ -44,7 +44,7 @@ tmc::task<void> CActor::OnEvent(NET_Packet& P, u16 type)
         CObject* O = Level().Objects.net_Find(id);
         if (!O)
         {
-            Msg("! Error: No object to take/buy [%d]", id);
+            Msg("! Error: No object to take/buy [{}]", id);
             break;
         }
 
@@ -93,7 +93,7 @@ tmc::task<void> CActor::OnEvent(NET_Packet& P, u16 type)
 
         if (!O)
         {
-            Msg("! [%s] Error: No object to reject/sell [%u]", __FUNCTION__, id);
+            Msg("! [{}] Error: No object to reject/sell [{}]", __FUNCTION__, id);
             break;
         }
 
@@ -121,10 +121,11 @@ tmc::task<void> CActor::OnEvent(NET_Packet& P, u16 type)
         CObject* O = Level().Objects.net_Find(id);
         if (!O)
             break;
+
         if (O->getDestroy())
         {
 #ifdef DEBUG
-            Msg("! something to destroyed object - %s[%d]0x%X", *O->cName(), id, smart_cast<CInventoryItem*>(O));
+            Msg("! something to destroyed object - {}[{}]{:#X}", O->cName(), id, smart_cast<CInventoryItem*>(O));
 #endif
             break;
         }
@@ -152,9 +153,10 @@ tmc::task<void> CActor::OnEvent(NET_Packet& P, u16 type)
         CObject* O = Level().Objects.net_Find(id);
         if (!O)
         {
-            Msg("! Error: No object to attach holder [%u]", id);
+            Msg("! Error: No object to attach holder [{}]", id);
             break;
         }
+
         VERIFY(!m_holder);
         CHolderCustom* holder = smart_cast<CHolderCustom*>(O);
         if (!holder->Engaged())

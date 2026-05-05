@@ -10,7 +10,7 @@
 tmc::task<xrServer::EConnect> xrServer::Connect(shared_str& session_name)
 {
 #ifdef DEBUG
-    Msg("* sv_Connect: %s", *session_name);
+    Msg("* sv_Connect: {}", session_name);
 #endif
 
     // Parse options and create game
@@ -38,9 +38,9 @@ tmc::task<xrServer::EConnect> xrServer::Connect(shared_str& session_name)
         co_return ErrConnect;
 
     csPlayers.Enter();
-//	game->type				= type_id;
+
 #ifdef DEBUG
-    Msg("* Created server_game %s", game->type_name());
+    Msg("* Created server_game {}", game->type_name());
 #endif
 
     co_await game->Create(session_name);

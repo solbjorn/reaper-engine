@@ -32,8 +32,8 @@ constexpr float erp{1.f};
 #define CHECK_POS(pos, msg, br) \
     if (!valid_pos(pos, phBoundaries)) \
     { \
-        Msg("pos:%f,%f,%f", pos.x, pos.y, pos.z); \
-        Msg(msg); \
+        Msg("pos:{},{},{}", pos.x, pos.y, pos.z); \
+        Log(msg); \
         VERIFY(!br); \
     } \
     XR_MACRO_END()
@@ -229,10 +229,12 @@ bool CPHActivationShape::Activate(const Fvector need_size, u16 steps, float, flo
             }
             attempts--;
         } while (!ret && attempts > 0);
+
 #ifdef DEBUG
-        Msg("correction attempts %d", 10 - attempts);
+        Msg("correction attempts {}", 10 - attempts);
 #endif
     }
+
     RestoreVelocityState(temp_state);
     CHECK_POS(Position(), "pos after RestoreVelocityState(temp_state);", true);
     if (!un_freeze_later)

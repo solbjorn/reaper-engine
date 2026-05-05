@@ -29,7 +29,8 @@ IC void CTradeFactorParameters::enable(const shared_str& section, const CTradeFa
     else
     {
         if (m_factors.find(section) != m_factors.end())
-            Msg("~~[%s] duplicate of CTradeFactors for section [%s] found!", __FUNCTION__, section.c_str());
+            Msg("~~[{}] duplicate of CTradeFactors for section [{}] found!", __FUNCTION__, section);
+
         m_factors.emplace(section, factors);
     }
 }

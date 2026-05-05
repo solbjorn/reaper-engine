@@ -16,7 +16,8 @@ struct SFeelParam
     Vision::feel_visible_Item* item;
     float vis;
     float vis_threshold;
-    SFeelParam(Vision* _parent, Vision::feel_visible_Item* _item, float _vis_threshold) : parent(_parent), item(_item), vis(1.f), vis_threshold(_vis_threshold) {}
+    SFeelParam(Vision* _parent, Vision::feel_visible_Item* _item, float _vis_threshold) : parent(_parent), item(_item), vis(1.f), vis_threshold(_vis_threshold)
+    {}
 };
 
 IC BOOL feel_vision_callback(collide::rq_result& result, LPVOID params)
@@ -202,7 +203,6 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold)
             {
                 // similar with previous query
                 feel_params.vis = I->Cache_vis;
-                //					Log("cache 0");
             }
             else
             {
@@ -210,7 +210,6 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold)
                 if (CDB::TestRayTri(P, D, I->Cache.verts, _u, _v, _range, false) && (_range > 0 && _range < f))
                 {
                     feel_params.vis = 0.f;
-                    //						Log("cache 1");
                 }
                 else
                 {
@@ -225,10 +224,9 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold)
                     {
                         I->Cache.set(P, D, f, FALSE);
                     }
-                    //						Log("query");
                 }
             }
-            //				Log("Vis",feel_params.vis);
+
             I->trans = feel_params.vis;
             if (feel_params.vis < feel_params.vis_threshold)
             {

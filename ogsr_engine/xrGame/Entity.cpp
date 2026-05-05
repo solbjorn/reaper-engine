@@ -56,10 +56,12 @@ tmc::task<void> CEntity::OnEvent(NET_Packet& P, u16 type)
             if (this != who)
             {
                 if (bDebug)
-                    Msg("%s %s %s %s", *cName(), "Killed by ", *(who->cName()), "...");
+                    Msg("{} {} {} {}", cName(), "Killed by ", who->cName(), "...");
             }
             else if (bDebug)
-                Msg("%s %s", *cName(), "Crashed...");
+            {
+                Msg("{} {}", cName(), "Crashed...");
+            }
         }
 
         co_await Die(who);
@@ -101,7 +103,7 @@ float CEntity::CalcCondition(float hit)
 void CEntity::Hit(SHit* pHDS)
 {
     if (bDebug)
-        Msg("Process HIT: [%s]", cName().c_str());
+        Msg("Process HIT: [{}]", cName());
 
     // *** process hit calculations
     // Calc impulse
@@ -207,10 +209,13 @@ tmc::task<bool> CEntity::net_Spawn(CSE_Abstract* DC)
     {
         m_registered_member = true;
         auto& squad = Level().seniority_holder().team(g_Team()).squad(g_Squad());
+
         while (squad.group(g_Group()).members().size() == sizeof(MemorySpace::squad_mask_type) * 8)
         {
-            Msg("* [%s]: [%s]: group [team:%d][squad:%d][group:%d] is full (%zu), try next group %d", __FUNCTION__,
-                (E && E->name_replace()[0]) ? E->name_replace() : cName().c_str(), g_Team(), g_Squad(), g_Group(), squad.group(g_Group()).members().size(), g_Group() + 1);
+            Msg("* [{}]: [{}]: group [team:{}][squad:{}][group:{}] is full ({}), try next group {}", __FUNCTION__,
+                (E && E->name_replace()[0]) ? std::string_view{E->name_replace()} : std::string_view{cName()}, g_Team(), g_Squad(), g_Group(),
+                squad.group(g_Group()).members().size(), g_Group() + 1);
+
             ++id_Group;
         }
 
@@ -261,13 +266,13 @@ void CEntity::KillEntity(u16 whoID)
 #ifdef DEBUG
         if (m_killer_id != ALife::_OBJECT_ID(-1))
         {
-            Msg("! Entity [%s][%s] already has killer with id %d, but new killer id arrived - %d", *cNameSect(), *cName(), m_killer_id, whoID);
+            Msg("! Entity [{}][{}] already has killer with id {}, but new killer id arrived - {}", cNameSect(), cName(), m_killer_id, whoID);
 
             CObject* old_killer = Level().Objects.net_Find(m_killer_id);
-            Msg("! Old killer is %s", old_killer ? *old_killer->cName() : "unknown");
+            Msg("! Old killer is {}", old_killer ? std::string_view{old_killer->cName()} : std::string_view{"unknown"});
 
             CObject* new_killer = Level().Objects.net_Find(whoID);
-            Msg("! New killer is %s", new_killer ? *new_killer->cName() : "unknown");
+            Msg("! New killer is {}", new_killer ? std::string_view{new_killer->cName()} : std::string_view{"unknown"});
 
             VERIFY(m_killer_id == ALife::_OBJECT_ID(-1));
         }

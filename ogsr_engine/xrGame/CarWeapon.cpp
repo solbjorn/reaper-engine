@@ -188,14 +188,6 @@ void CCarWeapon::UpdateBarrelDir()
     static float dir_eps = deg2rad(5.0f);
     if (!fsimilar(m_cur_x_rot, m_tgt_x_rot, dir_eps) || !fsimilar(m_cur_y_rot, m_tgt_y_rot, dir_eps))
         m_allow_fire = FALSE;
-
-#if (0)
-    if (Device.dwFrame % 200 == 0)
-    {
-        Msg("m_cur_x_rot=[%f]", m_cur_x_rot);
-        Msg("m_cur_y_rot=[%f]", m_cur_y_rot);
-    }
-#endif
 }
 
 bool CCarWeapon::AllowFire() { return m_allow_fire; }

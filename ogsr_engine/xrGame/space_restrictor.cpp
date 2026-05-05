@@ -66,7 +66,8 @@ tmc::task<bool> CSpaceRestrictor::net_Spawn(CSE_Abstract* data)
 
     if (se_shape->shapes.empty())
     {
-        Msg("! [%s]: %s has no shapes", __FUNCTION__, cName().c_str());
+        Msg("! [{}]: {} has no shapes", __FUNCTION__, cName());
+
         CShapeData::shape_def _shape;
         _shape.data.sphere.P.set(0.0f, 0.0f, 0.0f);
         _shape.data.sphere.R = 1.0f;
@@ -116,7 +117,7 @@ bool CSpaceRestrictor::inside(const Fsphere& sphere)
         }
         catch (...)
         {
-            Msg("!![%s] FATAL ERROR IN RESTRICTOR ID:[%u]!", __FUNCTION__, ID());
+            Msg("!![{}] FATAL ERROR IN RESTRICTOR ID:[{}]!", __FUNCTION__, ID());
             return false;
         }
     }

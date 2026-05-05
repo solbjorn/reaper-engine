@@ -129,16 +129,18 @@ void CPhysicsShellHolder::correct_spawn_pos()
     PPhysicsShell()->EnableCollision();
 
     Fvector ap = activation_shape.Position();
+
 #ifdef DEBUG
     if (!valid_pos(ap, phBoundaries))
     {
-        Msg("not valid position	%f,%f,%f", ap.x, ap.y, ap.z);
-        Msg("size	%f,%f,%f", size.x, size.y, size.z);
-        Msg("Object: %s", Name());
-        Msg("Visual: %s", *(cNameVisual()));
-        Msg("Object	pos	%f,%f,%f", Position().x, Position().y, Position().z);
+        Msg("not valid position\t{},{},{}", ap.x, ap.y, ap.z);
+        Msg("size\t{},{},{}", size.x, size.y, size.z);
+        Msg("Object: {}", Name());
+        Msg("Visual: {}", cNameVisual());
+        Msg("Object\tpos\t{},{},{}", Position().x, Position().y, Position().z);
     }
 #endif // DEBUG
+
     VERIFY(valid_pos(activation_shape.Position(), phBoundaries));
 
     Fmatrix trans;
@@ -350,13 +352,7 @@ void CPhysicsShellHolder::load(IReader& input_packet)
 
 void CPhysicsShellHolder::PHSaveState(NET_Packet& P)
 {
-    // Msg("!!Called [CPhysicsShellHolder::PHSaveState]");
-    // CPhysicsShell* pPhysicsShell=PPhysicsShell();
     IKinematics* K = smart_cast<IKinematics*>(Visual());
-    // Flags8 lflags;
-    // if(pPhysicsShell&&pPhysicsShell->isActive())			lflags.set(CSE_PHSkeleton::flActive,pPhysicsShell->isEnabled());
-
-    //	P.w_u8 (lflags.get());
     VisMask _vm;
     if (K)
     {
@@ -407,7 +403,7 @@ void CPhysicsShellHolder::PHSaveState(NET_Packet& P)
     P.w_u16(bones_number);
     if (bones_number > 64)
     {
-        Msg("!![CPhysicsShellHolder::PHSaveState] bones_number is [%u]!", bones_number);
+        Msg("!![CPhysicsShellHolder::PHSaveState] bones_number is [{}]!", bones_number);
         P.w_u64(K != nullptr ? _vm.to_u64(1) : std::numeric_limits<u64>::max());
     }
 
@@ -421,11 +417,7 @@ void CPhysicsShellHolder::PHSaveState(NET_Packet& P)
 
 void CPhysicsShellHolder::PHLoadState(IReader& P)
 {
-    // Msg("!!Called [CPhysicsShellHolder::PHLoadState]");
-
-    //	Flags8 lflags;
     IKinematics* K = smart_cast<IKinematics*>(Visual());
-    //	P.r_u8 (lflags.flags);
     u64 _low = 0;
     u64 _high = 0;
     if (K)
@@ -447,7 +439,7 @@ void CPhysicsShellHolder::PHLoadState(IReader& P)
     u16 bones_number = P.r_u16();
     if (bones_number > 64)
     {
-        Msg("!![CPhysicsShellHolder::PHLoadState] bones_number is [%u]!", bones_number);
+        Msg("!![CPhysicsShellHolder::PHLoadState] bones_number is [{}]!", bones_number);
         _high = P.r_u64();
     }
     VisMask _vm(_low, _high);

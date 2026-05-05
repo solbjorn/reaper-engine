@@ -157,8 +157,8 @@ tmc::task<void> IGame_Persistent::OnGameStart()
     p_time = 1000.f * Device.GetTimerGlobal()->GetElapsed_sec() - p_time;
     u32 p_mem = Memory.mem_usage() - mem_0;
 
-    Msg("* [prefetch] time:    %d ms", iFloor(p_time));
-    Msg("* [prefetch] memory:  %u Kb", p_mem / 1024);
+    Msg("* [prefetch] time:    {} ms", iFloor(p_time));
+    Msg("* [prefetch] memory:  {} Kb", p_mem / 1024);
 }
 
 void IGame_Persistent::OnGameEnd()
@@ -244,8 +244,8 @@ void IGame_Persistent::destroy_particles(const bool& all_particles)
 
 void IGame_Persistent::models_savePrefetch() { Render->models_savePrefetch(); }
 
-void IGame_Persistent::GrassBendersUpdate(const u16 id, size_t& data_idx, u32& data_frame, const Fvector& position, const float init_radius, const float init_str,
-                                          bool CheckDistance)
+void IGame_Persistent::GrassBendersUpdate(const u16 id, size_t& data_idx, u32& data_frame, const Fvector& position, const float init_radius,
+                                          const float init_str, bool CheckDistance)
 {
     // Interactive grass disabled
     if (ps_ssfx_grass_interactive.y < 1.f)
@@ -320,8 +320,8 @@ void IGame_Persistent::GrassBendersUpdate(const u16 id, size_t& data_idx, u32& d
     }
 }
 
-void IGame_Persistent::GrassBendersAddExplosion(const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity,
-                                                const float radius)
+void IGame_Persistent::GrassBendersAddExplosion(const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed,
+                                                const float intensity, const float radius)
 {
     if (ps_ssfx_grass_interactive.y < 1.f)
         return;
@@ -339,8 +339,8 @@ void IGame_Persistent::GrassBendersAddExplosion(const u16 id, const Fvector& pos
     }
 }
 
-void IGame_Persistent::GrassBendersAddShot(const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity,
-                                           const float radius)
+void IGame_Persistent::GrassBendersAddShot(const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed,
+                                           const float intensity, const float radius)
 {
     // Is disabled?
     if (ps_ssfx_grass_interactive.y < 1.f || intensity <= 0.0f)
@@ -521,8 +521,8 @@ void IGame_Persistent::GrassBendersReset(const size_t idx)
     grass_shader_data.str_target[idx] = 0;
 }
 
-void IGame_Persistent::GrassBendersSet(const size_t idx, const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity,
-                                       const float radius, const GrassBenders_Anim anim, const bool resetTime)
+void IGame_Persistent::GrassBendersSet(const size_t idx, const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed,
+                                       const float intensity, const float radius, const GrassBenders_Anim anim, const bool resetTime)
 {
     // Set values
     const float saved_radius = grass_shader_data.pos[idx].w;
@@ -566,7 +566,8 @@ bool IGame_Persistent::IsActorInHideout() const
         next_ray_pick_time = Device.dwTimeGlobal + 200;
 
         collide::rq_result RQ;
-        actor_in_hideout = !!g_pGameLevel->ObjectSpace.RayPick(Device.vCameraPosition, Fvector{0.f, 1.f, 0.f}, 50.f, collide::rqtBoth, RQ, g_pGameLevel->CurrentViewEntity());
+        actor_in_hideout =
+            !!g_pGameLevel->ObjectSpace.RayPick(Device.vCameraPosition, Fvector{0.f, 1.f, 0.f}, 50.f, collide::rqtBoth, RQ, g_pGameLevel->CurrentViewEntity());
     }
 
     return actor_in_hideout;

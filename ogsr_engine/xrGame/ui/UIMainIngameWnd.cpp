@@ -83,7 +83,7 @@ bool SetupGameIcon(CUIMainIngameWnd::EWarningIcons icon, u32 cl, float width, fl
     auto window = GetMainIngameWindow();
     if (!window)
     {
-        Msg("!![SetupGameIcon] failed due GetMainIngameWindow() returned NULL");
+        Log("!![SetupGameIcon] failed due GetMainIngameWindow() returned NULL");
         return false;
     }
 
@@ -98,9 +98,12 @@ bool SetupGameIcon(CUIMainIngameWnd::EWarningIcons icon, u32 cl, float width, fl
         sIcon->SetStretchTexture(cl > 0);
     }
     else
+    {
         window->SetWarningIconColor(icon, cl);
+    }
 
     external_icon_ctrl = true;
+
     return true;
 }
 } // namespace

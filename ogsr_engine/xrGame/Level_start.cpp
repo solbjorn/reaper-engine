@@ -95,7 +95,8 @@ tmc::task<bool> CLevel::net_start1()
             if (id < 0)
             {
                 pApp->LoadEnd();
-                Msg("Can't find level: [%s]", l_name);
+
+                Msg("Can't find level: [{}]", l_name);
                 net_start_result_total = FALSE;
 
                 co_return true;
@@ -113,7 +114,7 @@ tmc::task<bool> CLevel::net_start2()
         if (m_connect_server_err = co_await Server->Connect(m_caServerOptions); m_connect_server_err != xrServer::ErrNoError)
         {
             net_start_result_total = false;
-            Msg("! Failed to start server.");
+            Log("! Failed to start server.");
 
             co_return true;
         }
@@ -214,7 +215,8 @@ tmc::task<void> CLevel::InitializeClientGame(NET_Packet& P)
         co_return;
 
     xr_delete(game);
-    Msg("- Game configuring : Started ");
+
+    Log("- Game configuring : Started ");
     CLASS_ID clsid = game_GameState::getCLASS_ID(game_type_name, false);
     game = smart_cast<game_cl_GameState*>(NEW_INSTANCE(clsid));
     game->set_type_name(game_type_name);

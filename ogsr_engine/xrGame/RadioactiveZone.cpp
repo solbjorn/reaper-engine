@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "radioactivezone.h"
+
 #include "hudmanager.h"
 #include "level.h"
 #include "xrmessages.h"
@@ -40,7 +41,7 @@ void CRadioactiveZone::Affect(SZoneObjectInfo* O)
         char pow[255];
         sprintf_s(pow, "zone hit. %.3f", Power(GO->Position().distance_to(pos)));
         if (bDebug)
-            Msg("%s %s", *GO->cName(), pow);
+            Msg("{} {}", GO->cName(), pow);
 #endif
 
         Fvector dir;

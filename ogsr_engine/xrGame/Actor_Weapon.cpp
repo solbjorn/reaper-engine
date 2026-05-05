@@ -4,6 +4,7 @@
 #include "stdafx.h"
 
 #include "actor.h"
+
 #include "actoreffector.h"
 #include "Missile.h"
 #include "inventory.h"
@@ -41,7 +42,7 @@ float CActor::GetWeaponAccuracy() const
     {
         // angular factor
         dispersion *= (1.f + (state.fAVelocity / VEL_A_MAX) * m_fDispVelFactor * GetWeaponParam(W, Get_PDM_Vel_F(), 1.0f));
-        //		Msg("--- base=[%f] angular disp=[%f]",m_fDispBase, dispersion);
+
         // linear movement factor
         bool bAccelerated = isActorAccelerated(mstate_real, IsZoomAimingMode());
         if (bAccelerated)
@@ -160,8 +161,8 @@ void CActor::on_weapon_shot_start(CWeapon* weapon)
     CCameraShotEffector* effector = smart_cast<CCameraShotEffector*>(Cameras().GetCamEffector(eCEShot));
     if (!effector)
     {
-        effector = (CCameraShotEffector*)Cameras().AddCamEffector(
-            xr_new<CCameraShotEffector>(weapon->camMaxAngle, weapon->camRelaxSpeed, weapon->camMaxAngleHorz, weapon->camStepAngleHorz, weapon->camDispertionFrac));
+        effector = (CCameraShotEffector*)Cameras().AddCamEffector(xr_new<CCameraShotEffector>(
+            weapon->camMaxAngle, weapon->camRelaxSpeed, weapon->camMaxAngleHorz, weapon->camStepAngleHorz, weapon->camDispertionFrac));
     }
     R_ASSERT(effector);
 

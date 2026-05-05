@@ -34,9 +34,9 @@ void CDetailManager::hw_Load() { hw_Load_Geom(); }
 void CDetailManager::hw_Load_Geom()
 {
     // Analyze batch-size
-    hw_BatchSize = (u32(HW.Caps.geometry.dwRegisters) - c_hdr) / c_size;
-    clamp<size_t>(hw_BatchSize, 0, 64);
-    Msg("* [DETAILS] VertexConsts(%u), Batch(%zu)", u32(HW.Caps.geometry.dwRegisters), hw_BatchSize);
+    hw_BatchSize = (HW.Caps.geometry.dwRegisters - c_hdr) / c_size;
+    clamp(hw_BatchSize, 0uz, 64uz);
+    Msg("* [DETAILS] VertexConsts({}), Batch({})", +HW.Caps.geometry.dwRegisters, hw_BatchSize);
 
     // Pre-process objects
     u32 dwVerts = 0;
@@ -48,8 +48,8 @@ void CDetailManager::hw_Load_Geom()
         dwIndices += D.number_indices * hw_BatchSize;
     }
     u32 vSize = sizeof(vertHW);
-    Msg("* [DETAILS] %u v(%u), %u p", dwVerts, vSize, dwIndices / 3);
-    Msg("* [DETAILS] Batch(%zu), VB(%uK), IB(%uK)", hw_BatchSize, (dwVerts * vSize) / 1024, (dwIndices * 2) / 1024);
+    Msg("* [DETAILS] {} v({}), {} p", dwVerts, vSize, dwIndices / 3);
+    Msg("* [DETAILS] Batch({}), VB({}K), IB({}K)", hw_BatchSize, (dwVerts * vSize) / 1024, (dwIndices * 2) / 1024);
 
     // Fill VB
     {

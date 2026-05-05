@@ -160,11 +160,9 @@ void dxRender_Visual::Load(const char* N, IReader* data, u32)
         data->r_stringZ(fnS, sizeof(fnS));
         if (replaceShaders(N, fnS, sizeof fnS))
         {
-            // Msg("~~[%s] replaced shaders for [%s]: %s", __FUNCTION__, N, fnS);
         }
         if (overrideShaders(fnT, fnS, sizeof(fnS)))
         {
-            // Msg("~~[%s] overridden shaders for [%s]: %s", __FUNCTION__, N, fnS);
         }
         shader.create(fnS, fnT);
     }

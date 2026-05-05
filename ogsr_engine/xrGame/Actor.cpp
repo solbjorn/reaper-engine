@@ -219,7 +219,6 @@ void CActor::reload(LPCSTR section)
 
 void CActor::Load(LPCSTR section)
 {
-    // Msg						("Loading actor: %s",section);
     inherited::Load(section);
     material().Load(section);
     CInventoryOwner::Load(section);
@@ -297,9 +296,11 @@ void CActor::Load(LPCSTR section)
     if (pSettings->line_exist(section, "stalker_restrictor_radius"))
         character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtStalker, pSettings->r_float(section, "stalker_restrictor_radius"));
     if (pSettings->line_exist(section, "stalker_small_restrictor_radius"))
-        character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtStalkerSmall, pSettings->r_float(section, "stalker_small_restrictor_radius"));
+        character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtStalkerSmall,
+                                                                          pSettings->r_float(section, "stalker_small_restrictor_radius"));
     if (pSettings->line_exist(section, "medium_monster_restrictor_radius"))
-        character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtMonsterMedium, pSettings->r_float(section, "medium_monster_restrictor_radius"));
+        character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtMonsterMedium,
+                                                                          pSettings->r_float(section, "medium_monster_restrictor_radius"));
     character_physics_support()->movement()->Load(section);
 
     m_fWalkAccel = pSettings->r_float(section, "walk_accel");
@@ -598,7 +599,8 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
 
         // TODO: Dima to Dima : forward-back bone impulse direction has been determined incorrectly!
         MotionID motion_ID =
-            m_anims->m_normal.m_damage[iFloor(pK->LL_GetBoneInstance(element).get_param(1) + (angle_difference(r_model_yaw + r_model_yaw_delta, yaw) <= PI_DIV_2 ? 0 : 1))];
+            m_anims->m_normal
+                .m_damage[iFloor(pK->LL_GetBoneInstance(element).get_param(1) + (angle_difference(r_model_yaw + r_model_yaw_delta, yaw) <= PI_DIV_2 ? 0 : 1))];
         float power_factor = perc / 100.f;
         clamp(power_factor, 0.f, 1.f);
         VERIFY(motion_ID.valid());
@@ -660,14 +662,10 @@ tmc::task<void> CActor::Die(CObject* who)
 void CActor::SwitchOutBorder(bool new_border_state)
 {
     if (new_border_state)
-    {
         callback(GameObject::eExitLevelBorder)(lua_game_object());
-    }
     else
-    {
-        //.		Msg("enter level border");
         callback(GameObject::eEnterLevelBorder)(lua_game_object());
-    }
+
     m_bOutBorder = new_border_state;
 }
 
@@ -709,12 +707,13 @@ void CActor::g_Physics(Fvector& _accel, float jump, float dt)
             di->HitDir(hdir);
             SetHitInfo(this, nullptr, 0, Fvector{}, hdir);
             //				Hit
-            //(m_PhysicMovementControl->gcontact_HealthLost,hdir,di->DamageInitiator(),m_PhysicMovementControl->ContactBone(),di->HitPos(),0.f,ALife::eHitTypeStrike);//s16(6 +
+            //(m_PhysicMovementControl->gcontact_HealthLost,hdir,di->DamageInitiator(),m_PhysicMovementControl->ContactBone(),di->HitPos(),0.f,ALife::eHitTypeStrike);//s16(6
+            //+
             // 2*::Random.randI(0,2))
             if (Level().CurrentControlEntity() == this)
             {
-                SHit HDS = SHit(character_physics_support()->movement()->gcontact_HealthLost, hdir, di->DamageInitiator(), character_physics_support()->movement()->ContactBone(),
-                                di->HitPos(), 0.f, di->HitType(), 0.0f, b_hit_initiated);
+                SHit HDS = SHit(character_physics_support()->movement()->gcontact_HealthLost, hdir, di->DamageInitiator(),
+                                character_physics_support()->movement()->ContactBone(), di->HitPos(), 0.f, di->HitType(), 0.0f, b_hit_initiated);
                 //				Hit(&HDS);
 
                 NET_Packet l_P;
@@ -734,7 +733,8 @@ float CActor::currentFOV()
 {
     const auto pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());
 
-    if (cam_active == ACTOR_DEFS::eacFirstEye && pWeapon && pWeapon->IsZoomed() && (!pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture())))
+    if (cam_active == ACTOR_DEFS::eacFirstEye && pWeapon && pWeapon->IsZoomed() &&
+        (!pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture())))
     {
         if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system))
             return atanf(tanf(g_fov * (0.5f * PI / 180)) / pWeapon->GetZoomFactor()) / (0.5f * PI / 180);
@@ -807,7 +807,8 @@ tmc::task<void> CActor::UpdateCL()
         {
             float fire_disp_full = pWeapon->GetFireDispersion(true);
 
-            if (!Device.m_SecondViewport.IsSVPFrame()) //--#SM+#-- +SecondVP+ Чтобы перекрестие не скакало из за смены FOV (Sin!) [fix for crosshair shaking while SecondVP]
+            //--#SM+#-- +SecondVP+ Чтобы перекрестие не скакало из за смены FOV (Sin!) [fix for crosshair shaking while SecondVP]
+            if (!Device.m_SecondViewport.IsSVPFrame())
                 HUD().SetCrosshairDisp(fire_disp_full, 0.02f);
 
             HUD().ShowCrosshair(!psHUD_Flags.test(HUD_CROSSHAIR_BUILD) && pWeapon->use_crosshair());
@@ -919,13 +920,11 @@ tmc::task<void> CActor::shedule_Update(u32 DT)
         else
         {
             g_player_hud->detach_item_idx(0);
-            // Msg("---No active item in inventory(), item 0 detached.");
         }
     }
     else
     {
         g_player_hud->detach_all_items();
-        // Msg("---No hud view found, all items detached.");
     }
 
     // обновление инвентаря
@@ -1758,7 +1757,8 @@ bool CActor::is_actor_walking()
         run = psActorFlags.test(AF_ALWAYSRUN) ? true : false;
 
     return ((mstate_real &
-             (ACTOR_DEFS::mcJump | ACTOR_DEFS::mcFall | ACTOR_DEFS::mcLanding | ACTOR_DEFS::mcLanding2 | ACTOR_DEFS::mcCrouch | ACTOR_DEFS::mcClimb | ACTOR_DEFS::mcSprint)) ||
+             (ACTOR_DEFS::mcJump | ACTOR_DEFS::mcFall | ACTOR_DEFS::mcLanding | ACTOR_DEFS::mcLanding2 | ACTOR_DEFS::mcCrouch | ACTOR_DEFS::mcClimb |
+              ACTOR_DEFS::mcSprint)) ||
             run) ?
         false :
         (mstate_real & ACTOR_DEFS::mcAnyMove) ? true :
@@ -1774,8 +1774,8 @@ bool CActor::is_actor_running()
         run = psActorFlags.test(AF_ALWAYSRUN) ? true : false;
 
     return (mstate_real &
-            (ACTOR_DEFS::mcJump | ACTOR_DEFS::mcFall | ACTOR_DEFS::mcLanding | ACTOR_DEFS::mcLanding2 | ACTOR_DEFS::mcLookout | ACTOR_DEFS::mcCrouch | ACTOR_DEFS::mcClimb |
-             ACTOR_DEFS::mcSprint)) ?
+            (ACTOR_DEFS::mcJump | ACTOR_DEFS::mcFall | ACTOR_DEFS::mcLanding | ACTOR_DEFS::mcLanding2 | ACTOR_DEFS::mcLookout | ACTOR_DEFS::mcCrouch |
+             ACTOR_DEFS::mcClimb | ACTOR_DEFS::mcSprint)) ?
         false :
         ((mstate_real & ACTOR_DEFS::mcAnyMove) && run) ? true :
                                                          false;
@@ -1784,8 +1784,8 @@ bool CActor::is_actor_running()
 bool CActor::is_actor_sprinting()
 {
     return (mstate_real &
-            (ACTOR_DEFS::mcJump | ACTOR_DEFS::mcFall | ACTOR_DEFS::mcLanding | ACTOR_DEFS::mcLanding2 | ACTOR_DEFS::mcLookout | ACTOR_DEFS::mcCrouch | ACTOR_DEFS::mcAccel |
-             ACTOR_DEFS::mcClimb)) ?
+            (ACTOR_DEFS::mcJump | ACTOR_DEFS::mcFall | ACTOR_DEFS::mcLanding | ACTOR_DEFS::mcLanding2 | ACTOR_DEFS::mcLookout | ACTOR_DEFS::mcCrouch |
+             ACTOR_DEFS::mcAccel | ACTOR_DEFS::mcClimb)) ?
         false :
         ((mstate_real & (ACTOR_DEFS::mcFwd | ACTOR_DEFS::mcLStrafe | ACTOR_DEFS::mcRStrafe)) && (mstate_real & ACTOR_DEFS::mcSprint)) ? true :
                                                                                                                                         false;
@@ -1793,9 +1793,11 @@ bool CActor::is_actor_sprinting()
 
 bool CActor::is_actor_crouching()
 {
-    return (mstate_real & (ACTOR_DEFS::mcJump | ACTOR_DEFS::mcFall | ACTOR_DEFS::mcLanding | ACTOR_DEFS::mcLanding2 | ACTOR_DEFS::mcAccel | ACTOR_DEFS::mcClimb)) ? false :
-        ((mstate_real & ACTOR_DEFS::mcAnyMove) && (mstate_real & ACTOR_DEFS::mcCrouch))                                                                           ? true :
-                                                                                                                                                                    false;
+    return (mstate_real &
+            (ACTOR_DEFS::mcJump | ACTOR_DEFS::mcFall | ACTOR_DEFS::mcLanding | ACTOR_DEFS::mcLanding2 | ACTOR_DEFS::mcAccel | ACTOR_DEFS::mcClimb)) ?
+        false :
+        ((mstate_real & ACTOR_DEFS::mcAnyMove) && (mstate_real & ACTOR_DEFS::mcCrouch)) ? true :
+                                                                                          false;
 }
 
 bool CActor::is_actor_creeping()

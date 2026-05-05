@@ -115,7 +115,10 @@ static void remove_in_restriction(CALifeSimulator* alife, CSE_ALifeMonsterAbstra
     alife->remove_restriction(monster->ID, id, RestrictionSpace::eRestrictorTypeIn);
 }
 
-static void remove_in_restrictions(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster) { alife->remove_all_restrictions(monster->ID, RestrictionSpace::eRestrictorTypeIn); }
+static void remove_in_restrictions(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster)
+{
+    alife->remove_all_restrictions(monster->ID, RestrictionSpace::eRestrictorTypeIn);
+}
 
 static void remove_out_restriction(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster, ALife::_OBJECT_ID id)
 {
@@ -141,14 +144,15 @@ static CSE_ALifeDynamicObject* CALifeSimulator__create(CALifeSimulator* self, AL
     return (object);
 }
 
-static CSE_Abstract* CALifeSimulator__spawn_item(CALifeSimulator* self, LPCSTR section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id)
+static CSE_Abstract* CALifeSimulator__spawn_item(CALifeSimulator* self, LPCSTR section, const Fvector& position, u32 level_vertex_id,
+                                                 GameGraph::_GRAPH_ID game_vertex_id)
 {
     THROW(self);
     return (self->spawn_item(section, position, level_vertex_id, game_vertex_id, ALife::_OBJECT_ID(-1)));
 }
 
-static CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self, LPCSTR section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id,
-                                                  ALife::_OBJECT_ID id_parent)
+static CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self, LPCSTR section, const Fvector& position, u32 level_vertex_id,
+                                                  GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent)
 {
     if (id_parent == ALife::_OBJECT_ID(-1))
         return (self->spawn_item(section, position, level_vertex_id, game_vertex_id, id_parent));
@@ -156,7 +160,7 @@ static CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self, LPCSTR 
     CSE_ALifeDynamicObject* object = ai().alife().objects().object(id_parent, true);
     if (!object)
     {
-        Msg("! invalid parent id [%d] specified", id_parent);
+        Msg("! invalid parent id [{}] specified", id_parent);
         return nullptr;
     }
 
@@ -182,8 +186,8 @@ static CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self, LPCSTR 
     return self->server().Process_spawn(packet, clientID);
 }
 
-static CSE_Abstract* CALifeSimulator__spawn_ammo(CALifeSimulator* self, LPCSTR section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id,
-                                                 ALife::_OBJECT_ID id_parent, int ammo_to_spawn)
+static CSE_Abstract* CALifeSimulator__spawn_ammo(CALifeSimulator* self, LPCSTR section, const Fvector& position, u32 level_vertex_id,
+                                                 GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent, int ammo_to_spawn)
 {
     CSE_ALifeDynamicObject* object{};
 
@@ -192,7 +196,7 @@ static CSE_Abstract* CALifeSimulator__spawn_ammo(CALifeSimulator* self, LPCSTR s
         object = ai().alife().objects().object(id_parent, true);
         if (!object)
         {
-            Msg("! invalid parent id [%d] specified", id_parent);
+            Msg("! invalid parent id [{}] specified", id_parent);
             return nullptr;
         }
     }
@@ -275,9 +279,7 @@ static void CALifeSimulator__assign_story_id(CALifeSimulator* self, ALife::_OBJE
 
 #ifdef DEBUG
     if (psAI_Flags.test(aiALife))
-    {
-        Msg("[LSS] Assigning story_id for object [%s][%s][%d][%x]", obj->name_replace(), obj->s_name.c_str(), obj->ID, obj);
-    }
+        Msg("[LSS] Assigning story_id for object [{}][{}][{}][{:#x}]", obj->name_replace(), obj->s_name, obj->ID, obj);
 #endif
 
     if (!(ai().alife().story_objects().object(_story_id, true)))
@@ -286,24 +288,29 @@ static void CALifeSimulator__assign_story_id(CALifeSimulator* self, ALife::_OBJE
         self->add_story_object(obj, _story_id);
     }
     else
-        Msg("assign_story_id: specified id is already using");
+    {
+        Log("assign_story_id: specified id is already using");
+    }
 }
 
 static void CALifeSimulator__use_ai_locations(CALifeSimulator*, CSE_Abstract* object, bool _use)
 {
 #ifdef DEBUG
     if (psAI_Flags.test(aiALife))
-    {
-        Msg("[LSS] Assigning use of ai locations for object [%s][%s][%d][%x]", object->name_replace(), *object->s_name, object->ID, smart_cast<void*>(object));
-    }
+        Msg("[LSS] Assigning use of ai locations for object [{}][{}][{}][{:#x}]", object->name_replace(), object->s_name, object->ID,
+            smart_cast<void*>(object));
 #endif
+
     CSE_ALifeDynamicObject* obj = ai().alife().objects().object(object->ID);
     R_ASSERT(obj);
 
     obj->used_ai_locations(_use);
 }
 
-static void CALifeSimulator__teleport_object(CALifeSimulator* self, u16 ID, Fvector _pos, u32 _lvid, GameGraph::_GRAPH_ID _gvid) { self->teleport_object(ID, _gvid, _lvid, _pos); }
+static void CALifeSimulator__teleport_object(CALifeSimulator* self, u16 ID, Fvector _pos, u32 _lvid, GameGraph::_GRAPH_ID _gvid)
+{
+    self->teleport_object(ID, _gvid, _lvid, _pos);
+}
 
 static void FAKE_CALifeSimulator__teleport_object(CALifeSimulator*, const char*, Fvector, u32, GameGraph::_GRAPH_ID, u16)
 {
@@ -323,7 +330,10 @@ namespace
     return std::numeric_limits<u32>::max();
 }
 
-[[nodiscard]] std::string_view get_level_name(const CALifeSimulator*, GameGraph::_LEVEL_ID level_id) { return ai().game_graph().header().level(level_id).name(); }
+[[nodiscard]] std::string_view get_level_name(const CALifeSimulator*, GameGraph::_LEVEL_ID level_id)
+{
+    return ai().game_graph().header().level(level_id).name();
+}
 
 [[nodiscard]] CSE_ALifeCreatureActor* get_actor(const CALifeSimulator* self)
 {
@@ -393,25 +403,28 @@ void CALifeSimulator::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CALifeSimulator>(
         "alife_simulator", sol::no_constructor, "valid_object_id", &valid_object_id, "level_id",
-        sol::overload(&get_level_id_by_name, sol::resolve<u32(CALifeSimulator*)>(&get_level_id)), "level_name", &get_level_name, "objects", &alife_objects, "object",
+        sol::overload(&get_level_id_by_name, sol::resolve<u32(CALifeSimulator*)>(&get_level_id)), "level_name", &get_level_name, "objects", &alife_objects,
+        "object",
         sol::overload(sol::resolve<CSE_ALifeDynamicObject*(const CALifeSimulator*, ALife::_OBJECT_ID, bool)>(&alife_object),
                       sol::resolve<CSE_ALifeDynamicObject*(const CALifeSimulator*, ALife::_OBJECT_ID)>(&alife_object),
                       sol::resolve<CSE_ALifeDynamicObject*(const CALifeSimulator*, LPCSTR)>(&alife_object)),
-        "is_unloading", &sim_is_unloading, "story_object", sol::resolve<CSE_ALifeDynamicObject*(const CALifeSimulator*, ALife::_STORY_ID)>(alife_story_object), "set_switch_online",
-        sol::resolve<void(ALife::_OBJECT_ID, bool)>(&CALifeSimulator::set_switch_online), "set_switch_offline",
+        "is_unloading", &sim_is_unloading, "story_object", sol::resolve<CSE_ALifeDynamicObject*(const CALifeSimulator*, ALife::_STORY_ID)>(alife_story_object),
+        "set_switch_online", sol::resolve<void(ALife::_OBJECT_ID, bool)>(&CALifeSimulator::set_switch_online), "set_switch_offline",
         sol::resolve<void(ALife::_OBJECT_ID, bool)>(&CALifeSimulator::set_switch_offline), "set_interactive",
-        sol::resolve<void(ALife::_OBJECT_ID, bool)>(&CALifeSimulator::set_interactive), "add_in_restriction", &add_in_restriction, "add_out_restriction", &add_out_restriction,
-        "remove_in_restriction", &remove_in_restriction, "remove_in_restrictions", &remove_in_restrictions, "remove_out_restriction", &remove_out_restriction,
-        "remove_out_restrictions", &remove_out_restrictions, "remove_all_restrictions", &CALifeSimulator::remove_all_restrictions, "create",
-        sol::overload(&CALifeSimulator__spawn_item2, &CALifeSimulator__spawn_item, CALifeSimulator__create), "create_ammo", &CALifeSimulator__spawn_ammo, "release",
+        sol::resolve<void(ALife::_OBJECT_ID, bool)>(&CALifeSimulator::set_interactive), "add_in_restriction", &add_in_restriction, "add_out_restriction",
+        &add_out_restriction, "remove_in_restriction", &remove_in_restriction, "remove_in_restrictions", &remove_in_restrictions, "remove_out_restriction",
+        &remove_out_restriction, "remove_out_restrictions", &remove_out_restrictions, "remove_all_restrictions", &CALifeSimulator::remove_all_restrictions,
+        "create", sol::overload(&CALifeSimulator__spawn_item2, &CALifeSimulator__spawn_item, CALifeSimulator__create), "create_ammo",
+        &CALifeSimulator__spawn_ammo, "release",
         sol::overload(sol::resolve<void(CALifeSimulator*, CSE_Abstract*, bool)>(&CALifeSimulator__release),
                       sol::resolve<void(CALifeSimulator*, CSE_Abstract*)>(&CALifeSimulator__release)),
         "spawn_id",
         sol::overload([](CALifeSimulator* self, ALife::_SPAWN_STORY_ID spawn_story_id) { return self->spawns().spawn_id(spawn_story_id); },
                       [](CALifeSimulator* self, const char* obj_name) { return self->spawns().spawn_id(obj_name); }),
-        "actor", &get_actor, "has_info", &has_info, "dont_has_info", &dont_has_info, "switch_distance", &CALifeSimulator::switch_distance, "set_switch_distance",
-        &CALifeSimulator::set_switch_distance, "teleport_object", sol::overload(&FAKE_CALifeSimulator__teleport_object, &CALifeSimulator__teleport_object), "assign_story_id",
-        &CALifeSimulator__assign_story_id, "use_ai_locations", &CALifeSimulator__use_ai_locations, "save_name", sol::property(&get_save_name), "loaded_save_name",
+        "actor", &get_actor, "has_info", &has_info, "dont_has_info", &dont_has_info, "switch_distance", &CALifeSimulator::switch_distance,
+        "set_switch_distance", &CALifeSimulator::set_switch_distance, "teleport_object",
+        sol::overload(&FAKE_CALifeSimulator__teleport_object, &CALifeSimulator__teleport_object), "assign_story_id", &CALifeSimulator__assign_story_id,
+        "use_ai_locations", &CALifeSimulator__use_ai_locations, "save_name", sol::property(&get_save_name), "loaded_save_name",
         sol::property(&get_loaded_save));
 
     lua.set_function("alife", &alife);
@@ -419,8 +432,8 @@ void CALifeSimulator::script_register(sol::state_view& lua)
     sol::table target;
 
     if (story_ids.empty())
-        generate_story_ids(story_ids, INVALID_STORY_ID, "story_ids", "INVALID_STORY_ID", "Invalid story id description (contains spaces)!", "INVALID_STORY_ID redifinition!",
-                           "Duplicated story id description");
+        generate_story_ids(story_ids, INVALID_STORY_ID, "story_ids", "INVALID_STORY_ID", "Invalid story id description (contains spaces)!",
+                           "INVALID_STORY_ID redifinition!", "Duplicated story id description");
 
     target = lua.create_table(story_ids.size(), 0);
 
@@ -430,8 +443,9 @@ void CALifeSimulator::script_register(sol::state_view& lua)
     xr::sol_new_enum(lua, "story_ids", target);
 
     if (spawn_story_ids.empty())
-        generate_story_ids(spawn_story_ids, INVALID_SPAWN_STORY_ID, "spawn_story_ids", "INVALID_SPAWN_STORY_ID", "Invalid spawn story id description (contains spaces)!",
-                           "INVALID_SPAWN_STORY_ID redifinition!", "Duplicated spawn story id description");
+        generate_story_ids(spawn_story_ids, INVALID_SPAWN_STORY_ID, "spawn_story_ids", "INVALID_SPAWN_STORY_ID",
+                           "Invalid spawn story id description (contains spaces)!", "INVALID_SPAWN_STORY_ID redifinition!",
+                           "Duplicated spawn story id description");
 
     target = lua.create_table(spawn_story_ids.size(), 0);
 

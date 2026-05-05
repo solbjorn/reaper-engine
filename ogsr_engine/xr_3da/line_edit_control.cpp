@@ -512,11 +512,6 @@ void line_edit_control::on_frame()
     {
         m_need_update = false;
     }
-
-    /*if ( Device.dwFrame % 100 == 0 )
-    {
-    Msg( " cur_time=%.2f re=%d acc=%.2f rep_time=%.2f", cur_time, bRepeat, fAccel, rep_time );
-    }*/
 }
 
 void line_edit_control::update_bufs()
@@ -537,8 +532,6 @@ void line_edit_control::update_bufs()
 
     m_need_update = true;
     m_last_changed_frame = Device.dwFrame;
-    // if ( m_cursor_view ) {
-    // Msg( " m_p1=%d m_p2=%d cur=%d sstart=%d", m_p1, m_p2, m_cur_pos, m_select_start ); }
 }
 
 void line_edit_control::add_inserted_text()
@@ -567,7 +560,8 @@ void line_edit_control::add_inserted_text()
     strncpy_s(buf + m_p1, m_buffer_size - m_p1, m_inserted, _min(new_size, gsl::index{m_buffer_size - m_p1})); // part 2
 
     const u8 ds = (m_insert_mode && m_p2 < old_edit_size) ? 1 : 0;
-    strncpy_s(buf + m_p1 + new_size, m_buffer_size - (m_p1 + new_size), m_edit_str + m_p2 + ds, _min(old_edit_size - m_p2 - ds, m_buffer_size - m_p1 - new_size)); // part 3
+    strncpy_s(buf + m_p1 + new_size, m_buffer_size - (m_p1 + new_size), m_edit_str + m_p2 + ds,
+              _min(old_edit_size - m_p2 - ds, m_buffer_size - m_p1 - new_size)); // part 3
     buf[m_buffer_size] = 0;
 
     const gsl::index szn = m_p1 + new_size + old_edit_size - m_p2 - ds;

@@ -139,12 +139,7 @@ void CUIComboBox::SaveValue()
     SaveOptTokenValue(cur_val);
 }
 
-bool CUIComboBox::IsChanged()
-{
-    // if (m_backup_itoken_id != m_itoken_id) Msg("~~[%s] m_backup_itoken_id: [%d], m_itoken_id: [%d]", __FUNCTION__, m_backup_itoken_id, m_itoken_id);
-
-    return m_backup_itoken_id != m_itoken_id;
-}
+bool CUIComboBox::IsChanged() { return m_backup_itoken_id != m_itoken_id; }
 
 LPCSTR CUIComboBox::GetText() { return m_text.GetText(); }
 

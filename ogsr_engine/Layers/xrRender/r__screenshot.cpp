@@ -7,13 +7,13 @@ XR_DIAG_IGNORE("-Wc++98-compat-extra-semi");
 
 XR_DIAG_POP();
 
-#include <ImfIO.h>
+#include <OpenEXR/ImfIO.h>
 
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wunused-parameter");
 XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
 
-#include <ImfRgbaFile.h>
+#include <OpenEXR/ImfRgbaFile.h>
 
 XR_DIAG_POP();
 
@@ -43,7 +43,7 @@ namespace xr
 {
 namespace
 {
-enum class format : s32
+enum class scrfmt : s32
 {
     none = 0,
     dds,
@@ -55,14 +55,14 @@ enum class format : s32
     bmp,
 };
 
-constexpr std::array<std::tuple<xr::format, std::string_view, std::string_view>, 7> ssfmt{{
-    {xr::format::dds, "dds", "-ss_dds"},
-    {xr::format::exr, "exr", "-ss_exr"},
-    {xr::format::png, "png", "-ss_png"},
-    {xr::format::qoi, "qoi", "-ss_qoi"},
-    {xr::format::jpg, "jpg", "-ss_jpg"},
-    {xr::format::tga, "tga", "-ss_tga"},
-    {xr::format::bmp, "bmp", "-ss_bmp"},
+constexpr std::array<std::tuple<xr::scrfmt, std::string_view, std::string_view>, 7> ssfmt{{
+    {xr::scrfmt::dds, "dds", "-ss_dds"},
+    {xr::scrfmt::exr, "exr", "-ss_exr"},
+    {xr::scrfmt::png, "png", "-ss_png"},
+    {xr::scrfmt::qoi, "qoi", "-ss_qoi"},
+    {xr::scrfmt::jpg, "jpg", "-ss_jpg"},
+    {xr::scrfmt::tga, "tga", "-ss_tga"},
+    {xr::scrfmt::bmp, "bmp", "-ss_bmp"},
 }};
 
 constexpr size_t GAMESAVE_SIZE{1024};
@@ -265,12 +265,12 @@ void CRender::Screenshot(ScreenshotMode mode, LPCSTR name)
     R_CHK(DirectX::CaptureTexture(HW.pDevice, HW.get_imm_context(), pSrcTexture, SImage));
     _RELEASE(pSrcTexture);
 
-    xr::format fmt;
+    xr::scrfmt fmt;
 
     switch (SImage.GetMetadata().format)
     {
-    case DXGI_FORMAT_R8G8B8A8_UNORM: fmt = xr::format::none; break;
-    case DXGI_FORMAT_R16G16B16A16_FLOAT: fmt = xr::format::exr; break;
+    case DXGI_FORMAT_R8G8B8A8_UNORM: fmt = xr::scrfmt::none; break;
+    case DXGI_FORMAT_R16G16B16A16_FLOAT: fmt = xr::scrfmt::exr; break;
     default: FATAL("Unsupported render target format for screenshot: [0x%x]", gsl::narrow_cast<u32>(SImage.GetMetadata().format));
     }
 
@@ -280,7 +280,7 @@ void CRender::Screenshot(ScreenshotMode mode, LPCSTR name)
     switch (mode)
     {
     case IRender_interface::SM_NORMAL:
-        if (fmt == xr::format::none)
+        if (fmt == xr::scrfmt::none)
         {
             const std::string_view params{Core.Params};
 
@@ -293,35 +293,36 @@ void CRender::Screenshot(ScreenshotMode mode, LPCSTR name)
                 }
             }
 
-            if (fmt == xr::format::none)
-                fmt = xr::format::png;
+            if (fmt == xr::scrfmt::none)
+                fmt = xr::scrfmt::png;
         }
 
         if (ext.empty())
             ext = std::get<1>(*std::ranges::find_if(xr::ssfmt, [fmt](const auto& entry) { return std::get<0>(entry) == fmt; }));
 
         string64 t_stemp;
-        xr_sprintf(buf, sizeof(buf), "ss_%s_%s_(%s).%s", Core.UserName, timestamp(t_stemp), (g_pGameLevel) ? g_pGameLevel->name().c_str() : "mainmenu", ext.data());
+        xr_sprintf(buf, sizeof(buf), "ss_%s_%s_(%s).%s", Core.UserName, timestamp(t_stemp), (g_pGameLevel) ? g_pGameLevel->name().c_str() : "mainmenu",
+                   ext.data());
 
         switch (fmt)
         {
-        case xr::format::none: NODEFAULT;
-        case xr::format::dds: xr::save_dds(FS.w_open("$screenshots$", buf), SImage, false); break;
-        case xr::format::exr: {
+        case xr::scrfmt::none: NODEFAULT;
+        case xr::scrfmt::dds: xr::save_dds(FS.w_open("$screenshots$", buf), SImage, false); break;
+        case xr::scrfmt::exr: {
             string_path path;
             std::ignore = FS.update_path(path, "$screenshots$", buf);
 
             xr::save_exr(path, SImage, false);
             break;
         }
-        case xr::format::png: xr::png_writer{}.write(FS.w_open("$screenshots$", buf), SImage); break;
+        case xr::scrfmt::png: xr::png_writer{}.write(FS.w_open("$screenshots$", buf), SImage); break;
         default: xr::save_sf(FS.w_open("$screenshots$", buf), SImage, ext); break;
         }
 
         break;
     case IRender_interface::SM_FOR_GAMESAVE:
-        if (fmt == xr::format::none)
-            fmt = xr::format::dds;
+        if (fmt == xr::scrfmt::none)
+            fmt = xr::scrfmt::dds;
 
         ext = std::get<1>(*std::ranges::find_if(xr::ssfmt, [fmt](const auto& entry) { return std::get<0>(entry) == fmt; }));
 
@@ -333,16 +334,16 @@ void CRender::Screenshot(ScreenshotMode mode, LPCSTR name)
 
         switch (fmt)
         {
-        case xr::format::dds: xr::save_dds(FS.w_open(buf), SImage, true); break;
-        case xr::format::exr: xr::save_exr(buf, SImage, true); break;
+        case xr::scrfmt::dds: xr::save_dds(FS.w_open(buf), SImage, true); break;
+        case xr::scrfmt::exr: xr::save_exr(buf, SImage, true); break;
         default: NODEFAULT;
         }
 
         break;
     case IRender_interface::SM_FOR_LEVELMAP:
     case IRender_interface::SM_FOR_CUBEMAP:
-        if (fmt == xr::format::none)
-            fmt = xr::format::tga;
+        if (fmt == xr::scrfmt::none)
+            fmt = xr::scrfmt::tga;
 
         ext = std::get<1>(*std::ranges::find_if(xr::ssfmt, [fmt](const auto& entry) { return std::get<0>(entry) == fmt; }));
 
@@ -351,14 +352,14 @@ void CRender::Screenshot(ScreenshotMode mode, LPCSTR name)
 
         switch (fmt)
         {
-        case xr::format::exr: {
+        case xr::scrfmt::exr: {
             string_path path;
             std::ignore = FS.update_path(path, "$screenshots$", buf);
 
             xr::save_exr(path, SImage, false);
             break;
         }
-        case xr::format::tga: xr::save_sf(FS.w_open("$screenshots$", buf), SImage, ext); break;
+        case xr::scrfmt::tga: xr::save_sf(FS.w_open("$screenshots$", buf), SImage, ext); break;
         default: NODEFAULT;
         }
 

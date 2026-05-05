@@ -332,8 +332,11 @@ void CCar::RestoreNetState(CSE_PHSkeleton* /*po*/)
         */
     }
     else
-        Msg("~ [%s]: [%s] has different state in m_doors[%zu] door_states[%zu] Visual[%s]", __FUNCTION__, obj->Name_script(), m_doors.size(), co->door_states.size(),
-            obj->cNameVisual().c_str());
+    {
+        Msg("~ [{}]: [{}] has different state in m_doors[{}] door_states[{}] Visual[{}]", __FUNCTION__, obj->Name_script(), m_doors.size(),
+            co->door_states.size(), obj->cNameVisual());
+    }
+
     co->door_states.clear();
 
     if (co->wheel_states.size() == m_wheels_map.size())
@@ -349,8 +352,11 @@ void CCar::RestoreNetState(CSE_PHSkeleton* /*po*/)
         */
     }
     else
-        Msg("~ [%s]: [%s] has different state in m_wheels_map[%zu] wheel_states[%zu] Visual[%s]", __FUNCTION__, obj->Name_script(), m_wheels_map.size(), co->wheel_states.size(),
-            obj->cNameVisual().c_str());
+    {
+        Msg("~ [{}]: [{}] has different state in m_wheels_map[{}] wheel_states[{}] Visual[{}]", __FUNCTION__, obj->Name_script(), m_wheels_map.size(),
+            co->wheel_states.size(), obj->cNameVisual());
+    }
+
     co->wheel_states.clear();
 
     // as later may kill diable/enable state save it;
@@ -873,7 +879,8 @@ void CCar::Init()
 
     if (ini->section_exist("air_resistance"))
     {
-        PPhysicsShell()->SetAirResistance(default_k_l * ini->r_float("air_resistance", "linear_factor"), default_k_w * ini->r_float("air_resistance", "angular_factor"));
+        PPhysicsShell()->SetAirResistance(default_k_l * ini->r_float("air_resistance", "linear_factor"),
+                                          default_k_w * ini->r_float("air_resistance", "angular_factor"));
     }
     if (ini->line_exist("car_definition", "steer"))
     {
@@ -1703,7 +1710,7 @@ tmc::task<void> CCar::OnEvent(NET_Packet& P, u16 type)
 
         if (!O)
         {
-            Msg("! [%s] Error: No object to reject/sell [%u]", __FUNCTION__, id);
+            Msg("! [{}] Error: No object to reject/sell [{}]", __FUNCTION__, id);
             break;
         }
 

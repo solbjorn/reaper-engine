@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "ParticleEffectDef.h"
+
 #include "ParticleEffect.h"
 #include "ParticleEffectActions.h"
 
@@ -37,17 +38,14 @@ CPEDef::~CPEDef()
 }
 
 u32 CPEDef::GetUStep() { return m_uStep * ps_particle_update_coeff; }
-
 float CPEDef::GetFStep() { return m_fStep * ps_particle_update_coeff; }
 
 void CPEDef::CreateShader()
 {
     if (*m_ShaderName && *m_TextureName)
-    {
         m_CachedShader.create(*m_ShaderName, *m_TextureName);
-    }
     else
-        Msg("! ParticleEffect [%s] with empty texture or shader. Cannot create shader for Visual!", m_Name.c_str());
+        Msg("! ParticleEffect [{}] with empty texture or shader. Cannot create shader for Visual!", m_Name);
 }
 
 void CPEDef::DestroyShader() { m_CachedShader.destroy(); }

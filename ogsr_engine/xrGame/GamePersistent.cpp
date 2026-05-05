@@ -61,7 +61,8 @@ CGamePersistent::CGamePersistent()
         LPCSTR name = strstr(Core.Params, "-demomode ") + 10;
         sscanf(name, "%s", fname);
         R_ASSERT2(fname[0], "Missing filename for 'demomode'");
-        Msg("- playing in demo mode '%s'", fname);
+
+        Msg("- playing in demo mode '{}'", fname);
         pDemoFile = FS.r_open(fname);
         Device.seqFrame.Add(this);
         uTime2Change = 0;
@@ -192,8 +193,8 @@ void CGamePersistent::UpdateGameType()
     __super::UpdateGameType();
     m_game_params.m_e_game_type = GAME_SINGLE;
 
-    // TODO: KRodin: надо подумать, надо ли тут вылетать вообще. Не может ли возникнуть каких-нибудь проблем, если парсер налажал. Он же влияет не только на m_game_type. На данный
-    // момент парсер может налажать, если встретит скобочки () в имени сейва.
+    // TODO: KRodin: надо подумать, надо ли тут вылетать вообще. Не может ли возникнуть каких-нибудь проблем, если парсер налажал. Он же влияет не только на
+    // m_game_type. На данный момент парсер может налажать, если встретит скобочки () в имени сейва.
     ASSERT_FMT_DBG(std::is_eq(xr_strcmp(m_game_params.m_game_type, "single")), "!!failed to parse the name of the save, rename it and try to load again.");
 }
 
@@ -247,7 +248,8 @@ void CGamePersistent::WeathersUpdate()
                         pos.z = _sin(angle);
                         pos.normalize().mul(ch.get_rnd_sound_dist()).add(Device.vCameraPosition);
                         pos.y += 10.f;
-                        snd.play_at_pos(nullptr, pos, (!ch.m_sound_period.x && !ch.m_sound_period.y && !ch.m_sound_period.z && !ch.m_sound_period.w) ? sm_2D : 0);
+                        snd.play_at_pos(nullptr, pos,
+                                        (!ch.m_sound_period.x && !ch.m_sound_period.y && !ch.m_sound_period.z && !ch.m_sound_period.w) ? sm_2D : 0);
 
 #ifdef DEBUG
                         if (!snd._handle() && strstr(Core.Params, "-nosound"))
@@ -257,27 +259,9 @@ void CGamePersistent::WeathersUpdate()
                         VERIFY(snd._handle());
                         u32 _length_ms = iFloor(snd.get_length_sec() * 1000.0f);
                         ambient_sound_next_time[idx] = Device.dwTimeGlobal + _length_ms + ch.get_rnd_sound_time();
-                        //					Msg("- Playing ambient sound channel [%s] file[%s]",ch.m_load_section.c_str(),snd._handle()->file_name());
                     }
                 }
-                /*
-                            if (Device.dwTimeGlobal > ambient_sound_next_time)
-                            {
-                                ref_sound* snd			= env_amb->get_rnd_sound();
-                                ambient_sound_next_time	= Device.dwTimeGlobal + env_amb->get_rnd_sound_time();
-                                if (snd)
-                                {
-                                    Fvector	pos;
-                                    float	angle		= ::Random.randF(PI_MUL_2);
-                                    pos.x				= _cos(angle);
-                                    pos.y				= 0;
-                                    pos.z				= _sin(angle);
-                                    pos.normalize		().mul(env_amb->get_rnd_sound_dist()).add(Device.vCameraPosition);
-                                    pos.y				+= 10.f;
-                                    snd->play_at_pos	(0,pos);
-                                }
-                            }
-                */
+
                 // start effect
                 if (!bIndoor && !ambient_particles && Device.dwTimeGlobal > ambient_effect_next_time)
                 {
@@ -337,9 +321,10 @@ void CGamePersistent::WeathersUpdate()
                 }
                 Environment().wind_blast_current.slerp(Environment().wind_blast_start_time, Environment().wind_blast_stop_time, t);
 
-                Environment().wind_blast_direction.set(Environment().wind_blast_current.x, Environment().wind_blast_current.y, Environment().wind_blast_current.z);
-                Environment().wind_strength_factor =
-                    Environment().wind_blast_strength_start_value + t * (Environment().wind_blast_strength_stop_value - Environment().wind_blast_strength_start_value);
+                Environment().wind_blast_direction.set(Environment().wind_blast_current.x, Environment().wind_blast_current.y,
+                                                       Environment().wind_blast_current.z);
+                Environment().wind_strength_factor = Environment().wind_blast_strength_start_value +
+                    t * (Environment().wind_blast_strength_stop_value - Environment().wind_blast_strength_start_value);
             }
 
             // stop if time exceed or indoor
@@ -372,8 +357,8 @@ void CGamePersistent::WeathersUpdate()
                 {
                     t = 0.f;
                 }
-                Environment().wind_strength_factor =
-                    Environment().wind_blast_strength_start_value + t * (Environment().wind_blast_strength_stop_value - Environment().wind_blast_strength_start_value);
+                Environment().wind_strength_factor = Environment().wind_blast_strength_start_value +
+                    t * (Environment().wind_blast_strength_stop_value - Environment().wind_blast_strength_start_value);
             }
             if (Device.fTimeGlobal > ambient_effect_wind_out_time && ambient_effect_wind_out_time != 0.f)
             {
@@ -633,7 +618,8 @@ tmc::task<void> CGamePersistent::OnFrame()
 
             // Start _new level + demo
             co_await Engine.Event.Defer("KERNEL:disconnect");
-            co_await Engine.Event.Defer("KERNEL:start", reinterpret_cast<uintptr_t>(xr_strdup(_Trim(o_server))), reinterpret_cast<uintptr_t>(xr_strdup(_Trim(o_client))));
+            co_await Engine.Event.Defer("KERNEL:start", reinterpret_cast<uintptr_t>(xr_strdup(_Trim(o_server))),
+                                        reinterpret_cast<uintptr_t>(xr_strdup(_Trim(o_client))));
             co_await Engine.Event.Defer("GAME:demo", reinterpret_cast<uintptr_t>(xr_strdup(_Trim(o_demo))), o_time);
 
             uTime2Change = 0xffffffff; // Block changer until Event received

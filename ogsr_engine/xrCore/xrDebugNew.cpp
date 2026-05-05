@@ -89,7 +89,7 @@ void LogStackTrace(const char* header, const bool dump_lua_locals)
         if (auto pCrashHandler = Debug.get_lua_trace())
             pCrashHandler(dump_lua_locals);
         Log("********************************************************************************");
-        Msg("!![%s] Thread: [%s]", __FUNCTION__, GetThreadName());
+        Msg("!![{}] Thread: [{}]", __FUNCTION__, GetThreadName());
         Log(BuildStackTrace(header));
         Log("********************************************************************************");
     }
@@ -104,7 +104,7 @@ void LogStackTrace(const char* header, _EXCEPTION_POINTERS* pExceptionInfo, bool
         if (auto pCrashHandler = Debug.get_lua_trace())
             pCrashHandler(dump_lua_locals);
         Log("********************************************************************************");
-        Msg("!![%s] Thread: [%s], ExceptionCode: [0x%lx]", __FUNCTION__, GetThreadName(), pExceptionInfo->ExceptionRecord->ExceptionCode);
+        Msg("!![{}] Thread: [{}], ExceptionCode: [{:#x}]", __FUNCTION__, GetThreadName(), pExceptionInfo->ExceptionRecord->ExceptionCode);
         auto save = *pExceptionInfo->ContextRecord;
         Log(BuildStackTrace(header, pExceptionInfo->ContextRecord));
         *pExceptionInfo->ContextRecord = save;
@@ -341,8 +341,8 @@ static int out_of_memory_handler(size_t size)
     const auto eco_strings = str_container::stat_economy();
     const auto eco_smem = smem_container::stat_economy();
 
-    Msg("* [x-ray]: process heap[%zd K]", process_heap / 1024);
-    Msg("* [x-ray]: economy: strings[%zd K], smem[%zd K]", eco_strings / 1024, eco_smem / 1024);
+    Msg("* [x-ray]: process heap[{} K]", process_heap / 1024);
+    Msg("* [x-ray]: economy: strings[{} K], smem[{} K]", eco_strings / 1024, eco_smem / 1024);
 
     FATAL("Out of memory. Memory request: [%zu K]", size / 1024);
 }
@@ -402,20 +402,20 @@ static void save_mini_dump(_EXCEPTION_POINTERS* pExceptionInfo)
 
             BOOL bOK = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, dump_flags, &ExInfo, nullptr, nullptr);
             if (bOK)
-                Msg("--Saved dump file to [%s]", szDumpPath);
+                Msg("--Saved dump file to [{}]", szDumpPath);
             else
-                Msg("!!Failed to save dump file to [%s] (error [%s])", szDumpPath, Debug.error2string(GetLastError()));
+                Msg("!!Failed to save dump file to [{}] (error [{}])", szDumpPath, Debug.error2string(GetLastError()));
 
             ::CloseHandle(hFile);
         }
         else
         {
-            Msg("!!Failed to create dump file [%s] (error [%s])", szDumpPath, Debug.error2string(GetLastError()));
+            Msg("!!Failed to create dump file [{}] (error [{}])", szDumpPath, Debug.error2string(GetLastError()));
         }
     }
     __except (EXCEPTION_EXECUTE_HANDLER)
     {
-        Msg("Exception catched in function [%s]", __FUNCTION__);
+        Msg("Exception catched in function [{}]", __FUNCTION__);
     }
 
     xr::log_flush();
@@ -504,7 +504,7 @@ void format_message(char* buffer)
     }
     __except (EXCEPTION_EXECUTE_HANDLER)
     {
-        Msg("Exception catched in function [%s]", __FUNCTION__);
+        Msg("Exception catched in function [{}]", __FUNCTION__);
     }
 }
 
@@ -518,7 +518,7 @@ void format_message(char* buffer)
         string1024 error_message;
         format_message(error_message);
         if (*error_message)
-            Msg("\n%s", error_message);
+            Msg("\n{}", error_message);
 
         LogStackTrace("!!Unhandled exception stack trace:\n", pExceptionInfo, true);
 

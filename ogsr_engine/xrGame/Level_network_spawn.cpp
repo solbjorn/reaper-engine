@@ -25,17 +25,13 @@ tmc::task<void> CLevel::cl_Process_Spawn(NET_Packet& P)
     E->Spawn_Read(P);
     if (E->s_flags.is(M_SPAWN_UPDATE))
         E->UPDATE_Read(P);
-    //-------------------------------------------------
-    //	Msg ("M_SPAWN - %s[%d][%x] - %d", *s_name,  E->ID, E,E->ID_Parent);
-    //-------------------------------------------------
+
     // force object to be local for server client
-    {
-        E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
-    }
+    E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
 
     if (std::find(m_just_destroyed.begin(), m_just_destroyed.end(), E->ID) != m_just_destroyed.end())
     {
-        Msg("* [%s]: skip just destroyed [%s] ID: [%u] ID_Parent: [%u]", __FUNCTION__, E->name_replace(), E->ID, E->ID_Parent);
+        Msg("* [{}]: skip just destroyed [{}] ID: [{}] ID_Parent: [{}]", __FUNCTION__, E->name_replace(), E->ID, E->ID_Parent);
 
         m_just_destroyed.erase(std::remove(m_just_destroyed.begin(), m_just_destroyed.end(), E->ID), m_just_destroyed.end());
         F_entity_Destroy(E);
@@ -106,12 +102,12 @@ extern Flags32 psAI_Flags;
 tmc::task<void> CLevel::g_sv_Spawn(CSE_Abstract* E)
 {
 #ifdef DEBUG
-    Msg("* CLIENT: Spawn: %s, ID=%d", E->s_name.c_str(), E->ID);
+    Msg("* CLIENT: Spawn: {}, ID={}", E->s_name, E->ID);
 #endif
 
     if (auto obj = Objects.net_Find(E->ID); obj != nullptr && obj->getDestroy())
     {
-        Msg("[%s]: %s[%u] already net_Spawn'ed, call ProcessDestroyQueue()", __FUNCTION__, obj->cName().c_str(), obj->ID());
+        Msg("[{}]: {}[{}] already net_Spawn'ed, call ProcessDestroyQueue()", __FUNCTION__, obj->cName(), obj->ID());
         co_await Objects.ProcessDestroyQueue();
     }
 
@@ -125,7 +121,7 @@ tmc::task<void> CLevel::g_sv_Spawn(CSE_Abstract* E)
         client_spawn_manager().clear(O->ID());
         Objects.Destroy(O);
 
-        Msg("! Failed to spawn entity '%s'", E->s_name.c_str());
+        Msg("! Failed to spawn entity '{}'", E->s_name);
     }
     else
     {
@@ -228,7 +224,8 @@ tmc::task<void> CLevel::ProcessGameSpawns()
                 co_await g_sv_Spawn(E);
         }
 
-        game_spawn_queue.erase(std::remove_if(game_spawn_queue.begin(), game_spawn_queue.end(), [&](auto& E) { return E->ID_Parent == trader->ID; }), game_spawn_queue.end());
+        game_spawn_queue.erase(std::remove_if(game_spawn_queue.begin(), game_spawn_queue.end(), [&](auto& E) { return E->ID_Parent == trader->ID; }),
+                               game_spawn_queue.end());
         F_entity_Destroy(trader);
     }
 }
@@ -242,11 +239,10 @@ void CLevel::ProcessGameSpawnsDestroy(u16 dest, u16 type)
                                           [&](auto& E) {
                                               if (E->ID == dest || E->ID_Parent == dest)
                                               {
-                                                  // Msg( "* [CLevel::ProcessGameSpawnsDestroy]: delayed spawn GE_DESTROY dest[%d] ID[%d] ID_Parent[%d] name_replace[%s]", dest,
-                                                  // E->ID, E->ID_Parent, E->name_replace() );
                                                   F_entity_Destroy(E);
                                                   return true;
                                               }
+
                                               return false;
                                           }),
                            game_spawn_queue.end());

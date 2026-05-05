@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "PHShellCreator.h"
+
 #include "PhysicsShell.h"
 #include "gameobject.h"
 #include "physicsshellholder.h"
@@ -27,17 +28,17 @@ void CPHShellSimpleCreator::CreatePhysicsShell()
     if (owner->m_pPhysicsShell->get_ElementsNumber() == 0)
     {
 #ifdef DEBUG
-        Msg(" ! Error: world item visual [%s] has no elements!", pKinematics->getDebugName().c_str());
+        Msg(" ! Error: world item visual [{}] has no elements!", pKinematics->getDebugName());
 #else
-        Msg(" ! Error: world item visual has no elements!");
+        Log(" ! Error: world item visual has no elements!");
 #endif
     }
     else if (!owner->m_pPhysicsShell->get_ElementByStoreOrder(0)->has_geoms())
     {
 #ifdef DEBUG
-        Msg(" ! Error: world item visual [%s] has no shape!", pKinematics->getDebugName().c_str());
+        Msg(" ! Error: world item visual [{}] has no shape!", pKinematics->getDebugName());
 #else
-        Msg(" ! Error: world item visual has no shape!");
+        Log(" ! Error: world item visual has no shape!");
 #endif
     }
 

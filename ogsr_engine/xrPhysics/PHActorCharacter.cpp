@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "phactorcharacter.h"
+
 #include "Extendedgeom.h"
 #include "PhysicsCommon.h"
 #include "GameObject.h"
@@ -296,7 +297,7 @@ void CPHActorCharacter::ChooseRestrictionType(CPHCharacter::ERestrictionType my_
 
 #ifdef DEBUG
             if (ph_dbg_draw_mask1.test(ph_m1_DbgActorRestriction))
-                Msg("restriction ready to change small -> large");
+                Log("restriction ready to change small -> large");
 #endif
         }
         break;
@@ -305,7 +306,7 @@ void CPHActorCharacter::ChooseRestrictionType(CPHCharacter::ERestrictionType my_
         {
 #ifdef DEBUG
             if (ph_dbg_draw_mask1.test(ph_m1_DbgActorRestriction))
-                Msg("restriction  change large ->  small");
+                Log("restriction  change large ->  small");
 #endif
 
             ch->SetRestrictionType(rtStalkerSmall);

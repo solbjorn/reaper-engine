@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "xrServer.h"
+
 #include "hudmanager.h"
 #include "xrserver_objects.h"
 
@@ -24,23 +25,13 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
         E->Spawn_Read(P);
         if (!((game->Type() == E->s_gameid) || (GAME_ANY == E->s_gameid)) || !E->match_configuration() || !game->OnPreCreate(E))
         {
-            // Msg			("- SERVER: Entity [%s] incompatible with current game type.",*E->s_name);
             F_entity_Destroy(E);
             return nullptr;
         }
-
-        //		E->m_bALifeControl = false;
     }
     else
     {
         VERIFY(E->m_bALifeControl);
-        //		E->owner			= CL;
-        //		if (CL != nullptr)
-        //		{
-        //			int x=0;
-        //			x=x;
-        //		};
-        //		E->m_bALifeControl = true;
     }
 
     CSE_Abstract* e_parent{};
@@ -50,7 +41,6 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
         if (!e_parent)
         {
             R_ASSERT(!tpExistedEntity);
-            //			VERIFY3			(smart_cast<CSE_ALifeItemBolt*>(E) || smart_cast<CSE_ALifeItemGrenade*>(E),*E->s_name,E->name_replace());
             F_entity_Destroy(E);
 
             return nullptr;
@@ -176,13 +166,5 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
     if (!tpExistedEntity)
         game->OnPostCreate(E->ID);
 
-    // log
-    // Msg		("- SERVER: Spawning '%s'(%d,%d,%d) as #%d, on '%s'", E->s_name_replace, E->g_team(), E->g_squad(), E->g_group(), E->ID, CL?CL->name:"*SERVER*");
     return E;
 }
-
-/*
-void spawn_WithPhantom
-void spawn_FromPhantom
-void spawn_Simple
-*/

@@ -12,12 +12,17 @@ set(llvm_options "-march=skylake -mavx2 -mvpclmulqdq -flto -fmerge-all-constants
 
 set(warning_options "-Wextra -Wmost -Wno-error=unused-command-line-argument -Werror=format -Wformat-nonliteral -Werror=format-pedantic -Werror=format-signedness -Werror=format-type-confusion -Werror=microsoft -Werror=move -Werror=nan-infinity-disabled -Werror=parentheses -Werror=strict-aliasing -Werror=tautological-compare -Werror=typename-missing -Werror=weak-vtables")
 
-# hwloc, omp, and ASIO SDK don't behave
-# dwarfs does, and is handled differently below
-if(NOT (HWLOC_SKIP_LSTOPO OR LLVM_ENABLE_RUNTIMES OR PA_USE_ASIO OR DEFINED WITH_FUSE_DRIVER))
+# hwloc and ASIO SDK don't behave
+# DwarFS uses `UNICODE` as an enumeration
+if(NOT (HWLOC_SKIP_LSTOPO OR PA_USE_ASIO))
   cmake_policy(SET CMP0204 NEW)
   add_compile_definitions(_UNICODE)
-  add_compile_definitions(UNICODE)
+
+  if(DEFINED WITH_FUSE_DRIVER)
+    add_compile_definitions(UNICODE=UNICODE)
+  else()
+    add_compile_definitions(UNICODE)
+  endif()
 endif()
 
 # DirectXTex
@@ -76,7 +81,7 @@ endif()
 
 # dwarfs
 if(DEFINED WITH_FUSE_DRIVER)
-  set(conformance_options "${conformance_options} -D_UNICODE -DUNICODE=UNICODE -DBOOST_NO_CXX23_HDR_SPANSTREAM -DBOOST_NO_CXX23_HDR_STACKTRACE -DBOOST_NO_CXX23_HDR_STDFLOAT -DFLAC__NO_DLL -DLZMA_API_STATIC -DZXC_STATIC_DEFINE -Dclose=_close -Ddev_t=_dev_t -Dgetpid=_getpid -Doff_t=_off_t -Dread=_read -Dumask=_umask")
+  set(conformance_options "${conformance_options} -DBOOST_NO_CXX23_HDR_SPANSTREAM -DBOOST_NO_CXX23_HDR_STACKTRACE -DBOOST_NO_CXX23_HDR_STDFLOAT -DFLAC__NO_DLL -DLZMA_API_STATIC -DZXC_STATIC_DEFINE -Dclose=_close -Ddev_t=_dev_t -Dgetpid=_getpid -Doff_t=_off_t -Dread=_read -Dumask=_umask")
   set(warning_options "${warning_options} -Wno-c++98-compat")
 endif()
 

@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "stalker_planner.h"
+
 #include "stalker_property_evaluators.h"
 #include "stalker_danger_property_evaluators.h"
 #include "ai/stalker/ai_stalker.h"
@@ -89,39 +90,46 @@ void CStalkerPlanner::update(u32)
     if (m_failed)
     {
         {
-            Msg("%d", evaluators().size());
+            Msg("{}", evaluators().size());
+
             EVALUATORS::const_iterator I = evaluators().begin();
             EVALUATORS::const_iterator E = evaluators().end();
             for (; I != E; ++I)
-                Msg("%d,%d", (*I).first, (*I).second->evaluate() ? 1 : 0);
+                Msg("{},{}", (*I).first, (*I).second->evaluate() ? 1 : 0);
         }
         {
-            Msg("%d", target_state().conditions().size());
+            Msg("{}", target_state().conditions().size());
+
             xr_vector<COperatorCondition>::const_iterator I = target_state().conditions().begin();
             xr_vector<COperatorCondition>::const_iterator E = target_state().conditions().end();
             for (; I != E; ++I)
-                Msg("%d,%d", (*I).condition(), (*I).value() ? 1 : 0);
+                Msg("{},{}", (*I).condition(), (*I).value() ? 1 : 0);
         }
         {
-            Msg("%d", operators().size());
+            Msg("{}", operators().size());
+
             const_iterator I = operators().begin();
             const_iterator E = operators().end();
             for (; I != E; ++I)
             {
-                Msg("%d,%d", (*I).m_operator_id, (*I).m_operator->weight(target_state(), target_state()));
+                Msg("{},{}", (*I).m_operator_id, (*I).m_operator->weight(target_state(), target_state()));
+
                 {
-                    Msg("%d", (*I).m_operator->conditions().conditions().size());
+                    Msg("{}", (*I).m_operator->conditions().conditions().size());
+
                     xr_vector<COperatorCondition>::const_iterator i = (*I).m_operator->conditions().conditions().begin();
                     xr_vector<COperatorCondition>::const_iterator e = (*I).m_operator->conditions().conditions().end();
                     for (; i != e; ++i)
-                        Msg("%d,%d", (*i).condition(), (*i).value() ? 1 : 0);
+                        Msg("{},{}", (*i).condition(), (*i).value() ? 1 : 0);
                 }
+
                 {
-                    Msg("%d", (*I).m_operator->effects().conditions().size());
+                    Msg("{}", (*I).m_operator->effects().conditions().size());
+
                     xr_vector<COperatorCondition>::const_iterator i = (*I).m_operator->effects().conditions().begin();
                     xr_vector<COperatorCondition>::const_iterator e = (*I).m_operator->effects().conditions().end();
                     for (; i != e; ++i)
-                        Msg("%d,%d", (*i).condition(), (*i).value() ? 1 : 0);
+                        Msg("{},{}", (*i).condition(), (*i).value() ? 1 : 0);
                 }
             }
         }
@@ -134,7 +142,8 @@ void CStalkerPlanner::add_evaluators()
     add_evaluator(eWorldPropertyAlreadyDead, xr_new<CStalkerPropertyEvaluatorConst>(false, "is_already_dead"));
     add_evaluator(eWorldPropertyPuzzleSolved, xr_new<CStalkerPropertyEvaluatorConst>(false, "is_zone_puzzle_solved"));
     add_evaluator(eWorldPropertyAlive, xr_new<CStalkerPropertyEvaluatorAlive>(m_object, "is_alive"));
-    add_evaluator(eWorldPropertyEnemy, xr_new<CStalkerPropertyEvaluatorEnemies>(m_object, "is_there_enemies", gsl::narrow<u32>(CStalkerCombatPlanner::POST_COMBAT_WAIT_INTERVAL)));
+    add_evaluator(eWorldPropertyEnemy,
+                  xr_new<CStalkerPropertyEvaluatorEnemies>(m_object, "is_there_enemies", gsl::narrow<u32>(CStalkerCombatPlanner::POST_COMBAT_WAIT_INTERVAL)));
     add_evaluator(eWorldPropertyDanger, xr_new<CStalkerPropertyEvaluatorDangers>(m_object, "is_there_danger"));
     add_evaluator(eWorldPropertyAnomaly, xr_new<CStalkerPropertyEvaluatorAnomaly>(m_object, "is_there_anomalies"));
     add_evaluator(eWorldPropertyItems, xr_new<CStalkerPropertyEvaluatorItems>(m_object, "is_there_items_to_pick_up"));

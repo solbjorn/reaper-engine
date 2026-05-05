@@ -45,18 +45,22 @@ void CObjectHandler::reinit(CAI_Stalker* object)
     m_hammer_is_clutched = false;
     planner().setup(object);
     IKinematics* kinematics = smart_cast<IKinematics*>(planner().m_object->Visual());
-    m_r_hand = kinematics->LL_BoneID(pSettings->r_string(*planner().m_object->cNameSect(), "weapon_bone0"));
+
+    m_r_hand = kinematics->LL_BoneID(pSettings->r_string(planner().m_object->cNameSect(), "weapon_bone0"));
     if (m_r_hand == BI_NONE)
-        Msg("!![%s] weapon_bone [%s] not found in npc section [%s], npc visual [%s]", __FUNCTION__, pSettings->r_string(planner().m_object->cNameSect().c_str(), "weapon_bone0"),
-            planner().m_object->cNameSect().c_str(), planner().object().cNameVisual().c_str());
-    m_l_finger1 = kinematics->LL_BoneID(pSettings->r_string(*planner().m_object->cNameSect(), "weapon_bone1"));
+        Msg("!![{}] weapon_bone [{}] not found in npc section [{}], npc visual [{}]", __FUNCTION__,
+            pSettings->r_string(planner().m_object->cNameSect(), "weapon_bone0"), planner().m_object->cNameSect(), planner().object().cNameVisual());
+
+    m_l_finger1 = kinematics->LL_BoneID(pSettings->r_string(planner().m_object->cNameSect(), "weapon_bone1"));
     if (m_l_finger1 == BI_NONE)
-        Msg("!![%s] weapon_bone [%s] not found in npc section [%s], npc visual [%s]", __FUNCTION__, pSettings->r_string(planner().m_object->cNameSect().c_str(), "weapon_bone1"),
-            planner().m_object->cNameSect().c_str(), planner().object().cNameVisual().c_str());
-    m_r_finger2 = kinematics->LL_BoneID(pSettings->r_string(*planner().m_object->cNameSect(), "weapon_bone2"));
+        Msg("!![{}] weapon_bone [{}] not found in npc section [{}], npc visual [{}]", __FUNCTION__,
+            pSettings->r_string(planner().m_object->cNameSect(), "weapon_bone1"), planner().m_object->cNameSect(), planner().object().cNameVisual());
+
+    m_r_finger2 = kinematics->LL_BoneID(pSettings->r_string(planner().m_object->cNameSect(), "weapon_bone2"));
     if (m_r_finger2 == BI_NONE)
-        Msg("!![%s] weapon_bone [%s] not found in npc section [%s], npc visual [%s]", __FUNCTION__, pSettings->r_string(planner().m_object->cNameSect().c_str(), "weapon_bone2"),
-            planner().m_object->cNameSect().c_str(), planner().object().cNameVisual().c_str());
+        Msg("!![{}] weapon_bone [{}] not found in npc section [{}], npc visual [{}]", __FUNCTION__,
+            pSettings->r_string(planner().m_object->cNameSect(), "weapon_bone2"), planner().m_object->cNameSect(), planner().object().cNameVisual());
+
     m_strap_object_id = ALife::_OBJECT_ID(-1);
     m_strap_bone0 = -1;
     m_strap_bone1 = -1;
@@ -113,7 +117,8 @@ void CObjectHandler::OnItemDrop(CInventoryItem* inventory_item)
         CWeaponAmmo* weapon_ammo = smart_cast<CWeaponAmmo*>(inventory_item);
         if (weapon_ammo)
         {
-            Level().spawn_item(*weapon_ammo->cNameSect(), planner().object().Position(), planner().object().ai_location().level_vertex_id(), planner().object().ID());
+            Level().spawn_item(*weapon_ammo->cNameSect(), planner().object().Position(), planner().object().ai_location().level_vertex_id(),
+                               planner().object().ID());
             m_item_to_spawn = weapon_ammo->cNameSect();
             m_ammo_in_box_to_spawn = weapon_ammo->m_boxSize;
         }
@@ -135,14 +140,14 @@ CInventoryItem* CObjectHandler::best_weapon() const
 
 void CObjectHandler::update() { planner().update(); }
 
-void CObjectHandler::set_goal(MonsterSpace::EObjectAction object_action, CGameObject* game_object, u32 min_queue_size, u32 max_queue_size, u32 min_queue_interval,
-                              u32 max_queue_interval)
+void CObjectHandler::set_goal(MonsterSpace::EObjectAction object_action, CGameObject* game_object, u32 min_queue_size, u32 max_queue_size,
+                              u32 min_queue_interval, u32 max_queue_interval)
 {
     planner().set_goal(object_action, game_object, min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
 }
 
-void CObjectHandler::set_goal(MonsterSpace::EObjectAction object_action, CInventoryItem* inventory_item, u32 min_queue_size, u32 max_queue_size, u32 min_queue_interval,
-                              u32 max_queue_interval)
+void CObjectHandler::set_goal(MonsterSpace::EObjectAction object_action, CInventoryItem* inventory_item, u32 min_queue_size, u32 max_queue_size,
+                              u32 min_queue_interval, u32 max_queue_interval)
 {
     set_goal(object_action, inventory_item ? &inventory_item->object() : nullptr, min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
 }
@@ -165,14 +170,17 @@ void CObjectHandler::weapon_bones(int& b0, int& b1, int& b2) const
     if (weapon->ID() != m_strap_object_id)
     {
         IKinematics* kinematics = smart_cast<IKinematics*>(planner().m_object->Visual());
+
         m_strap_bone0 = kinematics->LL_BoneID(weapon->strap_bone0());
         if (m_strap_bone0 == BI_NONE)
-            Msg("!![%s] strap_bone [%s] not found in npc visual [%s], weapon: [%s]", __FUNCTION__, weapon->strap_bone0(), planner().object().cNameVisual().c_str(),
-                weapon->cNameSect().c_str());
+            Msg("!![{}] strap_bone [{}] not found in npc visual [{}], weapon: [{}]", __FUNCTION__, weapon->strap_bone0(), planner().object().cNameVisual(),
+                weapon->cNameSect());
+
         m_strap_bone1 = kinematics->LL_BoneID(weapon->strap_bone1());
         if (m_strap_bone1 == BI_NONE)
-            Msg("!![%s] strap_bone [%s] not found in npc visual [%s], weapon: [%s]", __FUNCTION__, weapon->strap_bone1(), planner().object().cNameVisual().c_str(),
-                weapon->cNameSect().c_str());
+            Msg("!![{}] strap_bone [{}] not found in npc visual [{}], weapon: [{}]", __FUNCTION__, weapon->strap_bone1(), planner().object().cNameVisual(),
+                weapon->cNameSect());
+
         m_strap_object_id = weapon->ID();
     }
 

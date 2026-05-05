@@ -138,7 +138,8 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
         VERIFY(_si->m_wnd);
         _si->m_wnd->SetTextComplexMode(true);
         _si->m_wnd->Show(false);
-        //	_si->m_wnd->SetWidth(_si->m_wnd->GetWidth()*UI()->get_current_kx()); // KRodin: этот код вызывает кучу проблем с положением текстур, не раскомментировать!
+        //	_si->m_wnd->SetWidth(_si->m_wnd->GetWidth()*UI()->get_current_kx()); // KRodin: этот код вызывает кучу проблем с положением текстур, не
+        // раскомментировать!
 
         xml->SetLocalRoot(_sr);
     }
@@ -181,8 +182,8 @@ void CUISequenceSimpleItem::Update()
         {
             if (!xr_strlen(m_pda_section))
             {
-                if (ui_game_sp->PdaMenu->IsShown() || ui_game_sp->InventoryMenu->IsShown() || ui_game_sp->TalkMenu->IsShown() || ui_game_sp->UICarBodyMenu->IsShown() ||
-                    ui_game_sp->UIChangeLevelWnd->IsShown())
+                if (ui_game_sp->PdaMenu->IsShown() || ui_game_sp->InventoryMenu->IsShown() || ui_game_sp->TalkMenu->IsShown() ||
+                    ui_game_sp->UICarBodyMenu->IsShown() || ui_game_sp->UIChangeLevelWnd->IsShown())
                     m_UIWindow->Show(false);
                 else
                     m_UIWindow->Show(true);
@@ -313,7 +314,7 @@ void CUISequenceSimpleItem::OnKeyboardPress(xr::key_id dik)
         {
             sol::function function_to_call;
             const bool function_exists = ai().script_engine().function(itm.m_functor.c_str(), function_to_call);
-            ASSERT_FMT_DBG(function_exists, "!![%s] Cannot find script function described in tutorial item [%s]", __FUNCTION__, itm.m_functor.c_str());
+            ASSERT_FMT_DBG(function_exists, "!![{}] Cannot find script function described in tutorial item [{}]", __FUNCTION__, itm.m_functor);
 
             if (function_exists)
                 function_to_call();

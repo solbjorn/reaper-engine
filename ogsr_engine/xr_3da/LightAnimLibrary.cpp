@@ -220,7 +220,7 @@ void ELightAnimLibrary::DbgDumpInfo() const
     std::ranges::sort(tmp, [](const CLAItem* a, const CLAItem* b) { return xr_strcmp(a->cName, b->cName) < 0; });
 
     for (auto& Item : tmp)
-        Msg("~ ELightAnimLibrary Item [%s] FPS: %.2f, FrameCount: %d, KeyCount: %zu", Item->cName.c_str(), Item->fFPS, Item->iFrameCount, Item->Keys.size());
+        Msg("~ ELightAnimLibrary Item [{}] FPS: {:.3}, FrameCount: {}, KeyCount: {}", Item->cName, Item->fFPS, Item->iFrameCount, Item->Keys.size());
 }
 
 void ELightAnimLibrary::Load()
@@ -279,7 +279,7 @@ void ELightAnimLibrary::Save()
     std::ignore = FS.update_path(fn, _game_data_, "lanims.xr");
 
     if (!F.save_to(fn))
-        Msg("!Can't save color animations: [%s]", fn);
+        Msg("!Can't save color animations: [{}]", fn);
 }
 
 void ELightAnimLibrary::Reload()

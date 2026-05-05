@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "stalker_combat_action_base.h"
+
 #include "ai/stalker/ai_stalker.h"
 #include "script_game_object.h"
 #include "sound_player.h"
@@ -57,7 +58,8 @@ void CStalkerActionCombatBase::fire()
     Fvector object_position = object().Position();
     float distance = enemy_position.distance_to(object_position);
     select_queue_params(distance, min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
-    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionFire1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
+    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionFire1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval,
+                                      max_queue_interval);
 }
 
 void CStalkerActionCombatBase::aim_ready()
@@ -65,7 +67,8 @@ void CStalkerActionCombatBase::aim_ready()
     u32 min_queue_size, max_queue_size, min_queue_interval, max_queue_interval;
     float distance = object().memory().enemy().selected()->Position().distance_to(object().Position());
     select_queue_params(distance, min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
-    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionAimReady1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
+    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionAimReady1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval,
+                                      max_queue_interval);
 }
 
 void CStalkerActionCombatBase::aim_ready_force_full()
@@ -73,10 +76,12 @@ void CStalkerActionCombatBase::aim_ready_force_full()
     u32 min_queue_size, max_queue_size, min_queue_interval, max_queue_interval;
     float distance = object().memory().enemy().selected()->Position().distance_to(object().Position());
     select_queue_params(distance, min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
-    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionAimForceFull1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
+    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionAimForceFull1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval,
+                                      max_queue_interval);
 }
 
-void CStalkerActionCombatBase::select_queue_params(const float& distance, u32& min_queue_size, u32& max_queue_size, u32& min_queue_interval, u32& max_queue_interval) const
+void CStalkerActionCombatBase::select_queue_params(const float& distance, u32& min_queue_size, u32& max_queue_size, u32& min_queue_interval,
+                                                   u32& max_queue_interval) const
 {
     int weapon_type = 6;
     if (object().best_weapon())
@@ -190,8 +195,8 @@ void CStalkerActionCombatBase::select_queue_params(const float& distance, u32& m
 
 void CStalkerActionCombatBase::play_panic_sound(u32 max_start_time, u32 min_start_time, u32 max_stop_time, u32 min_stop_time, u32 id)
 {
-    object().sound().play(object().memory().enemy().selected()->human_being() ? eStalkerSoundPanicHuman : eStalkerSoundPanicMonster, max_start_time, min_start_time, max_stop_time,
-                          min_stop_time, id);
+    object().sound().play(object().memory().enemy().selected()->human_being() ? eStalkerSoundPanicHuman : eStalkerSoundPanicMonster, max_start_time,
+                          min_start_time, max_stop_time, min_stop_time, id);
 }
 
 void CStalkerActionCombatBase::play_attack_sound(u32 max_start_time, u32 min_start_time, u32 max_stop_time, u32 min_stop_time, u32 id)
@@ -203,9 +208,10 @@ void CStalkerActionCombatBase::play_attack_sound(u32 max_start_time, u32 min_sta
         return;
 
     u32 sound_type = eStalkerSoundAttackNoAllies;
+
 #ifdef DEBUG
     if (object().agent_manager().member().combat_members().empty())
-        Msg("! I am in combat, but there is no combat members at all (including me), npc[%s],team[%d],squad[%d],group[%d]", *object().cName(), object().g_Team(),
+        Msg("! I am in combat, but there is no combat members at all (including me), npc[{}],team[{}],squad[{}],group[{}]", object().cName(), object().g_Team(),
             object().g_Squad(), object().g_Group());
 #endif // DEBUG
 
@@ -229,11 +235,12 @@ void CStalkerActionCombatBase::play_start_search_sound(u32 max_start_time, u32 m
 
 #ifdef DEBUG
     if (object().agent_manager().member().combat_members().empty())
-        Msg("! I am in combat, but there is no combat members at all (including me), npc[%s],team[%d],squad[%d],group[%d]", *object().cName(), object().g_Team(),
+        Msg("! I am in combat, but there is no combat members at all (including me), npc[{}],team[{}],squad[{}],group[{}]", object().cName(), object().g_Team(),
             object().g_Squad(), object().g_Group());
 #endif // DEBUG
 
     bool search_with_allies = object().agent_manager().member().combat_members().size() > 1;
 
-    object().sound().play(search_with_allies ? eStalkerSoundSearch1WithAllies : eStalkerSoundSearch1NoAllies, max_start_time, min_start_time, max_stop_time, min_stop_time, id);
+    object().sound().play(search_with_allies ? eStalkerSoundSearch1WithAllies : eStalkerSoundSearch1NoAllies, max_start_time, min_start_time, max_stop_time,
+                          min_stop_time, id);
 }

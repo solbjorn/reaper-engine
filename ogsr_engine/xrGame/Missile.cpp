@@ -166,7 +166,7 @@ void CMissile::OnH_B_Independent(bool just_before_destroy)
 
         if (GetState() == eThrow)
         {
-            Msg("Throw on reject");
+            Log("Throw on reject");
             Throw();
         }
     }

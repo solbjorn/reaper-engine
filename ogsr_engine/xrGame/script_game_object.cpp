@@ -342,7 +342,7 @@ Fvector CScriptGameObject::bone_position(LPCSTR bone_name) const
     else
         bone_id = k->LL_GetBoneRoot();
 
-    ASSERT_FMT_DBG(bone_id != BI_NONE, "model doesn't have bone [%s] for section [%s]", bone_name, object().cNameSect().c_str());
+    ASSERT_FMT_DBG(bone_id != BI_NONE, "model doesn't have bone [{}] for section [{}]", bone_name, object().cNameSect());
 
     Fmatrix matrix;
     matrix.mul_43(object().XFORM(), k->LL_GetBoneInstance(bone_id).mTransform);
@@ -590,9 +590,10 @@ bool CScriptGameObject::IsActorOutdoors() const
     // Check to make sure all the params are available (we're in game and such).
     if (!g_pGameLevel)
     {
-        Msg("CScriptGameObject::IsActorOutdoors : Game Level Doesn't Exist.");
+        Log("CScriptGameObject::IsActorOutdoors : Game Level Doesn't Exist.");
         return FALSE;
     }
+
     CObject* e = g_pGameLevel->CurrentViewEntity();
     if (!e || !e->renderable_ROS())
     {
@@ -692,16 +693,16 @@ LPCSTR CScriptGameObject::GetBoneName(u16 id) const
 void CScriptGameObject::GetModelDump()
 {
     auto K = smart_cast<IKinematics*>(object().Visual());
-    Msg("##[%s] WORLD Dump begin::[%s] with visual [%s]", __FUNCTION__, cName().c_str(), object().cNameVisual().c_str());
+    Msg("##[{}] WORLD Dump begin::[{}] with visual [{}]", __FUNCTION__, cName(), object().cNameVisual());
     K->RC_Dump();
-    Msg("##[%s] WORLD Dump [%s] end", __FUNCTION__, cName().c_str());
+    Msg("##[{}] WORLD Dump [{}] end", __FUNCTION__, cName());
 
     auto huditem = smart_cast<const CHudItem*>(&object());
     if (huditem && huditem->HudItemData())
     {
-        Msg("##[%s] HUD Dump begin::[%s] with visual [%s]", __FUNCTION__, huditem->HudSection().c_str(), huditem->HudItemData()->m_visual_name.c_str());
+        Msg("##[{}] HUD Dump begin::[{}] with visual [{}]", __FUNCTION__, huditem->HudSection(), huditem->HudItemData()->m_visual_name);
         huditem->HudItemData()->m_model->RC_Dump();
-        Msg("##[%s] HUD Dump [%s] end", __FUNCTION__, huditem->HudSection().c_str());
+        Msg("##[{}] HUD Dump [{}] end", __FUNCTION__, huditem->HudSection());
     }
 }
 
@@ -729,7 +730,7 @@ void CScriptGameObject::ShowModelMeshHUD(const u32 id, const bool state)
     if (huditem && huditem->HudItemData())
         huditem->HudItemData()->m_model->SetRFlag(id, state);
     else
-        Msg("!![%s] HUD model not found for [%s]", __FUNCTION__, cName().c_str());
+        Msg("!![{}] HUD model not found for [{}]", __FUNCTION__, cName());
 }
 
 bool CScriptGameObject::GetShowMeshHUD(const u32 id) const
@@ -738,7 +739,7 @@ bool CScriptGameObject::GetShowMeshHUD(const u32 id) const
     if (huditem && huditem->HudItemData())
         return huditem->HudItemData()->m_model->GetRFlag(id);
 
-    Msg("!![%s] HUD model not found for [%s]", __FUNCTION__, cName().c_str());
+    Msg("!![{}] HUD model not found for [{}]", __FUNCTION__, cName());
     return false;
 }
 
@@ -748,7 +749,7 @@ u32 CScriptGameObject::GetMeshCountHUD() const
     if (huditem && huditem->HudItemData())
         return huditem->HudItemData()->m_model->RChildCount();
 
-    Msg("!![%s] HUD model not found for [%s]", __FUNCTION__, cName().c_str());
+    Msg("!![{}] HUD model not found for [{}]", __FUNCTION__, cName());
     return 0;
 }
 /************************* End Add *************************************/

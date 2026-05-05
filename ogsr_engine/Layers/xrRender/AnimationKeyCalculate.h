@@ -132,45 +132,6 @@ IC void Dequantize(CKey& K, const CBlend& BD, const CMotion& M)
         T2.z		= float(K2t->z)*M._sizeT.z+M._initT.z;
         */
         D->T.lerp(T1, T2, delta);
-        /*
-        if ((_abs(D->T.y)>10000) || (_abs(D->T.x)>10000) || (_abs(D->T.z)>10000))
-        {
-        Log("xxx");
-        Log("Blend--------");
-        Log("blendAmount", B->blendAmount);
-        Log("timeCurrent", B->timeCurrent);
-        Log("timeTotal", B->timeTotal);
-        Log("bone_or_part", B->bone_or_part);
-
-        Log("blendAccrue", B->blendAccrue);
-        Log("blendFalloff", B->blendFalloff);
-        Log("blendPower", B->blendPower);
-        Log("speed", B->speed);
-        Log("playing", B->playing);
-        Log("stop_at_end", B->stop_at_end);
-        Log("motionID", (u32)B->motionID.idx);
-        Log("blend", B->blend);
-
-        Log("dwFrame", B->dwFrame);
-        Log("Device.dwFrame", Device.dwFrame);
-        Log("Blend-------end");
-
-        Log("Bone",LL_BoneName_dbg(SelfID));
-        Log("parent",*parent);
-        Msg("K1t %d,%d,%d",K1t->x,K1t->y,K1t->z);
-        Msg("K2t %d,%d,%d",K2t->x,K2t->y,K2t->z);
-
-        Log("count",count);
-        Log("time",time);
-        Log("frame",frame);
-        Log("T1",T1);
-        Log("T2",T2);
-        Log("delta",delta);
-        Log("Dt",D->T);
-        VERIFY(0);
-
-        }
-        */
     } // if (M.test_flag(flTKeyPresent))
     else
     {
@@ -187,19 +148,7 @@ IC void MixInterlerp(CKey& Result, const CKey* R, const CBlend* const BA[MAX_BLE
         Result.Q.set(0, 0, 0, 0);
         Result.T.set(0, 0, 0);
         break;
-    case 1:
-        Result = R[0];
-        /*
-        if(Result.T.y>10000){
-        Log("1");
-        Log("BLEND_INST",BLEND_INST.Blend.size());
-        Log("Bone",LL_BoneName_dbg(SelfID));
-        Msg("Result.Q %f,%f,%f,%f",Result.Q.x,Result.Q.y,Result.Q.z,Result.Q.w);
-        Log("Result.T",Result.T);
-        VERIFY(0);
-        }
-        */
-        break;
+    case 1: Result = R[0]; break;
     case 2: {
         float w0 = BA[0]->blendAmount;
         float w1 = BA[1]->blendAmount;
@@ -215,17 +164,6 @@ IC void MixInterlerp(CKey& Result, const CKey* R, const CBlend* const BA[MAX_BLE
         //%d",w0+w1,w,w0,w1,ws,BLEND_INST.Blend.size()); .					}
 #endif
         KEY_Interp(Result, R[0], R[1], clampr(w, 0.f, 1.f));
-        /*
-        if(Result.T.y>10000){
-        Log("2");
-        Log("BLEND_INST",BLEND_INST.Blend.size());
-        Log("Bone",LL_BoneName_dbg(SelfID));
-        Msg("Result.Q %f,%f,%f,%f",Result.Q.x,Result.Q.y,Result.Q.z,Result.Q.w);
-        Log("Result.T",Result.T);
-        Log("parent",*parent);
-        VERIFY(0);
-        }
-        */
     }
     break;
     default: {
@@ -348,7 +286,10 @@ IC void q_add_scaled_basem(Fquaternion& q, const Fquaternion& base, const Fquate
     q.normalize();
 }
 
-IC float DET(const Fmatrix& a) { return ((a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) + a._13 * (a._21 * a._32 - a._22 * a._31))); }
+IC float DET(const Fmatrix& a)
+{
+    return ((a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) + a._13 * (a._21 * a._32 - a._22 * a._31)));
+}
 
 IC bool check_scale(const Fmatrix& m)
 {

@@ -138,7 +138,8 @@ void CSightManager::SetLessCoverLook(const CLevelGraph::CVertex* tpNode, float f
             if (!ai().level_graph().valid_vertex_id(node_id))
                 continue;
             tpNextNode = ai().level_graph().vertex(node_id);
-            if (ai().level_graph().inside(tpNextNode, m_object->movement().detail().path()[m_object->movement().detail().curr_travel_point_index() + 1].position))
+            if (ai().level_graph().inside(tpNextNode,
+                                          m_object->movement().detail().path()[m_object->movement().detail().curr_travel_point_index() + 1].position))
             {
                 bOk = true;
                 break;
@@ -147,8 +148,8 @@ void CSightManager::SetLessCoverLook(const CLevelGraph::CVertex* tpNode, float f
     }
 
     if (!bDifferenceLook || !bOk)
-        for (float fIncrement = object().movement().m_body.target.yaw - fMaxHeadTurnAngle; fIncrement <= object().movement().m_body.target.yaw + fMaxHeadTurnAngle;
-             fIncrement += fMaxHeadTurnAngle / 18.f)
+        for (float fIncrement = object().movement().m_body.target.yaw - fMaxHeadTurnAngle;
+             fIncrement <= object().movement().m_body.target.yaw + fMaxHeadTurnAngle; fIncrement += fMaxHeadTurnAngle / 18.f)
         {
             float fSquare = ai().level_graph().compute_square(-fIncrement, fAngleOfView, tpNode);
             if (fSquare > fMaxSquare)
@@ -160,8 +161,8 @@ void CSightManager::SetLessCoverLook(const CLevelGraph::CVertex* tpNode, float f
     else
     {
         float fMaxSquareSingle = -1.f, fSingleIncrement = object().movement().m_head.target.yaw;
-        for (float fIncrement = object().movement().m_body.target.yaw - fMaxHeadTurnAngle; fIncrement <= object().movement().m_body.target.yaw + fMaxHeadTurnAngle;
-             fIncrement += 2 * fMaxHeadTurnAngle / 60.f)
+        for (float fIncrement = object().movement().m_body.target.yaw - fMaxHeadTurnAngle;
+             fIncrement <= object().movement().m_body.target.yaw + fMaxHeadTurnAngle; fIncrement += 2 * fMaxHeadTurnAngle / 60.f)
         {
             float fSquare0 = ai().level_graph().compute_square(-fIncrement, fAngleOfView, tpNode);
             float fSquare1 = ai().level_graph().compute_square(-fIncrement, fAngleOfView, tpNextNode);
@@ -196,7 +197,8 @@ bool CSightManager::bfIf_I_SeePosition(Fvector tPosition) const
     tVector.getHP(yaw, pitch);
     yaw = angle_normalize_signed(-yaw);
     pitch = angle_normalize_signed(-pitch);
-    return (angle_difference(yaw, object().movement().m_head.current.yaw) <= PI_DIV_6); // && angle_difference(pitch,object().movement().m_head.current.pitch,PI_DIV_6));
+    return (angle_difference(yaw, object().movement().m_head.current.yaw) <=
+            PI_DIV_6); // && angle_difference(pitch,object().movement().m_head.current.pitch,PI_DIV_6));
 }
 
 void CSightManager::vfValidateAngleDependency(float x1, float& x2, float x3)
@@ -244,8 +246,8 @@ void CSightManager::Exec_Look(float dt)
         head_speed = current_action().head_speed();
 
 #ifdef SIGHT_DEBUG
-    Msg("%6d BEFORE BODY [%f] -> [%f]", Device.dwTimeGlobal, object().movement().m_body.current.yaw, object().movement().m_body.target.yaw);
-    Msg("%6d BEFORE HEAD [%f] -> [%f]", Device.dwTimeGlobal, object().movement().m_head.current.yaw, object().movement().m_head.target.yaw);
+    Msg("{:6} BEFORE BODY [{}] -> [{}]", Device.dwTimeGlobal, object().movement().m_body.current.yaw, object().movement().m_body.target.yaw);
+    Msg("{:6} BEFORE HEAD [{}] -> [{}]", Device.dwTimeGlobal, object().movement().m_head.current.yaw, object().movement().m_head.target.yaw);
 #endif
 
     vfValidateAngleDependency(body.current.yaw, body.target.yaw, head.current.yaw);
@@ -265,8 +267,8 @@ void CSightManager::Exec_Look(float dt)
     head.current.yaw = angle_normalize_signed(head.current.yaw);
     head.current.pitch = angle_normalize_signed(head.current.pitch);
 
-    Msg("%6d AFTER  BODY [%f] -> [%f]", Device.dwTimeGlobal, object().movement().m_body.current.yaw, object().movement().m_body.target.yaw);
-    Msg("%6d AFTER  HEAD [%f][%f] -> [%f][%f]", Device.dwTimeGlobal, object().movement().m_head.current.yaw, object().movement().m_head.current.pitch,
+    Msg("{:6} AFTER  BODY [{}] -> [{}]", Device.dwTimeGlobal, object().movement().m_body.current.yaw, object().movement().m_body.target.yaw);
+    Msg("{:6} AFTER  HEAD [{}][{}] -> [{}][{}]", Device.dwTimeGlobal, object().movement().m_head.current.yaw, object().movement().m_head.current.pitch,
         object().movement().m_head.target.yaw, object().movement().m_head.target.pitch);
 #endif
 
@@ -303,7 +305,6 @@ void CSightManager::update()
                     (left_angle(-object().movement().m_head.current.yaw, -object().movement().m_body.current.yaw) ? m_max_left_angle : m_max_right_angle))
                 {
                     m_turning_in_place = true;
-                    //					Msg					("%6d started turning in place",Device.dwTimeGlobal);
                     object().movement().m_body.target.yaw = object().movement().m_head.current.yaw;
                 }
                 else
@@ -315,13 +316,11 @@ void CSightManager::update()
             {
                 if (angle_difference(object().movement().m_body.current.yaw, object().movement().m_head.target.yaw) > EPS_L)
                 {
-                    //					object().movement().m_body.target.yaw	= object().movement().m_head.current.yaw;
                     object().movement().m_body.target.yaw = object().movement().m_head.target.yaw;
                 }
                 else
                 {
                     m_turning_in_place = false;
-                    //					Msg					("%6d stopped turning in place",Device.dwTimeGlobal);
                     object().movement().m_body.target.yaw = object().movement().m_body.current.yaw;
                 }
             }

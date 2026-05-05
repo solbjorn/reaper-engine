@@ -69,7 +69,7 @@ static void check_object(CScriptGameObject* object)
 {
     try
     {
-        Msg("check_object %s", object->Name());
+        Msg("check_object {}", object->Name());
     }
     catch (...)
     {
@@ -126,7 +126,8 @@ void set_weather(gsl::czstring weather_name, bool forced)
     if (xr::editor() != nullptr && xr::editor()->script_weather())
         return;
 
-    // KRodin: ТЧ погоду всегда надо обновлять форсировано, иначе она почему-то не всегда корректно обновляется. А для ЗП погоды так делать нельзя - будут очень резкие переходы!
+    // KRodin: ТЧ погоду всегда надо обновлять форсировано, иначе она почему-то не всегда корректно обновляется. А для ЗП погоды так делать нельзя - будут очень
+    // резкие переходы!
     if (!g_pGamePersistent->Environment().USED_COP_WEATHER)
         forced = true;
 
@@ -653,7 +654,10 @@ static void set_music_volume(float v)
     clamp(psSoundVMusicFactor, 0.0f, 1.0f);
 }
 
-static void add_actor_points(LPCSTR sect, LPCSTR detail_key, int cnt, int pts) { return Actor()->StatisticMgr().AddPoints(shared_str{sect}, shared_str{detail_key}, cnt, pts); }
+static void add_actor_points(LPCSTR sect, LPCSTR detail_key, int cnt, int pts)
+{
+    return Actor()->StatisticMgr().AddPoints(shared_str{sect}, shared_str{detail_key}, cnt, pts);
+}
 
 static void add_actor_points_str(LPCSTR sect, LPCSTR detail_key, LPCSTR str_value)
 {
@@ -854,7 +858,10 @@ static void set_cam_inert(float v)
     clamp(psCamInert, 0.0f, 1.0f);
 }
 
-static void set_monster_relation(LPCSTR from, LPCSTR to, int rel) { MONSTER_COMMUNITY::set_relation((MONSTER_COMMUNITY_ID)from, (MONSTER_COMMUNITY_ID)to, rel); }
+static void set_monster_relation(LPCSTR from, LPCSTR to, int rel)
+{
+    MONSTER_COMMUNITY::set_relation((MONSTER_COMMUNITY_ID)from, (MONSTER_COMMUNITY_ID)to, rel);
+}
 
 static void patrol_path_add(LPCSTR patrol_path, CPatrolPath* path) { ai().patrol_paths_raw().add_path(shared_str(patrol_path), path); }
 
@@ -892,7 +899,10 @@ static void enable_vertex(u32 vertex_id) { ai().level_graph().clear_mask(vertex_
 
 static bool is_accessible_vertex_id(u32 level_vertex_id) { return ai().level_graph().is_accessible(level_vertex_id); }
 
-static IC Fvector construct_position(u32 level_vertex_id, float x, float z) { return Fvector().set(x, ai().level_graph().vertex_plane_y(level_vertex_id, x, z), z); }
+static IC Fvector construct_position(u32 level_vertex_id, float x, float z)
+{
+    return Fvector().set(x, ai().level_graph().vertex_plane_y(level_vertex_id, x, z), z);
+}
 
 static IC bool CSpaceRestrictionBase_inside(Fsphere m_sphere, const Fvector& position, const float& radius)
 {
@@ -1066,13 +1076,14 @@ static DBG_ScriptObject* add_object(u16 id, DebugRenderType type)
 
 void CLevel::script_register(sol::state_view& lua)
 {
-    lua.new_usertype<CEnvDescriptor>("CEnvDescriptor", sol::no_constructor, "fog_density", &CEnvDescriptor::fog_density, "fog_distance", &CEnvDescriptor::fog_distance, "far_plane",
-                                     &CEnvDescriptor::far_plane, "sun_dir", &CEnvDescriptor::sun_dir, "wind_velocity", &CEnvDescriptor::wind_velocity, "wind_direction",
-                                     &CEnvDescriptor::wind_direction, "m_fTreeAmplitudeIntensity", &CEnvDescriptor::m_fTreeAmplitudeIntensity, "m_fSunShaftsIntensity",
-                                     &CEnvDescriptor::m_fSunShaftsIntensity, "m_identifier", sol::property([](CEnvDescriptor* self) { return self->m_identifier.c_str(); }),
-                                     "set_env_ambient", &CEnvDescriptor::setEnvAmbient, "clouds_color", &CEnvDescriptor::clouds_color, "sky_color", &CEnvDescriptor::sky_color,
-                                     "fog_color", &CEnvDescriptor::fog_color, "rain_color", &CEnvDescriptor::rain_color, "ambient", &CEnvDescriptor::ambient, "hemi_color",
-                                     &CEnvDescriptor::hemi_color, "sun_color", &CEnvDescriptor::sun_color, "set_sun", &CEnvDescriptor::set_sun);
+    lua.new_usertype<CEnvDescriptor>(
+        "CEnvDescriptor", sol::no_constructor, "fog_density", &CEnvDescriptor::fog_density, "fog_distance", &CEnvDescriptor::fog_distance, "far_plane",
+        &CEnvDescriptor::far_plane, "sun_dir", &CEnvDescriptor::sun_dir, "wind_velocity", &CEnvDescriptor::wind_velocity, "wind_direction",
+        &CEnvDescriptor::wind_direction, "m_fTreeAmplitudeIntensity", &CEnvDescriptor::m_fTreeAmplitudeIntensity, "m_fSunShaftsIntensity",
+        &CEnvDescriptor::m_fSunShaftsIntensity, "m_identifier", sol::property([](CEnvDescriptor* self) { return self->m_identifier.c_str(); }),
+        "set_env_ambient", &CEnvDescriptor::setEnvAmbient, "clouds_color", &CEnvDescriptor::clouds_color, "sky_color", &CEnvDescriptor::sky_color, "fog_color",
+        &CEnvDescriptor::fog_color, "rain_color", &CEnvDescriptor::rain_color, "ambient", &CEnvDescriptor::ambient, "hemi_color", &CEnvDescriptor::hemi_color,
+        "sun_color", &CEnvDescriptor::sun_color, "set_sun", &CEnvDescriptor::set_sun);
 
     lua.new_usertype<CEnvironment>("CEnvironment", sol::no_constructor, "getCurrentWeather", [](CEnvironment* self, const size_t idx) {
         R_ASSERT(idx < 2);
@@ -1082,22 +1093,24 @@ void CLevel::script_register(sol::state_view& lua)
     lua.new_usertype<CPHCall>("CPHCall", sol::no_constructor, "set_pause", &CPHCall::setPause);
 
     lua.new_usertype<CEffectorBobbing>("CEffectorBobbing", sol::no_constructor, "run_amplitude", &CEffectorBobbing::m_fAmplitudeRun, "walk_amplitude",
-                                       &CEffectorBobbing::m_fAmplitudeWalk, "limp_amplitude", &CEffectorBobbing::m_fAmplitudeLimp, "run_speed", &CEffectorBobbing::m_fSpeedRun,
-                                       "walk_speed", &CEffectorBobbing::m_fSpeedWalk, "limp_speed", &CEffectorBobbing::m_fSpeedLimp);
+                                       &CEffectorBobbing::m_fAmplitudeWalk, "limp_amplitude", &CEffectorBobbing::m_fAmplitudeLimp, "run_speed",
+                                       &CEffectorBobbing::m_fSpeedRun, "walk_speed", &CEffectorBobbing::m_fSpeedWalk, "limp_speed",
+                                       &CEffectorBobbing::m_fSpeedLimp);
 
-    lua.new_usertype<DBG_ScriptObject>("DBG_ScriptObject", sol::no_constructor,
-                                       // dbg_type
-                                       "line", sol::var(DebugRenderType::eDBGLine), "sphere", sol::var(DebugRenderType::eDBGSphere), "box", sol::var(DebugRenderType::eDBGBox),
+    lua.new_usertype<DBG_ScriptObject>(
+        "DBG_ScriptObject", sol::no_constructor,
+        // dbg_type
+        "line", sol::var(DebugRenderType::eDBGLine), "sphere", sol::var(DebugRenderType::eDBGSphere), "box", sol::var(DebugRenderType::eDBGBox),
 
-                                       "cast_dbg_sphere", &DBG_ScriptObject::cast_dbg_sphere, "cast_dbg_box", &DBG_ScriptObject::cast_dbg_box, "cast_dbg_line",
-                                       &DBG_ScriptObject::cast_dbg_line, "color", &DBG_ScriptObject::m_color, "hud", &DBG_ScriptObject::m_hud, "visible",
-                                       &DBG_ScriptObject::m_visible);
+        "cast_dbg_sphere", &DBG_ScriptObject::cast_dbg_sphere, "cast_dbg_box", &DBG_ScriptObject::cast_dbg_box, "cast_dbg_line",
+        &DBG_ScriptObject::cast_dbg_line, "color", &DBG_ScriptObject::m_color, "hud", &DBG_ScriptObject::m_hud, "visible", &DBG_ScriptObject::m_visible);
 
-    lua.new_usertype<DBG_ScriptSphere>("DBG_ScriptSphere", sol::no_constructor, "matrix", &DBG_ScriptSphere::m_mat, sol::base_classes, xr::sol_bases<DBG_ScriptSphere>());
+    lua.new_usertype<DBG_ScriptSphere>("DBG_ScriptSphere", sol::no_constructor, "matrix", &DBG_ScriptSphere::m_mat, sol::base_classes,
+                                       xr::sol_bases<DBG_ScriptSphere>());
     lua.new_usertype<DBG_ScriptBox>("DBG_ScriptBox", sol::no_constructor, "matrix", &DBG_ScriptBox::m_mat, "size", &DBG_ScriptBox::m_size, sol::base_classes,
                                     xr::sol_bases<DBG_ScriptBox>());
-    lua.new_usertype<DBG_ScriptLine>("DBG_ScriptLine", sol::no_constructor, "point_a", &DBG_ScriptLine::m_point_a, "point_b", &DBG_ScriptLine::m_point_b, sol::base_classes,
-                                     xr::sol_bases<DBG_ScriptLine>());
+    lua.new_usertype<DBG_ScriptLine>("DBG_ScriptLine", sol::no_constructor, "point_a", &DBG_ScriptLine::m_point_a, "point_b", &DBG_ScriptLine::m_point_b,
+                                     sol::base_classes, xr::sol_bases<DBG_ScriptLine>());
 
     lua.new_usertype<CKeyBinding>("CKeyBinding", sol::no_constructor, "ignore", &CKeyBinding::ignore);
 
@@ -1112,73 +1125,80 @@ void CLevel::script_register(sol::state_view& lua)
 #endif
 
         "get_weather", &get_weather, "get_weather_prev", &get_weather_prev, "get_weather_last_shift", &get_weather_last_shift, "set_weather",
-        sol::overload(sol::resolve<void(gsl::czstring, bool)>(&set_weather), sol::resolve<void(gsl::czstring)>(&set_weather)), "set_weather_next", &set_weather_next,
-        "set_weather_fx", &set_weather_fx, "start_weather_fx_from_time", &start_weather_fx_from_time, "is_wfx_playing", &is_wfx_playing, "get_wfx_time", &get_wfx_time,
-        "stop_weather_fx", &stop_weather_fx, "environment", &environment, "set_time_factor", &set_time_factor, "get_time_factor", &get_time_factor, "set_game_difficulty",
-        &set_game_difficulty, "get_game_difficulty", &get_game_difficulty, "get_time_days", &get_time_days, "get_time_hours", &get_time_hours, "get_time_minutes",
-        &get_time_minutes, "cover_in_direction", &cover_in_direction, "vertex_in_direction", &vertex_in_direction, "rain_factor", &rain_factor, "rain_hemi", &rain_hemi,
-        "rain_wetness", [] { return g_pGamePersistent->Environment().wetness_factor; }, "set_rain_wetness", set_rain_wetness, "patrol_path_exists", &patrol_path_exists,
-        "vertex_position", &vertex_position, "name", &get_name, "prefetch_sound", &prefetch_sound, "prefetch_sound", prefetch_sound, "prefetch_many_sounds", prefetch_many_sounds,
-        "client_spawn_manager", &get_client_spawn_manager, "map_add_object_spot_ser", &map_add_object_spot_ser, "map_add_object_spot", &map_add_object_spot,
-        "map_remove_object_spot", &map_remove_object_spot, "map_has_object_spot", &map_has_object_spot, "map_change_spot_hint", &map_change_spot_hint, "map_change_spot_ser",
-        &map_change_spot_ser, "map_add_user_spot", &map_add_user_spot, "start_stop_menu",
+        sol::overload(sol::resolve<void(gsl::czstring, bool)>(&set_weather), sol::resolve<void(gsl::czstring)>(&set_weather)), "set_weather_next",
+        &set_weather_next, "set_weather_fx", &set_weather_fx, "start_weather_fx_from_time", &start_weather_fx_from_time, "is_wfx_playing", &is_wfx_playing,
+        "get_wfx_time", &get_wfx_time, "stop_weather_fx", &stop_weather_fx, "environment", &environment, "set_time_factor", &set_time_factor, "get_time_factor",
+        &get_time_factor, "set_game_difficulty", &set_game_difficulty, "get_game_difficulty", &get_game_difficulty, "get_time_days", &get_time_days,
+        "get_time_hours", &get_time_hours, "get_time_minutes", &get_time_minutes, "cover_in_direction", &cover_in_direction, "vertex_in_direction",
+        &vertex_in_direction, "rain_factor", &rain_factor, "rain_hemi", &rain_hemi, "rain_wetness",
+        [] { return g_pGamePersistent->Environment().wetness_factor; }, "set_rain_wetness", set_rain_wetness, "patrol_path_exists", &patrol_path_exists,
+        "vertex_position", &vertex_position, "name", &get_name, "prefetch_sound", &prefetch_sound, "prefetch_sound", prefetch_sound, "prefetch_many_sounds",
+        prefetch_many_sounds, "client_spawn_manager", &get_client_spawn_manager, "map_add_object_spot_ser", &map_add_object_spot_ser, "map_add_object_spot",
+        &map_add_object_spot, "map_remove_object_spot", &map_remove_object_spot, "map_has_object_spot", &map_has_object_spot, "map_change_spot_hint",
+        &map_change_spot_hint, "map_change_spot_ser", &map_change_spot_ser, "map_add_user_spot", &map_add_user_spot, "start_stop_menu",
         sol::overload(sol::resolve<void(std::unique_ptr<CUIDialogWndEx>&, bool)>(&start_stop_menu), sol::resolve<void(CUIDialogWnd*, bool)>(&start_stop_menu)),
-        "add_dialog_to_render", &add_dialog_to_render, "remove_dialog_to_render", &remove_dialog_to_render, "main_input_receiver", &main_input_receiver, "hide_indicators",
-        &hide_indicators, "show_indicators", &show_indicators, "game_indicators_shown", &game_indicators_shown, "get_hud_flags", &get_hud_flags, "add_call",
-        sol::overload(sol::resolve<CPHCall*(sol::function, sol::function)>(&add_call), sol::resolve<CPHCall*(sol::object, sol::function, sol::function)>(&add_call),
+        "add_dialog_to_render", &add_dialog_to_render, "remove_dialog_to_render", &remove_dialog_to_render, "main_input_receiver", &main_input_receiver,
+        "hide_indicators", &hide_indicators, "show_indicators", &show_indicators, "game_indicators_shown", &game_indicators_shown, "get_hud_flags",
+        &get_hud_flags, "add_call",
+        sol::overload(sol::resolve<CPHCall*(sol::function, sol::function)>(&add_call),
+                      sol::resolve<CPHCall*(sol::object, sol::function, sol::function)>(&add_call),
                       sol::resolve<CPHCall*(sol::object, LPCSTR, LPCSTR)>(&add_call)),
         "remove_call",
-        sol::overload(sol::resolve<void(sol::function, sol::function)>(&remove_call), sol::resolve<void(sol::object, sol::function, sol::function)>(&remove_call),
+        sol::overload(sol::resolve<void(sol::function, sol::function)>(&remove_call),
+                      sol::resolve<void(sol::object, sol::function, sol::function)>(&remove_call),
                       sol::resolve<void(sol::object, LPCSTR, LPCSTR)>(&remove_call)),
-        "remove_calls_for_object", &remove_calls_for_object, "present", &is_level_present, "disable_input", &disable_input, "enable_input", &enable_input, "only_allow_movekeys",
-        &block_all_except_movement, "only_movekeys_allowed", &only_movement_allowed, "set_actor_allow_ladder", &set_actor_allow_ladder, "actor_ladder_allowed",
-        &actor_ladder_allowed, "set_actor_allow_pda", &set_actor_allow_pda, "actor_pda_allowed", &actor_pda_allowed, "spawn_phantom", &spawn_phantom, "get_bounding_volume",
-        &get_bounding_volume, "iterate_sounds",
-        sol::overload(sol::resolve<void(LPCSTR, u32, sol::function, sol::object)>(&iterate_sounds), sol::resolve<void(LPCSTR, u32, sol::function)>(&iterate_sounds)),
-        "physics_world", &physics_world, "get_snd_volume", &get_snd_volume, "get_rain_volume", &get_rain_volume, "set_snd_volume", &set_snd_volume, "add_cam_effector",
-        &add_cam_effector, "add_cam_effector2", &add_cam_effector2, "remove_cam_effector", &remove_cam_effector, "add_pp_effector", &add_pp_effector, "set_pp_effector_factor",
-        &set_pp_effector_factor, "set_pp_effector_factor", &set_pp_effector_factor2, "remove_pp_effector", &remove_pp_effector, "has_pp_effector", &has_pp_effector,
-        "add_monster_cam_effector", &add_monster_cam_effector, "get_music_volume", &get_music_volume, "set_music_volume", &set_music_volume, "demo_record_start",
-        [] { Device.add_frame_async(CallMe::fromFunction<&demo_record_start>()); }, "demo_record_stop", &demo_record_stop, "demo_record_get_position", &demo_record_get_position,
-        "demo_record_set_position", &demo_record_set_position, "demo_record_get_HPB", &demo_record_get_HPB, "demo_record_set_HPB", &demo_record_set_HPB,
-        "demo_record_set_direct_input", &demo_record_set_direct_input, "add_complex_effector", &add_complex_effector, "remove_complex_effector", &remove_complex_effector,
-        "game_id", &GameID, "set_ignore_game_state_update", &set_ignore_game_state_update, "get_inventory_wnd", &GetInventoryWindow, "get_talk_wnd", &GetTalkWindow,
-        "get_trade_wnd", &GetTradeWindow, "get_pda_wnd", &GetPdaWindow, "get_car_body_wnd", &GetCarBodyWindow, "get_second_talker", &GetSecondTalker, "get_car_body_target",
-        &GetCarBodyTarget, "get_change_level_wnd", &GetUIChangeLevelWnd, "ray_query", &PerformRayQuery,
+        "remove_calls_for_object", &remove_calls_for_object, "present", &is_level_present, "disable_input", &disable_input, "enable_input", &enable_input,
+        "only_allow_movekeys", &block_all_except_movement, "only_movekeys_allowed", &only_movement_allowed, "set_actor_allow_ladder", &set_actor_allow_ladder,
+        "actor_ladder_allowed", &actor_ladder_allowed, "set_actor_allow_pda", &set_actor_allow_pda, "actor_pda_allowed", &actor_pda_allowed, "spawn_phantom",
+        &spawn_phantom, "get_bounding_volume", &get_bounding_volume, "iterate_sounds",
+        sol::overload(sol::resolve<void(LPCSTR, u32, sol::function, sol::object)>(&iterate_sounds),
+                      sol::resolve<void(LPCSTR, u32, sol::function)>(&iterate_sounds)),
+        "physics_world", &physics_world, "get_snd_volume", &get_snd_volume, "get_rain_volume", &get_rain_volume, "set_snd_volume", &set_snd_volume,
+        "add_cam_effector", &add_cam_effector, "add_cam_effector2", &add_cam_effector2, "remove_cam_effector", &remove_cam_effector, "add_pp_effector",
+        &add_pp_effector, "set_pp_effector_factor", &set_pp_effector_factor, "set_pp_effector_factor", &set_pp_effector_factor2, "remove_pp_effector",
+        &remove_pp_effector, "has_pp_effector", &has_pp_effector, "add_monster_cam_effector", &add_monster_cam_effector, "get_music_volume", &get_music_volume,
+        "set_music_volume", &set_music_volume, "demo_record_start", [] { Device.add_frame_async(CallMe::fromFunction<&demo_record_start>()); },
+        "demo_record_stop", &demo_record_stop, "demo_record_get_position", &demo_record_get_position, "demo_record_set_position", &demo_record_set_position,
+        "demo_record_get_HPB", &demo_record_get_HPB, "demo_record_set_HPB", &demo_record_set_HPB, "demo_record_set_direct_input", &demo_record_set_direct_input,
+        "add_complex_effector", &add_complex_effector, "remove_complex_effector", &remove_complex_effector, "game_id", &GameID, "set_ignore_game_state_update",
+        &set_ignore_game_state_update, "get_inventory_wnd", &GetInventoryWindow, "get_talk_wnd", &GetTalkWindow, "get_trade_wnd", &GetTradeWindow,
+        "get_pda_wnd", &GetPdaWindow, "get_car_body_wnd", &GetCarBodyWindow, "get_second_talker", &GetSecondTalker, "get_car_body_target", &GetCarBodyTarget,
+        "get_change_level_wnd", &GetUIChangeLevelWnd, "ray_query", &PerformRayQuery,
 
         // Real Wolf 07.07.2014
         "vertex_id", sol::overload(sol::resolve<u32(u32, const Fvector&)>(&vertex_id), sol::resolve<u32(const Fvector&)>(&vertex_id)),
 
-        "nearest_vertex_id", &nearest_vertex_id, "advance_game_time", &AdvanceGameTime, "get_target_dist", &GetTargetDist, "get_target_obj", &GetTargetObj, "get_current_ray_query",
-        &GetCurrentRayQuery,
+        "nearest_vertex_id", &nearest_vertex_id, "advance_game_time", &AdvanceGameTime, "get_target_dist", &GetTargetDist, "get_target_obj", &GetTargetObj,
+        "get_current_ray_query", &GetCurrentRayQuery,
 
         //
-        "send_event_key_press", &send_event_key_press, "send_event_key_release", &send_event_key_release, "send_event_key_hold", &send_event_key_hold, "send_event_mouse_wheel",
-        &send_event_mouse_wheel,
+        "send_event_key_press", &send_event_key_press, "send_event_key_release", &send_event_key_release, "send_event_key_hold", &send_event_key_hold,
+        "send_event_mouse_wheel", &send_event_mouse_wheel,
 
-        "iterate_nearest", &iterate_nearest, "change_level", &change_level, "set_cam_inert", &set_cam_inert, "set_monster_relation", &set_monster_relation, "patrol_path_add",
-        &patrol_path_add, "patrol_path_remove", &patrol_path_remove, "valid_vertex_id", &valid_vertex_id, "vertex_count", &vertex_count, "disable_vertex", &disable_vertex,
-        "enable_vertex", &enable_vertex, "is_accessible_vertex_id", &is_accessible_vertex_id, "iterate_vertices_inside", &iterate_vertices_inside, "iterate_vertices_border",
-        &iterate_vertices_border, "get_character_community_team", &get_character_community_team, "get_effector_bobbing", &get_effector_bobbing, "is_ray_intersect_sphere",
-        &is_ray_intersect_sphere,
+        "iterate_nearest", &iterate_nearest, "change_level", &change_level, "set_cam_inert", &set_cam_inert, "set_monster_relation", &set_monster_relation,
+        "patrol_path_add", &patrol_path_add, "patrol_path_remove", &patrol_path_remove, "valid_vertex_id", &valid_vertex_id, "vertex_count", &vertex_count,
+        "disable_vertex", &disable_vertex, "enable_vertex", &enable_vertex, "is_accessible_vertex_id", &is_accessible_vertex_id, "iterate_vertices_inside",
+        &iterate_vertices_inside, "iterate_vertices_border", &iterate_vertices_border, "get_character_community_team", &get_character_community_team,
+        "get_effector_bobbing", &get_effector_bobbing, "is_ray_intersect_sphere", &is_ray_intersect_sphere,
 
         //--#SM+# Begin --
-        "set_blender_mode_main", &set_blender_mode_main, "get_blender_mode_main", &get_blender_mode_main, "set_shader_params", &set_shader_params, "get_shader_params",
-        &get_shader_params,
+        "set_blender_mode_main", &set_blender_mode_main, "get_blender_mode_main", &get_blender_mode_main, "set_shader_params", &set_shader_params,
+        "get_shader_params", &get_shader_params,
         //--#SM+# End --
 
-        "block_action", [](EGameActions action) { Level().block_action(action); }, "unblock_action", [](EGameActions action) { Level().unblock_action(action); });
+        "block_action", [](EGameActions action) { Level().block_action(action); }, "unblock_action",
+        [](EGameActions action) { Level().unblock_action(action); });
 
-    lua.create_named_table("actor_stats", "add_points", &add_actor_points, "add_points_str", &add_actor_points_str, "get_points", &get_actor_points, "remove_points",
-                           &remove_actor_points, "add_to_ranking", &add_human_to_top_list, "remove_from_ranking", &remove_human_from_top_list, "get_actor_ranking",
-                           &get_actor_ranking);
+    lua.create_named_table("actor_stats", "add_points", &add_actor_points, "add_points_str", &add_actor_points_str, "get_points", &get_actor_points,
+                           "remove_points", &remove_actor_points, "add_to_ranking", &add_human_to_top_list, "remove_from_ranking", &remove_human_from_top_list,
+                           "get_actor_ranking", &get_actor_ranking);
 
     lua.set_function("command_line", &command_line);
 
-    lua.create_named_table("relation_registry", "community_goodwill", &g_community_goodwill, "set_community_goodwill", &g_set_community_goodwill, "change_community_goodwill",
-                           &g_change_community_goodwill, "get_personal_goodwill", &g_get_personal_goodwill, "set_personal_goodwill", &g_set_personal_goodwill,
-                           "change_personal_goodwill", &g_change_personal_goodwill, "clear_personal_goodwill", &g_clear_personal_goodwill, "clear_personal_relations",
-                           &g_clear_personal_relations);
+    lua.create_named_table("relation_registry", "community_goodwill", &g_community_goodwill, "set_community_goodwill", &g_set_community_goodwill,
+                           "change_community_goodwill", &g_change_community_goodwill, "get_personal_goodwill", &g_get_personal_goodwill,
+                           "set_personal_goodwill", &g_set_personal_goodwill, "change_personal_goodwill", &g_change_personal_goodwill,
+                           "clear_personal_goodwill", &g_clear_personal_goodwill, "clear_personal_relations", &g_clear_personal_relations);
 
     // установка параметров для шейдеров из скриптов
     lua.set_function("set_artefact_slot", &g_set_artefact_position);
@@ -1187,8 +1207,8 @@ void CLevel::script_register(sol::state_view& lua)
     lua.set_function("set_pda_params", [](const Fvector& p) { shader_exports.set_pda_params(p); });
     lua.set_function("update_inventory_window", &update_inventory_window);
 
-    lua.new_enum("rq_target", "rqtNone", collide::rqtNone, "rqtObject", collide::rqtObject, "rqtStatic", collide::rqtStatic, "rqtShape", collide::rqtShape, "rqtObstacle",
-                 collide::rqtObstacle, "rqtBoth", collide::rqtBoth, "rqtDyn", collide::rqtDyn);
+    lua.new_enum("rq_target", "rqtNone", collide::rqtNone, "rqtObject", collide::rqtObject, "rqtStatic", collide::rqtStatic, "rqtShape", collide::rqtShape,
+                 "rqtObstacle", collide::rqtObstacle, "rqtBoth", collide::rqtBoth, "rqtDyn", collide::rqtDyn);
 
     lua.create_named_table("lib", "random_f64_below", &xr::random_f64_below, "random_s64", &xr::random_s64, "random_u64", &xr::random_u64);
 }

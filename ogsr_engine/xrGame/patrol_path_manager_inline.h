@@ -34,11 +34,12 @@ IC void CPatrolPathManager::set_path(const CPatrolPath* path, shared_str path_na
 {
     if (m_path == path)
         return;
+
     m_path = path;
-    // Msg("~~[CPatrolPathManager::set_path] old path [%s], new_path [%s]", m_path_name.c_str(), path_name.c_str());
     m_path_name = path_name;
     m_actuality = false;
     m_completed = false;
+
     reset();
 }
 
@@ -66,8 +67,8 @@ IC void CPatrolPathManager::make_inactual()
 
 IC void CPatrolPathManager::set_path(shared_str path_name) { set_path(ai().patrol_paths().safe_path(path_name, false, true), path_name); }
 
-IC void CPatrolPathManager::set_path(shared_str path_name, const PatrolPathManager::EPatrolStartType patrol_start_type, const PatrolPathManager::EPatrolRouteType patrol_route_type,
-                                     bool random)
+IC void CPatrolPathManager::set_path(shared_str path_name, const PatrolPathManager::EPatrolStartType patrol_start_type,
+                                     const PatrolPathManager::EPatrolRouteType patrol_route_type, bool random)
 {
     set_path(ai().patrol_paths().safe_path(path_name, false, true), path_name);
     set_start_type(patrol_start_type);

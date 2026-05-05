@@ -85,25 +85,25 @@ static LPCSTR name_blend_type(CBlend::ECurvature blend)
 static void dump_blend(CKinematicsAnimated* K, CBlend& B, u32 index)
 {
     VERIFY(K);
-    Msg("----------------------------------------------------------");
-    Msg("blend index: %u ", index);
-    Msg("time total: %f, speed: %f , power: %f ", B.timeTotal, B.speed, B.blendPower);
-    Msg("ammount: %f, time current: %f, frame %u ", B.blendAmount, B.timeCurrent, B.dwFrame);
-    Msg("accrue: %f, fallof: %f ", B.blendAccrue, B.blendFalloff);
 
-    Msg("bonepart: %d, channel: %d, stop_at_end: %s, fall_at_end: %s ", B.bone_or_part, B.channel, name_bool(B.stop_at_end), name_bool(B.fall_at_end));
-    Msg("state: %s, playing: %s, stop_at_end_callback: %s ", name_blend_type(B.blend_state()), name_bool(B.playing), name_bool(B.stop_at_end_callback));
+    Log("----------------------------------------------------------");
+    Msg("blend index: {} ", index);
+    Msg("time total: {}, speed: {} , power: {} ", B.timeTotal, B.speed, B.blendPower);
+    Msg("ammount: {}, time current: {}, frame {} ", B.blendAmount, B.timeCurrent, B.dwFrame);
+    Msg("accrue: {}, fallof: {} ", B.blendAccrue, B.blendFalloff);
+
+    Msg("bonepart: {}, channel: {}, stop_at_end: {}, fall_at_end: {} ", B.bone_or_part, B.channel, name_bool(B.stop_at_end), name_bool(B.fall_at_end));
+    Msg("state: {}, playing: {}, stop_at_end_callback: {} ", name_blend_type(B.blend_state()), name_bool(B.playing), name_bool(B.stop_at_end_callback));
 
     if (B.blend_state() != CBlend::eFREE_SLOT)
-    {
-        Msg("motion : name %s, set: %s ", K->LL_MotionDefName_dbg(B.motionID).first, K->LL_MotionDefName_dbg(B.motionID).second);
-    }
-    Msg("----------------------------------------------------------");
+        Msg("motion : name {}, set: {} ", K->LL_MotionDefName_dbg(B.motionID).first, K->LL_MotionDefName_dbg(B.motionID).second);
+
+    Log("----------------------------------------------------------");
 }
 
 void CKinematicsAnimated::LL_DumpBlends_dbg()
 {
-    Msg("==================dump blends=================================================");
+    Log("==================dump blends=================================================");
 
     for (auto [idx, blend] : xr::views_enumerate(blend_pool))
         dump_blend(this, blend, idx);
@@ -261,8 +261,8 @@ float CKinematicsAnimated::get_animation_length(MotionID motion_ID)
     return bone_motions->at(motion_ID.idx).GetLength() / anim_speed;
 }
 
-void CKinematicsAnimated::IBlendSetup(CBlend& B, u16 part, u8 channel, MotionID motion_ID, BOOL bMixing, float blendAccrue, float /*blendFalloff*/, float Speed, BOOL noloop,
-                                      PlayCallback Callback, LPVOID CallbackParam)
+void CKinematicsAnimated::IBlendSetup(CBlend& B, u16 part, u8 channel, MotionID motion_ID, BOOL bMixing, float blendAccrue, float /*blendFalloff*/, float Speed,
+                                      BOOL noloop, PlayCallback Callback, LPVOID CallbackParam)
 {
     VERIFY(B.channel < MAX_CHANNELS);
     // Setup blend params
@@ -322,8 +322,8 @@ void CKinematicsAnimated::IFXBlendSetup(CBlend& B, MotionID motion_ID, float ble
     B.fall_at_end = FALSE;
 }
 
-CBlend* CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, BOOL bMixing, float blendAccrue, float blendFalloff, float Speed, BOOL noloop, PlayCallback Callback,
-                                          LPVOID CallbackParam, u8 channel /*=0*/)
+CBlend* CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, BOOL bMixing, float blendAccrue, float blendFalloff, float Speed, BOOL noloop,
+                                          PlayCallback Callback, LPVOID CallbackParam, u8 channel /*=0*/)
 {
     // validate and unroll
     if (!motion_ID.valid())
@@ -388,7 +388,8 @@ CBlend* CKinematicsAnimated::PlayCycle(MotionID motion_ID, BOOL bMixIn, PlayCall
     VERIFY(motion_ID.valid());
     CMotionDef* m_def = m_Motions[motion_ID.slot].motions.motion_def(motion_ID.idx);
     VERIFY(m_def);
-    return LL_PlayCycle(m_def->bone_or_part, motion_ID, bMixIn, m_def->Accrue(), m_def->Falloff(), m_def->Speed(), m_def->StopAtEnd(), Callback, CallbackParam, channel);
+    return LL_PlayCycle(m_def->bone_or_part, motion_ID, bMixIn, m_def->Accrue(), m_def->Falloff(), m_def->Speed(), m_def->StopAtEnd(), Callback, CallbackParam,
+                        channel);
 }
 
 CBlend* CKinematicsAnimated::PlayCycle(u16 partition, MotionID motion_ID, BOOL bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel /*= 0*/)
@@ -419,7 +420,7 @@ MotionID CKinematicsAnimated::ID_FX_Safe(LPCSTR N)
 MotionID CKinematicsAnimated::ID_FX(LPCSTR N)
 {
     MotionID motion_ID = ID_FX_Safe(N);
-    ASSERT_FMT_DBG(motion_ID.valid(), "!![%s] MODEL: can't find FX: [%s]", __FUNCTION__, N);
+    ASSERT_FMT_DBG(motion_ID.valid(), "!![{}] MODEL: can't find FX: [{}]", __FUNCTION__, N);
     return motion_ID;
 }
 
@@ -748,7 +749,7 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)
             else
             {
                 m_Motions.pop_back();
-                Msg("! error in model [%s]. Unable to load motion file '%s'.", N, nm);
+                Msg("! error in model [{}]. Unable to load motion file '{}'.", N, nm);
             }
         }
     }
@@ -851,7 +852,7 @@ void CKinematicsAnimated::LL_BoneMatrixBuild(CBoneInstance& bi, const Fmatrix* p
     Fbox dbg_box;
     float box_size = 100000.f;
     dbg_box.set(-box_size, -box_size, -box_size, box_size, box_size, box_size);
-    VERIFY2(dbg_box.contains(bi.mTransform.c), (make_string("model: %s has strange bone position, matrix : ", getDebugName().c_str()) + get_string(bi.mTransform)).c_str());
+    VERIFY2(dbg_box.contains(bi.mTransform.c), xr::format("model: {} has strange bone position, matrix : {}", getDebugName(), get_string(bi.mTransform)));
 #endif
 }
 

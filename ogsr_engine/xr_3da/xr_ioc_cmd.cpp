@@ -117,7 +117,7 @@ public:
         if (Memory.debug_mode)
             Memory.dbg_check();
         else
-            Msg("~ Run with -mem_debug options.");
+            Log("~ Run with -mem_debug options.");
     }
 };
 #endif // DEBUG_MEMORY_MANAGER
@@ -253,8 +253,9 @@ public:
             TInfo _I;
             C.Info(_I);
 
-            Msg("%-20s (%-10s) --- %s", C.Name(), _S, _I);
+            Msg("{:20} ({:10}) --- {}", C.Name(), _S, _I);
         }
+
         Log("Key: Ctrl + A         === Select all ");
         Log("Key: Ctrl + C         === Copy to clipboard ");
         Log("Key: Ctrl + V         === Paste from clipboard ");
@@ -327,12 +328,13 @@ public:
             CConsole::vecCMD_IT it;
             for (it = Console->Commands.begin(); it != Console->Commands.end(); it++)
                 it->second->Save(F);
+
             FS.w_close(F);
-            Msg("Config-file [%s] saved successfully", cfg_full_name);
+            Msg("Config-file [{}] saved successfully", cfg_full_name);
         }
         else
         {
-            Msg("!Cannot store config file [%s]", cfg_full_name);
+            Msg("!Cannot store config file [{}]", cfg_full_name);
         }
     }
 };
@@ -342,7 +344,7 @@ CCC_LoadCFG::CCC_LoadCFG(LPCSTR N) : IConsole_Command{N} {}
 
 void CCC_LoadCFG::Execute(LPCSTR args)
 {
-    Msg("Executing config-script \"%s\"...", args);
+    Msg("Executing config-script \"{}\"...", args);
     string_path cfg_name;
 
     xr_strcpy(cfg_name, args);
@@ -375,9 +377,11 @@ void CCC_LoadCFG::Execute(LPCSTR args)
                 {
                     if (F->r_u8() == 0)
                     {
-                        Msg("!![%s] file [%s] broken!", __FUNCTION__, cfg_full_name);
+                        Msg("!![{}] file [{}] broken!", __FUNCTION__, cfg_full_name);
+
                         FS.r_close(F);
                         FS.file_delete(cfg_full_name);
+
                         return;
                     }
 
@@ -391,11 +395,12 @@ void CCC_LoadCFG::Execute(LPCSTR args)
         }
 
         FS.r_close(F);
-        Msg("[%s] successfully loaded.", cfg_full_name);
+
+        Msg("[{}] successfully loaded.", cfg_full_name);
     }
     else
     {
-        Msg("! Cannot open script file [%s]", cfg_full_name);
+        Msg("! Cannot open script file [{}]", cfg_full_name);
     }
 }
 
@@ -490,10 +495,11 @@ public:
         }
         else
         {
-            Msg("! Wrong video mode [%s]", args);
+            Msg("! Wrong video mode [{}]", args);
             return;
         }
     }
+
     void Status(TStatus& S) override { xr_sprintf(S, sizeof(S), "%dx%d", psCurrentVidMode[0], psCurrentVidMode[1]); }
     const xr_token* GetToken() override { return vid_mode_token; }
     void Info(TInfo& I) override { xr_strcpy(I, sizeof(I), "change screen resolution WxH"); }

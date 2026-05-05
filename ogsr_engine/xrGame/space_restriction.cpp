@@ -57,9 +57,9 @@ bool CSpaceRestriction::accessible(const Fsphere& sphere)
     }
 
     return (ai().level_graph().valid_vertex_position(sphere.P) &&
-            (m_out_space_restriction ?
-                 (m_out_space_restriction->inside(sphere) && !m_out_space_restriction->on_border(sphere.P) && !m_out_space_restriction->out_of_border(sphere.P)) :
-                 true) &&
+            (m_out_space_restriction ? (m_out_space_restriction->inside(sphere) && !m_out_space_restriction->on_border(sphere.P) &&
+                                        !m_out_space_restriction->out_of_border(sphere.P)) :
+                                       true) &&
             (m_in_space_restriction ? (!m_in_space_restriction->inside(sphere) && !m_in_space_restriction->on_border(sphere.P)) : true));
 }
 
@@ -88,7 +88,8 @@ IC bool CSpaceRestriction::intersects(SpaceRestrictionHolder::CBaseRestrictionPt
         return (true);
 
     m_temp.resize(bridge0->border().size() + bridge1->border().size());
-    xr_vector<u32>::iterator J = std::set_intersection(bridge0->border().begin(), bridge0->border().end(), bridge1->border().begin(), bridge1->border().end(), m_temp.begin());
+    xr_vector<u32>::iterator J =
+        std::set_intersection(bridge0->border().begin(), bridge0->border().end(), bridge1->border().begin(), bridge1->border().end(), m_temp.begin());
     return (J != m_temp.begin());
 }
 
@@ -105,12 +106,14 @@ void CSpaceRestriction::merge_in_out_restrictions()
     xr_vector<u32> temp_border;
 
     m_border = m_out_space_restriction->border();
-    m_border.erase(std::remove_if(m_border.begin(), m_border.end(), CMergeInOutPredicate<true>(m_out_space_restriction, m_in_space_restriction)), m_border.end());
+    m_border.erase(std::remove_if(m_border.begin(), m_border.end(), CMergeInOutPredicate<true>(m_out_space_restriction, m_in_space_restriction)),
+                   m_border.end());
 
     if (m_in_space_restriction)
     {
         temp_border = m_in_space_restriction->border();
-        temp_border.erase(std::remove_if(temp_border.begin(), temp_border.end(), CMergeInOutPredicate<false>(m_out_space_restriction, m_in_space_restriction)), temp_border.end());
+        temp_border.erase(std::remove_if(temp_border.begin(), temp_border.end(), CMergeInOutPredicate<false>(m_out_space_restriction, m_in_space_restriction)),
+                          temp_border.end());
         m_border.insert(m_border.end(), temp_border.begin(), temp_border.end());
     }
 
@@ -186,8 +189,8 @@ void CSpaceRestriction::initialize()
     {
         if (!m_out_space_restriction->object().correct())
         {
-            Msg("~ BAD out restrictions combination :");
-            Msg("~ %s", *m_out_space_restriction->name());
+            Log("~ BAD out restrictions combination :");
+            Msg("~ {}", m_out_space_restriction->name());
         }
     }
 #endif

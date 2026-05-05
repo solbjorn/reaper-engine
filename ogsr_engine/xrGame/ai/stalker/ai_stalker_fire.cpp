@@ -103,14 +103,15 @@ float CAI_Stalker::GetWeaponAccuracy() const
 
 void CAI_Stalker::g_fireParams(CHudItem*, Fvector& P, Fvector& D, const bool)
 {
-    //.	VERIFY				(inventory().ActiveItem());
     if (!inventory().ActiveItem())
     {
 #ifdef DEBUG
-        Msg("! CAI_Stalker::g_fireParams() : VERIFY(inventory().ActiveItem())");
+        Log("! CAI_Stalker::g_fireParams() : VERIFY(inventory().ActiveItem())");
 #endif // DEBUG
+
         P = Position();
         D = Fvector().set(0.f, 0.f, 1.f);
+
         return;
     }
 
@@ -275,13 +276,10 @@ void CAI_Stalker::Hit(SHit* pHDS)
                 tpKinematics->LL_GetBoneInstance(pHDS->bone());
                 if (pHDS->bone() >= tpKinematics->LL_BoneCount())
                 {
-                    Msg("tpKinematics has no bone_id %d", pHDS->bone());
+                    Msg("tpKinematics has no bone_id {}", pHDS->bone());
                     pHDS->_dump();
                 }
 #endif
-                //				int						fx_index = iFloor(tpKinematics->LL_GetBoneInstance(pHDS->bone()).get_param(1) +
-                //(angle_difference(movement().m_body.current.yaw,-yaw) <= PI_DIV_2 ? 0 : 1)); 				if (fx_index != -1) 					animation().play_fx
-                // (power_factor,fx_index);
             }
             else
             {
@@ -686,7 +684,10 @@ void CAI_Stalker::update_can_kill_info()
     can_kill_entity_from(position, direction, start_pick_distance());
 }
 
-bool CAI_Stalker::undetected_anomaly() { return (inside_anomaly() || brain().CStalkerPlanner::m_storage.property(StalkerDecisionSpace::eWorldPropertyAnomaly)); }
+bool CAI_Stalker::undetected_anomaly()
+{
+    return (inside_anomaly() || brain().CStalkerPlanner::m_storage.property(StalkerDecisionSpace::eWorldPropertyAnomaly));
+}
 
 bool CAI_Stalker::inside_anomaly()
 {
@@ -711,7 +712,8 @@ bool CAI_Stalker::zoom_state() const
     if (!inventory().ActiveItem())
         return (false);
 
-    if (movement().movement_type() != MonsterSpace::eMovementTypeStand && movement().body_state() != MonsterSpace::eBodyStateCrouch && !movement().path_completed())
+    if (movement().movement_type() != MonsterSpace::eMovementTypeStand && movement().body_state() != MonsterSpace::eBodyStateCrouch &&
+        !movement().path_completed())
         return (false);
 
     switch (CObjectHandler::planner().current_action_state_id())
@@ -936,7 +938,8 @@ static float throw_pick_error(float low, float high, const Fvector& position, co
     return (magnitude * sine_alpha);
 }
 
-static float throw_select_pick_time(const float& start_low, float high, const Fvector& start, const Fvector& velocity, const Fvector& gravity, const float& epsilon)
+static float throw_select_pick_time(const float& start_low, float high, const Fvector& start, const Fvector& velocity, const Fvector& gravity,
+                                    const float& epsilon)
 {
     float low = start_low;
     float check_time = high;
@@ -1152,8 +1155,8 @@ bool CAI_Stalker::critical_wound_external_conditions_suitable()
     if (!agent_manager().member().registered_in_combat(this))
         return (false);
 
-    //	Msg								("%6d executing critical hit",Device.dwTimeGlobal);
     animation().global().make_inactual();
+
     return (true);
 }
 

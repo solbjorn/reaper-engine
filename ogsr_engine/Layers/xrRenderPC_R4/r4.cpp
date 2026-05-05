@@ -316,8 +316,8 @@ void CRender::AfterWorldRender(const bool save_bb_before_ui)
 {
     if (save_bb_before_ui || Device.m_SecondViewport.IsSVPFrame())
     {
-        // Делает копию бэкбуфера (текущего экрана) в рендер-таргет второго вьюпорта (для использования в 3д прицеле либо в рендер-таргет вьюпорта, из которого мы вернем заберем
-        // кадр после рендера ui. Именно этот кадр будет позже выведен на экран.)
+        // Делает копию бэкбуфера (текущего экрана) в рендер-таргет второго вьюпорта (для использования в 3д прицеле либо в рендер-таргет вьюпорта, из которого
+        // мы вернем заберем кадр после рендера ui. Именно этот кадр будет позже выведен на экран.)
         ID3DTexture2D* pBuffer{};
         HW.m_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBuffer));
         HW.get_imm_context()->CopyResource(save_bb_before_ui ? Target->rt_BeforeUi->pSurface : Target->rt_secondVP->pSurface, pBuffer);
@@ -585,7 +585,7 @@ HRESULT create_shader(DWORD const* buffer, u32 const buffer_size, LPCSTR const f
     }
     else
     {
-        Msg("! D3DReflectShader %s hr == 0x%lx", file_name, gsl::narrow_cast<unsigned long>(_hr));
+        Msg("! D3DReflectShader {} hr == {}", file_name, _hr);
     }
 
     return _hr;
@@ -605,8 +605,9 @@ HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffe
         _result = HW.pDevice->CreatePixelShader(buffer, buffer_size, nullptr, &sps_result->ps);
         if (!SUCCEEDED(_result))
         {
-            Msg("! PS: [%s]", file_name);
-            Msg("! CreatePixelShader hr == 0x%lx", gsl::narrow_cast<unsigned long>(_result));
+            Msg("! PS: [{}]", file_name);
+            Msg("! CreatePixelShader hr == {}", _result);
+
             return E_FAIL;
         }
 
@@ -626,8 +627,8 @@ HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffe
         }
         else
         {
-            Msg("! PS: [%s]", file_name);
-            Msg("! D3DReflectShader hr == 0x%lx", gsl::narrow_cast<unsigned long>(_result));
+            Msg("! PS: [{}]", file_name);
+            Msg("! D3DReflectShader hr == {}", _result);
         }
     }
     else if (pTarget[0] == 'v')
@@ -637,8 +638,8 @@ HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffe
         _result = HW.pDevice->CreateVertexShader(buffer, buffer_size, nullptr, &svs_result->vs);
         if (!SUCCEEDED(_result))
         {
-            Msg("! VS: [%s]", file_name);
-            Msg("! CreateVertexShader hr == 0x%lx", gsl::narrow_cast<unsigned long>(_result));
+            Msg("! VS: [{}]", file_name);
+            Msg("! CreateVertexShader hr == {}", _result);
             return E_FAIL;
         }
 
@@ -669,8 +670,8 @@ HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffe
         }
         else
         {
-            Msg("! VS: [%s]", file_name);
-            Msg("! D3DXFindShaderComment hr == 0x%lx", gsl::narrow_cast<unsigned long>(_result));
+            Msg("! VS: [{}]", file_name);
+            Msg("! D3DXFindShaderComment hr == {}", _result);
         }
     }
     else if (pTarget[0] == 'g')
@@ -680,8 +681,9 @@ HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffe
         _result = HW.pDevice->CreateGeometryShader(buffer, buffer_size, nullptr, &sgs_result->gs);
         if (!SUCCEEDED(_result))
         {
-            Msg("! GS: [%s]", file_name);
-            Msg("! CreateGeometryShaderhr == 0x%lx", gsl::narrow_cast<unsigned long>(_result));
+            Msg("! GS: [{}]", file_name);
+            Msg("! CreateGeometryShaderhr == {}", _result);
+
             return E_FAIL;
         }
 
@@ -701,8 +703,8 @@ HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffe
         }
         else
         {
-            Msg("! PS: [%s]", file_name);
-            Msg("! D3DReflectShader hr == 0x%lx", gsl::narrow_cast<unsigned long>(_result));
+            Msg("! PS: [{}]", file_name);
+            Msg("! D3DReflectShader hr == {}", _result);
         }
     }
     else if (pTarget[0] == 'c')
@@ -977,8 +979,6 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
 
     if (FAILED(_result))
     {
-        // Msg("--Compiling shader [%s] %s] [%s]", name, pTarget, pFunctionName);
-
         _result = D3DCompile(pSrcData, SrcDataLen, "", defines.data(), &Includer, pFunctionName, pTarget, Flags, 0, &pShaderBuf, &pErrorBuf);
         if (SUCCEEDED(_result))
         {
@@ -997,11 +997,11 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
 
     if (FAILED(_result))
     {
-        Msg("! %s", file_name);
+        Msg("! {}", file_name);
         if (pErrorBuf)
-            Log("! error: " + std::string{reinterpret_cast<const char*>(pErrorBuf->GetBufferPointer())});
+            Msg("! error: {}", reinterpret_cast<gsl::czstring>(pErrorBuf->GetBufferPointer()));
         else
-            Msg("Can't compile shader hr=0x%lx", gsl::narrow_cast<unsigned long>(_result));
+            Msg("Can't compile shader hr={}", _result);
     }
 
     if (pErrorBuf)

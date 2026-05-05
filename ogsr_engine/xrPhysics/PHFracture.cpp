@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "PHFracture.h"
+
 #include "Physics.h"
 #include "PHElement.h"
 #include "PHShell.h"
@@ -535,9 +536,11 @@ bool CPHFracture::Update(CPHElement* element)
         return m_breaked;
 #endif
     }
+
 #ifdef DBG_BREAK
-    Msg("bone_id %d break_torque - %f(max %f) break_force %f (max %f) breaked %d", m_bone_id, btm_dbg, m_break_torque, bfm, m_break_force, m_breaked);
+    Msg("bone_id {} break_torque - {}(max {}) break_force {} (max {}) breaked {}", m_bone_id, btm_dbg, m_break_torque, bfm, m_break_force, m_breaked);
 #endif
+
     return m_breaked;
 }
 
@@ -554,11 +557,13 @@ void CPHFracture::MassSubFromFirst(const dMass& m) { dMassSub(&m_firstM, &m); }
 void CPHFracture::MassSubFromSecond(const dMass& m) { dMassSub(&m_secondM, &m); }
 void CPHFracture::MassSetFirst(const dMass& m) { m_firstM = m; }
 void CPHFracture::MassSetSecond(const dMass& m) { m_secondM = m; }
+
 void CPHFracture::MassUnsplitFromFirstToSecond(const dMass& m)
 {
     dMassSub(&m_firstM, &m);
     dMassAdd(&m_secondM, &m);
 }
+
 void CPHFracture::MassSetZerro()
 {
     dMassSetZero(&m_firstM);

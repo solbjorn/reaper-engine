@@ -84,7 +84,7 @@ void ALDeviceList::IterateDevicesList(const char* devices, bool enumerateAllPres
 
 void ALDeviceList::Enumerate()
 {
-    Msg("SOUND: OpenAL: enumerate devices...");
+    Log("SOUND: OpenAL: enumerate devices...");
 
     // have a set of vectors storing the device list, selection status, spec version #, and XRAM support status
     m_devices.clear();
@@ -110,7 +110,9 @@ void ALDeviceList::Enumerate()
         xr_strcpy(m_defaultDeviceName, alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER));
     }
     else
-        Msg("!!SOUND: OpenAL: EnumerationExtension NOT Present");
+    {
+        Log("!!SOUND: OpenAL: EnumerationExtension NOT Present");
+    }
 
     u32 _cnt = GetNumDevices();
 
@@ -148,21 +150,23 @@ void ALDeviceList::Enumerate()
     if (need_to_trim_prefix && strstr(m_defaultDeviceName, prefix))
         xr_strcpy(m_defaultDeviceName, m_defaultDeviceName + xr_strlen(prefix));
 
-    Msg("~~SOUND: OpenAL: Default sound device name is [%s], device name size: [%zd]", m_defaultDeviceName, xr_strlen(m_defaultDeviceName));
+    Msg("~~SOUND: OpenAL: Default sound device name is [{}], device name size: [{}]", m_defaultDeviceName, xr_strlen(m_defaultDeviceName));
 
     if (0 != GetNumDevices())
     {
-        Msg("SOUND: OpenAL: All available devices:");
+        Log("SOUND: OpenAL: All available devices:");
 
         for (u32 j = 0; j < GetNumDevices(); j++)
         {
             ALDeviceDesc al_device_desc = GetDeviceDesc(j);
 
-            Msg("%u. %s (full name [%s]). al_soft [%d]", j + 1, snd_devices_token[j].name, al_device_desc.name, al_device_desc.is_al_soft);
+            Msg("{}. {} (full name [{}]). al_soft [{}]", j + 1, snd_devices_token[j].name, al_device_desc.name, al_device_desc.is_al_soft);
         }
     }
     else
+    {
         Log("!!SOUND: OpenAL: No devices available.");
+    }
 
     // CoInitializeEx(NULL, COINIT_MULTITHREADED); // ???
 }
@@ -171,7 +175,7 @@ void ALDeviceList::SelectBestDeviceId(const char* system_default_device) const
 {
     if (GetNumDevices() == 0)
     {
-        Msg("!!SOUND: Can't select device. List empty");
+        Log("!!SOUND: Can't select device. List empty");
         snd_device_id = u32(-1);
     }
     else
@@ -203,7 +207,7 @@ void ALDeviceList::SelectBestDeviceId(const char* system_default_device) const
             snd_device_id = new_device_id;
         }
 
-        Msg("--SOUND: Selected device is [%s]", snd_devices_token[snd_device_id].name);
+        Msg("--SOUND: Selected device is [{}]", snd_devices_token[snd_device_id].name);
     }
 }
 

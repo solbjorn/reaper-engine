@@ -723,7 +723,8 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id, Fmatrix glob
                     break;
                 }
                 case jtJoint: {
-                    bool eqx = !!fsimilar(joint_data.limits[0].limit.x, joint_data.limits[0].limit.y), eqy = !!fsimilar(joint_data.limits[1].limit.x, joint_data.limits[1].limit.y),
+                    bool eqx = !!fsimilar(joint_data.limits[0].limit.x, joint_data.limits[0].limit.y),
+                         eqy = !!fsimilar(joint_data.limits[1].limit.x, joint_data.limits[1].limit.y),
                          eqz = !!fsimilar(joint_data.limits[2].limit.x, joint_data.limits[2].limit.y);
 
                     if (eqx)
@@ -970,13 +971,14 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id, Fmatrix glob
 
     if (element_added && E->isBreakable())
         setElementSplitter(element_number, splitter_position);
+
 #ifdef DEBUG
     bool bbb = lvis_check || (!breakable && root_e);
     if (!bbb)
     {
         IKinematics* K = m_pKinematics;
 
-        Msg("all bones transform:--------");
+        Log("all bones transform:--------");
 
         for (u16 ii = 0; ii < K->LL_BoneCount(); ++ii)
         {
@@ -986,6 +988,7 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id, Fmatrix glob
             Log("bone ", K->LL_BoneName_dbg(ii));
             Log("bone_matrix", tr);
         }
+
         Log("end-------");
     }
 
@@ -1271,11 +1274,16 @@ void CPHShell::DeleteJoint(u16 joint)
 
 void CPHShell::setEndElementSplitter()
 {
-    if (!elements.back()->FracturesHolder()) // adding fracture for element supposed before adding splitter. Need only one splitter for an element
+    // adding fracture for element supposed before adding splitter. Need only one splitter for an element
+    if (!elements.back()->FracturesHolder())
         AddSplitter(CPHShellSplitter::splElement, u16(elements.size() - 1), u16(joints.size() - 1));
 }
 
-void CPHShell::setElementSplitter(u16 element_number, u16 splitter_position) { AddSplitter(CPHShellSplitter::splElement, element_number, element_number - 1, splitter_position); }
+void CPHShell::setElementSplitter(u16 element_number, u16 splitter_position)
+{
+    AddSplitter(CPHShellSplitter::splElement, element_number, element_number - 1, splitter_position);
+}
+
 void CPHShell::AddSplitter(CPHShellSplitter::EType type, u16 element, u16 joint)
 {
     if (!m_spliter_holder)
@@ -1287,11 +1295,13 @@ void CPHShell::AddSplitter(CPHShellSplitter::EType type, u16 element, u16 joint,
 {
     if (!m_spliter_holder)
         m_spliter_holder = xr_new<CPHShellSplitterHolder>(this);
+
     m_spliter_holder->AddSplitter(type, element, joint, position);
 }
 void CPHShell::setEndJointSplitter()
 {
-    if (!joints.back()->JointDestroyInfo()) // setting joint breacable supposed before adding splitter. Need only one splitter for a joint
+    // setting joint breacable supposed before adding splitter. Need only one splitter for a joint
+    if (!joints.back()->JointDestroyInfo())
         AddSplitter(CPHShellSplitter::splJoint, u16(elements.size() - 1), u16(joints.size() - 1));
 }
 

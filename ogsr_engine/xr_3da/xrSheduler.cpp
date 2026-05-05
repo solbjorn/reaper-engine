@@ -115,7 +115,6 @@ bool CSheduler::Registered(const ISheduled* object) const
     {
         if (it.Object == object)
         {
-            //				Msg				("0x%8x found in RT",object);
             count = 1;
             break;
         }
@@ -125,7 +124,6 @@ bool CSheduler::Registered(const ISheduled* object) const
     {
         if (it.Object == object)
         {
-            //				Msg				("0x%8x found in non-RT",object);
             VERIFY(!count);
             count = 1;
             break;
@@ -136,7 +134,6 @@ bool CSheduler::Registered(const ISheduled* object) const
     {
         if (it.Object == object)
         {
-            //				Msg				("0x%8x found in process items",object);
             VERIFY(!count);
             count = 1;
             break;
@@ -149,13 +146,11 @@ bool CSheduler::Registered(const ISheduled* object) const
         {
             if (it.OP)
             {
-                //				Msg				("0x%8x found in registration on register",object);
                 VERIFY(!count);
                 ++count;
             }
             else
             {
-                //				Msg				("0x%8x found in registration on UNregister",object);
                 VERIFY(count == 1);
                 --count;
             }

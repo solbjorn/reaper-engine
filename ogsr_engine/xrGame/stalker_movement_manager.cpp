@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "stalker_movement_manager.h"
+
 #include "stalker_movement_manager_space.h"
 #include "script_entity_action.h"
 #include "ai/stalker/ai_stalker.h"
@@ -149,38 +150,49 @@ void CStalkerMovementManager::init_velocity_masks()
     add_velocity(eVelocityStandingDangerCrouch, 0.f, PI_MUL_2);
 
     add_velocity(eVelocityWalkFreePositive,
-                 m_velocities->velocity(MonsterSpace::eMentalStateFree, MonsterSpace::eBodyStateStand, MonsterSpace::eMovementTypeWalk, MonsterSpace::eMovementDirectionForward),
+                 m_velocities->velocity(MonsterSpace::eMentalStateFree, MonsterSpace::eBodyStateStand, MonsterSpace::eMovementTypeWalk,
+                                        MonsterSpace::eMovementDirectionForward),
                  PI_DIV_8 / 1, cf * PI_DIV_8 / 1);
     add_velocity(eVelocityRunFreePositive,
-                 m_velocities->velocity(MonsterSpace::eMentalStateFree, MonsterSpace::eBodyStateStand, MonsterSpace::eMovementTypeRun, MonsterSpace::eMovementDirectionForward),
+                 m_velocities->velocity(MonsterSpace::eMentalStateFree, MonsterSpace::eBodyStateStand, MonsterSpace::eMovementTypeRun,
+                                        MonsterSpace::eMovementDirectionForward),
                  PI_DIV_8 / 2, cf * PI_DIV_8 / 2);
     add_velocity(eVelocityWalkDangerStandPositive,
-                 m_velocities->velocity(MonsterSpace::eMentalStateDanger, MonsterSpace::eBodyStateStand, MonsterSpace::eMovementTypeWalk, MonsterSpace::eMovementDirectionForward),
+                 m_velocities->velocity(MonsterSpace::eMentalStateDanger, MonsterSpace::eBodyStateStand, MonsterSpace::eMovementTypeWalk,
+                                        MonsterSpace::eMovementDirectionForward),
                  100 * PI, cf * PI);
     add_velocity(eVelocityWalkDangerCrouchPositive,
-                 m_velocities->velocity(MonsterSpace::eMentalStateDanger, MonsterSpace::eBodyStateCrouch, MonsterSpace::eMovementTypeWalk, MonsterSpace::eMovementDirectionForward),
+                 m_velocities->velocity(MonsterSpace::eMentalStateDanger, MonsterSpace::eBodyStateCrouch, MonsterSpace::eMovementTypeWalk,
+                                        MonsterSpace::eMovementDirectionForward),
                  100 * PI, cf * PI_DIV_2);
     add_velocity(eVelocityRunDangerStandPositive,
-                 m_velocities->velocity(MonsterSpace::eMentalStateDanger, MonsterSpace::eBodyStateStand, MonsterSpace::eMovementTypeRun, MonsterSpace::eMovementDirectionForward),
+                 m_velocities->velocity(MonsterSpace::eMentalStateDanger, MonsterSpace::eBodyStateStand, MonsterSpace::eMovementTypeRun,
+                                        MonsterSpace::eMovementDirectionForward),
                  100 * PI, cf * PI);
     add_velocity(eVelocityRunDangerCrouchPositive,
-                 m_velocities->velocity(MonsterSpace::eMentalStateDanger, MonsterSpace::eBodyStateCrouch, MonsterSpace::eMovementTypeRun, MonsterSpace::eMovementDirectionForward),
+                 m_velocities->velocity(MonsterSpace::eMentalStateDanger, MonsterSpace::eBodyStateCrouch, MonsterSpace::eMovementTypeRun,
+                                        MonsterSpace::eMovementDirectionForward),
                  100 * PI, cf * PI);
     add_velocity(eVelocityRunPanicStandPositive,
-                 m_velocities->velocity(MonsterSpace::eMentalStatePanic, MonsterSpace::eBodyStateStand, MonsterSpace::eMovementTypeRun, MonsterSpace::eMovementDirectionForward),
+                 m_velocities->velocity(MonsterSpace::eMentalStatePanic, MonsterSpace::eBodyStateStand, MonsterSpace::eMovementTypeRun,
+                                        MonsterSpace::eMovementDirectionForward),
                  PI_DIV_8 / 2, cf * PI_DIV_8 / 2);
 
     add_velocity(eVelocityWalkDangerStandNegative,
-                 m_velocities->velocity(MonsterSpace::eMentalStateDanger, MonsterSpace::eBodyStateStand, MonsterSpace::eMovementTypeWalk, MonsterSpace::eMovementDirectionForward),
+                 m_velocities->velocity(MonsterSpace::eMentalStateDanger, MonsterSpace::eBodyStateStand, MonsterSpace::eMovementTypeWalk,
+                                        MonsterSpace::eMovementDirectionForward),
                  100 * PI, cf * PI);
     add_velocity(eVelocityWalkDangerCrouchNegative,
-                 m_velocities->velocity(MonsterSpace::eMentalStateDanger, MonsterSpace::eBodyStateCrouch, MonsterSpace::eMovementTypeWalk, MonsterSpace::eMovementDirectionForward),
+                 m_velocities->velocity(MonsterSpace::eMentalStateDanger, MonsterSpace::eBodyStateCrouch, MonsterSpace::eMovementTypeWalk,
+                                        MonsterSpace::eMovementDirectionForward),
                  100 * PI, cf * PI_DIV_2);
     add_velocity(eVelocityRunDangerStandNegative,
-                 m_velocities->velocity(MonsterSpace::eMentalStateDanger, MonsterSpace::eBodyStateStand, MonsterSpace::eMovementTypeRun, MonsterSpace::eMovementDirectionForward),
+                 m_velocities->velocity(MonsterSpace::eMentalStateDanger, MonsterSpace::eBodyStateStand, MonsterSpace::eMovementTypeRun,
+                                        MonsterSpace::eMovementDirectionForward),
                  100 * PI, cf * PI);
     add_velocity(eVelocityRunDangerCrouchNegative,
-                 m_velocities->velocity(MonsterSpace::eMentalStateDanger, MonsterSpace::eBodyStateCrouch, MonsterSpace::eMovementTypeRun, MonsterSpace::eMovementDirectionForward),
+                 m_velocities->velocity(MonsterSpace::eMentalStateDanger, MonsterSpace::eBodyStateCrouch, MonsterSpace::eMovementTypeRun,
+                                        MonsterSpace::eMovementDirectionForward),
                  100 * PI, cf * PI);
 }
 
@@ -253,7 +265,8 @@ void CStalkerMovementManager::setup_movement_params()
     }
     else
     {
-        if ((path_type() != MovementManager::ePathTypePatrolPath) && (path_type() != MovementManager::ePathTypeGamePath) && (path_type() != MovementManager::ePathTypeNoPath))
+        if ((path_type() != MovementManager::ePathTypePatrolPath) && (path_type() != MovementManager::ePathTypeGamePath) &&
+            (path_type() != MovementManager::ePathTypeNoPath))
         {
             if (!restrictions().accessible(level_path().dest_vertex_id()))
             {
@@ -266,7 +279,7 @@ void CStalkerMovementManager::setup_movement_params()
                 u32 vertex_id = level_path().dest_vertex_id();
                 Fvector vertex_position = ai().level_graph().vertex_position(vertex_id);
                 VERIFY2(restrictions().accessible(vertex_position) || show_restrictions(&restrictions()),
-                        make_string("vertex_id[%u],position[%f][%f][%f],object[%s]", vertex_id, VPUSH(vertex_position), *object().cName()));
+                        xr::format("vertex_id[{}],position[{}][{}][{}],object[{}]", vertex_id, VPUSH(vertex_position), object().cName()));
                 detail().set_dest_position(vertex_position);
             }
         }
@@ -358,7 +371,8 @@ void CStalkerMovementManager::parse_velocity_mask()
 
     object().sight().enable(true);
 
-    if (movement_type() == MonsterSpace::eMovementTypeStand || path().empty() || path().size() <= detail().curr_travel_point_index() || path_completed() || !actual())
+    if (movement_type() == MonsterSpace::eMovementTypeStand || path().empty() || path().size() <= detail().curr_travel_point_index() || path_completed() ||
+        !actual())
     {
         object().m_fCurSpeed = 0;
         if (mental_state() != MonsterSpace::eMentalStateDanger)
@@ -382,10 +396,10 @@ void CStalkerMovementManager::parse_velocity_mask()
         {
             setup_body_orientation();
             object().sight().enable(false);
-            //			Msg						("%d FALSE",Device.dwTimeGlobal);
         }
 
-        if (mental_state() != MonsterSpace::eMentalStateFree || fis_zero(path_direction_angle(), EPS_L) || m_last_turn_index == detail().curr_travel_point_index())
+        if (mental_state() != MonsterSpace::eMentalStateFree || fis_zero(path_direction_angle(), EPS_L) ||
+            m_last_turn_index == detail().curr_travel_point_index())
         {
             m_last_turn_index = detail().curr_travel_point_index();
             object().sight().enable(true);
@@ -455,9 +469,10 @@ void CStalkerMovementManager::parse_velocity_mask()
         {
             CStalkerCombatPlanner& planner = *smart_cast<CStalkerCombatPlanner*>(&m_object->brain().current_action());
             if (planner.current_action_id() != StalkerDecisionSpace::eWorldOperatorKillWoundedEnemy)
-                Msg("~ stalker %s is doing bad thing (action %s)", *m_object->cName(), planner.current_action().m_action_name);
+                Msg("~ stalker {} is doing bad thing (action {})", m_object->cName(), planner.current_action().m_action_name);
         }
 #endif // DEBUG
+
         m_current.m_mental_state = MonsterSpace::eMentalStateFree;
         break;
     }
@@ -494,7 +509,10 @@ void CStalkerMovementManager::parse_velocity_mask()
     setup_head_speed();
 }
 
-void CStalkerMovementManager::set_nearest_accessible_position() { set_nearest_accessible_position(object().Position(), object().ai_location().level_vertex_id()); }
+void CStalkerMovementManager::set_nearest_accessible_position()
+{
+    set_nearest_accessible_position(object().Position(), object().ai_location().level_vertex_id());
+}
 
 void CStalkerMovementManager::set_nearest_accessible_position(Fvector desired_position, u32 level_vertex_id)
 {
@@ -726,7 +744,7 @@ void CStalkerMovementManager::check_for_bad_path()
         if (angle > BAD_PATH_ANGLE)
         {
 #ifdef DEBUG
-            Msg("bad path check changed movement type from RUN to WALK");
+            Log("bad path check changed movement type from RUN to WALK");
 #endif // DEBUG
 
             m_current.m_movement_type = MonsterSpace::eMovementTypeWalk;

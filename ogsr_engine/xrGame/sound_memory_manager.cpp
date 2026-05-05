@@ -86,7 +86,8 @@ IC void CSoundMemoryManager::update_sound_threshold()
     VERIFY(!fis_zero(m_decrease_factor));
     VERIFY(m_sound_decrease_quant);
     // t = max(t*f^((tc - tl)/tq),min_threshold)
-    m_sound_threshold = _max(m_self_sound_factor * m_sound_threshold * exp(float(Device.dwTimeGlobal - m_last_sound_time) / float(m_sound_decrease_quant) * log(m_decrease_factor)),
+    m_sound_threshold = _max(m_self_sound_factor * m_sound_threshold *
+                                 exp(float(Device.dwTimeGlobal - m_last_sound_time) / float(m_sound_decrease_quant) * log(m_decrease_factor)),
                              m_min_sound_threshold);
     VERIFY(_valid(m_sound_threshold));
 }
@@ -112,7 +113,8 @@ void CSoundMemoryManager::enable(const CObject* object, bool enable)
 
 IC bool is_sound_type(int s, const ESoundTypes& t) { return ((s & t) == t); }
 
-void CSoundMemoryManager::feel_sound_new(CObject* object, int sound_type, CSound_UserDataPtr user_data, const Fvector& position, float sound_power, float time_to_stop)
+void CSoundMemoryManager::feel_sound_new(CObject* object, int sound_type, CSound_UserDataPtr user_data, const Fvector& position, float sound_power,
+                                         float time_to_stop)
 {
 #ifndef MASTER_GOLD
     if (object && (object->CLS_ID == CLSID_OBJECT_ACTOR) && psAI_Flags.test(aiIgnoreActor))
@@ -128,9 +130,10 @@ void CSoundMemoryManager::feel_sound_new(CObject* object, int sound_type, CSound
 
     CObject* self = m_object;
     VERIFY(self);
+
 #ifndef SILENCE
-    Msg("%s (%d) - sound type %x from %s at %d in (%.2f,%.2f,%.2f) with power %.2f", *self->cName(), Device.dwTimeGlobal, sound_type, object ? *object->cName() : "world",
-        Device.dwTimeGlobal, position.x, position.y, position.z, sound_power);
+    Msg("{} ({}) - sound type {:#x} from {} at {} in ({:.3},{:.3},{:.3}) with power {:.3}", self->cName(), Device.dwTimeGlobal, sound_type,
+        object ? std::string_view{object->cName()} : std::string_view{"world"}, Device.dwTimeGlobal, position.x, position.y, position.z, sound_power);
 #endif
 
     // ignore unknown sounds
@@ -307,7 +310,10 @@ void CSoundMemoryManager::add(const CObject* object, int sound_type, const Fvect
 
 struct CRemoveOfflinePredicate
 {
-    bool operator()(const MemorySpace::CSoundObject& object) const { return (!object.m_object || !!object.m_object->getDestroy() || object.m_object->H_Parent()); }
+    bool operator()(const MemorySpace::CSoundObject& object) const
+    {
+        return (!object.m_object || !!object.m_object->getDestroy() || object.m_object->H_Parent());
+    }
 };
 
 void CSoundMemoryManager::update()

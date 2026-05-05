@@ -104,7 +104,7 @@ CLevel::~CLevel()
 {
     xr_delete(g_player_hud);
 
-    Msg("- Destroying level");
+    Log("- Destroying level");
 
     Engine.Event.handler_detach_locked(eEntitySpawn, this);
     Engine.Event.handler_detach_locked(eEnvironment, this);
@@ -282,7 +282,7 @@ tmc::task<void> CLevel::cl_Process_Event(u16 dest, u16 type, NET_Packet& P)
     if (!O)
     {
 #ifdef DEBUG
-        Msg("* WARNING: c_EVENT[%d] to [%d]: unknown dest", type, dest);
+        Msg("* WARNING: c_EVENT[{}] to [{}]: unknown dest", type, dest);
 #endif // DEBUG
 
         ProcessGameSpawnsDestroy(dest, type);
@@ -292,7 +292,7 @@ tmc::task<void> CLevel::cl_Process_Event(u16 dest, u16 type, NET_Packet& P)
     CGameObject* GO = smart_cast<CGameObject*>(O);
     if (!GO)
     {
-        Msg("! ERROR: c_EVENT[%d] : non-game-object", dest);
+        Msg("! ERROR: c_EVENT[{}] : non-game-object", dest);
         co_return;
     }
 
@@ -695,26 +695,6 @@ void CLevel::GetGameTimeForShaders(u32& hours, u32& minutes, u32& seconds, u32& 
     split_time(GetGameTime(), unused, unused, unused, hours, minutes, seconds, milliseconds);
 }
 
-// bool CLevel::IsServer() // always false
-//{
-//     //if (!Server)
-//     //    return false;
-//
-//     bool r = !Server ? false : (Server->client_Count() != 0);
-//     Msg("IsServer = %d", r ? 1 : 0);
-//     return r;
-// }
-//
-// bool CLevel::IsClient() // always false
-//{
-//     //if (!Server)
-//     //    return true;
-//
-//     bool r = !Server ? true : (Server->client_Count() == 0);
-//     Msg("IsClient = %d", r ? 1 : 0);
-//     return r;
-// }
-
 void CLevel::OnSessionTerminate(LPCSTR reason) { MainMenu()->OnSessionTerminate(reason); }
 
 void CLevel::OnDestroyObject(u16 id) { m_just_destroyed.push_back(id); }
@@ -768,7 +748,8 @@ bool GlobalFeelTouch::is_object_denied(CObject const* O)
 {
     /*Fvector temp_vector;
     feel_touch_update(temp_vector, 0.f);*/
-    if (std::find_if(feel_touch_disable.begin(), feel_touch_disable.end(), std::bind(objects_ptrs_equal(), std::placeholders::_1, O)) == feel_touch_disable.end())
+    if (std::find_if(feel_touch_disable.begin(), feel_touch_disable.end(), std::bind(objects_ptrs_equal(), std::placeholders::_1, O)) ==
+        feel_touch_disable.end())
     {
         return false;
     }

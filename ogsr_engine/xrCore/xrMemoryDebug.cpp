@@ -33,16 +33,16 @@ void PointerRegistryRelease(const void* ptr, const std::source_location& loc, co
         {
             if (search->second.is_class && !is_class)
             {
-                Msg("!![%s]Wrong release call [%s.%u (%s)]! xr_free called for class ?. ID [%s]", __FUNCTION__, loc.file_name(), loc.line(), loc.function_name(),
-                    search->second.identity.c_str());
+                Msg("!![{}]Wrong release call [{}.{} ({})]! xr_free called for class ?. ID [{}]", __FUNCTION__, loc.file_name(), loc.line(),
+                    loc.function_name(), search->second.identity);
             }
 
             gPointerRegistry.erase(search);
         }
         else if (g_enable_double_free_check)
         {
-            Msg("!![%s] ptr [%p] not found in gPointerRegistry! Potential double-free! Called from: [%s.%u (%s)]", __FUNCTION__, ptr, loc.file_name(), loc.line(),
-                loc.function_name());
+            Msg("!![{}] ptr [{}] not found in gPointerRegistry! Potential double-free! Called from: [{}.{} ({})]", __FUNCTION__, ptr, loc.file_name(),
+                loc.line(), loc.function_name());
         }
     }
 }
@@ -72,7 +72,7 @@ void PointerRegistryDump(float thresholdInKb)
 
         for (const auto& pair : gPointerRegistry)
         {
-            if (const auto search = std::find_if(tmp.begin(), tmp.end(), [&pair](const auto& v) { return std::is_eq(xr_strcmp(v.first, pair.second.identity)); });
+            if (const auto search = std::ranges::find_if(tmp, [&pair](const auto& v) { return std::is_eq(xr_strcmp(v.first, pair.second.identity)); });
                 search != tmp.end())
             {
                 std::get<0>(search->second) += 1;
@@ -86,8 +86,8 @@ void PointerRegistryDump(float thresholdInKb)
             size += pair.second.size;
         }
 
-        Msg("! xrMemory: instance count [%u]. total size [%.1f Kb]", cnt, gsl::narrow_cast<f32>(size) / 1024.0f);
-        Msg("! xrMemory: dump (large that [%f Kb]):", thresholdInKb);
+        Msg("! xrMemory: instance count [{}]. total size [{:.2} Kb]", cnt, gsl::narrow_cast<f32>(size) / 1024.0f);
+        Msg("! xrMemory: dump (large that [{} Kb]):", thresholdInKb);
 
         std::ranges::sort(tmp, [](const auto& a, const auto& b) { return std::get<1>(a.second) > std::get<1>(b.second); });
 
@@ -95,7 +95,7 @@ void PointerRegistryDump(float thresholdInKb)
         {
             const auto total_size = gsl::narrow_cast<f32>(std::get<1>(typle)) / 1024.0f;
             if (total_size > thresholdInKb)
-                Msg(" total size:[%.3f Kb], instance count:[%u], id: %s", total_size, std::get<0>(typle), name);
+                Msg(" total size:[{:.4} Kb], instance count:[{}], id: {}", total_size, std::get<0>(typle), name);
         }
     }
 }
@@ -114,7 +114,7 @@ void PointerRegistryInfo()
             size += pair.second.size;
         }
 
-        Msg("! xrMemory: instance count [%u]. total size [%.1f Kb]", cnt, gsl::narrow_cast<f32>(size) / 1024.0f);
+        Msg("! xrMemory: instance count [{}]. total size [{:.2} Kb]", cnt, gsl::narrow_cast<f32>(size) / 1024.0f);
     }
 }
 
