@@ -272,6 +272,8 @@ void Log(std::string_view str)
     }
 }
 
+void Log(xr::detail::string_view fmt, xr::detail::format_args args) { Log(xr::detail::vformat(fmt, args)); }
+
 void Log(const char* msg, const Fvector& dop) { Msg("{} ({},{},{})", msg, dop.x, dop.y, dop.z); }
 
 void Log(const char* msg, const Fmatrix& dop)

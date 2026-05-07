@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "script_game_object.h"
+
 #include "ai/monsters/bloodsucker/bloodsucker.h"
 #include "ai/monsters/zombie/zombie.h"
 #include "script_sound_info.h"
@@ -79,7 +80,8 @@ CScriptMonsterHitInfo CScriptGameObject::GetMonsterHitInfo()
         if (l_tpMonster->HitMemory.is_hit())
         {
             CGameObject* pO = smart_cast<CGameObject*>(l_tpMonster->HitMemory.get_last_hit_object());
-            ret_val.set((pO && !pO->getDestroy()) ? pO->lua_game_object() : nullptr, l_tpMonster->HitMemory.get_last_hit_dir(), l_tpMonster->HitMemory.get_last_hit_time());
+            ret_val.set((pO && !pO->getDestroy()) ? pO->lua_game_object() : nullptr, l_tpMonster->HitMemory.get_last_hit_dir(),
+                        l_tpMonster->HitMemory.get_last_hit_time());
         }
     }
     else

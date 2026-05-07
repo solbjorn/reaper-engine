@@ -109,12 +109,14 @@ void CScriptEntity::SetScriptControl(const bool bScriptControl, shared_str caSci
 
     m_bScriptControl = bScriptControl;
     m_caScriptName = caSciptName;
+
 #ifdef DEBUG
     if (bScriptControl)
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeInfo, "Script %s set object %s under its control", *caSciptName, *object().cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeInfo, "Script {} set object {} under its control", caSciptName, object().cName());
     else
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeInfo, "Script %s freed object %s from its control", *caSciptName, *object().cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeInfo, "Script {} freed object {} from its control", caSciptName, object().cName());
 #endif
+
     if (!bScriptControl)
         ResetScriptData(this);
 }
@@ -273,8 +275,9 @@ void CScriptEntity::ProcessScripts()
     {
 #ifdef DEBUG
         if (empty_queue)
-            ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeInfo, "Object %s has an empty script queue!", *object().cName());
+            ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeInfo, "Object {} has an empty script queue!", object().cName());
 #endif
+
         return;
     }
 

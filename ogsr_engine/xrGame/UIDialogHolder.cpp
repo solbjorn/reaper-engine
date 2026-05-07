@@ -207,7 +207,6 @@ void CDialogHolder::SetMainInputReceiver(CUIDialogWnd* ir, bool _find_remove, co
 
 void CDialogHolder::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 {
-    //.	ai().script_engine().script_log	(eLuaMessageTypeError,"foo");
     if (pDialog->IsShown())
         StopMenu(pDialog);
     else
@@ -251,7 +250,8 @@ tmc::task<void> CDialogHolder::shedule_Update(u32 dt)
     if (m_dialogsToRender.empty())
         co_return;
 
-    m_dialogsToRender.erase(std::remove_if(m_dialogsToRender.begin(), m_dialogsToRender.end(), [](const auto& it) { return !it.enabled; }), m_dialogsToRender.end());
+    m_dialogsToRender.erase(std::remove_if(m_dialogsToRender.begin(), m_dialogsToRender.end(), [](const auto& it) { return !it.enabled; }),
+                            m_dialogsToRender.end());
 }
 
 float CDialogHolder::shedule_Scale() const { return 0.5f; }

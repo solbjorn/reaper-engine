@@ -82,6 +82,7 @@ static CScriptGameObject* tpfGetActor()
     static bool first_time = true;
     if (first_time)
         ai().script_engine().script_log(eLuaMessageTypeError, "Do not use level.actor function!");
+
     first_time = false;
 
     CActor* l_tpActor = smart_cast<CActor*>(Level().CurrentEntity());
@@ -96,6 +97,7 @@ static CScriptGameObject* get_object_by_name(LPCSTR caObjectName)
     static bool first_time = true;
     if (first_time)
         ai().script_engine().script_log(eLuaMessageTypeError, "Do not use level.object function!");
+
     first_time = false;
 
     CGameObject* l_tpGameObject = smart_cast<CGameObject*>(Level().Objects.FindObjectByName(caObjectName));

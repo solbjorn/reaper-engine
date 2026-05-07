@@ -627,7 +627,7 @@ ETaskState CScriptGameObject::GetGameTaskState(LPCSTR task_id, int objective_num
 
     if (objective_num >= std::ssize(t->m_Objectives))
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "wrong objective num %d for task %s", objective_num, task_id);
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "wrong objective num {} for task {}", objective_num, task_id);
         return ETaskState::eTaskStateDummy;
     }
 
@@ -845,7 +845,7 @@ CScriptGameObject* CScriptGameObject::item_in_slot(u8 slot_id) const
 
     if (inventory_owner->inventory().m_slots.size() <= slot_id)
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CInventoryOwner : invalid slot id for class member item_in_slot : %d!", slot_id);
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CInventoryOwner : invalid slot id for class member item_in_slot : {}!", slot_id);
         return nullptr;
     }
 

@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "script_game_object.h"
+
 #include "ai_space.h"
 #include "script_engine.h"
 #include "explosive.h"
@@ -132,7 +133,7 @@ void CScriptGameObject::play_cycle(LPCSTR anim, bool mix_in)
         if (m)
             sa->PlayCycle(m, (BOOL)mix_in);
         else
-            ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CGameObject : has not cycle %s", anim);
+            ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CGameObject : has not cycle {}", anim);
     }
     else
     {
@@ -352,18 +353,19 @@ void CScriptGameObject::SetActorPosition(Fvector pos, bool skipCollisionCorrect)
         }
     }
     else
+    {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "ScriptGameObject : attempt to call SetActorPosition method for non-actor object");
+    }
 }
 
 void CScriptGameObject::SetActorDirection(float dir)
 {
     CActor* actor = smart_cast<CActor*>(&object());
     if (actor)
-    {
         actor->cam_Active()->Set(dir, 0, 0);
-    }
     else
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "ScriptGameObject : attempt to call SetActorDirection method for non-actor object");
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
+                                        "ScriptGameObject : attempt to call SetActorDirection method for non-actor object");
 }
 
 void CScriptGameObject::SetNpcPosition(Fvector pos, bool skipCollisionCorrect)
@@ -394,7 +396,8 @@ void CScriptGameObject::SetNpcPosition(Fvector pos, bool skipCollisionCorrect)
             obj->destroy_anim_mov_ctrl();
     }
     else
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "ScriptGameObject : attempt to call SetNpcPosition method for non-CCustomMonster object");
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
+                                        "ScriptGameObject : attempt to call SetNpcPosition method for non-CCustomMonster object");
 }
 
 CHolderCustom* CScriptGameObject::get_current_holder()

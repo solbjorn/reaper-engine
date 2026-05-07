@@ -597,15 +597,11 @@ void CScriptEngine::LogVariable(lua_State* l, gsl::czstring name, int level)
 
 #ifdef DEBUG
 // Используется в очень многих местах //Очень много пишет в лог.
-void CScriptEngine::script_log(ScriptStorage::ELuaMessageType tLuaMessageType, gsl::czstring caFormat, ...)
+void CScriptEngine::vscript_log(ScriptStorage::ELuaMessageType message, xr::detail::string_view fmt, xr::detail::format_args args)
 {
-    va_list marker;
-    va_start(marker, caFormat);
-    //
-    LPCSTR S = "";
-    LPSTR S1;
-    string4096 S2;
-    switch (tLuaMessageType)
+    std::string_view S;
+
+    switch (message)
     {
     case ScriptStorage::eLuaMessageTypeInfo: S = "[LUA INFO]"; break;
     case ScriptStorage::eLuaMessageTypeError: S = "[LUA ERROR]"; break;
@@ -614,18 +610,12 @@ void CScriptEngine::script_log(ScriptStorage::ELuaMessageType tLuaMessageType, g
     case ScriptStorage::eLuaMessageTypeHookReturn: S = "[LUA HOOK_RETURN]"; break;
     case ScriptStorage::eLuaMessageTypeHookLine: S = "[LUA HOOK_LINE]"; break;
     case ScriptStorage::eLuaMessageTypeHookCount: S = "[LUA HOOK_COUNT]"; break;
-    case ScriptStorage::eLuaMessageTypeHookTailReturn: S = "[LUA HOOK_TAIL_RETURN]"; break;
     default: NODEFAULT;
     }
-    xr_strcpy(S2, S);
-    S1 = S2 + xr_strlen(S);
-    vsprintf(S1, caFormat, marker);
 
     Log("-----------------------------------------");
-    Msg("[script_log] {}", S2);
+    Msg("[script_log] {} {}", S, xr::detail::vformat(fmt, args));
     print_stack();
     Log("-----------------------------------------");
-
-    va_end(marker);
 }
 #endif

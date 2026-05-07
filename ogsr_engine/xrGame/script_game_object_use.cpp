@@ -123,13 +123,13 @@ void CScriptGameObject::Kill(CScriptGameObject* who)
     CEntity* l_tpEntity = smart_cast<CEntity*>(&object());
     if (!l_tpEntity)
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "%s cannot access class member Kill!", *object().cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "{} cannot access class member Kill!", object().cName());
         return;
     }
     if (!l_tpEntity->AlreadyDie())
         l_tpEntity->KillEntity(who ? who->object().ID() : object().ID());
     else
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "attempt to kill dead object %s", *object().cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "attempt to kill dead object {}", object().cName());
 }
 
 bool CScriptGameObject::Alive() const
@@ -148,15 +148,15 @@ ALife::ERelationType CScriptGameObject::GetRelationType(CScriptGameObject* who)
     CEntityAlive* l_tpEntityAlive1 = smart_cast<CEntityAlive*>(&object());
     if (!l_tpEntityAlive1)
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "%s cannot access class member GetRelationType!", *object().cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "{} cannot access class member GetRelationType!", object().cName());
         return ALife::eRelationTypeDummy;
     }
 
     CEntityAlive* l_tpEntityAlive2 = smart_cast<CEntityAlive*>(&who->object());
     if (!l_tpEntityAlive2)
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "%s cannot apply GetRelationType method for non-alive object!",
-                                        *who->object().cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "{} cannot apply GetRelationType method for non-alive object!",
+                                        who->object().cName());
         return ALife::eRelationTypeDummy;
     }
 
@@ -168,15 +168,15 @@ bool CScriptGameObject::IsRelationEnemy(CScriptGameObject* who)
     CEntityAlive* l_tpEntityAlive1 = smart_cast<CEntityAlive*>(&object());
     if (!l_tpEntityAlive1)
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "%s cannot access class member GetRelationType!", *object().cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "{} cannot access class member GetRelationType!", object().cName());
         return false;
     }
 
     CEntityAlive* l_tpEntityAlive2 = smart_cast<CEntityAlive*>(&who->object());
     if (!l_tpEntityAlive2)
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "%s cannot apply GetRelationType method for non-alive object!",
-                                        *who->object().cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "{} cannot apply GetRelationType method for non-alive object!",
+                                        who->object().cName());
         return false;
     }
 
@@ -250,7 +250,7 @@ void CScriptGameObject::set_const_force(const Fvector& dir, float value, u32 tim
     }
     if (!shell)
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "set_const_force : object %s has no physics shell!", *object().cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "set_const_force : object {} has no physics shell!", object().cName());
         return;
     }
 

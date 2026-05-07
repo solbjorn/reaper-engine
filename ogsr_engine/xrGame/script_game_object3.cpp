@@ -396,11 +396,13 @@ void CScriptGameObject::set_dest_level_vertex_id(u32 level_vertex_id)
         if (!ai().level_graph().valid_vertex_id(level_vertex_id))
         {
 #ifdef DEBUG
-            ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : invalid vertex id being setup by action %s!",
+            ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : invalid vertex id being setup by action {}!",
                                             stalker->brain().CStalkerPlanner::current_action().m_action_name);
 #endif
+
             return;
         }
+
         THROW2(stalker->movement().restrictions().accessible(level_vertex_id), *stalker->cName());
         stalker->movement().set_level_dest_vertex(level_vertex_id);
     }
@@ -415,7 +417,9 @@ CHARACTER_RANK_VALUE CScriptGameObject::GetRank()
         return (CHARACTER_RANK_VALUE(0));
     }
     else
+    {
         return (stalker->Rank());
+    }
 }
 
 void CScriptGameObject::set_desired_position()
@@ -431,7 +435,9 @@ void CScriptGameObject::set_desired_position(const Fvector* desired_position)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
     if (!stalker)
+    {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member movement!");
+    }
     else
     {
         THROW2(desired_position || stalker->movement().restrictions().accessible(*desired_position), *stalker->cName());
@@ -531,8 +537,10 @@ MonsterSpace::EBodyState CScriptGameObject::body_state() const
             ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member body_state!");
             return (MonsterSpace::eBodyStateStand);
         }
+
         return actor->is_crouch() ? MonsterSpace::eBodyStateCrouch : MonsterSpace::eBodyStateStand;
     }
+
     return (stalker->movement().body_state());
 }
 
@@ -544,6 +552,7 @@ MonsterSpace::EBodyState CScriptGameObject::target_body_state() const
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member body_state!");
         return (MonsterSpace::eBodyStateStand);
     }
+
     return (stalker->movement().target_body_state());
 }
 
@@ -555,6 +564,7 @@ MonsterSpace::EMovementType CScriptGameObject::movement_type() const
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member movement_type!");
         return (MonsterSpace::eMovementTypeStand);
     }
+
     return (stalker->movement().movement_type());
 }
 
@@ -566,6 +576,7 @@ MonsterSpace::EMovementType CScriptGameObject::target_movement_type() const
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member target_movement_type!");
         return (MonsterSpace::eMovementTypeStand);
     }
+
     return (stalker->movement().target_movement_type());
 }
 
@@ -577,6 +588,7 @@ MonsterSpace::EMentalState CScriptGameObject::mental_state() const
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member mental_state!");
         return (MonsterSpace::eMentalStateDanger);
     }
+
     return (stalker->movement().mental_state());
 }
 
@@ -588,6 +600,7 @@ MonsterSpace::EMentalState CScriptGameObject::target_mental_state() const
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member mental_state!");
         return (MonsterSpace::eMentalStateDanger);
     }
+
     return (stalker->movement().target_mental_state());
 }
 
@@ -599,6 +612,7 @@ MovementManager::EPathType CScriptGameObject::path_type() const
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member path_type!");
         return (MovementManager::ePathTypeNoPath);
     }
+
     return (stalker->movement().path_type());
 }
 
@@ -610,6 +624,7 @@ DetailPathManager::EDetailPathType CScriptGameObject::detail_path_type() const
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member detail_path_type!");
         return (DetailPathManager::eDetailPathTypeSmooth);
     }
+
     return (DetailPathManager::eDetailPathTypeSmooth);
 }
 
@@ -858,6 +873,7 @@ Fvector CScriptGameObject::head_orientation() const
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CScriptGameObject : cannot access class member head_orientation!");
         return (Fvector().set(flt_max, flt_max, flt_max));
     }
+
     const SRotation& r = stalker->movement().head_orientation().current;
     return (Fvector().setHP(-r.yaw, -r.pitch));
 }

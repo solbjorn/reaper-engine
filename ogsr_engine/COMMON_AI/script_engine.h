@@ -77,11 +77,16 @@ public:
     void LogTable(lua_State* l, LPCSTR S, int level);
     void LogVariable(lua_State* l, gsl::czstring name, int level);
 
-#ifdef DEBUG
-    void XR_PRINTF(3, 4) script_log(ScriptStorage::ELuaMessageType message, gsl::czstring caFormat, ...);
-#else
-    static void XR_PRINTF(2, 3) script_log(ScriptStorage::ELuaMessageType, gsl::czstring, ...) {}
+    void vscript_log(ScriptStorage::ELuaMessageType message, xr::detail::string_view fmt, xr::detail::format_args args);
+
+    template <typename... Args>
+    void script_log(ScriptStorage::ELuaMessageType message, xr::detail::format_string<Args...> fmt, Args&&... args)
+    {
+#ifndef DEBUG
+        if constexpr (false)
 #endif
+            vscript_log(message, fmt.get(), xr::detail::make_format_args(args...));
+    }
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

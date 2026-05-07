@@ -3,7 +3,9 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "script_game_object.h"
+
 #include "ai/trader/ai_trader.h"
 #include "ai/trader/trader_animation.h"
 

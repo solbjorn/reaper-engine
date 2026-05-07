@@ -24,18 +24,6 @@ void CStalkerAnimationManager::script_play_callback(CBlend* blend)
     CStalkerAnimationPair& pair = animation_manager.script();
     const SCRIPT_ANIMATIONS& animations = animation_manager.script_animations();
 
-#if 0
-	Msg							(
-		"%6d Script callback [%s]",
-		Device.dwTimeGlobal,
-		animations.empty()
-		?
-		"unknown"
-		:
-		animation_manager.m_skeleton_animated->LL_MotionDefName_dbg(animations.front().animation())
-	);
-#endif
-
     if (pair.animation() && !animations.empty() && (pair.animation() == animations.front().animation()))
         animation_manager.pop_script_animation();
 
@@ -49,7 +37,7 @@ void CStalkerAnimationManager::add_script_animation(LPCSTR animation, bool hand_
     const MotionID& motion = m_skeleton_animated->ID_Cycle_Safe(shared_str{animation});
     if (!motion)
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "There is no animation %s (object %s)!", animation, *object().cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "There is no animation {} (object {})!", animation, object().cName());
         return;
     }
 

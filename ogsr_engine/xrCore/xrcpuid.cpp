@@ -2,7 +2,7 @@
 
 #include "xrcpuid.h"
 
-#include <intrin.h>
+#include <cpuid.h>
 
 namespace
 {

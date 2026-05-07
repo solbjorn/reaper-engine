@@ -19,7 +19,15 @@ XR_DIAG_POP();
 namespace xr
 {
 using fmt::format;
+
+namespace detail
+{
+using fmt::format_args;
 using fmt::format_string;
+using fmt::make_format_args;
+using fmt::string_view;
+using fmt::vformat;
+} // namespace detail
 } // namespace xr
 
 [[nodiscard]] constexpr auto format_as(const shared_str& str) { return std::string_view{str}; }
@@ -47,7 +55,15 @@ XR_DIAG_POP();
 namespace xr
 {
 using std::format;
+
+namespace detail
+{
+using std::format_args;
 using std::format_string;
+using std::make_format_args;
+using std::string_view;
+using std::vformat;
+} // namespace detail
 } // namespace xr
 
 template <>
@@ -71,15 +87,16 @@ struct std::formatter<sf::String> : std::formatter<xr_string>
 
 #endif // !XR_USE_FMT
 
-#define VPUSH(a) a.x, a.y, a.z
-
 void Log(std::string_view msg);
+void Log(xr::detail::string_view fmt, xr::detail::format_args args);
 
 template <typename... Args>
-constexpr void Msg(xr::format_string<Args...> fmt, Args&&... args)
+constexpr void Msg(xr::detail::format_string<Args...> fmt, Args&&... args)
 {
-    Log(xr::format(fmt, std::forward<Args>(args)...));
+    Log(fmt.get(), xr::detail::make_format_args(args...));
 }
+
+#define VPUSH(a) a.x, a.y, a.z
 
 void Log(gsl::czstring msg, const Fvector& dop);
 void Log(gsl::czstring msg, const Fmatrix& dop);

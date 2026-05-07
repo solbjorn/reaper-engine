@@ -323,18 +323,20 @@ void CPatrolPathManager::set_previous_point(int point_index)
 {
     if (!m_path)
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Path not specified (object %s)!", *m_game_object->cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Path not specified (object {})!", m_game_object->cName());
         return;
     }
 
     if (!m_path->vertex(point_index))
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Start point violates path bounds %s (object %s)!", *m_path_name,
-                                        *m_game_object->cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Start point violates path bounds {} (object {})!", m_path_name,
+                                        m_game_object->cName());
         return;
     }
+
     VERIFY(m_path);
     VERIFY(m_path->vertex(point_index));
+
     m_prev_point_index = point_index;
 }
 
@@ -342,18 +344,20 @@ void CPatrolPathManager::set_start_point(int point_index)
 {
     if (!m_path)
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Path not specified (object %s)!", *m_game_object->cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Path not specified (object {})!", m_game_object->cName());
         return;
     }
+
     if (!m_path->vertex(point_index))
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Start point violates path bounds %s (object %s)!", *m_path_name,
-                                        *m_game_object->cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Start point violates path bounds {} (object {})!", m_path_name,
+                                        m_game_object->cName());
         return;
     }
 
     VERIFY(m_path);
     VERIFY(m_path->vertex(point_index));
+
     m_start_point_index = point_index;
 }
 

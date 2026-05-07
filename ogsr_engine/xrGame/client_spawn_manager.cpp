@@ -76,7 +76,7 @@ void CClientSpawnManager::remove(REQUESTED_REGISTRY& registry, ALife::_OBJECT_ID
     REQUESTED_REGISTRY::iterator I = registry.find(requested_id);
     if (I == registry.end())
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "There is no spawn callback on object with id %d from object with id %d!",
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "There is no spawn callback on object with id {} from object with id {}!",
                                         requesting_id, requested_id);
         return;
     }
@@ -89,7 +89,7 @@ void CClientSpawnManager::remove(ALife::_OBJECT_ID requesting_id, ALife::_OBJECT
     REQUEST_REGISTRY::iterator I = m_registry.find(requesting_id);
     if (I == m_registry.end())
     {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "There is no spawn callback on object with id %d from object with id %d!",
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "There is no spawn callback on object with id {} from object with id {}!",
                                         requesting_id, requested_id);
         return;
     }
