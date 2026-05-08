@@ -35,7 +35,7 @@ public:
         // Ctor
         SPh();
 
-        void XR_PRINTF(2, 3) SetText(const char* fmt, ...);
+        constexpr void SetText(std::string_view text) { str._set(text); }
     } SinglePhrase;
 
     using Phrases = xr_vector<std::unique_ptr<SinglePhrase>>;
@@ -71,7 +71,8 @@ public:
     ~CUICaption() override = default;
 
     virtual void Draw();
-    void addCustomMessage(const shared_str& msg_name, float x, float y, float font_size, CGameFont* pFont, CGameFont::EAligment al, u32 color, LPCSTR def_str = "");
+    void addCustomMessage(const shared_str& msg_name, float x, float y, float font_size, CGameFont* pFont, CGameFont::EAligment al, u32 color,
+                          LPCSTR def_str = "");
     EffectParams* customizeMessage(const shared_str& msg_name, const CUITextBanner::TextBannerStyles styleName);
     void setCaption(const shared_str& msg_name, LPCSTR message_to_out, u32 color = 0, bool replaceColor = false);
     void removeCustomMessage(const shared_str& msg_name);

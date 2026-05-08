@@ -38,46 +38,30 @@ void CUITextBanner::Update()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void CUITextBanner::Out(float x, float y, const char* fmt, ...)
+void CUITextBanner::vOut(f32 x, f32 y, xr::detail::string_view fmt, xr::detail::format_args args)
 {
-    if (!fmt)
+    if (fmt.size() == 0)
         return;
 
-    StyleParams_it it = m_StyleParams.begin();
-
     // Применяем эффекты
-    for (; it != m_StyleParams.end(); ++it)
+    for (const auto& pair : m_StyleParams)
     {
         // Fade effect
-        if (it->first & tbsFade)
-        {
+        if (pair.first & tbsFade)
             EffectFade();
-        }
+
         // Flicker effect
-        if (it->first & tbsFlicker)
-        {
+        if (pair.first & tbsFlicker)
             EffectFlicker();
-        }
     }
-
-    va_list Print;
-    string256 msg;
-    xr_string buf;
-
-    va_start(Print, fmt);
-    vsprintf(msg, fmt, Print);
-    buf += msg;
-    va_end(Print);
 
     R_ASSERT(m_pFont);
     m_pFont->SetColor(m_Cl);
     m_pFont->SetAligment(aligment);
-    //	if(fontSize>0.0f)
-    //		m_pFont->SetHeight(fontSize);
 
     Fvector2 pos;
     UI()->ClientToScreenScaled(pos, x, y);
-    m_pFont->Out(pos.x, pos.y, "%s", buf.c_str());
+    m_pFont->vOut(pos.x, pos.y, std::move(fmt), std::move(args));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

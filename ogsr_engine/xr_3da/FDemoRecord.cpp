@@ -315,8 +315,8 @@ tmc::task<bool> CDemoRecord::ProcessCam(SCamEffectorInfo& info)
             pFontSystem->SetColor(color_rgba(255, 0, 0, 255));
             pFontSystem->SetAligment(CGameFont::alCenter);
             pFontSystem->OutSetI(0, -.05f);
-            pFontSystem->OutNext("%s", "RECORDING");
-            pFontSystem->OutNext("Key frames count: %d", iCount);
+            pFontSystem->OutNext("RECORDING");
+            pFontSystem->OutNext("Key frames count: {}", iCount);
             pFontSystem->SetAligment(CGameFont::alLeft);
             pFontSystem->OutSetI(-0.2f, +.05f);
             pFontSystem->OutNext("SPACE");

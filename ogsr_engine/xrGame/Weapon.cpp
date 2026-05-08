@@ -2238,7 +2238,7 @@ void CWeapon::HUD_VisualBulletUpdate()
     }
 }
 
-void CWeapon::ParseCurrentItem(CGameFont* F) { F->OutNext("WEAPON IN STRAPPED MODE: [%d]", m_strapped_mode); }
+void CWeapon::ParseCurrentItem(CGameFont* F) { F->OutNext("WEAPON IN STRAPPED MODE: [{}]", m_strapped_mode); }
 
 void CWeapon::update_visual_bullet_textures(const bool forced)
 {

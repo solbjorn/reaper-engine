@@ -140,6 +140,7 @@ public:
 };
 
 void DBG_DrawLine(const Fvector& p0, const Fvector& p1, u32 c) { DBG_DrawPHAbstruct(xr_new<SPHDBGDrawLine>(p0, p1, c)); }
+
 void DBG_DrawMatrix(const Fmatrix& m, float size, u8 a /* = 255*/)
 {
     Fvector to;
@@ -309,19 +310,14 @@ public:
     virtual void render()
     {
         // if(rendered) return;
-        HUD().Font().pFontStat->OutNext(s);
+        HUD().Font().pFontStat->OutNext("{}", s);
         rendered = true;
     }
 };
 
-void DBG_OutText(LPCSTR s, ...)
+void vDBG_OutText(xr::detail::string_view fmt, xr::detail::format_args args)
 {
-    string64 t;
-    va_list marker;
-    va_start(marker, s);
-    vsprintf(t, s, marker);
-    va_end(marker);
-    DBG_DrawPHAbstruct(xr_new<SPHDBGOutText>(t));
+    DBG_DrawPHAbstruct(xr_new<SPHDBGOutText>(xr::detail::vformat(fmt, args).c_str()));
 }
 
 void DBG_OpenCashedDraw() { dbg_ph_draw_mode = dmCashed; }
@@ -514,6 +510,7 @@ void PH_DBG_Clear()
     DBG_PHAbstructClear();
     dbg_draw_objects0.clear();
     dbg_draw_objects1.clear();
+
 #ifdef DRAW_CONTACTS
     Contacts0.clear();
     Contacts1.clear();
@@ -549,7 +546,6 @@ void PH_DBG_Render()
     DBG_PHAbstructRender();
 
 #ifdef DRAW_CONTACTS
-
     if (ph_dbg_draw_mask.test(phDbgDrawContacts))
     {
         CONTACT_I i, e;
@@ -576,7 +572,6 @@ void PH_DBG_Render()
             Level().debug_renderer().draw_line(Fidentity, c.pos, dir, D3DCOLOR_XRGB(255 * is_cyl, 0, 255 * !is_cyl));
         }
     }
-//	HUD().Font().pFontStat->OutNext("---------------------");
 #endif
 
     if (ph_dbg_draw_mask.test(phDbgDrawZDisable))
@@ -591,8 +586,9 @@ void DBG_DrawStatBeforeFrameStep()
         static float update_obj_count = 0.f;
         obj_count = obj_count * 0.9f + float(ph_world->ObjectsNumber()) * 0.1f;
         update_obj_count = update_obj_count * 0.9f + float(ph_world->UpdateObjectsNumber()) * 0.1f;
-        DBG_OutText("Active Phys Objects %3.0f", obj_count);
-        DBG_OutText("Active Phys Update Objects %3.0f", update_obj_count);
+
+        DBG_OutText("Active Phys Objects {:3.0f}", obj_count);
+        DBG_OutText("Active Phys Update Objects {:3.0f}", update_obj_count);
     }
 }
 
@@ -601,6 +597,7 @@ void DBG_DrawStatAfterFrameStep()
     if (ph_dbg_draw_mask.test(phDbgDrawObjectStatistics))
     {
         DBG_OutText("------------------------------");
+
         static float fdbg_bodies_num = 0.f;
         static float fdbg_joints_num = 0.f;
         static float fdbg_islands_num = 0.f;
@@ -611,32 +608,38 @@ void DBG_DrawStatAfterFrameStep()
         fdbg_joints_num = 0.9f * fdbg_joints_num + 0.1f * float(dbg_joints_num);
         fdbg_contacts_num = 0.9f * fdbg_contacts_num + 0.1f * float(dbg_contacts_num);
         fdbg_tries_num = 0.9f * fdbg_tries_num + 0.1f * float(dbg_tries_num);
-        DBG_OutText("Ph Number of active islands %3.0f", fdbg_islands_num);
-        DBG_OutText("Ph Number of active bodies %3.0f", fdbg_bodies_num);
-        DBG_OutText("Ph Number of active joints %4.0f", fdbg_joints_num);
-        DBG_OutText("Ph Number of contacts %4.0f", fdbg_contacts_num);
-        DBG_OutText("Ph Number of tries %5.0f", fdbg_tries_num);
+
+        DBG_OutText("Ph Number of active islands {:3.0f}", fdbg_islands_num);
+        DBG_OutText("Ph Number of active bodies {:3.0f}", fdbg_bodies_num);
+        DBG_OutText("Ph Number of active joints {:4.0f}", fdbg_joints_num);
+        DBG_OutText("Ph Number of contacts {:4.0f}", fdbg_contacts_num);
+        DBG_OutText("Ph Number of tries {:5.0f}", fdbg_tries_num);
         DBG_OutText("------------------------------");
     }
+
     if (ph_dbg_draw_mask.test(phDbgDrawCashedTriesStat))
     {
         DBG_OutText("------------------------------");
+
         static float fdbg_saved_tries_for_active_objects = 0;
         static float fdbg_total_saved_tries = 0;
 
         fdbg_saved_tries_for_active_objects = 0.9f * fdbg_saved_tries_for_active_objects + 0.1f * float(dbg_saved_tries_for_active_objects);
         fdbg_total_saved_tries = 0.9f * fdbg_total_saved_tries + 0.1f * float(dbg_total_saved_tries);
-        DBG_OutText("Ph Number of cashed tries in active objects %5.0f", fdbg_saved_tries_for_active_objects);
-        DBG_OutText("Ph Total number cashed %5.0f", fdbg_total_saved_tries);
+
+        DBG_OutText("Ph Number of cashed tries in active objects {:5.0f}", fdbg_saved_tries_for_active_objects);
+        DBG_OutText("Ph Total number cashed {:5.0f}", fdbg_total_saved_tries);
 
         static SInertVal fdbg_reused_queries_per_step(0.9f);
         static SInertVal fdbg_new_queries_per_step(0.9f);
         fdbg_reused_queries_per_step.new_val(float(dbg_reused_queries_per_step));
         fdbg_new_queries_per_step.new_val(float(dbg_new_queries_per_step));
-        DBG_OutText("Ph tri_queries_per_step %5.2f", fdbg_new_queries_per_step.val);
-        DBG_OutText("Ph reused_tri_queries_per_step %5.2f", fdbg_reused_queries_per_step.val);
+
+        DBG_OutText("Ph tri_queries_per_step {:5.2f}", fdbg_new_queries_per_step.val);
+        DBG_OutText("Ph reused_tri_queries_per_step {:5.2f}", fdbg_reused_queries_per_step.val);
         DBG_OutText("------------------------------");
     }
+
     draw_frame = !draw_frame;
 }
 
@@ -645,11 +648,13 @@ CFunctionGraph::CFunctionGraph()
     m_stat_graph = NULL;
     m_function.clear();
 }
+
 CFunctionGraph::~CFunctionGraph()
 {
     xr_delete(m_stat_graph);
     m_function.clear();
 }
+
 void CFunctionGraph::Init(type_function fun, float x0, float x1, int l, int t, int w, int h, int points_num /*=500*/, u32 color /*=*/, u32 bk_color)
 {
     x_min = x0;
@@ -679,8 +684,6 @@ void CFunctionGraph::Init(type_function fun, float x0, float x1, int l, int t, i
         float val = m_function(x);
         m_stat_graph->AppendItem(val, color);
     }
-    // m_stat_graph->AddMarker(CStatGraph::stVert, 0, D3DCOLOR_XRGB(255, 0, 0));
-    // m_stat_graph->AddMarker(CStatGraph::stHor, 0, D3DCOLOR_XRGB(255, 0, 0));
 }
 
 void CFunctionGraph::AddMarker(CStatGraph::EStyle Style, float pos, u32 Color)
@@ -689,23 +692,27 @@ void CFunctionGraph::AddMarker(CStatGraph::EStyle Style, float pos, u32 Color)
     ScaleMarkerPos(Style, pos);
     m_stat_graph->AddMarker(Style, pos, Color);
 }
+
 void CFunctionGraph::UpdateMarker(u32 ID, float M)
 {
     VERIFY(IsActive());
     ScaleMarkerPos(ID, M);
     m_stat_graph->UpdateMarkerPos(ID, M);
 }
+
 void CFunctionGraph::ScaleMarkerPos(u32 ID, float& p)
 {
     VERIFY(IsActive());
     ScaleMarkerPos(m_stat_graph->Marker(ID).m_eStyle, p);
 }
+
 void CFunctionGraph::ScaleMarkerPos(CStatGraph::EStyle Style, float& p)
 {
     VERIFY(IsActive());
     if (Style == CStatGraph::stVert)
         p = ScaleX(p);
 }
+
 void CFunctionGraph::Clear()
 {
     xr_delete(m_stat_graph);
@@ -719,6 +726,7 @@ bool CFunctionGraph::IsActive()
 }
 
 LPCSTR PH_DBG_ObjectTrack() { return dbg_trace_object; }
+
 void PH_DBG_SetTrackObject(LPCSTR obj)
 {
     strcpy(s_dbg_tsrace_obj, obj);

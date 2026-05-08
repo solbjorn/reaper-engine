@@ -433,9 +433,9 @@ void CHOM::stats()
     {
         CGameFont& F = *Device.Statistic->Font();
         F.OutNext(" **** HOM-occ ****");
-        F.OutNext("  visible:  %2d", tris_in_frame_visible);
-        F.OutNext("  frustum:  %2d", tris_in_frame);
-        F.OutNext("    total:  %2d", m_pModel->get_tris_count());
+        F.OutNext("  visible:  {:2}", tris_in_frame_visible);
+        F.OutNext("  frustum:  {:2}", tris_in_frame);
+        F.OutNext("    total:  {:2}", m_pModel->get_tris_count());
     }
 }
 #endif

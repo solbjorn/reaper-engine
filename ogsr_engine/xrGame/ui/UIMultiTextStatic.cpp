@@ -31,7 +31,7 @@ void CUIMultiTextStatic::Draw()
     GetAbsolutePos(p);
 
     for (const auto& ptr : m_vPhrases)
-        ptr->effect.Out(ptr->outX + p.x, ptr->outY + p.y, "%s", ptr->str.c_str());
+        ptr->effect.Out(ptr->outX + p.x, ptr->outY + p.y, "{}", ptr->str);
 
     inherited::Draw();
 }
@@ -66,38 +66,8 @@ CUIMultiTextStatic::SPh::SPh()
 
 //////////////////////////////////////////////////////////////////////////
 
-void CUIMultiTextStatic::SPh::SetText(const char* fmt, ...)
-{
-    va_list Print;
-    string256 msg;
-    xr_string buf;
-
-    va_start(Print, fmt);
-    vsprintf(msg, fmt, Print);
-    buf += msg;
-    msg[0] = '\n';
-    va_end(Print);
-
-    str._set(buf.c_str());
-
-    /*if (maxWidth > 0 && elipsisPos != CUIStatic::eepNone)
-    {
-        STRING s;
-        CUIStatic::SetText(*str, s);
-
-        Frect r;
-        r.left		= 0;
-        r.right		= maxWidth;
-        r.top		= 0;
-        r.bottom	= 0;
-
-        CUIStatic::Elipsis(s, r, elipsisPos, effect.GetFont());
-
-        str = &s.front();
-    }*/
-}
-
-void CUICaption::addCustomMessage(const shared_str& msg_name, float x, float y, float font_size, CGameFont* pFont, CGameFont::EAligment al, u32 color, LPCSTR def_str)
+void CUICaption::addCustomMessage(const shared_str& msg_name, float x, float y, float font_size, CGameFont* pFont, CGameFont::EAligment al, u32 color,
+                                  LPCSTR def_str)
 {
     //	R_ASSERT2( (m_indices.find(msg_name) == m_indices.end()),"message already defined !!!" );
     R_ASSERT2(u32(-1) == findIndexOf_(msg_name), "message already defined !!!");

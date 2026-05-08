@@ -353,26 +353,23 @@ void CPHWorld::FrameStep(dReal step)
 
     VERIFY(_valid(step));
     step *= phTimefactor;
+
     // compute contact joints and forces
-
-    // step+=astep;
-
-    // const  dReal k_p=24000000.f;//550000.f;///1000000.f;
-    // const dReal k_d=400000.f;
     u32 it_number;
     float frame_time = m_frame_time;
     frame_time += step;
-    // m_frame_sum+=step;
+
 #ifdef DEBUG
     if (ph_dbg_draw_mask.test(phDbgDrawObjectStatistics))
     {
         static float dbg_iterations = 0.f;
         dbg_iterations = dbg_iterations * 0.9f + step / fixed_step * 0.1f;
         b_processing = true;
-        DBG_OutText("phys steps per frame %2.1f", dbg_iterations);
+        DBG_OutText("phys steps per frame {:2.1f}", dbg_iterations);
         b_processing = false;
     }
 #endif
+
     if (!(frame_time < fixed_step))
     {
         it_number = iFloor(frame_time / fixed_step);
@@ -386,7 +383,7 @@ void CPHWorld::FrameStep(dReal step)
         m_frame_time = frame_time;
         return;
     }
-    // for(UINT i=0;i<(m_reduce_delay+1);++i)
+
     b_processing = true;
 
     start_time = Device.dwTimeGlobal; // - u32(m_frame_time*1000);

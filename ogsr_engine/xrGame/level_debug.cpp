@@ -1,17 +1,15 @@
 #include "stdafx.h"
+
 #include "level_debug.h"
+
 #include "..\xr_3da\xr_object.h"
 #include "level.h"
 #include "HUDManager.h"
 
 #ifdef DEBUG
 #include "debug_renderer.h"
-#endif
 
-#ifdef DEBUG
-
-CLevelDebug::CLevelDebug() {}
-
+CLevelDebug::CLevelDebug() = default;
 CLevelDebug::~CLevelDebug() { free_mem(); }
 
 CLevelDebug::CObjectInfo& CLevelDebug::object_info(CObject* obj, LPCSTR class_name)
@@ -192,7 +190,7 @@ struct DrawInfoPredicate
         HUD().Font().pFontMedium->SetAligment(CGameFont::alLeft);
         HUD().Font().pFontMedium->SetColor(s.color);
         HUD().Font().pFontMedium->OutSet(x, y -= delta_height);
-        HUD().Font().pFontMedium->OutNext(*(s.text));
+        HUD().Font().pFontMedium->OutNext("{}", s.text);
     }
 };
 
@@ -216,7 +214,7 @@ struct DrawTextPredicate
         HUD().Font().pFontMedium->SetAligment(CGameFont::alLeft);
         HUD().Font().pFontMedium->SetColor(s.color);
         HUD().Font().pFontMedium->OutSet(s.x, s.y);
-        HUD().Font().pFontMedium->OutNext(*(s.text));
+        HUD().Font().pFontMedium->OutNext("{}", s.text);
     }
 };
 
@@ -231,9 +229,7 @@ void CLevelDebug::CTextInfo::draw_text()
 //////////////////////////////////////////////////////////////////////////
 
 void CLevelDebug::CLevelInfo::add_item(const Fvector& pos, u32 color, u32 id) { inherited::add_item(SLevelItem(pos, color, id)); }
-
 void CLevelDebug::CLevelInfo::add_item(const Fvector& pos1, const Fvector& pos2, u32 color, u32 id) { inherited::add_item(SLevelItem(pos1, pos2, color, id)); }
-
 void CLevelDebug::CLevelInfo::add_item(const Fvector& pos, float radius, u32 color, u32 id) { inherited::add_item(SLevelItem(pos, radius, color, id)); }
 
 struct DrawLevelPredicate
@@ -284,5 +280,4 @@ void CLevelDebug::on_destroy_object(CObject* obj)
         }
     }
 }
-
 #endif

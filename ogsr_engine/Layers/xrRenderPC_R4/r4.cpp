@@ -539,26 +539,32 @@ CRender::~CRender() = default;
 void CRender::Statistics(CGameFont* _F)
 {
     CGameFont& F = *_F;
-    F.OutNext(" **** LT:%2u,LV:%2u **** ", stats.l_total, stats.l_visible);
+    F.OutNext(" **** LT:{:2},LV:{:2} **** ", stats.l_total, stats.l_visible);
     stats.l_visible = 0;
-    F.OutNext("    S(%2u)   | (%2u)NS   ", stats.l_shadowed, stats.l_unshadowed);
-    F.OutNext("smap use[%2d], merge[%2d], finalclip[%2d]", stats.s_used, stats.s_merged - stats.s_used, stats.s_finalclip);
+
+    F.OutNext("    S({:2})   | ({:2})NS   ", stats.l_shadowed, stats.l_unshadowed);
+    F.OutNext("smap use[{:2}], merge[{:2}], finalclip[{:2}]", stats.s_used, stats.s_merged - stats.s_used, stats.s_finalclip);
     stats.s_used = 0;
     stats.s_merged = 0;
     stats.s_finalclip = 0;
     F.OutSkip();
-    F.OutNext(" **** Occ-Q(%03.1f) **** ", 100.f * f32(stats.o_culled) / f32(stats.o_queries ? stats.o_queries : 1));
-    F.OutNext(" total  : %2u", stats.o_queries);
+
+    F.OutNext(" **** Occ-Q({:03.1f}) **** ", 100.f * f32(stats.o_culled) / f32(stats.o_queries ? stats.o_queries : 1));
+    F.OutNext(" total  : {:2}", stats.o_queries);
     stats.o_queries = 0;
-    F.OutNext(" culled : %2u", stats.o_culled);
+
+    F.OutNext(" culled : {:2}", stats.o_culled);
     stats.o_culled = 0;
     F.OutSkip();
+
     u32 ict = stats.ic_total + stats.ic_culled;
-    F.OutNext(" **** iCULL(%03.1f) **** ", 100.f * f32(stats.ic_culled) / f32(ict ? ict : 1));
-    F.OutNext(" visible: %2u", stats.ic_total);
+    F.OutNext(" **** iCULL({:03.1f}) **** ", 100.f * f32(stats.ic_culled) / f32(ict ? ict : 1));
+    F.OutNext(" visible: {:2}", stats.ic_total);
     stats.ic_total = 0;
-    F.OutNext(" culled : %2u", stats.ic_culled);
+
+    F.OutNext(" culled : {:2}", stats.ic_culled);
     stats.ic_culled = 0;
+
 #ifdef DEBUG
     HOM.stats();
 #endif

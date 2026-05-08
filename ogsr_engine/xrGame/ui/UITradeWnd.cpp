@@ -209,7 +209,7 @@ void CUITradeWnd::InitTrade(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 
     m_pInvOwner = pOur;
     m_pOthersInvOwner = pOthers;
-    m_uidata->UIOthersPriceCaption.GetPhraseByIndex(0)->SetText("%s", *CStringTable().translate(shared_str{"ui_st_opponent_items"}));
+    m_uidata->UIOthersPriceCaption.GetPhraseByIndex(0)->SetText(CStringTable().translate(shared_str{"ui_st_opponent_items"}));
 
     m_uidata->UICharacterInfoLeft.InitCharacter(m_pInvOwner->object_id());
     m_uidata->UICharacterInfoRight.InitCharacter(m_pOthersInvOwner->object_id());
@@ -223,7 +223,6 @@ void CUITradeWnd::InitTrade(CInventoryOwner* pOur, CInventoryOwner* pOthers)
     m_pUIPropertiesBox->Hide();
 
     EnableAll();
-
     UpdateLists(eBoth);
 }
 

@@ -219,7 +219,7 @@ void CConsole::OutFont(LPCSTR text, float& pos_y)
             {
                 OutFont(text + sz + 1, pos_y);
                 pos_y -= lineDistance;
-                pFont->OutI(-1.0f, pos_y, "%s", one_line + ln);
+                pFont->OutI(-1.0f, pos_y, "{}", one_line + ln);
                 ln = sz + 1;
             }
 
@@ -228,7 +228,7 @@ void CConsole::OutFont(LPCSTR text, float& pos_y)
     }
     else
     {
-        pFont->OutI(-1.0f, pos_y, "%s", text);
+        pFont->OutI(-1.0f, pos_y, "{}", text);
     }
 }
 
@@ -299,7 +299,7 @@ tmc::task<void> CConsole::OnRender()
         }
 
         pFont->SetColor(prompt_font_color);
-        pFont->OutI(-1.0f + out_pos * scr_x, ypos, "%s", ioc_prompt);
+        pFont->OutI(-1.0f + out_pos * scr_x, ypos, "{}", ioc_prompt);
         out_pos += ioc_d;
 
         if (!m_disable_tips && !m_tips.empty())
@@ -323,11 +323,10 @@ tmc::task<void> CConsole::OnRender()
             vecTipsEx::iterator ite = m_tips.end();
             for (u32 i = 0; itb != ite; ++itb, ++i) // tips
             {
-                pFont->OutI(-1.0f + shift_x, start + i * lineDistance, "%s", (*itb).text.c_str());
+                pFont->OutI(-1.0f + shift_x, start + i * lineDistance, "{}", itb->text);
+
                 if (i >= VIEW_TIPS_COUNT - 1)
-                {
                     break; // for
-                }
             }
         }
 
@@ -341,7 +340,7 @@ tmc::task<void> CConsole::OnRender()
         auto draw_string = [&](CGameFont* f, LPCSTR str) {
             for (const auto c : std::string_view{str})
             {
-                f->OutI(-1.0f + out_pos * scr_x, ypos, "%c", c);
+                f->OutI(-1.0f + out_pos * scr_x, ypos, "{}", c);
                 out_pos += f->SizeOf_(c);
             }
         };
@@ -353,7 +352,7 @@ tmc::task<void> CConsole::OnRender()
         if (ec().cursor_view())
         {
             pFont->SetColor(cursor_font_color);
-            pFont->OutI(-1.0f + str_length * scr_x, ypos, "%s", ch_cursor);
+            pFont->OutI(-1.0f + str_length * scr_x, ypos, "{}", ch_cursor);
         }
     }
 
@@ -384,7 +383,7 @@ tmc::task<void> CConsole::OnRender()
     _itoa(log_line, q, 10);
     u32 qn = xr_strlen(q);
     pFont->SetColor(total_font_color);
-    pFont->OutI(0.95f - 0.03f * qn, fMaxY - 2.0f * (LDIST), "[%u]", log_line + 1);
+    pFont->OutI(0.95f - 0.03f * qn, fMaxY - 2.0f * (LDIST), "[{}]", log_line + 1);
 
     pFont->OnRender();
     pFont2->OnRender();

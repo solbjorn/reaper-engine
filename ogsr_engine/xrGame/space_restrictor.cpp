@@ -417,7 +417,8 @@ void CSpaceRestrictor::OnRender()
 
         HUD().Font().pFontMedium->SetColor(Color);
         HUD().Font().pFontMedium->OutSet(x, y -= delta_height);
-        HUD().Font().pFontMedium->OutNext("%s id=%d", Name(), ID());
+        HUD().Font().pFontMedium->OutNext("{} id={}", Name(), ID());
+
         CCustomZone* z = smart_cast<CCustomZone*>(this);
         if (z)
         {
@@ -432,7 +433,7 @@ void CSpaceRestrictor::OnRender()
             default: str = "UNKNOWN"; break;
             }
 
-            HUD().Font().pFontMedium->OutNext("%s", str);
+            HUD().Font().pFontMedium->OutNext("{}", str);
         }
     }
 }

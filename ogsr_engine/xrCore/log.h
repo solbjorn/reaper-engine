@@ -66,6 +66,12 @@ using std::vformat;
 } // namespace detail
 } // namespace xr
 
+template <typename T>
+struct std::formatter<std::atomic<T>> : std::formatter<T>
+{
+    [[nodiscard]] constexpr auto format(const std::atomic<T>& val, std::format_context& ctx) const { return std::formatter<T>::format(val.load(), ctx); }
+};
+
 template <>
 struct std::formatter<shared_str> : std::formatter<std::string_view>
 {

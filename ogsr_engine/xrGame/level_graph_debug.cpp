@@ -234,7 +234,6 @@ void CLevelGraph::draw_stalkers(const int& vertex_id)
 
             const PATH& path = stalker->brain().movement().detail().path();
             const float& walked_distance = (path.size() < 2) ? 0.f : stalker->brain().movement().detail().walked_distance();
-            //			font.OutNext		("%s",stalker->name_replace());
 
             if ((path.size() >= 2) && !fis_zero(walked_distance))
                 continue;
@@ -388,7 +387,6 @@ void CLevelGraph::draw_objects(const int& vertex_id)
 
             const PATH& path = monster->brain().movement().detail().path();
             const float& walked_distance = (path.size() < 2) ? 0.f : monster->brain().movement().detail().walked_distance();
-            //			font.OutNext		("%s",monster->name_replace());
 
             if ((path.size() >= 2) && !fis_zero(walked_distance))
                 continue;

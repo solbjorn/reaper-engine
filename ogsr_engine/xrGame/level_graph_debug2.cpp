@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "level_graph.h"
+
 #include "../xr_3da/customhud.h"
 #include "ai_space.h"
 #include "hudmanager.h"
@@ -49,18 +50,11 @@ void CLevelGraph::draw_nodes()
 
     // display
     Fvector P = POSITION;
-
-    //	CPosition			Local;
-    //	vertex_position		(Local,P);
-
     u32 ID = O->ai_location().level_vertex_id();
 
     CGameFont* F = HUD().Font().pFontDI;
     F->SetHeightI(.02f);
-    F->OutI(0.f, 0.5f, "%f,%f,%f", VPUSH(P));
-    //	float				x,z;
-    //	unpack_xz			(Local,x,z);
-    //	F->Out				(0.f,0.55f,"%3d,%4d,%3d -> %d",	iFloor(x),iFloor(Local.y()),iFloor(z),u32(ID));
+    F->OutI(0.f, 0.5f, "{},{},{}", VPUSH(P));
 
     svector<u32, 128> linked;
     {
@@ -192,9 +186,10 @@ void CLevelGraph::draw_nodes()
                     continue;
                 if (S.x < -1.f || S.x > 1.f || S.y < -1.f)
                     continue;
+
                 F->SetHeightI(0.05f / _sqrt(_abs(S.w)));
                 F->SetColor(0xffffffff);
-                F->OutI(S.x, -S.y, "~%u", Nid);
+                F->OutI(S.x, -S.y, "~{}", Nid);
             }
         }
     }
@@ -266,7 +261,8 @@ void CLevelGraph::draw_covers()
     {
         Fvector position = (*I)->position();
         position.y += 1.f;
-        Level().debug_renderer().draw_aabb(position, half_size - .01f, 1.f, ai().level_graph().header().cell_size() * .5f - .01f, D3DCOLOR_XRGB(0 * 255, 255, 0 * 255));
+        Level().debug_renderer().draw_aabb(position, half_size - .01f, 1.f, ai().level_graph().header().cell_size() * .5f - .01f,
+                                           D3DCOLOR_XRGB(0 * 255, 255, 0 * 255));
 
         CVertex* v = vertex((*I)->level_vertex_id());
         Fvector direction;

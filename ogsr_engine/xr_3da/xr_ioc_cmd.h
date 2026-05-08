@@ -110,7 +110,7 @@ public:
         TStatus S;
         Status(S);
         if (S[0])
-            F->w_printf("%s %s\r\n", cName, S);
+            F->w_printf("{} {}\r\n", cName, S);
     }
 
     virtual void fill_tips(vecTips& tips) { add_LRU_to_tips(tips); }

@@ -119,8 +119,7 @@ void CUISubLine::Draw(CGameFont* pFont, float x, float y) const
 {
     pFont->SetColor(m_color);
 
-    Fvector2 pos;
-    pos.set(x, y);
+    Fvector2 pos{x, y};
     UI()->ClientToScreenScaled(pos);
-    pFont->Out(pos.x, pos.y, "%s", m_text.c_str());
+    pFont->Out(pos.x, pos.y, "{}", m_text);
 }

@@ -1,52 +1,53 @@
 #include "stdafx.h"
 
 #include "dxStatsRender.h"
+
 #include "../../xr_3da/GameFont.h"
 
 void dxStatsRender::Copy(IStatsRender&) {}
 
 void dxStatsRender::OutData1(CGameFont& F)
 {
-    F.OutNext("VERT:        %u/%u", RCache.stat.verts, RCache.stat.calls ? RCache.stat.verts / RCache.stat.calls : 0);
-    F.OutNext("POLY:        %u/%u", RCache.stat.polys, RCache.stat.calls ? RCache.stat.polys / RCache.stat.calls : 0);
-    F.OutNext("DIP/DP:      %u", RCache.stat.calls);
+    F.OutNext("VERT:        {}/{}", RCache.stat.verts, RCache.stat.calls ? RCache.stat.verts / RCache.stat.calls : 0);
+    F.OutNext("POLY:        {}/{}", RCache.stat.polys, RCache.stat.calls ? RCache.stat.polys / RCache.stat.calls : 0);
+    F.OutNext("DIP/DP:      {}", RCache.stat.calls);
 }
 
 void dxStatsRender::OutData2([[maybe_unused]] CGameFont& F)
 {
 #ifdef DEBUG
-    F.OutNext("SH/T/M/C:    %u/%u/%u/%u", RCache.stat.states, RCache.stat.textures, RCache.stat.matrices, RCache.stat.constants);
-    F.OutNext("RT/PS/VS:    %u/%u/%u", RCache.stat.target_rt, RCache.stat.ps, RCache.stat.vs);
-    F.OutNext("DCL/VB/IB:   %u/%u/%u", RCache.stat.decl, RCache.stat.vb, RCache.stat.ib);
+    F.OutNext("SH/T/M/C:    {}/{}/{}/{}", RCache.stat.states, RCache.stat.textures, RCache.stat.matrices, RCache.stat.constants);
+    F.OutNext("RT/PS/VS:    {}/{}/{}", RCache.stat.target_rt, RCache.stat.ps, RCache.stat.vs);
+    F.OutNext("DCL/VB/IB:   {}/{}/{}", RCache.stat.decl, RCache.stat.vb, RCache.stat.ib);
 #endif
 }
 
-void dxStatsRender::OutData3(CGameFont& F) { F.OutNext("xforms:      %u", RCache.stat.xforms); }
+void dxStatsRender::OutData3(CGameFont& F) { F.OutNext("xforms:      {}", RCache.stat.xforms); }
 
 void dxStatsRender::OutData4(CGameFont& F)
 {
-    F.OutNext("static:        %3.1f/%u", RCache.stat.r.s_static.verts / 1024.f, RCache.stat.r.s_static.dips);
-    F.OutNext("flora:         %3.1f/%u", RCache.stat.r.s_flora.verts / 1024.f, RCache.stat.r.s_flora.dips);
-    F.OutNext("  flora_lods:  %3.1f/%u", RCache.stat.r.s_flora_lods.verts / 1024.f, RCache.stat.r.s_flora_lods.dips);
-    F.OutNext("dynamic:       %3.1f/%u", RCache.stat.r.s_dynamic.verts / 1024.f, RCache.stat.r.s_dynamic.dips);
-    F.OutNext("  dynamic_inst:%3.1f/%u", RCache.stat.r.s_dynamic_inst.verts / 1024.f, RCache.stat.r.s_dynamic_inst.dips);
-    F.OutNext("  dynamic_1B:  %3.1f/%u", RCache.stat.r.s_dynamic_1B.verts / 1024.f, RCache.stat.r.s_dynamic_1B.dips);
-    F.OutNext("  dynamic_2B:  %3.1f/%u", RCache.stat.r.s_dynamic_2B.verts / 1024.f, RCache.stat.r.s_dynamic_2B.dips);
-    F.OutNext("  dynamic_3B:  %3.1f/%u", RCache.stat.r.s_dynamic_3B.verts / 1024.f, RCache.stat.r.s_dynamic_3B.dips);
-    F.OutNext("  dynamic_4B:  %3.1f/%u", RCache.stat.r.s_dynamic_4B.verts / 1024.f, RCache.stat.r.s_dynamic_4B.dips);
-    F.OutNext("details:       %3.1f/%u", RCache.stat.r.s_details.verts / 1024.f, RCache.stat.r.s_details.dips);
+    F.OutNext("static:        {:3.1f}/{}", RCache.stat.r.s_static.verts / 1024.f, RCache.stat.r.s_static.dips);
+    F.OutNext("flora:         {:3.1f}/{}", RCache.stat.r.s_flora.verts / 1024.f, RCache.stat.r.s_flora.dips);
+    F.OutNext("  flora_lods:  {:3.1f}/{}", RCache.stat.r.s_flora_lods.verts / 1024.f, RCache.stat.r.s_flora_lods.dips);
+    F.OutNext("dynamic:       {:3.1f}/{}", RCache.stat.r.s_dynamic.verts / 1024.f, RCache.stat.r.s_dynamic.dips);
+    F.OutNext("  dynamic_inst:{:3.1f}/{}", RCache.stat.r.s_dynamic_inst.verts / 1024.f, RCache.stat.r.s_dynamic_inst.dips);
+    F.OutNext("  dynamic_1B:  {:3.1f}/{}", RCache.stat.r.s_dynamic_1B.verts / 1024.f, RCache.stat.r.s_dynamic_1B.dips);
+    F.OutNext("  dynamic_2B:  {:3.1f}/{}", RCache.stat.r.s_dynamic_2B.verts / 1024.f, RCache.stat.r.s_dynamic_2B.dips);
+    F.OutNext("  dynamic_3B:  {:3.1f}/{}", RCache.stat.r.s_dynamic_3B.verts / 1024.f, RCache.stat.r.s_dynamic_3B.dips);
+    F.OutNext("  dynamic_4B:  {:3.1f}/{}", RCache.stat.r.s_dynamic_4B.verts / 1024.f, RCache.stat.r.s_dynamic_4B.dips);
+    F.OutNext("details:       {:3.1f}/{}", RCache.stat.r.s_details.verts / 1024.f, RCache.stat.r.s_details.dips);
 }
 
 void dxStatsRender::GuardVerts(CGameFont& F)
 {
     if (RCache.stat.verts > 500000)
-        F.OutNext("Verts     > 500k: %u", RCache.stat.verts);
+        F.OutNext("Verts     > 500k: {}", RCache.stat.verts);
 }
 
 void dxStatsRender::GuardDrawCalls(CGameFont& F)
 {
     if (RCache.stat.calls > 1000)
-        F.OutNext("DIP/DP    > 1k:   %u", RCache.stat.calls);
+        F.OutNext("DIP/DP    > 1k:   {}", RCache.stat.calls);
 }
 
 void dxStatsRender::SetDrawParams(IRenderDeviceRender* pRender)

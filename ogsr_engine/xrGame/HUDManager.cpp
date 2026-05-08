@@ -322,7 +322,7 @@ void CHUDManager::RenderUI()
         UI()->ClientToScreenScaled(_pos);
 
         pFont->SetAligment(CGameFont::alCenter);
-        pFont->Out(_pos.x, _pos.y, "%s", CStringTable().translate(shared_str{"st_game_paused"}).c_str());
+        pFont->Out(_pos.x, _pos.y, "{}", CStringTable().translate(shared_str{"st_game_paused"}));
         pFont->OnRender();
     }
 }
@@ -330,7 +330,11 @@ void CHUDManager::RenderUI()
 tmc::task<void> CHUDManager::OnEvent(CEvent*, u64, u64) { co_return; }
 collide::rq_result& CHUDManager::GetCurrentRayQuery() { return m_pHUDTarget->RQ; }
 
-void CHUDManager::SetCrosshairDisp(float dispf, float disps) { m_pHUDTarget->HUDCrosshair.SetDispersion(psHUD_Flags.test(HUD_CROSSHAIR_DYNAMIC) ? dispf : disps); }
+void CHUDManager::SetCrosshairDisp(float dispf, float disps)
+{
+    m_pHUDTarget->HUDCrosshair.SetDispersion(psHUD_Flags.test(HUD_CROSSHAIR_DYNAMIC) ? dispf : disps);
+}
+
 void CHUDManager::ShowCrosshair(bool show) { m_pHUDTarget->m_bShowCrosshair = show; }
 
 void CHUDManager::Hit(int idx, float, const Fvector& dir) { HitMarker.Hit(idx, dir); }

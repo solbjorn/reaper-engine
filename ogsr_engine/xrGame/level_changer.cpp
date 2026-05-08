@@ -277,6 +277,6 @@ void CLevelChanger::OnRender()
 
         HUD().Font().pFontMedium->SetColor(Color);
         HUD().Font().pFontMedium->OutSet(x, y -= delta_height);
-        HUD().Font().pFontMedium->OutNext("%s id=%d", Name(), ID());
+        HUD().Font().pFontMedium->OutNext("{} id={}", Name(), ID());
     }
 }

@@ -315,7 +315,7 @@ void CActor::PickupInfoDraw(CObject* object)
 
     HUD().Font().pFontLetterica16Russian->SetAligment(CGameFont::alCenter);
     HUD().Font().pFontLetterica16Russian->SetColor(PICKUP_INFO_COLOR);
-    HUD().Font().pFontLetterica16Russian->Out(x, y, "%s", draw_str);
+    HUD().Font().pFontLetterica16Russian->Out(x, y, "{}", draw_str);
 }
 
 void CActor::feel_sound_new(CObject* who, int, CSound_UserDataPtr, const Fvector&, float power, float)

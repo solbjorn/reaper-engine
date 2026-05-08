@@ -152,7 +152,7 @@ void CHUDTarget::Render()
     if (psHUD_Flags.test(HUD_CROSSHAIR_DIST))
     {
         F->SetColor(C);
-        F->OutNext("%4.1f", RQ.range);
+        F->OutNext("{:4.1f}", RQ.range);
     }
 
     if (psHUD_Flags.test(HUD_INFO))
@@ -195,8 +195,8 @@ void CHUDTarget::Render()
                     {
                         CStringTable strtbl;
                         F->SetColor(subst_alpha(C, u8(iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f))));
-                        F->OutNext("%s", *strtbl.translate(shared_str{others_inv_owner->Name()}));
-                        F->OutNext("%s", *strtbl.translate(others_inv_owner->CharacterInfo().Community().id()));
+                        F->OutNext("{}", strtbl.translate(shared_str{others_inv_owner->Name()}));
+                        F->OutNext("{}", strtbl.translate(others_inv_owner->CharacterInfo().Community().id()));
                     }
                 }
 
@@ -207,8 +207,9 @@ void CHUDTarget::Render()
                 if (fuzzyShowInfo > 0.5f)
                 {
                     F->SetColor(subst_alpha(C, u8(iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f))));
-                    F->OutNext("%s", l_pI->Name /*Complex*/ ());
+                    F->OutNext("{}", l_pI->Name /*Complex*/ ());
                 }
+
                 fuzzyShowInfo += SHOW_INFO_SPEED * Device.fTimeDelta;
             }
         }
@@ -216,6 +217,7 @@ void CHUDTarget::Render()
         {
             fuzzyShowInfo -= HIDE_INFO_SPEED * Device.fTimeDelta;
         }
+
         clamp(fuzzyShowInfo, 0.f, 1.f);
     }
 

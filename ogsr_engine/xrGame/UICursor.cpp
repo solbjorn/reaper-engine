@@ -54,8 +54,9 @@ tmc::task<void> CUICursor::OnRender()
         F->SetHeightI(0.02f);
         F->OutSetI(0.f, -0.9f);
         F->SetColor(0xffffffff);
+
         Fvector2 pt = GetCursorPosition();
-        F->OutNext("%f-%f", pt.x, pt.y);
+        F->OutNext("{}-{}", pt.x, pt.y);
     }
 #endif
 

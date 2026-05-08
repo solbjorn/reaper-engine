@@ -50,7 +50,16 @@ public:
     ~CUITextBanner() override = default;
 
     virtual void Update();
-    void XR_PRINTF(4, 5) Out(float x, float y, const char* fmt, ...);
+
+private:
+    void vOut(f32 x, f32 y, xr::detail::string_view fmt, xr::detail::format_args args);
+
+public:
+    template <typename... Args>
+    void Out(f32 x, f32 y, xr::detail::format_string<Args...> fmt, Args&&... args)
+    {
+        vOut(x, y, fmt.get(), xr::detail::make_format_args(args...));
+    }
 
     // Установить параметры визуализации баннера. Флаги см. перечисление TextBannerStyles
     EffectParams* SetStyleParams(const TextBannerStyles styleName);

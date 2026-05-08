@@ -388,11 +388,13 @@ void hud_draw_adjust_mode()
         F->SetAligment(CGameFont::alCenter);
         F->OutSetI(0.f, -0.8f);
         F->SetColor(D3DCOLOR_XRGB(125, 0, 0));
-        F->OutNext("%s", _text);
-        F->OutNext("for item: [%d] [%s]", g_bHudAdjustItemIdx,
-                   g_player_hud->attached_item(u16(g_bHudAdjustItemIdx)) ? g_player_hud->attached_item(u16(g_bHudAdjustItemIdx))->m_sect_name.c_str() :
-                                                                           "NOT FOUND");
-        F->OutNext("delta values: dP=[%g], dR=[%g]", g_bHudAdjustDeltaPos, g_bHudAdjustDeltaRot);
+
+        F->OutNext("{}", _text);
+        F->OutNext("for item: [{}] [{}]", g_bHudAdjustItemIdx,
+                   g_player_hud->attached_item(u16(g_bHudAdjustItemIdx)) ?
+                       std::string_view{g_player_hud->attached_item(u16(g_bHudAdjustItemIdx))->m_sect_name} :
+                       std::string_view{"NOT FOUND"});
+        F->OutNext("delta values: dP=[{}], dR=[{}]", g_bHudAdjustDeltaPos, g_bHudAdjustDeltaRot);
         F->OutNext("[Z]-x axis, [X]-y axis, [C]-z axis    ||||||    [<---LEFT/RIGHT--->]-x axis, [UP/DOWN]-y axis, [PageUP/PageDown]-z axis");
     }
 }

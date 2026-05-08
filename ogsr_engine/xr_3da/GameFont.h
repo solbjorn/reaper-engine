@@ -20,7 +20,7 @@ public:
 private:
     struct String
     {
-        string1024 string;
+        xr_string string;
         float x, y;
         float height;
         u32 color;
@@ -97,8 +97,13 @@ public:
     void OutSetI(float x, float y);
     void OutSet(float x, float y);
 
-    void XR_PRINTF(9, 0) MasterOut(BOOL bCheckDevice, BOOL bUseCoords, BOOL bScaleCoords, BOOL bUseSkip, float _x, float _y, float _skip, LPCSTR fmt, va_list p);
+private:
+    void vMasterOut(bool bCheckDevice, bool bUseCoords, bool bScaleCoords, bool bUseSkip, f32 _x, f32 _y, f32 _skip, xr::detail::string_view fmt,
+                    xr::detail::format_args args);
+    void vOutI(f32 _x, f32 _y, xr::detail::string_view fmt, xr::detail::format_args args);
+    void vOutNext(xr::detail::string_view fmt, xr::detail::format_args args);
 
+public:
     BOOL IsMultibyte() const { return (uFlags & fsMultibyte); }
 
     u32 SmartLength(const char* S);
@@ -106,9 +111,25 @@ public:
     u16 SplitByWidth(u16* puBuffer, u16 uBufferSize, float fTargetWidth, const char* pszText);
     u16 GetCutLengthPos(float fTargetWidth, const char* pszText);
 
-    void XR_PRINTF(4, 5) OutI(float _x, float _y, LPCSTR fmt, ...);
-    void XR_PRINTF(4, 5) Out(float _x, float _y, LPCSTR fmt, ...);
-    void XR_PRINTF(2, 3) OutNext(LPCSTR fmt, ...);
+    void vOut(f32 _x, f32 _y, xr::detail::string_view fmt, xr::detail::format_args args);
+
+    template <typename... Args>
+    constexpr void OutI(f32 _x, f32 _y, xr::detail::format_string<Args...> fmt, Args&&... args)
+    {
+        vOutI(_x, _y, fmt.get(), xr::detail::make_format_args(args...));
+    }
+
+    template <typename... Args>
+    constexpr void Out(f32 _x, f32 _y, xr::detail::format_string<Args...> fmt, Args&&... args)
+    {
+        vOut(_x, _y, fmt.get(), xr::detail::make_format_args(args...));
+    }
+
+    template <typename... Args>
+    constexpr void OutNext(xr::detail::format_string<Args...> fmt, Args&&... args)
+    {
+        vOutNext(fmt.get(), xr::detail::make_format_args(args...));
+    }
 
     void OutSkip(float val = 1.f);
 

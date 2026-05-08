@@ -31,7 +31,8 @@ namespace
     n = WideCharToMultiByte(CP_UTF8, 0, buf.data(), gsl::narrow_cast<s32>(std::ssize(buf)), nullptr, 0, nullptr, nullptr);
 
     result.resize(gsl::narrow<size_t>(n));
-    n = WideCharToMultiByte(CP_UTF8, 0, buf.data(), gsl::narrow_cast<s32>(std::ssize(buf)), result.data(), gsl::narrow_cast<s32>(std::ssize(result)), nullptr, nullptr);
+    n = WideCharToMultiByte(CP_UTF8, 0, buf.data(), gsl::narrow_cast<s32>(std::ssize(buf)), result.data(), gsl::narrow_cast<s32>(std::ssize(result)), nullptr,
+                            nullptr);
 
     return result;
 }
@@ -133,7 +134,7 @@ void DrawPointText(Fvector position, gsl::czstring text, u32 color = color_rgba(
     font.SetAligment(CGameFont::alCenter);
     font.SetColor(color);
     font.OutSet(x, y);
-    font.OutNext("%s", text);
+    font.OutNext("{}", text);
 }
 } // namespace
 
@@ -185,17 +186,17 @@ void ShowHudEditor(bool& show)
 
         ImGui::Separator();
 
-        std::ignore = xr::detail::ImGui_HoverDragFloat3("aim_hud_offset_pos", item->m_measures.m_hands_offset[0][hud_item_measures::m_hands_offset_type_aim].arr, drag_intensity,
-                                                        0.0f, 0.0f, "%.6f");
-        std::ignore = xr::detail::ImGui_HoverDragFloat3("aim_hud_offset_rot", item->m_measures.m_hands_offset[1][hud_item_measures::m_hands_offset_type_aim].arr, drag_intensity,
-                                                        0.0f, 0.0f, "%.6f");
+        std::ignore = xr::detail::ImGui_HoverDragFloat3(
+            "aim_hud_offset_pos", item->m_measures.m_hands_offset[0][hud_item_measures::m_hands_offset_type_aim].arr, drag_intensity, 0.0f, 0.0f, "%.6f");
+        std::ignore = xr::detail::ImGui_HoverDragFloat3(
+            "aim_hud_offset_rot", item->m_measures.m_hands_offset[1][hud_item_measures::m_hands_offset_type_aim].arr, drag_intensity, 0.0f, 0.0f, "%.6f");
 
         ImGui::Separator();
 
-        std::ignore = xr::detail::ImGui_HoverDragFloat3("gl_hud_offset_pos", item->m_measures.m_hands_offset[0][hud_item_measures::m_hands_offset_type_gl].arr, drag_intensity,
-                                                        0.0f, 0.0f, "%.6f");
-        std::ignore = xr::detail::ImGui_HoverDragFloat3("gl_hud_offset_rot", item->m_measures.m_hands_offset[1][hud_item_measures::m_hands_offset_type_gl].arr, drag_intensity,
-                                                        0.0f, 0.0f, "%.6f");
+        std::ignore = xr::detail::ImGui_HoverDragFloat3("gl_hud_offset_pos", item->m_measures.m_hands_offset[0][hud_item_measures::m_hands_offset_type_gl].arr,
+                                                        drag_intensity, 0.0f, 0.0f, "%.6f");
+        std::ignore = xr::detail::ImGui_HoverDragFloat3("gl_hud_offset_rot", item->m_measures.m_hands_offset[1][hud_item_measures::m_hands_offset_type_gl].arr,
+                                                        drag_intensity, 0.0f, 0.0f, "%.6f");
 
         ImGui::Separator();
 
@@ -233,7 +234,8 @@ void ShowHudEditor(bool& show)
                 // Laser light offsets
                 if (pSettings->line_exist(wpn->cNameSect(), "laser_light_section"))
                 {
-                    std::ignore = xr::detail::ImGui_HoverDragFloat3("laserdot_attach_offset", wpn->laserdot_attach_offset.arr, drag_intensity, 0.0f, 0.0f, "%.6f");
+                    std::ignore =
+                        xr::detail::ImGui_HoverDragFloat3("laserdot_attach_offset", wpn->laserdot_attach_offset.arr, drag_intensity, 0.0f, 0.0f, "%.6f");
 
                     can_save = true;
 
@@ -252,8 +254,10 @@ void ShowHudEditor(bool& show)
                 // Torch light offsets
                 if (pSettings->line_exist(wpn->cNameSect(), "flashlight_section"))
                 {
-                    std::ignore = xr::detail::ImGui_HoverDragFloat3("torch_attach_offset", wpn->flashlight_attach_offset.arr, drag_intensity, 0.0f, 0.0f, "%.6f");
-                    std::ignore = xr::detail::ImGui_HoverDragFloat3("torch_omni_attach_offset", wpn->flashlight_omni_attach_offset.arr, drag_intensity, 0.0f, 0.0f, "%.6f");
+                    std::ignore =
+                        xr::detail::ImGui_HoverDragFloat3("torch_attach_offset", wpn->flashlight_attach_offset.arr, drag_intensity, 0.0f, 0.0f, "%.6f");
+                    std::ignore = xr::detail::ImGui_HoverDragFloat3("torch_omni_attach_offset", wpn->flashlight_omni_attach_offset.arr, drag_intensity, 0.0f,
+                                                                    0.0f, "%.6f");
 
                     can_save = true;
 
@@ -288,9 +292,11 @@ void ShowHudEditor(bool& show)
         ImGui::TextUnformatted(det ? toUtf8(det->Name()).c_str() : toUtf8(("st_hud_editor_item_2")).c_str());
 
         std::ignore = xr::detail::ImGui_HoverDragFloat3("[R] hands_position", item->m_measures.m_hands_attach[0].arr, drag_intensity, 0.0f, 0.0f, "%.6f");
-        std::ignore = xr::detail::ImGui_HoverDragFloat3("[R] hands_orientation", item->m_measures.m_hands_attach[1].arr, drag_intensity * 5.0f, 0.0f, 0.0f, "%.6f");
+        std::ignore =
+            xr::detail::ImGui_HoverDragFloat3("[R] hands_orientation", item->m_measures.m_hands_attach[1].arr, drag_intensity * 5.0f, 0.0f, 0.0f, "%.6f");
         std::ignore = xr::detail::ImGui_HoverDragFloat3("[R] item_position", item->m_measures.m_item_attach[0].arr, drag_intensity, 0.0f, 0.0f, "%.6f");
-        std::ignore = xr::detail::ImGui_HoverDragFloat3("[R] item_orientation", item->m_measures.m_item_attach[1].arr, drag_intensity * 5.0f, 0.0f, 0.0f, "%.6f");
+        std::ignore =
+            xr::detail::ImGui_HoverDragFloat3("[R] item_orientation", item->m_measures.m_item_attach[1].arr, drag_intensity * 5.0f, 0.0f, 0.0f, "%.6f");
 
         if (ImGui::Button("[R] hud save"))
         {

@@ -268,8 +268,9 @@ void CUIDragDropListEx::Draw()
         F->SetHeightI(0.02f);
         F->OutSetI(0.f, -0.5f);
         F->SetColor(0xffffffff);
+
         Ivector2 pt = m_container->PickCell(GetUICursor()->GetCursorPosition());
-        F->OutNext("%d-%d", pt.x, pt.y);
+        F->OutNext("{}-{}", pt.x, pt.y);
     }
 }
 

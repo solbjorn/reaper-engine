@@ -56,8 +56,8 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName, const char* sect
     string_path cTexture;
 
     LPCSTR _lang = pSettings->r_string("string_table", "font_prefix");
-    const bool skip_prefix = READ_IF_EXISTS(pSettings, r_bool, sect, "skip_prefix", false) || strstr(cTextureName, "ui_font_hud_01") || strstr(cTextureName, "ui_font_hud_02") ||
-        strstr(cTextureName, "ui_font_console_02");
+    const bool skip_prefix = READ_IF_EXISTS(pSettings, r_bool, sect, "skip_prefix", false) || strstr(cTextureName, "ui_font_hud_01") ||
+        strstr(cTextureName, "ui_font_hud_02") || strstr(cTextureName, "ui_font_console_02");
 
     if (_lang && !skip_prefix)
         strconcat(sizeof(cTexture), cTexture, cTextureName, _lang);
@@ -316,47 +316,38 @@ u16 CGameFont::SplitByWidth(u16* puBuffer, u16 uBufferSize, float fTargetWidth, 
     return nLines;
 }
 
-void CGameFont::MasterOut(BOOL bCheckDevice, BOOL bUseCoords, BOOL bScaleCoords, BOOL bUseSkip, float _x, float _y, float _skip, LPCSTR fmt, va_list p)
+void CGameFont::vMasterOut(bool bCheckDevice, bool bUseCoords, bool bScaleCoords, bool bUseSkip, f32 _x, f32 _y, f32 _skip, xr::detail::string_view fmt,
+                           xr::detail::format_args args)
 {
     if (bCheckDevice && (!Device.b_is_Active))
         return;
 
-    String rs;
+    auto str = xr::detail::vformat(fmt, args);
+    if (str.empty())
+        goto out;
 
-    rs.x = (bUseCoords ? (bScaleCoords ? (DI2PX(_x)) : _x) : fCurrentX);
-    rs.y = (bUseCoords ? (bScaleCoords ? (DI2PY(_y)) : _y) : fCurrentY);
-    rs.color = dwCurrentColor;
-    rs.height = fCurrentHeight;
-    rs.align = eCurrentAlignment;
+    strings.emplace_back(std::move(str), bUseCoords ? (bScaleCoords ? (DI2PX(_x)) : _x) : fCurrentX, bUseCoords ? (bScaleCoords ? (DI2PY(_y)) : _y) : fCurrentY,
+                         fCurrentHeight, dwCurrentColor, eCurrentAlignment);
 
-    int vs_sz = vsprintf_s(rs.string, fmt, p);
-    // VERIFY( ( vs_sz != -1 ) && ( rs.string[ vs_sz ] == '\0' ) );
-
-    rs.string[sizeof(rs.string) - 1] = 0;
-    if (vs_sz == -1)
-    {
-        return;
-    }
-
-    if (vs_sz)
-        strings.push_back(rs);
-
+out:
     if (bUseSkip)
         OutSkip(_skip);
 }
 
-#define MASTER_OUT(CHECK_DEVICE, USE_COORDS, SCALE_COORDS, USE_SKIP, X, Y, SKIP, FMT) \
-    { \
-        va_list p; \
-        va_start(p, fmt); \
-        MasterOut(CHECK_DEVICE, USE_COORDS, SCALE_COORDS, USE_SKIP, X, Y, SKIP, FMT, p); \
-        va_end(p); \
-    } \
-    XR_MACRO_END()
+void CGameFont::vOutI(f32 _x, f32 _y, xr::detail::string_view fmt, xr::detail::format_args args)
+{
+    vMasterOut(false, true, true, false, _x, _y, 0.0f, std::move(fmt), std::move(args));
+}
 
-void CGameFont::OutI(float _x, float _y, LPCSTR fmt, ...) { MASTER_OUT(FALSE, TRUE, TRUE, FALSE, _x, _y, 0.0f, fmt); }
-void CGameFont::Out(float _x, float _y, LPCSTR fmt, ...) { MASTER_OUT(TRUE, TRUE, FALSE, FALSE, _x, _y, 0.0f, fmt); }
-void CGameFont::OutNext(LPCSTR fmt, ...) { MASTER_OUT(TRUE, FALSE, FALSE, TRUE, 0.0f, 0.0f, 1.0f, fmt); }
+void CGameFont::vOut(f32 _x, f32 _y, xr::detail::string_view fmt, xr::detail::format_args args)
+{
+    vMasterOut(true, true, false, false, _x, _y, 0.0f, std::move(fmt), std::move(args));
+}
+
+void CGameFont::vOutNext(xr::detail::string_view fmt, xr::detail::format_args args)
+{
+    vMasterOut(true, false, false, true, 0.0f, 0.0f, 1.0f, std::move(fmt), std::move(args));
+}
 
 void CGameFont::OutSkip(float val) { fCurrentY += val * CurrentHeight_(); }
 

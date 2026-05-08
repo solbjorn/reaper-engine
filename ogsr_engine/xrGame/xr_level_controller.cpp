@@ -565,7 +565,7 @@ public:
         for (const auto& pbinding : g_key_bindings)
         {
             if (pbinding.m_keyboard[m_work_idx])
-                F->w_printf("%s %s %s\r\n", cName, pbinding.m_action->action_name, pbinding.m_keyboard[m_work_idx]->key_name);
+                F->w_printf("{} {} {}\r\n", cName, pbinding.m_action->action_name, pbinding.m_keyboard[m_work_idx]->key_name);
         }
     }
 };
@@ -721,7 +721,7 @@ bool ConsoleBindCmds::execute(xr::key_id dik) const
 void ConsoleBindCmds::save(IWriter* F) const
 {
     for (const auto& bind : m_bindConsoleCmds)
-        F->w_printf("bind_console %s %s\n", bind.second.c_str(), dik_to_keyname(bind.first));
+        F->w_printf("bind_console {} {}\n", bind.second, dik_to_keyname(bind.first));
 }
 
 void CCC_RegisterInput()

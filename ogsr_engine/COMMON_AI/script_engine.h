@@ -77,8 +77,10 @@ public:
     void LogTable(lua_State* l, LPCSTR S, int level);
     void LogVariable(lua_State* l, gsl::czstring name, int level);
 
+private:
     void vscript_log(ScriptStorage::ELuaMessageType message, xr::detail::string_view fmt, xr::detail::format_args args);
 
+public:
     template <typename... Args>
     void script_log(ScriptStorage::ELuaMessageType message, xr::detail::format_string<Args...> fmt, Args&&... args)
     {

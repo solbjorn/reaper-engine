@@ -1251,10 +1251,9 @@ void CActor::RenderText(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
 
     pFont->SetAligment(CGameFont::alCenter);
     pFont->SetColor(color);
-    //	pFont->SetHeight	(NewFontSize);
-    pFont->Out(x, y, "%s", Text);
+    pFont->Out(x, y, "{}", Text);
     //-------------------------------------------------
-    //	pFont->SetHeight(OldFontSize);
+
     *pdup = delta_up;
 }
 

@@ -459,12 +459,12 @@ void CUILines::Draw(float x, float y)
             passText[sz] = 0;
 
             m_pFont->SetAligment((CGameFont::EAligment)m_eTextAlign);
-            m_pFont->Out(text_pos.x, text_pos.y, "%s", passText);
+            m_pFont->Out(text_pos.x, text_pos.y, "{}", passText);
         }
         else
         {
             m_pFont->SetAligment((CGameFont::EAligment)m_eTextAlign);
-            m_pFont->Out(text_pos.x, text_pos.y, "%s", m_text.c_str());
+            m_pFont->Out(text_pos.x, text_pos.y, "{}", m_text);
         }
     }
     else

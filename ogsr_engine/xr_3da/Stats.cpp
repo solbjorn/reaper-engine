@@ -56,7 +56,7 @@ void _draw_cam_pos(CGameFont* pFont)
     float sz = pFont->GetHeight();
     pFont->SetHeightI(0.02f);
     pFont->SetColor(0xffffffff);
-    pFont->Out(10, 600, "CAMERA POSITION:  [%3.2f,%3.2f,%3.2f]", VPUSH(Device.vCameraPosition));
+    pFont->Out(10.0f, 600.0f, "CAMERA POSITION:  [{:3.2f},{:3.2f},{:3.2f}]", VPUSH(Device.vCameraPosition));
     pFont->SetHeight(sz);
     pFont->OnRender();
 }
@@ -143,97 +143,101 @@ void CStats::Show()
         F.SetColor(0xFFFFFFFF);
 
         F.OutSet(0, 0);
-        F.OutNext("FPS/RFPS:    %3.1f/%3.1f", fFPS, fRFPS);
-        F.OutNext("TPS:         %2.2f M", fTPS);
+        F.OutNext("FPS/RFPS:    {:3.1f}/{:3.1f}", fFPS, fRFPS);
+        F.OutNext("TPS:         {:2.2f} M", fTPS);
         m_pRender->OutData1(F);
+
 #ifdef DEBUG
         F.OutSkip();
-        F.OutNext("mapped:      %u", g_file_mapped_memory);
+        F.OutNext("mapped:      {}", g_file_mapped_memory);
         F.OutSkip();
         m_pRender->OutData2(F);
 #endif
+
         m_pRender->OutData3(F);
         F.OutSkip();
 
 #define PPP(a) (100.f * float(a) / float(EngineTOTAL.result))
-        F.OutNext("*** ENGINE:  %2.2fms", EngineTOTAL.result);
-        F.OutNext("uClients:    %2.2fms, %2.1f%%, crow(%u)/active(%u)/total(%u)", UpdateClient.result, PPP(UpdateClient.result), UpdateClient_crows, UpdateClient_active,
-                  UpdateClient_total);
-        F.OutNext("uSheduler:   %2.2fms, %2.1f%%", Sheduler.result, PPP(Sheduler.result));
-        F.OutNext("uSheduler_L: %2.2fms", fShedulerLoad);
-        F.OutNext("uParticles:  Qstart[%u] Qactive[%u] Qdestroy[%u]", Particles_starting, Particles_active, Particles_destroy);
-        F.OutNext("spInsert:    o[%.2fms, %2.1f%%], p[%.2fms, %2.1f%%]", g_SpatialSpace->stat_insert.result, PPP(g_SpatialSpace->stat_insert.result),
+        F.OutNext("*** ENGINE:  {:2.2f}ms", EngineTOTAL.result);
+        F.OutNext("uClients:    {:2.2f}ms, {:2.1f}%, crow({})/active({})/total({})", UpdateClient.result, PPP(UpdateClient.result), UpdateClient_crows,
+                  UpdateClient_active, UpdateClient_total);
+        F.OutNext("uSheduler:   {:2.2f}ms, {:2.1f}%", Sheduler.result, PPP(Sheduler.result));
+        F.OutNext("uSheduler_L: {:2.2f}ms", fShedulerLoad);
+        F.OutNext("uParticles:  Qstart[{}] Qactive[{}] Qdestroy[{}]", Particles_starting, Particles_active, Particles_destroy);
+        F.OutNext("spInsert:    o[{:.2f}ms, {:2.1f}%], p[{:.2f}ms, {:2.1f}%]", g_SpatialSpace->stat_insert.result, PPP(g_SpatialSpace->stat_insert.result),
                   g_SpatialSpacePhysic->stat_insert.result, PPP(g_SpatialSpacePhysic->stat_insert.result));
-        F.OutNext("spRemove:    o[%.2fms, %2.1f%%], p[%.2fms, %2.1f%%]", g_SpatialSpace->stat_remove.result, PPP(g_SpatialSpace->stat_remove.result),
+        F.OutNext("spRemove:    o[{:.2f}ms, {:2.1f}%], p[{:.2f}ms, {:2.1f}%]", g_SpatialSpace->stat_remove.result, PPP(g_SpatialSpace->stat_remove.result),
                   g_SpatialSpacePhysic->stat_remove.result, PPP(g_SpatialSpacePhysic->stat_remove.result));
-        F.OutNext("Physics:     %2.2fms, %2.1f%%", Physics.result, PPP(Physics.result));
-        F.OutNext("  collider:  %2.2fms", ph_collision.result);
-        F.OutNext("  solver:    %2.2fms, %u", ph_core.result, ph_core.count);
-        F.OutNext("aiThink:     %2.2fms, %u", AI_Think.result, AI_Think.count);
-        F.OutNext("  aiRange:   %2.2fms, %u", AI_Range.result, AI_Range.count);
-        F.OutNext("  aiPath:    %2.2fms, %u", AI_Path.result, AI_Path.count);
-        F.OutNext("  aiNode:    %2.2fms, %u", AI_Node.result, AI_Node.count);
-        F.OutNext("aiVision:    %2.2fms, %u", AI_Vis.result, AI_Vis.count);
-        F.OutNext("  Query:     %2.2fms", AI_Vis_Query.result);
-        F.OutNext("  RayCast:   %2.2fms", AI_Vis_RayTests.result);
+        F.OutNext("Physics:     {:2.2f}ms, {:2.1f}%", Physics.result, PPP(Physics.result));
+        F.OutNext("  collider:  {:2.2f}ms", ph_collision.result);
+        F.OutNext("  solver:    {:2.2f}ms, {}", ph_core.result, ph_core.count);
+        F.OutNext("aiThink:     {:2.2f}ms, {}", AI_Think.result, AI_Think.count);
+        F.OutNext("  aiRange:   {:2.2f}ms, {}", AI_Range.result, AI_Range.count);
+        F.OutNext("  aiPath:    {:2.2f}ms, {}", AI_Path.result, AI_Path.count);
+        F.OutNext("  aiNode:    {:2.2f}ms, {}", AI_Node.result, AI_Node.count);
+        F.OutNext("aiVision:    {:2.2f}ms, {}", AI_Vis.result, AI_Vis.count);
+        F.OutNext("  Query:     {:2.2f}ms", AI_Vis_Query.result);
+        F.OutNext("  RayCast:   {:2.2f}ms", AI_Vis_RayTests.result);
         F.OutSkip();
 
 #undef PPP
 #define PPP(a) (100.f * float(a) / float(RenderTOTAL.result))
-        F.OutNext("*** RENDER:  %2.2fms", RenderTOTAL.result);
-        F.OutNext("R_CALC:      %2.2fms, %2.1f%%", RenderCALC.result, PPP(RenderCALC.result));
-        F.OutNext("  HOM:       %2.2fms, %u", RenderCALC_HOM.result, RenderCALC_HOM.count);
-        F.OutNext("  Skeletons: %2.2fms, %u", Animation.result, Animation.count);
-        F.OutNext("R_DUMP:      %2.2fms, %2.1f%%", RenderDUMP.result, PPP(RenderDUMP.result));
-        F.OutNext("  Wait-W:    %2.2fms", RenderDUMP_Wait_W.result);
-        F.OutNext("  Wait-L:    %2.2fms", RenderDUMP_Wait.result);
-        F.OutNext("  Wait-P:    %2.2fms", RenderDUMP_Wait_P.result);
-        F.OutNext("  Skinning:  %2.2fms", RenderDUMP_SKIN.result);
-        F.OutNext("  DT_Vis/Cnt:%2.2fms/%u", RenderDUMP_DT_VIS.result, RenderDUMP_DT_Count);
-        F.OutNext("  DT_Render: %2.2fms", RenderDUMP_DT_Render.result);
-        F.OutNext("  DT_Cache:  %2.2fms", RenderDUMP_DT_Cache.result);
-        F.OutNext("  Wallmarks: %2.2fms, %u/%u - %u", RenderDUMP_WM.result, RenderDUMP_WMS_Count, RenderDUMP_WMD_Count, RenderDUMP_WMT_Count);
-        F.OutNext("  Glows:     %2.2fms", RenderDUMP_Glows.result);
-        F.OutNext("  Lights:    %2.2fms, %u", RenderDUMP_Lights.result, RenderDUMP_Lights.count);
-        F.OutNext("  RT:        %2.2fms, %u", RenderDUMP_RT.result, RenderDUMP_RT.count);
-        F.OutNext("  HUD:       %2.2fms", RenderDUMP_HUD.result);
-        F.OutNext("  P_calc:    %2.2fms", RenderDUMP_Pcalc.result);
-        F.OutNext("  S_calc:    %2.2fms", RenderDUMP_Scalc.result);
-        F.OutNext("  S_render:  %2.2fms, %u", RenderDUMP_Srender.result, RenderDUMP_Srender.count);
+        F.OutNext("*** RENDER:  {:2.2f}ms", RenderTOTAL.result);
+        F.OutNext("R_CALC:      {:2.2f}ms, {:2.1f}%", RenderCALC.result, PPP(RenderCALC.result));
+        F.OutNext("  HOM:       {:2.2f}ms, {}", RenderCALC_HOM.result, RenderCALC_HOM.count);
+        F.OutNext("  Skeletons: {:2.2f}ms, {}", Animation.result, Animation.count);
+        F.OutNext("R_DUMP:      {:2.2f}ms, {:2.1f}%", RenderDUMP.result, PPP(RenderDUMP.result));
+        F.OutNext("  Wait-W:    {:2.2f}ms", RenderDUMP_Wait_W.result);
+        F.OutNext("  Wait-L:    {:2.2f}ms", RenderDUMP_Wait.result);
+        F.OutNext("  Wait-P:    {:2.2f}ms", RenderDUMP_Wait_P.result);
+        F.OutNext("  Skinning:  {:2.2f}ms", RenderDUMP_SKIN.result);
+        F.OutNext("  DT_Vis/Cnt:{:2.2f}ms/{}", RenderDUMP_DT_VIS.result, RenderDUMP_DT_Count);
+        F.OutNext("  DT_Render: {:2.2f}ms", RenderDUMP_DT_Render.result);
+        F.OutNext("  DT_Cache:  {:2.2f}ms", RenderDUMP_DT_Cache.result);
+        F.OutNext("  Wallmarks: {:2.2f}ms, {}/{} - {}", RenderDUMP_WM.result, RenderDUMP_WMS_Count, RenderDUMP_WMD_Count, RenderDUMP_WMT_Count);
+        F.OutNext("  Glows:     {:2.2f}ms", RenderDUMP_Glows.result);
+        F.OutNext("  Lights:    {:2.2f}ms, {}", RenderDUMP_Lights.result, RenderDUMP_Lights.count);
+        F.OutNext("  RT:        {:2.2f}ms, {}", RenderDUMP_RT.result, RenderDUMP_RT.count);
+        F.OutNext("  HUD:       {:2.2f}ms", RenderDUMP_HUD.result);
+        F.OutNext("  P_calc:    {:2.2f}ms", RenderDUMP_Pcalc.result);
+        F.OutNext("  S_calc:    {:2.2f}ms", RenderDUMP_Scalc.result);
+        F.OutNext("  S_render:  {:2.2f}ms, {}", RenderDUMP_Srender.result, RenderDUMP_Srender.count);
         F.OutSkip();
-        F.OutNext("*** SOUND:   %2.2fms", SoundUpdate.result);
-        F.OutNext("  RENDER:    %2.2fms", SoundRender.result);
-        F.OutNext("  TGT/SIM/E: %u/%u/%u", snd_stat._rendered, snd_stat._simulated, snd_stat._events);
+        F.OutNext("*** SOUND:   {:2.2f}ms", SoundUpdate.result);
+        F.OutNext("  RENDER:    {:2.2f}ms", SoundRender.result);
+        F.OutNext("  TGT/SIM/E: {}/{}/{}", snd_stat._rendered, snd_stat._simulated, snd_stat._events);
         F.OutSkip();
-        F.OutNext("Input:       %2.2fms", Input.result);
-        F.OutNext("clRAY:       %2.2fms, %u, %2.0fK", clRAY.result, clRAY.count, r_ps);
-        F.OutNext("clBOX:       %2.2fms, %u, %2.0fK", clBOX.result, clBOX.count, b_ps);
-        F.OutNext("clFRUSTUM:   %2.2fms, %u", clFRUSTUM.result, clFRUSTUM.count);
+        F.OutNext("Input:       {:2.2f}ms", Input.result);
+        F.OutNext("clRAY:       {:2.2f}ms, {}, {:2.0f}K", clRAY.result, clRAY.count, r_ps);
+        F.OutNext("clBOX:       {:2.2f}ms, {}, {:2.0f}K", clBOX.result, clBOX.count, b_ps);
+        F.OutNext("clFRUSTUM:   {:2.2f}ms, {}", clFRUSTUM.result, clFRUSTUM.count);
         F.OutSkip();
-        F.OutNext("netClientRecv:   %2.2fms, %u", netClient1.result, netClient1.count);
-        F.OutNext("netClientSend:   %2.2fms, %u", netClient2.result, netClient2.count);
-        F.OutNext("netServer:   %2.2fms, %u", netServer.result, netServer.count);
-        F.OutNext("netClientCompressor:   %2.2fms", netClientCompressor.result);
-        F.OutNext("netServerCompressor:   %2.2fms", netServerCompressor.result);
+        F.OutNext("netClientRecv:   {:2.2f}ms, {}", netClient1.result, netClient1.count);
+        F.OutNext("netClientSend:   {:2.2f}ms, {}", netClient2.result, netClient2.count);
+        F.OutNext("netServer:   {:2.2f}ms, {}", netServer.result, netServer.count);
+        F.OutNext("netClientCompressor:   {:2.2f}ms", netClientCompressor.result);
+        F.OutNext("netServerCompressor:   {:2.2f}ms", netServerCompressor.result);
 
         F.OutSkip();
 
         F.OutSkip();
-        F.OutNext("TEST 0:      %2.2fms, %u", TEST0.result, TEST0.count);
-        F.OutNext("TEST 1:      %2.2fms, %u", TEST1.result, TEST1.count);
-        F.OutNext("TEST 2:      %2.2fms, %u", TEST2.result, TEST2.count);
-        F.OutNext("TEST 3:      %2.2fms, %u", TEST3.result, TEST3.count);
+        F.OutNext("TEST 0:      {:2.2f}ms, {}", TEST0.result, TEST0.count);
+        F.OutNext("TEST 1:      {:2.2f}ms, {}", TEST1.result, TEST1.count);
+        F.OutNext("TEST 2:      {:2.2f}ms, {}", TEST2.result, TEST2.count);
+        F.OutNext("TEST 3:      {:2.2f}ms, {}", TEST3.result, TEST3.count);
+
 #ifdef DEBUG_MEMORY_MANAGER
         F.OutSkip();
-        F.OutNext("str: cmp[%3u], dock[%3u], qpc[%3u]", Memory.stat_strcmp, Memory.stat_strdock, CPU::qpc_counter);
+        F.OutNext("str: cmp[{:3}], dock[{:3}], qpc[{:3}]", Memory.stat_strcmp, Memory.stat_strdock, CPU::qpc_counter);
         Memory.stat_strcmp = 0;
         Memory.stat_strdock = 0;
         CPU::qpc_counter = 0;
 #else // DEBUG_MEMORY_MANAGER
         F.OutSkip();
-        F.OutNext("qpc[%3u]", CPU::qpc_counter);
+        F.OutNext("qpc[{:3}]", CPU::qpc_counter);
         CPU::qpc_counter = 0;
 #endif // DEBUG_MEMORY_MANAGER
+
         F.OutSkip();
         m_pRender->OutData4(F);
 
@@ -270,21 +274,27 @@ void CStats::Show()
         F.SetColor(color_rgba(255, 16, 16, 255));
         F.OutSet(300, 300);
         F.SetHeightI(f_base_size * 2);
+
         if (fFPS < 30)
-            F.OutNext("FPS       < 30:   %3.1f", fFPS);
+            F.OutNext("FPS       < 30:   {:3.1f}", fFPS);
+
         m_pRender->GuardVerts(F);
+
         if (psDeviceFlags.test(rsStatistic))
         {
             m_pRender->GuardDrawCalls(F);
+
             if (RenderDUMP_DT_Count > 1000)
-                F.OutNext("DT_count  > 1000: %u", RenderDUMP_DT_Count);
+                F.OutNext("DT_count  > 1000: {}", RenderDUMP_DT_Count);
+
             F.OutSkip();
+
             if (Sheduler.result > 3.f)
-                F.OutNext("Update     > 3ms:	%3.1f", Sheduler.result);
+                F.OutNext("Update     > 3ms:\t{:3.1f}", Sheduler.result);
             if (UpdateClient.result > 3.f)
-                F.OutNext("UpdateCL   > 3ms: %3.1f", UpdateClient.result);
+                F.OutNext("UpdateCL   > 3ms: {:3.1f}", UpdateClient.result);
             if (Physics.result > 5.f)
-                F.OutNext("Physics    > 5ms: %3.1f", Physics.result);
+                F.OutNext("Physics    > 5ms: {:3.1f}", Physics.result);
         }
     }
 
@@ -296,13 +306,10 @@ void CStats::Show()
         F.SetColor(color_rgba(255, 16, 16, 191));
         F.OutSet(200, 0);
         F.SetHeightI(f_base_size);
-#if 0
-		for (u32 it=0; it<errors.size(); it++)
-			F.OutNext("%s",errors[it].c_str());
-#else
+
         for (u32 it = (u32)_max(int(0), (int)errors.size() - g_ErrorLineCount); it < errors.size(); it++)
-            F.OutNext("%s", errors[it].c_str());
-#endif
+            F.OutNext("{}", errors[it]);
+
         F.OnRender();
     }
 #endif
@@ -425,11 +432,11 @@ void CStats::Show_HW_Stats()
     float y = 10.f;
 
     // Draw all your stuff
-    pFontHW->Out(10, y += 15, "PHYS MEM AVAILABLE: %0.0fMB", AvailableMem); // Physical memory available
-    pFontHW->Out(10, y += 15, "PAGE MEM AVAILABLE: %0.0fMB", AvailablePageFileMem); // Pagefile memory available
+    pFontHW->Out(10, y += 15, "PHYS MEM AVAILABLE: {:0.0f}MB", AvailableMem); // Physical memory available
+    pFontHW->Out(10, y += 15, "PAGE MEM AVAILABLE: {:0.0f}MB", AvailablePageFileMem); // Pagefile memory available
 
-    pFontHW->Out(10, y += 15, "Engine Working Set: %0.0fMB", WorkingSetSize); // Physical memory used by app
-    pFontHW->Out(10, y += 15, "Engine Commit Charge: %0.0fMB", PagefileUsage); // Physical memory used by app
+    pFontHW->Out(10, y += 15, "Engine Working Set: {:0.0f}MB", WorkingSetSize); // Physical memory used by app
+    pFontHW->Out(10, y += 15, "Engine Commit Charge: {:0.0f}MB", PagefileUsage); // Physical memory used by app
 
     if (PhysMemoryUsedPercent > 80.0f)
         pFontHW->SetColor(DebugTextColor::DTC_RED);
@@ -438,7 +445,7 @@ void CStats::Show_HW_Stats()
     else
         pFontHW->SetColor(DebugTextColor::DTC_GREEN);
 
-    pFontHW->Out(10, y += 15, "MEM USED: %0.0f%%", PhysMemoryUsedPercent); // Total Phys. memory load (%)
+    pFontHW->Out(10, y += 15, "MEM USED: {:0.0f}%", PhysMemoryUsedPercent); // Total Phys. memory load (%)
 
     if (cpuLoad > 80.0)
         pFontHW->SetColor(DebugTextColor::DTC_RED);
@@ -447,13 +454,13 @@ void CStats::Show_HW_Stats()
     else
         pFontHW->SetColor(DebugTextColor::DTC_GREEN);
 
-    pFontHW->Out(10, y += 15, "CPU LOAD: %0.0f%%", cpuLoad); // CPU load
+    pFontHW->Out(10, y += 15, "CPU LOAD: {:0.0f}%", cpuLoad); // CPU load
 
     // get MT Load
     float dwScale = 100;
     for (size_t i = 0; i < CPU::ID.m_dwNumberOfProcessors; i++)
     {
-        pFontHW->Out(10, dwScale, "CPU%zu: %0.0f%%", i, CPU::ID.fUsage[i]);
+        pFontHW->Out(10, dwScale, "CPU{}: {:0.0f}%", i, CPU::ID.fUsage[i]);
         dwScale += 15;
     }
 

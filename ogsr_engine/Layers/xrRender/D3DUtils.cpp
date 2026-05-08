@@ -54,12 +54,12 @@ Fvector boxvert[boxvertcount];
 
 // identity box
 constexpr u32 identboxwirecount{24};
-constexpr Fvector identboxwire[identboxwirecount]{Fvector{-0.5f, -0.5f, -0.5f}, Fvector{-0.5f, +0.5f, -0.5f}, Fvector{-0.5f, +0.5f, -0.5f}, Fvector{+0.5f, +0.5f, -0.5f},
-                                                  Fvector{+0.5f, +0.5f, -0.5f}, Fvector{+0.5f, -0.5f, -0.5f}, Fvector{+0.5f, -0.5f, -0.5f}, Fvector{-0.5f, -0.5f, -0.5f},
-                                                  Fvector{-0.5f, +0.5f, +0.5f}, Fvector{+0.5f, +0.5f, +0.5f}, Fvector{+0.5f, +0.5f, +0.5f}, Fvector{+0.5f, -0.5f, +0.5f},
-                                                  Fvector{+0.5f, -0.5f, +0.5f}, Fvector{-0.5f, -0.5f, +0.5f}, Fvector{-0.5f, -0.5f, +0.5f}, Fvector{-0.5f, +0.5f, +0.5f},
-                                                  Fvector{-0.5f, +0.5f, -0.5f}, Fvector{-0.5f, +0.5f, +0.5f}, Fvector{+0.5f, +0.5f, -0.5f}, Fvector{+0.5f, +0.5f, +0.5f},
-                                                  Fvector{+0.5f, -0.5f, -0.5f}, Fvector{+0.5f, -0.5f, +0.5f}, Fvector{-0.5f, -0.5f, -0.5f}, Fvector{-0.5f, -0.5f, +0.5f}};
+constexpr Fvector identboxwire[identboxwirecount]{
+    Fvector{-0.5f, -0.5f, -0.5f}, Fvector{-0.5f, +0.5f, -0.5f}, Fvector{-0.5f, +0.5f, -0.5f}, Fvector{+0.5f, +0.5f, -0.5f}, Fvector{+0.5f, +0.5f, -0.5f},
+    Fvector{+0.5f, -0.5f, -0.5f}, Fvector{+0.5f, -0.5f, -0.5f}, Fvector{-0.5f, -0.5f, -0.5f}, Fvector{-0.5f, +0.5f, +0.5f}, Fvector{+0.5f, +0.5f, +0.5f},
+    Fvector{+0.5f, +0.5f, +0.5f}, Fvector{+0.5f, -0.5f, +0.5f}, Fvector{+0.5f, -0.5f, +0.5f}, Fvector{-0.5f, -0.5f, +0.5f}, Fvector{-0.5f, -0.5f, +0.5f},
+    Fvector{-0.5f, +0.5f, +0.5f}, Fvector{-0.5f, +0.5f, -0.5f}, Fvector{-0.5f, +0.5f, +0.5f}, Fvector{+0.5f, +0.5f, -0.5f}, Fvector{+0.5f, +0.5f, +0.5f},
+    Fvector{+0.5f, -0.5f, -0.5f}, Fvector{+0.5f, -0.5f, +0.5f}, Fvector{-0.5f, -0.5f, -0.5f}, Fvector{-0.5f, -0.5f, +0.5f}};
 
 #define SIGN(x) ((x < 0) ? -1 : 1)
 
@@ -138,24 +138,26 @@ void CDrawUtilities::OnDeviceCreate()
 {
     Device.seqRender.Add(this, REG_PRIORITY_LOW - 1000);
 
-    m_SolidBox.CreateFromData(D3DPT_TRIANGLELIST, DU_BOX_NUMFACES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_box_vertices.data(), DU_BOX_NUMVERTEX, du_box_faces.data(), DU_BOX_NUMFACES * 3);
-    m_SolidCone.CreateFromData(D3DPT_TRIANGLELIST, DU_CONE_NUMFACES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_cone_vertices.data(), DU_CONE_NUMVERTEX, du_cone_faces.data(),
-                               DU_CONE_NUMFACES * 3);
-    m_SolidSphere.CreateFromData(D3DPT_TRIANGLELIST, DU_SPHERE_NUMFACES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_sphere_vertices.data(), DU_SPHERE_NUMVERTEX, du_sphere_faces.data(),
-                                 DU_SPHERE_NUMFACES * 3);
-    m_SolidSpherePart.CreateFromData(D3DPT_TRIANGLELIST, DU_SPHERE_PART_NUMFACES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_sphere_part_vertices.data(), DU_SPHERE_PART_NUMVERTEX,
-                                     du_sphere_part_faces.data(), DU_SPHERE_PART_NUMFACES * 3);
+    m_SolidBox.CreateFromData(D3DPT_TRIANGLELIST, DU_BOX_NUMFACES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_box_vertices.data(), DU_BOX_NUMVERTEX, du_box_faces.data(),
+                              DU_BOX_NUMFACES * 3);
+    m_SolidCone.CreateFromData(D3DPT_TRIANGLELIST, DU_CONE_NUMFACES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_cone_vertices.data(), DU_CONE_NUMVERTEX,
+                               du_cone_faces.data(), DU_CONE_NUMFACES * 3);
+    m_SolidSphere.CreateFromData(D3DPT_TRIANGLELIST, DU_SPHERE_NUMFACES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_sphere_vertices.data(), DU_SPHERE_NUMVERTEX,
+                                 du_sphere_faces.data(), DU_SPHERE_NUMFACES * 3);
+    m_SolidSpherePart.CreateFromData(D3DPT_TRIANGLELIST, DU_SPHERE_PART_NUMFACES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_sphere_part_vertices.data(),
+                                     DU_SPHERE_PART_NUMVERTEX, du_sphere_part_faces.data(), DU_SPHERE_PART_NUMFACES * 3);
     m_SolidCylinder.CreateFromData(D3DPT_TRIANGLELIST, DU_CYLINDER_NUMFACES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_cylinder_vertices.data(), DU_CYLINDER_NUMVERTEX,
                                    du_cylinder_faces.data(), DU_CYLINDER_NUMFACES * 3);
-    m_WireBox.CreateFromData(D3DPT_LINELIST, DU_BOX_NUMLINES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_box_vertices.data(), DU_BOX_NUMVERTEX, du_box_lines.data(), DU_BOX_NUMLINES * 2);
+    m_WireBox.CreateFromData(D3DPT_LINELIST, DU_BOX_NUMLINES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_box_vertices.data(), DU_BOX_NUMVERTEX, du_box_lines.data(),
+                             DU_BOX_NUMLINES * 2);
     m_WireCone.CreateFromData(D3DPT_LINELIST, DU_CONE_NUMLINES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_cone_vertices.data(), DU_CONE_NUMVERTEX, du_cone_lines.data(),
                               DU_CONE_NUMLINES * 2);
-    m_WireSphere.CreateFromData(D3DPT_LINELIST, DU_SPHERE_NUMLINES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_sphere_verticesl.data(), DU_SPHERE_NUMVERTEXL, du_sphere_lines.data(),
-                                DU_SPHERE_NUMLINES * 2);
-    m_WireSpherePart.CreateFromData(D3DPT_LINELIST, DU_SPHERE_PART_NUMLINES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_sphere_part_vertices.data(), DU_SPHERE_PART_NUMVERTEX,
-                                    du_sphere_part_lines.data(), DU_SPHERE_PART_NUMLINES * 2);
-    m_WireCylinder.CreateFromData(D3DPT_LINELIST, DU_CYLINDER_NUMLINES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_cylinder_vertices.data(), DU_CYLINDER_NUMVERTEX, du_cylinder_lines.data(),
-                                  DU_CYLINDER_NUMLINES * 2);
+    m_WireSphere.CreateFromData(D3DPT_LINELIST, DU_SPHERE_NUMLINES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_sphere_verticesl.data(), DU_SPHERE_NUMVERTEXL,
+                                du_sphere_lines.data(), DU_SPHERE_NUMLINES * 2);
+    m_WireSpherePart.CreateFromData(D3DPT_LINELIST, DU_SPHERE_PART_NUMLINES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_sphere_part_vertices.data(),
+                                    DU_SPHERE_PART_NUMVERTEX, du_sphere_part_lines.data(), DU_SPHERE_PART_NUMLINES * 2);
+    m_WireCylinder.CreateFromData(D3DPT_LINELIST, DU_CYLINDER_NUMLINES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_cylinder_vertices.data(), DU_CYLINDER_NUMVERTEX,
+                                  du_cylinder_lines.data(), DU_CYLINDER_NUMLINES * 2);
 
     for (u32 i = 0; i < LINE_DIVISION; i++)
     {
@@ -636,7 +638,7 @@ void CDrawUtilities::dbgDrawPlacement(const Fvector& p, int sz, u32 clr, LPCSTR 
     if (caption)
     {
         m_Font->SetColor(clr_font);
-        m_Font->Out(c.x, c.y + s, "%s", caption);
+        m_Font->Out(c.x, c.y + s, "{}", caption);
     }
 }
 
@@ -870,7 +872,8 @@ void CDrawUtilities::DD_DrawFace_end()
 
 //----------------------------------------------------
 
-void CDrawUtilities::DrawCylinder(const Fmatrix& parent, const Fvector& center, const Fvector& dir, float height, float radius, u32 clr_s, u32 clr_w, BOOL bSolid, BOOL bWire)
+void CDrawUtilities::DrawCylinder(const Fmatrix& parent, const Fvector& center, const Fvector& dir, float height, float radius, u32 clr_s, u32 clr_w,
+                                  BOOL bSolid, BOOL bWire)
 {
     Fmatrix mScale;
     mScale.scale(2.f * radius, 2.f * radius, height);
@@ -906,7 +909,8 @@ void CDrawUtilities::DrawCylinder(const Fmatrix& parent, const Fvector& center, 
 }
 //----------------------------------------------------
 
-void CDrawUtilities::DrawCone(const Fmatrix& parent, const Fvector& apex, const Fvector& dir, float height, float radius, u32 clr_s, u32 clr_w, BOOL bSolid, BOOL bWire)
+void CDrawUtilities::DrawCone(const Fmatrix& parent, const Fvector& apex, const Fvector& dir, float height, float radius, u32 clr_s, u32 clr_w, BOOL bSolid,
+                              BOOL bWire)
 {
     Fmatrix mScale;
     mScale.scale(2.f * radius, 2.f * radius, height);
@@ -1418,8 +1422,8 @@ void CDrawUtilities::OutText(const Fvector& pos, LPCSTR text, u32 color, u32 sha
         p.y = (float)iFloor(_y2real(-p.y));
 
         m_Font->SetColor(shadow_color);
-        m_Font->Out(p.x, p.y, "%s", text);
+        m_Font->Out(p.x, p.y, "{}", text);
         m_Font->SetColor(color);
-        m_Font->Out(p.x - 1, p.y - 1, "%s", text);
+        m_Font->Out(p.x - 1, p.y - 1, "{}", text);
     }
 }

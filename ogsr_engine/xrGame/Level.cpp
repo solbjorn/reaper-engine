@@ -535,9 +535,10 @@ tmc::task<void> CLevel::OnRender()
         HUD().Font().pFontStat->SetColor(0xffff0000);
 
         if (Server)
-            HUD().Font().pFontStat->OutNext("Client Objects:      [%d]", Server->GetEntitiesNum());
-        HUD().Font().pFontStat->OutNext("Server Objects:      [%d]", Objects.o_count());
-        HUD().Font().pFontStat->OutNext("Interpolation Steps: [%d]", Level().GetInterpolationSteps());
+            HUD().Font().pFontStat->OutNext("Client Objects:      [{}]", Server->GetEntitiesNum());
+
+        HUD().Font().pFontStat->OutNext("Server Objects:      [{}]", Objects.o_count());
+        HUD().Font().pFontStat->OutNext("Interpolation Steps: [{}]", Level().GetInterpolationSteps());
         HUD().Font().pFontStat->SetHeight(8.0f);
         //---------------------------------------------------------------------
     }

@@ -182,13 +182,10 @@ void IWriter::w_sdir(const Fvector& D)
     w_float(mag);
 }
 
-void IWriter::w_printf(const char* format, ...)
+void IWriter::w_vprintf(xr::detail::string_view fmt, xr::detail::format_args args)
 {
-    va_list mark;
-    char buf[1024];
-    va_start(mark, format);
-    vsprintf(buf, format, mark);
-    w(buf, xr_strlen(buf));
+    const auto str = xr::detail::vformat(fmt, args);
+    w(str.data(), std::ssize(str));
 }
 
 //---------------------------------------------------

@@ -763,7 +763,7 @@ public:
         if (!*g_last_saved_game)
             return;
 
-        F->w_printf("%s %s\r\n", cName, g_last_saved_game);
+        F->w_printf("{} {}\r\n", cName, g_last_saved_game);
     }
 };
 

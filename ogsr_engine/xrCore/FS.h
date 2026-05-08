@@ -97,7 +97,16 @@ public:
     IC void w_angle8(float a) { w_float_q8(angle_normalize(a), 0, PI_MUL_2); }
     IC void w_dir(const Fvector& D) { w_u16(pvCompress(D)); }
     void w_sdir(const Fvector& D);
-    void XR_PRINTF(2, 3) w_printf(const char* format, ...);
+
+private:
+    void w_vprintf(xr::detail::string_view fmt, xr::detail::format_args args);
+
+public:
+    template <typename... Args>
+    void w_printf(xr::detail::format_string<Args...> fmt, Args&&... args)
+    {
+        w_vprintf(fmt.get(), xr::detail::make_format_args(args...));
+    }
 
     // generalized chunking
     void open_chunk(u32 type);

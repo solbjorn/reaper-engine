@@ -30,25 +30,23 @@ void dxFontRender::RenderFragment(CGameFont& owner, u32& i, bool shadow_mode, fl
     for (; i < last; i++)
     {
         CGameFont::String& PS = owner.strings[i];
-
         wide_char wsStr[MAX_MB_CHARS];
 
-        u32 len = owner.IsMultibyte() ? mbhMulti2Wide(wsStr, nullptr, MAX_MB_CHARS, PS.string) : xr_strlen(PS.string);
-
+        u32 len = owner.IsMultibyte() ? mbhMulti2Wide(wsStr, nullptr, MAX_MB_CHARS, PS.string.c_str()) : xr_strlen(PS.string.c_str());
         if (len)
         {
             float X = float(iFloor(PS.x)) + dX;
             float Y = float(iFloor(PS.y)) + dY;
 
-            float S = PS.height * g_current_font_scale.y * owner.GetHeightScale(); // g_current_font_scale это еще один скейлинг шрифтов для pp эффектов похоже
+            // g_current_font_scale это еще один скейлинг шрифтов для pp эффектов похоже
+            float S = PS.height * g_current_font_scale.y * owner.GetHeightScale();
 
             float Y2 = Y + S;
             float fSize = 0;
 
             if (PS.align)
-            {
-                fSize = owner.IsMultibyte() ? owner.SizeOf_(wsStr) : owner.SizeOf_(PS.string); // уже с  * owner.GetWidthScale()
-            }
+                // уже с  * owner.GetWidthScale()
+                fSize = owner.IsMultibyte() ? owner.SizeOf_(wsStr) : owner.SizeOf_(PS.string.c_str());
 
             switch (PS.align)
             {
@@ -72,7 +70,6 @@ void dxFontRender::RenderFragment(CGameFont& owner, u32& i, bool shadow_mode, fl
             if (shadow_mode)
             {
                 // color_argb(220, 20, 20, 20)
-
                 const u32 min_alpha = _min(color_get_A(clr), (u32)220);
 
                 u32 _R = color_get_R(clr);
@@ -80,7 +77,6 @@ void dxFontRender::RenderFragment(CGameFont& owner, u32& i, bool shadow_mode, fl
                 u32 _B = color_get_B(clr);
 
                 float Y = 0.299f * _R + 0.587f * _G + 0.114f * _B;
-
                 u32 c = Y > 40 ? 20 : 120;
 
                 clr2 = clr = color_argb(min_alpha, c, c, c);
@@ -92,10 +88,8 @@ void dxFontRender::RenderFragment(CGameFont& owner, u32& i, bool shadow_mode, fl
 
             for (u32 j = 0; j < len; j++)
             {
-                const Fvector l = owner.IsMultibyte() ? owner.GetCharTC(wsStr[1 + j]) : owner.GetCharTC((u8)PS.string[j]);
-
+                const Fvector l = owner.IsMultibyte() ? owner.GetCharTC(wsStr[1 + j]) : owner.GetCharTC((u8)PS.string.c_str()[j]);
                 const float scw = l.z * g_current_font_scale.x * owner.GetWidthScale();
-
                 const float fTCWidth = l.z / owner.vTS.x;
 
                 if (!fis_zero(l.z))
@@ -139,7 +133,8 @@ void dxFontRender::OnRender(CGameFont& owner)
 {
     VERIFY(g_bRendering);
 
-    if (owner.strings.empty()) // early exit if there is no text to render
+    // early exit if there is no text to render
+    if (owner.strings.empty())
         return;
 
     if (pShader)
@@ -157,17 +152,20 @@ void dxFontRender::OnRender(CGameFont& owner)
     {
         // calculate first-fit
         int count = 1;
-        u32 length = owner.SmartLength(owner.strings[i].string);
+        u32 length = owner.SmartLength(owner.strings[i].string.c_str());
+
         while (i + count < owner.strings.size())
         {
-            u32 L = owner.SmartLength(owner.strings[i + count].string);
+            u32 L = owner.SmartLength(owner.strings[i + count].string.c_str());
             if (L + length < MAX_MB_CHARS)
             {
                 count++;
                 length += L;
             }
             else
+            {
                 break;
+            }
         }
 
         const u32 last = i + count;

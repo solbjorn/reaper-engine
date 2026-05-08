@@ -622,11 +622,9 @@ void CActor::g_SetAnimation(u32 mstate_rl)
     if (bDebug)
     {
         HUD().Font().pFontStat->OutSetI(0, 0);
-        HUD().Font().pFontStat->OutNext("[%s]", mov_state[moving_idx]);
+        HUD().Font().pFontStat->OutNext("[{}]", mov_state[moving_idx]);
     }
-#endif
 
-#ifdef DEBUG
     if ((Level().CurrentControlEntity() == this) && g_ShowAnimationInfo)
     {
         string128 buf;
@@ -657,7 +655,7 @@ void CActor::g_SetAnimation(u32 mstate_rl)
             strcat(buf, "RLookout ");
         if (m_bJumpKeyPressed)
             strcat(buf, "+Jumping ");
-        HUD().Font().pFontStat->OutNext("MSTATE:     [%s]", buf);
+        HUD().Font().pFontStat->OutNext("MSTATE:     [{}]", buf);
     };
 #endif
 

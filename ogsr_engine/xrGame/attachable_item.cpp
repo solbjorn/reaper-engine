@@ -205,11 +205,11 @@ void attach_draw_adjust_mode()
     F->SetAligment(CGameFont::alCenter);
     F->OutSetI(0.f, -0.8f);
     F->SetColor(D3DCOLOR_XRGB(125, 0, 0));
-    F->OutNext("Adjusting attachable item [%s]", CAttachableItem::m_dbgItem->object().cNameSect().c_str());
+    F->OutNext("Adjusting attachable item [{}]", CAttachableItem::m_dbgItem->object().cNameSect());
 
     CAttachableItem::m_dbgItem->ParseCurrentItem(F);
 
-    F->OutNext("move step  [%3.3f] rotate step  [%3.3f]", adj_delta_pos, adj_delta_rot);
+    F->OutNext("move step  [{:3.3f}] rotate step  [{:3.3f}]", adj_delta_pos, adj_delta_rot);
 
     F->OutNext("HOLD LShift to move. ALT to rotate");
     F->OutNext("HOLD [Z]-x axis [X]-y axis [C]-z axis");
@@ -221,8 +221,8 @@ void attach_draw_adjust_mode()
     F->OutSkip();
 
     const Fvector _pos = CAttachableItem::m_dbgItem->get_pos_offset();
-    F->OutNext("attach_position_offset IS [%3.3f][%3.3f][%3.3f]", _pos.x, _pos.y, _pos.z);
+    F->OutNext("attach_position_offset IS [{:3.3f}][{:3.3f}][{:3.3f}]", _pos.x, _pos.y, _pos.z);
 
     const Fvector _ang = CAttachableItem::m_dbgItem->get_angle_offset();
-    F->OutNext("attach_angle_offset IS [%3.3f][%3.3f][%3.3f]", _ang.y, _ang.x, _ang.z);
+    F->OutNext("attach_angle_offset IS [{:3.3f}][{:3.3f}][{:3.3f}]", _ang.y, _ang.x, _ang.z);
 }
