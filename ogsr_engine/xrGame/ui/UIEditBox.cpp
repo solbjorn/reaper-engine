@@ -26,7 +26,7 @@ void CUIEditBox::Init(float x, float y, float width, float height)
 
 void CUIEditBox::InitTexture(const char* texture) { m_frameLine.InitTexture(texture); }
 
-void CUIEditBox::SetCurrentValue() { SetText(GetOptStringValue()); }
+void CUIEditBox::SetCurrentValue() { SetText(GetOptStringValue().c_str()); }
 
 void CUIEditBox::SaveValue()
 {

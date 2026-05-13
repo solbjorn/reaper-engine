@@ -26,7 +26,7 @@ protected:
     virtual void OnMessage(const char*);
 
     // string
-    LPCSTR GetOptStringValue();
+    [[nodiscard]] xr_string GetOptStringValue() const;
     void SaveOptStringValue(const char* val);
     // integer
     void GetOptIntegerValue(int& val, int& min, int& max);
@@ -38,7 +38,7 @@ protected:
     bool GetOptBoolValue();
     void SaveOptBoolValue(bool val);
     // token
-    LPCSTR GetOptTokenValue();
+    [[nodiscard]] xr_string GetOptTokenValue() const;
     const xr_token* GetOptToken();
     void SaveOptTokenValue(const char* val);
 

@@ -875,20 +875,13 @@ void ImGuiGameConsole::ExecuteCommand(gsl::czstring cmd_str)
             if (last.empty())
             {
                 if (cc->bEmptyArgsHandled)
-                {
-                    cc->Execute(last.c_str());
-                }
+                    cc->Execute(last);
                 else
-                {
-                    IConsole_Command::TStatus stat;
-                    cc->Status(stat);
-
-                    Msg("- {} {}", cc->Name(), stat);
-                }
+                    Msg("- {} {}", cc->Name(), cc->Status());
             }
             else
             {
-                cc->Execute(last.c_str());
+                cc->Execute(last);
                 cc->add_to_LRU(shared_str{last.c_str()});
             }
         }

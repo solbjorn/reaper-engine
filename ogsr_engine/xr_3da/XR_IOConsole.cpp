@@ -590,20 +590,13 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool allow_disabl
             if (last.empty())
             {
                 if (cc->bEmptyArgsHandled)
-                {
-                    cc->Execute(last.c_str());
-                }
+                    cc->Execute(last);
                 else
-                {
-                    IConsole_Command::TStatus stat;
-                    cc->Status(stat);
-
-                    Msg("- {} {}", cc->Name(), stat);
-                }
+                    Msg("- {} {}", cc->Name(), cc->Status());
             }
             else
             {
-                cc->Execute(last.c_str());
+                cc->Execute(last);
                 if (record_cmd)
                     cc->add_to_LRU(shared_str{last});
             }

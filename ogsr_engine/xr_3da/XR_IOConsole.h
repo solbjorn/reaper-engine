@@ -142,8 +142,8 @@ public:
     bool GetBool(LPCSTR cmd) const;
     float GetFloat(LPCSTR cmd, float& min, float& max) const;
     int GetInteger(LPCSTR cmd, int& min, int& max) const;
-    LPCSTR GetString(LPCSTR cmd) const;
-    LPCSTR GetToken(LPCSTR cmd) const;
+    [[nodiscard]] xr_string GetString(gsl::czstring cmd) const;
+    [[nodiscard]] xr_string GetToken(gsl::czstring cmd) const;
     const xr_token* GetXRToken(LPCSTR cmd) const;
     Fvector GetFVector(LPCSTR cmd) const;
     Fvector* GetFVectorPtr(LPCSTR cmd) const;

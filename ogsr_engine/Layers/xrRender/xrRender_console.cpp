@@ -290,23 +290,24 @@ public:
     explicit CCC_r__color(LPCSTR N, Fvector4* V, Fvector4 _min, Fvector4 _max) : CCC_Vector4{N, V, _min, _max} {}
     ~CCC_r__color() override = default;
 
-    void Execute(LPCSTR args) override
+    void Execute(std::string_view args) override
     {
-        f32 x, y, z, w;
-
-        if (sscanf(args, "%g,%g,%g,%g", &x, &y, &z, &w) != 4 && sscanf(args, "(%g,%g,%g,%g)", &x, &y, &z, &w) != 4)
+        const auto res = scn::scan_value<Fvector4>(args);
+        if (!res)
         {
-            InvalidSyntax();
+            InvalidSyntax(res.error().msg(), args);
             return;
         }
 
-        if (w < min.w || x + w < min.x || y + w < min.y || z + w < min.z || w > max.w || x + w > max.x || y + w > max.y || z + w > max.z)
+        const auto& v = res->value();
+        if (v.w < min.w || v.x + v.w < min.x || v.y + v.w < min.y || v.z + v.w < min.z || v.w > max.w || v.x + v.w > max.x || v.y + v.w > max.y ||
+            v.z + v.w > max.z)
         {
-            InvalidSyntax();
+            InvalidSyntax("value(s) out of bounds", args);
             return;
         }
 
-        value->set(x, y, z, w);
+        value->set(v);
     }
 };
 
@@ -329,13 +330,11 @@ public:
     explicit CCC_detail_radius(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer{N, V, _min, _max} {}
     ~CCC_detail_radius() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
         CCC_Integer::Execute(args);
         apply();
     }
-
-    virtual void Status(TStatus& S) { CCC_Integer::Status(S); }
 };
 
 class CCC_detail_reset : public CCC_Float
@@ -352,13 +351,11 @@ public:
     explicit CCC_detail_reset(LPCSTR N, float* V, float _min = 0, float _max = 1) : CCC_Float{N, V, _min, _max} {}
     ~CCC_detail_reset() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
         CCC_Float::Execute(args);
         apply();
     }
-
-    virtual void Status(TStatus& S) { CCC_Float::Status(S); }
 };
 
 class CCC_tf_Aniso : public CCC_Integer
@@ -379,15 +376,9 @@ public:
     explicit CCC_tf_Aniso(LPCSTR N, int* v) : CCC_Integer{N, v, 1, 16} {}
     ~CCC_tf_Aniso() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
         CCC_Integer::Execute(args);
-        apply();
-    }
-
-    virtual void Status(TStatus& S)
-    {
-        CCC_Integer::Status(S);
         apply();
     }
 };
@@ -408,15 +399,9 @@ public:
     explicit CCC_tf_MipBias(LPCSTR N, float* v) : CCC_Float{N, v, -3.f, +3.f} {}
     ~CCC_tf_MipBias() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
         CCC_Float::Execute(args);
-        apply();
-    }
-
-    virtual void Status(TStatus& S)
-    {
-        CCC_Float::Status(S);
         apply();
     }
 };
@@ -429,13 +414,14 @@ public:
     explicit CCC_Screenshot(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_Screenshot() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
-        string_path name;
-        name[0] = 0;
+        gsl::czstring image{};
 
-        sscanf(args, "%s", name);
-        LPCSTR image = xr_strlen(name) ? name : nullptr;
+        const auto res = scn::scan_value<xr_string>(args);
+        if (res && !res->value().empty())
+            image = res->value().c_str();
+
         RImplementation.Screenshot(IRender_interface::SM_NORMAL, image);
     }
 };
@@ -449,7 +435,7 @@ public:
     explicit CCC_ModelPoolStat(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_ModelPoolStat() override = default;
 
-    void Execute(LPCSTR) override { RImplementation.Models->dump(); }
+    void Execute(std::string_view) override { RImplementation.Models->dump(); }
 };
 #endif
 
@@ -463,11 +449,10 @@ public:
     explicit CCC_Preset(LPCSTR N, u32* V, const xr_token* T) : CCC_Token{N, V, T} {}
     ~CCC_Preset() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
         CCC_Token::Execute(args);
         string_path _cfg;
-        string_path cmd;
 
         switch (*value)
         {
@@ -479,8 +464,7 @@ public:
         }
 
         std::ignore = FS.update_path(_cfg, "$game_config$", _cfg);
-        strconcat(sizeof(cmd), cmd, "cfg_load", " ", _cfg);
-        Console->Execute(cmd);
+        Console->Execute(xr::format("cfg_load {}", _cfg).c_str());
     }
 };
 
@@ -492,7 +476,7 @@ public:
     explicit CCC_VideoMemoryStats(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_VideoMemoryStats() override = default;
 
-    void Execute(LPCSTR) override
+    void Execute(std::string_view) override
     {
         Log("memory usage  mb \t \t video    \t managed      \t system");
 
@@ -532,7 +516,7 @@ public:
     explicit CCC_DumpResources(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_DumpResources() override = default;
 
-    void Execute(LPCSTR) override
+    void Execute(std::string_view) override
     {
         RImplementation.Models->dump();
         RImplementation.Resources->Dump(false);
@@ -548,7 +532,7 @@ public:
     explicit CCC_Fog_Reload(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_Fog_Reload() override = default;
 
-    void Execute(LPCSTR args) override { FluidManager.UpdateProfiles(); }
+    void Execute(std::string_view) override { FluidManager.UpdateProfiles(); }
 };
 #endif //	DEBUG
 
@@ -560,18 +544,24 @@ public:
     explicit CCC_PART_Export(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_PART_Export() override = default;
 
-    void Execute(LPCSTR args) override
+    void Execute(std::string_view args) override
     {
-        if (g_pGameLevel)
+        if (g_pGameLevel != nullptr)
         {
-            Log("Error: Unload level first!");
+            InvalidSyntax("unload the level to execute", args);
+            return;
+        }
+
+        if (args != "0" && args != "1")
+        {
+            InvalidSyntax("not a boolean", args);
             return;
         }
 
         Log("Exporting particles...");
 
         RImplementation.PSLibrary.Reload();
-        RImplementation.PSLibrary.Save2(0 == xr_strcmp(args, "1"));
+        RImplementation.PSLibrary.Save2(args == "1");
 
         Log("Exporting particles Done!");
     }
@@ -585,11 +575,11 @@ public:
     explicit CCC_PART_Import(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_PART_Import() override = default;
 
-    void Execute(LPCSTR) override
+    void Execute(std::string_view) override
     {
-        if (g_pGameLevel)
+        if (g_pGameLevel != nullptr)
         {
-            Log("Error: Unload level first!");
+            InvalidSyntax("unload the level to execute", "(no arguments)");
             return;
         }
 

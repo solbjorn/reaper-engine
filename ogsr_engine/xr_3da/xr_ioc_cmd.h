@@ -54,8 +54,6 @@ public:
     friend class CConsole;
     friend class xr::detail::ImGuiGameConsole;
 
-    using TInfo = string2048;
-    using TStatus = string2048;
     typedef xr_vector<shared_str> vecTips;
     typedef xr_vector<shared_str> vecLRU;
 
@@ -71,8 +69,6 @@ protected:
     {
         LRU_MAX_COUNT = 10
     };
-
-    [[nodiscard]] bool EQ(LPCSTR S1, LPCSTR S2) { return xr_strcmp(S1, S2) == 0; }
 
 public:
     IConsole_Command() = delete;
@@ -91,26 +87,17 @@ public:
 
     [[nodiscard]] LPCSTR Name() const { return cName; }
 
-    void InvalidSyntax()
-    {
-        TInfo I;
-        Info(I);
+    void InvalidSyntax(std::string_view msg, std::string_view args) const;
 
-        Msg("~ Invalid syntax in call to '{}'", cName);
-        Msg("~ Valid arguments: {}", I);
-    }
-
-    virtual void Execute(LPCSTR args) = 0;
+    virtual void Execute(std::string_view args) = 0;
     void SetEnabled(bool v) { bEnabled = v; }
-    virtual void Status(TStatus& S) { S[0] = 0; }
-    virtual void Info(TInfo& I) { xr_strcpy(I, "(no arguments)"); }
+    [[nodiscard]] virtual xr_string Status() const { return xr_string{}; }
+    [[nodiscard]] virtual xr_string Info() const { return "(no arguments)"; }
 
     virtual void Save(IWriter* F)
     {
-        TStatus S;
-        Status(S);
-        if (S[0])
-            F->w_printf("{} {}\r\n", cName, S);
+        if (const auto st = Status(); !st.empty())
+            F->w_printf("{} {}\r\n", cName, st);
     }
 
     virtual void fill_tips(vecTips& tips) { add_LRU_to_tips(tips); }
@@ -133,31 +120,23 @@ public:
 
     [[nodiscard]] BOOL GetValue() const { return value->test(mask); }
 
-    void Execute(LPCSTR args) override
+    void Execute(std::string_view args) override
     {
-        if (EQ(args, "on"))
+        if (args == "on" || args == "1")
             value->set(mask, TRUE);
-        else if (EQ(args, "off"))
-            value->set(mask, FALSE);
-        else if (EQ(args, "1"))
-            value->set(mask, TRUE);
-        else if (EQ(args, "0"))
+        else if (args == "off" || args == "0")
             value->set(mask, FALSE);
         else
-            InvalidSyntax();
+            InvalidSyntax("not a boolean", args);
     }
 
-    void Status(TStatus& S) override { xr_strcpy(S, value->test(mask) ? "on" : "off"); }
-    void Info(TInfo& I) override { xr_strcpy(I, "'on/off' or '1/0'"); }
+    [[nodiscard]] xr_string Status() const override { return value->test(mask) ? "on" : "off"; }
+    [[nodiscard]] xr_string Info() const override { return "'on/off' or '1/0'"; }
 
     void fill_tips(vecTips& tips) override
     {
-        TStatus str;
-        xr_sprintf(str, sizeof(str), "on%s", value->test(mask) ? " (current)" : "");
-        tips.emplace_back(str);
-
-        xr_sprintf(str, sizeof(str), "off%s", !value->test(mask) ? " (current)" : "");
-        tips.emplace_back(str);
+        tips.emplace_back(xr::format("on{}", value->test(mask) ? " (current)" : ""));
+        tips.emplace_back(xr::format("off{}", !value->test(mask) ? " (current)" : ""));
     }
 };
 
@@ -175,25 +154,19 @@ public:
 
     [[nodiscard]] BOOL GetValue() const { return value->test(mask); }
 
-    void Execute(LPCSTR) override
+    void Execute(std::string_view) override
     {
         value->set(mask, !GetValue());
-        TStatus S;
-        strconcat(sizeof(S), S, cName, " is ", value->test(mask) ? "on" : "off");
-        Log(S);
+        Msg("{} is {}", cName, value->test(mask) ? "on" : "off");
     }
 
-    void Status(TStatus& S) override { xr_strcpy(S, value->test(mask) ? "on" : "off"); }
-    void Info(TInfo& I) override { xr_strcpy(I, "'on/off' or '1/0'"); }
+    [[nodiscard]] xr_string Status() const override { return value->test(mask) ? "on" : "off"; }
+    [[nodiscard]] xr_string Info() const override { return "'on/off' or '1/0'"; }
 
     void fill_tips(vecTips& tips) override
     {
-        TStatus str;
-        xr_sprintf(str, sizeof(str), "on%s", value->test(mask) ? " (current)" : "");
-        tips.emplace_back(str);
-
-        xr_sprintf(str, sizeof(str), "off%s", !value->test(mask) ? " (current)" : "");
-        tips.emplace_back(str);
+        tips.emplace_back(xr::format("on{}", value->test(mask) ? " (current)" : ""));
+        tips.emplace_back(xr::format("off{}", !value->test(mask) ? " (current)" : ""));
     }
 };
 
@@ -208,7 +181,7 @@ public:
     explicit CCC_Token(LPCSTR N, u32* V, const xr_token* T) : IConsole_Command{N}, value{V}, tokens{T} {}
     ~CCC_Token() override = default;
 
-    void Execute(LPCSTR args) override
+    void Execute(std::string_view args) override
     {
         const xr_token* tok = tokens;
         while (tok->name)
@@ -223,54 +196,53 @@ public:
         }
 
         if (!tok->name)
-            InvalidSyntax();
+            InvalidSyntax("invalid token", args);
     }
 
-    void Status(TStatus& S) override
+    [[nodiscard]] xr_string Status() const override
     {
-        const xr_token* tok = tokens;
-        while (tok->name)
+        for (auto tok = &tokens[0]; tok->name != nullptr; ++tok)
         {
-            if (tok->id == (int)(*value))
-            {
-                xr_strcpy(S, tok->name);
-                return;
-            }
-            tok++;
+            if (tok->id == gsl::index{*value})
+                return tok->name;
         }
-        xr_strcpy(S, "?");
+
+        return "?";
     }
 
-    void Info(TInfo& I) override
+    [[nodiscard]] xr_string Info() const override
     {
-        I[0] = 0;
-        const xr_token* tok = tokens;
-        while (tok->name)
+        xr_string ret;
+
+        for (auto tok = &tokens[0]; tok->name != nullptr; ++tok)
         {
-            if (I[0])
-                xr_strcat(I, "/");
-            xr_strcat(I, tok->name);
-            tok++;
+            if (!ret.empty())
+                ret += '/';
+
+            ret += tok->name;
         }
+
+        return ret;
     }
 
     [[nodiscard]] virtual const xr_token* GetToken() { return tokens; }
 
     void fill_tips(vecTips& tips) override
     {
-        TStatus str;
         bool res = false;
         const xr_token* tok = GetToken();
+
         while (tok->name && !res)
         {
             if (tok->id == (int)(*value))
             {
-                xr_sprintf(str, sizeof(str), "%s  (current)", tok->name);
-                tips.emplace_back(str);
+                tips.emplace_back(xr::format("{}  (current)", tok->name));
                 res = true;
             }
+
             tok++;
         }
+
         if (!res)
             tips.emplace_back("---  (current)");
 
@@ -304,30 +276,31 @@ public:
         fmax = max;
     }
 
-    void Execute(LPCSTR args) override
+    void Execute(std::string_view args) override
     {
-        float v = float(atof(args));
+        const auto res = scn::scan_value<f32>(args);
+        if (!res)
+        {
+            InvalidSyntax(res.error().msg(), args);
+            return;
+        }
+
+        const auto v = res->value();
         if (v < (min - EPS) || v > (max + EPS))
-            InvalidSyntax();
-        else
-            *value = v;
+        {
+            InvalidSyntax("value out of bounds", args);
+            return;
+        }
+
+        *value = v;
     }
 
-    void Status(TStatus& S) override
-    {
-        xr_sprintf(S, sizeof(S), "%3.5f", *value);
-        while (xr_strlen(S) && ('0' == S[xr_strlen(S) - 1]))
-            S[xr_strlen(S) - 1] = 0;
-    }
-
-    void Info(TInfo& I) override { xr_sprintf(I, sizeof(I), "float value in range [%3.5f,%3.5f]", min, max); }
+    [[nodiscard]] xr_string Status() const override { return xr::format("{}", *value); }
+    [[nodiscard]] xr_string Info() const override { return xr::format("float value in range [{}, {}]", min, max); }
 
     void fill_tips(vecTips& tips) override
     {
-        TStatus str;
-        xr_sprintf(str, sizeof(str), "%3.5f  (current)  [%3.5f,%3.5f]", *value, min, max);
-        tips.emplace_back(str);
-
+        tips.emplace_back(xr::format("{}  (current)  [{}, {}]", *value, min, max));
         IConsole_Command::fill_tips(tips);
     }
 };
@@ -353,38 +326,31 @@ public:
     [[nodiscard]] const Fvector GetValue() const { return *value; }
     [[nodiscard]] Fvector* GetValuePtr() const { return value; }
 
-    void Execute(LPCSTR args) override
+    void Execute(std::string_view args) override
     {
-        Fvector v;
-        // Fixed parsing FVector for user.ltx
-        if ((3 != sscanf(args, "%g,%g,%g", &v.x, &v.y, &v.z)) && (3 != sscanf(args, "(%g, %g, %g)", &v.x, &v.y, &v.z)))
+        const auto res = scn::scan_value<Fvector>(args);
+        if (!res)
         {
-            InvalidSyntax();
+            InvalidSyntax(res.error().msg(), args);
             return;
         }
-        if (v.x < min.x || v.y < min.y || v.z < min.z)
+
+        const auto& v = res->value();
+        if (v.x < min.x || v.y < min.y || v.z < min.z || v.x > max.x || v.y > max.y || v.z > max.z)
         {
-            InvalidSyntax();
+            InvalidSyntax("value(s) out of bounds", args);
             return;
         }
-        if (v.x > max.x || v.y > max.y || v.z > max.z)
-        {
-            InvalidSyntax();
-            return;
-        }
+
         value->set(v);
     }
 
-    void Status(TStatus& S) override { xr_sprintf(S, sizeof(S), "(%g, %g, %g)", value->x, value->y, value->z); }
-    void Info(TInfo& I) override { xr_sprintf(I, sizeof(I), "vector3 in range [%g, %g, %g]-[%g, %g, %g]", min.x, min.y, min.z, max.x, max.y, max.z); }
+    [[nodiscard]] xr_string Status() const override { return xr::format("{}", *value); }
+    [[nodiscard]] xr_string Info() const override { return xr::format("vector3 in range {}-{}", min, max); }
 
     void fill_tips(vecTips& tips) override
     {
-        TStatus str;
-        xr_sprintf(str, sizeof(str), "(%g, %g, %g)  (current)  [(%g, %g, %g)-(%g, %g, %g)]", value->x, value->y, value->z, min.x, min.y, min.z, max.x, max.y,
-                   max.z);
-        tips.emplace_back(str);
-
+        tips.emplace_back(xr::format("{}  (current)  [{}-{}]", *value, min, max));
         IConsole_Command::fill_tips(tips);
     }
 };
@@ -410,24 +376,30 @@ public:
     explicit CCC_Integer(LPCSTR N, int* V, int _min = 0, int _max = 999) : IConsole_Command{N}, value{V}, min{_min}, max{_max} {}
     ~CCC_Integer() override = default;
 
-    void Execute(LPCSTR args) override
+    void Execute(std::string_view args) override
     {
-        int v = atoi(args);
+        const auto res = scn::scan_int<s32>(args);
+        if (!res)
+        {
+            InvalidSyntax(res.error().msg(), args);
+            return;
+        }
+
+        const auto v = res->value();
         if (v < min || v > max)
-            InvalidSyntax();
-        else
-            *value = v;
+        {
+            InvalidSyntax("value out of bounds", args);
+        }
+
+        *value = v;
     }
 
-    void Status(TStatus& S) override { _itoa(*value, S, 10); }
-    void Info(TInfo& I) override { xr_sprintf(I, sizeof(I), "integer value in range [%d,%d]", min, max); }
+    [[nodiscard]] xr_string Status() const override { return xr::format("{}", *value); }
+    [[nodiscard]] xr_string Info() const override { return xr::format("integer value in range [{}, {}]", min, max); }
 
     void fill_tips(vecTips& tips) override
     {
-        TStatus str;
-        xr_sprintf(str, sizeof(str), "%d  (current)  [%d,%d]", *value, min, max);
-        tips.emplace_back(str);
-
+        tips.emplace_back(xr::format("{}  (current)  [{}, {}]", *value, min, max));
         IConsole_Command::fill_tips(tips);
     }
 };
@@ -450,9 +422,19 @@ public:
 
     ~CCC_String() override = default;
 
-    void Execute(LPCSTR args) override { strncpy_s(value, size, args, size - 1); }
-    void Status(TStatus& S) override { xr_strcpy(S, value); }
-    void Info(TInfo& I) override { xr_sprintf(I, sizeof(I), "string with up to %d characters", size); }
+    void Execute(std::string_view args) override
+    {
+        if (std::ssize(args) >= size)
+        {
+            InvalidSyntax("argument too long", args);
+            return;
+        }
+
+        ::strncpy_s(value, size, args.data(), args.size());
+    }
+
+    [[nodiscard]] xr_string Status() const override { return value; }
+    [[nodiscard]] xr_string Info() const override { return xr::format("string with up to {} characters", size - 1); }
 
     void fill_tips(vecTips& tips) override
     {
@@ -470,7 +452,7 @@ public:
     ~CCC_LoadCFG() override = default;
 
     [[nodiscard]] virtual bool allow(LPCSTR) { return true; }
-    void Execute(LPCSTR args) override;
+    void Execute(std::string_view args) override;
 };
 
 class CCC_LoadCFG_custom : public CCC_LoadCFG
@@ -508,44 +490,31 @@ public:
     [[nodiscard]] const Fvector4 GetValue() const { return *value; }
     [[nodiscard]] Fvector4* GetValuePtr() const { return value; }
 
-    void Execute(LPCSTR args) override
+    void Execute(std::string_view args) override
     {
-        float x, y, z, w;
-        if (4 != sscanf(args, "%g,%g,%g,%g", &x, &y, &z, &w))
+        const auto res = scn::scan_value<Fvector4>(args);
+        if (!res)
         {
-            if (4 != sscanf(args, "(%g,%g,%g,%g)", &x, &y, &z, &w))
-            {
-                InvalidSyntax();
-                return;
-            }
-        }
-
-        if (x < min.x || y < min.y || z < min.z || w < min.w)
-        {
-            InvalidSyntax();
+            InvalidSyntax(res.error().msg(), args);
             return;
         }
-        if (x > max.x || y > max.y || z > max.z || w > max.w)
+
+        const auto& v = res->value();
+        if (v.x < min.x || v.y < min.y || v.z < min.z || v.w < min.w || v.x > max.x || v.y > max.y || v.z > max.z || v.w > max.w)
         {
-            InvalidSyntax();
+            InvalidSyntax("value(s) out of bounds", args);
             return;
         }
-        value->set(x, y, z, w);
+
+        value->set(v);
     }
 
-    void Status(TStatus& S) override { xr_sprintf(S, sizeof(S), "(%g, %g, %g, %g)", value->x, value->y, value->z, value->w); }
-    void Info(TInfo& I) override
-    {
-        xr_sprintf(I, sizeof(I), "vector4 in range [%g, %g, %g, %g]-[%g, %g, %g, %g]", min.x, min.y, min.z, min.w, max.x, max.y, max.z, max.w);
-    }
+    [[nodiscard]] xr_string Status() const override { return xr::format("{}", *value); }
+    [[nodiscard]] xr_string Info() const override { return xr::format("vector4 in range {}-{}", min, max); }
 
     void fill_tips(vecTips& tips) override
     {
-        TStatus str;
-        xr_sprintf(str, sizeof(str), "(%g, %g, %g, %g) (current) [(%g, %g, %g, %g)-(%g, %g, %g, %g)]", value->x, value->y, value->z, value->w, min.x, min.y,
-                   min.z, min.w, max.x, max.y, max.z, max.w);
-        tips.emplace_back(str);
-
+        tips.emplace_back(xr::format("{} (current) [{}-{}]", *value, min, max));
         IConsole_Command::fill_tips(tips);
     }
 };

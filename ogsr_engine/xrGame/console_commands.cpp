@@ -144,7 +144,7 @@ public:
     explicit CCC_MemStats(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_MemStats() override = default;
 
-    void Execute(LPCSTR) override
+    void Execute(std::string_view) override
     {
         Memory.mem_compact();
 
@@ -213,11 +213,13 @@ public:
 // console commands
 class CCC_GameDifficulty : public CCC_Token
 {
+    RTTI_DECLARE_TYPEINFO(CCC_GameDifficulty, CCC_Token);
+
 public:
     explicit CCC_GameDifficulty(LPCSTR N) : CCC_Token{N, (u32*)&g_SingleGameDifficulty, difficulty_type_token} {}
     ~CCC_GameDifficulty() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
         if (!Core.Features.test(xrCore::Feature::gd_master_only))
             CCC_Token::Execute(args);
@@ -230,7 +232,7 @@ public:
         }
     }
 
-    virtual void Info(TInfo& I) { strcpy_s(I, "game difficulty"); }
+    [[nodiscard]] xr_string Info() const override { return "game difficulty"; }
 };
 
 xr_vector<xr_token> LanguagesToken;
@@ -276,10 +278,10 @@ public:
         LanguagesToken.clear();
     }
 
-    void Execute(gsl::czstring args) override
+    void Execute(std::string_view args) override
     {
         auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_GameLanguage::execute_async>(this));
-        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args);
+        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args.data());
     }
 
 private:
@@ -318,31 +320,33 @@ private:
 #ifdef DEBUG
 class CCC_ALifePath : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_ALifePath, IConsole_Command);
+
 public:
     explicit CCC_ALifePath(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_ALifePath() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
-        if (!ai().get_level_graph())
+        if (ai().get_level_graph() == nullptr)
         {
-            Log("! there is no graph!");
+            InvalidSyntax("load a level to execute", args);
+            return;
         }
-        else
+
+        const auto res = scn::scan<s32, s32>(args, "{} {}");
+        if (!res)
         {
-            int id1 = -1, id2 = -1;
-            sscanf(args, "%d %d", &id1, &id2);
-            if ((-1 != id1) && (-1 != id2))
-            {
-                if (_max(id1, id2) > (int)ai().game_graph().header().vertex_count() - 1)
-                    Msg("! there are only {} vertexes!", ai().game_graph().header().vertex_count());
-                else if (_min(id1, id2) < 0)
-                    Msg("! invalid vertex number ({})!", _min(id1, id2));
-            }
-            else
-            {
-                Log("! not enough parameters!");
-            }
+            InvalidSyntax(res.error().msg(), args);
+            return;
+        }
+
+        const auto [id1, id2] = res.values();
+        if (std::min(id1, id2) < 0 || std::max(id1, id2) > s64{ai().game_graph().header().vertex_count()} - 1)
+        {
+        inv:
+            InvalidSyntax(xr::format("vertex id(s) out of bounds [0, {}]", ai().game_graph().header().vertex_count() - 1), args);
+            return;
         }
     }
 };
@@ -351,133 +355,179 @@ public:
 #ifndef MASTER_GOLD
 class CCC_ALifeTimeFactor : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_ALifeTimeFactor, IConsole_Command);
+
 public:
     explicit CCC_ALifeTimeFactor(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_ALifeTimeFactor() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
-        float id1 = 0.0f;
-        sscanf(args, "%f", &id1);
-        if (id1 < EPS_L)
-            Msg("Invalid time factor! ({:.5})", id1);
-        else
-            Level().Server->game->SetGameTimeFactor(id1);
+        const auto res = scn::scan_value<f32>(args);
+        if (!res)
+        {
+            InvalidSyntax(res.error().msg(), args);
+            return;
+        }
+
+        if (res->value() < EPS_L)
+        {
+            InvalidSyntax("too low time factor", args);
+            return;
+        }
+
+        Level().Server->game->SetGameTimeFactor(res->value());
     }
 };
 
 class CCC_ALifeSwitchDistance : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_ALifeSwitchDistance, IConsole_Command);
+
 public:
     explicit CCC_ALifeSwitchDistance(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_ALifeSwitchDistance() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
-        if (ai().get_alife())
+        if (ai().get_alife() == nullptr)
         {
-            float id1 = 0.0f;
-            sscanf(args, "%f", &id1);
-            if (id1 < 2.0f)
-            {
-                Msg("Invalid online distance! ({:.5})", id1);
-            }
-            else
-            {
-                NET_Packet P;
-                P.w_begin(M_SWITCH_DISTANCE);
-                P.w_float(id1);
-                Level().Send(P, net_flags(TRUE, TRUE));
-            }
+            InvalidSyntax("load a level to execute", args);
+            return;
         }
-        else
+
+        const auto res = scn::scan_value<f32>(args);
+        if (!res)
         {
-            Log("!Not a single player game!");
+            InvalidSyntax(res.error().msg(), args);
+            return;
         }
+
+        if (res->value() < 2.0f)
+        {
+            InvalidSyntax("too low online switch distance", args);
+            return;
+        }
+
+        NET_Packet P;
+        P.w_begin(M_SWITCH_DISTANCE);
+        P.w_float(res->value());
+        Level().Send(P, net_flags(TRUE, TRUE));
     }
 };
 
 class CCC_ALifeProcessTime : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_ALifeProcessTime, IConsole_Command);
+
 public:
     explicit CCC_ALifeProcessTime(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_ALifeProcessTime() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
-        if (ai().get_alife())
+        if (ai().get_alife() == nullptr)
         {
-            game_sv_Single* tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
-            VERIFY(tpGame);
-            int id1 = 0;
-            sscanf(args, "%d", &id1);
-            if (id1 < 1)
-                Msg("Invalid process time! ({})", id1);
-            else
-                tpGame->alife().set_process_time(id1);
+            InvalidSyntax("load a level to execute", args);
+            return;
         }
-        else
+
+        const auto res = scn::scan_int<s32>(args);
+        if (!res)
         {
-            Log("!Not a single player game!");
+            InvalidSyntax(res.error().msg(), args);
+            return;
         }
+
+        if (res->value() < 1)
+        {
+            InvalidSyntax("too low process time", args);
+            return;
+        }
+
+        auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
+        VERIFY(tpGame);
+        tpGame->alife().set_process_time(res->value());
     }
 };
 
 class CCC_ALifeObjectsPerUpdate : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_ALifeObjectsPerUpdate, IConsole_Command);
+
 public:
     explicit CCC_ALifeObjectsPerUpdate(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_ALifeObjectsPerUpdate() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
-        if (ai().get_alife())
+        if (ai().get_alife() == nullptr)
         {
-            game_sv_Single* tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
-            VERIFY(tpGame);
-            int id1 = 0;
-            sscanf(args, "%d", &id1);
-            tpGame->alife().objects_per_update(id1);
+            InvalidSyntax("load a level to execute", args);
+            return;
         }
-        else
-            Log("!Not a single player game!");
+
+        const auto res = scn::scan_int<s32>(args);
+        if (!res)
+        {
+            InvalidSyntax(res.error().msg(), args);
+            return;
+        }
+
+        auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
+        VERIFY(tpGame);
+        tpGame->alife().objects_per_update(res->value());
     }
 };
 
 class CCC_ALifeSwitchFactor : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_ALifeSwitchFactor, IConsole_Command);
+
 public:
     explicit CCC_ALifeSwitchFactor(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_ALifeSwitchFactor() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
-        if (ai().get_alife())
+        if (ai().get_alife() == nullptr)
         {
-            game_sv_Single* tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
-            VERIFY(tpGame);
-            float id1 = 0;
-            sscanf(args, "%f", &id1);
-            clamp(id1, .1f, 1.f);
-            tpGame->alife().set_switch_factor(id1);
+            InvalidSyntax("load a level to execute", args);
+            return;
         }
-        else
-            Log("!Not a single player game!");
+
+        const auto res = scn::scan_value<f32>(args);
+        if (!res)
+        {
+            InvalidSyntax(res.error().msg(), args);
+            return;
+        }
+
+        auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
+        VERIFY(tpGame);
+        tpGame->alife().set_switch_factor(std::clamp(res->value(), 0.1f, 1.0f));
     }
 };
 #endif // !MASTER_GOLD
 
 class CCC_TimeFactor : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_TimeFactor, IConsole_Command);
+
 public:
     explicit CCC_TimeFactor(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_TimeFactor() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
-        float time_factor = (float)atof(args);
-        clamp(time_factor, .001f, 1000.f);
-        Device.time_factor(time_factor);
+        const auto res = scn::scan_value<f32>(args);
+        if (!res)
+        {
+            InvalidSyntax(res.error().msg(), args);
+            return;
+        }
+
+        Device.time_factor(std::clamp(res->value(), 0.001f, 1000.0f));
     }
 };
 
@@ -489,16 +539,16 @@ public:
     explicit CCC_DemoRecord(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_DemoRecord() override = default;
 
-    void Execute(gsl::czstring args) override
+    void Execute(std::string_view args) override
     {
         if (g_pGameLevel == nullptr)
         {
-            Log("Demo Record is disabled when level is not loaded.");
+            InvalidSyntax("load a level to execute", args);
             return;
         }
 
         auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_DemoRecord::execute_async>(this));
-        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args);
+        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args.data());
     }
 
 private:
@@ -510,13 +560,11 @@ private:
             co_await MainMenu()->Activate(false);
 
         auto args = *reinterpret_cast<gsl::zstring*>(&arg);
-        string_path fn_;
-
-        xr_strconcat(fn_, args, ".xrdemo");
-        xr_free(args);
-
         string_path fn;
-        std::ignore = FS.update_path(fn, "$game_saves$", fn_);
+
+        xr_strconcat(fn, args, ".xrdemo");
+        xr_free(args);
+        std::ignore = FS.update_path(fn, "$game_saves$", fn);
 
         g_pGameLevel->Cameras().AddCamEffector((co_await CDemoRecord::co_create(fn)).release());
     }
@@ -530,16 +578,16 @@ public:
     explicit CCC_DemoPlay(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_DemoPlay() override = default;
 
-    void Execute(gsl::czstring args) override
+    void Execute(std::string_view args) override
     {
         if (!g_pGameLevel)
         {
-            Log("! There are no level(s) started");
+            InvalidSyntax("load a level to execute", args);
             return;
         }
 
         auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_DemoPlay::execute_async>(this));
-        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args);
+        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args.data());
     }
 
 private:
@@ -548,15 +596,23 @@ private:
         co_await Console->Hide();
 
         auto args = *reinterpret_cast<gsl::zstring*>(&arg);
-        string_path fn;
         u32 loops{};
 
-        if (gsl::zstring comma = std::strchr(args, ','); comma != nullptr)
+        if (auto comma = std::strchr(args, ','); comma != nullptr)
         {
-            loops = std::atoi(comma + 1);
-            *comma = '\0';
+            if (const auto res = scn::scan_int<u32>(std::string_view{&comma[1]}); !res)
+            {
+                InvalidSyntax(res.error().msg(), args);
+                co_return;
+            }
+            else
+            {
+                loops = res->value();
+                comma[0] = '\0';
+            }
         }
 
+        string_path fn;
         xr_strconcat(fn, args, ".xrdemo");
         xr_free(args);
 
@@ -589,23 +645,23 @@ public:
     explicit CCC_ALifeSave(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_ALifeSave() override = default;
 
-    void Execute(gsl::czstring args) override
+    void Execute(std::string_view args) override
     {
         if (g_actor == nullptr || !Actor()->g_Alive())
         {
-            Log("cannot make saved game because actor is dead :(");
+            InvalidSyntax("the actor is dead :(", args);
             return;
         }
 
-        const bool named = args != nullptr && args[0] != '\0';
-        if (named && !valid_file_name(args))
+        const bool named = !args.empty();
+        if (named && !valid_file_name(args.data()))
         {
-            Log("invalid file name");
+            InvalidSyntax("invalid file name", args);
             return;
         }
 
         auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_ALifeSave::execute_async>(this));
-        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(named ? args : "quick");
+        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(named ? args.data() : "quick");
     }
 
 private:
@@ -680,25 +736,22 @@ public:
     explicit CCC_ALifeLoadFrom(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_ALifeLoadFrom() override = default;
 
-    void Execute(gsl::czstring args) override
+    void Execute(std::string_view args) override
     {
-        if (!CSavedGameWrapper::valid_saved_game(args))
+        if (!CSavedGameWrapper::valid_saved_game(args.data()))
         {
-            Msg("! Cannot load saved game [{}]: not found or version mismatch or corrupted", args ?: "nullptr");
+            InvalidSyntax("invalid or corrupted saved game", args);
             return;
         }
 
         if (ai().get_alife() == nullptr)
         {
-            string_path command;
-            xr_strconcat(command, "start server(", args, "/single/alife/load)");
-
-            Console->Execute(command);
+            Console->Execute(xr::format("start server({}/single/alife/load)", args).c_str());
             return;
         }
 
         auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_ALifeLoadFrom::execute_async>(this));
-        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args);
+        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args.data());
     }
 
 private:
@@ -728,37 +781,42 @@ private:
 
 class CCC_LoadLastSave : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_LoadLastSave, IConsole_Command);
+
 public:
     explicit CCC_LoadLastSave(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_LoadLastSave() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
-        if (args && *args)
+        if (!args.empty())
         {
-            strcpy_s(g_last_saved_game, args);
+            strcpy_s(g_last_saved_game, args.data());
             return;
         }
 
         if (!*g_last_saved_game)
         {
-            Log("! cannot load last saved game since it hasn't been specified");
+            InvalidSyntax("last saved game not set", "(no arguments)");
             return;
         }
 
-        string512 command;
-        if (ai().get_alife())
+        std::string_view pref, post;
+        if (ai().get_alife() == nullptr)
         {
-            strconcat(sizeof(command), command, "load ", g_last_saved_game);
-            Console->Execute(command);
-            return;
+            pref = "start server(";
+            post = "/single/alife/load)";
+        }
+        else
+        {
+            pref = "load ";
+            post = "";
         }
 
-        strconcat(sizeof(command), command, "start server(", g_last_saved_game, "/single/alife/load)");
-        Console->Execute(command);
+        Console->Execute(xr::format("{}{}{}", pref, g_last_saved_game, post).c_str());
     }
 
-    virtual void Save(IWriter* F)
+    void Save(IWriter* F) override
     {
         if (!*g_last_saved_game)
             return;
@@ -769,24 +827,29 @@ public:
 
 class CCC_FloatBlock : public CCC_Float
 {
+    RTTI_DECLARE_TYPEINFO(CCC_FloatBlock, CCC_Float);
+
 public:
     explicit CCC_FloatBlock(LPCSTR N, float* V, float _min = 0, float _max = 1) : CCC_Float{N, V, _min, _max} {}
     ~CCC_FloatBlock() override = default;
-
-    virtual void Execute(LPCSTR args) { CCC_Float::Execute(args); }
 };
 
 #ifdef DEBUG
 class CCC_DrawGameGraphAll : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DrawGameGraphAll, IConsole_Command);
+
 public:
     explicit CCC_DrawGameGraphAll(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_DrawGameGraphAll() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view) override
     {
-        if (!ai().get_level_graph())
+        if (ai().get_level_graph() == nullptr)
+        {
+            InvalidSyntax("load a level to execute", "(no arguments)");
             return;
+        }
 
         ai().level_graph().setup_current_level(-1);
     }
@@ -794,14 +857,19 @@ public:
 
 class CCC_DrawGameGraphCurrent : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DrawGameGraphCurrent, IConsole_Command);
+
 public:
     explicit CCC_DrawGameGraphCurrent(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_DrawGameGraphCurrent() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view) override
     {
-        if (!ai().get_level_graph())
+        if (ai().get_level_graph() == nullptr)
+        {
+            InvalidSyntax("load a level to execute", "(no arguments)");
             return;
+        }
 
         ai().level_graph().setup_current_level(ai().level_graph().level_id());
     }
@@ -809,29 +877,31 @@ public:
 
 class CCC_DrawGameGraphLevel : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DrawGameGraphLevel, IConsole_Command);
+
 public:
     explicit CCC_DrawGameGraphLevel(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_DrawGameGraphLevel() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
-        if (!ai().get_level_graph())
-            return;
-
-        string256 S;
-        S[0] = 0;
-        sscanf(args, "%s", S);
-
-        if (!*S)
+        if (ai().get_level_graph() == nullptr)
         {
-            ai().level_graph().setup_current_level(-1);
+            InvalidSyntax("load a level to execute", "(no arguments)");
             return;
         }
 
-        const GameGraph::SLevel* level = ai().game_graph().header().level(S, true);
-        if (!level)
+        const auto res = scn::scan_value<xr_string>(args);
+        if (!res)
         {
-            Msg("! There is no level {} in the game graph", S);
+            InvalidSyntax(res.error().msg(), args);
+            return;
+        }
+
+        const auto level = ai().game_graph().header().level(res->value.c_str(), true);
+        if (level == nullptr)
+        {
+            InvalidSyntax("invalid level name", args);
             return;
         }
 
@@ -841,36 +911,43 @@ public:
 
 class CCC_DumpInfos : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DumpInfos, IConsole_Command);
+
 public:
     explicit CCC_DumpInfos(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_DumpInfos() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view) override
     {
         CActor* A = smart_cast<CActor*>(Level().CurrentEntity());
         if (A)
             A->DumpInfo();
     }
-    virtual void Info(TInfo& I) { strcpy_s(I, "dumps all infoportions that actor have"); }
+
+    [[nodiscard]] xr_string Info() const override { return "dumps all infoportions that actor have"; }
 };
 
 class CCC_DumpMap : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DumpMap, IConsole_Command);
+
 public:
     explicit CCC_DumpMap(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_DumpMap() override = default;
 
-    virtual void Execute(LPCSTR args) { Level().MapManager().Dump(); }
-    virtual void Info(TInfo& I) { strcpy_s(I, "dumps all currentmap locations"); }
+    void Execute(std::string_view) override { Level().MapManager().Dump(); }
+    [[nodiscard]] xr_string Info() const override { return "dumps all currentmap locations"; }
 };
 
 class CCC_DumpCreatures : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DumpCreatures, IConsole_Command);
+
 public:
     explicit CCC_DumpCreatures(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_DumpCreatures() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view) override
     {
         typedef CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeDynamicObject>::_REGISTRY::const_iterator const_iterator;
 
@@ -883,36 +960,39 @@ public:
                 Msg("\"{}\",", obj->name_replace());
         }
     }
-    virtual void Info(TInfo& I) { strcpy_s(I, "dumps all creature names"); }
+
+    [[nodiscard]] xr_string Info() const override { return "dumps all creature names"; }
 };
 
 class CCC_DebugFonts : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DebugFonts, IConsole_Command);
+
 public:
     explicit CCC_DebugFonts(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_DebugFonts() override = default;
 
-    virtual void Execute(LPCSTR args) { HUD().GetUI()->StartStopMenu(xr_new<CUIDebugFonts>(), true); }
+    void Execute(std::string_view) override { HUD().GetUI()->StartStopMenu(xr_new<CUIDebugFonts>(), true); }
 };
 
 class CCC_DebugNode : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DebugNode, IConsole_Command);
+
 public:
     explicit CCC_DebugNode(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_DebugNode() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
-        string128 param1, param2;
-        _GetItem(args, 0, param1, ' ');
-        _GetItem(args, 1, param2, ' ');
+        const auto res = scn.scan<u32, u32>(args, "{} {}");
+        if (!res)
+        {
+            InvalidSyntax(res.error().msg(), args);
+            return;
+        }
 
-        u32 value1;
-        u32 value2;
-
-        sscanf(param1, "%u", &value1);
-        sscanf(param2, "%u", &value2);
-
+        const auto [value1, value2] = res->values();
         if ((value1 > 0) && (value2 > 0))
         {
             g_bDebugNode = TRUE;
@@ -928,60 +1008,59 @@ public:
 
 class CCC_ShowMonsterInfo : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_ShowMonsterInfo, IConsole_Command);
+
 public:
     explicit CCC_ShowMonsterInfo(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_ShowMonsterInfo() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
-        string128 param1, param2;
-        _GetItem(args, 0, param1, ' ');
-        _GetItem(args, 1, param2, ' ');
-
-        CObject* obj = Level().Objects.FindObjectByName(param1);
-        CBaseMonster* monster = smart_cast<CBaseMonster*>(obj);
-        if (!monster)
+        const auto res = scn::scan<xr_string, u32>(args, "{} {}");
+        if (!res)
+        {
+            InvalidSyntax(res.error().msg(), args);
             return;
+        }
 
-        u32 value2;
+        const auto& [name, val] = res->values();
 
-        sscanf(param2, "%u", &value2);
-        monster->set_show_debug_info(u8(value2));
+        auto monster = smart_cast<CBaseMonster*>(Level().Objects.FindObjectByName(name.c_str()));
+        if (monster == nullptr)
+        {
+            InvalidSyntax("invalid creature name", name);
+            return;
+        }
+
+        monster->set_show_debug_info(val);
     }
 };
 
 class CCC_DbgPhTrackObj : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DbgPhTrackObj, IConsole_Command);
+
 public:
     explicit CCC_DbgPhTrackObj(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_DbgPhTrackObj() override = default;
 
-    virtual void Execute(LPCSTR args /**/)
+    void Execute(std::string_view args) override
     {
         ph_dbg_draw_mask1.set(ph_m1_DbgTrackObject, TRUE);
-        PH_DBG_SetTrackObject(args);
-        // CObject* O= Level().Objects.FindObjectByName(args);
-        // if(O)
-        //{
-        //	PH_DBG_SetTrackObject(*(O->cName()));
-        //	ph_dbg_draw_mask1.set(ph_m1_DbgTrackObject,TRUE);
-        // }
+        PH_DBG_SetTrackObject(args.data());
     }
-
-    // virtual void	Info	(TInfo& I)
-    //{
-    //	strcpy_s(I,"restart game fast");
-    // }
 };
 #endif
 
 class CCC_PHIterations : public CCC_Integer
 {
+    RTTI_DECLARE_TYPEINFO(CCC_PHIterations, CCC_Integer);
+
 public:
     explicit CCC_PHIterations(LPCSTR N) : CCC_Integer{N, &phIterations, 15, 50} {}
     ~CCC_PHIterations() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
         CCC_Integer::Execute(args);
         dWorldSetQuickStepNumIterations(nullptr, phIterations);
@@ -990,42 +1069,51 @@ public:
 
 class CCC_PHGravity : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_PHGravity, IConsole_Command);
+
 public:
     explicit CCC_PHGravity(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_PHGravity() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
-        if (!ph_world)
+        if (ph_world == nullptr)
             return;
-        ph_world->SetGravity(float(atof(args)));
+
+        const auto res = scn::scan_value<f32>(args);
+        if (!res)
+        {
+            InvalidSyntax(res.error().msg(), args);
+            return;
+        }
+
+        ph_world->SetGravity(res->value());
     }
 
-    virtual void Status(TStatus& S)
-    {
-        if (ph_world)
-            sprintf_s(S, "%3.5f", ph_world->Gravity());
-        else
-            sprintf_s(S, "%3.5f", default_world_gravity);
-        while (xr_strlen(S) && ('0' == S[xr_strlen(S) - 1]))
-            S[xr_strlen(S) - 1] = 0;
-    }
+    [[nodiscard]] xr_string Status() const override { return xr::format("{}", ph_world != nullptr ? ph_world->Gravity() : default_world_gravity); }
 };
 
 class CCC_PHFps : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_PHFps, IConsole_Command);
+
 public:
     explicit CCC_PHFps(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_PHFps() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
-        float step_count = (float)atof(args);
-        clamp(step_count, 50.f, 200.f);
-        CPHWorld::SetStep(1.f / step_count);
+        const auto res = scn::scan_value<f32>(args);
+        if (!res)
+        {
+            InvalidSyntax(res.error().msg(), args);
+            return;
+        }
+
+        CPHWorld::SetStep(1.0f / std::clamp(res->value(), 50.0f, 200.0f));
     }
 
-    virtual void Status(TStatus& S) { sprintf_s(S, "%3.5f", 1.f / fixed_step); }
+    [[nodiscard]] xr_string Status() const override { return xr::format("{}", 1.0f / fixed_step); }
 };
 
 struct CCC_JumpToLevel : public IConsole_Command
@@ -1036,27 +1124,33 @@ public:
     explicit CCC_JumpToLevel(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_JumpToLevel() override = default;
 
-    void Execute(LPCSTR args) override
+    void Execute(std::string_view args) override
     {
-        if (!ai().get_alife())
+        if (ai().get_alife() == nullptr)
         {
-            Log("! ALife simulator is needed to perform specified command!");
+            InvalidSyntax("load a level to execute", args);
             return;
         }
 
-        string256 level;
-        sscanf(args, "%s", level);
+        const auto res = scn::scan_value<xr_string>(args);
+        if (!res)
+        {
+            InvalidSyntax(res.error().msg(), args);
+            return;
+        }
+
+        const auto& level = res->value();
 
         for (const auto& lvl : ai().game_graph().header().levels())
         {
             if (std::is_eq(xr_strcmp(lvl.second.name(), level)))
             {
-                ai().alife().jump_to_level(level);
+                ai().alife().jump_to_level(level.c_str());
                 return;
             }
         }
 
-        Msg("! There is no level \"{}\" in the game graph!", level);
+        InvalidSyntax("invalid level name", level);
     }
 
     void fill_tips(vecTips& tips) override
@@ -1074,27 +1168,32 @@ public:
 
 class CCC_Spawn : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_Spawn, IConsole_Command);
+
 public:
     explicit CCC_Spawn(LPCSTR N) : IConsole_Command(N) {}
     ~CCC_Spawn() override = default;
 
-    void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
-        if (!g_pGameLevel)
-            return;
-
-        if (!pSettings->section_exist(args))
+        if (g_pGameLevel == nullptr)
         {
-            Msg("! Can't find section: {}", args);
+            InvalidSyntax("load a level to execute", args);
+            return;
+        }
+
+        if (!pSettings->section_exist(args.data()))
+        {
+            InvalidSyntax("invalid section", args);
             return;
         }
 
         if (auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game))
-            tpGame->alife().spawn_item(args, Actor()->Position(), Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(),
+            tpGame->alife().spawn_item(args.data(), Actor()->Position(), Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(),
                                        ALife::_OBJECT_ID(-1));
     }
 
-    virtual void fill_tips(vecTips& tips)
+    void fill_tips(vecTips& tips) override
     {
         if (!ai().get_alife())
         {
@@ -1124,14 +1223,17 @@ public:
     explicit CCC_SpawnToInventory(LPCSTR N) : IConsole_Command(N) {}
     ~CCC_SpawnToInventory() override = default;
 
-    void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
-        if (!g_pGameLevel)
-            return;
-
-        if (!pSettings->section_exist(args))
+        if (g_pGameLevel == nullptr)
         {
-            Msg("! Can't find section: {}", args);
+            InvalidSyntax("load a level to execute", args);
+            return;
+        }
+
+        if (!pSettings->section_exist(args.data()))
+        {
+            InvalidSyntax("invalid section", args);
             return;
         }
 
@@ -1139,9 +1241,9 @@ public:
         {
             NET_Packet packet;
             packet.w_begin(M_SPAWN);
-            packet.w_stringZ(args);
+            packet.w_stringZ(args.data());
 
-            CSE_Abstract* item = tpGame->alife().spawn_item(args, Actor()->Position(), Actor()->ai_location().level_vertex_id(),
+            CSE_Abstract* item = tpGame->alife().spawn_item(args.data(), Actor()->Position(), Actor()->ai_location().level_vertex_id(),
                                                             Actor()->ai_location().game_vertex_id(), 0, false);
             item->Spawn_Write(packet, FALSE);
             tpGame->alife().server().FreeID(item->ID, 0);
@@ -1158,7 +1260,7 @@ public:
         }
     }
 
-    virtual void fill_tips(vecTips& tips)
+    void fill_tips(vecTips& tips) override
     {
         if (!ai().get_alife())
         {
@@ -1186,7 +1288,7 @@ public:
     explicit CCC_LuaGCMethod(gsl::czstring name) : CCC_Token{name, &ps_lua_gc_method, lua_gc_method_token} {}
     ~CCC_LuaGCMethod() override = default;
 
-    void Execute(gsl::czstring args) override
+    void Execute(std::string_view args) override
     {
         const auto prev = *value;
         CCC_Token::Execute(args);
@@ -1222,10 +1324,10 @@ public:
     explicit CCC_MainMenu(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_MainMenu() override = default;
 
-    void Execute(gsl::czstring args) override
+    void Execute(std::string_view args) override
     {
         auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_MainMenu::execute_async>(this));
-        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args != nullptr && args[0] != '\0' ? args : "toggle");
+        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(!args.empty() ? args.data() : "toggle");
     }
 
 private:
@@ -1249,54 +1351,52 @@ private:
 #ifndef MASTER_GOLD
 struct CCC_StartTimeSingle : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_StartTimeSingle, IConsole_Command);
+
+public:
     explicit CCC_StartTimeSingle(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_StartTimeSingle() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
-        u32 year = 1, month = 1, day = 1, hours = 0, mins = 0, secs = 0, milisecs = 0;
-        sscanf(args, "%u.%u.%u %u:%u:%u.%u", &year, &month, &day, &hours, &mins, &secs, &milisecs);
-        year = _max(year, 1u);
-        month = _max(month, 1u);
-        day = _max(day, 1u);
-        g_qwStartGameTime = generate_time(year, month, day, hours, mins, secs, milisecs);
-
-        if (!g_pGameLevel)
+        const auto res = scn::scan<u32, u32, u32, u32, u32, u32, u32>(args, "{}.{}.{} {}:{}:{}.{}");
+        if (!res)
+        {
+            InvalidSyntax(res.error().msg(), args);
             return;
+        }
 
-        if (!Level().Server)
-            return;
+        const auto& [year, month, day, hours, mins, secs, milisecs] = res->values();
+        g_qwStartGameTime = generate_time(std::max(year, 1u), std::max(month, 1u), std::max(day, 1u), hours, mins, secs, milisecs);
 
-        if (!Level().Server->game)
+        if (g_pGameLevel == nullptr || Level().Server == nullptr || Level().Server->game == nullptr)
             return;
 
         Level().Server->game->SetGameTimeFactor(g_qwStartGameTime, g_fTimeFactor);
     }
 
-    virtual void Status(TStatus& S)
+    [[nodiscard]] xr_string Status() const override
     {
         u32 year = 1, month = 1, day = 1, hours = 0, mins = 0, secs = 0, milisecs = 0;
         split_time(g_qwStartGameTime, year, month, day, hours, mins, secs, milisecs);
-        sprintf_s(S, "%u.%u.%u %u:%u:%u.%u", year, month, day, hours, mins, secs, milisecs);
+
+        return xr::format("{}.{}.{} {}:{}:{}.{}", year, month, day, hours, mins, secs, milisecs);
     }
 };
 
 struct CCC_TimeFactorSingle : public CCC_Float
 {
+    RTTI_DECLARE_TYPEINFO(CCC_TimeFactorSingle, CCC_Float);
+
+public:
     explicit CCC_TimeFactorSingle(LPCSTR N, float* V, float _min = 0.f, float _max = 1.f) : CCC_Float{N, V, _min, _max} {}
     ~CCC_TimeFactorSingle() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
         CCC_Float::Execute(args);
 
-        if (!g_pGameLevel)
-            return;
-
-        if (!Level().Server)
-            return;
-
-        if (!Level().Server->game)
+        if (g_pGameLevel == nullptr || Level().Server == nullptr || Level().Server->game == nullptr)
             return;
 
         Level().Server->game->SetGameTimeFactor(g_fTimeFactor);
@@ -1309,6 +1409,9 @@ class CCC_RadioGroupMask2;
 
 class CCC_RadioMask : public CCC_Mask
 {
+    RTTI_DECLARE_TYPEINFO(CCC_RadioGroupMask, CCC_Mask);
+
+private:
     CCC_RadioGroupMask2* group{};
 
 public:
@@ -1316,7 +1419,7 @@ public:
     ~CCC_RadioMask() override = default;
 
     void SetGroup(CCC_RadioGroupMask2* G) { group = G; }
-    virtual void Execute(LPCSTR args);
+    void Execute(std::string_view args) override;
 
     IC void Set(BOOL V) { value->set(mask, V); }
 };
@@ -1337,7 +1440,7 @@ public:
 
     ~CCC_RadioGroupMask2() override = default;
 
-    void Execute(CCC_RadioMask& m, LPCSTR args)
+    void Execute(CCC_RadioMask& m, std::string_view)
     {
         BOOL value = m.GetValue();
         if (value)
@@ -1345,11 +1448,12 @@ public:
             mask0->Set(!value);
             mask1->Set(!value);
         }
+
         m.Set(value);
     }
 };
 
-void CCC_RadioMask::Execute(LPCSTR args)
+void CCC_RadioMask::Execute(std::string_view args)
 {
     CCC_Mask::Execute(args);
     VERIFY2(group, "CCC_RadioMask: group not set");
@@ -1368,10 +1472,13 @@ void CCC_RadioMask::Execute(LPCSTR args)
 
 struct CCC_DbgBullets : public CCC_Integer
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DbgBullets, CCC_Integer);
+
+public:
     explicit CCC_DbgBullets(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer{N, V, _min, _max} {}
     ~CCC_DbgBullets() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
         extern FvectorVec g_hit[];
         g_hit[0].clear();
@@ -1384,11 +1491,13 @@ struct CCC_DbgBullets : public CCC_Integer
 
 class CCC_TuneAttachableItem : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_TuneAttachableItem, IConsole_Command);
+
 public:
     explicit CCC_TuneAttachableItem(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_TuneAttachableItem() override = default;
 
-    void Execute(LPCSTR args) override
+    void Execute(std::string_view args) override
     {
         if (!g_pGameLevel) // level not loaded
             return;
@@ -1435,16 +1544,21 @@ public:
             Msg("!![{}] cannot find attached item [{}]", __FUNCTION__, args);
     }
 
-    void Info(TInfo& I) override { sprintf_s(I, "allows to change bind rotation and position offsets for attached item, <section_name> given as arguments"); }
+    [[nodiscard]] xr_string Info() const override
+    {
+        return "allows to change bind rotation and position offsets for attached item, <section_name> given as arguments";
+    }
 };
 
 class CCC_TuneAttachableItemInSlot : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_TuneAttachableItemInSlot, IConsole_Command);
+
 public:
     explicit CCC_TuneAttachableItemInSlot(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_TuneAttachableItemInSlot() override = default;
 
-    void Execute(LPCSTR args) override
+    void Execute(std::string_view args) override
     {
         if (!g_pGameLevel) // level not loaded
             return;
@@ -1473,13 +1587,22 @@ public:
         auto iowner = smart_cast<CInventoryOwner*>(obj);
         if (iowner)
         {
-            u32 slot = u32(std::stoi(args));
-            if (slot < SLOTS_TOTAL)
+            const auto res = scn::scan_int<u32>(args);
+            if (!res)
             {
-                auto active_item = iowner->m_inventory->ItemFromSlot(slot);
-                if (active_item)
-                    CAttachableItem::m_dbgItem = active_item->cast_attachable_item();
+                InvalidSyntax(res.error().msg(), args);
+                return;
             }
+
+            if (res->value() >= SLOTS_TOTAL)
+            {
+                InvalidSyntax("invalid slot", args);
+                return;
+            }
+
+            auto active_item = iowner->m_inventory->ItemFromSlot(res->value());
+            if (active_item != nullptr)
+                CAttachableItem::m_dbgItem = active_item->cast_attachable_item();
         }
 
         if (CAttachableItem::m_dbgItem)
@@ -1488,33 +1611,40 @@ public:
             Msg("!![{}] cannot find attached item in slot [{}]", __FUNCTION__, args);
     }
 
-    void Info(TInfo& I) override { sprintf_s(I, "allows to change bind rotation and position offsets for attached item, <section_name> given as arguments"); }
+    [[nodiscard]] xr_string Info() const override
+    {
+        return "allows to change bind rotation and position offsets for attached item, <section_name> given as arguments";
+    }
 };
 
 #ifdef DEBUG
 class CCC_Crash : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_Crash, IConsole_Command);
+
 public:
     explicit CCC_Crash(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_Crash() override = default;
 
-    virtual void Execute(LPCSTR)
+    void Execute(std::string_view) override
     {
         VERIFY3(false, "This is a test crash", "Do not post it as a bug");
-        int* pointer = 0;
+        int* pointer = nullptr;
         *pointer = 0;
     }
 };
 
 class CCC_DumpModelBones : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DumpModelBones, IConsole_Command);
+
 public:
     explicit CCC_DumpModelBones(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_DumpModelBones() override = default;
 
-    virtual void Execute(LPCSTR arguments)
+    void Execute(std::string_view args) override
     {
-        if (!arguments || !*arguments)
+        if (args.empty())
         {
             Log("! no arguments passed");
             return;
@@ -1523,27 +1653,27 @@ public:
         string_path name;
         string_path fn;
 
-        if (0 == strext(arguments))
-            strconcat(sizeof(name), name, arguments, ".ogf");
+        if (0 == strext(args.data()))
+            strconcat(sizeof(name), name, args.data(), ".ogf");
         else
-            strcpy_s(name, sizeof(name), arguments);
+            strcpy_s(name, sizeof(name), args.data());
 
-        if (!FS.exist(arguments) && !FS.exist(fn, "$level$", name) && !FS.exist(fn, "$game_meshes$", name))
+        if (!FS.exist(args.data()) && !FS.exist(fn, "$level$", name) && !FS.exist(fn, "$game_meshes$", name))
         {
-            Msg("! Cannot find visual \"{}\"", arguments);
+            Msg("! Cannot find visual \"{}\"", args);
             return;
         }
 
-        IRenderVisual* visual = Render->model_Create(arguments);
+        IRenderVisual* visual = Render->model_Create(args.data());
         IKinematics* kinematics = smart_cast<IKinematics*>(visual);
         if (!kinematics)
         {
             Render->model_Delete(visual);
-            Msg("! Invalid visual type \"{}\" (not a IKinematics)", arguments);
+            InvalidSyntax("! Invalid visual type (not a IKinematics)", args);
             return;
         }
 
-        Msg("bones for model \"{}\"", arguments);
+        Msg("bones for model \"{}\"", args);
 
         for (u16 i = 0, n = kinematics->LL_BoneCount(); i < n; ++i)
             Log(kinematics->LL_GetData(i).name);
@@ -1554,34 +1684,44 @@ public:
 
 class CCC_ShowAnimationStats : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_ShowAnimationStats, IConsole_Command);
+
 public:
     explicit CCC_ShowAnimationStats(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_ShowAnimationStats() override = default;
 
-    virtual void Execute(LPCSTR) { show_animation_stats(); }
+    void Execute(std::string_view) override { show_animation_stats(); }
 };
 
 class CCC_DumpObjects : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DumpObjects, IConsole_Command);
+
 public:
     explicit CCC_DumpObjects(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_DumpObjects() override = default;
 
-    virtual void Execute(LPCSTR) { Level().Objects.dump_all_objects(); }
+    void Execute(std::string_view) override { Level().Objects.dump_all_objects(); }
 };
 #endif // DEBUG
 
 // Change weather immediately
 class CCC_SetWeather : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_SetWeather, IConsole_Command);
+
 public:
     explicit CCC_SetWeather(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_SetWeather() override = default;
 
-    void Execute(LPCSTR args) override
+    void Execute(std::string_view args) override
     {
-        if (xr_strlen(args) == 0)
+        if (args.empty())
+        {
+            InvalidSyntax("insufficient args", "(no arguments)");
             return;
+        }
+
         if (!g_pGameLevel)
             return;
         if (!g_pGamePersistent)
@@ -1605,37 +1745,55 @@ public:
 #ifdef USE_MEMORY_VALIDATOR
 class CCC_DbgMemoryDump : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DbgMemoryDump, IConsole_Command);
+
 public:
     explicit CCC_DbgMemoryDump(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_DbgMemoryDump() override = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(std::string_view args) override
     {
-        float thresholdInKb = 1.f;
+        f32 thresholdInKb{1.0f};
 
-        if (xr_strlen(args) > 0)
-            thresholdInKb = atof(args);
+        if (args.empty())
+        {
+        dump:
+            PointerRegistryDump(thresholdInKb);
+            return;
+        }
 
-        PointerRegistryDump(thresholdInKb);
+        const auto res = scn::scan_value<f32>(args);
+        if (!res)
+        {
+            InvalidSyntax(res.error().msg(), args);
+            return;
+        }
+
+        thresholdInKb = res->value();
+        goto dump;
     }
 };
 
 class CCC_DbgMemoryClear : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DbgMemoryClear, IConsole_Command);
+
 public:
     explicit CCC_DbgMemoryClear(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_DbgMemoryClear() override = default;
 
-    virtual void Execute(LPCSTR args) { PointerRegistryClear(); }
+    void Execute(std::string_view) override { PointerRegistryClear(); }
 };
 
 class CCC_DbgMemoryInfo : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DbgMemoryInfo, IConsole_Command);
+
 public:
     explicit CCC_DbgMemoryInfo(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_DbgMemoryInfo() override = default;
 
-    virtual void Execute(LPCSTR args) { PointerRegistryInfo(); }
+    void Execute(std::string_view) override { PointerRegistryInfo(); }
 };
 #endif // USE_MEMORY_VALIDATOR
 
@@ -1646,7 +1804,7 @@ class CCC_UI_Reload : public IConsole_Command
 public:
     explicit CCC_UI_Reload(gsl::czstring N) : IConsole_Command{N, true} {}
 
-    void Execute(gsl::czstring) override
+    void Execute(std::string_view) override
     {
         if (g_pGamePersistent != nullptr && g_pGameLevel != nullptr && Level().game != nullptr)
             HUD().OnScreenRatioChanged();

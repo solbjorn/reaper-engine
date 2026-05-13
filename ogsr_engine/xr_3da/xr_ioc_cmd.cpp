@@ -16,20 +16,24 @@
 #include "LightAnimLibrary.h"
 #include "xr_efflensflare.h"
 
-#include <regex>
-
 xr_token* vid_quality_token = nullptr;
 
 u32 g_screenmode = 1;
 
 namespace
 {
-constexpr xr_token screen_mode_tokens[]{{"fullscreen", 2}, {"borderless", 1}, {"windowed", 0}, {nullptr, 0}};
+constexpr xr_token screen_mode_tokens[]{{"windowed", 0}, {"borderless", 1}, {"fullscreen", 2}, {nullptr, 0}};
 
 #ifdef DEBUG
 constexpr xr_token vid_bpp_token[]{{"16", 16}, {"32", 32}, {0, 0}};
 #endif
 } // namespace
+
+void IConsole_Command::InvalidSyntax(std::string_view msg, std::string_view args) const
+{
+    Msg("~ Invalid syntax in call to '{}': {}: {}", cName, msg, args);
+    Msg("~ Valid arguments: {}", Info());
+}
 
 void IConsole_Command::add_to_LRU(shared_str const& arg)
 {
@@ -71,7 +75,7 @@ public:
     explicit CCC_Quit(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_Quit() override = default;
 
-    void Execute(gsl::czstring) override { Device.add_frame_async(CallMe::fromMethod<&CCC_Quit::execute_async>(this)); }
+    void Execute(std::string_view) override { Device.add_frame_async(CallMe::fromMethod<&CCC_Quit::execute_async>(this)); }
 
 private:
     tmc::task<void> execute_async(std::array<std::byte, 16>&)
@@ -92,15 +96,16 @@ public:
     explicit CCC_MemStat(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_MemStat() override = default;
 
-    void Execute(LPCSTR args) override
+    void Execute(std::string_view args) override
     {
-        string_path fn;
-        if (args && args[0])
-            xr_sprintf(fn, sizeof(fn), "%s.dump", args);
-        else
-            strcpy_s_s(fn, sizeof(fn), "x:\\$memory$.dump");
+        xr_string fn;
 
-        Memory.mem_statistic(fn);
+        if (!args.empty())
+            fn = xr::format("{}.dump", args);
+        else
+            fn.assign("x:\\$memory$.dump");
+
+        Memory.mem_statistic(fn.c_str());
     }
 };
 
@@ -112,7 +117,7 @@ public:
     explicit CCC_DbgMemCheck(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_DbgMemCheck() override = default;
 
-    void Execute(LPCSTR) override
+    void Execute(std::string_view) override
     {
         if (Memory.debug_mode)
             Memory.dbg_check();
@@ -131,7 +136,7 @@ public:
     explicit CCC_DbgStrCheck(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_DbgStrCheck() override = default;
 
-    void Execute(LPCSTR) override { str_container::verify(); }
+    void Execute(std::string_view) override { str_container::verify(); }
 };
 
 class CCC_DbgStrDump : public IConsole_Command
@@ -142,7 +147,7 @@ public:
     explicit CCC_DbgStrDump(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_DbgStrDump() override = default;
 
-    void Execute(LPCSTR) override { str_container::dump(); }
+    void Execute(std::string_view) override { str_container::dump(); }
 };
 #endif // DEBUG
 
@@ -154,7 +159,7 @@ public:
     explicit CCC_DbgLALibDump(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_DbgLALibDump() override = default;
 
-    void Execute(LPCSTR) override { LALib.DbgDumpInfo(); }
+    void Execute(std::string_view) override { LALib.DbgDumpInfo(); }
 };
 
 //-----------------------------------------------------------------------
@@ -166,7 +171,7 @@ public:
     explicit CCC_MotionsStat(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_MotionsStat() override = default;
 
-    void Execute(LPCSTR) override { g_pMotionsContainer->dump(); }
+    void Execute(std::string_view) override { g_pMotionsContainer->dump(); }
 };
 
 #ifdef DEBUG
@@ -178,13 +183,7 @@ public:
     explicit CCC_TexturesStat(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_TexturesStat() override = default;
 
-    void Execute(LPCSTR) override
-    {
-        Device.DumpResourcesMemoryUsage();
-        // Device.Resources->_DumpMemoryUsage();
-        //	TODO: move this console commant into renderer
-        // VERIFY(0);
-    }
+    void Execute(std::string_view) override { Device.DumpResourcesMemoryUsage(); }
 };
 
 //-----------------------------------------------------------------------
@@ -197,7 +196,7 @@ public:
     explicit CCC_E_Dump(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_E_Dump() override = default;
 
-    void Execute(LPCSTR) override { Engine.Event.Dump(); }
+    void Execute(std::string_view) override { Engine.Event.Dump(); }
 };
 
 class CCC_E_Signal : public IConsole_Command
@@ -208,15 +207,19 @@ public:
     explicit CCC_E_Signal(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_E_Signal() override = default;
 
-    void Execute(gsl::czstring args) override
+    void Execute(std::string_view args) override
     {
-        char Event[128], Param[128];
-        Event[0] = '\0';
-        Param[0] = '\0';
-        sscanf(args, "%[^,],%s", Event, Param);
+        const auto res = scn::scan<xr_string, xr_string>(args, "{:[^,]},{}");
+        if (!res)
+        {
+            InvalidSyntax(res.error().msg(), args);
+            return;
+        }
+
+        const auto& [event, param] = res.values();
 
         auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_E_Signal::execute_async>(this));
-        *reinterpret_cast<std::pair<gsl::zstring, gsl::zstring>*>(&arg) = std::make_pair(xr_strdup(Event), xr_strdup(Param));
+        *reinterpret_cast<std::pair<gsl::zstring, gsl::zstring>*>(&arg) = std::make_pair(xr_strdup(event.c_str()), xr_strdup(param.c_str()));
     }
 
 private:
@@ -241,19 +244,14 @@ public:
     explicit CCC_Help(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_Help() override = default;
 
-    void Execute(LPCSTR) override
+    void Execute(std::string_view) override
     {
         Log("- --- Command listing: start ---");
         CConsole::vecCMD_IT it;
         for (it = Console->Commands.begin(); it != Console->Commands.end(); it++)
         {
             IConsole_Command& C = *(it->second);
-            TStatus _S;
-            C.Status(_S);
-            TInfo _I;
-            C.Info(_I);
-
-            Msg("{:20} ({:10}) --- {}", C.Name(), _S, _I);
+            Msg("{:20} ({:10}) --- {}", C.Name(), C.Status(), C.Info());
         }
 
         Log("Key: Ctrl + A         === Select all ");
@@ -287,10 +285,16 @@ public:
     explicit CCC_DumpOpenFiles(LPCSTR N) : IConsole_Command{N} {}
     ~CCC_DumpOpenFiles() override = default;
 
-    void Execute(LPCSTR args) override
+    void Execute(std::string_view args) override
     {
-        int _mode = atoi(args);
-        _dump_open_files(_mode);
+        const auto res = scn::scan_int<s32>(args);
+        if (!res)
+        {
+            InvalidSyntax(res.error().msg(), args);
+            return;
+        }
+
+        _dump_open_files(res->value());
     }
 };
 #endif
@@ -305,10 +309,10 @@ public:
     explicit CCC_SaveCFG(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_SaveCFG() override = default;
 
-    void Execute(LPCSTR args) override
+    void Execute(std::string_view args) override
     {
         string_path cfg_full_name;
-        xr_strcpy(cfg_full_name, (xr_strlen(args) > 0) ? args : Console->ConfigFile);
+        xr_strcpy(cfg_full_name, !args.empty() ? args.data() : Console->ConfigFile);
 
         bool b_abs_name = xr_strlen(cfg_full_name) > 2 && cfg_full_name[1] == ':';
         if (!b_abs_name)
@@ -334,7 +338,7 @@ public:
         }
         else
         {
-            Msg("!Cannot store config file [{}]", cfg_full_name);
+            InvalidSyntax("failed to save the config to", cfg_full_name);
         }
     }
 };
@@ -342,21 +346,18 @@ public:
 
 CCC_LoadCFG::CCC_LoadCFG(LPCSTR N) : IConsole_Command{N} {}
 
-void CCC_LoadCFG::Execute(LPCSTR args)
+void CCC_LoadCFG::Execute(std::string_view args)
 {
     Msg("Executing config-script \"{}\"...", args);
     string_path cfg_name;
 
-    xr_strcpy(cfg_name, args);
+    xr_strcpy(cfg_name, args.data());
     if (strext(cfg_name))
         *strext(cfg_name) = 0;
     xr_strcat(cfg_name, ".ltx");
 
     string_path cfg_full_name;
     std::ignore = FS.update_path(cfg_full_name, "$app_data_root$", cfg_name);
-
-    // if( NULL == FS.exist(cfg_full_name) )
-    //	FS.update_path					(cfg_full_name, "$fs_root$", cfg_name);
 
     if (!FS.exist(cfg_full_name))
         xr_strcpy(cfg_full_name, cfg_name);
@@ -377,7 +378,7 @@ void CCC_LoadCFG::Execute(LPCSTR args)
                 {
                     if (F->r_u8() == 0)
                     {
-                        Msg("!![{}] file [{}] broken!", __FUNCTION__, cfg_full_name);
+                        InvalidSyntax("broken config file", cfg_full_name);
 
                         FS.r_close(F);
                         FS.file_delete(cfg_full_name);
@@ -400,7 +401,7 @@ void CCC_LoadCFG::Execute(LPCSTR args)
     }
     else
     {
-        Msg("! Cannot open script file [{}]", cfg_full_name);
+        InvalidSyntax("failed to open", cfg_full_name);
     }
 }
 
@@ -415,24 +416,25 @@ class CCC_Start : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_Start, IConsole_Command);
 
-private:
-    xr_string parse(gsl::czstring str)
-    {
-        static const std::regex Reg{"\\(([^)]+)\\)"};
-        std::cmatch results;
-
-        ASSERT_FMT(std::regex_search(str, results, Reg), "Failed parsing string: [%s]", str);
-        return results[1].str();
-    }
-
 public:
     explicit CCC_Start(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_Start() override = default;
 
-    void Execute(gsl::czstring args) override
+    void Execute(std::string_view args) override
     {
+        const auto start = args.find('(');
+        const auto end = args.rfind(')');
+
+        if (start == std::string_view::npos || end == std::string_view::npos)
+        {
+            InvalidSyntax("invalid expression", args);
+            return;
+        }
+
+        const xr_string val{args.substr(start + 1, end - start - 1)};
+
         auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_Start::execute_async>(this));
-        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(parse(args).c_str());
+        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(val.c_str());
     }
 
 private:
@@ -447,7 +449,7 @@ public:
     explicit CCC_Disconnect(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_Disconnect() override = default;
 
-    void Execute(gsl::czstring) override { Device.add_frame_async(CallMe::fromMethod<&CCC_Disconnect::execute_async>(this)); }
+    void Execute(std::string_view) override { Device.add_frame_async(CallMe::fromMethod<&CCC_Disconnect::execute_async>(this)); }
 
 private:
     tmc::task<void> execute_async(std::array<std::byte, 16>&) { co_await Engine.Event.Defer("KERNEL:disconnect"); }
@@ -463,7 +465,7 @@ public:
     explicit CCC_VID_Reset(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_VID_Reset() override = default;
 
-    void Execute(gsl::czstring) override
+    void Execute(std::string_view) override
     {
         if (Device.b_is_Ready)
             Device.add_frame_async(CallMe::fromMethod<&CCC_VID_Reset::execute_async>(this));
@@ -484,31 +486,27 @@ public:
     explicit CCC_VidMode(LPCSTR N) : CCC_Token{N, &_dummy, nullptr} { bEmptyArgsHandled = false; }
     ~CCC_VidMode() override = default;
 
-    void Execute(LPCSTR args) override
+    void Execute(std::string_view args) override
     {
-        u32 _w, _h;
-        int cnt = sscanf(args, "%ux%u", &_w, &_h);
-        if (cnt == 2)
+        const auto res = scn::scan<u32, u32>(args, "{}x{}");
+        if (!res)
         {
-            psCurrentVidMode[0] = _w;
-            psCurrentVidMode[1] = _h;
-        }
-        else
-        {
-            Msg("! Wrong video mode [{}]", args);
+            InvalidSyntax(res.error().msg(), args);
             return;
         }
+
+        const auto& [w, h] = res->values();
+        psCurrentVidMode[0] = w;
+        psCurrentVidMode[1] = h;
     }
 
-    void Status(TStatus& S) override { xr_sprintf(S, sizeof(S), "%dx%d", psCurrentVidMode[0], psCurrentVidMode[1]); }
+    [[nodiscard]] xr_string Status() const override { return xr::format("{}x{}", psCurrentVidMode[0], psCurrentVidMode[1]); }
     const xr_token* GetToken() override { return vid_mode_token; }
-    void Info(TInfo& I) override { xr_strcpy(I, sizeof(I), "change screen resolution WxH"); }
+    [[nodiscard]] xr_string Info() const override { return "change screen resolution WxH"; }
 
     void fill_tips(vecTips& tips) override
     {
-        TStatus str, cur;
-        Status(cur);
-
+        const auto cur = Status();
         bool res = false;
         const xr_token* tok = GetToken();
 
@@ -516,8 +514,7 @@ public:
         {
             if (std::is_eq(xr_strcmp(tok->name, cur)))
             {
-                xr_sprintf(str, sizeof(str), "%s  (current)", tok->name);
-                tips.emplace_back(str);
+                tips.emplace_back(xr::format("{}  (current)", tok->name));
                 res = true;
             }
 
@@ -544,10 +541,10 @@ public:
     explicit CCC_Screenmode(gsl::czstring N) : CCC_Token{N, &g_screenmode, screen_mode_tokens} {}
     ~CCC_Screenmode() override = default;
 
-    void Execute(gsl::czstring args) override
+    void Execute(std::string_view args) override
     {
         auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_Screenmode::execute_async>(this));
-        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args);
+        *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args.data());
     }
 
 private:
@@ -623,7 +620,7 @@ public:
     explicit CCC_SND_Restart(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_SND_Restart() override = default;
 
-    void Execute(LPCSTR) override { Sound->_restart(); }
+    void Execute(std::string_view) override { Sound->_restart(); }
 };
 
 //-----------------------------------------------------------------------
@@ -639,7 +636,7 @@ public:
     explicit CCC_Gamma(LPCSTR N, float* V) : CCC_Float(N, V, 0.5f, 1.5f) {}
     ~CCC_Gamma() override = default;
 
-    void Execute(LPCSTR args) override
+    void Execute(std::string_view args) override
     {
         CCC_Float::Execute(args);
         // Device.Gamma.Gamma		(ps_gamma);
@@ -669,11 +666,10 @@ public:
     explicit CCC_r2(LPCSTR N) : inherited{N, &renderer_value, nullptr} {}
     ~CCC_r2() override = default;
 
-    void Execute(LPCSTR args) override
+    void Execute(std::string_view args) override
     {
         //	vid_quality_token must be already created!
         tokens = vid_quality_token;
-
         inherited::Execute(args);
     }
 
@@ -688,12 +684,6 @@ public:
         tokens = vid_quality_token;
         return inherited::GetToken();
     }
-
-    void Status(TStatus& S) override
-    {
-        tokens = vid_quality_token;
-        inherited::Status(S);
-    }
 };
 
 class CCC_soundDevice : public CCC_Token
@@ -707,20 +697,24 @@ public:
     explicit CCC_soundDevice(LPCSTR N) : inherited{N, &snd_device_id, nullptr} {}
     ~CCC_soundDevice() override = default;
 
-    void Execute(LPCSTR args) override
+    void Execute(std::string_view args) override
     {
         GetToken();
+
         if (!tokens)
             return;
+
         inherited::Execute(args);
     }
 
-    void Status(TStatus& S) override
+    [[nodiscard]] xr_string Status() const override
     {
-        GetToken();
-        if (!tokens)
-            return;
-        inherited::Status(S);
+        xr_string ret;
+
+        if (tokens != nullptr)
+            ret = inherited::Status();
+
+        return ret;
     }
 
     const xr_token* GetToken() override
@@ -749,7 +743,7 @@ public:
     explicit CCC_ExclusiveMode(const char* N, Flags32* V, u32 M) : inherited{N, V, M} {}
     ~CCC_ExclusiveMode() override = default;
 
-    void Execute(const char* args) override
+    void Execute(std::string_view args) override
     {
         inherited::Execute(args);
 
@@ -767,9 +761,8 @@ public:
     explicit CCC_HideConsole(LPCSTR N) : IConsole_Command{N, true} {}
     ~CCC_HideConsole() override = default;
 
-    void Execute(gsl::czstring) override { Device.add_frame_async(CallMe::fromMethod<&CCC_HideConsole::execute_async>(this)); }
-    void Status(TStatus& S) override { S[0] = 0; }
-    void Info(TInfo& I) override { xr_sprintf(I, sizeof(I), "hide console"); }
+    void Execute(std::string_view) override { Device.add_frame_async(CallMe::fromMethod<&CCC_HideConsole::execute_async>(this)); }
+    [[nodiscard]] xr_string Info() const override { return "hide console"; }
 
 private:
     tmc::task<void> execute_async(std::array<std::byte, 16>&) { co_await Console->Hide(); }
@@ -783,7 +776,7 @@ public:
     explicit CCC_SoundParamsSmoothing(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer{N, V, _min, _max} {}
     ~CCC_SoundParamsSmoothing() override = default;
 
-    void Execute(LPCSTR args) override
+    void Execute(std::string_view args) override
     {
         CCC_Integer::Execute(args);
         soundSmoothingParams::alpha = soundSmoothingParams::getAlpha();

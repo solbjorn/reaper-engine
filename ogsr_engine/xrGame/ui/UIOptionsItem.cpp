@@ -1,7 +1,9 @@
 #include "StdAfx.h"
 
 #include "UIOptionsItem.h"
+
 #include "UIOptionsManager.h"
+
 #include "..\..\xr_3da\xr_ioconsole.h"
 
 CUIOptionsManager CUIOptionsItem::m_optionsManager;
@@ -21,7 +23,7 @@ void CUIOptionsItem::OnMessage(const char*)
     // do nothing
 }
 
-LPCSTR CUIOptionsItem::GetOptStringValue() { return Console->GetString(m_entry.c_str()); }
+xr_string CUIOptionsItem::GetOptStringValue() const { return Console->GetString(m_entry.c_str()); }
 
 void CUIOptionsItem::SaveOptStringValue(const char* val)
 {
@@ -63,7 +65,7 @@ void CUIOptionsItem::SaveOptBoolValue(bool val)
     Console->Execute(command);
 }
 
-LPCSTR CUIOptionsItem::GetOptTokenValue() { return Console->GetToken(m_entry.c_str()); }
+xr_string CUIOptionsItem::GetOptTokenValue() const { return Console->GetToken(m_entry.c_str()); }
 
 const xr_token* CUIOptionsItem::GetOptToken()
 {
@@ -74,12 +76,14 @@ const xr_token* CUIOptionsItem::GetOptToken()
 
 void CUIOptionsItem::SaveOptTokenValue(const char* val) { SaveOptStringValue(val); }
 
-// TODO: KRodin: желательно убрать этот хардкод, как в ЗП, конечно, но пока меня устраивает. Перетаскивать полностью движковые классы опций оттуда я точно не буду.
+// TODO: KRodin: желательно убрать этот хардкод, как в ЗП, конечно, но пока меня устраивает. Перетаскивать полностью движковые классы опций оттуда я точно не
+// буду.
 void CUIOptionsItem::SaveValue()
 {
-    if (m_entry == "vid_mode" || m_entry == "rs_fullscreen" || m_entry == "rs_v_sync" || m_entry == "r2_volumetric_lights" || m_entry == "r3_dynamic_wet_surfaces" ||
-        m_entry == "r__detail_radius" || m_entry == "r2_sun_quality" || m_entry == "r_ao_mode" || m_entry == "r2_ssao" || m_entry == "r_sslr_enable" ||
-        m_entry == "ssfx_height_fog" || m_entry == "ssfx_sky_debanding" || m_entry == "ssfx_indirect_light")
+    if (m_entry == "vid_mode" || m_entry == "rs_fullscreen" || m_entry == "rs_v_sync" || m_entry == "r2_volumetric_lights" ||
+        m_entry == "r3_dynamic_wet_surfaces" || m_entry == "r__detail_radius" || m_entry == "r2_sun_quality" || m_entry == "r_ao_mode" ||
+        m_entry == "r2_ssao" || m_entry == "r_sslr_enable" || m_entry == "ssfx_height_fog" || m_entry == "ssfx_sky_debanding" ||
+        m_entry == "ssfx_indirect_light")
         m_optionsManager.DoVidRestart();
 
     if (m_entry == "snd_efx" || m_entry == "snd_device")

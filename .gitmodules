@@ -98,6 +98,24 @@
 [submodule "3rd_party/Src/crypto/openssl"]
 	path = 3rd_party/Src/crypto/openssl
 	url = https://github.com/openssl/openssl.git
+[submodule "3rd_party/Src/formatting/assert/libassert"]
+	path = 3rd_party/Src/formatting/assert/libassert
+	url = https://github.com/jeremy-rifkin/libassert.git
+[submodule "3rd_party/Src/formatting/cpptrace/cpptrace"]
+	path = 3rd_party/Src/formatting/cpptrace/cpptrace
+	url = https://github.com/jeremy-rifkin/cpptrace.git
+[submodule "3rd_party/Src/formatting/enchantum"]
+	path = 3rd_party/Src/formatting/enchantum
+	url = https://github.com/ZXShady/enchantum.git
+[submodule "3rd_party/Src/formatting/fmt/fmt"]
+	path = 3rd_party/Src/formatting/fmt/fmt
+	url = https://github.com/fmtlib/fmt.git
+[submodule "3rd_party/Src/formatting/re2/re2"]
+	path = 3rd_party/Src/formatting/re2/re2
+	url = https://github.com/google/re2.git
+[submodule "3rd_party/Src/formatting/scn/scnlib"]
+	path = 3rd_party/Src/formatting/scn/scnlib
+	url = https://github.com/eliaskosunen/scnlib.git
 [submodule "3rd_party/Src/i18n/SheenBidi/SheenBidi"]
 	path = 3rd_party/Src/i18n/SheenBidi/SheenBidi
 	url = https://github.com/Tehreer/SheenBidi.git
@@ -126,24 +144,6 @@
 [submodule "3rd_party/Src/legacy/OpCoDe/OpCoDe"]
 	path = 3rd_party/Src/legacy/OpCoDe/OpCoDe
 	url = https://github.com/solbjorn/OpCoDe.git
-[submodule "3rd_party/Src/logging/assert/libassert"]
-	path = 3rd_party/Src/logging/assert/libassert
-	url = https://github.com/jeremy-rifkin/libassert.git
-[submodule "3rd_party/Src/logging/cpptrace/cpptrace"]
-	path = 3rd_party/Src/logging/cpptrace/cpptrace
-	url = https://github.com/jeremy-rifkin/cpptrace.git
-[submodule "3rd_party/Src/logging/enchantum"]
-	path = 3rd_party/Src/logging/enchantum
-	url = https://github.com/ZXShady/enchantum.git
-[submodule "3rd_party/Src/logging/fmt/fmt"]
-	path = 3rd_party/Src/logging/fmt/fmt
-	url = https://github.com/fmtlib/fmt.git
-[submodule "3rd_party/Src/logging/re2/re2"]
-	path = 3rd_party/Src/logging/re2/re2
-	url = https://github.com/google/re2.git
-[submodule "3rd_party/Src/logging/scn/scnlib"]
-	path = 3rd_party/Src/logging/scn/scnlib
-	url = https://github.com/eliaskosunen/scnlib.git
 [submodule "3rd_party/Src/luajit2/luajit2"]
 	path = 3rd_party/Src/luajit2/luajit2
 	url = https://github.com/openresty/luajit2.git

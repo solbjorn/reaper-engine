@@ -504,22 +504,20 @@ public:
     explicit CCC_Bind(gsl::czstring N, int idx) : IConsole_Command{N}, m_work_idx{idx} {}
     ~CCC_Bind() override = default;
 
-    void Execute(gsl::czstring args) override
+    void Execute(std::string_view args) override
     {
-        string256 action;
-        string256 key;
-        *action = 0;
-        *key = 0;
-
-        sscanf(args, "%s %s", action, key);
-        if (!*action)
-            return;
-
-        if (!*key)
-            return;
-
         if (Core.Features.test(xrCore::Feature::remove_alt_keybinding) && m_work_idx > 0)
+        {
+            InvalidSyntax("secondary keybindings are disabled", args);
             return;
+        }
+
+        const auto res = scn::scan<xr_string, xr_string>(args, "{} {}");
+        if (!res)
+        {
+            InvalidSyntax(res.error().msg(), args);
+            return;
+        }
 
         if (!bRemapped)
         {
@@ -527,19 +525,27 @@ public:
             bRemapped = TRUE;
         }
 
-        if (!action_name_to_ptr(action))
-            return;
+        const auto& [action, key] = res->values();
 
-        const EGameActions action_id = action_name_to_id(action);
+        if (action_name_to_ptr(action.c_str()) == nullptr)
+        {
+        inv:
+            InvalidSyntax("invalid action", action);
+            return;
+        }
+
+        const EGameActions action_id = action_name_to_id(action.c_str());
         if (action_id == EGameActions::kNOTBINDED)
-            return;
+            goto inv;
 
-        _keyboard* pkeyboard = keyname_to_ptr(key);
-        if (!pkeyboard)
+        auto pkeyboard = keyname_to_ptr(key.c_str());
+        if (pkeyboard == nullptr)
+        {
+            InvalidSyntax("invalid keycode", key);
             return;
+        }
 
         auto& curr_pbinding = g_key_bindings[std::to_underlying(action_id)];
-
         curr_pbinding.m_keyboard[m_work_idx] = pkeyboard;
 
         for (auto& binding : g_key_bindings)
@@ -581,9 +587,20 @@ public:
     explicit CCC_UnBind(gsl::czstring N, int idx) : IConsole_Command{N, true}, m_work_idx{idx} {}
     ~CCC_UnBind() override = default;
 
-    void Execute(gsl::czstring args) override
+    void Execute(std::string_view args) override
     {
-        g_key_bindings[std::to_underlying(action_name_to_id(args))].m_keyboard[m_work_idx] = nullptr;
+        if (action_name_to_ptr(args.data()) == nullptr)
+        {
+        inv:
+            InvalidSyntax("invalid action", args);
+            return;
+        }
+
+        const auto act = action_name_to_id(args.data());
+        if (act == EGameActions::kNOTBINDED)
+            goto inv;
+
+        g_key_bindings[std::to_underlying(act)].m_keyboard[m_work_idx] = nullptr;
 
         CStringTable::ReparseKeyBindings();
     }
@@ -597,7 +614,7 @@ public:
     explicit CCC_ListActions(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_ListActions() override = default;
 
-    void Execute(gsl::czstring) override
+    void Execute(std::string_view) override
     {
         Log("- --- Action list start ---");
 
@@ -616,7 +633,7 @@ public:
     explicit CCC_UnBindAll(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_UnBindAll() override = default;
 
-    void Execute(gsl::czstring) override
+    void Execute(std::string_view) override
     {
         for (auto& pbinding : g_key_bindings)
         {
@@ -644,15 +661,15 @@ public:
     explicit CCC_BindList(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_BindList() override = default;
 
-    void Execute(gsl::czstring) override
+    void Execute(std::string_view) override
     {
         Log("- --- Bind list start ---");
 
         for (const auto& pbinding : g_key_bindings)
         {
             Msg("[{}] primary is[{}] secondary is[{}]", pbinding.m_action->action_name,
-                pbinding.m_keyboard[0] != nullptr ? pbinding.m_keyboard[0]->key_local_name.c_str() : "None",
-                pbinding.m_keyboard[1] != nullptr ? pbinding.m_keyboard[1]->key_local_name.c_str() : "None");
+                pbinding.m_keyboard[0] != nullptr ? std::string_view{pbinding.m_keyboard[0]->key_local_name} : std::string_view{"None"},
+                pbinding.m_keyboard[1] != nullptr ? std::string_view{pbinding.m_keyboard[1]->key_local_name} : std::string_view{"None"});
         }
 
         Log("- --- Bind list end   ---");
@@ -667,16 +684,25 @@ public:
     explicit CCC_BindConsoleCmd(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_BindConsoleCmd() override = default;
 
-    void Execute(gsl::czstring args) override
+    void Execute(std::string_view args) override
     {
-        string512 console_command;
-        string256 key;
+        const auto space = args.rfind(' ');
+        if (space == std::string_view::npos)
+        {
+            InvalidSyntax("insufficient args", args);
+            return;
+        }
 
-        const auto cnt = _GetItemCount(args, ' ');
-        std::ignore = _GetItems(args, 0, cnt - 1, console_command, ' ');
-        std::ignore = _GetItem(args, cnt - 1, key, ' ');
+        const xr_string console_command{args.substr(0, space)};
+        const xr_string key{args.substr(space + 1)};
 
-        bindConsoleCmds.bind(keyname_to_dik(key), console_command);
+        if (keyname_to_ptr(key.c_str()) == nullptr)
+        {
+            InvalidSyntax("invalid keycode", key);
+            return;
+        }
+
+        bindConsoleCmds.bind(keyname_to_dik(key.c_str()), console_command.c_str());
     }
 
     void Save(IWriter* F) override { bindConsoleCmds.save(F); }
@@ -690,7 +716,7 @@ public:
     explicit CCC_UnBindConsoleCmd(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_UnBindConsoleCmd() override = default;
 
-    void Execute(gsl::czstring args) override { bindConsoleCmds.unbind(keyname_to_dik(args)); }
+    void Execute(std::string_view args) override { bindConsoleCmds.unbind(keyname_to_dik(args.data())); }
 };
 } // namespace
 

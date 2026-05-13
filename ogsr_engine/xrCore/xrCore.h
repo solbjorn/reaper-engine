@@ -91,6 +91,7 @@
 
 DEFINE_VECTOR(shared_str, RStringVec, RStringVecIt);
 
+#include "format.h"
 #include "log.h"
 #include "FS.h"
 #include "xr_trims.h"
