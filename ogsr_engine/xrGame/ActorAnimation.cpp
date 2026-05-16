@@ -150,7 +150,7 @@ void SAnimState::Create(IKinematicsAnimated* K, LPCSTR base0, LPCSTR base1)
 
 void SActorState::CreateClimb(IKinematicsAnimated* K)
 {
-    string128 buf, buf1;
+    string128 buf;
     string16 base;
 
     // climb anims
@@ -186,12 +186,12 @@ void SActorState::CreateClimb(IKinematicsAnimated* K)
     landing[1] = K->ID_Cycle(shared_str{strconcat(sizeof(buf), buf, base, "_jump_end_1")});
 
     for (int k = 0; k < 12; ++k)
-        m_damage[k] = K->ID_FX(strconcat(sizeof(buf), buf, base, "_damage_", _itoa(k, buf1, 10)));
+        m_damage[k] = K->ID_FX(xr::format("{}_damage_{}", base, k));
 }
 
 void SActorState::Create(IKinematicsAnimated* K, LPCSTR base)
 {
-    string128 buf, buf1;
+    string128 buf;
     legs_turn = K->ID_Cycle(shared_str{strconcat(sizeof(buf), buf, base, "_turn")});
     legs_idle = K->ID_Cycle(shared_str{strconcat(sizeof(buf), buf, base, "_idle_0")});
     death = K->ID_Cycle(shared_str{strconcat(sizeof(buf), buf, base, "_death_0")});
@@ -222,7 +222,7 @@ void SActorState::Create(IKinematicsAnimated* K, LPCSTR base)
     landing[1] = K->ID_Cycle(shared_str{strconcat(sizeof(buf), buf, base, "_jump_end_1")});
 
     for (int k = 0; k < 12; ++k)
-        m_damage[k] = K->ID_FX(strconcat(sizeof(buf), buf, base, "_damage_", _itoa(k, buf1, 10)));
+        m_damage[k] = K->ID_FX(xr::format("{}_damage_{}", base, k));
 }
 
 void SActorSprintState::Create(IKinematicsAnimated* K)
@@ -261,15 +261,12 @@ SVehicleAnimCollection::SVehicleAnimCollection()
 
 void SVehicleAnimCollection::Create(IKinematicsAnimated* V, u16 num)
 {
-    string128 buf, buff1, buff2;
-    strconcat(sizeof(buff1), buff1, _itoa(num, buf, 10), "_");
-
-    steer_left = V->ID_Cycle(shared_str{strconcat(sizeof(buf), buf, "steering_idle_", buff1, "ls")});
-    steer_right = V->ID_Cycle(shared_str{strconcat(sizeof(buf), buf, "steering_idle_", buff1, "rs")});
+    steer_left = V->ID_Cycle(shared_str{xr::format("steering_idle_{}_ls", num)});
+    steer_right = V->ID_Cycle(shared_str{xr::format("steering_idle_{}_rs", num)});
 
     for (int i = 0; MAX_IDLES > i; ++i)
     {
-        idles[i] = V->ID_Cycle_Safe(shared_str{strconcat(sizeof(buf), buf, "steering_idle_", buff1, _itoa(i, buff2, 10))});
+        idles[i] = V->ID_Cycle_Safe(shared_str{xr::format("steering_idle_{}_{}", num, i)});
         if (idles[i])
             idles_num++;
         else

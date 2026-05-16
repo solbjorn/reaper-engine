@@ -203,27 +203,26 @@ void CAniVector::Load(IKinematicsAnimated* tpKinematics, LPCSTR caBaseName)
 {
     A.clear();
 
-    string256 S1, S2;
-    MotionID tpMotionDef;
-
     for (int i = 0;; ++i)
     {
-        if (!!(tpMotionDef = tpKinematics->ID_Cycle_Safe(shared_str{xr_strconcat(S1, caBaseName, _itoa(i, S2, 10))})))
+        const auto id = xr::format("{}{}", caBaseName, i);
+
+        if (auto tpMotionDef = tpKinematics->ID_Cycle_Safe(shared_str{id}); tpMotionDef)
         {
             A.push_back(tpMotionDef);
 
 #ifdef DEBUG
             if (psAI_Flags.test(aiAnimation))
-                Msg("* Loaded animation {}", S1);
+                Msg("* Loaded animation {}", id);
 #endif
         }
-        else if (!!(tpMotionDef = tpKinematics->ID_FX_Safe(xr_strconcat(S1, caBaseName, _itoa(i, S2, 10)))))
+        else if (auto tpMotionDef = tpKinematics->ID_FX_Safe(id); tpMotionDef)
         {
             A.push_back(tpMotionDef);
 
 #ifdef DEBUG
             if (psAI_Flags.test(aiAnimation))
-                Msg("* Loaded animation fx {}", S1);
+                Msg("* Loaded animation fx {}", id);
 #endif
         }
         else if (i < 10)

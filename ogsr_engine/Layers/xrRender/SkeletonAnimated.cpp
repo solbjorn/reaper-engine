@@ -401,7 +401,7 @@ CBlend* CKinematicsAnimated::PlayCycle(u16 partition, MotionID motion_ID, BOOL b
 }
 
 // fx'es
-MotionID CKinematicsAnimated::ID_FX_Safe(LPCSTR N)
+MotionID CKinematicsAnimated::ID_FX_Safe(std::string_view N)
 {
     MotionID motion_ID;
     for (int k = int(m_Motions.size()) - 1; k >= 0; --k)
@@ -417,7 +417,7 @@ MotionID CKinematicsAnimated::ID_FX_Safe(LPCSTR N)
     return motion_ID;
 }
 
-MotionID CKinematicsAnimated::ID_FX(LPCSTR N)
+MotionID CKinematicsAnimated::ID_FX(std::string_view N)
 {
     MotionID motion_ID = ID_FX_Safe(N);
     ASSERT_FMT_DBG(motion_ID.valid(), "!![{}] MODEL: can't find FX: [{}]", __FUNCTION__, N);
@@ -434,7 +434,7 @@ CBlend* CKinematicsAnimated::PlayFX(MotionID motion_ID, float power_scale)
     return LL_PlayFX(m_def->bone_or_part, motion_ID, m_def->Accrue(), m_def->Falloff(), m_def->Speed(), m_def->Power() * power_scale);
 }
 
-CBlend* CKinematicsAnimated::PlayFX(LPCSTR N, float power_scale)
+CBlend* CKinematicsAnimated::PlayFX(std::string_view N, f32 power_scale)
 {
     MotionID motion_ID = ID_FX(N);
     return PlayFX(motion_ID, power_scale);

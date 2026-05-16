@@ -241,10 +241,7 @@ void game_sv_GameState::OnEvent(NET_Packet& tNetPacket, u16 type, u32, ClientID 
         m_server->OnBuildVersionRespond(CL, tNetPacket);
     }
     break;
-    default: {
-        string16 tmp;
-        R_ASSERT(0, "Game Event not implemented!!!", _itoa(type, tmp, 10));
-    }
+    default: FATAL("Game Event %u not implemented!!!", type);
     }
 }
 

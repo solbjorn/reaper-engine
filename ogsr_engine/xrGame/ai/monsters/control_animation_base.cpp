@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "control_animation_base.h"
+
 #include "control_direction_base.h"
 #include "control_movement_base.h"
 #include "BaseMonster/base_monster.h"
@@ -18,8 +19,9 @@
 namespace
 {
 // DEBUG purpose only
-constexpr const char* dbg_action_name_table[] = {"ACT_STAND_IDLE", "ACT_SIT_IDLE", "ACT_LIE_IDLE", "ACT_WALK_FWD", "ACT_WALK_BKWD", "ACT_RUN",         "ACT_EAT",
-                                                 "ACT_SLEEP",      "ACT_REST",     "ACT_DRAG",     "ACT_ATTACK",   "ACT_STEAL",     "ACT_LOOK_AROUND", "ACT_JUMP"};
+constexpr const char* dbg_action_name_table[] = {"ACT_STAND_IDLE", "ACT_SIT_IDLE", "ACT_LIE_IDLE",    "ACT_WALK_FWD", "ACT_WALK_BKWD",
+                                                 "ACT_RUN",        "ACT_EAT",      "ACT_SLEEP",       "ACT_REST",     "ACT_DRAG",
+                                                 "ACT_ATTACK",     "ACT_STEAL",    "ACT_LOOK_AROUND", "ACT_JUMP"};
 } // namespace
 
 void SCurrentAnimationInfo::set_motion(EMotionAnim new_motion) { motion = new_motion; }
@@ -139,19 +141,15 @@ bool CControlAnimationBase::get_animation_info(EMotionAnim anim, u32 index, Moti
         return false;
     }
 
-    char index_string_buffer[128];
-    string256 animation_name_buffer;
-    xr_strconcat(animation_name_buffer, anim_it->target_name.c_str(), _itoa(index, index_string_buffer, 10));
-
     IKinematicsAnimated* animated = smart_cast<IKinematicsAnimated*>(m_object->Visual());
     if (!animated)
     {
         return false;
     }
 
-    motion = animated->ID_Cycle_Safe(shared_str{animation_name_buffer});
-
+    motion = animated->ID_Cycle_Safe(shared_str{xr::format("{}{}", anim_it->target_name, index)});
     length = animated->get_animation_length(motion);
+
     return true;
 }
 
@@ -228,10 +226,9 @@ void CControlAnimationBase::select_animation(bool anim_end)
     }
 
     // установить анимацию
-    string128 s1, s2;
-    MotionID cur_anim = smart_cast<IKinematicsAnimated*>(m_object->Visual())->ID_Cycle_Safe(shared_str{xr_strconcat(s2, *anim_it->target_name, _itoa(index, s1, 10))});
-    if (!cur_anim.valid())
-        FATAL("%s", s2);
+    const auto st = xr::format("{}{}", anim_it->target_name, index);
+    MotionID cur_anim = smart_cast<IKinematicsAnimated*>(m_object->Visual())->ID_Cycle_Safe(shared_str{st});
+    R_ASSERT(cur_anim.valid(), st);
 
     // Setup Com
     ctrl_data->global.set_motion(cur_anim);
@@ -239,9 +236,6 @@ void CControlAnimationBase::select_animation(bool anim_end)
     ctrl_data->set_speed(m_cur_anim.speed._get_target());
 
     // Заполнить текущую анимацию
-    string64 st, tmp;
-    xr_strconcat(st, *anim_it->target_name, _itoa(index, tmp, 10));
-    //	xr_sprintf		(st, "%s%d", *anim_it->second.target_name, index);
     m_cur_anim.name._set(st);
     m_cur_anim.index = u8(index);
     m_cur_anim.time_started = Device.dwTimeGlobal;
@@ -376,7 +370,7 @@ void CControlAnimationBase::FX_Play(EHitSide side, float amount)
     }
 
     if (p_str && p_str->size())
-        smart_cast<IKinematicsAnimated*>(m_object->Visual())->PlayFX(*(*p_str), amount);
+        std::ignore = smart_cast<IKinematicsAnimated*>(m_object->Visual())->PlayFX(*p_str, amount);
 
     fx_time_last_play = m_object->m_dwCurrentTime;
 }
@@ -494,7 +488,8 @@ void CControlAnimationBase::ValidateAnimation()
         return;
     }
 
-    if (!m_object->control().direction().is_turning() && ((cur_anim_info().get_motion() == eAnimStandTurnLeft) || (cur_anim_info().get_motion() == eAnimStandTurnRight)))
+    if (!m_object->control().direction().is_turning() &&
+        ((cur_anim_info().get_motion() == eAnimStandTurnLeft) || (cur_anim_info().get_motion() == eAnimStandTurnRight)))
     {
         cur_anim_info().set_motion(eAnimStandIdle);
         return;
@@ -515,19 +510,17 @@ void CControlAnimationBase::UpdateAnimCount()
         if ((*it)->count != 0)
             return;
 
-        string128 s, s_temp;
         u8 count = 0;
 
         for (int i = 0;; ++i)
         {
-            xr_strconcat(s_temp, *((*it)->target_name), _itoa(i, s, 10));
-            LPCSTR name = s_temp;
+            const auto name = xr::format("{}{}", (*it)->target_name, i);
             MotionID id = skel->ID_Cycle_Safe(shared_str{name});
 
             if (id.valid())
             {
                 count++;
-                AddAnimTranslation(id, name);
+                AddAnimTranslation(id, name.c_str());
             }
             else
             {
@@ -538,10 +531,7 @@ void CControlAnimationBase::UpdateAnimCount()
         if (count != 0)
             (*it)->count = count;
         else
-        {
-            xr_sprintf(s, "Error! No animation: %s for monster %s", *((*it)->target_name), *m_object->cName());
-            R_ASSERT2(false, s);
-        }
+            FATAL("Error! No animation: %s for monster %s", (*it)->target_name.c_str(), m_object->cName().c_str());
     }
 }
 
@@ -549,9 +539,8 @@ void CControlAnimationBase::SetCurAnim(EMotionAnim a) { cur_anim_info().set_moti
 
 CMotionDef* CControlAnimationBase::get_motion_def(SAnimItem* it, u32 index)
 {
-    string128 s1, s2;
     IKinematicsAnimated* skeleton_animated = smart_cast<IKinematicsAnimated*>(m_object->Visual());
-    const MotionID& motion_id = skeleton_animated->ID_Cycle_Safe(shared_str{xr_strconcat(s2, *it->target_name, _itoa(index, s1, 10))});
+    const MotionID& motion_id = skeleton_animated->ID_Cycle_Safe(shared_str{xr::format("{}{}", it->target_name, index)});
 
     return skeleton_animated->LL_GetMotionDef(motion_id);
 }
@@ -587,15 +576,10 @@ MotionID CControlAnimationBase::get_motion_id(EMotionAnim a, u32 index)
         }
     }
 
-    string128 s1, s2;
-    return smart_cast<IKinematicsAnimated*>(m_object->Visual())->ID_Cycle_Safe(shared_str{xr_strconcat(s2, *anim_it->target_name, _itoa(index, s1, 10))});
+    return smart_cast<IKinematicsAnimated*>(m_object->Visual())->ID_Cycle_Safe(shared_str{xr::format("{}{}", anim_it->target_name, index)});
 }
 
-void CControlAnimationBase::stop_now()
-{
-    m_object->move().stop();
-    //	m_object->path().disable_path	();
-}
+void CControlAnimationBase::stop_now() { m_object->move().stop(); }
 
 void CControlAnimationBase::set_animation_speed()
 {

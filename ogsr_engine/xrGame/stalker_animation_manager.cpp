@@ -109,5 +109,5 @@ void CStalkerAnimationManager::play_fx(float power_factor, int fx_index)
     }
 #endif
 
-    m_skeleton_animated->PlayFX(m_data_storage->m_part_animations.A[object().movement().body_state()].m_global.A[0].A[fx_index], power_factor);
+    std::ignore = m_skeleton_animated->PlayFX(m_data_storage->m_part_animations.A[object().movement().body_state()].m_global.A[0].A[fx_index], power_factor);
 }

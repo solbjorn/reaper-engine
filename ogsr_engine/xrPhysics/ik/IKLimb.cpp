@@ -266,15 +266,14 @@ void CIKLimb::Create(u16 id, IKinematicsAnimated* K, bool collide_)
 
     if (has_ik_settings(CK))
     {
-        string32 section;
-        string32 buff;
-
-        strconcat(sizeof(section), section, "ik_limb", _itoa(id, buff, 10));
-        parse_bones_string(CK, CK->LL_UserData()->r_string(section, "bones"), m_bones);
-        m_foot.Create(CK, section, m_bones);
+        const auto section = xr::format("ik_limb{}", id);
+        parse_bones_string(CK, CK->LL_UserData()->r_string(section.c_str(), "bones"), m_bones);
+        m_foot.Create(CK, section.c_str(), m_bones);
     }
     else
+    {
         m_foot.Create(CK, nullptr, m_bones);
+    }
 
     ////////////////////////////////////////////////////////////////////
     sv_state.set_limb(this);

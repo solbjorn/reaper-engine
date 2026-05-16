@@ -5,9 +5,9 @@
 #include "stdafx.h"
 
 #include "FHierrarhyVisual.h"
-#include "../../xr_3da/Fmesh.h"
 
-#include "../../xr_3da/render.h"
+#include "../../xr_3da/Fmesh.h"
+#include "../../xr_3da/Render.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -60,12 +60,13 @@ void FHierrarhyVisual::Load(const char* N, IReader* data, u32 dwFlags)
                 IReader* O = OBJ->open_chunk(0);
                 for (int count = 1; O; count++)
                 {
-                    string_path name_load, short_name, num;
-                    xr_strcpy(short_name, N);
-                    if (strext(short_name))
-                        *strext(short_name) = 0;
-                    strconcat(sizeof(name_load), name_load, short_name, ":", _itoa(count, num, 10));
-                    children.push_back((dxRender_Visual*)RImplementation.model_CreateChild(name_load, O));
+                    std::string_view short_name{N};
+
+                    if (const auto pos = short_name.rfind('.'); pos != std::string_view::npos)
+                        short_name = short_name.substr(0, pos);
+
+                    children.push_back((dxRender_Visual*)RImplementation.model_CreateChild(xr::format("{}:{}", short_name, count).c_str(), O));
+
                     O->close();
                     O = OBJ->open_chunk(count);
                 }

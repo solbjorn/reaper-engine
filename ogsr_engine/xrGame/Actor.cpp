@@ -601,10 +601,11 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
         MotionID motion_ID =
             m_anims->m_normal
                 .m_damage[iFloor(pK->LL_GetBoneInstance(element).get_param(1) + (angle_difference(r_model_yaw + r_model_yaw_delta, yaw) <= PI_DIV_2 ? 0 : 1))];
+        VERIFY(motion_ID.valid());
         float power_factor = perc / 100.f;
         clamp(power_factor, 0.f, 1.f);
-        VERIFY(motion_ID.valid());
-        tpKinematics->PlayFX(motion_ID, power_factor);
+
+        std::ignore = tpKinematics->PlayFX(motion_ID, power_factor);
         callback(GameObject::eHit)(lua_game_object(), perc, vLocalDir, smart_cast<const CGameObject*>(who)->lua_game_object(), element);
     }
 }

@@ -98,23 +98,8 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
     }
 
     // PROCESS NAME; Name this entity
-    gsl::czstring name = E->name_replace();
-    if (name == nullptr || name[0] == '\0' || std::is_eq(xr_strcmp(name, E->s_name)))
-    {
-        string256 s_name_replace;
-        string16 S1;
-
-        strcpy_s(s_name_replace, E->s_name.c_str());
-        if (E->ID < 1000)
-            strcat_s(s_name_replace, "0");
-        if (E->ID < 100)
-            strcat_s(s_name_replace, "0");
-        if (E->ID < 10)
-            strcat_s(s_name_replace, "0");
-        strcat_s(s_name_replace, _itoa(E->ID, S1, 10));
-
-        E->set_name_replace(s_name_replace);
-    }
+    if (const auto name = E->name_replace(); name == nullptr || name[0] == '\0' || std::is_eq(xr_strcmp(name, E->s_name)))
+        E->set_name_replace(xr::format("{}{:04}", E->s_name, E->ID).c_str());
 
     if (CL && E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
         CL->owner = E;

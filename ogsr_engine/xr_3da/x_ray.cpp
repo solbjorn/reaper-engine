@@ -731,29 +731,28 @@ void CApplication::Level_Scan()
 #endif
 }
 
-// Taken from OpenXray/xray-16 and refactored
-static void generate_logo_path(string_path& path, pcstr level_name, int num = -1)
+namespace
 {
-    strconcat(sizeof(path), path, "intro\\intro_", level_name);
-
-    if (num < 0)
-        return;
-
-    string16 buff;
-    xr_strcat(path, sizeof(path), "_");
-    xr_strcat(path, sizeof(path), _itoa(num + 1, buff, 10));
+// Taken from OpenXray/xray-16 and refactored
+void generate_logo_path(string_path& path, std::string_view level_name, gsl::index num = -1)
+{
+    if (num >= 0)
+        *xr::format_to_n(&path[0], sizeof(path) - 1, "intro\\intro_{}_{}", level_name, num + 1).out = '\0';
+    else
+        *xr::format_to_n(&path[0], sizeof(path) - 1, "intro\\intro_{}", level_name).out = '\0';
 }
 
 // Taken from OpenXray/xray-16 and refactored
 // Return true if logo exists
 // Always sets the path even if logo doesn't exist
-static bool validate_logo_path(string_path& path, pcstr level_name, int num = -1)
+bool validate_logo_path(string_path& path, std::string_view level_name, int num = -1)
 {
     generate_logo_path(path, level_name, num);
     string_path temp;
 
     return xr::texture_exists(temp, std::array{xr::fsgame::game_textures, xr::fsgame::level}, path);
 }
+} // namespace
 
 void CApplication::Level_Set(u32 L)
 {
@@ -763,9 +762,8 @@ void CApplication::Level_Set(u32 L)
     Level_Current = L;
     FS.get_path("$level$")->_set(Levels[L].folder);
 
-    std::string temp = Levels[L].folder;
-    temp.pop_back();
-    const char* level_name = temp.c_str();
+    xr_string level_name{Levels[L].folder};
+    level_name.pop_back();
 
     static string_path path;
     path[0] = 0;
@@ -793,7 +791,7 @@ void CApplication::Level_Set(u32 L)
     if (path[0])
         loadingScreen->SetLevelLogo(path);
 
-    loadingScreen->SetLevelText(level_name);
+    loadingScreen->SetLevelText(level_name.c_str());
 }
 
 gsl::index CApplication::Level_ID(gsl::czstring name) const

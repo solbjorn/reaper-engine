@@ -7,7 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "team_hierarchy_holder.h"
+
 #include "squad_hierarchy_holder.h"
 #include "object_broker.h"
 #include "seniority_hierarchy_space.h"
@@ -16,8 +18,10 @@ CTeamHierarchyHolder::~CTeamHierarchyHolder() { delete_data(m_squads); }
 
 CSquadHierarchyHolder& CTeamHierarchyHolder::squad(u32 squad_id) const
 {
-    VERIFY3(squad_id < max_squad_count, "Squad id is invalid : ", *SeniorityHierarchy::to_string(squad_id));
+    VERIFY3(squad_id < max_squad_count, "Squad id is invalid : ", xr::format("{}", squad_id).c_str());
+
     if (!m_squads[squad_id])
         m_squads[squad_id] = xr_new<CSquadHierarchyHolder>(const_cast<CTeamHierarchyHolder*>(this), squad_id);
-    return (*m_squads[squad_id]);
+
+    return *m_squads[squad_id];
 }

@@ -379,9 +379,7 @@ tmc::task<void> CConsole::OnRender()
         OutFont(ls, ypos);
     }
 
-    string16 q;
-    _itoa(log_line, q, 10);
-    u32 qn = xr_strlen(q);
+    const auto qn = gsl::narrow_cast<f32>(xr_strlen(xr::format("{}", log_line)));
     pFont->SetColor(total_font_color);
     pFont->OutI(0.95f - 0.03f * qn, fMaxY - 2.0f * (LDIST), "[{}]", log_line + 1);
 

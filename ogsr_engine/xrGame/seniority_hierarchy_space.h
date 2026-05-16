@@ -12,13 +12,6 @@
 
 namespace SeniorityHierarchy
 {
-IC shared_str to_string(u32 number)
-{
-    string16 S;
-    _itoa(number, S, 10);
-    return (shared_str(S));
-}
-
 template <typename T1>
 IC void assign_svector(T1& container, u32 count, const typename T1::value_type& value)
 {

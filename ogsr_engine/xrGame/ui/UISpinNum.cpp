@@ -7,6 +7,7 @@
 #include "StdAfx.h"
 
 #include "UISpinNum.h"
+
 #include "UILines.h"
 
 CUISpinNum::CUISpinNum() = default;
@@ -64,11 +65,7 @@ void CUISpinNum::OnBtnDownClick()
     CUICustomSpin::OnBtnDownClick();
 }
 
-void CUISpinNum::SetValue()
-{
-    string16 buff;
-    m_pLines->SetText(_itoa(m_iVal, buff, 10));
-}
+void CUISpinNum::SetValue() { m_pLines->SetText(xr::format("{}", m_iVal).c_str()); }
 
 bool CUISpinNum::CanPressUp() { return m_iVal + m_iStep <= m_iMax; }
 bool CUISpinNum::CanPressDown() { return m_iVal - m_iStep >= m_iMin; }

@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "UIProgressShape.h"
+
 #include "UIStatic.h"
 
 CUIProgressShape::CUIProgressShape()
@@ -22,11 +23,9 @@ void CUIProgressShape::SetPos(float pos) { m_stage = pos; }
 void CUIProgressShape::SetPos(int pos, int max)
 {
     m_stage = float(pos) / float(max);
+
     if (m_bText)
-    {
-        string256 _buff;
-        m_pTexture->SetText(_itoa(pos, _buff, 10));
-    }
+        m_pTexture->SetText(xr::format("{}", pos).c_str());
 }
 
 void CUIProgressShape::SetTextVisible(bool b) { m_bText = b; }

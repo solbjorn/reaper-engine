@@ -2,8 +2,7 @@
 #define __XR_CORE_MATRIX_H
 
 XR_DIAG_PUSH();
-XR_DIAG_IGNORE("-Wdefaulted-function-deleted");
-XR_DIAG_IGNORE("-Wmissing-variable-declarations");
+XR_DIAG_IGNORE("-Wfloat-equal");
 
 #include <DirectXMath.h>
 
@@ -873,9 +872,12 @@ public:
 
         DirectX::XMScalarSinCos(&Sine, &Cosine, Angle);
 
-        vm[0].set(axis.x * axis.x + (1 - axis.x * axis.x) * Cosine, axis.x * axis.y * (1 - Cosine) + axis.z * Sine, axis.x * axis.z * (1 - Cosine) - axis.y * Sine, 0);
-        vm[1].set(axis.x * axis.y * (1 - Cosine) - axis.z * Sine, axis.y * axis.y + (1 - axis.y * axis.y) * Cosine, axis.y * axis.z * (1 - Cosine) + axis.x * Sine, 0);
-        vm[2].set(axis.x * axis.z * (1 - Cosine) + axis.y * Sine, axis.y * axis.z * (1 - Cosine) - axis.x * Sine, axis.z * axis.z + (1 - axis.z * axis.z) * Cosine, 0);
+        vm[0].set(axis.x * axis.x + (1 - axis.x * axis.x) * Cosine, axis.x * axis.y * (1 - Cosine) + axis.z * Sine,
+                  axis.x * axis.z * (1 - Cosine) - axis.y * Sine, 0);
+        vm[1].set(axis.x * axis.y * (1 - Cosine) - axis.z * Sine, axis.y * axis.y + (1 - axis.y * axis.y) * Cosine,
+                  axis.y * axis.z * (1 - Cosine) + axis.x * Sine, 0);
+        vm[2].set(axis.x * axis.z * (1 - Cosine) + axis.y * Sine, axis.y * axis.z * (1 - Cosine) - axis.x * Sine,
+                  axis.z * axis.z + (1 - axis.z * axis.z) * Cosine, 0);
         mm.r[3] = DirectX::g_XMIdentityR3.v;
 
         return *this;
@@ -995,7 +997,10 @@ public:
     }
 
     // fov
-    constexpr SelfRef build_projection(T fFOV, T fAspect, T fNearPlane, T fFarPlane) { return build_projection_HAT(tanf(fFOV / 2.f), fAspect, fNearPlane, fFarPlane); }
+    constexpr SelfRef build_projection(T fFOV, T fAspect, T fNearPlane, T fFarPlane)
+    {
+        return build_projection_HAT(tanf(fFOV / 2.f), fAspect, fNearPlane, fFarPlane);
+    }
 
     // half_fov-angle-tangent
     constexpr SelfRef build_projection_HAT(T HAT, T fAspect, T fNearPlane, T fFarPlane)

@@ -76,18 +76,7 @@ CSE_Abstract* CALifeSimulatorBase::spawn_item(LPCSTR section, const Fvector& pos
     abstract->ID_Phantom = 0xffff;
     abstract->o_Position = position;
     abstract->m_wVersion = SPAWN_VERSION;
-
-    string256 s_name_replace;
-    strcpy_s(s_name_replace, *abstract->s_name);
-    if (abstract->ID < 1000)
-        strcat_s(s_name_replace, "0");
-    if (abstract->ID < 100)
-        strcat_s(s_name_replace, "0");
-    if (abstract->ID < 10)
-        strcat_s(s_name_replace, "0");
-    string16 S1;
-    strcat_s(s_name_replace, _itoa(abstract->ID, S1, 10));
-    abstract->set_name_replace(s_name_replace);
+    abstract->set_name_replace(xr::format("{}{:04}", abstract->s_name, abstract->ID).c_str());
 
     CSE_ALifeDynamicObject* dynamic_object = smart_cast<CSE_ALifeDynamicObject*>(abstract);
     VERIFY(dynamic_object);
@@ -133,18 +122,7 @@ CSE_Abstract* CALifeSimulatorBase::create(CSE_ALifeGroupAbstract* tpALifeGroupAb
     k->ID = server().PerformIDgen(0xffff);
     k->m_bDirectControl = false;
     k->m_bALifeControl = true;
-
-    string256 s_name_replace;
-    strcpy_s(s_name_replace, *k->s_name);
-    if (k->ID < 1000)
-        strcat_s(s_name_replace, "0");
-    if (k->ID < 100)
-        strcat_s(s_name_replace, "0");
-    if (k->ID < 10)
-        strcat_s(s_name_replace, "0");
-    string16 S1;
-    strcat_s(s_name_replace, _itoa(k->ID, S1, 10));
-    k->set_name_replace(s_name_replace);
+    k->set_name_replace(xr::format("{}{:04}", k->s_name, k->ID).c_str());
 
     register_object(k, true);
     k->spawn_supplies();

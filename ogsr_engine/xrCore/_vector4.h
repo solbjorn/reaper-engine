@@ -2,8 +2,7 @@
 #define __XR_CORE_VECTOR4_H
 
 XR_DIAG_PUSH();
-XR_DIAG_IGNORE("-Wdefaulted-function-deleted");
-XR_DIAG_IGNORE("-Wmissing-variable-declarations");
+XR_DIAG_IGNORE("-Wfloat-equal");
 
 #include <DirectXMath.h>
 

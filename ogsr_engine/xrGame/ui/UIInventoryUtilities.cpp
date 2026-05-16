@@ -188,15 +188,14 @@ ui_shader& InventoryUtilities::GetEquipmentIconsShader(size_t icon_group)
 {
     if (auto it = g_EquipmentIconsShaders.find(icon_group); it == g_EquipmentIconsShaders.end())
     {
-        string_path file;
-        strcpy_s(file, EQUIPMENT_ICONS);
-        if (icon_group > 0)
-        {
-            strcat_s(file, "_");
-            _itoa(icon_group, file + xr_strlen(file), 10);
-        }
+        xr_string file;
 
-        g_EquipmentIconsShaders[icon_group]->create("hud\\default", file);
+        if (icon_group > 0)
+            file = xr::format("{}_{}", EQUIPMENT_ICONS, icon_group);
+        else
+            file = EQUIPMENT_ICONS;
+
+        g_EquipmentIconsShaders[icon_group]->create("hud\\default", file.c_str());
     }
 
     return g_EquipmentIconsShaders.at(icon_group);
@@ -204,11 +203,17 @@ ui_shader& InventoryUtilities::GetEquipmentIconsShader(size_t icon_group)
 
 //////////////////////////////////////////////////////////////////////////
 
-const shared_str InventoryUtilities::GetGameDateAsString(EDatePrecision datePrec, char dateSeparator) { return GetDateAsString(Level().GetGameTime(), datePrec, dateSeparator); }
+const shared_str InventoryUtilities::GetGameDateAsString(EDatePrecision datePrec, char dateSeparator)
+{
+    return GetDateAsString(Level().GetGameTime(), datePrec, dateSeparator);
+}
 
 //////////////////////////////////////////////////////////////////////////
 
-const shared_str InventoryUtilities::GetGameTimeAsString(ETimePrecision timePrec, char timeSeparator) { return GetTimeAsString(Level().GetGameTime(), timePrec, timeSeparator); }
+const shared_str InventoryUtilities::GetGameTimeAsString(ETimePrecision timePrec, char timeSeparator)
+{
+    return GetTimeAsString(Level().GetGameTime(), timePrec, timeSeparator);
+}
 
 //////////////////////////////////////////////////////////////////////////
 

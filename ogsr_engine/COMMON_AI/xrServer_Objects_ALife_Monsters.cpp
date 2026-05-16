@@ -377,32 +377,21 @@ void CSE_ALifeTraderAbstract::set_specific_character(shared_str new_spec_char)
     if (NO_REPUTATION == m_reputation)
         m_reputation = selected_char.Reputation();
 
-    m_character_name = *(CStringTable().translate(shared_str{selected_char.Name()}));
-    LPCSTR gen_name = "GENERATE_NAME_";
+    m_character_name = CStringTable().translate(shared_str{selected_char.Name()});
+    static constexpr std::string_view gen_name{"GENERATE_NAME_"};
 
-    if (strstr(m_character_name.c_str(), gen_name))
+    if (const auto pos = m_character_name.find(gen_name); pos != xr_string::npos)
     {
         // select name and lastname
-        xr_string subset = m_character_name.c_str() + xr_strlen(gen_name);
+        const auto subset = m_character_name.substr(pos + xr_strlen(gen_name));
 
-        string_path t1;
-        strconcat(sizeof(t1), t1, "stalker_names_", subset.c_str());
-        u32 name_cnt = pSettings->r_u32(t1, "name_cnt");
-        u32 last_name_cnt = pSettings->r_u32(t1, "last_name_cnt");
+        const auto t1 = xr::format("stalker_names_{}", subset);
+        const auto name_cnt = pSettings->r_u32(t1.c_str(), "name_cnt");
+        const auto last_name_cnt = pSettings->r_u32(t1.c_str(), "last_name_cnt");
 
-        string512 S;
-        xr_string n = "name_";
-        n += subset;
-        n += "_";
-        n += _itoa(::Random.randI(name_cnt), S, 10);
-        m_character_name = *(CStringTable().translate(shared_str{n.c_str()}));
+        m_character_name = CStringTable().translate(shared_str{xr::format("name_{}_{}", subset, ::Random.randI(name_cnt))});
         m_character_name += " ";
-
-        n = "lname_";
-        n += subset;
-        n += "_";
-        n += _itoa(::Random.randI(last_name_cnt), S, 10);
-        m_character_name += *(CStringTable().translate(shared_str{n.c_str()}));
+        m_character_name += CStringTable().translate(shared_str{xr::format("lname_{}_{}", subset, ::Random.randI(last_name_cnt))});
     }
 
     u32 min_m = selected_char.MoneyDef().min_money;

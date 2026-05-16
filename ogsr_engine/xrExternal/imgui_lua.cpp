@@ -7,8 +7,6 @@
 #ifdef XR_IMGUI_LUA
 #include <sol_ImGui.cpp>
 
-#define ImGuiChildFlags_Border ImGuiChildFlags_Borders
-#define ImGuiPopupFlags_MouseButtonDefault_ ImGuiPopupFlags_MouseButtonRight
 #define ImGuiTabBarFlags_FittingPolicyResizeDown ImGuiTabBarFlags_FittingPolicyShrink
 #define ImGuiTreeNodeFlags_NavLeftJumpsBackHere ImGuiTreeNodeFlags_NavLeftJumpsToParent
 
@@ -21,8 +19,6 @@ XR_DIAG_IGNORE("-Wnewline-eof");
 
 XR_DIAG_POP();
 
-#undef ImGuiChildFlags_Border
-#undef ImGuiPopupFlags_MouseButtonDefault_
 #undef ImGuiTabBarFlags_FittingPolicyResizeDown
 #undef ImGuiTreeNodeFlags_NavLeftJumpsBackHere
 
