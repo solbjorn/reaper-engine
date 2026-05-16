@@ -2072,7 +2072,7 @@ bool CWeapon::ParentIsActor() const { return smart_cast<const CActor*>(H_Parent(
 const float& CWeapon::hit_probability() const
 {
     VERIFY((g_SingleGameDifficulty >= egdNovice) && (g_SingleGameDifficulty <= egdMaster));
-    return (m_hit_probability[egdNovice]);
+    return m_hit_probability[g_SingleGameDifficulty];
 }
 
 // Обновление необходимости включения второго вьюпорта +SecondVP+
