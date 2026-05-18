@@ -76,7 +76,7 @@ void CBlender_LmEbB::Compile(CBlender_Compile& C)
     C.r_dx10Sampler("smp_base");
     C.r_dx10Texture("s_lmap", C.L_textures[1]);
     C.r_dx10Sampler("smp_linear");
-    C.r_dx10Texture("s_hemi", *C.L_textures[2]);
+    C.r_dx10Texture("s_hemi", C.L_textures[2]);
     C.r_dx10Sampler("smp_rtlinear");
     C.r_dx10Texture("s_env", oT2_Name);
     C.r_End();

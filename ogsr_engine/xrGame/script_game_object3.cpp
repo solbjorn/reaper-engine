@@ -403,7 +403,7 @@ void CScriptGameObject::set_dest_level_vertex_id(u32 level_vertex_id)
             return;
         }
 
-        THROW2(stalker->movement().restrictions().accessible(level_vertex_id), *stalker->cName());
+        THROW2(stalker->movement().restrictions().accessible(level_vertex_id), stalker->cName().c_str());
         stalker->movement().set_level_dest_vertex(level_vertex_id);
     }
 }
@@ -440,7 +440,7 @@ void CScriptGameObject::set_desired_position(const Fvector* desired_position)
     }
     else
     {
-        THROW2(desired_position || stalker->movement().restrictions().accessible(*desired_position), *stalker->cName());
+        THROW2(desired_position || stalker->movement().restrictions().accessible(*desired_position), stalker->cName().c_str());
         stalker->movement().set_desired_position(desired_position);
     }
 }
@@ -1029,7 +1029,7 @@ LPCSTR CScriptGameObject::sound_prefix() const
         return nullptr;
     }
 
-    return (*custom_monster->sound().sound_prefix());
+    return custom_monster->sound().sound_prefix().c_str();
 }
 
 void CScriptGameObject::sound_prefix(LPCSTR sound_prefix)
@@ -1235,7 +1235,7 @@ const char* CScriptGameObject::GetVisualName() const
         return "";
     }
 
-    return *object().cNameVisual();
+    return object().cNameVisual().c_str();
 }
 
 const CCoverPoint* CScriptGameObject::angle_cover(const Fvector& position, f32 radius, const Fvector& enemy_position, f32 min_enemy_distance,

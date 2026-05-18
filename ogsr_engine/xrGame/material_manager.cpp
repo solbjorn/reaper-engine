@@ -28,7 +28,7 @@ CMaterialManager::~CMaterialManager() = default;
 
 void CMaterialManager::Load(LPCSTR section)
 {
-    R_ASSERT3(pSettings->line_exist(section, "material"), "Material not found in the section ", *(m_object->cNameSect()));
+    R_ASSERT3(pSettings->line_exist(section, "material"), "Material not found in the section ", m_object->cNameSect().c_str());
     m_my_material_idx = GMLib.GetMaterialIdx(pSettings->r_string(section, "material"));
 }
 
@@ -54,8 +54,10 @@ void CMaterialManager::update(float time_delta, float volume, float step_time, b
 {
     VERIFY(GAMEMTL_NONE_IDX != m_my_material_idx);
     VERIFY(GAMEMTL_NONE_IDX != m_last_material_idx);
+
     SGameMtlPair* mtl_pair = GMLib.GetMaterialPair(m_my_material_idx, m_last_material_idx);
-    VERIFY3(mtl_pair, "Undefined material pair: ", *GMLib.GetMaterialByIdx(m_last_material_idx)->m_Name);
+    VERIFY3(mtl_pair, "Undefined material pair: ", GMLib.GetMaterialByIdx(m_last_material_idx)->m_Name.c_str());
+
     Fvector position = m_object->Position();
     if (m_movement_control->CharacterExist())
     {

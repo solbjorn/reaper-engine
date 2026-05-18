@@ -164,7 +164,8 @@ void CUIInventoryWnd::ActivatePropertiesBox()
             XR_DIAG_PUSH();
             XR_DIAG_IGNORE("-Wformat-nonliteral");
 
-            std::snprintf(str, sizeof(str), CStringTable().translate(shared_str{trans_str.c_str()}).c_str(), CurrentIItem()->m_nameShort.c_str(), tgt->m_nameShort.c_str());
+            std::snprintf(str, sizeof(str), CStringTable().translate(shared_str{trans_str.c_str()}).c_str(), CurrentIItem()->m_nameShort.c_str(),
+                          tgt->m_nameShort.c_str());
 
             XR_DIAG_POP();
 
@@ -264,9 +265,9 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked()
         break;
         case INVENTORY_EAT_ACTION: EatItem(CurrentIItem()); break;
         case INVENTORY_ATTACH_ADDON: AttachAddon((PIItem)(UIPropertiesBox.GetClickedItem()->GetData())); break;
-        case INVENTORY_DETACH_SCOPE_ADDON: DetachAddon(*(smart_cast<CWeapon*>(CurrentIItem()))->GetScopeName()); break;
-        case INVENTORY_DETACH_SILENCER_ADDON: DetachAddon(*(smart_cast<CWeapon*>(CurrentIItem()))->GetSilencerName()); break;
-        case INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON: DetachAddon(*(smart_cast<CWeapon*>(CurrentIItem()))->GetGrenadeLauncherName()); break;
+        case INVENTORY_DETACH_SCOPE_ADDON: DetachAddon(smart_cast<CWeapon*>(CurrentIItem())->GetScopeName().c_str()); break;
+        case INVENTORY_DETACH_SILENCER_ADDON: DetachAddon(smart_cast<CWeapon*>(CurrentIItem())->GetSilencerName().c_str()); break;
+        case INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON: DetachAddon(smart_cast<CWeapon*>(CurrentIItem())->GetGrenadeLauncherName().c_str()); break;
         case INVENTORY_RELOAD_MAGAZINE: std::ignore = (smart_cast<CWeapon*>(CurrentIItem()))->Action(EGameActions::kWPN_RELOAD, CMD_START); break;
         case INVENTORY_UNLOAD_MAGAZINE: {
             auto ProcessUnload = [](void* pWpn) {

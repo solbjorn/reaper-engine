@@ -5,6 +5,7 @@
 #include "stdafx.h"
 
 #include "ParticlesPlayer.h"
+
 #include "..\xr_3da\xr_object.h"
 #include "../Include/xrRender/Kinematics.h"
 
@@ -32,7 +33,8 @@ CParticlesPlayer::SParticlesInfo* CParticlesPlayer::SBoneInfo::AppendParticles(c
         return pi;
 
     pi = &particles.emplace_back();
-    pi->ps = CParticlesObject::Create(*ps_name, FALSE);
+    pi->ps = CParticlesObject::Create(ps_name.c_str(), FALSE);
+
     return pi;
 }
 
@@ -127,10 +129,11 @@ void CParticlesPlayer::StartParticles(const shared_str& particles_name, u16 bone
     generate_orthonormal_basis(dir, xform);
     StartParticles(particles_name, bone_num, xform, sender_id, life_time, auto_stop);
 }
+
 void CParticlesPlayer::StartParticles(const shared_str& particles_name, u16 bone_num, const Fmatrix& xform, u16 sender_id, int life_time, bool auto_stop)
 {
     VERIFY(fis_zero(xform.c.magnitude()));
-    R_ASSERT(*particles_name);
+    R_ASSERT(particles_name.c_str() != nullptr);
 
     CObject* object = m_self_object;
     VERIFY(object);

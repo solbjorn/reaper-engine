@@ -297,7 +297,7 @@ void CTextureDescrMngr::GetTextureUsage(const shared_str& tex_name, BOOL& bDiffu
     }
 }
 
-BOOL CTextureDescrMngr::GetDetailTexture(const shared_str& tex_name, LPCSTR& res, R_constant_setup*& CS) const
+BOOL CTextureDescrMngr::GetDetailTexture(const shared_str& tex_name, shared_str& res, R_constant_setup*& CS) const
 {
     auto I = m_texture_details.find(tex_name);
     if (I != m_texture_details.end())
@@ -305,7 +305,7 @@ BOOL CTextureDescrMngr::GetDetailTexture(const shared_str& tex_name, LPCSTR& res
         if (I->second.m_assoc)
         {
             texture_assoc* TA = I->second.m_assoc;
-            res = TA->detail_name.c_str();
+            res = TA->detail_name;
             auto It2 = m_detail_scalers.find(tex_name);
             CS = It2 == m_detail_scalers.end() ? nullptr : It2->second; // TA->cs;
 

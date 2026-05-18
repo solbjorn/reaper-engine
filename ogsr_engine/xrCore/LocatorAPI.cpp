@@ -264,7 +264,7 @@ void CLocatorAPI::archive::open()
     R_ASSERT(size > 0);
 
     u32 dwPtr = SetFilePointer(hSrcFile, 0, nullptr, FILE_BEGIN);
-    R_ASSERT3(dwPtr != INVALID_SET_FILE_POINTER, *path, Debug.error2string(GetLastError()));
+    R_ASSERT3(dwPtr != INVALID_SET_FILE_POINTER, path.c_str(), Debug.error2string(GetLastError()));
 
     switch (fmt)
     {
@@ -714,11 +714,9 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
             lp_def = (cnt >= 5) ? def : nullptr;
             lp_capt = (cnt >= 6) ? capt : nullptr;
 
-            PathPairIt p_it = pathes.find(root);
-
-            std::pair<PathPairIt, bool> I;
+            auto p_it = pathes.find(root);
             FS_Path* P = xr_new<FS_Path>((p_it != pathes.end()) ? p_it->second->m_Path : root, lp_add, lp_def, lp_capt, fl);
-            I = pathes.emplace(xr_strdup(id), P);
+            auto I = pathes.emplace(xr_strdup(id), P);
 
 #ifndef DEBUG
             m_Flags.set(flCacheFiles, FALSE);
@@ -730,7 +728,7 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
         r_close(pFSltx);
         R_ASSERT(path_exist("$app_data_root$"));
 
-        for (PathPairIt p_it = pathes.begin(); p_it != pathes.end(); p_it++)
+        for (auto p_it = pathes.begin(); p_it != pathes.end(); p_it++)
         {
             FS_Path* P = p_it->second;
 
@@ -1117,7 +1115,7 @@ void CLocatorAPI::w_close(IWriter*& S)
     {
         R_ASSERT(S->fName.size());
         string_path fname;
-        strcpy_s(fname, *S->fName);
+        strcpy_s(fname, S->fName.c_str());
         bool bReg = S->valid();
         xr_delete(S);
 
@@ -1230,11 +1228,7 @@ s64 CLocatorAPI::file_length(LPCSTR src)
     return I != files.end() ? I->size_real : -1;
 }
 
-bool CLocatorAPI::path_exist(LPCSTR path)
-{
-    PathPairIt P = pathes.find(path);
-    return (P != pathes.end());
-}
+bool CLocatorAPI::path_exist(LPCSTR path) { return pathes.contains(path); }
 
 FS_Path* CLocatorAPI::append_path(LPCSTR path_alias, LPCSTR root, LPCSTR add, BOOL recursive)
 {
@@ -1252,8 +1246,9 @@ FS_Path* CLocatorAPI::append_path(LPCSTR path_alias, LPCSTR root, LPCSTR add, BO
 
 FS_Path* CLocatorAPI::get_path(LPCSTR path)
 {
-    PathPairIt P = pathes.find(path);
+    auto P = pathes.find(path);
     R_ASSERT2(P != pathes.end(), path);
+
     return P->second;
 }
 
@@ -1312,7 +1307,8 @@ void CLocatorAPI::rescan_physical_path(LPCSTR full_path, BOOL bRecurse)
 void CLocatorAPI::rescan_physical_pathes()
 {
     m_Flags.set(flNeedRescan, FALSE);
-    for (PathPairIt p_it = pathes.begin(); p_it != pathes.end(); p_it++)
+
+    for (auto p_it = pathes.begin(); p_it != pathes.end(); p_it++)
     {
         FS_Path* P = p_it->second;
         if (P->m_Flags.is(FS_Path::flNeedRescan))

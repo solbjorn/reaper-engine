@@ -109,12 +109,11 @@ Flags32 CPatrolPathParams::flags(u32 index) const
 LPCSTR CPatrolPathParams::name(u32 index) const
 {
     VERIFY(m_path->vertex(index));
-    return (*m_path->vertex(index)->data().name());
+    return m_path->vertex(index)->data().name().c_str();
 }
 
 bool CPatrolPathParams::terminal(u32 index) const
 {
     VERIFY(m_path->vertex(index));
-
-    return (m_path->vertex(index)->edges().size() == 0);
+    return m_path->vertex(index)->edges().empty();
 }

@@ -26,7 +26,7 @@ CUIColorAnimatorWrapper::CUIColorAnimatorWrapper(u32* colorToModify) : color{col
 }
 //////////////////////////////////////////////////////////////////////////
 
-CUIColorAnimatorWrapper::CUIColorAnimatorWrapper(const shared_str& animationName) : colorAnimation{LALib.FindItem(*animationName)}, currColor{0xffff0000}
+CUIColorAnimatorWrapper::CUIColorAnimatorWrapper(const shared_str& animationName) : colorAnimation{LALib.FindItem(animationName.c_str())}, currColor{0xffff0000}
 {
     VERIFY(colorAnimation);
     prevGlobalTime = Device.dwTimeContinual / 1000.0f;
@@ -36,8 +36,8 @@ void CUIColorAnimatorWrapper::SetColorAnimation(const shared_str& animationName)
 {
     if (animationName.size() != 0)
     {
-        colorAnimation = LALib.FindItem(*animationName);
-        R_ASSERT2(colorAnimation, *animationName);
+        colorAnimation = LALib.FindItem(animationName.c_str());
+        R_ASSERT2(colorAnimation, animationName.c_str());
     }
     else
     {

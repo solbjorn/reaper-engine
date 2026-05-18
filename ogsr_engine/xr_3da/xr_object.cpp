@@ -30,17 +30,11 @@ void CObject::cNameVisual_set(shared_str N)
         IRenderVisual* old_v = renderable.visual;
 
         NameVisual = N;
-        renderable.visual = Render->model_Create(*N);
+        renderable.visual = Render->model_Create(N.c_str());
 
         IKinematics* old_k = old_v ? old_v->dcast_PKinematics() : nullptr;
         IKinematics* new_k = renderable.visual->dcast_PKinematics();
 
-        /*
-        if(old_k && new_k){
-            new_k->Update_Callback			= old_k->Update_Callback;
-            new_k->Update_Callback_Param	= old_k->Update_Callback_Param;
-        }
-        */
         if (old_k && new_k)
         {
             new_k->SetUpdateCallback(old_k->GetUpdateCallback());
@@ -61,14 +55,15 @@ void CObject::cNameVisual_set(shared_str N)
 // flagging
 void CObject::processing_activate()
 {
-    VERIFY3(255 != Props.bActiveCounter, "Invalid sequence of processing enable/disable calls: overflow", *cName());
+    VERIFY3(255 != Props.bActiveCounter, "Invalid sequence of processing enable/disable calls: overflow", cName().c_str());
     Props.bActiveCounter++;
     if (0 == (Props.bActiveCounter - 1))
         g_pGameLevel->Objects.o_activate(this);
 }
+
 void CObject::processing_deactivate()
 {
-    VERIFY3(0 != Props.bActiveCounter, "Invalid sequence of processing enable/disable calls: underflow", *cName());
+    VERIFY3(0 != Props.bActiveCounter, "Invalid sequence of processing enable/disable calls: underflow", cName().c_str());
     Props.bActiveCounter--;
     if (0 == Props.bActiveCounter)
         g_pGameLevel->Objects.o_sleep(this);
@@ -179,7 +174,7 @@ tmc::task<bool> CObject::net_Spawn(CSE_Abstract*)
     {
         if (pSettings->line_exist(cNameSect(), "cform"))
         {
-            VERIFY3(*NameVisual, "Model isn't assigned for object, but cform requisted", *cName());
+            VERIFY3(NameVisual.c_str() != nullptr, "Model isn't assigned for object, but cform requisted", cName().c_str());
             collidable.model = xr_new<CCF_Skeleton>(this);
         }
     }
@@ -346,7 +341,7 @@ void CObject::spatial_move()
 
 CObject::SavedPosition CObject::ps_Element(u32 ID) const
 {
-    VERIFY(ID < ps_Size());
+    VERIFY(gsl::narrow<s32>(ID) < ps_Size());
     return PositionStack[ID];
 }
 

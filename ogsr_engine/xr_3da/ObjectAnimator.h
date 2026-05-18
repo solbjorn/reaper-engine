@@ -33,7 +33,7 @@ public:
 
     void Clear();
     void Load(LPCSTR name);
-    IC LPCSTR Name() const { return *m_Name; }
+    [[nodiscard]] gsl::czstring Name() const { return m_Name.c_str(); }
     float& Speed() { return m_Speed; }
 
     COMotion* Play(bool bLoop, LPCSTR name = nullptr);

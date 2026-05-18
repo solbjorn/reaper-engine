@@ -64,7 +64,7 @@ void CCharacterInfo::load_shared(LPCSTR)
     pXML->SetLocalRoot(pXML->GetRoot());
 
     const auto item_node = pXML->NavigateToNode(id_to_index::tag_name, item_data.pos_in_file);
-    R_ASSERT3(item_node, "profile id=", *item_data.id);
+    R_ASSERT3(item_node, "profile id=", item_data.id.c_str());
 
     pXML->SetLocalRoot(item_node);
 

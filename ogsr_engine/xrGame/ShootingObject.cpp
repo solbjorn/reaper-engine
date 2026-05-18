@@ -81,24 +81,24 @@ void CShootingObject::LoadFireParams(LPCSTR section, LPCSTR prefix)
     m_eHitType = ALife::g_tfString2HitType(hit_type); // поддержка произвольного хита оружия
     // сила выстрела и его мощьность
     s_sHitPower = pSettings->r_string_wb(section, strconcat(sizeof(full_name), full_name, prefix, "hit_power")); // читаем строку силы хита пули оружия
-    fvHitPower[egdMaster] = (float)atof(_GetItem(*s_sHitPower, 0, buffer)); // первый параметр - это хит для уровня игры мастер
+    fvHitPower[egdMaster] = (float)atof(_GetItem(s_sHitPower.c_str(), 0, buffer)); // первый параметр - это хит для уровня игры мастер
 
     fvHitPower[egdVeteran] = fvHitPower[egdMaster]; // изначально параметры для других уровней
     fvHitPower[egdStalker] = fvHitPower[egdMaster]; // сложности
     fvHitPower[egdNovice] = fvHitPower[egdMaster]; // такие же
 
-    int num_game_diff_param = _GetItemCount(*s_sHitPower); // узнаём колличество параметров для хитов
+    int num_game_diff_param = _GetItemCount(s_sHitPower.c_str()); // узнаём колличество параметров для хитов
     if (num_game_diff_param > 1) // если задан второй параметр хита
     {
-        fvHitPower[egdVeteran] = (float)atof(_GetItem(*s_sHitPower, 1, buffer)); // то вычитываем его для уровня ветерана
+        fvHitPower[egdVeteran] = (float)atof(_GetItem(s_sHitPower.c_str(), 1, buffer)); // то вычитываем его для уровня ветерана
     }
     if (num_game_diff_param > 2) // если задан третий параметр хита
     {
-        fvHitPower[egdStalker] = (float)atof(_GetItem(*s_sHitPower, 2, buffer)); // то вычитываем его для уровня сталкера
+        fvHitPower[egdStalker] = (float)atof(_GetItem(s_sHitPower.c_str(), 2, buffer)); // то вычитываем его для уровня сталкера
     }
     if (num_game_diff_param > 3) // если задан четвёртый параметр хита
     {
-        fvHitPower[egdNovice] = (float)atof(_GetItem(*s_sHitPower, 3, buffer)); // то вычитываем его для уровня новичка
+        fvHitPower[egdNovice] = (float)atof(_GetItem(s_sHitPower.c_str(), 3, buffer)); // то вычитываем его для уровня новичка
     }
 
     // fHitPower			= pSettings->r_float	(section,strconcat(full_name, prefix, "hit_power"));
@@ -261,7 +261,7 @@ void CShootingObject::OnShellDrop(const Fvector& play_pos, const Fvector& parent
     if (Device.vCameraPosition.distance_to_sqr(play_pos) > 2 * 2)
         return;
 
-    CParticlesObject* pShellParticles = CParticlesObject::Create(*m_sShellParticles, TRUE);
+    CParticlesObject* pShellParticles = CParticlesObject::Create(m_sShellParticles.c_str(), TRUE);
 
     Fmatrix particles_pos;
     particles_pos.set(get_ParticlesXFORM());
@@ -279,7 +279,7 @@ void CShootingObject::StartSmokeParticles(const Fvector& play_pos)
         return;
 
     CParticlesObject* pSmokeParticles{};
-    StartParticles(pSmokeParticles, *m_sSmokeParticlesCurrent, play_pos, true);
+    StartParticles(pSmokeParticles, m_sSmokeParticlesCurrent.c_str(), play_pos, true);
 }
 
 void CShootingObject::StartFlameParticles()
@@ -295,8 +295,9 @@ void CShootingObject::StartFlameParticles()
     }
 
     StopFlameParticles();
-    m_pFlameParticles = CParticlesObject::Create(*m_sFlameParticlesCurrent, FALSE);
+    m_pFlameParticles = CParticlesObject::Create(m_sFlameParticlesCurrent.c_str(), FALSE);
     UpdateFlameParticles();
+
     BOOL hudMode = IsHudModeNow() && m_bParticlesHudMode;
     m_pFlameParticles->Play(hudMode);
 }
@@ -379,7 +380,8 @@ bool CShootingObject::SendHitAllowed(CObject* pUser)
     }
 }
 
-void CShootingObject::FireBullet(const Fvector& pos, const Fvector& shot_dir, float fire_disp, const CCartridge& cartridge, u16 parent_id, u16 weapon_id, bool send_hit)
+void CShootingObject::FireBullet(const Fvector& pos, const Fvector& shot_dir, float fire_disp, const CCartridge& cartridge, u16 parent_id, u16 weapon_id,
+                                 bool send_hit)
 {
     Fvector dir;
     dir.random_dir(shot_dir, fire_disp);
@@ -438,7 +440,8 @@ void CShootingObject::FireBullet(const Fvector& pos, const Fvector& shot_dir, fl
         l_fHitPower = fvHitPower[egdMaster];
     }
 
-    Level().BulletManager().AddBullet(pos, dir, m_fStartBulletSpeed, l_fHitPower, fHitImpulse, parent_id, weapon_id, m_eHitType, fireDistance, cartridge, send_hit, aim_bullet);
+    Level().BulletManager().AddBullet(pos, dir, m_fStartBulletSpeed, l_fHitPower, fHitImpulse, parent_id, weapon_id, m_eHitType, fireDistance, cartridge,
+                                      send_hit, aim_bullet);
 }
 
 void CShootingObject::FireStart() { bWorking = true; }

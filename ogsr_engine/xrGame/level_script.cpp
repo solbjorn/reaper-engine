@@ -316,14 +316,14 @@ static u16 map_has_object_spot(u16 id, LPCSTR spot_type) { return Level().MapMan
 
 static bool patrol_path_exists(LPCSTR patrol_path) { return (!!ai().patrol_paths().path(shared_str{patrol_path}, true)); }
 
-static LPCSTR get_name() { return (*Level().name()); }
-
-static void prefetch_sound(LPCSTR name) { Level().PrefetchSound(name); }
-
-static CClientSpawnManager& get_client_spawn_manager() { return (Level().client_spawn_manager()); }
-
 namespace
 {
+[[nodiscard]] gsl::czstring get_name() { return Level().name().c_str(); }
+
+void prefetch_sound(gsl::czstring name) { Level().PrefetchSound(name); }
+
+[[nodiscard]] CClientSpawnManager& get_client_spawn_manager() { return Level().client_spawn_manager(); }
+
 void start_stop_menu(CUIDialogWnd* pDialog, bool bDoHideIndicators) { HUD().GetUI()->StartStopMenu(pDialog, bDoHideIndicators); }
 void start_stop_menu(std::unique_ptr<CUIDialogWndEx>& pDialog, bool bDoHideIndicators) { HUD().GetUI()->StartStopMenu_script(pDialog, bDoHideIndicators); }
 } // namespace

@@ -90,11 +90,11 @@ static void generate_story_ids(STORY_PAIRS& result, _id_type INVALID_ID, LPCSTR 
     {
         temp = Ini->r_string_wb(section, N);
 
-        R_ASSERT3(!strchr(*temp, ' '), invalid_id_description, *temp);
+        R_ASSERT3(!std::string_view{temp}.contains(' '), invalid_id_description, temp.c_str());
         R_ASSERT2(std::is_neq(xr_strcmp(temp, INVALID_ID_STRING)), invalid_id_redefinition);
 
         auto ret = result.try_emplace(temp, atoi(N));
-        ASSERT_FMT(ret.second == true, "%s %s!", duplicated_id_description, *temp);
+        ASSERT_FMT(ret.second == true, "%s %s!", duplicated_id_description, temp.c_str());
     }
 
     result.try_emplace(shared_str{INVALID_ID_STRING}, INVALID_ID);
@@ -438,7 +438,7 @@ void CALifeSimulator::script_register(sol::state_view& lua)
     target = lua.create_table(story_ids.size(), 0);
 
     for (const auto& pair : story_ids)
-        target.set(*pair.first, pair.second);
+        target.set(std::string_view{pair.first}, pair.second);
 
     xr::sol_new_enum(lua, "story_ids", target);
 
@@ -450,7 +450,7 @@ void CALifeSimulator::script_register(sol::state_view& lua)
     target = lua.create_table(spawn_story_ids.size(), 0);
 
     for (const auto& pair : spawn_story_ids)
-        target.set(*pair.first, pair.second);
+        target.set(std::string_view{pair.first}, pair.second);
 
     xr::sol_new_enum(lua, "spawn_story_ids", target);
 }

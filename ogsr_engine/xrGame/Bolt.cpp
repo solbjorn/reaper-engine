@@ -70,5 +70,5 @@ void CBolt::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_stri
 {
     str_name = NameShort();
     str_count = "";
-    icon_sect_name = *cNameSect();
+    icon_sect_name = cNameSect().c_str();
 }

@@ -707,10 +707,7 @@ private:
 
         SDrawStaticStruct* _s = HUD().GetUI()->UIGame()->AddCustomStatic("game_saved", true);
         _s->m_endTime = Device.fTimeGlobal + 3.0f; // 3sec
-
-        string_path save_name;
-        strconcat(sizeof(save_name), save_name, *CStringTable().translate(shared_str{"st_game_saved"}), ": ", S);
-        _s->wnd()->SetText(save_name);
+        _s->wnd()->SetText(xr::format("{}: {}", CStringTable().translate(shared_str{"st_game_saved"}), S).c_str());
 
         xr_strcat(S, ".dds");
         string_path S1;

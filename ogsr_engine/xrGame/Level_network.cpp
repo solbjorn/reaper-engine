@@ -333,26 +333,20 @@ void CLevel::net_OnChangeSelfName(NET_Packet* P)
     string64 NewName;
     P->r_stringZ(NewName);
 
-    if (!strstr(*m_caClientOptions, "/name="))
-    {
-        string1024 tmpstr;
-        strcpy_s(tmpstr, *m_caClientOptions);
-        strcat_s(tmpstr, "/name=");
-        strcat_s(tmpstr, NewName);
+    const auto opts = std::string_view{m_caClientOptions};
 
-        m_caClientOptions._set(tmpstr);
+    if (const auto pos = opts.find("/name="); pos != std::string_view::npos)
+    {
+        const auto pref = opts.substr(0, pos + 6);
+        std::string_view pfx;
+
+        if (const auto ppos = opts.find('/', pos + 6); ppos != std::string_view::npos)
+            pfx = opts.substr(ppos);
+
+        m_caClientOptions._set(xr::format("{}{}{}", pref, NewName, pfx));
     }
     else
     {
-        string1024 tmpstr;
-        strcpy_s(tmpstr, *m_caClientOptions);
-        *(strstr(tmpstr, "name=") + 5) = 0;
-        strcat_s(tmpstr, NewName);
-
-        const char* ptmp = strchr(strstr(*m_caClientOptions, "name="), '/');
-        if (ptmp)
-            strcat_s(tmpstr, ptmp);
-
-        m_caClientOptions._set(tmpstr);
+        m_caClientOptions._set(xr::format("{}/name={}", opts, NewName));
     }
 }

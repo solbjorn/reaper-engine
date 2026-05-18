@@ -59,7 +59,8 @@ bool CUIButton::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
     if (inherited::OnMouse(x, y, mouse_action))
         return true;
 
-    if ((WINDOW_LBUTTON_DOWN == mouse_action || WINDOW_LBUTTON_UP == mouse_action || WINDOW_RBUTTON_DOWN == mouse_action || WINDOW_RBUTTON_UP == mouse_action) &&
+    if ((WINDOW_LBUTTON_DOWN == mouse_action || WINDOW_LBUTTON_UP == mouse_action || WINDOW_RBUTTON_DOWN == mouse_action ||
+         WINDOW_RBUTTON_UP == mouse_action) &&
         HasChildMouseHandler())
         return false;
 
@@ -208,7 +209,7 @@ void CUIButton::Update()
 
     if (CursorOverWindow() && m_hint_text.size() && !g_btnHint->Owner() && Device.dwTimeGlobal > m_dwFocusReceiveTime + 500)
     {
-        g_btnHint->SetHintText(this, *m_hint_text);
+        g_btnHint->SetHintText(this, m_hint_text.c_str());
 
         Fvector2 c_pos = GetUICursor()->GetCursorPosition();
         Frect vis_rect;

@@ -114,11 +114,11 @@ void CDestroyablePhysicsObject::Destroy()
     callback(GameObject::eDeath)(lua_game_object(), who_object ? who_object->lua_game_object() : nullptr);
 
     CPHDestroyable::Destroy(ID(), "physic_destroyable_object");
+
     if (m_destroy_sound._handle())
-    {
         m_destroy_sound.play_at_pos(this, Position());
-    }
-    if (*m_destroy_particles)
+
+    if (m_destroy_particles.c_str() != nullptr)
     {
         // Fvector dir;dir.set(0,1,0);
         Fmatrix m;
@@ -142,6 +142,7 @@ void CDestroyablePhysicsObject::Destroy()
         m.k.crossproduct(m.i, m.j);
         StartParticles(m_destroy_particles, m, ID());
     }
+
     SheduleRegister();
 }
 

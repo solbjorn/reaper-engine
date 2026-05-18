@@ -25,10 +25,11 @@ CUIOutfitInfo::~CUIOutfitInfo()
 namespace
 {
 constexpr std::array<std::string_view, 16> _imm_names{
-    "health_restore_speed", "radiation_restore_speed", "satiety_restore_speed", "thirst_restore_speed", "power_restore_speed", "bleeding_restore_speed", "psy_health_restore_speed",
+    "health_restore_speed",   "radiation_restore_speed",  "satiety_restore_speed", "thirst_restore_speed", "power_restore_speed",
+    "bleeding_restore_speed", "psy_health_restore_speed",
 
-    "burn_immunity",        "shock_immunity",          "strike_immunity",       "wound_immunity",       "radiation_immunity",  "telepatic_immunity",     "chemical_burn_immunity",
-    "explosion_immunity",   "fire_wound_immunity",
+    "burn_immunity",          "shock_immunity",           "strike_immunity",       "wound_immunity",       "radiation_immunity",
+    "telepatic_immunity",     "chemical_burn_immunity",   "explosion_immunity",    "fire_wound_immunity",
 };
 
 constexpr std::array<std::string_view, 16> _imm_st_names{
@@ -51,7 +52,8 @@ constexpr std::array<std::string_view, 16> _imm_st_names{
     "ui_inv_outfit_fire_wound_protection",
 };
 
-constexpr std::array<std::string_view, 7> _actor_param_names{"satiety_health_v", "radiation_v", "satiety_v", "thirst_v", "satiety_power_v", "wound_incarnation_v", "psy_health_v"};
+constexpr std::array<std::string_view, 7> _actor_param_names{"satiety_health_v", "radiation_v",         "satiety_v",   "thirst_v",
+                                                             "satiety_power_v",  "wound_incarnation_v", "psy_health_v"};
 } // namespace
 
 void CUIOutfitInfo::InitFromXml(CUIXml& xml_doc)
@@ -150,7 +152,7 @@ void CUIOutfitInfo::Update(CCustomOutfit* outfit)
         if (i == _item_bleeding_restore_speed || i == _item_radiation_restore_speed)
             _color = (_val_outfit > 0) ? "%c[red]" : "%c[green]";
 
-        LPCSTR _imm_name = *CStringTable().translate(shared_str{_imm_st_names[i].data()});
+        const auto _imm_name = CStringTable::translate(shared_str{_imm_st_names[i].data()}).c_str();
 
         int _sz = sprintf_s(_buff, sizeof(_buff), "%s ", _imm_name);
         _sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%s", _color, _val_outfit, _sn);

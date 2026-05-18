@@ -54,7 +54,8 @@ void CHelicopter::StartFlame()
 {
     if (m_pParticle)
         return;
-    m_pParticle = CParticlesObject::Create(*m_smoke_particle, FALSE);
+
+    m_pParticle = CParticlesObject::Create(m_smoke_particle.c_str(), FALSE);
 
     Fvector zero_vector;
     zero_vector.set(0.f, 0.f, 0.f);
@@ -271,7 +272,7 @@ tmc::task<void> CHelicopter::die_async(std::array<std::byte, 16>&)
     co_await CEntity::Die(nullptr);
     co_await m_engineSound.stop();
 
-    m_brokenSound.create(pSettings->r_string(*cNameSect(), "broken_snd"), st_Effect, sg_SourceType);
+    m_brokenSound.create(pSettings->r_string(cNameSect(), "broken_snd"), st_Effect, sg_SourceType);
     m_brokenSound.play_at_pos(nullptr, XFORM().c, sm_Looped);
 
     IKinematics* K = smart_cast<IKinematics*>(Visual());
@@ -281,9 +282,9 @@ tmc::task<void> CHelicopter::die_async(std::array<std::byte, 16>&)
         LPCSTR bone;
 
         u16 bone_id;
-        for (u32 i = 0, n = _GetItemCount(*m_death_bones_to_hide); i < n; ++i)
+        for (u32 i = 0, n = _GetItemCount(m_death_bones_to_hide.c_str()); i < n; ++i)
         {
-            bone = _GetItem(*m_death_bones_to_hide, i, I);
+            bone = _GetItem(m_death_bones_to_hide.c_str(), i, I);
             bone_id = K->LL_BoneID(bone);
             K->LL_SetBoneVisible(bone_id, FALSE, TRUE);
         }
@@ -293,8 +294,8 @@ tmc::task<void> CHelicopter::die_async(std::array<std::byte, 16>&)
         PPhysicsShell()->set_ObjectContactCallback(CollisionCallbackDead);
         PPhysicsShell()->set_ContactCallback(ContactShotMark);
     }
-    Fvector lin_vel;
 
+    Fvector lin_vel;
     Fvector prev_pos = PositionStack.front().vPosition;
     lin_vel.sub(XFORM().c, prev_pos);
 
@@ -375,12 +376,12 @@ void CHelicopter::UseFireTrail(bool val)
     m_enemy.bUseFireTrail = val;
     if (val)
     {
-        fireDispersionBase = pSettings->r_float(*cNameSect(), "fire_dispersion_null");
+        fireDispersionBase = pSettings->r_float(cNameSect(), "fire_dispersion_null");
         fireDispersionBase = deg2rad(fireDispersionBase);
     }
     else
     {
-        fireDispersionBase = pSettings->r_float(*cNameSect(), "fire_dispersion_base");
+        fireDispersionBase = pSettings->r_float(cNameSect(), "fire_dispersion_base");
         fireDispersionBase = deg2rad(fireDispersionBase);
     }
 }

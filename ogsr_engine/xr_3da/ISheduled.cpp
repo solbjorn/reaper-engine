@@ -17,7 +17,7 @@ ISheduled::ISheduled()
 
 ISheduled::~ISheduled()
 {
-    VERIFY2(!Engine.Sheduler.Registered(this), *shedule_Name());
+    VERIFY2(!Engine.Sheduler.Registered(this), shedule_Name().c_str());
 
 #ifndef DEBUG
     // sad, but true

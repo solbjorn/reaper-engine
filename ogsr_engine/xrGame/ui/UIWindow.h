@@ -156,7 +156,7 @@ public:
     const shared_str WindowName() const;
     void SetWindowName(const char* wn, bool ifnset);
     inline void SetWindowName(const char* wn) { SetWindowName(wn, false); }
-    LPCSTR WindowName_script() { return *m_windowName; }
+    [[nodiscard]] auto WindowName_script() const { return m_windowName.c_str(); }
 
     CUIWindow* FindChild(const shared_str name, u32 max_nested = 15);
     CUIWindow* FindChild(LPCSTR s) { return FindChild(shared_str{s}); }

@@ -13,7 +13,7 @@
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Items.h"
 
-void CSE_ALifeObject::spawn_supplies() { spawn_supplies(*m_ini_string); }
+void CSE_ALifeObject::spawn_supplies() { spawn_supplies(m_ini_string.c_str()); }
 
 void CSE_ALifeObject::spawn_supplies(LPCSTR ini_string)
 {

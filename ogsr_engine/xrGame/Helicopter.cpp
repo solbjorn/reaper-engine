@@ -89,7 +89,7 @@ void CHelicopter::Load(LPCSTR section)
     UseFireTrail(m_enemy.bUseFireTrail); // temp force reloar disp params
 
     m_sAmmoType._set(pSettings->r_string(section, "ammo_class"));
-    m_CurrentAmmo.Load(*m_sAmmoType, 0);
+    m_CurrentAmmo.Load(m_sAmmoType.c_str(), 0);
 
     m_sRocketSection._set(pSettings->r_string(section, "rocket_class"));
 
@@ -140,7 +140,7 @@ tmc::task<bool> CHelicopter::net_Spawn(CSE_Abstract* DC)
     std::ignore = CPHSkeleton::Spawn(DC);
 
     for (u32 i = 0; i < 4; ++i)
-        CRocketLauncher::SpawnRocket(*m_sRocketSection, smart_cast<CGameObject*>(this));
+        CRocketLauncher::SpawnRocket(m_sRocketSection.c_str(), smart_cast<CGameObject*>(this));
 
     // assigning m_animator here
     CSE_Abstract* abstract = (CSE_Abstract*)(DC);
@@ -208,7 +208,7 @@ tmc::task<bool> CHelicopter::net_Spawn(CSE_Abstract* DC)
         K->CalculateBones(TRUE);
     }
 
-    m_engineSound.create(*heli->engine_sound, st_Effect, sg_SourceType);
+    m_engineSound.create(heli->engine_sound.c_str(), st_Effect, sg_SourceType);
     m_engineSound.play_at_pos(nullptr, XFORM().c, sm_Looped);
 
     if (m_bLightShotEnabled)
@@ -443,7 +443,7 @@ tmc::task<void> CHelicopter::shedule_Update(u32 time_delta)
     if (state() != CHelicopter::eDead)
     {
         for (u32 i = getRocketCount(); i < 4; ++i)
-            CRocketLauncher::SpawnRocket(*m_sRocketSection, this);
+            CRocketLauncher::SpawnRocket(m_sRocketSection.c_str(), this);
     }
 
     if (!m_ready_explode)

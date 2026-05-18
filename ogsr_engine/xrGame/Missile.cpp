@@ -79,8 +79,8 @@ void CMissile::Load(LPCSTR section)
 
     m_vThrowPoint = pSettings->r_fvector3(section, "throw_point");
     m_vThrowDir = pSettings->r_fvector3(section, "throw_dir");
-    m_vHudThrowPoint = pSettings->r_fvector3(*hud_sect, "throw_point");
-    m_vHudThrowDir = pSettings->r_fvector3(*hud_sect, "throw_dir");
+    m_vHudThrowPoint = pSettings->r_fvector3(hud_sect, "throw_point");
+    m_vHudThrowDir = pSettings->r_fvector3(hud_sect, "throw_dir");
 
     if (pSettings->line_exist(section, "snd_playing"))
         HUD_SOUND::LoadSound(section, "snd_playing", sndPlaying);
@@ -133,7 +133,7 @@ void CMissile::spawn_fake_missile()
 {
     if (!getDestroy())
     {
-        CSE_Abstract* object = Level().spawn_item(*cNameSect(), Position(), ai_location().level_vertex_id(), ID(), true);
+        CSE_Abstract* object = Level().spawn_item(cNameSect().c_str(), Position(), ai_location().level_vertex_id(), ID(), true);
 
         CSE_ALifeObject* alife_object = smart_cast<CSE_ALifeObject*>(object);
         VERIFY(alife_object);

@@ -88,12 +88,7 @@ CXml::~CXml() = default;
 
 bool CXml::Init(gsl::czstring path_alias, gsl::czstring path, gsl::czstring _xml_filename)
 {
-    const shared_str fn = correct_file_name(path, _xml_filename);
-
-    string_path str;
-    sprintf(str, "%s\\%s", path, *fn);
-
-    return Init(path_alias, str);
+    return Init(path_alias, xr::format("{}\\{}", path, correct_file_name(path, _xml_filename)).c_str());
 }
 
 // инициализация и загрузка XML файла
@@ -164,7 +159,10 @@ pugi::xml_node CXml::NavigateToNode(pugi::xml_node start_node, gsl::czstring pat
     return node;
 }
 
-pugi::xml_node CXml::NavigateToNode(gsl::czstring path, gsl::index index) const { return NavigateToNode(GetLocalRoot() ? GetLocalRoot() : GetRoot(), path, index); }
+pugi::xml_node CXml::NavigateToNode(gsl::czstring path, gsl::index index) const
+{
+    return NavigateToNode(GetLocalRoot() ? GetLocalRoot() : GetRoot(), path, index);
+}
 
 pugi::xml_node CXml::NavigateToNodeWithAttribute(gsl::czstring tag_name, gsl::czstring attrib_name, gsl::czstring attrib_value) const
 {
@@ -199,10 +197,19 @@ gsl::czstring CXml::Read(pugi::xml_node node, gsl::czstring default_str_val) con
 
 s32 CXml::ReadInt(pugi::xml_node node, s32 default_int_val) const { return text(node).as_int(default_int_val); }
 s32 CXml::ReadInt(gsl::czstring path, gsl::index index, s32 default_int_val) const { return text(path, index).as_int(default_int_val); }
-s32 CXml::ReadInt(pugi::xml_node start_node, gsl::czstring path, gsl::index index, s32 default_int_val) const { return text(start_node, path, index).as_int(default_int_val); }
+
+s32 CXml::ReadInt(pugi::xml_node start_node, gsl::czstring path, gsl::index index, s32 default_int_val) const
+{
+    return text(start_node, path, index).as_int(default_int_val);
+}
 
 f32 CXml::ReadFlt(gsl::czstring path, gsl::index index, f32 default_flt_val) const { return text(path, index).as_float(default_flt_val); }
-f32 CXml::ReadFlt(pugi::xml_node start_node, gsl::czstring path, gsl::index index, f32 default_flt_val) const { return text(start_node, path, index).as_float(default_flt_val); }
+
+f32 CXml::ReadFlt(pugi::xml_node start_node, gsl::czstring path, gsl::index index, f32 default_flt_val) const
+{
+    return text(start_node, path, index).as_float(default_flt_val);
+}
+
 f32 CXml::ReadFlt(pugi::xml_node node, f32 default_flt_val) const { return text(node).as_float(default_flt_val); }
 
 pugi::xml_attribute CXml::attribute(pugi::xml_node start_node, gsl::czstring path, gsl::index index, gsl::czstring attrib) const
@@ -223,17 +230,28 @@ gsl::czstring CXml::ReadAttrib(gsl::czstring path, gsl::index index, gsl::czstri
 }
 
 pugi::xml_attribute CXml::attribute(pugi::xml_node node, gsl::czstring attrib) const { return node.attribute(attrib); }
-gsl::czstring CXml::ReadAttrib(pugi::xml_node node, gsl::czstring attrib, gsl::czstring default_str_val) const { return attribute(node, attrib).as_string(default_str_val); }
+
+gsl::czstring CXml::ReadAttrib(pugi::xml_node node, gsl::czstring attrib, gsl::czstring default_str_val) const
+{
+    return attribute(node, attrib).as_string(default_str_val);
+}
 
 s32 CXml::ReadAttribInt(pugi::xml_node node, gsl::czstring attrib, s32 default_int_val) const { return attribute(node, attrib).as_int(default_int_val); }
-s32 CXml::ReadAttribInt(gsl::czstring path, gsl::index index, gsl::czstring attrib, s32 default_int_val) const { return attribute(path, index, attrib).as_int(default_int_val); }
+
+s32 CXml::ReadAttribInt(gsl::czstring path, gsl::index index, gsl::czstring attrib, s32 default_int_val) const
+{
+    return attribute(path, index, attrib).as_int(default_int_val);
+}
 
 s32 CXml::ReadAttribInt(pugi::xml_node start_node, gsl::czstring path, gsl::index index, gsl::czstring attrib, s32 default_int_val) const
 {
     return attribute(start_node, path, index, attrib).as_int(default_int_val);
 }
 
-f32 CXml::ReadAttribFlt(gsl::czstring path, gsl::index index, gsl::czstring attrib, f32 default_flt_val) const { return attribute(path, index, attrib).as_float(default_flt_val); }
+f32 CXml::ReadAttribFlt(gsl::czstring path, gsl::index index, gsl::czstring attrib, f32 default_flt_val) const
+{
+    return attribute(path, index, attrib).as_float(default_flt_val);
+}
 
 f32 CXml::ReadAttribFlt(pugi::xml_node start_node, gsl::czstring path, gsl::index index, gsl::czstring attrib, f32 default_flt_val) const
 {
@@ -282,7 +300,8 @@ gsl::index CXml::GetNodesNum(pugi::xml_node node, gsl::czstring tag_name) const
 }
 
 // нахождение элемента по его атрибуту
-pugi::xml_node CXml::SearchForAttribute(gsl::czstring path, gsl::index index, gsl::czstring tag_name, gsl::czstring attrib, gsl::czstring attrib_value_pattern) const
+pugi::xml_node CXml::SearchForAttribute(gsl::czstring path, gsl::index index, gsl::czstring tag_name, gsl::czstring attrib,
+                                        gsl::czstring attrib_value_pattern) const
 {
     return SearchForAttribute(NavigateToNode(path, index), tag_name, attrib, attrib_value_pattern);
 }

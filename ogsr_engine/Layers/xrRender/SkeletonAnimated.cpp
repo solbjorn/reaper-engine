@@ -65,8 +65,11 @@ std::pair<LPCSTR, LPCSTR> CKinematicsAnimated::LL_MotionDefName_dbg(MotionID ID)
 {
     shared_motions& s_mots = m_Motions[ID.slot].motions;
     for (auto& it : *s_mots.motion_map())
+    {
         if (it.second == ID.idx)
-            return std::make_pair(*it.first, *s_mots.id());
+            return std::make_pair(it.first.c_str(), s_mots.id().c_str());
+    }
+
     return std::make_pair((LPCSTR) nullptr, (LPCSTR) nullptr);
 }
 

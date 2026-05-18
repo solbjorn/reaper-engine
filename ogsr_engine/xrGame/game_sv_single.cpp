@@ -22,7 +22,7 @@ tmc::task<void> game_sv_Single::Create(shared_str& options)
 {
     co_await inherited::Create(options);
 
-    if (strstr(*options, "/alife"))
+    if (std::string_view{options}.contains("/alife"))
         m_alife_simulator = (co_await CALifeSimulator::co_create(&server(), &options)).release();
 
     switch_Phase(GAME_PHASE_INPROGRESS);
@@ -193,10 +193,12 @@ void game_sv_Single::save_game(NET_Packet& net_packet, ClientID)
 bool game_sv_Single::load_game(NET_Packet& net_packet, ClientID sender)
 {
     if (!ai().get_alife())
-        return (inherited::load_game(net_packet, sender));
+        return inherited::load_game(net_packet, sender);
+
     shared_str game_name;
     net_packet.r_stringZ(game_name);
-    return (alife().load_game(*game_name, true));
+
+    return alife().load_game(game_name.c_str(), true);
 }
 
 void game_sv_Single::switch_distance(NET_Packet& net_packet, ClientID)

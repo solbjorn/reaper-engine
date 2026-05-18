@@ -202,7 +202,7 @@ void CTorch::Switch(bool light_on)
     light_omni->set_active(light_on);
     glow_render->set_active(light_on);
 
-    if (*light_trace_bone)
+    if (light_trace_bone.c_str() != nullptr)
     {
         IKinematics* pVisual = smart_cast<IKinematics*>(Visual());
         VERIFY(pVisual);
@@ -374,17 +374,17 @@ tmc::task<void> CTorch::UpdateCL()
         {
             if (actor->active_cam() == ACTOR_DEFS::eacLookAt)
             {
-                m_prev_hp.x =
-                    angle_inertion_var(m_prev_hp.x, -actor->cam_Active()->yaw, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Device.fTimeDelta);
-                m_prev_hp.y =
-                    angle_inertion_var(m_prev_hp.y, -actor->cam_Active()->pitch, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Device.fTimeDelta);
+                m_prev_hp.x = angle_inertion_var(m_prev_hp.x, -actor->cam_Active()->yaw, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX,
+                                                 TORCH_INERTION_CLAMP, Device.fTimeDelta);
+                m_prev_hp.y = angle_inertion_var(m_prev_hp.y, -actor->cam_Active()->pitch, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX,
+                                                 TORCH_INERTION_CLAMP, Device.fTimeDelta);
             }
             else
             {
-                m_prev_hp.x =
-                    angle_inertion_var(m_prev_hp.x, -actor->cam_FirstEye()->yaw, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Device.fTimeDelta);
-                m_prev_hp.y =
-                    angle_inertion_var(m_prev_hp.y, -actor->cam_FirstEye()->pitch, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Device.fTimeDelta);
+                m_prev_hp.x = angle_inertion_var(m_prev_hp.x, -actor->cam_FirstEye()->yaw, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX,
+                                                 TORCH_INERTION_CLAMP, Device.fTimeDelta);
+                m_prev_hp.y = angle_inertion_var(m_prev_hp.y, -actor->cam_FirstEye()->pitch, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX,
+                                                 TORCH_INERTION_CLAMP, Device.fTimeDelta);
             }
 
             Fvector dir, pos, right, up;

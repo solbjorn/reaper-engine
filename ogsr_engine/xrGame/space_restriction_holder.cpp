@@ -42,7 +42,7 @@ shared_str CSpaceRestrictionHolder::normalize_string(shared_str space_restrictor
     LPSTR* string_current = strings;
 
     LPSTR temp_string = (LPSTR)_alloca((n + 1) * sizeof(char));
-    LPCSTR I = *space_restrictors;
+    LPCSTR I = space_restrictors.c_str();
     LPSTR i = temp_string, j = i;
     for (; *I; ++I, ++i)
     {
@@ -67,7 +67,7 @@ shared_str CSpaceRestrictionHolder::normalize_string(shared_str space_restrictor
     ++string_current;
 
     // 2. sort the vector (svector???)
-    std::sort(strings, string_current, pred_str());
+    std::sort(strings, string_current, std::less<std::string_view>{});
 
     // 3. copy back to another temp string, based on sorted vector
     LPSTR result_string = (LPSTR)_alloca((n + 1) * sizeof(char));
@@ -97,7 +97,7 @@ SpaceRestrictionHolder::CBaseRestrictionPtr CSpaceRestrictionHolder::restriction
 
     space_restrictors = normalize_string(space_restrictors);
 
-    RESTRICTIONS::const_iterator I = m_restrictions.find(space_restrictors);
+    auto I = m_restrictions.find(space_restrictors);
     if (I != m_restrictions.end())
         return ((*I).second);
 
@@ -111,7 +111,6 @@ SpaceRestrictionHolder::CBaseRestrictionPtr CSpaceRestrictionHolder::restriction
 
 void CSpaceRestrictionHolder::register_restrictor(CSpaceRestrictor* space_restrictor, const RestrictionSpace::ERestrictorTypes& restrictor_type)
 {
-    string4096 m_temp_string;
     shared_str space_restrictors = space_restrictor->cName();
     if (restrictor_type != RestrictionSpace::eDefaultRestrictorTypeNone)
     {
@@ -124,10 +123,12 @@ void CSpaceRestrictionHolder::register_restrictor(CSpaceRestrictor* space_restri
             NODEFAULT;
         temp1 = *temp;
 
+        xr_string m_temp_string;
+
         if (xr_strlen(*temp) && xr_strlen(space_restrictors))
-            strconcat(sizeof(m_temp_string), m_temp_string, **temp, ",", *space_restrictors);
+            m_temp_string = xr::format("{},{}", *temp, space_restrictors);
         else
-            strconcat(sizeof(m_temp_string), m_temp_string, **temp, *space_restrictors);
+            m_temp_string = xr::format("{}{}", *temp, space_restrictors);
 
         *temp = normalize_string(shared_str{m_temp_string});
 
@@ -146,7 +147,7 @@ void CSpaceRestrictionHolder::register_restrictor(CSpaceRestrictor* space_restri
         return;
     }
 
-    RESTRICTIONS::iterator I = m_restrictions.find(space_restrictors);
+    auto I = m_restrictions.find(space_restrictors);
     if (I == m_restrictions.end())
     {
         CSpaceRestrictionBridge* bridge = xr_new<CSpaceRestrictionBridge>(shape);
@@ -165,9 +166,9 @@ bool try_remove_string(shared_str& search_string, const shared_str& string_to_se
     string256 temp;
     string4096 temp1;
     *temp1 = 0;
-    for (int i = 0, j = 0, n = _GetItemCount(*search_string); i < n; ++i, ++j)
+    for (int i = 0, j = 0, n = _GetItemCount(search_string.c_str()); i < n; ++i, ++j)
     {
-        if (std::is_neq(xr_strcmp(string_to_search, _GetItem(*search_string, i, temp))))
+        if (std::is_neq(xr_strcmp(string_to_search, _GetItem(search_string.c_str(), i, temp))))
         {
             if (j)
                 strcat_s(temp1, ",");

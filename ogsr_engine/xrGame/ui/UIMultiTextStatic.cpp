@@ -100,7 +100,7 @@ u32 CUICaption::findIndexOf_(const shared_str& key_) const
 u32 CUICaption::findIndexOf(const shared_str& key_) const
 {
     u32 res = findIndexOf_(key_);
-    R_ASSERT3(res != u32(-1), "cannot find msg ", *key_);
+    R_ASSERT3(res != u32(-1), "cannot find msg ", key_.c_str());
     return res;
 }
 

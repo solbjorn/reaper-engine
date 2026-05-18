@@ -163,7 +163,7 @@ public:
     virtual tmc::task<void> Create(shared_str&) { co_return; }
     virtual LPCSTR type_name() const { return "base game"; }
     // for scripting enhancement
-    static CLASS_ID getCLASS_ID(LPCSTR game_type_name, bool bServer);
+    static CLASS_ID getCLASS_ID(bool bServer);
     virtual game_PlayerState* createPlayerState() { return xr_new<game_PlayerState>(); }
 
     // moved from game_sv_base (time routines)

@@ -6,7 +6,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR _vspec, LPCSTR _pspec, BOO
 {
     // Uber-parse
     string256 fname, fnameA, fnameB;
-    xr_strcpy(fname, *C.L_textures[0]); //. andy if (strext(fname)) *strext(fname)=0;
+    xr_strcpy(fname, C.L_textures[0].c_str()); //. andy if (strext(fname)) *strext(fname)=0;
     fix_texture_name(fname);
     ref_texture _t;
     _t.create(fname);
@@ -28,7 +28,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR _vspec, LPCSTR _pspec, BOO
     string256 ps, vs, dt;
     strconcat(sizeof(vs), vs, "deffer_", _vspec, lmap ? "_lmh" : "");
     strconcat(sizeof(ps), ps, "deffer_", _pspec, lmap ? "_lmh" : "");
-    xr_strcpy(dt, sizeof(dt), _detail_replace ? _detail_replace : (C.detail_texture ? C.detail_texture : ""));
+    xr_strcpy(dt, sizeof(dt), _detail_replace ? _detail_replace : C.detail_texture.data());
 
     // detect detail bump
     string256 texDetailBump{}, texDetailBumpX{};
@@ -190,7 +190,7 @@ void uber_shadow(CBlender_Compile& C, LPCSTR _vspec)
 {
     // Uber-parse
     string256 fname, fnameA, fnameB;
-    xr_strcpy(fname, *C.L_textures[0]); //. andy if (strext(fname)) *strext(fname)=0;
+    xr_strcpy(fname, C.L_textures[0].c_str()); //. andy if (strext(fname)) *strext(fname)=0;
     fix_texture_name(fname);
     ref_texture _t;
     _t.create(fname);
@@ -210,7 +210,7 @@ void uber_shadow(CBlender_Compile& C, LPCSTR _vspec)
     }
 
     string256 vs, dt;
-    xr_strcpy(dt, sizeof(dt), C.detail_texture ? C.detail_texture : "");
+    xr_strcpy(dt, sizeof(dt), C.detail_texture.data());
 
     // detect detail bump
     string256 texDetailBump = {'\0'};

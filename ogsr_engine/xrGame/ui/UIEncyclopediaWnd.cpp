@@ -9,6 +9,7 @@
 #include "StdAfx.h"
 
 #include "UIEncyclopediaWnd.h"
+
 #include "UIXmlInit.h"
 #include "UIFrameWindow.h"
 #include "UIFrameLineWnd.h"
@@ -114,7 +115,7 @@ void CUIEncyclopediaWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
             caption += CStringTable().translate(A.data()->group).c_str();
 
             UIEncyclopediaInfoHeader->UITitleText.SetText(caption.c_str());
-            UIArticleHeader->SetTextST(*(A.data()->group));
+            UIArticleHeader->SetTextST(A.data()->group.c_str());
             SetCurrentArtice(nullptr);
         }
         else
@@ -128,7 +129,7 @@ void CUIEncyclopediaWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
             UIEncyclopediaInfoHeader->UITitleText.SetText(caption.c_str());
             SetCurrentArtice(pTVItem);
-            UIArticleHeader->SetTextST(*(A.data()->name));
+            UIArticleHeader->SetTextST(A.data()->name.c_str());
         }
     }
 
@@ -197,8 +198,8 @@ void CUIEncyclopediaWnd::SetCurrentArtice(CUITreeViewItem* pTVItem)
         {
             if (Actor()->encyclopedia_registry->registry().objects_ptr())
             {
-                for (ARTICLE_VECTOR::iterator it = Actor()->encyclopedia_registry->registry().objects().begin(); it != Actor()->encyclopedia_registry->registry().objects().end();
-                     it++)
+                for (ARTICLE_VECTOR::iterator it = Actor()->encyclopedia_registry->registry().objects().begin();
+                     it != Actor()->encyclopedia_registry->registry().objects().end(); it++)
                 {
                     if (ARTICLE_DATA::eEncyclopediaArticle == it->article_type && m_ArticlesDB[pTVItem->GetValue()]->Id() == it->article_id)
                     {
@@ -263,8 +264,8 @@ void CUIEncyclopediaWnd::UpdateArticles()
                     if (prevArticlesCount > 0 && a && !need_sort)
                     {
                         // Теперь создаем иерархию вещи по заданному пути
-                        CreateTreeBranch(a->data()->group, a->data()->name, UIIdxList, m_ArticlesDB.size() - 1, m_pTreeRootFont, m_uTreeRootColor, m_pTreeItemFont,
-                                         m_uTreeItemColor, it->readed);
+                        CreateTreeBranch(a->data()->group, a->data()->name, UIIdxList, m_ArticlesDB.size() - 1, m_pTreeRootFont, m_uTreeRootColor,
+                                         m_pTreeItemFont, m_uTreeItemColor, it->readed);
                     }
                 }
             }
@@ -320,7 +321,8 @@ void CUIEncyclopediaWnd::UpdateArticles()
                 u32 idx = 0;
                 for (auto& a : m_ArticlesDB)
                     // Теперь создаем иерархию вещи по заданному пути
-                    CreateTreeBranch(a->data()->group, a->data()->name, UIIdxList, idx++, m_pTreeRootFont, m_uTreeRootColor, m_pTreeItemFont, m_uTreeItemColor, a->readed);
+                    CreateTreeBranch(a->data()->group, a->data()->name, UIIdxList, idx++, m_pTreeRootFont, m_uTreeRootColor, m_pTreeItemFont, m_uTreeItemColor,
+                                     a->readed);
             }
 
             prevArticlesCount = Actor()->encyclopedia_registry->registry().objects_ptr()->size();

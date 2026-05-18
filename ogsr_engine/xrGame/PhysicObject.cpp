@@ -78,7 +78,8 @@ void CPhysicObject::RunStartupAnim(CSE_Abstract* D)
         {
             CSE_Visual* visual = smart_cast<CSE_Visual*>(D);
             R_ASSERT(visual);
-            R_ASSERT2(*visual->startup_animation, "no startup animation");
+
+            R_ASSERT2(visual->startup_animation.c_str() != nullptr, "no startup animation");
             PKinematicsAnimated->PlayCycle(visual->startup_animation);
         }
 
@@ -116,7 +117,7 @@ void CPhysicObject::CreateSkeleton(CSE_ALifeObjectPhysic* po)
     if (!Visual())
         return;
 
-    LPCSTR fixed_bones = *po->fixed_bones;
+    const auto fixed_bones = po->fixed_bones.c_str();
     m_pPhysicsShell = P_build_Shell(this, !po->_flags.test(CSE_PHSkeleton::flActive), fixed_bones);
 
     ApplySpawnIniToPhysicShell(&po->spawn_ini(), m_pPhysicsShell, fixed_bones[0] != '\0');
@@ -216,7 +217,7 @@ void CPhysicObject::CreateBody(CSE_ALifeObjectPhysic* po)
             // но объекты с таким type есть в all.spawn например визуалы сталкеров на Арене. я так и не нашел как оно раньше могло работать
             // пока сделаем фикс прямо тут
 
-            if (*po->fixed_bones)
+            if (po->fixed_bones.c_str() != nullptr)
             {
                 m_pPhysicsShell->get_ElementByStoreOrder(0)->Fix();
 

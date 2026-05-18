@@ -82,7 +82,7 @@ void StopBlendAnm(LPCSTR name, bool bForce) { g_player_hud->StopBlendAnm(name, b
 void StopAllBlendAnms(bool bForce) { g_player_hud->StopAllBlendAnms(bForce); }
 float SetBlendAnmTime(LPCSTR name, float time) { return g_player_hud->SetBlendAnmTime(name, time); }
 
-LPCSTR translate_string(LPCSTR str) { return *CStringTable().translate(shared_str{str}); }
+gsl::czstring translate_string(gsl::czstring str) { return CStringTable::translate(shared_str{str}).c_str(); }
 
 bool has_active_tutotial() { return !!g_tutorial; }
 
@@ -93,8 +93,8 @@ xr_string generate_id()
 
     // 32 hex chars + 4 hyphens + null terminator
     xr_string guid_string(36, '\0');
-    snprintf(guid_string.data(), guid_string.size() + 1, "%08lx-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x", guid.Data1, guid.Data2, guid.Data3, guid.Data4[0], guid.Data4[1],
-             guid.Data4[2], guid.Data4[3], guid.Data4[4], guid.Data4[5], guid.Data4[6], guid.Data4[7]);
+    snprintf(guid_string.data(), guid_string.size() + 1, "%08lx-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x", guid.Data1, guid.Data2, guid.Data3, guid.Data4[0],
+             guid.Data4[1], guid.Data4[2], guid.Data4[3], guid.Data4[4], guid.Data4[5], guid.Data4[6], guid.Data4[7]);
 
     return guid_string;
 }
@@ -104,24 +104,26 @@ void game_sv_GameState::script_register(sol::state_view& lua)
 {
     auto game = lua.create_named_table("game");
 
-    game.new_usertype<xrTime>("CTime", sol::no_constructor, sol::call_constructor, sol::constructors<xrTime(), xrTime(const xrTime&)>(),
-                              // date_format
-                              "DateToDay", sol::var(InventoryUtilities::edpDateToDay), "DateToMonth", sol::var(InventoryUtilities::edpDateToMonth), "DateToYear",
-                              sol::var(InventoryUtilities::edpDateToYear),
+    game.new_usertype<xrTime>(
+        "CTime", sol::no_constructor, sol::call_constructor, sol::constructors<xrTime(), xrTime(const xrTime&)>(),
+        // date_format
+        "DateToDay", sol::var(InventoryUtilities::edpDateToDay), "DateToMonth", sol::var(InventoryUtilities::edpDateToMonth), "DateToYear",
+        sol::var(InventoryUtilities::edpDateToYear),
 
-                              // time_format
-                              "TimeToHours", sol::var(InventoryUtilities::etpTimeToHours), "TimeToMinutes", sol::var(InventoryUtilities::etpTimeToMinutes), "TimeToSeconds",
-                              sol::var(InventoryUtilities::etpTimeToSeconds), "TimeToMilisecs", sol::var(InventoryUtilities::etpTimeToMilisecs),
+        // time_format
+        "TimeToHours", sol::var(InventoryUtilities::etpTimeToHours), "TimeToMinutes", sol::var(InventoryUtilities::etpTimeToMinutes), "TimeToSeconds",
+        sol::var(InventoryUtilities::etpTimeToSeconds), "TimeToMilisecs", sol::var(InventoryUtilities::etpTimeToMilisecs),
 
-                              sol::meta_function::addition, &xrTime::operator+, sol::meta_function::subtraction, &xrTime::operator-, "diffSec", &xrTime::diffSec_script, "add",
-                              sol::policies(&xrTime::add_script, sol::returns_self()), "sub", sol::policies(&xrTime::sub_script, sol::returns_self()), "setHMS",
-                              sol::policies(&xrTime::setHMS, sol::returns_self()), "setHMSms", sol::policies(&xrTime::setHMSms, sol::returns_self()), "set",
-                              sol::policies(&xrTime::set, sol::returns_self()), "get", &xrTime::get, "dateToString", &xrTime::dateToString, "timeToString", &xrTime::timeToString);
+        sol::meta_function::addition, &xrTime::operator+, sol::meta_function::subtraction, &xrTime::operator-, "diffSec", &xrTime::diffSec_script, "add",
+        sol::policies(&xrTime::add_script, sol::returns_self()), "sub", sol::policies(&xrTime::sub_script, sol::returns_self()), "setHMS",
+        sol::policies(&xrTime::setHMS, sol::returns_self()), "setHMSms", sol::policies(&xrTime::setHMSms, sol::returns_self()), "set",
+        sol::policies(&xrTime::set, sol::returns_self()), "get", &xrTime::get, "dateToString", &xrTime::dateToString, "timeToString", &xrTime::timeToString);
 
-    game.set("time", &get_time, "get_game_time", &get_time_struct, "start_tutorial", &start_tutorial, "stop_tutorial", &stop_tutorial, "has_active_tutorial", &has_active_tutotial,
-             "translate_string", &translate_string, "play_hud_motion", &PlayHudMotion, "stop_hud_motion", &StopHudMotion, "get_motion_length", &MotionLength, "hud_motion_allowed",
-             &AllowHudMotion, "play_hud_anm", &PlayBlendAnm, "stop_hud_anm", &StopBlendAnm, "stop_all_hud_anms", &StopAllBlendAnms, "set_hud_anm_time", &SetBlendAnmTime,
-             "generate_id", &generate_id, "StringHasUTF8", &StringHasUTF8, "StringToUTF8", &StringToUTF8, "StringFromUTF8", &StringFromUTF8);
+    game.set("time", &get_time, "get_game_time", &get_time_struct, "start_tutorial", &start_tutorial, "stop_tutorial", &stop_tutorial, "has_active_tutorial",
+             &has_active_tutotial, "translate_string", &translate_string, "play_hud_motion", &PlayHudMotion, "stop_hud_motion", &StopHudMotion,
+             "get_motion_length", &MotionLength, "hud_motion_allowed", &AllowHudMotion, "play_hud_anm", &PlayBlendAnm, "stop_hud_anm", &StopBlendAnm,
+             "stop_all_hud_anms", &StopAllBlendAnms, "set_hud_anm_time", &SetBlendAnmTime, "generate_id", &generate_id, "StringHasUTF8", &StringHasUTF8,
+             "StringToUTF8", &StringToUTF8, "StringFromUTF8", &StringFromUTF8);
 
     lua.new_enum("game_player_flags", "GAME_PLAYER_FLAG_LOCAL", GAME_PLAYER_FLAG_LOCAL);
     lua.new_enum("game_phases", "GAME_PHASE_NONE", GAME_PHASE_NONE, "GAME_PHASE_INPROGRESS", GAME_PHASE_INPROGRESS, "GAME_PHASE_PENDING", GAME_PHASE_PENDING);

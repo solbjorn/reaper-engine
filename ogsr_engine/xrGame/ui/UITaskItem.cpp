@@ -83,23 +83,21 @@ void CUITaskRootItem::SetGameTask(CGameTask* gt, u16 obj_idx)
 {
     inherited::SetGameTask(gt, obj_idx);
 
-    CStringTable stbl;
     auto& obj = m_GameTask->m_Objectives.at(m_TaskObjectiveIdx);
-
-    m_taskImage->InitTexture(*obj.icon_texture_name);
+    m_taskImage->InitTexture(obj.icon_texture_name.c_str());
 
     Frect r = obj.icon_rect;
     m_taskImage->SetOriginalRect(r.x1, r.y1, r.x2, r.y2);
     m_taskImage->ClipperOn();
     m_taskImage->SetStretchTexture(true);
 
-    m_captionStatic->SetText(*stbl.translate(m_GameTask->m_Title));
+    m_captionStatic->SetText(CStringTable::translate(m_GameTask->m_Title).c_str());
     m_captionStatic->AdjustHeightToText();
 
     xr_string txt = "";
-    txt += *(InventoryUtilities::GetDateAsString(gt->m_ReceiveTime, InventoryUtilities::edpDateToDay));
+    txt += InventoryUtilities::GetDateAsString(gt->m_ReceiveTime, InventoryUtilities::edpDateToDay).c_str();
     txt += " ";
-    txt += *(InventoryUtilities::GetTimeAsString(gt->m_ReceiveTime, InventoryUtilities::etpTimeToMinutes));
+    txt += InventoryUtilities::GetTimeAsString(gt->m_ReceiveTime, InventoryUtilities::etpTimeToMinutes).c_str();
 
     m_captionTime->SetText(txt.c_str());
     m_captionTime->SetWndPos(m_captionTime->GetWndPos().x, m_captionStatic->GetWndPos().y + m_captionStatic->GetHeight() + 3.0f);
@@ -114,7 +112,8 @@ void CUITaskRootItem::SetGameTask(CGameTask* gt, u16 obj_idx)
     else
         m_switchDescriptionBtn->InitTexture("ui_icons_newPDA_showmap");
 
-    m_remTimeStatic->Show(GameTask()->Objective(0).TaskState() == ETaskState::eTaskStateInProgress && (GameTask()->m_ReceiveTime != GameTask()->m_TimeToComplete));
+    m_remTimeStatic->Show(GameTask()->Objective(0).TaskState() == ETaskState::eTaskStateInProgress &&
+                          (GameTask()->m_ReceiveTime != GameTask()->m_TimeToComplete));
 
     if (m_remTimeStatic->IsShown())
     {
@@ -149,7 +148,7 @@ void CUITaskRootItem::Update()
     {
         string512 buff, buff2;
         InventoryUtilities::GetTimePeriodAsString(buff, sizeof(buff), Level().GetGameTime(), GameTask()->m_TimeToComplete);
-        sprintf_s(buff2, "%s %s", *CStringTable().translate(shared_str{"ui_st_time_remains"}), buff);
+        sprintf_s(buff2, "%s %s", CStringTable::translate(shared_str{"ui_st_time_remains"}).c_str(), buff);
         m_remTimeStatic->SetText(buff2);
     }
 }
@@ -209,12 +208,12 @@ void CUITaskSubItem::SetGameTask(CGameTask* gt, u16 obj_idx)
 {
     inherited::SetGameTask(gt, obj_idx);
 
-    CStringTable stbl;
     auto& obj = m_GameTask->m_Objectives.at(m_TaskObjectiveIdx);
 
-    m_descriptionStatic->SetText(*stbl.translate(obj.description));
+    m_descriptionStatic->SetText(CStringTable::translate(obj.description).c_str());
     m_descriptionStatic->AdjustHeightToText();
-    float h = _max(m_ActiveObjectiveStatic->GetWndPos().y + m_ActiveObjectiveStatic->GetHeight(), m_descriptionStatic->GetWndPos().y + m_descriptionStatic->GetHeight());
+    float h = _max(m_ActiveObjectiveStatic->GetWndPos().y + m_ActiveObjectiveStatic->GetHeight(),
+                   m_descriptionStatic->GetWndPos().y + m_descriptionStatic->GetHeight());
     SetHeight(h);
 
     switch (obj.TaskState())

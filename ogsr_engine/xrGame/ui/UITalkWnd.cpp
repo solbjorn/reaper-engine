@@ -162,7 +162,8 @@ void CUITalkWnd::UpdateQuestions()
 
 void CUITalkWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-    if (pWnd == UITalkDialogWnd && msg == TALK_DIALOG_TRADE_BUTTON_CLICKED /*&& ( !Core.Features.test( xrCore::Feature::disable_dialog_break ) || !m_pCurrentDialog )*/)
+    if (pWnd == UITalkDialogWnd &&
+        msg == TALK_DIALOG_TRADE_BUTTON_CLICKED /*&& ( !Core.Features.test( xrCore::Feature::disable_dialog_break ) || !m_pCurrentDialog )*/)
     {
         SwitchToTrade();
     }
@@ -221,7 +222,8 @@ void CUITalkWnd::Update()
         CGameObject* pOtherGO = smart_cast<CGameObject*>(m_pOthersInvOwner);
 
         if (!pOurGO || !pOtherGO ||
-            ((pOurGO->Position().distance_to(pOtherGO->Position()) - pOtherGO->Radius() - pOurGO->Radius() > m_pOurInvOwner->inventory().GetTakeDist() + 0.5f) &&
+            ((pOurGO->Position().distance_to(pOtherGO->Position()) - pOtherGO->Radius() - pOurGO->Radius() >
+              m_pOurInvOwner->inventory().GetTakeDist() + 0.5f) &&
              !m_pOthersInvOwner->NeedOsoznanieMode()))
             Game().StartStopMenu(this, true);
     }
@@ -292,7 +294,8 @@ void CUITalkWnd::AskQuestion()
     // игрок выбрал тему разговора
     if (TopicMode())
     {
-        if (std::is_eq(xr_strcmp(UITalkDialogWnd->m_ClickedQuestionID, "")) || (!m_pOurDialogManager->HaveAvailableDialog(UITalkDialogWnd->m_ClickedQuestionID)))
+        if (std::is_eq(xr_strcmp(UITalkDialogWnd->m_ClickedQuestionID, "")) ||
+            (!m_pOurDialogManager->HaveAvailableDialog(UITalkDialogWnd->m_ClickedQuestionID)))
         {
             string128 s;
             sprintf_s(s, "ID = [%s] of selected question is out of range of available dialogs ", UITalkDialogWnd->m_ClickedQuestionID.c_str());
@@ -333,9 +336,10 @@ void CUITalkWnd::SayPhrase(const shared_str& phrase_id)
 
 void CUITalkWnd::AddQuestion(const shared_str& text, const shared_str& value, int& i)
 {
-    if (text.size() == 0)
+    if (text.empty())
         return;
-    UITalkDialogWnd->AddQuestion(*CStringTable().translate(text), value.c_str(), i++);
+
+    UITalkDialogWnd->AddQuestion(CStringTable::translate(text).c_str(), value.c_str(), i++);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -343,12 +347,13 @@ void CUITalkWnd::AddQuestion(const shared_str& text, const shared_str& value, in
 void CUITalkWnd::AddAnswer(const shared_str& text, LPCSTR SpeakerName)
 {
     // для пустой фразы вообще ничего не выводим
-    if (text.size() == 0)
+    if (text.empty())
         return;
+
     PlaySnd(text.c_str());
 
     bool i_am = (0 == xr_strcmp(SpeakerName, m_pOurInvOwner->Name()));
-    UITalkDialogWnd->AddAnswer(SpeakerName, *CStringTable().translate(text), i_am);
+    UITalkDialogWnd->AddAnswer(SpeakerName, CStringTable::translate(text).c_str(), i_am);
 }
 
 //////////////////////////////////////////////////////////////////////////

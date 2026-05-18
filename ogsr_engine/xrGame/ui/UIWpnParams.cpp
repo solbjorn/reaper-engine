@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "UIWpnParams.h"
+
 #include "UIXmlInit.h"
 #include "../Level.h"
 #include "../ai_space.h"
@@ -93,10 +94,10 @@ void CUIWpnParams::SetInfo(CPhysicsShellHolder& obj /*const shared_str& wpn_sect
 
     const shared_str& wpn_section = obj.cNameSect();
 
-    m_progressRPM.SetProgressPos(g_lua_wpn_params->m_functionRPM(*wpn_section, obj.lua_game_object()));
-    m_progressAccuracy.SetProgressPos(g_lua_wpn_params->m_functionAccuracy(*wpn_section, obj.lua_game_object()));
-    m_progressDamage.SetProgressPos(g_lua_wpn_params->m_functionDamage(*wpn_section, obj.lua_game_object()));
-    m_progressHandling.SetProgressPos(g_lua_wpn_params->m_functionHandling(*wpn_section, obj.lua_game_object()));
+    m_progressRPM.SetProgressPos(g_lua_wpn_params->m_functionRPM(wpn_section.c_str(), obj.lua_game_object()));
+    m_progressAccuracy.SetProgressPos(g_lua_wpn_params->m_functionAccuracy(wpn_section.c_str(), obj.lua_game_object()));
+    m_progressDamage.SetProgressPos(g_lua_wpn_params->m_functionDamage(wpn_section.c_str(), obj.lua_game_object()));
+    m_progressHandling.SetProgressPos(g_lua_wpn_params->m_functionHandling(wpn_section.c_str(), obj.lua_game_object()));
 }
 
 bool CUIWpnParams::Check(CPhysicsShellHolder& obj /*const shared_str& wpn_section*/)
@@ -116,8 +117,8 @@ bool CUIWpnParams::Check(CPhysicsShellHolder& obj /*const shared_str& wpn_sectio
         if (0==xr_strcmp(wpn_section, "mp_wpn_binoc"))
             return false;*/
 
-        if (obj.CLS_ID == CLSID_OBJECT_W_BINOCULAR || obj.CLS_ID == CLSID_OBJECT_W_KNIFE || obj.CLS_ID == CLSID_OBJECT_W_SILENCER || obj.CLS_ID == CLSID_OBJECT_W_SCOPE ||
-            obj.CLS_ID == CLSID_OBJECT_W_GLAUNCHER)
+        if (obj.CLS_ID == CLSID_OBJECT_W_BINOCULAR || obj.CLS_ID == CLSID_OBJECT_W_KNIFE || obj.CLS_ID == CLSID_OBJECT_W_SILENCER ||
+            obj.CLS_ID == CLSID_OBJECT_W_SCOPE || obj.CLS_ID == CLSID_OBJECT_W_GLAUNCHER)
             return false;
 
         return true;

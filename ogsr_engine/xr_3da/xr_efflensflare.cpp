@@ -115,10 +115,11 @@ void CLensFlareDescriptor::load(CInifile* pIni, LPCSTR sect)
 void CLensFlareDescriptor::OnDeviceCreate()
 {
     // shaders
-    m_Gradient.m_pRender->CreateShader(*m_Gradient.shader, *m_Gradient.texture);
-    m_Source.m_pRender->CreateShader(*m_Source.shader, *m_Source.texture);
+    m_Gradient.m_pRender->CreateShader(m_Gradient.shader.c_str(), m_Gradient.texture.c_str());
+    m_Source.m_pRender->CreateShader(m_Source.shader.c_str(), m_Source.texture.c_str());
+
     for (const auto& flare : m_Flares)
-        flare.m_pRender->CreateShader(*flare.shader, *flare.texture);
+        flare.m_pRender->CreateShader(flare.shader.c_str(), flare.texture.c_str());
 }
 
 void CLensFlareDescriptor::OnDeviceDestroy()

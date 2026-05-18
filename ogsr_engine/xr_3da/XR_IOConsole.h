@@ -59,18 +59,9 @@ class CConsole : public pureRender, public pureFrame, public pureScreenResolutio
     RTTI_DECLARE_TYPEINFO(CConsole, pureRender, pureFrame, pureScreenResolutionChanged);
 
 public:
-    struct str_pred
-    {
-        IC bool operator()(const char* x, const char* y) const { return (xr_strcmp(x, y) < 0); }
-    };
-
-    typedef xr_map<LPCSTR, IConsole_Command*, str_pred> vecCMD;
-    typedef vecCMD::iterator vecCMD_IT;
-    typedef vecCMD::const_iterator vecCMD_CIT;
     using Callback = CallMe::Delegate<void()>;
-    typedef xr_vector<shared_str> vecHistory;
-    typedef xr_vector<shared_str> vecTips;
-    typedef xr_vector<TipString> vecTipsEx;
+    using vecTips = xr_vector<shared_str>;
+    using vecTipsEx = xr_vector<TipString>;
 
     enum
     {
@@ -95,7 +86,7 @@ protected:
     bool m_disable_tips{};
 
 private:
-    vecHistory m_cmd_history;
+    xr_vector<shared_str> m_cmd_history;
     u32 m_cmd_history_max;
     int m_cmd_history_idx;
     shared_str m_last_cmd;
@@ -122,9 +113,9 @@ public:
     tmc::task<void> OnScreenResolutionChanged() override;
 
     string64 ConfigFile;
-    bool bVisible;
-    vecCMD Commands;
+    xr::string_map<gsl::czstring, IConsole_Command*> Commands;
     float lineDistance;
+    bool bVisible;
 
     void AddCommand(IConsole_Command* cc);
     void RemoveCommand(IConsole_Command* cc);

@@ -52,7 +52,7 @@ public:
     const char* set_name(const char* name)
     {
         cName._set(name);
-        return *cName;
+        return cName.c_str();
     }
 };
 

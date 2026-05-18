@@ -45,7 +45,7 @@ void R_constant_table::merge(const R_constant_table* T)
 
     for (const auto& src : T->table)
     {
-        ref_constant C = get(*src->name);
+        ref_constant C = get(src->name);
         if (!C)
         {
             auto cc = xr_new<R_constant>();

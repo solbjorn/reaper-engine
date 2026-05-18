@@ -158,7 +158,7 @@ void CStepManager::update()
             // Играть партиклы
             if (!mtl_pair->CollideParticles.empty())
             {
-                LPCSTR ps_name = *mtl_pair->CollideParticles[::Random.randI(0, mtl_pair->CollideParticles.size())];
+                LPCSTR ps_name = mtl_pair->CollideParticles[::Random.randI(0, mtl_pair->CollideParticles.size())].c_str();
 
                 // отыграть партиклы столкновения материалов
                 CParticlesObject* ps = CParticlesObject::Create(ps_name, TRUE);
@@ -249,9 +249,10 @@ void CStepManager::reload_foot_bones()
     }
     else
     {
-        if (!pSettings->line_exist(*m_object->cNameSect(), "foot_bones"))
-            R_ASSERT2(false, "section [foot_bones] not found in monster user_data");
-        load_foot_bones(pSettings->r_section(pSettings->r_string(*m_object->cNameSect(), "foot_bones")));
+        if (!pSettings->line_exist(m_object->cNameSect().c_str(), "foot_bones"))
+            FATAL("section [foot_bones] not found in monster user_data");
+
+        load_foot_bones(pSettings->r_section(pSettings->r_string(m_object->cNameSect().c_str(), "foot_bones")));
     }
 
     // проверка на соответсвие

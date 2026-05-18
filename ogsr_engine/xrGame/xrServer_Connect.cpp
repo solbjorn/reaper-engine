@@ -14,23 +14,12 @@ tmc::task<xrServer::EConnect> xrServer::Connect(shared_str& session_name)
 #endif
 
     // Parse options and create game
-    if (!strchr(*session_name, '/'))
+    if (!std::string_view{session_name}.contains('/'))
         co_return ErrConnect;
-
-    string1024 options;
-    R_ASSERT2(xr_strlen(session_name) <= gsl::index{sizeof(options)}, "session_name too BIIIGGG!!!");
-    strcpy_s(options, strchr(*session_name, '/') + 1);
-
-    // Parse game type
-    string1024 type;
-    R_ASSERT2(xr_strlen(options) <= gsl::index{sizeof(type)}, "session_name too BIIIGGG!!!");
-    strcpy_s(type, options);
-    if (strchr(type, '/'))
-        *strchr(type, '/') = 0;
 
     game = nullptr;
 
-    CLASS_ID clsid = game_GameState::getCLASS_ID(type, true);
+    CLASS_ID clsid = game_GameState::getCLASS_ID(true);
     game = smart_cast<game_sv_GameState*>(NEW_INSTANCE(clsid));
 
     // Options

@@ -45,7 +45,7 @@ void CUIListWnd::Init(float x, float y, float width, float height, float item_he
     AttachChild(m_ScrollBar);
 
     if (!!m_scrollbar_profile)
-        m_ScrollBar->Init(width, 0, height, false, *m_scrollbar_profile);
+        m_ScrollBar->Init(width, 0, height, false, m_scrollbar_profile.c_str());
     else
         m_ScrollBar->Init(width, 0, height, false);
 
@@ -208,7 +208,8 @@ void CUIListWnd::UpdateList()
     // показать текущий список
     for (int i = m_iFirstShownIndex; i < _min(static_cast<int>(m_ItemList.size()), m_iFirstShownIndex + m_iRowNum + 1); ++i, ++it)
     {
-        (*it)->SetWndRect((*it)->GetWndRect().left, m_bVertFlip ? GetHeight() - (i - m_iFirstShownIndex) * m_iItemHeight - m_iItemHeight : (i - m_iFirstShownIndex) * m_iItemHeight,
+        (*it)->SetWndRect((*it)->GetWndRect().left,
+                          m_bVertFlip ? GetHeight() - (i - m_iFirstShownIndex) * m_iItemHeight - m_iItemHeight : (i - m_iFirstShownIndex) * m_iItemHeight,
                           m_iItemWidth, m_iItemHeight);
         (*it)->Show(true);
 
@@ -449,7 +450,8 @@ int CUIListWnd::FindItemWithValue(int iValue)
 
 bool CUIListWnd::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
 {
-    const bool with_shift = Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::RShift});
+    const bool with_shift =
+        Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::RShift});
 
     switch (mouse_action)
     {

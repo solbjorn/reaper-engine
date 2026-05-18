@@ -601,7 +601,7 @@ void CUIStatic::AdjustWidthToText()
     SetWidth(iCeil(_len));
 }
 
-void CUIStatic::SetTextST(LPCSTR str_id) { SetText(*CStringTable().translate(shared_str{str_id})); }
+void CUIStatic::SetTextST(gsl::czstring str_id) { SetText(CStringTable::translate(shared_str{str_id}).c_str()); }
 
 void CUIStatic::DrawHighlightedText()
 {

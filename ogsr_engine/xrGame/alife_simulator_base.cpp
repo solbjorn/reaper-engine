@@ -133,8 +133,9 @@ CSE_Abstract* CALifeSimulatorBase::create(CSE_ALifeGroupAbstract* tpALifeGroupAb
 
 void CALifeSimulatorBase::create(CSE_ALifeDynamicObject*& i, CSE_ALifeDynamicObject* j, const _SPAWN_ID& tSpawnID)
 {
-    CSE_Abstract* tpSE_Abstract = F_entity_Create(*j->s_name);
-    R_ASSERT3(tpSE_Abstract, "Cannot find item with section", *j->s_name);
+    CSE_Abstract* tpSE_Abstract = F_entity_Create(j->s_name.c_str());
+    R_ASSERT3(tpSE_Abstract, "Cannot find item with section", j->s_name.c_str());
+
     i = smart_cast<CSE_ALifeDynamicObject*>(tpSE_Abstract);
     R_ASSERT2(i, "Non-ALife object in the 'game.spawn'");
 

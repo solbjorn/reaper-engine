@@ -58,14 +58,14 @@ void CHelicopter::MGunUpdateFire()
     float time_f = Device.fTimeGlobal - delta_t;
 
     float fire_time;
-    if (pSettings->line_exist(*cNameSect(), "fire_time"))
-        fire_time = pSettings->r_float(*cNameSect(), "fire_time");
+    if (pSettings->line_exist(cNameSect(), "fire_time"))
+        fire_time = pSettings->r_float(cNameSect(), "fire_time");
     else
         fire_time = -1;
 
     float no_fire_time;
-    if (pSettings->line_exist(*cNameSect(), "no_fire_time"))
-        no_fire_time = pSettings->r_float(*cNameSect(), "no_fire_time");
+    if (pSettings->line_exist(cNameSect(), "no_fire_time"))
+        no_fire_time = pSettings->r_float(cNameSect(), "no_fire_time");
     else
         no_fire_time = -1;
 
@@ -137,7 +137,7 @@ void CHelicopter::OnShot()
             dist = (m_enemy.fire_trail_length_curr / 2.0f) - dist;
         }
 
-        static float fire_trace_width = pSettings->r_float(*cNameSect(), "fire_trace_width");
+        static float fire_trace_width = pSettings->r_float(cNameSect(), "fire_trace_width");
         enemy_pos.mad(fd, dist);
         Fvector disp_dir;
         disp_dir.random_point(fire_trace_width);

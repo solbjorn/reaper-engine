@@ -161,8 +161,8 @@ public:
 
     constexpr void w_stringZ(shared_str& p)
     {
-        if (*p)
-            w(*p, (u32)xr_strlen(p) + 1);
+        if (p.c_str() != nullptr)
+            w(p.c_str(), (u32)xr_strlen(p) + 1);
         else
             w_u8(0);
     }

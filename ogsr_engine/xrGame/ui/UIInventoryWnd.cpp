@@ -327,7 +327,7 @@ void CUIInventoryWnd::Update()
         }
     }
 
-    UIStaticTimeString.SetText(*InventoryUtilities::GetGameTimeAsString(InventoryUtilities::etpTimeToMinutes));
+    UIStaticTimeString.SetText(InventoryUtilities::GetGameTimeAsString(InventoryUtilities::etpTimeToMinutes).c_str());
 
     CUIWindow::Update();
 }

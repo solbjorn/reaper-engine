@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "postprocessanimator.h"
+
 #include "ActorEffector.h"
 
 // postprocess value LOAD method implementation
@@ -202,9 +203,7 @@ BOOL CPostprocessAnimator::Process(SPPInfo& PPInfo)
     PPInfo.lerp(pp_identity, m_EffectorParams, m_factor);
 
     if (PPInfo.noise.grain <= 0.0f)
-    {
-        R_ASSERT3(0, "noise.grain cant be zero! see postprocess", *m_Name);
-    }
+        FATAL("noise.grain cant be zero! see postprocess %s", m_Name.c_str());
 
     if (fsimilar(m_factor, 0.0001f, EPS_S))
         return FALSE;

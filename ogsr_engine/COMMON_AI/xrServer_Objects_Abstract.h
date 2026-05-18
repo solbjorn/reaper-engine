@@ -55,7 +55,7 @@ void visual_read(NET_Packet& P, u16 version);
 void visual_write(NET_Packet& P);
 
 void set_visual(LPCSTR name);
-LPCSTR get_visual() const { return *visual_name; }
+[[nodiscard]] gsl::czstring get_visual() const { return visual_name.c_str(); }
 
 virtual CSE_Visual* visual() = 0;
 }
@@ -77,7 +77,7 @@ void motion_read(NET_Packet& P);
 void motion_write(NET_Packet& P);
 
 void set_motion(LPCSTR name);
-LPCSTR get_motion() const { return *motion_name; }
+[[nodiscard]] gsl::czstring get_motion() const { return motion_name.c_str(); }
 
 virtual CSE_Motion* motion() = 0;
 }

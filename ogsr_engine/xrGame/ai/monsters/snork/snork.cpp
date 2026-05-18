@@ -111,7 +111,8 @@ void CSnork::reinit()
 
     if (CCustomMonster::use_simplified_visual())
         return;
-    move().load_velocity(*cNameSect(), "Velocity_JumpGround", MonsterMovement::eSnorkVelocityParameterJumpGround);
+
+    move().load_velocity(cNameSect().c_str(), "Velocity_JumpGround", MonsterMovement::eSnorkVelocityParameterJumpGround);
     com_man().load_jump_data("stand_attack_2_0", nullptr, "stand_attack_2_1", "stand_somersault_0", std::numeric_limits<u32>::max(),
                              MonsterMovement::eSnorkVelocityParameterJumpGround, 0);
 

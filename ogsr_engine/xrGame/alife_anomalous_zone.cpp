@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "xrServer_Objects_ALife_Monsters.h"
+
 #include "ai_space.h"
 #include "alife_simulator.h"
 #include "alife_time_manager.h"
@@ -125,8 +126,8 @@ void CSE_ALifeAnomalousZone::spawn_artefacts()
             art_pos.x = art_pos.x + ::Random.randF(-0.5, 0.5);
             art_pos.z = art_pos.z + ::Random.randF(-0.5, 0.5);
 
-            CSE_Abstract* l_tpSE_Abstract = alife().spawn_item(*m_weights[item].first, art_pos, m_tNodeID, m_tGraphID, 0xffff);
-            R_ASSERT3(l_tpSE_Abstract, "Can't spawn artefact ", *m_weights[item].first);
+            CSE_Abstract* l_tpSE_Abstract = alife().spawn_item(m_weights[item].first.c_str(), art_pos, m_tNodeID, m_tGraphID, 0xffff);
+            R_ASSERT3(l_tpSE_Abstract, "Can't spawn artefact ", m_weights[item].first.c_str());
 
             CSE_ALifeDynamicObject* i = smart_cast<CSE_ALifeDynamicObject*>(l_tpSE_Abstract);
             R_ASSERT2(i, "Non-ALife object in the 'game.spawn'");

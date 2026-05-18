@@ -350,12 +350,11 @@ void CActor::Load(LPCSTR section)
         {
             sndHit[hit_type].emplace_back().create(_GetItem(hit_snds, i, tmp), st_Effect, sg_SourceType);
         }
-        char buf[256];
 
-        ::Sound->create(sndDie[0], strconcat(sizeof(buf), buf, *cName(), "\\die0"), st_Effect, SOUND_TYPE_MONSTER_DYING);
-        ::Sound->create(sndDie[1], strconcat(sizeof(buf), buf, *cName(), "\\die1"), st_Effect, SOUND_TYPE_MONSTER_DYING);
-        ::Sound->create(sndDie[2], strconcat(sizeof(buf), buf, *cName(), "\\die2"), st_Effect, SOUND_TYPE_MONSTER_DYING);
-        ::Sound->create(sndDie[3], strconcat(sizeof(buf), buf, *cName(), "\\die3"), st_Effect, SOUND_TYPE_MONSTER_DYING);
+        ::Sound->create(sndDie[0], xr::format("{}\\die0", cName()).c_str(), st_Effect, SOUND_TYPE_MONSTER_DYING);
+        ::Sound->create(sndDie[1], xr::format("{}\\die1", cName()).c_str(), st_Effect, SOUND_TYPE_MONSTER_DYING);
+        ::Sound->create(sndDie[2], xr::format("{}\\die2", cName()).c_str(), st_Effect, SOUND_TYPE_MONSTER_DYING);
+        ::Sound->create(sndDie[3], xr::format("{}\\die3", cName()).c_str(), st_Effect, SOUND_TYPE_MONSTER_DYING);
 
         m_HeavyBreathSnd.create(pSettings->r_string(section, "heavy_breath_snd"), st_Effect, SOUND_TYPE_MONSTER_INJURING);
         m_BloodSnd.create(pSettings->r_string(section, "heavy_blood_snd"), st_Effect, SOUND_TYPE_MONSTER_INJURING);
@@ -767,11 +766,11 @@ tmc::task<void> CActor::UpdateCL()
 
     m_snd_noise -= 0.3f * Device.fTimeDelta;
 
-    VERIFY2(_valid(renderable.xform), *cName());
+    VERIFY2(_valid(renderable.xform), cName().c_str());
     co_await inherited::UpdateCL();
-    VERIFY2(_valid(renderable.xform), *cName());
+    VERIFY2(_valid(renderable.xform), cName().c_str());
     m_pPhysics_support->in_UpdateCL();
-    VERIFY2(_valid(renderable.xform), *cName());
+    VERIFY2(_valid(renderable.xform), cName().c_str());
 
     if (g_Alive())
         PickupModeUpdate();
@@ -1693,7 +1692,7 @@ void CActor::OnDifficultyChanged()
     conditions().LoadImmunities(tmp, pSettings);
     // hit probability
     strconcat(sizeof(tmp), tmp, "hit_probability_", diff_name);
-    hit_probability = pSettings->r_float(*cNameSect(), tmp);
+    hit_probability = pSettings->r_float(cNameSect(), tmp);
 }
 
 CVisualMemoryManager* CActor::visual_memory() const { return (&memory().visual()); }
@@ -1709,7 +1708,7 @@ float CActor::GetCarryWeight() const
         if (io)
             add += io->GetCarryWeight();
 
-        add += READ_IF_EXISTS(pSettings, r_float, *obj->cNameSect(), "ph_mass", 0) * 0.1f;
+        add += READ_IF_EXISTS(pSettings, r_float, obj->cNameSect(), "ph_mass", 0) * 0.1f;
     }
 
     return CInventoryOwner::GetCarryWeight() + add;

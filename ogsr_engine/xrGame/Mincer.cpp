@@ -84,7 +84,10 @@ void CMincer::feel_touch_new(CObject* O)
 
 BOOL CMincer::feel_touch_contact(CObject* O) { return inherited::feel_touch_contact(O) && smart_cast<CPhysicsShellHolder*>(O); }
 
-void CMincer::AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist) { inherited::AffectThrow(O, GO, throw_in_dir, dist); }
+void CMincer::AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist)
+{
+    inherited::AffectThrow(O, GO, throw_in_dir, dist);
+}
 
 bool CMincer::BlowoutState()
 {
@@ -122,11 +125,11 @@ void CMincer::NotificateDestroy(CPHDestroyableNotificate* dn)
     // CObject* obj=Level().Objects.net_Find(id);
     CPhysicsShellHolder* obj = dn->PPhysicsShellHolder();
     m_telekinetics.draw_out_impact(dir, impulse);
+
     CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(obj);
-    if (PP && *m_torn_particles)
-    {
+    if (PP != nullptr && m_torn_particles.c_str() != nullptr)
         PP->StartParticles(m_torn_particles, Fvector().set(0, 1, 0), ID());
-    }
+
     m_tearing_sound.play_at_pos(nullptr, m_telekinetics.Center());
 
     Fvector position_in_bone_space, throw_in_dir;
@@ -152,4 +155,7 @@ void CMincer::AffectPullAlife(CEntityAlive* EA, const Fvector& throw_in_dir, flo
     inherited::AffectPullAlife(EA, throw_in_dir, dist);
 }
 
-float CMincer::BlowoutRadiusPercent(CPhysicsShellHolder* GO) { return (GO->CLS_ID != CLSID_OBJECT_ACTOR ? m_fBlowoutRadiusPercent : m_fActorBlowoutRadiusPercent); }
+float CMincer::BlowoutRadiusPercent(CPhysicsShellHolder* GO)
+{
+    return (GO->CLS_ID != CLSID_OBJECT_ACTOR ? m_fBlowoutRadiusPercent : m_fActorBlowoutRadiusPercent);
+}

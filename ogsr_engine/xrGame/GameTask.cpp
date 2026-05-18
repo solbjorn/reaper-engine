@@ -68,8 +68,8 @@ void CGameTask::Load(const TASK_ID& id)
         std::ignore = g_gameTaskXml->Init(CONFIG_PATH, "gameplay", "game_tasks.xml");
     }
 
-    const auto task_node = g_gameTaskXml->NavigateToNodeWithAttribute("game_task", "id", *id);
-    THROW3(task_node, "game task id=", *id);
+    const auto task_node = g_gameTaskXml->NavigateToNodeWithAttribute("game_task", "id", id.c_str());
+    THROW3(task_node, "game task id=", id.c_str());
 
     g_gameTaskXml->SetLocalRoot(task_node);
     m_Title._set(g_gameTaskXml->Read(g_gameTaskXml->GetLocalRoot(), "title", 0, nullptr));
@@ -109,9 +109,9 @@ void CGameTask::Load(const TASK_ID& id)
             objective.icon_texture_name._set(g_gameTaskXml->Read(g_gameTaskXml->GetLocalRoot(), "icon", 0, nullptr));
             if (!objective.icon_texture_name.empty() && std::is_neq(xr::strcasecmp(objective.icon_texture_name, "ui\\ui_icons_task")))
             {
-                objective.icon_rect = CUITextureMaster::GetTextureRect(*objective.icon_texture_name);
+                objective.icon_rect = CUITextureMaster::GetTextureRect(objective.icon_texture_name.c_str());
                 objective.icon_rect.rb.sub(objective.icon_rect.rb, objective.icon_rect.lt);
-                objective.icon_texture_name._set(CUITextureMaster::GetTextureFileName(*objective.icon_texture_name));
+                objective.icon_texture_name._set(CUITextureMaster::GetTextureFileName(objective.icon_texture_name.c_str()));
             }
             else if (!objective.icon_texture_name.empty())
             {
@@ -135,7 +135,7 @@ void CGameTask::Load(const TASK_ID& id)
         bool b1, b2;
         b1 = objective.map_location.empty();
         b2 = !object_story_id;
-        VERIFY3(b1 == b2, "check [map_location_type] and [object_story_id] fields in objective definition for: ", *objective.description);
+        VERIFY3(b1 == b2, "check [map_location_type] and [object_story_id] fields in objective definition for: ", objective.description.c_str());
 
         //.
         objective.object_id = u16(-1);

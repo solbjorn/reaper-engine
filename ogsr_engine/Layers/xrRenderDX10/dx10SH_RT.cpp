@@ -219,7 +219,7 @@ void CRT::set_slice_write(ctx_id_t context_id, gsl::index slice)
 }
 
 void CRT::reset_begin() { destroy(); }
-void CRT::reset_end() { create(*cName, dwWidth, dwHeight, fmt, sampleCount, n_slices, {dwFlags}); }
+void CRT::reset_end() { create(cName.c_str(), dwWidth, dwHeight, fmt, sampleCount, n_slices, {dwFlags}); }
 
 void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount /*= 1*/, u32 slices_num /*=1*/, Flags32 flags /*= 0*/)
 {

@@ -49,18 +49,18 @@ Fvector CScriptSound::GetPosition() const
 
 void CScriptSound::Play(CScriptGameObject* object, float delay, int flags)
 {
-    THROW3(m_sound._handle(), "There is no sound", *m_caSoundToPlay);
+    THROW3(m_sound._handle(), "There is no sound", m_caSoundToPlay.c_str());
     m_sound.play(&object->object(), flags, delay);
 }
 
 void CScriptSound::PlayAtPos(CScriptGameObject* object, const Fvector& position, float delay, int flags)
 {
-    THROW3(m_sound._handle(), "There is no sound", *m_caSoundToPlay);
+    THROW3(m_sound._handle(), "There is no sound", m_caSoundToPlay.c_str());
     m_sound.play_at_pos(&object->object(), position, flags, delay);
 }
 
 void CScriptSound::PlayNoFeedback(CScriptGameObject* object, u32 flags /*!< Looping */, float delay /*!< Delay */, Fvector pos, float vol)
 {
-    THROW3(m_sound._handle(), "There is no sound", *m_caSoundToPlay);
+    THROW3(m_sound._handle(), "There is no sound", m_caSoundToPlay.c_str());
     m_sound.play_no_feedback(&object->object(), flags, delay, &pos, &vol);
 }

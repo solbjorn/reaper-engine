@@ -292,9 +292,8 @@ bool CUIXmlInit::InitText(CUIXml& xml_doc, const char* path, int index, IUITextC
         pWnd->SetTextAlignment(CGameFont::alJustified);
 
     gsl::czstring text = xml_doc.Read(path, index, nullptr);
-    CStringTable st;
     if (text != nullptr)
-        pWnd->SetText(*st.translate(shared_str{text}));
+        pWnd->SetText(CStringTable::translate(shared_str{text}).c_str());
 
     return true;
 }

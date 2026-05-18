@@ -107,7 +107,7 @@ const ITEM_DATA* CSINI_IdToIndex::GetById(const T_ID& str_id, bool no_assert)
             return &item;
     }
 
-    R_ASSERT3(no_assert, "item not found, id", *str_id);
+    R_ASSERT3(no_assert, "item not found, id", str_id.c_str());
     return nullptr;
 }
 

@@ -542,7 +542,7 @@ tmc::task<void> CCustomMonster::Die(CObject* who)
 
 tmc::task<bool> CCustomMonster::net_Spawn(CSE_Abstract* DC)
 {
-    memory().reload(*cNameSect());
+    memory().reload(cNameSect().c_str());
     memory().reinit();
 
     if (!co_await movement().net_Spawn(DC) || !co_await inherited::net_Spawn(DC) || !co_await CScriptEntity::net_Spawn(DC))

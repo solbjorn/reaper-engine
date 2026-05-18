@@ -52,7 +52,7 @@ public:
 
     void decompress(void* dest, s64 byte_offset, s64 size, sf::SNDFILE* snd) const;
 
-    [[nodiscard]] const char* file_name() const override { return *fname; }
+    [[nodiscard]] gsl::czstring file_name() const override { return fname.c_str(); }
     [[nodiscard]] float base_volume() const { return m_fBaseVolume; }
 
     [[nodiscard]] float length_sec() const override { return fTimeTotal; }

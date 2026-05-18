@@ -83,11 +83,13 @@ bool CPHSkeleton::Spawn(CSE_Abstract* D)
     if (po->_flags.test(CSE_PHSkeleton::flSpawnCopy))
     {
         CPHSkeleton* source = smart_cast<CPHSkeleton*>(Level().Objects.net_Find(po->source_id));
-        ASSERT_FMT(source, "no source: '%s'", *D->s_name);
+        ASSERT_FMT(source, "no source: '%s'", D->s_name.c_str());
+
         source->UnsplitSingle(this);
         m_flags.set(CSE_PHSkeleton::flSpawnCopy, FALSE);
         po->_flags.set(CSE_PHSkeleton::flSpawnCopy, FALSE);
         po->source_id = BI_NONE;
+
         return true;
     }
     else
@@ -413,8 +415,9 @@ void CPHSkeleton::UnsplitSingle(CPHSkeleton* SO)
 
     SO->CopySpawnInit();
     CopySpawnInit();
-    VERIFY3(CheckObjectSize(pKinematics), *(O->cNameVisual()), "Object unsplit whith no size");
-    VERIFY3(CheckObjectSize(newKinematics), *(O->cNameVisual()), "Object unsplit whith no size");
+
+    VERIFY3(CheckObjectSize(pKinematics), O->cNameVisual().c_str(), "Object unsplit whith no size");
+    VERIFY3(CheckObjectSize(newKinematics), O->cNameVisual().c_str(), "Object unsplit whith no size");
 }
 
 void CPHSkeleton::CopySpawnInit()
@@ -473,7 +476,7 @@ void CPHSkeleton::InitServerObject(CSE_Abstract* D)
 
     l_tpALifePhysicObject->m_tGraphID = obj->ai_location().game_vertex_id();
     l_tpALifeDynamicObject->m_tNodeID = obj->ai_location().level_vertex_id();
-    l_tpALifePhysicObject->set_visual(*obj->cNameVisual());
+    l_tpALifePhysicObject->set_visual(obj->cNameVisual().c_str());
 
     l_tpALifePhysicObject->source_id = u16(obj->ID());
     l_tpALifePhysicObject->startup_animation = m_startup_anim;

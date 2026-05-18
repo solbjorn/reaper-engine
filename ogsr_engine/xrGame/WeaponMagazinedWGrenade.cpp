@@ -123,13 +123,13 @@ tmc::task<bool> CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
         m_ammoTypes.swap(m_ammoTypes2);
 
         // reloading
-        m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));
+        m_DefaultCartridge.Load(m_ammoTypes[m_ammoType].c_str(), u8(m_ammoType));
         u32 mag_sz = m_magazine.size();
         m_magazine.clear();
         while (mag_sz--)
             m_magazine.push_back(m_DefaultCartridge);
 
-        m_DefaultCartridge2.Load(*m_ammoTypes2[m_ammoType2], u8(m_ammoType2));
+        m_DefaultCartridge2.Load(m_ammoTypes2[m_ammoType2].c_str(), u8(m_ammoType2));
         // mag_sz = m_magazine2.size();
         m_magazine2.clear();
         while ((u32)iAmmoElapsed2 > m_magazine2.size()) //(mag_sz--)
@@ -440,7 +440,7 @@ void CWeaponMagazinedWGrenade::ReloadMagazine()
     // перезарядка подствольного гранатомета
     if (iAmmoElapsed && !getRocketCount() && m_bGrenadeMode)
     {
-        gsl::czstring fake_grenade_name = pSettings->r_string(*m_ammoTypes[m_ammoType], "fake_grenade_name");
+        gsl::czstring fake_grenade_name = pSettings->r_string(m_ammoTypes[m_ammoType], "fake_grenade_name");
         CRocketLauncher::SpawnRocket(fake_grenade_name, this);
     }
 }
@@ -569,9 +569,7 @@ void CWeaponMagazinedWGrenade::InitAddons()
     if (GrenadeLauncherAttachable())
     {
         if (IsGrenadeLauncherAttached())
-        {
-            CRocketLauncher::m_fLaunchSpeed = pSettings->r_float(*m_sGrenadeLauncherName, "grenade_vel");
-        }
+            CRocketLauncher::m_fLaunchSpeed = pSettings->r_float(m_sGrenadeLauncherName.c_str(), "grenade_vel");
     }
 
     callback(GameObject::eOnAddonInit)(2);

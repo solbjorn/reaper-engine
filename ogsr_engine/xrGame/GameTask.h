@@ -23,8 +23,8 @@ public:
 public:
     [[nodiscard]] constexpr bool not_empty() const
     {
-        return !m_s_complete_lua_functions.empty() || !m_s_fail_lua_functions.empty() || !m_s_skipped_lua_functions.empty() || !m_s_lua_functions_on_complete.empty() ||
-            !m_s_lua_functions_on_fail.empty() || !m_s_lua_functions_on_skipped.empty();
+        return !m_s_complete_lua_functions.empty() || !m_s_fail_lua_functions.empty() || !m_s_skipped_lua_functions.empty() ||
+            !m_s_lua_functions_on_complete.empty() || !m_s_lua_functions_on_fail.empty() || !m_s_lua_functions_on_skipped.empty();
     }
 
     void save(IWriter& stream) const;
@@ -176,12 +176,12 @@ public:
     // for scripting access
     void Load_script(LPCSTR _id);
     void SetTitle_script(LPCSTR _title);
-    LPCSTR GetTitle_script() { return *m_Title; }
+    [[nodiscard]] constexpr auto GetTitle_script() const { return m_Title.c_str(); }
     void SetPriority_script(int _prio);
     int GetPriority_script() { return m_priority; }
     void AddObjective_script(SGameTaskObjective* O);
     SGameTaskObjective* GetObjective_script(int objective_id) { return &(Objective(objective_id)); }
-    LPCSTR GetID_script() { return *m_ID; }
+    [[nodiscard]] constexpr auto GetID_script() const { return m_ID.c_str(); }
     void SetID_script(LPCSTR _id) { m_ID._set(_id); }
     int GetObjectiveSize_script() { return m_Objectives.size(); }
 

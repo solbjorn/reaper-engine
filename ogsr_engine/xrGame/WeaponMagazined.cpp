@@ -308,7 +308,7 @@ bool CWeaponMagazined::TryReload()
     {
         bool forActor = ParentIsActor();
 
-        m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[m_ammoType], forActor));
+        m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(m_ammoTypes[m_ammoType].c_str(), forActor));
 
         if ((m_pAmmo || m_set_next_ammoType_on_reload != u32(-1)) || unlimited_ammo() || (IsMisfire() && iAmmoElapsed))
         {
@@ -319,7 +319,7 @@ bool CWeaponMagazined::TryReload()
         else
             for (u32 i = 0; i < m_ammoTypes.size(); ++i)
             {
-                m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[i], forActor));
+                m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(m_ammoTypes[i].c_str(), forActor));
                 if (m_pAmmo)
                 {
                     m_set_next_ammoType_on_reload = i; // https://github.com/revolucas/CoC-Xray/pull/5/commits/3c45cad1edb388664efbe3bb20a29f92e2d827ca
@@ -354,12 +354,12 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 {
     last_hide_bullet = -1;
 
-    xr_map<LPCSTR, u16> l_ammo;
+    xr::string_map<gsl::czstring, u16> l_ammo;
 
     while (!m_magazine.empty())
     {
         CCartridge& l_cartridge = m_magazine.back();
-        xr_map<LPCSTR, u16>::iterator l_it;
+        xr::string_map<gsl::czstring, u16>::iterator l_it;
 
         for (l_it = l_ammo.begin(); l_ammo.end() != l_it; ++l_it)
         {
@@ -371,7 +371,8 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
         }
 
         if (l_it == l_ammo.end())
-            l_ammo[*l_cartridge.m_ammoSect] = 1;
+            l_ammo[l_cartridge.m_ammoSect.c_str()] = 1;
+
         m_magazine.pop_back();
         --iAmmoElapsed;
     }
@@ -382,8 +383,8 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
         return;
 
     bool forActor = ParentIsActor();
+    xr::string_map<gsl::czstring, u16>::iterator l_it;
 
-    xr_map<LPCSTR, u16>::iterator l_it;
     for (l_it = l_ammo.begin(); l_ammo.end() != l_it; ++l_it)
     {
         if (Core.Features.test(xrCore::Feature::hard_ammo_reload) ? (!forActor && m_pCurrentInventory) : !!m_pCurrentInventory)
@@ -432,9 +433,9 @@ void CWeaponMagazined::ReloadMagazine()
 
         // попытаться найти в инвентаре патроны текущего типа
         if (Core.Features.test(xrCore::Feature::hard_ammo_reload) && forActor)
-            m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmoMaxCurr(*m_ammoTypes[m_ammoType], forActor));
+            m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmoMaxCurr(m_ammoTypes[m_ammoType].c_str(), forActor));
         else
-            m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[m_ammoType], forActor));
+            m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(m_ammoTypes[m_ammoType].c_str(), forActor));
 
         if (!m_pAmmo && !m_bLockType)
         {
@@ -442,9 +443,9 @@ void CWeaponMagazined::ReloadMagazine()
             {
                 // проверить патроны всех подходящих типов
                 if (Core.Features.test(xrCore::Feature::hard_ammo_reload) && forActor)
-                    m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmoMaxCurr(*m_ammoTypes[i], forActor));
+                    m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmoMaxCurr(m_ammoTypes[i].c_str(), forActor));
                 else
-                    m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[i], forActor));
+                    m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(m_ammoTypes[i].c_str(), forActor));
 
                 if (m_pAmmo)
                 {
@@ -477,7 +478,8 @@ void CWeaponMagazined::ReloadMagazine()
     VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
     if (m_DefaultCartridge.m_LocalAmmoType != m_ammoType)
-        m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));
+        m_DefaultCartridge.Load(m_ammoTypes[m_ammoType].c_str(), u8(m_ammoType));
+
     CCartridge l_cartridge = m_DefaultCartridge;
     while (iAmmoElapsed < (iMagazineSize + static_cast<int>(CartridgeInTheChamber)))
     {
@@ -1237,7 +1239,7 @@ void CWeaponMagazined::InitAddons()
             m_iScopeX = pSettings->r_s32(cNameSect(), "scope_x");
             m_iScopeY = pSettings->r_s32(cNameSect(), "scope_y");
 
-            InitZoomParams(*m_sScopeName, !m_bIgnoreScopeTexture);
+            InitZoomParams(m_sScopeName.c_str(), !m_bIgnoreScopeTexture);
 
             m_fZoomHudFov = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "scope_zoom_hud_fov", m_fZoomHudFov);
             m_fSecondVPHudFov = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "scope_lense_hud_fov", m_fSecondVPHudFov);
@@ -1302,10 +1304,10 @@ void CWeaponMagazined::InitAddons()
         m_pSndShotCurrent = &sndSilencerShot;
 
         // сила выстрела
-        LoadFireParams(*cNameSect(), "");
+        LoadFireParams(cNameSect().c_str(), "");
 
         // подсветка от выстрела
-        LoadLights(*cNameSect(), "silencer_");
+        LoadLights(cNameSect().c_str(), "silencer_");
 
         ApplySilencerKoeffs();
     }
@@ -1316,10 +1318,10 @@ void CWeaponMagazined::InitAddons()
         m_pSndShotCurrent = &sndShot;
 
         // сила выстрела
-        LoadFireParams(*cNameSect(), "");
+        LoadFireParams(cNameSect().c_str(), "");
 
         // подсветка от выстрела
-        LoadLights(*cNameSect(), "");
+        LoadLights(cNameSect().c_str(), "");
     }
 
     inherited::InitAddons();

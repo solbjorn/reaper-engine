@@ -83,7 +83,7 @@ void CAI_PhraseDialogManager::UpdateAvailableDialogs(CPhraseDialogManager* partn
     m_AvailableDialogs.clear();
     m_CheckedDialogs.clear();
 
-    if (*m_sStartDialog)
+    if (m_sStartDialog.c_str() != nullptr)
         std::ignore = inherited::AddAvailableDialog(m_sStartDialog, partner);
 
     std::ignore = inherited::AddAvailableDialog(shared_str{"hello_dialog"}, partner);

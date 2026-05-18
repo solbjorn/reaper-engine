@@ -65,8 +65,8 @@ void game_PlayerState::setFlag(u16 f) { flags__ |= f; }
 
 void game_PlayerState::resetFlag(u16 f) { flags__ &= ~(f); }
 
-void game_PlayerState::net_Export(NET_Packet& P,
-                                  BOOL Full) // KRodin: НЕ ИЗМЕНЯТЬ! Иначе будет несовместимо по сейвам! Единственный нужный нет_экспорт с нетпакетами на данный момент
+// KRodin: НЕ ИЗМЕНЯТЬ! Иначе будет несовместимо по сейвам! Единственный нужный нет_экспорт с нетпакетами на данный момент
+void game_PlayerState::net_Export(NET_Packet& P, BOOL Full)
 {
     P.w_u8(Full ? 1 : 0);
     if (Full)
@@ -91,7 +91,8 @@ void game_PlayerState::net_Export(NET_Packet& P,
     P.w_u32(Device.dwTimeGlobal - DeathTime);
 }
 
-void game_PlayerState::net_Import(NET_Packet& P) // KRodin: НЕ ИЗМЕНЯТЬ! Иначе будет несовместимо по сейвам! Это походу единственный нет_импорт, который нужен.
+// KRodin: НЕ ИЗМЕНЯТЬ! Иначе будет несовместимо по сейвам! Это походу единственный нет_импорт, который нужен.
+void game_PlayerState::net_Import(NET_Packet& P)
 {
     BOOL bFullUpdate = !!P.r_u8();
 
@@ -158,7 +159,7 @@ game_GameState::game_GameState()
     m_fETimeFactor = m_fTimeFactor;
 }
 
-CLASS_ID game_GameState::getCLASS_ID(LPCSTR, bool isServer) { return isServer ? TEXT2CLSID("SV_SINGL") : TEXT2CLSID("CL_SINGL"); }
+CLASS_ID game_GameState::getCLASS_ID(bool isServer) { return isServer ? TEXT2CLSID("SV_SINGL") : TEXT2CLSID("CL_SINGL"); }
 
 void game_GameState::switch_Phase(u32 new_phase)
 {

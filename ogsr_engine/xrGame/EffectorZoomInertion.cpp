@@ -48,13 +48,16 @@ void CEffectorZoomInertion::LoadParams(LPCSTR Section, LPCSTR Prefix)
     string256 full_name;
     m_fCameraMoveEpsilon = READ_IF_EXISTS(pSettings, r_float, Section, strconcat(sizeof(full_name), full_name, Prefix, "camera_move_epsilon"),
                                           pSettings->r_float(EFFECTOR_ZOOM_SECTION, "camera_move_epsilon"));
-    m_fDispMin = READ_IF_EXISTS(pSettings, r_float, Section, strconcat(sizeof(full_name), full_name, Prefix, "disp_min"), pSettings->r_float(EFFECTOR_ZOOM_SECTION, "disp_min"));
-    m_fSpeedMin = READ_IF_EXISTS(pSettings, r_float, Section, strconcat(sizeof(full_name), full_name, Prefix, "speed_min"), pSettings->r_float(EFFECTOR_ZOOM_SECTION, "speed_min"));
+    m_fDispMin = READ_IF_EXISTS(pSettings, r_float, Section, strconcat(sizeof(full_name), full_name, Prefix, "disp_min"),
+                                pSettings->r_float(EFFECTOR_ZOOM_SECTION, "disp_min"));
+    m_fSpeedMin = READ_IF_EXISTS(pSettings, r_float, Section, strconcat(sizeof(full_name), full_name, Prefix, "speed_min"),
+                                 pSettings->r_float(EFFECTOR_ZOOM_SECTION, "speed_min"));
     m_fZoomAimingDispK = READ_IF_EXISTS(pSettings, r_float, Section, strconcat(sizeof(full_name), full_name, Prefix, "zoom_aim_disp_k"),
                                         pSettings->r_float(EFFECTOR_ZOOM_SECTION, "zoom_aim_disp_k"));
     m_fZoomAimingSpeedK = READ_IF_EXISTS(pSettings, r_float, Section, strconcat(sizeof(full_name), full_name, Prefix, "zoom_aim_speed_k"),
                                          pSettings->r_float(EFFECTOR_ZOOM_SECTION, "zoom_aim_speed_k"));
-    m_dwDeltaTime = READ_IF_EXISTS(pSettings, r_u32, Section, strconcat(sizeof(full_name), full_name, Prefix, "delta_time"), pSettings->r_u32(EFFECTOR_ZOOM_SECTION, "delta_time"));
+    m_dwDeltaTime = READ_IF_EXISTS(pSettings, r_u32, Section, strconcat(sizeof(full_name), full_name, Prefix, "delta_time"),
+                                   pSettings->r_u32(EFFECTOR_ZOOM_SECTION, "delta_time"));
 }
 
 void CEffectorZoomInertion::Load()
@@ -79,7 +82,7 @@ void CEffectorZoomInertion::Init(CWeaponMagazined* pWeapon)
     if (!pWeapon)
         return;
 
-    LoadParams(*pWeapon->cNameSect(), "ezi_");
+    LoadParams(pWeapon->cNameSect().c_str(), "ezi_");
 }
 
 void CEffectorZoomInertion::SetParams(float disp)
@@ -157,15 +160,16 @@ static void set_target_point(CEffectorZoomInertion* E, const Fvector src) { E->m
 
 void CEffectorZoomInertion::script_register(sol::state_view& lua)
 {
-    lua.new_usertype<CEffectorZoomInertion>("CEffectorZoomInertion", sol::no_constructor, "float_speed", &CEffectorZoomInertion::m_fFloatSpeed, "disp_radius",
-                                            &CEffectorZoomInertion::m_fDispRadius, "epsilon", &CEffectorZoomInertion::m_fEpsilon, "current_point",
-                                            sol::property(&get_current_point, &set_current_point), "last_point", sol::property(&get_last_point, &set_last_point), "target_point",
-                                            sol::property(&get_target_point, &set_target_point), "target_vel", &CEffectorZoomInertion::m_vTargetVel, "time_passed",
-                                            &CEffectorZoomInertion::m_dwTimePassed,
-                                            // settings for real-time modify
-                                            "camera_move_epsilon", &CEffectorZoomInertion::m_fCameraMoveEpsilon, "disp_min", &CEffectorZoomInertion::m_fDispMin, "speed_min",
-                                            &CEffectorZoomInertion::m_fSpeedMin, "zoom_aim_disp_k", &CEffectorZoomInertion::m_fZoomAimingDispK, "zoom_aim_speed_k",
-                                            &CEffectorZoomInertion::m_fZoomAimingSpeedK, "delta_time", &CEffectorZoomInertion::m_dwDeltaTime);
+    lua.new_usertype<CEffectorZoomInertion>(
+        "CEffectorZoomInertion", sol::no_constructor, "float_speed", &CEffectorZoomInertion::m_fFloatSpeed, "disp_radius",
+        &CEffectorZoomInertion::m_fDispRadius, "epsilon", &CEffectorZoomInertion::m_fEpsilon, "current_point",
+        sol::property(&get_current_point, &set_current_point), "last_point", sol::property(&get_last_point, &set_last_point), "target_point",
+        sol::property(&get_target_point, &set_target_point), "target_vel", &CEffectorZoomInertion::m_vTargetVel, "time_passed",
+        &CEffectorZoomInertion::m_dwTimePassed,
+        // settings for real-time modify
+        "camera_move_epsilon", &CEffectorZoomInertion::m_fCameraMoveEpsilon, "disp_min", &CEffectorZoomInertion::m_fDispMin, "speed_min",
+        &CEffectorZoomInertion::m_fSpeedMin, "zoom_aim_disp_k", &CEffectorZoomInertion::m_fZoomAimingDispK, "zoom_aim_speed_k",
+        &CEffectorZoomInertion::m_fZoomAimingSpeedK, "delta_time", &CEffectorZoomInertion::m_dwDeltaTime);
 
     lua.set("find_effector_zi", &FindEffectorZoomInertion, "switch_zoom_osc", &switch_zoom_osc);
 }

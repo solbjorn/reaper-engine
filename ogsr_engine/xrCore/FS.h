@@ -32,7 +32,7 @@ public:
 
 public:
     IWriter() = default;
-    ~IWriter() override { R_ASSERT3(chunk_pos.empty(), "Opened chunk not closed.", *fName); }
+    ~IWriter() override { R_ASSERT3(chunk_pos.empty(), "Opened chunk not closed.", fName.c_str()); }
 
     // kernel
     virtual void seek(gsl::index pos) = 0;
@@ -62,13 +62,13 @@ public:
 
     void w_stringZ(const shared_str& p)
     {
-        w(*p ? *p : "", p.size());
+        w(p.data(), p.size());
         w_u8(0);
     }
 
     void w_stringZ(const xr_string& p)
     {
-        w(p.c_str() ? p.c_str() : "", std::ssize(p));
+        w(p.data(), std::ssize(p));
         w_u8(0);
     }
 

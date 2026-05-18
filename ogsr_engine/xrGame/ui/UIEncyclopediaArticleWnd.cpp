@@ -49,7 +49,7 @@ void CUIEncyclopediaArticleWnd::SetArticle(CEncyclopediaArticle* article)
         m_UIImage->SetWndPos(img_x, m_UIImage->GetWndPos().y);
     }
 
-    m_UIText->SetText(*CStringTable().translate(shared_str{article->data()->text.c_str()}));
+    m_UIText->SetText(CStringTable::translate(shared_str{article->data()->text.c_str()}).c_str());
     m_UIText->AdjustHeightToText();
 
     AdjustLauout();

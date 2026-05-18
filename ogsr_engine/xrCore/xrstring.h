@@ -1,7 +1,6 @@
 #ifndef xrstringH
 #define xrstringH
 
-#include <absl/container/flat_hash_map.h>
 #include <absl/hash/hash.h>
 
 //////////////////////////////////////////////////////////////////////////
@@ -133,7 +132,6 @@ public:
     }
 
     [[nodiscard]] constexpr explicit operator bool() const { return p_ != nullptr; }
-    [[nodiscard]] constexpr gsl::czstring operator*() const { return p_ ? p_->value : nullptr; }
 
     // Чтобы можно было легко кастить в std::string_view как и все остальные строки
     [[nodiscard]] constexpr operator std::string_view() const
@@ -185,19 +183,14 @@ constexpr void xr_strlwr(xr_string& src)
 
 IC void xr_strlwr(shared_str& src)
 {
-    if (*src)
-    {
-        LPSTR lp = xr_strdup(*src);
-        xr_strlwr(lp);
-        src._set(lp);
-        xr_free(lp);
-    }
-}
+    if (src.empty())
+        return;
 
-template <class K, class V, class Hash = typename absl::container_internal::FlatHashMapPolicy<std::string_view, V>::DefaultHash,
-          class Eq = typename absl::container_internal::FlatHashMapPolicy<std::string_view, V>::DefaultEq,
-          class Allocator = xr_allocator<std::pair<const K, V>>>
-using string_unordered_map = absl::flat_hash_map<K, V, Hash, Eq, Allocator>;
+    xr_string lp{src};
+    xr_strlwr(lp);
+
+    src._set(lp);
+}
 
 namespace xr_string_utils
 {

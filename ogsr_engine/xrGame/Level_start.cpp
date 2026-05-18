@@ -73,7 +73,7 @@ BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
 tmc::task<bool> CLevel::net_start1()
 {
     // Start client and server if need it
-    if (m_caServerOptions.size())
+    if (!m_caServerOptions.empty())
     {
         co_await g_pGamePersistent->LoadTitle("st_server_starting");
 
@@ -82,16 +82,14 @@ tmc::task<bool> CLevel::net_start1()
 
         if (std::is_neq(xr_strcmp(g_pGamePersistent->m_game_params.m_alife, "alife")))
         {
-            string64 l_name = "";
-            const char* SOpts = *m_caServerOptions;
-            strncpy_s(l_name, *m_caServerOptions, strchr(SOpts, '/') - SOpts);
-            // Activate level
-            if (strchr(l_name, '/'))
-                *strchr(l_name, '/') = 0;
+            std::string_view l_name{m_caServerOptions};
+
+            if (const auto pos = l_name.find('/'); pos != std::string_view::npos)
+                l_name = l_name.substr(0, pos);
 
             m_name._set(l_name);
 
-            int id = pApp->Level_ID(l_name);
+            int id = pApp->Level_ID(m_name.c_str());
             if (id < 0)
             {
                 pApp->LoadEnd();
@@ -217,7 +215,7 @@ tmc::task<void> CLevel::InitializeClientGame(NET_Packet& P)
     xr_delete(game);
 
     Log("- Game configuring : Started ");
-    CLASS_ID clsid = game_GameState::getCLASS_ID(game_type_name, false);
+    CLASS_ID clsid = game_GameState::getCLASS_ID(false);
     game = smart_cast<game_cl_GameState*>(NEW_INSTANCE(clsid));
     game->set_type_name(game_type_name);
     game->Init();

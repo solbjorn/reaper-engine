@@ -153,7 +153,7 @@ void CGameTaskManager::SetTaskState(CGameTask* t, u16 objective_num, ETaskState 
 
         if (!obj.def_location_enabled && obj.TaskState() == ETaskState::eTaskStateInProgress)
         {
-            if (obj.object_id != u16(-1) && *obj.map_location)
+            if (obj.object_id != u16(-1) && obj.map_location.c_str() != nullptr)
             {
                 CMapLocation* ml = Level().MapManager().AddMapLocation(obj.map_location, obj.object_id);
                 if (obj.map_hint.size())

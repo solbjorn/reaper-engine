@@ -306,7 +306,8 @@ shared_str CSE_ALifeTraderAbstract::specific_character()
                 }
             }
         }
-        R_ASSERT3(!m_DefaultCharacters.empty(), "no default specific character set for class", *char_info.data()->m_Class);
+
+        R_ASSERT3(!m_DefaultCharacters.empty(), "no default specific character set for class", char_info.data()->m_Class.c_str());
 
 #ifdef XRGAME_EXPORTS
         if (m_CheckedCharacters.empty())
@@ -367,10 +368,9 @@ void CSE_ALifeTraderAbstract::set_specific_character(shared_str new_spec_char)
     //----
     CSE_ALifeMonsterAbstract* monster = smart_cast<CSE_ALifeMonsterAbstract*>(base());
     if (monster && selected_char.terrain_sect().size())
-    {
-        setup_location_types_section(monster->m_tpaTerrain, pSettings, *(selected_char.terrain_sect()));
-    }
+        setup_location_types_section(monster->m_tpaTerrain, pSettings, selected_char.terrain_sect().c_str());
     //----
+
     if (NO_RANK == m_rank)
         m_rank = selected_char.Rank();
 
@@ -417,7 +417,7 @@ shared_str CSE_ALifeTraderAbstract::character_profile() { return m_sCharacterPro
 u16 CSE_ALifeTraderAbstract::object_id() const { return base()->ID; }
 
 CHARACTER_COMMUNITY_INDEX CSE_ALifeTraderAbstract::Community() const { return m_community_index; }
-LPCSTR CSE_ALifeTraderAbstract::CommunityName() const { return *CHARACTER_COMMUNITY::IndexToId(m_community_index); }
+gsl::czstring CSE_ALifeTraderAbstract::CommunityName() const { return CHARACTER_COMMUNITY::IndexToId(m_community_index).c_str(); }
 
 CHARACTER_RANK_VALUE CSE_ALifeTraderAbstract::Rank()
 {

@@ -163,7 +163,6 @@ void CUICharacterInfo::InitCharacter(u16 id)
 
     chInfo.Init(T);
 
-    CStringTable stbl;
     string256 str;
     if (m_icons[eUIName])
     {
@@ -172,19 +171,19 @@ void CUICharacterInfo::InitCharacter(u16 id)
 
     if (m_icons[eUIRank])
     {
-        sprintf_s(str, "%s", *stbl.translate(shared_str{GetRankAsText(chInfo.Rank().value())}));
+        sprintf_s(str, "%s", CStringTable::translate(shared_str{GetRankAsText(chInfo.Rank().value())}).c_str());
         m_icons[eUIRank]->SetText(str);
     }
 
     if (m_icons[eUIReputation])
     {
-        sprintf_s(str, "%s", *stbl.translate(shared_str{GetReputationAsText(chInfo.Reputation().value())}));
+        sprintf_s(str, "%s", CStringTable::translate(shared_str{GetReputationAsText(chInfo.Reputation().value())}).c_str());
         m_icons[eUIReputation]->SetText(str);
     }
 
     if (m_icons[eUICommunity])
     {
-        sprintf_s(str, "%s", *CStringTable().translate(chInfo.Community().id()));
+        sprintf_s(str, "%s", CStringTable::translate(chInfo.Community().id()).c_str());
         m_icons[eUICommunity]->SetText(str);
     }
 
@@ -200,7 +199,7 @@ void CUICharacterInfo::InitCharacter(u16 id)
         {
             CUIStatic* pItem = xr_new<CUIStatic>();
             pItem->SetWidth(pUIBio->GetDesiredChildWidth());
-            pItem->SetText(*(chInfo.Bio()));
+            pItem->SetText(chInfo.Bio().c_str());
             pItem->AdjustHeightToText();
             pItem->SetTextComplexMode(true);
 
@@ -225,9 +224,8 @@ void CUICharacterInfo::SetRelation(ALife::ERelationType relation, CHARACTER_GOOD
     m_icons[eUIRelation]->SetTextColor(GetRelationColor(relation));
 
     string256 str;
-    CStringTable stbl;
 
-    sprintf_s(str, "%s", *stbl.translate(shared_str{GetGoodwillAsText(goodwill)}));
+    sprintf_s(str, "%s", CStringTable::translate(shared_str{GetGoodwillAsText(goodwill)}).c_str());
     m_icons[eUIRelation]->SetText(str);
 }
 
@@ -309,7 +307,8 @@ void CUICharacterInfo::ClearInfo()
     if (m_icons[eUIIcon])
     {
         // m_icons[eUIIcon]->SetColor(0xffffffff);
-        m_icons[eUIIcon]->GetUIStaticItem().SetOriginalRect(8 * ICON_GRID_WIDTH, 0, float(CHAR_ICON_WIDTH * ICON_GRID_WIDTH), float(CHAR_ICON_HEIGHT * ICON_GRID_HEIGHT));
+        m_icons[eUIIcon]->GetUIStaticItem().SetOriginalRect(8 * ICON_GRID_WIDTH, 0, float(CHAR_ICON_WIDTH * ICON_GRID_WIDTH),
+                                                            float(CHAR_ICON_HEIGHT * ICON_GRID_HEIGHT));
     }
 
     for (int i = eUIName; i < eMaxCaption; ++i)

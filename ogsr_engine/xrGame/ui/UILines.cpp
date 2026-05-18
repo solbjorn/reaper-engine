@@ -620,7 +620,7 @@ u32 CUILines::GetColorFromText(const xr_string& str) const
     //	CUIXmlInit xml;
     for (CUIXmlInit::ColorDefs::const_iterator it = CUIXmlInit::GetColorDefs()->begin(); it != CUIXmlInit::GetColorDefs()->end(); ++it)
     {
-        int cmp = str.compare(begin + 3, end - begin - 3, *it->first);
+        int cmp = str.compare(begin + 3, end - begin - 3, it->first.c_str());
         if (cmp == 0)
             return it->second;
     }

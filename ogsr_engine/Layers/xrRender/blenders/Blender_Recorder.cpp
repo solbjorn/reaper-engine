@@ -49,7 +49,7 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
     auto& desc = RImplementation.Resources->m_textures_description;
 
     // Analyze possibility to detail this shader
-    detail_texture = nullptr;
+    detail_texture._set(nullptr);
     detail_scaler = nullptr;
     LPCSTR base = nullptr;
 
@@ -62,8 +62,9 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
         if (id >= 0)
         {
             if (id >= int(lst.size()))
-                Debug.fatal(DEBUG_INFO, "Not enough textures for shader. Base texture: '%s'.", *lst[0]);
-            base = *lst[id];
+                Debug.fatal(DEBUG_INFO, "Not enough textures for shader. Base texture: '%s'.", lst[0].c_str());
+
+            base = lst[id].c_str();
         }
 
         if (!desc.GetDetailTexture(shared_str{base}, detail_texture, detail_scaler))
@@ -82,8 +83,9 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
             if (id >= 0)
             {
                 if (id >= int(lst.size()))
-                    Debug.fatal(DEBUG_INFO, "Not enough textures for shader. Base texture: '%s'.", *lst[0]);
-                base = *lst[id];
+                    Debug.fatal(DEBUG_INFO, "Not enough textures for shader. Base texture: '%s'.", lst[0].c_str());
+
+                base = lst[id].c_str();
             }
         }
         //	Igor

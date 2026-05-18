@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "space_restriction.h"
+
 #include "restriction_space.h"
 #include "space_restriction_manager.h"
 #include "space_restriction_bridge.h"
@@ -120,7 +121,8 @@ void CSpaceRestrictionManager::restrict(ALife::_OBJECT_ID id, shared_str out_res
     join_restrictions(merged_in_restrictions, _default_in_restrictions);
 
     CLIENT_RESTRICTIONS::iterator I = m_clients->find(id);
-    VERIFY2((m_clients->end() == I) || !(*I).second.m_restriction || !(*I).second.m_restriction->applied(), "Restriction cannot be changed since its border is still applied!");
+    VERIFY2((m_clients->end() == I) || !(*I).second.m_restriction || !(*I).second.m_restriction->applied(),
+            "Restriction cannot be changed since its border is still applied!");
     (*m_clients)[id].m_restriction = restriction(merged_out_restrictions, merged_in_restrictions);
     (*m_clients)[id].m_base_out_restrictions = out_restrictors;
     (*m_clients)[id].m_base_in_restrictions = in_restrictors;
@@ -154,15 +156,12 @@ bool CSpaceRestrictionManager::accessible(ALife::_OBJECT_ID id, u32 level_vertex
 
 CSpaceRestrictionManager::CRestrictionPtr CSpaceRestrictionManager::restriction(shared_str out_restrictors, shared_str in_restrictors)
 {
-    string4096 m_temp;
     if (!xr_strlen(out_restrictors) && !xr_strlen(in_restrictors))
         return nullptr;
 
     out_restrictors = normalize_string(out_restrictors);
     in_restrictors = normalize_string(in_restrictors);
-
-    strconcat(sizeof(m_temp), m_temp, *out_restrictors, "\x01", *in_restrictors);
-    shared_str space_restrictions{m_temp};
+    shared_str space_restrictions{xr::format("{}\x01{}", out_restrictors, in_restrictors)};
 
     SPACE_RESTRICTIONS::const_iterator I = m_space_restrictions.find(space_restrictions);
     if (I != m_space_restrictions.end())
@@ -184,9 +183,9 @@ u32 CSpaceRestrictionManager::accessible_nearest(ALife::_OBJECT_ID id, const Fve
 {
     string4096 m_temp;
 
-    for (u32 i = 0, n = _GetItemCount(*restrictions); i < n; ++i)
+    for (u32 i = 0, n = _GetItemCount(restrictions.c_str()); i < n; ++i)
     {
-        if (std::is_eq(xr_strcmp(restriction, _GetItem(*restrictions, i, m_temp))))
+        if (std::is_eq(xr_strcmp(restriction, _GetItem(restrictions.c_str(), i, m_temp))))
             return true;
     }
 
@@ -197,11 +196,11 @@ IC void CSpaceRestrictionManager::join_restrictions(shared_str& restrictions, sh
 {
     string4096 m_temp1;
     string4096 m_temp2;
-    strcpy_s(m_temp2, *restrictions);
+    strcpy_s(m_temp2, restrictions.c_str());
 
-    for (u32 i = 0, n = _GetItemCount(*update), count = xr_strlen(m_temp2); i < n; ++i)
+    for (u32 i = 0, n = _GetItemCount(update.c_str()), count = xr_strlen(m_temp2); i < n; ++i)
     {
-        if (!restriction_presented(shared_str{m_temp2}, shared_str{_GetItem(*update, i, m_temp1)}))
+        if (!restriction_presented(shared_str{m_temp2}, shared_str{_GetItem(update.c_str(), i, m_temp1)}))
         {
             if (count)
                 strcat_s(m_temp2, ",");
@@ -219,9 +218,9 @@ IC void CSpaceRestrictionManager::difference_restrictions(shared_str& restrictio
     string4096 m_temp2;
     strcpy_s(m_temp2, "");
 
-    for (u32 i = 0, n = _GetItemCount(*restrictions), count = 0; i < n; ++i)
+    for (u32 i = 0, n = _GetItemCount(restrictions.c_str()), count = 0; i < n; ++i)
     {
-        if (!restriction_presented(shared_str{update}, shared_str{_GetItem(*restrictions, i, m_temp1)}))
+        if (!restriction_presented(shared_str{update}, shared_str{_GetItem(restrictions.c_str(), i, m_temp1)}))
         {
             if (count)
                 strcat_s(m_temp2, ",");
@@ -274,8 +273,8 @@ void CSpaceRestrictionManager::remove_restrictions(ALife::_OBJECT_ID id, shared_
     restrict(id, new_out_restrictions, new_in_restrictions);
 }
 
-void CSpaceRestrictionManager::change_restrictions(ALife::_OBJECT_ID id, shared_str add_out_restrictions, shared_str add_in_restrictions, shared_str remove_out_restrictions,
-                                                   shared_str remove_in_restrictions)
+void CSpaceRestrictionManager::change_restrictions(ALife::_OBJECT_ID id, shared_str add_out_restrictions, shared_str add_in_restrictions,
+                                                   shared_str remove_out_restrictions, shared_str remove_in_restrictions)
 {
     CRestrictionPtr _client_restriction = restriction(id);
     if (!_client_restriction)

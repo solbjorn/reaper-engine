@@ -914,7 +914,7 @@ void CPHMovementControl::PHCaptureObject(CPhysicsShellHolder* object, u16 elemen
 
 Fvector CPHMovementControl::PHCaptureGetNearestElemPos(const CPhysicsShellHolder* object)
 {
-    R_ASSERT3((object->m_pPhysicsShell != NULL), "NO Phisics Shell for object ", *object->cName());
+    R_ASSERT3((object->m_pPhysicsShell != NULL), "NO Phisics Shell for object ", object->cName().c_str());
 
     CPhysicsElement* ph_elem = object->m_pPhysicsShell->NearestToPoint(vPosition);
 

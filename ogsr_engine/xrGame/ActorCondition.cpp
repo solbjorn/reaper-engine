@@ -178,11 +178,9 @@ void CActorCondition::UpdateCondition()
 
     CEffectorPP* ppe = object().Cameras().GetPPEffector((EEffectorPPType)effPsyHealth);
 
-    string64 pp_sect_name;
-    shared_str ln = Level().name();
-    strconcat(sizeof(pp_sect_name), pp_sect_name, "effector_psy_health", "_", *ln);
-    if (!pSettings->section_exist(pp_sect_name))
-        strcpy_s(pp_sect_name, "effector_psy_health");
+    auto pp_sect_name = xr::format("effector_psy_health_{}", Level().name());
+    if (!pSettings->section_exist(pp_sect_name.c_str()))
+        pp_sect_name = "effector_psy_health";
 
     if (!fsimilar(GetPsyHealth(), 1.0f, 0.05f))
     {
@@ -265,7 +263,8 @@ void CActorCondition::AffectDamage_InjuriousMaterialAndMonstersInfluence()
         ALife::EHitType type;
         float value;
 
-    } hits[] = {{ALife::eHitTypeRadiation, radiation_influence * one}, {ALife::eHitTypeTelepatic, psy_influence * one}, {ALife::eHitTypeBurn, fire_influence * one}};
+    } hits[] = {
+        {ALife::eHitTypeRadiation, radiation_influence * one}, {ALife::eHitTypeTelepatic, psy_influence * one}, {ALife::eHitTypeBurn, fire_influence * one}};
 
     NET_Packet np;
 

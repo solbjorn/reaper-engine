@@ -33,6 +33,8 @@
 #include "PHScriptCall.h"
 #include "debug_renderer.h"
 
+#include "bolt.h"
+
 CGameObject::CGameObject()
 {
     init();
@@ -319,8 +321,8 @@ tmc::task<bool> CGameObject::net_Spawn(CSE_Abstract* DC)
 
     load_upgrades(DC);
 
-    reload(*cNameSect());
-    CScriptBinder::reload(*cNameSect());
+    reload(cNameSect().c_str());
+    CScriptBinder::reload(cNameSect().c_str());
 
     reinit();
     CScriptBinder::reinit();
@@ -658,7 +660,7 @@ void CGameObject::renderable_Render(u32 context_id, IRenderable* root)
 
 CObject::SavedPosition CGameObject::ps_Element(u32 ID) const
 {
-    VERIFY(ID < ps_Size());
+    VERIFY(gsl::narrow<s32>(ID) < ps_Size());
     inherited::SavedPosition SP = PositionStack[ID];
     return SP;
 }
@@ -673,7 +675,6 @@ void CGameObject::u_EventGen(NET_Packet& P, u32 type, u32 dest)
 
 void CGameObject::u_EventSend(NET_Packet& P, u32 dwFlags) { Level().Send(P, dwFlags); }
 
-#include "bolt.h"
 void CGameObject::OnH_B_Chield()
 {
     inherited::OnH_B_Chield();
@@ -693,7 +694,6 @@ void CGameObject::OnH_B_Independent(bool just_before_destroy)
 }
 
 #ifdef DEBUG
-
 void CGameObject::OnRender()
 {
     if (bDebug && Visual())
@@ -795,7 +795,7 @@ tmc::task<void> CGameObject::shedule_Update(u32 dt)
 BOOL CGameObject::net_SaveRelevant() { return (CScriptBinder::net_SaveRelevant()); }
 
 // игровое имя объекта
-LPCSTR CGameObject::Name() const { return (*cName()); }
+gsl::czstring CGameObject::Name() const { return cName().c_str(); }
 
 u32 CGameObject::ef_creature_type() const
 {

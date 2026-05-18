@@ -52,8 +52,10 @@ void CPHDestroyable::GenSpawnReplace(u16 ref_id, LPCSTR section, shared_str visu
 {
     CSE_Abstract* D = F_entity_Create(section); //*cNameSect()
     VERIFY(D);
+
     CSE_Visual* V = smart_cast<CSE_Visual*>(D);
-    V->set_visual(*visual_name);
+    V->set_visual(visual_name.c_str());
+
     CSE_PHSkeleton* l_tpPHSkeleton = smart_cast<CSE_PHSkeleton*>(D);
     VERIFY(l_tpPHSkeleton);
     l_tpPHSkeleton->source_id = ref_id;

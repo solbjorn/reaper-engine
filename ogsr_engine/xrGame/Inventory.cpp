@@ -1003,7 +1003,7 @@ bool CInventory::CanTakeItem(CInventoryItem* inventory_item) const
         return false;
 
     VERIFY3(std::ranges::find_if(m_all, [inventory_item](const auto item) { return item->object().ID() == inventory_item->object().ID(); }) == m_all.end(),
-            "item already exists in inventory", *inventory_item->object().cName());
+            "item already exists in inventory", inventory_item->object().cName().c_str());
 
     CActor* pActor = smart_cast<CActor*>(m_pOwner);
     // актер всегда может взять вещь

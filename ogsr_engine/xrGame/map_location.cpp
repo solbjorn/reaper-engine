@@ -573,11 +573,7 @@ void CMapLocation::load(IReader& stream)
 
 void CMapLocation::SetHint(const shared_str& hint) { m_hint = hint; }
 
-LPCSTR CMapLocation::GetHint()
-{
-    CStringTable stbl;
-    return *stbl.translate(m_hint);
-}
+LPCSTR CMapLocation::GetHint() { return CStringTable::translate(m_hint).c_str(); }
 
 CMapSpotPointer* CMapLocation::GetSpotPointer(CMapSpot* sp)
 {
@@ -625,7 +621,8 @@ CMapSpot* CMapLocation::GetSpotBorder(CMapSpot* sp)
 
 Fvector2 CMapLocation::SpotSize() { return m_level_spot->GetWndSize(); }
 
-CRelationMapLocation::CRelationMapLocation(const shared_str& type, u16 object_id, u16 pInvOwnerActorID, u16 pInvOwnerEntityID) : CMapLocation(*type, object_id)
+CRelationMapLocation::CRelationMapLocation(const shared_str& type, u16 object_id, u16 pInvOwnerActorID, u16 pInvOwnerEntityID)
+    : CMapLocation(type.c_str(), object_id)
 {
     m_curr_spot_name = type;
     m_pInvOwnerEntityID = pInvOwnerEntityID;
@@ -683,7 +680,7 @@ bool CRelationMapLocation::Update()
 
     if (m_curr_spot_name != sname)
     {
-        LoadSpot(*sname, true);
+        LoadSpot(sname.c_str(), true);
         m_curr_spot_name = sname;
     }
 

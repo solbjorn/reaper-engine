@@ -387,7 +387,7 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
 
     // Prepare
     _ParseList(C.L_textures, s_textures);
-    C.detail_texture = nullptr;
+    C.detail_texture._set(nullptr);
     C.detail_scaler = nullptr;
 
     const lua_scoped_handler sc;
@@ -489,9 +489,9 @@ ShaderElement* CBlender_Compile::_lua_Compile(LPCSTR namesp, LPCSTR name)
     RS.Invalidate();
 
     // Compile
-    LPCSTR t_0 = *L_textures[0] ? *L_textures[0] : "null";
-    LPCSTR t_1 = (L_textures.size() > 1) ? *L_textures[1] : "null";
-    LPCSTR t_d = detail_texture ? detail_texture : "null";
+    const auto t_0 = L_textures[0].c_str() != nullptr ? std::string_view{L_textures[0]} : std::string_view{"null"};
+    const auto t_1 = L_textures.size() > 1 ? std::string_view{L_textures[1]} : std::string_view{"null"};
+    const auto t_d = detail_texture.c_str() != nullptr ? std::string_view{detail_texture} : std::string_view{"null"};
 
     bool bFirstPass{};
     adopt_compiler ac{this, bFirstPass};

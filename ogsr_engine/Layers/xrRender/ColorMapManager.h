@@ -15,19 +15,10 @@ public:
 private:
     void UpdateTexture(const shared_str& strTexName, int iTex);
 
-private:
-    struct str_pred
-    {
-        IC bool operator()(const shared_str& x, const shared_str& y) const { return x < y; }
-    };
-
-    DEFINE_MAP_PRED(shared_str, ref_texture, map_Tex, map_TexIt, str_pred);
-
-private:
     ref_texture m_CMap[2];
     shared_str m_strCMap[2];
 
-    map_Tex m_TexCache;
+    xr::string_map<shared_str, ref_texture> m_TexCache;
 };
 
 #endif //	ColorMapManager_included

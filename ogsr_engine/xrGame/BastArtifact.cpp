@@ -177,7 +177,7 @@ void CBastArtefact::UpdateCLChild()
         if (m_fEnergy > 0 && ::Random.randF(0.f, 1.0f) < (m_fEnergy / (m_fStrikeImpulse * 100.f)))
         {
             CParticlesObject* pStaticPG;
-            pStaticPG = CParticlesObject::Create(*m_sParticleName, TRUE);
+            pStaticPG = CParticlesObject::Create(m_sParticleName.c_str(), TRUE);
             Fmatrix pos;
             pos.set(XFORM());
             Fvector vel;

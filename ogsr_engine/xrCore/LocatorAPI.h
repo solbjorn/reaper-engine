@@ -115,8 +115,7 @@ private:
         void close_db();
     };
 
-    DEFINE_MAP_PRED(LPCSTR, FS_Path*, PathMap, PathPairIt, pred_str);
-    PathMap pathes;
+    xr::string_map<gsl::czstring, FS_Path*> pathes;
 
     DEFINE_SET_PRED(file, files_set, files_it, file_pred);
     DEFINE_VECTOR(archive, archives_vec, archives_it);

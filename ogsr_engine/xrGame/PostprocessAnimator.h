@@ -126,7 +126,7 @@ public:
 
     void Clear();
     void Load(LPCSTR name);
-    IC LPCSTR Name() { return *m_Name; }
+    [[nodiscard]] auto Name() const { return m_Name.c_str(); }
     virtual void Stop(float speed);
     void SetDesiredFactor(float f, float sp);
     void SetCurrentFactor(float f);

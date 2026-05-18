@@ -354,11 +354,8 @@ void CGrenade::Deactivate(bool now)
 void CGrenade::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count)
 {
     str_name = NameShort();
-    u32 ThisGrenadeCount = m_pCurrentInventory->dwfGetSameItemCount(*cNameSect(), true);
-    string16 stmp;
-    sprintf_s(stmp, "%d", ThisGrenadeCount);
-    str_count = stmp;
-    icon_sect_name = *cNameSect();
+    icon_sect_name = cNameSect().c_str();
+    str_count = xr::format("{}", m_pCurrentInventory->dwfGetSameItemCount(cNameSect().c_str(), true));
 }
 
 bool CGrenade::CanTake() const

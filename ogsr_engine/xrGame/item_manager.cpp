@@ -53,7 +53,7 @@ bool CItemManager::useful(const CGameObject* object) const
 
 float CItemManager::do_evaluate(const CGameObject* object) const
 {
-    VERIFY3(m_object->movement().restrictions().accessible(object->ai_location().level_vertex_id()), *m_object->cName(), *object->cName());
+    VERIFY3(m_object->movement().restrictions().accessible(object->ai_location().level_vertex_id()), m_object->cName().c_str(), object->cName().c_str());
     return (m_object->evaluate(this, object));
 }
 
@@ -76,8 +76,8 @@ void CItemManager::update()
 
     inherited::update();
 
-    VERIFY3(!selected() || m_object->movement().restrictions().accessible(selected()->ai_location().level_vertex_id()), *m_object->cName(),
-            selected() ? *selected()->cName() : "<no selected item>");
+    VERIFY3(!selected() || m_object->movement().restrictions().accessible(selected()->ai_location().level_vertex_id()), m_object->cName().c_str(),
+            selected() ? selected()->cName().c_str() : "<no selected item>");
 }
 
 void CItemManager::remove_links(CObject* object)

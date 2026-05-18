@@ -64,8 +64,8 @@ tmc::task<bool> CRestrictedObject::net_Spawn(CSE_Abstract* data)
 
     string4096 temp0{}, temp1{};
 
-    strcpy_s(temp0, *monster->m_out_space_restrictors);
-    strcpy_s(temp1, *monster->m_in_space_restrictors);
+    strcpy_s(temp0, monster->m_out_space_restrictors.c_str());
+    strcpy_s(temp1, monster->m_in_space_restrictors.c_str());
 
     if (ai().get_alife())
     {

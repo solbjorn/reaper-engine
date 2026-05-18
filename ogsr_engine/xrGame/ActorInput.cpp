@@ -112,7 +112,8 @@ tmc::task<void> CActor::IR_OnKeyboardPress(xr::key_id dik)
         }
 
         auto pTorch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
-        if (pTorch != nullptr && smart_cast<CWeaponMagazined*>(act_it) == nullptr && smart_cast<CWeaponKnife*>(act_it) == nullptr && smart_cast<CMissile*>(act_it) == nullptr)
+        if (pTorch != nullptr && smart_cast<CWeaponMagazined*>(act_it) == nullptr && smart_cast<CWeaponKnife*>(act_it) == nullptr &&
+            smart_cast<CMissile*>(act_it) == nullptr)
         {
             if (cmd == EGameActions::kNIGHT_VISION)
                 pTorch->SwitchNightVision();
@@ -150,11 +151,10 @@ tmc::task<void> CActor::IR_OnKeyboardPress(xr::key_id dik)
             if (itm)
             {
                 inventory().Eat(itm);
+
                 SDrawStaticStruct* _s = HUD().GetUI()->UIGame()->AddCustomStatic("item_used", true);
                 _s->m_endTime = Device.fTimeGlobal + 3.0f; // 3sec
-                string1024 str;
-                strconcat(sizeof(str), str, *CStringTable().translate(shared_str{"st_item_used"}), ": ", itm->Name());
-                _s->wnd()->SetText(str);
+                _s->wnd()->SetText(xr::format("{}: {}", CStringTable().translate(shared_str{"st_item_used"}), itm->Name()).c_str());
             }
         }
     }
@@ -492,7 +492,10 @@ void CActor::ActorUse()
     PickupModeUpdate_COD();
 }
 
-BOOL CActor::HUDview() const { return IsFocused() && (cam_active == ACTOR_DEFS::eacFirstEye) && ((!m_holder) || (m_holder && m_holder->allowWeapon() && m_holder->HUDView())); }
+BOOL CActor::HUDview() const
+{
+    return IsFocused() && (cam_active == ACTOR_DEFS::eacFirstEye) && ((!m_holder) || (m_holder && m_holder->allowWeapon() && m_holder->HUDView()));
+}
 
 constexpr u32 SlotsToCheck[] = {
     KNIFE_SLOT, // 0

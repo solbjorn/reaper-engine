@@ -497,7 +497,7 @@ LPCSTR CScriptGameObject::ProfileName()
     if (!profile_id || !profile_id.size())
         return nullptr;
 
-    return *profile_id;
+    return profile_id.c_str();
 }
 
 LPCSTR CScriptGameObject::CharacterName()
@@ -587,7 +587,7 @@ LPCSTR CScriptGameObject::CharacterCommunity()
         return nullptr;
     }
 
-    return *pInventoryOwner->CharacterInfo().Community().id();
+    return pInventoryOwner->CharacterInfo().Community().id().c_str();
 }
 
 void CScriptGameObject::SetCharacterCommunity(LPCSTR comm, int squad, int group)
@@ -719,7 +719,8 @@ LPCSTR CScriptGameObject::in_restrictions()
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CRestrictedObject : cannot access class member in_restrictions!");
         return ("");
     }
-    return (*monster->movement().restrictions().in_restrictions());
+
+    return monster->movement().restrictions().in_restrictions().c_str();
 }
 
 LPCSTR CScriptGameObject::out_restrictions()
@@ -730,7 +731,8 @@ LPCSTR CScriptGameObject::out_restrictions()
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CRestrictedObject : cannot access class member out_restrictions!");
         return ("");
     }
-    return (*monster->movement().restrictions().out_restrictions());
+
+    return monster->movement().restrictions().out_restrictions().c_str();
 }
 
 LPCSTR CScriptGameObject::base_in_restrictions()
@@ -741,7 +743,8 @@ LPCSTR CScriptGameObject::base_in_restrictions()
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CRestrictedObject : cannot access class member base_in_restrictions!");
         return ("");
     }
-    return (*monster->movement().restrictions().base_in_restrictions());
+
+    return monster->movement().restrictions().base_in_restrictions().c_str();
 }
 
 LPCSTR CScriptGameObject::base_out_restrictions()
@@ -752,7 +755,8 @@ LPCSTR CScriptGameObject::base_out_restrictions()
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CRestrictedObject : cannot access class member base_out_restrictions!");
         return ("");
     }
-    return (*monster->movement().restrictions().base_out_restrictions());
+
+    return monster->movement().restrictions().base_out_restrictions().c_str();
 }
 
 bool CScriptGameObject::accessible_position(const Fvector& position)

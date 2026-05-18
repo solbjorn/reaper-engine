@@ -79,13 +79,15 @@ void CALifeGraphRegistry::setup_current_level()
 
         m_temp.clear();
     }
+
     GameGraph::LEVEL_MAP::const_iterator I = ai().game_graph().header().levels().find(ai().game_graph().vertex(actor()->m_tGraphID)->level_id());
     R_ASSERT2(ai().game_graph().header().levels().end() != I, "Graph point level ID not found!");
 
-    int id = pApp->Level_ID(*(*I).second.name());
-    VERIFY3(id >= 0, "Level is corrupted or doesn't exist", *(*I).second.name());
+    int id = pApp->Level_ID(I->second.name().c_str());
+    VERIFY3(id >= 0, "Level is corrupted or doesn't exist", I->second.name().c_str());
+
     pApp->Level_Set(id);
-    ai().load(*(*I).second.name());
+    ai().load(I->second.name().c_str());
 }
 
 void CALifeGraphRegistry::attach(CSE_Abstract& object, CSE_ALifeInventoryItem* item, GameGraph::_GRAPH_ID game_vertex_id, bool alife_query, bool add_children)

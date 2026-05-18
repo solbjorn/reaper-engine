@@ -20,8 +20,9 @@ IC const xr_vector<u32>& CSpaceRestrictionAbstract::border()
         initialize();
 
     THROW(initialized());
-    THROW3(!m_border.empty(), "Space restrictor has no border!", *name());
-    return (m_border);
+    THROW3(!m_border.empty(), "Space restrictor has no border!", name().c_str());
+
+    return m_border;
 }
 
 IC bool CSpaceRestrictionAbstract::initialized() const { return (m_initialized); }
@@ -32,8 +33,9 @@ IC const xr_vector<u32>& CSpaceRestrictionAbstract::accessible_neighbour_border(
     if (!m_accessible_neighbour_border_actual)
         prepare_accessible_neighbour_border(restriction, out_restriction);
 
-    THROW3(!m_accessible_neighbour_border.empty(), "Space restrictor has no accessible neighbours", *name());
-    return (m_accessible_neighbour_border);
+    THROW3(!m_accessible_neighbour_border.empty(), "Space restrictor has no accessible neighbours", name().c_str());
+
+    return m_accessible_neighbour_border;
 }
 
 template <typename T>

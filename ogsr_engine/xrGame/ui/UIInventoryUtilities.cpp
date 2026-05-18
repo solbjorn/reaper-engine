@@ -273,19 +273,19 @@ LPCSTR InventoryUtilities::GetTimePeriodAsString(LPSTR _buff, u32 buff_sz, ALife
     _buff[0] = 0;
 
     if (month1 != month2)
-        cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s ", month2 - month1, *CStringTable().translate(shared_str{"ui_st_months"}));
+        cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s ", month2 - month1, CStringTable::translate(shared_str{"ui_st_months"}).c_str());
 
     if (!cnt && day1 != day2)
-        cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s", day2 - day1, *CStringTable().translate(shared_str{"ui_st_days"}));
+        cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s", day2 - day1, CStringTable::translate(shared_str{"ui_st_days"}).c_str());
 
     if (!cnt && hours1 != hours2)
-        cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s", hours2 - hours1, *CStringTable().translate(shared_str{"ui_st_hours"}));
+        cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s", hours2 - hours1, CStringTable::translate(shared_str{"ui_st_hours"}).c_str());
 
     if (!cnt && mins1 != mins2)
-        cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s", mins2 - mins1, *CStringTable().translate(shared_str{"ui_st_mins"}));
+        cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s", mins2 - mins1, CStringTable::translate(shared_str{"ui_st_mins"}).c_str());
 
     if (!cnt && secs1 != secs2)
-        cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s", secs2 - secs1, *CStringTable().translate(shared_str{"ui_st_secs"}));
+        cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s", secs2 - secs1, CStringTable::translate(shared_str{"ui_st_secs"}).c_str());
 
     return _buff;
 }
@@ -311,7 +311,7 @@ void InventoryUtilities::UpdateWeight(CUIStatic& wnd, bool withPrefix)
     string32 prefix{};
 
     if (withPrefix)
-        sprintf_s(prefix, "%%c[default]%s ", *CStringTable().translate(shared_str{"ui_inv_weight"}));
+        sprintf_s(prefix, "%%c[default]%s ", CStringTable::translate(shared_str{"ui_inv_weight"}).c_str());
     else
         strcpy_s(prefix, "");
 

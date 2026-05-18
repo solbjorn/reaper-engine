@@ -93,19 +93,11 @@ tmc::task<void> vision_client::shedule_Update(u32 dt)
     visual().update(float(dt) / 1000.f);
 }
 
-shared_str vision_client::shedule_Name() const
-{
-    string256 temp;
-    sprintf_s(temp, "vision_client[%s]", *object().cName());
-    return shared_str{temp};
-}
-
+shared_str vision_client::shedule_Name() const { return shared_str{xr::format("vision_client[{}]", object().cName())}; }
 bool vision_client::shedule_Needed() { return (true); }
 
 float vision_client::feel_vision_mtl_transp(CObject* O, u32 element) { return (visual().feel_vision_mtl_transp(O, element)); }
 
 void vision_client::reinit() { visual().reinit(); }
-
 void vision_client::reload(LPCSTR section) { visual().reload(section); }
-
 void vision_client::remove_links(CObject* object) { visual().remove_links(object); }

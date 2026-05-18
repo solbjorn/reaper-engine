@@ -442,7 +442,7 @@ void CArtefact::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_
 {
     str_name = NameShort();
     str_count = "";
-    icon_sect_name = *cNameSect();
+    icon_sect_name = cNameSect().c_str();
 }
 
 void CArtefact::FollowByPath(LPCSTR path_name, int start_idx, Fvector magic_force)
@@ -495,7 +495,7 @@ void SArtefactActivation::Load()
     for (int i = 0; i < (int)eMax; ++i)
         m_activation_states.push_back(SStateDef());
 
-    LPCSTR activation_seq = pSettings->r_string(*m_af->cNameSect(), "artefact_activation_seq");
+    const auto activation_seq = pSettings->r_string(m_af->cNameSect(), "artefact_activation_seq");
 
     m_activation_states[(int)eStarting].Load(activation_seq, "starting");
     m_activation_states[(int)eFlying].Load(activation_seq, "flying");
@@ -572,7 +572,7 @@ tmc::task<void> SArtefactActivation::ChangeEffects()
 
     if (state_def.m_snd.size())
     {
-        m_snd.create(*state_def.m_snd, st_Effect, sg_SourceType);
+        m_snd.create(state_def.m_snd.c_str(), st_Effect, sg_SourceType);
         m_snd.play_at_pos(m_af, m_af->Position());
     }
 
@@ -608,8 +608,9 @@ void SArtefactActivation::SpawnAnomaly()
 {
     VERIFY(!ph_world->Processing());
     string128 tmp;
-    LPCSTR str = pSettings->r_string("artefact_spawn_zones", *m_af->cNameSect());
+    const auto str = pSettings->r_string("artefact_spawn_zones", m_af->cNameSect().c_str());
     VERIFY3(_GetItemCount(str) >= 3, "Bad record format in artefact_spawn_zones", str);
+
     float zone_radius = (float)atof(_GetItem(str, 1, tmp));
     u8 restrictor_type = RestrictionSpace::eRestrictorTypeNone;
     if (_GetItemCount(str) > 3 && atoi(_GetItem(str, 3, tmp)) != 0)

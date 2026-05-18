@@ -81,7 +81,8 @@ void CCartridge::Load(LPCSTR section, u8 LocalAmmoType)
     VERIFY(u16(-1) != bullet_material_idx);
     VERIFY(fWallmarkSize > 0);
 
-    m_InvShortName = CStringTable().translate(shared_str{READ_IF_EXISTS(pSettings, r_string, section, "inv_name_short", pSettings->r_string(section, "inv_name"))});
+    m_InvShortName =
+        CStringTable().translate(shared_str{READ_IF_EXISTS(pSettings, r_string, section, "inv_name_short", pSettings->r_string(section, "inv_name"))});
 }
 
 float CCartridge::Weight() const
@@ -221,9 +222,9 @@ void CWeaponAmmo::renderable_Render(u32 context_id, IRenderable* root)
 
 tmc::task<void> CWeaponAmmo::UpdateCL()
 {
-    VERIFY2(_valid(renderable.xform), *cName());
+    VERIFY2(_valid(renderable.xform), cName().c_str());
     co_await inherited::UpdateCL();
-    VERIFY2(_valid(renderable.xform), *cName());
+    VERIFY2(_valid(renderable.xform), cName().c_str());
 }
 
 void CWeaponAmmo::net_Export(CSE_Abstract* E)

@@ -72,7 +72,7 @@ void CControlAnimationBase::reinit()
     m_man->capture(this, ControlCom::eControlAnimation);
     m_man->subscribe(this, ControlCom::eventAnimationSignal);
 
-    AA_reload(pSettings->r_string(*(m_object->cNameSect()), "attack_params"));
+    AA_reload(pSettings->r_string(m_object->cNameSect(), "attack_params"));
 
     braking_mode = false;
 
@@ -455,7 +455,7 @@ LPCSTR CControlAnimationBase::GetAnimationName(EMotionAnim anim)
     SAnimItem* item_it = m_anim_storage[anim];
     VERIFY2(item_it, "animation not found in m_anim_storage!");
 
-    return *item_it->target_name;
+    return item_it->target_name.c_str();
 }
 
 LPCSTR CControlAnimationBase::GetActionName(EAction action) { return dbg_action_name_table[action]; }

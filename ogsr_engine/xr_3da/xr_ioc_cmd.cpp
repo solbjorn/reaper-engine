@@ -247,8 +247,8 @@ public:
     void Execute(std::string_view) override
     {
         Log("- --- Command listing: start ---");
-        CConsole::vecCMD_IT it;
-        for (it = Console->Commands.begin(); it != Console->Commands.end(); it++)
+
+        for (auto it = Console->Commands.begin(); it != Console->Commands.end(); it++)
         {
             IConsole_Command& C = *(it->second);
             Msg("{:20} ({:10}) --- {}", C.Name(), C.Status(), C.Info());
@@ -329,8 +329,8 @@ public:
         if (b_allow)
         {
             IWriter* F = FS.w_open(cfg_full_name);
-            CConsole::vecCMD_IT it;
-            for (it = Console->Commands.begin(); it != Console->Commands.end(); it++)
+
+            for (auto it = Console->Commands.begin(); it != Console->Commands.end(); it++)
                 it->second->Save(F);
 
             FS.w_close(F);

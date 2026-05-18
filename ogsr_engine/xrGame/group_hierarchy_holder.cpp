@@ -48,7 +48,7 @@ void CGroupHierarchyHolder::update_leader()
 void CGroupHierarchyHolder::register_in_group(CEntity* member)
 {
     VERIFY(member);
-    VERIFY3(std::find(m_members.begin(), m_members.end(), member) == m_members.end(), "Specified group member has already been found", *member->cName());
+    VERIFY3(std::find(m_members.begin(), m_members.end(), member) == m_members.end(), "Specified group member has already been found", member->cName().c_str());
 
     if (m_members.empty())
     {

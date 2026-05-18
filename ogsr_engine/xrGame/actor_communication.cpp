@@ -90,7 +90,8 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion* info_portion, bool rever
             ARTICLE_DATA::EArticleType _atype = article.data()->articleType;
             auto& Data = article_vector.emplace_back(id, Level().GetGameTime(), _atype);
 
-            callback(GameObject::eArticleInfo)(lua_game_object(), article.data()->group.c_str(), article.data()->name.c_str(), _atype, article.data()->text.c_str());
+            callback(GameObject::eArticleInfo)(lua_game_object(), article.data()->group.c_str(), article.data()->name.c_str(), _atype,
+                                               article.data()->text.c_str());
 
             update_pda_section(Data);
         }
@@ -148,7 +149,7 @@ bool CActor::OnReceiveInfo(shared_str info_id) const
     AddEncyclopediaArticle(&info_portion);
     AddGameTask(&info_portion);
 
-    callback(GameObject::eInventoryInfo)(lua_game_object(), *info_id);
+    callback(GameObject::eInventoryInfo)(lua_game_object(), info_id.c_str());
 
     if (!HUD().GetUI())
         return false;

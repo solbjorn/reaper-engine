@@ -59,7 +59,7 @@ void CWeaponMounted::Load(LPCSTR section)
 
     // тип используемых патронов
     m_sAmmoType._set(pSettings->r_string(section, "ammo_class"));
-    m_CurrentAmmo.Load(*m_sAmmoType, 0);
+    m_CurrentAmmo.Load(m_sAmmoType.c_str(), 0);
 
     // подбрасывание камеры во время отдачи
     camMaxAngle = pSettings->r_float(section, "cam_max_angle");

@@ -174,8 +174,9 @@ u8 CPsyDog::get_phantoms_count() { return u8(m_storage.size()); }
 //////////////////////////////////////////////////////////////////////////
 // Phantom Psy Dog
 //////////////////////////////////////////////////////////////////////////
-CPsyDogPhantom::CPsyDogPhantom() {}
-CPsyDogPhantom::~CPsyDogPhantom() {}
+
+CPsyDogPhantom::CPsyDogPhantom() = default;
+CPsyDogPhantom::~CPsyDogPhantom() = default;
 
 tmc::task<bool> CPsyDogPhantom::net_Spawn(CSE_Abstract* dc)
 {
@@ -195,11 +196,11 @@ tmc::task<bool> CPsyDogPhantom::net_Spawn(CSE_Abstract* dc)
     // load effector
     // Load psi postprocess --------------------------------------------------------
 
-    load_effector(*cNameSect(), "appear_effector", m_appear_effector);
+    load_effector(cNameSect().c_str(), "appear_effector", m_appear_effector);
 
     // --------------------------------------------------------------------------------
-    m_particles_appear = pSettings->r_string(*cNameSect(), "particles_appear");
-    m_particles_disappear = pSettings->r_string(*cNameSect(), "particles_disappear");
+    m_particles_appear = pSettings->r_string(cNameSect(), "particles_appear");
+    m_particles_disappear = pSettings->r_string(cNameSect(), "particles_disappear");
 
     m_time_spawned = time();
 
@@ -269,7 +270,8 @@ void CPsyDogPhantom::Think()
 
     Actor()->Cameras().AddCamEffector(
         xr_new<CMonsterEffectorHit>(m_appear_effector.ce_time, m_appear_effector.ce_amplitude, m_appear_effector.ce_period_number, m_appear_effector.ce_power));
-    Actor()->Cameras().AddPPEffector(xr_new<CMonsterEffector>(m_appear_effector.ppi, m_appear_effector.time, m_appear_effector.time_attack, m_appear_effector.time_release));
+    Actor()->Cameras().AddPPEffector(
+        xr_new<CMonsterEffector>(m_appear_effector.ppi, m_appear_effector.time, m_appear_effector.time_attack, m_appear_effector.time_release));
 }
 
 void CPsyDogPhantom::Hit(SHit* pHDS)
@@ -323,7 +325,8 @@ void CPsyDogPhantom::try_to_register_to_parent()
             m_parent = dog;
             m_parent->register_phantom(this);
 
-            movement().restrictions().add_restrictions(m_parent->movement().restrictions().out_restrictions(), m_parent->movement().restrictions().in_restrictions());
+            movement().restrictions().add_restrictions(m_parent->movement().restrictions().out_restrictions(),
+                                                       m_parent->movement().restrictions().in_restrictions());
 
             m_state = eWaitToAppear;
         }

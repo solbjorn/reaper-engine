@@ -150,7 +150,7 @@ public:
 
 private:
     // preload sounds registry
-    xr_map<shared_str, ref_sound, absl::container_internal::StringBtreeDefaultLess> sound_registry;
+    xr::string_map<shared_str, ref_sound> sound_registry;
     xr_deque<std::string> sound_registry_defer;
 
     xr_set<EGameActions> m_blocked_actions; // Вектор с заблокированными действиями. Real Wolf. 14.10.2014.

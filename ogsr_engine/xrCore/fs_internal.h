@@ -20,16 +20,16 @@ public:
         R_ASSERT(name && name[0]);
 
         fName._set(name);
-        VerifyPath(*fName);
+        VerifyPath(fName.c_str());
 
         if (exclusive)
         {
-            int handle = _sopen(*fName, _O_WRONLY | _O_TRUNC | _O_CREAT | _O_BINARY, _SH_DENYWR);
+            int handle = _sopen(fName.c_str(), _O_WRONLY | _O_TRUNC | _O_CREAT | _O_BINARY, _SH_DENYWR);
             hf = _fdopen(handle, "wb");
         }
         else
         {
-            hf = fopen(*fName, "wb");
+            hf = fopen(fName.c_str(), "wb");
             if (hf == nullptr)
                 Msg("!Can't write file: '{}'. Error: '{}'.", fName, _sys_errlist[errno]);
         }

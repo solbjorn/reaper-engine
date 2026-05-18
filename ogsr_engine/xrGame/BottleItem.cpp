@@ -46,19 +46,17 @@ void CBottleItem::BreakToPieces()
     sndBreaking.play_at_pos(nullptr, Position(), false);
 
     // отыграть партиклы разбивания
-    if (*m_sBreakParticles)
+    if (m_sBreakParticles.c_str() != nullptr)
     {
         // показываем эффекты
         CParticlesObject* pStaticPG;
-        pStaticPG = CParticlesObject::Create(*m_sBreakParticles, TRUE);
+        pStaticPG = CParticlesObject::Create(m_sBreakParticles.c_str(), TRUE);
         pStaticPG->play_at_pos(Position());
     }
 
     // ликвидировать сам объект
     if (Local())
-    {
         DestroyObject();
-    }
 }
 
 void CBottleItem::Hit(SHit* pHDS)

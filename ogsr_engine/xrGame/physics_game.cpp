@@ -227,7 +227,7 @@ void TContactShotMark(CDB::TRI* T, dContactGeom* c)
             {
                 if (vel_cret > Pars::vel_cret_particles && !mtl_pair->CollideParticles.empty())
                 {
-                    LPCSTR ps_name = *mtl_pair->CollideParticles[::Random.randI(0, mtl_pair->CollideParticles.size())];
+                    const auto ps_name = mtl_pair->CollideParticles[::Random.randI(0, mtl_pair->CollideParticles.size())].c_str();
 
                     // отыграть партиклы столкновения материалов
                     CPHFindParticlesComparer find(cast_fv(c->pos), data->ph_ref_object);

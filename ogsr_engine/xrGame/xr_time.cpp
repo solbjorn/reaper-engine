@@ -18,8 +18,8 @@ ALife::_TIME_ID __game_time() { return (ai().get_alife() ? ai().alife().time().g
 u32 get_time() { return gsl::narrow_cast<u32>(__game_time()); }
 xrTime get_time_struct() { return xrTime{__game_time()}; }
 
-LPCSTR xrTime::dateToString(int mode) { return *InventoryUtilities::GetDateAsString(m_time, (InventoryUtilities::EDatePrecision)mode); }
-LPCSTR xrTime::timeToString(int mode) { return *InventoryUtilities::GetTimeAsString(m_time, (InventoryUtilities::ETimePrecision)mode); }
+gsl::czstring xrTime::dateToString(s32 mode) { return InventoryUtilities::GetDateAsString(m_time, (InventoryUtilities::EDatePrecision)mode).c_str(); }
+gsl::czstring xrTime::timeToString(s32 mode) { return InventoryUtilities::GetTimeAsString(m_time, (InventoryUtilities::ETimePrecision)mode).c_str(); }
 
 xrTime& xrTime::add(const xrTime& other)
 {

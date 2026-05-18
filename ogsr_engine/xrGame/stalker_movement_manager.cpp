@@ -93,7 +93,7 @@ void CStalkerMovementManager::set_desired_position(const Fvector* desired_positi
     if (desired_position)
     {
         m_target.m_use_desired_position = true;
-        VERIFY2(object().movement().accessible(*desired_position) || show_restrictions(&restrictions()), *object().cName());
+        VERIFY2(object().movement().accessible(*desired_position) || show_restrictions(&restrictions()), object().cName().c_str());
         m_target.m_desired_position = *desired_position;
     }
     else
@@ -487,7 +487,7 @@ void CStalkerMovementManager::parse_velocity_mask()
     default: NODEFAULT;
     }
 
-    VERIFY2(m_current.m_mental_state != MonsterSpace::eMentalStateFree || m_current.m_body_state != MonsterSpace::eBodyStateCrouch, *object().cName());
+    VERIFY2(m_current.m_mental_state != MonsterSpace::eMentalStateFree || m_current.m_body_state != MonsterSpace::eBodyStateCrouch, object().cName().c_str());
 
     switch (point.velocity & eVelocityMovementType)
     {
@@ -539,10 +539,10 @@ void CStalkerMovementManager::set_nearest_accessible_position(Fvector desired_po
 
     VERIFY(ai().level_graph().inside(level_vertex_id, desired_position));
 
-    VERIFY2(restrictions().accessible(level_vertex_id) || show_restrictions(&restrictions()), *object().cName());
+    VERIFY2(restrictions().accessible(level_vertex_id) || show_restrictions(&restrictions()), object().cName().c_str());
     set_level_dest_vertex(level_vertex_id);
 
-    VERIFY2(restrictions().accessible(desired_position) || show_restrictions(&restrictions()), *object().cName());
+    VERIFY2(restrictions().accessible(desired_position) || show_restrictions(&restrictions()), object().cName().c_str());
     set_desired_position(&desired_position);
 }
 

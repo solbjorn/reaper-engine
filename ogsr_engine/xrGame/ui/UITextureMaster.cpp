@@ -14,7 +14,7 @@
 #include "uiabstract.h"
 #include "xrUIXmlParser.h"
 
-xr_map<shared_str, TEX_INFO, absl::container_internal::StringBtreeDefaultLess> CUITextureMaster::m_textures;
+xr::string_map<shared_str, TEX_INFO> CUITextureMaster::m_textures;
 
 #ifdef DEBUG
 u32 CUITextureMaster::m_time = 0;
@@ -105,8 +105,8 @@ void CUITextureMaster::InitTexture(const char* texture_name, IUISimpleTextureCon
     auto it = m_textures.find(texture_name);
     if (it != m_textures.end())
     {
-        tc->CreateShader(*((*it).second.file));
-        tc->SetOriginalRectEx((*it).second.rect);
+        tc->CreateShader(it->second.file.c_str());
+        tc->SetOriginalRectEx(it->second.rect);
 
 #ifdef DEBUG
         m_time += T.GetElapsed_ms();
@@ -130,8 +130,8 @@ void CUITextureMaster::InitTexture(const char* texture_name, const char* shader_
     auto it = m_textures.find(texture_name);
     if (it != m_textures.end())
     {
-        tc->CreateShader(*((*it).second.file), shader_name);
-        tc->SetOriginalRectEx((*it).second.rect);
+        tc->CreateShader(it->second.file.c_str(), shader_name);
+        tc->SetOriginalRectEx(it->second.rect);
 
 #ifdef DEBUG
         m_time += T.GetElapsed_ms();
@@ -182,7 +182,7 @@ LPCSTR CUITextureMaster::GetTextureFileName(const char* texture_name)
 {
     auto it = m_textures.find(texture_name);
     if (it != m_textures.end())
-        return *((*it).second.file);
+        return it->second.file.c_str();
 
     Msg("! CUITextureMaster::GetTextureFileName Can't find texture {}", texture_name);
     return nullptr;

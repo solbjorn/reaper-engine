@@ -44,7 +44,7 @@ float CConsole::GetFloat(LPCSTR cmd, float& min, float& max) const
 
 IConsole_Command* CConsole::GetCommand(LPCSTR cmd) const
 {
-    vecCMD_CIT it = Commands.find(cmd);
+    auto it = Commands.find(cmd);
     if (it == Commands.end())
         return nullptr;
 

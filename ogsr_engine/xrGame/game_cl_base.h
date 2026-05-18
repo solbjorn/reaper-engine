@@ -51,7 +51,7 @@ public:
     game_cl_GameState();
     ~game_cl_GameState() override;
 
-    LPCSTR type_name() const { return *m_game_type_name; }
+    [[nodiscard]] gsl::czstring type_name() const { return m_game_type_name.c_str(); }
     void set_type_name(LPCSTR s);
     virtual void Init() {}
     virtual void net_import_state(NET_Packet& P);

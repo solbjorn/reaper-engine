@@ -51,10 +51,12 @@ void CUIScrollView::Init()
         Register(m_VScrollBar);
         AddCallback("scroll_v", SCROLLBAR_VSCROLL, CallMe::fromMethod<&CUIScrollView::OnScrollV>(this));
     }
+
     if (!!m_scrollbar_profile)
-        m_VScrollBar->Init(GetWndSize().x, 0.0f, GetWndSize().y, false, *m_scrollbar_profile);
+        m_VScrollBar->Init(GetWndSize().x, 0.0f, GetWndSize().y, false, m_scrollbar_profile.c_str());
     else
         m_VScrollBar->Init(GetWndSize().x, 0.0f, GetWndSize().y, false);
+
     m_VScrollBar->SetWndPos(m_VScrollBar->GetWndPos().x - m_VScrollBar->GetWndSize().x, m_VScrollBar->GetWndPos().y);
     m_VScrollBar->SetWindowName("scroll_v");
     m_VScrollBar->SetStepSize(_max(1, iFloor(GetHeight() / 10)));
@@ -220,7 +222,8 @@ bool CUIScrollView::OnMouse(f32 x, f32 y, EUIMessages mouse_action)
     if (inherited::OnMouse(x, y, mouse_action))
         return true;
 
-    const bool with_shift = Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::RShift});
+    const bool with_shift =
+        Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || Level().IR_GetKeyState(xr::key_id{sf::Keyboard::Scancode::RShift});
 
     switch (mouse_action)
     {

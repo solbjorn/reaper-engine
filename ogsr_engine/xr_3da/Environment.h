@@ -206,15 +206,9 @@ public:
 class CEnvironment
 {
     friend class dxEnvironmentRender;
-    struct str_pred
-    {
-        IC bool operator()(const shared_str& x, const shared_str& y) const { return xr_strcmp(x, y) < 0; }
-    };
 
 public:
-    DEFINE_VECTOR(CEnvAmbient*, EnvAmbVec, EnvAmbVecIt);
-    DEFINE_VECTOR(CEnvDescriptor*, EnvVec, EnvIt);
-    DEFINE_MAP_PRED(shared_str, EnvVec, EnvsMap, EnvsMapIt, str_pred);
+    using EnvVec = xr_vector<CEnvDescriptor*>;
 
 private:
     // clouds
@@ -272,10 +266,10 @@ public:
     shared_str CurrentCycleName;
     u32 m_last_weather_shift{};
 
-    EnvsMap WeatherCycles;
-    EnvsMap WeatherFXs;
+    xr::string_map<shared_str, EnvVec> WeatherCycles;
+    xr::string_map<shared_str, EnvVec> WeatherFXs;
     xr_vector<CEnvModifier> Modifiers;
-    EnvAmbVec Ambients;
+    xr_vector<CEnvAmbient*> Ambients;
 
     CEffect_Rain* eff_Rain{};
     CLensFlare* eff_LensFlare{};

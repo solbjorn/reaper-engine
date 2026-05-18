@@ -61,8 +61,8 @@ void CPHScriptObjectAction::run()
 
     switch (m_lua_object.get_type())
     {
-    case sol::type::userdata: func = m_lua_object.as<sol::userdata>()[*m_method_name]; break;
-    case sol::type::table: func = m_lua_object.as<sol::table>()[*m_method_name]; break;
+    case sol::type::userdata: func = m_lua_object.as<sol::userdata>()[m_method_name.c_str()]; break;
+    case sol::type::table: func = m_lua_object.as<sol::table>()[m_method_name.c_str()]; break;
     default: break;
     }
 
@@ -97,8 +97,8 @@ bool CPHScriptObjectCondition::is_true()
 
     switch (m_lua_object.get_type())
     {
-    case sol::type::userdata: func = m_lua_object.as<sol::userdata>()[*m_method_name]; break;
-    case sol::type::table: func = m_lua_object.as<sol::table>()[*m_method_name]; break;
+    case sol::type::userdata: func = m_lua_object.as<sol::userdata>()[m_method_name.c_str()]; break;
+    case sol::type::table: func = m_lua_object.as<sol::table>()[m_method_name.c_str()]; break;
     default: break;
     }
 

@@ -223,8 +223,8 @@ void CInventoryItem::Hit(SHit* pHDS)
     }
 }
 
-const char* CInventoryItem::Name() { return *m_name; }
-const char* CInventoryItem::NameShort() { return *m_nameShort; }
+gsl::czstring CInventoryItem::Name() { return m_name.c_str(); }
+gsl::czstring CInventoryItem::NameShort() { return m_nameShort.c_str(); }
 
 bool CInventoryItem::Useful() const { return CanTake(); }
 

@@ -74,7 +74,7 @@ bool CPhraseDialog::SayPhrase(DIALOG_SHARED_PTR& phrase_dialog, const shared_str
     // вызвать скриптовую присоединенную функцию
     // активируется после сказанной фразы
     // первый параметр - тот кто говорит фразу, второй - тот кто слушает
-    last_phrase->m_PhraseScript.Action(pSpeakerGO1, pSpeakerGO2, *phrase_dialog->m_DialogId, phrase_id.c_str());
+    last_phrase->m_PhraseScript.Action(pSpeakerGO1, pSpeakerGO2, phrase_dialog->m_DialogId.c_str(), phrase_id.c_str());
 
     // больше нет фраз, чтоб говорить
     phrase_dialog->m_PhraseVector.clear();
@@ -91,7 +91,7 @@ bool CPhraseDialog::SayPhrase(DIALOG_SHARED_PTR& phrase_dialog, const shared_str
             CPhraseGraph::CVertex* next_phrase_vertex = phrase_dialog->data()->m_PhraseGraph.vertex(edge.vertex_id());
             THROW(next_phrase_vertex);
             shared_str next_phrase_id = next_phrase_vertex->vertex_id();
-            if (next_phrase_vertex->data()->m_PhraseScript.Precondition(pSpeakerGO2, pSpeakerGO1, *phrase_dialog->m_DialogId, phrase_id.c_str(),
+            if (next_phrase_vertex->data()->m_PhraseScript.Precondition(pSpeakerGO2, pSpeakerGO1, phrase_dialog->m_DialogId.c_str(), phrase_id.c_str(),
                                                                         next_phrase_id.c_str()))
             {
                 phrase_dialog->m_PhraseVector.push_back(next_phrase_vertex->data());
@@ -141,7 +141,7 @@ LPCSTR CPhraseDialog::GetPhraseText(const shared_str& phrase_id, bool current_sp
     return ph->m_PhraseScript.GetScriptText(ph->GetText(), pSpeakerGO1, pSpeakerGO2, m_DialogId.c_str(), phrase_id.c_str());
 }
 
-LPCSTR CPhraseDialog::DialogCaption() { return !data()->m_sCaption.empty() ? *data()->m_sCaption : GetPhraseText(shared_str{"0"}); }
+gsl::czstring CPhraseDialog::DialogCaption() { return !data()->m_sCaption.empty() ? data()->m_sCaption.c_str() : GetPhraseText(shared_str{"0"}); }
 
 int CPhraseDialog::Priority() { return data()->m_iPriority; }
 
@@ -176,7 +176,7 @@ void CPhraseDialog::load_shared(LPCSTR)
 
     // loading from XML
     const auto dialog_node = pXML->NavigateToNode(id_to_index::tag_name, item_data.pos_in_file);
-    THROW3(dialog_node, "dialog id=", *item_data.id);
+    THROW3(dialog_node, "dialog id=", item_data.id.c_str());
 
     pXML->SetLocalRoot(dialog_node);
 
@@ -208,7 +208,7 @@ void CPhraseDialog::load_shared(LPCSTR)
         return;
     }
 
-    THROW3(pXML->GetNodesNum(phrase_list_node, "phrase"), "dialog %s has no phrases at all", *item_data.id);
+    THROW3(pXML->GetNodesNum(phrase_list_node, "phrase"), "dialog %s has no phrases at all", item_data.id.c_str());
 
     pXML->SetLocalRoot(phrase_list_node);
 

@@ -52,7 +52,7 @@ void CEncyclopediaArticle::load_shared(LPCSTR)
 
     // loading from XML
     const auto pNode = pXML->NavigateToNode(id_to_index::tag_name, item_data.pos_in_file);
-    THROW3(pNode, "encyclopedia article id=", *item_data.id);
+    THROW3(pNode, "encyclopedia article id=", item_data.id.c_str());
 
     // текст
     data()->text = pXML->Read(pNode, "text", 0, "");

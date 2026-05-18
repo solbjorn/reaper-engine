@@ -50,11 +50,11 @@ CUIListBoxItem* CUIListBox::AddItem(LPCSTR text)
     if (!m_selection_texture)
         pItem->InitDefault();
     else
-        pItem->InitTexture(*m_selection_texture);
+        pItem->InitTexture(m_selection_texture.c_str());
 
     pItem->SetFont(GetFont());
     pItem->SetSelected(false);
-    pItem->SetText(*CStringTable().translate(shared_str{text}));
+    pItem->SetText(CStringTable::translate(shared_str{text}).c_str());
     pItem->SetTextColor(m_text_color, m_text_color_s);
     pItem->SetMessageTarget(this);
     AddWindow(pItem, true);

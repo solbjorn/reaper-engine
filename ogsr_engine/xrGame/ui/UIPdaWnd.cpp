@@ -299,9 +299,9 @@ void CUIPdaWnd::Hide()
 void CUIPdaWnd::UpdateDateTime()
 {
     static shared_str prevStrTime{" "};
-    xr_string strTime = *InventoryUtilities::GetGameTimeAsString(InventoryUtilities::etpTimeToMinutes);
+    xr_string strTime = InventoryUtilities::GetGameTimeAsString(InventoryUtilities::etpTimeToMinutes).c_str();
     strTime += " ";
-    strTime += *InventoryUtilities::GetGameDateAsString(InventoryUtilities::edpDateToDay);
+    strTime += InventoryUtilities::GetGameDateAsString(InventoryUtilities::edpDateToDay).c_str();
 
     if (std::is_neq(xr_strcmp(strTime, prevStrTime)))
     {

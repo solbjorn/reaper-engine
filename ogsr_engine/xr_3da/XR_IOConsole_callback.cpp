@@ -97,7 +97,7 @@ tmc::task<void> CConsole::Find_cmd_back() // Shift + Tab
 {
     LPCSTR edt = ec().str_edit();
 
-    vecCMD_IT it = Commands.lower_bound(edt);
+    auto it = Commands.lower_bound(edt);
     if (it != Commands.begin())
     {
         --it;

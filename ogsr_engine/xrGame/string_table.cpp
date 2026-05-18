@@ -50,7 +50,7 @@ tmc::task<void> CStringTable::Init()
 
 tmc::task<void> CStringTable::Load(gsl::czstring xml_file)
 {
-    const char* lang = *pData->m_sLanguage;
+    const auto lang = pData->m_sLanguage.c_str();
     string_path xml_file_full, _s;
     CUIXml uiXml;
     bool nf;

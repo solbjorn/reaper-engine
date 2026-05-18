@@ -57,15 +57,12 @@ private:
         }
     };
 
-    using POOL = xr_multimap<shared_str, dxRender_Visual*, absl::container_internal::StringBtreeDefaultLess>;
-    typedef xr_map<dxRender_Visual*, shared_str> REGISTRY;
-    typedef REGISTRY::iterator REGISTRY_IT;
-
 private:
     xr_vector<ModelDef> Models; // Reference / Base
     xr_vector<dxRender_Visual*> ModelsToDelete; //
-    REGISTRY Registry; // Just pairing of pointer / Name
-    POOL Pool; // Unused / Inactive
+    xr_map<dxRender_Visual*, shared_str> Registry; // Just pairing of pointer / Name
+    xr::string_multimap<shared_str, dxRender_Visual*> Pool; // Unused / Inactive
+
     BOOL bLogging;
     BOOL bForceDiscard;
     BOOL bAllowChildrenDuplicate;

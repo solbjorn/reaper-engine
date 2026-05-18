@@ -85,7 +85,7 @@ BOOL CInifile::Sect::line_exist(LPCSTR L, LPCSTR* val) const
     if (A != Data.end())
     {
         if (val)
-            *val = *A->second;
+            *val = A->second.c_str();
 
         return TRUE;
     }
@@ -375,12 +375,12 @@ void CInifile::Load(IReader* F, LPCSTR path, BOOL allow_dup_sections, const CIni
                     Item I{name, str2[0] ? str2 : nullptr};
                     if (bReadOnly)
                     {
-                        if (*I.first)
+                        if (I.first.c_str() != nullptr)
                             insert_item(Current, I);
                     }
                     else
                     {
-                        if (*I.first || *I.second)
+                        if (I.first.c_str() != nullptr || I.second.c_str() != nullptr)
                             insert_item(Current, I);
                     }
                 }
@@ -457,29 +457,25 @@ bool CInifile::save_as(LPCSTR new_fname)
 
             for (const auto& I : second->Ordered_Data)
             {
-                if (*I.first)
+                if (I.first.c_str() != nullptr)
                 {
-                    if (*I.second)
+                    if (I.second.c_str() != nullptr)
                     {
-                        _decorate(val, *I.second);
+                        _decorate(val, I.second.c_str());
 
-                        {
-                            // only name and value
-                            sprintf_s(temp, "%s = %s", *I.first, val);
-                        }
+                        // only name and value
+                        sprintf_s(temp, "%s = %s", I.first.c_str(), val);
                     }
                     else
                     {
-                        {
-                            // only name
-                            sprintf_s(temp, "%s = ", *I.first);
-                        }
+                        // only name
+                        sprintf_s(temp, "%s = ", I.first.c_str());
                     }
                 }
                 else
                 {
                     // no name, so no value
-                    temp[0] = 0;
+                    temp[0] = '\0';
                 }
 
                 std::ignore = _TrimRight(temp);

@@ -116,7 +116,7 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
         skinning = 4;
     }
     LPSTR N = LPSTR(name);
-    map_VS::iterator I = m_vs.find(N);
+    auto I = m_vs.find(N);
     if (I != m_vs.end())
         return I->second;
     else
@@ -172,7 +172,7 @@ void CResourceManager::_DeleteVS(const SVS* vs)
     if (0 == (vs->dwFlags & xr_resource_flagged::RF_REGISTERED))
         return;
 
-    auto I = m_vs.find(*vs->cName);
+    auto I = m_vs.find(vs->cName);
     if (I != m_vs.end())
     {
         m_vs.erase(I);
@@ -217,7 +217,7 @@ SPS* CResourceManager::_CreatePS(LPCSTR _name)
     if (7 == RImplementation.m_MSAASample)
         xr_strcat(name, "_7");
     LPSTR N = LPSTR(name);
-    map_PS::iterator I = m_ps.find(N);
+    auto I = m_ps.find(N);
     if (I != m_ps.end())
         return I->second;
     else
@@ -274,7 +274,7 @@ void CResourceManager::_DeletePS(const SPS* ps)
     if (0 == (ps->dwFlags & xr_resource_flagged::RF_REGISTERED))
         return;
 
-    auto I = m_ps.find(*ps->cName);
+    auto I = m_ps.find(ps->cName);
     if (I != m_ps.end())
     {
         m_ps.erase(I);
@@ -337,7 +337,7 @@ void CResourceManager::_DeleteGS(const SGS* gs)
     if (0 == (gs->dwFlags & xr_resource_flagged::RF_REGISTERED))
         return;
 
-    auto I = m_gs.find(*gs->cName);
+    auto I = m_gs.find(gs->cName);
     if (I != m_gs.end())
     {
         m_gs.erase(I);
@@ -443,7 +443,7 @@ void CResourceManager::_DeleteRT(const CRT* RT)
     if (0 == (RT->dwFlags & xr_resource_flagged::RF_REGISTERED))
         return;
 
-    auto I = m_rtargets.find(*RT->cName);
+    auto I = m_rtargets.find(RT->cName);
     if (I != m_rtargets.end())
     {
         m_rtargets.erase(I);
@@ -509,7 +509,7 @@ CTexture* CResourceManager::_CreateTexture(LPCSTR _Name)
     fix_texture_name(Name);
     // ***** first pass - search already loaded texture
     LPSTR N = LPSTR(Name);
-    map_TextureIt I = m_textures.find(N);
+    auto I = m_textures.find(N);
     if (I != m_textures.end())
         return I->second;
 
@@ -527,7 +527,7 @@ void CResourceManager::_DeleteTexture(const CTexture* T)
     if (0 == (T->dwFlags & xr_resource_flagged::RF_REGISTERED))
         return;
 
-    auto I = m_textures.find(*T->cName);
+    auto I = m_textures.find(T->cName);
     if (I != m_textures.end())
     {
         m_textures.erase(I);

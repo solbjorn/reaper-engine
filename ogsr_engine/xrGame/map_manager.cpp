@@ -55,12 +55,13 @@ void SLocationKey::load(IReader& stream)
     if (bUserDefined)
     {
         Level().Server->PerformIDgen(object_id);
-        location = xr_new<CMapLocation>(*spot_type, object_id, true);
+        location = xr_new<CMapLocation>(spot_type.c_str(), object_id, true);
     }
     else
     {
-        location = xr_new<CMapLocation>(*spot_type, object_id);
+        location = xr_new<CMapLocation>(spot_type.c_str(), object_id);
     }
+
     location->load(stream);
 }
 
@@ -117,11 +118,11 @@ CMapLocation* CMapManager::AddMapLocation(const shared_str& spot_type, u16 id)
     Locations_it it = std::find_if(Locations().begin(), Locations().end(), key);
     if (it == Locations().end())
     {
-        CMapLocation* l = xr_new<CMapLocation>(*key.spot_id, key.object_id);
+        CMapLocation* l = xr_new<CMapLocation>(key.spot_id.c_str(), key.object_id);
         Locations().emplace_back(key.spot_id, key.object_id).location = l;
 
         if (g_actor)
-            Actor()->callback(GameObject::eMapLocationAdded)(*spot_type, id);
+            Actor()->callback(GameObject::eMapLocationAdded)(spot_type.c_str(), id);
 
         return l;
     }

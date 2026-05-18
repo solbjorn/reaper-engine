@@ -888,7 +888,7 @@ bool CPHElement::AnimToVel(float dt, float l_limit, float a_limit)
 
 void CPHElement::ToBonePos(CBoneInstance* B)
 {
-    VERIFY2(!ph_world->Processing(), *PhysicsRefObject()->cNameSect());
+    VERIFY2(!ph_world->Processing(), PhysicsRefObject()->cNameSect().c_str());
     VERIFY(_valid(B->mTransform));
     VERIFY(!m_shell->dSpace()->lock_count);
 

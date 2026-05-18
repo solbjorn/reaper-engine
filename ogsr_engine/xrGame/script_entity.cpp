@@ -122,8 +122,7 @@ void CScriptEntity::SetScriptControl(const bool bScriptControl, shared_str caSci
 }
 
 bool CScriptEntity::GetScriptControl() const { return (m_bScriptControl); }
-
-LPCSTR CScriptEntity::GetScriptControlName() const { return (*m_caScriptName); }
+gsl::czstring CScriptEntity::GetScriptControlName() const { return m_caScriptName.c_str(); }
 
 bool CScriptEntity::CheckObjectVisibility(const CGameObject* tpObject)
 {
@@ -388,7 +387,7 @@ bool CScriptEntity::bfAssignSound(CScriptEntityAction* tpEntityAction)
         if (xr_strlen(l_tSoundAction.m_caSoundToPlay))
         {
             m_current_sound = xr_new<ref_sound>();
-            m_current_sound->create(*l_tSoundAction.m_caSoundToPlay, st_Effect, l_tSoundAction.m_sound_type);
+            m_current_sound->create(l_tSoundAction.m_caSoundToPlay.c_str(), st_Effect, l_tSoundAction.m_sound_type);
         }
         else
         {
@@ -555,7 +554,7 @@ LPCSTR CScriptEntity::GetPatrolPathName()
         return "";
     }
 
-    return *m_tpActionQueue.back()->m_tMovementAction.m_path_name;
+    return m_tpActionQueue.back()->m_tMovementAction.m_path_name.c_str();
 }
 
 tmc::task<bool> CScriptEntity::net_Spawn(CSE_Abstract*)

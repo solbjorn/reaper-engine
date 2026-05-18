@@ -30,8 +30,8 @@ void CALifeStoryRegistry::add(ALife::_STORY_ID id, CSE_ALifeDynamicObject* objec
     if (I != m_objects.end())
     {
         ASSERT_FMT(no_assert, "Trying add story id [%u] for Object [%s] at level [%s], but this story id is already using in object [%s] at level [%s]", id,
-                   object->name_replace(), *ai().game_graph().header().level(ai().game_graph().vertex(object->m_tGraphID)->level_id()).name(),
-                   I->second->name_replace(), *ai().game_graph().header().level(ai().game_graph().vertex(I->second->m_tGraphID)->level_id()).name());
+                   object->name_replace(), ai().game_graph().header().level(ai().game_graph().vertex(object->m_tGraphID)->level_id()).name().c_str(),
+                   I->second->name_replace(), ai().game_graph().header().level(ai().game_graph().vertex(I->second->m_tGraphID)->level_id()).name().c_str());
         return;
     }
 

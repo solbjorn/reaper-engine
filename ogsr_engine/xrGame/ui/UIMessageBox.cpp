@@ -227,7 +227,7 @@ void CUIMessageBox::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
     inherited::SendMessage(pWnd, msg, pData);
 }
 
-void CUIMessageBox::SetText(LPCSTR str) { m_UIStaticText->SetText(*(CStringTable().translate(shared_str{str}))); }
+void CUIMessageBox::SetText(gsl::czstring str) { m_UIStaticText->SetText(CStringTable::translate(shared_str{str}).c_str()); }
 LPCSTR CUIMessageBox::GetText() { return m_UIStaticText->GetText(); }
 
 LPCSTR CUIMessageBox::GetHost()

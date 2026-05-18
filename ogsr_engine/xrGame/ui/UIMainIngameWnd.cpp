@@ -502,9 +502,8 @@ void CUIMainIngameWnd::RenderQuickInfos()
 
 void CUIMainIngameWnd::ReceiveNews(GAME_NEWS_DATA* news)
 {
-    VERIFY(news->texture_name.size());
-
-    HUD().GetUI()->m_pMessagesWnd->AddIconedPdaMessage(*(news->texture_name), news->tex_rect, news->SingleLineText(), news->show_time);
+    VERIFY(!news->texture_name.empty());
+    HUD().GetUI()->m_pMessagesWnd->AddIconedPdaMessage(news->texture_name.c_str(), news->tex_rect, news->SingleLineText(), news->show_time);
 }
 
 void CUIMainIngameWnd::SetWarningIconColor(CUIStatic* s, const u32 cl)
@@ -723,19 +722,19 @@ void CUIMainIngameWnd::UpdatePickUpItem()
 
         if (wpn->SilencerAttachable() && wpn->IsSilencerAttached())
         {
-            auto sil = init_addon(&cell_item, *wpn->GetSilencerName(), scale, UI()->get_current_kx(), eAddonType::eSilencer);
+            auto sil = init_addon(&cell_item, wpn->GetSilencerName().c_str(), scale, UI()->get_current_kx(), eAddonType::eSilencer);
             UIPickUpItemIcon.AttachChild(sil);
         }
 
         if (wpn->ScopeAttachable() && wpn->IsScopeAttached())
         {
-            auto scope = init_addon(&cell_item, *wpn->GetScopeName(), scale, UI()->get_current_kx(), eAddonType::eScope);
+            auto scope = init_addon(&cell_item, wpn->GetScopeName().c_str(), scale, UI()->get_current_kx(), eAddonType::eScope);
             UIPickUpItemIcon.AttachChild(scope);
         }
 
         if (wpn->GrenadeLauncherAttachable() && wpn->IsGrenadeLauncherAttached())
         {
-            auto launcher = init_addon(&cell_item, *wpn->GetGrenadeLauncherName(), scale, UI()->get_current_kx(), eAddonType::eLauncher);
+            auto launcher = init_addon(&cell_item, wpn->GetGrenadeLauncherName().c_str(), scale, UI()->get_current_kx(), eAddonType::eLauncher);
             UIPickUpItemIcon.AttachChild(launcher);
         }
     }

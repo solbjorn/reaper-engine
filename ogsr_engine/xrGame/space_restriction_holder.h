@@ -29,16 +29,13 @@ class XR_NOVTABLE CSpaceRestrictionHolder : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CSpaceRestrictionHolder);
 
-public:
-    typedef xr_map<shared_str, CSpaceRestrictionBridge*> RESTRICTIONS;
-
 private:
     enum : u32
     {
         MAX_RESTRICTION_PER_TYPE_COUNT = u32(128),
     };
 
-    RESTRICTIONS m_restrictions;
+    xr::string_map<shared_str, CSpaceRestrictionBridge*> m_restrictions;
     shared_str m_default_out_restrictions;
     shared_str m_default_in_restrictions;
 

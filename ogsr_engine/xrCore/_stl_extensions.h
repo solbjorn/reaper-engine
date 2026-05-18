@@ -74,19 +74,27 @@ template <class K, class V, class Hash = typename absl::container_internal::Flat
           class Eq = typename absl::container_internal::FlatHashMapPolicy<K, V>::DefaultEq, class Allocator = xr_allocator<std::pair<const K, V>>>
 using xr_unordered_map = absl::flat_hash_map<K, V, Hash, Eq, Allocator>;
 
+template <class K, class V, class Hash = typename absl::container_internal::FlatHashMapPolicy<std::string_view, V>::DefaultHash,
+          class Eq = typename absl::container_internal::FlatHashMapPolicy<std::string_view, V>::DefaultEq,
+          class Allocator = xr_allocator<std::pair<const K, V>>>
+using string_unordered_map = absl::flat_hash_map<K, V, Hash, Eq, Allocator>;
+
 namespace xr
 {
+template <typename Key, typename Value, typename Compare = absl::container_internal::StringBtreeDefaultLess,
+          typename Alloc = xr_allocator<std::pair<const Key, Value>>>
+using string_map = absl::btree_map<Key, Value, Compare, Alloc>;
+
+template <typename Key, typename Value, typename Compare = absl::container_internal::StringBtreeDefaultLess,
+          typename Alloc = xr_allocator<std::pair<const Key, Value>>>
+using string_multimap = absl::btree_multimap<Key, Value, Compare, Alloc>;
+
 // Until libc++ implements std::views::enumerate()
 [[nodiscard]] constexpr inline auto views_enumerate(std::ranges::viewable_range auto&& rng)
 {
     return std::views::zip(std::views::iota(0z, std::ssize(std::forward<decltype(rng)>(rng))), std::forward<decltype(rng)>(rng));
 }
 } // namespace xr
-
-struct pred_str
-{
-    [[nodiscard]] constexpr bool operator()(gsl::czstring x, gsl::czstring y) const { return std::is_lt(xr_strcmp(x, y)); }
-};
 
 // STL extensions
 #define DEF_VECTOR(N, T) \

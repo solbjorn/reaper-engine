@@ -30,7 +30,7 @@ void SThunderboltDesc::create_top_gradient(CInifile& pIni, shared_str const& sec
     m_GradientTop->texture._set(pIni.r_string(sect, "gradient_top_texture"));
     m_GradientTop->fRadius = pIni.r_fvector2(sect, "gradient_top_radius");
     m_GradientTop->fOpacity = pIni.r_float(sect, "gradient_top_opacity");
-    m_GradientTop->m_pFlare->CreateShader(*m_GradientTop->shader, *m_GradientTop->texture);
+    m_GradientTop->m_pFlare->CreateShader(m_GradientTop->shader.c_str(), m_GradientTop->texture.c_str());
 }
 
 void SThunderboltDesc::create_center_gradient(CInifile& pIni, shared_str const& sect)
@@ -40,7 +40,7 @@ void SThunderboltDesc::create_center_gradient(CInifile& pIni, shared_str const& 
     m_GradientCenter->texture._set(pIni.r_string(sect, "gradient_center_texture"));
     m_GradientCenter->fRadius = pIni.r_fvector2(sect, "gradient_center_radius");
     m_GradientCenter->fOpacity = pIni.r_float(sect, "gradient_center_opacity");
-    m_GradientCenter->m_pFlare->CreateShader(*m_GradientCenter->shader, *m_GradientCenter->texture);
+    m_GradientCenter->m_pFlare->CreateShader(m_GradientCenter->shader.c_str(), m_GradientCenter->texture.c_str());
 }
 
 void SThunderboltDesc::load(CInifile& pIni, shared_str const& sect)
@@ -58,13 +58,6 @@ void SThunderboltDesc::load(CInifile& pIni, shared_str const& sect)
     m_name = pIni.r_string(sect, "lightning_model");
     m_pRender->CreateModel(m_name);
 
-    /*
-    IReader* F			= 0;
-    F					= FS.r_open("$game_meshes$",m_name); R_ASSERT2(F,"Empty 'lightning_model'.");
-    l_model				= ::Render->model_CreateDM(F);
-    FS.r_close			(F);
-    */
-
     // sound
     m_name = pIni.r_string(sect, "sound");
     if (m_name && m_name[0])
@@ -78,7 +71,7 @@ void SThunderboltDesc::create_top_gradient_shoc(CInifile* pIni, shared_str const
     m_GradientTop->texture._set(pIni->r_string(sect, "gradient_top_texture"));
     m_GradientTop->fRadius = pIni->r_fvector2(sect, "gradient_top_radius");
     m_GradientTop->fOpacity = pIni->r_float(sect, "gradient_top_opacity");
-    m_GradientTop->m_pFlare->CreateShader(*m_GradientTop->shader, *m_GradientTop->texture);
+    m_GradientTop->m_pFlare->CreateShader(m_GradientTop->shader.c_str(), m_GradientTop->texture.c_str());
 }
 
 void SThunderboltDesc::create_center_gradient_shoc(CInifile* pIni, shared_str const& sect)
@@ -88,7 +81,7 @@ void SThunderboltDesc::create_center_gradient_shoc(CInifile* pIni, shared_str co
     m_GradientCenter->texture._set(pIni->r_string(sect, "gradient_center_texture"));
     m_GradientCenter->fRadius = pIni->r_fvector2(sect, "gradient_center_radius");
     m_GradientCenter->fOpacity = pIni->r_float(sect, "gradient_center_opacity");
-    m_GradientCenter->m_pFlare->CreateShader(*m_GradientCenter->shader, *m_GradientCenter->texture);
+    m_GradientCenter->m_pFlare->CreateShader(m_GradientCenter->shader.c_str(), m_GradientCenter->texture.c_str());
 }
 
 void SThunderboltDesc::load_shoc(CInifile* pIni, shared_str const& sect)
@@ -302,7 +295,8 @@ void CEffect_Thunderbolt::OnFrame(shared_str id, float period, float duration)
         Fvector fClr;
         int frame;
         u32 uClr = current->color_anim->CalculateRGB(current_time / life_time, frame);
-        fClr.set(clampr(float(color_get_R(uClr) / 255.f), 0.f, 1.f), clampr(float(color_get_G(uClr) / 255.f), 0.f, 1.f), clampr(float(color_get_B(uClr) / 255.f), 0.f, 1.f));
+        fClr.set(clampr(float(color_get_R(uClr) / 255.f), 0.f, 1.f), clampr(float(color_get_G(uClr) / 255.f), 0.f, 1.f),
+                 clampr(float(color_get_B(uClr) / 255.f), 0.f, 1.f));
 
         lightning_phase = 1.5f * (current_time / life_time);
         clamp(lightning_phase, 0.f, 1.f);

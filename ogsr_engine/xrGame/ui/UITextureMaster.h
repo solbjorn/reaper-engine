@@ -17,8 +17,9 @@ struct TEX_INFO
 {
     shared_str file;
     Frect rect;
-    LPCSTR get_file_name() { return *file; }
-    Frect get_rect() { return rect; }
+
+    [[nodiscard]] constexpr auto get_file_name() const { return file.c_str(); }
+    [[nodiscard]] constexpr auto get_rect() const { return rect; }
 };
 
 class CUITextureMaster
@@ -36,16 +37,8 @@ public:
     static void WriteLog();
 
 protected:
-    //	typedef xr_string region_name;
-    //	typedef xr_string shader_name;
-    //	typedef xr_map<region_name, Frect>				regions;
-    //	typedef xr_map<region_name, Frect>::iterator	regions_it;
-    //	typedef xr_map<shader_name, regions>			shared_textures;
-    //	typedef xr_map<shader_name, regions>::iterator	shared_textures_it;
+    static xr::string_map<shared_str, TEX_INFO> m_textures;
 
-    static xr_map<shared_str, TEX_INFO, absl::container_internal::StringBtreeDefaultLess> m_textures;
-
-//	static	shared_textures		m_shTex;
 #ifdef DEBUG
     static u32 m_time;
 #endif

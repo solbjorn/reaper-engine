@@ -119,7 +119,7 @@ public:
 
     void SetSlotsBlocked(u16 mask, bool bBlock, bool now = false);
 
-    xr_multimap<shared_str, PIItem, absl::container_internal::StringBtreeDefaultLess> m_allMap;
+    xr::string_multimap<shared_str, PIItem> m_allMap;
 
     TIItemContainer m_all;
     TIItemContainer m_ruck, m_belt;

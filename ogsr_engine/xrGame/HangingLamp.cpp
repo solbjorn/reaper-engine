@@ -92,10 +92,13 @@ tmc::task<bool> CHangingLamp::net_Spawn(CSE_Abstract* DC)
     {
         IKinematics* K = smart_cast<IKinematics*>(Visual());
         R_ASSERT(Visual() && K);
-        light_bone = K->LL_BoneID(*lamp->light_main_bone);
+
+        light_bone = K->LL_BoneID(lamp->light_main_bone.c_str());
         VERIFY(light_bone != BI_NONE);
-        ambient_bone = K->LL_BoneID(*lamp->light_ambient_bone);
+
+        ambient_bone = K->LL_BoneID(lamp->light_ambient_bone.c_str());
         VERIFY(ambient_bone != BI_NONE);
+
         collidable.model = xr_new<CCF_Skeleton>(this);
     }
 
@@ -111,7 +114,7 @@ tmc::task<bool> CHangingLamp::net_Spawn(CSE_Abstract* DC)
     light_render->set_range(lamp->range);
     light_render->set_color(clr);
     light_render->set_cone(lamp->spot_cone_angle);
-    light_render->set_texture(*lamp->light_texture);
+    light_render->set_texture(lamp->light_texture.c_str());
     light_render->set_virtual_size(lamp->m_virtual_size);
 
     // TODO: KRodin: адаптировать под новый рендер!
@@ -129,7 +132,7 @@ tmc::task<bool> CHangingLamp::net_Spawn(CSE_Abstract* DC)
     if (lamp->glow_texture.size())
     {
         glow_render._set(::Render->glow_create());
-        glow_render->set_texture(*lamp->glow_texture);
+        glow_render->set_texture(lamp->glow_texture.c_str());
         glow_render->set_color(clr);
         glow_render->set_radius(lamp->glow_radius);
     }
@@ -143,12 +146,12 @@ tmc::task<bool> CHangingLamp::net_Spawn(CSE_Abstract* DC)
         clr.mul_rgb(ambient_power);
         light_ambient->set_range(lamp->m_ambient_radius);
         light_ambient->set_color(clr);
-        light_ambient->set_texture(*lamp->m_ambient_texture);
+        light_ambient->set_texture(lamp->m_ambient_texture.c_str());
         light_ambient->set_virtual_size(lamp->m_virtual_size);
     }
 
     fHealth = lamp->m_health;
-    lanim = LALib.FindItem(*lamp->color_animator);
+    lanim = LALib.FindItem(lamp->color_animator.c_str());
 
     std::ignore = CPHSkeleton::Spawn(e);
 
@@ -380,8 +383,9 @@ void CHangingLamp::CreateBody(CSE_ALifeObjectHangingLamp* lamp)
     m_pPhysicsShell = P_create_Shell();
 
     bone_map.clear();
-    LPCSTR fixed_bones = *lamp->fixed_bones;
-    if (fixed_bones)
+
+    const auto fixed_bones = lamp->fixed_bones.c_str();
+    if (fixed_bones != nullptr)
     {
         int count = _GetItemCount(fixed_bones);
         for (int i = 0; i < count; ++i)

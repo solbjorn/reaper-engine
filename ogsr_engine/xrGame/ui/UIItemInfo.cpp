@@ -155,9 +155,11 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
     {
         UIDesc->Clear();
         VERIFY(0 == UIDesc->GetSize());
+
         TryAddWpnInfo(pInvItem->object());
         TryAddArtefactInfo(pInvItem->object().cNameSect());
         TryAddCustomInfo(pInvItem->object());
+
         if (m_desc_info.bShowDescrText)
         {
             CUIStatic* pItem = xr_new<CUIStatic>();
@@ -165,12 +167,14 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
             pItem->SetFont(m_desc_info.pDescFont);
             pItem->SetWidth(UIDesc->GetDesiredChildWidth());
             pItem->SetTextComplexMode(true);
-            pItem->SetText(*pInvItem->ItemDescription());
+            pItem->SetText(pInvItem->ItemDescription().c_str());
             pItem->AdjustHeightToText();
             UIDesc->AddWindow(pItem, true);
         }
+
         UIDesc->ScrollToBegin();
     }
+
     if (UIItemImage)
     {
         // Загружаем картинку

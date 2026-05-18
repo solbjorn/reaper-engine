@@ -367,7 +367,8 @@ void CCustomZone::Load(LPCSTR section)
             total_probability += artefact_spawn.probability;
         }
 
-        R_ASSERT3(!fis_zero(total_probability), "The probability of artefact spawn is zero!", *cName());
+        R_ASSERT3(!fis_zero(total_probability), "The probability of artefact spawn is zero!", cName().c_str());
+
         // нормализировать вероятности
         for (u32 i = 0; i < m_ArtefactSpawn.size(); ++i)
             m_ArtefactSpawn[i].probability = m_ArtefactSpawn[i].probability / total_probability;
@@ -815,11 +816,11 @@ void CCustomZone::PlayIdleParticles()
 {
     m_idle_sound.play_at_pos(nullptr, Position(), true);
 
-    if (*m_sIdleParticles)
+    if (m_sIdleParticles.c_str() != nullptr)
     {
         if (!m_pIdleParticles)
         {
-            m_pIdleParticles = CParticlesObject::Create(*m_sIdleParticles, FALSE);
+            m_pIdleParticles = CParticlesObject::Create(m_sIdleParticles.c_str(), FALSE);
             m_pIdleParticles->UpdateParent(XFORM(), zero_vel);
         }
 
@@ -885,7 +886,7 @@ void CCustomZone::PlayBlowoutParticles()
         return;
 
     CParticlesObject* pParticles;
-    pParticles = CParticlesObject::Create(*m_sBlowoutParticles, TRUE);
+    pParticles = CParticlesObject::Create(m_sBlowoutParticles.c_str(), TRUE);
     pParticles->UpdateParent(XFORM(), zero_vel);
     pParticles->Play();
 
@@ -966,7 +967,7 @@ void CCustomZone::PlayEntranceParticles(CGameObject* pObject)
         u16 play_bone = PP->GetRandomBone();
         if (play_bone != BI_NONE)
         {
-            CParticlesObject* pParticles = CParticlesObject::Create(*particle_str, TRUE);
+            CParticlesObject* pParticles = CParticlesObject::Create(particle_str.c_str(), TRUE);
             Fmatrix xform;
 
             Fvector dir;
@@ -997,7 +998,7 @@ void CCustomZone::PlayBulletParticles(Fvector& pos)
         return;
 
     CParticlesObject* pParticles;
-    pParticles = CParticlesObject::Create(*m_sEntranceParticlesSmall, TRUE);
+    pParticles = CParticlesObject::Create(m_sEntranceParticlesSmall.c_str(), TRUE);
 
     Fmatrix M;
     M = XFORM();
@@ -1363,7 +1364,7 @@ void CCustomZone::SpawnArtefact()
 
     pos.x = pos.x + ::Random.randF(-0.5, 0.5);
     pos.z = pos.z + ::Random.randF(-0.5, 0.5);
-    Level().spawn_item(*m_ArtefactSpawn[i].section, pos, ai_location().level_vertex_id(), ID());
+    Level().spawn_item(m_ArtefactSpawn[i].section.c_str(), pos, ai_location().level_vertex_id(), ID());
 }
 
 void CCustomZone::BornArtefact(bool forced)
@@ -1441,10 +1442,10 @@ void CCustomZone::ThrowOutArtefact(CArtefact* pArtefact)
     pos.y += m_fArtefactSpawnHeight;
     pArtefact->XFORM().c.set(pos);
 
-    if (*m_sArtefactSpawnParticles)
+    if (m_sArtefactSpawnParticles.c_str() != nullptr)
     {
         CParticlesObject* pParticles;
-        pParticles = CParticlesObject::Create(*m_sArtefactSpawnParticles, TRUE);
+        pParticles = CParticlesObject::Create(m_sArtefactSpawnParticles.c_str(), TRUE);
         pParticles->UpdateParent(pArtefact->XFORM(), zero_vel);
         pParticles->Play();
     }
@@ -1566,7 +1567,7 @@ void CCustomZone::PlayAccumParticles()
     if (m_sAccumParticles.size())
     {
         CParticlesObject* pParticles;
-        pParticles = CParticlesObject::Create(*m_sAccumParticles, TRUE);
+        pParticles = CParticlesObject::Create(m_sAccumParticles.c_str(), TRUE);
         pParticles->UpdateParent(XFORM(), zero_vel);
         pParticles->Play();
     }
@@ -1580,7 +1581,7 @@ void CCustomZone::PlayAwakingParticles()
     if (m_sAwakingParticles.size())
     {
         CParticlesObject* pParticles;
-        pParticles = CParticlesObject::Create(*m_sAwakingParticles, TRUE);
+        pParticles = CParticlesObject::Create(m_sAwakingParticles.c_str(), TRUE);
         pParticles->UpdateParent(XFORM(), zero_vel);
         pParticles->Play();
     }

@@ -64,8 +64,9 @@ bool CSpaceRestrictionComposition::inside(const Fsphere& sphere)
 
 void CSpaceRestrictionComposition::initialize()
 {
-    u32 n = _GetItemCount(*m_space_restrictors);
+    u32 n = _GetItemCount(m_space_restrictors.c_str());
     VERIFY(n);
+
     if (n == 1)
     {
 #ifdef DEBUG
@@ -79,7 +80,7 @@ void CSpaceRestrictionComposition::initialize()
 
     for (u32 i = 0; i < n; ++i)
     {
-        LPSTR space_restrictors = _GetItem(*m_space_restrictors, i, element);
+        LPSTR space_restrictors = _GetItem(m_space_restrictors.c_str(), i, element);
         if (!m_space_restriction_holder->restriction(shared_str{space_restrictors})->initialized())
             return;
     }
@@ -88,7 +89,7 @@ void CSpaceRestrictionComposition::initialize()
 
     for (u32 i = 0; i < n; ++i)
     {
-        LPSTR space_restrictors = _GetItem(*m_space_restrictors, i, element);
+        LPSTR space_restrictors = _GetItem(m_space_restrictors.c_str(), i, element);
         SpaceRestrictionHolder::CBaseRestrictionPtr restriction = m_space_restriction_holder->restriction(shared_str{space_restrictors});
 
         merge(restriction);

@@ -42,8 +42,8 @@ float CPEDef::GetFStep() { return m_fStep * ps_particle_update_coeff; }
 
 void CPEDef::CreateShader()
 {
-    if (*m_ShaderName && *m_TextureName)
-        m_CachedShader.create(*m_ShaderName, *m_TextureName);
+    if (m_ShaderName.c_str() != nullptr && m_TextureName.c_str() != nullptr)
+        m_CachedShader.create(m_ShaderName.c_str(), m_TextureName.c_str());
     else
         Msg("! ParticleEffect [{}] with empty texture or shader. Cannot create shader for Visual!", m_Name);
 }

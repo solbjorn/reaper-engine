@@ -173,20 +173,13 @@ CConsole::~CConsole()
     Device.seqResolutionChanged.Remove(this);
 }
 
-// void CConsole::Destroy()
-//{
-//
-// }
-
 void CConsole::AddCommand(IConsole_Command* cc) { Commands[cc->Name()] = cc; }
 
 void CConsole::RemoveCommand(IConsole_Command* cc)
 {
-    vecCMD_IT it = Commands.find(cc->Name());
+    auto it = Commands.find(cc->Name());
     if (Commands.end() != it)
-    {
         Commands.erase(it);
-    }
 }
 
 tmc::task<void> CConsole::OnFrame()
@@ -576,7 +569,7 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool allow_disabl
     split_cmd(edt, first, last);
 
     // search
-    vecCMD_IT it = Commands.find(first.c_str());
+    auto it = Commands.find(first.c_str());
     if (it != Commands.end())
     {
         IConsole_Command* cc = it->second;
@@ -663,12 +656,11 @@ tmc::task<void> CConsole::Hide()
 void CConsole::SelectCommand()
 {
     if (m_cmd_history.empty())
-    {
         return;
-    }
+
     VERIFY(0 <= m_cmd_history_idx && m_cmd_history_idx < (int)m_cmd_history.size());
 
-    vecHistory::reverse_iterator it_rb = m_cmd_history.rbegin() + m_cmd_history_idx;
+    auto it_rb = m_cmd_history.rbegin() + m_cmd_history_idx;
     ec().set_edit((*it_rb).c_str());
     reset_selected_tip();
 }
@@ -700,7 +692,7 @@ IConsole_Command* CConsole::find_next_cmd(LPCSTR in_str, shared_str& out_str)
     string_path t2;
     xr_strconcat(t2, in_str, " ");
 
-    vecCMD_IT it = Commands.lower_bound(t2);
+    auto it = Commands.lower_bound(t2);
     if (it != Commands.end())
     {
         IConsole_Command* cc = it->second;
@@ -709,6 +701,7 @@ IConsole_Command* CConsole::find_next_cmd(LPCSTR in_str, shared_str& out_str)
         out_str._set(name_cmd);
         return cc;
     }
+
     return nullptr;
 }
 
@@ -768,8 +761,8 @@ bool CConsole::add_internal_cmds(LPCSTR in_str, vecTipsEx& out_v)
     bool res = false;
     // word in begin
     xr_string name2;
-    vecCMD_IT itb = Commands.begin();
-    vecCMD_IT ite = Commands.end();
+
+    auto itb = Commands.begin(), ite = Commands.end();
     for (; itb != ite; ++itb)
     {
         LPCSTR name = itb->first;
@@ -871,7 +864,7 @@ void CConsole::update_tips()
             if (m_tips_mode != 2)
                 reset_selected_tip();
 
-            vecCMD_IT it = Commands.find(first.c_str());
+            auto it = Commands.find(first.c_str());
             if (it != Commands.end())
             {
                 IConsole_Command* cc = it->second;

@@ -146,7 +146,7 @@ tmc::task<bool> CUIGameSP::IR_OnKeyboardPress(xr::key_id dik)
         if (!o)
             ss->m_static->SetTextST("st_no_active_task");
         else
-            ss->m_static->SetTextST(*(o->description));
+            ss->m_static->SetTextST(o->description.c_str());
 
         break;
     }

@@ -140,9 +140,9 @@ void CWeaponShotgun::OnShotBoth()
     if (ParentIsActor())
     {
         CParticlesObject* pSmokeParticles{};
-        CShootingObject::StartParticles(pSmokeParticles, *m_sSmokeParticlesCurrent, get_LastFP(), true);
+        CShootingObject::StartParticles(pSmokeParticles, m_sSmokeParticlesCurrent.c_str(), get_LastFP(), true);
         pSmokeParticles = nullptr;
-        CShootingObject::StartParticles(pSmokeParticles, *m_sSmokeParticlesCurrent, get_LastFP2(), true);
+        CShootingObject::StartParticles(pSmokeParticles, m_sSmokeParticlesCurrent.c_str(), get_LastFP2(), true);
     }
 }
 
@@ -285,7 +285,8 @@ bool CWeaponShotgun::Action(EGameActions cmd, u32 flags)
     if (inherited::Action(cmd, flags))
         return true;
 
-    if (m_bTriStateReload && GetState() == eReload && !IsMisfire() && (flags & CMD_START) && (m_sub_state == eSubstateReloadInProcess || m_sub_state == eSubstateReloadBegin))
+    if (m_bTriStateReload && GetState() == eReload && !IsMisfire() && (flags & CMD_START) &&
+        (m_sub_state == eSubstateReloadInProcess || m_sub_state == eSubstateReloadBegin))
     {
         switch (cmd)
         {
@@ -453,7 +454,8 @@ void CWeaponShotgun::OnStateSwitch(u32 S, u32 oldState)
         break;
     }
     case eSubstateReloadEnd: {
-        PlayHUDMotion({IsMisfire() ? "anm_close_jammed" : (SecondCartridge ? "anm_close_empty" : "nullptr"), "anim_close_weapon", "anm_close"}, true, GetState());
+        PlayHUDMotion({IsMisfire() ? "anm_close_jammed" : (SecondCartridge ? "anm_close_empty" : "nullptr"), "anim_close_weapon", "anm_close"}, true,
+                      GetState());
         PlaySound(((IsMisfire() || SecondCartridge) && !m_sndCloseEmpty.sounds.empty()) ? m_sndCloseEmpty : m_sndClose, get_LastFP());
         SetPending(TRUE);
         break;
@@ -494,7 +496,8 @@ bool CWeaponShotgun::HaveCartridgeInInventory(u8 cnt)
                 m_ammoType = i;
         }
     }
-    m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmoMinCurr(*m_ammoTypes[m_ammoType], ParentIsActor()));
+
+    m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmoMinCurr(m_ammoTypes[m_ammoType].c_str(), ParentIsActor()));
 
     return (m_pAmmo && ac >= cnt);
 }
@@ -513,7 +516,7 @@ u8 CWeaponShotgun::AddCartridge(u8 cnt)
     VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
     if (m_DefaultCartridge.m_LocalAmmoType != m_ammoType)
-        m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));
+        m_DefaultCartridge.Load(m_ammoTypes[m_ammoType].c_str(), u8(m_ammoType));
 
     CCartridge l_cartridge = m_DefaultCartridge;
     while (cnt && m_magazine.size() < (u32)iMagazineSize) // && m_pAmmo->Get(l_cartridge))

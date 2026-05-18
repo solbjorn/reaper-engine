@@ -53,8 +53,8 @@ void CPurchaseList::process(CInifile& ini_file, LPCSTR section, CInventoryOwner&
 
 void CPurchaseList::process(const CGameObject& owner, const shared_str& name, const u32& count, const float& probability, sol::function& lua_function)
 {
-    VERIFY3(count, "Invalid count for section in the purchase list", *name);
-    VERIFY3(!fis_zero(probability, EPS_S), "Invalid probability for section in the purchase list", *name);
+    VERIFY3(count, "Invalid count for section in the purchase list", name.c_str());
+    VERIFY3(!fis_zero(probability, EPS_S), "Invalid probability for section in the purchase list", name.c_str());
 
     const Fvector& position = owner.Position();
     const u32& level_vertex_id = owner.ai_location().level_vertex_id();
@@ -68,7 +68,7 @@ void CPurchaseList::process(const CGameObject& owner, const shared_str& name, co
 
         ++j;
 
-        CSE_Abstract* _abstract = Level().spawn_item(*name, position, level_vertex_id, id, true);
+        CSE_Abstract* _abstract = Level().spawn_item(name.c_str(), position, level_vertex_id, id, true);
 
         if (lua_function)
             lua_function(owner.lua_game_object(), smart_cast<CSE_ALifeObject*>(_abstract));
@@ -79,6 +79,6 @@ void CPurchaseList::process(const CGameObject& owner, const shared_str& name, co
         F_entity_Destroy(_abstract);
     }
 
-    VERIFY3(m_deficits.find(name) == m_deficits.end(), "Duplicate section in the purchase list", *name);
+    VERIFY3(m_deficits.find(name) == m_deficits.end(), "Duplicate section in the purchase list", name.c_str());
     m_deficits.emplace(name, (float)count * probability / _max((float)j, min_deficit_factor));
 }

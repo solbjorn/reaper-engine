@@ -56,10 +56,9 @@ tmc::task<bool> CWeaponRPG7::net_Spawn(CSE_Abstract* DC)
     const bool l_res = co_await inherited::net_Spawn(DC);
 
     UpdateMissileVisibility();
+
     if (iAmmoElapsed && !getCurrentRocket())
-    {
-        CRocketLauncher::SpawnRocket(*m_sRocketSection, this);
-    }
+        CRocketLauncher::SpawnRocket(m_sRocketSection.c_str(), this);
 
     co_return l_res;
 }
@@ -81,12 +80,10 @@ void CWeaponRPG7::ReloadMagazine()
     inherited::ReloadMagazine();
 
     if (iAmmoElapsed && !getRocketCount())
-    {
-        CRocketLauncher::SpawnRocket(*m_sRocketSection, this);
-    }
+        CRocketLauncher::SpawnRocket(m_sRocketSection.c_str(), this);
 }
-void CWeaponRPG7::SwitchState(u32 S) { inherited::SwitchState(S); }
 
+void CWeaponRPG7::SwitchState(u32 S) { inherited::SwitchState(S); }
 void CWeaponRPG7::FireStart() { inherited::FireStart(); }
 
 void CWeaponRPG7::on_a_hud_attach()

@@ -654,7 +654,7 @@ void CEnvironment::load_level_specific_ambients()
     string_path full_path;
     CInifile* level_ambients = xr_new<CInifile>(FS.update_path(full_path, "$game_config$", path), TRUE, TRUE, FALSE);
 
-    for (EnvAmbVecIt I = Ambients.begin(), E = Ambients.end(); I != E; ++I)
+    for (auto I = Ambients.begin(), E = Ambients.end(); I != E; ++I)
     {
         CEnvAmbient* ambient = *I;
 
@@ -865,13 +865,11 @@ void CEnvironment::unload()
 {
     invalidate_descs();
 
-    EnvsMapIt _I, _E;
     // clear weathers
-    _I = WeatherCycles.begin();
-    _E = WeatherCycles.end();
+    auto _I = WeatherCycles.begin(), _E = WeatherCycles.end();
     for (; _I != _E; _I++)
     {
-        for (EnvIt it = _I->second.begin(); it != _I->second.end(); it++)
+        for (auto it = _I->second.begin(); it != _I->second.end(); it++)
             xr_delete(*it);
     }
 
@@ -882,14 +880,16 @@ void CEnvironment::unload()
     _E = WeatherFXs.end();
     for (; _I != _E; _I++)
     {
-        for (EnvIt it = _I->second.begin(); it != _I->second.end(); it++)
+        for (auto it = _I->second.begin(); it != _I->second.end(); it++)
             xr_delete(*it);
     }
+
     WeatherFXs.clear();
 
     // clear ambient
-    for (EnvAmbVecIt it = Ambients.begin(); it != Ambients.end(); it++)
+    for (auto it = Ambients.begin(); it != Ambients.end(); it++)
         xr_delete(*it);
+
     Ambients.clear();
 
     // misc

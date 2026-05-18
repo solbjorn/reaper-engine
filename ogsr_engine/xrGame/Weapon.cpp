@@ -701,7 +701,7 @@ tmc::task<bool> CWeapon::net_Spawn(CSE_Abstract* DC)
         }
     }
 
-    m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));
+    m_DefaultCartridge.Load(m_ammoTypes[m_ammoType].c_str(), u8(m_ammoType));
     if (iAmmoElapsed)
     {
         // нож автоматически заряжается двумя патронами, хотя
@@ -1161,7 +1161,7 @@ bool CWeapon::Action(EGameActions cmd, u32 flags)
             {
                 l_newType = (l_newType + 1) % m_ammoTypes.size();
                 b1 = l_newType != m_ammoType;
-                b2 = unlimited_ammo() ? false : (!m_pCurrentInventory->GetAmmo(*m_ammoTypes[l_newType], ParentIsActor()));
+                b2 = unlimited_ammo() ? false : (!m_pCurrentInventory->GetAmmo(m_ammoTypes[l_newType].c_str(), ParentIsActor()));
             } while (b1 && b2);
 
             if (l_newType != m_ammoType)
@@ -1904,7 +1904,8 @@ void CWeapon::SetAmmoElapsed(int ammo_count)
         if (uAmmo > m_magazine.size())
         {
             CCartridge l_cartridge;
-            l_cartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));
+            l_cartridge.Load(m_ammoTypes[m_ammoType].c_str(), u8(m_ammoType));
+
             while (uAmmo > m_magazine.size())
                 m_magazine.push_back(l_cartridge);
         }
@@ -1970,8 +1971,9 @@ LPCSTR CWeapon::GetCurrentAmmo_ShortName()
 {
     if (m_magazine.empty())
         return ("");
+
     CCartridge& l_cartridge = m_magazine.back();
-    return *(l_cartridge.m_InvShortName);
+    return l_cartridge.m_InvShortName.c_str();
 }
 
 float CWeapon::GetMagazineWeight(const decltype(CWeapon::m_magazine)& mag) const

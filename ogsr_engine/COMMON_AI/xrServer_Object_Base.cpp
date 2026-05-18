@@ -311,8 +311,8 @@ const CSE_Abstract* CSE_Abstract::base() const { return (this); }
 
 CSE_Abstract* CSE_Abstract::init() { return (this); }
 
-LPCSTR CSE_Abstract::name() const { return (*s_name); }
-LPCSTR CSE_Abstract::name_replace() const { return (s_name_replace); }
+gsl::czstring CSE_Abstract::name() const { return s_name.c_str(); }
+gsl::czstring CSE_Abstract::name_replace() const { return s_name_replace; }
 
 Fvector& CSE_Abstract::position() { return (o_Position); }
 Fvector& CSE_Abstract::angle() { return (o_Angle); }

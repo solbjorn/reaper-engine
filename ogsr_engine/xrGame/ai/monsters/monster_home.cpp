@@ -46,7 +46,7 @@ void CMonsterHome::load(LPCSTR line)
         if (m_object->spawn_ini()->line_exist(line, "radius_max"))
             m_radius_max = m_object->spawn_ini()->r_float(line, "radius_max");
 
-        VERIFY3(m_radius_max > m_radius_min, "Error: Wrong home point radius specified for monster ", *m_object->cName());
+        VERIFY3(m_radius_max > m_radius_min, "Error: Wrong home point radius specified for monster ", m_object->cName().c_str());
 
         if (m_object->spawn_ini()->line_exist(line, "radius_middle"))
         {

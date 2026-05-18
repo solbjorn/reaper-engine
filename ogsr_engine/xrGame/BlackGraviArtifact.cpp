@@ -95,7 +95,7 @@ void CBlackGraviArtefact::UpdateCLChild()
             GraviStrike();
 
             CParticlesObject* pStaticPG;
-            pStaticPG = CParticlesObject::Create(*m_sParticleName, TRUE);
+            pStaticPG = CParticlesObject::Create(m_sParticleName.c_str(), TRUE);
             Fmatrix pos;
             pos.set(XFORM());
             Fvector vel;

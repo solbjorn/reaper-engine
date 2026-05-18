@@ -172,8 +172,10 @@ bool CALifeUpdateManager::change_level(NET_Packet& net_packet)
 
     string256 autoave_name;
     strconcat(sizeof(autoave_name), autoave_name, Core.UserName, "_", "autosave");
-    LPCSTR temp0 = strchr(**m_server_command_line, '/');
-    VERIFY(temp0);
+
+    const auto temp0 = std::strchr((*m_server_command_line).c_str(), '/');
+    VERIFY(temp0 != nullptr);
+
     string256 temp;
     m_server_command_line->_set(strconcat(sizeof(temp), temp, autoave_name, temp0));
 
@@ -282,9 +284,11 @@ bool CALifeUpdateManager::load_game(LPCSTR game_name, bool no_assert)
     }
 
     string512 S, S1;
-    strcpy_s(S, **m_server_command_line);
-    LPSTR temp = strchr(S, '/');
-    R_ASSERT2(temp, "Invalid server options!");
+    strcpy_s(S, (*m_server_command_line).c_str());
+
+    const auto temp = std::strchr(S, '/');
+    R_ASSERT2(temp != nullptr, "Invalid server options!");
+
     strconcat(sizeof(S1), S1, game_name, temp);
     m_server_command_line->_set(S1);
 

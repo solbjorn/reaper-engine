@@ -17,38 +17,20 @@ class CResourceManager : public IResourceManager
 {
     RTTI_DECLARE_TYPEINFO(CResourceManager, IResourceManager);
 
-private:
-    struct str_pred
-    {
-        IC bool operator()(LPCSTR x, LPCSTR y) const { return xr_strcmp(x, y) < 0; }
-    };
-    struct texture_detail
-    {
-        const char* T;
-        R_constant_setup* cs;
-    };
-
 public:
-    DEFINE_MAP_PRED(const char*, IBlenderXr*, map_Blender, map_BlenderIt, pred_str);
-    DEFINE_MAP_PRED(const char*, CTexture*, map_Texture, map_TextureIt, pred_str);
-    DEFINE_MAP_PRED(const char*, CRT*, map_RT, map_RTIt, pred_str);
-    DEFINE_MAP_PRED(const char*, SVS*, map_VS, map_VSIt, pred_str);
-    DEFINE_MAP_PRED(const char*, SGS*, map_GS, map_GSIt, pred_str);
-    DEFINE_MAP_PRED(const char*, SHS*, map_HS, map_HSIt, pred_str);
-    DEFINE_MAP_PRED(const char*, SDS*, map_DS, map_DSIt, pred_str);
-    DEFINE_MAP_PRED(const char*, SCS*, map_CS, map_CSIt, pred_str);
-    DEFINE_MAP_PRED(const char*, SPS*, map_PS, map_PSIt, pred_str);
-    DEFINE_MAP_PRED(const char*, texture_detail, map_TD, map_TDIt, pred_str);
+    using map_HS = xr::string_map<gsl::czstring, SHS*>;
+    using map_DS = xr::string_map<gsl::czstring, SDS*>;
+    using map_CS = xr::string_map<gsl::czstring, SCS*>;
 
 private:
     // data
-    map_Blender m_blenders;
-    map_Texture m_textures;
-    map_RT m_rtargets;
+    xr::string_map<gsl::czstring, IBlenderXr*> m_blenders;
+    xr::string_map<gsl::czstring, CTexture*> m_textures;
+    xr::string_map<gsl::czstring, CRT*> m_rtargets;
 
-    map_VS m_vs;
-    map_PS m_ps;
-    map_GS m_gs;
+    xr::string_map<gsl::czstring, SVS*> m_vs;
+    xr::string_map<gsl::czstring, SPS*> m_ps;
+    xr::string_map<gsl::czstring, SGS*> m_gs;
     map_DS m_ds;
     map_HS m_hs;
     map_CS m_cs;

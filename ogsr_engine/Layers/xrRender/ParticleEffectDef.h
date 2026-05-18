@@ -106,7 +106,7 @@ public:
     float GetFStep();
 
     void SetName(LPCSTR name);
-    IC LPCSTR Name() const { return *m_Name; }
+    [[nodiscard]] gsl::czstring Name() const { return m_Name.c_str(); }
     void CreateShader();
     void DestroyShader();
 

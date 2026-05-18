@@ -46,7 +46,7 @@ void CInfoPortion::load_shared(LPCSTR)
 
     // loading from XML
     const auto pNode = pXML->NavigateToNode(id_to_index::tag_name, item_data.pos_in_file);
-    THROW3(pNode, "info_portion id=", *item_data.id);
+    THROW3(pNode, "info_portion id=", item_data.id.c_str());
 
     // список названий диалогов
     int dialogs_num = pXML->GetNodesNum(pNode, "dialog");

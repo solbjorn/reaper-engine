@@ -366,12 +366,12 @@ void CActor::OnChangeVisual()
         SetCallbacks();
         m_anims->Create(V);
         m_vehicle_anims->Create(V);
-        CDamageManager::reload(*cNameSect(), "damage", pSettings);
+        CDamageManager::reload(cNameSect().c_str(), "damage", pSettings);
         //-------------------------------------------------------------------------------
         m_head = smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head");
-        m_r_hand = smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(), "weapon_bone0"));
-        m_l_finger1 = smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(), "weapon_bone1"));
-        m_r_finger2 = smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(), "weapon_bone2"));
+        m_r_hand = smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(cNameSect(), "weapon_bone0"));
+        m_l_finger1 = smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(cNameSect(), "weapon_bone1"));
+        m_r_finger2 = smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(cNameSect(), "weapon_bone2"));
         //-------------------------------------------------------------------------------
         m_neck = smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_neck");
         m_l_clavicle = smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_l_clavicle");
@@ -393,7 +393,7 @@ void CActor::OnChangeVisual()
         m_current_torso_blend = nullptr;
         m_current_jump_blend = nullptr;
 
-        CStepManager::reload(*cNameSect());
+        CStepManager::reload(cNameSect().c_str());
     }
 }
 

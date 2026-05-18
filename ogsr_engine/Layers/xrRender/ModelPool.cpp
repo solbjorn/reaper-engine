@@ -138,7 +138,7 @@ void CModelPool::Destroy()
     // Registry
     while (!Registry.empty())
     {
-        REGISTRY_IT it = Registry.begin();
+        auto it = Registry.begin();
         dxRender_Visual* V = (dxRender_Visual*)it->first;
 
 #ifdef DEBUG
@@ -326,7 +326,7 @@ void CModelPool::DeleteInternal(dxRender_Visual*& V, BOOL bDiscard)
     else
     {
         //
-        REGISTRY_IT it = Registry.find(V);
+        auto it = Registry.find(V);
         if (it != Registry.end())
         {
             // Registry entry found - move it to pool
@@ -371,21 +371,21 @@ void CModelPool::DeleteQueue()
 void CModelPool::Discard(dxRender_Visual*& V, BOOL b_complete)
 {
     //
-    REGISTRY_IT it = Registry.find(V);
+    auto it = Registry.find(V);
     if (it != Registry.end())
     {
         // Pool - OK
 
         // Base
         const shared_str& name = it->second;
-        xr_vector<ModelDef>::iterator I = Models.begin();
-        xr_vector<ModelDef>::iterator I_e = Models.end();
+        auto I = Models.begin();
+        auto I_e = Models.end();
 
         for (; I != I_e; ++I)
         {
             if (I->name == name)
             {
-                if (b_complete || strchr(*name, '#'))
+                if (b_complete || std::string_view{name}.contains('#'))
                 {
                     VERIFY(I->refs > 0);
 
@@ -545,7 +545,8 @@ void CModelPool::dump()
     sz = 0;
     k = 0;
     u32 free_cnt{};
-    for (REGISTRY_IT it = Registry.begin(); it != Registry.end(); it++)
+
+    for (auto it = Registry.begin(); it != Registry.end(); it++)
     {
         CKinematics* K = PCKinematics((dxRender_Visual*)it->first);
         VERIFY(K);

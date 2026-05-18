@@ -158,8 +158,8 @@ void CPseudoGigant::reinit()
     if (CCustomMonster::use_simplified_visual())
         return;
 
-    move().load_velocity(*cNameSect(), "Velocity_JumpPrepare", MonsterMovement::eGiantVelocityParameterJumpPrepare);
-    move().load_velocity(*cNameSect(), "Velocity_JumpGround", MonsterMovement::eGiantVelocityParameterJumpGround);
+    move().load_velocity(cNameSect().c_str(), "Velocity_JumpPrepare", MonsterMovement::eGiantVelocityParameterJumpPrepare);
+    move().load_velocity(cNameSect().c_str(), "Velocity_JumpGround", MonsterMovement::eGiantVelocityParameterJumpGround);
 
     // com_man().load_jump_data(0,"jump_attack_0", "jump_attack_1", "jump_attack_2", MonsterMovement::eGiantVelocityParameterJumpPrepare,
     // MonsterMovement::eGiantVelocityParameterJumpGround,0);
@@ -180,8 +180,8 @@ void CPseudoGigant::event_on_step()
         float dist_to_actor = pActor->Position().distance_to(Position());
         float max_dist = MAX_STEP_RADIUS;
         if (dist_to_actor < max_dist)
-            Actor()->Cameras().AddCamEffector(
-                xr_new<CPseudogigantStepEffector>(step_effector.time, step_effector.amplitude, step_effector.period_number, (max_dist - dist_to_actor) / (1.2f * max_dist)));
+            Actor()->Cameras().AddCamEffector(xr_new<CPseudogigantStepEffector>(step_effector.time, step_effector.amplitude, step_effector.period_number,
+                                                                                (max_dist - dist_to_actor) / (1.2f * max_dist)));
     }
     //////////////////////////////////
 }
@@ -232,7 +232,8 @@ void CPseudoGigant::on_threaten_execute()
         CPhysicsShellHolder* obj = smart_cast<CPhysicsShellHolder*>(m_nearest[i]);
         if (!obj || !obj->PPhysicsShell() || (obj->spawn_ini() && obj->spawn_ini()->section_exist("ph_heavy")) ||
             (pSettings->line_exist(obj->cNameSect().c_str(), "ph_heavy") && pSettings->r_bool(obj->cNameSect().c_str(), "ph_heavy")) ||
-            (pSettings->line_exist(obj->cNameSect().c_str(), "quest_item") && pSettings->r_bool(obj->cNameSect().c_str(), "quest_item")) || obj->hasFixedBones())
+            (pSettings->line_exist(obj->cNameSect().c_str(), "quest_item") && pSettings->r_bool(obj->cNameSect().c_str(), "quest_item")) ||
+            obj->hasFixedBones())
             continue;
 
         Fvector dir;
@@ -270,10 +271,10 @@ void CPseudoGigant::on_threaten_execute()
         return;
 
     // запустить эффектор
-    Actor()->Cameras().AddCamEffector(xr_new<CMonsterEffectorHit>(m_threaten_effector.ce_time, m_threaten_effector.ce_amplitude * hit_value, m_threaten_effector.ce_period_number,
-                                                                  m_threaten_effector.ce_power * hit_value));
-    Actor()->Cameras().AddPPEffector(
-        xr_new<CMonsterEffector>(m_threaten_effector.ppi, m_threaten_effector.time, m_threaten_effector.time_attack, m_threaten_effector.time_release, hit_value));
+    Actor()->Cameras().AddCamEffector(xr_new<CMonsterEffectorHit>(m_threaten_effector.ce_time, m_threaten_effector.ce_amplitude * hit_value,
+                                                                  m_threaten_effector.ce_period_number, m_threaten_effector.ce_power * hit_value));
+    Actor()->Cameras().AddPPEffector(xr_new<CMonsterEffector>(m_threaten_effector.ppi, m_threaten_effector.time, m_threaten_effector.time_attack,
+                                                              m_threaten_effector.time_release, hit_value));
 
     // развернуть камеру
     if (pA->cam_Active())

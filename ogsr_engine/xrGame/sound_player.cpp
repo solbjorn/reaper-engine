@@ -250,11 +250,11 @@ void CSoundPlayer::CSoundCollection::load()
 
     m_loaded = true;
 
-    for (int j = 0, N = _GetItemCount(*m_params.m_sound_prefix); j < N; ++j)
+    for (int j = 0, N = _GetItemCount(m_params.m_sound_prefix.c_str()); j < N; ++j)
     {
         string_path fn, s, temp;
-        std::ignore = _GetItem(*m_params.m_sound_prefix, j, temp);
-        strconcat(sizeof(s), s, *m_params.m_sound_player_prefix, temp);
+        std::ignore = _GetItem(m_params.m_sound_prefix.c_str(), j, temp);
+        strconcat(sizeof(s), s, m_params.m_sound_player_prefix.c_str(), temp);
 
         if (xr::sound_exists(fn, s))
         {
@@ -265,12 +265,11 @@ void CSoundPlayer::CSoundCollection::load()
 
         for (u32 i = 0; i < m_params.m_max_count; ++i)
         {
-            string256 name;
-            sprintf_s(name, "%s%d", s, i);
+            const auto name = xr::format("{}{}", s, i);
 
             if (xr::sound_exists(fn, name))
             {
-                ref_sound* temp = add(m_params.m_type, name);
+                ref_sound* temp = add(m_params.m_type, name.c_str());
                 if (temp)
                     m_sounds.push_back(temp);
             }

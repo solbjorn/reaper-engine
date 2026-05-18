@@ -119,7 +119,7 @@ void CLocatorAPI::archive::autoload_db()
 {
     for (const auto& excl : xr::excls)
     {
-        if (std::is_eq(xr_strcmp(strext(*path), excl.ext)) && size == excl.size)
+        if (std::is_eq(xr_strcmp(strext(path.c_str()), excl.ext)) && size == excl.size)
         {
             key = excl.key;
             break;
@@ -145,8 +145,8 @@ void CLocatorAPI::archive::index_db(CLocatorAPI& loc, gsl::czstring fs_entry_poi
         string_path name;
 
         gsl::index buffer_size = hdr->r_u16();
-        VERIFY(buffer_size < sizeof(name) + 4 * sizeof(u32));
-        VERIFY(buffer_size < sizeof(buffer_start));
+        VERIFY(buffer_size < gsl::index{sizeof(name) + 4 * sizeof(u32)});
+        VERIFY(buffer_size < gsl::index{sizeof(buffer_start)});
 
         auto buffer{buffer_start.begin()};
         hdr->r(&*buffer, buffer_size);

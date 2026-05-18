@@ -117,7 +117,7 @@ void CObjectHandler::OnItemDrop(CInventoryItem* inventory_item)
         CWeaponAmmo* weapon_ammo = smart_cast<CWeaponAmmo*>(inventory_item);
         if (weapon_ammo)
         {
-            Level().spawn_item(*weapon_ammo->cNameSect(), planner().object().Position(), planner().object().ai_location().level_vertex_id(),
+            Level().spawn_item(weapon_ammo->cNameSect().c_str(), planner().object().Position(), planner().object().ai_location().level_vertex_id(),
                                planner().object().ID());
             m_item_to_spawn = weapon_ammo->cNameSect();
             m_ammo_in_box_to_spawn = weapon_ammo->m_boxSize;
@@ -209,7 +209,7 @@ void CObjectHandler::actualize_strap_mode(CWeapon* weapon) const
         return;
     }
 
-    THROW3(weapon->can_be_strapped(), "Cannot strap weapon", *weapon->cName());
+    THROW3(weapon->can_be_strapped(), "Cannot strap weapon", weapon->cName().c_str());
     weapon->strapped_mode(true);
 }
 

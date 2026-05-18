@@ -110,13 +110,10 @@ CScriptGameObject* CScriptGameObject::Parent() const
     return nullptr;
 }
 
-int CScriptGameObject::clsid() const { return (object().clsid()); }
-
-LPCSTR CScriptGameObject::Name() const { return (*object().cName()); }
-
-shared_str CScriptGameObject::cName() const { return (object().cName()); }
-
-LPCSTR CScriptGameObject::Section() const { return (*object().cNameSect()); }
+int CScriptGameObject::clsid() const { return object().clsid(); }
+gsl::czstring CScriptGameObject::Name() const { return object().cName().c_str(); }
+shared_str CScriptGameObject::cName() const { return object().cName(); }
+gsl::czstring CScriptGameObject::Section() const { return object().cNameSect().c_str(); }
 
 void CScriptGameObject::Kill(CScriptGameObject* who)
 {
