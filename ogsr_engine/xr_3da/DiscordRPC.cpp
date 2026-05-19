@@ -76,7 +76,7 @@ void DiscordRPC::Update(const char* level_name_translated, const char* level_nam
 
     if (active_task_text)
     {
-        task_txt = StringHasUTF8(active_task_text) ? active_task_text : StringToUTF8(active_task_text);
+        task_txt = active_task_text;
         presenseInfo.state = task_txt.c_str(); // Активное задание
     }
 
@@ -85,7 +85,7 @@ void DiscordRPC::Update(const char* level_name_translated, const char* level_nam
 
     if (current_level_name_translated)
     {
-        lname = StringHasUTF8(current_level_name_translated) ? current_level_name_translated : StringToUTF8(current_level_name_translated);
+        lname = current_level_name_translated;
         presenseInfo.details = lname.c_str(); // название уровня
     }
 

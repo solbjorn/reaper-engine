@@ -122,8 +122,7 @@ void game_sv_GameState::script_register(sol::state_view& lua)
     game.set("time", &get_time, "get_game_time", &get_time_struct, "start_tutorial", &start_tutorial, "stop_tutorial", &stop_tutorial, "has_active_tutorial",
              &has_active_tutotial, "translate_string", &translate_string, "play_hud_motion", &PlayHudMotion, "stop_hud_motion", &StopHudMotion,
              "get_motion_length", &MotionLength, "hud_motion_allowed", &AllowHudMotion, "play_hud_anm", &PlayBlendAnm, "stop_hud_anm", &StopBlendAnm,
-             "stop_all_hud_anms", &StopAllBlendAnms, "set_hud_anm_time", &SetBlendAnmTime, "generate_id", &generate_id, "StringHasUTF8", &StringHasUTF8,
-             "StringToUTF8", &StringToUTF8, "StringFromUTF8", &StringFromUTF8);
+             "stop_all_hud_anms", &StopAllBlendAnms, "set_hud_anm_time", &SetBlendAnmTime, "generate_id", &generate_id, "StringHasUTF8", &StringHasUTF8);
 
     lua.new_enum("game_player_flags", "GAME_PLAYER_FLAG_LOCAL", GAME_PLAYER_FLAG_LOCAL);
     lua.new_enum("game_phases", "GAME_PHASE_NONE", GAME_PHASE_NONE, "GAME_PHASE_INPROGRESS", GAME_PHASE_INPROGRESS, "GAME_PHASE_PENDING", GAME_PHASE_PENDING);

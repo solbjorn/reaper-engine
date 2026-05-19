@@ -375,9 +375,6 @@ inline char* xr_strconcat(StrType& dest, const StrType2& arg1, const Args&... ar
 #define xr_sprintf sprintf_s
 #define xr_strcat strcat_s
 
-std::string StringToUTF8(const char* in);
-std::string StringFromUTF8(const char* in);
-
 // Определяет есть ли в строке юникодные символы
 inline bool StringHasUTF8(const char* str)
 {
