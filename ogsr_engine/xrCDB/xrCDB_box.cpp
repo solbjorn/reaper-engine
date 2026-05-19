@@ -7,6 +7,7 @@ XR_DIAG_IGNORE("-Wfloat-conversion");
 XR_DIAG_IGNORE("-Wfloat-equal");
 XR_DIAG_IGNORE("-Wheader-hygiene");
 XR_DIAG_IGNORE("-Wold-style-cast");
+XR_DIAG_IGNORE("-Woverloaded-virtual");
 XR_DIAG_IGNORE("-Wshorten-64-to-32");
 XR_DIAG_IGNORE("-Wsign-conversion");
 XR_DIAG_IGNORE("-Wunknown-pragmas");

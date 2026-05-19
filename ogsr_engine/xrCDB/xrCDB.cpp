@@ -10,6 +10,7 @@ XR_DIAG_IGNORE("-Wfloat-conversion");
 XR_DIAG_IGNORE("-Wfloat-equal");
 XR_DIAG_IGNORE("-Wheader-hygiene");
 XR_DIAG_IGNORE("-Wold-style-cast");
+XR_DIAG_IGNORE("-Woverloaded-virtual");
 XR_DIAG_IGNORE("-Wshorten-64-to-32");
 XR_DIAG_IGNORE("-Wsign-conversion");
 XR_DIAG_IGNORE("-Wunknown-pragmas");
@@ -116,6 +117,8 @@ gsl::index MODEL::memory() const
     return tree->GetUsedBytes() + V + T + gsl::index{sizeof(*this)} + gsl::index{sizeof(*tree)};
 }
 
+namespace
+{
 struct alignas(16) model_mid_hdr
 {
     s64 tris_count;
@@ -132,15 +135,16 @@ struct alignas(16) model_end_hdr
     xxh::XXH64_hash_t nodes_xxh;
     u64 pad;
 };
+} // namespace
 
 void MODEL::serialize_tree(IWriter* stream) const
 {
     // This should be smart_cast<>()/dynamic_cast<>(), but OpCoDe doesn't use our custom RTTI.
     // So we just rely on that `AABBOptimizedTree` starts at offset 0 inside `AABBNoLeafTree`.
     // OpCoDe itself uses C-style casts for downcasting, which is roughly the same.
-    const auto* root = reinterpret_cast<const AABBNoLeafTree*>(tree->GetTree())->GetNodes();
+    const auto root = reinterpret_cast<const AABBNoLeafTree*>(tree->GetTree())->GetNodes();
     const auto nodes_num = tree->GetNbNodes();
-    const auto size = xr::roundup(nodes_num * sizeof(AABBNoLeafNode), 16uz);
+    const auto size = nodes_num * sizeof(AABBNoLeafNode);
 
     const model_end_hdr hdr = {
         .model_code = tree->GetModelCode(),
@@ -194,33 +198,29 @@ bool MODEL::deserialize_tree(IReader* stream)
     xr_memcpy128(&hdr, stream->pointer(), sizeof(hdr));
     stream->advance(sizeof(hdr));
 
-    auto* mTree = xr_new<AABBNoLeafTree>();
-    auto* ptr = xr_alloc<AABBNoLeafNode>(hdr.nodes_num);
-
+    auto nodes = std::make_unique_for_overwrite<AABBNoLeafNode[]>(hdr.nodes_num);
     const auto size = hdr.nodes_num * sizeof(AABBNoLeafNode);
-    xr_memcpy128(ptr, stream->pointer(), size);
+    std::memcpy(static_cast<void*>(&nodes[0]), stream->pointer(), size);
 
-    if (xxh::XXH3_64bits(ptr, size) != hdr.nodes_xxh)
-    {
-        xr_free(ptr);
-        xr_delete(mTree);
-
+    if (xxh::XXH3_64bits(&nodes[0], size) != hdr.nodes_xxh)
         return false;
+
+    for (auto& node : std::span{&nodes[0], hdr.nodes_num})
+    {
+        if (!node.HasPosLeaf())
+        {
+            node.mPosData -= hdr.nodes;
+            node.mPosData += reinterpret_cast<uintptr_t>(&nodes[0]);
+        }
+
+        if (!node.HasNegLeaf())
+        {
+            node.mNegData -= hdr.nodes;
+            node.mNegData += reinterpret_cast<uintptr_t>(&nodes[0]);
+        }
     }
 
-    for (gsl::index i{}; i < hdr.nodes_num; ++i)
-    {
-        if (!ptr[i].HasPosLeaf())
-        {
-            ptr[i].mPosData -= hdr.nodes;
-            ptr[i].mPosData += reinterpret_cast<uintptr_t>(ptr);
-        }
-        if (!ptr[i].HasNegLeaf())
-        {
-            ptr[i].mNegData -= hdr.nodes;
-            ptr[i].mNegData += reinterpret_cast<uintptr_t>(ptr);
-        }
-    }
+    auto mTree = std::make_unique<AABBNoLeafTree>();
 
     struct faketree
     {
@@ -228,10 +228,10 @@ bool MODEL::deserialize_tree(IReader* stream)
         u32 mNbNodes;
         u8 pad2[4];
         AABBNoLeafNode* mNodes;
-    }* ft = reinterpret_cast<faketree*>(mTree);
+    }* ft = reinterpret_cast<faketree*>(mTree.get());
 
     ft->mNbNodes = hdr.nodes_num;
-    ft->mNodes = ptr;
+    ft->mNodes = nodes.release();
 
     struct fakemodel
     {
@@ -242,7 +242,7 @@ bool MODEL::deserialize_tree(IReader* stream)
     }* fm = reinterpret_cast<fakemodel*>(tree);
 
     fm->mModelCode = hdr.model_code;
-    fm->mTree = mTree;
+    fm->mTree = mTree.release();
 
     return true;
 }
