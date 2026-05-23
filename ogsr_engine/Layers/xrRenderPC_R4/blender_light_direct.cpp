@@ -97,10 +97,16 @@ void CBlender_accum_direct_msaa::Compile(CBlender_Compile& C)
 {
     IBlender::Compile(C);
 
-    if (Name)
-        RImplementation.m_MSAASample = atoi(Definition);
+    if (Name != nullptr)
+    {
+        const auto res = scn::scan_int<s32>(Definition);
+        R_ASSERT(res, res.error().msg());
+        RImplementation.m_MSAASample = res->value();
+    }
     else
+    {
         RImplementation.m_MSAASample = -1;
+    }
 
     constexpr BOOL blend = FALSE;
     constexpr D3DBLEND dest = blend ? D3DBLEND_ONE : D3DBLEND_ZERO;
@@ -192,10 +198,16 @@ void CBlender_accum_direct_volumetric_msaa::Compile(CBlender_Compile& C)
 {
     IBlender::Compile(C);
 
-    if (Name)
-        RImplementation.m_MSAASample = atoi(Definition);
+    if (Name != nullptr)
+    {
+        const auto res = scn::scan_int<s32>(Definition);
+        R_ASSERT(res, res.error().msg());
+        RImplementation.m_MSAASample = res->value();
+    }
     else
+    {
         RImplementation.m_MSAASample = -1;
+    }
 
     constexpr BOOL blend = FALSE;
     constexpr D3DBLEND dest = blend ? D3DBLEND_ONE : D3DBLEND_ZERO;
@@ -226,10 +238,16 @@ void CBlender_accum_direct_volumetric_sun_msaa::Compile(CBlender_Compile& C)
 {
     IBlender::Compile(C);
 
-    if (Name)
-        RImplementation.m_MSAASample = atoi(Definition);
+    if (Name != nullptr)
+    {
+        const auto res = scn::scan_int<s32>(Definition);
+        R_ASSERT(res, res.error().msg());
+        RImplementation.m_MSAASample = res->value();
+    }
     else
+    {
         RImplementation.m_MSAASample = -1;
+    }
 
     switch (C.iElement)
     {

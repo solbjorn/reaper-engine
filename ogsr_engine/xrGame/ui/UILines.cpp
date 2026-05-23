@@ -601,10 +601,8 @@ float CUILines::GetVIndentByAlign()
 }
 
 // %c[255,255,255,255] or %c[255,255,255]
-u32 CUILines::GetColorFromText(const xr_string& str) const
+u32 CUILines::GetColorFromText(std::string_view str) const
 {
-    //	typedef xr_string::size_type size;
-
     StrSize begin, end, comma1_pos, comma2_pos, comma3_pos;
 
     begin = str.find(BEGIN);
@@ -620,8 +618,7 @@ u32 CUILines::GetColorFromText(const xr_string& str) const
     //	CUIXmlInit xml;
     for (CUIXmlInit::ColorDefs::const_iterator it = CUIXmlInit::GetColorDefs()->begin(); it != CUIXmlInit::GetColorDefs()->end(); ++it)
     {
-        int cmp = str.compare(begin + 3, end - begin - 3, it->first.c_str());
-        if (cmp == 0)
+        if (const auto cmp = str.compare(begin + 3, end - begin - 3, it->first); cmp == 0)
             return it->second;
     }
 
@@ -636,33 +633,48 @@ u32 CUILines::GetColorFromText(const xr_string& str) const
     //  commented by Zander
 
     u32 a, r, g, b;
-    xr_string single_color;
 
     begin += 3;
 
     // Этот код воспринимает цвет и в ARGB, и в RGB формате. При не-валидном коде цвета устанавливается ARGB 255,200,200,200.
     if (npos != comma1_pos && npos != comma2_pos)
-    { // have 2+ comma`s
+    {
+        // have 2+ comma`s
         if (npos != comma3_pos)
-        { // ARGB code found
-            single_color = str.substr(begin, comma1_pos - 1);
-            a = atoi(single_color.c_str());
-            single_color = str.substr(comma1_pos + 1, comma2_pos - 1);
-            r = atoi(single_color.c_str());
-            single_color = str.substr(comma2_pos + 1, comma3_pos - 1);
-            g = atoi(single_color.c_str());
-            single_color = str.substr(comma3_pos + 1, end - 1);
-            b = atoi(single_color.c_str());
+        {
+            // ARGB code found
+            auto res = scn::scan_int<u8>(str.substr(begin, comma1_pos - 1));
+            R_ASSERT(res, res.error().msg());
+            a = res->value();
+
+            res = scn::scan_int<u8>(str.substr(comma1_pos + 1, comma2_pos - 1));
+            R_ASSERT(res, res.error().msg());
+            r = res->value();
+
+            res = scn::scan_int<u8>(str.substr(comma2_pos + 1, comma3_pos - 1));
+            R_ASSERT(res, res.error().msg());
+            g = res->value();
+
+            res = scn::scan_int<u8>(str.substr(comma3_pos + 1, end - 1));
+            R_ASSERT(res, res.error().msg());
+            b = res->value();
         }
         else
-        { // RGB code found
+        {
+            // RGB code found
             a = 255;
-            single_color = str.substr(begin, comma1_pos - 1);
-            r = atoi(single_color.c_str());
-            single_color = str.substr(comma1_pos + 1, comma2_pos - 1);
-            g = atoi(single_color.c_str());
-            single_color = str.substr(comma2_pos + 1, end - 1);
-            b = atoi(single_color.c_str());
+
+            auto res = scn::scan_int<u8>(str.substr(begin, comma1_pos - 1));
+            R_ASSERT(res, res.error().msg());
+            r = res->value();
+
+            res = scn::scan_int<u8>(str.substr(comma1_pos + 1, comma2_pos - 1));
+            R_ASSERT(res, res.error().msg());
+            g = res->value();
+
+            res = scn::scan_int<u8>(str.substr(comma2_pos + 1, end - 1));
+            R_ASSERT(res, res.error().msg());
+            b = res->value();
         }
     }
     else

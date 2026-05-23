@@ -53,7 +53,11 @@ void setup_location_types_section(GameGraph::TERRAIN_VECTOR& m_vertex_types, CIn
             continue;
 
         for (u32 j = 0; j < GameGraph::LOCATION_TYPE_COUNT; ++j)
-            terrain_mask.tMask[j] = GameGraph::_LOCATION_ID(atoi(_GetItem(S, j, I16)));
+        {
+            const auto res = scn::scan_int<GameGraph::_LOCATION_ID>(_GetItem(S, j, I16));
+            R_ASSERT(res, res.error().msg());
+            terrain_mask.tMask[j] = res->value();
+        }
 
         m_vertex_types.push_back(terrain_mask);
     }
@@ -88,7 +92,12 @@ void setup_location_types_line(GameGraph::TERRAIN_VECTOR& m_vertex_types, LPCSTR
     for (u32 i = 0; i < N;)
     {
         for (u32 j = 0; j < GameGraph::LOCATION_TYPE_COUNT; ++j, ++i)
-            terrain_mask.tMask[j] = GameGraph::_LOCATION_ID(atoi(_GetItem(string, i, I)));
+        {
+            const auto res = scn::scan_int<GameGraph::_LOCATION_ID>(_GetItem(string, i, I));
+            R_ASSERT(res, res.error().msg());
+            terrain_mask.tMask[j] = res->value();
+        }
+
         m_vertex_types.push_back(terrain_mask);
     }
 }

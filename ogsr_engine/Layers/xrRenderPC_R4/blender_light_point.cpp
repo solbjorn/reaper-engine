@@ -76,10 +76,16 @@ void CBlender_accum_point_msaa::Compile(CBlender_Compile& C)
 {
     IBlender::Compile(C);
 
-    if (Name)
-        RImplementation.m_MSAASample = atoi(Definition);
+    if (Name != nullptr)
+    {
+        const auto res = scn::scan_int<s32>(Definition);
+        R_ASSERT(res, res.error().msg());
+        RImplementation.m_MSAASample = res->value();
+    }
     else
+    {
         RImplementation.m_MSAASample = -1;
+    }
 
     constexpr BOOL blend = true;
     constexpr D3DBLEND dest = blend ? D3DBLEND_ONE : D3DBLEND_ZERO;
@@ -139,5 +145,6 @@ void CBlender_accum_point_msaa::Compile(CBlender_Compile& C)
         C.r_End();
         break;
     }
+
     RImplementation.m_MSAASample = -1;
 }

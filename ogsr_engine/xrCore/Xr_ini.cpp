@@ -107,14 +107,18 @@ LPCSTR CInifile::Sect::r_string(LPCSTR L)
 
 float CInifile::Sect::r_float(LPCSTR L)
 {
-    LPCSTR C = r_string(L);
-    return float(atof(C));
+    const auto res = scn::scan_value<f32>(std::string_view{r_string(L)});
+    R_ASSERT(res, res.error().msg());
+
+    return res->value();
 }
 
 u32 CInifile::Sect::r_u32(LPCSTR L)
 {
-    LPCSTR C = r_string(L);
-    return u32(atoi(C));
+    const auto res = scn::scan_int<u32>(r_string(L));
+    R_ASSERT(res, res.error().msg());
+
+    return res->value();
 }
 
 Fvector3 CInifile::Sect::r_fvector3(LPCSTR L)
@@ -564,50 +568,64 @@ shared_str CInifile::r_string_wb(LPCSTR S, LPCSTR L)
 
 u8 CInifile::r_u8(LPCSTR S, LPCSTR L)
 {
-    LPCSTR C = r_string(S, L);
-    return u8(atoi(C));
+    const auto res = scn::scan_int<u8>(r_string(S, L));
+    R_ASSERT(res, res.error().msg());
+
+    return res->value();
 }
 
 u8 CInifile::r_u8_hex(gsl::czstring sect, gsl::czstring line) { return gsl::narrow<u8>(std::strtol(r_string(sect, line), nullptr, 16)); }
 
 u16 CInifile::r_u16(LPCSTR S, LPCSTR L)
 {
-    LPCSTR C = r_string(S, L);
-    return u16(atoi(C));
+    const auto res = scn::scan_int<u16>(r_string(S, L));
+    R_ASSERT(res, res.error().msg());
+
+    return res->value();
 }
 
 u16 CInifile::r_u16_hex(gsl::czstring sect, gsl::czstring line) { return gsl::narrow<u16>(std::strtol(r_string(sect, line), nullptr, 16)); }
 
 u32 CInifile::r_u32(LPCSTR S, LPCSTR L)
 {
-    LPCSTR C = r_string(S, L);
-    return u32(atoi(C));
+    const auto res = scn::scan_int<u32>(r_string(S, L));
+    R_ASSERT(res, res.error().msg());
+
+    return res->value();
 }
 
 u32 CInifile::r_u32_hex(gsl::czstring sect, gsl::czstring line) { return gsl::narrow<u32>(std::strtoll(r_string(sect, line), nullptr, 16)); }
 
 s8 CInifile::r_s8(LPCSTR S, LPCSTR L)
 {
-    LPCSTR C = r_string(S, L);
-    return s8(atoi(C));
+    const auto res = scn::scan_int<s8>(r_string(S, L));
+    R_ASSERT(res, res.error().msg());
+
+    return res->value();
 }
 
 s16 CInifile::r_s16(LPCSTR S, LPCSTR L)
 {
-    LPCSTR C = r_string(S, L);
-    return s16(atoi(C));
+    const auto res = scn::scan_int<s16>(r_string(S, L));
+    R_ASSERT(res, res.error().msg());
+
+    return res->value();
 }
 
 s32 CInifile::r_s32(LPCSTR S, LPCSTR L)
 {
-    LPCSTR C = r_string(S, L);
-    return s32(atoi(C));
+    const auto res = scn::scan_int<s32>(r_string(S, L));
+    R_ASSERT(res, res.error().msg());
+
+    return res->value();
 }
 
 float CInifile::r_float(LPCSTR S, LPCSTR L)
 {
-    LPCSTR C = r_string(S, L);
-    return float(atof(C));
+    const auto res = scn::scan_value<f32>(std::string_view{r_string(S, L)});
+    R_ASSERT(res, res.error().msg());
+
+    return res->value();
 }
 
 Fcolor CInifile::r_fcolor(LPCSTR S, LPCSTR L)

@@ -4,6 +4,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "monster_community.h"
 
 #define MONSTER_RELATIONS_SECT "monster_communities"
@@ -11,17 +12,23 @@
 #define MONSTER_RELATIONS_TABLE "monster_relations"
 
 //////////////////////////////////////////////////////////////////////////
+
 MONSTER_COMMUNITY_DATA::MONSTER_COMMUNITY_DATA(MONSTER_COMMUNITY_INDEX idx, MONSTER_COMMUNITY_ID idn, LPCSTR team_str)
 {
     index = idx;
     id = idn;
-    team = (u8)atoi(team_str);
+
+    const auto res = scn::scan_int<u8>(team_str);
+    R_ASSERT(res, res.error().msg());
+    team = res->value();
 }
 
 //////////////////////////////////////////////////////////////////////////
+
 MONSTER_COMMUNITY::MONSTER_RELATION_TABLE MONSTER_COMMUNITY::m_relation_table;
 
 //////////////////////////////////////////////////////////////////////////
+
 MONSTER_COMMUNITY::MONSTER_COMMUNITY() { m_current_index = NO_MONSTER_COMMUNITY_INDEX; }
 MONSTER_COMMUNITY::~MONSTER_COMMUNITY() {}
 

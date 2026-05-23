@@ -211,8 +211,11 @@ void CEnvelope::LoadA(IReader& F)
     if (strstr(buf, "{ Envelope"))
     {
         F.r_string(buf, sizeof(buf));
-        int nkeys = atoi(buf);
-        keys.resize(nkeys);
+
+        const auto res = scn::scan_int<size_t>(buf);
+        R_ASSERT(res, res.error().msg());
+        keys.resize(res->value());
+
         for (u32 i = 0; i < keys.size(); i++)
         {
             keys[i] = xr_new<st_Key>();

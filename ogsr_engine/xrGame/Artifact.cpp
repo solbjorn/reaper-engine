@@ -613,10 +613,16 @@ void SArtefactActivation::SpawnAnomaly()
 
     float zone_radius = (float)atof(_GetItem(str, 1, tmp));
     u8 restrictor_type = RestrictionSpace::eRestrictorTypeNone;
-    if (_GetItemCount(str) > 3 && atoi(_GetItem(str, 3, tmp)) != 0)
+
+    if (_GetItemCount(str) > 3)
     {
-        restrictor_type = RestrictionSpace::eDefaultRestrictorTypeNone;
+        const auto res = scn::scan_int<s32>(_GetItem(str, 3, tmp));
+        R_ASSERT(res, res.error().msg());
+
+        if (res->value() != 0)
+            restrictor_type = RestrictionSpace::eDefaultRestrictorTypeNone;
     }
+
     LPCSTR zone_sect = _GetItem(str, 0, tmp); // must be last call of _GetItem... (LPCSTR !!!)
 
     Fvector pos;

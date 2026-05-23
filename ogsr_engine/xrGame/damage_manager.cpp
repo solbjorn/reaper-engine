@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "damage_manager.h"
+
 #include "..\xr_3da\xr_object.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xr_3da/bone.h"
@@ -88,7 +89,7 @@ void CDamageManager::load_section(LPCSTR section, CInifile* ini)
                        m_object->cNameVisual().c_str());
             CBoneInstance& bone_instance = kinematics->LL_GetBoneInstance(u16(bone));
             bone_instance.set_param(0, (float)atof(_GetItem(i.second.c_str(), 0, buffer)));
-            bone_instance.set_param(1, (float)atoi(_GetItem(i.second.c_str(), 1, buffer)));
+            bone_instance.set_param(1, (float)atof(_GetItem(i.second.c_str(), 1, buffer)));
             bone_instance.set_param(2, (float)atof(_GetItem(i.second.c_str(), 2, buffer)));
             if (_GetItemCount(i.second.c_str()) < 4)
             {

@@ -12,13 +12,19 @@
 #define REPUTATION_TABLE "reputation_relations"
 
 //////////////////////////////////////////////////////////////////////////
+
 REPUTATION_DATA::REPUTATION_DATA(int idx, shared_str idn, LPCSTR threshold_str)
 {
     index = idx;
     id = idn;
-    threshold = (CHARACTER_REPUTATION_VALUE)atoi(threshold_str);
+
+    const auto res = scn::scan_int<CHARACTER_REPUTATION_VALUE>(threshold_str);
+    R_ASSERT(res, res.error().msg());
+    threshold = res->value();
 }
+
 //////////////////////////////////////////////////////////////////////////
+
 CHARACTER_REPUTATION::GOODWILL_TABLE CHARACTER_REPUTATION::m_relation_table;
 
 //////////////////////////////////////////////////////////////////////////

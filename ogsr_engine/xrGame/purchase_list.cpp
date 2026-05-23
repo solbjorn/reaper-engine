@@ -47,7 +47,14 @@ void CPurchaseList::process(CInifile& ini_file, LPCSTR section, CInventoryOwner&
                    I.first.c_str());
 
         string256 temp0, temp1;
-        process(game_object, I.first, atoi(_GetItem(I.second.c_str(), 0, temp0)), (float)atof(_GetItem(I.second.c_str(), 1, temp1)), lua_function);
+
+        const auto resi = scn::scan_int<u32>(_GetItem(I.second.c_str(), 0, temp0));
+        R_ASSERT(resi, resi.error().msg());
+
+        const auto resf = scn::scan_value<f32>(std::string_view{_GetItem(I.second.c_str(), 1, temp1)});
+        R_ASSERT(resf, resf.error().msg());
+
+        process(game_object, I.first, resi->value(), resf->value(), lua_function);
     }
 }
 

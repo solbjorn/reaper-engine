@@ -69,7 +69,7 @@ protected:
     Ivector2 m_cursor_pos{};
     void UpdateCursor();
     // %c[255,255,255,255]
-    u32 GetColorFromText(const xr_string& str) const;
+    [[nodiscard]] u32 GetColorFromText(std::string_view str) const;
     float GetIndentByAlign() const;
     float GetVIndentByAlign();
     void CutFirstColoredTextEntry(xr_string& entry, u32& color, xr_string& text) const;

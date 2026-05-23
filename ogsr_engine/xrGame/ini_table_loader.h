@@ -43,28 +43,24 @@ private:
     int table_width{-1};
 
     // перобразование из LPCSTR в T_ITEM
-    decltype(auto) convert(const char* str)
+    [[nodiscard]] static constexpr auto convert(gsl::czstring str)
     {
-        if constexpr (std::is_same_v<T_ITEM, float>)
-            return static_cast<T_ITEM>(atof(str));
+        if constexpr (std::is_same_v<T_ITEM, f32>)
+        {
+            const auto res = scn::scan_value<T_ITEM>(std::string_view{str});
+            R_ASSERT(res, res.error().msg());
+            return res->value();
+        }
         else
         {
-            static_assert(std::is_same_v<T_ITEM, int>, "Specialization for convert in CIni_Table not found.");
-            return atoi(str);
+            static_assert(std::is_same_v<T_ITEM, s32>, "Specialization for convert in CIni_Table not found.");
+
+            const auto res = scn::scan_int<T_ITEM>(str);
+            R_ASSERT(res, res.error().msg());
+            return res->value();
         }
     }
 };
-
-/*
-TEMPLATE_SPECIALIZATION
-typename CSIni_Table::ITEM_TABLE* CSIni_Table::m_pTable = NULL;
-
-//имя секции таблицы
-TEMPLATE_SPECIALIZATION
-LPCSTR CSIni_Table::table_sect = NULL;
-TEMPLATE_SPECIALIZATION
-int CSIni_Table::table_width = -1;
-*/
 
 TEMPLATE_SPECIALIZATION
 CSIni_Table::~CIni_Table() { xr_delete(m_pTable); }

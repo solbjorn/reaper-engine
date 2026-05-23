@@ -93,13 +93,18 @@ void CInventoryItem::Load(LPCSTR section)
         const int count = _GetItemCount(m_slots_sect);
         if (count)
             m_slots.clear(); // full override!
+
         for (int i = 0; i < count; ++i)
         {
-            u8 slot = u8(atoi(_GetItem(m_slots_sect, i, buf)));
+            const auto res = scn::scan_int<u8>(_GetItem(m_slots_sect, i, buf));
+            R_ASSERT(res, res.error().msg());
+            const auto slot = res->value();
+
             // вместо std::find(m_slots.begin(), m_slots.end(), slot) == m_slots.end() используется !IsPlaceable
             if (slot < SLOTS_TOTAL && !IsPlaceable(slot, slot))
-                m_slots.push_back(slot);
+                m_slots.emplace_back(slot);
         }
+
         if (count)
             SetSlot(m_slots[0]);
     }

@@ -81,6 +81,7 @@ Fvector get_head_position(CObject* object);
 //////////////////////////////////////////////////////////////////////////
 // LTX routines
 //////////////////////////////////////////////////////////////////////////
+
 IC void read_delay(LPCSTR section, LPCSTR name, u32& delay_min, u32& delay_max)
 {
     LPCSTR delay = pSettings->r_string(section, name);
@@ -88,13 +89,21 @@ IC void read_delay(LPCSTR section, LPCSTR name, u32& delay_min, u32& delay_max)
 
     if (_GetItemCount(delay) == 2)
     {
-        delay_min = u32(atoi(_GetItem(delay, 0, tempst)));
-        delay_max = u32(atoi(_GetItem(delay, 1, tempst)));
+        auto res = scn::scan_int<u32>(_GetItem(delay, 0, tempst));
+        R_ASSERT(res, res.error().msg());
+        delay_min = res->value();
+
+        res = scn::scan_int<u32>(_GetItem(delay, 1, tempst));
+        R_ASSERT(res, res.error().msg());
+        delay_max = res->value();
     }
     else
     {
         delay_min = 0;
-        delay_max = u32(atoi(delay));
+
+        const auto res = scn::scan_int<u32>(delay);
+        R_ASSERT(res);
+        delay_max = res->value();
     }
 }
 

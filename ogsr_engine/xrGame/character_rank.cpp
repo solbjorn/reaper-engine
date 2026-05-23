@@ -13,13 +13,19 @@
 #define RANK_KILL_TABLE_SECT "rank_kill_points"
 
 //////////////////////////////////////////////////////////////////////////
+
 RANK_DATA::RANK_DATA(int idx, shared_str idn, LPCSTR threshold_str)
 {
     index = idx;
     id = idn;
-    threshold = (CHARACTER_RANK_VALUE)atoi(threshold_str);
+
+    const auto res = scn::scan_int<CHARACTER_RANK_VALUE>(threshold_str);
+    R_ASSERT(res, res.error().msg());
+    threshold = res->value();
 }
+
 //////////////////////////////////////////////////////////////////////////
+
 CHARACTER_RANK::GOODWILL_TABLE CHARACTER_RANK::m_relation_table;
 CHARACTER_RANK::RANK_KILL_TABLE CHARACTER_RANK::m_rank_kill_table;
 

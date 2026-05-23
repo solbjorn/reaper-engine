@@ -93,7 +93,10 @@ static void generate_story_ids(STORY_PAIRS& result, _id_type INVALID_ID, LPCSTR 
         R_ASSERT3(!std::string_view{temp}.contains(' '), invalid_id_description, temp.c_str());
         R_ASSERT2(std::is_neq(xr_strcmp(temp, INVALID_ID_STRING)), invalid_id_redefinition);
 
-        auto ret = result.try_emplace(temp, atoi(N));
+        const auto res = scn::scan_int<u32>(N);
+        R_ASSERT(res, res.error().msg());
+
+        auto ret = result.try_emplace(temp, res->value());
         ASSERT_FMT(ret.second == true, "%s %s!", duplicated_id_description, temp.c_str());
     }
 

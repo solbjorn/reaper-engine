@@ -44,8 +44,10 @@ void CStepManager::reload(LPCSTR section)
 
     for (u32 i = 0; pSettings->r_line(anim_section, i, &anim_name, &val); ++i)
     {
-        std::ignore = _GetItem(val, 0, cur_elem);
-        param.cycles = u8(atoi(cur_elem));
+        const auto res = scn::scan_int<u8>(_GetItem(val, 0, cur_elem));
+        R_ASSERT(res, res.error().msg());
+
+        param.cycles = res->value();
         R_ASSERT(param.cycles >= 1);
 
         for (u32 j = 0; j < m_legs_count; j++)

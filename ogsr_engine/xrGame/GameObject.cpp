@@ -491,8 +491,14 @@ void CGameObject::spawn_supplies()
         {
             int n = _GetItemCount(V);
             string16 temp;
+
             if (n > 0)
-                j = atoi(_GetItem(V, 0, temp)); // count
+            {
+                // count
+                const auto res = scn::scan_int<u32>(_GetItem(V, 0, temp));
+                R_ASSERT(res, res.error().msg());
+                j = std::max(res->value(), 1u);
+            }
 
             if (strstr(V, "prob="))
                 p = (float)atof(strstr(V, "prob=") + 5);

@@ -390,8 +390,10 @@ void CTexture::Load(const char* Name)
             flags.seqCycles = TRUE;
             _fs->r_string(buffer, sizeof(buffer));
         }
-        u32 fps = atoi(buffer);
-        seqMSPF = 1000 / fps;
+
+        const auto res = scn::scan_int<u32>(buffer);
+        R_ASSERT(res, res.error().msg());
+        seqMSPF = 1000 / std::max(res->value(), 1u);
 
         while (!_fs->eof())
         {

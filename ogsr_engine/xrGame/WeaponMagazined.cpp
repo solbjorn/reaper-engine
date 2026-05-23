@@ -181,9 +181,10 @@ void CWeaponMagazined::Load(LPCSTR section)
         for (int i = 0; i < ModesCount; i++)
         {
             string16 sItem;
-            std::ignore = _GetItem(FireModesList, i, sItem);
-            int FireMode = atoi(sItem);
-            m_aFireModes.push_back(FireMode);
+
+            const auto res = scn::scan_int<s32>(_GetItem(FireModesList, i, sItem));
+            R_ASSERT(res, res.error().msg());
+            m_aFireModes.emplace_back(res->value());
         }
 
         m_iCurFireMode = ModesCount - 1;

@@ -8,14 +8,19 @@
 #include "character_community.h"
 
 //////////////////////////////////////////////////////////////////////////
+
 COMMUNITY_DATA::COMMUNITY_DATA(CHARACTER_COMMUNITY_INDEX idx, CHARACTER_COMMUNITY_ID idn, LPCSTR team_str)
 {
     index = idx;
     id = idn;
-    team = (u8)atoi(team_str);
+
+    const auto res = scn::scan_int<u8>(team_str);
+    R_ASSERT(res, res.error().msg());
+    team = res->value();
 }
 
 //////////////////////////////////////////////////////////////////////////
+
 CHARACTER_COMMUNITY::GOODWILL_TABLE CHARACTER_COMMUNITY::m_relation_table;
 CHARACTER_COMMUNITY::SYMPATHY_TABLE CHARACTER_COMMUNITY::m_sympathy_table;
 

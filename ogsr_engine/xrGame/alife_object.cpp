@@ -44,9 +44,10 @@ void CSE_ALifeObject::spawn_supplies(LPCSTR ini_string)
             if (V != nullptr && xr_strlen(V) > 0)
             {
                 string64 buf;
-                j = atoi(_GetItem(V, 0, buf));
-                if (!j)
-                    j = 1;
+
+                const auto res = scn::scan_int<u32>(_GetItem(V, 0, buf));
+                R_ASSERT(res, res.error().msg());
+                j = std::max(res->value(), 1u);
 
                 bScope = !!strstr(V, "scope");
                 bSilencer = !!strstr(V, "silencer");
