@@ -363,7 +363,11 @@ void CCustomZone::Load(LPCSTR section)
         {
             ARTEFACT_SPAWN& artefact_spawn = m_ArtefactSpawn[i];
             artefact_spawn.section._set(_GetItem(l_caParameters, i << 1, l_caBuffer));
-            artefact_spawn.probability = (float)atof(_GetItem(l_caParameters, (i << 1) | 1, l_caBuffer));
+
+            const auto res = scn::scan_value<f32>(std::string_view{_GetItem(l_caParameters, (i << 1) | 1, l_caBuffer)});
+            R_ASSERT(res, res.error().msg());
+            artefact_spawn.probability = res->value();
+
             total_probability += artefact_spawn.probability;
         }
 

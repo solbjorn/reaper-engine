@@ -114,6 +114,11 @@ IC void read_distance(LPCSTR section, LPCSTR name, float& dist_min, float& dist_
 
     VERIFY(_GetItemCount(dist) == 2);
 
-    dist_min = float(atof(_GetItem(dist, 0, tempst)));
-    dist_max = float(atof(_GetItem(dist, 1, tempst)));
+    auto res = scn::scan_value<f32>(std::string_view{_GetItem(dist, 0, tempst)});
+    R_ASSERT(res, res.error().msg());
+    dist_min = res->value();
+
+    res = scn::scan_value<f32>(std::string_view{_GetItem(dist, 1, tempst)});
+    R_ASSERT(res, res.error().msg());
+    dist_max = res->value();
 }

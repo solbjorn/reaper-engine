@@ -79,26 +79,49 @@ void CShootingObject::LoadFireParams(LPCSTR section, LPCSTR prefix)
 
     LPCSTR hit_type = READ_IF_EXISTS(pSettings, r_string, section, "hit_type", "fire_wound");
     m_eHitType = ALife::g_tfString2HitType(hit_type); // поддержка произвольного хита оружия
+
     // сила выстрела и его мощьность
-    s_sHitPower = pSettings->r_string_wb(section, strconcat(sizeof(full_name), full_name, prefix, "hit_power")); // читаем строку силы хита пули оружия
-    fvHitPower[egdMaster] = (float)atof(_GetItem(s_sHitPower.c_str(), 0, buffer)); // первый параметр - это хит для уровня игры мастер
+    // читаем строку силы хита пули оружия
+    s_sHitPower = pSettings->r_string_wb(section, strconcat(sizeof(full_name), full_name, prefix, "hit_power"));
 
-    fvHitPower[egdVeteran] = fvHitPower[egdMaster]; // изначально параметры для других уровней
-    fvHitPower[egdStalker] = fvHitPower[egdMaster]; // сложности
-    fvHitPower[egdNovice] = fvHitPower[egdMaster]; // такие же
+    // первый параметр - это хит для уровня игры мастер
+    auto res = scn::scan_value<f32>(std::string_view{_GetItem(s_sHitPower.c_str(), 0, buffer)});
+    R_ASSERT(res, res.error().msg());
+    fvHitPower[egdMaster] = res->value();
 
-    int num_game_diff_param = _GetItemCount(s_sHitPower.c_str()); // узнаём колличество параметров для хитов
-    if (num_game_diff_param > 1) // если задан второй параметр хита
+    // изначально параметры для других уровней сложности такие же
+    fvHitPower[egdVeteran] = fvHitPower[egdMaster];
+    fvHitPower[egdStalker] = fvHitPower[egdMaster];
+    fvHitPower[egdNovice] = fvHitPower[egdMaster];
+
+    // узнаём колличество параметров для хитов
+    const auto num_game_diff_param = _GetItemCount(s_sHitPower.c_str());
+
+    // если задан второй параметр хита
+    if (num_game_diff_param > 1)
     {
-        fvHitPower[egdVeteran] = (float)atof(_GetItem(s_sHitPower.c_str(), 1, buffer)); // то вычитываем его для уровня ветерана
+        // то вычитываем его для уровня ветерана
+        res = scn::scan_value<f32>(std::string_view{_GetItem(s_sHitPower.c_str(), 1, buffer)});
+        R_ASSERT(res, res.error().msg());
+        fvHitPower[egdVeteran] = res->value();
     }
-    if (num_game_diff_param > 2) // если задан третий параметр хита
+
+    // если задан третий параметр хита
+    if (num_game_diff_param > 2)
     {
-        fvHitPower[egdStalker] = (float)atof(_GetItem(s_sHitPower.c_str(), 2, buffer)); // то вычитываем его для уровня сталкера
+        // то вычитываем его для уровня сталкера
+        res = scn::scan_value<f32>(std::string_view{_GetItem(s_sHitPower.c_str(), 2, buffer)});
+        R_ASSERT(res, res.error().msg());
+        fvHitPower[egdStalker] = res->value();
     }
-    if (num_game_diff_param > 3) // если задан четвёртый параметр хита
+
+    // если задан четвёртый параметр хита
+    if (num_game_diff_param > 3)
     {
-        fvHitPower[egdNovice] = (float)atof(_GetItem(s_sHitPower.c_str(), 3, buffer)); // то вычитываем его для уровня новичка
+        // то вычитываем его для уровня новичка
+        res = scn::scan_value<f32>(std::string_view{_GetItem(s_sHitPower.c_str(), 3, buffer)});
+        R_ASSERT(res, res.error().msg());
+        fvHitPower[egdNovice] = res->value();
     }
 
     // fHitPower			= pSettings->r_float	(section,strconcat(full_name, prefix, "hit_power"));

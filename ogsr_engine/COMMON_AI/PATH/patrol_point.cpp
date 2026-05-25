@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "patrol_point.h"
+
 #include "level_graph.h"
 #include "level_graph.h"
 #include "game_level_cross_table.h"
@@ -105,17 +106,26 @@ CPatrolPoint& CPatrolPoint::load_raw(const CLevelGraph* level_graph, const CGame
 
 CPatrolPoint& CPatrolPoint::load_ini(CInifile::Sect& section, LPSTR prefix)
 {
-    string256 full_name;
+    const std::string_view sv{prefix};
 
-    m_name._set(section.r_string(xr_strconcat(full_name, prefix, ":", "name")));
-    m_position = section.r_fvector3(xr_strconcat(full_name, prefix, ":", "position"));
-    m_level_vertex_id = strtol(section.r_string(xr_strconcat(full_name, prefix, ":", "level_vertex_id")), nullptr, 10);
-    m_game_vertex_id = strtol(section.r_string(xr_strconcat(full_name, prefix, ":", "game_vertex_id")), nullptr, 10);
+    m_name._set(section.r_string(xr::format("{}:name", sv).c_str()));
+    m_position = section.r_fvector3(xr::format("{}:position", sv).c_str());
 
-    xr_strconcat(full_name, prefix, ":", "flags");
+    auto res32 = scn::scan_int<u32>(section.r_string(xr::format("{}:level_vertex_id", sv).c_str()));
+    R_ASSERT(res32, res32.error().msg());
+    m_level_vertex_id = res32->value();
 
-    if (section.line_exist(full_name))
-        m_flags = strtol(section.r_string(full_name), nullptr, 16);
+    const auto res16 = scn::scan_int<GameGraph::_GRAPH_ID>(section.r_string(xr::format("{}:game_vertex_id", sv).c_str()));
+    R_ASSERT(res16, res16.error().msg());
+    m_game_vertex_id = res16->value();
+
+    const auto flags = xr::format("{}:flags", sv);
+    if (section.line_exist(flags.c_str()))
+    {
+        res32 = scn::scan_int<u32>(section.r_string(flags.c_str()), 16);
+        R_ASSERT(res32, res32.error().msg());
+        m_flags = res32->value();
+    }
 
 #ifdef DEBUG
     m_initialized = true;

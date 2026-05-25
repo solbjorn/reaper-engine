@@ -168,16 +168,14 @@ tmc::task<bool> CHelicopter::net_Spawn(CSE_Abstract* DC)
 
     if (pUserData->section_exist(s))
     {
-        int lc = pUserData->line_count(s);
-        LPCSTR name;
-        LPCSTR value;
-        s16 boneID;
-
-        for (int i = 0; i < lc; ++i)
+        for (int i = 0, lc = pUserData->line_count(s); i < lc; ++i)
         {
+            gsl::czstring name, value;
             std::ignore = pUserData->r_line(s, i, &name, &value);
-            boneID = K->LL_BoneID(name);
-            m_hitBones.try_emplace(boneID, (float)atof(value));
+
+            const auto res = scn::scan_value<f32>(std::string_view{value});
+            R_ASSERT(res, res.error().msg());
+            m_hitBones.try_emplace(K->LL_BoneID(name), res->value());
         }
     }
 

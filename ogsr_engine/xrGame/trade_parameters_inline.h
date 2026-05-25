@@ -87,18 +87,32 @@ IC void CTradeParameters::process(_action_type type, CInifile& ini_file, const s
             continue;
         }
 
-        string256 temp0, temp1;
-        int cnt = _GetItemCount(I->second.c_str());
+        const auto cnt = _GetItemCount(I->second.c_str());
         ASSERT_FMT(cnt >= 2, "[%s]: invalid parameters in section [%s]: [%s] = [%s]", __FUNCTION__, section.c_str(), I->first.c_str(), I->second.c_str());
-        float min_condition = 0.f;
+
+        string256 temp;
+        f32 from, to, min_condition;
+
+        auto res = scn::scan_value<f32>(std::string_view{_GetItem(I->second.c_str(), 0, temp)});
+        R_ASSERT(res, res.error().msg());
+        from = res->value();
+
+        res = scn::scan_value<f32>(std::string_view{_GetItem(I->second.c_str(), 1, temp)});
+        R_ASSERT(res, res.error().msg());
+        to = res->value();
+
         if (cnt > 2)
         {
-            string256 str;
-            min_condition = (float)atof(_GetItem(I->second.c_str(), 2, str));
+            res = scn::scan_value<f32>(std::string_view{_GetItem(I->second.c_str(), 2, temp)});
+            R_ASSERT(res, res.error().msg());
+            min_condition = res->value();
         }
-        _action.enable(
-            (*I).first,
-            CTradeFactors((float)atof(_GetItem(I->second.c_str(), 0, temp0)), (float)atof(_GetItem(I->second.c_str(), 1, temp1)), min_condition, false));
+        else
+        {
+            min_condition = 0.0f;
+        }
+
+        _action.enable((*I).first, CTradeFactors(from, to, min_condition, false));
     }
 }
 

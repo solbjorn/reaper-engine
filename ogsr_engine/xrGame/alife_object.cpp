@@ -49,17 +49,29 @@ void CSE_ALifeObject::spawn_supplies(LPCSTR ini_string)
                 R_ASSERT(res, res.error().msg());
                 j = std::max(res->value(), 1u);
 
-                bScope = !!strstr(V, "scope");
-                bSilencer = !!strstr(V, "silencer");
-                bLauncher = !!strstr(V, "launcher");
+                const std::string_view sv{V};
+
+                bScope = sv.contains("scope");
+                bSilencer = sv.contains("silencer");
+                bLauncher = sv.contains("launcher");
 
                 // probability
-                if (strstr(V, "prob="))
-                    p = (float)atof(strstr(V, "prob=") + 5);
-                if (fis_zero(p))
-                    p = 1.0f;
-                if (strstr(V, "cond="))
-                    f_cond = (float)atof(strstr(V, "cond=") + 5);
+                if (const auto pos = sv.find("prob="); pos != std::string_view::npos)
+                {
+                    const auto res = scn::scan_value<f32>(sv.substr(pos + 5));
+                    R_ASSERT(res, res.error().msg());
+
+                    p = res->value();
+                    if (fis_zero(p))
+                        p = 1.0f;
+                }
+
+                if (const auto pos = sv.find("cond="); pos != std::string_view::npos)
+                {
+                    const auto res = scn::scan_value<f32>(sv.substr(pos + 5));
+                    R_ASSERT(res, res.error().msg());
+                    f_cond = res->value();
+                }
             }
 
             for (u32 i = 0; i < j; ++i)

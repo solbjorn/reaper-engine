@@ -6,7 +6,6 @@
 #ifdef XR_USE_FMT
 
 XR_DIAG_PUSH();
-XR_DIAG_IGNORE("-Wextra-semi");
 XR_DIAG_IGNORE("-Wfloat-equal");
 XR_DIAG_IGNORE("-Wnan-infinity-disabled");
 XR_DIAG_IGNORE("-Wnewline-eof");
@@ -58,7 +57,6 @@ namespace sf
 #else // !XR_USE_FMT
 
 XR_DIAG_PUSH();
-XR_DIAG_IGNORE("-Wextra-semi");
 XR_DIAG_IGNORE("-Wnewline-eof");
 XR_DIAG_IGNORE("-Wnrvo");
 

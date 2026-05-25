@@ -611,15 +611,18 @@ void SArtefactActivation::SpawnAnomaly()
     const auto str = pSettings->r_string("artefact_spawn_zones", m_af->cNameSect().c_str());
     VERIFY3(_GetItemCount(str) >= 3, "Bad record format in artefact_spawn_zones", str);
 
-    float zone_radius = (float)atof(_GetItem(str, 1, tmp));
-    u8 restrictor_type = RestrictionSpace::eRestrictorTypeNone;
+    const auto resf = scn::scan_value<f32>(std::string_view{_GetItem(str, 1, tmp)});
+    R_ASSERT(resf, resf.error().msg());
+    const auto zone_radius = resf->value();
+
+    auto restrictor_type = RestrictionSpace::eRestrictorTypeNone;
 
     if (_GetItemCount(str) > 3)
     {
-        const auto res = scn::scan_int<s32>(_GetItem(str, 3, tmp));
-        R_ASSERT(res, res.error().msg());
+        const auto resi = scn::scan_int<s32>(_GetItem(str, 3, tmp));
+        R_ASSERT(resi, resi.error().msg());
 
-        if (res->value() != 0)
+        if (resi->value() != 0)
             restrictor_type = RestrictionSpace::eDefaultRestrictorTypeNone;
     }
 
@@ -674,15 +677,27 @@ void SArtefactActivation::SStateDef::Load(LPCSTR section, LPCSTR name)
 
     string128 tmp;
 
-    m_time = (float)atof(_GetItem(str, 0, tmp));
+    auto res = scn::scan_value<f32>(std::string_view{_GetItem(str, 0, tmp)});
+    R_ASSERT(res, res.error().msg());
+    m_time = res->value();
 
     m_snd = clear_brackets(_GetItem(str, 1, tmp));
 
-    m_light_color.r = (float)atof(_GetItem(str, 2, tmp));
-    m_light_color.g = (float)atof(_GetItem(str, 3, tmp));
-    m_light_color.b = (float)atof(_GetItem(str, 4, tmp));
+    res = scn::scan_value<f32>(std::string_view{_GetItem(str, 2, tmp)});
+    R_ASSERT(res, res.error().msg());
+    m_light_color.r = res->value();
 
-    m_light_range = (float)atof(_GetItem(str, 5, tmp));
+    res = scn::scan_value<f32>(std::string_view{_GetItem(str, 3, tmp)});
+    R_ASSERT(res, res.error().msg());
+    m_light_color.g = res->value();
+
+    res = scn::scan_value<f32>(std::string_view{_GetItem(str, 4, tmp)});
+    R_ASSERT(res, res.error().msg());
+    m_light_color.b = res->value();
+
+    res = scn::scan_value<f32>(std::string_view{_GetItem(str, 5, tmp)});
+    R_ASSERT(res, res.error().msg());
+    m_light_range = res->value();
 
     m_particle = clear_brackets(_GetItem(str, 6, tmp));
     m_animation = clear_brackets(_GetItem(str, 7, tmp));

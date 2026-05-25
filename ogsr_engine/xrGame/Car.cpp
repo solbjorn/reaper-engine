@@ -966,24 +966,26 @@ void CCar::Init()
             u16 index = pKinematics->LL_BoneID(item.first.c_str());
             R_ASSERT3(index != BI_NONE, "Wrong bone name", item.first.c_str());
 
-            auto i = m_wheels_map.find(index);
-            if (i != m_wheels_map.end())
+            if (const auto w = m_wheels_map.find(index); w != m_wheels_map.end())
             {
-                i->second->CDamagableHealthItem::Init(float(atof(item.second.c_str())), 2);
+                const auto res = scn::scan_value<f32>(std::string_view{item.second});
+                R_ASSERT(res, res.error().msg());
+                w->second->CDamagableHealthItem::Init(res->value(), 2);
             }
             else
             {
-                xr_map<u16, std::unique_ptr<SDoor>>::iterator i = m_doors.find(index);
-                R_ASSERT3(i != m_doors.end(), "only wheel and doors bones allowed for damage defs", item.first.c_str());
-                i->second->CDamagableHealthItem::Init(float(atof(item.second.c_str())), 1);
+                const auto d = m_doors.find(index);
+                R_ASSERT3(d != m_doors.end(), "only wheel and doors bones allowed for damage defs", item.first.c_str());
+
+                const auto res = scn::scan_value<f32>(std::string_view{item.second});
+                R_ASSERT(res, res.error().msg());
+                d->second->CDamagableHealthItem::Init(res->value(), 1);
             }
         }
     }
 
     if (ini->section_exist("immunities"))
-    {
         LoadImmunities("immunities", ini);
-    }
 
     CDamageManager::reload("car_definition", "damage", ini);
 

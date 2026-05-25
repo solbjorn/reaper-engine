@@ -691,28 +691,49 @@ void parse_anim_params(LPCSTR val, SAAParam& anim)
 {
     string16 cur_elem;
 
-    std::ignore = _GetItem(val, 0, cur_elem);
-    anim.time = float(atof(cur_elem));
-    std::ignore = _GetItem(val, 1, cur_elem);
-    anim.hit_power = float(atof(cur_elem));
-    std::ignore = _GetItem(val, 2, cur_elem);
-    anim.impulse = float(atof(cur_elem));
-    std::ignore = _GetItem(val, 3, cur_elem);
-    anim.impulse_dir.x = float(atof(cur_elem));
-    std::ignore = _GetItem(val, 4, cur_elem);
-    anim.impulse_dir.y = float(atof(cur_elem));
-    std::ignore = _GetItem(val, 5, cur_elem);
-    anim.impulse_dir.z = float(atof(cur_elem));
-    std::ignore = _GetItem(val, 6, cur_elem);
-    anim.foh.from_yaw = float(atof(cur_elem));
-    std::ignore = _GetItem(val, 7, cur_elem);
-    anim.foh.to_yaw = float(atof(cur_elem));
-    std::ignore = _GetItem(val, 8, cur_elem);
-    anim.foh.from_pitch = float(atof(cur_elem));
-    std::ignore = _GetItem(val, 9, cur_elem);
-    anim.foh.to_pitch = float(atof(cur_elem));
-    std::ignore = _GetItem(val, 10, cur_elem);
-    anim.dist = float(atof(cur_elem));
+    auto res = scn::scan_value<f32>(std::string_view{_GetItem(val, 0, cur_elem)});
+    R_ASSERT(res, res.error().msg());
+    anim.time = res->value();
+
+    res = scn::scan_value<f32>(std::string_view{_GetItem(val, 1, cur_elem)});
+    R_ASSERT(res, res.error().msg());
+    anim.hit_power = res->value();
+
+    res = scn::scan_value<f32>(std::string_view{_GetItem(val, 2, cur_elem)});
+    R_ASSERT(res, res.error().msg());
+    anim.impulse = res->value();
+
+    res = scn::scan_value<f32>(std::string_view{_GetItem(val, 3, cur_elem)});
+    R_ASSERT(res, res.error().msg());
+    anim.impulse_dir.x = res->value();
+
+    res = scn::scan_value<f32>(std::string_view{_GetItem(val, 4, cur_elem)});
+    R_ASSERT(res, res.error().msg());
+    anim.impulse_dir.y = res->value();
+
+    res = scn::scan_value<f32>(std::string_view{_GetItem(val, 5, cur_elem)});
+    R_ASSERT(res, res.error().msg());
+    anim.impulse_dir.z = res->value();
+
+    res = scn::scan_value<f32>(std::string_view{_GetItem(val, 6, cur_elem)});
+    R_ASSERT(res, res.error().msg());
+    anim.foh.from_yaw = res->value();
+
+    res = scn::scan_value<f32>(std::string_view{_GetItem(val, 7, cur_elem)});
+    R_ASSERT(res, res.error().msg());
+    anim.foh.to_yaw = res->value();
+
+    res = scn::scan_value<f32>(std::string_view{_GetItem(val, 8, cur_elem)});
+    R_ASSERT(res, res.error().msg());
+    anim.foh.from_pitch = res->value();
+
+    res = scn::scan_value<f32>(std::string_view{_GetItem(val, 9, cur_elem)});
+    R_ASSERT(res, res.error().msg());
+    anim.foh.to_pitch = res->value();
+
+    res = scn::scan_value<f32>(std::string_view{_GetItem(val, 10, cur_elem)});
+    R_ASSERT(res, res.error().msg());
+    anim.dist = res->value();
 
     anim.impulse_dir.normalize();
 

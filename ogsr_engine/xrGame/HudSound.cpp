@@ -30,45 +30,52 @@ void HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line, HUD_SOUND& hud_snd, int t
 
 void HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line, ref_sound& snd, int type, float* volume, float* delay, float* freq)
 {
-    LPCSTR str = pSettings->r_string(section, line);
+    const auto str = pSettings->r_string(section, line);
+    const auto count = _GetItemCount(str);
+
+    R_ASSERT(count > 0);
     string256 buf_str;
+    snd.create(_GetItem(str, 0, buf_str), st_Effect, type);
 
-    int count = _GetItemCount(str);
-    R_ASSERT(count);
-
-    std::ignore = _GetItem(str, 0, buf_str);
-    snd.create(buf_str, st_Effect, type);
-
-    if (volume)
+    if (volume != nullptr)
     {
-        *volume = 1.f;
         if (count > 1)
         {
-            std::ignore = _GetItem(str, 1, buf_str);
-            if (xr_strlen(buf_str) > 0)
-                *volume = (float)atof(buf_str);
+            const auto res = scn::scan_value<f32>(std::string_view{_GetItem(str, 1, buf_str)});
+            R_ASSERT(res, res.error().msg());
+            *volume = res->value();
+        }
+        else
+        {
+            *volume = 1.0f;
         }
     }
 
-    if (delay)
+    if (delay != nullptr)
     {
-        *delay = 0;
         if (count > 2)
         {
-            std::ignore = _GetItem(str, 2, buf_str);
-            if (xr_strlen(buf_str) > 0)
-                *delay = (float)atof(buf_str);
+            const auto res = scn::scan_value<f32>(std::string_view{_GetItem(str, 2, buf_str)});
+            R_ASSERT(res, res.error().msg());
+            *delay = res->value();
+        }
+        else
+        {
+            *delay = 0.0f;
         }
     }
 
-    if (freq)
+    if (freq != nullptr)
     {
-        *freq = 1.f;
         if (count > 3)
         {
-            std::ignore = _GetItem(str, 3, buf_str);
-            if (xr_strlen(buf_str) > 0)
-                *freq = (float)atof(buf_str);
+            const auto res = scn::scan_value<f32>(std::string_view{_GetItem(str, 3, buf_str)});
+            R_ASSERT(res, res.error().msg());
+            *freq = res->value();
+        }
+        else
+        {
+            *freq = 1.0f;
         }
     }
 }

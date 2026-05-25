@@ -14,8 +14,8 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "../xr_3da/bone.h"
 
-CDamageManager::CDamageManager() {}
-CDamageManager::~CDamageManager() {}
+CDamageManager::CDamageManager() = default;
+CDamageManager::~CDamageManager() = default;
 
 DLL_Pure* CDamageManager::_construct()
 {
@@ -29,18 +29,21 @@ void CDamageManager::reload(LPCSTR section, CInifile* ini)
     m_default_hit_factor = 1.f;
     m_default_wound_factor = 1.f;
 
-    bool section_exist = ini && ini->section_exist(section);
+    const bool section_exist = ini != nullptr && ini->section_exist(section);
 
     // прочитать дефолтные параметры
-    if (section_exist)
+    if (section_exist && ini->line_exist(section, "default"))
     {
+        const auto value = ini->r_string(section, "default");
         string32 buffer;
-        if (ini->line_exist(section, "default"))
-        {
-            LPCSTR value = ini->r_string(section, "default");
-            m_default_hit_factor = (float)atof(_GetItem(value, 0, buffer));
-            m_default_wound_factor = (float)atof(_GetItem(value, 2, buffer));
-        }
+
+        auto res = scn::scan_value<f32>(std::string_view{_GetItem(value, 0, buffer)});
+        R_ASSERT(res, res.error().msg());
+        m_default_hit_factor = res->value();
+
+        res = scn::scan_value<f32>(std::string_view{_GetItem(value, 2, buffer)});
+        R_ASSERT(res, res.error().msg());
+        m_default_wound_factor = res->value();
     }
 
     // инициализировать default параметрами
@@ -87,18 +90,34 @@ void CDamageManager::load_section(LPCSTR section, CInifile* ini)
             int bone = kinematics->LL_BoneID(i.first);
             ASSERT_FMT(bone != BI_NONE, "[%s]: bone '%s' not found in %s[%s] visual[%s]", __FUNCTION__, i.first.c_str(), m_object->cName().c_str(), section,
                        m_object->cNameVisual().c_str());
+
             CBoneInstance& bone_instance = kinematics->LL_GetBoneInstance(u16(bone));
-            bone_instance.set_param(0, (float)atof(_GetItem(i.second.c_str(), 0, buffer)));
-            bone_instance.set_param(1, (float)atof(_GetItem(i.second.c_str(), 1, buffer)));
-            bone_instance.set_param(2, (float)atof(_GetItem(i.second.c_str(), 2, buffer)));
-            if (_GetItemCount(i.second.c_str()) < 4)
+
+            auto res = scn::scan_value<f32>(std::string_view{_GetItem(i.second.c_str(), 0, buffer)});
+            R_ASSERT(res, res.error().msg());
+
+            const auto param0 = res->value();
+            bone_instance.set_param(0, param0);
+
+            res = scn::scan_value<f32>(std::string_view{_GetItem(i.second.c_str(), 1, buffer)});
+            R_ASSERT(res, res.error().msg());
+            bone_instance.set_param(1, res->value());
+
+            res = scn::scan_value<f32>(std::string_view{_GetItem(i.second.c_str(), 2, buffer)});
+            R_ASSERT(res, res.error().msg());
+            bone_instance.set_param(2, res->value());
+
+            if (_GetItemCount(i.second.c_str()) >= 4)
             {
-                bone_instance.set_param(3, (float)atof(_GetItem(i.second.c_str(), 0, buffer)));
+                res = scn::scan_value<f32>(std::string_view{_GetItem(i.second.c_str(), 3, buffer)});
+                R_ASSERT(res, res.error().msg());
+                bone_instance.set_param(3, res->value());
             }
             else
             {
-                bone_instance.set_param(3, (float)atof(_GetItem(i.second.c_str(), 3, buffer)));
+                bone_instance.set_param(3, param0);
             }
+
             if (0 == bone && (fis_zero(bone_instance.get_param(0)) || fis_zero(bone_instance.get_param(2))))
             {
                 string256 error_str;

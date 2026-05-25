@@ -44,18 +44,22 @@ void CStepManager::reload(LPCSTR section)
 
     for (u32 i = 0; pSettings->r_line(anim_section, i, &anim_name, &val); ++i)
     {
-        const auto res = scn::scan_int<u8>(_GetItem(val, 0, cur_elem));
-        R_ASSERT(res, res.error().msg());
+        const auto resi = scn::scan_int<u8>(_GetItem(val, 0, cur_elem));
+        R_ASSERT(resi, resi.error().msg());
 
-        param.cycles = res->value();
+        param.cycles = resi->value();
         R_ASSERT(param.cycles >= 1);
 
         for (u32 j = 0; j < m_legs_count; j++)
         {
-            std::ignore = _GetItem(val, 1 + j * 2, cur_elem);
-            param.step[j].time = float(atof(cur_elem));
-            std::ignore = _GetItem(val, 1 + j * 2 + 1, cur_elem);
-            param.step[j].power = float(atof(cur_elem));
+            auto resf = scn::scan_value<f32>(std::string_view{_GetItem(val, 1 + j * 2, cur_elem)});
+            R_ASSERT(resf, resf.error().msg());
+            param.step[j].time = resf->value();
+
+            resf = scn::scan_value<f32>(std::string_view{_GetItem(val, 1 + j * 2 + 1, cur_elem)});
+            R_ASSERT(resf, resf.error().msg());
+            param.step[j].power = resf->value();
+
             VERIFY(_valid(param.step[j].power));
         }
 

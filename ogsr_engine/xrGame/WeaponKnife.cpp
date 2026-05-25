@@ -351,24 +351,45 @@ void CWeaponKnife::LoadFireParams(LPCSTR section, LPCSTR prefix)
 
     // fHitPower_2			= pSettings->r_float	(section,strconcat(full_name, prefix, "hit_power_2"));
     s_sHitPower_2 = pSettings->r_string_wb(section, strconcat(sizeof(full_name), full_name, prefix, "hit_power_2"));
-    fvHitPower_2[egdMaster] = (float)atof(_GetItem(s_sHitPower_2.c_str(), 0, buffer)); // первый параметр - это хит для уровня игры мастер
 
-    fvHitPower_2[egdVeteran] = fvHitPower_2[egdMaster]; // изначально параметры для других уровней
-    fvHitPower_2[egdStalker] = fvHitPower_2[egdMaster]; // сложности
-    fvHitPower_2[egdNovice] = fvHitPower_2[egdMaster]; // такие же
+    // первый параметр - это хит для уровня игры мастер
+    auto res = scn::scan_value<f32>(std::string_view{_GetItem(s_sHitPower_2.c_str(), 0, buffer)});
+    R_ASSERT(res, res.error().msg());
+    fvHitPower_2[egdMaster] = res->value();
 
-    int num_game_diff_param = _GetItemCount(s_sHitPower_2.c_str()); // узнаём колличество параметров для хитов
-    if (num_game_diff_param > 1) // если задан второй параметр хита
+    // изначально параметры для других уровней сложности такие же
+    fvHitPower_2[egdVeteran] = fvHitPower_2[egdMaster];
+    fvHitPower_2[egdStalker] = fvHitPower_2[egdMaster];
+    fvHitPower_2[egdNovice] = fvHitPower_2[egdMaster];
+
+    // узнаём колличество параметров для хитов
+    const auto num_game_diff_param = _GetItemCount(s_sHitPower_2.c_str());
+
+    // если задан второй параметр хита
+    if (num_game_diff_param > 1)
     {
-        fvHitPower_2[egdVeteran] = (float)atof(_GetItem(s_sHitPower_2.c_str(), 1, buffer)); // то вычитываем его для уровня ветерана
+        // то вычитываем его для уровня ветерана
+        res = scn::scan_value<f32>(std::string_view{_GetItem(s_sHitPower_2.c_str(), 1, buffer)});
+        R_ASSERT(res, res.error().msg());
+        fvHitPower_2[egdVeteran] = res->value();
     }
-    if (num_game_diff_param > 2) // если задан третий параметр хита
+
+    // если задан третий параметр хита
+    if (num_game_diff_param > 2)
     {
-        fvHitPower_2[egdStalker] = (float)atof(_GetItem(s_sHitPower_2.c_str(), 2, buffer)); // то вычитываем его для уровня сталкера
+        // то вычитываем его для уровня сталкера
+        res = scn::scan_value<f32>(std::string_view{_GetItem(s_sHitPower_2.c_str(), 2, buffer)});
+        R_ASSERT(res, res.error().msg());
+        fvHitPower_2[egdStalker] = res->value();
     }
-    if (num_game_diff_param > 3) // если задан четвёртый параметр хита
+
+    // если задан четвёртый параметр хита
+    if (num_game_diff_param > 3)
     {
-        fvHitPower_2[egdNovice] = (float)atof(_GetItem(s_sHitPower_2.c_str(), 3, buffer)); // то вычитываем его для уровня новичка
+        // то вычитываем его для уровня новичка
+        res = scn::scan_value<f32>(std::string_view{_GetItem(s_sHitPower_2.c_str(), 3, buffer)});
+        R_ASSERT(res, res.error().msg());
+        fvHitPower_2[egdNovice] = res->value();
     }
 
     fHitImpulse_2 = pSettings->r_float(section, strconcat(sizeof(full_name), full_name, prefix, "hit_impulse_2"));
@@ -378,6 +399,6 @@ void CWeaponKnife::LoadFireParams(LPCSTR section, LPCSTR prefix)
 void CWeaponKnife::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count)
 {
     str_name = NameShort();
+    icon_sect_name = xr_string{cNameSect()};
     str_count = "";
-    icon_sect_name = cNameSect().c_str();
 }

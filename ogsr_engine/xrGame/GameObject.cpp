@@ -500,18 +500,28 @@ void CGameObject::spawn_supplies()
                 j = std::max(res->value(), 1u);
             }
 
-            if (strstr(V, "prob="))
-                p = (float)atof(strstr(V, "prob=") + 5);
-            if (fis_zero(p))
-                p = 1.f;
-            if (!j)
-                j = 1;
-            if (strstr(V, "cond="))
-                f_cond = (float)atof(strstr(V, "cond=") + 5);
+            const std::string_view sv{V};
 
-            bScope = !!strstr(V, "scope");
-            bSilencer = !!strstr(V, "silencer");
-            bLauncher = !!strstr(V, "launcher");
+            if (const auto pos = sv.find("prob="); pos != std::string_view::npos)
+            {
+                const auto res = scn::scan_value<f32>(sv.substr(pos + 5));
+                R_ASSERT(res, res.error().msg());
+
+                p = res->value();
+                if (fis_zero(p))
+                    p = 1.0f;
+            }
+
+            if (const auto pos = sv.find("cond="); pos != std::string_view::npos)
+            {
+                const auto res = scn::scan_value<f32>(sv.substr(pos + 5));
+                R_ASSERT(res, res.error().msg());
+                f_cond = res->value();
+            }
+
+            bScope = sv.contains("scope");
+            bSilencer = sv.contains("silencer");
+            bLauncher = sv.contains("launcher");
         }
 
         for (u32 i = 0; i < j; ++i)

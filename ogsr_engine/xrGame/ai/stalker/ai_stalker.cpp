@@ -157,13 +157,16 @@ void CAI_Stalker::reinit()
 
     brain().CStalkerPlanner::m_storage.set_property(StalkerDecisionSpace::eWorldPropertyCriticallyWounded, false);
 
+    const auto weights = SpecificCharacter().critical_wound_weights();
+    m_critical_wound_weights.clear();
+
+    for (int i = 0, n = _GetItemCount(weights); i < n; ++i)
     {
-        m_critical_wound_weights.clear();
-        //		LPCSTR							weights = pSettings->r_string(cNameSect(),"critical_wound_weights");
-        LPCSTR weights = SpecificCharacter().critical_wound_weights();
         string16 temp;
-        for (int i = 0, n = _GetItemCount(weights); i < n; ++i)
-            m_critical_wound_weights.push_back((float)atof(_GetItem(weights, i, temp)));
+
+        const auto res = scn::scan_value<f32>(std::string_view{_GetItem(weights, i, temp)});
+        R_ASSERT(res, res.error().msg());
+        m_critical_wound_weights.emplace_back(res->value());
     }
 
     m_sight_enabled_before_animation_controller = true;

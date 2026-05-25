@@ -90,30 +90,38 @@ struct SVelocityParam
 {
     struct
     {
-        float linear;
-        float angular_path;
-        float angular_real;
+        f32 linear{0.0f};
+        f32 angular_real{0.0f};
+        f32 angular_path{0.0f};
     } velocity;
-    float min_factor;
-    float max_factor;
 
-    SVelocityParam()
-    {
-        velocity.linear = 0.f;
-        velocity.angular_real = 0.f;
-        velocity.angular_path = 0.f;
-        min_factor = 1.0f;
-        max_factor = 1.0f;
-    }
+    f32 min_factor{1.0f};
+    f32 max_factor{1.0f};
 
     void Load(LPCSTR section, LPCSTR line)
     {
+        const auto val = pSettings->r_string(section, line);
         string32 buffer;
-        velocity.linear = float(atof(_GetItem(pSettings->r_string(section, line), 0, buffer)));
-        velocity.angular_real = float(atof(_GetItem(pSettings->r_string(section, line), 1, buffer)));
-        velocity.angular_path = float(atof(_GetItem(pSettings->r_string(section, line), 2, buffer)));
-        min_factor = float(atof(_GetItem(pSettings->r_string(section, line), 3, buffer)));
-        max_factor = float(atof(_GetItem(pSettings->r_string(section, line), 4, buffer)));
+
+        auto res = scn::scan_value<f32>(std::string_view{_GetItem(val, 0, buffer)});
+        R_ASSERT(res, res.error().msg());
+        velocity.linear = res->value();
+
+        res = scn::scan_value<f32>(std::string_view{_GetItem(val, 1, buffer)});
+        R_ASSERT(res, res.error().msg());
+        velocity.angular_real = res->value();
+
+        res = scn::scan_value<f32>(std::string_view{_GetItem(val, 2, buffer)});
+        R_ASSERT(res, res.error().msg());
+        velocity.angular_path = res->value();
+
+        res = scn::scan_value<f32>(std::string_view{_GetItem(val, 3, buffer)});
+        R_ASSERT(res, res.error().msg());
+        min_factor = res->value();
+
+        res = scn::scan_value<f32>(std::string_view{_GetItem(val, 4, buffer)});
+        R_ASSERT(res, res.error().msg());
+        max_factor = res->value();
     }
 };
 

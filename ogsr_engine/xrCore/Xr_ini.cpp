@@ -574,7 +574,13 @@ u8 CInifile::r_u8(LPCSTR S, LPCSTR L)
     return res->value();
 }
 
-u8 CInifile::r_u8_hex(gsl::czstring sect, gsl::czstring line) { return gsl::narrow<u8>(std::strtol(r_string(sect, line), nullptr, 16)); }
+u8 CInifile::r_u8_hex(gsl::czstring sect, gsl::czstring line)
+{
+    const auto res = scn::scan_int<u8>(r_string(sect, line), 16);
+    R_ASSERT(res, res.error().msg());
+
+    return res->value();
+}
 
 u16 CInifile::r_u16(LPCSTR S, LPCSTR L)
 {
@@ -584,7 +590,13 @@ u16 CInifile::r_u16(LPCSTR S, LPCSTR L)
     return res->value();
 }
 
-u16 CInifile::r_u16_hex(gsl::czstring sect, gsl::czstring line) { return gsl::narrow<u16>(std::strtol(r_string(sect, line), nullptr, 16)); }
+u16 CInifile::r_u16_hex(gsl::czstring sect, gsl::czstring line)
+{
+    const auto res = scn::scan_int<u16>(r_string(sect, line), 16);
+    R_ASSERT(res, res.error().msg());
+
+    return res->value();
+}
 
 u32 CInifile::r_u32(LPCSTR S, LPCSTR L)
 {
@@ -594,7 +606,13 @@ u32 CInifile::r_u32(LPCSTR S, LPCSTR L)
     return res->value();
 }
 
-u32 CInifile::r_u32_hex(gsl::czstring sect, gsl::czstring line) { return gsl::narrow<u32>(std::strtoll(r_string(sect, line), nullptr, 16)); }
+u32 CInifile::r_u32_hex(gsl::czstring sect, gsl::czstring line)
+{
+    const auto res = scn::scan_int<u32>(r_string(sect, line), 16);
+    R_ASSERT(res, res.error().msg());
+
+    return res->value();
+}
 
 s8 CInifile::r_s8(LPCSTR S, LPCSTR L)
 {

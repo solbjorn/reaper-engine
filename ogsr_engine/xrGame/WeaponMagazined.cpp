@@ -1189,13 +1189,23 @@ void CWeaponMagazined::InitZoomParams(LPCSTR section, bool useTexture)
         m_bScopeDynamicZoom = CInifile::IsBOOL(_GetItem(dynamicZoomParams, 0, tmp));
 
         if (num_zoom_param > 1)
-            m_fZoomStepCount = atof(_GetItem(dynamicZoomParams, 1, tmp));
+        {
+            const auto res = scn::scan_value<f32>(std::string_view{_GetItem(dynamicZoomParams, 1, tmp)});
+            R_ASSERT(res, res.error().msg());
+            m_fZoomStepCount = res->value();
+        }
 
         if (num_zoom_param > 2)
-            m_fMinZoomK = atof(_GetItem(dynamicZoomParams, 2, tmp));
+        {
+            const auto res = scn::scan_value<f32>(std::string_view{_GetItem(dynamicZoomParams, 2, tmp)});
+            R_ASSERT(res, res.error().msg());
+            m_fMinZoomK = res->value();
+        }
     }
     else
+    {
         m_bScopeDynamicZoom = false;
+    }
 
     m_fScopeInertionFactor = READ_IF_EXISTS(pSettings, r_float, section, "scope_inertion_factor", m_fControlInertionFactor);
     clamp(m_fScopeInertionFactor, m_fControlInertionFactor, m_fScopeInertionFactor);

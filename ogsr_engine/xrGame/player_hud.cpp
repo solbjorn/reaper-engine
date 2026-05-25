@@ -732,15 +732,45 @@ player_hud::player_hud()
             string512 tmp;
             strconcat(sizeof(temp), temp, "movement_layer_", std::to_string(i).c_str());
             R_ASSERT2(pSettings->line_exist("hud_movement_layers", temp), xr::format("Missing definition for [hud_movement_layers] {}", temp));
-            LPCSTR layer_def = pSettings->r_string("hud_movement_layers", temp);
-            R_ASSERT2(_GetItemCount(layer_def) > 0, xr::format("Wrong definition for [hud_movement_layers] {}", temp));
 
-            std::ignore = _GetItem(layer_def, 0, tmp);
-            anm->Load(tmp);
-            std::ignore = _GetItem(layer_def, 1, tmp);
-            anm->anm->Speed() = (atof(tmp) ? atof(tmp) : 1.f);
-            std::ignore = _GetItem(layer_def, 2, tmp);
-            anm->m_power = (atof(tmp) ? atof(tmp) : 1.f);
+            const auto layer_def = pSettings->r_string("hud_movement_layers", temp);
+            const auto cnt = _GetItemCount(layer_def);
+            R_ASSERT2(cnt > 0, xr::format("Wrong definition for [hud_movement_layers] {}", temp));
+
+            anm->Load(_GetItem(layer_def, 0, tmp));
+
+            if (cnt > 1)
+            {
+                const auto res = scn::scan_value<f32>(std::string_view{_GetItem(layer_def, 1, tmp)});
+                R_ASSERT(res, res.error().msg());
+
+                auto val = res->value();
+                if (fis_zero(val))
+                    val = 1.0f;
+
+                anm->anm->Speed() = val;
+            }
+            else
+            {
+                anm->anm->Speed() = 1.0f;
+            }
+
+            if (cnt > 2)
+            {
+                const auto res = scn::scan_value<f32>(std::string_view{_GetItem(layer_def, 2, tmp)});
+                R_ASSERT(res, res.error().msg());
+
+                auto val = res->value();
+                if (fis_zero(val))
+                    val = 1.0f;
+
+                anm->m_power = val;
+            }
+            else
+            {
+                anm->m_power = 1.0f;
+            }
+
             m_movement_layers.push_back(anm);
         }
     }

@@ -36,13 +36,19 @@ void SBoneProtections::reload(const shared_str& bone_sect, IKinematics* kinemati
     CInifile::Sect& protections = pSettings->r_section(bone_sect);
     for (const auto& i : protections.Data)
     {
-        string256 buffer;
-        float Koeff = (float)atof(_GetItem(i.second.c_str(), 0, buffer));
-        float Armour = (float)atof(_GetItem(i.second.c_str(), 1, buffer));
+        if (std::is_eq(xr_strcmp(i.first, "hit_fraction")))
+            continue;
 
         BoneProtection BP;
-        BP.koeff = Koeff;
-        BP.armour = Armour;
+        string256 buffer;
+
+        auto res = scn::scan_value<f32>(std::string_view{_GetItem(i.second.c_str(), 0, buffer)});
+        R_ASSERT(res, res.error().msg());
+        BP.koeff = res->value();
+
+        res = scn::scan_value<f32>(std::string_view{_GetItem(i.second.c_str(), 1, buffer)});
+        R_ASSERT(res, res.error().msg());
+        BP.armour = res->value();
 
         if (std::is_eq(xr_strcmp(i.first, "default")))
         {
@@ -50,9 +56,6 @@ void SBoneProtections::reload(const shared_str& bone_sect, IKinematics* kinemati
         }
         else
         {
-            if (std::is_eq(xr_strcmp(i.first, "hit_fraction")))
-                continue;
-
             s16 bone_id = kinematics->LL_BoneID(i.first);
             R_ASSERT2(gsl::narrow_cast<decltype(BI_NONE)>(bone_id) != BI_NONE, i.first.c_str());
             m_bones_koeff.try_emplace(bone_id, BP);

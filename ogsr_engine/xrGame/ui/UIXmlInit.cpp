@@ -983,7 +983,7 @@ bool CUIXmlInit::InitTextBanner(CUIXml& xml_doc, const char* path, int index, CU
 
         param->bCyclic = !!xml_doc.ReadAttribInt("animation", i, "cyclic", 1);
         param->bOn = !!xml_doc.ReadAttribInt("animation", i, "on", 1);
-        param->fPeriod = static_cast<float>(atof(xml_doc.ReadAttrib("animation", i, "period", "1")));
+        param->fPeriod = xml_doc.ReadAttribFlt("animation", i, "period", 1.0f);
         param->iEffectStage = xml_doc.ReadAttribInt("animation", i, "stage", 0);
     }
 

@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "xrServer_Objects_ALife_Monsters.h"
+
 #include "alife_simulator.h"
 #include "xrServer.h"
 #include "alife_monster_brain.h"
@@ -30,11 +31,16 @@ void CSE_ALifeMonsterBase::on_spawn()
         {
             std::ignore = _GetItem(item_section, i, item);
             float spawn_prob = spawn_probability;
+
             if (i + 1 < count)
             {
                 string128 tmp;
-                spawn_prob = atof(_GetItem(item_section, i + 1, tmp));
+
+                const auto res = scn::scan_value<f32>(std::string_view{_GetItem(item_section, i + 1, tmp)});
+                R_ASSERT(res, res.error().msg());
+                spawn_prob = res->value();
             }
+
             float probability = ::Random.randF();
             if (probability < spawn_prob || fsimilar(spawn_prob, 1.f))
             {

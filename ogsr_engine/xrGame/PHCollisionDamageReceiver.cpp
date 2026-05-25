@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "phcollisiondamagereceiver.h"
+
 #include "PhysicsShellHolder.h"
 #include "xr_ini.h"
 #include "../Include/xrRender/Kinematics.h"
@@ -30,7 +31,11 @@ void CPHCollisionDamageReceiver::Init()
         {
             u16 index = K->LL_BoneID(item.first.c_str());
             R_ASSERT3(index != BI_NONE, "Wrong bone name", item.first.c_str());
-            BoneInsert(index, float(atof(item.second.c_str())));
+
+            const auto res = scn::scan_value<f32>(std::string_view{item.second});
+            R_ASSERT(res, res.error().msg());
+            BoneInsert(index, res->value());
+
             CODEGeom* og = sh->PPhysicsShell()->get_GeomByID(index);
             // R_ASSERT3(og, "collision damage bone has no physics collision", item.first.c_str());
             if (og)

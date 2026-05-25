@@ -84,16 +84,22 @@ void CLensFlareDescriptor::load(CInifile* pIni, LPCSTR sect)
         u32 tcnt = _GetItemCount(T);
         m_Flares.reserve(tcnt);
         string256 name;
+
         for (u32 i = 0; i < tcnt; i++)
         {
-            std::ignore = _GetItem(R, i, name);
-            float r = (float)atof(name);
-            std::ignore = _GetItem(O, i, name);
-            float o = (float)atof(name);
-            std::ignore = _GetItem(P, i, name);
-            float p = (float)atof(name);
-            std::ignore = _GetItem(T, i, name);
-            AddFlare(r, o, p, name, S);
+            auto res = scn::scan_value<f32>(std::string_view{_GetItem(R, i, name)});
+            R_ASSERT(res, res.error().msg());
+            const auto r = res->value();
+
+            res = scn::scan_value<f32>(std::string_view{_GetItem(O, i, name)});
+            R_ASSERT(res, res.error().msg());
+            const auto o = res->value();
+
+            res = scn::scan_value<f32>(std::string_view{_GetItem(P, i, name)});
+            R_ASSERT(res, res.error().msg());
+            const auto p = res->value();
+
+            AddFlare(r, o, p, _GetItem(T, i, name), S);
         }
     }
 
