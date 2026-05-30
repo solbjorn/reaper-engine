@@ -22,7 +22,7 @@ class CTextureDescrMngr
     {
         shared_str m_bump_name;
         float m_material;
-        bool m_use_steep_parallax;
+        bool m_use_steep_parallax{false};
     };
     struct texture_desc
     {

@@ -380,12 +380,11 @@ void CLocatorAPI::LoadArchive(archive& A)
     }
     else
     {
-        string256 alias_name;
-        alias_name[0] = '\0';
         R_ASSERT2(read_path[0] == '$', read_path);
 
-        const auto count = sscanf(read_path, "%[^\\]s", alias_name);
-        R_ASSERT2(count == 1, read_path);
+        const auto res = scn::scan<std::string_view>(std::string_view{read_path}, "{:[^\\]}");
+        R_ASSERT(res, res.error().msg());
+        const auto alias_name = res->value();
 
         const auto P = pathes.find(alias_name);
         if (P != pathes.end())
@@ -743,32 +742,43 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
         }
     }
 
-    const auto M2 = Memory.mem_usage();
-    Msg("FS: {} files cached, {} Kb memory used.", std::ssize(files), (M2 - M1) / 1024);
+    Msg("FS: {} files cached, {} Kb memory used.", std::ssize(files), (Memory.mem_usage() - M1) / 1024);
 
     m_Flags.set(flReady, TRUE);
 
     Msg("Init FileSystem {} sec", t.GetElapsed_sec());
 
-    //-----------------------------------------------------------
-    if (strstr(Core.Params, "-overlaypath"))
-    {
-        string1024 c_newAppPathRoot;
-        sscanf(strstr(Core.Params, "-overlaypath ") + 13, "%[^ ] ", c_newAppPathRoot);
-        FS_Path* pLogsPath = FS.get_path("$logs$");
-        FS_Path* pAppdataPath = FS.get_path("$app_data_root$");
+    const std::string_view params{Core.Params};
 
-        if (pLogsPath)
-            pLogsPath->_set_root(c_newAppPathRoot);
-        if (pAppdataPath)
+    if (const auto pos = params.rfind("-overlaypath"); pos != std::string_view::npos)
+    {
+        if (pos + 13 < params.size())
         {
-            pAppdataPath->_set_root(c_newAppPathRoot);
-            rescan_physical_path(pAppdataPath->m_Path, pAppdataPath->m_Flags.is(FS_Path::flRecurse));
+            if (const auto res = scn::scan_value<xr_string>(params.substr(pos + 13)); res)
+            {
+                auto& root = res->value();
+
+                if (auto pLogsPath = FS.get_path("$logs$"); pLogsPath != nullptr)
+                    pLogsPath->_set_root(root.c_str());
+
+                if (auto pAppdataPath = FS.get_path("$app_data_root$"); pAppdataPath != nullptr)
+                {
+                    pAppdataPath->_set_root(root.c_str());
+                    rescan_physical_path(pAppdataPath->m_Path, pAppdataPath->m_Flags.is(FS_Path::flRecurse));
+                }
+            }
+            else
+            {
+                Msg("! Invalid -overlaypath parameter argument: {}", res.error().msg());
+            }
+        }
+        else
+        {
+            Msg("! The -overlaypath parameter requires an argument");
         }
     }
-    //-----------------------------------------------------------
 
-    CreateLog(!!strstr(Core.Params, "-nolog"));
+    CreateLog(params.contains("-nolog"));
 }
 
 void CLocatorAPI::_destroy()

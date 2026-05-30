@@ -225,8 +225,6 @@ public:
     void unblock_action(EGameActions cmd);
     // Real Wolf. End. 14.10.2014
 
-    int get_RPID(LPCSTR name);
-
     // Game
     tmc::task<void> InitializeClientGame(NET_Packet& P);
     tmc::task<void> ClientReceive();

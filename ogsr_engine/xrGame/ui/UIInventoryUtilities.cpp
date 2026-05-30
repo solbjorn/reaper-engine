@@ -337,14 +337,18 @@ void LoadStrings(CharInfoStrings* container, LPCSTR section, LPCSTR field)
 
     for (u32 k = 0; k < count; k += 2)
     {
-        std::ignore = _GetItem(cfgRecord, k, singleThreshold);
-        id.second._set(singleThreshold);
+        id.second._set(_GetItem(cfgRecord, k, singleThreshold));
 
-        std::ignore = _GetItem(cfgRecord, k + 1, singleThreshold);
         if (k + 1 != count)
-            sscanf(singleThreshold, "%i", &upBoundThreshold);
+        {
+            const auto res = scn::scan_int<s32>(_GetItem(cfgRecord, k + 1, singleThreshold));
+            R_ASSERT(res, res.error().msg());
+            upBoundThreshold = res->value();
+        }
         else
+        {
             upBoundThreshold += 1;
+        }
 
         id.first = upBoundThreshold;
         container->insert(id);

@@ -33,11 +33,7 @@ BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
     }
     else
     {
-        string1024 ret = "";
-        LPCSTR begin = NameStart + xr_strlen("/name=");
-        sscanf(begin, "%[^/]", ret);
-
-        if (!xr_strlen(ret))
+        if (const auto res = scn::scan<std::string_view>(std::string_view{NameStart + xr_strlen("/name=")}, "{:[^/]}"); !res || res->value().empty())
         {
             string1024 tmpstr;
             strcpy_s(tmpstr, op_client);
@@ -187,19 +183,33 @@ tmc::task<bool> CLevel::net_start6()
 
     pApp->LoadEnd();
 
-    if (net_start_result_total)
-    {
-        if (strstr(Core.Params, "-$"))
-        {
-            string256 buf, cmd, param;
-            sscanf(strstr(Core.Params, "-$") + 2, "%[^ ] %[^ ] ", cmd, param);
-            strconcat(sizeof(buf), buf, cmd, " ", param);
-            Console->Execute(buf);
-        }
+    if (!net_start_result_total)
+        co_return false;
 
-        if (g_hud)
-            HUD().GetUI()->OnConnected();
+    const std::string_view params{Core.Params};
+
+    if (const auto pos = params.rfind("-$"); pos != std::string_view::npos)
+    {
+        if (pos + 2 < params.size())
+        {
+            if (const auto res = scn::scan<std::string_view, std::string_view>(params.substr(pos + 2), "{} {}"); res)
+            {
+                const auto [cmd, param] = res->values();
+                Console->Execute(xr::format("{} {}", cmd, param).c_str());
+            }
+            else
+            {
+                Msg("! Invalid -$ parameter arguments: {}", res.error().msg());
+            }
+        }
+        else
+        {
+            Msg("! The -$ parameter requires 2 arguments");
+        }
     }
+
+    if (g_hud != nullptr)
+        HUD().GetUI()->OnConnected();
 
     co_return false;
 }

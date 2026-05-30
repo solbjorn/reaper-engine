@@ -117,12 +117,29 @@ void CPseudoGigant::Load(LPCSTR section)
     m_threaten_effector.ppi.noise.fps = pSettings->r_float(ppi_section, "noise_fps");
     VERIFY(!fis_zero(m_threaten_effector.ppi.noise.fps));
 
-    sscanf(pSettings->r_string(ppi_section, "color_base"), "%f,%f,%f", &m_threaten_effector.ppi.color_base.r, &m_threaten_effector.ppi.color_base.g,
-           &m_threaten_effector.ppi.color_base.b);
-    sscanf(pSettings->r_string(ppi_section, "color_gray"), "%f,%f,%f", &m_threaten_effector.ppi.color_gray.r, &m_threaten_effector.ppi.color_gray.g,
-           &m_threaten_effector.ppi.color_gray.b);
-    sscanf(pSettings->r_string(ppi_section, "color_add"), "%f,%f,%f", &m_threaten_effector.ppi.color_add.r, &m_threaten_effector.ppi.color_add.g,
-           &m_threaten_effector.ppi.color_add.b);
+    auto res = scn::scan<f32, f32, f32>(std::string_view{pSettings->r_string(ppi_section, "color_base")}, "{},{},{}");
+    R_ASSERT(res, res.error().msg());
+
+    const auto [br, bg, bb] = res->values();
+    m_threaten_effector.ppi.color_base.r = br;
+    m_threaten_effector.ppi.color_base.g = bg;
+    m_threaten_effector.ppi.color_base.b = bb;
+
+    res = scn::scan<f32, f32, f32>(std::string_view{pSettings->r_string(ppi_section, "color_gray")}, "{},{},{}");
+    R_ASSERT(res, res.error().msg());
+
+    const auto [gr, gg, gb] = res->values();
+    m_threaten_effector.ppi.color_gray.r = gr;
+    m_threaten_effector.ppi.color_gray.g = gg;
+    m_threaten_effector.ppi.color_gray.b = gb;
+
+    res = scn::scan<f32, f32, f32>(std::string_view{pSettings->r_string(ppi_section, "color_add")}, "{},{},{}");
+    R_ASSERT(res, res.error().msg());
+
+    const auto [ar, ag, ab] = res->values();
+    m_threaten_effector.ppi.color_add.r = ar;
+    m_threaten_effector.ppi.color_add.g = ag;
+    m_threaten_effector.ppi.color_add.b = ab;
 
     m_threaten_effector.time = pSettings->r_float(ppi_section, "time");
     m_threaten_effector.time_attack = pSettings->r_float(ppi_section, "time_attack");

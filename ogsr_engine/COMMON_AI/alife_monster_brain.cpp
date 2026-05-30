@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "alife_monster_brain.h"
+
 #include "object_broker.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 
@@ -40,8 +41,10 @@ CALifeMonsterBrain::CALifeMonsterBrain(object_type* object) : m_object{object}
 #ifdef XRGAME_EXPORTS
     m_movement_manager = xr_new<CALifeMonsterMovementManager>(object);
 
-    u32 hours, minutes, seconds;
-    sscanf(pSettings->r_string(this->object().name(), "smart_terrain_choose_interval"), "%u:%u:%u", &hours, &minutes, &seconds);
+    const auto res = scn::scan<u32, u32, u32>(std::string_view{pSettings->r_string(this->object().name(), "smart_terrain_choose_interval")}, "{}:{}:{}");
+    R_ASSERT(res, res.error().msg());
+
+    const auto [hours, minutes, seconds] = res->values();
     m_time_interval = (u32)generate_time(1, 1, 1, hours, minutes, seconds);
 #endif
 }

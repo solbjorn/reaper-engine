@@ -254,25 +254,6 @@ void CLevel::CancelPrefetchManySounds(LPCSTR prefix)
 }
 
 // Game interface ////////////////////////////////////////////////////
-int CLevel::get_RPID(LPCSTR /**name**/)
-{
-    /*
-    // Gain access to string
-    LPCSTR	params = pLevel->r_string("respawn_point",name);
-    if (0==params)	return -1;
-
-    // Read data
-    Fvector4	pos;
-    int			team;
-    sscanf		(params,"%f,%f,%f,%d,%f",&pos.x,&pos.y,&pos.z,&team,&pos.w); pos.y += 0.1f;
-
-    // Search respawn point
-    svector<Fvector4,maxRP>	&rp = Level().get_team(team).RespawnPoints;
-    for (int i=0; i<(int)(rp.size()); ++i)
-        if (pos.similar(rp[i],EPS_L))	return i;
-    */
-    return -1;
-}
 
 BOOL g_bDebugEvents = FALSE;
 
@@ -587,20 +568,14 @@ tmc::task<void> CLevel::OnEvent(CEvent* E, u64 P1, u64)
 {
     if (E == eEntitySpawn)
     {
-        char Name[128];
-        Name[0] = 0;
-        sscanf(LPCSTR(P1), "%s", Name);
+        const auto res = scn::scan_value<xr_string>(std::string_view{reinterpret_cast<gsl::czstring>(P1)});
+        R_ASSERT(res, res.error().msg());
 
-        Level().g_cl_Spawn(Name, 0xff, M_SPAWN_OBJECT_LOCAL, Fvector().set(0, 0, 0));
+        Level().g_cl_Spawn(res->value().c_str(), 0xff, M_SPAWN_OBJECT_LOCAL, Fvector3{});
     }
     else if (E == eDemoPlay && P1)
     {
-        char* name = (char*)P1;
-        string_path RealName;
-        strcpy_s(RealName, name);
-        strcat_s(RealName, ".xrdemo");
-
-        Cameras().AddCamEffector(xr_new<CDemoPlay>(RealName, 1.3f, 0u));
+        Cameras().AddCamEffector(xr_new<CDemoPlay>(xr::format("{}.xrdemo", reinterpret_cast<gsl::czstring>(P1)).c_str(), 1.3f, 0u));
     }
 
     co_return;

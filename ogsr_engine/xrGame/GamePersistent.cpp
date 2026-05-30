@@ -54,21 +54,37 @@ CGamePersistent::CGamePersistent()
     dSetReallocHandler(ode_realloc);
     dSetFreeHandler(ode_free);
 
-    //
-    if (strstr(Core.Params, "-demomode "))
-    {
-        string256 fname;
-        LPCSTR name = strstr(Core.Params, "-demomode ") + 10;
-        sscanf(name, "%s", fname);
-        R_ASSERT2(fname[0], "Missing filename for 'demomode'");
+    const std::string_view params{Core.Params};
 
-        Msg("- playing in demo mode '{}'", fname);
-        pDemoFile = FS.r_open(fname);
-        Device.seqFrame.Add(this);
-        uTime2Change = 0;
+    if (const auto pos = params.rfind("-demomode"); pos != std::string_view::npos)
+    {
+        if (pos + 10 < params.size())
+        {
+            if (const auto res = scn::scan_value<xr_string>(params.substr(pos + 10)); res)
+            {
+                auto& fname = res->value();
+
+                Msg("- playing in demo mode '{}'", fname);
+                pDemoFile = FS.r_open(fname.c_str());
+
+                Device.seqFrame.Add(this);
+                uTime2Change = 0;
+            }
+            else
+            {
+                Msg("! Invalid -demomode parameter argument: {}", res.error().msg());
+                goto null;
+            }
+        }
+        else
+        {
+            Msg("! The -demomode parameter requires an argument");
+            goto null;
+        }
     }
     else
     {
+    null:
         pDemoFile = nullptr;
         eDemoStart = nullptr;
     }
@@ -603,29 +619,28 @@ tmc::task<void> CGamePersistent::OnFrame()
     if (!Device.Paused())
         WeathersUpdate();
 
-    if (pDemoFile)
+    if (pDemoFile != nullptr && Device.dwTimeGlobal > uTime2Change)
     {
-        if (Device.dwTimeGlobal > uTime2Change)
-        {
-            // Change level + play demo
-            if (pDemoFile->elapsed() < 3)
-                pDemoFile->seek(0); // cycle
+        // Change level + play demo
+        if (pDemoFile->elapsed() < 3)
+            pDemoFile->seek(0); // cycle
 
-            // Read params
-            string512 params;
-            pDemoFile->r_string(params, sizeof(params));
-            string256 o_server, o_client, o_demo;
-            u32 o_time;
-            sscanf(params, "%[^,],%[^,],%[^,],%u", o_server, o_client, o_demo, &o_time);
+        // Read params
+        xr_string params;
+        pDemoFile->r_string(params);
 
-            // Start _new level + demo
-            co_await Engine.Event.Defer("KERNEL:disconnect");
-            co_await Engine.Event.Defer("KERNEL:start", reinterpret_cast<uintptr_t>(xr_strdup(_Trim(o_server))),
-                                        reinterpret_cast<uintptr_t>(xr_strdup(_Trim(o_client))));
-            co_await Engine.Event.Defer("GAME:demo", reinterpret_cast<uintptr_t>(xr_strdup(_Trim(o_demo))), o_time);
+        auto res = scn::scan<xr_string, xr_string, xr_string, u32>(std::move(params), "{:[^,]},{:[^,]},{:[^,]},{}");
+        R_ASSERT(res, res.error().msg());
+        auto& [o_server, o_client, o_demo, o_time] = res->values();
 
-            uTime2Change = 0xffffffff; // Block changer until Event received
-        }
+        // Start _new level + demo
+        co_await Engine.Event.Defer("KERNEL:disconnect");
+        co_await Engine.Event.Defer("KERNEL:start", reinterpret_cast<uintptr_t>(xr_strdup(_Trim(o_server).c_str())),
+                                    reinterpret_cast<uintptr_t>(xr_strdup(_Trim(o_client).c_str())));
+        co_await Engine.Event.Defer("GAME:demo", reinterpret_cast<uintptr_t>(xr_strdup(_Trim(o_demo).c_str())), o_time);
+
+        // Block changer until Event received
+        uTime2Change = std::numeric_limits<u32>::max();
     }
 
 #ifdef DEBUG

@@ -74,7 +74,7 @@ void FS_Path::_set(LPSTR add)
     m_Path = xr_strlwr(xr_strdup(temp));
 }
 
-void FS_Path::_set_root(LPSTR root)
+void FS_Path::_set_root(gsl::czstring root)
 {
     // m_Root
     //	R_ASSERT		(root);

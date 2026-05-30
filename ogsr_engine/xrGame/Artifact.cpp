@@ -91,24 +91,32 @@ void CArtefact::Load(LPCSTR section)
     if (pSettings->line_exist(section, "particles"))
         m_sParticlesName._set(pSettings->r_string(section, "particles"));
 
-    m_bLightsEnabled = !!pSettings->r_bool(section, "lights_enabled");
+    m_bLightsEnabled = pSettings->r_bool(section, "lights_enabled");
     if (m_bLightsEnabled)
     {
-        sscanf(pSettings->r_string(section, "trail_light_color"), "%f,%f,%f", &m_TrailLightColor.r, &m_TrailLightColor.g, &m_TrailLightColor.b);
+        const auto res = scn::scan<f32, f32, f32>(std::string_view{pSettings->r_string(section, "trail_light_color")}, "{},{},{}");
+        R_ASSERT(res, res.error().msg());
+
+        const auto [r, g, b] = res->values();
+        m_TrailLightColor.r = r;
+        m_TrailLightColor.g = g;
+        m_TrailLightColor.b = b;
+
         m_fTrailLightRange = pSettings->r_float(section, "trail_light_range");
     }
 
-    {
-        m_fHealthRestoreSpeed = pSettings->r_float(section, "health_restore_speed");
-        m_fSatietyRestoreSpeed = pSettings->r_float(section, "satiety_restore_speed");
-        m_fPowerRestoreSpeed = pSettings->r_float(section, "power_restore_speed");
-        m_fBleedingRestoreSpeed = pSettings->r_float(section, "bleeding_restore_speed");
-        if (pSettings->section_exist(/**cNameSect(), */ pSettings->r_string(section, "hit_absorbation_sect")))
-            m_ArtefactHitImmunities.LoadImmunities(pSettings->r_string(section, "hit_absorbation_sect"), pSettings);
-        m_additional_weight = READ_IF_EXISTS(pSettings, r_float, section, "additional_inventory_weight", 0.f);
-        m_additional_weight2 = READ_IF_EXISTS(pSettings, r_float, section, "additional_inventory_weight2", 0.f);
-        m_fThirstRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "thirst_restore_speed", 0.f);
-    }
+    m_fHealthRestoreSpeed = pSettings->r_float(section, "health_restore_speed");
+    m_fSatietyRestoreSpeed = pSettings->r_float(section, "satiety_restore_speed");
+    m_fPowerRestoreSpeed = pSettings->r_float(section, "power_restore_speed");
+    m_fBleedingRestoreSpeed = pSettings->r_float(section, "bleeding_restore_speed");
+
+    if (pSettings->section_exist(/**cNameSect(), */ pSettings->r_string(section, "hit_absorbation_sect")))
+        m_ArtefactHitImmunities.LoadImmunities(pSettings->r_string(section, "hit_absorbation_sect"), pSettings);
+
+    m_additional_weight = READ_IF_EXISTS(pSettings, r_float, section, "additional_inventory_weight", 0.f);
+    m_additional_weight2 = READ_IF_EXISTS(pSettings, r_float, section, "additional_inventory_weight2", 0.f);
+    m_fThirstRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "thirst_restore_speed", 0.f);
+
     m_bCanSpawnZone = !!pSettings->line_exist("artefact_spawn_zones", section);
     m_af_rank = READ_IF_EXISTS(pSettings, r_u8, section, "af_rank", 0);
 }

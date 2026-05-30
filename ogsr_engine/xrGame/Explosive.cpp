@@ -8,7 +8,6 @@
 
 #include "PhysicsShell.h"
 #include "entity.h"
-// #include "PSObject.h"
 #include "ParticlesObject.h"
 
 // для вызова статических функций поражения осколками
@@ -105,7 +104,14 @@ void CExplosive::Load(CInifile* ini, LPCSTR section)
 
     m_sExplodeParticles._set(ini->r_string(section, "explode_particles"));
 
-    sscanf_s(ini->r_string(section, "light_color"), "%f,%f,%f", &m_LightColor.r, &m_LightColor.g, &m_LightColor.b);
+    const auto res = scn::scan<f32, f32, f32>(std::string_view{ini->r_string(section, "light_color")}, "{},{},{}");
+    R_ASSERT(res, res.error().msg());
+
+    const auto [r, g, b] = res->values();
+    m_LightColor.r = r;
+    m_LightColor.g = g;
+    m_LightColor.b = b;
+
     m_fLightRange = ini->r_float(section, "light_range");
     m_fLightTime = ini->r_float(section, "light_time");
 

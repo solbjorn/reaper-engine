@@ -60,19 +60,19 @@ CEnvironment::CEnvironment()
     if (USED_COP_WEATHER)
     {
         string_path file_name;
-        m_ambients_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\ambients.ltx"), TRUE, TRUE, FALSE);
-        m_sound_channels_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\sound_channels.ltx"), TRUE, TRUE, FALSE);
-        m_effects_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\effects.ltx"), TRUE, TRUE, FALSE);
-        m_suns_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\suns.ltx"), TRUE, TRUE, FALSE);
+        m_ambients_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\ambients.ltx"), true, true, false);
+        m_sound_channels_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\sound_channels.ltx"), true, true, false);
+        m_effects_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\effects.ltx"), true, true, false);
+        m_suns_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\suns.ltx"), true, true, false);
 
         if (FS.exist(file_name, "$game_config$", "environment\\sun_positions.ltx"))
-            m_sun_pos_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\sun_positions.ltx"), TRUE, TRUE, FALSE);
+            m_sun_pos_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\sun_positions.ltx"), true, true, false);
 
         m_thunderbolt_collections_config =
-            xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\thunderbolt_collections.ltx"), TRUE, TRUE, FALSE);
-        m_thunderbolts_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\thunderbolts.ltx"), TRUE, TRUE, FALSE);
+            xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\thunderbolt_collections.ltx"), true, true, false);
+        m_thunderbolts_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\thunderbolts.ltx"), true, true, false);
 
-        CInifile* config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\environment.ltx"), TRUE, TRUE, FALSE);
+        CInifile* config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\environment.ltx"), true, true, false);
         m_dynamic_sun_movement = READ_IF_EXISTS(config, r_bool, "environment", "dynamic_sun_movement", true);
         // params
         p_var_alt = deg2rad(config->r_float("environment", "altitude"));

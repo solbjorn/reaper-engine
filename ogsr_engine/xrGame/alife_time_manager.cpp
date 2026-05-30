@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "alife_time_manager.h"
+
 #include "date_time.h"
 
 CALifeTimeManager::CALifeTimeManager(LPCSTR section) { init(section); }
@@ -16,9 +17,14 @@ CALifeTimeManager::~CALifeTimeManager() = default;
 
 void CALifeTimeManager::init(LPCSTR section)
 {
-    u32 years, months, days, hours, minutes, seconds;
-    sscanf(pSettings->r_string(section, "start_time"), "%u:%u:%u", &hours, &minutes, &seconds);
-    sscanf(pSettings->r_string(section, "start_date"), "%u.%u.%u", &days, &months, &years);
+    auto res = scn::scan<u32, u32, u32>(std::string_view{pSettings->r_string(section, "start_time")}, "{}:{}:{}");
+    R_ASSERT(res, res.error().msg());
+    const auto [hours, minutes, seconds] = res->values();
+
+    res = scn::scan<u32, u32, u32>(std::string_view{pSettings->r_string(section, "start_date")}, "{}.{}.{}");
+    R_ASSERT(res, res.error().msg());
+    const auto [days, months, years] = res->values();
+
     m_start_game_time = generate_time(years, months, days, hours, minutes, seconds);
     m_time_factor = pSettings->r_float(section, "time_factor");
     m_normal_time_factor = pSettings->r_float(section, "normal_time_factor");

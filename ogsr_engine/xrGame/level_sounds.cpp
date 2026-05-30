@@ -123,14 +123,18 @@ void SMusicTrack::Load(LPCSTR fn, LPCSTR params)
     strconcat(sizeof(_r), _r, fn, "_r");
     m_SourceLeft.create(_l, st_Music, sg_Undefined);
     m_SourceRight.create(_r, st_Music, sg_Undefined);
-    // parse params
-    VERIFY(_GetItemCount(params) == 5);
-    m_ActiveTime.set(0, 0);
-    m_PauseTime.set(0, 0);
-    m_Volume = 1.f;
-    sscanf(params, "%d,%d,%f,%d,%d", &m_ActiveTime.x, &m_ActiveTime.y, &m_Volume, &m_PauseTime.x, &m_PauseTime.y);
+
+    const auto res = scn::scan<u32, u32, f32, u32, u32>(std::string_view{params}, "{},{},{},{},{}");
+    R_ASSERT(res, res.error().msg());
+    const auto [ax, ay, vol, px, py] = res->values();
+
+    m_ActiveTime.set(gsl::narrow_cast<s32>(ax), gsl::narrow_cast<s32>(ay));
+    m_Volume = vol;
+    m_PauseTime.set(gsl::narrow_cast<s32>(px), gsl::narrow_cast<s32>(py));
+
     if (m_PauseTime.x == m_PauseTime.y)
         ++m_PauseTime.y;
+
     m_ActiveTime.mul(60 * 60 * 1000); // convert hour to ms
     m_PauseTime.mul(1000); // convert sec to ms
 }

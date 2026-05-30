@@ -281,7 +281,14 @@ void CCustomRocket::reload(LPCSTR section)
     m_bLightsEnabled = !!pSettings->r_bool(section, "lights_enabled");
     if (m_bLightsEnabled)
     {
-        sscanf(pSettings->r_string(section, "trail_light_color"), "%f,%f,%f", &m_TrailLightColor.r, &m_TrailLightColor.g, &m_TrailLightColor.b);
+        const auto res = scn::scan<f32, f32, f32>(std::string_view{pSettings->r_string(section, "trail_light_color")}, "{},{},{}");
+        R_ASSERT(res, res.error().msg());
+
+        const auto [r, g, b] = res->values();
+        m_TrailLightColor.r = r;
+        m_TrailLightColor.g = g;
+        m_TrailLightColor.b = b;
+
         m_fTrailLightRange = pSettings->r_float(section, "trail_light_range");
     }
 

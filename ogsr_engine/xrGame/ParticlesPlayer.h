@@ -39,10 +39,12 @@ public:
         u16 index;
         Fvector offset;
         ParticlesInfoList particles;
+
         SParticlesInfo* FindParticles(const shared_str& ps_name);
 
     public:
-        SBoneInfo(u16 idx, const Fvector& offs) : index{idx}, offset{offs} {}
+        constexpr explicit SBoneInfo(u16 idx, const Fvector& offs) : index{idx}, offset{offs} {}
+        constexpr explicit SBoneInfo(u16 idx, f32 x, f32 y, f32 z) : index{idx}, offset{x, y, z} {}
 
         [[nodiscard]] SParticlesInfo* AppendParticles(const shared_str& ps_name);
         void StopParticles(const shared_str& ps_name, bool bDestroy);

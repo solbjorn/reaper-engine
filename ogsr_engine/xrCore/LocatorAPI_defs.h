@@ -54,7 +54,7 @@ public:
     [[nodiscard]] LPCSTR _update(string_path& dest, LPCSTR src) const;
 
     void _set(LPSTR add);
-    void _set_root(LPSTR root);
+    void _set_root(gsl::czstring root);
 };
 
 struct __finddata64_t;

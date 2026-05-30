@@ -182,15 +182,22 @@ void CBaseMonster::reload(LPCSTR section)
     {
         // load base sounds
         LOAD_SOUND("sound_idle", SOUND_TYPE_MONSTER_TALKING, MonsterSound::eLowPriority, MonsterSound::eBaseChannel, MonsterSound::eMonsterSoundIdle);
-        LOAD_SOUND("sound_distant_idle", SOUND_TYPE_MONSTER_TALKING, MonsterSound::eLowPriority + 1, MonsterSound::eBaseChannel, MonsterSound::eMonsterSoundIdleDistant);
+        LOAD_SOUND("sound_distant_idle", SOUND_TYPE_MONSTER_TALKING, MonsterSound::eLowPriority + 1, MonsterSound::eBaseChannel,
+                   MonsterSound::eMonsterSoundIdleDistant);
         LOAD_SOUND("sound_eat", SOUND_TYPE_MONSTER_TALKING, MonsterSound::eNormalPriority + 4, MonsterSound::eBaseChannel, MonsterSound::eMonsterSoundEat);
-        LOAD_SOUND("sound_aggressive", SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eNormalPriority + 3, MonsterSound::eBaseChannel, MonsterSound::eMonsterSoundAggressive);
-        LOAD_SOUND("sound_attack_hit", SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 1, MonsterSound::eCaptureAllChannels, MonsterSound::eMonsterSoundAttackHit);
-        LOAD_SOUND("sound_take_damage", SOUND_TYPE_MONSTER_INJURING, MonsterSound::eHighPriority, MonsterSound::eCaptureAllChannels, MonsterSound::eMonsterSoundTakeDamage);
-        LOAD_SOUND("sound_strike", SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eNormalPriority, MonsterSound::eChannelIndependent, MonsterSound::eMonsterSoundStrike);
+        LOAD_SOUND("sound_aggressive", SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eNormalPriority + 3, MonsterSound::eBaseChannel,
+                   MonsterSound::eMonsterSoundAggressive);
+        LOAD_SOUND("sound_attack_hit", SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 1, MonsterSound::eCaptureAllChannels,
+                   MonsterSound::eMonsterSoundAttackHit);
+        LOAD_SOUND("sound_take_damage", SOUND_TYPE_MONSTER_INJURING, MonsterSound::eHighPriority, MonsterSound::eCaptureAllChannels,
+                   MonsterSound::eMonsterSoundTakeDamage);
+        LOAD_SOUND("sound_strike", SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eNormalPriority, MonsterSound::eChannelIndependent,
+                   MonsterSound::eMonsterSoundStrike);
         LOAD_SOUND("sound_die", SOUND_TYPE_MONSTER_DYING, MonsterSound::eCriticalPriority, MonsterSound::eCaptureAllChannels, MonsterSound::eMonsterSoundDie);
-        LOAD_SOUND("sound_die_in_anomaly", SOUND_TYPE_MONSTER_DYING, MonsterSound::eCriticalPriority, MonsterSound::eCaptureAllChannels, MonsterSound::eMonsterSoundDieInAnomaly);
-        LOAD_SOUND("sound_threaten", SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eNormalPriority, MonsterSound::eBaseChannel, MonsterSound::eMonsterSoundThreaten);
+        LOAD_SOUND("sound_die_in_anomaly", SOUND_TYPE_MONSTER_DYING, MonsterSound::eCriticalPriority, MonsterSound::eCaptureAllChannels,
+                   MonsterSound::eMonsterSoundDieInAnomaly);
+        LOAD_SOUND("sound_threaten", SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eNormalPriority, MonsterSound::eBaseChannel,
+                   MonsterSound::eMonsterSoundThreaten);
         LOAD_SOUND("sound_steal", SOUND_TYPE_MONSTER_STEP, MonsterSound::eNormalPriority + 1, MonsterSound::eBaseChannel, MonsterSound::eMonsterSoundSteal);
         LOAD_SOUND("sound_panic", SOUND_TYPE_MONSTER_STEP, MonsterSound::eNormalPriority + 2, MonsterSound::eBaseChannel, MonsterSound::eMonsterSoundPanic);
     }
@@ -389,14 +396,37 @@ void CBaseMonster::settings_read(CInifile* ini, LPCSTR section, SMonsterSettings
         VERIFY(!fis_zero(data.m_attack_effector.ppi.noise.fps));
 
         if (ini->line_exist(ppi_section, "color_base"))
-            sscanf(ini->r_string(ppi_section, "color_base"), "%f,%f,%f", &data.m_attack_effector.ppi.color_base.r, &data.m_attack_effector.ppi.color_base.g,
-                   &data.m_attack_effector.ppi.color_base.b);
-        if (ini->line_exist(ppi_section, "color_base"))
-            sscanf(ini->r_string(ppi_section, "color_gray"), "%f,%f,%f", &data.m_attack_effector.ppi.color_gray.r, &data.m_attack_effector.ppi.color_gray.g,
-                   &data.m_attack_effector.ppi.color_gray.b);
-        if (ini->line_exist(ppi_section, "color_base"))
-            sscanf(ini->r_string(ppi_section, "color_add"), "%f,%f,%f", &data.m_attack_effector.ppi.color_add.r, &data.m_attack_effector.ppi.color_add.g,
-                   &data.m_attack_effector.ppi.color_add.b);
+        {
+            const auto res = scn::scan<f32, f32, f32>(std::string_view{ini->r_string(ppi_section, "color_base")}, "{},{},{}");
+            R_ASSERT(res, res.error().msg());
+
+            const auto [r, g, b] = res->values();
+            data.m_attack_effector.ppi.color_base.r = r;
+            data.m_attack_effector.ppi.color_base.g = g;
+            data.m_attack_effector.ppi.color_base.b = b;
+        }
+
+        if (ini->line_exist(ppi_section, "color_gray"))
+        {
+            const auto res = scn::scan<f32, f32, f32>(std::string_view{ini->r_string(ppi_section, "color_gray")}, "{},{},{}");
+            R_ASSERT(res, res.error().msg());
+
+            const auto [r, g, b] = res->values();
+            data.m_attack_effector.ppi.color_gray.r = r;
+            data.m_attack_effector.ppi.color_gray.g = g;
+            data.m_attack_effector.ppi.color_gray.b = b;
+        }
+
+        if (ini->line_exist(ppi_section, "color_add"))
+        {
+            const auto res = scn::scan<f32, f32, f32>(std::string_view{ini->r_string(ppi_section, "color_add")}, "{},{},{}");
+            R_ASSERT(res, res.error().msg());
+
+            const auto [r, g, b] = res->values();
+            data.m_attack_effector.ppi.color_add.r = r;
+            data.m_attack_effector.ppi.color_add.g = g;
+            data.m_attack_effector.ppi.color_add.b = b;
+        }
 
         READ_SETTINGS(data.m_attack_effector.time, "time", r_float, ini, ppi_section);
         READ_SETTINGS(data.m_attack_effector.time_attack, "time_attack", r_float, ini, ppi_section);

@@ -22,20 +22,21 @@ CTracer::CTracer()
 {
     const char* sh_name = READ_IF_EXISTS(pSettings, r_string, "bullet_manager", "tracer_shader", "effects\\bullet_tracer");
     const char* tx_name = READ_IF_EXISTS(pSettings, r_string, "bullet_manager", "tracer_texture", "fx\\fx_tracer");
-    sh_Tracer->create(sh_name, tx_name);
 
+    sh_Tracer->create(sh_name, tx_name);
     m_aColors.clear();
 
     for (u8 i = 0; i < 255; i++)
     {
-        std::array<char, 16> LineName;
-        sprintf_s(LineName.data(), LineName.size(), "color_%d", i);
-        if (!pSettings->line_exist(TRACERS_COLOR_TABLE.data(), LineName.data()))
+        const auto name = xr::format("color_{}", i);
+        if (!pSettings->line_exist(TRACERS_COLOR_TABLE.data(), name.c_str()))
             break;
 
-        float r, g, b;
-        sscanf_s(pSettings->r_string(TRACERS_COLOR_TABLE.data(), LineName.data()), "%f,%f,%f", &r, &g, &b);
-        m_aColors.push_back(color_argb_f(1.0f, r, g, b));
+        const auto res = scn::scan<f32, f32, f32>(std::string_view{pSettings->r_string(TRACERS_COLOR_TABLE.data(), name.c_str())}, "{},{},{}");
+        R_ASSERT(res, res.error().msg());
+
+        const auto [r, g, b] = res->values();
+        m_aColors.emplace_back(color_argb_f(1.0f, r, g, b));
     }
 }
 

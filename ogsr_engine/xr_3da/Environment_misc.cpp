@@ -324,26 +324,44 @@ void CEnvDescriptor::load_common(CInifile* config)
 
 void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
 {
-    Ivector3 tm{};
-    sscanf(m_identifier.c_str(), "%d:%d:%d", &tm.x, &tm.y, &tm.z);
-    R_ASSERT3((tm.x >= 0) && (tm.x < 24) && (tm.y >= 0) && (tm.y < 60) && (tm.z >= 0) && (tm.z < 60), "Incorrect weather time", m_identifier.c_str());
-    exec_time = tm.x * 3600.f + tm.y * 60.f + tm.z;
+    const auto res = scn::scan<u32, u32, u32>(std::string_view{m_identifier}, "{}:{}:{}");
+    R_ASSERT(res, res.error().msg());
+
+    const auto [tx, ty, tz] = res->values();
+    R_ASSERT(tx < 24 && ty < 60 && tz < 60, "Incorrect weather time", m_identifier.c_str());
+
+    exec_time = gsl::narrow_cast<f32>(tx * 3600 + ty * 60 + tz);
     exec_time_loaded = exec_time;
+
     string_path st, st_env;
     xr_strcpy(st, config.r_string(m_identifier.c_str(), "sky_texture"));
     strconcat(sizeof(st_env), st_env, st, "#small");
     sky_texture_name._set(st);
     sky_texture_env_name._set(st_env);
     clouds_texture_name._set(config.r_string(m_identifier.c_str(), "clouds_texture"));
-    LPCSTR cldclr = config.r_string(m_identifier.c_str(), "clouds_color");
-    float x, y, z, w, multiplier = 0;
-    sscanf(cldclr, "%f,%f,%f,%f,%f", &x, &y, &z, &w, &multiplier);
-    clouds_color.set(x, y, z, w);
-    if (!fis_zero(multiplier))
+
+    if (const std::string_view cldclr{config.r_string(m_identifier, "clouds_color")}; std::ranges::count(cldclr, ',') == 4)
     {
-        float save = clouds_color.w;
-        clouds_color.mul(.5f * multiplier);
-        clouds_color.w = save;
+        const auto resc = scn::scan<f32, f32, f32, f32, f32>(cldclr, "{},{},{},{},{}");
+        R_ASSERT(resc, resc.error().msg());
+
+        const auto [cx, cy, cz, cw, multiplier] = resc->values();
+        clouds_color.set(cx, cy, cz, cw);
+
+        if (!fis_zero(multiplier))
+        {
+            const auto save = clouds_color.w;
+            clouds_color.mul(0.5f * multiplier);
+            clouds_color.w = save;
+        }
+    }
+    else
+    {
+        const auto resc = scn::scan<f32, f32, f32, f32>(cldclr, "{},{},{},{}");
+        R_ASSERT(resc, resc.error().msg());
+
+        const auto [cx, cy, cz, cw] = resc->values();
+        clouds_color.set(cx, cy, cz, cw);
     }
 
     sky_color = config.r_fvector3(m_identifier.c_str(), "sky_color");
@@ -396,32 +414,51 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
 
 void CEnvDescriptor::load_shoc(CEnvironment& environment, LPCSTR exec_tm, LPCSTR S)
 {
-    Ivector3 tm{};
-    sscanf(exec_tm, "%d:%d:%d", &tm.x, &tm.y, &tm.z);
-    R_ASSERT3((tm.x >= 0) && (tm.x < 24) && (tm.y >= 0) && (tm.y < 60) && (tm.z >= 0) && (tm.z < 60), "Incorrect weather time", S);
-    load_shoc(tm.x * 3600.f + tm.y * 60.f + tm.z, S, environment);
+    const auto res = scn::scan<u32, u32, u32>(std::string_view{exec_tm}, "{}:{}:{}");
+    R_ASSERT(res, res.error().msg());
+
+    const auto [tx, ty, tz] = res->values();
+    R_ASSERT(tx < 24 && ty < 60 && tz < 60, "Incorrect weather time", S);
+
+    load_shoc(gsl::narrow_cast<f32>(tx * 3600 + ty * 60 + tz), S, environment);
 }
 
 void CEnvDescriptor::load_shoc(float exec_tm, LPCSTR S, CEnvironment& environment)
 {
     m_identifier._set(S);
+
     exec_time = exec_tm;
     exec_time_loaded = exec_time;
+
     string_path st, st_env;
     xr_strcpy(st, pSettings->r_string(m_identifier.c_str(), "sky_texture"));
     strconcat(sizeof(st_env), st_env, st, "#small");
     sky_texture_name._set(st);
     sky_texture_env_name._set(st_env);
     clouds_texture_name._set(pSettings->r_string(m_identifier.c_str(), "clouds_texture"));
-    LPCSTR cldclr = pSettings->r_string(m_identifier.c_str(), "clouds_color");
-    float x, y, z, w, multiplier = 0;
-    sscanf(cldclr, "%f,%f,%f,%f,%f", &x, &y, &z, &w, &multiplier);
-    clouds_color.set(x, y, z, w);
-    if (!fis_zero(multiplier))
+
+    if (const std::string_view cldclr{pSettings->r_string(m_identifier, "clouds_color")}; std::ranges::count(cldclr, ',') == 4)
     {
-        float save = clouds_color.w;
-        clouds_color.mul(.5f * multiplier);
-        clouds_color.w = save;
+        const auto resc = scn::scan<f32, f32, f32, f32, f32>(cldclr, "{},{},{},{},{}");
+        R_ASSERT(resc, resc.error().msg());
+
+        const auto [cx, cy, cz, cw, multiplier] = resc->values();
+        clouds_color.set(cx, cy, cz, cw);
+
+        if (!fis_zero(multiplier))
+        {
+            const auto save = clouds_color.w;
+            clouds_color.mul(0.5f * multiplier);
+            clouds_color.w = save;
+        }
+    }
+    else
+    {
+        const auto resc = scn::scan<f32, f32, f32, f32>(cldclr, "{},{},{},{}");
+        R_ASSERT(resc, resc.error().msg());
+
+        const auto [cx, cy, cz, cw] = resc->values();
+        clouds_color.set(cx, cy, cz, cw);
     }
 
     sky_color = pSettings->r_fvector3(m_identifier.c_str(), "sky_color");
@@ -652,7 +689,7 @@ void CEnvironment::load_level_specific_ambients()
     strconcat(sizeof(path), path, "environment\\ambients\\", level_name.c_str(), ".ltx");
 
     string_path full_path;
-    CInifile* level_ambients = xr_new<CInifile>(FS.update_path(full_path, "$game_config$", path), TRUE, TRUE, FALSE);
+    CInifile* level_ambients = xr_new<CInifile>(FS.update_path(full_path, "$game_config$", path), true, true, false);
 
     for (auto I = Ambients.begin(), E = Ambients.end(); I != E; ++I)
     {
@@ -737,9 +774,8 @@ void CEnvironment::load_weathers()
 
             for (const auto& pair : sections)
             {
-                int h, m, s;
-                if (sscanf(pair.second->Name.c_str(), "%d:%d:%d", &m, &h, &s) == 3)
-                    env.push_back(create_descriptor(pair.second->Name, &config));
+                if (const auto res = scn::scan<u32, u32, u32>(std::string_view{pair.second->Name}, "{}:{}:{}"); res)
+                    env.emplace_back(create_descriptor(pair.second->Name, &config));
             }
         }
 
@@ -805,9 +841,8 @@ void CEnvironment::load_weather_effects()
 
             for (const auto& pair : sections)
             {
-                int h, m, s;
-                if (sscanf_s(pair.second->Name.c_str(), "%d:%d:%d", &m, &h, &s) == 3)
-                    env.push_back(create_descriptor(pair.second->Name, &config));
+                if (const auto res = scn::scan<u32, u32, u32>(std::string_view{pair.second->Name}, "{}:{}:{}"); res)
+                    env.emplace_back(create_descriptor(pair.second->Name, &config));
             }
 
             env.emplace_back(create_descriptor(shared_str{"24:00:00"}, nullptr))->exec_time_loaded = DAY_LENGTH;

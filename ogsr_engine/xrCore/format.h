@@ -133,7 +133,12 @@ struct std::formatter<sf::String> : std::formatter<xr_string>
 
 #endif // !XR_USE_FMT
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wsign-conversion");
+
 #include <scn/ranges.h>
+
+XR_DIAG_POP();
 
 template <typename T>
 struct scn::scanner<Fvector2, T> : scn::scanner<xr::inlined_vector<f32, 2>, T>

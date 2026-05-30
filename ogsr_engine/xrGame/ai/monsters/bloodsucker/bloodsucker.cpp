@@ -271,12 +271,29 @@ void CAI_Bloodsucker::LoadVampirePPEffector(LPCSTR section)
     pp_vampire_effector.noise.fps = pSettings->r_float(section, "noise_fps");
     VERIFY(!fis_zero(pp_vampire_effector.noise.fps));
 
-    sscanf(pSettings->r_string(section, "color_base"), "%f,%f,%f", &pp_vampire_effector.color_base.r, &pp_vampire_effector.color_base.g,
-           &pp_vampire_effector.color_base.b);
-    sscanf(pSettings->r_string(section, "color_gray"), "%f,%f,%f", &pp_vampire_effector.color_gray.r, &pp_vampire_effector.color_gray.g,
-           &pp_vampire_effector.color_gray.b);
-    sscanf(pSettings->r_string(section, "color_add"), "%f,%f,%f", &pp_vampire_effector.color_add.r, &pp_vampire_effector.color_add.g,
-           &pp_vampire_effector.color_add.b);
+    auto res = scn::scan<f32, f32, f32>(std::string_view{pSettings->r_string(section, "color_base")}, "{},{},{}");
+    R_ASSERT(res, res.error().msg());
+
+    const auto [br, bg, bb] = res->values();
+    pp_vampire_effector.color_base.r = br;
+    pp_vampire_effector.color_base.g = bg;
+    pp_vampire_effector.color_base.b = bb;
+
+    res = scn::scan<f32, f32, f32>(std::string_view{pSettings->r_string(section, "color_gray")}, "{},{},{}");
+    R_ASSERT(res, res.error().msg());
+
+    const auto [gr, gg, gb] = res->values();
+    pp_vampire_effector.color_gray.r = gr;
+    pp_vampire_effector.color_gray.g = gg;
+    pp_vampire_effector.color_gray.b = gb;
+
+    res = scn::scan<f32, f32, f32>(std::string_view{pSettings->r_string(section, "color_add")}, "{},{},{}");
+    R_ASSERT(res, res.error().msg());
+
+    const auto [ar, ag, ab] = res->values();
+    pp_vampire_effector.color_add.r = ar;
+    pp_vampire_effector.color_add.g = ag;
+    pp_vampire_effector.color_add.b = ab;
 }
 
 void CAI_Bloodsucker::BoneCallback(CBoneInstance* B)

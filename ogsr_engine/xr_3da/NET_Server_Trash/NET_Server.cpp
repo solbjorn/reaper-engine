@@ -6,18 +6,18 @@ ClientID BroadcastCID(0xffffffff);
 
 void ip_address::set(LPCSTR src_string) // Это нужно
 {
-    u32 buff[4];
-    int cnt = sscanf(src_string, "%u.%u.%u.%u", &buff[0], &buff[1], &buff[2], &buff[3]);
-    if (cnt == 4)
+    const auto res = scn::scan<u8, u8, u8, u8>(std::string_view{src_string}, "{}.{}.{}.{}");
+    if (res)
     {
-        m_data.a1 = u8(buff[0] & 0xff);
-        m_data.a2 = u8(buff[1] & 0xff);
-        m_data.a3 = u8(buff[2] & 0xff);
-        m_data.a4 = u8(buff[3] & 0xff);
+        const auto [a1, a2, a3, a4] = res->values();
+        m_data.a1 = a1;
+        m_data.a2 = a2;
+        m_data.a3 = a3;
+        m_data.a4 = a4;
     }
     else
     {
-        Msg("! Bad ipAddress format [{}]", src_string);
+        Msg("! Bad ipAddress format [{}]: {}", src_string, res.error().msg());
         m_data.data = 0;
     }
 }

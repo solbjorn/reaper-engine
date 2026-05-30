@@ -195,7 +195,7 @@ CModelPool::CModelPool()
             FS.r_close(F);
     }
 
-    vis_prefetch_ini = xr_new<CInifile>(fname, FALSE);
+    vis_prefetch_ini = xr_new<CInifile>(fname, false);
     process_vis_prefetch();
 }
 
@@ -465,16 +465,18 @@ void CModelPool::Prefetch()
 
     now_prefetch2 = true;
     const auto& sect = vis_prefetch_ini->r_section("prefetch");
+
     for (const auto& [low_name, val] : sect.Data)
     {
-        float val1{}, val2{};
-        sscanf(val.c_str(), "%f,%f", &val1, &val2);
+        const auto res = scn::scan<f32, f32>(std::string_view{val}, "{},{}");
+        R_ASSERT(res, res.error().msg());
+        const auto [val1, val2] = res->values();
 
         if (!Instance_Find(low_name.c_str()))
         {
             if (const auto fname = shared_str{xr::format("{}.ogf", low_name)}; FS.exist("$game_meshes$", fname.c_str()))
             {
-                RImplementation.hud_loading = val2 == 2.f;
+                RImplementation.hud_loading = fsimilar(val2, 2.0f);
                 dxRender_Visual* V = Create(low_name.c_str());
                 RImplementation.hud_loading = false;
                 Delete(V, FALSE);
@@ -612,12 +614,15 @@ void CModelPool::process_vis_prefetch()
 {
     if (!vis_prefetch_ini->section_exist("prefetch"))
         return;
+
     xr_vector<const char*> expired;
     const auto& sect = vis_prefetch_ini->r_section("prefetch");
+
     for (const auto& [key, val] : sect.Data)
     {
-        float val1{}, val2{};
-        sscanf(val.c_str(), "%f,%f", &val1, &val2);
+        const auto res = scn::scan<f32, f32>(std::string_view{val}, "{},{}");
+        R_ASSERT(res, res.error().msg());
+        auto [val1, val2] = res->values();
 
         const float need = val1 * 0.8f; // скорость уменьшение популярности визуала
         // -0.5..+0.5 - добавить случайность, чтобы не было общего выключения
@@ -628,6 +633,7 @@ void CModelPool::process_vis_prefetch()
         else
             expired.emplace_back(key.c_str());
     }
+
     for (const char* s : expired)
         vis_prefetch_ini->remove_line("prefetch", s);
 }

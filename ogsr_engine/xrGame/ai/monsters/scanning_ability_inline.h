@@ -41,9 +41,29 @@ void CScanningAbilityAbstract::load(LPCSTR section)
     m_effector_info.noise.fps = pSettings->r_float(ppi_section, "noise_fps");
     VERIFY(!fis_zero(m_effector_info.noise.fps));
 
-    sscanf(pSettings->r_string(ppi_section, "color_base"), "%f,%f,%f", &m_effector_info.color_base.r, &m_effector_info.color_base.g, &m_effector_info.color_base.b);
-    sscanf(pSettings->r_string(ppi_section, "color_gray"), "%f,%f,%f", &m_effector_info.color_gray.r, &m_effector_info.color_gray.g, &m_effector_info.color_gray.b);
-    sscanf(pSettings->r_string(ppi_section, "color_add"), "%f,%f,%f", &m_effector_info.color_add.r, &m_effector_info.color_add.g, &m_effector_info.color_add.b);
+    auto res = scn::scan<f32, f32, f32>(std::string_view{pSettings->r_string(ppi_section, "color_base")}, "{},{},{}");
+    R_ASSERT(res, res.error().msg());
+
+    const auto [br, bg, bb] = res->values();
+    m_effector_info.color_base.r = br;
+    m_effector_info.color_base.g = bg;
+    m_effector_info.color_base.b = bb;
+
+    res = scn::scan<f32, f32, f32>(std::string_view{pSettings->r_string(ppi_section, "color_gray")}, "{},{},{}");
+    R_ASSERT(res, res.error().msg());
+
+    const auto [gr, gg, gb] = res->values();
+    m_effector_info.color_gray.r = gr;
+    m_effector_info.color_gray.g = gg;
+    m_effector_info.color_gray.b = gb;
+
+    res = scn::scan<f32, f32, f32>(std::string_view{pSettings->r_string(ppi_section, "color_add")}, "{},{},{}");
+    R_ASSERT(res, res.error().msg());
+
+    const auto [ar, ag, ab] = res->values();
+    m_effector_info.color_add.r = ar;
+    m_effector_info.color_add.g = ag;
+    m_effector_info.color_add.b = ab;
 
     m_effector_time = pSettings->r_float(ppi_section, "time");
     m_effector_time_attack = pSettings->r_float(ppi_section, "time_attack");
@@ -114,7 +134,8 @@ void CScanningAbilityAbstract::schedule_update()
 
                     // постпроцесс
                     // TODO: make this postprocess with static check (only one for all scanners)
-                    Actor()->Cameras().AddPPEffector(xr_new<CMonsterEffector>(m_effector_info, m_effector_time, m_effector_time_attack, m_effector_time_release));
+                    Actor()->Cameras().AddPPEffector(
+                        xr_new<CMonsterEffector>(m_effector_info, m_effector_time, m_effector_time_attack, m_effector_time_release));
 
                     object->can_scan = false;
                     m_this_scan = true;

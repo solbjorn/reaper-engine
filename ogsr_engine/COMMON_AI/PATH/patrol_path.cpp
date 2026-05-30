@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "patrol_path.h"
+
 #include "levelgamedef.h"
 
 CPatrolPath::CPatrolPath([[maybe_unused]] shared_str name)
@@ -25,7 +26,7 @@ CPatrolPath& CPatrolPath::load_raw(const CLevelGraph* level_graph, const CGameLe
     R_ASSERT(stream.find_chunk(WAYOBJECT_CHUNK_POINTS));
     u32 vertex_count = stream.r_u16();
     for (u32 i = 0; i < vertex_count; ++i)
-        add_vertex(CPatrolPoint(this).load_raw(level_graph, cross, game_graph, stream), i);
+        add_vertex(CPatrolPoint{this}.load_raw(level_graph, cross, game_graph, stream), i);
 
     R_ASSERT(stream.find_chunk(WAYOBJECT_CHUNK_LINKS));
     u32 edge_count = stream.r_u16();
@@ -47,38 +48,29 @@ CPatrolPath& CPatrolPath::load_ini(CInifile::Sect& section)
     string16 prefix;
 
     for (int i = 0; i < vertex_count; ++i)
-    {
-        std::ignore = _GetItem(points, i, prefix);
-        add_vertex(CPatrolPoint(this).load_ini(section, prefix), i);
-    }
+        add_vertex(CPatrolPoint{this}.load_ini(section, _GetItem(points, i, prefix)), i);
 
     for (int i = 0; i < vertex_count; ++i)
     {
-        std::ignore = _GetItem(points, i, prefix);
-
-        string256 full_name;
-        strconcat(sizeof(full_name), full_name, prefix, ":", "links");
-
-        if (section.line_exist(full_name))
+        if (const auto sect = xr::format("{}:links", _GetItem(points, i, prefix)); section.line_exist(sect.c_str()))
         {
-            const char* links = section.r_string(full_name);
+            const char* links = section.r_string(sect.c_str());
             const int links_count = _GetItemCount(links);
 
-            string32 link;
             for (int k = 0; k < links_count; ++k)
             {
-                std::ignore = _GetItem(links, k, link);
+                string32 link;
 
-                u32 vertex_idx;
-                float probability;
+                const auto res = scn::scan<u32, f32>(std::string_view{_GetItem(links, k, link)}, "p{}({})");
+                R_ASSERT(res, res.error().msg());
 
-                sscanf(link, "p%u(%f)", &vertex_idx, &probability);
+                const auto [vertex_idx, probability] = res->values();
                 add_edge(i, vertex_idx, probability);
             }
         }
     }
 
-    return (*this);
+    return *this;
 }
 
 #ifdef DEBUG

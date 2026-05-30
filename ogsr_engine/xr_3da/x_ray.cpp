@@ -60,11 +60,11 @@ static void InitSettings()
 {
     string_path fname;
     std::ignore = FS.update_path(fname, "$game_config$", "system.ltx");
-    pSettings = xr_new<CInifile>(fname, TRUE);
+    pSettings = xr_new<CInifile>(fname, true);
     CHECK_OR_EXIT(!pSettings->sections().empty(), xr::format("Cannot find file {}.\nReinstalling application may fix this problem.", fname));
 
     std::ignore = FS.update_path(fname, "$game_config$", "game.ltx");
-    pGameIni = xr_new<CInifile>(fname, TRUE);
+    pGameIni = xr_new<CInifile>(fname, true);
     CHECK_OR_EXIT(!pGameIni->sections().empty(), xr::format("Cannot find file {}.\nReinstalling application may fix this problem.", fname));
 
     IS_OGSR_GA = strstr(READ_IF_EXISTS(pSettings, r_string, "mod_ver", "mod_ver", "nullptr"), "OGSR");
@@ -76,11 +76,29 @@ static void InitConsole()
     Console->Initialize();
 
     strcpy_s(Console->ConfigFile, "user.ltx");
-    if (strstr(Core.Params, "-ltx "))
+
+    const std::string_view params{Core.Params};
+    if (const auto pos = params.rfind("-ltx"); pos != std::string_view::npos)
     {
-        string64 c_name;
-        sscanf(strstr(Core.Params, "-ltx ") + 5, "%[^ ] ", c_name);
-        strcpy_s(Console->ConfigFile, c_name);
+        if (pos + 5 < params.size())
+        {
+            if (const auto res = scn::scan_value<std::string_view>(params.substr(pos + 5)); res)
+            {
+                const auto val = res->value();
+                const auto copy = std::min(val.size(), sizeof(Console->ConfigFile) - 1);
+
+                std::memcpy(&Console->ConfigFile[0], &val[0], copy);
+                Console->ConfigFile[copy] = '\0';
+            }
+            else
+            {
+                Msg("! Invalid -ltx parameter argument: {}", res.error().msg());
+            }
+        }
+        else
+        {
+            Msg("! The -ltx parameter requires an argument");
+        }
     }
 
     CORE_FEATURE_SET(colorize_ammo, "dragdrop");
@@ -311,8 +329,8 @@ namespace xr
 {
 namespace
 {
-[[nodiscard]] s32 main(gsl::czstring cmdline, void* handle);
-tmc::task<void> main_async(gsl::czstring cmdline, void* handle, std::atomic<xr::tmc_atomic_wait_t>& code);
+[[nodiscard]] s32 main(std::string_view cmdline, void* handle);
+tmc::task<void> main_async(std::string_view cmdline, void* handle, std::atomic<xr::tmc_atomic_wait_t>& code);
 } // namespace
 } // namespace xr
 
@@ -354,14 +372,30 @@ namespace xr
 {
 namespace
 {
-s32 main(gsl::czstring cmdline, void* handle)
+s32 main(std::string_view cmdline, void* handle)
 {
-    size_t cpus{};
+    size_t cpus{0};
 
-    if (gsl::czstring key{"-max-threads"}, param = std::strstr(cmdline, key); param != nullptr)
+    if (const auto pos = cmdline.rfind("-max-threads"); pos != std::string_view::npos)
     {
-        if (sscanf_s(param + xr_strlen(key) + 1, "%zu", &cpus) == 1)
-            cpus = std::clamp(cpus, 1uz, TMC_PLATFORM_BITS);
+        if (pos + 13 < cmdline.size())
+        {
+            if (const auto res = scn::scan_int<size_t>(cmdline.substr(pos + 13)); res)
+            {
+                if (const auto val = res->value(); val < 1 || val > TMC_PLATFORM_BITS)
+                    Msg("! Invalid -max-threads parameter argument: {}, must be [1-{}]", val, TMC_PLATFORM_BITS);
+                else
+                    cpus = val;
+            }
+            else
+            {
+                Msg("! Invalid -max-threads parameter argument: {}", res.error().msg());
+            }
+        }
+        else
+        {
+            Msg("! The -max-threads parameter requires an argument");
+        }
     }
 
     CPU::ID.topo = tmc::topology::query();
@@ -376,7 +410,7 @@ s32 main(gsl::czstring cmdline, void* handle)
         cpu.add_partition(p_cores, xr::tmc_priority_high, xr::tmc_priority_any + 1).add_partition(e_cores, xr::tmc_priority_any, xr::tmc_priority_low + 1);
     }
 
-    if (cpus > 0)
+    if (cpus != 0)
         cpu.set_thread_count(cpus);
 
     cpu.fill_thread_occupancy().set_thread_init_hook([](tmc::topology::thread_info info) { CPU::ID.threads.emplace_back(std::move(info)); }).init();
@@ -395,7 +429,7 @@ s32 main(gsl::czstring cmdline, void* handle)
     return gsl::narrow_cast<s32>(code);
 }
 
-tmc::task<void> main_async(gsl::czstring cmdline, void* handle, std::atomic<xr::tmc_atomic_wait_t>& code)
+tmc::task<void> main_async(std::string_view cmdline, void* handle, std::atomic<xr::tmc_atomic_wait_t>& code)
 {
     xr::tmc_cpu_st_executor().init();
 
@@ -405,8 +439,28 @@ tmc::task<void> main_async(gsl::czstring cmdline, void* handle, std::atomic<xr::
     string_path fsgame;
     fsgame[0] = '\0';
 
-    if (gsl::czstring key{"-fsltx"}, param = std::strstr(cmdline, key); param != nullptr)
-        sscanf(param + xr_strlen(key) + 1, "%[^ ] ", fsgame);
+    if (const auto pos = cmdline.rfind("-fsltx"); pos != std::string_view::npos)
+    {
+        if (pos + 7 < cmdline.size())
+        {
+            if (const auto res = scn::scan_value<std::string_view>(cmdline.substr(pos + 7)); res)
+            {
+                const auto val = res->value();
+                const auto copy = std::min(val.size(), sizeof(fsgame) - 1);
+
+                std::memcpy(&fsgame[0], &val[0], copy);
+                fsgame[copy] = '\0';
+            }
+            else
+            {
+                Msg("! Invalid -fsltx parameter argument: {}", res.error().msg());
+            }
+        }
+        else
+        {
+            Msg("! The -fsltx parameter requires an argument");
+        }
+    }
 
     Core._initialize("xray", true, fsgame[0] ? fsgame : nullptr);
     InitSettings();
@@ -476,7 +530,7 @@ tmc::task<void> main_async(gsl::czstring cmdline, void* handle, std::atomic<xr::
 
         Core._destroy();
 
-        if (std::strstr(cmdline, "-multi_instances") == nullptr)
+        if (!cmdline.contains("-multi_instances"))
             // Delete application presence mutex
             CloseHandle(handle);
     }

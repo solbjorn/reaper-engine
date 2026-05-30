@@ -280,7 +280,14 @@ void CCustomZone::Load(LPCSTR section)
 
     if (BlowoutLight)
     {
-        sscanf(pSettings->r_string(section, "light_color"), "%f,%f,%f", &m_LightColor.r, &m_LightColor.g, &m_LightColor.b);
+        const auto res = scn::scan<f32, f32, f32>(std::string_view{pSettings->r_string(section, "light_color")}, "{},{},{}");
+        R_ASSERT(res, res.error().msg());
+
+        const auto [r, g, b] = res->values();
+        m_LightColor.r = r;
+        m_LightColor.g = g;
+        m_LightColor.b = b;
+
         m_fLightRange = pSettings->r_float(section, "light_range");
         m_fLightTime = pSettings->r_float(section, "light_time");
         m_fLightTimeLeft = 0;

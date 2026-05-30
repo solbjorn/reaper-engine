@@ -110,12 +110,29 @@ void CController::Load(LPCSTR section)
     m_control_effector.ppi.noise.fps = pSettings->r_float(ppi_section, "noise_fps");
     VERIFY(!fis_zero(m_control_effector.ppi.noise.fps));
 
-    sscanf(pSettings->r_string(ppi_section, "color_base"), "%f,%f,%f", &m_control_effector.ppi.color_base.r, &m_control_effector.ppi.color_base.g,
-           &m_control_effector.ppi.color_base.b);
-    sscanf(pSettings->r_string(ppi_section, "color_gray"), "%f,%f,%f", &m_control_effector.ppi.color_gray.r, &m_control_effector.ppi.color_gray.g,
-           &m_control_effector.ppi.color_gray.b);
-    sscanf(pSettings->r_string(ppi_section, "color_add"), "%f,%f,%f", &m_control_effector.ppi.color_add.r, &m_control_effector.ppi.color_add.g,
-           &m_control_effector.ppi.color_add.b);
+    auto res = scn::scan<f32, f32, f32>(std::string_view{pSettings->r_string(ppi_section, "color_base")}, "{},{},{}");
+    R_ASSERT(res, res.error().msg());
+
+    const auto [br, bg, bb] = res->values();
+    m_control_effector.ppi.color_base.r = br;
+    m_control_effector.ppi.color_base.g = bg;
+    m_control_effector.ppi.color_base.b = bb;
+
+    res = scn::scan<f32, f32, f32>(std::string_view{pSettings->r_string(ppi_section, "color_gray")}, "{},{},{}");
+    R_ASSERT(res, res.error().msg());
+
+    const auto [gr, gg, gb] = res->values();
+    m_control_effector.ppi.color_gray.r = gr;
+    m_control_effector.ppi.color_gray.g = gg;
+    m_control_effector.ppi.color_gray.b = gb;
+
+    res = scn::scan<f32, f32, f32>(std::string_view{pSettings->r_string(ppi_section, "color_add")}, "{},{},{}");
+    R_ASSERT(res, res.error().msg());
+
+    const auto [ar, ag, ab] = res->values();
+    m_control_effector.ppi.color_add.r = ar;
+    m_control_effector.ppi.color_add.g = ag;
+    m_control_effector.ppi.color_add.b = ab;
 
     m_control_effector.time = pSettings->r_float(ppi_section, "time");
     m_control_effector.time_attack = pSettings->r_float(ppi_section, "time_attack");
@@ -203,11 +220,12 @@ void CController::Load(LPCSTR section)
     m_tube_condition_see_duration =
         pSettings->line_exist(section, tube_see_duration_line) ? pSettings->r_u32(section, tube_see_duration_line) : default_tube_condition_see_duration;
 
-    m_tube_condition_min_delay =
-        pSettings->line_exist(section, tube_condition_min_delay_line) ? pSettings->r_u32(section, tube_condition_min_delay_line) : default_tube_condition_min_delay;
+    m_tube_condition_min_delay = pSettings->line_exist(section, tube_condition_min_delay_line) ? pSettings->r_u32(section, tube_condition_min_delay_line) :
+                                                                                                 default_tube_condition_min_delay;
 
-    m_tube_condition_min_distance =
-        pSettings->line_exist(section, tube_condition_min_distance_line) ? pSettings->r_float(section, tube_condition_min_distance_line) : default_tube_condition_min_distance;
+    m_tube_condition_min_distance = pSettings->line_exist(section, tube_condition_min_distance_line) ?
+        pSettings->r_float(section, tube_condition_min_distance_line) :
+        default_tube_condition_min_distance;
 
     m_stamina_hit = READ_IF_EXISTS(pSettings, r_float, section, "stamina_hit", default_stamina_hit);
 
@@ -237,7 +255,8 @@ bool CController::is_community_friend_overrides(const CEntityAlive* entity_alive
     if (const_cast<CEntityAlive*>(entity_alive)->cast_base_monster())
         return false;
 
-    return (std::find(m_friend_community_overrides.begin(), m_friend_community_overrides.end(), IO->CharacterInfo().Community().id()) != m_friend_community_overrides.end());
+    return (std::find(m_friend_community_overrides.begin(), m_friend_community_overrides.end(), IO->CharacterInfo().Community().id()) !=
+            m_friend_community_overrides.end());
 }
 
 tmc::task<bool> CController::net_Spawn(CSE_Abstract* DC)
@@ -298,7 +317,8 @@ void CController::InitThink()
         if (!base)
             continue;
         if (base->EnemyMan.get_enemy())
-            EnemyMemory.add_enemy(base->EnemyMan.get_enemy(), base->EnemyMan.get_enemy_position(), base->EnemyMan.get_enemy_vertex(), base->EnemyMan.get_enemy_time_last_seen());
+            EnemyMemory.add_enemy(base->EnemyMan.get_enemy(), base->EnemyMan.get_enemy_position(), base->EnemyMan.get_enemy_vertex(),
+                                  base->EnemyMan.get_enemy_time_last_seen());
     }
 }
 
@@ -337,12 +357,14 @@ void CController::reinit()
     m_psy_fire_start_time = 0;
     m_psy_fire_delay = _pmt_psy_attack_delay;
 
-    control().path_builder().detail().add_velocity(
-        MonsterMovement::eControllerVelocityParameterMoveFwd,
-        CDetailPathManager::STravelParams(m_velocity_move_fwd.velocity.linear, m_velocity_move_fwd.velocity.angular_path, m_velocity_move_fwd.velocity.angular_real));
-    control().path_builder().detail().add_velocity(
-        MonsterMovement::eControllerVelocityParameterMoveBkwd,
-        CDetailPathManager::STravelParams(m_velocity_move_bkwd.velocity.linear, m_velocity_move_bkwd.velocity.angular_path, m_velocity_move_bkwd.velocity.angular_real));
+    control().path_builder().detail().add_velocity(MonsterMovement::eControllerVelocityParameterMoveFwd,
+                                                   CDetailPathManager::STravelParams(m_velocity_move_fwd.velocity.linear,
+                                                                                     m_velocity_move_fwd.velocity.angular_path,
+                                                                                     m_velocity_move_fwd.velocity.angular_real));
+    control().path_builder().detail().add_velocity(MonsterMovement::eControllerVelocityParameterMoveBkwd,
+                                                   CDetailPathManager::STravelParams(m_velocity_move_bkwd.velocity.linear,
+                                                                                     m_velocity_move_bkwd.velocity.angular_path,
+                                                                                     m_velocity_move_bkwd.velocity.angular_real));
 
     m_sndShockEffector = nullptr;
     active_control_fx = false;
@@ -358,9 +380,10 @@ void CController::control_hit()
     if (!pA)
         return;
 
-    Actor()->Cameras().AddCamEffector(
-        xr_new<CMonsterEffectorHit>(m_control_effector.ce_time, m_control_effector.ce_amplitude, m_control_effector.ce_period_number, m_control_effector.ce_power));
-    Actor()->Cameras().AddPPEffector(xr_new<CMonsterEffector>(m_control_effector.ppi, m_control_effector.time, m_control_effector.time_attack, m_control_effector.time_release));
+    Actor()->Cameras().AddCamEffector(xr_new<CMonsterEffectorHit>(m_control_effector.ce_time, m_control_effector.ce_amplitude,
+                                                                  m_control_effector.ce_period_number, m_control_effector.ce_power));
+    Actor()->Cameras().AddPPEffector(
+        xr_new<CMonsterEffector>(m_control_effector.ppi, m_control_effector.time, m_control_effector.time_attack, m_control_effector.time_release));
 
     Device.add_frame_async(CallMe::fromMethod<&CController::play_control_sound_hit>(this));
 }

@@ -63,12 +63,16 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount /*= 1*/
     if (flags.test(CreateBase))
     {
         dwFlags |= CreateBase;
+
         if (!useAsDepth)
         {
-            u32 idx;
-            char const* str = strrchr(Name, '_');
-            sscanf(++str, "%u", &idx);
-            R_CHK(HW.m_pSwapChain->GetBuffer(idx, IID_PPV_ARGS(&pSurface)));
+            const std::string_view name{Name};
+            const auto pos = name.rfind('_');
+            R_ASSERT(pos != std::string_view::npos);
+
+            const auto res = scn::scan_int<u32>(name.substr(pos + 1));
+            R_ASSERT(res, res.error().msg());
+            R_CHK(HW.m_pSwapChain->GetBuffer(res->value(), IID_PPV_ARGS(&pSurface)));
         }
     }
 

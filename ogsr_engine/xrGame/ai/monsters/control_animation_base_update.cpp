@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "control_animation_base.h"
+
 #include "control_direction_base.h"
 #include "control_movement_base.h"
 #include "BaseMonster/base_monster.h"
@@ -76,9 +77,9 @@ void CControlAnimationBase::set_override_animation(pcstr name)
         {
             pcstr const anim_index_string = name + anim_item->target_name.size();
 
-            u32 anim_index = 0;
-            sscanf(anim_index_string, "%u", &anim_index);
-            set_override_animation((EMotionAnim)anim_type, anim_index);
+            const auto res = scn::scan_int<u32>(anim_index_string);
+            R_ASSERT(res, res.error().msg());
+            set_override_animation((EMotionAnim)anim_type, res->value());
 
             return;
         }

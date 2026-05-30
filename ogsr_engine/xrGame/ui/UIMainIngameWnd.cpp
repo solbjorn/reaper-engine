@@ -240,15 +240,13 @@ void CUIMainIngameWnd::Init()
         // Читаем данные порогов для каждого индикатора
         const char* cfgRecord = pSettings->r_string("main_ingame_indicators_thresholds", warningStrings[static_cast<int>(i) - 1]);
         u32 count = _GetItemCount(cfgRecord);
-
         char singleThreshold[8];
-        float f = 0;
+
         for (u32 k = 0; k < count; ++k)
         {
-            std::ignore = _GetItem(cfgRecord, k, singleThreshold);
-            sscanf(singleThreshold, "%f", &f);
-
-            m_Thresholds[i].push_back(f);
+            const auto res = scn::scan_value<f32>(std::string_view{_GetItem(cfgRecord, k, singleThreshold)});
+            R_ASSERT(res, res.error().msg());
+            m_Thresholds[i].push_back(res->value());
         }
 
         i = static_cast<EWarningIcons>(i + 1);

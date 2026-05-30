@@ -51,32 +51,34 @@ tmc::task<void> CTextureDescrMngr::LoadLTX(gsl::czstring initial)
                                              cl_dt_scaler*& dts = m_detail_scalers[item.first];
                                              co_await lock.co_unlock();
 
-                                             if (desc.m_assoc)
-                                                 xr_delete(desc.m_assoc);
+                                             xr_delete(desc.m_assoc);
                                              desc.m_assoc = xr_new<texture_assoc>();
 
-                                             string_path T;
-                                             f32 s;
-                                             R_ASSERT(sscanf(item.second.c_str(), "%[^,],%f", T, &s) == 2);
+                                             const std::string_view val{item.second};
+                                             const auto res = scn::scan<std::string_view, f32, std::string_view>(val, "{:[^,]},{},{}");
+                                             R_ASSERT(res, res.error().msg());
+
+                                             const auto [T, s, usage] = res->values();
                                              desc.m_assoc->detail_name._set(T);
 
-                                             if (dts)
+                                             if (dts != nullptr)
                                                  dts->scale = s;
                                              else
                                                  dts = xr_new<cl_dt_scaler>(s);
 
-                                             if (strstr(item.second.c_str(), "usage[diffuse_or_bump]"))
+                                             if (usage == "usage[diffuse_or_bump]")
                                              {
                                                  desc.m_assoc->usage.set(texture_assoc::flDiffuseDetail);
                                                  desc.m_assoc->usage.set(texture_assoc::flBumpDetail);
                                              }
-                                             else if (strstr(item.second.c_str(), "usage[bump]"))
-                                             {
-                                                 desc.m_assoc->usage.set(texture_assoc::flBumpDetail);
-                                             }
-                                             else if (strstr(item.second.c_str(), "usage[diffuse]"))
+                                             else if (usage == "usage[diffuse]")
                                              {
                                                  desc.m_assoc->usage.set(texture_assoc::flDiffuseDetail);
+                                             }
+                                             else
+                                             {
+                                                 R_ASSERT(usage == "usage[bump]");
+                                                 desc.m_assoc->usage.set(texture_assoc::flBumpDetail);
                                              }
                                          }(m_texture_details, m_detail_scalers, lock, item);
                                      }))
@@ -94,20 +96,51 @@ tmc::task<void> CTextureDescrMngr::LoadLTX(gsl::czstring initial)
                                              texture_desc& desc = m_texture_details[item.first];
                                              co_await lock.co_unlock();
 
-                                             if (desc.m_spec)
-                                                 xr_delete(desc.m_spec);
+                                             xr_delete(desc.m_spec);
                                              desc.m_spec = xr_new<texture_spec>();
 
-                                             string_path bmode, bparallax;
-                                             bmode[0] = '\0';
-                                             bparallax[0] = '\0';
-                                             R_ASSERT(sscanf(item.second.c_str(), "bump_mode[%[^]]], material[%f], parallax[%[^]]", bmode,
-                                                             &desc.m_spec->m_material, bparallax) >= 2);
+                                             if (const std::string_view val{item.second}; std::ranges::count(val, ']') == 3)
+                                             {
+                                                 const auto res = scn::scan<std::string_view, f32, std::string_view>(
+                                                     val, "bump_mode[{:[^]]}], material[{}], parallax[{:[^]]}]");
+                                                 R_ASSERT(res, res.error().msg());
 
-                                             if ((bmode[0] == 'u') && (bmode[1] == 's') && (bmode[2] == 'e') && (bmode[3] == ':')) // bump-map specified
-                                                 desc.m_spec->m_bump_name._set(bmode + 4);
+                                                 const auto [bmode, mat, par] = res->values();
+                                                 if (bmode.starts_with("use:"))
+                                                 {
+                                                     R_ASSERT(bmode.size() > 4);
+                                                     desc.m_spec->m_bump_name._set(bmode.substr(4));
+                                                 }
+                                                 else
+                                                 {
+                                                     R_ASSERT(bmode == "none");
+                                                 }
 
-                                             desc.m_spec->m_use_steep_parallax = (bparallax[0] == 'y') && (bparallax[1] == 'e') && (bparallax[2] == 's');
+                                                 desc.m_spec->m_material = mat;
+
+                                                 if (par == "yes")
+                                                     desc.m_spec->m_use_steep_parallax = true;
+                                                 else
+                                                     R_ASSERT(par == "no");
+                                             }
+                                             else
+                                             {
+                                                 const auto res = scn::scan<std::string_view, f32>(val, "bump_mode[{:[^]]}], material[{}]");
+                                                 R_ASSERT(res, res.error().msg());
+
+                                                 const auto [bmode, mat] = res->values();
+                                                 if (bmode.starts_with("use:"))
+                                                 {
+                                                     R_ASSERT(bmode.size() > 4);
+                                                     desc.m_spec->m_bump_name._set(bmode.substr(4));
+                                                 }
+                                                 else
+                                                 {
+                                                     R_ASSERT(bmode == "none");
+                                                 }
+
+                                                 desc.m_spec->m_material = mat;
+                                             }
                                          }(m_texture_details, lock, item);
                                      }))
                 .with_priority(xr::tmc_priority_any);
@@ -131,72 +164,61 @@ tmc::task<void> CTextureDescrMngr::LoadTHM(gsl::czstring initial)
     m_detail_scalers.reserve(m_detail_scalers.size() + flist.size());
 
     co_await tmc::spawn_many(flist | std::views::transform([this, initial, &lock](const auto& it) -> tmc::task<void> {
-                                 return
-                                     [](auto& m_texture_details, auto& m_detail_scalers, gsl::czstring initial, auto& lock, const auto& it) -> tmc::task<void> {
-                                         string_path fn;
-                                         std::ignore = FS.update_path(fn, initial, it.name.c_str());
-                                         IReader* F = FS.r_open(fn);
+                                 return [](auto& m_texture_details, auto& m_detail_scalers, gsl::czstring initial, auto& lock,
+                                           const auto& it) -> tmc::task<void> {
+                                     string_path fn;
+                                     std::ignore = FS.update_path(fn, initial, it.name.c_str());
+                                     IReader* F = FS.r_open(fn);
 
-                                         xr_strcpy(fn, it.name.c_str());
-                                         fix_texture_name(fn);
-                                         R_ASSERT(F->find_chunk_thm(THM_CHUNK_TYPE, fn));
+                                     xr_strcpy(fn, it.name.c_str());
+                                     fix_texture_name(fn);
+                                     R_ASSERT(F->find_chunk_thm(THM_CHUNK_TYPE, fn));
 
-                                         std::ignore = F->r_u32();
-                                         STextureParams tp;
-                                         tp.Load(*F, fn);
-                                         FS.r_close(F);
+                                     std::ignore = F->r_u32();
+                                     STextureParams tp;
+                                     tp.Load(*F, fn);
+                                     FS.r_close(F);
 
-                                         if (
-#ifdef USE_SHOC_THM_FORMAT
-                                             STextureParams::ttImage == tp.fmt || STextureParams::ttTerrain == tp.fmt || STextureParams::ttNormalMap == tp.fmt
-#else
-                                             STextureParams::ttImage == tp.type || STextureParams::ttTerrain == tp.type ||
-                                             STextureParams::ttNormalMap == tp.type
-#endif
-                                         )
+                                     if (tp.type == STextureParams::ttImage || tp.type == STextureParams::ttTerrain || tp.type == STextureParams::ttNormalMap)
+                                     {
+                                         co_await lock;
+                                         texture_desc& desc = m_texture_details[fn];
+                                         cl_dt_scaler*& dts = m_detail_scalers[fn];
+                                         co_await lock.co_unlock();
+
+                                         if (!tp.detail_name.empty() && tp.flags.is_any(STextureParams::flDiffuseDetail | STextureParams::flBumpDetail))
                                          {
-                                             co_await lock;
-                                             texture_desc& desc = m_texture_details[fn];
-                                             cl_dt_scaler*& dts = m_detail_scalers[fn];
-                                             co_await lock.co_unlock();
+                                             xr_delete(desc.m_assoc);
+                                             desc.m_assoc = xr_new<texture_assoc>();
+                                             desc.m_assoc->detail_name = tp.detail_name;
 
-                                             if (tp.detail_name.size() && tp.flags.is_any(STextureParams::flDiffuseDetail | STextureParams::flBumpDetail))
-                                             {
-                                                 if (desc.m_assoc)
-                                                     xr_delete(desc.m_assoc);
+                                             if (dts != nullptr)
+                                                 dts->scale = tp.detail_scale;
+                                             else
+                                                 dts = xr_new<cl_dt_scaler>(tp.detail_scale);
 
-                                                 desc.m_assoc = xr_new<texture_assoc>();
-                                                 desc.m_assoc->detail_name = tp.detail_name;
+                                             if (tp.flags.is(STextureParams::flDiffuseDetail))
+                                                 desc.m_assoc->usage.set(texture_assoc::flDiffuseDetail);
 
-                                                 if (dts)
-                                                     dts->scale = tp.detail_scale;
-                                                 else
-                                                     dts = xr_new<cl_dt_scaler>(tp.detail_scale);
-
-                                                 if (tp.flags.is(STextureParams::flDiffuseDetail))
-                                                     desc.m_assoc->usage.set(texture_assoc::flDiffuseDetail);
-
-                                                 if (tp.flags.is(STextureParams::flBumpDetail))
-                                                     desc.m_assoc->usage.set(texture_assoc::flBumpDetail);
-                                             }
-                                             if (desc.m_spec)
-                                                 xr_delete(desc.m_spec);
-
-                                             desc.m_spec = xr_new<texture_spec>();
-                                             desc.m_spec->m_material = (float)(tp.material) + (tp.material < 4 ? tp.material_weight : 0);
-                                             desc.m_spec->m_use_steep_parallax = false;
-
-                                             if (tp.bump_mode == STextureParams::tbmUse)
-                                             {
-                                                 desc.m_spec->m_bump_name = tp.bump_name;
-                                             }
-                                             else if (tp.bump_mode == STextureParams::tbmUseParallax)
-                                             {
-                                                 desc.m_spec->m_bump_name = tp.bump_name;
-                                                 desc.m_spec->m_use_steep_parallax = true;
-                                             }
+                                             if (tp.flags.is(STextureParams::flBumpDetail))
+                                                 desc.m_assoc->usage.set(texture_assoc::flBumpDetail);
                                          }
-                                     }(m_texture_details, m_detail_scalers, initial, lock, it);
+
+                                         xr_delete(desc.m_spec);
+                                         desc.m_spec = xr_new<texture_spec>();
+                                         desc.m_spec->m_material = gsl::narrow_cast<f32>(tp.material) + (tp.material < 4 ? tp.material_weight : 0.0f);
+
+                                         if (tp.bump_mode == STextureParams::tbmUseParallax)
+                                         {
+                                             desc.m_spec->m_bump_name = tp.bump_name;
+                                             desc.m_spec->m_use_steep_parallax = true;
+                                         }
+                                         else if (tp.bump_mode == STextureParams::tbmUse)
+                                         {
+                                             desc.m_spec->m_bump_name = tp.bump_name;
+                                         }
+                                     }
+                                 }(m_texture_details, m_detail_scalers, initial, lock, it);
                              }))
         .with_priority(xr::tmc_priority_any);
 }

@@ -205,9 +205,10 @@ void CEnvelope::SaveA(IWriter&) {}
 void CEnvelope::LoadA(IReader& F)
 {
     Clear();
+
     string512 buf;
-    float f[9];
     F.r_string(buf, sizeof(buf));
+
     if (strstr(buf, "{ Envelope"))
     {
         F.r_string(buf, sizeof(buf));
@@ -221,34 +222,44 @@ void CEnvelope::LoadA(IReader& F)
             keys[i] = xr_new<st_Key>();
             st_Key& K = *keys[i];
             F.r_string(buf, sizeof(buf));
-            int cnt = sscanf(buf, "Key %f %f %f %f %f %f %f %f %f", f + 0, f + 1, f + 2, f + 3, f + 4, f + 5, f + 6, f + 7, f + 8);
-            R_ASSERT(cnt == 9);
-            K.value = f[0];
-            K.time = f[1];
-            K.shape = (u8)f[2];
+
+            const auto resf = scn::scan<f32, f32, f32, f32, f32, f32, f32, f32, f32>(std::string_view{buf}, "Key {} {} {} {} {} {} {} {} {}");
+            R_ASSERT(resf, resf.error().msg());
+            const auto [f0, f1, f2, f3, f4, f5, f6, f7, f8] = resf->values();
+
+            K.value = f0;
+            K.time = f1;
+            K.shape = gsl::narrow_cast<u8>(f2);
+
             if (K.shape == SHAPE_TCB)
             {
-                K.tension = f[3];
-                K.continuity = f[4];
-                K.bias = f[5];
+                K.tension = f3;
+                K.continuity = f4;
+                K.bias = f5;
             }
-            if (K.shape == SHAPE_BEZ2)
+            else if (K.shape == SHAPE_BEZ2)
             {
-                K.param[0] = f[3];
-                K.param[1] = f[4];
-                K.param[2] = f[5];
-                K.param[3] = f[6];
+                K.param[0] = f3;
+                K.param[1] = f4;
+                K.param[2] = f5;
+                K.param[3] = f6;
             }
             else
             {
-                K.param[0] = f[6];
-                K.param[1] = f[7];
+                K.param[0] = f6;
+                K.param[1] = f7;
             }
         }
+
         // behavior <pre> <post>
         F.r_string(buf, sizeof(buf));
-        int cnt = sscanf(buf, "Behaviors %d %d", &behavior[0], &behavior[1]);
-        R_ASSERT(cnt == 2);
+
+        const auto resd = scn::scan<s32, s32>(std::string_view{buf}, "Behaviors {} {}");
+        R_ASSERT(resd, resd.error().msg());
+
+        const auto [b0, b1] = resd->values();
+        behavior[0] = b0;
+        behavior[1] = b1;
     }
 }
 
