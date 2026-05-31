@@ -22,7 +22,8 @@ CGroupHierarchyHolder& CSquadHierarchyHolder::group(u32 group_id) const
 {
     if (group_id >= m_groups.size())
     {
-        Msg("* [{}]: [team:{}][squad:{}] group_id[{}]: resize m_groups: {} -> {}", __FUNCTION__, team().id(), id(), group_id, m_groups.size(), group_id + 1);
+        Msg("* [{}]: [team:{}][squad:{}] group_id[{}]: resize m_groups: {} -> {}", std::source_location::current().function_name(), team().id(), id(), group_id,
+            m_groups.size(), group_id + 1);
         m_groups.resize(group_id + 1, nullptr);
     }
 

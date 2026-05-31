@@ -148,7 +148,8 @@ void CStepManager::update()
                 if (mtl_pair->StepSounds.empty())
                 {
                     if (actor)
-                        Msg("!![{}] no sound for steps pair id0:[{}], id1:[{}]", __FUNCTION__, mtl_pair->GetMtl0(), mtl_pair->GetMtl1());
+                        Msg("!![{}] no sound for steps pair id0:[{}], id1:[{}]", std::source_location::current().function_name(), mtl_pair->GetMtl0(),
+                            mtl_pair->GetMtl1());
 
                     return;
                 }

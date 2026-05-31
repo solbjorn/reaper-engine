@@ -89,7 +89,7 @@ void LogStackTrace(const char* header, const bool dump_lua_locals)
         if (auto pCrashHandler = Debug.get_lua_trace())
             pCrashHandler(dump_lua_locals);
         Log("********************************************************************************");
-        Msg("!![{}] Thread: [{}]", __FUNCTION__, GetThreadName());
+        Msg("!![{}] Thread: [{}]", std::source_location::current().function_name(), GetThreadName());
         Log(BuildStackTrace(header));
         Log("********************************************************************************");
     }
@@ -104,7 +104,8 @@ void LogStackTrace(const char* header, _EXCEPTION_POINTERS* pExceptionInfo, bool
         if (auto pCrashHandler = Debug.get_lua_trace())
             pCrashHandler(dump_lua_locals);
         Log("********************************************************************************");
-        Msg("!![{}] Thread: [{}], ExceptionCode: [{:#x}]", __FUNCTION__, GetThreadName(), pExceptionInfo->ExceptionRecord->ExceptionCode);
+        Msg("!![{}] Thread: [{}], ExceptionCode: [{:#x}]", std::source_location::current().function_name(), GetThreadName(),
+            pExceptionInfo->ExceptionRecord->ExceptionCode);
         auto save = *pExceptionInfo->ContextRecord;
         Log(BuildStackTrace(header, pExceptionInfo->ContextRecord));
         *pExceptionInfo->ContextRecord = save;
@@ -415,7 +416,7 @@ static void save_mini_dump(_EXCEPTION_POINTERS* pExceptionInfo)
     }
     __except (EXCEPTION_EXECUTE_HANDLER)
     {
-        Msg("Exception catched in function [{}]", __FUNCTION__);
+        Msg("Exception catched in function [{}]", std::source_location::current().function_name());
     }
 
     xr::log_flush();
@@ -504,7 +505,7 @@ void format_message(char* buffer)
     }
     __except (EXCEPTION_EXECUTE_HANDLER)
     {
-        Msg("Exception catched in function [{}]", __FUNCTION__);
+        Msg("Exception catched in function [{}]", std::source_location::current().function_name());
     }
 }
 
@@ -552,14 +553,14 @@ void invalid_parameter_handler(const wchar_t* expression, const wchar_t* functio
     if (function)
         wcstombs_s(&converted_chars, function_, sizeof(function_), function, (wcslen(function) + 1) * 2 * sizeof(char));
     else
-        strcpy_s(function_, __FUNCTION__);
+        strcpy_s(function_, std::source_location::current().function_name());
 
     if (file)
         wcstombs_s(&converted_chars, file_, sizeof(file_), file, (wcslen(file) + 1) * 2 * sizeof(char));
     else
     {
-        line = __LINE__;
-        strcpy_s(file_, __FILE__);
+        line = std::source_location::current().line();
+        strcpy_s(file_, std::source_location::current().function_name());
     }
 
     Debug.backend("error handler is invoked!", expression_, nullptr, nullptr, file_, line, function_);

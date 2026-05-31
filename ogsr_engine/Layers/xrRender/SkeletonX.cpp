@@ -154,8 +154,8 @@ void CSkeletonX::_Render(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iO
             if (!logged)
             {
                 logged = true;
-                Msg("!![{}] Can't get/create sbones_array for model [{}] vith [{}] bones. Most likely, an incorrect shader is assigned there.", __FUNCTION__,
-                    this->Parent->dbg_name, RMS_bonecount);
+                Msg("!![{}] Can't get/create sbones_array for model [{}] vith [{}] bones. Most likely, an incorrect shader is assigned there.",
+                    std::source_location::current().function_name(), this->Parent->dbg_name, RMS_bonecount);
             }
         }
 

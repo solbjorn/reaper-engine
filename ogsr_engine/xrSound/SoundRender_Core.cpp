@@ -616,7 +616,7 @@ bool CSoundRender_Core::EFXTestSupport()
     ALenum err = alGetError();
     if (err != AL_NO_ERROR)
     {
-        Msg("!![{}] OpenAL error: {}", __FUNCTION__, alGetString(err));
+        Msg("!![{}] OpenAL error: {}", std::source_location::current().function_name(), alGetString(err));
 
         if (alIsEffect(effect))
             alDeleteEffects(1, &effect);
@@ -626,7 +626,7 @@ bool CSoundRender_Core::EFXTestSupport()
 
     alGenAuxiliaryEffectSlots(1, &slot);
     err = alGetError();
-    ASSERT_FMT_DBG(err == AL_NO_ERROR, "!![{}] OpenAL EFX error: [{}]", __FUNCTION__, alGetString(err));
+    ASSERT_FMT_DBG(err == AL_NO_ERROR, "!![{}] OpenAL EFX error: [{}]", std::source_location::current().function_name(), alGetString(err));
 
     return true;
 }
@@ -669,12 +669,13 @@ bool CSoundRender_Core::i_efx_commit_setting()
     ALenum err = alGetError();
     if (err != AL_NO_ERROR)
     {
-        Msg("!![{}] OpenAL EFX commit error: [{}]. EFX will be disabled.", __FUNCTION__, alGetString(err));
+        Msg("!![{}] OpenAL EFX commit error: [{}]. EFX will be disabled.", std::source_location::current().function_name(), alGetString(err));
         return false;
     }
 
     return true;
 }
+
 //////////////////////////////////////////////////
 
 void CSoundRender_Core::i_eax_listener_set(CSound_environment* _E)

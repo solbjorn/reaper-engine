@@ -53,7 +53,7 @@ void IInventoryBox::ProcessEvent(CGameObject* O, NET_Packet& P, u16 type)
         if (it != m_items.end())
             m_items.erase(it);
         else
-            Msg("!![{}.GE_TRANSFER_REJECT] object with id [{}] not found!", __FUNCTION__, id);
+            Msg("!![{}.GE_TRANSFER_REJECT] object with id [{}] not found!", std::source_location::current().function_name(), id);
 
         bool just_before_destroy = !P.r_eof() && P.r_u8();
         bool dont_create_shell = (type == GE_TRADE_SELL) || (type == GE_TRANSFER_REJECT) || just_before_destroy;

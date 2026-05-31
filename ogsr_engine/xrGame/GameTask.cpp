@@ -199,7 +199,8 @@ void CGameTask::Load(const TASK_ID& id)
             gsl::czstring str = g_gameTaskXml->Read(l_root, "function_complete", j, nullptr);
             const bool function_exists = ai().script_engine().function(str, fn);
 
-            ASSERT_FMT_DBG(function_exists, "[{}]: Cannot find script function described in task objective: {}", __FUNCTION__, str);
+            ASSERT_FMT_DBG(function_exists, "[{}]: Cannot find script function described in task objective: {}",
+                           std::source_location::current().function_name(), str);
         }
 
         //------function_fail
@@ -210,7 +211,8 @@ void CGameTask::Load(const TASK_ID& id)
             gsl::czstring str = g_gameTaskXml->Read(l_root, "function_fail", j, nullptr);
             const bool function_exists = ai().script_engine().function(str, fn);
 
-            ASSERT_FMT_DBG(function_exists, "[{}]: Cannot find script function described in task objective: {}", __FUNCTION__, str);
+            ASSERT_FMT_DBG(function_exists, "[{}]: Cannot find script function described in task objective: {}",
+                           std::source_location::current().function_name(), str);
         }
 
         //------function_skipped
@@ -232,7 +234,8 @@ void CGameTask::Load(const TASK_ID& id)
             gsl::czstring str = g_gameTaskXml->Read(l_root, "function_call_complete", j, nullptr);
             const bool function_exists = ai().script_engine().function(str, fn);
 
-            ASSERT_FMT_DBG(function_exists, "[{}]: Cannot find script function described in task objective: {}", __FUNCTION__, str);
+            ASSERT_FMT_DBG(function_exists, "[{}]: Cannot find script function described in task objective: {}",
+                           std::source_location::current().function_name(), str);
         }
 
         //------function_on_fail
@@ -243,7 +246,8 @@ void CGameTask::Load(const TASK_ID& id)
             gsl::czstring str = g_gameTaskXml->Read(l_root, "function_call_fail", j, nullptr);
             const bool function_exists = ai().script_engine().function(str, fn);
 
-            ASSERT_FMT_DBG(function_exists, "[{}]: Cannot find script function described in task objective: {}", __FUNCTION__, str);
+            ASSERT_FMT_DBG(function_exists, "[{}]: Cannot find script function described in task objective: {}",
+                           std::source_location::current().function_name(), str);
         }
 
         //------function_on_skipped
@@ -530,7 +534,8 @@ void SScriptObjectiveHelper::init_functions(xr_vector<shared_str>& v_src, xr_vec
     for (auto [str, fn] : std::views::zip(v_src, v_dest))
     {
         const bool function_exists = ai().script_engine().function(str.c_str(), fn);
-        ASSERT_FMT_DBG(function_exists, "[{}]: Cannot find script function described in task objective: {}", __FUNCTION__, str);
+        ASSERT_FMT_DBG(function_exists, "[{}]: Cannot find script function described in task objective: {}", std::source_location::current().function_name(),
+                       str);
     }
 }
 

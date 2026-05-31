@@ -98,7 +98,7 @@ tmc::task<bool> CActor::net_Spawn(CSE_Abstract* DC)
         {
             size_t s = news.size();
             news.erase(news.begin(), news.begin() + (news.size() - NewsToShow()));
-            Msg("[{}]: purge {} news items, {} left", __FUNCTION__, s - news.size(), news.size());
+            Msg("[{}]: purge {} news items, {} left", std::source_location::current().function_name(), s - news.size(), news.size());
         }
     }
 

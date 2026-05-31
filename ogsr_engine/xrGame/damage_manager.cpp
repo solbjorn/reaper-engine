@@ -88,8 +88,8 @@ void CDamageManager::load_section(LPCSTR section, CInifile* ini)
         {
             VERIFY(m_object);
             int bone = kinematics->LL_BoneID(i.first);
-            ASSERT_FMT(bone != BI_NONE, "[%s]: bone '%s' not found in %s[%s] visual[%s]", __FUNCTION__, i.first.c_str(), m_object->cName().c_str(), section,
-                       m_object->cNameVisual().c_str());
+            ASSERT_FMT(bone != BI_NONE, "[%s]: bone '%s' not found in %s[%s] visual[%s]", std::source_location::current().function_name(), i.first.c_str(),
+                       m_object->cName().c_str(), section, m_object->cNameVisual().c_str());
 
             CBoneInstance& bone_instance = kinematics->LL_GetBoneInstance(u16(bone));
 

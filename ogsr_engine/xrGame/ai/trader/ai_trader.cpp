@@ -179,7 +179,7 @@ tmc::task<void> CAI_Trader::OnEvent(NET_Packet& P, u16 type)
 
         if (!Obj)
         {
-            Msg("! [{}] Error: No object to reject/sell [{}]", __FUNCTION__, id);
+            Msg("! [{}] Error: No object to reject/sell [{}]", std::source_location::current().function_name(), id);
             break;
         }
 

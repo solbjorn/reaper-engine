@@ -462,23 +462,23 @@ void CKinematics::Release()
 
 void CKinematics::LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive)
 {
-    ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", __FUNCTION__, dbg_name.c_str(), bone_id);
+    ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", std::source_location::current().function_name(), dbg_name.c_str(),
+               bone_id);
 
     visimask.set(bone_id, !!val);
     if (!visimask.is(bone_id))
-    {
         bone_instances[bone_id].mTransform.scale(0.f, 0.f, 0.f);
-    }
     else
-    {
         CalculateBones_Invalidate();
-    }
+
     bone_instances[bone_id].mRenderTransform.mul_43(bone_instances[bone_id].mTransform, (*bones)[bone_id]->m2b_transform);
+
     if (bRecursive)
     {
         for (xr_vector<CBoneData*>::iterator C = (*bones)[bone_id]->children.begin(); C != (*bones)[bone_id]->children.end(); C++)
             LL_SetBoneVisible((*C)->GetSelfID(), val, bRecursive);
     }
+
     Visibility_Invalidate();
 }
 

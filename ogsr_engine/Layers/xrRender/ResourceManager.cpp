@@ -16,7 +16,7 @@ IBlender* CResourceManager::_GetBlender(LPCSTR Name)
 
     auto I = m_blenders.find(Name);
     if (I == m_blenders.end())
-        FATAL("!![%s] DX10: Shader [%s] not found in library.", __FUNCTION__, Name);
+        FATAL("!![%s] DX10: Shader [%s] not found in library.", std::source_location::current().function_name(), Name);
 
     return I->second;
 }

@@ -291,8 +291,8 @@ tmc::task<void> CRenderDevice::ProcessFrame()
     {
         const std::chrono::duration<f64, std::milli> SecondThreadFreeTime = FrameElapsedTime - SecondThreadTasksElapsedTime;
 
-        Msg("##[{}] Second thread work time is too long! Avail: [{}]ms, used: [{}]ms, free: [{}]ms", __FUNCTION__, FrameElapsedTime.count(),
-            SecondThreadTasksElapsedTime.count(), SecondThreadFreeTime.count());
+        Msg("##[{}] Second thread work time is too long! Avail: [{}]ms, used: [{}]ms, free: [{}]ms", std::source_location::current().function_name(),
+            FrameElapsedTime.count(), SecondThreadTasksElapsedTime.count(), SecondThreadFreeTime.count());
     }
 #else
     co_await std::move(second);
@@ -387,7 +387,7 @@ static void LogOsVersion()
         }
     }
 
-    Msg("!![{}] Can't get RtlGetVersion", __FUNCTION__);
+    Msg("!![{}] Can't get RtlGetVersion", std::source_location::current().function_name());
 }
 
 tmc::task<void> CRenderDevice::Run()

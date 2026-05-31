@@ -20,7 +20,7 @@ CPatrolPathParams::CPatrolPathParams(LPCSTR caPatrolPathToGo, const PatrolPathMa
     m_path = ai().patrol_paths().safe_path(m_path_name, true);
 
 #ifdef CRASH_ON_INVALID_VERTEX_ID
-    ASSERT_FMT(m_path, "[%s]: there is no patrol path %s", __FUNCTION__, caPatrolPathToGo);
+    ASSERT_FMT(m_path, "[%s]: there is no patrol path %s", std::source_location::current().function_name(), caPatrolPathToGo);
 #else
     THROW3(m_path, "There is no patrol path", caPatrolPathToGo);
 #endif
@@ -37,51 +37,54 @@ u32 CPatrolPathParams::count() const { return m_path->vertices().size(); }
 
 const Fvector& CPatrolPathParams::point(u32 index) const
 {
-    ASSERT_FMT(m_path, "!![%s] Empty path [%s]", __FUNCTION__, m_path_name.c_str());
-    ASSERT_FMT(!m_path->vertices().empty(), "!![%s] Empty vertices in [%s]", __FUNCTION__, m_path_name.c_str());
+    ASSERT_FMT(m_path, "!![%s] Empty path [%s]", std::source_location::current().function_name(), m_path_name.c_str());
+    ASSERT_FMT(!m_path->vertices().empty(), "!![%s] Empty vertices in [%s]", std::source_location::current().function_name(), m_path_name.c_str());
 
     if (!m_path->vertex(index))
     {
-        Msg("!![{}] Can't get information about patrol point number [{}] in the patrol way [{}]", __FUNCTION__, index, m_path_name);
+        Msg("!![{}] Can't get information about patrol point number [{}] in the patrol way [{}]", std::source_location::current().function_name(), index,
+            m_path_name);
         index = (*m_path->vertices().begin()).second->vertex_id();
     }
 
-    ASSERT_FMT(m_path->vertex(index), "!![%s] Can't get information about patrol point number [%u] in the patrol way [%s]", __FUNCTION__, index,
-               m_path_name.c_str());
+    ASSERT_FMT(m_path->vertex(index), "!![%s] Can't get information about patrol point number [%u] in the patrol way [%s]",
+               std::source_location::current().function_name(), index, m_path_name.c_str());
 
     return m_path->vertex(index)->data().position();
 }
 
 u32 CPatrolPathParams::level_vertex_id(u32 index) const
 {
-    ASSERT_FMT(m_path, "!![%s] Empty path [%s]", __FUNCTION__, m_path_name.c_str());
-    ASSERT_FMT(!m_path->vertices().empty(), "!![%s] Empty vertices in [%s]", __FUNCTION__, m_path_name.c_str());
+    ASSERT_FMT(m_path, "!![%s] Empty path [%s]", std::source_location::current().function_name(), m_path_name.c_str());
+    ASSERT_FMT(!m_path->vertices().empty(), "!![%s] Empty vertices in [%s]", std::source_location::current().function_name(), m_path_name.c_str());
 
     if (!m_path->vertex(index))
     {
-        Msg("!![{}] Can't get information about patrol point number [{}] in the patrol way [{}]", __FUNCTION__, index, m_path_name);
+        Msg("!![{}] Can't get information about patrol point number [{}] in the patrol way [{}]", std::source_location::current().function_name(), index,
+            m_path_name);
         index = (*m_path->vertices().begin()).second->vertex_id();
     }
 
-    ASSERT_FMT(m_path->vertex(index), "!![%s] Can't get information about patrol point number [%u] in the patrol way [%s]", __FUNCTION__, index,
-               m_path_name.c_str());
+    ASSERT_FMT(m_path->vertex(index), "!![%s] Can't get information about patrol point number [%u] in the patrol way [%s]",
+               std::source_location::current().function_name(), index, m_path_name.c_str());
 
     return m_path->vertex(index)->data().level_vertex_id();
 }
 
 GameGraph::_GRAPH_ID CPatrolPathParams::game_vertex_id(u32 index) const
 {
-    ASSERT_FMT(m_path, "!![%s] Empty path [%s]", __FUNCTION__, m_path_name.c_str());
-    ASSERT_FMT(!m_path->vertices().empty(), "!![%s] Empty vertices in [%s]", __FUNCTION__, m_path_name.c_str());
+    ASSERT_FMT(m_path, "!![%s] Empty path [%s]", std::source_location::current().function_name(), m_path_name.c_str());
+    ASSERT_FMT(!m_path->vertices().empty(), "!![%s] Empty vertices in [%s]", std::source_location::current().function_name(), m_path_name.c_str());
 
     if (!m_path->vertex(index))
     {
-        Msg("!![{}] Can't get information about patrol point number [{}] in the patrol way [{}]", __FUNCTION__, index, m_path_name);
+        Msg("!![{}] Can't get information about patrol point number [{}] in the patrol way [{}]", std::source_location::current().function_name(), index,
+            m_path_name);
         index = (*m_path->vertices().begin()).second->vertex_id();
     }
 
-    ASSERT_FMT(m_path->vertex(index), "!![%s] Can't get information about patrol point number [%u] in the patrol way [%s]", __FUNCTION__, index,
-               m_path_name.c_str());
+    ASSERT_FMT(m_path->vertex(index), "!![%s] Can't get information about patrol point number [%u] in the patrol way [%s]",
+               std::source_location::current().function_name(), index, m_path_name.c_str());
 
     return m_path->vertex(index)->data().game_vertex_id();
 }

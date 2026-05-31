@@ -38,13 +38,13 @@ IC const CObjectItemAbstract& CObjectFactory::item(const CLASS_ID& clsid) const
 
 IC void CObjectFactory::add(CObjectItemAbstract* item)
 {
-    ASSERT_FMT_DBG(std::ranges::find_if(clsids(), [item](const CObjectItemAbstract* item_compare) { return item->clsid() == item_compare->clsid(); }) ==
-                       clsids().end(),
-                   "!![{}] Clsid [{}] already exists! Script clsid: [{}]", __FUNCTION__, item->clsid(), item->script_clsid());
+    ASSERT_FMT_DBG(
+        std::ranges::find_if(clsids(), [item](const CObjectItemAbstract* item_compare) { return item->clsid() == item_compare->clsid(); }) == clsids().end(),
+        "!![{}] Clsid [{}] already exists! Script clsid: [{}]", std::source_location::current().function_name(), item->clsid(), item->script_clsid());
     ASSERT_FMT_DBG(
         std::ranges::find_if(clsids(), [item](const CObjectItemAbstract* item_compare) { return item->script_clsid() == item_compare->script_clsid(); }) ==
             clsids().end(),
-        "!![{}] Script clsid [{}] already exists! Clsid: [{}]", __FUNCTION__, item->script_clsid(), item->clsid());
+        "!![{}] Script clsid [{}] already exists! Clsid: [{}]", std::source_location::current().function_name(), item->script_clsid(), item->clsid());
 
     m_actual = false;
     m_clsids.push_back(item);

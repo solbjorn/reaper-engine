@@ -42,9 +42,10 @@ void CPurchaseList::process(CInifile& ini_file, LPCSTR section, CInventoryOwner&
     CInifile::Sect& S = ini_file.r_section(section);
     for (const auto& I : S.Data)
     {
-        ASSERT_FMT(I.second.size(), "!![%s] : cannot handle lines in section without values: [%s], first param: [%s]", __FUNCTION__, section, I.first.c_str());
-        ASSERT_FMT(_GetItemCount(I.second.c_str()) > 1, "!![%s] : Invalid second parameter in section [%s], first param: [%s]", __FUNCTION__, section,
-                   I.first.c_str());
+        ASSERT_FMT(I.second.size(), "!![%s] : cannot handle lines in section without values: [%s], first param: [%s]",
+                   std::source_location::current().function_name(), section, I.first.c_str());
+        ASSERT_FMT(_GetItemCount(I.second.c_str()) > 1, "!![%s] : Invalid second parameter in section [%s], first param: [%s]",
+                   std::source_location::current().function_name(), section, I.first.c_str());
 
         string256 temp0, temp1;
 

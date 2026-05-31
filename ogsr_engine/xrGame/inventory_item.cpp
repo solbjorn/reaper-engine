@@ -400,7 +400,7 @@ void CInventoryItem::load(IReader& packet)
         else
         {
             std::ignore = packet.r_u8();
-            Msg("! [{}]: move {} from belt, because belt = false", __FUNCTION__, object().cName());
+            Msg("! [{}]: move {} from belt, because belt = false", std::source_location::current().function_name(), object().cName());
             m_eItemPlace = eItemPlaceRuck;
         }
     }

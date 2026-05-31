@@ -141,9 +141,11 @@ public:
     void LL_FadeCycle(u16 partition, float falloff, u8 mask_channel = (1 << 0));
     void LL_CloseCycle(u16 partition, u8 mask_channel = (1 << 0));
     void LL_SetChannelFactor(u16 channel, float factor);
+
     CBlendInstance& LL_GetBlendInstance(u16 bone_id)
     {
-        ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", __FUNCTION__, dbg_name.c_str(), bone_id);
+        ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", std::source_location::current().function_name(),
+                   dbg_name.c_str(), bone_id);
         return blend_instances[bone_id];
     }
 

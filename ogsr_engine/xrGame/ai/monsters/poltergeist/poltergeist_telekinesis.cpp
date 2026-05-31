@@ -293,7 +293,7 @@ public:
         if (m_object)
             m_object->set_collision_hit_callback(nullptr); // delete this!!
         else
-            Msg("!![{}] CPhysicsShellHolder is nullptr!", __FUNCTION__);
+            Msg("!![{}] CPhysicsShellHolder is nullptr!", std::source_location::current().function_name());
     }
 };
 
@@ -312,7 +312,7 @@ void CPolterTele::tele_fire_objects()
             if (hobj)
                 hobj->set_collision_hit_callback(xr_new<SCollisionHitCallback>(hobj, m_pmt_object_collision_damage));
             else
-                Msg("!![{}] CPhysicsShellHolder is nullptr!", __FUNCTION__);
+                Msg("!![{}] CPhysicsShellHolder is nullptr!", std::source_location::current().function_name());
 
             m_object->CTelekinesis::fire_t(tele_object.get_object(), enemy_pos,
                                            tele_object.get_object()->Position().distance_to(enemy_pos) / m_pmt_fly_velocity);

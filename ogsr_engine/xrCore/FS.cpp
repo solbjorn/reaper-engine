@@ -243,7 +243,7 @@ IReader* IReader::open_chunk_iterator(u32& ID, IReader* _prev)
     // На всякий случай тут тоже так сделаем по аналогии с find_chunk()
     if (elapsed() < _size)
     {
-        Msg("!![{}] chunk [{}] has invalid size [{}], return elapsed size [{}]", __FUNCTION__, ID, _size, elapsed());
+        Msg("!![{}] chunk [{}] has invalid size [{}], return elapsed size [{}]", std::source_location::current().function_name(), ID, _size, elapsed());
         _size = elapsed();
     }
 
@@ -352,7 +352,7 @@ void IReader::r_stringZ(char* dest, gsl::index tgt_sz)
     while ((src[Pos] != 0) && (!eof()))
     {
         sz++;
-        ASSERT_FMT(sz < (tgt_sz - 1), "!![%s] Dest string less than needed for: [%s]", __FUNCTION__, src);
+        ASSERT_FMT(sz < (tgt_sz - 1), "!![%s] Dest string less than needed for: [%s]", std::source_location::current().function_name(), src);
         *dest++ = src[Pos++];
     }
 
@@ -446,7 +446,7 @@ CVirtualFileReader::CVirtualFileReader(gsl::czstring cFileName)
     Size = sz.QuadPart;
 
     if (Size == 0)
-        Msg("~~[{}] Found empty file: [{}]", __FUNCTION__, cFileName);
+        Msg("~~[{}] Found empty file: [{}]", std::source_location::current().function_name(), cFileName);
 
     hSrcMap = CreateFileMapping(hSrcFile, nullptr, PAGE_READONLY, 0, 0, nullptr);
     R_ASSERT3(hSrcMap != INVALID_HANDLE_VALUE, cFileName, Debug.error2string(GetLastError()));

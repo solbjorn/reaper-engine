@@ -9,6 +9,7 @@
 #pragma once
 
 #include "gameobject.h"
+
 #include "ai_space.h"
 #include "script_engine.h"
 
@@ -17,7 +18,7 @@ IC CGameObject& CScriptGameObject::object() const
     if (m_game_object && m_game_object->lua_game_object() == this)
         return (*m_game_object);
 
-    Msg("!! [{}] You are trying to use a destroyed object [{}]", __FUNCTION__, m_game_object->cName());
+    Msg("!! [{}] You are trying to use a destroyed object [{}]", std::source_location::current().function_name(), m_game_object->cName());
     LogStackTrace("!!stack trace:\n", false);
 
     return (*m_game_object);

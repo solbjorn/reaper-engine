@@ -28,11 +28,12 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T restriction, const Fvector&
     // TODO: Dima to Dima : _Warning : this place can be optimized in case of a slowdown
     VERIFY(initialized());
 
-    ASSERT_FMT(restriction, "[%s]:[%s] restriction is nullptr! Something strange! Most likely a problem due to crooked scripts!", __FUNCTION__, name().c_str());
+    ASSERT_FMT(restriction, "[%s]:[%s] restriction is nullptr! Something strange! Most likely a problem due to crooked scripts!",
+               std::source_location::current().function_name(), name().c_str());
 #ifdef CRASH_ON_INVALID_VERTEX_ID
-    ASSERT_FMT(!restriction->border().empty(), "[%s]: %s has border().empty()", __FUNCTION__, name().c_str());
+    ASSERT_FMT(!restriction->border().empty(), "[%s]: %s has border().empty()", std::source_location::current().function_name(), name().c_str());
     ASSERT_FMT(!restriction->accessible_neighbour_border(restriction, out_restriction).empty(), "[%s]: %s has accessible_neighbour_border().empty()",
-               __FUNCTION__, name().c_str());
+               std::source_location::current().function_name(), name().c_str());
 #else
     VERIFY(!restriction->border().empty());
     VERIFY(!restriction->accessible_neighbour_border(restriction, out_restriction).empty());
@@ -44,7 +45,7 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T restriction, const Fvector&
     xr_vector<u32>::const_iterator E = restriction->accessible_neighbour_border(restriction, out_restriction).end();
     if (I == E)
     {
-        Msg("! [{}]: {}: empty accessible_neighbour_border()", __FUNCTION__, name());
+        Msg("! [{}]: {}: empty accessible_neighbour_border()", std::source_location::current().function_name(), name());
         selected = ai().level_graph().header().vertex_count() - 1;
     }
 

@@ -738,7 +738,10 @@ void CScriptGameObject::addFeelTouch(f32 radius, sol::object lua_object, sol::fu
     GO->addFeelTouch(radius, std::move(lua_object), std::move(new_delete), std::move(contact));
 }
 
-void CScriptGameObject::addFeelTouch(f32 radius, sol::object lua_object, sol::function new_delete) { addFeelTouch(radius, std::move(lua_object), std::move(new_delete), {}); }
+void CScriptGameObject::addFeelTouch(f32 radius, sol::object lua_object, sol::function new_delete)
+{
+    addFeelTouch(radius, std::move(lua_object), std::move(new_delete), {});
+}
 
 void CScriptGameObject::removeFeelTouch(sol::object lua_object, sol::function new_delete, sol::function contact)
 {
@@ -751,9 +754,9 @@ void CScriptGameObject::removeFeelTouch(sol::object lua_object, sol::function ne
 void CScriptGameObject::PHCaptureObject(CScriptGameObject* obj, LPCSTR capture_bone)
 {
     auto ps = smart_cast<CPhysicsShellHolder*>(&(obj->object()));
-    ASSERT_FMT(ps, "[%s]: %s not a CPhysicsShellHolder", __FUNCTION__, obj->cName().c_str());
+    ASSERT_FMT(ps, "[%s]: %s not a CPhysicsShellHolder", std::source_location::current().function_name(), obj->cName().c_str());
     auto EA = smart_cast<CEntityAlive*>(&object());
-    ASSERT_FMT(EA, "[%s]: %s not a CEntityAlive", __FUNCTION__, cName().c_str());
+    ASSERT_FMT(EA, "[%s]: %s not a CEntityAlive", std::source_location::current().function_name(), cName().c_str());
     EA->character_physics_support()->movement()->PHCaptureObject(ps, capture_bone, true);
 }
 
@@ -762,9 +765,9 @@ void CScriptGameObject::PHCaptureObject(CScriptGameObject* obj) { PHCaptureObjec
 void CScriptGameObject::PHCaptureObject(CScriptGameObject* obj, u16 bone, LPCSTR capture_bone)
 {
     auto ps = smart_cast<CPhysicsShellHolder*>(&(obj->object()));
-    ASSERT_FMT(ps, "[%s]: %s not a CPhysicsShellHolder", __FUNCTION__, obj->cName().c_str());
+    ASSERT_FMT(ps, "[%s]: %s not a CPhysicsShellHolder", std::source_location::current().function_name(), obj->cName().c_str());
     auto EA = smart_cast<CEntityAlive*>(&object());
-    ASSERT_FMT(EA, "[%s]: %s not a CEntityAlive", __FUNCTION__, cName().c_str());
+    ASSERT_FMT(EA, "[%s]: %s not a CEntityAlive", std::source_location::current().function_name(), cName().c_str());
     EA->character_physics_support()->movement()->PHCaptureObject(ps, bone, capture_bone, true);
 }
 
@@ -773,26 +776,26 @@ void CScriptGameObject::PHCaptureObject(CScriptGameObject* obj, u16 bone) { PHCa
 void CScriptGameObject::PHReleaseObject()
 {
     auto EA = smart_cast<CEntityAlive*>(&object());
-    ASSERT_FMT(EA, "[%s]: %s not a CEntityAlive", __FUNCTION__, cName().c_str());
+    ASSERT_FMT(EA, "[%s]: %s not a CEntityAlive", std::source_location::current().function_name(), cName().c_str());
     EA->character_physics_support()->movement()->PHReleaseObject();
 }
 
 CPHCapture* CScriptGameObject::PHCapture()
 {
     auto EA = smart_cast<CEntityAlive*>(&object());
-    ASSERT_FMT(EA, "[%s]: %s not a CEntityAlive", __FUNCTION__, cName().c_str());
+    ASSERT_FMT(EA, "[%s]: %s not a CEntityAlive", std::source_location::current().function_name(), cName().c_str());
     return EA->character_physics_support()->movement()->PHCapture();
 }
 
 bool CScriptGameObject::throw_target(const Fvector& position, CScriptGameObject* throw_ignore_object)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
-    ASSERT_FMT(stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
+    ASSERT_FMT(stalker, "[%s]: %s not a CAI_Stalker", std::source_location::current().function_name(), object().cName().c_str());
     CObject* obj;
     if (throw_ignore_object)
     {
         obj = smart_cast<CObject*>(&(throw_ignore_object->object()));
-        ASSERT_FMT(obj, "[%s]: %s not a CObject", __FUNCTION__, throw_ignore_object->cName().c_str());
+        ASSERT_FMT(obj, "[%s]: %s not a CObject", std::source_location::current().function_name(), throw_ignore_object->cName().c_str());
     }
     else
         obj = nullptr;
@@ -803,12 +806,12 @@ bool CScriptGameObject::throw_target(const Fvector& position, CScriptGameObject*
 bool CScriptGameObject::throw_target(const Fvector& position, u32 const vertex_id, CScriptGameObject* throw_ignore_object)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
-    ASSERT_FMT(stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
+    ASSERT_FMT(stalker, "[%s]: %s not a CAI_Stalker", std::source_location::current().function_name(), object().cName().c_str());
     CObject* obj;
     if (throw_ignore_object)
     {
         obj = smart_cast<CObject*>(&(throw_ignore_object->object()));
-        ASSERT_FMT(obj, "[%s]: %s not a CObject", __FUNCTION__, throw_ignore_object->cName().c_str());
+        ASSERT_FMT(obj, "[%s]: %s not a CObject", std::source_location::current().function_name(), throw_ignore_object->cName().c_str());
     }
     else
         obj = nullptr;
@@ -819,40 +822,40 @@ bool CScriptGameObject::throw_target(const Fvector& position, u32 const vertex_i
 void CScriptGameObject::g_fireParams(const CScriptGameObject* pHudItem, Fvector& P, Fvector& D)
 {
     auto E = smart_cast<CEntity*>(&object());
-    ASSERT_FMT(E, "[%s]: %s not a CEntity", __FUNCTION__, object().cName().c_str());
+    ASSERT_FMT(E, "[%s]: %s not a CEntity", std::source_location::current().function_name(), object().cName().c_str());
     auto item = smart_cast<CHudItem*>(&(pHudItem->object()));
-    ASSERT_FMT(item, "[%s]: %s not a CHudItem", __FUNCTION__, pHudItem->object().cName().c_str());
+    ASSERT_FMT(item, "[%s]: %s not a CHudItem", std::source_location::current().function_name(), pHudItem->object().cName().c_str());
     E->g_fireParams(item, P, D);
 }
 
 float CScriptGameObject::stalker_disp_base()
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
-    ASSERT_FMT(stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
+    ASSERT_FMT(stalker, "[%s]: %s not a CAI_Stalker", std::source_location::current().function_name(), object().cName().c_str());
     return stalker->m_fDispBase;
 }
 
 void CScriptGameObject::stalker_disp_base(float disp)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
-    ASSERT_FMT(stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
+    ASSERT_FMT(stalker, "[%s]: %s not a CAI_Stalker", std::source_location::current().function_name(), object().cName().c_str());
     stalker->m_fDispBase = disp;
 }
 
 void CScriptGameObject::stalker_disp_base(float range, float maxr)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
-    ASSERT_FMT(stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
+    ASSERT_FMT(stalker, "[%s]: %s not a CAI_Stalker", std::source_location::current().function_name(), object().cName().c_str());
     stalker->m_fDispBase = asin(maxr / range);
 }
 
 void CScriptGameObject::DropItemAndThrow(CScriptGameObject* pItem, Fvector speed)
 {
     auto owner = smart_cast<CInventoryOwner*>(&object());
-    ASSERT_FMT(owner, "[%s]: %s not a CInventoryOwner", __FUNCTION__, object().cName().c_str());
+    ASSERT_FMT(owner, "[%s]: %s not a CInventoryOwner", std::source_location::current().function_name(), object().cName().c_str());
 
     auto item = smart_cast<CPhysicsShellHolder*>(&pItem->object());
-    ASSERT_FMT(item, "[%s]: %s not a CPhysicsShellHolder", __FUNCTION__, pItem->object().cName().c_str());
+    ASSERT_FMT(item, "[%s]: %s not a CPhysicsShellHolder", std::source_location::current().function_name(), pItem->object().cName().c_str());
 
     item->SetActivationSpeedOverride(speed);
     NET_Packet P;
@@ -864,23 +867,23 @@ void CScriptGameObject::DropItemAndThrow(CScriptGameObject* pItem, Fvector speed
 bool CScriptGameObject::controller_psy_hit_active()
 {
     auto controller = smart_cast<CController*>(&object());
-    ASSERT_FMT(controller, "[%s]: %s not a CController", __FUNCTION__, object().cName().c_str());
+    ASSERT_FMT(controller, "[%s]: %s not a CController", std::source_location::current().function_name(), object().cName().c_str());
     return controller->m_psy_hit->is_active();
 }
 
 bool CScriptGameObject::can_kill_enemy()
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
-    ASSERT_FMT(stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
+    ASSERT_FMT(stalker, "[%s]: %s not a CAI_Stalker", std::source_location::current().function_name(), object().cName().c_str());
     return stalker->can_kill_enemy();
 }
 
 bool CScriptGameObject::can_fire_to_enemy(const CScriptGameObject* obj)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
-    ASSERT_FMT(stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
+    ASSERT_FMT(stalker, "[%s]: %s not a CAI_Stalker", std::source_location::current().function_name(), object().cName().c_str());
     auto enemy = smart_cast<CEntityAlive*>(&(obj->object()));
-    ASSERT_FMT(enemy, "[%s]: %s not a CEntityAlive", __FUNCTION__, obj->cName().c_str());
+    ASSERT_FMT(enemy, "[%s]: %s not a CEntityAlive", std::source_location::current().function_name(), obj->cName().c_str());
 
     bool can_kill = stalker->can_kill_enemy();
     bool vis = stalker->memory().visual().visible_right_now(enemy);
@@ -903,18 +906,17 @@ bool CScriptGameObject::can_fire_to_enemy(const CScriptGameObject* obj)
 void CScriptGameObject::register_in_combat()
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
-    ASSERT_FMT(stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
+    ASSERT_FMT(stalker, "[%s]: %s not a CAI_Stalker", std::source_location::current().function_name(), object().cName().c_str());
     stalker->agent_manager().member().register_in_combat(stalker);
 }
 
 void CScriptGameObject::unregister_in_combat()
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
-    ASSERT_FMT(stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
+    ASSERT_FMT(stalker, "[%s]: %s not a CAI_Stalker", std::source_location::current().function_name(), object().cName().c_str());
     if (stalker->g_Alive() && stalker->agent_manager().member().registered_in_combat(stalker))
         stalker->agent_manager().member().unregister_in_combat(stalker);
 }
 
 void CScriptGameObject::setEnabled(bool value) { object().setEnabled(value); }
-
 void CScriptGameObject::setVisible(bool value) { object().setVisible(value); }

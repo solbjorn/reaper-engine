@@ -149,9 +149,9 @@ gsl::index mem_usage_impl(gsl::index* pBlocksUsed, gsl::index* pBlocksFree)
     {
     case _HEAPEMPTY: break;
     case _HEAPEND: break;
-    case _HEAPBADPTR: Msg("!![{}] bad pointer to heap", __FUNCTION__); break;
-    case _HEAPBADBEGIN: Msg("!![{}] bad start of heap", __FUNCTION__); break;
-    case _HEAPBADNODE: Msg("!![{}] bad node in heap", __FUNCTION__); break;
+    case _HEAPBADPTR: Msg("!![{}] bad pointer to heap", std::source_location::current().function_name()); break;
+    case _HEAPBADBEGIN: Msg("!![{}] bad start of heap", std::source_location::current().function_name()); break;
+    case _HEAPBADNODE: Msg("!![{}] bad node in heap", std::source_location::current().function_name()); break;
     }
     return total;
 }

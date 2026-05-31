@@ -31,7 +31,7 @@ void CSpaceRestrictor::Center(Fvector& C) const { XFORM().transform_tiny(C, CFOR
 float CSpaceRestrictor::Radius() const
 {
     auto cf = CFORM();
-    ASSERT_FMT(cf, "!![%s]: [%s] has no CFORM()", __FUNCTION__, cName().c_str());
+    ASSERT_FMT(cf, "!![%s]: [%s] has no CFORM()", std::source_location::current().function_name(), cName().c_str());
     return cf->getRadius();
 }
 
@@ -66,7 +66,7 @@ tmc::task<bool> CSpaceRestrictor::net_Spawn(CSE_Abstract* data)
 
     if (se_shape->shapes.empty())
     {
-        Msg("! [{}]: {} has no shapes", __FUNCTION__, cName());
+        Msg("! [{}]: {} has no shapes", std::source_location::current().function_name(), cName());
 
         CShapeData::shape_def _shape;
         _shape.data.sphere.P.set(0.0f, 0.0f, 0.0f);
@@ -117,7 +117,7 @@ bool CSpaceRestrictor::inside(const Fsphere& sphere)
         }
         catch (...)
         {
-            Msg("!![{}] FATAL ERROR IN RESTRICTOR ID:[{}]!", __FUNCTION__, ID());
+            Msg("!![{}] FATAL ERROR IN RESTRICTOR ID:[{}]!", std::source_location::current().function_name(), ID());
             return false;
         }
     }

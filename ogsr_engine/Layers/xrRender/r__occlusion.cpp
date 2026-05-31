@@ -19,7 +19,7 @@ void R_occlusion::occq_destroy(bool silent)
     const auto p_cnt = std::ssize(pool);
 
     if (!silent)
-        Msg("* [{}]: fids[{}] used[{}] pool[{}]", __FUNCTION__, std::ssize(fids), std::ssize(used), p_cnt);
+        Msg("* [{}]: fids[{}] used[{}] pool[{}]", std::source_location::current().function_name(), std::ssize(fids), std::ssize(used), p_cnt);
 
     gsl::index u_cnt{};
 
@@ -34,7 +34,7 @@ void R_occlusion::occq_destroy(bool silent)
     fids.clear();
 
     if (!silent)
-        Msg("* [{}]: released [{}] used and [{}] pool queries", __FUNCTION__, u_cnt, p_cnt);
+        Msg("* [{}]: released [{}] used and [{}] pool queries", std::source_location::current().function_name(), u_cnt, p_cnt);
 }
 
 void R_occlusion::cleanup_lost()
@@ -50,7 +50,7 @@ void R_occlusion::cleanup_lost()
     }
 
     if (cnt > 0)
-        MsgDbg("! [{}]: cleanup {} lost queries", __FUNCTION__, cnt);
+        MsgDbg("! [{}]: cleanup {} lost queries", std::source_location::current().function_name(), cnt);
 }
 
 u32 R_occlusion::occq_begin(u32& ID, ctx_id_t context_id)

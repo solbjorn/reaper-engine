@@ -132,7 +132,7 @@ void CLevelChanger::feel_touch_new(CObject* tpObject)
             }
             else
             {
-                Msg("! [{}]: [{}] pt_move_if_reject not found: m_SilentMode[{}]", __FUNCTION__, cName(), m_SilentMode);
+                Msg("! [{}]: [{}] pt_move_if_reject not found: m_SilentMode[{}]", std::source_location::current().function_name(), cName(), m_SilentMode);
             }
         }
 

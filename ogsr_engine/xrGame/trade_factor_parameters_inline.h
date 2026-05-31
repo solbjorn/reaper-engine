@@ -8,7 +8,7 @@
 
 #pragma once
 
-IC CTradeFactorParameters::CTradeFactorParameters() {}
+IC CTradeFactorParameters::CTradeFactorParameters() = default;
 
 IC void CTradeFactorParameters::clear()
 {
@@ -29,7 +29,7 @@ IC void CTradeFactorParameters::enable(const shared_str& section, const CTradeFa
     else
     {
         if (m_factors.find(section) != m_factors.end())
-            Msg("~~[{}] duplicate of CTradeFactors for section [{}] found!", __FUNCTION__, section);
+            Msg("~~[{}] duplicate of CTradeFactors for section [{}] found!", std::source_location::current().function_name(), section);
 
         m_factors.emplace(section, factors);
     }
@@ -56,7 +56,8 @@ IC const CTradeFactors& CTradeFactorParameters::factors(const shared_str& sectio
 {
     auto I = m_factors.find(section);
     if (I != m_factors.end())
-        return (*I).second;
+        return I->second;
+
     for (const auto& it : m_factors_re)
     {
         std::smatch results;
@@ -66,8 +67,10 @@ IC const CTradeFactors& CTradeFactorParameters::factors(const shared_str& sectio
             return it.second;
         }
     }
-    ASSERT_FMT(false, "[%s]: %s not found", __FUNCTION__, section.c_str());
-    return (*I).second;
+
+    ASSERT_FMT(false, "[%s]: %s not found", std::source_location::current().function_name(), section.c_str());
+
+    return I->second;
 }
 
 IC bool CTradeFactorParameters::disabled(const shared_str& section) const { return enabled(section) ? factors(section).disabled() : false; }

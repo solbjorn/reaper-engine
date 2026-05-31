@@ -97,15 +97,15 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
                 MP->r_stringZ(buf, sizeof(buf));
                 u16 m_idx = u16(MP->r_u32());
                 *b_it = find_bone_id(bones, shared_str{buf});
-                ASSERT_FMT_DBG(*b_it != BI_NONE, "!![{}][{}] Can't find bone: [{}]", __FUNCTION__, N, buf);
+                ASSERT_FMT_DBG(*b_it != BI_NONE, "!![{}][{}] Can't find bone: [{}]", std::source_location::current().function_name(), N, buf);
                 if (bRes)
                     rm_bones[m_idx] = u16(*b_it);
             }
             part_bone_cnt = u16(part_bone_cnt + (u16)PART.bones.size());
         }
 
-        ASSERT_FMT_DBG(part_bone_cnt == (u16)bones->size(), "!![{}] Different bone count for [{}]! part_bone_cnt: [{}], bones->size(): [{}]", __FUNCTION__, N,
-                       part_bone_cnt, bones->size());
+        ASSERT_FMT_DBG(part_bone_cnt == (u16)bones->size(), "!![{}] Different bone count for [{}]! part_bone_cnt: [{}], bones->size(): [{}]",
+                       std::source_location::current().function_name(), N, part_bone_cnt, bones->size());
 
         if (bRes)
         {
@@ -123,7 +123,7 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
                 _strlwr(buf);
                 R_ASSERT(MP->elapsed() >=
                              static_cast<int>(sizeof(u32) + sizeof(u16) + sizeof(u16) + sizeof(float) + sizeof(float) + sizeof(float) + sizeof(float)),
-                         "[%s] Something strange with file [%s]. This file broken!", __FUNCTION__, N);
+                         "[%s] Something strange with file [%s]. This file broken!", std::source_location::current().function_name(), N);
                 u32 dwFlags = MP->r_u32();
                 CMotionDef& D = m_mdefs[mot_i];
                 D.Load(MP, dwFlags, vers);
@@ -152,7 +152,8 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
 
     u32 dwCNT = 0;
     std::ignore = MS->r_chunk_safe(0, &dwCNT, sizeof(dwCNT));
-    ASSERT_FMT_DBG(dwCNT < 0x3FFF, "!![{}][{}] dwCNT is [{}]", __FUNCTION__, N, dwCNT); // MotionID 2 bit - slot, 14 bit - motion index
+    ASSERT_FMT_DBG(dwCNT < 0x3FFF, "!![{}][{}] dwCNT is [{}]", std::source_location::current().function_name(), N,
+                   dwCNT); // MotionID 2 bit - slot, 14 bit - motion index
 
     m_motions.reserve(bones->size());
 
@@ -172,15 +173,15 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
             // sanity check
             xr_strlwr(mname);
             auto I = m_motion_map.find(mname);
-            ASSERT_FMT_DBG(I != m_motion_map.end(), "!![{}][{}] Can't find motion: [{}]", __FUNCTION__, N, mname);
-            ASSERT_FMT_DBG(I->second == m_idx, "!![{}][{}] Invalid motion index: [{}]", __FUNCTION__, N, mname);
+            ASSERT_FMT_DBG(I != m_motion_map.end(), "!![{}][{}] Can't find motion: [{}]", std::source_location::current().function_name(), N, mname);
+            ASSERT_FMT_DBG(I->second == m_idx, "!![{}][{}] Invalid motion index: [{}]", std::source_location::current().function_name(), N, mname);
         }
 
         u32 dwLen = MS->r_u32();
         for (u32 i = 0; i < bones->size(); i++)
         {
             u16 bone_id = rm_bones[i];
-            ASSERT_FMT(bone_id != BI_NONE, "!![%s][%s] Invalid remap index!", __FUNCTION__, N);
+            ASSERT_FMT(bone_id != BI_NONE, "!![%s][%s] Invalid remap index!", std::source_location::current().function_name(), N);
             CMotion& M = m_motions[bones->at(bone_id)->name][m_idx];
             M.set_count(dwLen);
             M.set_flags(MS->r_u8());

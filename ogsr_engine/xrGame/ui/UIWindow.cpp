@@ -278,7 +278,7 @@ void CUIWindow::DoDetachChild(CUIWindow* pChild, bool from_destructor)
     pChild->SetParent(nullptr);
 
     if (from_destructor && pChild->IsAutoDelete())
-        Msg("!![{}] detaching autodelete window from destructor : [{}]", __FUNCTION__, pChild->WindowName_script());
+        Msg("!![{}] detaching autodelete window from destructor : [{}]", std::source_location::current().function_name(), pChild->WindowName_script());
 
     if (pChild->IsAutoDelete() && !from_destructor)
         xr_delete(pChild);
@@ -493,8 +493,9 @@ void CUIWindow::SetMouseCapture(CUIWindow* pChildWindow, bool capture_status)
     }
     else
     {
-        ASSERT_FMT_DBG((m_pMouseCapturer && m_pMouseCapturer == pChildWindow), "[{}]: [{}] trying to reset m_pMouseCapturer[{}]", __FUNCTION__,
-                       pChildWindow->WindowName(), m_pMouseCapturer != nullptr ? std::string_view{m_pMouseCapturer->WindowName()} : std::string_view{});
+        ASSERT_FMT_DBG((m_pMouseCapturer && m_pMouseCapturer == pChildWindow), "[{}]: [{}] trying to reset m_pMouseCapturer[{}]",
+                       std::source_location::current().function_name(), pChildWindow->WindowName(),
+                       m_pMouseCapturer != nullptr ? std::string_view{m_pMouseCapturer->WindowName()} : std::string_view{});
         m_pMouseCapturer = nullptr;
     }
 }
@@ -516,7 +517,7 @@ bool CUIWindow::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 
         auto* Wnd = *(iter++);
 
-        ASSERT_FMT_DBG(Wnd, "!![{}][{}] Child wnd is nullptr! Something strange!", __FUNCTION__, this->WindowName_script());
+        ASSERT_FMT_DBG(Wnd, "!![{}][{}] Child wnd is nullptr! Something strange!", std::source_location::current().function_name(), this->WindowName_script());
 
         if (Wnd != nullptr && Wnd->IsEnabled() && Wnd->OnKeyboard(dik, keyboard_action))
             return true;
@@ -548,7 +549,7 @@ bool CUIWindow::OnKeyboardHold(xr::key_id dik)
 
         auto* Wnd = *(iter++);
 
-        ASSERT_FMT_DBG(Wnd, "!![{}][{}] Child wnd is nullptr! Something strange!", __FUNCTION__, this->WindowName_script());
+        ASSERT_FMT_DBG(Wnd, "!![{}][{}] Child wnd is nullptr! Something strange!", std::source_location::current().function_name(), this->WindowName_script());
 
         if (Wnd != nullptr && Wnd->IsEnabled() && Wnd->OnKeyboardHold(dik))
             return true;

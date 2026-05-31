@@ -423,7 +423,9 @@ MotionID CKinematicsAnimated::ID_FX_Safe(std::string_view N)
 MotionID CKinematicsAnimated::ID_FX(std::string_view N)
 {
     MotionID motion_ID = ID_FX_Safe(N);
-    ASSERT_FMT_DBG(motion_ID.valid(), "!![{}] MODEL: can't find FX: [{}]", __FUNCTION__, N);
+
+    ASSERT_FMT_DBG(motion_ID.valid(), "!![{}] MODEL: can't find FX: [{}]", std::source_location::current().function_name(), N);
+
     return motion_ID;
 }
 

@@ -48,7 +48,7 @@ static void construct_string(StrType& result, xr_vector<ALife::_OBJECT_ID>& rest
         }
         else
         {
-            Msg("~~[{}]: remove invalid restriction with ID[{}] from {}", __FUNCTION__, *iter, monster->name_replace());
+            Msg("~~[{}]: remove invalid restriction with ID[{}] from {}", std::source_location::current().function_name(), *iter, monster->name_replace());
             iter = restrictions.erase(iter);
         }
     }
@@ -242,7 +242,7 @@ static void construct_restriction_string(StrType& temp_restrictions, const xr_ve
             s += it;
         }
         ASSERT_FMT(s.length() < std::size(temp_restrictions), "!![%s]: resulted string too long: object[%s] temp_restrictions_size[%zu] s.length[%zu]",
-                   __FUNCTION__, RObj->object().cName().c_str(), std::size(temp_restrictions), s.length());
+                   std::source_location::current().function_name(), RObj->object().cName().c_str(), std::size(temp_restrictions), s.length());
         strcpy_s(temp_restrictions, s.c_str());
     }
 }

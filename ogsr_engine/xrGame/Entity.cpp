@@ -212,7 +212,7 @@ tmc::task<bool> CEntity::net_Spawn(CSE_Abstract* DC)
 
         while (squad.group(g_Group()).members().size() == sizeof(MemorySpace::squad_mask_type) * 8)
         {
-            Msg("* [{}]: [{}]: group [team:{}][squad:{}][group:{}] is full ({}), try next group {}", __FUNCTION__,
+            Msg("* [{}]: [{}]: group [team:{}][squad:{}][group:{}] is full ({}), try next group {}", std::source_location::current().function_name(),
                 (E && E->name_replace()[0]) ? std::string_view{E->name_replace()} : std::string_view{cName()}, g_Team(), g_Squad(), g_Group(),
                 squad.group(g_Group()).members().size(), g_Group() + 1);
 

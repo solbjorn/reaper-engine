@@ -19,7 +19,7 @@ IC void CALifeObjectRegistry::add(CSE_ALifeDynamicObject* object)
     const char* name = object->name_replace();
     if (name && name[0])
     {
-        ASSERT_FMT(!m_object_ids.contains(name), "%s: duplicate object name '%s'", __FUNCTION__, name);
+        ASSERT_FMT(!m_object_ids.contains(name), "%s: duplicate object name '%s'", std::source_location::current().function_name(), name);
         m_object_ids.emplace(name, object);
     }
 
@@ -40,7 +40,7 @@ IC void CALifeObjectRegistry::remove(const ALife::_OBJECT_ID& id, bool no_assert
     {
         auto iter = m_object_ids.find(name);
 
-        ASSERT_FMT(iter != m_object_ids.end(), "%s: no object with name '%s'", __FUNCTION__, name);
+        ASSERT_FMT(iter != m_object_ids.end(), "%s: no object with name '%s'", std::source_location::current().function_name(), name);
         m_object_ids.erase(iter);
     }
 

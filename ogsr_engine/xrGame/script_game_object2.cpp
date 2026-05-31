@@ -522,9 +522,9 @@ u32 CScriptGameObject::location_on_path(float distance, Fvector* location)
 
 void CScriptGameObject::explode_initiator(u16 who_id)
 {
-    ASSERT_FMT(!object().H_Parent(), "[%s]: cannot explode %s with parent", __FUNCTION__, cName().c_str());
+    ASSERT_FMT(!object().H_Parent(), "[%s]: cannot explode %s with parent", std::source_location::current().function_name(), cName().c_str());
     CExplosive* explosive = smart_cast<CExplosive*>(&object());
-    ASSERT_FMT(explosive, "[%s]: %s not a CExplosive", __FUNCTION__, cName().c_str());
+    ASSERT_FMT(explosive, "[%s]: %s not a CExplosive", std::source_location::current().function_name(), cName().c_str());
     Fvector normal;
     explosive->FindNormal(normal);
     explosive->SetInitiator(who_id);
@@ -534,20 +534,20 @@ void CScriptGameObject::explode_initiator(u16 who_id)
 bool CScriptGameObject::is_exploded()
 {
     CExplosive* explosive = smart_cast<CExplosive*>(&object());
-    ASSERT_FMT(explosive, "[%s]: %s not a CExplosive", __FUNCTION__, cName().c_str());
+    ASSERT_FMT(explosive, "[%s]: %s not a CExplosive", std::source_location::current().function_name(), cName().c_str());
     return explosive->IsExploded();
 }
 
 bool CScriptGameObject::is_ready_to_explode()
 {
     CExplosive* explosive = smart_cast<CExplosive*>(&object());
-    ASSERT_FMT(explosive, "[%s]: %s not a CExplosive", __FUNCTION__, cName().c_str());
+    ASSERT_FMT(explosive, "[%s]: %s not a CExplosive", std::source_location::current().function_name(), cName().c_str());
     return explosive->IsReadyToExplode();
 }
 
 void CScriptGameObject::remove_memory_object(CScriptGameObject* game_object)
 {
     CCustomMonster* monster = smart_cast<CCustomMonster*>(&object());
-    ASSERT_FMT(monster, "[%s]: %s not a CCustomMonster", __FUNCTION__, cName().c_str());
+    ASSERT_FMT(monster, "[%s]: %s not a CCustomMonster", std::source_location::current().function_name(), cName().c_str());
     monster->memory().remove_links(&game_object->object());
 }

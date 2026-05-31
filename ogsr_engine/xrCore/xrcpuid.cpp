@@ -178,7 +178,7 @@ void _processor_info::MTCPULoad()
 
     if (!NT_SUCCESS(m_pNtQuerySystemInformation(SystemProcessorPerformanceInformation, perfomanceInfo.get(),
                                                 sizeof(SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION) * m_dwNumberOfProcessors, nullptr)))
-        Msg("!![{}] Can't get NtQuerySystemInformation", __FUNCTION__);
+        Msg("!![{}] Can't get NtQuerySystemInformation", std::source_location::current().function_name());
 
     DWORD dwTickCount = GetTickCount();
     if (!m_dwCount)

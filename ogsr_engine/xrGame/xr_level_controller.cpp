@@ -469,7 +469,7 @@ void GetActionAllBinding(gsl::czstring _action, gsl::zstring dst_buff, gsl::inde
     const _binding* pbinding{};
 
     if (action_id == EGameActions::kNOTBINDED)
-        Msg("!![{}] Action [{}] not found! Fix it or remove from text!", __FUNCTION__, _action);
+        Msg("!![{}] Action [{}] not found! Fix it or remove from text!", std::source_location::current().function_name(), _action);
     else
         pbinding = &g_key_bindings[std::to_underlying(action_id)];
 

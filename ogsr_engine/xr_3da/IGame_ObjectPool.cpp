@@ -38,11 +38,11 @@ void IGame_ObjectPool::prefetch()
                 m_PrefetchObjects.push_back(pObject);
             }
             else
-                Msg("! [{}] unknown section {} in {}", __FUNCTION__, item.first, section);
+                Msg("! [{}] unknown section {} in {}", std::source_location::current().function_name(), item.first, section);
         }
 
         Render->models_begin_prefetch1(false);
-        Msg("[{}] objects prefetching time ({}): [{:.3} s.]", __FUNCTION__, p_count, T.GetElapsed_sec());
+        Msg("[{}] objects prefetching time ({}): [{:.3} s.]", std::source_location::current().function_name(), p_count, T.GetElapsed_sec());
     }
 
     // out statistic

@@ -1502,7 +1502,7 @@ public:
         if (CAttachableItem::m_dbgItem)
         {
             CAttachableItem::m_dbgItem = nullptr;
-            Msg("~~[{}] switched to off", __FUNCTION__);
+            Msg("~~[{}] switched to off", std::source_location::current().function_name());
             return;
         }
 
@@ -1536,9 +1536,9 @@ public:
         }
 
         if (CAttachableItem::m_dbgItem)
-            Msg("--[{}] switched to ON for [{}]", __FUNCTION__, args);
+            Msg("--[{}] switched to ON for [{}]", std::source_location::current().function_name(), args);
         else
-            Msg("!![{}] cannot find attached item [{}]", __FUNCTION__, args);
+            Msg("!![{}] cannot find attached item [{}]", std::source_location::current().function_name(), args);
     }
 
     [[nodiscard]] xr_string Info() const override
@@ -1563,7 +1563,7 @@ public:
         if (CAttachableItem::m_dbgItem)
         {
             CAttachableItem::m_dbgItem = nullptr;
-            Msg("~~[{}] switched to off", __FUNCTION__);
+            Msg("~~[{}] switched to off", std::source_location::current().function_name());
             return;
         }
 
@@ -1603,9 +1603,9 @@ public:
         }
 
         if (CAttachableItem::m_dbgItem)
-            Msg("--[{}] switched to ON for item in slot [{}]", __FUNCTION__, args);
+            Msg("--[{}] switched to ON for item in slot [{}]", std::source_location::current().function_name(), args);
         else
-            Msg("!![{}] cannot find attached item in slot [{}]", __FUNCTION__, args);
+            Msg("!![{}] cannot find attached item in slot [{}]", std::source_location::current().function_name(), args);
     }
 
     [[nodiscard]] xr_string Info() const override

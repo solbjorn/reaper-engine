@@ -97,7 +97,7 @@ tmc::task<bool> CWeaponMagazined::net_Spawn(CSE_Abstract* DC)
     m_iCurFireMode = wpn->m_u8CurFireMode;
     if (HasFireModes() && m_iCurFireMode >= std::ssize(m_aFireModes))
     {
-        Msg("! [{}]: {}: wrong m_iCurFireMode[{}/{}]", __FUNCTION__, cName(), m_iCurFireMode, std::ssize(m_aFireModes) - 1);
+        Msg("! [{}]: {}: wrong m_iCurFireMode[{}/{}]", std::source_location::current().function_name(), cName(), m_iCurFireMode, std::ssize(m_aFireModes) - 1);
         m_iCurFireMode = std::ssize(m_aFireModes) - 1;
 
         auto se_obj = alife_object();
@@ -1183,7 +1183,8 @@ void CWeaponMagazined::InitZoomParams(LPCSTR section, bool useTexture)
     {
         int num_zoom_param = _GetItemCount(dynamicZoomParams);
 
-        ASSERT_FMT(num_zoom_param >= 1, "!![%s] : Invalid scope_dynamic_zoom parameter in section [%s]", __FUNCTION__, section);
+        ASSERT_FMT(num_zoom_param >= 1, "!![%s] : Invalid scope_dynamic_zoom parameter in section [%s]", std::source_location::current().function_name(),
+                   section);
 
         string128 tmp;
         m_bScopeDynamicZoom = CInifile::IsBOOL(_GetItem(dynamicZoomParams, 0, tmp));

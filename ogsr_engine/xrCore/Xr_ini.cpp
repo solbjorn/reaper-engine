@@ -793,7 +793,7 @@ void CInifile::w_string(gsl::czstring S, gsl::czstring L, gsl::czstring V)
     char sect[256];
     _parse(sect, S);
     _strlwr(sect);
-    ASSERT_FMT(sect[0], "[%s]: wrong section name [%s]", __FUNCTION__, S);
+    ASSERT_FMT(sect[0], "[%s]: wrong section name [%s]", std::source_location::current().function_name(), S);
 
     if (!section_exist(sect))
     {
@@ -808,7 +808,7 @@ void CInifile::w_string(gsl::czstring S, gsl::czstring L, gsl::czstring V)
     // parse line/value
     char line[256];
     _parse(line, L);
-    ASSERT_FMT(line[0], "[%s]: wrong param name [%s]", __FUNCTION__, L);
+    ASSERT_FMT(line[0], "[%s]: wrong param name [%s]", std::source_location::current().function_name(), L);
     char value[256];
     _parse(value, V);
 

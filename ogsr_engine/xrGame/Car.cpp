@@ -312,13 +312,13 @@ void CCar::RestoreNetState(CSE_PHSkeleton* /*po*/)
         return;
 
     auto po = smart_cast<CSE_PHSkeleton*>(se_obj);
-    ASSERT_FMT(po, "[%s]: %s is not CSE_PHSkeleton", __FUNCTION__, obj->Name_script());
+    ASSERT_FMT(po, "[%s]: %s is not CSE_PHSkeleton", std::source_location::current().function_name(), obj->Name_script());
     if (!po->_flags.test(CSE_PHSkeleton::flSavedData))
         return;
     CPHSkeleton::RestoreNetState(po);
 
     CSE_ALifeCar* co = smart_cast<CSE_ALifeCar*>(se_obj);
-    ASSERT_FMT(co, "[%s]: %s is not CSE_ALifeCar", __FUNCTION__, obj->Name_script());
+    ASSERT_FMT(co, "[%s]: %s is not CSE_ALifeCar", std::source_location::current().function_name(), obj->Name_script());
     if (co->door_states.size() == m_doors.size())
     {
         /* восстановление состояния дверей отключено, пусть в дефолтном состоянии
@@ -333,8 +333,8 @@ void CCar::RestoreNetState(CSE_PHSkeleton* /*po*/)
     }
     else
     {
-        Msg("~ [{}]: [{}] has different state in m_doors[{}] door_states[{}] Visual[{}]", __FUNCTION__, obj->Name_script(), m_doors.size(),
-            co->door_states.size(), obj->cNameVisual());
+        Msg("~ [{}]: [{}] has different state in m_doors[{}] door_states[{}] Visual[{}]", std::source_location::current().function_name(), obj->Name_script(),
+            m_doors.size(), co->door_states.size(), obj->cNameVisual());
     }
 
     co->door_states.clear();
@@ -353,8 +353,8 @@ void CCar::RestoreNetState(CSE_PHSkeleton* /*po*/)
     }
     else
     {
-        Msg("~ [{}]: [{}] has different state in m_wheels_map[{}] wheel_states[{}] Visual[{}]", __FUNCTION__, obj->Name_script(), m_wheels_map.size(),
-            co->wheel_states.size(), obj->cNameVisual());
+        Msg("~ [{}]: [{}] has different state in m_wheels_map[{}] wheel_states[{}] Visual[{}]", std::source_location::current().function_name(),
+            obj->Name_script(), m_wheels_map.size(), co->wheel_states.size(), obj->cNameVisual());
     }
 
     co->wheel_states.clear();
@@ -1713,7 +1713,7 @@ tmc::task<void> CCar::OnEvent(NET_Packet& P, u16 type)
 
         if (!O)
         {
-            Msg("! [{}] Error: No object to reject/sell [{}]", __FUNCTION__, id);
+            Msg("! [{}] Error: No object to reject/sell [{}]", std::source_location::current().function_name(), id);
             break;
         }
 
@@ -2032,7 +2032,7 @@ void CCar::SyncNetState()
         return;
 
     auto co = smart_cast<CSE_ALifeCar*>(se_obj);
-    ASSERT_FMT(co, "[%s]: %s is not CSE_ALifeCar", __FUNCTION__, obj->Name_script());
+    ASSERT_FMT(co, "[%s]: %s is not CSE_ALifeCar", std::source_location::current().function_name(), obj->Name_script());
 
     co->o_Position = Position();
     Fvector Angle;

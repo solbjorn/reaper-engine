@@ -81,7 +81,7 @@ CInifile* reload_system_ini()
         // Не понятно почему так происходит, поэтому сделал тут обработку такой ситуации.
         if (F->elapsed() >= gsl::index{sizeof(u8)} && F->r_u8() == 0)
         {
-            Msg("!![{}] file [{}] is broken!", __FUNCTION__, szFileName);
+            Msg("!![{}] file [{}] is broken!", std::source_location::current().function_name(), szFileName);
 
             F.reset();
             FS.file_delete(szFileName);

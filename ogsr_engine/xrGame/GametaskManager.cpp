@@ -276,18 +276,18 @@ void CGameTaskManager::SetActiveTask(const TASK_ID& id, u16 idx, const bool safe
         auto* t = ActiveTask();
         if (t && t->m_Objectives.size() < (idx + 1))
         {
-            ASSERT_FMT(!t->m_Objectives.empty(), "!![%s] m_Objectives is empty! Something strange!", __FUNCTION__);
+            ASSERT_FMT(!t->m_Objectives.empty(), "!![%s] m_Objectives is empty! Something strange!", std::source_location::current().function_name());
             g_active_task_objective_id = t->m_Objectives.size() - 1; // Некторые таски могут содержать всего один objective
 
             if (g_active_task_objective_id == 0)
-                Msg("!![{} - 1] g_active_task_objective_idx == 0", __FUNCTION__);
+                Msg("!![{} - 1] g_active_task_objective_idx == 0", std::source_location::current().function_name());
         }
         else
         {
             g_active_task_objective_id = idx;
 
             if (g_active_task_objective_id == 0)
-                Msg("!![{} - 2] g_active_task_objective_idx == 0", __FUNCTION__);
+                Msg("!![{} - 2] g_active_task_objective_idx == 0", std::source_location::current().function_name());
         }
     }
     else
@@ -295,7 +295,7 @@ void CGameTaskManager::SetActiveTask(const TASK_ID& id, u16 idx, const bool safe
         g_active_task_objective_id = idx;
 
         if (g_active_task_objective_id == 0)
-            Msg("!![{} - 3] g_active_task_objective_idx == 0", __FUNCTION__);
+            Msg("!![{} - 3] g_active_task_objective_idx == 0", std::source_location::current().function_name());
     }
 
     Level().MapManager().DisableAllPointers();

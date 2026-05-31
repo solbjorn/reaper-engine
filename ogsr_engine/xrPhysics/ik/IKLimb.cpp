@@ -241,7 +241,8 @@ u16 get_ik_bone(IKinematics* K, LPCSTR S, u16 i)
     u16 bone = K->LL_BoneID(sbone);
 
     if (BI_NONE == bone)
-        Msg("!![{}]ik bone: [{}] does not found in visual: [{}]", __FUNCTION__, sbone, smart_cast<IRenderVisual*>(K)->getDebugName());
+        Msg("!![{}]ik bone: [{}] does not found in visual: [{}]", std::source_location::current().function_name(), sbone,
+            smart_cast<IRenderVisual*>(K)->getDebugName());
 
     return bone;
 }

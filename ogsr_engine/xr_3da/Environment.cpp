@@ -697,7 +697,7 @@ void CEnvironment::SetWeatherNext(shared_str name)
     auto it = WeatherCycles.find(name);
     if (it == WeatherCycles.end())
     {
-        Msg("! [{}]: Invalid weather name: {}", __FUNCTION__, name);
+        Msg("! [{}]: Invalid weather name: {}", std::source_location::current().function_name(), name);
         return;
     }
 

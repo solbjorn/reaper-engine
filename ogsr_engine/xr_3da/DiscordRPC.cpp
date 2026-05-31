@@ -13,7 +13,7 @@ void DiscordRPC::Init()
     m_hDiscordDLL = LoadLibraryA(DISCORD_LIBRARY_DLL);
     if (!m_hDiscordDLL)
     {
-        Msg("!![{}]Failed to load [{}], error: {}", __FUNCTION__, DISCORD_LIBRARY_DLL, Debug.error2string(GetLastError()));
+        Msg("!![{}]Failed to load [{}], error: {}", std::source_location::current().function_name(), DISCORD_LIBRARY_DLL, Debug.error2string(GetLastError()));
         return;
     }
 
@@ -25,7 +25,7 @@ void DiscordRPC::Init()
 
     if (!Discord_Initialize || !Discord_Shutdown || !Discord_ClearPresence || !Discord_RunCallbacks || !Discord_UpdatePresence)
     {
-        Msg("!![{}] Initialization failed!", __FUNCTION__);
+        Msg("!![{}] Initialization failed!", std::source_location::current().function_name());
 
         FreeLibrary(m_hDiscordDLL);
         m_hDiscordDLL = nullptr;

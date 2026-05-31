@@ -3,6 +3,7 @@
 #include "_types.h"
 
 #include <gsl/util>
+#include <source_location>
 
 #define DEBUG_INVOKE __debugbreak()
 

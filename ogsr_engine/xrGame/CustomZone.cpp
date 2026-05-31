@@ -1264,7 +1264,7 @@ void CCustomZone::OnOwnershipTake(u16 id)
     VERIFY(GO);
 
     if (!smart_cast<CArtefact*>(GO))
-        Msg("[{}] zone_name[{}] object_name[{}]", __FUNCTION__, cName(), GO->cName());
+        Msg("[{}] zone_name[{}] object_name[{}]", std::source_location::current().function_name(), cName(), GO->cName());
 
     CArtefact* artefact = smart_cast<CArtefact*>(Level().Objects.net_Find(id));
     VERIFY(artefact);
@@ -1366,7 +1366,7 @@ void CCustomZone::SpawnArtefact()
     R_ASSERT(i < m_ArtefactSpawn.size());
 
 #ifdef DEBUG
-    Msg("--[{}] anom: [{}], art: [{}]", __FUNCTION__, cName(), m_ArtefactSpawn[i].section);
+    Msg("--[{}] anom: [{}], art: [{}]", std::source_location::current().function_name(), cName(), m_ArtefactSpawn[i].section);
 #endif
 
     Fvector pos;

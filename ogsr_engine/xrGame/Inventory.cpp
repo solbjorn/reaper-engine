@@ -146,7 +146,7 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
         result = Belt(pIItem);
         if (!result)
         {
-            Msg("!![{}] cant put in belt item [{}], moving to ruck...", __FUNCTION__, pIItem->object().cName());
+            Msg("!![{}] cant put in belt item [{}], moving to ruck...", std::source_location::current().function_name(), pIItem->object().cName());
 
             pIItem->m_eItemPlace = eItemPlaceRuck;
             R_ASSERT(Ruck(pIItem));

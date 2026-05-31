@@ -61,8 +61,8 @@ RELATION_REGISTRY::RELATION_MAP_SPOTS* RELATION_REGISTRY::m_spot_names{};
 
 //////////////////////////////////////////////////////////////////////////
 
-RELATION_REGISTRY::RELATION_REGISTRY() {}
-RELATION_REGISTRY::~RELATION_REGISTRY() {}
+RELATION_REGISTRY::RELATION_REGISTRY() = default;
+RELATION_REGISTRY::~RELATION_REGISTRY() = default;
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -81,16 +81,19 @@ void RELATION_REGISTRY::build_reverse_personal()
 {
     for (const auto& it : relation_registry().registry().get_registry_objects())
     {
+        // skip actor (0)
         if (it.first)
-        { // skip actor (0)
+        {
             const auto& relation_data = relation_registry().registry().objects(it.first);
             for (const auto& it2 : relation_data.personal)
             {
+                // skip actor (0)
                 if (it2.first)
-                { // skip actor (0)
+                {
                     auto& relation_data2 = relation_registry().registry().objects(it2.first);
                     const auto it3 = std::find(relation_data2.reverse_personal.begin(), relation_data2.reverse_personal.end(), it.first);
-                    ASSERT_FMT(it3 == relation_data2.reverse_personal.end(), "[%s]: %u already exists in revers_personal of %u", __FUNCTION__, it.first, it2.first);
+                    ASSERT_FMT(it3 == relation_data2.reverse_personal.end(), "[%s]: %u already exists in revers_personal of %u",
+                               std::source_location::current().function_name(), it.first, it2.first);
                     relation_data2.reverse_personal.push_back(it.first);
                 }
             }
@@ -136,26 +139,29 @@ void RELATION_REGISTRY::ClearRelations(u16 person_id)
         }
         for (const auto to : relation_data.reverse_personal)
         {
-            ASSERT_FMT(relation_registry().registry().objects_ptr(to), "[%s]: %u not found clearing %u", __FUNCTION__, to, person_id);
+            ASSERT_FMT(relation_registry().registry().objects_ptr(to), "[%s]: %u not found clearing %u", std::source_location::current().function_name(), to,
+                       person_id);
             auto& relation_data2 = relation_registry().registry().objects(to);
             const auto it = relation_data2.personal.find(person_id);
-            ASSERT_FMT(it != relation_data2.personal.end(), "[%s]: %u not found in personal of %u", __FUNCTION__, person_id, to);
+            ASSERT_FMT(it != relation_data2.personal.end(), "[%s]: %u not found in personal of %u", std::source_location::current().function_name(), person_id,
+                       to);
             relation_data2.personal.erase(it);
         }
         auto& objects = relation_registry().registry().get_registry_objects();
         auto it = objects.find(person_id);
-        ASSERT_FMT(it != objects.end(), "[%s]: %u not found", __FUNCTION__, person_id);
+        ASSERT_FMT(it != objects.end(), "[%s]: %u not found", std::source_location::current().function_name(), person_id);
         objects.erase(it);
     }
 }
 
 void RELATION_REGISTRY::clear_reverse_personal(u16 from, u16 to)
 {
-    ASSERT_FMT(to, "[%s]: actor detected clearing %u", __FUNCTION__, from);
-    ASSERT_FMT(relation_registry().registry().objects_ptr(to), "[%s]: %u not found clearing %u", __FUNCTION__, to, from);
+    ASSERT_FMT(to, "[%s]: actor detected clearing %u", std::source_location::current().function_name(), from);
+    ASSERT_FMT(relation_registry().registry().objects_ptr(to), "[%s]: %u not found clearing %u", std::source_location::current().function_name(), to, from);
     auto& relation_data = relation_registry().registry().objects(to);
     const auto it = std::find(relation_data.reverse_personal.begin(), relation_data.reverse_personal.end(), from);
-    ASSERT_FMT(it != relation_data.reverse_personal.end(), "[%s]: %u not found in reverse_personal of %u", __FUNCTION__, from, to);
+    ASSERT_FMT(it != relation_data.reverse_personal.end(), "[%s]: %u not found in reverse_personal of %u", std::source_location::current().function_name(),
+               from, to);
     relation_data.reverse_personal.erase(it);
 }
 

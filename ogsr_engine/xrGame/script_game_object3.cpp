@@ -55,7 +55,7 @@ const CCoverPoint* CScriptGameObject::best_cover(const Fvector& position, const 
                                                  f32 max_enemy_distance)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
-    ASSERT_FMT(stalker != nullptr, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
+    ASSERT_FMT(stalker != nullptr, "[%s]: %s not a CAI_Stalker", std::source_location::current().function_name(), object().cName().c_str());
 
     stalker->m_ce_best->setup(enemy_position, min_enemy_distance, max_enemy_distance, 0.0f);
     return ai().cover_manager().best_cover(position, radius, *stalker->m_ce_best);
@@ -65,7 +65,7 @@ const CCoverPoint* CScriptGameObject::best_cover(const Fvector& position, const 
                                                  f32 max_enemy_distance, sol::function callback)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
-    ASSERT_FMT(stalker != nullptr, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
+    ASSERT_FMT(stalker != nullptr, "[%s]: %s not a CAI_Stalker", std::source_location::current().function_name(), object().cName().c_str());
 
     xr_vector<const CCoverPoint*> covers;
     stalker->m_ce_best->setup(enemy_position, min_enemy_distance, max_enemy_distance, 0.0f, [&](auto point) -> bool {
@@ -87,7 +87,7 @@ const CCoverPoint* CScriptGameObject::best_cover(const Fvector& position, const 
 const CCoverPoint* CScriptGameObject::safe_cover(const Fvector& position, f32 radius, f32 min_distance)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
-    ASSERT_FMT(stalker != nullptr, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
+    ASSERT_FMT(stalker != nullptr, "[%s]: %s not a CAI_Stalker", std::source_location::current().function_name(), object().cName().c_str());
 
     stalker->m_ce_safe->setup(min_distance);
     return ai().cover_manager().best_cover(position, radius, *stalker->m_ce_safe);
@@ -96,7 +96,7 @@ const CCoverPoint* CScriptGameObject::safe_cover(const Fvector& position, f32 ra
 const CCoverPoint* CScriptGameObject::safe_cover(const Fvector& position, f32 radius, f32 min_distance, sol::function callback)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
-    ASSERT_FMT(stalker != nullptr, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
+    ASSERT_FMT(stalker != nullptr, "[%s]: %s not a CAI_Stalker", std::source_location::current().function_name(), object().cName().c_str());
 
     xr_vector<const CCoverPoint*> covers;
     stalker->m_ce_safe->setup(min_distance, [&](auto point) -> bool {
@@ -118,7 +118,7 @@ const CCoverPoint* CScriptGameObject::safe_cover(const Fvector& position, f32 ra
 const CCoverPoint* CScriptGameObject::ambush_cover(const Fvector& position, const Fvector& enemy_position, f32 radius, f32 min_distance)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
-    ASSERT_FMT(stalker != nullptr, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
+    ASSERT_FMT(stalker != nullptr, "[%s]: %s not a CAI_Stalker", std::source_location::current().function_name(), object().cName().c_str());
 
     stalker->m_ce_ambush->setup(position, enemy_position, min_distance);
     return ai().cover_manager().best_cover(position, radius, *stalker->m_ce_ambush);
@@ -127,7 +127,7 @@ const CCoverPoint* CScriptGameObject::ambush_cover(const Fvector& position, cons
 const CCoverPoint* CScriptGameObject::ambush_cover(const Fvector& position, const Fvector& enemy_position, f32 radius, f32 min_distance, sol::function callback)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
-    ASSERT_FMT(stalker != nullptr, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
+    ASSERT_FMT(stalker != nullptr, "[%s]: %s not a CAI_Stalker", std::source_location::current().function_name(), object().cName().c_str());
 
     xr_vector<const CCoverPoint*> covers;
     stalker->m_ce_ambush->setup(position, enemy_position, min_distance, [&](auto point) -> bool {
@@ -313,7 +313,7 @@ LPCSTR CScriptGameObject::GetPatrolPathName()
         CScriptEntity* script_monster = smart_cast<CScriptEntity*>(&object());
         if (!script_monster)
         {
-            Msg("!![{}] cannot access class member GetPatrolPathName! Object: [{}]", __FUNCTION__, this->cName());
+            Msg("!![{}] cannot access class member GetPatrolPathName! Object: [{}]", std::source_location::current().function_name(), this->cName());
             return ("");
         }
         else
@@ -1242,7 +1242,7 @@ const CCoverPoint* CScriptGameObject::angle_cover(const Fvector& position, f32 r
                                                   f32 max_enemy_distance, u32 enemy_vertex_id)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
-    ASSERT_FMT(stalker != nullptr, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
+    ASSERT_FMT(stalker != nullptr, "[%s]: %s not a CAI_Stalker", std::source_location::current().function_name(), object().cName().c_str());
 
     stalker->m_ce_angle->setup(enemy_position, min_enemy_distance, max_enemy_distance, enemy_vertex_id);
     return ai().cover_manager().best_cover(position, radius, *stalker->m_ce_angle);
@@ -1252,7 +1252,7 @@ const CCoverPoint* CScriptGameObject::angle_cover(const Fvector& position, f32 r
                                                   f32 max_enemy_distance, u32 enemy_vertex_id, sol::function callback)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
-    ASSERT_FMT(stalker != nullptr, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
+    ASSERT_FMT(stalker != nullptr, "[%s]: %s not a CAI_Stalker", std::source_location::current().function_name(), object().cName().c_str());
 
     xr_vector<const CCoverPoint*> covers;
     stalker->m_ce_angle->setup(enemy_position, min_enemy_distance, max_enemy_distance, enemy_vertex_id, [&](auto point) -> bool {

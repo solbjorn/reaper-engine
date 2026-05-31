@@ -147,7 +147,7 @@ void CAttachableItem::SaveAttachableParams()
     sprintf_s(buff, "%f,%f,%f", ypr.y, ypr.x, ypr.z);
     pCfg.w_string(sect_name, "attach_angle_offset", buff);
 
-    Msg("--[{}] data saved to [{}]", __FUNCTION__, pCfg.fname());
+    Msg("--[{}] data saved to [{}]", std::source_location::current().function_name(), pCfg.fname());
 }
 
 bool attach_adjust_mode_keyb(xr::key_id dik)

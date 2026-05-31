@@ -113,7 +113,7 @@ tmc::task<void> CSoundRender_TargetA::update()
         ALenum error = alGetError();
         if (error != AL_NO_ERROR)
         {
-            Msg("!![{}]Error checking source state! OpenAL Error: [{}]", __FUNCTION__, alGetString(error));
+            Msg("!![{}]Error checking source state! OpenAL Error: [{}]", std::source_location::current().function_name(), alGetString(error));
             co_return;
         }
 
@@ -129,7 +129,7 @@ tmc::task<void> CSoundRender_TargetA::update()
             ALenum error = alGetError();
             if (error != AL_NO_ERROR)
             {
-                Msg("!![{}]Error buffering data! OpenAL Error: [{}]", __FUNCTION__, alGetString(error));
+                Msg("!![{}]Error buffering data! OpenAL Error: [{}]", std::source_location::current().function_name(), alGetString(error));
                 co_return;
             }
         }
@@ -148,7 +148,7 @@ tmc::task<void> CSoundRender_TargetA::update()
             ALenum error = alGetError();
             if (error != AL_NO_ERROR)
             {
-                Msg("!![{}]Error restarting playback! OpenAL Error: [{}]", __FUNCTION__, alGetString(error));
+                Msg("!![{}]Error restarting playback! OpenAL Error: [{}]", std::source_location::current().function_name(), alGetString(error));
                 co_return;
             }
         }

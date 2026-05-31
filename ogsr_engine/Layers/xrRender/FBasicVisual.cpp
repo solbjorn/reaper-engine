@@ -36,7 +36,8 @@ bool replaceShadersLine(char* fnS, u32 fnS_size, LPCSTR item)
 
     LPCSTR overrides = pSettings->r_string(vis_shaders_replace, item);
     u32 cnt = _GetItemCount(overrides);
-    ASSERT_FMT(cnt % 2 == 0, "[%s]: %s: wrong format cnt = %u: %s = %s", __FUNCTION__, vis_shaders_replace, cnt, item, overrides);
+    ASSERT_FMT(cnt % 2 == 0, "[%s]: %s: wrong format cnt = %u: %s = %s", std::source_location::current().function_name(), vis_shaders_replace, cnt, item,
+               overrides);
 
     for (u32 i = 0; i < cnt; i += 2)
     {
@@ -86,7 +87,8 @@ bool overrideShadersLine(char* fnS, u32 fnS_size, const char* item)
 
     LPCSTR overrides = pSettings->r_string(vis_shaders_override, item);
     u32 cnt = _GetItemCount(overrides);
-    ASSERT_FMT(cnt % 2 == 0, "[%s]: %s: wrong format cnt = %u: %s = %s", __FUNCTION__, vis_shaders_override, cnt, item, overrides);
+    ASSERT_FMT(cnt % 2 == 0, "[%s]: %s: wrong format cnt = %u: %s = %s", std::source_location::current().function_name(), vis_shaders_override, cnt, item,
+               overrides);
 
     for (u32 i = 0; i < cnt; i += 2)
     {

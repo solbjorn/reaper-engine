@@ -361,7 +361,8 @@ public:
         }
         else
         {
-            Msg("!![{}] chunk [{}] has invalid size [{}], return elapsed size [{}]", __FUNCTION__, ID, dwSize, impl().elapsed());
+            Msg("!![{}] chunk [{}] has invalid size [{}], return elapsed size [{}]", std::source_location::current().function_name(), ID, dwSize,
+                impl().elapsed());
             m_last_pos = 0;
 
             return impl().elapsed();
@@ -428,7 +429,8 @@ public:
                                     length++;
                                 }
 
-                                Msg("!![{}] THM [{}] chunk [{}] fixed, wrong size = [{}], correct size = [{}]", __FUNCTION__, dbg_name, ID, dwSize, length);
+                                Msg("!![{}] THM [{}] chunk [{}] fixed, wrong size = [{}], correct size = [{}]", std::source_location::current().function_name(),
+                                    dbg_name, ID, dwSize, length);
                             }
                         }
 
@@ -456,7 +458,8 @@ public:
         }
         else
         {
-            Msg("!![{}] chunk [{}] has invalid size [{}], return elapsed size [{}]", __FUNCTION__, ID, dwSize, impl().elapsed());
+            Msg("!![{}] chunk [{}] has invalid size [{}], return elapsed size [{}]", std::source_location::current().function_name(), ID, dwSize,
+                impl().elapsed());
             m_last_pos = 0;
 
             return impl().elapsed();

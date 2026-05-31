@@ -31,7 +31,8 @@ tmc::task<void> CLevel::cl_Process_Spawn(NET_Packet& P)
 
     if (std::find(m_just_destroyed.begin(), m_just_destroyed.end(), E->ID) != m_just_destroyed.end())
     {
-        Msg("* [{}]: skip just destroyed [{}] ID: [{}] ID_Parent: [{}]", __FUNCTION__, E->name_replace(), E->ID, E->ID_Parent);
+        Msg("* [{}]: skip just destroyed [{}] ID: [{}] ID_Parent: [{}]", std::source_location::current().function_name(), E->name_replace(), E->ID,
+            E->ID_Parent);
 
         m_just_destroyed.erase(std::remove(m_just_destroyed.begin(), m_just_destroyed.end(), E->ID), m_just_destroyed.end());
         F_entity_Destroy(E);
@@ -107,7 +108,7 @@ tmc::task<void> CLevel::g_sv_Spawn(CSE_Abstract* E)
 
     if (auto obj = Objects.net_Find(E->ID); obj != nullptr && obj->getDestroy())
     {
-        Msg("[{}]: {}[{}] already net_Spawn'ed, call ProcessDestroyQueue()", __FUNCTION__, obj->cName(), obj->ID());
+        Msg("[{}]: {}[{}] already net_Spawn'ed, call ProcessDestroyQueue()", std::source_location::current().function_name(), obj->cName(), obj->ID());
         co_await Objects.ProcessDestroyQueue();
     }
 

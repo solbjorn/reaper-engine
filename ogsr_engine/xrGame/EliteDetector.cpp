@@ -108,7 +108,7 @@ void CUIArtefactDetectorElite::construct(CEliteDetector* p)
     }
     else
     {
-        Msg("!![{}] xml file [ui_detector_artefact.xml] not found!", __FUNCTION__);
+        Msg("!![{}] xml file [ui_detector_artefact.xml] not found!", std::source_location::current().function_name());
     }
 
     Fvector _map_attach_p = pSettings->r_fvector3(m_parent->cNameSect(), "ui_p");

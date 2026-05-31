@@ -408,9 +408,11 @@ void CScriptGameObject::GiveMoney(int money)
 void CScriptGameObject::SetMoney(u32 money)
 {
     CInventoryOwner* pOurOwner = smart_cast<CInventoryOwner*>(&object());
-    ASSERT_FMT(pOurOwner, "[%s]: %s not an CInventoryOwner", __FUNCTION__, object().Name());
+    ASSERT_FMT(pOurOwner, "[%s]: %s not an CInventoryOwner", std::source_location::current().function_name(), object().Name());
+
     pOurOwner->set_money(money, true);
 }
+
 //////////////////////////////////////////////////////////////////////////
 
 int CScriptGameObject::GetGoodwill(CScriptGameObject* pToWho)
@@ -1133,7 +1135,7 @@ bool CScriptGameObject::IsInSlot(CScriptGameObject* obj) const
 u8 CScriptGameObject::GetSlot() const
 {
     CInventoryItem* inventory_item = smart_cast<CInventoryItem*>(&object());
-    ASSERT_FMT(inventory_item, "[%s]: %s not an CInventoryItem", __FUNCTION__, object().Name());
+    ASSERT_FMT(inventory_item, "[%s]: %s not an CInventoryItem", std::source_location::current().function_name(), object().Name());
 
     return inventory_item->GetSlot();
 }
@@ -1258,7 +1260,7 @@ void CScriptGameObject::SetIIFlags(Flags16 flags)
 void CScriptGameObject::IterateBelt(sol::function function, sol::object object)
 {
     auto inventory_owner = smart_cast<CInventoryOwner*>(&this->object());
-    ASSERT_FMT(inventory_owner, "[%s]: %s not an CInventoryOwner", __FUNCTION__, this->object().Name());
+    ASSERT_FMT(inventory_owner, "[%s]: %s not an CInventoryOwner", std::source_location::current().function_name(), this->object().Name());
 
     for (const auto it : inventory_owner->inventory().m_belt)
     {
@@ -1270,7 +1272,7 @@ void CScriptGameObject::IterateBelt(sol::function function, sol::object object)
 void CScriptGameObject::IterateRuck(sol::function function, sol::object object)
 {
     auto inventory_owner = smart_cast<CInventoryOwner*>(&this->object());
-    ASSERT_FMT(inventory_owner, "[%s]: %s not an CInventoryOwner", __FUNCTION__, this->object().Name());
+    ASSERT_FMT(inventory_owner, "[%s]: %s not an CInventoryOwner", std::source_location::current().function_name(), this->object().Name());
 
     for (const auto it : inventory_owner->inventory().m_ruck)
     {

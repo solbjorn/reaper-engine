@@ -1,5 +1,7 @@
 #include "stdafx.h"
+
 #include "anomaly_detector.h"
+
 #include "../../CustomMonster.h"
 #include "../../restricted_object.h"
 #include "../../level.h"
@@ -7,9 +9,8 @@
 #include "../../movement_manager.h"
 #include "ai_monster_utils.h"
 
-CAnomalyDetector::CAnomalyDetector(CCustomMonster* monster) : m_object(monster) {}
-
-CAnomalyDetector::~CAnomalyDetector() {}
+CAnomalyDetector::CAnomalyDetector(CCustomMonster* monster) : m_object{monster} {}
+CAnomalyDetector::~CAnomalyDetector() = default;
 
 void CAnomalyDetector::load(LPCSTR section)
 {
@@ -102,7 +103,7 @@ void CAnomalyDetector::on_contact(CObject* obj)
 
     auto custom_zone = smart_cast<CCustomZone*>(obj);
 
-    ASSERT_FMT(custom_zone, "[%s]: %s not a CCUstomZone", __FUNCTION__, obj->cName().c_str());
+    ASSERT_FMT(custom_zone, "[%s]: %s not a CCUstomZone", std::source_location::current().function_name(), obj->cName().c_str());
 
     if (custom_zone->ZoneState() == CCustomZone::eZoneStateDisabled)
         return;

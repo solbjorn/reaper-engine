@@ -33,16 +33,16 @@ void PointerRegistryRelease(const void* ptr, const std::source_location& loc, co
         {
             if (search->second.is_class && !is_class)
             {
-                Msg("!![{}]Wrong release call [{}.{} ({})]! xr_free called for class ?. ID [{}]", __FUNCTION__, loc.file_name(), loc.line(),
-                    loc.function_name(), search->second.identity);
+                Msg("!![{}]Wrong release call [{}.{} ({})]! xr_free called for class ?. ID [{}]", std::source_location::current().function_name(),
+                    loc.file_name(), loc.line(), loc.function_name(), search->second.identity);
             }
 
             gPointerRegistry.erase(search);
         }
         else if (g_enable_double_free_check)
         {
-            Msg("!![{}] ptr [{}] not found in gPointerRegistry! Potential double-free! Called from: [{}.{} ({})]", __FUNCTION__, ptr, loc.file_name(),
-                loc.line(), loc.function_name());
+            Msg("!![{}] ptr [{}] not found in gPointerRegistry! Potential double-free! Called from: [{}.{} ({})]",
+                std::source_location::current().function_name(), ptr, loc.file_name(), loc.line(), loc.function_name());
         }
     }
 }

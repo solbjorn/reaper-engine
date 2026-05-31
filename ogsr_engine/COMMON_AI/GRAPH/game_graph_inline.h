@@ -59,7 +59,7 @@ IC float CGameGraph::distance(const _GRAPH_ID tGraphID0, const _GRAPH_ID tGraphI
             return (edge_weight(i));
 
     // TODO: KD: не всегда построенный путь для монстра валидный. Пока вывожу в лог и сбрасываю путь в вызвавшей функции.
-    Msg("!![{}] There is no way to get distance from vertex [{}] to vertex [{}]!!!", __FUNCTION__, tGraphID0, tGraphID1);
+    Msg("!![{}] There is no way to get distance from vertex [{}] to vertex [{}]!!!", std::source_location::current().function_name(), tGraphID0, tGraphID1);
 
     return (_GRAPH_ID(-1));
 }

@@ -159,7 +159,7 @@ void CPhraseDialog::Load(shared_str dialog_id)
 
             sol::function lua_function;
             const bool function_exists = ai().script_engine().function(data()->m_sInitFunction.c_str(), lua_function);
-            ASSERT_FMT_DBG(function_exists, "!![{}] Cannot find precondition [{}]", __FUNCTION__, data()->m_sInitFunction);
+            ASSERT_FMT_DBG(function_exists, "!![{}] Cannot find precondition [{}]", std::source_location::current().function_name(), data()->m_sInitFunction);
 
             if (function_exists)
                 lua_function(this);
@@ -200,7 +200,7 @@ void CPhraseDialog::load_shared(LPCSTR)
 
         sol::function lua_function;
         const bool function_exists = ai().script_engine().function(data()->m_sInitFunction.c_str(), lua_function);
-        ASSERT_FMT_DBG(function_exists, "!![{}] Cannot find precondition [{}]", __FUNCTION__, data()->m_sInitFunction);
+        ASSERT_FMT_DBG(function_exists, "!![{}] Cannot find precondition [{}]", std::source_location::current().function_name(), data()->m_sInitFunction);
 
         if (function_exists)
             lua_function(this);

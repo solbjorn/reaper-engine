@@ -690,7 +690,7 @@ tmc::task<bool> CWeapon::net_Spawn(CSE_Abstract* DC)
 
     if (m_ammoType >= m_ammoTypes.size())
     {
-        Msg("! [{}]: {}: wrong m_ammoType[{}/{}]", __FUNCTION__, cName(), m_ammoType, m_ammoTypes.size() - 1);
+        Msg("! [{}]: {}: wrong m_ammoType[{}/{}]", std::source_location::current().function_name(), cName(), m_ammoType, m_ammoTypes.size() - 1);
         m_ammoType = 0;
 
         auto se_obj = alife_object();
@@ -709,7 +709,7 @@ tmc::task<bool> CWeapon::net_Spawn(CSE_Abstract* DC)
         // что в конфиге размер магазина не нулевой.
         if (iMagazineSize && iAmmoElapsed > (iMagazineSize + 1))
         {
-            Msg("! [{}]: {}: wrong iAmmoElapsed[{}/{}]", __FUNCTION__, cName(), iAmmoElapsed, iMagazineSize);
+            Msg("! [{}]: {}: wrong iAmmoElapsed[{}/{}]", std::source_location::current().function_name(), cName(), iAmmoElapsed, iMagazineSize);
             iAmmoElapsed = iMagazineSize;
 
             auto se_obj = alife_object();
@@ -2198,7 +2198,7 @@ void CWeapon::SaveAttachableParams()
         pHudCfg.w_string(sect_name, "strap_orientation", buff);
     }
 
-    Msg("--[{}] data saved to [{}]", __FUNCTION__, pHudCfg.fname());
+    Msg("--[{}] data saved to [{}]", std::source_location::current().function_name(), pHudCfg.fname());
 }
 
 void CWeapon::UpdateVisualBullets()
@@ -2265,7 +2265,7 @@ void CWeapon::update_visual_bullet_textures(const bool forced)
         const auto textures = Device.m_pRender->GetResourceManager()->FindTexture(tex_name.c_str());
         if (textures.empty())
         {
-            Msg("!![{}] can't find texture [{}] for [{}]", __FUNCTION__, tex_name, cNameSect());
+            Msg("!![{}] can't find texture [{}] for [{}]", std::source_location::current().function_name(), tex_name, cNameSect());
             continue;
         }
 

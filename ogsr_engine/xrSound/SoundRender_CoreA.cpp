@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "soundrender_coreA.h"
+
 #include "soundrender_targetA.h"
 
 namespace soundSmoothingParams
@@ -175,7 +176,7 @@ bool CSoundRender_CoreA::init_context(const ALDeviceDesc& deviceDesc)
     // clear errors
     alGetError();
 
-    Msg("~[{}] OpenAL version: {}", __FUNCTION__, alGetString(AL_VERSION));
+    Msg("~[{}] OpenAL version: {}", std::source_location::current().function_name(), alGetString(AL_VERSION));
 
     return true;
 }
@@ -280,7 +281,7 @@ void CSoundRender_CoreA::_initialize(int stage)
     ALenum err = alGetError();
     if (err != AL_NO_ERROR)
     {
-        Msg("!![{}] OpenAL AL_STOP_SOURCES_ON_DISCONNECT_SOFT error: {}", __FUNCTION__, alGetString(err));
+        Msg("!![{}] OpenAL AL_STOP_SOURCES_ON_DISCONNECT_SOFT error: {}", std::source_location::current().function_name(), alGetString(err));
     }
 
     R_ASSERT(alIsExtensionPresent("AL_EXT_FLOAT32") || alIsExtensionPresent("AL_EXT_float32"),

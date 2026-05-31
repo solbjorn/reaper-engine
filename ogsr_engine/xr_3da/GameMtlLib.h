@@ -226,7 +226,7 @@ public:
         }
         else
         {
-            Msg("!![{}] material id [{}] not found!", __FUNCTION__, ID);
+            Msg("!![{}] material id [{}] not found!", std::source_location::current().function_name(), ID);
             return 0;
         }
     }
@@ -239,7 +239,7 @@ public:
         }
         else
         {
-            Msg("!![{}] material name [{}] not found!", __FUNCTION__, name);
+            Msg("!![{}] material name [{}] not found!", std::source_location::current().function_name(), name);
             return 0;
         }
     }
@@ -251,7 +251,7 @@ public:
         }
         else
         {
-            Msg("!![{}] material id [{}] not found!", __FUNCTION__, idx);
+            Msg("!![{}] material id [{}] not found!", std::source_location::current().function_name(), idx);
             return materials.front();
         }
     }

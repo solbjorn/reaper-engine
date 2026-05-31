@@ -1,6 +1,6 @@
 #pragma once
 
-#define DEBUG_INFO __FILE__, __LINE__, __FUNCTION__
+#define DEBUG_INFO std::source_location::current().file_name(), std::source_location::current().line(), std::source_location::current().function_name()
 
 // KRodin: Добавил ASSERT как в скриптах, с поддержкой форматирования строки и неограниченным кол-вом аргументов.
 #define FATAL(...) ::Debug.fatal(DEBUG_INFO, ##__VA_ARGS__)

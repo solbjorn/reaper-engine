@@ -92,8 +92,9 @@ void CAttachmentOwner::attach(CInventoryItem* inventory_item)
         if (m_attached_objects.empty())
             game_object->add_visual_callback(AttachmentCallback);
         const u16 bone_id = smart_cast<IKinematics*>(game_object->Visual())->LL_BoneID(attachable_item->bone_name());
-        ASSERT_FMT(bone_id != BI_NONE, "!![%s] attach_bone_name [%s] in section [%s] not found in game object [%s] with visual [%s]", __FUNCTION__,
-                   attachable_item->bone_name().c_str(), smart_cast<CGameObject*>(inventory_item)->cNameSect().c_str(), game_object->cNameSect().c_str(),
+        ASSERT_FMT(bone_id != BI_NONE, "!![%s] attach_bone_name [%s] in section [%s] not found in game object [%s] with visual [%s]",
+                   std::source_location::current().function_name(), attachable_item->bone_name().c_str(),
+                   smart_cast<CGameObject*>(inventory_item)->cNameSect().c_str(), game_object->cNameSect().c_str(),
                    game_object->Visual()->getDebugName().c_str());
         attachable_item->set_bone_id(bone_id);
         m_attached_objects.push_back(smart_cast<CAttachableItem*>(inventory_item));

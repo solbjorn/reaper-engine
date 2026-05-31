@@ -117,7 +117,7 @@ tmc::task<void> CGameObject::net_Destroy()
 
     VERIFY(m_spawned);
     if (!m_spawned)
-        Msg("!![{}] Already destroyed object detected: [{}]", __FUNCTION__, this->cName());
+        Msg("!![{}] Already destroyed object detected: [{}]", std::source_location::current().function_name(), this->cName());
 
     if (animation_movement_controlled())
         destroy_anim_mov_ctrl();
@@ -197,7 +197,7 @@ tmc::task<void> CGameObject::OnEvent(NET_Packet& P, u16 type)
                 Device.dwFrame);
 
         if (!Level().is_removing_objects())
-            ASSERT_FMT(ID() != 0, "![%s] cannot destory actor!", __FUNCTION__);
+            ASSERT_FMT(ID() != 0, "![%s] cannot destory actor!", std::source_location::current().function_name());
 
         setDestroy(TRUE);
     }
@@ -213,7 +213,7 @@ tmc::task<bool> CGameObject::net_Spawn(CSE_Abstract* DC)
 {
     VERIFY(!m_spawned);
     if (m_spawned)
-        Msg("!![{}] Already spawned object detected: [{}]", __FUNCTION__, this->cName());
+        Msg("!![{}] Already spawned object detected: [{}]", std::source_location::current().function_name(), this->cName());
 
     m_spawned = true;
     m_spawn_time = Device.dwFrame;
@@ -256,11 +256,13 @@ tmc::task<bool> CGameObject::net_Spawn(CSE_Abstract* DC)
             if (keep_visual)
             {
                 if (std::is_neq(xr_strcmp(config_visual_file, saved_visual_file)))
-                    Msg("! [{}]: changed visual_name[{}] found in {}, keep original {} instead", __FUNCTION__, saved_visual, cName(), config_visual);
+                    Msg("! [{}]: changed visual_name[{}] found in {}, keep original {} instead", std::source_location::current().function_name(), saved_visual,
+                        cName(), config_visual);
             }
             else if (!FS.exist(saved_visual) && !FS.exist("$level$", saved_visual_file) && !FS.exist("$game_meshes$", saved_visual_file))
             {
-                Msg("! [{}]: visual_name[{}] not found in {}, keep original {} instead", __FUNCTION__, saved_visual, cName(), config_visual);
+                Msg("! [{}]: visual_name[{}] not found in {}, keep original {} instead", std::source_location::current().function_name(), saved_visual, cName(),
+                    config_visual);
             }
             else
             {
@@ -374,8 +376,8 @@ tmc::task<bool> CGameObject::net_Spawn(CSE_Abstract* DC)
             if (!_valid(Position()))
             {
                 Fvector vertex_pos = ai().level_graph().vertex_position(ai_location().level_vertex_id());
-                Msg("! [{}]: {} has invalid Position[{},{},{}] level_vertex_id[{}][{},{},{}]", __FUNCTION__, cName(), Position().x, Position().y, Position().z,
-                    ai_location().level_vertex_id(), vertex_pos.x, vertex_pos.y, vertex_pos.z);
+                Msg("! [{}]: {} has invalid Position[{},{},{}] level_vertex_id[{}][{},{},{}]", std::source_location::current().function_name(), cName(),
+                    Position().x, Position().y, Position().z, ai_location().level_vertex_id(), vertex_pos.x, vertex_pos.y, vertex_pos.z);
 
                 Position().set(vertex_pos);
                 auto se_obj = alife_object();
@@ -776,7 +778,7 @@ CScriptGameObject* CGameObject::lua_game_object() const
 {
     if (!m_spawned)
     {
-        Msg("!! [{}] you are trying to use a destroyed object name=[{}] getDestroy={}", __FUNCTION__, cName(), getDestroy());
+        Msg("!! [{}] you are trying to use a destroyed object name=[{}] getDestroy={}", std::source_location::current().function_name(), cName(), getDestroy());
         LogStackTrace("!!stack trace:\n", false);
     }
 
@@ -853,7 +855,7 @@ u32 CGameObject::ef_weapon_type() const
     CLSID2TEXT(CLS_ID, temp);
 
     R_ASSERT3(false, "Invalid weapon type request, virtual function is not properly overridden!", temp);
-    Msg("!![{}] Invalid weapon type request, virtual function is not properly overridden [{}] ", __FUNCTION__, temp);
+    Msg("!![{}] Invalid weapon type request, virtual function is not properly overridden [{}] ", std::source_location::current().function_name(), temp);
 
     return u32(-1);
 }

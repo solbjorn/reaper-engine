@@ -183,7 +183,7 @@ CModelPool::CModelPool()
 
         if (F->elapsed() >= gsl::index{sizeof(u8)} && F->r_u8() == 0)
         {
-            Msg("!![{}] file [{}] broken!", __FUNCTION__, fname);
+            Msg("!![{}] file [{}] broken!", std::source_location::current().function_name(), fname);
 
             FS.r_close(F);
             FS.file_delete(fname);
@@ -450,7 +450,7 @@ void CModelPool::Prefetch()
                 }
                 else
                 {
-                    Msg("! [{}]: {} not found in $game_meshes$", __FUNCTION__, fname);
+                    Msg("! [{}]: {} not found in $game_meshes$", std::source_location::current().function_name(), fname);
                 }
             }
         }
@@ -459,7 +459,7 @@ void CModelPool::Prefetch()
 
     if (!vis_prefetch_ini || !vis_prefetch_ini->section_exist("prefetch"))
     {
-        Msg("[{}] models prefetching time ({}): [{:.3} s.]", __FUNCTION__, cnt, timer.GetElapsed_sec());
+        Msg("[{}] models prefetching time ({}): [{:.3} s.]", std::source_location::current().function_name(), cnt, timer.GetElapsed_sec());
         return;
     }
 
@@ -484,7 +484,7 @@ void CModelPool::Prefetch()
             }
             else
             {
-                Msg("! [{}]: {} not found in $game_meshes$", __FUNCTION__, fname);
+                Msg("! [{}]: {} not found in $game_meshes$", std::source_location::current().function_name(), fname);
             }
         }
     }
@@ -492,7 +492,7 @@ void CModelPool::Prefetch()
     now_prefetch2 = false;
     Logging(TRUE);
 
-    Msg("[{}] models prefetching time ({}): [{:.3} s.]", __FUNCTION__, cnt, timer.GetElapsed_sec());
+    Msg("[{}] models prefetching time ({}): [{:.3} s.]", std::source_location::current().function_name(), cnt, timer.GetElapsed_sec());
 }
 
 void CModelPool::ClearPool(BOOL b_complete)

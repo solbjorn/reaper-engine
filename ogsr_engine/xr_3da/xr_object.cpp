@@ -100,17 +100,17 @@ void CObject::setVisible(BOOL _visible)
 
 void CObject::Center(Fvector& C) const
 {
-    ASSERT_FMT(renderable.visual, "[%s]: %s[%u] has no renderable.visual", __FUNCTION__, cName().c_str(), ID());
+    ASSERT_FMT(renderable.visual, "[%s]: %s[%u] has no renderable.visual", std::source_location::current().function_name(), cName().c_str(), ID());
     renderable.xform.transform_tiny(C, renderable.visual->getVisData().sphere.P);
 }
 float CObject::Radius() const
 {
-    ASSERT_FMT(renderable.visual, "[%s]: %s[%u] has no renderable.visual", __FUNCTION__, cName().c_str(), ID());
+    ASSERT_FMT(renderable.visual, "[%s]: %s[%u] has no renderable.visual", std::source_location::current().function_name(), cName().c_str(), ID());
     return renderable.visual->getVisData().sphere.R;
 }
 const Fbox& CObject::BoundingBox() const
 {
-    ASSERT_FMT(renderable.visual, "[%s]: %s[%u] has no renderable.visual", __FUNCTION__, cName().c_str(), ID());
+    ASSERT_FMT(renderable.visual, "[%s]: %s[%u] has no renderable.visual", std::source_location::current().function_name(), cName().c_str(), ID());
     return renderable.visual->getVisData().box;
 }
 
@@ -166,7 +166,7 @@ tmc::task<bool> CObject::net_Spawn(CSE_Abstract*)
     if (!Visual() && pSettings->line_exist(cNameSect(), "visual"))
     {
         gsl::czstring visual_name = pSettings->r_string(cNameSect(), "visual");
-        Msg("! [{}]: zero Visual() in {} found, use {} instead", __FUNCTION__, cName(), visual_name);
+        Msg("! [{}]: zero Visual() in {} found, use {} instead", std::source_location::current().function_name(), cName(), visual_name);
         cNameVisual_set(shared_str{visual_name});
     }
 

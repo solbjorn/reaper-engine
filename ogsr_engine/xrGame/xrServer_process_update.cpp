@@ -88,8 +88,8 @@ void xrServer::Process_save(NET_Packet& P, ClientID sender)
 
         if (_size != (_pos_end - _pos_start))
         {
-            Msg("!![{}] load/save mismatch, object: [{}], size: [{}], _pos_end-_pos_start: [{}], ID_to_entity(ID) is [{}]", __FUNCTION__,
-                E ? E->name_replace() : "unknown", _size, _pos_end - _pos_start, E ? "true" : "false");
+            Msg("!![{}] load/save mismatch, object: [{}], size: [{}], _pos_end-_pos_start: [{}], ID_to_entity(ID) is [{}]",
+                std::source_location::current().function_name(), E ? E->name_replace() : "unknown", _size, _pos_end - _pos_start, E ? "true" : "false");
 
             s32 _rollback = _pos_start + _size;
             P.r_seek(_rollback);

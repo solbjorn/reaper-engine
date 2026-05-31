@@ -82,7 +82,7 @@ IReader* open_chunk(void* ptr, u32 ID, gsl::czstring archiveName, s64 archiveSiz
                     g_trivial_encryptor.decode(src_data, dwSize, src_data, gsl::narrow<trivial_encryptor::key_flag>(key - 1));
 
                 bool result = _decompressLZ(&dest, &dest_sz, src_data, dwSize, archiveSize);
-                CHECK_OR_EXIT(result, xr::format("[{}] Can't decompress archive [{}]", __FUNCTION__, archiveName));
+                CHECK_OR_EXIT(result, xr::format("[{}] Can't decompress archive [{}]", std::source_location::current().function_name(), archiveName));
                 xr_free(src_data);
 
                 return xr_new<CTempReader>(dest, dest_sz, 0z);

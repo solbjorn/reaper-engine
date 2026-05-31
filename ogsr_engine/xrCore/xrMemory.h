@@ -3,9 +3,6 @@
 // #define USE_MEMORY_VALIDATOR
 
 #ifdef USE_MEMORY_VALIDATOR
-
-#include <source_location>
-
 #include "xrMemoryDebug.h"
 
 extern BOOL g_enable_memory_debug;
@@ -85,8 +82,8 @@ template <typename T>
 
     if (g_enable_memory_debug)
     {
-        std::string id = std::string{is_container ? "xr_allocator: " : "xr_alloc: "} + loc.file_name() + "." + std::to_string(loc.line()) + ": " + loc.function_name() + " (" +
-            typeid(T).name() + ")";
+        std::string id = std::string{is_container ? "xr_allocator: " : "xr_alloc: "} + loc.file_name() + "." + std::to_string(loc.line()) + ": " +
+            loc.function_name() + " (" + typeid(T).name() + ")";
         PointerRegistryAdd(ptr, {std::move(id), loc.line(), false, is_container, count * sizeof(T)});
     }
 
@@ -110,7 +107,8 @@ void registerClass(T* ptr, const std::source_location& loc)
 {
     if (g_enable_memory_debug)
     {
-        std::string id = std::string{"xr_new: "} + loc.file_name() + "." + std::to_string(loc.line()) + ": " + loc.function_name() + " (" + typeid(T).name() + ")";
+        std::string id =
+            std::string{"xr_new: "} + loc.file_name() + "." + std::to_string(loc.line()) + ": " + loc.function_name() + " (" + typeid(T).name() + ")";
         PointerRegistryAdd(ptr, {std::move(id), loc.line(), true, false, sizeof(T)});
     }
 }
@@ -152,7 +150,8 @@ template <typename T, typename A0, typename A1>
 }
 
 template <typename T, typename A0, typename A1, typename A2>
-[[gnu::returns_nonnull]] [[nodiscard]] XR_RESTRICT constexpr T* xr_new(A0&& a0, A1&& a1, A2&& a2, const std::source_location& loc = std::source_location::current())
+[[gnu::returns_nonnull]] [[nodiscard]] XR_RESTRICT constexpr T* xr_new(A0&& a0, A1&& a1, A2&& a2,
+                                                                       const std::source_location& loc = std::source_location::current())
 {
     if (std::is_constant_evaluated())
         return new T{std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2)};
@@ -164,7 +163,8 @@ template <typename T, typename A0, typename A1, typename A2>
 }
 
 template <typename T, typename A0, typename A1, typename A2, typename A3>
-[[gnu::returns_nonnull]] [[nodiscard]] XR_RESTRICT constexpr T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, const std::source_location& loc = std::source_location::current())
+[[gnu::returns_nonnull]] [[nodiscard]] XR_RESTRICT constexpr T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3,
+                                                                       const std::source_location& loc = std::source_location::current())
 {
     if (std::is_constant_evaluated())
         return new T{std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3)};

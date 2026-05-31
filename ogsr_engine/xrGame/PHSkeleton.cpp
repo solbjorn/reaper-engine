@@ -305,14 +305,14 @@ void CPHSkeleton::RestoreNetState(CSE_PHSkeleton* /*po*/)
         }
         else
         {
-            MsgDbg("! [{}]: [{}] skip load of bone state due to single root bone with fixed position. Visual[{}]", __FUNCTION__, obj->Name_script(),
-                   obj->cNameVisual());
+            MsgDbg("! [{}]: [{}] skip load of bone state due to single root bone with fixed position. Visual[{}]",
+                   std::source_location::current().function_name(), obj->Name_script(), obj->cNameVisual());
         }
     }
     else
     {
-        MsgDbg("~ [{}]: [{}] has different state in saved_bones[{}] PHGetSyncItemsNumber[{}] Visual[{}] alive[{}]", __FUNCTION__, obj->Name_script(),
-               saved_bones.size(), obj->PHGetSyncItemsNumber(), obj->cNameVisual(),
+        MsgDbg("~ [{}]: [{}] has different state in saved_bones[{}] PHGetSyncItemsNumber[{}] Visual[{}] alive[{}]",
+               std::source_location::current().function_name(), obj->Name_script(), saved_bones.size(), obj->PHGetSyncItemsNumber(), obj->cNameVisual(),
                (obj->cast_entity_alive() && obj->cast_entity_alive()->conditions().GetHealth() > 0.f) ? "yes" : "no");
     }
 
@@ -513,7 +513,7 @@ void CPHSkeleton::SyncNetState()
         m_flags.set(CSE_PHSkeleton::flActive, obj->PPhysicsShell()->isEnabled());
 
     auto po = smart_cast<CSE_PHSkeleton*>(se_obj);
-    ASSERT_FMT(po, "[%s]: %s is not CSE_PHSkeleton", __FUNCTION__, obj->Name_script());
+    ASSERT_FMT(po, "[%s]: %s is not CSE_PHSkeleton", std::source_location::current().function_name(), obj->Name_script());
     po->_flags.assign(m_flags.get());
 
     auto& saved_bones = po->saved_bones;

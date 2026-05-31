@@ -160,7 +160,8 @@ const CPatrolPath* CPatrolPathStorage::safe_path(shared_str patrol_name, bool no
                 u32 prev_vertex_id = pp.m_level_vertex_id;
                 pp.m_level_vertex_id = ai().level_graph().nearest_vertex_id(pp.m_position);
 
-                Msg("* [{}]: path[{}] pp[{}] level_vertex_id[{}] -> {}", __FUNCTION__, patrol_name, pp.m_name, prev_vertex_id, pp.m_level_vertex_id);
+                Msg("* [{}]: path[{}] pp[{}] level_vertex_id[{}] -> {}", std::source_location::current().function_name(), patrol_name, pp.m_name,
+                    prev_vertex_id, pp.m_level_vertex_id);
             }
         }
         else

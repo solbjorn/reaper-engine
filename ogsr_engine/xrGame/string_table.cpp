@@ -89,7 +89,7 @@ tmc::task<void> CStringTable::Load(gsl::czstring xml_file)
         co_await pDataMutex;
 
         if (WriteErrorsToLog && pData->m_StringTable.contains(string_name))
-            Msg("!![{}] duplicate string table id: [{}]", __FUNCTION__, string_name);
+            Msg("!![{}] duplicate string table id: [{}]", std::source_location::current().function_name(), string_name);
 
         pData->m_StringTable[string_name] = std::move(ret.first);
         if (ret.second)
@@ -177,7 +177,7 @@ STRING_VALUE CStringTable::translate(const STRING_ID& str_id)
     if (const auto item = pData->m_StringTable.find(str_id); item == pData->m_StringTable.end())
     {
         if (WriteErrorsToLog)
-            Msg("!![{}] [{}] has no entry!", __FUNCTION__, str_id);
+            Msg("!![{}] [{}] has no entry!", std::source_location::current().function_name(), str_id);
     }
     else
     {

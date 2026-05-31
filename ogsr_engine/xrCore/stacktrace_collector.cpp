@@ -66,7 +66,8 @@ std::string BuildStackTrace(const char* header, PCONTEXT threadCtx)
     if (!InitializeSymbolEngine())
     {
         const auto LastErr = GetLastError();
-        traceResult << "[" << __FUNCTION__ << "] InitializeSymbolEngine failed with error: [" << LastErr << "], descr: [" << Debug.error2string(LastErr) << "]";
+        traceResult << "[" << std::source_location::current().function_name() << "] InitializeSymbolEngine failed with error: [" << LastErr << "], descr: ["
+                    << Debug.error2string(LastErr) << "]";
         return traceResult.str();
     }
 
@@ -91,7 +92,8 @@ std::string BuildStackTrace(const char* header, PCONTEXT threadCtx)
     u16 count_frames = 0;
     while (count_frames++ <= maxFramesCount)
     {
-        BOOL result = StackWalk(MACHINE_TYPE, GetCurrentProcess(), GetCurrentThread(), lpstackFrame, threadCtx, nullptr, SymFunctionTableAccess, SymGetModuleBase, nullptr);
+        BOOL result = StackWalk(MACHINE_TYPE, GetCurrentProcess(), GetCurrentThread(), lpstackFrame, threadCtx, nullptr, SymFunctionTableAccess,
+                                SymGetModuleBase, nullptr);
 
         if (!result || lpstackFrame->AddrPC.Offset == 0)
             break;

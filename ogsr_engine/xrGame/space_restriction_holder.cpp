@@ -139,7 +139,8 @@ void CSpaceRestrictionHolder::register_restrictor(CSpaceRestrictor* space_restri
     CSpaceRestrictionShape* shape = xr_new<CSpaceRestrictionShape>(space_restrictor, restrictor_type != RestrictionSpace::eDefaultRestrictorTypeNone);
     if (shape->border().empty())
     {
-        Msg("* [{}]: change restrictor_type of {} to eRestrictorTypeNone because border().empty()", __FUNCTION__, space_restrictor->cName());
+        Msg("* [{}]: change restrictor_type of {} to eRestrictorTypeNone because border().empty()", std::source_location::current().function_name(),
+            space_restrictor->cName());
 
         space_restrictor->change_restrictor_type(RestrictionSpace::eRestrictorTypeNone);
         xr_delete(shape);
@@ -195,7 +196,7 @@ void CSpaceRestrictionHolder::unregister_restrictor(CSpaceRestrictor* space_rest
     shared_str restrictor_id = space_restrictor->cName();
 
     auto I = m_restrictions.find(restrictor_id);
-    ASSERT_FMT(I != m_restrictions.end(), "!![%s] restrictor [%s] not found!", __FUNCTION__, restrictor_id.c_str());
+    ASSERT_FMT(I != m_restrictions.end(), "!![%s] restrictor [%s] not found!", std::source_location::current().function_name(), restrictor_id.c_str());
 
     CSpaceRestrictionBridge* bridge = (*I).second;
     m_restrictions.erase(I);
