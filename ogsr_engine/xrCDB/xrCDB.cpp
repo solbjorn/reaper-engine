@@ -149,13 +149,21 @@ void MODEL::serialize_tree(IWriter* stream) const
     const model_end_hdr hdr = {
         .model_code = tree->GetModelCode(),
         .nodes_num = nodes_num,
-        .nodes = u64{reinterpret_cast<uintptr_t>(root)},
+        .nodes = u64{std::bit_cast<uintptr_t>(root)},
         .nodes_xxh = xxh::XXH3_64bits(root, size),
         .pad = 0,
     };
 
+    // new () is aligned to 16, but new[] () is not as it stores the number of elements
+    // at the beginning, so that the first element is always located at 16 * N + 8.
+    // Copy the whole storage including the hidden "header" to be able to use inline
+    // AVX memory copy when deserializing.
+    const auto start = &reinterpret_cast<const size_t*>(root)[-1];
+    R_ASSERT(std::is_sufficiently_aligned<16>(start));
+    R_ASSERT(*start == nodes_num);
+
     stream->w(&hdr, sizeof(hdr));
-    stream->w(root, gsl::narrow_cast<gsl::index>(size));
+    stream->w(start, gsl::narrow_cast<gsl::index>(xr::roundup(sizeof(*start) + size, 16uz)));
 }
 
 bool MODEL::serialize(const char* file, u64 xxh, serialize_callback callback) const
@@ -200,7 +208,12 @@ bool MODEL::deserialize_tree(IReader* stream)
 
     auto nodes = std::make_unique_for_overwrite<AABBNoLeafNode[]>(hdr.nodes_num);
     const auto size = hdr.nodes_num * sizeof(AABBNoLeafNode);
-    std::memcpy(static_cast<void*>(&nodes[0]), stream->pointer(), size);
+
+    auto start = &reinterpret_cast<size_t*>(&nodes[0])[-1];
+    R_ASSERT(std::is_sufficiently_aligned<16>(start));
+    R_ASSERT(*start == hdr.nodes_num);
+
+    xr_memcpy128(start, stream->pointer(), xr::roundup(sizeof(*start) + size, 16uz));
 
     if (xxh::XXH3_64bits(&nodes[0], size) != hdr.nodes_xxh)
         return false;
@@ -210,13 +223,13 @@ bool MODEL::deserialize_tree(IReader* stream)
         if (!node.HasPosLeaf())
         {
             node.mPosData -= hdr.nodes;
-            node.mPosData += reinterpret_cast<uintptr_t>(&nodes[0]);
+            node.mPosData += std::bit_cast<uintptr_t>(&nodes[0]);
         }
 
         if (!node.HasNegLeaf())
         {
             node.mNegData -= hdr.nodes;
-            node.mNegData += reinterpret_cast<uintptr_t>(&nodes[0]);
+            node.mNegData += std::bit_cast<uintptr_t>(&nodes[0]);
         }
     }
 
