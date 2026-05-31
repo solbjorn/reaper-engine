@@ -45,13 +45,13 @@
 	url = https://github.com/solbjorn/SFML.git
 [submodule "3rd_party/Src/Xiph/flac/flac"]
 	path = 3rd_party/Src/Xiph/flac/flac
-	url = https://github.com/xiph/flac.git
+	url = https://github.com/solbjorn/flac.git
 [submodule "3rd_party/Src/Xiph/ogg/ogg"]
 	path = 3rd_party/Src/Xiph/ogg/ogg
 	url = https://github.com/xiph/ogg.git
 [submodule "3rd_party/Src/Xiph/opus/opus"]
 	path = 3rd_party/Src/Xiph/opus/opus
-	url = https://github.com/xiph/opus.git
+	url = https://github.com/solbjorn/opus.git
 [submodule "3rd_party/Src/Xiph/theora/theora"]
 	path = 3rd_party/Src/Xiph/theora/theora
 	url = https://github.com/xiph/theora.git
@@ -64,7 +64,8 @@
 	url = https://github.com/libarchive/libarchive.git
 [submodule "3rd_party/Src/archiving/dwarfs/dwarfs"]
 	path = 3rd_party/Src/archiving/dwarfs/dwarfs
-	url = https://github.com/mhx/dwarfs.git
+	url = https://github.com/hellobertrand/dwarfs.git
+	branch = zxc-compressor
 [submodule "3rd_party/Src/archiving/minizip/minizip-ng"]
 	path = 3rd_party/Src/archiving/minizip/minizip-ng
 	url = https://github.com/zlib-ng/minizip-ng.git
@@ -115,7 +116,7 @@
 	url = https://github.com/google/re2.git
 [submodule "3rd_party/Src/formatting/scn/scnlib"]
 	path = 3rd_party/Src/formatting/scn/scnlib
-	url = https://github.com/eliaskosunen/scnlib.git
+	url = https://github.com/solbjorn/scnlib.git
 [submodule "3rd_party/Src/i18n/SheenBidi/SheenBidi"]
 	path = 3rd_party/Src/i18n/SheenBidi/SheenBidi
 	url = https://github.com/Tehreer/SheenBidi.git
