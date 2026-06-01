@@ -33,7 +33,7 @@ extern Fvector4 ps_ssfx_florafixes_2;
 extern Fvector4 ps_ssfx_wetsurfaces_1;
 extern Fvector4 ps_ssfx_wetsurfaces_2;
 
-extern int ps_ssfx_is_underground;
+extern bool ps_ssfx_is_underground;
 extern Fvector4 ps_ssfx_lightsetup_1;
 extern Fvector4 ps_ssfx_hud_drops_1;
 extern Fvector4 ps_ssfx_hud_drops_2;
@@ -43,12 +43,11 @@ extern Fvector4 ps_ssfx_wpn_dof_1;
 extern float ps_ssfx_wpn_dof_2;
 
 extern Fvector4 ps_ssfx_rain_drops_setup;
-extern int ps_ssfx_terrain_grass_align;
-extern int ps_ssfx_terrain_pom_refine;
-extern int ps_ssfx_pom_refine;
-extern int ps_ssfx_terrain_grass_align;
+extern bool ps_ssfx_terrain_pom_refine;
+extern bool ps_ssfx_pom_refine;
+extern bool ps_ssfx_terrain_grass_align;
 extern float ps_ssfx_terrain_grass_slope;
-extern int ps_ssfx_bloom_use_presets;
+extern bool ps_ssfx_bloom_use_presets;
 extern Fvector4 ps_ssfx_bloom_2;
 extern Fvector4 ps_ssfx_sss_quality;
 extern Fvector4 ps_ssfx_sss;
@@ -148,7 +147,7 @@ extern float ps_r2_ssaLOD_B;
 // R2-specific
 extern Flags32 ps_r2_ls_flags; // r2-only
 extern Flags32 ps_r2_ls_flags_ext;
-extern BOOL ps_no_scale_on_fade;
+extern bool ps_no_scale_on_fade;
 extern float ps_r2_df_parallax_h; // r2-only
 extern float ps_r2_df_parallax_range; // r2-only
 extern float ps_r2_tonemap_middlegray; // r2-only

@@ -912,10 +912,10 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
     sprintf_s(c_ssfx_ao, "%d", u8(std::min(std::max(ps_ssfx_ao_quality, 2), 8)));
     defines.emplace_back("SSFX_AO_QUALITY", c_ssfx_ao);
 
-    sprintf_s(c_ssfx_pom_refine, "%d", u8(std::min(std::max(ps_ssfx_pom_refine, 0), 1)));
+    sprintf_s(c_ssfx_pom_refine, "%d", ps_ssfx_pom_refine ? 1 : 0);
     defines.emplace_back("SSFX_POM_REFINE", c_ssfx_pom_refine);
 
-    sprintf_s(c_ssfx_terrain_pom_refine, "%d", u8(std::min(std::max(ps_ssfx_terrain_pom_refine, 0), 1)));
+    sprintf_s(c_ssfx_terrain_pom_refine, "%d", ps_ssfx_terrain_pom_refine ? 1 : 0);
     defines.emplace_back("SSFX_TERRA_POM_REFINE", c_ssfx_terrain_pom_refine);
 
     sprintf_s(c_ssfx_sss_dir_quality, "%d", u8(std::min(std::max((int)ps_ssfx_sss_quality.x, 1), 24)));

@@ -4,7 +4,7 @@
 
 #include "blenders\blender.h"
 
-BOOL bShadersXrExport{};
+bool bShadersXrExport{false};
 
 void CResourceManager::OnDeviceDestroy(BOOL)
 {

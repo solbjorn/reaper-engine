@@ -23,7 +23,7 @@
 //////////////CPHMesh///////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 
-BOOL g_bDebugDumpPhysicsStep = 0;
+bool g_bDebugDumpPhysicsStep{false};
 
 void CPHMesh ::Create(dSpaceID space) { Geom = dCreateTriList(space, nullptr, nullptr); }
 

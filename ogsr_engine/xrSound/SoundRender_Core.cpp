@@ -15,7 +15,7 @@ XR_DIAG_IGNORE("-Wmissing-variable-declarations");
 
 XR_DIAG_POP();
 
-BOOL bSenvironmentXrExport{};
+bool bSenvironmentXrExport{false};
 int psSoundTargets = 256; // 512; //--#SM+#-- //32;
 Flags32 psSoundFlags{};
 

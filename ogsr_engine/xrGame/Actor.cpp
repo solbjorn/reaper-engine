@@ -1189,10 +1189,6 @@ void CActor::g_PerformDrop()
     pItem->SetDropManual(TRUE);
 }
 
-#ifdef DEBUG
-extern BOOL g_ShowAnimationInfo;
-#endif // DEBUG
-
 // HUD
 void CActor::OnHUDDraw(ctx_id_t context_id, CCustomHUD*, IRenderable* root) { g_player_hud->render_hud(context_id, root); }
 

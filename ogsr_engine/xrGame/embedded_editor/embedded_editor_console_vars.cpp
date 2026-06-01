@@ -51,12 +51,7 @@ void ShowConsoleVars(bool& show)
             const auto max = std::clamp(_float->max, -std::numeric_limits<f32>::max() / 2.0f, std::numeric_limits<f32>::max() / 2.0f);
 
             if (ImGui::DragFloat(_float->Name(), &test, drag_intensity, min, max))
-            {
-                string32 String;
-                xr_sprintf(String, "%3.5f", test);
-
-                _float->Execute(String);
-            }
+                _float->Execute(xr::format("{}", test));
 
             continue;
         }
@@ -66,12 +61,7 @@ void ShowConsoleVars(bool& show)
             s32 test = _int->GetValue();
 
             if (ImGui::SliderInt(_int->Name(), &test, _int->min, _int->max))
-            {
-                string32 String;
-                xr_sprintf(String, "%i", test);
-
-                _int->Execute(String);
-            }
+                _int->Execute(xr::format("{}", test));
 
             continue;
         }
@@ -79,7 +69,7 @@ void ShowConsoleVars(bool& show)
         if (auto token = smart_cast<CCC_Token*>(Command); token == smart_cast<void*>(Command))
         {
             const xr_token* tok = token->GetToken();
-            const auto curr = *token->value;
+            const auto curr = token->value;
             gsl::czstring Value = "?";
 
             while (tok->name != nullptr)
@@ -118,12 +108,7 @@ void ShowConsoleVars(bool& show)
             const auto max = std::clamp(vector->max.x, -std::numeric_limits<f32>::max() / 2.0f, std::numeric_limits<f32>::max() / 2.0f);
 
             if (ImGui::DragFloat3(vector->Name(), &Val[0], drag_intensity, min, max))
-            {
-                string64 str;
-                xr_sprintf(str, "(%f, %f, %f)", Val.x, Val.y, Val.z);
-
-                vector->Execute(str);
-            }
+                vector->Execute(xr::format("{}", Val));
 
             continue;
         }
@@ -135,12 +120,7 @@ void ShowConsoleVars(bool& show)
             const auto max = std::clamp(vector->max.x, -std::numeric_limits<f32>::max() / 2.0f, std::numeric_limits<f32>::max() / 2.0f);
 
             if (ImGui::DragFloat4(vector->Name(), &Val[0], drag_intensity, min, max))
-            {
-                string128 str;
-                xr_sprintf(str, "(%f, %f, %f, %f)", Val.x, Val.y, Val.z, Val.w);
-
-                vector->Execute(str);
-            }
+                vector->Execute(xr::format("{}", Val));
         }
     }
 }

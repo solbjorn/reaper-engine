@@ -46,7 +46,7 @@ char const* const ioc_prompt = ">>> ";
 extern char const* const ch_cursor;
 char const* const ch_cursor = "_";
 
-BOOL g_console_show_always = FALSE;
+bool g_console_show_always{false};
 
 static inline void split_cmd(const std::string& str, std::string& out1, std::string& out2)
 {
@@ -177,8 +177,7 @@ void CConsole::AddCommand(IConsole_Command* cc) { Commands[cc->Name()] = cc; }
 
 void CConsole::RemoveCommand(IConsole_Command* cc)
 {
-    auto it = Commands.find(cc->Name());
-    if (Commands.end() != it)
+    if (auto it = Commands.find(cc->Name()); it != Commands.end())
         Commands.erase(it);
 }
 

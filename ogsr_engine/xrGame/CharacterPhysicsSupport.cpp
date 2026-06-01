@@ -312,10 +312,10 @@ void CCharacterPhysicsSupport::in_shedule_Update(u32 DT)
 #ifdef DEBUG
 string64 sdbg_stalker_death_anim = "none";
 LPSTR dbg_stalker_death_anim = sdbg_stalker_death_anim;
-BOOL b_death_anim_velocity = TRUE;
+bool b_death_anim_velocity{true};
 #endif
 
-BOOL g_bCopDeathAnim = TRUE;
+bool g_bCopDeathAnim{true};
 
 const float cmp_angle = M_PI / 10.f;
 const float cmp_ldisp = 0.1f;

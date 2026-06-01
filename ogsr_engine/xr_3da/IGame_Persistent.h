@@ -67,14 +67,17 @@ public:
     };
 
     void GrassBendersUpdateAnimations();
-    void GrassBendersAddExplosion(const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity, const float radius);
-    void GrassBendersAddShot(const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity, const float radius);
+    void GrassBendersAddExplosion(const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity,
+                                  const float radius);
+    void GrassBendersAddShot(const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity,
+                             const float radius);
     void GrassBendersRemoveById(const u16 id);
     void GrassBendersRemoveByIndex(size_t& idx);
-    void GrassBendersUpdate(const u16 id, size_t& data_idx, u32& data_frame, const Fvector& position, const float init_radius, const float init_str, bool CheckDistance);
+    void GrassBendersUpdate(const u16 id, size_t& data_idx, u32& data_frame, const Fvector& position, const float init_radius, const float init_str,
+                            bool CheckDistance);
     void GrassBendersReset(const size_t idx);
-    void GrassBendersSet(const size_t idx, const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity,
-                         const float radius, const GrassBenders_Anim anim, const bool resetTime);
+    void GrassBendersSet(const size_t idx, const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed,
+                         const float intensity, const float radius, const GrassBenders_Anim anim, const bool resetTime);
     float GrassBenderToValue(float& current, const float go_to, const float intensity, const bool use_easing);
     CPerlinNoise1D* PerlinNoise1D{};
 
@@ -183,6 +186,6 @@ extern std::unique_ptr<xr::ingame_editor> editor;
 } // namespace xr
 
 extern IGame_Persistent* g_pGamePersistent;
-extern BOOL g_prefetch;
+extern bool g_prefetch;
 
 #endif // IGame_PersistentH

@@ -239,9 +239,9 @@ inline std::unique_ptr<CUIWindow> ui_factory(std::unique_ptr<T>& self)
 }
 } // namespace xr
 
-extern BOOL g_show_wnd_rect;
-extern BOOL g_show_wnd_rect_text;
-extern BOOL g_show_wnd_rect2;
+extern bool g_show_wnd_rect;
+extern bool g_show_wnd_rect_text;
+extern bool g_show_wnd_rect2;
 
 void clean_wnd_rects();
 void draw_wnds_rects();

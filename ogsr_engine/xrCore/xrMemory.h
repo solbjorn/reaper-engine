@@ -5,8 +5,7 @@
 #ifdef USE_MEMORY_VALIDATOR
 #include "xrMemoryDebug.h"
 
-extern BOOL g_enable_memory_debug;
-
+extern bool g_enable_memory_debug;
 #endif
 
 #if _MSC_VER >= 1900 && !defined(__EDG__)

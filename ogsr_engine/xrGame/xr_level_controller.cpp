@@ -498,10 +498,10 @@ class CCC_Bind : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_Bind, IConsole_Command);
 
 private:
-    int m_work_idx;
+    s32 m_work_idx;
 
 public:
-    explicit CCC_Bind(gsl::czstring N, int idx) : IConsole_Command{N}, m_work_idx{idx} {}
+    explicit CCC_Bind(gsl::czstring N, s32 idx) : IConsole_Command{N}, m_work_idx{idx} {}
     ~CCC_Bind() override = default;
 
     void Execute(std::string_view args) override
@@ -581,10 +581,10 @@ class CCC_UnBind : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_UnBind, IConsole_Command);
 
 private:
-    int m_work_idx;
+    s32 m_work_idx;
 
 public:
-    explicit CCC_UnBind(gsl::czstring N, int idx) : IConsole_Command{N, true}, m_work_idx{idx} {}
+    explicit CCC_UnBind(gsl::czstring N, s32 idx) : IConsole_Command{N, true}, m_work_idx{idx} {}
     ~CCC_UnBind() override = default;
 
     void Execute(std::string_view args) override
@@ -754,14 +754,14 @@ void CCC_RegisterInput()
 {
     initialize_bindings();
 
-    CMD2(CCC_Bind, "bind", 0);
-    CMD2(CCC_Bind, "bind_sec", 1);
-    CMD2(CCC_UnBind, "unbind", 0);
-    CMD2(CCC_UnBind, "unbind_sec", 1);
-    CMD1(CCC_UnBindAll, "unbindall");
-    CMD1(CCC_ListActions, "list_actions");
+    XR_CMD(CCC_Bind, "bind", 0);
+    XR_CMD(CCC_Bind, "bind_sec", 1);
+    XR_CMD(CCC_UnBind, "unbind", 0);
+    XR_CMD(CCC_UnBind, "unbind_sec", 1);
+    XR_CMD(CCC_UnBindAll, "unbindall");
+    XR_CMD(CCC_ListActions, "list_actions");
 
-    CMD1(CCC_BindList, "bind_list");
-    CMD1(CCC_BindConsoleCmd, "bind_console");
-    CMD1(CCC_UnBindConsoleCmd, "unbind_console");
+    XR_CMD(CCC_BindList, "bind_list");
+    XR_CMD(CCC_BindConsoleCmd, "bind_console");
+    XR_CMD(CCC_UnBindConsoleCmd, "unbind_console");
 }

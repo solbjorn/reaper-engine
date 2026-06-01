@@ -67,7 +67,7 @@ extern int x_m_x;
 extern int x_m_z;
 
 #ifdef DEBUG
-extern BOOL g_ShowAnimationInfo;
+extern bool g_ShowAnimationInfo;
 #endif // DEBUG
 
 extern ESingleGameDifficulty g_SingleGameDifficulty;
@@ -77,7 +77,7 @@ float adj_delta_pos = 0.0005f;
 float adj_delta_rot = 0.05f;
 //-----------------------------------------------------------
 
-extern BOOL g_enable_memory_debug;
+extern bool g_enable_memory_debug;
 
 #ifndef MASTER_GOLD
 Flags32 g_mt_config = g_mt_default;
@@ -93,8 +93,9 @@ extern BOOL g_bDrawBulletHit;
 #endif
 #ifdef DEBUG
 extern LPSTR dbg_stalker_death_anim;
-extern BOOL b_death_anim_velocity;
+extern bool b_death_anim_velocity;
 #endif
+
 int g_AI_inactive_time = 0;
 
 extern void show_animation_stats();
@@ -141,7 +142,7 @@ class CCC_MemStats : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_MemStats, IConsole_Command);
 
 public:
-    explicit CCC_MemStats(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_MemStats(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_MemStats() override = default;
 
     void Execute(std::string_view) override
@@ -216,7 +217,7 @@ class CCC_GameDifficulty : public CCC_Token
     RTTI_DECLARE_TYPEINFO(CCC_GameDifficulty, CCC_Token);
 
 public:
-    explicit CCC_GameDifficulty(LPCSTR N) : CCC_Token{N, (u32*)&g_SingleGameDifficulty, difficulty_type_token} {}
+    explicit CCC_GameDifficulty(gsl::czstring N) : CCC_Token{N, *reinterpret_cast<u32*>(&g_SingleGameDifficulty), difficulty_type_token} {}
     ~CCC_GameDifficulty() override = default;
 
     void Execute(std::string_view args) override
@@ -251,7 +252,7 @@ class CCC_GameLanguage : public CCC_Token
     RTTI_DECLARE_TYPEINFO(CCC_GameLanguage, CCC_Token);
 
 public:
-    explicit CCC_GameLanguage(gsl::czstring N) : CCC_Token{N, &LanguageID, LanguagesToken.data()}
+    explicit CCC_GameLanguage(gsl::czstring N) : CCC_Token{N, LanguageID, LanguagesToken.data()}
     {
         gsl::czstring str = pSettings->r_string("string_table", "language");
 
@@ -323,7 +324,7 @@ class CCC_ALifePath : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_ALifePath, IConsole_Command);
 
 public:
-    explicit CCC_ALifePath(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_ALifePath(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_ALifePath() override = default;
 
     void Execute(std::string_view args) override
@@ -358,7 +359,7 @@ class CCC_ALifeTimeFactor : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_ALifeTimeFactor, IConsole_Command);
 
 public:
-    explicit CCC_ALifeTimeFactor(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_ALifeTimeFactor(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_ALifeTimeFactor() override = default;
 
     void Execute(std::string_view args) override
@@ -385,7 +386,7 @@ class CCC_ALifeSwitchDistance : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_ALifeSwitchDistance, IConsole_Command);
 
 public:
-    explicit CCC_ALifeSwitchDistance(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_ALifeSwitchDistance(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_ALifeSwitchDistance() override = default;
 
     void Execute(std::string_view args) override
@@ -421,7 +422,7 @@ class CCC_ALifeProcessTime : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_ALifeProcessTime, IConsole_Command);
 
 public:
-    explicit CCC_ALifeProcessTime(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_ALifeProcessTime(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_ALifeProcessTime() override = default;
 
     void Execute(std::string_view args) override
@@ -456,7 +457,7 @@ class CCC_ALifeObjectsPerUpdate : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_ALifeObjectsPerUpdate, IConsole_Command);
 
 public:
-    explicit CCC_ALifeObjectsPerUpdate(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_ALifeObjectsPerUpdate(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_ALifeObjectsPerUpdate() override = default;
 
     void Execute(std::string_view args) override
@@ -485,7 +486,7 @@ class CCC_ALifeSwitchFactor : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_ALifeSwitchFactor, IConsole_Command);
 
 public:
-    explicit CCC_ALifeSwitchFactor(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_ALifeSwitchFactor(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_ALifeSwitchFactor() override = default;
 
     void Execute(std::string_view args) override
@@ -515,7 +516,7 @@ class CCC_TimeFactor : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_TimeFactor, IConsole_Command);
 
 public:
-    explicit CCC_TimeFactor(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_TimeFactor(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_TimeFactor() override = default;
 
     void Execute(std::string_view args) override
@@ -575,7 +576,7 @@ class CCC_DemoPlay : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DemoPlay, IConsole_Command);
 
 public:
-    explicit CCC_DemoPlay(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DemoPlay(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_DemoPlay() override = default;
 
     void Execute(std::string_view args) override
@@ -781,7 +782,7 @@ class CCC_LoadLastSave : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_LoadLastSave, IConsole_Command);
 
 public:
-    explicit CCC_LoadLastSave(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_LoadLastSave(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_LoadLastSave() override = default;
 
     void Execute(std::string_view args) override
@@ -827,7 +828,7 @@ class CCC_FloatBlock : public CCC_Float
     RTTI_DECLARE_TYPEINFO(CCC_FloatBlock, CCC_Float);
 
 public:
-    explicit CCC_FloatBlock(LPCSTR N, float* V, float _min = 0, float _max = 1) : CCC_Float{N, V, _min, _max} {}
+    explicit CCC_FloatBlock(gsl::czstring N, f32& V, f32 _min = 0.0f, f32 _max = 1.0f) : CCC_Float{N, V, _min, _max} {}
     ~CCC_FloatBlock() override = default;
 };
 
@@ -837,7 +838,7 @@ class CCC_DrawGameGraphAll : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DrawGameGraphAll, IConsole_Command);
 
 public:
-    explicit CCC_DrawGameGraphAll(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DrawGameGraphAll(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_DrawGameGraphAll() override = default;
 
     void Execute(std::string_view) override
@@ -857,7 +858,7 @@ class CCC_DrawGameGraphCurrent : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DrawGameGraphCurrent, IConsole_Command);
 
 public:
-    explicit CCC_DrawGameGraphCurrent(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DrawGameGraphCurrent(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_DrawGameGraphCurrent() override = default;
 
     void Execute(std::string_view) override
@@ -877,7 +878,7 @@ class CCC_DrawGameGraphLevel : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DrawGameGraphLevel, IConsole_Command);
 
 public:
-    explicit CCC_DrawGameGraphLevel(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_DrawGameGraphLevel(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_DrawGameGraphLevel() override = default;
 
     void Execute(std::string_view args) override
@@ -911,7 +912,7 @@ class CCC_DumpInfos : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DumpInfos, IConsole_Command);
 
 public:
-    explicit CCC_DumpInfos(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DumpInfos(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_DumpInfos() override = default;
 
     void Execute(std::string_view) override
@@ -929,7 +930,7 @@ class CCC_DumpMap : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DumpMap, IConsole_Command);
 
 public:
-    explicit CCC_DumpMap(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DumpMap(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_DumpMap() override = default;
 
     void Execute(std::string_view) override { Level().MapManager().Dump(); }
@@ -941,7 +942,7 @@ class CCC_DumpCreatures : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DumpCreatures, IConsole_Command);
 
 public:
-    explicit CCC_DumpCreatures(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DumpCreatures(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_DumpCreatures() override = default;
 
     void Execute(std::string_view) override
@@ -966,7 +967,7 @@ class CCC_DebugFonts : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DebugFonts, IConsole_Command);
 
 public:
-    explicit CCC_DebugFonts(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DebugFonts(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_DebugFonts() override = default;
 
     void Execute(std::string_view) override { HUD().GetUI()->StartStopMenu(xr_new<CUIDebugFonts>(), true); }
@@ -977,7 +978,7 @@ class CCC_DebugNode : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DebugNode, IConsole_Command);
 
 public:
-    explicit CCC_DebugNode(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_DebugNode(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_DebugNode() override = default;
 
     void Execute(std::string_view args) override
@@ -1008,7 +1009,7 @@ class CCC_ShowMonsterInfo : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_ShowMonsterInfo, IConsole_Command);
 
 public:
-    explicit CCC_ShowMonsterInfo(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_ShowMonsterInfo(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_ShowMonsterInfo() override = default;
 
     void Execute(std::string_view args) override
@@ -1038,7 +1039,7 @@ class CCC_DbgPhTrackObj : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DbgPhTrackObj, IConsole_Command);
 
 public:
-    explicit CCC_DbgPhTrackObj(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_DbgPhTrackObj(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_DbgPhTrackObj() override = default;
 
     void Execute(std::string_view args) override
@@ -1054,7 +1055,7 @@ class CCC_PHIterations : public CCC_Integer
     RTTI_DECLARE_TYPEINFO(CCC_PHIterations, CCC_Integer);
 
 public:
-    explicit CCC_PHIterations(LPCSTR N) : CCC_Integer{N, &phIterations, 15, 50} {}
+    explicit CCC_PHIterations(gsl::czstring N) : CCC_Integer{N, phIterations, 15, 50} {}
     ~CCC_PHIterations() override = default;
 
     void Execute(std::string_view args) override
@@ -1069,7 +1070,7 @@ class CCC_PHGravity : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_PHGravity, IConsole_Command);
 
 public:
-    explicit CCC_PHGravity(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_PHGravity(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_PHGravity() override = default;
 
     void Execute(std::string_view args) override
@@ -1095,7 +1096,7 @@ class CCC_PHFps : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_PHFps, IConsole_Command);
 
 public:
-    explicit CCC_PHFps(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_PHFps(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_PHFps() override = default;
 
     void Execute(std::string_view args) override
@@ -1118,7 +1119,7 @@ struct CCC_JumpToLevel : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_JumpToLevel, IConsole_Command);
 
 public:
-    explicit CCC_JumpToLevel(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_JumpToLevel(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_JumpToLevel() override = default;
 
     void Execute(std::string_view args) override
@@ -1168,7 +1169,7 @@ class CCC_Spawn : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_Spawn, IConsole_Command);
 
 public:
-    explicit CCC_Spawn(LPCSTR N) : IConsole_Command(N) {}
+    explicit CCC_Spawn(gsl::czstring N) : IConsole_Command(N) {}
     ~CCC_Spawn() override = default;
 
     void Execute(std::string_view args) override
@@ -1217,7 +1218,7 @@ class CCC_SpawnToInventory : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_SpawnToInventory, IConsole_Command);
 
 public:
-    explicit CCC_SpawnToInventory(LPCSTR N) : IConsole_Command(N) {}
+    explicit CCC_SpawnToInventory(gsl::czstring N) : IConsole_Command(N) {}
     ~CCC_SpawnToInventory() override = default;
 
     void Execute(std::string_view args) override
@@ -1282,19 +1283,19 @@ class CCC_LuaGCMethod : public CCC_Token
     RTTI_DECLARE_TYPEINFO(CCC_LuaGCMethod, CCC_Token);
 
 public:
-    explicit CCC_LuaGCMethod(gsl::czstring name) : CCC_Token{name, &ps_lua_gc_method, lua_gc_method_token} {}
+    explicit CCC_LuaGCMethod(gsl::czstring name) : CCC_Token{name, ps_lua_gc_method, lua_gc_method_token} {}
     ~CCC_LuaGCMethod() override = default;
 
     void Execute(std::string_view args) override
     {
-        const auto prev = *value;
+        const auto prev = value;
         CCC_Token::Execute(args);
 
         if (!xr::script_engine_initialized())
             return;
 
         auto& lua = ai().script_engine().lua();
-        switch (*value)
+        switch (value)
         {
         case 0: lua.stop_gc(); break;
         case 1:
@@ -1306,7 +1307,7 @@ public:
         case 3:
             // Perform a full garbage collection cycle and return to previous strategy.
             lua.collect_gc();
-            *value = prev;
+            value = prev;
 
             break;
         }
@@ -1351,7 +1352,7 @@ struct CCC_StartTimeSingle : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_StartTimeSingle, IConsole_Command);
 
 public:
-    explicit CCC_StartTimeSingle(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_StartTimeSingle(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_StartTimeSingle() override = default;
 
     void Execute(std::string_view args) override
@@ -1386,7 +1387,7 @@ struct CCC_TimeFactorSingle : public CCC_Float
     RTTI_DECLARE_TYPEINFO(CCC_TimeFactorSingle, CCC_Float);
 
 public:
-    explicit CCC_TimeFactorSingle(LPCSTR N, float* V, float _min = 0.f, float _max = 1.f) : CCC_Float{N, V, _min, _max} {}
+    explicit CCC_TimeFactorSingle(gsl::czstring N, f32& V, f32 _min = 0.0f, f32 _max = 1.0f) : CCC_Float{N, V, _min, _max} {}
     ~CCC_TimeFactorSingle() override = default;
 
     void Execute(std::string_view args) override
@@ -1412,7 +1413,7 @@ private:
     CCC_RadioGroupMask2* group{};
 
 public:
-    explicit CCC_RadioMask(LPCSTR N, Flags32* V, u32 M) : CCC_Mask{N, V, M} {}
+    explicit CCC_RadioMask(gsl::czstring N, Flags32& V, u32 M) : CCC_Mask{N, V, M} {}
     ~CCC_RadioMask() override = default;
 
     void SetGroup(CCC_RadioGroupMask2* G) { group = G; }
@@ -1423,16 +1424,16 @@ public:
 
 class CCC_RadioGroupMask2
 {
-    CCC_RadioMask* mask0;
-    CCC_RadioMask* mask1;
+    CCC_RadioMask& mask0;
+    CCC_RadioMask& mask1;
 
 public:
-    explicit CCC_RadioGroupMask2(CCC_RadioMask* m0, CCC_RadioMask* m1)
+    explicit CCC_RadioGroupMask2(CCC_RadioMask& m0, CCC_RadioMask& m1)
     {
         mask0 = m0;
         mask1 = m1;
-        mask0->SetGroup(this);
-        mask1->SetGroup(this);
+        mask0.SetGroup(this);
+        mask1.SetGroup(this);
     }
 
     ~CCC_RadioGroupMask2() override = default;
@@ -1442,8 +1443,8 @@ public:
         BOOL value = m.GetValue();
         if (value)
         {
-            mask0->Set(!value);
-            mask1->Set(!value);
+            mask0.Set(!value);
+            mask1.Set(!value);
         }
 
         m.Set(value);
@@ -1459,11 +1460,11 @@ void CCC_RadioMask::Execute(std::string_view args)
 
 #define CMD_RADIOGROUPMASK2(p1, p2, p3, p4, p5, p6) \
     { \
-        static CCC_RadioMask x##CCC_RadioMask1(p1, p2, p3); \
+        static CCC_RadioMask x##CCC_RadioMask1{p1, p2, p3}; \
         Console->AddCommand(&x##CCC_RadioMask1); \
-        static CCC_RadioMask x##CCC_RadioMask2(p4, p5, p6); \
+        static CCC_RadioMask x##CCC_RadioMask2{p4, p5, p6}; \
         Console->AddCommand(&x##CCC_RadioMask2); \
-        static CCC_RadioGroupMask2 x##CCC_RadioGroupMask2(&x##CCC_RadioMask1, &x##CCC_RadioMask2); \
+        static CCC_RadioGroupMask2 x##CCC_RadioGroupMask2{x##CCC_RadioMask1, x##CCC_RadioMask2}; \
     } \
     XR_MACRO_END()
 
@@ -1472,7 +1473,7 @@ struct CCC_DbgBullets : public CCC_Integer
     RTTI_DECLARE_TYPEINFO(CCC_DbgBullets, CCC_Integer);
 
 public:
-    explicit CCC_DbgBullets(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer{N, V, _min, _max} {}
+    explicit CCC_DbgBullets(gsl::czstring N, s32& V, s32 _min = 0, s32 _max = 999) : CCC_Integer{N, V, _min, _max} {}
     ~CCC_DbgBullets() override = default;
 
     void Execute(std::string_view args) override
@@ -1491,7 +1492,7 @@ class CCC_TuneAttachableItem : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_TuneAttachableItem, IConsole_Command);
 
 public:
-    explicit CCC_TuneAttachableItem(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_TuneAttachableItem(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_TuneAttachableItem() override = default;
 
     void Execute(std::string_view args) override
@@ -1552,7 +1553,7 @@ class CCC_TuneAttachableItemInSlot : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_TuneAttachableItemInSlot, IConsole_Command);
 
 public:
-    explicit CCC_TuneAttachableItemInSlot(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_TuneAttachableItemInSlot(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_TuneAttachableItemInSlot() override = default;
 
     void Execute(std::string_view args) override
@@ -1620,7 +1621,7 @@ class CCC_Crash : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_Crash, IConsole_Command);
 
 public:
-    explicit CCC_Crash(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_Crash(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_Crash() override = default;
 
     void Execute(std::string_view) override
@@ -1636,7 +1637,7 @@ class CCC_DumpModelBones : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DumpModelBones, IConsole_Command);
 
 public:
-    explicit CCC_DumpModelBones(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_DumpModelBones(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_DumpModelBones() override = default;
 
     void Execute(std::string_view args) override
@@ -1684,7 +1685,7 @@ class CCC_ShowAnimationStats : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_ShowAnimationStats, IConsole_Command);
 
 public:
-    explicit CCC_ShowAnimationStats(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_ShowAnimationStats(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_ShowAnimationStats() override = default;
 
     void Execute(std::string_view) override { show_animation_stats(); }
@@ -1695,7 +1696,7 @@ class CCC_DumpObjects : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DumpObjects, IConsole_Command);
 
 public:
-    explicit CCC_DumpObjects(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DumpObjects(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_DumpObjects() override = default;
 
     void Execute(std::string_view) override { Level().Objects.dump_all_objects(); }
@@ -1708,7 +1709,7 @@ class CCC_SetWeather : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_SetWeather, IConsole_Command);
 
 public:
-    explicit CCC_SetWeather(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_SetWeather(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_SetWeather() override = default;
 
     void Execute(std::string_view args) override
@@ -1745,7 +1746,7 @@ class CCC_DbgMemoryDump : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DbgMemoryDump, IConsole_Command);
 
 public:
-    explicit CCC_DbgMemoryDump(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DbgMemoryDump(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_DbgMemoryDump() override = default;
 
     void Execute(std::string_view args) override
@@ -1776,7 +1777,7 @@ class CCC_DbgMemoryClear : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DbgMemoryClear, IConsole_Command);
 
 public:
-    explicit CCC_DbgMemoryClear(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DbgMemoryClear(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_DbgMemoryClear() override = default;
 
     void Execute(std::string_view) override { PointerRegistryClear(); }
@@ -1787,7 +1788,7 @@ class CCC_DbgMemoryInfo : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DbgMemoryInfo, IConsole_Command);
 
 public:
-    explicit CCC_DbgMemoryInfo(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DbgMemoryInfo(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_DbgMemoryInfo() override = default;
 
     void Execute(std::string_view) override { PointerRegistryInfo(); }
@@ -1811,278 +1812,278 @@ public:
 
 void CCC_RegisterCommands()
 {
-    CMD1(CCC_MemStats, "stat_memory");
-    CMD1(CCC_UI_Reload, "ui_reload");
+    XR_CMD(CCC_MemStats, "stat_memory");
+    XR_CMD(CCC_UI_Reload, "ui_reload");
 
     // game
-    CMD1(CCC_GameDifficulty, "g_game_difficulty");
-    CMD1(CCC_GameLanguage, "g_language");
+    XR_CMD(CCC_GameDifficulty, "g_game_difficulty");
+    XR_CMD(CCC_GameLanguage, "g_language");
 
-    CMD3(CCC_Mask, "wpn_aim_toggle", &psActorFlags, AF_WPN_AIM_TOGGLE);
+    XR_CMD(CCC_Mask, "wpn_aim_toggle", psActorFlags, AF_WPN_AIM_TOGGLE);
 
     // alife
 #ifdef DEBUG
-    CMD1(CCC_ALifePath, "al_path"); // build path
+    XR_CMD(CCC_ALifePath, "al_path"); // build path
 #endif // DEBUG
 
-    CMD1(CCC_ALifeSave, "save"); // save game
-    CMD1(CCC_ALifeLoadFrom, "load"); // load game from ...
-    CMD1(CCC_LoadLastSave, "load_last_save"); // load last saved game from ...
+    XR_CMD(CCC_ALifeSave, "save"); // save game
+    XR_CMD(CCC_ALifeLoadFrom, "load"); // load game from ...
+    XR_CMD(CCC_LoadLastSave, "load_last_save"); // load last saved game from ...
 
 #ifndef MASTER_GOLD
-    CMD1(CCC_ALifeTimeFactor, "al_time_factor"); // set time factor
-    CMD1(CCC_ALifeSwitchDistance, "al_switch_distance"); // set switch distance
-    CMD1(CCC_ALifeProcessTime, "al_process_time"); // set process time
-    CMD1(CCC_ALifeObjectsPerUpdate, "al_objects_per_update"); // set process time
-    CMD1(CCC_ALifeSwitchFactor, "al_switch_factor"); // set switch factor
+    XR_CMD(CCC_ALifeTimeFactor, "al_time_factor"); // set time factor
+    XR_CMD(CCC_ALifeSwitchDistance, "al_switch_distance"); // set switch distance
+    XR_CMD(CCC_ALifeProcessTime, "al_process_time"); // set process time
+    XR_CMD(CCC_ALifeObjectsPerUpdate, "al_objects_per_update"); // set process time
+    XR_CMD(CCC_ALifeSwitchFactor, "al_switch_factor"); // set switch factor
 #endif // MASTER_GOLD
 
-    CMD3(CCC_Mask, "hud_info", &psHUD_Flags, HUD_INFO);
-    CMD3(CCC_Mask, "hud_draw", &psHUD_Flags, HUD_DRAW);
-    CMD3(CCC_Mask, "hud_crosshair_build", &psHUD_Flags, HUD_CROSSHAIR_BUILD); // билдокурсор
+    XR_CMD(CCC_Mask, "hud_info", psHUD_Flags, HUD_INFO);
+    XR_CMD(CCC_Mask, "hud_draw", psHUD_Flags, HUD_DRAW);
+    XR_CMD(CCC_Mask, "hud_crosshair_build", psHUD_Flags, HUD_CROSSHAIR_BUILD); // билдокурсор
 
     if (IS_OGSR_GA)
         psHUD_Flags.set(HUD_CROSSHAIR_HARD, TRUE);
     else
-        CMD3(CCC_Mask, "hud_crosshair_hard", &psHUD_Flags, HUD_CROSSHAIR_HARD);
+        XR_CMD(CCC_Mask, "hud_crosshair_hard", psHUD_Flags, HUD_CROSSHAIR_HARD);
 
-    CMD3(CCC_Mask, "hud_crosshair", &psHUD_Flags, HUD_CROSSHAIR);
-    CMD3(CCC_Mask, "hud_crosshair_dist", &psHUD_Flags, HUD_CROSSHAIR_DIST);
+    XR_CMD(CCC_Mask, "hud_crosshair", psHUD_Flags, HUD_CROSSHAIR);
+    XR_CMD(CCC_Mask, "hud_crosshair_dist", psHUD_Flags, HUD_CROSSHAIR_DIST);
 
     if (IS_OGSR_GA)
         psHUD_FOV_def = 0.65f;
-    CMD4(CCC_Float, "hud_fov", &psHUD_FOV_def, 0.1f, 1.0f);
+    XR_CMD(CCC_Float, "hud_fov", psHUD_FOV_def, 0.1f, 1.0f);
 
-    CMD4(CCC_Float, "fov", &g_fov, 5.0f, 140.0f);
+    XR_CMD(CCC_Float, "fov", g_fov, 5.0f, 140.0f);
 
     // Demo
-    CMD1(CCC_DemoPlay, "demo_play");
-    CMD1(CCC_DemoRecord, "demo_record");
+    XR_CMD(CCC_DemoPlay, "demo_play");
+    XR_CMD(CCC_DemoRecord, "demo_record");
 
 #ifndef MASTER_GOLD
     // ai
-    CMD3(CCC_Mask, "mt_ai_vision", &g_mt_config, mtAiVision);
-    CMD3(CCC_Mask, "mt_level_path", &g_mt_config, mtLevelPath);
-    CMD3(CCC_Mask, "mt_detail_path", &g_mt_config, mtDetailPath);
-    CMD3(CCC_Mask, "mt_object_handler", &g_mt_config, mtObjectHandler);
-    CMD3(CCC_Mask, "mt_sound_player", &g_mt_config, mtSoundPlayer);
-    CMD3(CCC_Mask, "mt_bullets", &g_mt_config, mtBullets);
-    CMD3(CCC_Mask, "mt_script_gc", &g_mt_config, mtLUA_GC);
-    CMD3(CCC_Mask, "mt_level_sounds", &g_mt_config, mtLevelSounds);
-    CMD3(CCC_Mask, "mt_alife", &g_mt_config, mtALife);
-    CMD3(CCC_Mask, "mt_map", &g_mt_config, mtMap);
+    XR_CMD(CCC_Mask, "mt_ai_vision", g_mt_config, mtAiVision);
+    XR_CMD(CCC_Mask, "mt_level_path", g_mt_config, mtLevelPath);
+    XR_CMD(CCC_Mask, "mt_detail_path", g_mt_config, mtDetailPath);
+    XR_CMD(CCC_Mask, "mt_object_handler", g_mt_config, mtObjectHandler);
+    XR_CMD(CCC_Mask, "mt_sound_player", g_mt_config, mtSoundPlayer);
+    XR_CMD(CCC_Mask, "mt_bullets", g_mt_config, mtBullets);
+    XR_CMD(CCC_Mask, "mt_script_gc", g_mt_config, mtLUA_GC);
+    XR_CMD(CCC_Mask, "mt_level_sounds", g_mt_config, mtLevelSounds);
+    XR_CMD(CCC_Mask, "mt_alife", g_mt_config, mtALife);
+    XR_CMD(CCC_Mask, "mt_map", g_mt_config, mtMap);
 #endif // MASTER_GOLD
 
-    CMD1(CCC_LuaGCMethod, "lua_gc_method");
-    CMD4(CCC_Integer, "lua_gc_step", &psLUA_GCSTEP, 1, 1000);
-    CMD4(CCC_Integer, "lua_gc_timeout", &psLUA_GCTIMEOUT, 1000, 16000);
+    XR_CMD(CCC_LuaGCMethod, "lua_gc_method");
+    XR_CMD(CCC_Integer, "lua_gc_step", psLUA_GCSTEP, 1, 1000);
+    XR_CMD(CCC_Integer, "lua_gc_timeout", psLUA_GCTIMEOUT, 1000, 16000);
 
 #ifdef DEBUG
-    CMD3(CCC_Mask, "ai_debug", &psAI_Flags, aiDebug);
-    CMD3(CCC_Mask, "ai_dbg_brain", &psAI_Flags, aiBrain);
-    CMD3(CCC_Mask, "ai_dbg_motion", &psAI_Flags, aiMotion);
-    CMD3(CCC_Mask, "ai_dbg_frustum", &psAI_Flags, aiFrustum);
-    CMD3(CCC_Mask, "ai_dbg_funcs", &psAI_Flags, aiFuncs);
-    CMD3(CCC_Mask, "ai_dbg_alife", &psAI_Flags, aiALife);
-    CMD3(CCC_Mask, "ai_dbg_lua", &psAI_Flags, aiLua);
-    CMD3(CCC_Mask, "ai_dbg_goap", &psAI_Flags, aiGOAP);
-    CMD3(CCC_Mask, "ai_dbg_goap_script", &psAI_Flags, aiGOAPScript);
-    CMD3(CCC_Mask, "ai_dbg_goap_object", &psAI_Flags, aiGOAPObject);
-    CMD3(CCC_Mask, "ai_dbg_cover", &psAI_Flags, aiCover);
-    CMD3(CCC_Mask, "ai_dbg_anim", &psAI_Flags, aiAnimation);
-    CMD3(CCC_Mask, "ai_dbg_vision", &psAI_Flags, aiVision);
-    CMD3(CCC_Mask, "ai_dbg_monster", &psAI_Flags, aiMonsterDebug);
-    CMD3(CCC_Mask, "ai_dbg_stalker", &psAI_Flags, aiStalker);
-    CMD3(CCC_Mask, "ai_stats", &psAI_Flags, aiStats);
-    CMD3(CCC_Mask, "ai_dbg_destroy", &psAI_Flags, aiDestroy);
-    CMD3(CCC_Mask, "ai_dbg_serialize", &psAI_Flags, aiSerialize);
-    CMD3(CCC_Mask, "ai_dbg_dialogs", &psAI_Flags, aiDialogs);
-    CMD3(CCC_Mask, "ai_dbg_infoportion", &psAI_Flags, aiInfoPortion);
+    XR_CMD(CCC_Mask, "ai_debug", psAI_Flags, aiDebug);
+    XR_CMD(CCC_Mask, "ai_dbg_brain", psAI_Flags, aiBrain);
+    XR_CMD(CCC_Mask, "ai_dbg_motion", psAI_Flags, aiMotion);
+    XR_CMD(CCC_Mask, "ai_dbg_frustum", psAI_Flags, aiFrustum);
+    XR_CMD(CCC_Mask, "ai_dbg_funcs", psAI_Flags, aiFuncs);
+    XR_CMD(CCC_Mask, "ai_dbg_alife", psAI_Flags, aiALife);
+    XR_CMD(CCC_Mask, "ai_dbg_lua", psAI_Flags, aiLua);
+    XR_CMD(CCC_Mask, "ai_dbg_goap", psAI_Flags, aiGOAP);
+    XR_CMD(CCC_Mask, "ai_dbg_goap_script", psAI_Flags, aiGOAPScript);
+    XR_CMD(CCC_Mask, "ai_dbg_goap_object", psAI_Flags, aiGOAPObject);
+    XR_CMD(CCC_Mask, "ai_dbg_cover", psAI_Flags, aiCover);
+    XR_CMD(CCC_Mask, "ai_dbg_anim", psAI_Flags, aiAnimation);
+    XR_CMD(CCC_Mask, "ai_dbg_vision", psAI_Flags, aiVision);
+    XR_CMD(CCC_Mask, "ai_dbg_monster", psAI_Flags, aiMonsterDebug);
+    XR_CMD(CCC_Mask, "ai_dbg_stalker", psAI_Flags, aiStalker);
+    XR_CMD(CCC_Mask, "ai_stats", psAI_Flags, aiStats);
+    XR_CMD(CCC_Mask, "ai_dbg_destroy", psAI_Flags, aiDestroy);
+    XR_CMD(CCC_Mask, "ai_dbg_serialize", psAI_Flags, aiSerialize);
+    XR_CMD(CCC_Mask, "ai_dbg_dialogs", psAI_Flags, aiDialogs);
+    XR_CMD(CCC_Mask, "ai_dbg_infoportion", psAI_Flags, aiInfoPortion);
 
-    CMD3(CCC_Mask, "ai_draw_game_graph", &psAI_Flags, aiDrawGameGraph);
-    CMD3(CCC_Mask, "ai_draw_game_graph_stalkers", &psAI_Flags, aiDrawGameGraphStalkers);
-    CMD3(CCC_Mask, "ai_draw_game_graph_objects", &psAI_Flags, aiDrawGameGraphObjects);
+    XR_CMD(CCC_Mask, "ai_draw_game_graph", psAI_Flags, aiDrawGameGraph);
+    XR_CMD(CCC_Mask, "ai_draw_game_graph_stalkers", psAI_Flags, aiDrawGameGraphStalkers);
+    XR_CMD(CCC_Mask, "ai_draw_game_graph_objects", psAI_Flags, aiDrawGameGraphObjects);
 
-    CMD3(CCC_Mask, "ai_nil_object_access", &psAI_Flags, aiNilObjectAccess);
+    XR_CMD(CCC_Mask, "ai_nil_object_access", psAI_Flags, aiNilObjectAccess);
 
-    CMD3(CCC_Mask, "ai_draw_visibility_rays", &psAI_Flags, aiDrawVisibilityRays);
-    CMD3(CCC_Mask, "ai_animation_stats", &psAI_Flags, aiAnimationStats);
+    XR_CMD(CCC_Mask, "ai_draw_visibility_rays", psAI_Flags, aiDrawVisibilityRays);
+    XR_CMD(CCC_Mask, "ai_animation_stats", psAI_Flags, aiAnimationStats);
 
-    CMD1(CCC_DumpModelBones, "debug_dump_model_bones");
+    XR_CMD(CCC_DumpModelBones, "debug_dump_model_bones");
 
-    CMD1(CCC_DrawGameGraphAll, "ai_draw_game_graph_all");
-    CMD1(CCC_DrawGameGraphCurrent, "ai_draw_game_graph_current_level");
-    CMD1(CCC_DrawGameGraphLevel, "ai_draw_game_graph_level");
+    XR_CMD(CCC_DrawGameGraphAll, "ai_draw_game_graph_all");
+    XR_CMD(CCC_DrawGameGraphCurrent, "ai_draw_game_graph_current_level");
+    XR_CMD(CCC_DrawGameGraphLevel, "ai_draw_game_graph_level");
 
-    CMD4(CCC_Integer, "ai_dbg_inactive_time", &g_AI_inactive_time, 0, 1000000);
+    XR_CMD(CCC_Integer, "ai_dbg_inactive_time", g_AI_inactive_time, 0, 1000000);
 
-    CMD1(CCC_DebugNode, "ai_dbg_node");
+    XR_CMD(CCC_DebugNode, "ai_dbg_node");
 
-    CMD1(CCC_ShowMonsterInfo, "ai_monster_info");
-    CMD1(CCC_DebugFonts, "debug_fonts");
+    XR_CMD(CCC_ShowMonsterInfo, "ai_monster_info");
+    XR_CMD(CCC_DebugFonts, "debug_fonts");
 #endif
-    CMD1(CCC_TuneAttachableItem, "dbg_adjust_attachable_item");
-    CMD1(CCC_TuneAttachableItemInSlot, "dbg_adjust_attachable_item_in_slot");
+    XR_CMD(CCC_TuneAttachableItem, "dbg_adjust_attachable_item");
+    XR_CMD(CCC_TuneAttachableItemInSlot, "dbg_adjust_attachable_item_in_slot");
     // adjust mode support
-    CMD4(CCC_Integer, "hud_adjust_mode", &g_bHudAdjustMode, 0, 11);
-    CMD4(CCC_Float, "hud_adjust_delta_value", &g_bHudAdjustDeltaPos, 0.00005f, 1.f);
-    CMD4(CCC_Float, "hud_adjust_delta_rot", &g_bHudAdjustDeltaRot, 0.00005f, 10.f);
+    XR_CMD(CCC_Integer, "hud_adjust_mode", g_bHudAdjustMode, 0, 11);
+    XR_CMD(CCC_Float, "hud_adjust_delta_value", g_bHudAdjustDeltaPos, 0.00005f, 1.0f);
+    XR_CMD(CCC_Float, "hud_adjust_delta_rot", g_bHudAdjustDeltaRot, 0.00005f, 10.0f);
 
-    CMD4(CCC_Float, "adjust_delta_pos", &adj_delta_pos, -10.f, 10.f);
-    CMD4(CCC_Float, "adjust_delta_rot", &adj_delta_rot, -10.f, 10.f);
+    XR_CMD(CCC_Float, "adjust_delta_pos", adj_delta_pos, -10.0f, 10.0f);
+    XR_CMD(CCC_Float, "adjust_delta_rot", adj_delta_rot, -10.0f, 10.0f);
 
 #ifdef DEBUG
-    CMD1(CCC_ShowAnimationStats, "ai_show_animation_stats");
+    XR_CMD(CCC_ShowAnimationStats, "ai_show_animation_stats");
 #endif // DEBUG
 
 #ifndef MASTER_GOLD
-    CMD3(CCC_Mask, "ai_ignore_actor", &psAI_Flags, aiIgnoreActor);
+    XR_CMD(CCC_Mask, "ai_ignore_actor", psAI_Flags, aiIgnoreActor);
 #endif // MASTER_GOLD
 
     // Physics
-    CMD1(CCC_PHFps, "ph_frequency");
-    CMD1(CCC_PHIterations, "ph_iterations");
+    XR_CMD(CCC_PHFps, "ph_frequency");
+    XR_CMD(CCC_PHIterations, "ph_iterations");
 
-    CMD1(CCC_PHGravity, "ph_gravity");
-    CMD4(CCC_FloatBlock, "ph_timefactor", &phTimefactor, 0.0001f, 1000.f);
+    XR_CMD(CCC_PHGravity, "ph_gravity");
+    XR_CMD(CCC_FloatBlock, "ph_timefactor", phTimefactor, 0.0001f, 1000.0f);
 
 #ifdef DEBUG
-    CMD4(CCC_FloatBlock, "ph_break_common_factor", &phBreakCommonFactor, 0.f, 1000000000.f);
-    CMD4(CCC_FloatBlock, "ph_rigid_break_weapon_factor", &phRigidBreakWeaponFactor, 0.f, 1000000000.f);
-    CMD4(CCC_Integer, "ph_tri_clear_disable_count", &ph_tri_clear_disable_count, 0, 255);
-    CMD4(CCC_FloatBlock, "ph_tri_query_ex_aabb_rate", &ph_tri_query_ex_aabb_rate, 1.01f, 3.f);
+    XR_CMD(CCC_FloatBlock, "ph_break_common_factor", phBreakCommonFactor, 0.0f, 1000000000.0f);
+    XR_CMD(CCC_FloatBlock, "ph_rigid_break_weapon_factor", phRigidBreakWeaponFactor, 0.0f, 1000000000.0f);
+    XR_CMD(CCC_Integer, "ph_tri_clear_disable_count", ph_tri_clear_disable_count, 0, 255);
+    XR_CMD(CCC_FloatBlock, "ph_tri_query_ex_aabb_rate", ph_tri_query_ex_aabb_rate, 1.01f, 3.0f);
 #endif // DEBUG
 
     // #ifndef MASTER_GOLD
-    CMD1(CCC_JumpToLevel, "jump_to_level");
-    CMD1(CCC_Spawn, "g_spawn");
-    CMD1(CCC_SpawnToInventory, "g_spawn_to_inventory");
-    CMD3(CCC_Mask, "g_god", &psActorFlags, AF_GODMODE);
-    CMD3(CCC_Mask, "g_unlimitedammo", &psActorFlags, AF_UNLIMITEDAMMO);
-    CMD3(CCC_Mask, "g_ammunition_on_belt", &psActorFlags, AF_AMMO_ON_BELT);
-    CMD3(CCC_Mask, "g_3d_scopes", &psActorFlags, AF_3D_SCOPES);
-    CMD4(CCC_Integer, "g_3d_scopes_fps_factor", &g_3dscopes_fps_factor, 2, 5);
-    CMD3(CCC_Mask, "g_crosshair_dbg", &psActorFlags, AF_CROSSHAIR_DBG);
-    CMD3(CCC_Mask, "g_camera_collision", &psActorFlags, AF_CAM_COLLISION);
+    XR_CMD(CCC_JumpToLevel, "jump_to_level");
+    XR_CMD(CCC_Spawn, "g_spawn");
+    XR_CMD(CCC_SpawnToInventory, "g_spawn_to_inventory");
+    XR_CMD(CCC_Mask, "g_god", psActorFlags, AF_GODMODE);
+    XR_CMD(CCC_Mask, "g_unlimitedammo", psActorFlags, AF_UNLIMITEDAMMO);
+    XR_CMD(CCC_Mask, "g_ammunition_on_belt", psActorFlags, AF_AMMO_ON_BELT);
+    XR_CMD(CCC_Mask, "g_3d_scopes", psActorFlags, AF_3D_SCOPES);
+    XR_CMD(CCC_Integer, "g_3d_scopes_fps_factor", g_3dscopes_fps_factor, 2, 5);
+    XR_CMD(CCC_Mask, "g_crosshair_dbg", psActorFlags, AF_CROSSHAIR_DBG);
+    XR_CMD(CCC_Mask, "g_camera_collision", psActorFlags, AF_CAM_COLLISION);
 
-    CMD3(CCC_Mask, "g_mouse_wheel_switch_slot", &psActorFlags, AF_MOUSE_WHEEL_SWITCH_SLOTS);
+    XR_CMD(CCC_Mask, "g_mouse_wheel_switch_slot", psActorFlags, AF_MOUSE_WHEEL_SWITCH_SLOTS);
 
-    CMD3(CCC_Mask, "g_3d_pda", &psActorFlags, AF_3D_PDA);
+    XR_CMD(CCC_Mask, "g_3d_pda", psActorFlags, AF_3D_PDA);
 
-    CMD3(CCC_Mask, "g_first_person_death", &psActorFlags, AF_FIRST_PERSON_DEATH);
+    XR_CMD(CCC_Mask, "g_first_person_death", psActorFlags, AF_FIRST_PERSON_DEATH);
 
-    CMD1(CCC_TimeFactor, "time_factor");
-    CMD1(CCC_SetWeather, "set_weather");
+    XR_CMD(CCC_TimeFactor, "time_factor");
+    XR_CMD(CCC_SetWeather, "set_weather");
     // #endif // MASTER_GOLD
 
-    CMD3(CCC_Mask, "g_music_tracks", &psActorFlags, AF_MUSIC_TRACKS);
+    XR_CMD(CCC_Mask, "g_music_tracks", psActorFlags, AF_MUSIC_TRACKS);
 
-    CMD3(CCC_Mask, "g_zones_dbg", &psActorFlags, AF_ZONES_DBG);
-    CMD3(CCC_Mask, "g_vertex_dbg", &psActorFlags, AF_VERTEX_DBG);
-    CMD3(CCC_Mask, "keypress_on_start", &psActorFlags, AF_KEYPRESS_ON_START);
-    CMD3(CCC_Mask, "g_effects_on_demorecord", &psActorFlags, AF_EFFECTS_ON_DEMORECORD);
-    CMD3(CCC_Mask, "g_lock_reload", &psActorFlags, AF_LOCK_RELOAD);
+    XR_CMD(CCC_Mask, "g_zones_dbg", psActorFlags, AF_ZONES_DBG);
+    XR_CMD(CCC_Mask, "g_vertex_dbg", psActorFlags, AF_VERTEX_DBG);
+    XR_CMD(CCC_Mask, "keypress_on_start", psActorFlags, AF_KEYPRESS_ON_START);
+    XR_CMD(CCC_Mask, "g_effects_on_demorecord", psActorFlags, AF_EFFECTS_ON_DEMORECORD);
+    XR_CMD(CCC_Mask, "g_lock_reload", psActorFlags, AF_LOCK_RELOAD);
 
-    CMD4(CCC_Integer, "g_cop_death_anim", &g_bCopDeathAnim, 0, 1);
-
-#ifdef DEBUG
-    CMD3(CCC_Mask, "dbg_draw_actor_alive", &dbg_net_Draw_Flags, (1 << 0));
-    CMD3(CCC_Mask, "dbg_draw_actor_dead", &dbg_net_Draw_Flags, (1 << 1));
-    CMD3(CCC_Mask, "dbg_draw_invitem", &dbg_net_Draw_Flags, (1 << 4));
-    CMD3(CCC_Mask, "dbg_draw_actor_phys", &dbg_net_Draw_Flags, (1 << 5));
-    CMD3(CCC_Mask, "dbg_draw_customdetector", &dbg_net_Draw_Flags, (1 << 6));
-    CMD3(CCC_Mask, "dbg_destroy", &dbg_net_Draw_Flags, (1 << 7));
-    CMD3(CCC_Mask, "dbg_draw_autopickupbox", &dbg_net_Draw_Flags, (1 << 8));
-    CMD3(CCC_Mask, "dbg_draw_climbable", &dbg_net_Draw_Flags, (1 << 10));
-
-    CMD3(CCC_Mask, "dbg_draw_ph_contacts", &ph_dbg_draw_mask, phDbgDrawContacts);
-    CMD3(CCC_Mask, "dbg_draw_ph_enabled_aabbs", &ph_dbg_draw_mask, phDbgDrawEnabledAABBS);
-    CMD3(CCC_Mask, "dbg_draw_ph_intersected_tries", &ph_dbg_draw_mask, phDBgDrawIntersectedTries);
-    CMD3(CCC_Mask, "dbg_draw_ph_saved_tries", &ph_dbg_draw_mask, phDbgDrawSavedTries);
-    CMD3(CCC_Mask, "dbg_draw_ph_tri_trace", &ph_dbg_draw_mask, phDbgDrawTriTrace);
-    CMD3(CCC_Mask, "dbg_draw_ph_positive_tries", &ph_dbg_draw_mask, phDBgDrawPositiveTries);
-    CMD3(CCC_Mask, "dbg_draw_ph_negative_tries", &ph_dbg_draw_mask, phDBgDrawNegativeTries);
-    CMD3(CCC_Mask, "dbg_draw_ph_tri_test_aabb", &ph_dbg_draw_mask, phDbgDrawTriTestAABB);
-    CMD3(CCC_Mask, "dbg_draw_ph_tries_changes_sign", &ph_dbg_draw_mask, phDBgDrawTriesChangesSign);
-    CMD3(CCC_Mask, "dbg_draw_ph_tri_point", &ph_dbg_draw_mask, phDbgDrawTriPoint);
-    CMD3(CCC_Mask, "dbg_draw_ph_explosion_position", &ph_dbg_draw_mask, phDbgDrawExplosionPos);
-    CMD3(CCC_Mask, "dbg_draw_ph_statistics", &ph_dbg_draw_mask, phDbgDrawObjectStatistics);
-    CMD3(CCC_Mask, "dbg_draw_ph_mass_centres", &ph_dbg_draw_mask, phDbgDrawMassCenters);
-    CMD3(CCC_Mask, "dbg_draw_ph_death_boxes", &ph_dbg_draw_mask, phDbgDrawDeathActivationBox);
-    CMD3(CCC_Mask, "dbg_draw_ph_hit_app_pos", &ph_dbg_draw_mask, phHitApplicationPoints);
-    CMD3(CCC_Mask, "dbg_draw_ph_cashed_tries_stats", &ph_dbg_draw_mask, phDbgDrawCashedTriesStat);
-    CMD3(CCC_Mask, "dbg_draw_ph_car_dynamics", &ph_dbg_draw_mask, phDbgDrawCarDynamics);
-    CMD3(CCC_Mask, "dbg_draw_ph_car_plots", &ph_dbg_draw_mask, phDbgDrawCarPlots);
-    CMD3(CCC_Mask, "dbg_ph_ladder", &ph_dbg_draw_mask, phDbgLadder);
-    CMD3(CCC_Mask, "dbg_draw_ph_explosions", &ph_dbg_draw_mask, phDbgDrawExplosions);
-    CMD3(CCC_Mask, "dbg_draw_car_plots_all_trans", &ph_dbg_draw_mask, phDbgDrawCarAllTrnsm);
-    CMD3(CCC_Mask, "dbg_draw_ph_zbuffer_disable", &ph_dbg_draw_mask, phDbgDrawZDisable);
-    CMD3(CCC_Mask, "dbg_ph_obj_collision_damage", &ph_dbg_draw_mask, phDbgDispObjCollisionDammage);
-    CMD_RADIOGROUPMASK2("dbg_ph_ai_always_phmove", &ph_dbg_draw_mask, phDbgAlwaysUseAiPhMove, "dbg_ph_ai_never_phmove", &ph_dbg_draw_mask,
-                        phDbgNeverUseAiPhMove);
-    CMD3(CCC_Mask, "dbg_ph_ik", &ph_dbg_draw_mask, phDbgIK);
-    CMD3(CCC_Mask, "dbg_ph_ik_off", &ph_dbg_draw_mask1, phDbgIKOff);
-    CMD3(CCC_Mask, "dbg_draw_ph_ik_goal", &ph_dbg_draw_mask, phDbgDrawIKGoal);
-    CMD3(CCC_Mask, "dbg_ph_ik_limits", &ph_dbg_draw_mask, phDbgIKLimits);
-    CMD3(CCC_Mask, "dbg_ph_character_control", &ph_dbg_draw_mask, phDbgCharacterControl);
-    CMD3(CCC_Mask, "dbg_draw_ph_ray_motions", &ph_dbg_draw_mask, phDbgDrawRayMotions);
-    CMD4(CCC_Float, "dbg_ph_vel_collid_damage_to_display", &dbg_vel_collid_damage_to_display, 0.f, 1000.f);
-    CMD4(CCC_DbgBullets, "dbg_draw_bullet_hit", &g_bDrawBulletHit, 0, 1);
-    CMD1(CCC_DbgPhTrackObj, "dbg_track_obj");
-    CMD3(CCC_Mask, "dbg_ph_actor_restriction", &ph_dbg_draw_mask1, ph_m1_DbgActorRestriction);
-    CMD3(CCC_Mask, "dbg_draw_ph_hit_anims", &ph_dbg_draw_mask1, phDbgHitAnims);
-    CMD3(CCC_Mask, "dbg_draw_ph_ik_limits", &ph_dbg_draw_mask1, phDbgDrawIKLimits);
-#endif
-
-    CMD3(CCC_Mask, "dbg_draw_skeleton", &dbg_net_Draw_Flags, (1 << 11));
-
-    CMD4(CCC_Integer, "dbg_string_table_error_msg", &CStringTable::WriteErrorsToLog, 0, 1);
+    XR_CMD(CCC_Bool, "g_cop_death_anim", g_bCopDeathAnim);
 
 #ifdef DEBUG
-    CMD1(CCC_DumpInfos, "dump_infos");
-    CMD1(CCC_DumpMap, "dump_map");
-    CMD1(CCC_DumpCreatures, "dump_creatures");
+    XR_CMD(CCC_Mask, "dbg_draw_actor_alive", dbg_net_Draw_Flags, (1 << 0));
+    XR_CMD(CCC_Mask, "dbg_draw_actor_dead", dbg_net_Draw_Flags, (1 << 1));
+    XR_CMD(CCC_Mask, "dbg_draw_invitem", dbg_net_Draw_Flags, (1 << 4));
+    XR_CMD(CCC_Mask, "dbg_draw_actor_phys", dbg_net_Draw_Flags, (1 << 5));
+    XR_CMD(CCC_Mask, "dbg_draw_customdetector", dbg_net_Draw_Flags, (1 << 6));
+    XR_CMD(CCC_Mask, "dbg_destroy", dbg_net_Draw_Flags, (1 << 7));
+    XR_CMD(CCC_Mask, "dbg_draw_autopickupbox", dbg_net_Draw_Flags, (1 << 8));
+    XR_CMD(CCC_Mask, "dbg_draw_climbable", dbg_net_Draw_Flags, (1 << 10));
+
+    XR_CMD(CCC_Mask, "dbg_draw_ph_contacts", ph_dbg_draw_mask, phDbgDrawContacts);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_enabled_aabbs", ph_dbg_draw_mask, phDbgDrawEnabledAABBS);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_intersected_tries", ph_dbg_draw_mask, phDBgDrawIntersectedTries);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_saved_tries", ph_dbg_draw_mask, phDbgDrawSavedTries);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_tri_trace", ph_dbg_draw_mask, phDbgDrawTriTrace);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_positive_tries", ph_dbg_draw_mask, phDBgDrawPositiveTries);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_negative_tries", ph_dbg_draw_mask, phDBgDrawNegativeTries);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_tri_test_aabb", ph_dbg_draw_mask, phDbgDrawTriTestAABB);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_tries_changes_sign", ph_dbg_draw_mask, phDBgDrawTriesChangesSign);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_tri_point", ph_dbg_draw_mask, phDbgDrawTriPoint);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_explosion_position", ph_dbg_draw_mask, phDbgDrawExplosionPos);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_statistics", ph_dbg_draw_mask, phDbgDrawObjectStatistics);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_mass_centres", ph_dbg_draw_mask, phDbgDrawMassCenters);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_death_boxes", ph_dbg_draw_mask, phDbgDrawDeathActivationBox);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_hit_app_pos", ph_dbg_draw_mask, phHitApplicationPoints);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_cashed_tries_stats", ph_dbg_draw_mask, phDbgDrawCashedTriesStat);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_car_dynamics", ph_dbg_draw_mask, phDbgDrawCarDynamics);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_car_plots", ph_dbg_draw_mask, phDbgDrawCarPlots);
+    XR_CMD(CCC_Mask, "dbg_ph_ladder", ph_dbg_draw_mask, phDbgLadder);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_explosions", ph_dbg_draw_mask, phDbgDrawExplosions);
+    XR_CMD(CCC_Mask, "dbg_draw_car_plots_all_trans", ph_dbg_draw_mask, phDbgDrawCarAllTrnsm);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_zbuffer_disable", ph_dbg_draw_mask, phDbgDrawZDisable);
+    XR_CMD(CCC_Mask, "dbg_ph_obj_collision_damage", ph_dbg_draw_mask, phDbgDispObjCollisionDammage);
+    CMD_RADIOGROUPMASK2("dbg_ph_ai_always_phmove", ph_dbg_draw_mask, phDbgAlwaysUseAiPhMove, "dbg_ph_ai_never_phmove", ph_dbg_draw_mask, phDbgNeverUseAiPhMove);
+    XR_CMD(CCC_Mask, "dbg_ph_ik", ph_dbg_draw_mask, phDbgIK);
+    XR_CMD(CCC_Mask, "dbg_ph_ik_off", ph_dbg_draw_mask1, phDbgIKOff);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_ik_goal", ph_dbg_draw_mask, phDbgDrawIKGoal);
+    XR_CMD(CCC_Mask, "dbg_ph_ik_limits", ph_dbg_draw_mask, phDbgIKLimits);
+    XR_CMD(CCC_Mask, "dbg_ph_character_control", ph_dbg_draw_mask, phDbgCharacterControl);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_ray_motions", ph_dbg_draw_mask, phDbgDrawRayMotions);
+    XR_CMD(CCC_Float, "dbg_ph_vel_collid_damage_to_display", dbg_vel_collid_damage_to_display, 0.0f, 1000.0f);
+    XR_CMD(CCC_DbgBullets, "dbg_draw_bullet_hit", g_bDrawBulletHit, 0, 1);
+    XR_CMD(CCC_DbgPhTrackObj, "dbg_track_obj");
+    XR_CMD(CCC_Mask, "dbg_ph_actor_restriction", ph_dbg_draw_mask1, ph_m1_DbgActorRestriction);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_hit_anims", ph_dbg_draw_mask1, phDbgHitAnims);
+    XR_CMD(CCC_Mask, "dbg_draw_ph_ik_limits", ph_dbg_draw_mask1, phDbgDrawIKLimits);
 #endif
 
-    CMD3(CCC_Mask, "cl_dynamiccrosshair", &psHUD_Flags, HUD_CROSSHAIR_DYNAMIC);
-    CMD1(CCC_MainMenu, "main_menu");
+    XR_CMD(CCC_Mask, "dbg_draw_skeleton", dbg_net_Draw_Flags, (1 << 11));
+
+    XR_CMD(CCC_Bool, "dbg_string_table_error_msg", CStringTable::WriteErrorsToLog);
+
+#ifdef DEBUG
+    XR_CMD(CCC_DumpInfos, "dump_infos");
+    XR_CMD(CCC_DumpMap, "dump_map");
+    XR_CMD(CCC_DumpCreatures, "dump_creatures");
+#endif
+
+    XR_CMD(CCC_Mask, "cl_dynamiccrosshair", psHUD_Flags, HUD_CROSSHAIR_DYNAMIC);
+    XR_CMD(CCC_MainMenu, "main_menu");
 
 #ifndef MASTER_GOLD
-    CMD1(CCC_StartTimeSingle, "start_time_single");
-    CMD4(CCC_TimeFactorSingle, "time_factor_single", &g_fTimeFactor, 0.f, flt_max);
+    XR_CMD(CCC_StartTimeSingle, "start_time_single");
+    XR_CMD(CCC_TimeFactorSingle, "time_factor_single", g_fTimeFactor, 0.0f, flt_max);
 #endif // MASTER_GOLD
 
-    CMD3(CCC_Mask, "ai_use_torch_dynamic_lights", &psActorFlags, AF_AI_VOLUMETRIC_LIGHTS);
-    CMD3(CCC_Mask, "r2_exp_force_shadowed", &psActorFlags, AF_FORCE_LIGHTS_SHADOWED);
+    XR_CMD(CCC_Mask, "ai_use_torch_dynamic_lights", psActorFlags, AF_AI_VOLUMETRIC_LIGHTS);
+    XR_CMD(CCC_Mask, "r2_exp_force_shadowed", psActorFlags, AF_FORCE_LIGHTS_SHADOWED);
 
 #ifndef MASTER_GOLD
-    CMD4(CCC_Vector3, "psp_cam_offset", &CCameraLook2::m_cam_offset, Fvector().set(-1000, -1000, -1000), Fvector().set(1000, 1000, 1000));
+    XR_CMD(CCC_Vector3, "psp_cam_offset", CCameraLook2::m_cam_offset, Fvector3{-1000.0f, -1000.0f, -1000.0f}, Fvector3{1000.0f, 1000.0f, 1000.0f});
 #endif // MASTER_GOLD
 
 #ifdef DEBUG
-    CMD1(CCC_DumpObjects, "dump_all_objects");
-    CMD3(CCC_String, "stalker_death_anim", dbg_stalker_death_anim, 32);
-    CMD4(CCC_Integer, "death_anim_velocity", &b_death_anim_velocity, FALSE, TRUE);
-    CMD1(CCC_Crash, "crash");
-    CMD4(CCC_Integer, "dbg_show_ani_info", &g_ShowAnimationInfo, 0, 1);
-    CMD4(CCC_Integer, "dbg_dump_physics_step", &g_bDebugDumpPhysicsStep, 0, 1);
+    XR_CMD(CCC_DumpObjects, "dump_all_objects");
+    XR_CMD(CCC_String, "stalker_death_anim", dbg_stalker_death_anim, 32);
+    XR_CMD(CCC_Bool, "death_anim_velocity", b_death_anim_velocity);
+    XR_CMD(CCC_Crash, "crash");
+    XR_CMD(CCC_Bool, "dbg_show_ani_info", g_ShowAnimationInfo);
+    XR_CMD(CCC_Bool, "dbg_dump_physics_step", g_bDebugDumpPhysicsStep);
 #endif
 
-    CMD4(CCC_Integer, "show_wnd_rect", &g_show_wnd_rect, 0, 1);
-    CMD4(CCC_Integer, "show_wnd_rect_all", &g_show_wnd_rect2, 0, 1);
-    CMD4(CCC_Integer, "show_wnd_rect_names", &g_show_wnd_rect_text, 0, 1);
-    CMD4(CCC_Integer, "g_console_show_always", &g_console_show_always, 0, 1);
+    XR_CMD(CCC_Bool, "show_wnd_rect", g_show_wnd_rect);
+    XR_CMD(CCC_Bool, "show_wnd_rect_all", g_show_wnd_rect2);
+    XR_CMD(CCC_Bool, "show_wnd_rect_names", g_show_wnd_rect_text);
+    XR_CMD(CCC_Bool, "g_console_show_always", g_console_show_always);
 
     *g_last_saved_game = 0;
 
-    CMD4(CCC_Float, "g_cam_height_speed", &cam_HeightInterpolationSpeed, 4.0f, 16.0f);
-    CMD4(CCC_Float, "g_cam_lookout_speed", &cam_LookoutSpeed, 1.0f, 4.0f);
+    XR_CMD(CCC_Float, "g_cam_height_speed", cam_HeightInterpolationSpeed, 4.0f, 16.0f);
+    XR_CMD(CCC_Float, "g_cam_lookout_speed", cam_LookoutSpeed, 1.0f, 4.0f);
 
 #ifdef USE_MEMORY_VALIDATOR
-    CMD4(CCC_Integer, "g_enable_memory_debug", &g_enable_memory_debug, 0, 1);
-    CMD1(CCC_DbgMemoryDump, "dbg_memory_dump");
-    CMD1(CCC_DbgMemoryInfo, "dbg_memory_info");
-    CMD1(CCC_DbgMemoryClear, "dbg_memory_clear");
+    XR_CMD(CCC_Bool, "g_enable_memory_debug", g_enable_memory_debug);
+    XR_CMD(CCC_DbgMemoryDump, "dbg_memory_dump");
+    XR_CMD(CCC_DbgMemoryInfo, "dbg_memory_info");
+    XR_CMD(CCC_DbgMemoryClear, "dbg_memory_clear");
+
     if (!g_enable_memory_debug)
         PointerRegistryClear();
 #endif

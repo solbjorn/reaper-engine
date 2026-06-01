@@ -15,7 +15,7 @@
 extern Fvector4 ps_ssfx_grass_interactive;
 
 IGame_Persistent* g_pGamePersistent{};
-BOOL g_prefetch{TRUE};
+bool g_prefetch{true};
 
 namespace xr
 {

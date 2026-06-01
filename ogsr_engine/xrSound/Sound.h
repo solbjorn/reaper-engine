@@ -30,7 +30,7 @@ extern u32 snd_device_id;
 extern float psSoundTimeFactor; //--#SM+#--
 
 // SoundRender_Core.cpp
-extern BOOL bSenvironmentXrExport;
+extern bool bSenvironmentXrExport;
 
 // Flags
 enum : u32
@@ -158,7 +158,8 @@ public:
 
     IC void play(CObject* O, u32 flags = 0, float delay = 0.f);
     IC void play_at_pos(CObject* O, const Fvector& pos, u32 flags = 0, float delay = 0.f);
-    IC void play_no_feedback(CObject* O, u32 flags = 0, float delay = 0.f, Fvector* pos = nullptr, float* vol = nullptr, float* freq = nullptr, Fvector2* range = nullptr);
+    IC void play_no_feedback(CObject* O, u32 flags = 0, float delay = 0.f, Fvector* pos = nullptr, float* vol = nullptr, float* freq = nullptr,
+                             Fvector2* range = nullptr);
 
     inline tmc::task<void> stop();
     inline void queue_stop();
@@ -377,8 +378,8 @@ public:
 
     virtual void play(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f) = 0;
     virtual void play_at_pos(ref_sound& S, CObject* O, const Fvector& pos, u32 flags = 0, float delay = 0.f) = 0;
-    virtual void play_no_feedback(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f, Fvector* pos = nullptr, float* vol = nullptr, float* freq = nullptr,
-                                  Fvector2* range = nullptr) = 0;
+    virtual void play_no_feedback(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f, Fvector* pos = nullptr, float* vol = nullptr,
+                                  float* freq = nullptr, Fvector2* range = nullptr) = 0;
     virtual void queue_stop(ref_sound& S, bool deferred, f32 speed_k = 1.0f) = 0;
 
     virtual void set_master_volume(float f = 1.f) = 0;

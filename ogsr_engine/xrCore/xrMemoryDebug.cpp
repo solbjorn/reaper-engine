@@ -7,8 +7,8 @@
 static std::map<void*, PointerInfo, std::less<>, PointerAllocator<std::pair<void* const, PointerInfo>>> gPointerRegistry;
 static std::recursive_mutex gPointerRegistryProtector;
 
-BOOL g_enable_memory_debug = TRUE;
-static BOOL g_enable_double_free_check = g_enable_memory_debug;
+bool g_enable_memory_debug{true};
+static bool g_enable_double_free_check = g_enable_memory_debug;
 
 void PointerRegistryAdd(void* ptr, PointerInfo&& info)
 {
@@ -54,7 +54,7 @@ void PointerRegistryClear()
         std::scoped_lock lock(gPointerRegistryProtector);
         gPointerRegistry.clear();
 
-        g_enable_double_free_check = FALSE;
+        g_enable_double_free_check = false;
     }
 }
 

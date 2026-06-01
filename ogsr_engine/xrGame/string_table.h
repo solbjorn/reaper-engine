@@ -27,7 +27,7 @@ public:
     static void ReparseKeyBindings();
     static shared_str GetLanguage();
 
-    static BOOL WriteErrorsToLog;
+    static bool WriteErrorsToLog;
 
 private:
     static tmc::task<void> Init();

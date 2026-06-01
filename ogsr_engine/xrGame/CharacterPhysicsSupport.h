@@ -179,4 +179,4 @@ private:
     void update_animation_collision();
 };
 
-extern BOOL g_bCopDeathAnim;
+extern bool g_bCopDeathAnim;

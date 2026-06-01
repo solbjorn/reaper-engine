@@ -93,7 +93,7 @@ class CCC_MemStat : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_MemStat, IConsole_Command);
 
 public:
-    explicit CCC_MemStat(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_MemStat(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_MemStat() override = default;
 
     void Execute(std::string_view args) override
@@ -114,7 +114,7 @@ class CCC_DbgMemCheck : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DbgMemCheck, IConsole_Command);
 
 public:
-    explicit CCC_DbgMemCheck(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DbgMemCheck(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_DbgMemCheck() override = default;
 
     void Execute(std::string_view) override
@@ -133,7 +133,7 @@ class CCC_DbgStrCheck : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DbgStrCheck, IConsole_Command);
 
 public:
-    explicit CCC_DbgStrCheck(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DbgStrCheck(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_DbgStrCheck() override = default;
 
     void Execute(std::string_view) override { str_container::verify(); }
@@ -144,7 +144,7 @@ class CCC_DbgStrDump : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DbgStrDump, IConsole_Command);
 
 public:
-    explicit CCC_DbgStrDump(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DbgStrDump(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_DbgStrDump() override = default;
 
     void Execute(std::string_view) override { str_container::dump(); }
@@ -156,7 +156,7 @@ class CCC_DbgLALibDump : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DbgLALibDump, IConsole_Command);
 
 public:
-    explicit CCC_DbgLALibDump(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DbgLALibDump(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_DbgLALibDump() override = default;
 
     void Execute(std::string_view) override { LALib.DbgDumpInfo(); }
@@ -168,7 +168,7 @@ class CCC_MotionsStat : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_MotionsStat, IConsole_Command);
 
 public:
-    explicit CCC_MotionsStat(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_MotionsStat(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_MotionsStat() override = default;
 
     void Execute(std::string_view) override { g_pMotionsContainer->dump(); }
@@ -180,7 +180,7 @@ class CCC_TexturesStat : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_TexturesStat, IConsole_Command);
 
 public:
-    explicit CCC_TexturesStat(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_TexturesStat(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_TexturesStat() override = default;
 
     void Execute(std::string_view) override { Device.DumpResourcesMemoryUsage(); }
@@ -193,7 +193,7 @@ class CCC_E_Dump : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_E_Dump, IConsole_Command);
 
 public:
-    explicit CCC_E_Dump(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_E_Dump(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_E_Dump() override = default;
 
     void Execute(std::string_view) override { Engine.Event.Dump(); }
@@ -241,7 +241,7 @@ class CCC_Help : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_Help, IConsole_Command);
 
 public:
-    explicit CCC_Help(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_Help(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_Help() override = default;
 
     void Execute(std::string_view) override
@@ -282,7 +282,7 @@ class CCC_DumpOpenFiles : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DumpOpenFiles, IConsole_Command);
 
 public:
-    explicit CCC_DumpOpenFiles(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_DumpOpenFiles(gsl::czstring N) : IConsole_Command{N} {}
     ~CCC_DumpOpenFiles() override = default;
 
     void Execute(std::string_view args) override
@@ -306,7 +306,7 @@ class CCC_SaveCFG : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_SaveCFG, IConsole_Command);
 
 public:
-    explicit CCC_SaveCFG(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_SaveCFG(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_SaveCFG() override = default;
 
     void Execute(std::string_view args) override
@@ -483,7 +483,7 @@ private:
     u32 _dummy{};
 
 public:
-    explicit CCC_VidMode(LPCSTR N) : CCC_Token{N, &_dummy, nullptr} { bEmptyArgsHandled = false; }
+    explicit CCC_VidMode(gsl::czstring N) : CCC_Token{N, _dummy, nullptr} { bEmptyArgsHandled = false; }
     ~CCC_VidMode() override = default;
 
     void Execute(std::string_view args) override
@@ -538,7 +538,7 @@ class CCC_Screenmode : public CCC_Token
     RTTI_DECLARE_TYPEINFO(CCC_Screenmode, CCC_Token);
 
 public:
-    explicit CCC_Screenmode(gsl::czstring N) : CCC_Token{N, &g_screenmode, screen_mode_tokens} {}
+    explicit CCC_Screenmode(gsl::czstring N) : CCC_Token{N, g_screenmode, screen_mode_tokens} {}
     ~CCC_Screenmode() override = default;
 
     void Execute(std::string_view args) override
@@ -617,7 +617,7 @@ class CCC_SND_Restart : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_SND_Restart, IConsole_Command);
 
 public:
-    explicit CCC_SND_Restart(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_SND_Restart(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_SND_Restart() override = default;
 
     void Execute(std::string_view) override { Sound->_restart(); }
@@ -626,14 +626,14 @@ public:
 //-----------------------------------------------------------------------
 
 #if 0
-float ps_gamma = 1.f, ps_brightness = 1.f, ps_contrast = 1.f;
+f32 ps_gamma{1.0f}, ps_brightness{1.0f}, ps_contrast{1.0f};
 
 class CCC_Gamma : public CCC_Float
 {
     RTTI_DECLARE_TYPEINFO(CCC_Gamma, CCC_Float);
 
 public:
-    explicit CCC_Gamma(LPCSTR N, float* V) : CCC_Float(N, V, 0.5f, 1.5f) {}
+    explicit CCC_Gamma(gsl::czstring N, f32& V) : CCC_Float(N, V, 0.5f, 1.5f) {}
     ~CCC_Gamma() override = default;
 
     void Execute(std::string_view args) override
@@ -663,7 +663,7 @@ private:
     u32 renderer_value{};
 
 public:
-    explicit CCC_r2(LPCSTR N) : inherited{N, &renderer_value, nullptr} {}
+    explicit CCC_r2(gsl::czstring N) : inherited{N, renderer_value, nullptr} {}
     ~CCC_r2() override = default;
 
     void Execute(std::string_view args) override
@@ -694,7 +694,7 @@ private:
     typedef CCC_Token inherited;
 
 public:
-    explicit CCC_soundDevice(LPCSTR N) : inherited{N, &snd_device_id, nullptr} {}
+    explicit CCC_soundDevice(gsl::czstring N) : inherited{N, snd_device_id, nullptr} {}
     ~CCC_soundDevice() override = default;
 
     void Execute(std::string_view args) override
@@ -740,7 +740,7 @@ private:
     using inherited = CCC_Mask;
 
 public:
-    explicit CCC_ExclusiveMode(const char* N, Flags32* V, u32 M) : inherited{N, V, M} {}
+    explicit CCC_ExclusiveMode(gsl::czstring N, Flags32& V, u32 M) : inherited{N, V, M} {}
     ~CCC_ExclusiveMode() override = default;
 
     void Execute(std::string_view args) override
@@ -758,7 +758,7 @@ class CCC_HideConsole : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_HideConsole, IConsole_Command);
 
 public:
-    explicit CCC_HideConsole(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_HideConsole(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_HideConsole() override = default;
 
     void Execute(std::string_view) override { Device.add_frame_async(CallMe::fromMethod<&CCC_HideConsole::execute_async>(this)); }
@@ -773,7 +773,7 @@ class CCC_SoundParamsSmoothing : public CCC_Integer
     RTTI_DECLARE_TYPEINFO(CCC_SoundParamsSmoothing, CCC_Integer);
 
 public:
-    explicit CCC_SoundParamsSmoothing(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer{N, V, _min, _max} {}
+    explicit CCC_SoundParamsSmoothing(gsl::czstring N, s32& V, s32 _min = 0, s32 _max = 999) : CCC_Integer{N, V, _min, _max} {}
     ~CCC_SoundParamsSmoothing() override = default;
 
     void Execute(std::string_view args) override
@@ -790,8 +790,8 @@ float psHUD_FOV = psHUD_FOV_def;
 extern int rsDVB_Size;
 extern int rsDIB_Size;
 
-float ps_r2_sun_shafts_min = 0.f;
-float ps_r2_sun_shafts_value = 1.f;
+float ps_r2_sun_shafts_min = 0.0f;
+float ps_r2_sun_shafts_value = 1.0f;
 
 int ps_framelimiter = 0;
 
@@ -800,153 +800,142 @@ Fvector3 ssfx_wetness_multiplier{1.0f, 0.3f, 0.0f};
 void CCC_Register()
 {
     // General
-    CMD1(CCC_Help, "help");
-    CMD1(CCC_Quit, "quit");
-    CMD1(CCC_Start, "start");
-    CMD1(CCC_Disconnect, "disconnect");
-    CMD1(CCC_SaveCFG, "cfg_save");
-    CMD1(CCC_LoadCFG, "cfg_load");
+    XR_CMD(CCC_Help, "help");
+    XR_CMD(CCC_Quit, "quit");
+    XR_CMD(CCC_Start, "start");
+    XR_CMD(CCC_Disconnect, "disconnect");
+    XR_CMD(CCC_SaveCFG, "cfg_save");
+    XR_CMD(CCC_LoadCFG, "cfg_load");
 
-    CMD1(CCC_MotionsStat, "stat_motions");
+    XR_CMD(CCC_MotionsStat, "stat_motions");
 #ifdef DEBUG
-    CMD1(CCC_TexturesStat, "stat_textures");
+    XR_CMD(CCC_TexturesStat, "stat_textures");
 #endif // DEBUG
 
 #ifdef DEBUG_MEMORY_MANAGER
-    CMD1(CCC_MemStat, "dbg_mem_dump");
-    CMD1(CCC_DbgMemCheck, "dbg_mem_check");
+    XR_CMD(CCC_MemStat, "dbg_mem_dump");
+    XR_CMD(CCC_DbgMemCheck, "dbg_mem_check");
 #endif // DEBUG_MEMORY_MANAGER
 
 #ifdef DEBUG
-    CMD3(CCC_Mask, "mt_particles", &psDeviceFlags, mtParticles);
+    XR_CMD(CCC_Mask, "mt_particles", psDeviceFlags, mtParticles);
 
-    CMD1(CCC_DbgStrCheck, "dbg_str_check");
-    CMD1(CCC_DbgStrDump, "dbg_str_dump");
+    XR_CMD(CCC_DbgStrCheck, "dbg_str_check");
+    XR_CMD(CCC_DbgStrDump, "dbg_str_dump");
 
-    CMD3(CCC_Mask, "mt_sound", &psDeviceFlags, mtSound);
-    CMD3(CCC_Mask, "mt_physics", &psDeviceFlags, mtPhysics);
-    CMD3(CCC_Mask, "mt_network", &psDeviceFlags, mtNetwork);
+    XR_CMD(CCC_Mask, "mt_sound", psDeviceFlags, mtSound);
+    XR_CMD(CCC_Mask, "mt_physics", psDeviceFlags, mtPhysics);
+    XR_CMD(CCC_Mask, "mt_network", psDeviceFlags, mtNetwork);
 
     // Events
-    CMD1(CCC_E_Dump, "e_list");
-    CMD1(CCC_E_Signal, "e_signal");
+    XR_CMD(CCC_E_Dump, "e_list");
+    XR_CMD(CCC_E_Signal, "e_signal");
 
-    CMD3(CCC_Mask, "rs_wireframe", &psDeviceFlags, rsWireframe);
-    CMD3(CCC_Mask, "rs_clear_bb", &psDeviceFlags, rsClearBB);
-    CMD3(CCC_Mask, "rs_occlusion", &psDeviceFlags, rsOcclusion);
+    XR_CMD(CCC_Mask, "rs_wireframe", psDeviceFlags, rsWireframe);
+    XR_CMD(CCC_Mask, "rs_clear_bb", psDeviceFlags, rsClearBB);
+    XR_CMD(CCC_Mask, "rs_occlusion", psDeviceFlags, rsOcclusion);
 
-    CMD3(CCC_Mask, "rs_detail", &psDeviceFlags, rsDetails);
+    XR_CMD(CCC_Mask, "rs_detail", psDeviceFlags, rsDetails);
 
-    CMD3(CCC_Mask, "rs_render_statics", &psDeviceFlags, rsDrawStatic);
-    CMD3(CCC_Mask, "rs_render_dynamics", &psDeviceFlags, rsDrawDynamic);
+    XR_CMD(CCC_Mask, "rs_render_statics", psDeviceFlags, rsDrawStatic);
+    XR_CMD(CCC_Mask, "rs_render_dynamics", psDeviceFlags, rsDrawDynamic);
 #endif
 
     // Render device states
-    CMD3(CCC_Mask, "rs_always_active", &psDeviceFlags, rsAlwaysActive);
+    XR_CMD(CCC_Mask, "rs_always_active", psDeviceFlags, rsAlwaysActive);
 
-    CMD4(CCC_Integer, "r_lens_flare", &ps_lens_flare, FALSE, TRUE);
+    XR_CMD(CCC_Bool, "r_lens_flare", ps_lens_flare);
 
-    CMD4(CCC_Float, "r2_sunshafts_min", &ps_r2_sun_shafts_min, 0.0, 0.5);
-    CMD4(CCC_Float, "r2_sunshafts_value", &ps_r2_sun_shafts_value, 0.5, 2.0);
+    XR_CMD(CCC_Float, "r2_sunshafts_min", ps_r2_sun_shafts_min, 0.0f, 0.5f);
+    XR_CMD(CCC_Float, "r2_sunshafts_value", ps_r2_sun_shafts_value, 0.5f, 2.0f);
 
-    CMD3(CCC_Mask, "rs_v_sync", &psDeviceFlags, rsVSync);
-    CMD3(CCC_Mask, "rs_triple_buffering", &psDeviceFlags, rs_triple_buffering);
-    CMD1(CCC_Screenmode, "rs_screenmode");
-    CMD3(CCC_Mask, "rs_stats", &psDeviceFlags, rsStatistic);
-    CMD4(CCC_Float, "rs_vis_distance", &psVisDistance, 0.4f, 1.5f);
+    XR_CMD(CCC_Mask, "rs_v_sync", psDeviceFlags, rsVSync);
+    XR_CMD(CCC_Mask, "rs_triple_buffering", psDeviceFlags, rs_triple_buffering);
+    XR_CMD(CCC_Screenmode, "rs_screenmode");
+    XR_CMD(CCC_Mask, "rs_stats", psDeviceFlags, rsStatistic);
+    XR_CMD(CCC_Float, "rs_vis_distance", psVisDistance, 0.4f, 1.5f);
 
-    CMD3(CCC_Mask, "rs_cam_pos", &psDeviceFlags, rsCameraPos);
+    XR_CMD(CCC_Mask, "rs_cam_pos", psDeviceFlags, rsCameraPos);
 
 #ifdef DEBUG
-    CMD3(CCC_Mask, "rs_occ_draw", &psDeviceFlags, rsOcclusionDraw);
-    CMD3(CCC_Mask, "rs_occ_stats", &psDeviceFlags, rsOcclusionStats);
+    XR_CMD(CCC_Mask, "rs_occ_draw", psDeviceFlags, rsOcclusionDraw);
+    XR_CMD(CCC_Mask, "rs_occ_stats", psDeviceFlags, rsOcclusionStats);
 #endif // DEBUG
 
 #if 0
     // Вместо этих настроек теперь используется ES Color Grading
-    CMD2(CCC_Gamma, "rs_c_gamma", &ps_gamma);
-    CMD2(CCC_Gamma, "rs_c_brightness", &ps_brightness);
-    CMD2(CCC_Gamma, "rs_c_contrast", &ps_contrast);
+    XR_CMD(CCC_Gamma, "rs_c_gamma", ps_gamma);
+    XR_CMD(CCC_Gamma, "rs_c_brightness", ps_brightness);
+    XR_CMD(CCC_Gamma, "rs_c_contrast", ps_contrast);
 #endif
 
-    //	CMD4(CCC_Integer,	"rs_vb_size",			&rsDVB_Size,		32,		4096);
-    //	CMD4(CCC_Integer,	"rs_ib_size",			&rsDIB_Size,		32,		4096);
-
-    CMD3(CCC_Mask, "rs_hw_stats", &psDeviceFlags, rsHWInfo);
+    XR_CMD(CCC_Mask, "rs_hw_stats", psDeviceFlags, rsHWInfo);
 
     // General video control
-    CMD1(CCC_VidMode, "vid_mode");
+    XR_CMD(CCC_VidMode, "vid_mode");
 
-    CMD1(CCC_VID_Reset, "vid_restart");
+    XR_CMD(CCC_VID_Reset, "vid_restart");
 
     // Sound
-    CMD2(CCC_Float, "snd_volume_eff", &psSoundVEffects);
-    CMD2(CCC_Float, "snd_volume_music", &psSoundVMusic);
-    CMD1(CCC_SND_Restart, "snd_restart");
+    XR_CMD(CCC_Float, "snd_volume_eff", psSoundVEffects);
+    XR_CMD(CCC_Float, "snd_volume_music", psSoundVMusic);
+    XR_CMD(CCC_SND_Restart, "snd_restart");
 
-    CMD3(CCC_Mask, "snd_efx", &psSoundFlags, ss_EFX);
-    CMD4(CCC_Integer, "snd_targets", &psSoundTargets, 128, 1024);
+    XR_CMD(CCC_Mask, "snd_efx", psSoundFlags, ss_EFX);
+    XR_CMD(CCC_Integer, "snd_targets", psSoundTargets, 128, 1024);
 
-    CMD4(CCC_Float, "snd_rolloff", &psSoundRolloff, 0.1f, 2.f);
-    CMD4(CCC_Float, "snd_fade_speed", &psSoundFadeSpeed, 1.f, 10.f);
-    CMD4(CCC_Float, "snd_occ_scale", &psSoundOcclusionScale, 0.1f, 1.f);
-    CMD4(CCC_Float, "snd_occ_hf", &psSoundOcclusionHf, 0.f, 1.f);
-    CMD4(CCC_Float, "snd_occ_mtl", &psSoundOcclusionMtl, 0.f, 1.f);
+    XR_CMD(CCC_Float, "snd_rolloff", psSoundRolloff, 0.1f, 2.0f);
+    XR_CMD(CCC_Float, "snd_fade_speed", psSoundFadeSpeed, 1.0f, 10.0f);
+    XR_CMD(CCC_Float, "snd_occ_scale", psSoundOcclusionScale, 0.1f, 1.0f);
+    XR_CMD(CCC_Float, "snd_occ_hf", psSoundOcclusionHf, 0.0f, 1.0f);
+    XR_CMD(CCC_Float, "snd_occ_mtl", psSoundOcclusionMtl, 0.0f, 1.0f);
 
     // Doppler effect power
-    CMD4(CCC_Float, "snd_doppler_power", &soundSmoothingParams::power, 0.f, 5.f);
-    CMD4(CCC_SoundParamsSmoothing, "snd_doppler_smoothing", &soundSmoothingParams::steps, 1, 100);
+    XR_CMD(CCC_Float, "snd_doppler_power", soundSmoothingParams::power, 0.0f, 5.0f);
+    XR_CMD(CCC_SoundParamsSmoothing, "snd_doppler_smoothing", soundSmoothingParams::steps, 1, 100);
 
-    CMD4(CCC_Integer, "senvironment_xr_export", &bSenvironmentXrExport, FALSE, TRUE);
+    XR_CMD(CCC_Bool, "senvironment_xr_export", bSenvironmentXrExport);
 
 #ifdef DEBUG
-    CMD3(CCC_Mask, "snd_stats", &g_stats_flags, st_sound);
-    CMD3(CCC_Mask, "snd_stats_min_dist", &g_stats_flags, st_sound_min_dist);
-    CMD3(CCC_Mask, "snd_stats_max_dist", &g_stats_flags, st_sound_max_dist);
-    CMD3(CCC_Mask, "snd_stats_ai_dist", &g_stats_flags, st_sound_ai_dist);
-    CMD3(CCC_Mask, "snd_stats_info_name", &g_stats_flags, st_sound_info_name);
-    CMD3(CCC_Mask, "snd_stats_info_object", &g_stats_flags, st_sound_info_object);
+    XR_CMD(CCC_Mask, "snd_stats", g_stats_flags, st_sound);
+    XR_CMD(CCC_Mask, "snd_stats_min_dist", g_stats_flags, st_sound_min_dist);
+    XR_CMD(CCC_Mask, "snd_stats_max_dist", g_stats_flags, st_sound_max_dist);
+    XR_CMD(CCC_Mask, "snd_stats_ai_dist", g_stats_flags, st_sound_ai_dist);
+    XR_CMD(CCC_Mask, "snd_stats_info_name", g_stats_flags, st_sound_info_name);
+    XR_CMD(CCC_Mask, "snd_stats_info_object", g_stats_flags, st_sound_info_object);
 
-    CMD4(CCC_Integer, "error_line_count", &g_ErrorLineCount, 6, 1024);
+    XR_CMD(CCC_Integer, "error_line_count", g_ErrorLineCount, 6, 1024);
 #endif // DEBUG
 
     // Mouse
-    CMD3(CCC_Mask, "mouse_invert", &psMouseInvert, 1);
+    XR_CMD(CCC_Mask, "mouse_invert", psMouseInvert, 1);
     psMouseSens = 0.12f;
-    CMD4(CCC_Float, "mouse_sens", &psMouseSens, 0.001f, 0.6f);
+    XR_CMD(CCC_Float, "mouse_sens", psMouseSens, 0.001f, 0.6f);
 
     // Camera
-    CMD4(CCC_Float, "cam_inert", &psCamInert, 0.0f, 0.99f);
-    CMD2(CCC_Float, "cam_slide_inert", &psCamSlideInert);
+    XR_CMD(CCC_Float, "cam_inert", psCamInert, 0.0f, 0.99f);
+    XR_CMD(CCC_Float, "cam_slide_inert", psCamSlideInert);
 
-    CMD1(CCC_r2, "renderer");
+    XR_CMD(CCC_r2, "renderer");
 
-    CMD1(CCC_soundDevice, "snd_device");
-
-#ifdef DEBUG
-    CMD1(CCC_DumpOpenFiles, "dump_open_files");
-#endif
-
-    CMD3(CCC_ExclusiveMode, "input_exclusive_mode", &psDeviceFlags, rsExclusiveMode);
-
-    // extern int g_svTextConsoleUpdateRate;
-    // CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);
-
-    CMD1(CCC_HideConsole, "hide");
-
-    CMD4(CCC_Integer, "r__framelimit", &ps_framelimiter, 0, 500);
-
-    CMD4(CCC_Vector3, "ssfx_wetness_multiplier", &ssfx_wetness_multiplier, Fvector3().set(0.1f, 0.1f, 0.0f), Fvector3().set(20.0f, 20.0f, 0.0f));
+    XR_CMD(CCC_soundDevice, "snd_device");
 
 #ifdef DEBUG
-    extern BOOL debug_destroy;
-    CMD4(CCC_Integer, "debug_destroy", &debug_destroy, FALSE, TRUE);
+    XR_CMD(CCC_DumpOpenFiles, "dump_open_files");
 #endif
 
-    CMD4(CCC_Float, "g_font_scale_x", &g_fontWidthScale, 0.2f, 5.0f);
-    CMD4(CCC_Float, "g_font_scale_y", &g_fontHeightScale, 0.2f, 5.0f);
+    XR_CMD(CCC_ExclusiveMode, "input_exclusive_mode", psDeviceFlags, rsExclusiveMode);
 
-    CMD4(CCC_Integer, "g_prefetch", &g_prefetch, 0, 1);
+    XR_CMD(CCC_HideConsole, "hide");
 
-    CMD1(CCC_DbgLALibDump, "dbg_lalib_dump");
+    XR_CMD(CCC_Integer, "r__framelimit", ps_framelimiter, 0, 500);
+
+    XR_CMD(CCC_Vector3, "ssfx_wetness_multiplier", ssfx_wetness_multiplier, Fvector3{0.1f, 0.1f, 0.0f}, Fvector3{20.0f, 20.0f, 0.0f});
+
+    XR_CMD(CCC_Float, "g_font_scale_x", g_fontWidthScale, 0.2f, 5.0f);
+    XR_CMD(CCC_Float, "g_font_scale_y", g_fontHeightScale, 0.2f, 5.0f);
+
+    XR_CMD(CCC_Bool, "g_prefetch", g_prefetch);
+
+    XR_CMD(CCC_DbgLALibDump, "dbg_lalib_dump");
 }

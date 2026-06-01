@@ -11,7 +11,15 @@
 
 #include "xr_ioc_cmd.h"
 
-bool CConsole::GetBool(LPCSTR cmd) const
+IConsole_Command* CConsole::GetCommand(gsl::czstring cmd) const
+{
+    if (auto it = Commands.find(cmd); it != Commands.end())
+        return it->second;
+
+    return nullptr;
+}
+
+bool CConsole::GetBool(gsl::czstring cmd) const
 {
     IConsole_Command* cc = GetCommand(cmd);
     CCC_Mask* cf = smart_cast<CCC_Mask*>(cc);
@@ -19,6 +27,9 @@ bool CConsole::GetBool(LPCSTR cmd) const
     {
         return (cf->GetValue() != 0);
     }
+
+    if (auto cb = smart_cast<const CCC_Bool*>(cc); cb != nullptr)
+        return cb->GetValue();
 
     CCC_Integer* ci = smart_cast<CCC_Integer*>(cc);
     if (ci)
@@ -28,30 +39,7 @@ bool CConsole::GetBool(LPCSTR cmd) const
     return false;
 }
 
-float CConsole::GetFloat(LPCSTR cmd, float& min, float& max) const
-{
-    min = 0.0f;
-    max = 0.0f;
-    IConsole_Command* cc = GetCommand(cmd);
-    CCC_Float* cf = smart_cast<CCC_Float*>(cc);
-    if (cf)
-    {
-        cf->GetBounds(min, max);
-        return cf->GetValue();
-    }
-    return 0.0f;
-}
-
-IConsole_Command* CConsole::GetCommand(LPCSTR cmd) const
-{
-    auto it = Commands.find(cmd);
-    if (it == Commands.end())
-        return nullptr;
-
-    return it->second;
-}
-
-int CConsole::GetInteger(LPCSTR cmd, int& min, int& max) const
+s32 CConsole::GetInteger(gsl::czstring cmd, s32& min, s32& max) const
 {
     min = 0;
     max = 1;
@@ -63,14 +51,29 @@ int CConsole::GetInteger(LPCSTR cmd, int& min, int& max) const
         cf->GetBounds(min, max);
         return cf->GetValue();
     }
+
     CCC_Mask* cm = smart_cast<CCC_Mask*>(cc);
     if (cm)
-    {
-        min = 0;
-        max = 1;
         return (cm->GetValue()) ? 1 : 0;
-    }
+
+    if (auto cb = smart_cast<const CCC_Bool*>(cc); cb != nullptr)
+        return cb->GetValue() ? 1 : 0;
+
     return 0;
+}
+
+f32 CConsole::GetFloat(gsl::czstring cmd, f32& min, f32& max) const
+{
+    min = 0.0f;
+    max = 0.0f;
+    IConsole_Command* cc = GetCommand(cmd);
+    CCC_Float* cf = smart_cast<CCC_Float*>(cc);
+    if (cf)
+    {
+        cf->GetBounds(min, max);
+        return cf->GetValue();
+    }
+    return 0.0f;
 }
 
 xr_string CConsole::GetString(gsl::czstring cmd) const
@@ -86,7 +89,7 @@ xr_string CConsole::GetString(gsl::czstring cmd) const
 
 xr_string CConsole::GetToken(gsl::czstring cmd) const { return GetString(cmd); }
 
-const xr_token* CConsole::GetXRToken(LPCSTR cmd) const
+const xr_token* CConsole::GetXRToken(gsl::czstring cmd) const
 {
     IConsole_Command* cc = GetCommand(cmd);
     CCC_Token* cf = smart_cast<CCC_Token*>(cc);
@@ -99,7 +102,7 @@ const xr_token* CConsole::GetXRToken(LPCSTR cmd) const
     return nullptr;
 }
 
-Fvector* CConsole::GetFVectorPtr(LPCSTR cmd) const
+Fvector* CConsole::GetFVectorPtr(gsl::czstring cmd) const
 {
     IConsole_Command* cc = GetCommand(cmd);
     CCC_Vector3* cf = smart_cast<CCC_Vector3*>(cc);
@@ -109,7 +112,7 @@ Fvector* CConsole::GetFVectorPtr(LPCSTR cmd) const
     return nullptr;
 }
 
-Fvector CConsole::GetFVector(LPCSTR cmd) const
+Fvector CConsole::GetFVector(gsl::czstring cmd) const
 {
     Fvector* pV = GetFVectorPtr(cmd);
     if (pV)
@@ -118,7 +121,7 @@ Fvector CConsole::GetFVector(LPCSTR cmd) const
     return Fvector{};
 }
 
-Fvector4* CConsole::GetFVector4Ptr(const char* cmd) const
+Fvector4* CConsole::GetFVector4Ptr(gsl::czstring cmd) const
 {
     IConsole_Command* cc = GetCommand(cmd);
     CCC_Vector4* cf = smart_cast<CCC_Vector4*>(cc);
@@ -126,7 +129,7 @@ Fvector4* CConsole::GetFVector4Ptr(const char* cmd) const
     return cf ? cf->GetValuePtr() : nullptr;
 }
 
-Fvector4 CConsole::GetFVector4(const char* cmd) const
+Fvector4 CConsole::GetFVector4(gsl::czstring cmd) const
 {
     const Fvector4* pV = GetFVector4Ptr(cmd);
 

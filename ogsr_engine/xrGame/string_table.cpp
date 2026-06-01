@@ -9,7 +9,7 @@
 tmc::mutex CStringTable::pDataMutex;
 STRING_TABLE_DATA* CStringTable::pData{};
 
-BOOL CStringTable::WriteErrorsToLog{};
+bool CStringTable::WriteErrorsToLog{false};
 
 void CStringTable::Destroy() { xr_delete(pData); }
 

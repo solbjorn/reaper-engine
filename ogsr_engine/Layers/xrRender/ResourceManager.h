@@ -186,6 +186,6 @@ private:
 };
 
 // ResourceManager_Loader.cpp
-extern BOOL bShadersXrExport;
+extern bool bShadersXrExport;
 
 #endif // ResourceManagerH

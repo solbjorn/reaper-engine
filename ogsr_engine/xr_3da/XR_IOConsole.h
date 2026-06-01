@@ -130,19 +130,19 @@ public:
     void ExecuteCommand(LPCSTR cmd, bool record_cmd = true, bool allow_disabled = false);
     void SelectCommand();
 
-    bool GetBool(LPCSTR cmd) const;
-    float GetFloat(LPCSTR cmd, float& min, float& max) const;
-    int GetInteger(LPCSTR cmd, int& min, int& max) const;
+    [[nodiscard]] IConsole_Command* GetCommand(gsl::czstring cmd) const;
+    [[nodiscard]] bool GetBool(gsl::czstring cmd) const;
+    [[nodiscard]] s32 GetInteger(gsl::czstring cmd, s32& min, s32& max) const;
+    [[nodiscard]] f32 GetFloat(gsl::czstring cmd, f32& min, f32& max) const;
     [[nodiscard]] xr_string GetString(gsl::czstring cmd) const;
     [[nodiscard]] xr_string GetToken(gsl::czstring cmd) const;
-    const xr_token* GetXRToken(LPCSTR cmd) const;
-    Fvector GetFVector(LPCSTR cmd) const;
-    Fvector* GetFVectorPtr(LPCSTR cmd) const;
-    IConsole_Command* GetCommand(LPCSTR cmd) const;
-    Fvector4 GetFVector4(const char* cmd) const;
+    [[nodiscard]] const xr_token* GetXRToken(gsl::czstring cmd) const;
+    [[nodiscard]] Fvector* GetFVectorPtr(gsl::czstring cmd) const;
+    [[nodiscard]] Fvector GetFVector(gsl::czstring cmd) const;
+    [[nodiscard]] Fvector4 GetFVector4(gsl::czstring cmd) const;
 
 protected:
-    Fvector4* GetFVector4Ptr(const char* cmd) const;
+    [[nodiscard]] Fvector4* GetFVector4Ptr(gsl::czstring cmd) const;
 
     text_editor::line_editor* m_editor;
     text_editor::line_edit_control& ec();
@@ -226,7 +226,7 @@ protected:
 
 extern CConsole* Console;
 
-extern BOOL g_console_show_always;
+extern bool g_console_show_always;
 
 // xr_ioc_cmd.cpp
 void CCC_Register();

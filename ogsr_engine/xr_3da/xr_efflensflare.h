@@ -127,6 +127,6 @@ public:
     void Invalidate() { m_State = lfsNone; }
 };
 
-extern int ps_lens_flare;
+extern bool ps_lens_flare;
 
 #endif // xr_efflensflareH
