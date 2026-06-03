@@ -29,12 +29,13 @@ private:
 
     float fXStep;
 
-    float fTCHeight;
-
     float fXScale{};
     float fYScale{};
 
+    f32 size;
+
     IFontRender* pFontRender;
+    gsl::index family;
 
     std::unique_ptr<Fvector[]> TCMap;
     EAligment eCurrentAlignment;
@@ -48,8 +49,6 @@ protected:
 
     xr_vector<String> strings;
 
-    Ivector2 vTS;
-
     u32 uFlags;
 
 public:
@@ -57,7 +56,6 @@ public:
     {
         fsGradient = (1 << 0),
         fsDeviceIndependent = (1 << 1),
-        fsValid = (1 << 2),
         fsMultibyte = (1 << 3),
     };
 
@@ -108,7 +106,6 @@ public:
 
     u32 SmartLength(const char* S);
 
-    u16 SplitByWidth(u16* puBuffer, u16 uBufferSize, float fTargetWidth, const char* pszText);
     u16 GetCutLengthPos(float fTargetWidth, const char* pszText);
 
     void vOut(f32 _x, f32 _y, xr::detail::string_view fmt, xr::detail::format_args args);

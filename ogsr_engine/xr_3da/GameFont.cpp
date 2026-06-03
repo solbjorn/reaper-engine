@@ -29,14 +29,6 @@ CGameFont::CGameFont(LPCSTR section, u32 flags)
 
     Initialize(pSettings->r_string(section, "shader"), pSettings->r_string(section, line), section);
 
-    if (pSettings->line_exist(section, "size"))
-    {
-        float sz = pSettings->r_float(section, "size");
-        if (uFlags & fsDeviceIndependent)
-            SetHeightI(sz);
-        else
-            SetHeight(sz);
-    }
     if (pSettings->line_exist(section, "interval"))
         SetInterval(pSettings->r_fvector2(section, "interval"));
 }
@@ -63,9 +55,6 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName, const char* sect
         strconcat(sizeof(cTexture), cTexture, cTextureName, _lang);
     else
         xr_strcpy(cTexture, sizeof(cTexture), cTextureName);
-
-    uFlags &= ~fsValid;
-    vTS.set(1.f, 1.f); // обязательно !!!
 
     eCurrentAlignment = alLeft;
     vInterval.set(1.f, 1.f);
@@ -221,7 +210,8 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName, const char* sect
     fCurrentHeight = fHeight;
 
     // Shading
-    pFontRender->Initialize(cShader, cTexture);
+    family = pFontRender->Initialize(cShader, pSettings->r_string(sect, "font"));
+    size = pSettings->r_float(sect, "size");
 }
 
 CGameFont::~CGameFont()
@@ -276,44 +266,6 @@ u16 CGameFont::GetCutLengthPos(float fTargetWidth, const char* pszText)
     }
 
     return wsPos[i - 1];
-}
-
-u16 CGameFont::SplitByWidth(u16* puBuffer, u16 uBufferSize, float fTargetWidth, const char* pszText)
-{
-    VERIFY(puBuffer && uBufferSize && pszText);
-
-    wide_char wsStr[MAX_MB_CHARS], wsPos[MAX_MB_CHARS];
-    float fCurWidth = 0.0f, fDelta = 0.0f;
-
-    u16 len = mbhMulti2Wide(wsStr, wsPos, MAX_MB_CHARS, pszText);
-    u16 nLines = 0;
-
-    // vInterval.x  ???
-
-    for (u16 i = 1; i <= len; i++)
-    {
-        fDelta = GetCharTC(wsStr[i]).z * GetWidthScale();
-
-        if (IsSpaceCharacter(wsStr[i]))
-            fDelta += GetfXStep() * GetWidthScale();
-
-        if (fCurWidth + fDelta > fTargetWidth && // overlength
-            !IsBadStartCharacter(wsStr[i]) && // can start with this character
-            (i < len) && // is not the last character
-            (i > 1 && (!IsBadEndCharacter(wsStr[i - 1]))) // && // do not stop the string on a "bad" character
-        )
-        {
-            fCurWidth = fDelta;
-
-            VERIFY(nLines < uBufferSize);
-
-            puBuffer[nLines++] = wsPos[i - 1];
-        }
-        else
-            fCurWidth += fDelta;
-    }
-
-    return nLines;
 }
 
 void CGameFont::vMasterOut(bool bCheckDevice, bool bUseCoords, bool bScaleCoords, bool bUseSkip, f32 _x, f32 _y, f32 _skip, xr::detail::string_view fmt,

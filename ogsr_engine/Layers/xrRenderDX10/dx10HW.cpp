@@ -271,6 +271,7 @@ tmc::task<void> CHW::CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight)
     co_await Reset(wnd, dwWidth, dwHeight);
     fill_vid_mode_list(this);
 
+    Device.update_dpi_scale();
     imgui_init();
 }
 

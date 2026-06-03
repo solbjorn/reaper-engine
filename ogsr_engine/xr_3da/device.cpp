@@ -128,6 +128,21 @@ float GetMonitorRefresh()
 }
 } // namespace
 
+void CRenderDevice::update_dpi_scale()
+{
+    u32 w, h;
+    GetMonitorResolution(w, h);
+
+    const auto base = gsl::narrow_cast<f32>(GetDpiForWindow(m_hWnd)) / f32{USER_DEFAULT_SCREEN_DPI};
+    if (dwWidth == w && dwHeight == h)
+    {
+        dpi_scale = base;
+        return;
+    }
+
+    dpi_scale = base * (gsl::narrow_cast<f32>(dwWidth) / gsl::narrow_cast<f32>(w) + gsl::narrow_cast<f32>(dwHeight) / gsl::narrow_cast<f32>(h)) / 2.0f;
+}
+
 void CRenderDevice::CalcFrameStats()
 {
     auto& stats = *Statistic;
@@ -364,6 +379,8 @@ tmc::task<void> CRenderDevice::message_loop()
             co_await tmc::spawn_clang(process_frame_async(), tmc::cpu_executor());
             continue;
         }
+
+        update_dpi_scale();
 
         co_await tmc::spawn_clang(ProcessFrame(), tmc::cpu_executor());
         XR_TRACY_FRAME_MARK();

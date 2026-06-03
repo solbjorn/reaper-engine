@@ -11,14 +11,12 @@ public:
     dxFontRender();
     ~dxFontRender() override;
 
-    virtual void Initialize(LPCSTR cShader, LPCSTR cTexture);
-    virtual void OnRender(CGameFont& owner);
+    [[nodiscard]] gsl::index Initialize(gsl::czstring shader, gsl::czstring font) override;
+    void OnRender(CGameFont& owner) override;
 
 private:
     ref_shader pShader;
     ref_geom pGeom;
-
-    void RenderFragment(CGameFont& owner, u32& i, bool shadow_mode, float dX, float dY, u32 length, u32 last);
 };
 
 #endif //	FontRender_included

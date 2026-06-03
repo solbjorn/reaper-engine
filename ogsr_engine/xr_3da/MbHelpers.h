@@ -7,7 +7,7 @@ typedef unsigned short int wide_char;
 
 unsigned short int mbhMulti2Wide(wide_char* WideStr, wide_char* WidePos, const unsigned short int WideStrSize, const char* MultiStr);
 
-__inline BOOL IsSpaceCharacter(wide_char wc)
+[[nodiscard]] constexpr bool IsSpaceCharacter(wide_char wc)
 {
     return ((wc == 0x0020) ||
 
@@ -18,26 +18,6 @@ __inline BOOL IsSpaceCharacter(wide_char wc)
             (wc == 0x2026) ||
 
             (wc == 0x3002) || (wc == 0x3001));
-}
-
-__inline BOOL IsBadStartCharacter(wide_char wc)
-{
-    return (IsSpaceCharacter(wc) ||
-
-            (wc == 0x0021) || (wc == 0x002C) ||
-            //( wc == 0x002D )  ||
-            (wc == 0x002E) || (wc == 0x003A) || (wc == 0x003B) || (wc == 0x003F) ||
-
-            (wc == 0x0029) || (wc == 0xFF09));
-}
-
-__inline BOOL IsBadEndCharacter(wide_char wc)
-{
-    return ((wc == 0x0028) ||
-
-            (wc == 0xFF08) ||
-
-            (wc == 0x4E00));
 }
 
 #endif // _MB_HELPERS_H_INCLUDED

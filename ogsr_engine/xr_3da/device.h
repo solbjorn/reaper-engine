@@ -40,6 +40,7 @@ public:
 public:
     u32 dwWidth;
     u32 dwHeight;
+    f32 dpi_scale{1.0f};
 
     u32 dwPrecacheFrame;
     BOOL b_is_Ready;
@@ -247,7 +248,9 @@ public:
     template <typename D, typename... Args>
     constexpr auto& add_frame_async(D&& d, Args&&... args)
     {
-        return seq_frame_async.emplace_back(std::piecewise_construct, std::forward_as_tuple(std::forward<D>(d)), std::forward_as_tuple(std::forward<Args>(args)...)).second;
+        return seq_frame_async
+            .emplace_back(std::piecewise_construct, std::forward_as_tuple(std::forward<D>(d)), std::forward_as_tuple(std::forward<Args>(args)...))
+            .second;
     }
 
     tmc::task<void> process_frame_async()
@@ -268,6 +271,7 @@ public:
 
     tmc::task<void> execute_async(gsl::czstring cmd);
 
+    void update_dpi_scale();
     bool on_message(UINT uMsg, WPARAM wParam, LRESULT& result);
 
 private:

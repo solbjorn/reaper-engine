@@ -7,6 +7,16 @@
 
 #include "StateManager/dx10ShaderResourceStateCache.h"
 
+namespace skb
+{
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wc++98-compat-extra-semi");
+
+#include <skb_image_atlas.h>
+
+XR_DIAG_POP();
+} // namespace skb
+
 void resptrcode_texture::create(LPCSTR _name) { _set(RImplementation.Resources->_CreateTexture(_name)); }
 
 //////////////////////////////////////////////////////////////////////
@@ -132,7 +142,9 @@ ID3DBaseTexture* CTexture::surface_get() const { return pSurface; }
 
 void CTexture::PostLoad()
 {
-    if (pTheora)
+    if (atlas != nullptr)
+        bind = CallMe::fromMethod<&CTexture::apply_font>(this);
+    else if (pTheora != nullptr)
         bind = CallMe::fromMethod<&CTexture::apply_theora>(this);
     else if (pAVI)
         bind = CallMe::fromMethod<&CTexture::apply_avi>(this);
@@ -179,6 +191,45 @@ void CTexture::Apply(CBackend& cmd_list, u32 dwStage) const
     }
     else
         VERIFY("Invalid stage");
+}
+
+void CTexture::apply_font(CBackend& cmd_list, u32 dwStage) const
+{
+    const auto bounds = skb::skb_image_atlas_get_and_reset_texture_dirty_bounds(atlas, texture_idx);
+    if (skb::skb_rect2i_is_empty(bounds))
+    {
+    apply:
+        Apply(cmd_list, dwStage);
+        return;
+    }
+
+    auto tex = static_cast<ID3DTexture2D*>(staging);
+    auto& context = *cmd_list.context();
+
+    D3D_MAPPED_TEXTURE2D data;
+    R_CHK(context.Map(tex, 0, D3D11_MAP_WRITE, 0, &data));
+
+    auto image = skb::skb_image_atlas_get_texture(atlas, texture_idx);
+    R_ASSERT(data.RowPitch == gsl::narrow_cast<u32>(image->stride_bytes));
+    const auto bpp = image->bpp;
+
+    for (decltype(bounds.height) y{0}; y < bounds.height; ++y)
+    {
+        const auto off = (bounds.y + y) * data.RowPitch + bounds.x * bpp;
+        std::memcpy(&static_cast<std::byte*>(data.pData)[off], &image->buffer[off], bounds.width * bpp);
+    }
+
+    context.Unmap(tex, 0);
+
+    const D3D11_BOX box{gsl::narrow_cast<u32>(bounds.x),
+                        gsl::narrow_cast<u32>(bounds.y),
+                        0,
+                        gsl::narrow_cast<u32>(bounds.x + bounds.width),
+                        gsl::narrow_cast<u32>(bounds.y + bounds.height),
+                        1};
+    context.CopySubresourceRegion(pSurface, 0, bounds.x, bounds.y, 0, staging, 0, &box);
+
+    goto apply;
 }
 
 void CTexture::apply_theora(CBackend& cmd_list, u32 dwStage)
@@ -277,19 +328,53 @@ void CTexture::Load(const char* Name)
     flags.bLoaded = true;
     flags.memUsage = 0;
 
-    if (std::is_eq(xr::strcasecmp(Name, "$null")))
+    const std::string_view name{Name};
+
+    if (std::is_eq(xr::strcasecmp(name, "$null")))
         return;
 
-    if (std::string_view{Name}.starts_with("$user$"))
+    if (name.starts_with("$user$"))
         return;
 
     Preload(Name);
-
-    // Check for OGM
     string_path fn;
-    if (FS.exist(fn, "$game_textures$", Name, ".ogm"))
+
+    if (name.starts_with("$font$"))
     {
-        // AVI
+        const auto params = xr::font_atlas_get(name);
+        atlas = &params.first;
+        texture_idx = params.second;
+        auto image = skb::skb_image_atlas_get_texture(atlas, texture_idx);
+
+        D3D_TEXTURE2D_DESC desc{};
+        desc.Width = image->width;
+        desc.Height = image->height;
+        desc.MipLevels = 1;
+        desc.ArraySize = 1;
+        desc.Format = image->bpp == 4 ? DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT_R8_UNORM;
+        desc.SampleDesc.Count = 1;
+        desc.Usage = D3D11_USAGE_DEFAULT;
+        desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
+
+        const D3D_SUBRESOURCE_DATA data{image->buffer, gsl::narrow_cast<u32>(image->stride_bytes), 0};
+        ID3DTexture2D* tex;
+
+        R_CHK(HW.pDevice->CreateTexture2D(&desc, &data, &tex));
+        pSurface = tex;
+
+        desc.Usage = D3D11_USAGE_STAGING;
+        desc.BindFlags = 0;
+        desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+        R_CHK(HW.pDevice->CreateTexture2D(&desc, &data, &tex));
+        staging = tex;
+
+        CHK_DX(HW.pDevice->CreateShaderResourceView(pSurface, nullptr, &m_pSRView));
+        flags.memUsage = data.SysMemPitch * desc.Height * 2;
+    }
+    else if (FS.exist(fn, "$game_textures$", Name, ".ogm"))
+    {
+        // OGM
         pTheora = xr_new<CTheoraSurface>();
         m_play_time = 0xFFFFFFFF;
 
@@ -501,6 +586,7 @@ void CTexture::Unload()
     }
 
     _RELEASE(pSurface);
+    _RELEASE(staging);
     _RELEASE(srv_all);
 
     for (auto& srv : srv_per_slice)

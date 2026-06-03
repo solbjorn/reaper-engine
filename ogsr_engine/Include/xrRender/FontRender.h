@@ -10,7 +10,7 @@ class XR_NOVTABLE IFontRender : public virtual RTTI::Enable
 public:
     ~IFontRender() override = 0;
 
-    virtual void Initialize(LPCSTR cShader, LPCSTR cTexture) = 0;
+    [[nodiscard]] virtual gsl::index Initialize(gsl::czstring shader, gsl::czstring font) = 0;
     virtual void OnRender(CGameFont& owner) = 0;
 };
 

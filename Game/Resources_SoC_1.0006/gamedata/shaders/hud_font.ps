@@ -1,17 +1,12 @@
 #include "common.h"
 
-struct v2p
-{
-    float2 tc0 : TEXCOORD0;
-    float4 c0 : COLOR0;
-};
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// Pixel
 float4 main(p_TL I) : SV_Target
 {
+    if (font_params.x > 1.5f)
+        return float4(I.Color.rgb, s_base.Sample(smp_base, I.Tex0).r * I.Color.a);
+
     float4 r = s_base.Sample(smp_base, I.Tex0);
-    r.rgb = I.Color;
     r.a *= I.Color.a;
+
     return r;
 }

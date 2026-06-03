@@ -168,7 +168,6 @@ void CUILines::ParseText()
     if (!fsimilar(m_oldWidth, m_wndSize.x))
     {
         m_oldWidth = m_wndSize.x;
-
         uFlags.set(flNeedReparse, TRUE);
     }
 
@@ -183,8 +182,7 @@ void CUILines::ParseText()
     if (!m_text.empty() && !m_pFont)
         R_ASSERT2(false, "can't parse text without font");
 
-    CUILine* line{};
-
+    CUILine* line;
     if (uFlags.test(flColoringMode))
     {
         line = ParseTextToColoredLine(m_text);
@@ -195,188 +193,109 @@ void CUILines::ParseText()
         line->AddSubLine(m_text, GetTextColor());
     }
 
-    bool bNewLines{};
-    static const bool use_new_parse_text = READ_IF_EXISTS(pSettings, r_bool, "features", "use_new_parse_text", true);
-
     if (uFlags.test(flRecognizeNewLine))
+        line->ProcessNewLines(); // process "\n"
+
+    static constexpr float __eps = 5.f;
+
+    const float max_width = m_wndSize.x;
+    float curr_width{};
+
+    CUILine tmp_line;
+
+    const size_t sbl_cnt = line->m_subLines.size();
+    for (size_t sbl_idx{}; sbl_idx < sbl_cnt; ++sbl_idx)
     {
-        if (!use_new_parse_text && m_pFont->IsMultibyte())
-        {
-            CUILine* ptmp_line = xr_new<CUILine>();
+        const bool b_last_subl = sbl_idx == sbl_cnt - 1;
+        CUISubLine& sbl = line->m_subLines[sbl_idx];
+        const size_t sub_len = sbl.m_text.length();
 
-            for (const auto& subline : line->m_subLines)
+        size_t curr_w_pos{}, last_space_idx{};
+
+        for (size_t idx{}; idx < sub_len;)
+        {
+            bool is_wide_char =
+                m_pFont->IsMultibyte() && *reinterpret_cast<const unsigned char*>(&sbl.m_text[idx]) > std::numeric_limits<char>::max() && (idx + 1) < sub_len;
+
+            auto get_str_width = [](CGameFont* pFont, const char ch) {
+                float fDelta = pFont->SizeOf_(ch);
+                return fDelta;
+            };
+
+            auto get_wstr_width = [&](CGameFont* pFont, const char* ch) {
+                u16 wchar{};
+                const int wchars_num = MultiByteToWideChar(CP_UTF8, 0, ch, 2, reinterpret_cast<LPWSTR>(&wchar), 1);
+
+                if (wchars_num < 1) // Такое бывает на неподдерживаемых языках кроме rus/eng, мб ещё в каких то редких случаях
+                {
+                    is_wide_char = false;
+                    return get_str_width(pFont, *ch);
+                }
+
+                float fDelta = pFont->SizeOf_(wchar);
+                return fDelta;
+            };
+
+            float char_width = is_wide_char ? get_wstr_width(m_pFont, &sbl.m_text[idx]) : get_str_width(m_pFont, sbl.m_text[idx]);
+
+            UI()->ClientToScreenScaledWidth(char_width);
+
+            if (!is_wide_char && iswspace(sbl.m_text[idx]))
             {
-                const u32 tcolor = subline.m_color;
-                xr_string szTempLine = subline.m_text;
-                char* pszSearch = szTempLine.data();
-                while (char* pszTemp = strstr(pszSearch, "\\n"))
-                {
-                    bNewLines = true;
-                    *pszTemp = '\0';
-                    ptmp_line->AddSubLine(xr_string{pszSearch}, tcolor);
-                    pszSearch = pszTemp + 2;
-                }
-                ptmp_line->AddSubLine(xr_string{pszSearch}, tcolor);
-            }
-            xr_delete(line);
-            line = ptmp_line;
-        }
-        else
-        {
-            line->ProcessNewLines(); // process "\n"
-        }
-    }
-
-    if (!use_new_parse_text && m_pFont->IsMultibyte())
-    {
-        float fTargetWidth = 1.0f;
-        UI()->ClientToScreenScaledWidth(fTargetWidth);
-        VERIFY((m_wndSize.x > 0) && (fTargetWidth > 0));
-        fTargetWidth = m_wndSize.x / fTargetWidth;
-
-        if (line->m_subLines.size() > 1 && !bNewLines)
-        {
-            // only colored line, pizdets
-            auto& tmp_line = m_lines.emplace_back();
-            for (const auto& subline : line->m_subLines)
-            {
-                xr_string pszText = subline.m_text;
-                const u32 tcolor = subline.m_color;
-                tmp_line.AddSubLine(std::move(pszText), tcolor);
-            }
-        }
-        else
-        {
-            for (const auto& subline : line->m_subLines)
-            {
-                const char* pszText = subline.m_text.c_str();
-                VERIFY(pszText);
-                const u32 tcolor = subline.m_color;
-
-                u16 aMarkers[1000]{};
-                u16 uFrom{}, uPartLen{};
-                const u16 nMarkers = m_pFont->SplitByWidth(aMarkers, std::size(aMarkers), fTargetWidth, pszText);
-                for (u16 j = 0; j < nMarkers; j++)
-                {
-                    uPartLen = aMarkers[j] - uFrom;
-                    VERIFY(uPartLen > 0);
-                    xr_string szTempLine{pszText + uFrom, uPartLen};
-                    auto& tmp_line = m_lines.emplace_back();
-                    tmp_line.AddSubLine(std::move(szTempLine), tcolor);
-                    uFrom += uPartLen;
-                }
-
-                xr_string szTempLine{pszText + uFrom};
-                auto& tmp_line = m_lines.emplace_back();
-                tmp_line.AddSubLine(std::move(szTempLine), tcolor);
-            }
-        }
-    }
-    else
-    {
-        constexpr float __eps = 5.f;
-
-        const float max_width = m_wndSize.x;
-        float curr_width{};
-
-        CUILine tmp_line;
-
-        const size_t sbl_cnt = line->m_subLines.size();
-        for (size_t sbl_idx{}; sbl_idx < sbl_cnt; ++sbl_idx)
-        {
-            const bool b_last_subl = sbl_idx == sbl_cnt - 1;
-            CUISubLine& sbl = line->m_subLines[sbl_idx];
-            const size_t sub_len = sbl.m_text.length();
-
-            size_t curr_w_pos{}, last_space_idx{};
-
-            for (size_t idx{}; idx < sub_len;)
-            {
-                bool is_wide_char = m_pFont->IsMultibyte() && *reinterpret_cast<const unsigned char*>(&sbl.m_text[idx]) > std::numeric_limits<char>::max() &&
-                    (idx + 1) < sub_len;
-
-                auto get_str_width = [](CGameFont* pFont, const char ch) {
-                    float fDelta = pFont->SizeOf_(ch);
-                    return fDelta;
-                };
-
-                auto get_wstr_width = [&](CGameFont* pFont, const char* ch) {
-                    u16 wchar{};
-                    const int wchars_num = MultiByteToWideChar(CP_UTF8, 0, ch, 2, reinterpret_cast<LPWSTR>(&wchar), 1);
-
-                    if (wchars_num < 1) // Такое бывает на неподдерживаемых языках кроме rus/eng, мб ещё в каких то редких случаях
-                    {
-                        is_wide_char = false;
-                        return get_str_width(pFont, *ch);
-                    }
-
-                    float fDelta = pFont->SizeOf_(wchar);
-                    return fDelta;
-                };
-
-                float char_width = is_wide_char ? get_wstr_width(m_pFont, &sbl.m_text[idx]) : get_str_width(m_pFont, sbl.m_text[idx]);
-
-                UI()->ClientToScreenScaledWidth(char_width);
-
-                if (!is_wide_char && iswspace(sbl.m_text[idx]))
-                {
-                    last_space_idx = idx;
-                }
-
-                const bool bOver = curr_width + char_width + __eps > max_width;
-                const bool b_last_ch = idx == sub_len - (is_wide_char ? 2 : 1);
-
-                if (bOver || b_last_ch)
-                {
-                    if (last_space_idx && !b_last_ch)
-                    {
-                        idx = last_space_idx;
-                        is_wide_char = false;
-                        last_space_idx = 0;
-                    }
-
-                    xr_string buff{sbl.m_text.c_str() + curr_w_pos, idx - curr_w_pos + (is_wide_char ? 2 : 1)};
-                    tmp_line.AddSubLine(std::move(buff), sbl.m_color);
-                    curr_w_pos = idx + (is_wide_char ? 2 : 1);
-                }
-                else
-                {
-                    curr_width += char_width;
-                }
-
-                if (bOver || (b_last_ch && sbl.m_last_in_line))
-                {
-                    m_lines.push_back(tmp_line);
-                    tmp_line.Clear();
-                    curr_width = 0.0f;
-                }
-
-                if (is_wide_char)
-                {
-                    ++idx;
-                    ++idx;
-                }
-                else
-                {
-                    ++idx;
-                }
+                last_space_idx = idx;
             }
 
-            if (b_last_subl && !tmp_line.IsEmpty())
+            const bool bOver = curr_width + char_width + __eps > max_width;
+            const bool b_last_ch = idx == sub_len - (is_wide_char ? 2 : 1);
+
+            if (bOver || b_last_ch)
+            {
+                if (last_space_idx && !b_last_ch)
+                {
+                    idx = last_space_idx;
+                    is_wide_char = false;
+                    last_space_idx = 0;
+                }
+
+                xr_string buff{sbl.m_text.c_str() + curr_w_pos, idx - curr_w_pos + (is_wide_char ? 2 : 1)};
+                tmp_line.AddSubLine(std::move(buff), sbl.m_color);
+                curr_w_pos = idx + (is_wide_char ? 2 : 1);
+            }
+            else
+            {
+                curr_width += char_width;
+            }
+
+            if (bOver || (b_last_ch && sbl.m_last_in_line))
             {
                 m_lines.push_back(tmp_line);
                 tmp_line.Clear();
                 curr_width = 0.0f;
             }
+
+            if (is_wide_char)
+            {
+                ++idx;
+                ++idx;
+            }
+            else
+            {
+                ++idx;
+            }
+        }
+
+        if (b_last_subl && !tmp_line.IsEmpty())
+        {
+            m_lines.push_back(tmp_line);
+            tmp_line.Clear();
+            curr_width = 0.0f;
         }
     }
 
     if (m_eTextAlign == CGameFont::alJustified)
     {
         for (auto& m_line : m_lines)
-        {
             m_line.ProcessSpaces();
-        }
     }
 
     xr_delete(line);

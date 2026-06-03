@@ -3,6 +3,11 @@
 #include "../../xrCore/xr_resource.h"
 #include "../../xr_3da/Render.h"
 
+namespace skb
+{
+typedef struct skb_image_atlas_t skb_image_atlas_t;
+}
+
 class CAviPlayerCustom;
 class CTheoraSurface;
 
@@ -36,6 +41,7 @@ public:
     };
 
 public:
+    void apply_font(CBackend& cmd_list, u32 stage) const;
     void apply_load(CBackend& cmd_list, u32 stage);
     void apply_theora(CBackend& cmd_list, u32 stage);
     void apply_avi(CBackend& cmd_list, u32 stage) const;
@@ -74,6 +80,10 @@ public:
 
 private:
     void Apply(CBackend& cmd_list, u32 dwStage) const;
+
+    skb::skb_image_atlas_t* atlas{nullptr};
+    gsl::index texture_idx{-1};
+    ID3DBaseTexture* staging{nullptr};
 
     //	Class data
 public: //	Public class members (must be encapsulated further)
@@ -125,3 +135,9 @@ struct resptrcode_texture : public resptr_base<CTexture>
 };
 
 typedef resptr_core<CTexture, resptrcode_texture> ref_texture;
+
+// dxFontRender.cpp
+namespace xr
+{
+[[nodiscard]] std::pair<skb::skb_image_atlas_t&, gsl::index> font_atlas_get(std::string_view name);
+}

@@ -6,24 +6,10 @@
 #ifndef IMGUI_DISABLE
 #include "../xrExternal/imgui.h"
 
-namespace
-{
-[[nodiscard]] f32 get_dpi_scale(ImGuiViewport* viewport)
-{
-    u32 w, h;
-    GetMonitorResolution(w, h);
-
-    const auto base = gsl::narrow_cast<f32>(GetDpiForWindow(static_cast<HWND>(viewport->PlatformHandleRaw))) / f32{USER_DEFAULT_SCREEN_DPI};
-    if (Device.dwWidth == w && Device.dwHeight == h)
-        return base;
-
-    return base * (gsl::narrow_cast<f32>(Device.dwWidth) / gsl::narrow_cast<f32>(w) + gsl::narrow_cast<f32>(Device.dwHeight) / gsl::narrow_cast<f32>(h)) / 2.0f;
-}
-} // namespace
-
 void CHW::imgui_init() const
 {
-    ImGui::SetAllocatorFunctions([](size_t size, void*) { return xr_malloc(gsl::narrow_cast<gsl::index>(size)); }, [](void* ptr, void*) { xr_free(ptr); });
+    ImGui::SetAllocatorFunctions([] [[nodiscard]] (size_t size, void*) { return xr_malloc(gsl::narrow_cast<gsl::index>(size)); },
+                                 [](void* ptr, void*) { xr_free(ptr); });
     ImGui::CreateContext();
 
     auto& io = ImGui::GetIO();
@@ -41,15 +27,14 @@ void CHW::imgui_init() const
     auto viewport = ImGui::GetMainViewport();
     viewport->PlatformHandle = m_hWnd;
     viewport->PlatformHandleRaw = m_hWnd;
-    const auto scale = get_dpi_scale(viewport);
 
     auto& style = ImGui::GetStyle();
-    style.ScaleAllSizes(scale);
-    style.FontScaleDpi = scale;
+    style.ScaleAllSizes(Device.dpi_scale);
+    style.FontScaleDpi = Device.dpi_scale;
     io.ConfigDpiScaleFonts = true;
     io.ConfigDpiScaleViewports = true;
 
-    ImGui::GetPlatformIO().Platform_GetWindowDpiScale = get_dpi_scale;
+    ImGui::GetPlatformIO().Platform_GetWindowDpiScale = [] [[nodiscard]] (ImGuiViewport*) { return Device.dpi_scale; };
     ImGui_ImplDX11_Init(pDevice, contexts_pool[R__IMM_CTX_ID]);
 
     RECT rect;
