@@ -110,6 +110,7 @@ endif()
 # hwloc
 if(HWLOC_SKIP_LSTOPO)
   set(conformance_options "${conformance_options} -DHWLOC_HAVE_MSVC_CPUIDEX -DO_RDONLY=_O_RDONLY -DS_IFREG=_S_IFREG -Dfstat=_fstat -Dstat=_stat")
+  set(warning_options "${warning_options} -Wno-error=format-signedness")
 endif()
 
 # ktx

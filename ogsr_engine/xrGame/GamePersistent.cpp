@@ -19,7 +19,6 @@
 #include "../xr_3da/x_ray.h"
 #include "string_table.h"
 #include "HUDManager.h"
-#include "..\xr_3da\DiscordRPC.hpp"
 #include "holder_custom.h"
 
 #include "embedded_editor/embedded_editor.h"
@@ -560,7 +559,8 @@ tmc::task<void> CGamePersistent::OnFrame()
             load_screen_renderer.stop();
         }
 
-        Discord.Update(CStringTable().translate(Level().name()).c_str(), Level().name().c_str());
+        if (xr::social())
+            xr::social()->set_level(CStringTable::translate(Level().name()));
     }
 
     if (!m_pMainMenu->IsActive())
@@ -727,12 +727,13 @@ void CGamePersistent::OnRenderPPUI_PP() { MainMenu()->OnRenderPPUI_PP(); }
 
 tmc::task<void> CGamePersistent::LoadTitle(gsl::czstring title)
 {
-    title = CStringTable().translate(shared_str{title}).c_str();
+    auto trans = CStringTable::translate(shared_str{title});
 
-    pApp->SetLoadStageTitle(title);
+    pApp->SetLoadStageTitle(trans.c_str());
     co_await pApp->LoadStage();
 
-    Discord.Update(title);
+    if (xr::social())
+        xr::social()->set_level(std::move(trans));
 }
 
 void CGamePersistent::SetTip() { pApp->LoadTitleInt(); }

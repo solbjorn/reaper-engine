@@ -22,7 +22,12 @@ XR_DIAG_IGNORE("-Wnrvo");
 
 XR_DIAG_POP();
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wfloat-equal");
+
 #include <fmt/std.h>
+
+XR_DIAG_POP();
 
 namespace xr
 {

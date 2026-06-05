@@ -20,7 +20,6 @@
 #include "LightAnimLibrary.h"
 #include "../xrcdb/ispatial.h"
 #include "ILoadingScreen.h"
-#include "DiscordRPC.hpp"
 #include "splash.h"
 
 #include "xrcpuid.h"
@@ -185,7 +184,7 @@ tmc::task<void> startup(std::atomic<xr::tmc_atomic_wait_t>& code)
     code = xr::code_splash;
     code.notify_all();
 
-    Discord.Init();
+    xr::detail::discord_init();
 
     // Main cycle
     std::ignore = Memory.mem_usage();

@@ -938,4 +938,6 @@ void CCC_Register()
     XR_CMD(CCC_Bool, "g_prefetch", g_prefetch);
 
     XR_CMD(CCC_DbgLALibDump, "dbg_lalib_dump");
+
+    xr::detail::discord_register();
 }

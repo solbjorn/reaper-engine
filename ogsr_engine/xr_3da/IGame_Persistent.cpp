@@ -22,7 +22,8 @@ namespace xr
 namespace detail
 {
 std::unique_ptr<xr::ingame_editor> editor;
-}
+std::unique_ptr<xr::social_app> social;
+} // namespace detail
 } // namespace xr
 
 bool IGame_Persistent::IsMainMenuActive() const { return g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive(); }

@@ -68,3 +68,17 @@ extern bool IS_OGSR_GA;
 extern BOOL g_appLoaded;
 extern string512 g_sBenchmarkName;
 extern CApplication* pApp;
+
+namespace xr
+{
+namespace detail
+{
+#ifdef XR_DISCORD
+void discord_register();
+void discord_init();
+#else
+constexpr void discord_register {}
+constexpr void discord_init() {}
+#endif
+} // namespace detail
+} // namespace xr

@@ -99,7 +99,7 @@ public:
     void OnSessionTerminate(LPCSTR reason);
     void SetNeedVidRestart();
     tmc::task<void> OnDeviceReset() override;
-    LPCSTR GetGSVer();
+    [[nodiscard]] static xr_string GetGSVer();
 
     void PlaySound(gsl::czstring path);
 

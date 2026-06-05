@@ -42,7 +42,7 @@ tmc::task<void> CRenderDevice::Initialize()
         AdjustWindowRect(&rc, m_dwWindowStyle, FALSE);
 
         // Create the render window
-        m_hWnd = CreateWindowW(wndclass.data(), L"OGSR Engine", m_dwWindowStyle, CW_USEDEFAULT, CW_USEDEFAULT, (rc.right - rc.left), (rc.bottom - rc.top),
+        m_hWnd = CreateWindowW(wndclass.data(), L"ReapeR Engine", m_dwWindowStyle, CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top,
                                nullptr, nullptr, hInstance, nullptr);
         gGameWindow = m_hWnd;
     }

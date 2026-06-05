@@ -14,8 +14,9 @@
 #include "ui/UIPDAWnd.h"
 #include "encyclopedia_article.h"
 #include "ui/UIEventsWnd.h"
-#include "..\xr_3da\DiscordRPC.hpp"
 #include "string_table.h"
+
+#include "../xr_3da/IGame_Persistent.h"
 
 shared_str g_active_task_id;
 u16 g_active_task_objective_id = u16(-1);
@@ -308,7 +309,8 @@ void CGameTaskManager::SetActiveTask(const TASK_ID& id, u16 idx, const bool safe
             ml->EnablePointer();
     }
 
-    Discord.Set_active_task_text(CStringTable().translate(o ? o->description : shared_str{"st_no_active_task"}).c_str());
+    if (xr::social())
+        xr::social()->set_task(CStringTable::translate(o != nullptr ? o->description : shared_str{"st_no_active_task"}));
 }
 
 SGameTaskObjective* CGameTaskManager::ActiveObjective()

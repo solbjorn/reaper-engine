@@ -14,7 +14,6 @@
 #include "ui\UIBtnHint.h"
 #include "UICursor.h"
 #include "string_table.h"
-#include "..\xr_3da\DiscordRPC.hpp"
 #include "object_broker.h"
 
 #include "../xr_3da/xr_input.h"
@@ -162,12 +161,10 @@ tmc::task<void> CMainMenu::Activate(bool bActivate)
 
         Device.seqRender.Add(this, 4); // 1-console 2-cursor 3-tutorial
 
-        if (!g_pGameLevel)
+        if (g_pGameLevel == nullptr && xr::social())
         {
-            Discord.Set_active_task_text(nullptr); // Апдейт таска должен быть выше апдейта значка уровня!
-
-            gsl::czstring menu_status = CStringTable().translate(shared_str{"discord_status_mm"}).c_str();
-            Discord.Update(std::is_eq(xr_strcmp(menu_status, "discord_status_mm")) ? "In main menu" : menu_status);
+            xr::social()->set_task({});
+            xr::social()->set_level(CStringTable::translate(shared_str{"discord_status_mm"}));
         }
     }
     else
@@ -449,7 +446,7 @@ tmc::task<void> CMainMenu::OnDeviceReset()
     co_return;
 }
 
-LPCSTR CMainMenu::GetGSVer() { return Core.GetEngineVersion(); }
+xr_string CMainMenu::GetGSVer() { return Core.GetEngineVersion(); }
 
 void CMainMenu::PlaySound(gsl::czstring path)
 {

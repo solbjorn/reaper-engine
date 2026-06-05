@@ -338,7 +338,7 @@ tmc::task<void> CLevel::OnFrame()
     // Inherited update
     co_await inherited::OnFrame();
 
-    if (xr::editor() == nullptr || !xr::editor()->script_time())
+    if (!xr::editor() || !xr::editor()->script_time())
         g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
 
     m_ph_commander->update();

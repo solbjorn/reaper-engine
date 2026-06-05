@@ -12,6 +12,8 @@ constexpr inline std::array<std::string_view, 6> sound{".flac", ".opus", ".ogg",
 constexpr inline std::array<std::string_view, 8> archive{".dw", ".sq", ".z", ".xdb", ".db", ".7z", ".r", ".tar"};
 } // namespace formats
 
+constexpr inline std::string_view app_data_root{"$app_data_root$"};
+
 constexpr inline std::string_view game_sounds{"$game_sounds$"};
 constexpr inline std::string_view game_textures{"$game_textures$"};
 

@@ -28,20 +28,16 @@ XR_DIAG_POP();
 #include "../xrExternal/sol.h"
 
 #ifdef XR_IMGUI_LUA
-XR_DIAG_PUSH();
-XR_DIAG_IGNORE("-Wimplicit-float-conversion");
-XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
 
 #include <sol_ImGui.h>
 
-XR_DIAG_POP();
-
-#undef ImMin
 #else // !XR_IMGUI_LUA
+
 namespace sol_ImGui
 {
-inline void Init(sol::state&) {}
+constexpr void Init(sol::state&) {}
 } // namespace sol_ImGui
+
 #endif // !XR_IMGUI_LUA
 
 #endif // !__XREXTERNAL_IMGUI_H

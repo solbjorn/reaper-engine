@@ -57,6 +57,21 @@
 // Включает поддержку анимированных физобъектов типа крутящегося вентилятора в подземке агропрома из ЧН.
 #define ANIMATED_PHYSICS_OBJECT_SUPPORT
 
+// Uncomment to enable Discord integration
+#define XR_DISCORD
+// Discord application ID
+#define XR_DISCORD_APPID 1507428629104295938
+
+// Discord GitHub button label
+#define XR_DISCORD_GITHUB_LABEL "400 BPM GitHub"
+// Discord GitHub button URL
+#define XR_DISCORD_GITHUB_URL "https://github.com/solbjorn/reaper-engine"
+
+// Discord server button label
+#define XR_DISCORD_SERVER_LABEL "OGSR Discord"
+// Discord server button URL
+#define XR_DISCORD_SERVER_URL "https://discord.com/servers/ogsr-508530704674455562"
+
 // Uncomment to use {fmt} instead of std::format
 #define XR_USE_FMT
 

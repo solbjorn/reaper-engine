@@ -358,7 +358,7 @@ tmc::task<void> CInput::KeyUpdate()
             co_return;
     }
 
-    const bool editor = xr::editor() != nullptr;
+    const bool editor = !!xr::editor();
 
     for (u32 i = 0; i < dwElements; ++i)
     {
@@ -464,7 +464,7 @@ tmc::task<void> CInput::MouseUpdate()
     }
 
     const auto mouse_prev = mouseState;
-    const bool editor = xr::editor() != nullptr;
+    const bool editor = !!xr::editor();
 
     offs[0] = offs[1] = offs[2] = 0;
 

@@ -68,7 +68,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\xrCore\;$(SolutionDir)\3rd_party\Src\Xiph\ogg\ogg\include;$(SolutionDir)\3rd_party\Src\Xiph\theora\theora\include;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\xrCore\;$(SolutionDir)\3rd_party\Src\Xiph\ogg\ogg\include;$(SolutionDir)\3rd_party\Src\Xiph\theora\theora\include;$(SolutionDir)\3rd_party\Src\discord_social_sdk\include;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -85,7 +85,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>clang_rt.builtins-x86_64.lib;llvmlibc.lib;libc++.lib;$(AbseilLibs);DirectXTex.lib;FLAC.lib;FLAC++.lib;Iex-4_0.lib;IlmThread-4_0.lib;OpenAL32.lib;OpenCL.lib;OpenEXR-4_0.lib;OpenEXRCore-4_0.lib;SheenBidi.lib;archive.lib;avrt.lib;budouxc.lib;brotlicommon.lib;brotlidec.lib;brotlienc.lib;bz2_static.lib;cpptrace.lib;crypt32.lib;d3d11.lib;d3dcompiler.lib;deflatestatic.lib;dinput8.lib;dwarfs_common.lib;dwarfs_decompressor.lib;dwarfs_reader.lib;dwrite.lib;dxgi.lib;dxguid.lib;fmt.lib;freetype.lib;graphite2.lib;harfbuzz.lib;hwloc.lib;ktx.lib;libboost_chrono.lib;libboost_filesystem.lib;libcrypto.lib;libmpg123.lib;libomp.lib;libpng18_static.lib;luajit.lib;lz4.lib;lzma.lib;minizip.lib;mp3lame.lib;ode.lib;ogg.lib;openjph.0.27.lib;opus.lib;plutosvg.lib;plutovg.lib;portaudio.lib;ppmd.lib;psapi.lib;pugixml.lib;re2.lib;scn.lib;sfml-graphics-s.lib;sfml-system-s.lib;sfml-window-s.lib;skribidi.lib;sndfile.lib;squashfs.lib;theora.lib;unibreak.lib;vfw32.lib;vorbis.lib;winmm.lib;ws2_32.lib;xmllite.lib;xxhash.lib;zlibstatic.lib;zstd_static.lib;zxc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\3rd_party\Src\discord_social_sdk\lib\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>clang_rt.builtins-x86_64.lib;llvmlibc.lib;libc++.lib;$(AbseilLibs);DirectXTex.lib;FLAC.lib;FLAC++.lib;Iex-4_0.lib;IlmThread-4_0.lib;OpenAL32.lib;OpenCL.lib;OpenEXR-4_0.lib;OpenEXRCore-4_0.lib;SheenBidi.lib;archive.lib;avrt.lib;budouxc.lib;brotlicommon.lib;brotlidec.lib;brotlienc.lib;bz2_static.lib;cpptrace.lib;crypt32.lib;d3d11.lib;d3dcompiler.lib;deflatestatic.lib;dinput8.lib;discord_partner_sdk.lib;dwarfs_common.lib;dwarfs_decompressor.lib;dwarfs_reader.lib;dwrite.lib;dxgi.lib;dxguid.lib;fmt.lib;freetype.lib;graphite2.lib;harfbuzz.lib;hwloc.lib;ktx.lib;libboost_chrono.lib;libboost_filesystem.lib;libcrypto.lib;libmpg123.lib;libomp.lib;libpng18_static.lib;luajit.lib;lz4.lib;lzma.lib;minizip.lib;mp3lame.lib;ode.lib;ogg.lib;openjph.0.27.lib;opus.lib;plutosvg.lib;plutovg.lib;portaudio.lib;ppmd.lib;psapi.lib;pugixml.lib;re2.lib;scn.lib;sfml-graphics-s.lib;sfml-system-s.lib;sfml-window-s.lib;skribidi.lib;sndfile.lib;squashfs.lib;theora.lib;unibreak.lib;vfw32.lib;vorbis.lib;winmm.lib;ws2_32.lib;xmllite.lib;xxhash.lib;zlibstatic.lib;zstd_static.lib;zxc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>%(AdditionalOptions) /force:multiple</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)xrEngine.pdb</ProgramDatabaseFile>
@@ -95,8 +96,8 @@
     </Link>
     <PostBuildEvent>
       <Command>
-        copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
-        copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
+        copy /Y "$(SolutionDir)\Game\dlls\dbghelp.dll" "$(OutDir)dbghelp.dll"
+        copy /Y "$(SolutionDir)\3rd_party\Src\discord_social_sdk\bin\release\discord_partner_sdk.dll" "$(OutDir)\discord_partner_sdk.dll"
         "$(SolutionDir)\3rd_party\Src\system\mimalloc\mimalloc\bin\minject.exe" -i -f "$(OutDir)\xrEngine.exe"
         copy /Y ".\manifest.xml" "$(OutDir)\xrEngine.exe.manifest"
       </Command>
@@ -114,7 +115,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\xrCore\;$(SolutionDir)\3rd_party\Src\Xiph\ogg\ogg\include;$(SolutionDir)\3rd_party\Src\Xiph\theora\theora\include;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\xrCore\;$(SolutionDir)\3rd_party\Src\Xiph\ogg\ogg\include;$(SolutionDir)\3rd_party\Src\Xiph\theora\theora\include;$(SolutionDir)\3rd_party\Src\discord_social_sdk\include;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>false</StringPooling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -132,15 +133,16 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>clang_rt.builtins-x86_64.lib;llvmlibc.lib;libc++.lib;$(AbseilLibs);DirectXTex.lib;FLAC.lib;FLAC++.lib;Iex-4_0.lib;IlmThread-4_0.lib;OpenAL32.lib;OpenCL.lib;OpenEXR-4_0.lib;OpenEXRCore-4_0.lib;SheenBidi.lib;archive.lib;avrt.lib;budouxc.lib;brotlicommon.lib;brotlidec.lib;brotlienc.lib;bz2_static.lib;cpptrace.lib;crypt32.lib;d3d11.lib;d3dcompiler.lib;deflatestatic.lib;dinput8.lib;dwarfs_common.lib;dwarfs_decompressor.lib;dwarfs_reader.lib;dwrite.lib;dxgi.lib;dxguid.lib;fmt.lib;freetype.lib;graphite2.lib;harfbuzz.lib;hwloc.lib;ktx.lib;libboost_chrono.lib;libboost_filesystem.lib;libcrypto.lib;libmpg123.lib;libomp.lib;libpng18_static.lib;luajit.lib;lz4.lib;lzma.lib;minizip.lib;mp3lame.lib;ode.lib;ogg.lib;openjph.0.27.lib;opus.lib;plutosvg.lib;plutovg.lib;portaudio.lib;ppmd.lib;psapi.lib;pugixml.lib;re2.lib;scn.lib;sfml-graphics-s.lib;sfml-system-s.lib;sfml-window-s.lib;skribidi.lib;sndfile.lib;squashfs.lib;theora.lib;unibreak.lib;vfw32.lib;vorbis.lib;winmm.lib;ws2_32.lib;xmllite.lib;xxhash.lib;zlibstatic.lib;zstd_static.lib;zxc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\3rd_party\Src\discord_social_sdk\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>clang_rt.builtins-x86_64.lib;llvmlibc.lib;libc++.lib;$(AbseilLibs);DirectXTex.lib;FLAC.lib;FLAC++.lib;Iex-4_0.lib;IlmThread-4_0.lib;OpenAL32.lib;OpenCL.lib;OpenEXR-4_0.lib;OpenEXRCore-4_0.lib;SheenBidi.lib;archive.lib;avrt.lib;budouxc.lib;brotlicommon.lib;brotlidec.lib;brotlienc.lib;bz2_static.lib;cpptrace.lib;crypt32.lib;d3d11.lib;d3dcompiler.lib;deflatestatic.lib;dinput8.lib;discord_partner_sdk.lib;dwarfs_common.lib;dwarfs_decompressor.lib;dwarfs_reader.lib;dwrite.lib;dxgi.lib;dxguid.lib;fmt.lib;freetype.lib;graphite2.lib;harfbuzz.lib;hwloc.lib;ktx.lib;libboost_chrono.lib;libboost_filesystem.lib;libcrypto.lib;libmpg123.lib;libomp.lib;libpng18_static.lib;luajit.lib;lz4.lib;lzma.lib;minizip.lib;mp3lame.lib;ode.lib;ogg.lib;openjph.0.27.lib;opus.lib;plutosvg.lib;plutovg.lib;portaudio.lib;ppmd.lib;psapi.lib;pugixml.lib;re2.lib;scn.lib;sfml-graphics-s.lib;sfml-system-s.lib;sfml-window-s.lib;skribidi.lib;sndfile.lib;squashfs.lib;theora.lib;unibreak.lib;vfw32.lib;vorbis.lib;winmm.lib;ws2_32.lib;xmllite.lib;xxhash.lib;zlibstatic.lib;zstd_static.lib;zxc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)xrEngine.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
       <Command>
-        copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
-        copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
+        copy /Y "$(SolutionDir)\Game\dlls\dbghelp.dll" "$(OutDir)dbghelp.dll"
+        copy /Y "$(SolutionDir)\3rd_party\Src\discord_social_sdk\bin\debug\discord_partner_sdk.dll" "$(OutDir)\discord_partner_sdk.dll"
         "$(SolutionDir)\3rd_party\Src\system\mimalloc\mimalloc\bin\minject.exe" -i -f "$(OutDir)\xrEngine.exe"
         copy /Y ".\manifest.xml" "$(OutDir)\xrEngine.exe.manifest"
       </Command>
@@ -154,7 +156,6 @@
     <ClInclude Include="bone.h" />
     <ClInclude Include="context.h" />
     <ClInclude Include="..\xrParticles\psystem.h" />
-    <ClInclude Include="DiscordRPC.hpp" />
     <ClInclude Include="edit_actions.h" />
     <ClInclude Include="GameMtlLib.h" />
     <ClInclude Include="ILoadingScreen.h" />
@@ -235,7 +236,7 @@
   <ItemGroup>
     <ClCompile Include="bone.cpp" />
     <ClCompile Include="defines.cpp" />
-    <ClCompile Include="DiscordRPC.cpp" />
+    <ClCompile Include="discord.cpp" />
     <ClCompile Include="edit_actions.cpp" />
     <ClCompile Include="GameMtlLib.cpp" />
     <ClCompile Include="GameMtlLib_Engine.cpp" />

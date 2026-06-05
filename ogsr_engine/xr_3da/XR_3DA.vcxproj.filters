@@ -322,9 +322,6 @@
     <ClInclude Include="ILoadingScreen.h">
       <Filter>Interfaces\LoadScreen</Filter>
     </ClInclude>
-    <ClInclude Include="DiscordRPC.hpp">
-      <Filter>Discord</Filter>
-    </ClInclude>
     <ClInclude Include="line_edit_control.h">
       <Filter>Engine\Console</Filter>
     </ClInclude>
@@ -544,7 +541,7 @@
     <ClCompile Include="bone.cpp" />
     <ClCompile Include="GameMtlLib_Engine.cpp" />
     <ClCompile Include="GameMtlLib.cpp" />
-    <ClCompile Include="DiscordRPC.cpp">
+    <ClCompile Include="discord.cpp">
       <Filter>Discord</Filter>
     </ClCompile>
     <ClCompile Include="line_edit_control.cpp">

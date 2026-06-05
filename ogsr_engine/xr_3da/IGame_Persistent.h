@@ -177,12 +177,32 @@ public:
 
 inline ingame_editor::~ingame_editor() = default;
 
+class XR_NOVTABLE social_app : public virtual RTTI::Enable
+{
+    RTTI_DECLARE_TYPEINFO(xr::social_app);
+
+public:
+    ~social_app() override = 0;
+
+    virtual void connect(bool auth) = 0;
+    virtual void disconnect() = 0;
+
+    virtual void set_level(shared_str level) = 0;
+    virtual void set_task(shared_str task) = 0;
+
+    virtual void update() = 0;
+};
+
+inline social_app::~social_app() = default;
+
 namespace detail
 {
 extern std::unique_ptr<xr::ingame_editor> editor;
-}
+extern std::unique_ptr<xr::social_app> social;
+} // namespace detail
 
-[[nodiscard]] inline xr::ingame_editor* editor() { return xr::detail::editor.get(); }
+[[nodiscard]] constexpr const auto& editor() { return xr::detail::editor; }
+[[nodiscard]] constexpr const auto& social() { return xr::detail::social; }
 } // namespace xr
 
 extern IGame_Persistent* g_pGamePersistent;

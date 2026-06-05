@@ -195,7 +195,7 @@ public:
     [[nodiscard]] static bool Paused();
 
     // Scene control
-    tmc::task<void> ProcessFrame();
+    tmc::task<void> ProcessFrame(decltype(std::chrono::high_resolution_clock::now()) start);
     void PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input);
 
     tmc::task<bool> BeforeFrame();

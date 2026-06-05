@@ -173,9 +173,18 @@ public:
     void _initialize(gsl::czstring ApplicationName, bool init_fs = true, gsl::czstring fs_fname = nullptr);
     void _destroy();
 
-    constexpr const char* GetBuildConfiguration();
-    const char* GetEngineVersion();
+    [[nodiscard]] static constexpr std::string_view GetBuildConfiguration();
+    [[nodiscard]] static xr_string GetEngineVersion();
 };
+
+constexpr std::string_view xrCore::GetBuildConfiguration()
+{
+#ifdef _DEBUG
+    return "x64 Debug";
+#else
+    return "x64";
+#endif
+}
 
 extern xrCore Core;
 extern bool gModulesLoaded;

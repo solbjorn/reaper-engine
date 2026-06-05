@@ -104,7 +104,7 @@ void xrCore::_initialize(gsl::czstring _ApplicationName, bool init_fs, gsl::czst
 
         FS._initialize(flags, nullptr, fs_fname);
 
-        Msg("[OGSR Engine ({})] build date: [" __DATE__ " " __TIME__ "]", GetBuildConfiguration());
+        Msg("[ReapeR Engine ({})] build date: [" __DATE__ " " __TIME__ "]", GetBuildConfiguration());
         if (xr_strlen(APPVEYOR_BUILD_VERSION) > 0)
             Log("[AppVeyor] build version: [" APPVEYOR_BUILD_VERSION "], repo: [" APPVEYOR_REPO_NAME "]");
 
@@ -140,29 +140,10 @@ void xrCore::_destroy()
     }
 }
 
-const char* xrCore::GetEngineVersion()
+xr_string xrCore::GetEngineVersion()
 {
-    static string256 buff;
     if (xr_strlen(APPVEYOR_BUILD_VERSION) > 0)
-        std::snprintf(buff, sizeof(buff), APPVEYOR_BUILD_VERSION " (%s) from repo: [" APPVEYOR_REPO_NAME "]", GetBuildConfiguration());
+        return xr::format(APPVEYOR_BUILD_VERSION " ({}) from repo: [" APPVEYOR_REPO_NAME "]", GetBuildConfiguration());
     else
-        std::snprintf(buff, sizeof(buff), "[OGSR Engine %s (build: " __DATE__ " " __TIME__ ")]", GetBuildConfiguration());
-    return buff;
-}
-
-constexpr const char* xrCore::GetBuildConfiguration()
-{
-#ifdef _DEBUG
-#ifdef _M_X64
-    return "x64_Dbg";
-#else
-    return "x86_Dbg";
-#endif
-#else
-#ifdef _M_X64
-    return "x64";
-#else
-    return "x86";
-#endif
-#endif
+        return xr::format("[ReapeR Engine {} (build: " __DATE__ " " __TIME__ ")]", GetBuildConfiguration());
 }

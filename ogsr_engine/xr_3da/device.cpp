@@ -238,16 +238,14 @@ tmc::task<void> CRenderDevice::OnCameraUpdated()
     camFrame = dwFrame;
 }
 
-tmc::task<void> CRenderDevice::ProcessFrame()
+tmc::task<void> CRenderDevice::ProcessFrame(decltype(std::chrono::high_resolution_clock::now()) start)
 {
     if (!co_await BeforeFrame())
         co_return;
 
     XR_TRACY_ZONE_SCOPED();
 
-    const auto FrameStartTime = std::chrono::high_resolution_clock::now();
-    const bool editor = xr::editor() != nullptr && xr::editor()->opened();
-
+    const bool editor = xr::editor() && xr::editor()->opened();
     if (editor)
         m_pRender->editor_new();
 
@@ -282,7 +280,8 @@ tmc::task<void> CRenderDevice::ProcessFrame()
                 m_pRender->editor_render();
 
             CalcFrameStats();
-            if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
+
+            if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || !Statistic->errors.empty())
                 Statistic->Show();
             if (psDeviceFlags.test(rsHWInfo))
                 Statistic->Show_HW_Stats();
@@ -300,14 +299,14 @@ tmc::task<void> CRenderDevice::ProcessFrame()
 #ifdef LOG_SECOND_THREAD_STATS
     const auto FrameEndTime = std::chrono::high_resolution_clock::now();
     const auto SecondThreadTasksElapsedTime = co_await std::move(second);
-    const std::chrono::duration<f64, std::milli> FrameElapsedTime = FrameEndTime - FrameStartTime;
+    const std::chrono::duration<f64, std::milli> FrameElapsedTime = FrameEndTime - start;
 
     if (SecondThreadTasksElapsedTime > FrameElapsedTime && dwPrecacheFrame == 0) [[unlikely]]
     {
         const std::chrono::duration<f64, std::milli> SecondThreadFreeTime = FrameElapsedTime - SecondThreadTasksElapsedTime;
 
         Msg("##[{}] Second thread work time is too long! Avail: [{}]ms, used: [{}]ms, free: [{}]ms", std::source_location::current().function_name(),
-            FrameElapsedTime.count(), SecondThreadTasksElapsedTime.count(), SecondThreadFreeTime.count());
+            FrameElapsedTime, SecondThreadTasksElapsedTime, SecondThreadFreeTime);
     }
 #else
     co_await std::move(second);
@@ -327,7 +326,7 @@ tmc::task<void> CRenderDevice::ProcessFrame()
     if (curFPSLimit >= 1.0f && !m_SecondViewport.IsSVPFrame())
     {
         const std::chrono::duration<f64, std::milli> FpsLimitMs{1000.0 / curFPSLimit};
-        const auto diff = std::chrono::floor<std::chrono::nanoseconds>(FpsLimitMs) - (std::chrono::high_resolution_clock::now() - FrameStartTime);
+        const auto diff = std::chrono::floor<std::chrono::nanoseconds>(FpsLimitMs) - (std::chrono::high_resolution_clock::now() - start);
 
         if (diff > std::chrono::nanoseconds{100})
             co_await xr::sleep(diff);
@@ -380,9 +379,14 @@ tmc::task<void> CRenderDevice::message_loop()
             continue;
         }
 
+        const auto start = std::chrono::high_resolution_clock::now();
+
+        if (xr::social())
+            xr::social()->update();
+
         update_dpi_scale();
 
-        co_await tmc::spawn_clang(ProcessFrame(), tmc::cpu_executor());
+        co_await tmc::spawn_clang(ProcessFrame(start), tmc::cpu_executor());
         XR_TRACY_FRAME_MARK();
     }
 }

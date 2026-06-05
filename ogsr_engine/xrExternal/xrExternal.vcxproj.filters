@@ -7,6 +7,9 @@
     <Filter Include="Core">
       <UniqueIdentifier>{61a60c70-b020-461c-8f72-30ff3b87687d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Discord">
+      <UniqueIdentifier>{fe7326b4-8f16-476f-ba1a-3bc16c35589c}</UniqueIdentifier>
+    </Filter>
     <Filter Include="ImGui">
       <UniqueIdentifier>{1bedd022-e50c-4080-813d-e27315bac8cd}</UniqueIdentifier>
     </Filter>
@@ -18,6 +21,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="discord.cpp">
+      <Filter>Discord</Filter>
+    </ClCompile>
     <ClCompile Include="imgui.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
