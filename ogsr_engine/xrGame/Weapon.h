@@ -41,64 +41,64 @@ public:
     ~CWeapon() override;
 
     // Generic
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual void net_Export(CSE_Abstract* E);
+    void net_Export(CSE_Abstract* E) override;
 
-    virtual CWeapon* cast_weapon() { return this; }
-    virtual CWeaponMagazined* cast_weapon_magazined() { return nullptr; }
+    [[nodiscard]] CWeapon* cast_weapon() override { return this; }
+    [[nodiscard]] virtual CWeaponMagazined* cast_weapon_magazined() { return nullptr; }
 
     // serialization
-    virtual void save(NET_Packet& output_packet);
-    virtual void load(IReader& input_packet);
-    virtual BOOL net_SaveRelevant() { return inherited::net_SaveRelevant(); }
+    void save(NET_Packet& output_packet) override;
+    void load(IReader& input_packet) override;
+    [[nodiscard]] BOOL net_SaveRelevant() override { return inherited::net_SaveRelevant(); }
 
     tmc::task<void> UpdateCL() override;
     tmc::task<void> shedule_Update(u32 dt) override;
 
     void renderable_Render(u32 context_id, IRenderable* root) override;
-    virtual void render_hud_mode() override;
-    virtual void OnDrawUI();
-    virtual bool need_renderable();
+    void render_hud_mode() override;
+    void OnDrawUI() override;
+    [[nodiscard]] bool need_renderable() override;
 
-    virtual void OnH_B_Chield();
-    virtual void OnH_A_Chield();
-    virtual void OnH_B_Independent(bool just_before_destroy);
-    virtual void OnH_A_Independent();
+    void OnH_B_Chield() override;
+    void OnH_A_Chield() override;
+    void OnH_B_Independent(bool just_before_destroy) override;
+    void OnH_A_Independent() override;
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
-    virtual void OnBeforeDrop() override;
+    void OnBeforeDrop() override;
 
-    virtual void Hit(SHit* pHDS);
+    void Hit(SHit* pHDS) override;
 
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
-    virtual void create_physic_shell();
-    virtual void activate_physic_shell();
-    virtual void setup_physic_shell();
+    void reinit() override;
+    void reload(gsl::czstring section) override;
+    void create_physic_shell() override;
+    void activate_physic_shell() override;
+    void setup_physic_shell() override;
 
-    virtual void SwitchState(u32 S);
-    virtual bool Activate(bool = false);
+    void SwitchState(u32 S) override;
+    [[nodiscard]] bool Activate(bool = false) override;
 
-    virtual void Hide(bool = false);
-    virtual void Show(bool = false);
+    void Hide(bool = false) override;
+    void Show(bool = false) override;
 
     // инициализация если вещь в активном слоте или спрятана на OnH_B_Chield
-    virtual void OnActiveItem();
-    virtual void OnHiddenItem();
+    void OnActiveItem() override;
+    void OnHiddenItem() override;
 
-    virtual bool NeedBlendAnm();
+    [[nodiscard]] bool NeedBlendAnm() override;
 
     //////////////////////////////////////////////////////////////////////////
     //  Network
     //////////////////////////////////////////////////////////////////////////
 
 public:
-    virtual bool can_kill() const;
-    virtual CInventoryItem* can_kill(CInventory* inventory) const;
-    virtual const CInventoryItem* can_kill(const xr_vector<const CGameObject*>& items) const;
-    virtual bool ready_to_kill() const;
+    [[nodiscard]] bool can_kill() const override;
+    [[nodiscard]] CInventoryItem* can_kill(CInventory* inventory) const override;
+    [[nodiscard]] const CInventoryItem* can_kill(const xr_vector<const CGameObject*>& items) const override;
+    [[nodiscard]] bool ready_to_kill() const override;
 
     //////////////////////////////////////////////////////////////////////////
     //  Animation
@@ -125,19 +125,19 @@ public:
         eSubstateIdleSprint,
     };
 
-    virtual bool IsHidden() const { return GetState() == eHidden; } // Does weapon is in hidden state
-    virtual bool IsHiding() const { return GetState() == eHiding; }
-    virtual bool IsShowing() const { return GetState() == eShowing; }
+    [[nodiscard]] bool IsHidden() const override { return GetState() == eHidden; } // Does weapon is in hidden state
+    [[nodiscard]] bool IsHiding() const override { return GetState() == eHiding; }
+    [[nodiscard]] bool IsShowing() const override { return GetState() == eShowing; }
 
-    IC BOOL IsValid() const { return iAmmoElapsed; }
+    [[nodiscard]] BOOL IsValid() const { return iAmmoElapsed; }
     // Does weapon need's update?
-    BOOL IsUpdating();
+    [[nodiscard]] BOOL IsUpdating();
 
-    BOOL CheckForMisfire();
+    [[nodiscard]] BOOL CheckForMisfire();
 
-    bool IsTriStateReload() const { return m_bTriStateReload; }
-    EWeaponSubStates GetReloadState() const { return (EWeaponSubStates)m_sub_state; }
-    u8 idle_state();
+    [[nodiscard]] bool IsTriStateReload() const { return m_bTriStateReload; }
+    [[nodiscard]] EWeaponSubStates GetReloadState() const { return (EWeaponSubStates)m_sub_state; }
+    [[nodiscard]] u8 idle_state();
 
 protected:
     bool m_bTriStateReload;
@@ -154,16 +154,16 @@ public:
     // работа с аддонами к оружию
     //////////////////////////////////////////
 
-    bool IsGrenadeLauncherAttached() const;
-    bool IsScopeAttached() const;
-    bool IsSilencerAttached() const;
+    [[nodiscard]] bool IsGrenadeLauncherAttached() const;
+    [[nodiscard]] bool IsScopeAttached() const;
+    [[nodiscard]] bool IsSilencerAttached() const;
 
-    virtual bool IsGrenadeMode() const { return false; }
+    [[nodiscard]] virtual bool IsGrenadeMode() const { return false; }
 
-    virtual bool GrenadeLauncherAttachable() const;
-    virtual bool ScopeAttachable() const;
-    virtual bool SilencerAttachable() const;
-    virtual bool UseScopeTexture();
+    [[nodiscard]] virtual bool GrenadeLauncherAttachable() const;
+    [[nodiscard]] virtual bool ScopeAttachable() const;
+    [[nodiscard]] virtual bool SilencerAttachable() const;
+    [[nodiscard]] virtual bool UseScopeTexture();
 
     // обновление видимости для косточек аддонов
     void UpdateAddonsVisibility();
@@ -172,18 +172,18 @@ public:
     virtual void InitAddons();
 
     // для отоброажения иконок апгрейдов в интерфейсе
-    int GetScopeX() { return m_iScopeX; }
-    int GetScopeY() { return m_iScopeY; }
-    int GetSilencerX() { return m_iSilencerX; }
-    int GetSilencerY() { return m_iSilencerY; }
-    int GetGrenadeLauncherX() { return m_iGrenadeLauncherX; }
-    int GetGrenadeLauncherY() { return m_iGrenadeLauncherY; }
+    [[nodiscard]] int GetScopeX() { return m_iScopeX; }
+    [[nodiscard]] int GetScopeY() { return m_iScopeY; }
+    [[nodiscard]] int GetSilencerX() { return m_iSilencerX; }
+    [[nodiscard]] int GetSilencerY() { return m_iSilencerY; }
+    [[nodiscard]] int GetGrenadeLauncherX() { return m_iGrenadeLauncherX; }
+    [[nodiscard]] int GetGrenadeLauncherY() { return m_iGrenadeLauncherY; }
 
-    const shared_str& GetGrenadeLauncherName() const { return m_sGrenadeLauncherName; }
-    const shared_str& GetScopeName() const { return m_sScopeName; }
-    const shared_str& GetSilencerName() const { return m_sSilencerName; }
+    [[nodiscard]] const shared_str& GetGrenadeLauncherName() const { return m_sGrenadeLauncherName; }
+    [[nodiscard]] const shared_str& GetScopeName() const { return m_sScopeName; }
+    [[nodiscard]] const shared_str& GetSilencerName() const { return m_sSilencerName; }
 
-    u8 GetAddonsState() const { return m_flagsAddOnState; }
+    [[nodiscard]] u8 GetAddonsState() const { return m_flagsAddOnState; }
     void SetAddonsState(u8 st) { m_flagsAddOnState = st; }
 
     // названия секций подключаемых аддонов
@@ -266,14 +266,15 @@ protected:
     float m_fScopeInertionFactor;
 
 public:
-    IC bool IsZoomEnabled() const { return m_bZoomEnabled; }
+    [[nodiscard]] bool IsZoomEnabled() const { return m_bZoomEnabled; }
     void GetZoomData(float scope_factor, float& delta, float& min_zoom_factor);
     virtual void ZoomChange(bool inc);
     virtual void OnZoomIn();
     virtual void OnZoomOut();
-    bool IsZoomed() const override { return m_bZoomMode; }
-    CUIStaticItem* ZoomTexture();
-    bool ZoomHideCrosshair()
+    [[nodiscard]] bool IsZoomed() const override { return m_bZoomMode; }
+    [[nodiscard]] CUIStaticItem* ZoomTexture();
+
+    [[nodiscard]] bool ZoomHideCrosshair()
     {
         auto* pA = smart_cast<CActor*>(H_Parent());
         if (pA && pA->active_cam() == ACTOR_DEFS::eacLookAt)
@@ -284,25 +285,25 @@ public:
 
     virtual void OnZoomChanged() {}
 
-    IC float GetZoomFactor() const { return m_fZoomFactor; }
-    virtual float CurrentZoomFactor();
+    [[nodiscard]] float GetZoomFactor() const { return m_fZoomFactor; }
+    [[nodiscard]] virtual float CurrentZoomFactor();
     // показывает, что оружие находится в соостоянии поворота для приближенного прицеливания
-    bool IsRotatingToZoom() const { return (m_fZoomRotationFactor < 1.f); }
-    bool IsRotatingFromZoom() const { return m_fZoomRotationFactor > 0.f; }
+    [[nodiscard]] bool IsRotatingToZoom() const { return (m_fZoomRotationFactor < 1.f); }
+    [[nodiscard]] bool IsRotatingFromZoom() const { return m_fZoomRotationFactor > 0.f; }
 
-    virtual float Weight() const;
-    virtual u32 Cost() const;
-    virtual float GetControlInertionFactor() const;
-
-public:
-    virtual EHandDependence HandDependence() const { return eHandDependence; }
-    bool IsSingleHanded() const { return m_bIsSingleHanded; }
+    [[nodiscard]] f32 Weight() const override;
+    [[nodiscard]] u32 Cost() const override;
+    [[nodiscard]] f32 GetControlInertionFactor() const override;
 
 public:
-    IC LPCSTR strap_bone0() const { return m_strap_bone0; }
-    IC LPCSTR strap_bone1() const { return m_strap_bone1; }
-    IC void strapped_mode(bool value) { m_strapped_mode = value; }
-    IC bool strapped_mode() const { return m_strapped_mode; }
+    [[nodiscard]] EHandDependence HandDependence() const override { return eHandDependence; }
+    [[nodiscard]] bool IsSingleHanded() const override { return m_bIsSingleHanded; }
+
+public:
+    [[nodiscard]] gsl::czstring strap_bone0() const { return m_strap_bone0; }
+    [[nodiscard]] gsl::czstring strap_bone1() const { return m_strap_bone1; }
+    void strapped_mode(bool value) { m_strapped_mode = value; }
+    [[nodiscard]] bool strapped_mode() const { return m_strapped_mode; }
 
 protected:
     LPCSTR m_strap_bone0;
@@ -331,48 +332,54 @@ private:
 protected:
     virtual void UpdateFireDependencies_internal();
     virtual void UpdatePosition(const Fmatrix& transform); //.
-    virtual void UpdateXForm();
+    void UpdateXForm() override;
 
-    u8 GetCurrentHudOffsetIdx() const override;
-    virtual bool IsHudModeNow();
+    [[nodiscard]] u8 GetCurrentHudOffsetIdx() const override;
+    [[nodiscard]] bool IsHudModeNow() override;
 
-    virtual void LoadFireParams(LPCSTR section, LPCSTR prefix);
+    void LoadFireParams(gsl::czstring section, gsl::czstring prefix) override;
 
 public:
-    IC const Fvector& get_LastFP()
+    [[nodiscard]] const Fvector& get_LastFP()
     {
         UpdateFireDependencies_internal();
         return m_current_firedeps.vLastFP;
     }
-    IC const Fvector& get_LastFP2()
+
+    [[nodiscard]] const Fvector& get_LastFP2()
     {
         UpdateFireDependencies_internal();
         return m_current_firedeps.vLastFP2;
     }
-    IC const Fvector& get_LastFD()
+
+    [[nodiscard]] const Fvector& get_LastFD()
     {
         UpdateFireDependencies_internal();
         return m_current_firedeps.vLastFD;
     }
-    IC const Fvector& get_LastSP()
+
+    [[nodiscard]] const Fvector& get_LastSP()
     {
         UpdateFireDependencies_internal();
         return m_current_firedeps.vLastSP;
     }
-    IC const Fvector& get_LastShootPoint()
+
+    [[nodiscard]] const Fvector& get_LastShootPoint()
     {
         UpdateFireDependencies_internal();
         return m_current_firedeps.vLastShootPoint;
     }
 
-    virtual const Fvector& get_CurrentFirePoint() { return get_LastFP(); }
-    virtual const Fvector& get_CurrentFirePoint2() { return get_LastFP2(); }
-    virtual const Fmatrix& get_ParticlesXFORM()
+    [[nodiscard]] const Fvector& get_CurrentFirePoint() override { return get_LastFP(); }
+    [[nodiscard]] virtual const Fvector& get_CurrentFirePoint2() { return get_LastFP2(); }
+
+    [[nodiscard]] const Fmatrix& get_ParticlesXFORM() override
     {
         UpdateFireDependencies_internal();
         return m_current_firedeps.m_FireParticlesXForm;
     }
-    virtual void ForceUpdateFireParticles();
+
+    void ForceUpdateFireParticles() override;
 
     //////////////////////////////////////////////////////////////////////////
     // Weapon fire
@@ -382,10 +389,10 @@ protected:
 
     // трассирование полета пули
     virtual void FireTrace(const Fvector& P, const Fvector& D);
-    virtual float GetWeaponDeterioration();
+    [[nodiscard]] virtual f32 GetWeaponDeterioration();
 
-    virtual void FireStart() { CShootingObject::FireStart(); }
-    virtual void FireEnd(); // {CShootingObject::FireEnd();}
+    void FireStart() override { CShootingObject::FireStart(); }
+    void FireEnd() override;
 
     virtual void Fire2Start();
     virtual void Fire2End();
@@ -403,15 +410,14 @@ protected:
 
 public:
     // текущая дисперсия (в радианах) оружия с учетом используемого патрона
-    float GetFireDispersion(bool with_cartridge);
-    float GetFireDispersion(float cartridge_k);
-    //	const Fvector&			GetRecoilDeltaAngle	();
-    virtual int ShotsFired() { return 0; }
+    [[nodiscard]] f32 GetFireDispersion(bool with_cartridge);
+    [[nodiscard]] f32 GetFireDispersion(float cartridge_k);
+    [[nodiscard]] virtual s32 ShotsFired() { return 0; }
 
     // параметы оружия в зависимоти от его состояния исправности
-    float GetConditionDispersionFactor() const;
-    float GetConditionMisfireProbability() const;
-    virtual float GetConditionToShow() const;
+    [[nodiscard]] f32 GetConditionDispersionFactor() const;
+    [[nodiscard]] f32 GetConditionMisfireProbability() const;
+    [[nodiscard]] f32 GetConditionToShow() const override;
 
 public:
     // отдача при стрельбе
@@ -481,11 +487,11 @@ protected:
     int GetAmmoCount(u8 ammo_type, u32 = 0) const;
 
 public:
-    IC int GetAmmoElapsed() const { return /*int(m_magazine.size())*/ iAmmoElapsed; }
-    virtual int GetAmmoElapsed2() const { return 0; }
-    IC int GetAmmoMagSize() const { return iMagazineSize; }
-    int GetAmmoCurrent(bool use_item_to_spawn = false) const;
-    IC void SetAmmoMagSize(int _size) { iMagazineSize = _size; }
+    [[nodiscard]] s32 GetAmmoElapsed() const { return /*int(m_magazine.size())*/ iAmmoElapsed; }
+    [[nodiscard]] virtual s32 GetAmmoElapsed2() const { return 0; }
+    [[nodiscard]] s32 GetAmmoMagSize() const { return iMagazineSize; }
+    [[nodiscard]] s32 GetAmmoCurrent(bool use_item_to_spawn = false) const;
+    void SetAmmoMagSize(s32 _size) { iMagazineSize = _size; }
 
     void SetAmmoElapsed(int ammo_count);
 
@@ -493,12 +499,13 @@ public:
     void SpawnAmmo(u32 boxCurr = std::numeric_limits<u32>::max(), LPCSTR ammoSect = nullptr, u32 ParentID = std::numeric_limits<u32>::max());
 
     //  [8/3/2005]
-    virtual float Get_PDM_Base() const { return m_fPDM_disp_base; }
-    virtual float Get_PDM_Vel_F() const { return m_fPDM_disp_vel_factor; }
-    virtual float Get_PDM_Accel_F() const { return m_fPDM_disp_accel_factor; }
-    virtual float Get_PDM_Crouch() const { return m_fPDM_disp_crouch; }
-    virtual float Get_PDM_Crouch_NA() const { return m_fPDM_disp_crouch_no_acc; }
+    [[nodiscard]] virtual f32 Get_PDM_Base() const { return m_fPDM_disp_base; }
+    [[nodiscard]] virtual f32 Get_PDM_Vel_F() const { return m_fPDM_disp_vel_factor; }
+    [[nodiscard]] virtual f32 Get_PDM_Accel_F() const { return m_fPDM_disp_accel_factor; }
+    [[nodiscard]] virtual f32 Get_PDM_Crouch() const { return m_fPDM_disp_crouch; }
+    [[nodiscard]] virtual f32 Get_PDM_Crouch_NA() const { return m_fPDM_disp_crouch_no_acc; }
     //  [8/3/2005]
+
 protected:
     int iAmmoElapsed; // ammo in magazine, currently
     int iMagazineSize; // size (in bullets) of magazine
@@ -507,7 +514,7 @@ protected:
     mutable int iAmmoCurrent;
     mutable u32 m_dwAmmoCurrentCalcFrame; // кадр на котором просчитали кол-во патронов
 
-    virtual bool IsNecessaryItem(const shared_str& item_sect);
+    [[nodiscard]] bool IsNecessaryItem(const shared_str& item_sect) override;
 
 public:
     xr_vector<shared_str> m_ammoTypes;
@@ -523,19 +530,19 @@ public:
     CCartridge m_DefaultCartridge;
     float m_fCurrentCartirdgeDisp;
 
-    bool unlimited_ammo();
-    IC bool can_be_strapped() const { return m_can_be_strapped; }
+    [[nodiscard]] bool unlimited_ammo();
+    [[nodiscard]] bool can_be_strapped() const { return m_can_be_strapped; }
 
-    LPCSTR GetCurrentAmmo_ShortName();
-    float GetMagazineWeight(const decltype(m_magazine)& mag) const;
+    [[nodiscard]] gsl::czstring GetCurrentAmmo_ShortName();
+    [[nodiscard]] f32 GetMagazineWeight(const decltype(m_magazine)& mag) const;
 
 protected:
     u32 m_ef_main_weapon_type;
     u32 m_ef_weapon_type;
 
 public:
-    virtual u32 ef_main_weapon_type() const;
-    virtual u32 ef_weapon_type() const;
+    [[nodiscard]] u32 ef_main_weapon_type() const override;
+    [[nodiscard]] u32 ef_weapon_type() const override;
 
 protected:
     // This is because when scope is attached we can't ask scope for these params
@@ -544,32 +551,32 @@ protected:
     float m_addon_holder_fov_modifier;
 
 protected:
-    virtual size_t GetWeaponTypeForCollision() const override { return CWeaponBase; }
-    virtual Fvector GetPositionForCollision() override { return get_LastShootPoint(); }
-    virtual Fvector GetDirectionForCollision() override { return get_LastFD(); }
+    [[nodiscard]] size_t GetWeaponTypeForCollision() const override { return CWeaponBase; }
+    [[nodiscard]] Fvector GetPositionForCollision() override { return get_LastShootPoint(); }
+    [[nodiscard]] Fvector GetDirectionForCollision() override { return get_LastFD(); }
 
 public:
-    virtual void modify_holder_params(float& range, float& fov) const;
-    virtual bool use_crosshair() const { return true; }
-    bool show_crosshair();
-    bool show_indicators();
-    virtual bool ParentIsActor() const override;
+    void modify_holder_params(float& range, float& fov) const override;
+    [[nodiscard]] virtual bool use_crosshair() const { return true; }
+    [[nodiscard]] bool show_crosshair();
+    [[nodiscard]] bool show_indicators();
+    [[nodiscard]] bool ParentIsActor() const override;
 
 private:
     float m_hit_probability[egdCount];
 
 public:
-    const float& hit_probability() const;
+    [[nodiscard]] const f32& hit_probability() const;
     void UpdateSecondVP();
-    float GetZRotatingFactor() const { return m_fZoomRotationFactor; } //--#SM+#--
-    float GetSecondVPFov() const; //--#SM+#--
-    bool SecondVPEnabled() const;
-    float GetHudFov() override;
+    [[nodiscard]] f32 GetZRotatingFactor() const { return m_fZoomRotationFactor; } //--#SM+#--
+    [[nodiscard]] f32 GetSecondVPFov() const; //--#SM+#--
+    [[nodiscard]] bool SecondVPEnabled() const;
+    [[nodiscard]] f32 GetHudFov() override;
 
     virtual void OnBulletHit();
-    virtual bool IsPartlyReloading() const;
+    [[nodiscard]] virtual bool IsPartlyReloading() const;
 
-    virtual void processing_deactivate() override
+    void processing_deactivate() override
     {
         UpdateLaser();
         UpdateFlashlight();
@@ -595,7 +602,7 @@ private:
     void UpdateLaser();
 
 public:
-    bool SwitchLaser(bool on)
+    [[nodiscard]] bool SwitchLaser(bool on)
     {
         if (!has_laser)
             return false;
@@ -607,7 +614,8 @@ public:
 
         return true;
     }
-    inline bool IsLaserOn() const { return m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonLaserOn; }
+
+    [[nodiscard]] bool IsLaserOn() const { return m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonLaserOn; }
 
     Fvector flashlight_attach_offset{}, flashlight_pos{};
 
@@ -629,7 +637,7 @@ private:
     void UpdateFlashlight();
 
 public:
-    bool SwitchFlashlight(bool on)
+    [[nodiscard]] bool SwitchFlashlight(bool on)
     {
         if (!has_flashlight)
             return false;
@@ -641,7 +649,8 @@ public:
 
         return true;
     }
-    inline bool IsFlashlightOn() const { return m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonFlashlightOn; }
+
+    [[nodiscard]] bool IsFlashlightOn() const { return m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonFlashlightOn; }
 
     void SwitchMisfire(bool on)
     {
@@ -650,15 +659,18 @@ public:
         else
             m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponMisfire;
     }
-    inline bool IsMisfire() const { return m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponMisfire; }
 
-    Fvector get_angle_offset() const override
+    [[nodiscard]] bool IsMisfire() const { return m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponMisfire; }
+
+    [[nodiscard]] Fvector get_angle_offset() const override
     {
         Fvector v;
         m_strapped_mode ? m_StrapOffset.getHPB(v) : m_Offset.getHPB(v);
         return v;
     }
-    Fvector get_pos_offset() const override { return m_strapped_mode ? m_StrapOffset.c : m_Offset.c; }
+
+    [[nodiscard]] Fvector get_pos_offset() const override { return m_strapped_mode ? m_StrapOffset.c : m_Offset.c; }
+
     void set_angle_offset(Fvector val) override
     {
         Fvector c = get_pos_offset();
@@ -666,12 +678,14 @@ public:
         mat.setHPB(VPUSH(val));
         mat.c = c;
     }
+
     void rot(int axis, float val) override
     {
         Fvector v = get_angle_offset();
         v[axis] += val;
         set_angle_offset(v);
     }
+
     void mov(int axis, float val) override
     {
         Fvector c = get_pos_offset();
@@ -681,6 +695,7 @@ public:
         else
             m_Offset.c = c;
     }
+
     void SaveAttachableParams() override;
     void ParseCurrentItem(CGameFont* F) override;
 

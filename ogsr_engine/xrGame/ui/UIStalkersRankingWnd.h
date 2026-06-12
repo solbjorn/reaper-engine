@@ -21,7 +21,7 @@ public:
     ~CUIStalkersRankingWnd() override = default;
 
     void Init();
-    virtual void Show(bool status);
+    void Show(bool status) override;
     void ShowHumanDetails();
 
 protected:
@@ -40,9 +40,9 @@ protected:
     void AddActorItem(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t);
 
 public:
-    CUIScrollView& GetTopList() { return *UIList; }
+    [[nodiscard]] CUIScrollView& GetTopList() { return *UIList; }
     void ShowHumanInfo(u16 id);
-    virtual void Reset();
+    void Reset() override;
 };
 
 class CUIStalkerRankingInfoItem : public CUIWindow, public CUISelectable
@@ -62,7 +62,7 @@ public:
     ~CUIStalkerRankingInfoItem() override = default;
 
     void Init(CUIXml* xml, LPCSTR path, int idx);
-    virtual void SetSelected(bool b);
+    void SetSelected(bool b) override;
     [[nodiscard]] bool OnMouseDown(sf::Mouse::Button mouse_btn) override;
 };
 
@@ -76,7 +76,7 @@ public:
     explicit CUIStalkerRankingElipsisItem(CUIStalkersRankingWnd*);
     ~CUIStalkerRankingElipsisItem() override = default;
 
-    virtual void SetSelected(bool);
+    void SetSelected(bool) override;
     [[nodiscard]] bool OnMouseDown(sf::Mouse::Button) override;
 };
 

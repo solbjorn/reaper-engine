@@ -159,9 +159,9 @@ public:
     explicit CMovementManager(CCustomMonster* object);
     ~CMovementManager() override;
 
-    virtual void Load(LPCSTR caSection);
+    virtual void Load(gsl::czstring caSection);
     virtual void reinit();
-    virtual void reload(LPCSTR caSection);
+    virtual void reload(gsl::czstring caSection);
     virtual tmc::task<bool> net_Spawn(CSE_Abstract* data);
     virtual tmc::task<void> net_Destroy();
     virtual void on_frame(CPHMovementControl* movement_control, Fvector& dest_position);
@@ -183,7 +183,7 @@ public:
     IC void set_body_orientation(const MonsterSpace::SBoneRotation& orientation);
     IC const CBoneRotation& body_orientation() const;
     void update_path();
-    virtual void move_along_path(CPHMovementControl* movement_control, Fvector& dest_position, float time_delta);
+    virtual void move_along_path(CPHMovementControl* movement_control, Fvector3& dest_position, f32 time_delta);
 
     IC float speed() const;
     float speed(CPHMovementControl* movement_control) const;
@@ -226,8 +226,8 @@ protected:
 
 protected:
     Fvector path_position(const float& time_to_check);
-    Fvector path_position(const float& velocity, const Fvector& position, const float& time_delta, u32& current_travel_point, float& dist, float& dist_to_target,
-                          Fvector& dir_to_target);
+    Fvector path_position(const float& velocity, const Fvector& position, const float& time_delta, u32& current_travel_point, float& dist,
+                          float& dist_to_target, Fvector& dir_to_target);
 };
 
 #include "movement_manager_inline.h"

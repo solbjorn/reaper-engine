@@ -281,30 +281,35 @@ void CScriptEntity::ProcessScripts()
     }
 
     bool l_bCompleted = l_tpEntityAction->m_tWatchAction.m_bCompleted;
-    bfAssignWatch(l_tpEntityAction);
+    std::ignore = bfAssignWatch(l_tpEntityAction);
+
     if (l_tpEntityAction->m_tWatchAction.m_bCompleted && !l_bCompleted)
         object().callback(GameObject::eActionTypeWatch)(object().lua_game_object(), u32(GameObject::eActionTypeWatch));
 
     l_bCompleted = l_tpEntityAction->m_tAnimationAction.m_bCompleted;
-    bfAssignAnimation(l_tpEntityAction);
+    std::ignore = bfAssignAnimation(l_tpEntityAction);
 
     l_bCompleted = l_tpEntityAction->m_tSoundAction.m_bCompleted;
-    bfAssignSound(l_tpEntityAction);
+    std::ignore = bfAssignSound(l_tpEntityAction);
+
     if (l_tpEntityAction->m_tSoundAction.m_bCompleted && !l_bCompleted)
         object().callback(GameObject::eActionTypeSound)(object().lua_game_object(), u32(GameObject::eActionTypeSound));
 
     l_bCompleted = l_tpEntityAction->m_tParticleAction.m_bCompleted;
-    bfAssignParticles(l_tpEntityAction);
+    std::ignore = bfAssignParticles(l_tpEntityAction);
+
     if (l_tpEntityAction->m_tParticleAction.m_bCompleted && !l_bCompleted)
         object().callback(GameObject::eActionTypeParticle)(object().lua_game_object(), u32(GameObject::eActionTypeParticle));
 
     l_bCompleted = l_tpEntityAction->m_tObjectAction.m_bCompleted;
-    bfAssignObject(l_tpEntityAction);
+    std::ignore = bfAssignObject(l_tpEntityAction);
+
     if (l_tpEntityAction->m_tObjectAction.m_bCompleted && !l_bCompleted)
         object().callback(GameObject::eActionTypeObject)(object().lua_game_object(), u32(GameObject::eActionTypeObject));
 
     l_bCompleted = l_tpEntityAction->m_tMovementAction.m_bCompleted;
-    bfAssignMovement(l_tpEntityAction);
+    std::ignore = bfAssignMovement(l_tpEntityAction);
+
     if (l_tpEntityAction->m_tMovementAction.m_bCompleted && !l_bCompleted)
         object().callback(GameObject::eActionTypeMovement)(object().lua_game_object(), u32(GameObject::eActionTypeMovement), -1);
 
@@ -312,7 +317,7 @@ void CScriptEntity::ProcessScripts()
     if (!l_tpEntityAction->m_tAnimationAction.m_bCompleted)
         bfScriptAnimation();
 
-    bfAssignMonsterAction(l_tpEntityAction);
+    std::ignore = bfAssignMonsterAction(l_tpEntityAction);
 }
 
 bool CScriptEntity::bfAssignWatch(CScriptEntityAction*) { return GetCurrentAction() && !GetCurrentAction()->m_tWatchAction.m_bCompleted; }
@@ -615,7 +620,7 @@ bool CScriptEntity::bfScriptAnimation()
         {
             if (result)
             {
-                skeleton_animated->LL_PlayCycle(i, animation, TRUE, nullptr, nullptr);
+                std::ignore = skeleton_animated->LL_PlayCycle(i, animation, TRUE, nullptr, nullptr);
                 continue;
             }
 

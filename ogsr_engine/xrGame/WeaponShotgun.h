@@ -13,22 +13,22 @@ public:
     CWeaponShotgun();
     ~CWeaponShotgun() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
 
     tmc::task<void> net_Destroy() override;
-    virtual void net_Export(CSE_Abstract* E);
+    void net_Export(CSE_Abstract* E) override;
 
-    virtual void Reload();
+    void Reload() override;
     void TryReload();
-    virtual void Fire2Start();
-    virtual void Fire2End();
-    virtual void OnShot();
+    void Fire2Start() override;
+    void Fire2End() override;
+    void OnShot() override;
     virtual void OnShotBoth();
-    virtual void switch2_Fire();
-    virtual void switch2_Fire2();
-    virtual void StopHUDSounds();
+    void switch2_Fire() override;
+    void switch2_Fire2() override;
+    void StopHUDSounds() override;
 
-    virtual void UpdateSounds();
+    void UpdateSounds() override;
     tmc::task<void> UpdateCL() override;
 
     [[nodiscard]] bool Action(EGameActions cmd, u32 flags) override;
@@ -39,13 +39,13 @@ public:
 #endif // !DUPLET_STATE_SWITCH
 
 protected:
-    virtual void OnAnimationEnd(u32 state);
+    void OnAnimationEnd(u32 state) override;
     void TriStateReload();
-    virtual void OnStateSwitch(u32 S, u32 oldState);
+    void OnStateSwitch(u32 S, u32 oldState) override;
 
-    bool HaveCartridgeInInventory(u8 cnt);
-    virtual u8 AddCartridge(u8 cnt);
-    virtual void ReloadMagazine();
+    [[nodiscard]] bool HaveCartridgeInInventory(u8 cnt);
+    [[nodiscard]] virtual u8 AddCartridge(u8 cnt);
+    void ReloadMagazine() override;
 
     HUD_SOUND sndShotBoth;
     ESoundTypes m_eSoundShotBoth;

@@ -25,6 +25,6 @@ public:
     explicit CActorMemory(CActor* actor);
     ~CActorMemory() override = default;
 
-    virtual BOOL feel_vision_isRelevant(CObject* object);
-    virtual void camera(Fvector& position, Fvector& direction, Fvector& normal, float& field_of_view, float& aspect_ratio, float& near_plane, float& far_plane);
+    [[nodiscard]] BOOL feel_vision_isRelevant(CObject* object) override;
+    void camera(Fvector3& position, Fvector3& direction, Fvector3& normal, f32& field_of_view, f32& aspect_ratio, f32& near_plane, f32& far_plane) override;
 };

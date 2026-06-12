@@ -5,18 +5,18 @@ class CBlender_deffer_flat : public IBlenderXr
     RTTI_DECLARE_TYPEINFO(CBlender_deffer_flat, IBlenderXr);
 
 public:
-    virtual LPCSTR getComment() { return "LEVEL: defer-base-normal"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "LEVEL: defer-base-normal"; }
 
-    virtual BOOL canBeDetailed() { return TRUE; }
-    virtual BOOL canUseSteepParallax() { return TRUE; }
+    [[nodiscard]] BOOL canBeDetailed() override { return TRUE; }
+    [[nodiscard]] BOOL canUseSteepParallax() override { return TRUE; }
 
-    virtual void Save(IWriter& fs);
-    virtual void Load(IReader& fs, u16 version);
+    void Save(IWriter& fs) override;
+    void Load(IReader& fs, u16 version) override;
 
-    virtual void SaveIni(CInifile* ini_file, LPCSTR section);
-    virtual void LoadIni(CInifile* ini_file, LPCSTR section);
+    void SaveIni(CInifile* ini_file, gsl::czstring section) override;
+    void LoadIni(CInifile* ini_file, gsl::czstring section) override;
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 
     CBlender_deffer_flat();
     ~CBlender_deffer_flat() override;

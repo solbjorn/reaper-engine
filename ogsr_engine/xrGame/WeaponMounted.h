@@ -35,16 +35,16 @@ public:
     ~CWeaponMounted() override;
 
     // for shooting object
-    virtual const Fvector& get_CurrentFirePoint() { return fire_pos; }
-    virtual const Fmatrix& get_ParticlesXFORM();
-    virtual bool IsHudModeNow() { return false; }
+    [[nodiscard]] const Fvector3& get_CurrentFirePoint() override { return fire_pos; }
+    [[nodiscard]] const Fmatrix& get_ParticlesXFORM() override;
+    [[nodiscard]] bool IsHudModeNow() override { return false; }
 
     //////////////////////////////////////////////////
     // непосредственно обработка стрельбы
     //////////////////////////////////////////////////
 protected:
-    virtual void FireStart();
-    virtual void FireEnd();
+    void FireStart() override;
+    void FireEnd() override;
     virtual void UpdateFire();
     virtual void OnShot();
     void AddShotEffector();
@@ -65,19 +65,19 @@ protected:
     // Generic
     /////////////////////////////////////////////////
 public:
-    virtual CHolderCustom* cast_holder_custom() { return this; }
-    virtual void Load(LPCSTR section);
+    [[nodiscard]] CHolderCustom* cast_holder_custom() override { return this; }
+    void Load(gsl::czstring section) override;
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual void net_Export(CSE_Abstract* E);
+    void net_Export(CSE_Abstract* E) override;
 
     tmc::task<void> UpdateCL() override;
     tmc::task<void> shedule_Update(u32 dt) override;
 
     void renderable_Render(u32 context_id, IRenderable* root) override;
 
-    virtual BOOL UsedAI_Locations() { return FALSE; }
+    [[nodiscard]] BOOL UsedAI_Locations() override { return FALSE; }
 
     // control functions
     void OnMouseMove(int x, int y) override;
@@ -85,18 +85,18 @@ public:
     void OnKeyboardRelease(EGameActions cmd) override;
     void OnKeyboardHold(EGameActions) override;
 
-    virtual CInventory* GetInventory() { return nullptr; }
+    [[nodiscard]] CInventory* GetInventory() override { return nullptr; }
 
     tmc::task<void> cam_Update(f32, f32 = 90.0f) override;
 
-    [[nodiscard]] bool Use(const Fvector&, const Fvector&, const Fvector&) override;
-    virtual bool attach_Actor(CGameObject* actor);
-    virtual void detach_Actor();
-    virtual Fvector ExitPosition();
-    virtual bool allowWeapon() const { return false; }
-    virtual bool HUDView() const { return true; }
+    [[nodiscard]] bool Use(const Fvector3&, const Fvector3&, const Fvector3&) override;
+    [[nodiscard]] bool attach_Actor(CGameObject* actor) override;
+    void detach_Actor() override;
+    [[nodiscard]] Fvector ExitPosition() override;
+    [[nodiscard]] bool allowWeapon() const override { return false; }
+    [[nodiscard]] bool HUDView() const override { return true; }
 
-    virtual CCameraBase* Camera();
+    [[nodiscard]] CCameraBase* Camera() override;
 };
 
 #endif // WeaponMountedH

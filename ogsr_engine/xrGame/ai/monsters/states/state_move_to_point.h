@@ -19,11 +19,11 @@ public:
     explicit CStateMonsterMoveToPoint(_Object* obj) : inherited{obj, &data} {}
     ~CStateMonsterMoveToPoint() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void initialize() override;
+    void execute() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 
-    virtual bool check_completion();
+    [[nodiscard]] bool check_completion() override;
 };
 
 template <typename _Object>
@@ -43,10 +43,10 @@ public:
     explicit CStateMonsterMoveToPointEx(_Object* obj) : inherited{obj, &data} {}
     ~CStateMonsterMoveToPointEx() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual bool check_completion();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void initialize() override;
+    void execute() override;
+    [[nodiscard]] bool check_completion() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 };
 
 #include "state_move_to_point_inline.h"

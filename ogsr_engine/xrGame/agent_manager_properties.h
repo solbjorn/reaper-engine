@@ -32,7 +32,7 @@ public:
     inline explicit CAgentManagerPropertyEvaluatorItem(CAgentManager* object = nullptr, LPCSTR evaluator_name = "");
     ~CAgentManagerPropertyEvaluatorItem() override = default;
 
-    virtual _value_type evaluate();
+    [[nodiscard]] _value_type evaluate() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ public:
     inline explicit CAgentManagerPropertyEvaluatorEnemy(CAgentManager* object = nullptr, LPCSTR evaluator_name = "");
     ~CAgentManagerPropertyEvaluatorEnemy() override = default;
 
-    virtual _value_type evaluate();
+    [[nodiscard]] _value_type evaluate() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -68,7 +68,7 @@ public:
     inline explicit CAgentManagerPropertyEvaluatorDanger(CAgentManager* object = nullptr, LPCSTR evaluator_name = "");
     ~CAgentManagerPropertyEvaluatorDanger() override = default;
 
-    virtual _value_type evaluate();
+    [[nodiscard]] _value_type evaluate() override;
 };
 
 #include "agent_manager_properties_inline.h"

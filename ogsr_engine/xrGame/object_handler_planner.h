@@ -76,11 +76,12 @@ public:
 public:
     ~CObjectHandlerPlanner() override = default;
 
-    virtual void setup(CAI_Stalker* object);
-    virtual void update();
+    void setup(CAI_Stalker* object) override;
+    void update() override;
     void add_item(CInventoryItem* inventory_item);
     void remove_item(CInventoryItem* inventory_item);
-    void set_goal(EObjectAction object_action, CGameObject* game_object, u32 min_queue_size, u32 max_queue_size, u32 min_queue_interval, u32 max_queue_interval);
+    void set_goal(EObjectAction object_action, CGameObject* game_object, u32 min_queue_size, u32 max_queue_size, u32 min_queue_interval,
+                  u32 max_queue_interval);
 };
 
 #include "object_handler_planner_inline.h"

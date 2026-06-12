@@ -399,7 +399,7 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
             tmpP.B.count = P.r_u8();
             P.r(&tmpP.B.data, tmpP.B.count);
 
-            OnMessage(tmpP, sender);
+            std::ignore = OnMessage(tmpP, sender);
         }
     }
     break;
@@ -589,7 +589,7 @@ void xrServer::create_direct_client()
     strcpy_s(cl_data.name, "single_player");
     cl_data.process_id = GetCurrentProcessId();
 
-    new_client(&cl_data);
+    std::ignore = new_client(&cl_data);
 }
 
 void xrServer::ProceedDelayedPackets()

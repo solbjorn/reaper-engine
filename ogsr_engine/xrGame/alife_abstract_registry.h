@@ -30,8 +30,8 @@ public:
     IC CALifeAbstractRegistry();
     ~CALifeAbstractRegistry() override;
 
-    virtual void save(IWriter& memory_stream);
-    virtual void load(IReader& file_stream);
+    void save(IWriter& memory_stream) override;
+    void load(IReader& file_stream) override;
     IC const OBJECT_REGISTRY& objects() const;
     IC OBJECT_REGISTRY& objects();
     IC void add(const _index_type& index, _data_type& data, bool no_assert = false);

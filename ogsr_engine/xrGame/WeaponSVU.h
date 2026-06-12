@@ -14,7 +14,8 @@ public:
     ~CWeaponSVU() override;
 
 protected:
-    virtual size_t GetWeaponTypeForCollision() const override { return SniperRifle; } // Вообще СВУ короткая, мб и не надо её относить к длинным снайперкам типа СВД
+    // Вообще СВУ короткая, мб и не надо её относить к длинным снайперкам типа СВД
+    [[nodiscard]] size_t GetWeaponTypeForCollision() const override { return SniperRifle; }
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

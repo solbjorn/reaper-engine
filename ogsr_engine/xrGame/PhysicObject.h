@@ -33,21 +33,21 @@ public:
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     virtual void CreatePhysicsShell(CSE_Abstract* e);
     tmc::task<void> net_Destroy() override;
-    virtual void Load(LPCSTR section);
-    tmc::task<void> shedule_Update(u32 dt) override; //
+    void Load(gsl::czstring section) override;
+    tmc::task<void> shedule_Update(u32 dt) override;
     tmc::task<void> UpdateCL() override;
-    virtual void net_Save(NET_Packet& P);
-    virtual BOOL net_SaveRelevant();
-    virtual BOOL UsedAI_Locations();
-    virtual ICollisionHitCallback* get_collision_hit_callback();
-    virtual void set_collision_hit_callback(ICollisionHitCallback* cc);
+    void net_Save(NET_Packet& P) override;
+    [[nodiscard]] BOOL net_SaveRelevant() override;
+    [[nodiscard]] BOOL UsedAI_Locations() override;
+    [[nodiscard]] ICollisionHitCallback* get_collision_hit_callback() override;
+    void set_collision_hit_callback(ICollisionHitCallback* cc) override;
 
 protected:
-    virtual void SpawnInitPhysics(CSE_Abstract* D);
+    void SpawnInitPhysics(CSE_Abstract* D) override;
     virtual void RunStartupAnim(CSE_Abstract* D);
-    virtual CPhysicsShellHolder* PPhysicsShellHolder() { return PhysicsShellHolder(); }
-    virtual CPHSkeleton* PHSkeleton() { return this; }
-    virtual void InitServerObject(CSE_Abstract* po);
+    [[nodiscard]] CPhysicsShellHolder* PPhysicsShellHolder() override { return PhysicsShellHolder(); }
+    [[nodiscard]] CPHSkeleton* PHSkeleton() override { return this; }
+    void InitServerObject(CSE_Abstract* po) override;
     virtual void PHObjectPositionUpdate();
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();

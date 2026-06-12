@@ -57,9 +57,8 @@ public:
     CUIStalkersRankingWnd* UIStalkersRanking{};
     CUIEventsWnd* UIEventsWnd{};
 
-    virtual void Reset();
+    void Reset() override;
 
-public:
     CUIPdaWnd();
     ~CUIPdaWnd() override;
 
@@ -67,16 +66,16 @@ public:
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 
-    virtual void Draw();
-    virtual void Update();
-    virtual void Show();
-    virtual void Hide();
+    void Draw() override;
+    void Update() override;
+    void Show() override;
+    void Hide() override;
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
     void MouseMovement(float x, float y);
     [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
 
     void SetActiveSubdialog(EPdaTabs section);
-    virtual bool StopAnyMove() { return false; }
+    [[nodiscard]] bool StopAnyMove() override { return false; }
 
     void PdaContentsChanged(pda_section::part type, bool = true);
 

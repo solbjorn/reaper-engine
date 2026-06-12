@@ -97,11 +97,11 @@ private:
 public:
     ~CControlJump() override = default;
 
-    virtual void load(LPCSTR section);
-    virtual void reinit();
-    virtual bool check_start_conditions();
-    virtual void activate();
-    virtual void on_release();
+    void load(gsl::czstring section) override;
+    void reinit() override;
+    [[nodiscard]] bool check_start_conditions() override;
+    void activate() override;
+    void on_release() override;
     void on_event(ControlCom::EEventType type, ControlCom::IEventData* data) override;
 
     float relative_time();
@@ -109,7 +109,7 @@ public:
     float get_auto_aim_factor() const { return m_auto_aim_factor; }
     Fvector get_jump_start_pos() const { return m_jump_start_pos; }
     // process jump
-    virtual void update_frame();
+    void update_frame() override;
 
     // check for distance and angle difference
     virtual bool can_jump(CObject* target);

@@ -160,74 +160,75 @@ public:
     IC void occq_free(u32 ID) { HWOCC.occq_free(ID); }
 
     // Loading / Unloading
-    virtual void create();
-    virtual void destroy();
-    virtual void reset_begin();
-    virtual void reset_end();
+    void create() override;
+    void destroy() override;
+    void reset_begin() override;
+    void reset_end() override;
 
     tmc::task<void> level_Load(IReader* fs) override;
-    virtual void level_Unload();
+    void level_Unload() override;
 
     ID3DBaseTexture* texture_load(LPCSTR fname, u32& msize);
-    virtual HRESULT shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcDataLen, LPCSTR pFunctionName, LPCSTR pTarget, DWORD Flags, void*& result);
+    [[nodiscard]] HRESULT shader_compile(gsl::czstring name, DWORD const* pSrcData, UINT SrcDataLen, gsl::czstring pFunctionName, gsl::czstring pTarget,
+                                         DWORD Flags, void*& result) override;
 
     // Information
-    virtual void Statistics(CGameFont* F);
-    virtual LPCSTR getShaderPath() { return ""; }
-    virtual ref_shader getShader(int id);
-    virtual IRenderVisual* getVisual(int id);
-    IRender_Target* getTarget() override { return Target; }
+    void Statistics(CGameFont* F) override;
+    [[nodiscard]] gsl::czstring getShaderPath() override { return ""; }
+    [[nodiscard]] ref_shader getShader(s32 id);
+    [[nodiscard]] IRenderVisual* getVisual(s32 id) override;
+    [[nodiscard]] IRender_Target* getTarget() override { return Target; }
 
     // Main
     void add_Visual(u32 context_id, IRenderable* root, IRenderVisual* V, Fmatrix& m) override;
 
     // wallmarks
     virtual void add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
-    virtual void add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
-    virtual void add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
-    virtual void clear_static_wallmarks();
+    void add_StaticWallmark(IWallMarkArray* pArray, const Fvector3& P, f32 s, CDB::TRI* T, Fvector3* V) override;
+    void add_StaticWallmark(const wm_shader& S, const Fvector3& P, f32 s, CDB::TRI* T, Fvector3* V) override;
+    void clear_static_wallmarks() override;
     virtual void add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm);
     virtual void add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size);
-    virtual void add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size);
+    void add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector3& start, const Fvector3& dir, f32 size) override;
 
     //
     virtual IBlenderXr* blender_create(CLASS_ID cls);
     virtual void blender_destroy(IBlenderXr*&);
 
     //
-    virtual IRender_ObjectSpecific* ros_create();
-    virtual void ros_destroy(IRender_ObjectSpecific*&);
+    [[nodiscard]] IRender_ObjectSpecific* ros_create() override;
+    void ros_destroy(IRender_ObjectSpecific*&) override;
 
     // Lighting
-    virtual IRender_Light* light_create();
-    virtual IRender_Glow* glow_create();
+    [[nodiscard]] IRender_Light* light_create() override;
+    [[nodiscard]] IRender_Glow* glow_create() override;
 
     // Models
-    virtual IRenderVisual* model_CreateParticles(LPCSTR name);
+    [[nodiscard]] IRenderVisual* model_CreateParticles(gsl::czstring name) override;
     virtual IRender_DetailModel* model_CreateDM(IReader* F);
-    virtual IRenderVisual* model_Create(LPCSTR name, IReader* data = nullptr);
-    virtual IRenderVisual* model_CreateChild(LPCSTR name, IReader* data);
-    virtual IRenderVisual* model_Duplicate(IRenderVisual* V);
-    virtual void model_Delete(IRenderVisual*& V, BOOL bDiscard);
+    [[nodiscard]] IRenderVisual* model_Create(gsl::czstring name, IReader* data = nullptr) override;
+    [[nodiscard]] IRenderVisual* model_CreateChild(gsl::czstring name, IReader* data) override;
+    [[nodiscard]] IRenderVisual* model_Duplicate(IRenderVisual* V) override;
+    void model_Delete(IRenderVisual*& V, BOOL bDiscard) override;
     virtual void model_Delete(IRender_DetailModel*& F);
-    virtual void model_Logging(BOOL bEnable) { Models->Logging(bEnable); }
-    virtual void models_Prefetch();
-    virtual void models_Clear(BOOL b_complete);
-    virtual void models_savePrefetch();
-    virtual void models_begin_prefetch1(bool val);
+    void model_Logging(BOOL bEnable) override { Models->Logging(bEnable); }
+    void models_Prefetch() override;
+    void models_Clear(BOOL b_complete) override;
+    void models_savePrefetch() override;
+    void models_begin_prefetch1(bool val) override;
 
     // Occlusion culling
-    virtual BOOL occ_visible(vis_data& V);
-    virtual BOOL occ_visible(Fbox& B);
-    virtual BOOL occ_visible(sPoly& P);
+    [[nodiscard]] BOOL occ_visible(vis_data& V) override;
+    [[nodiscard]] BOOL occ_visible(Fbox& B) override;
+    [[nodiscard]] BOOL occ_visible(sPoly& P) override;
 
     // Main
     tmc::task<void> OnCameraUpdated() override;
     tmc::task<void> Render() override;
-    virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = nullptr);
+    void Screenshot(ScreenshotMode mode = SM_NORMAL, gsl::czstring name = nullptr) override;
     tmc::task<void> OnFrame() override;
-    virtual void BeforeWorldRender(); //--#SM+#-- +SecondVP+ Вызывается перед началом рендера мира и пост-эффектов
-    virtual void AfterWorldRender(const bool save_bb_before_ui); //--#SM+#-- +SecondVP+ Вызывается после рендера мира и перед UI
+    void BeforeWorldRender() override; //--#SM+#-- +SecondVP+ Вызывается перед началом рендера мира и пост-эффектов
+    void AfterWorldRender(const bool save_bb_before_ui) override; //--#SM+#-- +SecondVP+ Вызывается после рендера мира и перед UI
     void AfterUIRender() override; // После рендеринга UI. Вызывать только если нам нужно отрендерить кадр для пда.
 
     // Render mode

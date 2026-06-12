@@ -42,7 +42,7 @@ public:
     CTelekineticObject();
     ~CTelekineticObject() override;
 
-    [[nodiscard]] virtual bool init(CTelekinesis*, CPhysicsShellHolder* obj, float s, float h, u32 ttk, bool rot = true);
+    [[nodiscard]] virtual bool init(CTelekinesis*, CPhysicsShellHolder* obj, f32 s, f32 h, u32 ttk, bool rot = true);
     void set_sound(const ref_sound& snd_hold, const ref_sound& snd_throw);
 
     virtual void raise();
@@ -56,7 +56,7 @@ public:
     void fire_t(const Fvector& target, float time);
     virtual void fire_update();
     virtual void update_state();
-    virtual bool can_activate(CPhysicsShellHolder* obj);
+    [[nodiscard]] virtual bool can_activate(CPhysicsShellHolder* obj);
     bool is_released() { return state == TS_None; }
     ETelekineticState get_state() { return state; }
     virtual void switch_state(ETelekineticState new_state);

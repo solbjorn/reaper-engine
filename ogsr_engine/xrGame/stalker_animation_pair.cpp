@@ -60,7 +60,9 @@ void CStalkerAnimationPair::play_global_animation(IKinematicsAnimated* skeleton_
                 object->create_anim_mov_ctrl(blend);
         }
         else
-            skeleton_animated->LL_PlayCycle(i, animation(), TRUE, nullptr, nullptr);
+        {
+            std::ignore = skeleton_animated->LL_PlayCycle(i, animation(), TRUE, nullptr, nullptr);
+        }
 
         if (blend && !m_blend)
             m_blend = blend;

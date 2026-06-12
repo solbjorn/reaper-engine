@@ -46,7 +46,7 @@ void interactive_motion::anim_callback(CBlend* B)
 void interactive_motion::play(CPhysicsShell* s)
 {
     VERIFY(s);
-    smart_cast<IKinematicsAnimated*>(s->PKinematics())->PlayCycle(motion, TRUE, anim_callback, this);
+    std::ignore = smart_cast<IKinematicsAnimated*>(s->PKinematics())->PlayCycle(motion, TRUE, anim_callback, this);
     state_start(s);
 }
 
@@ -74,10 +74,11 @@ void interactive_motion::state_end(CPhysicsShell* s)
 {
     flags.set(fl_switch_dm_toragdoll, FALSE);
     flags.set(fl_use_death_motion, FALSE);
+
     s->Enable();
     s->remove_ObjectContactCallback(get_depth);
     ////set and velocities
-    s->AnimToVelocityState(Device.fTimeDelta, default_l_limit * 10, default_w_limit * 10);
+    std::ignore = s->AnimToVelocityState(Device.fTimeDelta, default_l_limit * 10, default_w_limit * 10);
 }
 
 void interactive_motion::state_end()

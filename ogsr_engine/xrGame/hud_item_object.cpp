@@ -15,9 +15,10 @@ CHudItemObject::~CHudItemObject() = default;
 
 DLL_Pure* CHudItemObject::_construct()
 {
-    CInventoryItemObject::_construct();
-    CHudItem::_construct();
-    return (this);
+    std::ignore = CInventoryItemObject::_construct();
+    std::ignore = CHudItem::_construct();
+
+    return this;
 }
 
 void CHudItemObject::Load(LPCSTR section)

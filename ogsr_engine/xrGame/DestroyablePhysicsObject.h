@@ -20,19 +20,19 @@ public:
     CDestroyablePhysicsObject();
     ~CDestroyablePhysicsObject() override;
 
-    virtual CPhysicsShellHolder* PPhysicsShellHolder();
+    [[nodiscard]] CPhysicsShellHolder* PPhysicsShellHolder() override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual void Hit(SHit* pHDS);
-    virtual void InitServerObject(CSE_Abstract* D);
-    virtual CPHCollisionDamageReceiver* PHCollisionDamageReceiver() { return static_cast<CPHCollisionDamageReceiver*>(this); }
-    virtual DLL_Pure* _construct();
-    virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
-    virtual CParticlesPlayer* cast_particles_player() { return this; }
-    virtual CPHDestroyable* ph_destroyable() { return this; }
+    void Hit(SHit* pHDS) override;
+    void InitServerObject(CSE_Abstract* D) override;
+    [[nodiscard]] CPHCollisionDamageReceiver* PHCollisionDamageReceiver() override { return static_cast<CPHCollisionDamageReceiver*>(this); }
+    [[nodiscard]] DLL_Pure* _construct() override;
+    [[nodiscard]] CPhysicsShellHolder* cast_physics_shell_holder() override { return this; }
+    [[nodiscard]] CParticlesPlayer* cast_particles_player() override { return this; }
+    [[nodiscard]] CPHDestroyable* ph_destroyable() override { return this; }
     tmc::task<void> shedule_Update(u32 dt) override;
-    virtual bool CanRemoveObject();
-    virtual void OnChangeVisual();
+    [[nodiscard]] bool CanRemoveObject() override;
+    void OnChangeVisual() override;
 
 protected:
     void Destroy();

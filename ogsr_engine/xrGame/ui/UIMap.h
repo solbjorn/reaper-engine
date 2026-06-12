@@ -33,14 +33,15 @@ public:
 
     virtual void SetActivePoint(const Fvector& vNewPoint);
 
-    virtual void Init(shared_str name, CInifile& gameLtx, LPCSTR sh_name);
+    virtual void Init(shared_str name, CInifile& gameLtx, gsl::czstring sh_name);
 
     virtual Fvector2 ConvertRealToLocal(const Fvector2& src, bool for_drawing); // meters->pixels (relatively own left-top pos)
     Fvector2 ConvertLocalToReal(const Fvector2& src) const;
     Fvector2 ConvertRealToLocalNoTransform(const Fvector2& src) const; // meters->pixels (relatively own left-top pos)
     Fvector2 ConvertRealToLocalNoTransform(const Fvector2& src, Frect const& bound_rect) const;
 
-    virtual bool GetPointerTo(const Fvector2& src, float item_radius, Fvector2& pos, float& heading); // position and heading for drawing pointer to src pos
+    [[nodiscard]] virtual bool GetPointerTo(const Fvector2& src, f32 item_radius, Fvector2& pos,
+                                            f32& heading); // position and heading for drawing pointer to src pos
 
     void FitToWidth(float width);
     void FitToHeight(float height);
@@ -51,11 +52,11 @@ public:
 
     shared_str MapName() { return m_name; }
 
-    virtual void Update();
+    void Update() override;
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
 
-    virtual bool IsRectVisible(Frect r);
-    virtual bool NeedShowPointer(Frect r);
+    [[nodiscard]] virtual bool IsRectVisible(Frect r);
+    [[nodiscard]] virtual bool NeedShowPointer(Frect r);
 
     bool Locked() const { return !!m_flags.test(eLocked); }
     void SetLocked(bool b) { m_flags.set(eLocked, b); }
@@ -94,7 +95,7 @@ public:
     IC void SetMaxZoom(float zoom) { m_max_zoom = zoom; }
     IC float GetMaxZoom() const { return m_max_zoom; }
 
-    virtual void Init(shared_str name, CInifile& gameLtx, LPCSTR sh_name);
+    void Init(shared_str name, CInifile& gameLtx, gsl::czstring sh_name) override;
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
 
     CUIMapWnd* MapWnd() const { return m_mapWnd; }
@@ -105,8 +106,8 @@ public:
 
     void ClipByVisRect();
 
-    virtual void Update();
-    virtual void DrawText();
+    void Update() override;
+    void DrawText() override;
 };
 
 class CUILevelMap : public CUICustomMap
@@ -122,12 +123,12 @@ public:
     explicit CUILevelMap(CUIMapWnd*);
     ~CUILevelMap() override;
 
-    virtual void Init(shared_str name, CInifile& gameLtx, LPCSTR sh_name);
+    void Init(shared_str name, CInifile& gameLtx, gsl::czstring sh_name) override;
 
     const Frect& GlobalRect() const { return m_GlobalRect; }
 
-    virtual void Draw();
-    virtual void Update();
+    void Draw() override;
+    void Update() override;
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
@@ -135,10 +136,10 @@ public:
     // Frect CalcWndRectOnGlobal();
     CUIMapWnd* MapWnd() const { return m_mapWnd; }
 
-    virtual void OnFocusLost();
+    void OnFocusLost() override;
 
 protected:
-    virtual void UpdateSpots();
+    void UpdateSpots() override;
 };
 
 class CUIMiniMap : public CUICustomMap
@@ -151,14 +152,14 @@ public:
     CUIMiniMap();
     ~CUIMiniMap() override;
 
-    virtual void Init(shared_str name, CInifile& gameLtx, LPCSTR sh_name);
+    void Init(shared_str name, CInifile& gameLtx, gsl::czstring sh_name) override;
 
-    virtual void Draw();
-    virtual bool GetPointerTo(const Fvector2& src, float item_radius, Fvector2& pos, float& heading); // position and heading for drawing pointer to src pos
-    virtual bool NeedShowPointer(Frect r);
-    virtual bool IsRectVisible(Frect r);
+    void Draw() override;
+    [[nodiscard]] bool GetPointerTo(const Fvector2& src, f32 item_radius, Fvector2& pos, f32& heading) override;
+    [[nodiscard]] bool NeedShowPointer(Frect r) override;
+    [[nodiscard]] bool IsRectVisible(Frect r) override;
 
 protected:
-    virtual void UpdateSpots();
+    void UpdateSpots() override;
 };
 XR_SOL_BASE_CLASSES(CUIMiniMap);

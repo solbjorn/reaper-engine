@@ -15,18 +15,18 @@ public:
     CPHAICharacter();
     ~CPHAICharacter() override = default;
 
-    virtual CPHAICharacter* CastAICharacter() { return this; }
-    virtual void SetPosition(Fvector pos);
-    virtual void SetDesiredPosition(const Fvector& pos) { m_vDesiredPosition.set(pos); }
-    virtual void GetDesiredPosition(Fvector& dpos) { dpos.set(m_vDesiredPosition); }
-    virtual void ValidateWalkOn();
-    virtual bool TryPosition(Fvector pos);
-    virtual void Jump(const Fvector& jump_velocity);
-    virtual void SetMaximumVelocity(dReal vel) { m_max_velocity = vel; }
-    virtual void InitContact(dContact* c, bool& do_collide, u16 material_idx_1, u16 material_idx_2);
-    virtual void SetForcedPhysicsControl(bool v) { m_forced_physics_control = v; }
-    virtual bool ForcedPhysicsControl() { return m_forced_physics_control; }
-    virtual void Create(dVector3 sizes);
+    [[nodiscard]] CPHAICharacter* CastAICharacter() override { return this; }
+    void SetPosition(Fvector pos) override;
+    void SetDesiredPosition(const Fvector& pos) override { m_vDesiredPosition.set(pos); }
+    void GetDesiredPosition(Fvector& dpos) override { dpos.set(m_vDesiredPosition); }
+    void ValidateWalkOn() override;
+    [[nodiscard]] bool TryPosition(Fvector pos) override;
+    void Jump(const Fvector& jump_velocity) override;
+    void SetMaximumVelocity(dReal vel) override { m_max_velocity = vel; }
+    void InitContact(dContact* c, bool& do_collide, u16 material_idx_1, u16 material_idx_2) override;
+    void SetForcedPhysicsControl(bool v) override { m_forced_physics_control = v; }
+    [[nodiscard]] bool ForcedPhysicsControl() override { return m_forced_physics_control; }
+    void Create(dVector3 sizes) override;
 
 #ifdef DEBUG
     virtual void OnRender();

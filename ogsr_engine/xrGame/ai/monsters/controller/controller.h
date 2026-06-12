@@ -74,32 +74,32 @@ public:
     CController();
     ~CController() override;
 
-    virtual void Load(LPCSTR section);
-    virtual void reload(LPCSTR section);
-    virtual void reinit();
+    void Load(gsl::czstring section) override;
+    void reload(gsl::czstring section) override;
+    void reinit() override;
     tmc::task<void> UpdateCL() override;
     tmc::task<void> shedule_Update(u32 dt) override;
     tmc::task<void> Die(CObject* who) override;
 
     tmc::task<void> net_Destroy() override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
-    virtual void net_Relcase(CObject* O);
+    void net_Relcase(CObject* O) override;
 
-    virtual void CheckSpecParams(u32 spec_params);
-    virtual void InitThink();
+    void CheckSpecParams(u32 spec_params) override;
+    void InitThink() override;
 
-    virtual void create_base_controls();
+    void create_base_controls() override;
+    [[nodiscard]] const MonsterSpace::SBoneRotation& head_orientation() const override;
 
-    virtual const MonsterSpace::SBoneRotation& head_orientation() const;
-
-    virtual void TranslateActionToPathParams();
-
-    virtual bool ability_pitch_correction() { return false; }
+    void TranslateActionToPathParams() override;
+    [[nodiscard]] bool ability_pitch_correction() override { return false; }
 
     //-------------------------------------------------------------------
 
-    virtual bool is_relation_enemy(const CEntityAlive* tpEntityAlive) const;
+    [[nodiscard]] bool is_relation_enemy(const CEntityAlive* tpEntityAlive) const override;
+
     xr_vector<shared_str> m_friend_community_overrides;
+
     void load_friend_community_overrides(LPCSTR section);
     bool is_community_friend_overrides(const CEntityAlive* tpEntityAlive) const;
     //-------------------------------------------------------------------
@@ -149,10 +149,10 @@ public:
     } m_mental_state;
 
     void set_mental_state(EMentalState state);
-    virtual void HitEntity(const CEntity* pEntity, float fDamage, float impulse, Fvector& dir, ALife::EHitType hit_type, bool draw_hit_marks);
+    void HitEntity(const CEntity* pEntity, f32 fDamage, f32 impulse, Fvector3& dir, ALife::EHitType hit_type, bool draw_hit_marks) override;
 
 public:
-    virtual bool use_center_to_aim() const { return true; }
+    [[nodiscard]] bool use_center_to_aim() const override { return true; }
 
     SAnimationTripleData anim_triple_control;
 
@@ -160,7 +160,7 @@ private:
     float m_stamina_hit;
 
 public:
-    virtual bool run_home_point_when_enemy_inaccessible() const { return false; }
+    [[nodiscard]] bool run_home_point_when_enemy_inaccessible() const override { return false; }
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

@@ -16,8 +16,8 @@ public:
     ~CUICarPanel() override = default;
 
     // Установить
-    void SetCarHealth(float value);
-    void SetSpeed(float) {}
-    void SetRPM(float) {}
-    void Init(float x, float y, float width, float height);
+    void SetCarHealth(f32 value);
+    void SetSpeed(f32) {}
+    void SetRPM(f32) {}
+    void Init(f32 x, f32 y, f32 width, f32 height) override;
 };

@@ -19,8 +19,8 @@ public:
     ~CUIMMShniaga() override;
 
     void Init(CUIXml& xml_doc, LPCSTR path);
-    virtual void Update();
-    virtual void Draw();
+    void Update() override;
+    void Draw() override;
 
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
     [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;

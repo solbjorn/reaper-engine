@@ -586,12 +586,12 @@ void CWeaponMagazined::DeviceUpdate()
     {
         if (LaserSwitch)
         {
-            SwitchLaser(!IsLaserOn());
+            std::ignore = SwitchLaser(!IsLaserOn());
             LaserSwitch = false;
         }
         else if (TorchSwitch)
         {
-            SwitchFlashlight(!IsFlashlightOn());
+            std::ignore = SwitchFlashlight(!IsFlashlightOn());
             TorchSwitch = false;
         }
         else if (HeadLampSwitch)
@@ -758,7 +758,7 @@ void CWeaponMagazined::state_Fire(float)
 
         ++m_iShotNum;
 
-        CheckForMisfire();
+        std::ignore = CheckForMisfire();
         OnShot();
 
         if (smart_cast<CWeaponBM16*>(this) && IsMisfire())

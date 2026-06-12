@@ -16,13 +16,13 @@ public:
     CEliteDetector();
     ~CEliteDetector() override = default;
 
-    virtual void render_item_3d_ui() override;
-    virtual bool render_item_3d_ui_query() override;
-    virtual LPCSTR ui_xml_tag() const { return "elite"; }
+    void render_item_3d_ui() override;
+    bool render_item_3d_ui_query() override;
+    [[nodiscard]] virtual gsl::czstring ui_xml_tag() const { return "elite"; }
 
 protected:
-    virtual void UpdateAf() override;
-    virtual void CreateUI() override;
+    void UpdateAf() override;
+    void CreateUI() override;
     CUIArtefactDetectorElite& ui();
 };
 
@@ -37,12 +37,13 @@ public:
     CScientificDetector();
     ~CScientificDetector() override;
 
-    virtual void Load(LPCSTR section) override;
-    virtual void OnH_B_Independent(bool just_before_destroy) override;
+    void Load(gsl::czstring section) override;
+    void OnH_B_Independent(bool just_before_destroy) override;
     tmc::task<void> shedule_Update(u32 dt) override;
-    virtual LPCSTR ui_xml_tag() const override { return "scientific"; }
+    [[nodiscard]] gsl::czstring ui_xml_tag() const override { return "scientific"; }
 
 protected:
-    virtual void UpfateWork() override;
+    void UpfateWork() override;
+
     CZoneList m_zones;
 };

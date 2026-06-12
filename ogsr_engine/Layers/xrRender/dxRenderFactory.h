@@ -10,41 +10,43 @@ class dxRenderFactory : public IRenderFactory
 public:
     ~dxRenderFactory() override = default;
 
-    virtual IUISequenceVideoItem* CreateUISequenceVideoItem();
-    virtual void DestroyUISequenceVideoItem(IUISequenceVideoItem* pObject);
-    virtual IUIShader* CreateUIShader();
-    virtual void DestroyUIShader(IUIShader* pObject);
-    virtual IStatGraphRender* CreateStatGraphRender();
-    virtual void DestroyStatGraphRender(IStatGraphRender* pObject);
-    virtual IConsoleRender* CreateConsoleRender();
-    virtual void DestroyConsoleRender(IConsoleRender* pObject);
-    virtual IRenderDeviceRender* CreateRenderDeviceRender();
-    virtual void DestroyRenderDeviceRender(IRenderDeviceRender* pObject);
-#ifdef DEBUG
-    virtual IObjectSpaceRender* CreateObjectSpaceRender();
-    virtual void DestroyObjectSpaceRender(IObjectSpaceRender* pObject);
-#endif // DEBUG
-    virtual IWallMarkArray* CreateWallMarkArray();
-    virtual void DestroyWallMarkArray(IWallMarkArray* pObject);
-    virtual IStatsRender* CreateStatsRender();
-    virtual void DestroyStatsRender(IStatsRender* pObject);
+    [[nodiscard]] IUISequenceVideoItem* CreateUISequenceVideoItem() override;
+    void DestroyUISequenceVideoItem(IUISequenceVideoItem* pObject) override;
+    [[nodiscard]] IUIShader* CreateUIShader() override;
+    void DestroyUIShader(IUIShader* pObject) override;
+    [[nodiscard]] IStatGraphRender* CreateStatGraphRender() override;
+    void DestroyStatGraphRender(IStatGraphRender* pObject) override;
+    [[nodiscard]] IConsoleRender* CreateConsoleRender() override;
+    void DestroyConsoleRender(IConsoleRender* pObject) override;
+    [[nodiscard]] IRenderDeviceRender* CreateRenderDeviceRender() override;
+    void DestroyRenderDeviceRender(IRenderDeviceRender* pObject) override;
 
-    virtual IFlareRender* CreateFlareRender();
-    virtual void DestroyFlareRender(IFlareRender* pObject);
-    virtual IThunderboltRender* CreateThunderboltRender();
-    virtual void DestroyThunderboltRender(IThunderboltRender* pObject);
-    virtual IThunderboltDescRender* CreateThunderboltDescRender();
-    virtual void DestroyThunderboltDescRender(IThunderboltDescRender* pObject);
-    virtual IRainRender* CreateRainRender();
-    virtual void DestroyRainRender(IRainRender* pObject);
-    virtual ILensFlareRender* CreateLensFlareRender();
-    virtual void DestroyLensFlareRender(ILensFlareRender* pObject);
-    virtual IEnvironmentRender* CreateEnvironmentRender();
-    virtual void DestroyEnvironmentRender(IEnvironmentRender* pObject);
-    virtual IEnvDescriptorRender* CreateEnvDescriptorRender();
-    virtual void DestroyEnvDescriptorRender(IEnvDescriptorRender* pObject);
-    virtual IFontRender* CreateFontRender();
-    virtual void DestroyFontRender(IFontRender* pObject);
+#ifdef DEBUG
+    [[nodiscard]] IObjectSpaceRender* CreateObjectSpaceRender() override;
+    void DestroyObjectSpaceRender(IObjectSpaceRender* pObject) override;
+#endif // DEBUG
+
+    [[nodiscard]] IWallMarkArray* CreateWallMarkArray() override;
+    void DestroyWallMarkArray(IWallMarkArray* pObject) override;
+    [[nodiscard]] IStatsRender* CreateStatsRender() override;
+    void DestroyStatsRender(IStatsRender* pObject) override;
+
+    [[nodiscard]] IFlareRender* CreateFlareRender() override;
+    void DestroyFlareRender(IFlareRender* pObject) override;
+    [[nodiscard]] IThunderboltRender* CreateThunderboltRender() override;
+    void DestroyThunderboltRender(IThunderboltRender* pObject) override;
+    [[nodiscard]] IThunderboltDescRender* CreateThunderboltDescRender() override;
+    void DestroyThunderboltDescRender(IThunderboltDescRender* pObject) override;
+    [[nodiscard]] IRainRender* CreateRainRender() override;
+    void DestroyRainRender(IRainRender* pObject) override;
+    [[nodiscard]] ILensFlareRender* CreateLensFlareRender() override;
+    void DestroyLensFlareRender(ILensFlareRender* pObject) override;
+    [[nodiscard]] IEnvironmentRender* CreateEnvironmentRender() override;
+    void DestroyEnvironmentRender(IEnvironmentRender* pObject) override;
+    [[nodiscard]] IEnvDescriptorRender* CreateEnvDescriptorRender() override;
+    void DestroyEnvDescriptorRender(IEnvDescriptorRender* pObject) override;
+    [[nodiscard]] IFontRender* CreateFontRender() override;
+    void DestroyFontRender(IFontRender* pObject) override;
 };
 
 extern dxRenderFactory RenderFactoryImpl;

@@ -49,7 +49,7 @@ void CActor::attach_Vehicle(CHolderCustom* vehicle)
     CCar* car = smart_cast<CCar*>(m_holder);
     u16 anim_type = car->DriverAnimationType();
     SVehicleAnimCollection& anims = m_vehicle_anims->m_vehicles_type_collections[anim_type];
-    V->PlayCycle(anims.idles[0], FALSE);
+    std::ignore = V->PlayCycle(anims.idles[0], FALSE);
 
     ResetCallbacks();
     u16 head_bone = V->dcast_PKinematics()->LL_BoneID("bip01_head");
@@ -100,10 +100,11 @@ void CActor::detach_Vehicle()
     r_model_yaw_dest = r_model_yaw;
     m_holder = nullptr;
     SetCallbacks();
+
     IKinematicsAnimated* V = smart_cast<IKinematicsAnimated*>(Visual());
     R_ASSERT(V);
-    V->PlayCycle(m_anims->m_normal.legs_idle);
-    V->PlayCycle(m_anims->m_normal.m_torso_idle);
+    std::ignore = V->PlayCycle(m_anims->m_normal.legs_idle);
+    std::ignore = V->PlayCycle(m_anims->m_normal.m_torso_idle);
     m_holderID = u16(-1);
 
     //.	SetWeaponHideState(whs_CAR, FALSE);

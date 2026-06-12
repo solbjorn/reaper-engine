@@ -26,6 +26,7 @@ void CTraderAnimation::reinit()
 /////////////////////////////////////////////////////////////////////////////////////////
 // Animation Callbacks
 /////////////////////////////////////////////////////////////////////////////////////////
+
 void CTraderAnimation::global_callback(CBlend* B)
 {
     CTraderAnimation* trader = (CTraderAnimation*)B->CallbackParam;
@@ -41,13 +42,14 @@ void CTraderAnimation::head_callback(CBlend* B)
 /////////////////////////////////////////////////////////////////////////////////////////
 // Animation management
 /////////////////////////////////////////////////////////////////////////////////////////
+
 void CTraderAnimation::set_animation(LPCSTR anim)
 {
     m_anim_global = anim;
 
     IKinematicsAnimated* kinematics_animated = smart_cast<IKinematicsAnimated*>(m_trader->Visual());
     m_motion_global = kinematics_animated->ID_Cycle(shared_str{m_anim_global});
-    kinematics_animated->PlayCycle(m_motion_global, TRUE, global_callback, this);
+    std::ignore = kinematics_animated->PlayCycle(m_motion_global, TRUE, global_callback, this);
 }
 
 void CTraderAnimation::set_head_animation(LPCSTR anim)
@@ -57,12 +59,13 @@ void CTraderAnimation::set_head_animation(LPCSTR anim)
     // назначить анимацию головы
     IKinematicsAnimated* kinematics_animated = smart_cast<IKinematicsAnimated*>(m_trader->Visual());
     m_motion_head = kinematics_animated->ID_Cycle(shared_str{m_anim_head});
-    kinematics_animated->PlayCycle(m_motion_head, TRUE, head_callback, this);
+    std::ignore = kinematics_animated->PlayCycle(m_motion_head, TRUE, head_callback, this);
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Sound management
 //////////////////////////////////////////////////////////////////////////
+
 void CTraderAnimation::set_sound(LPCSTR sound, LPCSTR anim)
 {
     if (m_sound)
@@ -87,6 +90,7 @@ void CTraderAnimation::remove_sound()
 //////////////////////////////////////////////////////////////////////////
 // Update
 //////////////////////////////////////////////////////////////////////////
+
 void CTraderAnimation::update_frame()
 {
     if (m_sound)
@@ -120,6 +124,7 @@ void CTraderAnimation::update_frame()
 //////////////////////////////////////////////////////////////////////////
 // External sound support
 //////////////////////////////////////////////////////////////////////////
+
 void CTraderAnimation::external_sound_start(LPCSTR phrase)
 {
     if (m_sound)

@@ -18,17 +18,17 @@ public:
     ~CUITrackBar() override = default;
 
     // CUIOptionsItem
-    virtual void SetCurrentValue();
-    virtual void SaveValue();
-    virtual bool IsChanged();
-    virtual void SeveBackUpValue();
-    virtual void Undo();
-    virtual void Draw();
+    void SetCurrentValue() override;
+    void SaveValue() override;
+    [[nodiscard]] bool IsChanged() override;
+    void SeveBackUpValue() override;
+    void Undo() override;
+    void Draw() override;
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
-    virtual void OnMessage(const char* message);
+    void OnMessage(gsl::czstring message) override;
     // CUIWindow
-    virtual void Init(float x, float y, float width, float height);
-    virtual void Enable(bool status);
+    void Init(f32 x, f32 y, f32 width, f32 height) override;
+    void Enable(bool status) override;
     void SetInvert(bool v) { m_b_invert = v; }
     bool GetInvert() const { return m_b_invert; }
     void SetStep(float step);

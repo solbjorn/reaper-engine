@@ -11,7 +11,8 @@
 #include "abstract_path_manager.h"
 
 template <typename _VertexEvaluator, typename _vertex_id_type, typename _index_type>
-class CBasePathManager<CLevelGraph, _VertexEvaluator, _vertex_id_type, _index_type> : public CAbstractPathManager<CLevelGraph, _VertexEvaluator, _vertex_id_type, _index_type>
+class CBasePathManager<CLevelGraph, _VertexEvaluator, _vertex_id_type, _index_type>
+    : public CAbstractPathManager<CLevelGraph, _VertexEvaluator, _vertex_id_type, _index_type>
 {
     RTTI_DECLARE_TYPEINFO(CBasePathManager<CLevelGraph, _VertexEvaluator, _vertex_id_type, _index_type>,
                           CAbstractPathManager<CLevelGraph, _VertexEvaluator, _vertex_id_type, _index_type>);
@@ -32,9 +33,9 @@ private:
 
 protected:
     IC void build_path(const _vertex_id_type start_vertex_id, const _vertex_id_type dest_vertex_id);
-    IC virtual void before_search(const _vertex_id_type start_vertex_id, const _vertex_id_type dest_vertex_id);
-    IC virtual void after_search();
-    IC virtual bool check_vertex(const _vertex_id_type vertex_id) const;
+    inline void before_search(const _vertex_id_type start_vertex_id, const _vertex_id_type dest_vertex_id) override;
+    inline void after_search() override;
+    [[nodiscard]] inline bool check_vertex(const _vertex_id_type vertex_id) const override;
 
 public:
     inline explicit CBasePathManager(CRestrictedObject* object);

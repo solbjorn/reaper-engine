@@ -18,7 +18,7 @@ CPhantom::CPhantom()
     m_TgtState = stInvalid;
 }
 
-CPhantom::~CPhantom() {}
+CPhantom::~CPhantom() = default;
 
 //---------------------------------------------------------------------
 void CPhantom::Load(LPCSTR section)
@@ -183,7 +183,7 @@ tmc::task<void> CPhantom::SwitchToState_internal(EState new_state)
             PlayParticles(sdata.particles, TRUE, xform);
 
             sdata.sound.play_at_pos(nullptr, xform.c);
-            K->PlayCycle(sdata.motion, TRUE, animation_end_callback, this);
+            std::ignore = K->PlayCycle(sdata.motion, TRUE, animation_end_callback, this);
         }
         break;
         case stFly: {
@@ -192,14 +192,14 @@ tmc::task<void> CPhantom::SwitchToState_internal(EState new_state)
             m_fly_particles = PlayParticles(sdata.particles, FALSE, xform);
 
             sdata.sound.play_at_pos(nullptr, xform.c, sm_Looped);
-            K->PlayCycle(sdata.motion);
+            std::ignore = K->PlayCycle(sdata.motion);
         }
         break;
         case stContact: {
             UpdateEvent = CallMe::fromMethod<&CPhantom::OnDeadState>(this);
             SStateData& sdata = m_state_data[new_state];
             sdata.sound.play_at_pos(nullptr, xform.c);
-            K->PlayCycle(sdata.motion, TRUE, animation_end_callback, this);
+            std::ignore = K->PlayCycle(sdata.motion, TRUE, animation_end_callback, this);
         }
         break;
         case stShoot: {
@@ -208,7 +208,7 @@ tmc::task<void> CPhantom::SwitchToState_internal(EState new_state)
             PlayParticles(sdata.particles, TRUE, xform);
 
             sdata.sound.play_at_pos(nullptr, xform.c);
-            K->PlayCycle(sdata.motion, TRUE, animation_end_callback, this);
+            std::ignore = K->PlayCycle(sdata.motion, TRUE, animation_end_callback, this);
         }
         break;
         case stIdle: {

@@ -35,8 +35,8 @@ public:
     ~CUIMainIngameWnd() override;
 
     virtual void Init();
-    virtual void Draw();
-    virtual void Update();
+    void Draw() override;
+    void Update() override;
 
     [[nodiscard]] bool OnKeyboardPress(xr::key_id dik);
 

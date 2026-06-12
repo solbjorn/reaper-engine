@@ -36,52 +36,52 @@ public:
     CAI_Trader();
     ~CAI_Trader() override;
 
-    virtual CAttachmentOwner* cast_attachment_owner() { return this; }
-    virtual CInventoryOwner* cast_inventory_owner() { return this; }
-    virtual CEntityAlive* cast_entity_alive() { return this; }
-    virtual CEntity* cast_entity() { return this; }
-    virtual CGameObject* cast_game_object() { return this; }
-    virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
-    virtual CParticlesPlayer* cast_particles_player() { return this; }
-    virtual CScriptEntity* cast_script_entity() { return this; }
+    [[nodiscard]] CAttachmentOwner* cast_attachment_owner() override { return this; }
+    [[nodiscard]] CInventoryOwner* cast_inventory_owner() override { return this; }
+    [[nodiscard]] CEntityAlive* cast_entity_alive() override { return this; }
+    [[nodiscard]] CEntity* cast_entity() override { return this; }
+    [[nodiscard]] CGameObject* cast_game_object() override { return this; }
+    [[nodiscard]] CPhysicsShellHolder* cast_physics_shell_holder() override { return this; }
+    [[nodiscard]] CParticlesPlayer* cast_particles_player() override { return this; }
+    [[nodiscard]] CScriptEntity* cast_script_entity() override { return this; }
 
-    virtual DLL_Pure* _construct();
-    virtual void Load(LPCSTR section);
+    [[nodiscard]] DLL_Pure* _construct() override;
+    void Load(gsl::czstring section) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
-    virtual void net_Export(CSE_Abstract*);
+    void net_Export(CSE_Abstract*) override;
     tmc::task<void> net_Destroy() override;
 
-    virtual void save(NET_Packet& output_packet);
-    virtual void load(IReader& input_packet);
-    virtual BOOL net_SaveRelevant() { return inherited::net_SaveRelevant(); }
+    void save(NET_Packet& output_packet) override;
+    void load(IReader& input_packet) override;
+    [[nodiscard]] BOOL net_SaveRelevant() override { return inherited::net_SaveRelevant(); }
 
     tmc::task<void> Die(CObject* who) override;
     virtual void Think();
-    virtual void HitSignal(float, Fvector&, CObject*, s16) {}
-    virtual void HitImpulse(float, Fvector&, Fvector&) {}
-    virtual void Hit(SHit* pHDS);
+    void HitSignal(f32, Fvector&, CObject*, s16) override {}
+    void HitImpulse(f32, Fvector&, Fvector&) override {}
+    void Hit(SHit* pHDS) override;
     tmc::task<void> UpdateCL() override;
 
     void g_fireParams(CHudItem*, Fvector& P, Fvector& D, const bool = false) override;
-    virtual void g_WeaponBones(int& L, int& R1, int& R2);
-    virtual float ffGetFov() const { return 150.f; }
-    virtual float ffGetRange() const { return 30.f; }
+    void g_WeaponBones(s32& L, s32& R1, s32& R2) override;
+    [[nodiscard]] f32 ffGetFov() const override { return 150.0f; }
+    [[nodiscard]] f32 ffGetRange() const override { return 30.0f; }
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     virtual void feel_touch_new(CObject* O);
     virtual void DropItemSendMessage(CObject* O);
     tmc::task<void> shedule_Update(u32 dt) override;
 
-    virtual BOOL UsedAI_Locations();
+    [[nodiscard]] BOOL UsedAI_Locations() override;
 
     ///////////////////////////////////////////////////////////////////////
-    virtual u16 PHGetSyncItemsNumber() { return inherited ::PHGetSyncItemsNumber(); }
-    virtual CPHSynchronize* PHGetSyncItem(u16 item) { return inherited ::PHGetSyncItem(item); }
-    virtual void PHUnFreeze() { return inherited ::PHUnFreeze(); }
-    virtual void PHFreeze() { return inherited ::PHFreeze(); }
+    [[nodiscard]] u16 PHGetSyncItemsNumber() override { return inherited ::PHGetSyncItemsNumber(); }
+    [[nodiscard]] CPHSynchronize* PHGetSyncItem(u16 item) override { return inherited ::PHGetSyncItem(item); }
+    void PHUnFreeze() override { return inherited ::PHUnFreeze(); }
+    void PHFreeze() override { return inherited ::PHFreeze(); }
     ///////////////////////////////////////////////////////////////////////
 
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
+    void reinit() override;
+    void reload(gsl::czstring section) override;
 
     static void BoneCallback(CBoneInstance* B);
     void LookAtActor(CBoneInstance* B);
@@ -90,17 +90,16 @@ public:
     void OnStopTrade();
 
     // игровое имя
-    virtual LPCSTR Name() const { return CInventoryOwner::Name(); }
+    [[nodiscard]] gsl::czstring Name() const override { return CInventoryOwner::Name(); }
 
     [[nodiscard]] bool can_attach(const CInventoryItem*) const override;
     [[nodiscard]] bool use_bolts() const override;
-    virtual void spawn_supplies();
+    void spawn_supplies() override;
 
-    virtual bool bfAssignSound(CScriptEntityAction* tpEntityAction);
+    [[nodiscard]] bool bfAssignSound(CScriptEntityAction* tpEntityAction) override;
+    [[nodiscard]] ALife::ERelationType tfGetRelationType(const CEntityAlive* tpEntityAlive) const override;
 
-    virtual ALife::ERelationType tfGetRelationType(const CEntityAlive* tpEntityAlive) const;
-
-    IC bool busy_now() const { return (m_busy_now); }
+    [[nodiscard]] bool busy_now() const { return (m_busy_now); }
 
 private:
     CSoundPlayer* m_sound_player;
@@ -111,10 +110,11 @@ public:
         VERIFY(m_sound_player);
         return (*m_sound_player);
     }
-    virtual bool unlimited_ammo() { return false; }
-    virtual bool natural_weapon() const { return false; }
-    virtual bool natural_detector() const { return false; }
-    virtual bool AllowItemToTrade(CInventoryItem const* item, EItemPlace place) const;
+
+    [[nodiscard]] bool unlimited_ammo() override { return false; }
+    [[nodiscard]] bool natural_weapon() const override { return false; }
+    [[nodiscard]] bool natural_detector() const override { return false; }
+    [[nodiscard]] bool AllowItemToTrade(CInventoryItem const* item, EItemPlace place) const override;
 
     void dialog_sound_start(LPCSTR phrase);
     void dialog_sound_stop();

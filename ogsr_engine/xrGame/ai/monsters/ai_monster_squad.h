@@ -204,11 +204,11 @@ public:
     ~squad_grouping_behaviour() override = default;
 
     void set_squad(CMonsterSquad* squad);
-    virtual void first_nearest(Fvector& v);
-    virtual bool nomore_nearest();
-    virtual void next_nearest(Fvector& v);
+    void first_nearest(Fvector& v) override;
+    [[nodiscard]] bool nomore_nearest() override;
+    void next_nearest(Fvector& v) override;
 
-    virtual bool update();
+    [[nodiscard]] bool update() override;
 
 private:
     CMonsterSquad* squad{};

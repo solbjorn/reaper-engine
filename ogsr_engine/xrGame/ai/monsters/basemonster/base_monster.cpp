@@ -657,10 +657,11 @@ DLL_Pure* CBaseMonster::_construct()
     control().set_base_controller(m_move_base, ControlCom::eControlMovement);
     control().set_base_controller(m_dir_base, ControlCom::eControlDir);
 
-    inherited::_construct();
-    CStepManager::_construct();
-    CInventoryOwner::_construct();
-    return (this);
+    std::ignore = inherited::_construct();
+    std::ignore = CStepManager::_construct();
+    std::ignore = CInventoryOwner::_construct();
+
+    return this;
 }
 
 void CBaseMonster::net_Relcase(CObject* O)

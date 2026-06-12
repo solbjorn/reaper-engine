@@ -130,7 +130,7 @@ CSE_ALifeDynamicObject* CALifeObjectRegistry::get_object(IReader& file_stream)
     R_ASSERT2(tpSE_Abstract, "Can't create entity.");
     CSE_ALifeDynamicObject* tpALifeDynamicObject = smart_cast<CSE_ALifeDynamicObject*>(tpSE_Abstract);
     R_ASSERT2(tpALifeDynamicObject, "Non-ALife object in the saved game!");
-    tpALifeDynamicObject->Spawn_Read(tNetPacket);
+    std::ignore = tpALifeDynamicObject->Spawn_Read(tNetPacket);
 
     // Update
     tNetPacket.B.count = file_stream.r_u16();

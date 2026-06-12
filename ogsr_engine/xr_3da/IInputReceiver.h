@@ -110,8 +110,8 @@ public:
     virtual void IR_OnDeactivate();
 
     virtual tmc::task<void> IR_OnMouseWheel(gsl::index) { co_return; }
-    virtual void IR_OnMouseMove(int, int) {}
-    virtual void IR_OnMouseStop(int, int) {}
+    virtual void IR_OnMouseMove(s32, s32) {}
+    virtual void IR_OnMouseStop(s32, s32) {}
 
     virtual tmc::task<void> IR_OnKeyboardPress(xr::key_id) { co_return; }
     virtual void IR_OnKeyboardRelease(xr::key_id) {}

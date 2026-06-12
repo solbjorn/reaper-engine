@@ -21,8 +21,8 @@ public:
 
     void Init();
     void SetText(LPCSTR text);
-    virtual void Draw() {}
+    void Draw() override {}
     void Draw_();
     void SetOwner(CUIWindow* w) { m_owner = w; }
-    CUIWindow* GetOwner() { return m_owner; }
+    [[nodiscard]] CUIWindow* GetOwner() { return m_owner; }
 };

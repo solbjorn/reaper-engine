@@ -109,7 +109,7 @@ CSE_Abstract* CALifeSimulatorBase::create(CSE_ALifeGroupAbstract* tpALifeGroupAb
     R_ASSERT2(k, "Non-ALife object in the 'game.spawn'");
 
     j->Spawn_Write(tNetPacket, TRUE);
-    k->Spawn_Read(tNetPacket);
+    std::ignore = k->Spawn_Read(tNetPacket);
     tNetPacket.w_begin(M_UPDATE);
     j->UPDATE_Write(tNetPacket);
 
@@ -141,7 +141,7 @@ void CALifeSimulatorBase::create(CSE_ALifeDynamicObject*& i, CSE_ALifeDynamicObj
 
     NET_Packet tNetPacket;
     j->Spawn_Write(tNetPacket, TRUE);
-    i->Spawn_Read(tNetPacket);
+    std::ignore = i->Spawn_Read(tNetPacket);
     tNetPacket.w_begin(M_UPDATE);
     j->UPDATE_Write(tNetPacket);
 

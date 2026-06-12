@@ -14,27 +14,27 @@ public:
     ~CUICustomEdit() override = default;
 
     // CUILinesOwner
-    virtual void SetFont(CGameFont* pFont) { CUILinesOwner::SetFont(pFont); }
-    virtual CGameFont* GetFont() { return CUILinesOwner::GetFont(); }
-    virtual void SetTextColor(u32 color);
+    void SetFont(CGameFont* pFont) override { CUILinesOwner::SetFont(pFont); }
+    [[nodiscard]] CGameFont* GetFont() override { return CUILinesOwner::GetFont(); }
+    void SetTextColor(u32 color) override;
     virtual void SetTextColorD(u32 color);
 
-    virtual void Init(float x, float y, float width, float height);
+    void Init(f32 x, f32 y, f32 width, f32 height) override;
     void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr) override;
 
     [[nodiscard]] bool OnMouse(f32, f32, EUIMessages mouse_action) override;
     [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
     [[nodiscard]] bool OnKeyboardHold(xr::key_id) override;
-    virtual void OnFocusLost();
+    void OnFocusLost() override;
 
-    virtual void Update();
-    virtual void Draw();
+    void Update() override;
+    void Draw() override;
 
     void CaptureFocus(bool bCapture) { m_bInputFocus = bCapture; }
-    virtual void SetText(const char* str);
-    virtual const char* GetText();
+    void SetText(gsl::czstring str) override;
+    [[nodiscard]] gsl::czstring GetText() override;
     void SetMaxCharCount(u32 cnt) { m_max_symb_count = cnt; }
-    virtual void Enable(bool status);
+    void Enable(bool status) override;
     void SetNumbersOnly(bool status);
     void SetFloatNumbers(bool status);
     void SetPasswordMode(bool mode = true);
@@ -42,10 +42,10 @@ public:
     void SetCursorColor(u32 color) { m_lines.SetCursorColor(color); }
 
     // Какой-то недодел
-    void SetLightAnim(LPCSTR lanim);
+    void SetLightAnim(gsl::czstring lanim);
 
-    virtual void SetTextPosX(float x);
-    virtual void SetTextPosY(float y);
+    void SetTextPosX(f32 x) override;
+    void SetTextPosY(f32 y) override;
 
 protected:
     [[nodiscard]] bool KeyPressed(sf::Keyboard::Scancode dik);

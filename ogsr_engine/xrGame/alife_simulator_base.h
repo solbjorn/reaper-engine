@@ -77,7 +77,7 @@ public:
     explicit CALifeSimulatorBase(xrServer* server);
     ~CALifeSimulatorBase() override;
 
-    virtual void destroy();
+    void destroy() override;
     IC bool initialized() const;
     IC const CALifeSimulatorHeader& header() const;
     IC const CALifeTimeManager& time() const;
@@ -107,7 +107,8 @@ public:
     void create(CSE_ALifeDynamicObject*& object, CSE_ALifeDynamicObject* spawn_object, const ALife::_SPAWN_ID& spawn_id);
     void create(CSE_ALifeObject* object);
     CSE_Abstract* create(CSE_ALifeGroupAbstract* object, CSE_ALifeDynamicObject* j);
-    CSE_Abstract* spawn_item(LPCSTR section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, u16 parent_id, bool registration = true);
+    CSE_Abstract* spawn_item(LPCSTR section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, u16 parent_id,
+                             bool registration = true);
     void append_item_vector(ALife::OBJECT_VECTOR& tObjectVector, ALife::ITEM_P_VECTOR& tItemList);
     shared_str level_name() const;
     void on_death(CSE_Abstract* killed, CSE_Abstract* killer);

@@ -46,15 +46,15 @@ public:
     explicit CActorCondition(CActor* object);
     ~CActorCondition() override;
 
-    virtual void LoadCondition(LPCSTR section);
-    virtual void reinit();
+    void LoadCondition(gsl::czstring section) override;
+    void reinit() override;
 
-    virtual CWound* ConditionHit(SHit* pHDS);
-    virtual void UpdateCondition();
+    [[nodiscard]] CWound* ConditionHit(SHit* pHDS) override;
+    void UpdateCondition() override;
 
-    virtual void ChangeAlcohol(float value);
-    virtual void ChangeSatiety(float value);
-    virtual void ChangeThirst(float value);
+    void ChangeAlcohol(f32 value) override;
+    void ChangeSatiety(f32 value) override;
+    void ChangeThirst(f32 value) override;
 
     // хромание при потере сил и здоровья
     virtual bool IsLimping();
@@ -64,7 +64,7 @@ public:
     virtual bool IsCantJump(float weight);
 
     void PowerHit(float power, bool apply_outfit);
-    virtual void UpdatePower();
+    void UpdatePower() override;
 
     void ConditionJump(float weight);
 
@@ -73,10 +73,10 @@ private:
     void ConditionStand();
 
 public:
-    float GetAlcohol() { return m_fAlcohol; }
+    [[nodiscard]] f32 GetAlcohol() override { return m_fAlcohol; }
     float GetPsy() { return 1.0f - GetPsyHealth(); }
-    float GetSatiety() { return m_fSatiety; }
-    float GetThirst() { return m_fThirst; }
+    [[nodiscard]] f32 GetSatiety() override { return m_fSatiety; }
+    [[nodiscard]] f32 GetThirst() override { return m_fThirst; }
     void SetMaxWalkWeight(float _weight) { m_MaxWalkWeight = _weight; }
 
     void AffectDamage_InjuriousMaterialAndMonstersInfluence();
@@ -88,8 +88,10 @@ public:
         VERIFY(m_object);
         return (*m_object);
     }
-    virtual void save(NET_Packet& output_packet);
-    virtual void load(IReader& input_packet);
+
+    void save(NET_Packet& output_packet) override;
+    void load(IReader& input_packet) override;
+
     float m_MaxWalkWeight;
 
     bool DisableSprint(SHit* pHDS);

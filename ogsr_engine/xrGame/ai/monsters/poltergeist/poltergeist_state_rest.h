@@ -21,7 +21,7 @@ public:
     explicit CPoltergeistStateRest(_Object* obj) : inherited{obj} {}
     ~CPoltergeistStateRest() override = default;
 
-    virtual void execute();
+    void execute() override;
 };
 
 template <typename _Object>

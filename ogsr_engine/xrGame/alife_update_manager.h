@@ -36,16 +36,16 @@ public:
 protected:
     tmc::task<void> new_game(gsl::czstring save_name);
     void init_ef_storage() const;
-    virtual void reload(LPCSTR section);
+    void reload(gsl::czstring section) override;
 
 public:
     explicit CALifeUpdateManager(LPCSTR section);
     ~CALifeUpdateManager() override;
 
-    virtual shared_str shedule_Name() const { return shared_str("alife_simulator"); }
-    virtual float shedule_Scale() const;
+    [[nodiscard]] shared_str shedule_Name() const override { return shared_str{"alife_simulator"}; }
+    [[nodiscard]] f32 shedule_Scale() const override;
     tmc::task<void> shedule_Update(u32 dt) override;
-    virtual bool shedule_Needed() { return true; }
+    [[nodiscard]] bool shedule_Needed() override { return true; }
     void update_switch();
     void update_scheduled(bool init_ef = true);
     tmc::task<void> load(gsl::czstring game_name = nullptr, bool no_assert = false, bool new_only = false);

@@ -43,21 +43,21 @@ public:
     CTorch();
     ~CTorch() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual void net_Export(CSE_Abstract* E);
+    void net_Export(CSE_Abstract* E) override;
 
-    virtual void OnH_A_Chield();
-    virtual void OnH_B_Independent(bool just_before_destroy);
+    void OnH_A_Chield() override;
+    void OnH_B_Independent(bool just_before_destroy) override;
 
     tmc::task<void> UpdateCL() override;
 
     void Switch();
     void Switch(bool light_on);
-    bool torch_active() const;
+    [[nodiscard]] bool torch_active() const;
 
-    virtual bool can_be_attached() const;
+    [[nodiscard]] bool can_be_attached() const override;
     void calc_m_delta_h(float);
     float get_range() const;
 
@@ -85,15 +85,15 @@ protected:
     };
 
 public:
-    virtual bool use_parent_ai_locations() const { return (!H_Parent()); }
-    virtual void create_physic_shell();
-    virtual void activate_physic_shell();
-    virtual void setup_physic_shell();
+    [[nodiscard]] bool use_parent_ai_locations() const override { return !H_Parent(); }
+    void create_physic_shell() override;
+    void activate_physic_shell() override;
+    void setup_physic_shell() override;
 
-    virtual void afterDetach();
+    void afterDetach() override;
 
     // alpet: управление светом фонаря
-    IRender_Light* GetLight(int target = 0) const;
+    [[nodiscard]] IRender_Light* GetLight(int target = 0) const;
 
     void SetAnimation(LPCSTR name);
     void SetBrightness(float brightness);

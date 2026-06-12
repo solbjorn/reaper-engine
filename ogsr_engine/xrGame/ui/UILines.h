@@ -23,17 +23,17 @@ public:
     ~CUILines() override;
 
     // IUITextControl methods
-    virtual void SetText(LPCSTR text);
-    virtual LPCSTR GetText();
-    virtual void SetTextColor(u32 color);
-    virtual u32 GetTextColor() { return m_dwTextColor; }
-    u32& GetTextColorRef() { return m_dwTextColor; }
-    virtual void SetFont(CGameFont* pFont);
-    virtual CGameFont* GetFont() { return m_pFont; }
-    virtual void SetTextAlignment(ETextAlignment al) { m_eTextAlign = al; }
-    virtual ETextAlignment GetTextAlignment() { return m_eTextAlign; }
+    void SetText(gsl::czstring text) override;
+    [[nodiscard]] gsl::czstring GetText() override;
+    void SetTextColor(u32 color) override;
+    [[nodiscard]] u32 GetTextColor() override { return m_dwTextColor; }
+    [[nodiscard]] u32& GetTextColorRef() { return m_dwTextColor; }
+    void SetFont(CGameFont* pFont) override;
+    [[nodiscard]] CGameFont* GetFont() override { return m_pFont; }
+    void SetTextAlignment(ETextAlignment al) override { m_eTextAlign = al; }
+    [[nodiscard]] ETextAlignment GetTextAlignment() override { return m_eTextAlign; }
     void SetVTextAlignment(EVTextAlignment al) { m_eVTextAlign = al; }
-    EVTextAlignment GetVTextAlignment() { return m_eVTextAlign; }
+    [[nodiscard]] EVTextAlignment GetVTextAlignment() { return m_eVTextAlign; }
 
     // additional
     void SetCursorColor(u32 color) { m_dwCursorColor = color; }
@@ -49,10 +49,10 @@ public:
     void SetUseNewLineMode(bool mode);
 
     // IUISimpleWindow methods
-    virtual void Init(float x, float y, float width, float height);
-    virtual void Draw();
-    virtual void Draw(float x, float y);
-    virtual void Update();
+    void Init(f32 x, f32 y, f32 width, f32 height) override;
+    void Draw() override;
+    void Draw(f32 x, f32 y) override;
+    void Update() override;
     IC void SetWndSize_inline(const Fvector2& wnd_size);
 
     // own methods
@@ -116,20 +116,20 @@ public:
     ~CUILinesOwner() override = default;
 
     // IUIFontControl{
-    virtual void SetTextColor(u32 color) { m_lines.SetTextColor(color); }
-    virtual u32 GetTextColor() { return m_lines.GetTextColor(); }
-    virtual void SetFont(CGameFont* pFont) { m_lines.SetFont(pFont); }
-    virtual CGameFont* GetFont() { return m_lines.GetFont(); }
-    virtual void SetTextAlignment(ETextAlignment alignment) { m_lines.SetTextAlignment(alignment); }
-    virtual ETextAlignment GetTextAlignment() { return m_lines.GetTextAlignment(); }
+    void SetTextColor(u32 color) override { m_lines.SetTextColor(color); }
+    [[nodiscard]] u32 GetTextColor() override { return m_lines.GetTextColor(); }
+    void SetFont(CGameFont* pFont) override { m_lines.SetFont(pFont); }
+    [[nodiscard]] CGameFont* GetFont() override { return m_lines.GetFont(); }
+    void SetTextAlignment(ETextAlignment alignment) override { m_lines.SetTextAlignment(alignment); }
+    [[nodiscard]] ETextAlignment GetTextAlignment() override { return m_lines.GetTextAlignment(); }
 
     // IUITextControl : public IUIFontControl{
-    virtual void SetText(LPCSTR text) { m_lines.SetText(text); }
-    virtual LPCSTR GetText() { return m_lines.GetText(); }
+    void SetText(gsl::czstring text) override { m_lines.SetText(text); }
+    [[nodiscard]] gsl::czstring GetText() override { return m_lines.GetText(); }
 
     // own
-    virtual void SetTextPosX(float x) { m_textPos.x = x; }
-    virtual void SetTextPosY(float y) { m_textPos.y = y; }
+    virtual void SetTextPosX(f32 x) { m_textPos.x = x; }
+    virtual void SetTextPosY(f32 y) { m_textPos.y = y; }
 
 protected:
     Fvector2 m_textPos{};

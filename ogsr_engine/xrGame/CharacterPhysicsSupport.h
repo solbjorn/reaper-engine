@@ -78,10 +78,7 @@ private:
     float skel_fatal_impulse_factor;
     float skel_ddelay;
     float skel_remain_time;
-    /////////////////////////////////////////////////
-    // bool								b_death_anim_on ; bool								b_skeleton_in_shell
-    // ;
-    ///////////////////////////////////////////////////////////////////////////
+
     float m_shot_up_factor;
     float m_after_death_velocity_factor;
     float m_BonceDamageFactor;
@@ -115,7 +112,7 @@ protected:
     void SpawnInitPhysics(CSE_Abstract*) override;
     [[nodiscard]] CPhysicsShellHolder* PPhysicsShellHolder() override { return m_EntityAlife.PhysicsShellHolder(); }
 
-    virtual bool CanRemoveObject();
+    [[nodiscard]] bool CanRemoveObject() override;
 
 public:
     IC CPHMovementControl* movement() { return m_PhysicMovementControl; }

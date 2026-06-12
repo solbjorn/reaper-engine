@@ -26,8 +26,8 @@ public:
     inline explicit CObjectItemClientServer(const CLASS_ID& clsid, LPCSTR script_clsid);
     ~CObjectItemClientServer() override = default;
 
-    virtual ObjectFactory::CLIENT_BASE_CLASS* client_object() const;
-    virtual ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR section) const;
+    [[nodiscard]] ObjectFactory::CLIENT_BASE_CLASS* client_object() const override;
+    [[nodiscard]] ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR section) const override;
 };
 
 template <typename _client_type_single, typename _client_type_mp, typename _server_type_single, typename _server_type_mp>

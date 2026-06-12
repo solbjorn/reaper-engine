@@ -22,13 +22,13 @@ public:
     explicit CStateMonsterHearHelpSound(_Object* obj);
     ~CStateMonsterHearHelpSound() override = default;
 
-    virtual void reselect_state();
-    virtual void setup_substates();
+    void reselect_state() override;
+    void setup_substates() override;
 
-    virtual bool check_start_conditions();
-    virtual bool check_completion();
+    [[nodiscard]] bool check_start_conditions() override;
+    [[nodiscard]] bool check_completion() override;
 
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 };
 
 #include "monster_state_help_sound_inline.h"

@@ -18,17 +18,17 @@ public:
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     tmc::task<void> UpdateCL() override; // Called each frame, so no need for dt
     tmc::task<void> shedule_Update(u32 dt) override; //
-    virtual void net_Save(NET_Packet& P);
-    virtual BOOL net_SaveRelevant();
-    virtual BOOL UsedAI_Locations();
+    void net_Save(NET_Packet& P) override;
+    [[nodiscard]] BOOL net_SaveRelevant() override;
+    [[nodiscard]] BOOL UsedAI_Locations() override;
 
 protected:
-    virtual CPhysicsShellHolder* PPhysicsShellHolder() { return PhysicsShellHolder(); }
-    virtual CPHSkeleton* PHSkeleton() { return this; }
-    virtual void SpawnInitPhysics(CSE_Abstract* D);
+    [[nodiscard]] CPhysicsShellHolder* PPhysicsShellHolder() override { return PhysicsShellHolder(); }
+    [[nodiscard]] CPHSkeleton* PHSkeleton() override { return this; }
+    void SpawnInitPhysics(CSE_Abstract* D) override;
     virtual void PHObjectPositionUpdate();
     virtual void CreatePhysicsShell(CSE_Abstract* e);
 };

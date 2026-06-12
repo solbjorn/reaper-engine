@@ -12,10 +12,10 @@ class dxThunderboltDescRender : public IThunderboltDescRender
 public:
     ~dxThunderboltDescRender() override = default;
 
-    virtual void Copy(IThunderboltDescRender& _in);
+    void Copy(IThunderboltDescRender& _in) override;
 
-    virtual void CreateModel(LPCSTR m_name);
-    virtual void DestroyModel();
+    void CreateModel(gsl::czstring m_name) override;
+    void DestroyModel() override;
 
     IRender_DetailModel* l_model;
 };

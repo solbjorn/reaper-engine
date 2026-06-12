@@ -58,20 +58,23 @@ public:
     void InitCharacter(u16 id);
     void ClearInfo();
 
-    virtual void Update();
+    void Update() override;
 
-    u16 OwnerID() const { return m_ownerID; }
-    CUIStatic& UIIcon()
+    [[nodiscard]] u16 OwnerID() const { return m_ownerID; }
+
+    [[nodiscard]] CUIStatic& UIIcon()
     {
         VERIFY(m_icons[eUIIcon]);
         return *m_icons[eUIIcon];
     }
-    CUIStatic& UIName()
+
+    [[nodiscard]] CUIStatic& UIName()
     {
         VERIFY(m_icons[eUIName]);
         return *m_icons[eUIName];
     }
-    const shared_str& IconName() { return m_texture_name; }
+
+    [[nodiscard]] const shared_str& IconName() { return m_texture_name; }
 };
 
 CSE_ALifeTraderAbstract* ch_info_get_from_id(u16 id);

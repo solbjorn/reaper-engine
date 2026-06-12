@@ -15,14 +15,14 @@ protected:
 
     void SetBoneCallbacks();
     void ResetBoneCallbacks();
-    virtual void FireStart();
-    virtual void FireEnd();
+    void FireStart() override;
+    void FireEnd() override;
     virtual void UpdateFire();
     virtual void OnShot();
     void UpdateBarrelDir();
-    virtual const Fvector& get_CurrentFirePoint();
-    virtual const Fmatrix& get_ParticlesXFORM();
-    virtual bool IsHudModeNow() { return false; }
+    [[nodiscard]] const Fvector3& get_CurrentFirePoint() override;
+    [[nodiscard]] const Fmatrix& get_ParticlesXFORM() override;
+    [[nodiscard]] bool IsHudModeNow() override { return false; }
 
     CPhysicsShellHolder* m_object;
     bool m_bActive;

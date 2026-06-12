@@ -18,7 +18,7 @@ public:
 
     ~dxParticleCustom() override = default;
 
-    virtual IParticleCustom* dcast_ParticleCustom() { return this; }
+    [[nodiscard]] IParticleCustom* dcast_ParticleCustom() override { return this; }
 };
 
 //---------------------------------------------------------------------------

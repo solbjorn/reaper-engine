@@ -19,7 +19,7 @@ public:
     void SetPos(float pos);
     void SetTextVisible(bool b);
 
-    virtual void Draw();
+    void Draw() override;
 
 protected:
     bool m_bClockwise{};

@@ -29,12 +29,12 @@ public:
     ~CAttachmentOwner() override;
 
     virtual void reinit();
-    virtual void reload(LPCSTR section);
+    virtual void reload(gsl::czstring section);
     virtual tmc::task<void> net_Destroy();
     virtual void renderable_Render(u32 context_id, IRenderable* root);
     virtual void attach(CInventoryItem* inventory_item);
     virtual void detach(CInventoryItem* inventory_item);
-    virtual bool can_attach(const CInventoryItem* inventory_item) const;
+    [[nodiscard]] virtual bool can_attach(const CInventoryItem* inventory_item) const;
     bool attached(const CInventoryItem* inventory_item) const;
     bool attached(shared_str sect_name) const;
     virtual void reattach_items();

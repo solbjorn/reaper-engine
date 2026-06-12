@@ -15,11 +15,11 @@ class CUIPdaMsgListItem : public CUIStatic
 public:
     ~CUIPdaMsgListItem() override = default;
 
-    virtual void Init(float x, float y, float width, float height);
+    void Init(f32 x, f32 y, f32 width, f32 height) override;
     virtual void InitCharacter(CInventoryOwner* pInvOwner);
-    virtual void SetTextColor(u32 color);
-    virtual void SetFont(CGameFont* pFont);
-    virtual void SetColor(u32 color);
+    void SetTextColor(u32 color) override;
+    void SetFont(CGameFont* pFont) override;
+    void SetColor(u32 color) override;
 
     // информация о персонаже
     CUIStatic UIIcon;

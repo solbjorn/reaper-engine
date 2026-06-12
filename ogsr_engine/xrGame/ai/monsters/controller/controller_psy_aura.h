@@ -38,7 +38,7 @@ public:
     explicit CPPEffectorControllerAura(const SPPInfo& ppi, u32 time_to_fade, const ref_sound& snd_left, const ref_sound& snd_right);
     ~CPPEffectorControllerAura() override = default;
 
-    virtual BOOL update();
+    [[nodiscard]] BOOL update() override;
     void switch_off();
 };
 
@@ -67,7 +67,7 @@ public:
     explicit CControllerAura(CController* monster) : m_object{monster} {}
     ~CControllerAura() override = default;
 
-    virtual void load(LPCSTR section);
+    void load(gsl::czstring section) override;
 
     void on_death();
     void update_schedule();

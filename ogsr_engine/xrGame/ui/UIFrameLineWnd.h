@@ -14,12 +14,12 @@ public:
     CUIFrameLineWnd();
     ~CUIFrameLineWnd() override = default;
 
-    virtual void Init(float x, float y, float width, float height);
-    virtual void Init(LPCSTR base_name, float x, float y, float width, float height, bool horizontal = true);
-    virtual void InitTexture(LPCSTR tex_name, bool horizontal = true);
-    virtual void Draw();
-    virtual void SetWidth(float width);
-    virtual void SetHeight(float height);
+    void Init(f32 x, f32 y, f32 width, f32 height) override;
+    virtual void Init(gsl::czstring base_name, f32 x, f32 y, f32 width, f32 height, bool horizontal = true);
+    virtual void InitTexture(gsl::czstring tex_name, bool horizontal = true);
+    void Draw() override;
+    void SetWidth(f32 width) override;
+    void SetHeight(f32 height) override;
     virtual void SetOrientation(bool horizontal);
     float GetTextureHeight();
     void SetColor(u32 cl);

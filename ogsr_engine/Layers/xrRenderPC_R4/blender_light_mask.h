@@ -5,9 +5,9 @@ class CBlender_accum_direct_mask : public IBlender
     RTTI_DECLARE_TYPEINFO(CBlender_accum_direct_mask, IBlender);
 
 public:
-    virtual LPCSTR getComment() { return "INTERNAL: mask direct light"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: mask direct light"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 
     CBlender_accum_direct_mask();
     ~CBlender_accum_direct_mask() override;
@@ -18,7 +18,7 @@ class CBlender_accum_direct_mask_msaa : public IBlender
     RTTI_DECLARE_TYPEINFO(CBlender_accum_direct_mask_msaa, IBlender);
 
 public:
-    virtual LPCSTR getComment() { return "INTERNAL: mask direct light msaa"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: mask direct light msaa"; }
 
     virtual void SetDefine(LPCSTR Name, LPCSTR Definition)
     {
@@ -26,7 +26,7 @@ public:
         this->Definition = Definition;
     }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 
     CBlender_accum_direct_mask_msaa();
     ~CBlender_accum_direct_mask_msaa() override;

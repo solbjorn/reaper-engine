@@ -33,7 +33,7 @@ public:
     inline explicit CScriptEffector(int iType, float time);
     ~CScriptEffector() override = default;
 
-    virtual BOOL Process(SPPInfo& pp);
+    [[nodiscard]] BOOL Process(SPPInfo& pp) override;
     virtual void Add();
     virtual void Remove();
 

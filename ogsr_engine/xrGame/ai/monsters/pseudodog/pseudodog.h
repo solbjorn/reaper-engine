@@ -26,22 +26,19 @@ public:
     CAI_PseudoDog();
     ~CAI_PseudoDog() override;
 
-    virtual DLL_Pure* _construct();
+    [[nodiscard]] DLL_Pure* _construct() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
+    void reinit() override;
+    void reload(gsl::czstring section) override;
 
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
+    [[nodiscard]] bool ability_can_drag() override { return true; }
+    [[nodiscard]] bool ability_psi_attack() override { return true; }
 
-    virtual bool ability_can_drag() { return true; }
-    virtual bool ability_psi_attack() { return true; }
+    void CheckSpecParams(u32 spec_params) override;
+    void HitEntityInJump(const CEntity* pEntity) override;
 
-    virtual void CheckSpecParams(u32 spec_params);
-    // virtual void	play_effect_sound	();
-
-    virtual void HitEntityInJump(const CEntity* pEntity);
-
-    virtual IStateManagerBase* create_state_manager();
+    [[nodiscard]] virtual IStateManagerBase* create_state_manager();
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

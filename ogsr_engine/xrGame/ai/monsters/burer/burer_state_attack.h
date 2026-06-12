@@ -22,13 +22,13 @@ public:
     explicit CStateBurerAttack(Object* obj);
     ~CStateBurerAttack() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void initialize() override;
+    void execute() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 
-    virtual void finalize();
-    virtual void critical_finalize();
-    virtual bool check_control_start_conditions(ControlCom::EControlType type);
+    void finalize() override;
+    void critical_finalize() override;
+    [[nodiscard]] bool check_control_start_conditions(ControlCom::EControlType type) override;
 
 private:
     bool m_wait_state_end;

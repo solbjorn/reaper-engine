@@ -15,7 +15,7 @@ public:
     ~CWeaponFN2000() override;
 
 protected:
-    virtual size_t GetWeaponTypeForCollision() const override { return FN2000; }
+    size_t GetWeaponTypeForCollision() const override { return FN2000; }
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

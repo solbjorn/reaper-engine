@@ -37,11 +37,11 @@ class XR_NOVTABLE CPostProcessParam : public virtual RTTI::Enable
 public:
     ~CPostProcessParam() override = 0;
 
-    virtual void update(float dt) = 0;
+    virtual void update(f32 dt) = 0;
     virtual void load(IReader& pReader) = 0;
     virtual void save(IWriter& pWriter) = 0;
-    virtual float get_length() = 0;
-    virtual size_t get_keys_count() = 0;
+    [[nodiscard]] virtual f32 get_length() = 0;
+    [[nodiscard]] virtual size_t get_keys_count() = 0;
 };
 
 inline CPostProcessParam::~CPostProcessParam() = default;
@@ -58,15 +58,17 @@ public:
     explicit CPostProcessValue(float* pfparam) : m_pfParam{pfparam} {}
     ~CPostProcessValue() override = default;
 
-    virtual void update(float dt) { *m_pfParam = m_Value.Evaluate(dt); }
-    virtual void load(IReader& pReader);
-    virtual void save(IWriter& pWriter);
-    virtual float get_length()
+    void update(f32 dt) override { *m_pfParam = m_Value.Evaluate(dt); }
+    void load(IReader& pReader) override;
+    void save(IWriter& pWriter) override;
+
+    [[nodiscard]] f32 get_length() override
     {
         float mn, mx;
         return m_Value.GetLength(&mn, &mx);
     }
-    virtual size_t get_keys_count() { return m_Value.keys.size(); }
+
+    [[nodiscard]] size_t get_keys_count() override { return m_Value.keys.size(); }
 };
 
 class CPostProcessColor : public CPostProcessParam
@@ -84,21 +86,24 @@ public:
     explicit CPostProcessColor(SPPInfo::SColor* pcolor) : m_pColor{pcolor} {}
     ~CPostProcessColor() override = default;
 
-    virtual void update(float dt)
+    void update(f32 dt) override
     {
         m_pColor->r = m_Red.Evaluate(dt);
         m_pColor->g = m_Green.Evaluate(dt);
         m_pColor->b = m_Blue.Evaluate(dt);
     }
-    virtual void load(IReader& pReader);
-    virtual void save(IWriter& pWriter);
-    virtual float get_length()
+
+    void load(IReader& pReader) override;
+    void save(IWriter& pWriter) override;
+
+    [[nodiscard]] f32 get_length() override
     {
         float mn, mx, r = m_Red.GetLength(&mn, &mx), g = m_Green.GetLength(&mn, &mx), b = m_Blue.GetLength(&mn, &mx);
         mn = (r > g ? r : g);
         return mn > b ? mn : b;
     }
-    virtual size_t get_keys_count() { return m_Red.keys.size(); }
+
+    [[nodiscard]] size_t get_keys_count() override { return m_Red.keys.size(); }
 };
 
 class CPostprocessAnimator : public CEffectorPP
@@ -125,15 +130,15 @@ public:
     ~CPostprocessAnimator() override;
 
     void Clear();
-    void Load(LPCSTR name);
+    void Load(gsl::czstring name);
     [[nodiscard]] auto Name() const { return m_Name.c_str(); }
-    virtual void Stop(float speed);
+    void Stop(f32 speed) override;
     void SetDesiredFactor(float f, float sp);
     void SetCurrentFactor(float f);
     void SetCyclic(bool b) { m_bCyclic = b; }
-    float GetLength();
-    virtual BOOL Valid();
-    virtual BOOL Process(SPPInfo& PPInfo);
+    [[nodiscard]] f32 GetLength();
+    [[nodiscard]] BOOL Valid() override;
+    [[nodiscard]] BOOL Process(SPPInfo& PPInfo) override;
     void Create();
 };
 
@@ -148,7 +153,7 @@ public:
     ~CPostprocessAnimatorLerp() override = default;
 
     void SetFactorFunc(CallMe::Delegate<float()> f) { m_get_factor_func = f; }
-    virtual BOOL Process(SPPInfo& PPInfo);
+    [[nodiscard]] BOOL Process(SPPInfo& PPInfo) override;
 };
 
 class CPostprocessAnimatorLerpConst : public CPostprocessAnimator
@@ -163,7 +168,7 @@ public:
     ~CPostprocessAnimatorLerpConst() override = default;
 
     void SetPower(f32 val) { m_power = val; }
-    virtual BOOL Process(SPPInfo& PPInfo);
+    [[nodiscard]] BOOL Process(SPPInfo& PPInfo) override;
 };
 
 class CPostprocessAnimatorControlled : public CPostprocessAnimatorLerp
@@ -176,7 +181,7 @@ public:
     explicit CPostprocessAnimatorControlled(CEffectorController* c);
     ~CPostprocessAnimatorControlled() override;
 
-    virtual BOOL Valid();
+    [[nodiscard]] BOOL Valid() override;
 };
 
 #endif /*__ppanimator_included__*/

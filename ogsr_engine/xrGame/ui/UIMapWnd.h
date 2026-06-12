@@ -85,12 +85,12 @@ public:
     ~CUIMapWnd() override;
 
     virtual void Init(LPCSTR xml_name, LPCSTR start_from);
-    virtual void Show(bool status);
-    virtual void Draw();
-    virtual void Reset();
-    virtual void Update();
-    float GetZoom() { return m_currentZoom; }
-    void SetZoom(float value);
+    void Show(bool status) override;
+    void Draw() override;
+    void Reset() override;
+    void Update() override;
+    [[nodiscard]] f32 GetZoom() { return m_currentZoom; }
+    void SetZoom(f32 value);
 
     void ShowHint(CUIWindow* parent, LPCSTR text);
     void HideHint(CUIWindow* parent);

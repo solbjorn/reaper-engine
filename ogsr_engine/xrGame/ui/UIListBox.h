@@ -27,7 +27,7 @@ public:
     float GetItemHeight();
     float GetLongestLength();
 
-    virtual void SetSelected(CUIWindow* w) { CUIScrollView::SetSelected(w); }
+    void SetSelected(CUIWindow* w) override { CUIScrollView::SetSelected(w); }
     u32 GetSelectedIDX();
     void SetSelectedIDX(u32 idx);
     void SetSelectedTAG(u32 tag_val);
@@ -38,13 +38,13 @@ public:
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 
     // IUIFontControl
-    virtual void SetTextColor(u32 color);
+    void SetTextColor(u32 color) override;
     void SetTextColorS(u32 color);
-    virtual u32 GetTextColor();
-    virtual void SetFont(CGameFont* pFont);
-    virtual CGameFont* GetFont();
-    virtual void SetTextAlignment(ETextAlignment alignment);
-    virtual ETextAlignment GetTextAlignment();
+    [[nodiscard]] u32 GetTextColor() override;
+    void SetFont(CGameFont* pFont) override;
+    [[nodiscard]] CGameFont* GetFont() override;
+    void SetTextAlignment(ETextAlignment alignment) override;
+    [[nodiscard]] ETextAlignment GetTextAlignment() override;
 
 protected:
     float m_def_item_height;

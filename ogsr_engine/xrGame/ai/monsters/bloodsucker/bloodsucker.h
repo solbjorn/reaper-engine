@@ -17,25 +17,25 @@ public:
     CAI_Bloodsucker();
     ~CAI_Bloodsucker() override;
 
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
+    void reinit() override;
+    void reload(gsl::czstring section) override;
 
     tmc::task<void> UpdateCL() override;
     tmc::task<void> shedule_Update(u32 dt) override;
     tmc::task<void> Die(CObject* who) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
-    virtual void Load(LPCSTR section);
-    virtual void Hit(SHit* pHDS);
+    void Load(gsl::czstring section) override;
+    void Hit(SHit* pHDS) override;
 
-    virtual void CheckSpecParams(u32 spec_params);
-    virtual bool ability_invisibility() { return true; }
-    virtual bool ability_pitch_correction() { return false; }
-    virtual bool ability_can_drag() { return true; }
+    void CheckSpecParams(u32 spec_params) override;
+    [[nodiscard]] bool ability_invisibility() override { return true; }
+    [[nodiscard]] bool ability_pitch_correction() override { return false; }
+    [[nodiscard]] bool ability_can_drag() override { return true; }
 
-    virtual void post_fsm_update();
+    void post_fsm_update() override;
 
-    virtual bool use_center_to_aim() const { return true; }
-    virtual bool check_start_conditions(ControlCom::EControlType);
+    [[nodiscard]] bool use_center_to_aim() const override { return true; }
+    [[nodiscard]] bool check_start_conditions(ControlCom::EControlType) override;
     void HitEntity(const CEntity* pEntity, float fDamage, float impulse, Fvector& dir, ALife::EHitType = ALife::eHitTypeWound, bool = true) override;
 
     //--------------------------------------------------------------------
@@ -123,7 +123,7 @@ public:
     void predator_stop();
     void predator_freeze();
     void predator_unfreeze();
-    void jump(const Fvector& position, float factor);
+    void jump(const Fvector3& position, f32 factor) override;
     //--------------------------------------------------------------------
     // Sounds
     //--------------------------------------------------------------------
@@ -200,7 +200,7 @@ public:
     u32 m_hits_before_vampire;
     u32 m_sufficient_hits_before_vampire;
     int m_sufficient_hits_before_vampire_random;
-    virtual void on_attack_on_run_hit();
+    void on_attack_on_run_hit() override;
     bool done_enough_hits_before_vampire();
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();

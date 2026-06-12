@@ -15,7 +15,7 @@ CEatableItemObject::~CEatableItemObject() = default;
 
 DLL_Pure* CEatableItemObject::_construct()
 {
-    CEatableItem::_construct();
+    std::ignore = CEatableItem::_construct();
     std::ignore = CPhysicItem::_construct();
 
     return this;
@@ -27,34 +27,8 @@ void CEatableItemObject::Load(LPCSTR section)
     CEatableItem::Load(section);
 }
 
-// void CEatableItemObject::Hit(float P, Fvector &dir,
-//						 CObject* who, s16 element,
-//						 Fvector position_in_object_space,
-//						 float impulse,
-//						 ALife::EHitType hit_type)
 void CEatableItemObject::Hit(SHit* pHDS)
 {
-    /*
-    CPhysicItem::Hit			(
-        P,
-        dir,
-        who,
-        element,
-        position_in_object_space,
-        impulse,
-        hit_type
-    );
-
-    CEatableItem::Hit			(
-        P,
-        dir,
-        who,
-        element,
-        position_in_object_space,
-        impulse,
-        hit_type
-    );
-    */
     CPhysicItem::Hit(pHDS);
     CEatableItem::Hit(pHDS);
 }
@@ -149,7 +123,6 @@ void CEatableItemObject::reinit()
 }
 
 void CEatableItemObject::activate_physic_shell() { CEatableItem::activate_physic_shell(); }
-
 void CEatableItemObject::on_activate_physic_shell() { CPhysicItem::activate_physic_shell(); }
 
 #ifdef DEBUG
@@ -157,5 +130,4 @@ void CEatableItemObject::OnRender() { CEatableItem::OnRender(); }
 #endif
 
 u32 CEatableItemObject::ef_weapon_type() const { return (0); }
-
 bool CEatableItemObject::Useful() const { return (CEatableItem::Useful()); }

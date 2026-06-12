@@ -41,7 +41,7 @@ public:
     CUIMotionIcon();
     ~CUIMotionIcon() override;
 
-    virtual void Update();
+    void Update() override;
     void Init();
     void ShowState(EState state);
     void SetPower(float Pos);

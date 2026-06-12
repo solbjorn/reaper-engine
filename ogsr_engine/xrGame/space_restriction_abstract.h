@@ -41,7 +41,7 @@ public:
     IC const xr_vector<u32>& accessible_neighbour_border(T& restriction, bool out_restriction);
 
 public:
-    virtual shared_str name() const = 0;
+    [[nodiscard]] virtual shared_str name() const = 0;
 };
 
 inline CSpaceRestrictionAbstract::~CSpaceRestrictionAbstract() = default;

@@ -15,31 +15,31 @@ public:
     CWeaponBM16();
     ~CWeaponBM16() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
 
 protected:
-    virtual void PlayAnimShoot();
-    virtual void PlayAnimFakeShoot() override;
-    virtual void PlayAnimReload();
-    virtual void PlayAnimShow();
-    virtual void PlayAnimHide();
-    virtual void PlayAnimIdleMoving();
-    virtual void PlayAnimIdleMovingSlow() override;
-    virtual void PlayAnimIdleMovingCrouch() override;
-    virtual void PlayAnimIdleMovingCrouchSlow() override;
-    virtual void PlayAnimIdleSprint();
-    virtual void PlayAnimIdle();
-    virtual void PlayAnimCheckMisfire() override;
-    virtual void PlayAnimDeviceSwitch() override;
-    virtual void PlayAnimSprintStart() override;
-    virtual void PlayAnimSprintEnd() override;
-    virtual void PlayReloadSound();
-    virtual void OnShot();
-    virtual void UpdateSounds() override;
+    void PlayAnimShoot() override;
+    void PlayAnimFakeShoot() override;
+    void PlayAnimReload() override;
+    void PlayAnimShow() override;
+    void PlayAnimHide() override;
+    void PlayAnimIdleMoving() override;
+    void PlayAnimIdleMovingSlow() override;
+    void PlayAnimIdleMovingCrouch() override;
+    void PlayAnimIdleMovingCrouchSlow() override;
+    void PlayAnimIdleSprint() override;
+    void PlayAnimIdle() override;
+    void PlayAnimCheckMisfire() override;
+    void PlayAnimDeviceSwitch() override;
+    void PlayAnimSprintStart() override;
+    void PlayAnimSprintEnd() override;
+    void PlayReloadSound() override;
+    void OnShot() override;
+    void UpdateSounds() override;
 
-    virtual size_t GetWeaponTypeForCollision() const override { return BM_16; }
+    [[nodiscard]] size_t GetWeaponTypeForCollision() const override { return BM_16; }
 
-    const char* GetAnimAimName() override;
+    [[nodiscard]] gsl::czstring GetAnimAimName() override;
 
 private:
     string128 guns_bm_aim_anm;

@@ -34,7 +34,7 @@ public:
     explicit CStalkerPropertyEvaluatorDangers(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
     ~CStalkerPropertyEvaluatorDangers() override = default;
 
-    virtual _value_type evaluate();
+    [[nodiscard]] _value_type evaluate() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ public:
     explicit CStalkerPropertyEvaluatorDangerUnknown(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
     ~CStalkerPropertyEvaluatorDangerUnknown() override = default;
 
-    virtual _value_type evaluate();
+    [[nodiscard]] _value_type evaluate() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -70,7 +70,7 @@ public:
     explicit CStalkerPropertyEvaluatorDangerInDirection(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
     ~CStalkerPropertyEvaluatorDangerInDirection() override = default;
 
-    virtual _value_type evaluate();
+    [[nodiscard]] _value_type evaluate() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -88,7 +88,7 @@ public:
     explicit CStalkerPropertyEvaluatorDangerWithGrenade(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
     ~CStalkerPropertyEvaluatorDangerWithGrenade() override = default;
 
-    virtual _value_type evaluate();
+    [[nodiscard]] _value_type evaluate() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -106,7 +106,7 @@ public:
     explicit CStalkerPropertyEvaluatorDangerBySound(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
     ~CStalkerPropertyEvaluatorDangerBySound() override = default;
 
-    virtual _value_type evaluate();
+    [[nodiscard]] _value_type evaluate() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -127,7 +127,7 @@ public:
     explicit CStalkerPropertyEvaluatorDangerUnknownCoverActual(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
     ~CStalkerPropertyEvaluatorDangerUnknownCoverActual() override = default;
 
-    virtual _value_type evaluate();
+    [[nodiscard]] _value_type evaluate() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -145,7 +145,7 @@ public:
     explicit CStalkerPropertyEvaluatorDangerGrenadeExploded(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
     ~CStalkerPropertyEvaluatorDangerGrenadeExploded() override = default;
 
-    virtual _value_type evaluate();
+    [[nodiscard]] _value_type evaluate() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -163,7 +163,7 @@ public:
     explicit CStalkerPropertyEvaluatorGrenadeToExplode(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
     ~CStalkerPropertyEvaluatorGrenadeToExplode() override = default;
 
-    virtual _value_type evaluate();
+    [[nodiscard]] _value_type evaluate() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -181,5 +181,5 @@ public:
     explicit CStalkerPropertyEvaluatorEnemyWounded(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
     ~CStalkerPropertyEvaluatorEnemyWounded() override = default;
 
-    virtual _value_type evaluate();
+    [[nodiscard]] _value_type evaluate() override;
 };

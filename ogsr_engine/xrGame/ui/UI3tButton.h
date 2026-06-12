@@ -26,39 +26,39 @@ public:
     // appearance
     using CUIButton::Init;
 
-    virtual void Init(float x, float y, float width, float height);
-    virtual void InitTexture(LPCSTR tex_name);
-    virtual void InitTexture(LPCSTR tex_enabled, LPCSTR tex_disabled, LPCSTR tex_touched, LPCSTR tex_highlighted);
+    void Init(f32 x, f32 y, f32 width, f32 height) override;
+    void InitTexture(gsl::czstring tex_name) override;
+    virtual void InitTexture(gsl::czstring tex_enabled, gsl::czstring tex_disabled, gsl::czstring tex_touched, gsl::czstring tex_highlighted);
 
-    void SetTextColor(u32 color);
+    void SetTextColor(u32 color) override;
     void SetTextColorH(u32 color);
     void SetTextColorD(u32 color);
     void SetTextColorT(u32 color);
-    virtual void SetTextureOffset(float x, float y);
-    virtual void SetWidth(float width);
-    virtual void SetHeight(float height);
+    void SetTextureOffset(f32 x, f32 y) override;
+    void SetWidth(f32 width) override;
+    void SetHeight(f32 height) override;
     void InitSoundH(LPCSTR sound_file);
     void InitSoundT(LPCSTR sound_file);
 
-    virtual void OnClick();
-    virtual void OnFocusReceive();
-    virtual void OnFocusLost();
+    void OnClick() override;
+    void OnFocusReceive() override;
+    void OnFocusLost() override;
 
     // check button
-    bool GetCheck() { return m_eButtonState == BUTTON_PUSHED; }
+    [[nodiscard]] bool GetCheck() { return m_eButtonState == BUTTON_PUSHED; }
     void SetCheck(bool ch) { m_eButtonState = ch ? BUTTON_PUSHED : BUTTON_NORMAL; }
 
     // behavior
-    virtual void DrawTexture();
-    virtual void Update();
+    void DrawTexture() override;
+    void Update() override;
 
     // virtual void Enable(bool bEnable);
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
     [[nodiscard]] bool OnMouseDown(sf::Mouse::Button mouse_btn) override;
     void SetCheckMode(bool mode) { m_bCheckMode = mode; }
 
-    virtual void SetStretchTexture(bool stretch_texture);
-    virtual void EnableHeading(bool b);
+    void SetStretchTexture(bool stretch_texture) override;
+    void EnableHeading(bool b) override;
 
     CUIStatic m_hint;
     CUI_IB_Static m_background;

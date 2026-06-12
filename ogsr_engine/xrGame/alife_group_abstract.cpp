@@ -7,7 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "xrServer_Objects_ALife.h"
+
 #include "ai_space.h"
 #include "alife_simulator.h"
 #include "alife_object_registry.h"
@@ -93,7 +95,7 @@ bool CSE_ALifeGroupAbstract::synchronize_location()
     ALife::OBJECT_VECTOR::iterator I = m_tpMembers.begin();
     ALife::OBJECT_VECTOR::iterator E = m_tpMembers.end();
     for (; I != E; ++I)
-        ai().alife().objects().object(*I)->synchronize_location();
+        std::ignore = ai().alife().objects().object(*I)->synchronize_location();
 
     CSE_ALifeDynamicObject& member = *ai().alife().objects().object(*I); //-V783
     object->o_Position = member.o_Position;

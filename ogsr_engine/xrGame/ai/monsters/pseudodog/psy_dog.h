@@ -35,16 +35,15 @@ public:
     CPsyDog();
     ~CPsyDog() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* dc) override;
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
+    void reinit() override;
+    void reload(gsl::czstring section) override;
     tmc::task<void> net_Destroy() override;
     tmc::task<void> Die(CObject* who) override;
 
-    virtual void Think();
-    //				void	on_phantom_appear	();
-    virtual IStateManagerBase* create_state_manager();
+    void Think() override;
+    [[nodiscard]] IStateManagerBase* create_state_manager() override;
 
     u8 get_phantoms_count();
     bool must_hide() { return get_phantoms_count() == 0; }
@@ -100,8 +99,8 @@ public:
     ~CPsyDogPhantom() override;
 
     tmc::task<bool> net_Spawn(CSE_Abstract* dc) override;
-    virtual void Think();
-    virtual void Hit(SHit* pHDS);
+    void Think() override;
+    void Hit(SHit* pHDS) override;
 
     tmc::task<void> net_Destroy() override;
     tmc::task<void> Die(CObject* who) override;

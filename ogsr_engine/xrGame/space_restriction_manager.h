@@ -49,7 +49,7 @@ protected:
     /*IC*/ CRestrictionPtr restriction(ALife::_OBJECT_ID id);
     CRestrictionPtr restriction(shared_str out_restrictors, shared_str in_restrictors);
     IC void collect_garbage();
-    virtual void on_default_restrictions_changed();
+    void on_default_restrictions_changed() override;
 
 public:
     CSpaceRestrictionManager();

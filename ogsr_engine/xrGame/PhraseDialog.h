@@ -135,7 +135,7 @@ protected:
     }
 
     // загрузка диалога из XML файла
-    virtual void load_shared(LPCSTR);
+    void load_shared(gsl::czstring) override;
 
     // рекурсивное добавление фраз в граф
     void AddPhrase(CUIXml* pXml, pugi::xml_node phrase_node, const shared_str& phrase_id, const shared_str& prev_phrase_id);

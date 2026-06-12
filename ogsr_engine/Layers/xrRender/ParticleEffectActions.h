@@ -100,8 +100,8 @@ struct PDomain
     u32 clr;
 
     PDomain() = default;
-    PDomain(EType et, BOOL renderable, u32 color = 0x00000000, PAPI::PDomainEnum type = PAPI::PDPoint, float inA0 = 0.0f, float inA1 = 0.0f, float inA2 = 0.0f, float inA3 = 0.0f,
-            float inA4 = 0.0f, float inA5 = 0.0f, float inA6 = 0.0f, float inA7 = 0.0f, float inA8 = 0.0f);
+    PDomain(EType et, BOOL renderable, u32 color = 0x00000000, PAPI::PDomainEnum type = PAPI::PDPoint, float inA0 = 0.0f, float inA1 = 0.0f, float inA2 = 0.0f,
+            float inA3 = 0.0f, float inA4 = 0.0f, float inA5 = 0.0f, float inA6 = 0.0f, float inA7 = 0.0f, float inA8 = 0.0f);
     PDomain(const PDomain& in);
     PDomain(PDomain&&);
 
@@ -222,7 +222,7 @@ public:
 
     virtual void Compile(IWriter& F) = 0;
 
-    virtual bool Load(IReader& F);
+    [[nodiscard]] virtual bool Load(IReader& F);
     virtual void Save(IWriter& F);
 
     virtual void Load2(CInifile& ini, gsl::czstring sect);
@@ -237,7 +237,7 @@ public:
     EPAAvoid();
     ~EPAAvoid() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPABounce : public EParticleAction
@@ -248,7 +248,7 @@ public:
     EPABounce();
     ~EPABounce() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPACopyVertexB : public EParticleAction
@@ -259,7 +259,7 @@ public:
     EPACopyVertexB();
     ~EPACopyVertexB() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPADamping : public EParticleAction
@@ -270,7 +270,7 @@ public:
     EPADamping();
     ~EPADamping() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPAExplosion : public EParticleAction
@@ -281,7 +281,7 @@ public:
     EPAExplosion();
     ~EPAExplosion() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPAFollow : public EParticleAction
@@ -292,7 +292,7 @@ public:
     EPAFollow();
     ~EPAFollow() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPAGravitate : public EParticleAction
@@ -303,7 +303,7 @@ public:
     EPAGravitate();
     ~EPAGravitate() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPAGravity : public EParticleAction
@@ -314,7 +314,7 @@ public:
     EPAGravity();
     ~EPAGravity() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPAJet : public EParticleAction
@@ -325,7 +325,7 @@ public:
     EPAJet();
     ~EPAJet() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPAKillOld : public EParticleAction
@@ -336,7 +336,7 @@ public:
     EPAKillOld();
     ~EPAKillOld() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPAMatchVelocity : public EParticleAction
@@ -347,7 +347,7 @@ public:
     EPAMatchVelocity();
     ~EPAMatchVelocity() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPAMove : public EParticleAction
@@ -358,7 +358,7 @@ public:
     EPAMove();
     ~EPAMove() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPAOrbitLine : public EParticleAction
@@ -369,7 +369,7 @@ public:
     EPAOrbitLine();
     ~EPAOrbitLine() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPAOrbitPoint : public EParticleAction
@@ -380,7 +380,7 @@ public:
     EPAOrbitPoint();
     ~EPAOrbitPoint() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPARandomAccel : public EParticleAction
@@ -391,7 +391,7 @@ public:
     EPARandomAccel();
     ~EPARandomAccel() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPARandomDisplace : public EParticleAction
@@ -402,7 +402,7 @@ public:
     EPARandomDisplace();
     ~EPARandomDisplace() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPARandomVelocity : public EParticleAction
@@ -413,7 +413,7 @@ public:
     EPARandomVelocity();
     ~EPARandomVelocity() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPARestore : public EParticleAction
@@ -424,7 +424,7 @@ public:
     EPARestore();
     ~EPARestore() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPAScatter : public EParticleAction
@@ -435,7 +435,7 @@ public:
     EPAScatter();
     ~EPAScatter() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPASink : public EParticleAction
@@ -446,7 +446,7 @@ public:
     EPASink();
     ~EPASink() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPASinkVelocity : public EParticleAction
@@ -457,7 +457,7 @@ public:
     EPASinkVelocity();
     ~EPASinkVelocity() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPASpeedLimit : public EParticleAction
@@ -468,7 +468,7 @@ public:
     EPASpeedLimit();
     ~EPASpeedLimit() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPASource : public EParticleAction
@@ -479,7 +479,7 @@ public:
     EPASource();
     ~EPASource() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPATargetColor : public EParticleAction
@@ -490,7 +490,7 @@ public:
     EPATargetColor();
     ~EPATargetColor() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPATargetSize : public EParticleAction
@@ -501,7 +501,7 @@ public:
     EPATargetSize();
     ~EPATargetSize() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPATargetRotate : public EParticleAction
@@ -512,7 +512,7 @@ public:
     EPATargetRotate();
     ~EPATargetRotate() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPATargetVelocity : public EParticleAction
@@ -523,7 +523,7 @@ public:
     EPATargetVelocity();
     ~EPATargetVelocity() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPAVortex : public EParticleAction
@@ -534,7 +534,7 @@ public:
     EPAVortex();
     ~EPAVortex() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 struct EPATurbulence : public EParticleAction
@@ -548,7 +548,7 @@ public:
     EPATurbulence();
     ~EPATurbulence() override = default;
 
-    virtual void Compile(IWriter& F);
+    void Compile(IWriter& F) override;
 };
 
 typedef EParticleAction* (*_CreateEAction)(PAPI::PActionEnum type);

@@ -16,7 +16,7 @@ public:
     CUIPropertiesBox();
     ~CUIPropertiesBox() override;
 
-    virtual void Init(float x, float y, float width, float height);
+    void Init(f32 x, f32 y, f32 width, f32 height) override;
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
@@ -31,8 +31,8 @@ public:
     virtual void Show(const Frect& parent_rect, const Fvector2& point);
     virtual void Hide();
 
-    virtual void Update();
-    virtual void Draw();
+    void Update() override;
+    void Draw() override;
 
     CUIListBoxItem* GetClickedItem();
 

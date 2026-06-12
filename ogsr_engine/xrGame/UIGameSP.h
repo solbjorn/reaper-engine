@@ -32,18 +32,18 @@ public:
 
     tmc::task<void> reset_ui() override;
     tmc::task<void> shedule_Update(u32 dt) override;
-    virtual void Render();
-    virtual void SetClGame(game_cl_GameState* g);
+    void Render() override;
+    void SetClGame(game_cl_GameState* g) override;
     tmc::task<bool> IR_OnKeyboardPress(xr::key_id dik) override;
     [[nodiscard]] bool IR_OnKeyboardRelease(xr::key_id dik) override;
 
     void StartTalk();
     void StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers);
     void StartCarBody(CInventoryOwner* pOurInv, IInventoryBox* pBox);
-    virtual void ReInitShownUI();
+    void ReInitShownUI() override;
     void ChangeLevel(GameGraph::_GRAPH_ID game_vert_id, u32 level_vert_id, Fvector pos, Fvector ang, Fvector pos2, Fvector ang2, bool b);
 
-    virtual void HideShownDialogs();
+    void HideShownDialogs() override;
 
     CUIInventoryWnd* InventoryMenu;
     CUIPdaWnd* PdaMenu;
@@ -78,9 +78,9 @@ public:
     ~CChangeLevelWnd() override = default;
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
-    virtual bool WorkInPause() const { return true; }
-    virtual void Show();
-    virtual void Hide();
+    [[nodiscard]] bool WorkInPause() const override { return true; }
+    void Show() override;
+    void Hide() override;
     [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
 };
 

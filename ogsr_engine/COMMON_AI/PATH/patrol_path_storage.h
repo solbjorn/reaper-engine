@@ -35,8 +35,8 @@ public:
     CPatrolPathStorage();
     ~CPatrolPathStorage() override;
 
-    virtual void load(IReader& stream);
-    virtual void save(IWriter& stream);
+    void load(IReader& stream) override;
+    void save(IWriter& stream) override;
 
 public:
     void load_raw(const CLevelGraph* level_graph, const CGameLevelCrossTable* cross, const CGameGraph* game_graph, IReader& stream);

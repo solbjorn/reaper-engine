@@ -5,9 +5,9 @@ class CBlender_combine : public IBlender
     RTTI_DECLARE_TYPEINFO(CBlender_combine, IBlender);
 
 public:
-    virtual LPCSTR getComment() { return "INTERNAL: combiner"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: combiner"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 
     CBlender_combine();
     ~CBlender_combine() override;
@@ -18,9 +18,9 @@ class CBlender_combine_msaa : public IBlender
     RTTI_DECLARE_TYPEINFO(CBlender_combine_msaa, IBlender);
 
 public:
-    virtual LPCSTR getComment() { return "INTERNAL: combiner"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: combiner"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 
     CBlender_combine_msaa();
     ~CBlender_combine_msaa() override;

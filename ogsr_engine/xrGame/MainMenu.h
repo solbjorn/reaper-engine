@@ -61,16 +61,16 @@ public:
     CMainMenu();
     ~CMainMenu() override;
 
-    virtual void DestroyInternal(bool bForce);
+    void DestroyInternal(bool bForce) override;
     tmc::task<void> Activate(bool bActive) override;
-    virtual bool IsActive();
-    virtual bool CanSkipSceneRendering();
+    [[nodiscard]] bool IsActive() override;
+    [[nodiscard]] bool CanSkipSceneRendering() override;
 
     [[nodiscard]] bool IsLanguageChanged() const { return languageChanged; }
     void SetLanguageChanged(bool status) { languageChanged = status; }
 
-    virtual void IR_OnMouseMove(int x, int y);
-    virtual void IR_OnMouseStop(int, int);
+    void IR_OnMouseMove(s32 x, s32 y) override;
+    void IR_OnMouseStop(s32, s32) override;
 
     tmc::task<void> IR_OnKeyboardPress(xr::key_id dik) override;
     void IR_OnKeyboardRelease(xr::key_id dik) override;
@@ -84,8 +84,8 @@ public:
 
     tmc::task<void> OnRender() override;
     tmc::task<void> OnFrame() override;
-    virtual void StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators);
-    virtual bool UseIndicators() { return false; }
+    void StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators) override;
+    [[nodiscard]] bool UseIndicators() override { return false; }
 
     void OnDeviceCreate();
 

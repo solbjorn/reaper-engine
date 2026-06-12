@@ -5,9 +5,9 @@ class CBlender_gasmask_drops : public IBlender
     RTTI_DECLARE_TYPEINFO(CBlender_gasmask_drops, IBlender);
 
 public:
-    virtual LPCSTR getComment() { return "Gasmask_drops"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "Gasmask_drops"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 
     CBlender_gasmask_drops();
     ~CBlender_gasmask_drops() override;

@@ -18,14 +18,14 @@ public:
     virtual void OnClick();
 
     // прорисовка окна
-    virtual void DrawTexture();
-    virtual void DrawText();
-    virtual void DrawHighlightedText();
+    void DrawTexture() override;
+    void DrawText() override;
+    void DrawHighlightedText() override;
 
-    virtual void Update();
-    virtual void Enable(bool status);
+    void Update() override;
+    void Enable(bool status) override;
     [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
-    virtual void OnFocusLost();
+    void OnFocusLost() override;
 
     // режимы в которых можно нажимать кнопку
     typedef enum
@@ -36,7 +36,7 @@ public:
     } E_PRESS_MODE;
 
     // заново подготовить состояние
-    virtual void Reset();
+    void Reset() override;
 
     // подсвечен ли текст на кнопке
     //  принудительная подсветка
@@ -71,7 +71,10 @@ public:
         return m_uAccelerator[idx];
     }
 
-    [[nodiscard]] bool IsAccelerator(xr::key_id dik) const { return (m_uAccelerator[0] == dik) || m_uAccelerator[1] == dik || is_binded(m_uAcceleratorAction, dik); }
+    [[nodiscard]] bool IsAccelerator(xr::key_id dik) const
+    {
+        return (m_uAccelerator[0] == dik) || m_uAccelerator[1] == dik || is_binded(m_uAcceleratorAction, dik);
+    }
 
     void SetAcceleratorAction(EGameActions a) { m_uAcceleratorAction = a; }
 

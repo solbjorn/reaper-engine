@@ -28,6 +28,6 @@ public:
     explicit CStalkerActionDead(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionDead() override = default;
 
-    virtual void initialize();
-    virtual void execute();
+    void initialize() override;
+    void execute() override;
 };

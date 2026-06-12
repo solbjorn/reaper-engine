@@ -17,7 +17,7 @@ public:
     FHierrarhyVisual();
     ~FHierrarhyVisual() override;
 
-    virtual void Load(const char* N, IReader* data, u32 dwFlags);
-    virtual void Copy(dxRender_Visual* pFrom);
-    virtual void Release();
+    void Load(gsl::czstring N, IReader* data, u32 dwFlags) override;
+    void Copy(dxRender_Visual* pFrom) override;
+    void Release() override;
 };

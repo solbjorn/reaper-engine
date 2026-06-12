@@ -36,7 +36,7 @@ public:
     virtual void OnH_A_Chield();
     virtual void OnH_A_Independent();
     virtual void renderable_Render(u32 context_id, IRenderable* root);
-    virtual bool can_be_attached() const;
+    [[nodiscard]] virtual bool can_be_attached() const;
     virtual void afterAttach();
     virtual void afterDetach();
     IC CInventoryItem& item() const;
@@ -50,13 +50,16 @@ public:
 
 public:
     static CAttachableItem* m_dbgItem;
+
     virtual Fvector get_angle_offset() const
     {
         Fvector v;
         m_dbgItem->m_offset.getHPB(v);
         return v;
     }
+
     virtual Fvector get_pos_offset() const { return m_dbgItem->m_offset.c; }
+
     virtual void set_angle_offset(Fvector val)
     {
         Fvector c = get_pos_offset();
@@ -70,6 +73,7 @@ public:
         v[axis] += val;
         set_angle_offset(v);
     }
+
     virtual void mov(int axis, float val)
     {
         Fvector c = get_pos_offset();

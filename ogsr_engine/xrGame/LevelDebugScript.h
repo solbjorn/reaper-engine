@@ -24,9 +24,9 @@ public:
     DBG_ScriptObject() { m_color.set(1, 0, 0, 1); }
     ~DBG_ScriptObject() override = default;
 
-    virtual DBG_ScriptSphere* cast_dbg_sphere() { return nullptr; }
-    virtual DBG_ScriptBox* cast_dbg_box() { return nullptr; }
-    virtual DBG_ScriptLine* cast_dbg_line() { return nullptr; }
+    [[nodiscard]] virtual DBG_ScriptSphere* cast_dbg_sphere() { return nullptr; }
+    [[nodiscard]] virtual DBG_ScriptBox* cast_dbg_box() { return nullptr; }
+    [[nodiscard]] virtual DBG_ScriptLine* cast_dbg_line() { return nullptr; }
 
     virtual void Render() {}
 };
@@ -41,9 +41,9 @@ public:
     DBG_ScriptSphere() : m_mat{Fidentity} {}
     ~DBG_ScriptSphere() override = default;
 
-    virtual DBG_ScriptSphere* cast_dbg_sphere() { return this; }
+    [[nodiscard]] DBG_ScriptSphere* cast_dbg_sphere() override { return this; }
 
-    virtual void Render();
+    void Render() override;
 };
 XR_SOL_BASE_CLASSES(DBG_ScriptSphere);
 
@@ -58,9 +58,9 @@ public:
     DBG_ScriptBox() : m_mat{Fidentity} {}
     ~DBG_ScriptBox() override = default;
 
-    virtual DBG_ScriptBox* cast_dbg_box() { return this; }
+    [[nodiscard]] DBG_ScriptBox* cast_dbg_box() override { return this; }
 
-    virtual void Render();
+    void Render() override;
 };
 XR_SOL_BASE_CLASSES(DBG_ScriptBox);
 
@@ -75,8 +75,8 @@ public:
     DBG_ScriptLine() = default;
     ~DBG_ScriptLine() override = default;
 
-    virtual DBG_ScriptLine* cast_dbg_line() { return this; }
+    [[nodiscard]] DBG_ScriptLine* cast_dbg_line() override { return this; }
 
-    virtual void Render();
+    void Render() override;
 };
 XR_SOL_BASE_CLASSES(DBG_ScriptLine);

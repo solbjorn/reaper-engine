@@ -10,15 +10,15 @@ class dxStatsRender : public IStatsRender
 public:
     ~dxStatsRender() override = default;
 
-    virtual void Copy(IStatsRender& _in);
+    void Copy(IStatsRender& _in) override;
 
-    virtual void OutData1(CGameFont& F);
-    virtual void OutData2(CGameFont& F);
-    virtual void OutData3(CGameFont& F);
-    virtual void OutData4(CGameFont& F);
-    virtual void GuardVerts(CGameFont& F);
-    virtual void GuardDrawCalls(CGameFont& F);
-    virtual void SetDrawParams(IRenderDeviceRender* pRender);
+    void OutData1(CGameFont& F) override;
+    void OutData2(CGameFont& F) override;
+    void OutData3(CGameFont& F) override;
+    void OutData4(CGameFont& F) override;
+    void GuardVerts(CGameFont& F) override;
+    void GuardDrawCalls(CGameFont& F) override;
+    void SetDrawParams(IRenderDeviceRender* pRender) override;
 };
 
 #endif //	dxStatsRender_included

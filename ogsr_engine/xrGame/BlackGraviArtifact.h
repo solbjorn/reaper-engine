@@ -27,17 +27,17 @@ public:
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
 
-    virtual void Hit(SHit* pHDS);
+    void Hit(SHit* pHDS) override;
 
-    virtual void feel_touch_new(CObject* O);
-    virtual void feel_touch_delete(CObject* O);
-    virtual BOOL feel_touch_contact(CObject* O);
+    void feel_touch_new(CObject* O) override;
+    void feel_touch_delete(CObject* O) override;
+    [[nodiscard]] BOOL feel_touch_contact(CObject* O) override;
 
 protected:
-    virtual void net_Relcase(CObject* O);
-    virtual void UpdateCLChild();
+    void net_Relcase(CObject* O) override;
+    void UpdateCLChild() override;
 
     // гравитационный удар по всем объектам в зоне досягаемости
     void GraviStrike();

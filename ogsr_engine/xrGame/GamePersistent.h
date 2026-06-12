@@ -66,21 +66,21 @@ public:
     tmc::task<void> OnAppStart() override;
     tmc::task<void> OnAppEnd() override;
     tmc::task<void> OnGameStart() override;
-    virtual void OnGameEnd();
+    void OnGameEnd() override;
     tmc::task<void> OnFrame() override;
     tmc::task<void> OnEvent(CEvent* E, u64 P1, u64 P2) override;
 
-    virtual void UpdateGameType();
+    void UpdateGameType() override;
 
-    virtual void RegisterModel(IRenderVisual* V);
-    virtual float MtlTransparent(u32 mtl_idx);
-    virtual void Statistics(CGameFont* F);
+    void RegisterModel(IRenderVisual* V) override;
+    [[nodiscard]] f32 MtlTransparent(u32 mtl_idx) override;
+    void Statistics(CGameFont* F) override;
 
-    virtual bool OnRenderPPUI_query();
-    virtual void OnRenderPPUI_main();
-    virtual void OnRenderPPUI_PP();
+    [[nodiscard]] bool OnRenderPPUI_query() override;
+    void OnRenderPPUI_main() override;
+    void OnRenderPPUI_PP() override;
     tmc::task<void> LoadTitle(gsl::czstring title) override;
-    virtual void SetTip();
+    void SetTip() override;
 
     [[nodiscard]] bool OnKeyboardPress();
 

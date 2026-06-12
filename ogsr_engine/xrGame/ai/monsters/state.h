@@ -3,13 +3,6 @@
 #include "state_defs.h"
 #include "control_com_defs.h"
 
-// Lain: added
-/*
-#ifdef DEBUG
-#include "debug_text_tree.h"
-#endif
-*/
-
 template <typename _Object>
 class XR_NOVTABLE CState : public virtual RTTI::Enable
 {
@@ -31,8 +24,8 @@ public:
 
     virtual void reset();
 
-    virtual bool check_completion() { return false; }
-    virtual bool check_start_conditions() { return true; }
+    [[nodiscard]] virtual bool check_completion() { return false; }
+    [[nodiscard]] virtual bool check_start_conditions() { return true; }
 
     virtual void reselect_state() {}
     virtual void check_force_state() {}
@@ -42,16 +35,9 @@ public:
 
     void fill_data_with(void* ptr_src, u32 size);
 
-    u32 time_started() { return time_state_started; }
+    [[nodiscard]] u32 time_started() { return time_state_started; }
 
-    virtual bool check_control_start_conditions(ControlCom::EControlType type);
-
-    // Lain: added
-    /*
-        #ifdef DEBUG
-        virtual void		add_debug_info          (debug::text_tree& root_s);
-        #endif
-    */
+    [[nodiscard]] virtual bool check_control_start_conditions(ControlCom::EControlType type);
 
 protected:
     void select_state(u32 new_state_id);
@@ -90,7 +76,7 @@ public:
     explicit CStateMove(_Object* obj, void* data = nullptr) : inherited{obj, data} {}
     ~CStateMove() override = default;
 
-    virtual void initialize()
+    void initialize() override
     {
         inherited::initialize();
         this->object->path().prepare_builder();

@@ -61,16 +61,18 @@ struct CGameTaskRegistry : public CALifeAbstractRegistry<u16, GameTasks>
 public:
     ~CGameTaskRegistry() override = default;
 
-    virtual void save(IWriter& stream)
+    void save(IWriter& stream) override
     {
         CALifeAbstractRegistry<u16, GameTasks>::save(stream);
+
         save_data(g_active_task_id, stream);
         save_data(g_active_task_objective_id, stream);
     }
 
-    virtual void load(IReader& stream)
+    void load(IReader& stream) override
     {
         CALifeAbstractRegistry<u16, GameTasks>::load(stream);
+
         load_data(g_active_task_id, stream);
         load_data(g_active_task_objective_id, stream);
     }

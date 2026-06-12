@@ -26,24 +26,25 @@ class CInventoryContainer : public CCustomInventoryBox<CInventoryItemObject>
 
 private:
     typedef CCustomInventoryBox<CInventoryItemObject> inherited;
+
     bool m_opened;
 
-    virtual u32 CalcItems(SItemsInfo& info) const;
+    [[nodiscard]] virtual u32 CalcItems(SItemsInfo& info) const;
 
 public:
     CInventoryContainer();
     ~CInventoryContainer() override;
 
-    virtual bool CanTrade() const;
-    virtual u32 Cost() const;
-    virtual float Weight() const;
-    virtual float RadiationRestoreSpeed() const;
-    virtual DLL_Pure* _construct();
+    [[nodiscard]] virtual bool CanTrade() const;
+    [[nodiscard]] u32 Cost() const override;
+    [[nodiscard]] f32 Weight() const override;
+    [[nodiscard]] f32 RadiationRestoreSpeed() const override;
+    [[nodiscard]] DLL_Pure* _construct() override;
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
 
-    virtual bool IsClosed() const { return !m_opened; } // alpet: если закрыт - можно подобрать в инвентарь
-    virtual bool IsOpened() const { return m_opened; } // alpet: если открыт - в нем можно ковыряться
+    [[nodiscard]] virtual bool IsClosed() const { return !m_opened; } // alpet: если закрыт - можно подобрать в инвентарь
+    [[nodiscard]] bool IsOpened() const override { return m_opened; } // alpet: если открыт - в нем можно ковыряться
 
     void open();
     void close();

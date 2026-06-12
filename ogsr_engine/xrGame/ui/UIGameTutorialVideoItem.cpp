@@ -15,7 +15,10 @@
 // Tutorial Item
 //-----------------------------------------------------------------------------
 
-CUISequenceVideoItem::CUISequenceVideoItem(CUISequencer* owner) : CUISequenceItem{owner} { m_flags.set(etiPlaying | etiNeedStart | etiDelayed | etiBackVisible, FALSE); }
+CUISequenceVideoItem::CUISequenceVideoItem(CUISequencer* owner) : CUISequenceItem{owner}
+{
+    m_flags.set(etiPlaying | etiNeedStart | etiDelayed | etiBackVisible, FALSE);
+}
 
 CUISequenceVideoItem::~CUISequenceVideoItem()
 {
@@ -199,6 +202,7 @@ bool CUISequenceVideoItem::Stop(bool bForce)
     if (m_flags.test(etiNeedPauseSound))
         Device.Pause(FALSE, FALSE, TRUE, "videoitem_stop");
 
-    inherited::Stop();
+    std::ignore = inherited::Stop();
+
     return true;
 }

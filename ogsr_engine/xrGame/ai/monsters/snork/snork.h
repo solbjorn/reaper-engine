@@ -16,24 +16,24 @@ public:
     CSnork();
     ~CSnork() override;
 
-    virtual void Load(LPCSTR section);
-    virtual void reinit();
+    void Load(gsl::czstring section) override;
+    void reinit() override;
     tmc::task<void> UpdateCL() override;
-    virtual void CheckSpecParams(u32 spec_params);
-    virtual void jump(const Fvector& position, float factor);
-    virtual bool ability_jump_over_physics() { return true; }
-    virtual bool ability_distant_feel() { return true; }
-    virtual void HitEntityInJump(const CEntity* pEntity);
+    void CheckSpecParams(u32 spec_params) override;
+    void jump(const Fvector3& position, f32 factor) override;
+    [[nodiscard]] bool ability_jump_over_physics() override { return true; }
+    [[nodiscard]] bool ability_distant_feel() override { return true; }
+    void HitEntityInJump(const CEntity* pEntity) override;
 
     bool find_geometry(Fvector& dir);
     float trace(const Fvector& dir);
 
     bool trace_geometry(const Fvector& d, float& range);
 
-    virtual bool check_start_conditions(ControlCom::EControlType type);
-    virtual void on_activate_control(ControlCom::EControlType);
+    [[nodiscard]] bool check_start_conditions(ControlCom::EControlType type) override;
+    void on_activate_control(ControlCom::EControlType) override;
 
-    virtual bool run_home_point_when_enemy_inaccessible() const { return false; }
+    [[nodiscard]] bool run_home_point_when_enemy_inaccessible() const override { return false; }
 
     u32 m_target_node;
     bool start_threaten;

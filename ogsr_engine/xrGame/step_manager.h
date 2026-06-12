@@ -26,7 +26,7 @@ public:
     ~CStepManager() override;
 
     // init on construction
-    virtual DLL_Pure* _construct();
+    [[nodiscard]] virtual DLL_Pure* _construct();
     virtual void reload(LPCSTR section);
 
     // call on set animation
@@ -39,7 +39,7 @@ public:
 
 protected:
     Fvector get_foot_position(ELegType leg_type);
-    virtual bool is_on_ground() { return true; }
+    [[nodiscard]] virtual bool is_on_ground() { return true; }
 
 private:
     void reload_foot_bones();

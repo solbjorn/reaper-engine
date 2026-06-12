@@ -25,10 +25,10 @@ public:
     FTreeVisual();
     ~FTreeVisual() override;
 
-    virtual void Render(CBackend& cmd_list, float, bool) override; // LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
-    virtual void Load(LPCSTR N, IReader* data, u32 dwFlags);
-    virtual void Copy(dxRender_Visual* pFrom);
-    virtual void Release();
+    void Render(CBackend& cmd_list, f32, bool) override; // LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
+    void Load(gsl::czstring N, IReader* data, u32 dwFlags) override;
+    void Copy(dxRender_Visual* pFrom) override;
+    void Release() override;
 };
 
 class FTreeVisual_ST : public FTreeVisual
@@ -41,10 +41,10 @@ public:
     FTreeVisual_ST();
     ~FTreeVisual_ST() override;
 
-    virtual void Render(CBackend& cmd_list, float LOD, bool use_fast_geo) override; // LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
-    virtual void Load(LPCSTR N, IReader* data, u32 dwFlags);
-    virtual void Copy(dxRender_Visual* pFrom);
-    virtual void Release();
+    void Render(CBackend& cmd_list, f32 LOD, bool use_fast_geo) override; // LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
+    void Load(gsl::czstring N, IReader* data, u32 dwFlags) override;
+    void Copy(dxRender_Visual* pFrom) override;
+    void Release() override;
 };
 
 class FTreeVisual_PM : public FTreeVisual
@@ -62,10 +62,10 @@ public:
     FTreeVisual_PM();
     ~FTreeVisual_PM() override;
 
-    virtual void Render(CBackend& cmd_list, float LOD, bool use_fast_geo) override; // LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
-    virtual void Load(LPCSTR N, IReader* data, u32 dwFlags);
-    virtual void Copy(dxRender_Visual* pFrom);
-    virtual void Release();
+    void Render(CBackend& cmd_list, f32 LOD, bool use_fast_geo) override; // LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
+    void Load(gsl::czstring N, IReader* data, u32 dwFlags) override;
+    void Copy(dxRender_Visual* pFrom) override;
+    void Release() override;
 };
 
 constexpr inline f32 FTreeVisual_tile{16.0f};

@@ -97,10 +97,10 @@ public:
     }
 
     virtual void Save(IWriter& F);
-    virtual bool Load(IReader& F);
+    [[nodiscard]] virtual bool Load(IReader& F);
 
-    virtual void SaveMotion(const char* buf) = 0;
-    virtual bool LoadMotion(const char* buf) = 0;
+    virtual void SaveMotion(gsl::czstring buf) = 0;
+    [[nodiscard]] virtual bool LoadMotion(gsl::czstring buf) = 0;
 
 #ifdef _LW_EXPORT
     CEnvelope* CreateEnvelope(LWChannelID chan, LWChannelID* chan_parent = 0);
@@ -124,11 +124,11 @@ public:
     void Clear();
 
     void _Evaluate(float t, Fvector& T, Fvector& R);
-    virtual void Save(IWriter& F);
-    virtual bool Load(IReader& F);
+    void Save(IWriter& F) override;
+    [[nodiscard]] bool Load(IReader& F) override;
 
-    virtual void SaveMotion(const char* buf);
-    virtual bool LoadMotion(const char* buf);
+    void SaveMotion(gsl::czstring buf) override;
+    [[nodiscard]] bool LoadMotion(gsl::czstring buf) override;
 
 #ifdef _LW_EXPORT
     void ParseObjectMotion(LWItemID object);

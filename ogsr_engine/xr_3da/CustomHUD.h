@@ -38,12 +38,12 @@ public:
     virtual void OnFrame() {}
     tmc::task<void> OnEvent(CEvent*, u64, u64) override { co_return; }
 
-    virtual IC CUI* GetUI() = 0;
+    [[nodiscard]] virtual CUI* GetUI() = 0;
     virtual void OnScreenRatioChanged() = 0;
     virtual void OnDisconnected() = 0;
     virtual void OnConnected() = 0;
     virtual void RenderActiveItemUI() = 0;
-    virtual bool RenderActiveItemUIQuery() = 0;
+    [[nodiscard]] virtual bool RenderActiveItemUIQuery() = 0;
     virtual void net_Relcase(CObject* object) = 0;
 };
 

@@ -759,9 +759,9 @@ DLL_Pure* CCustomMonster::_construct()
     m_sound_player = xr_new<CSoundPlayer>(this);
 
     std::ignore = inherited::_construct();
-    CScriptEntity::_construct();
+    std::ignore = CScriptEntity::_construct();
 
-    return (this);
+    return this;
 }
 
 void CCustomMonster::net_Relcase(CObject* object)

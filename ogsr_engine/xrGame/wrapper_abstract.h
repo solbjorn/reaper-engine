@@ -71,8 +71,8 @@ public:
     ~CWrapperAbstract2() override = default;
 
     virtual void setup(_object_type* object, CPropertyStorage* storage);
-    virtual void setup(CScriptGameObject* object, CPropertyStorage* storage);
-    IC _object_type& object() const;
+    void setup(CScriptGameObject* object, CPropertyStorage* storage) override;
+    [[nodiscard]] inline _object_type& object() const;
 };
 
 #include "wrapper_abstract_inline.h"

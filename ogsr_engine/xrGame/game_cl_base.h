@@ -36,14 +36,14 @@ public:
     virtual tmc::task<void> reset_ui();
 
 private:
-    void switch_Phase(u32 new_phase) { inherited::switch_Phase(new_phase); }
+    void switch_Phase(u32 new_phase) override { inherited::switch_Phase(new_phase); }
 
 protected:
-    virtual void OnSwitchPhase(u32 old_phase, u32 new_phase);
+    void OnSwitchPhase(u32 old_phase, u32 new_phase) override;
 
-    virtual shared_str shedule_Name() const { return shared_str("game_cl_GameState"); }
-    virtual float shedule_Scale() const;
-    virtual bool shedule_Needed() { return true; }
+    [[nodiscard]] shared_str shedule_Name() const override { return shared_str{"game_cl_GameState"}; }
+    [[nodiscard]] f32 shedule_Scale() const override;
+    [[nodiscard]] bool shedule_Needed() override { return true; }
 
     void sv_EventSend(NET_Packet& P);
 
@@ -51,7 +51,7 @@ public:
     game_cl_GameState();
     ~game_cl_GameState() override;
 
-    [[nodiscard]] gsl::czstring type_name() const { return m_game_type_name.c_str(); }
+    [[nodiscard]] gsl::czstring type_name() const override { return m_game_type_name.c_str(); }
     void set_type_name(LPCSTR s);
     virtual void Init() {}
     virtual void net_import_state(NET_Packet& P);
@@ -70,7 +70,7 @@ public:
     game_PlayerState* GetPlayerByOrderID(u32 id);
     ClientID GetClientIDByOrderID(u32 id);
     u32 GetPlayersCount() const { return players.size(); }
-    virtual CUIGameCustom* createGameUI() { return nullptr; }
+    [[nodiscard]] virtual CUIGameCustom* createGameUI() { return nullptr; }
 
     void StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators);
     tmc::task<void> shedule_Update(u32 dt) override;
@@ -79,7 +79,7 @@ public:
     void u_EventSend(NET_Packet& P);
 
     virtual void OnRender() {}
-    virtual bool IsServerControlHits() { return m_bServerControlHits; }
+    [[nodiscard]] virtual bool IsServerControlHits() { return m_bServerControlHits; }
     virtual bool IsEnemy(game_PlayerState*) { return false; }
     virtual bool IsEnemy(CEntityAlive*, CEntityAlive*) { return false; }
 

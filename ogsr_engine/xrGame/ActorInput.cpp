@@ -428,7 +428,7 @@ void CActor::ActorUse()
 
     if (m_pUsableObject)
     {
-        m_pUsableObject->use(this);
+        std::ignore = m_pUsableObject->use(this);
         if (g_bDisableAllInput || HUD().GetUI()->MainInputReceiver())
             return;
     }

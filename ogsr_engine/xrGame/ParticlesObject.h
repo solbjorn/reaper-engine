@@ -26,8 +26,8 @@ public:
     explicit CParticlesObject(LPCSTR p_name, BOOL bAutoRemove, bool destroy_on_game_load);
     ~CParticlesObject() override;
 
-    virtual bool shedule_Needed() { return true; }
-    virtual float shedule_Scale() const;
+    [[nodiscard]] bool shedule_Needed() override { return true; }
+    [[nodiscard]] f32 shedule_Scale() const override;
     tmc::task<void> shedule_Update(u32 dt) override;
     void renderable_Render(u32 context_id, IRenderable* root) override;
 
@@ -42,9 +42,9 @@ public:
     void UpdateParent(const Fmatrix& m, const Fvector& vel);
 
     void play_at_pos(const Fvector& pos, BOOL xform = FALSE);
-    virtual void Play(BOOL hudMode = FALSE);
+    void Play(BOOL hudMode = FALSE) override;
     void Stop(BOOL bDefferedStop = TRUE);
-    virtual BOOL Locked() { return mt_dt; }
+    [[nodiscard]] BOOL Locked() override { return mt_dt; }
 
     bool IsLooped() { return m_bLooped; }
     bool IsAutoRemove();

@@ -15,8 +15,8 @@ public:
     explicit CStateManagerBloodsucker(CAI_Bloodsucker* monster);
     ~CStateManagerBloodsucker() override = default;
 
-    virtual void execute();
-    virtual void update();
-    bool check_vampire();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void execute() override;
+    void update() override;
+    [[nodiscard]] bool check_vampire();
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 };

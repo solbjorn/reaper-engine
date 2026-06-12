@@ -16,8 +16,8 @@ public:
     explicit CStateBurerAttackMelee(_Object* obj);
     ~CStateBurerAttackMelee() override = default;
 
-    virtual bool check_start_conditions();
-    virtual bool check_completion();
+    [[nodiscard]] bool check_start_conditions() override;
+    [[nodiscard]] bool check_completion() override;
 };
 
 #include "burer_state_attack_melee_inline.h"

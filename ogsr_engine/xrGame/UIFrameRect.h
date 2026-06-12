@@ -35,17 +35,17 @@ public:
     CUIFrameRect();
     ~CUIFrameRect() override;
 
-    virtual void Init(LPCSTR base_name, float x, float y, float w, float h); //, DWORD align);
-    virtual void InitTexture(const char* texture);
-    virtual void Draw();
-    virtual void Draw(float x, float y);
-    virtual void SetWndPos(float x, float y);
-    virtual void SetWndPos(const Fvector2& pos);
-    virtual void SetWndSize(const Fvector2& size);
-    virtual void SetWndRect(const Frect& rect);
-    virtual void SetWidth(float width);
-    virtual void SetHeight(float height);
-    virtual void Update();
+    virtual void Init(gsl::czstring base_name, f32 x, f32 y, f32 w, f32 h);
+    void InitTexture(gsl::czstring texture) override;
+    void Draw() override;
+    void Draw(f32 x, f32 y) override;
+    void SetWndPos(f32 x, f32 y) override;
+    void SetWndPos(const Fvector2& pos) override;
+    void SetWndSize(const Fvector2& size) override;
+    void SetWndRect(const Frect& rect) override;
+    void SetWidth(f32 width) override;
+    void SetHeight(f32 height) override;
+    void Update() override;
     void SetTextureColor(u32 cl);
     void SetVisiblePart(EFramePart p, BOOL b) { m_itm_mask.set(u16(1 << p), b); }
 

@@ -48,27 +48,27 @@ public:
 
     void TurnOn();
     void TurnOff();
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
     tmc::task<void> shedule_Update(u32 dt) override; // Called by sheduler
     tmc::task<void> UpdateCL() override; // Called each frame, so no need for dt
 
-    virtual void SpawnInitPhysics(CSE_Abstract* D);
-    virtual CPhysicsShellHolder* PPhysicsShellHolder() { return PhysicsShellHolder(); }
-    virtual void CopySpawnInit();
-    virtual void net_Save(NET_Packet& P);
-    virtual BOOL net_SaveRelevant();
+    void SpawnInitPhysics(CSE_Abstract* D) override;
+    [[nodiscard]] CPhysicsShellHolder* PPhysicsShellHolder() override { return PhysicsShellHolder(); }
+    void CopySpawnInit() override;
+    void net_Save(NET_Packet& P) override;
+    [[nodiscard]] BOOL net_SaveRelevant() override;
 
-    virtual BOOL renderable_ShadowGenerate() { return TRUE; }
-    virtual BOOL renderable_ShadowReceive() { return TRUE; }
+    [[nodiscard]] BOOL renderable_ShadowGenerate() override { return TRUE; }
+    [[nodiscard]] BOOL renderable_ShadowReceive() override { return TRUE; }
 
-    virtual void Hit(SHit* pHDS);
+    void Hit(SHit* pHDS) override;
     void net_Export(CSE_Abstract*) override;
-    virtual BOOL UsedAI_Locations();
+    [[nodiscard]] BOOL UsedAI_Locations() override;
 
-    virtual void Center(Fvector& C) const;
-    virtual float Radius() const;
+    void Center(Fvector& C) const override;
+    [[nodiscard]] f32 Radius() const override;
 
     void SetLSFParams(float, float, float);
 

@@ -18,14 +18,14 @@ public:
     // Real Wolf: Для метода get_cell_item(). 25.07.2014.
     ~CUIInventoryCellItem() override;
 
-    virtual void Update();
-    virtual bool EqualTo(CUICellItem* itm);
-    virtual CUIDragItem* CreateDragItem();
-    CInventoryItem* object() { return static_cast<CInventoryItem*>(m_pData); }
+    void Update() override;
+    [[nodiscard]] bool EqualTo(CUICellItem* itm) override;
+    [[nodiscard]] CUIDragItem* CreateDragItem() override;
+    [[nodiscard]] CInventoryItem* object() { return static_cast<CInventoryItem*>(m_pData); }
 
     // Real Wolf: Для коллбеков. 25.07.2014.
-    virtual void OnFocusReceive();
-    virtual void OnFocusLost();
+    void OnFocusReceive() override;
+    void OnFocusLost() override;
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages action) override;
 };
 
@@ -40,11 +40,11 @@ public:
     explicit CUIAmmoCellItem(CWeaponAmmo* itm);
     ~CUIAmmoCellItem() override = default;
 
-    virtual void Update();
+    void Update() override;
     void UpdateItemText() override;
-    virtual bool EqualTo(CUICellItem* itm);
+    [[nodiscard]] bool EqualTo(CUICellItem* itm) override;
 
-    CWeaponAmmo* object() { return static_cast<CWeaponAmmo*>(m_pData); }
+    [[nodiscard]] CWeaponAmmo* object() { return static_cast<CWeaponAmmo*>(m_pData); }
 };
 
 class CUIWeaponCellItem : public CUIInventoryCellItem
@@ -65,24 +65,25 @@ public:
 
 protected:
     Fvector2 m_addon_offset[eMaxAddon];
+
     void CreateIcon(eAddonType, CIconParams& params);
     void DestroyIcon(eAddonType);
-    CUIStatic* GetIcon(eAddonType);
+    [[nodiscard]] CUIStatic* GetIcon(eAddonType);
     void InitAddon(CUIStatic* s, CIconParams& params, Fvector2 offset, bool b_rotate);
     void InitAllAddons(CUIStatic* s_silencer, CUIStatic* s_scope, CUIStatic* s_launcher, bool b_vertical);
-    bool is_scope();
-    bool is_silencer();
-    bool is_launcher();
+    [[nodiscard]] bool is_scope();
+    [[nodiscard]] bool is_silencer();
+    [[nodiscard]] bool is_launcher();
 
 public:
     explicit CUIWeaponCellItem(CWeapon* itm);
     ~CUIWeaponCellItem() override;
 
-    virtual void Update();
-    CWeapon* object() { return (CWeapon*)m_pData; }
-    virtual void OnAfterChild(CUIDragDropListEx* parent_list);
-    CUIDragItem* CreateDragItem();
-    virtual bool EqualTo(CUICellItem* itm);
-    CUIStatic* get_addon_static(u32 idx) { return m_addons[idx]; }
-    Fvector2 get_addon_offset(u32 idx) { return m_addon_offset[idx]; }
+    void Update() override;
+    [[nodiscard]] CWeapon* object() { return (CWeapon*)m_pData; }
+    void OnAfterChild(CUIDragDropListEx* parent_list) override;
+    [[nodiscard]] CUIDragItem* CreateDragItem() override;
+    [[nodiscard]] bool EqualTo(CUICellItem* itm) override;
+    [[nodiscard]] CUIStatic* get_addon_static(u32 idx) { return m_addons[idx]; }
+    [[nodiscard]] Fvector2 get_addon_offset(u32 idx) { return m_addon_offset[idx]; }
 };

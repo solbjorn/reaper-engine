@@ -15,8 +15,8 @@ public:
     explicit CStateManagerController(CController* obj);
     ~CStateManagerController() override;
 
-    virtual void reinit();
-    virtual void execute();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
-    virtual bool check_control_start_conditions(ControlCom::EControlType type);
+    void reinit() override;
+    void execute() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
+    [[nodiscard]] bool check_control_start_conditions(ControlCom::EControlType type) override;
 };

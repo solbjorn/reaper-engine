@@ -31,30 +31,30 @@ public:
     ParticleActions* GetActionListPtr(int alist_id);
 
     // create&destroy
-    virtual int CreateEffect(u32 max_particles);
-    virtual void DestroyEffect(int effect_id);
-    virtual int CreateActionList();
-    virtual void DestroyActionList(int alist_id);
+    [[nodiscard]] s32 CreateEffect(u32 max_particles) override;
+    void DestroyEffect(s32 effect_id) override;
+    [[nodiscard]] s32 CreateActionList() override;
+    void DestroyActionList(s32 alist_id) override;
 
     // control
-    virtual void PlayEffect(int alist_id);
-    virtual void StopEffect(int effect_id, int alist_id, BOOL deffered = TRUE);
+    void PlayEffect(s32 alist_id) override;
+    void StopEffect(s32 effect_id, s32 alist_id, BOOL deffered = TRUE) override;
 
     // update&render
-    virtual void Update(int effect_id, int alist_id, float dt);
-    virtual void Render(int effect_id);
-    virtual void Transform(int alist_id, const Fmatrix& m, const Fvector& velocity);
+    void Update(s32 effect_id, s32 alist_id, f32 dt) override;
+    void Render(s32 effect_id) override;
+    void Transform(s32 alist_id, const Fmatrix& m, const Fvector3& velocity) override;
 
     // effect
-    virtual void RemoveParticle(int effect_id, u32 p_id);
-    virtual void SetMaxParticles(int effect_id, u32 max_particles);
-    virtual void SetCallback(int effect_id, OnBirthParticleCB b, OnDeadParticleCB d, void* owner, u32 param);
-    virtual void GetParticles(int effect_id, Particle*& particles, u32& cnt);
-    virtual u32 GetParticlesCount(int effect_id);
+    void RemoveParticle(s32 effect_id, u32 p_id) override;
+    void SetMaxParticles(s32 effect_id, u32 max_particles) override;
+    void SetCallback(s32 effect_id, OnBirthParticleCB b, OnDeadParticleCB d, void* owner, u32 param) override;
+    void GetParticles(s32 effect_id, Particle*& particles, u32& cnt) override;
+    [[nodiscard]] u32 GetParticlesCount(s32 effect_id) override;
 
     // action
-    virtual ParticleAction* CreateAction(PActionEnum action_id);
-    virtual u32 LoadActions(int alist_id, IReader& R, bool copFormat);
+    [[nodiscard]] ParticleAction* CreateAction(PActionEnum action_id) override;
+    [[nodiscard]] u32 LoadActions(s32 alist_id, IReader& R, bool copFormat) override;
 };
 } // namespace PAPI
 

@@ -18,15 +18,15 @@ public:
     CBottleItem();
     ~CBottleItem() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
 
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
 
-    virtual void Hit(SHit* pHDS);
+    void Hit(SHit* pHDS) override;
 
     void BreakToPieces();
-    virtual void UseBy(CEntityAlive* entity_alive);
-    virtual void ZeroAllEffects();
+    void UseBy(CEntityAlive* entity_alive) override;
+    void ZeroAllEffects() override;
 
 protected:
     float m_alcohol;

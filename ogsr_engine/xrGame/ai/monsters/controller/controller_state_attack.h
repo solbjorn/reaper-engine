@@ -23,15 +23,15 @@ public:
     explicit CStateControllerAttack(_Object* obj);
     ~CStateControllerAttack() override = default;
 
-    virtual void initialize();
-    virtual void finalize();
-    virtual void critical_finalize();
+    void initialize() override;
+    void finalize() override;
+    void critical_finalize() override;
 
-    virtual void execute();
-    virtual void setup_substates();
-    virtual void check_force_state();
-    virtual void remove_links(CObject*) {}
-    bool check_home_point();
+    void execute() override;
+    void setup_substates() override;
+    void check_force_state() override;
+    void remove_links(CObject*) override {}
+    [[nodiscard]] bool check_home_point();
 };
 
 #include "controller_state_attack_inline.h"

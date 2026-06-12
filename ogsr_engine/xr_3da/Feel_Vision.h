@@ -83,8 +83,8 @@ public:
         return Fvector().set(flt_max, flt_max, flt_max);
     }
 
-    virtual BOOL feel_vision_isRelevant(CObject* O) = 0;
-    virtual float feel_vision_mtl_transp(CObject* O, u32 element) = 0;
+    [[nodiscard]] virtual BOOL feel_vision_isRelevant(CObject* O) = 0;
+    [[nodiscard]] virtual f32 feel_vision_mtl_transp(CObject* O, u32 element) = 0;
 
     float feel_vision_get_transparency(const CObject* _O) const;
 };

@@ -91,11 +91,11 @@ public:
     IGame_Level();
     ~IGame_Level() override;
 
-    virtual shared_str name() const = 0;
+    [[nodiscard]] virtual shared_str name() const = 0;
 
-    virtual BOOL net_Start(LPCSTR op_server, LPCSTR op_client) = 0;
-    virtual void net_Load(LPCSTR name) = 0;
-    virtual void net_Save(LPCSTR name) = 0;
+    [[nodiscard]] virtual BOOL net_Start(gsl::czstring op_server, gsl::czstring op_client) = 0;
+    virtual void net_Load(gsl::czstring name) = 0;
+    virtual void net_Save(gsl::czstring name) = 0;
     virtual tmc::task<void> net_Stop();
     virtual void net_Update() = 0;
 
@@ -122,7 +122,7 @@ public:
 
     // Loader interface
     void LL_CheckTextures();
-    virtual void SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTimeFactor) = 0;
+    virtual void SetEnvironmentGameTimeFactor(u64 const& GameTime, f32 const& fTimeFactor) = 0;
     virtual void OnChangeCurrentWeather(const char* sect) = 0;
 
     virtual void OnDestroyObject(u16 id) = 0;

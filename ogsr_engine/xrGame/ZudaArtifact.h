@@ -18,6 +18,6 @@ public:
     CZudaArtefact();
     ~CZudaArtefact() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
 };
 XR_SOL_BASE_CLASSES(CZudaArtefact);

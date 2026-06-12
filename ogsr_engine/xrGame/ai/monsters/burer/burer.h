@@ -123,17 +123,17 @@ public:
     CBurer();
     ~CBurer() override;
 
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
+    void reinit() override;
+    void reload(gsl::czstring section) override;
 
-    virtual void Load(LPCSTR section);
-    virtual void PostLoad(LPCSTR section);
+    void Load(gsl::czstring section) override;
+    void PostLoad(gsl::czstring section) override;
 
     tmc::task<void> net_Destroy() override;
-    virtual void net_Relcase(CObject* O);
+    void net_Relcase(CObject* O) override;
     tmc::task<void> shedule_Update(u32 dt) override;
     tmc::task<void> UpdateCL() override;
-    virtual void Hit(SHit* pHDS);
+    void Hit(SHit* pHDS) override;
     tmc::task<void> Die(CObject* who) override;
     void ProcessTurn();
     void CheckSpecParams(u32) override;
@@ -149,15 +149,8 @@ public:
     void ActivateShield();
     void DeactivateShield();
 
-    bool need_shotmark() const { return !m_shield_active; }
-
-    virtual bool ability_distant_feel() { return true; }
-
-    /*
-    #ifdef DEBUG
-        virtual CBaseMonster::SDebugInfo show_debug_info();
-    #endif
-    */
+    [[nodiscard]] bool need_shotmark() const override { return !m_shield_active; }
+    [[nodiscard]] bool ability_distant_feel() override { return true; }
 
     void set_force_gravi_attack(bool force_gravi) { m_force_gravi_attack = force_gravi; }
     bool get_force_gravi_attack() const { return m_force_gravi_attack; }

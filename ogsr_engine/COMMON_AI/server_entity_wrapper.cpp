@@ -39,11 +39,6 @@ void CServerEntityWrapper::save(IWriter& stream)
     stream.w_u16(u16(net_packet.B.count));
     stream.w(net_packet.B.data, net_packet.B.count);
 
-    //	u16						ID;
-    //	net_packet.r_begin		(ID);
-    //	VERIFY					(ID==M_UPDATE);
-    //	m_object->UPDATE_Read	(net_packet);
-
     stream.close_chunk();
 }
 
@@ -69,7 +64,7 @@ void CServerEntityWrapper::load(IReader& stream)
     m_object = F_entity_Create(s_name);
 
     R_ASSERT3(m_object, "Can't create entity.", s_name);
-    m_object->Spawn_Read(net_packet);
+    std::ignore = m_object->Spawn_Read(net_packet);
 
 #ifdef DEBUG
     Msg("[SPAWN] {}, ({})", m_object->name_replace(), m_object->ID);

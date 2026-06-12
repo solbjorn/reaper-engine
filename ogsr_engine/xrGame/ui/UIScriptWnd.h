@@ -44,7 +44,7 @@ public:
     void AddCallback(LPCSTR control_id, s16 event, sol::function function);
     void ClearCallbacks();
 
-    virtual void Update();
+    void Update() override;
     [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
 
     template <typename T>

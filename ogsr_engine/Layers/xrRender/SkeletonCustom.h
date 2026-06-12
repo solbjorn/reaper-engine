@@ -121,14 +121,14 @@ public:
     void CLBone(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 mask_channel = (1 << 0));
 
     void BoneChain_Calculate(const CBoneData* bd, CBoneInstance& bi, u8 channel_mask, bool ignore_callbacks);
-    void Bone_GetAnimPos(Fmatrix& pos, u16 id, u8 channel_mask, bool ignore_callbacks);
+    void Bone_GetAnimPos(Fmatrix& pos, u16 id, u8 channel_mask, bool ignore_callbacks) override;
 
     virtual void BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 mask_channel = (1 << 0));
     virtual void OnCalculateBones() {}
 
     virtual void CalculateBonesAdditionalTransforms(const CBoneData* bd, CBoneInstance& bi); //--#SM+#--
-    virtual void LL_AddTransformToBone(KinematicsABT::additional_bone_transform& offset); //--#SM+#--
-    virtual void LL_ClearAdditionalTransform(u16 bone_id = BI_NONE); //--#SM+#--
+    void LL_AddTransformToBone(KinematicsABT::additional_bone_transform& offset) override; //--#SM+#--
+    void LL_ClearAdditionalTransform(u16 bone_id = BI_NONE) override; //--#SM+#--
 
     dxRender_Visual* m_lod;
 
@@ -175,8 +175,9 @@ public:
     void RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT*& verts);
     void ClearWallmarks();
 
-    bool PickBone(const Fmatrix& parent_xform, IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id);
-    virtual void EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id);
+    [[nodiscard]] bool PickBone(const Fmatrix& parent_xform, IKinematics::pick_result& r, f32 dist, const Fvector3& start, const Fvector3& dir,
+                                u16 bone_id) override;
+    void EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id) override;
 
     CKinematics();
     ~CKinematics() override;
@@ -186,14 +187,15 @@ public:
     u16 LL_BoneID(const shared_str& B) const override;
     const char* LL_BoneName_dbg(const u16 ID) const override;
 
-    CInifile* LL_UserData() { return pUserData; }
+    [[nodiscard]] CInifile* LL_UserData() override { return pUserData; }
 
-    ICF CBoneInstance& LL_GetBoneInstance(u16 bone_id)
+    [[nodiscard]] CBoneInstance& LL_GetBoneInstance(u16 bone_id) override
     {
         R_ASSERT(bone_id < LL_BoneCount(), xr::format("visual_name: {}, bone_id: {}", dbg_name, bone_id));
         R_ASSERT(bone_instances);
         return bone_instances[bone_id];
     }
+
     ICF const CBoneInstance& LL_GetBoneInstance(u16 bone_id) const
     {
         R_ASSERT(bone_id < LL_BoneCount(), xr::format("visual_name: {}, bone_id: {}", dbg_name, bone_id));
@@ -201,7 +203,7 @@ public:
         return bone_instances[bone_id];
     }
 
-    CBoneData& LL_GetData(u16 bone_id)
+    [[nodiscard]] CBoneData& LL_GetData(u16 bone_id) override
     {
         ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", std::source_location::current().function_name(),
                    dbg_name.c_str(), bone_id);
@@ -210,7 +212,7 @@ public:
         return bd;
     }
 
-    virtual const IBoneData& GetBoneData(u16 bone_id) const
+    [[nodiscard]] const IBoneData& GetBoneData(u16 bone_id) const override
     {
         ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", std::source_location::current().function_name(),
                    dbg_name.c_str(), bone_id);
@@ -231,76 +233,80 @@ public:
         return bd;
     }
 
-    u16 LL_BoneCount() const { return u16(bones->size()); }
-    u16 LL_VisibleBoneCount() { return visimask.count(); }
-    ICF Fmatrix& LL_GetTransform(u16 bone_id) { return LL_GetBoneInstance(bone_id).mTransform; }
-    ICF const Fmatrix& LL_GetTransform(u16 bone_id) const { return LL_GetBoneInstance(bone_id).mTransform; }
-    ICF Fmatrix& LL_GetTransform_R(u16 bone_id) { return LL_GetBoneInstance(bone_id).mRenderTransform; } // rendering only
+    [[nodiscard]] u16 LL_BoneCount() const override { return u16(bones->size()); }
+    [[nodiscard]] u16 LL_VisibleBoneCount() override { return visimask.count(); }
 
-    Fobb& LL_GetBox(u16 bone_id)
+    [[nodiscard]] Fmatrix& LL_GetTransform(u16 bone_id) override { return LL_GetBoneInstance(bone_id).mTransform; }
+    [[nodiscard]] const Fmatrix& LL_GetTransform(u16 bone_id) const override { return LL_GetBoneInstance(bone_id).mTransform; }
+    [[nodiscard]] Fmatrix& LL_GetTransform_R(u16 bone_id) override { return LL_GetBoneInstance(bone_id).mRenderTransform; } // rendering only
+
+    [[nodiscard]] Fobb& LL_GetBox(u16 bone_id) override
     {
         ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", std::source_location::current().function_name(),
                    dbg_name.c_str(), bone_id);
         return (*bones)[bone_id]->obb;
     }
 
-    const Fbox& GetBox() const { return vis.box; }
-    void LL_GetBindTransform(xr_vector<Fmatrix>& matrices);
-    int LL_GetBoneGroups(xr_vector<xr_vector<u16>>& groups);
+    [[nodiscard]] const Fbox& GetBox() const override { return vis.box; }
 
-    u16 LL_GetBoneRoot() { return iRoot; }
-    void LL_SetBoneRoot(u16 bone_id)
+    void LL_GetBindTransform(xr_vector<Fmatrix>& matrices) override;
+    [[nodiscard]] s32 LL_GetBoneGroups(xr_vector<xr_vector<u16>>& groups) override;
+
+    [[nodiscard]] u16 LL_GetBoneRoot() override { return iRoot; }
+
+    void LL_SetBoneRoot(u16 bone_id) override
     {
         VERIFY(bone_id < LL_BoneCount());
         iRoot = bone_id;
     }
 
-    BOOL LL_GetBoneVisible(u16 bone_id)
+    [[nodiscard]] BOOL LL_GetBoneVisible(u16 bone_id) override
     {
         VERIFY(bone_id < LL_BoneCount());
         return visimask.is(bone_id);
     }
-    void LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive);
-    VisMask LL_GetBonesVisible() { return visimask; }
-    void LL_SetBonesVisible(VisMask mask);
+
+    void LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive) override;
+    [[nodiscard]] VisMask LL_GetBonesVisible() override { return visimask; }
+    void LL_SetBonesVisible(VisMask mask) override;
 
     // Main functionality
-    virtual void CalculateBones(BOOL bForceExact = FALSE); // Recalculate skeleton
-    void CalculateBones_Invalidate();
-    void Callback(UpdateCallback C, void* Param)
+    void CalculateBones(BOOL bForceExact = FALSE) override; // Recalculate skeleton
+    void CalculateBones_Invalidate() override;
+
+    void Callback(UpdateCallback C, void* Param) override
     {
         Update_Callback = C;
         Update_Callback_Param = Param;
     }
 
     //	Callback: data manipulation
-    virtual void SetUpdateCallback(UpdateCallback pCallback) { Update_Callback = pCallback; }
-    virtual void SetUpdateCallbackParam(void* pCallbackParam) { Update_Callback_Param = pCallbackParam; }
+    void SetUpdateCallback(UpdateCallback pCallback) override { Update_Callback = pCallback; }
+    void SetUpdateCallbackParam(void* pCallbackParam) override { Update_Callback_Param = pCallbackParam; }
 
-    virtual UpdateCallback GetUpdateCallback() { return Update_Callback; }
-    virtual void* GetUpdateCallbackParam() { return Update_Callback_Param; }
+    [[nodiscard]] UpdateCallback GetUpdateCallback() override { return Update_Callback; }
+    [[nodiscard]] void* GetUpdateCallbackParam() override { return Update_Callback_Param; }
 
 #ifdef DEBUG
     // debug
-    void DebugRender(Fmatrix& XFORM);
+    void DebugRender(Fmatrix& XFORM) override;
 
 protected:
-    virtual shared_str getDebugName() { return dbg_name; }
+    [[nodiscard]] shared_str getDebugName() override { return dbg_name; }
 
 public:
 #endif
 
     // General "Visual" stuff
-    virtual void Copy(dxRender_Visual* pFrom);
-    virtual void Load(const char* N, IReader* data, u32 dwFlags);
-    virtual void Spawn();
-    virtual void Depart();
-    virtual void Release();
+    void Copy(dxRender_Visual* pFrom) override;
+    void Load(gsl::czstring N, IReader* data, u32 dwFlags) override;
+    void Spawn() override;
+    void Depart() override;
+    void Release() override;
 
-    virtual IKinematicsAnimated* dcast_PKinematicsAnimated() { return nullptr; }
-    virtual IRenderVisual* dcast_RenderVisual() { return this; }
-    virtual IKinematics* dcast_PKinematics() { return this; }
-    //	virtual	CKinematics*		dcast_PKinematics	()				{ return this;	}
+    [[nodiscard]] IKinematicsAnimated* dcast_PKinematicsAnimated() override { return nullptr; }
+    [[nodiscard]] IRenderVisual* dcast_RenderVisual() override { return this; }
+    [[nodiscard]] IKinematics* dcast_PKinematics() override { return this; }
 
     [[nodiscard]] virtual gsl::index mem_usage(bool bInstance) const
     {

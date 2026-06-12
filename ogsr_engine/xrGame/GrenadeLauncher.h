@@ -19,15 +19,15 @@ public:
     ~CGrenadeLauncher() override;
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     tmc::task<void> net_Destroy() override;
 
-    virtual void OnH_A_Chield();
-    virtual void OnH_B_Independent(bool just_before_destroy);
+    void OnH_A_Chield() override;
+    void OnH_B_Independent(bool just_before_destroy) override;
 
     tmc::task<void> UpdateCL() override;
 
-    float GetGrenadeVel() { return m_fGrenadeVel; }
+    [[nodiscard]] f32 GetGrenadeVel() { return m_fGrenadeVel; }
 
 protected:
     // стартовая скорость вылета подствольной гранаты

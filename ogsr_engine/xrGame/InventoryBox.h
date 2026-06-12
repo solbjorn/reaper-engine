@@ -26,8 +26,8 @@ public:
 
     virtual CGameObject* cast_game_object() { return nullptr; }
     virtual CInventoryItem* cast_inventory_item() { return nullptr; }
-    virtual CGameObject& object() = 0;
-    virtual bool IsOpened() const { return true; }
+    [[nodiscard]] virtual CGameObject& object() = 0;
+    [[nodiscard]] virtual bool IsOpened() const { return true; }
 };
 
 inline IInventoryBox::~IInventoryBox() = default;
@@ -60,7 +60,7 @@ public:
         co_return true;
     }
 
-    virtual CGameObject& object() { return *smart_cast<CGameObject*>(this); }
+    [[nodiscard]] CGameObject& object() override { return *smart_cast<CGameObject*>(this); }
 };
 
 class CInventoryBox : public CCustomInventoryBox<CGameObject> // CBasicInventoryBox

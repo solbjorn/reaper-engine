@@ -14,9 +14,9 @@ public:
     ~CCameraShotEffectorX() override;
 
     tmc::task<bool> ProcessCam(SCamEffectorInfo&) override;
-    virtual void GetDeltaAngle(Fvector& delta_angle);
-    virtual void Shot(float angle);
-    virtual void Clear();
+    void GetDeltaAngle(Fvector3& delta_angle) override;
+    void Shot(f32 angle) override;
+    void Clear() override;
 
 protected:
     virtual void UpdateActorCamera(float dPitch, float dYaw);

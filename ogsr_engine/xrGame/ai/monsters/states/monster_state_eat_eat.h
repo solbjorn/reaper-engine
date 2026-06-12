@@ -19,12 +19,12 @@ public:
     explicit CStateMonsterEating(_Object* obj);
     ~CStateMonsterEating() override;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void remove_links(CObject* object);
+    void initialize() override;
+    void execute() override;
+    void remove_links(CObject* object) override;
 
-    virtual bool check_start_conditions();
-    virtual bool check_completion();
+    [[nodiscard]] bool check_start_conditions() override;
+    [[nodiscard]] bool check_completion() override;
 };
 
 #include "monster_state_eat_eat_inline.h"

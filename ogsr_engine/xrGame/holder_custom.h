@@ -28,28 +28,28 @@ public:
     CActor* OwnerActor() const { return m_ownerActor; }
 
     virtual tmc::task<void> UpdateEx(f32) { co_return; } // called by owner
-    virtual CHolderCustom* cast_holder_custom() { return this; }
+    [[nodiscard]] virtual CHolderCustom* cast_holder_custom() { return this; }
     bool Engaged() { return !!m_owner; }
     virtual void OnMouseMove(int x, int y) = 0;
     virtual void OnKeyboardPress(EGameActions cmd) = 0;
     virtual void OnKeyboardRelease(EGameActions cmd) = 0;
     virtual void OnKeyboardHold(EGameActions cmd) = 0;
     // Inventory for the car
-    virtual CInventory* GetInventory() = 0;
+    [[nodiscard]] virtual CInventory* GetInventory() = 0;
 
     virtual tmc::task<void> cam_Update(f32 dt, f32 fov = 90.0f) = 0;
 
-    virtual bool Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos) = 0;
+    [[nodiscard]] virtual bool Use(const Fvector3& pos, const Fvector3& dir, const Fvector3& foot_pos) = 0;
     virtual bool attach_Actor(CGameObject* actor);
     virtual void detach_Actor();
-    virtual bool allowWeapon() const = 0;
-    virtual bool HUDView() const = 0;
-    virtual Fvector ExitPosition() = 0;
+    [[nodiscard]] virtual bool allowWeapon() const = 0;
+    [[nodiscard]] virtual bool HUDView() const = 0;
+    [[nodiscard]] virtual Fvector ExitPosition() = 0;
     [[nodiscard]] virtual Fvector ExitVelocity() { return Fvector{}; }
-    virtual CCameraBase* Camera() = 0;
+    [[nodiscard]] virtual CCameraBase* Camera() = 0;
     virtual void Action(EGameActions, u32) {}
-    virtual void SetParam(int, Fvector2) {}
-    virtual void SetParam(int, Fvector) {}
+    virtual void SetParam(s32, Fvector2) {}
+    virtual void SetParam(s32, Fvector3) {}
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

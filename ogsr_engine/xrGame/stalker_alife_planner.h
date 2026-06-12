@@ -23,7 +23,7 @@ public:
     explicit CStalkerALifePlanner(CAI_Stalker* object = nullptr, LPCSTR action_name = "");
     ~CStalkerALifePlanner() override;
 
-    virtual void setup(CAI_Stalker* object, CPropertyStorage* storage);
+    void setup(CAI_Stalker* object, CPropertyStorage* storage) override;
     void add_evaluators();
     void add_actions();
 };

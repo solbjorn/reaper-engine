@@ -15,8 +15,8 @@ public:
     CWeaponCustomPistol();
     ~CWeaponCustomPistol() override;
 
-    virtual int GetCurrentFireMode() { return m_bHasDifferentFireModes ? m_aFireModes[m_iCurFireMode] : 1; }
+    [[nodiscard]] s32 GetCurrentFireMode() override { return m_bHasDifferentFireModes ? m_aFireModes[m_iCurFireMode] : 1; }
 
 protected:
-    virtual void switch2_Fire();
+    void switch2_Fire() override;
 };

@@ -35,18 +35,18 @@ public:
 
     void SetAlphaRef(int val) { alpha_ref = val; }
 
-    virtual void CreateShader(const char* tex, const char* sh = "hud\\default");
+    void CreateShader(gsl::czstring tex, gsl::czstring sh = "hud\\default") override;
 
-    virtual void SetTextureColor(u32 color) { SetColor(color); }
-    virtual u32 GetTextureColor() const { return GetColor(); }
+    void SetTextureColor(u32 color) override { SetColor(color); }
+    [[nodiscard]] u32 GetTextureColor() const override { return GetColor(); }
 
-    virtual void SetOriginalRect(const Frect& r)
+    void SetOriginalRect(const Frect& r) override
     {
         iOriginalRect = r;
         uFlags.set(flValidOriginalRect, TRUE);
     }
 
-    virtual void SetOriginalRectEx(const Frect& r)
+    void SetOriginalRectEx(const Frect& r) override
     {
         iOriginalRect = r;
         uFlags.set(flValidOriginalRect, TRUE);
@@ -81,6 +81,6 @@ public:
     IC u32 GetColor() const { return dwColor; }
     IC u32& GetColorRef() { return dwColor; }
 
-    virtual void SetShader(const ui_shader& sh);
+    void SetShader(const ui_shader& sh) override;
     ui_shader& GetShader() { return hShader; }
 };

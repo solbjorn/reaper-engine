@@ -18,10 +18,10 @@ private:
 public:
     ~CControlThreaten() override = default;
 
-    virtual void reinit();
-    virtual void update_schedule();
+    void reinit() override;
+    void update_schedule() override;
     void on_event(ControlCom::EEventType type, ControlCom::IEventData* data) override;
-    virtual void activate();
-    virtual void on_release();
-    virtual bool check_start_conditions();
+    void activate() override;
+    void on_release() override;
+    [[nodiscard]] bool check_start_conditions() override;
 };

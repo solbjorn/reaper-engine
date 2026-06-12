@@ -27,7 +27,7 @@ public:
     inline explicit CPropertyEvaluatorConst(val_type value, LPCSTR evaluator_name = "");
     ~CPropertyEvaluatorConst() override = default;
 
-    virtual val_type evaluate();
+    [[nodiscard]] val_type evaluate() override;
 };
 
 #include "property_evaluator_const_inline.h"

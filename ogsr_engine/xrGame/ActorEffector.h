@@ -49,7 +49,7 @@ public:
     void SetPP(CEffectorPP* p) { m_pe = p; }
     void SetCam(CEffectorCam* p) { m_ce = p; }
     virtual BOOL Valid() { return m_ce || m_pe; }
-    virtual float GetFactor() = 0;
+    [[nodiscard]] virtual f32 GetFactor() = 0;
 };
 
 class CAnimatorCamEffector : public CEffectorCam
@@ -73,9 +73,9 @@ public:
     void Start(LPCSTR fn);
     tmc::task<bool> ProcessCam(SCamEffectorInfo& info) override;
     void SetCyclic(bool b) { m_bCyclic = b; }
-    virtual BOOL Valid();
+    [[nodiscard]] BOOL Valid() override;
     float GetAnimatorLength() { return fLifeTime; }
-    virtual bool AbsolutePositioning() { return m_bAbsolutePositioning; }
+    [[nodiscard]] bool AbsolutePositioning() override { return m_bAbsolutePositioning; }
 };
 
 class CAnimatorCamEffectorScriptCB : public CAnimatorCamEffector
@@ -92,9 +92,9 @@ public:
     explicit CAnimatorCamEffectorScriptCB(LPCSTR _cb) : cb_name{_cb} {}
     ~CAnimatorCamEffectorScriptCB() override = default;
 
-    virtual BOOL Valid();
-    virtual BOOL AllowProcessingIfInvalid() { return m_bAbsolutePositioning; }
-    virtual void ProcessIfInvalid(SCamEffectorInfo& info);
+    [[nodiscard]] BOOL Valid() override;
+    [[nodiscard]] BOOL AllowProcessingIfInvalid() override { return m_bAbsolutePositioning; }
+    void ProcessIfInvalid(SCamEffectorInfo& info) override;
 };
 
 class CAnimatorCamLerpEffector : public CAnimatorCamEffector
@@ -141,7 +141,7 @@ public:
     explicit CCameraEffectorControlled(CEffectorController* c);
     ~CCameraEffectorControlled() override;
 
-    virtual BOOL Valid();
+    [[nodiscard]] BOOL Valid() override;
 };
 
 class SndShockEffector : public CEffectorController
@@ -166,9 +166,9 @@ public:
     void Start(CActor* A, float snd_length, float power);
     void Update();
 
-    virtual BOOL Valid();
+    [[nodiscard]] BOOL Valid() override;
     BOOL InWork();
-    virtual float GetFactor();
+    [[nodiscard]] f32 GetFactor() override;
 };
 
 //////////////////////////////////////////////////////////////////////////

@@ -68,61 +68,67 @@ public:
     void SetLimitsActive(int axis_num);
     void CalcAxis(int ax_num, Fvector& axis, float& lo, float& hi, const Fmatrix& first_matrix, const Fmatrix& second_matrix);
     void CalcAxis(int ax_num, Fvector& axis, float& lo, float& hi, const Fmatrix& first_matrix, const Fmatrix& second_matrix, const Fmatrix&);
-    virtual u16 GetAxesNumber();
-    virtual void SetAxisSDfactors(float spring_factor, float damping_factor, int axis_num);
-    virtual void SetJointSDfactors(float spring_factor, float damping_factor);
+    [[nodiscard]] u16 GetAxesNumber() override;
+    void SetAxisSDfactors(f32 spring_factor, f32 damping_factor, s32 axis_num) override;
+    void SetJointSDfactors(f32 spring_factor, f32 damping_factor) override;
     virtual void SetJointSDfactorsActive();
     virtual void SetLimitsSDfactorsActive();
     virtual void SetAxisSDfactorsActive(int axis_num);
     virtual void SetAxis(const SPHAxis& axis, const int axis_num);
-    virtual void SetAnchor(const Fvector& position) { SetAnchor(position.x, position.y, position.z); }
-    virtual void SetAnchorVsFirstElement(const Fvector& position) { SetAnchorVsFirstElement(position.x, position.y, position.z); }
-    virtual void SetAnchorVsSecondElement(const Fvector& position) { SetAnchorVsSecondElement(position.x, position.y, position.z); }
+    void SetAnchor(const Fvector& position) override { SetAnchor(position.x, position.y, position.z); }
+    void SetAnchorVsFirstElement(const Fvector& position) override { SetAnchorVsFirstElement(position.x, position.y, position.z); }
+    void SetAnchorVsSecondElement(const Fvector& position) override { SetAnchorVsSecondElement(position.x, position.y, position.z); }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    virtual void SetAxisDir(const Fvector& orientation, const int axis_num) { SetAxisDir(orientation.x, orientation.y, orientation.z, axis_num); }
-    virtual void SetAxisDirVsFirstElement(const Fvector& orientation, const int axis_num) { SetAxisDirVsFirstElement(orientation.x, orientation.y, orientation.z, axis_num); }
-    virtual void SetAxisDirVsSecondElement(const Fvector& orientation, const int axis_num) { SetAxisDirVsSecondElement(orientation.x, orientation.y, orientation.z, axis_num); }
+    void SetAxisDir(const Fvector& orientation, const s32 axis_num) override { SetAxisDir(orientation.x, orientation.y, orientation.z, axis_num); }
+    void SetAxisDirVsFirstElement(const Fvector& orientation, const s32 axis_num) override
+    {
+        SetAxisDirVsFirstElement(orientation.x, orientation.y, orientation.z, axis_num);
+    }
+    void SetAxisDirVsSecondElement(const Fvector& orientation, const s32 axis_num) override
+    {
+        SetAxisDirVsSecondElement(orientation.x, orientation.y, orientation.z, axis_num);
+    }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    virtual void SetLimits(const float low, const float high, const int axis_num);
+    void SetLimits(const f32 low, const f32 high, const s32 axis_num) override;
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    virtual void SetAnchor(const float x, const float y, const float z);
-    virtual void SetAnchorVsFirstElement(const float x, const float y, const float z);
-    virtual void SetAnchorVsSecondElement(const float x, const float y, const float z);
+    void SetAnchor(const f32 x, const f32 y, const f32 z) override;
+    void SetAnchorVsFirstElement(const f32 x, const f32 y, const f32 z) override;
+    void SetAnchorVsSecondElement(const f32 x, const f32 y, const f32 z) override;
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    virtual void SetAxisDir(const float x, const float y, const float z, const int axis_num);
-    virtual void SetAxisDirVsFirstElement(const float x, const float y, const float z, const int axis_num);
-    virtual void SetAxisDirVsSecondElement(const float x, const float y, const float z, const int axis_num);
+    void SetAxisDir(const f32 x, const f32 y, const f32 z, const s32 axis_num) override;
+    void SetAxisDirVsFirstElement(const f32 x, const f32 y, const f32 z, const s32 axis_num) override;
+    void SetAxisDirVsSecondElement(const f32 x, const f32 y, const f32 z, const s32 axis_num) override;
 
 public:
-    virtual CPhysicsElement* PFirst_element();
-    virtual CPhysicsElement* PSecond_element();
-    virtual u16 BoneID() { return m_bone_id; }
-    virtual void SetBoneID(u16 bone_id) { m_bone_id = bone_id; }
+    [[nodiscard]] CPhysicsElement* PFirst_element() override;
+    [[nodiscard]] CPhysicsElement* PSecond_element() override;
+    [[nodiscard]] u16 BoneID() override { return m_bone_id; }
+    void SetBoneID(u16 bone_id) override { m_bone_id = bone_id; }
     IC CPHElement* PFirstElement() { return pFirst_element; }
     IC CPHElement* PSecondElement() { return pSecond_element; }
-    virtual void Activate();
-    virtual void Create();
-    virtual void RunSimulation();
-    virtual void SetBackRef(CPhysicsJoint** j);
-    virtual void SetForceAndVelocity(const float force, const float velocity = 0.f, const int axis_num = -1);
+    void Activate() override;
+    void Create() override;
+    void RunSimulation() override;
+    void SetBackRef(CPhysicsJoint** j) override;
+    void SetForceAndVelocity(const f32 force, const f32 velocity = 0.0f, const s32 axis_num = -1) override;
     virtual void SetForce(const float force, const int axis_num = -1);
     virtual void SetVelocity(const float velocity = 0.f, const int axis_num = -1);
-    virtual void SetBreakable(float force, float torque);
-    virtual bool isBreakable() { return !!m_destroy_info; }
-    virtual dJointID GetDJoint() { return m_joint; }
+    void SetBreakable(f32 force, f32 torque) override;
+    [[nodiscard]] bool isBreakable() override { return !!m_destroy_info; }
+    [[nodiscard]] dJointID GetDJoint() override { return m_joint; }
     virtual dJointID GetDJoint1() { return m_joint1; }
-    virtual void GetLimits(float& lo_limit, float& hi_limit, int axis_num);
-    virtual void GetAxisDir(int num, Fvector& axis, eVs& vs);
-    virtual void GetAxisDirDynamic(int num, Fvector& axis);
-    virtual void GetAnchorDynamic(Fvector& anchor);
-    virtual void GetAxisSDfactors(float& spring_factor, float& damping_factor, int axis_num);
-    virtual void GetJointSDfactors(float& spring_factor, float& damping_factor);
-    virtual void GetMaxForceAndVelocity(float& force, float& velocity, int axis_num);
-    virtual float GetAxisAngle(int axis_num);
-    virtual void Deactivate();
+    void GetLimits(f32& lo_limit, f32& hi_limit, s32 axis_num) override;
+    void GetAxisDir(s32 num, Fvector& axis, eVs& vs) override;
+    void GetAxisDirDynamic(s32 num, Fvector& axis) override;
+    void GetAnchorDynamic(Fvector& anchor) override;
+    void GetAxisSDfactors(f32& spring_factor, f32& damping_factor, s32 axis_num) override;
+    void GetJointSDfactors(f32& spring_factor, f32& damping_factor) override;
+    void GetMaxForceAndVelocity(f32& force, f32& velocity, s32 axis_num) override;
+    [[nodiscard]] f32 GetAxisAngle(s32 axis_num) override;
+    void Deactivate() override;
     void ReattachFirstElement(CPHElement* new_element);
     CODEGeom*& RootGeom() { return pFirstGeom; }
-    virtual CPHJointDestroyInfo* JointDestroyInfo() { return m_destroy_info; }
+    [[nodiscard]] CPHJointDestroyInfo* JointDestroyInfo() override { return m_destroy_info; }
 
     explicit CPHJoint(CPhysicsJoint::enumType type, CPhysicsElement* first, CPhysicsElement* second);
     ~CPHJoint() override;

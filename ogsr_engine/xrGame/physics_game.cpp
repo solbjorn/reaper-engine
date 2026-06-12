@@ -60,7 +60,7 @@ public:
 
     ~CPHParticlesPlayCall() override = default;
 
-    virtual void run()
+    void run() override
     {
         if (b_called)
             return;
@@ -82,12 +82,12 @@ public:
             remove_time = Device.dwTimeGlobal + iFloor(psLifeTime / 2.f);
     }
 
-    virtual bool obsolete() const noexcept { return Device.dwTimeGlobal > remove_time; }
+    [[nodiscard]] bool obsolete() const noexcept override { return Device.dwTimeGlobal > remove_time; }
 
-    const CPhysicsShellHolder* object() const noexcept { return m_object; }
-    const Fvector& position() const noexcept { return cast_fv(c.pos); }
+    [[nodiscard]] const CPhysicsShellHolder* object() const noexcept { return m_object; }
+    [[nodiscard]] const Fvector& position() const noexcept { return cast_fv(c.pos); }
 
-    virtual bool compare(const CPHReqComparerV* v) const { return v->compare(this); }
+    [[nodiscard]] bool compare(const CPHReqComparerV* v) const override { return v->compare(this); }
 };
 
 class CPHParticlesCondition : public CPHCondition, public CPHReqComparerV
@@ -98,11 +98,9 @@ public:
     ~CPHParticlesCondition() override = default;
 
 private:
-    virtual bool compare(const CPHReqComparerV* v) const noexcept { return v->compare(this); }
-
-    virtual bool is_true() noexcept override { return true; }
-
-    virtual bool obsolete() const noexcept { return false; }
+    [[nodiscard]] bool compare(const CPHReqComparerV* v) const noexcept override { return v->compare(this); }
+    [[nodiscard]] bool is_true() noexcept override { return true; }
+    [[nodiscard]] bool obsolete() const noexcept override { return false; }
 };
 
 class CPHFindParticlesComparer : public CPHReqComparerV
@@ -118,9 +116,9 @@ public:
 
 private:
     [[nodiscard]] virtual bool compare(const CPHReqComparerV* v) const { return v->compare(this); }
-    [[nodiscard]] virtual bool compare(const CPHParticlesCondition*) const { return true; }
+    [[nodiscard]] bool compare(const CPHParticlesCondition*) const override { return true; }
 
-    [[nodiscard]] virtual bool compare(const CPHParticlesPlayCall* v) const
+    [[nodiscard]] bool compare(const CPHParticlesPlayCall* v) const override
     {
         VERIFY(v);
 
@@ -152,13 +150,13 @@ public:
 
     ~CPHWallMarksCall() override = default;
 
-    virtual void run()
+    void run() override
     {
         // добавить отметку на материале
         ::Render->add_StaticWallmark(pWallmarkShader, pos, 0.09f, T, Level().ObjectSpace.GetStaticVerts());
     }
 
-    virtual bool obsolete() const { return false; }
+    [[nodiscard]] bool obsolete() const override { return false; }
 };
 
 CPHSoundPlayer* object_snd_player(dxGeomUserData* data) noexcept { return data->ph_ref_object ? data->ph_ref_object->ph_sound_player() : nullptr; }

@@ -13,13 +13,13 @@ public:
     CRadioactiveZone();
     ~CRadioactiveZone() override;
 
-    virtual void Load(LPCSTR section);
-    virtual void Affect(SZoneObjectInfo* O);
+    void Load(gsl::czstring section) override;
+    void Affect(SZoneObjectInfo* O) override;
 
-    virtual void feel_touch_new(CObject* O);
-    virtual void UpdateWorkload(u32 dt); // related to fast-mode optimizations
-    virtual BOOL feel_touch_contact(CObject* O);
+    void feel_touch_new(CObject* O) override;
+    void UpdateWorkload(u32 dt) override; // related to fast-mode optimizations
+    [[nodiscard]] BOOL feel_touch_contact(CObject* O) override;
 
 protected:
-    virtual bool BlowoutState();
+    [[nodiscard]] bool BlowoutState() override;
 };

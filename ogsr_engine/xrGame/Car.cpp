@@ -849,7 +849,7 @@ void CCar::CreateSkeleton(CSE_Abstract* po)
     IKinematicsAnimated* K = smart_cast<IKinematicsAnimated*>(Visual());
     if (K)
     {
-        K->PlayCycle(shared_str{"idle"});
+        std::ignore = K->PlayCycle(shared_str{"idle"});
         K->dcast_PKinematics()->CalculateBones();
     }
 
@@ -1933,7 +1933,7 @@ IC void CCar::fill_doors_map(LPCSTR S, xr_map<u16, std::unique_ptr<SDoor>>& door
 DLL_Pure* CCar::_construct()
 {
     std::ignore = inherited::_construct();
-    CScriptEntity::_construct();
+    std::ignore = CScriptEntity::_construct();
 
     return this;
 }
@@ -1941,24 +1941,24 @@ DLL_Pure* CCar::_construct()
 u16 CCar::Initiator()
 {
     if (g_Alive() && Owner())
-    {
         return Owner()->ID();
-    }
-    // else if(CExplosive::Initiator()!=u16(-1))return CExplosive::Initiator();
     else
         return ID();
 }
 
 float CCar::RefWheelMaxSpeed() { return m_max_rpm / m_current_gear_ratio; }
-
 float CCar::EngineCurTorque() { return m_current_engine_power / m_current_rpm; }
+
 float CCar::RefWheelCurTorque()
 {
     if (b_transmission_switching)
         return 0.f;
+
     return EngineCurTorque() * ((m_current_gear_ratio < 0.f) ? -m_current_gear_ratio : m_current_gear_ratio);
 }
+
 void CCar::GetRayExplosionSourcePos(Fvector& pos) { random_point_in_object_box(pos, this); }
+
 void CCar::net_Relcase(CObject* O)
 {
     CExplosive::net_Relcase(O);

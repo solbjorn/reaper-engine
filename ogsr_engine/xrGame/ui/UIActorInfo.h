@@ -21,11 +21,11 @@ public:
     ~CUIActorInfoWnd() override = default;
 
     virtual void Init();
-    virtual void Show(bool status);
-    CUIScrollView& DetailList() { return *UIDetailList; }
-    CUIScrollView& MasterList() { return *UIMasterList; }
+    void Show(bool status) override;
+    [[nodiscard]] CUIScrollView& DetailList() { return *UIDetailList; }
+    [[nodiscard]] CUIScrollView& MasterList() { return *UIMasterList; }
     void FillPointsDetail(const shared_str& idx);
-    virtual void Reset();
+    void Reset() override;
 
 protected:
     CUIFrameWindow* UIInfoFrame;
@@ -64,7 +64,7 @@ public:
 
     void Init(CUIXml* xml, LPCSTR path, int idx_in_xml);
     [[nodiscard]] bool OnMouseDown(sf::Mouse::Button mouse_btn) override;
-    virtual void SetSelected(bool b);
+    void SetSelected(bool b) override;
 
     shared_str m_id;
 };

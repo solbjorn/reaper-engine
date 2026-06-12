@@ -53,7 +53,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_LIB;dSINGLE;MSVC;dNODEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalOptions>%(AdditionalOptions) -Dalloca=_alloca -Wno-error</AdditionalOptions>
+      <AdditionalOptions>%(AdditionalOptions) -Dalloca=_alloca -Wno-error -Werror=inconsistent-missing-override -Werror=microsoft</AdditionalOptions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
@@ -87,7 +87,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_LIB;dSINGLE;MSVC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalOptions>%(AdditionalOptions) -Dalloca=_alloca -Wno-error</AdditionalOptions>
+      <AdditionalOptions>%(AdditionalOptions) -Dalloca=_alloca -Wno-error -Werror=inconsistent-missing-override -Werror=microsoft</AdditionalOptions>
       <StringPooling>false</StringPooling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>

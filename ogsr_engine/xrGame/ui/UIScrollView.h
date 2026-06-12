@@ -56,8 +56,8 @@ public:
     void Init(); // need parent to be initialized
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
-    virtual void Draw();
-    virtual void Update();
+    void Draw() override;
+    void Update() override;
     void AddWindow(CUIWindow* pWnd, bool auto_delete, bool top = false);
     void RemoveWindow(CUIWindow* pWnd);
     void Clear(bool scrollToTop);
@@ -76,8 +76,8 @@ public:
     int GetMinScrollPos();
     int GetMaxScrollPos();
     int GetCurrentScrollPos();
-    virtual void SetWndSize(const Fvector2& size) override;
-    virtual void SetHeight(float height) override;
+    void SetWndSize(const Fvector2& size) override;
+    void SetHeight(float height) override;
     void SetScrollPos(int position);
     void SetScrollBarProfile(LPCSTR profile);
     IC bool NeedShowScrollBar(); // no comment

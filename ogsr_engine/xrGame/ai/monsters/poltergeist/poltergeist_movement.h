@@ -18,7 +18,7 @@ public:
     explicit CPoltergeisMovementManager(CPoltergeist* monster) : inherited((CCustomMonster*)monster), m_monster(monster) {}
     ~CPoltergeisMovementManager() override = default;
 
-    virtual void move_along_path(CPHMovementControl* movement_control, Fvector& dest_position, float time_delta);
+    void move_along_path(CPHMovementControl* movement_control, Fvector3& dest_position, f32 time_delta) override;
 
-    Fvector CalculateRealPosition();
+    [[nodiscard]] Fvector CalculateRealPosition();
 };

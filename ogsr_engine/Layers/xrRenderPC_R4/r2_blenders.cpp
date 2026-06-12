@@ -21,23 +21,23 @@ class CBlender_Editor_Selection : public IBlenderXr
     RTTI_DECLARE_TYPEINFO(CBlender_Editor_Selection, IBlenderXr);
 
 public:
-    virtual LPCSTR getComment() { return "EDITOR: selection"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "EDITOR: selection"; }
 
-    void Save(IWriter& fs)
+    void Save(IWriter& fs) override
     {
         IBlenderXr::Save(fs);
         string64 oT_Factor;
         xrPWRITE_PROP(fs, "TFactor", xrPID_CONSTANT, oT_Factor);
     }
 
-    void Load(IReader& fs, u16 version)
+    void Load(IReader& fs, u16 version) override
     {
         IBlenderXr::Load(fs, version);
         string64 oT_Factor;
         xrPREAD_PROP(fs, xrPID_CONSTANT, oT_Factor);
     }
 
-    virtual void Compile(CBlender_Compile& C)
+    void Compile(CBlender_Compile& C) override
     {
         IBlender::Compile(C);
 
@@ -54,23 +54,23 @@ class CBlender_Editor_Wire : public IBlenderXr
     RTTI_DECLARE_TYPEINFO(CBlender_Editor_Wire, IBlenderXr);
 
 public:
-    virtual LPCSTR getComment() { return "EDITOR: wire"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "EDITOR: wire"; }
 
-    void Save(IWriter& fs)
+    void Save(IWriter& fs) override
     {
         IBlenderXr::Save(fs);
         string64 oT_Factor;
         xrPWRITE_PROP(fs, "TFactor", xrPID_CONSTANT, oT_Factor);
     }
 
-    void Load(IReader& fs, u16 version)
+    void Load(IReader& fs, u16 version) override
     {
         IBlenderXr::Load(fs, version);
         string64 oT_Factor;
         xrPREAD_PROP(fs, xrPID_CONSTANT, oT_Factor);
     }
 
-    virtual void Compile(CBlender_Compile& C)
+    void Compile(CBlender_Compile& C) override
     {
         C.r_Pass("editor", "simple_color", FALSE, FALSE, FALSE);
         C.r_ColorWriteEnable();

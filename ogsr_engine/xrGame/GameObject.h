@@ -80,7 +80,11 @@ struct FeelTouchAddon
         : radius{rad}, feel_touch_new_delete{std::move(new_delete)}, feel_touch_contact{std::move(contact)}, arg{std::move(obj)}
     {}
 
-    [[nodiscard]] constexpr bool equal_new_delete(const sol::function& func, const sol::object& obj) const { return feel_touch_new_delete == func && arg == obj; }
+    [[nodiscard]] constexpr bool equal_new_delete(const sol::function& func, const sol::object& obj) const
+    {
+        return feel_touch_new_delete == func && arg == obj;
+    }
+
     [[nodiscard]] constexpr bool equal_contact(const sol::function& func, const sol::object& obj) const { return feel_touch_contact == func && arg == obj; }
 
     template <typename... Args>
@@ -123,31 +127,31 @@ public:
 
 public:
     // functions used for avoiding most of the smart_cast
-    virtual CAttachmentOwner* cast_attachment_owner() { return nullptr; }
-    virtual CInventoryOwner* cast_inventory_owner() { return nullptr; }
-    virtual CInventoryItem* cast_inventory_item() { return nullptr; }
-    virtual CEntity* cast_entity() { return nullptr; }
-    virtual CEntityAlive* cast_entity_alive() { return nullptr; }
-    virtual CActor* cast_actor() { return nullptr; }
-    virtual CGameObject* cast_game_object() { return this; }
-    virtual CCustomZone* cast_custom_zone() { return nullptr; }
-    virtual CPhysicsShellHolder* cast_physics_shell_holder() { return nullptr; }
-    virtual IInputReceiver* cast_input_receiver() { return nullptr; }
-    virtual CParticlesPlayer* cast_particles_player() { return nullptr; }
-    virtual CArtefact* cast_artefact() { return nullptr; }
-    virtual CCustomMonster* cast_custom_monster() { return nullptr; }
-    virtual CAI_Stalker* cast_stalker() { return nullptr; }
-    virtual CScriptEntity* cast_script_entity() { return nullptr; }
-    virtual CWeapon* cast_weapon() { return nullptr; }
-    virtual CExplosive* cast_explosive() { return nullptr; }
-    virtual CSpaceRestrictor* cast_restrictor() { return nullptr; }
-    virtual CAttachableItem* cast_attachable_item() { return nullptr; }
-    virtual CHolderCustom* cast_holder_custom() { return nullptr; }
-    virtual CBaseMonster* cast_base_monster() { return nullptr; }
+    [[nodiscard]] virtual CAttachmentOwner* cast_attachment_owner() { return nullptr; }
+    [[nodiscard]] virtual CInventoryOwner* cast_inventory_owner() { return nullptr; }
+    [[nodiscard]] virtual CInventoryItem* cast_inventory_item() { return nullptr; }
+    [[nodiscard]] virtual CEntity* cast_entity() { return nullptr; }
+    [[nodiscard]] virtual CEntityAlive* cast_entity_alive() { return nullptr; }
+    [[nodiscard]] virtual CActor* cast_actor() { return nullptr; }
+    [[nodiscard]] virtual CGameObject* cast_game_object() { return this; }
+    [[nodiscard]] virtual CCustomZone* cast_custom_zone() { return nullptr; }
+    [[nodiscard]] virtual CPhysicsShellHolder* cast_physics_shell_holder() { return nullptr; }
+    [[nodiscard]] virtual IInputReceiver* cast_input_receiver() { return nullptr; }
+    [[nodiscard]] virtual CParticlesPlayer* cast_particles_player() { return nullptr; }
+    [[nodiscard]] virtual CArtefact* cast_artefact() { return nullptr; }
+    [[nodiscard]] virtual CCustomMonster* cast_custom_monster() { return nullptr; }
+    [[nodiscard]] virtual CAI_Stalker* cast_stalker() { return nullptr; }
+    [[nodiscard]] virtual CScriptEntity* cast_script_entity() { return nullptr; }
+    [[nodiscard]] virtual CWeapon* cast_weapon() { return nullptr; }
+    [[nodiscard]] virtual CExplosive* cast_explosive() { return nullptr; }
+    [[nodiscard]] virtual CSpaceRestrictor* cast_restrictor() { return nullptr; }
+    [[nodiscard]] virtual CAttachableItem* cast_attachable_item() { return nullptr; }
+    [[nodiscard]] virtual CHolderCustom* cast_holder_custom() { return nullptr; }
+    [[nodiscard]] virtual CBaseMonster* cast_base_monster() { return nullptr; }
 
 public:
-    virtual BOOL feel_touch_on_contact(CObject*) { return TRUE; }
-    virtual bool use(CGameObject* who_use) { return CUsableScriptObject::use(who_use); }
+    [[nodiscard]] virtual BOOL feel_touch_on_contact(CObject*) { return TRUE; }
+    [[nodiscard]] bool use(CGameObject* who_use) override { return CUsableScriptObject::use(who_use); }
 
 public:
     CInifile* m_ini_file;
@@ -158,28 +162,28 @@ public:
     static void u_EventSend(NET_Packet& P, u32 dwFlags = 0x0008);
 
     // Methods
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual void net_Relcase(CObject* O);
+    void net_Relcase(CObject* O) override;
     tmc::task<void> UpdateCL() override;
-    virtual void OnChangeVisual();
+    void OnChangeVisual() override;
     // object serialization
     virtual void net_Save(NET_Packet& net_packet);
     virtual void net_Load(IReader& ireader);
-    virtual BOOL net_SaveRelevant();
+    [[nodiscard]] BOOL net_SaveRelevant() override;
     void save(NET_Packet&) override;
     void load(IReader&) override;
 
-    virtual BOOL net_Relevant() { return getLocal(); } // send messages only if active and local
-    virtual void spatial_move();
-    virtual BOOL Ready() { return getReady(); } // update only if active and fully initialized by/for network
+    [[nodiscard]] BOOL net_Relevant() override { return getLocal(); } // send messages only if active and local
+    void spatial_move() override;
+    [[nodiscard]] BOOL Ready() override { return getReady(); } // update only if active and fully initialized by/for network
 
     tmc::task<void> shedule_Update(u32 dt) override;
-    virtual bool shedule_Needed();
+    [[nodiscard]] bool shedule_Needed() override;
 
-    virtual void ForceTransform(const Fmatrix&) override {}
-    virtual void ForceTransformAndDirection(const Fmatrix& m) override { ForceTransform(m); }
+    void ForceTransform(const Fmatrix&) override {}
+    void ForceTransformAndDirection(const Fmatrix& m) override { ForceTransform(m); }
 
     void renderable_Render(u32 context_id, IRenderable* root) override;
     virtual tmc::task<void> OnEvent(NET_Packet& P, u16 type);
@@ -189,17 +193,16 @@ public:
     // игровое имя объекта
     virtual LPCSTR Name() const;
 
-    // virtual void			OnH_A_Independent	();
-    virtual void OnH_B_Chield();
-    virtual void OnH_B_Independent(bool just_before_destroy);
+    void OnH_B_Chield() override;
+    void OnH_B_Independent(bool just_before_destroy) override;
 
-    virtual bool IsVisibleForZones() { return true; }
+    [[nodiscard]] virtual bool IsVisibleForZones() { return true; }
     ///////////////////////////////////////////////////////////////////////
     virtual void DestroyObject();
     ///////////////////////////////////////////////////////////////////////
 
     // Position stack
-    virtual SavedPosition ps_Element(u32 ID) const;
+    [[nodiscard]] SavedPosition ps_Element(u32 ID) const override;
 
     void setup_parent_ai_locations(bool assign_position);
     void validate_ai_locations(bool decrement_reference);
@@ -212,22 +215,23 @@ public:
     const animation_movement_controller* animation_movement() const { return m_anim_mov_ctrl; }
     // Game-specific events
 
-    virtual BOOL UsedAI_Locations();
+    [[nodiscard]] virtual BOOL UsedAI_Locations();
     void SetUseAI_Locations(bool _use);
     BOOL TestServerFlag(u32 Flag) const;
-    virtual bool can_validate_position_on_spawn() { return true; }
+    [[nodiscard]] virtual bool can_validate_position_on_spawn() { return true; }
+
 #ifdef DEBUG
     virtual void OnRender();
 #endif
 
     void init();
     void reinit() override;
-    void reload(LPCSTR) override;
+    void reload(gsl::czstring) override;
 
 public:
     virtual void dbg_DrawSkeleton();
 
-    virtual const SRotation Orientation() const
+    [[nodiscard]] virtual const SRotation Orientation() const
     {
         SRotation rotation;
         float h, p, b;
@@ -237,7 +241,7 @@ public:
         return (rotation);
     }
 
-    virtual bool use_parent_ai_locations() const { return (true); }
+    [[nodiscard]] virtual bool use_parent_ai_locations() const { return (true); }
 
 public:
     typedef void visual_callback(IKinematics*);
@@ -292,20 +296,20 @@ public:
     IC const ALife::_STORY_ID& story_id() const { return (m_story_id); }
 
 public:
-    virtual u32 ef_creature_type() const;
-    virtual u32 ef_equipment_type() const;
-    virtual u32 ef_main_weapon_type() const;
-    virtual u32 ef_anomaly_type() const;
-    virtual u32 ef_weapon_type() const;
-    virtual u32 ef_detector_type() const;
-    virtual bool natural_weapon() const { return true; }
-    virtual bool natural_detector() const { return true; }
-    virtual bool use_center_to_aim() const { return false; }
+    [[nodiscard]] virtual u32 ef_creature_type() const;
+    [[nodiscard]] virtual u32 ef_equipment_type() const;
+    [[nodiscard]] virtual u32 ef_main_weapon_type() const;
+    [[nodiscard]] virtual u32 ef_anomaly_type() const;
+    [[nodiscard]] virtual u32 ef_weapon_type() const;
+    [[nodiscard]] virtual u32 ef_detector_type() const;
+    [[nodiscard]] virtual bool natural_weapon() const { return true; }
+    [[nodiscard]] virtual bool natural_detector() const { return true; }
+    [[nodiscard]] virtual bool use_center_to_aim() const { return false; }
 
     xr_map<GameObject::ECallbackType, GOCallbackInfo> m_callbacks;
 
     const GOCallbackInfo& callback(GameObject::ECallbackType type) const;
-    virtual LPCSTR visual_name(CSE_Abstract* server_entity);
+    [[nodiscard]] virtual gsl::czstring visual_name(CSE_Abstract* server_entity);
 
     virtual void On_B_NotCurrentEntity() {}
 

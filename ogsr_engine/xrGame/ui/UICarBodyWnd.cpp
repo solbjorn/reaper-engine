@@ -348,21 +348,21 @@ void CUICarBodyWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
             break;
             case INVENTORY_DETACH_SCOPE_ADDON: {
                 auto wpn = smart_cast<CWeapon*>(CurrentIItem());
-                wpn->Detach(wpn->GetScopeName().c_str(), true);
+                std::ignore = wpn->Detach(wpn->GetScopeName().c_str(), true);
 
                 PlaySnd(eInventorySndAction::eInvDetachAddon);
             }
             break;
             case INVENTORY_DETACH_SILENCER_ADDON: {
                 auto wpn = smart_cast<CWeapon*>(CurrentIItem());
-                wpn->Detach(wpn->GetSilencerName().c_str(), true);
+                std::ignore = wpn->Detach(wpn->GetSilencerName().c_str(), true);
 
                 PlaySnd(eInventorySndAction::eInvDetachAddon);
             }
             break;
             case INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON: {
                 auto wpn = smart_cast<CWeapon*>(CurrentIItem());
-                wpn->Detach(wpn->GetGrenadeLauncherName().c_str(), true);
+                std::ignore = wpn->Detach(wpn->GetGrenadeLauncherName().c_str(), true);
 
                 PlaySnd(eInventorySndAction::eInvDetachAddon);
             }
@@ -410,7 +410,8 @@ void CUICarBodyWnd::Draw() { inherited::Draw(); }
 
 void CUICarBodyWnd::Update()
 {
-    if (m_b_need_update || m_pOurObject->inventory().ModifyFrame() == Device.dwFrame || (m_pOthersObject && m_pOthersObject->inventory().ModifyFrame() == Device.dwFrame))
+    if (m_b_need_update || m_pOurObject->inventory().ModifyFrame() == Device.dwFrame ||
+        (m_pOthersObject && m_pOthersObject->inventory().ModifyFrame() == Device.dwFrame))
     {
         if (m_pUIOurBagList && m_pUIOthersBagList)
         {
@@ -424,7 +425,8 @@ void CUICarBodyWnd::Update()
 
     CGameObject* pOurGO = smart_cast<CGameObject*>(m_pOurObject);
     CGameObject* pOtherGO = smart_cast<CGameObject*>(m_pOthersObject);
-    if (pOtherGO && pOurGO->Position().distance_to(pOtherGO->Position()) - pOtherGO->Radius() - pOurGO->Radius() > m_pOurObject->inventory().GetTakeDist() + 0.5f)
+    if (pOtherGO &&
+        pOurGO->Position().distance_to(pOtherGO->Position()) - pOtherGO->Radius() - pOurGO->Radius() > m_pOurObject->inventory().GetTakeDist() + 0.5f)
     {
         GetHolder()->StartStopMenu(this, true);
     }
@@ -487,9 +489,7 @@ void CUICarBodyWnd::TakeAll()
     u32 cnt = m_pUIOthersBagList->ItemsCount();
     u16 tmp_id = 0;
     if (m_pInventoryBox)
-    {
         tmp_id = (smart_cast<CGameObject*>(m_pOurObject))->ID();
-    }
 
     for (u32 i = 0; i < cnt; ++i)
     {
@@ -500,19 +500,14 @@ void CUICarBodyWnd::TakeAll()
             if (m_pOthersObject)
                 TransferItem(_itm, m_pOthersObject, m_pOurObject, false);
             else
-            {
                 move_item(m_pInventoryBox->object().ID(), tmp_id, _itm->object().ID());
-                //.				Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
-            }
         }
+
         PIItem itm = (PIItem)(ci->m_pData);
         if (m_pOthersObject)
             TransferItem(itm, m_pOthersObject, m_pOurObject, false);
         else
-        {
             move_item(m_pInventoryBox->object().ID(), tmp_id, itm->object().ID());
-            //.			Actor()->callback(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(), itm->object().lua_game_object() );
-        }
     }
 }
 
@@ -520,60 +515,48 @@ void CUICarBodyWnd::MoveItems(CUICellItem* itm)
 {
     u16 tmp_id = 0;
     if (m_pInventoryBox)
-    {
         tmp_id = (smart_cast<CGameObject*>(m_pOurObject))->ID();
-    }
 
     CUIDragDropListEx* owner_list = itm->OwnerList();
 
     if (owner_list != m_pUIOthersBagList)
-    { // from actor to box
+    {
+        // from actor to box
         for (u32 j = 0; j < itm->ChildsCount(); ++j)
         {
             PIItem _itm = (PIItem)(itm->Child(j)->m_pData);
             if (m_pOthersObject)
                 TransferItem(_itm, m_pOurObject, m_pOthersObject, true);
             else
-            {
                 move_item(tmp_id, m_pInventoryBox->object().ID(), _itm->object().ID());
-                //. Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
-            }
         }
 
         PIItem p_itm = (PIItem)(itm->m_pData);
         if (m_pOthersObject)
             TransferItem(p_itm, m_pOurObject, m_pOthersObject, true);
         else
-        {
             move_item(tmp_id, m_pInventoryBox->object().ID(), p_itm->object().ID());
-            //. Actor()->callback(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(), itm->object().lua_game_object() );
-        }
     }
     else
-    { // from box to actor
+    {
+        // from box to actor
         for (u32 j = 0; j < itm->ChildsCount(); ++j)
         {
             PIItem _itm = (PIItem)(itm->Child(j)->m_pData);
             if (m_pOthersObject)
                 TransferItem(_itm, m_pOthersObject, m_pOurObject, false);
             else
-            {
                 move_item(m_pInventoryBox->object().ID(), tmp_id, _itm->object().ID());
-                //. Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
-            }
         }
 
         PIItem p_itm = (PIItem)(itm->m_pData);
         if (m_pOthersObject)
             TransferItem(p_itm, m_pOthersObject, m_pOurObject, false);
         else
-        {
             move_item(m_pInventoryBox->object().ID(), tmp_id, p_itm->object().ID());
-            //. Actor()->callback(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(), itm->object().lua_game_object() );
-        }
     }
 
-    owner_list->RemoveItem(itm, true);
+    std::ignore = owner_list->RemoveItem(itm, true);
 
     SetCurrentItem(nullptr);
     PlaySnd(eInventorySndAction::eInvItemMove);
@@ -596,27 +579,19 @@ void CUICarBodyWnd::DropItemsfromCell(bool b_all)
 {
     CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
     if (!pActor)
-    {
         return;
-    }
 
     CUICellItem* ci = CurrentItem();
     if (!ci)
-    {
         return;
-    }
 
     CUIDragDropListEx* old_owner = ci->OwnerList();
 
     u16 from_id = 0;
     if (old_owner == m_pUIOthersBagList)
-    {
         from_id = (m_pInventoryBox) ? m_pInventoryBox->object().ID() : smart_cast<CGameObject*>(m_pOthersObject)->ID();
-    }
     else
-    {
         from_id = smart_cast<CGameObject*>(m_pOurObject)->ID();
-    }
 
     if (b_all)
     {
@@ -634,7 +609,7 @@ void CUICarBodyWnd::DropItemsfromCell(bool b_all)
     PIItem iitm = (PIItem)ci->m_pData;
     SendEvent_Item_Drop(from_id, iitm);
 
-    old_owner->RemoveItem(ci, b_all);
+    std::ignore = old_owner->RemoveItem(ci, b_all);
     SetCurrentItem(nullptr);
 
     InventoryUtilities::UpdateWeight(*m_pUIOurBagWnd);

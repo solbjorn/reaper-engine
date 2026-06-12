@@ -21,7 +21,8 @@ class CActionBase;
 template <typename _object_type>
 class CPropertyEvaluator;
 
-template <typename _object_type, bool _reverse_search, typename _world_operator, typename _condition_evaluator, typename _world_operator_ptr, typename _condition_evaluator_ptr>
+template <typename _object_type, bool _reverse_search, typename _world_operator, typename _condition_evaluator, typename _world_operator_ptr,
+          typename _condition_evaluator_ptr>
 class CActionPlanner;
 
 typedef CActionPlanner<CScriptGameObject, false, CActionBase<CScriptGameObject>, CPropertyEvaluator<CScriptGameObject>, CActionBase<CScriptGameObject>*,
@@ -146,58 +147,58 @@ public:
     ~CAI_Stalker() override;
 
 public:
-    virtual CCharacterPhysicsSupport* character_physics_support() { return m_pPhysics_support; }
-    virtual CPHDestroyable* ph_destroyable();
-    virtual CAttachmentOwner* cast_attachment_owner() { return this; }
-    virtual CInventoryOwner* cast_inventory_owner() { return this; }
-    virtual CEntityAlive* cast_entity_alive() { return this; }
-    virtual CEntity* cast_entity() { return this; }
-    virtual CGameObject* cast_game_object() { return this; }
-    virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
-    virtual CParticlesPlayer* cast_particles_player() { return this; }
-    virtual Feel::Sound* dcast_FeelSound() { return this; }
-    virtual CAI_Stalker* cast_stalker() { return this; }
-    virtual CCustomMonster* cast_custom_monster() { return this; }
-    virtual CScriptEntity* cast_script_entity() { return this; }
+    [[nodiscard]] CCharacterPhysicsSupport* character_physics_support() override { return m_pPhysics_support; }
+    [[nodiscard]] CPHDestroyable* ph_destroyable() override;
+    [[nodiscard]] CAttachmentOwner* cast_attachment_owner() override { return this; }
+    [[nodiscard]] CInventoryOwner* cast_inventory_owner() override { return this; }
+    [[nodiscard]] CEntityAlive* cast_entity_alive() override { return this; }
+    [[nodiscard]] CEntity* cast_entity() override { return this; }
+    [[nodiscard]] CGameObject* cast_game_object() override { return this; }
+    [[nodiscard]] CPhysicsShellHolder* cast_physics_shell_holder() override { return this; }
+    [[nodiscard]] CParticlesPlayer* cast_particles_player() override { return this; }
+    [[nodiscard]] Feel::Sound* dcast_FeelSound() override { return this; }
+    [[nodiscard]] CAI_Stalker* cast_stalker() override { return this; }
+    [[nodiscard]] CCustomMonster* cast_custom_monster() override { return this; }
+    [[nodiscard]] CScriptEntity* cast_script_entity() override { return this; }
 
 public:
     void init();
-    virtual void Load(LPCSTR section);
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
+    void Load(gsl::czstring section) override;
+    void reinit() override;
+    void reload(gsl::czstring section) override;
     virtual void LoadSounds(LPCSTR section);
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
-    virtual void net_Export(CSE_Abstract* E);
+    void net_Export(CSE_Abstract* E) override;
     tmc::task<void> net_Destroy() override;
-    virtual void net_Save(NET_Packet& P);
-    virtual BOOL net_SaveRelevant();
-    virtual void net_Relcase(CObject* O);
+    void net_Save(NET_Packet& P) override;
+    [[nodiscard]] BOOL net_SaveRelevant() override;
+    void net_Relcase(CObject* O) override;
 
     // save/load server serialization
-    virtual void save(NET_Packet& output_packet);
-    virtual void load(IReader& input_packet);
+    void save(NET_Packet& output_packet) override;
+    void load(IReader& input_packet) override;
 
     tmc::task<void> UpdateCL() override;
     tmc::task<void> shedule_Update(u32 dt) override;
-    virtual void Think();
+    void Think() override;
     void SelectAnimation(const Fvector&, const Fvector&, float) override;
-    virtual BOOL UsedAI_Locations();
+    [[nodiscard]] BOOL UsedAI_Locations() override;
 
-    virtual void g_WeaponBones(int& L, int& R1, int& R2);
+    void g_WeaponBones(s32& L, s32& R1, s32& R2) override;
     void g_fireParams(CHudItem*, Fvector& P, Fvector& D, const bool = false) override;
-    virtual void HitSignal(float P, Fvector& vLocalDir, CObject* who, s16 element);
+    void HitSignal(f32 P, Fvector& vLocalDir, CObject* who, s16 element) override;
     tmc::task<void> Die(CObject* who) override;
 
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
-    virtual void feel_touch_new(CObject* O);
+    void feel_touch_new(CObject* O) override;
 
     void renderable_Render(u32 context_id, IRenderable* root) override;
-    virtual void Exec_Look(float dt);
-    virtual void Hit(SHit* pHDS);
-    virtual void PHHit(SHit& H);
-    virtual BOOL feel_vision_isRelevant(CObject* who);
-    virtual float Radius() const;
+    void Exec_Look(f32 dt) override;
+    void Hit(SHit* pHDS) override;
+    void PHHit(SHit& H) override;
+    [[nodiscard]] BOOL feel_vision_isRelevant(CObject* who) override;
+    [[nodiscard]] f32 Radius() const override;
 
 #ifdef DEBUG
     void OnHUDDraw(ctx_id_t context_id, CCustomHUD* hud, IRenderable* root) override;
@@ -209,8 +210,7 @@ public:
     [[nodiscard]] bool useful(const CEnemyManager*, const CEntityAlive* object) const override;
 
     // PDA && Dialogs
-    //	virtual void						ReceivePdaMessage					(u16 who, EPdaMsg msg, shared_str info_id);
-    virtual void UpdateAvailableDialogs(CPhraseDialogManager* partner);
+    void UpdateAvailableDialogs(CPhraseDialogManager* partner) override;
 
     // scripts
     virtual CWeapon* GetCurrentWeapon() const;
@@ -218,33 +218,33 @@ public:
     //	virtual CInventoryItem				*GetCurrentEquipment	() const; <- moved to InventoryOwner::GetCurrentOutfit
     virtual CInventoryItem* GetMedikit() const;
     virtual CInventoryItem* GetFood() const;
-    virtual bool bfAssignMovement(CScriptEntityAction* tpEntityAction);
-    virtual bool bfAssignWatch(CScriptEntityAction* tpEntityAction);
-    virtual void ResetScriptData(void* P = nullptr);
-    virtual bool bfAssignObject(CScriptEntityAction* tpEntityAction);
-    virtual bool bfAssignAnimation(CScriptEntityAction* tpEntityAction);
+    [[nodiscard]] bool bfAssignMovement(CScriptEntityAction* tpEntityAction) override;
+    [[nodiscard]] bool bfAssignWatch(CScriptEntityAction* tpEntityAction) override;
+    void ResetScriptData(void* P = nullptr) override;
+    [[nodiscard]] bool bfAssignObject(CScriptEntityAction* tpEntityAction) override;
+    [[nodiscard]] bool bfAssignAnimation(CScriptEntityAction* tpEntityAction) override;
 
     // physics
-    virtual u16 PHGetSyncItemsNumber() { return inherited ::PHGetSyncItemsNumber(); }
-    virtual CPHSynchronize* PHGetSyncItem(u16 item) { return inherited ::PHGetSyncItem(item); }
-    virtual void PHUnFreeze() { return inherited ::PHUnFreeze(); }
-    virtual void PHFreeze() { return inherited ::PHFreeze(); }
+    [[nodiscard]] u16 PHGetSyncItemsNumber() override { return inherited ::PHGetSyncItemsNumber(); }
+    [[nodiscard]] CPHSynchronize* PHGetSyncItem(u16 item) override { return inherited ::PHGetSyncItem(item); }
+    void PHUnFreeze() override { return inherited ::PHUnFreeze(); }
+    void PHFreeze() override { return inherited ::PHFreeze(); }
 
     // miscellanious functions
     void DropItemSendMessage(CObject* O);
-    virtual ALife::ERelationType tfGetRelationType(const CEntityAlive* tpEntityAlive) const;
-    virtual const SRotation Orientation() const;
-    virtual const MonsterSpace::SBoneRotation& head_orientation() const;
+    [[nodiscard]] ALife::ERelationType tfGetRelationType(const CEntityAlive* tpEntityAlive) const override;
+    [[nodiscard]] const SRotation Orientation() const override;
+    [[nodiscard]] const MonsterSpace::SBoneRotation& head_orientation() const override;
 
     // InventoryOwner stuff
-    virtual bool CanPutInSlot(PIItem item, u32 slot) override;
+    bool CanPutInSlot(PIItem item, u32 slot) override;
 
     //////////////////////////////////////////////////////////////////////////
     // action/evaluators support functions
     //////////////////////////////////////////////////////////////////////////
 public:
-    virtual void OnItemTake(CInventoryItem* inventory_item);
-    virtual void OnItemDrop(CInventoryItem* inventory_item);
+    void OnItemTake(CInventoryItem* inventory_item) override;
+    void OnItemDrop(CInventoryItem* inventory_item) override;
     bool item_to_kill();
     bool item_can_kill();
     bool remember_item_to_kill();
@@ -252,12 +252,12 @@ public:
     bool ready_to_kill();
     bool ready_to_detour();
     void update_best_item_info();
-    virtual float GetWeaponAccuracy() const;
-    virtual bool unlimited_ammo();
-    virtual void spawn_supplies();
+    [[nodiscard]] f32 GetWeaponAccuracy() const override;
+    [[nodiscard]] bool unlimited_ammo() override;
+    void spawn_supplies() override;
     CAgentManager& agent_manager() const;
 
-    virtual bool human_being() const { return (true); }
+    [[nodiscard]] bool human_being() const override { return true; }
 
     bool undetected_anomaly();
     bool inside_anomaly();
@@ -282,9 +282,9 @@ public:
     bool fire_make_sense();
     bool can_fire_to_enemy(const CEntityAlive* enemy);
 
-    virtual LPCSTR Name() const;
-    virtual BOOL feel_touch_contact(CObject* O);
-    virtual BOOL feel_touch_on_contact(CObject* O);
+    [[nodiscard]] gsl::czstring Name() const override;
+    [[nodiscard]] BOOL feel_touch_contact(CObject* O) override;
+    [[nodiscard]] BOOL feel_touch_on_contact(CObject* O) override;
 
     // флаги, какие действия совершал актер по отношению к сталкеру
     //(помог, атаковал и т.д.)
@@ -352,19 +352,19 @@ private:
     CStalkerSoundDataVisitor* m_sound_user_data_visitor{};
 
 protected:
-    virtual CSound_UserDataVisitor* create_sound_visitor();
-    virtual CMemoryManager* create_memory_manager();
-    virtual CMovementManager* create_movement_manager();
+    [[nodiscard]] CSound_UserDataVisitor* create_sound_visitor() override;
+    [[nodiscard]] CMemoryManager* create_memory_manager() override;
+    [[nodiscard]] CMovementManager* create_movement_manager() override;
 
 public:
     IC CStalkerMovementManager& movement() const;
-    virtual DLL_Pure* _construct();
+    [[nodiscard]] DLL_Pure* _construct() override;
 
 private:
     IC bool frame_check(u32& frame);
-    virtual bool natural_weapon() const { return false; }
-    virtual bool natural_detector() const { return false; }
-    virtual bool use_center_to_aim() const;
+    [[nodiscard]] bool natural_weapon() const override { return false; }
+    [[nodiscard]] bool natural_detector() const override { return false; }
+    [[nodiscard]] bool use_center_to_aim() const override;
     void process_enemies();
 
 private:
@@ -372,7 +372,7 @@ private:
 
 public:
     IC bool group_behaviour() const;
-    virtual void update_range_fov(float& new_range, float& new_fov, float start_range, float start_fov);
+    void update_range_fov(f32& new_range, f32& new_fov, f32 start_range, f32 start_fov) override;
     tmc::task<void> update_object_handler();
     bool zoom_state() const;
     void react_on_grenades();
@@ -388,8 +388,8 @@ public:
     IC CWeaponShotEffector& weapon_shot_effector() const;
     IC Fvector weapon_shot_effector_direction(const Fvector& current) const;
     tmc::task<void> UpdateCamera() override;
-    virtual bool can_attach(const CInventoryItem* inventory_item) const;
-    virtual bool use_simplified_visual() const { return already_dead(); }
+    [[nodiscard]] bool can_attach(const CInventoryItem* inventory_item) const override;
+    [[nodiscard]] bool use_simplified_visual() const override { return already_dead(); }
 
 #ifdef DEBUG
     void debug_planner(const script_planner* planner);
@@ -454,8 +454,8 @@ public:
     void subscribe_on_best_cover_changed(const on_best_cover_changed_delegate& delegate);
     void unsubscribe_on_best_cover_changed(const on_best_cover_changed_delegate& delegate);
 
-    virtual void on_enemy_change(const CEntityAlive* enemy);
-    virtual void on_restrictions_change();
+    void on_enemy_change(const CEntityAlive* enemy) override;
+    void on_restrictions_change() override;
     void on_cover_blocked();
     void on_danger_location_add(const CDangerLocation& location);
     void on_danger_location_remove(const CDangerLocation& location);
@@ -504,9 +504,9 @@ private:
     void compute_throw_miss(u32 const vertex_id);
 
 public:
-    virtual bool use_default_throw_force();
-    virtual float missile_throw_force();
-    virtual bool use_throw_randomness();
+    [[nodiscard]] bool use_default_throw_force() override;
+    [[nodiscard]] f32 missile_throw_force() override;
+    [[nodiscard]] bool use_throw_randomness() override;
     void throw_target(const Fvector& position, CObject* throw_ignore_object = nullptr);
     void throw_target(const Fvector& position, u32 const vertex_id, CObject* throw_ignore_object = nullptr);
     IC const Fvector& throw_target() const;
@@ -524,9 +524,9 @@ public:
     // Critical Wounds
     //////////////////////////////////////////////////////////////////////////
 private:
-    virtual void load_critical_wound_bones();
-    virtual bool critical_wound_external_conditions_suitable();
-    virtual void critical_wounded_state_start();
+    void load_critical_wound_bones() override;
+    [[nodiscard]] bool critical_wound_external_conditions_suitable() override;
+    void critical_wounded_state_start() override;
 
     void fill_bones_body_parts(LPCSTR bone_id, const ECriticalWoundType& wound_type);
 
@@ -552,15 +552,15 @@ private:
     bool m_registered_in_combat_on_migration{};
 
 public:
-    virtual void on_before_change_team();
-    virtual void on_after_change_team();
+    void on_before_change_team() override;
+    void on_after_change_team() override;
 
 private:
     bool m_sight_enabled_before_animation_controller;
 
 public:
-    virtual void create_anim_mov_ctrl(CBlend* b);
-    virtual void destroy_anim_mov_ctrl();
+    void create_anim_mov_ctrl(CBlend* b) override;
+    void destroy_anim_mov_ctrl() override;
 
 private:
     bool m_can_select_items;

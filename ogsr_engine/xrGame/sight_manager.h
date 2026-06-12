@@ -35,9 +35,9 @@ public:
     explicit CSightManager(CAI_Stalker* object);
     ~CSightManager() override;
 
-    virtual void Load(LPCSTR);
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
+    virtual void Load(gsl::czstring);
+    void reinit() override;
+    virtual void reload(gsl::czstring section);
     void remove_links(CObject* object);
     void Exec_Look(float dt);
     bool bfIf_I_SeePosition(Fvector tPosition) const;
@@ -58,7 +58,7 @@ public:
     template <typename T1>
     IC void setup(T1 _1);
     void setup(const CSightAction& sight_action);
-    virtual void update();
+    void update() override;
     IC bool turning_in_place() const;
     IC bool enabled() const;
     IC void enable(bool value);

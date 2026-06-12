@@ -27,14 +27,13 @@ void CMincer::OnStateSwitch(EZoneState new_state)
         {
             CPhysicsShellHolder* GO = smart_cast<CPhysicsShellHolder*>((*it).object);
             if (GO)
-                Telekinesis().activate(GO, m_fThrowInImpulse, m_fTeleHeight, 100000);
+                std::ignore = Telekinesis().activate(GO, m_fThrowInImpulse, m_fTeleHeight, 100000);
         }
     }
 
     if (m_eZoneState == eZoneStateBlowout && new_state != eZoneStateBlowout)
-    {
         Telekinesis().clear_deactivate();
-    }
+
     inherited::OnStateSwitch(new_state);
 }
 
@@ -78,7 +77,7 @@ void CMincer::feel_touch_new(CObject* O)
     if (m_eZoneState == eZoneStateBlowout && (m_dwBlowoutExplosionTime > (u32)m_iStateTime))
     {
         CPhysicsShellHolder* GO = smart_cast<CPhysicsShellHolder*>(O);
-        Telekinesis().activate(GO, m_fThrowInImpulse, m_fTeleHeight, 100000);
+        std::ignore = Telekinesis().activate(GO, m_fThrowInImpulse, m_fTeleHeight, 100000);
     }
 }
 
@@ -93,21 +92,14 @@ bool CMincer::BlowoutState()
 {
     bool ret = inherited::BlowoutState();
 
-    // xr_set<CObject*>::iterator it=m_inZone.begin(),e=m_inZone.end();
-    // for(;e!=it;++it)
-    //{
-    //	CEntityAlive * EA = smart_cast<CEntityAlive *>(*it);
-    //	if(!EA)continue;
-    //	CPhysicsShellHolder * GO = smart_cast<CPhysicsShellHolder *>(*it);
-    //	Telekinesis().activate(GO,m_fThrowInImpulse, m_fTeleHeight, 100000);
-
-    //}
-
     if (m_dwBlowoutExplosionTime < (u32)m_iPreviousStateTime || m_dwBlowoutExplosionTime >= (u32)m_iStateTime)
         return ret;
+
     Telekinesis().deactivate();
+
     return ret;
 }
+
 void CMincer ::ThrowInCenter(Fvector& C)
 {
     C.set(m_telekinetics.Center());

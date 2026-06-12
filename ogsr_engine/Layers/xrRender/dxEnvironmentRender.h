@@ -15,10 +15,10 @@ private:
 public:
     ~dxEnvDescriptorRender() override = default;
 
-    virtual void OnDeviceCreate(CEnvDescriptor& owner);
-    virtual void OnDeviceDestroy();
+    void OnDeviceCreate(CEnvDescriptor& owner) override;
+    void OnDeviceDestroy() override;
 
-    virtual void Copy(IEnvDescriptorRender& _in);
+    void Copy(IEnvDescriptorRender& _in) override;
 
 private:
     ref_texture sky_texture;
@@ -34,14 +34,14 @@ public:
     dxEnvironmentRender();
     ~dxEnvironmentRender() override;
 
-    virtual void Copy(IEnvironmentRender& _in);
+    void Copy(IEnvironmentRender& _in) override;
 
-    virtual void RenderSky(CEnvironment& env);
-    virtual void RenderClouds(CEnvironment& env);
-    virtual void OnDeviceCreate();
-    virtual void OnDeviceDestroy();
-    virtual void Clear();
-    virtual void lerp(IEnvDescriptorRender* inA, IEnvDescriptorRender* inB);
+    void RenderSky(CEnvironment& env) override;
+    void RenderClouds(CEnvironment& env) override;
+    void OnDeviceCreate() override;
+    void OnDeviceDestroy() override;
+    void Clear() override;
+    void lerp(IEnvDescriptorRender* inA, IEnvDescriptorRender* inB) override;
 
 private:
     STextureList sky_r_textures;

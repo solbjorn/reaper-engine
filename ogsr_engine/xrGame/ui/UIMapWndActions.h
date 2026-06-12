@@ -18,6 +18,6 @@ public:
     CMapActionPlanner();
     ~CMapActionPlanner() override;
 
-    virtual void setup(CUIMapWnd* object);
-    virtual LPCSTR object_name() const;
+    void setup(CUIMapWnd* object) override;
+    [[nodiscard]] virtual gsl::czstring object_name() const;
 };

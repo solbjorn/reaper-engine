@@ -21,13 +21,13 @@ private:
 public:
     ~CPPEffectorDistance() override = default;
 
-    virtual void load(LPCSTR section);
+    void load(gsl::czstring section) override;
     IC void set_radius(float r) { m_radius = r; }
     IC void set_current_dist(float dist) { m_dist = dist; }
 
-    virtual bool check_completion();
-    virtual bool check_start_conditions();
-    virtual void update_factor();
+    [[nodiscard]] bool check_completion() override;
+    [[nodiscard]] bool check_start_conditions() override;
+    void update_factor() override;
 
-    virtual CPPEffectorControlled* create_effector();
+    [[nodiscard]] CPPEffectorControlled* create_effector() override;
 };

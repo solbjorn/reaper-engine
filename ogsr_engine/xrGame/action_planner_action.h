@@ -40,20 +40,21 @@ public:
     inline explicit CActionPlannerAction(_object_type* object = nullptr, LPCSTR action_name = "");
     ~CActionPlannerAction() override = default;
 
-    virtual void setup(_object_type* object, CPropertyStorage* storage);
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
-    virtual bool completed() const;
+    void setup(_object_type* object, CPropertyStorage* storage) override;
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
+    [[nodiscard]] virtual bool completed() const;
     IC void add_condition(_world_operator* action, _condition_type condition_id, _value_type condition_value);
     IC void add_effect(_world_operator* action, _condition_type condition_id, _value_type condition_value);
 
-    virtual void save(NET_Packet& packet)
+    void save(NET_Packet& packet) override
     {
         inherited_planner::save(packet);
         inherited_action::save(packet);
     }
-    virtual void load(IReader& packet)
+
+    void load(IReader& packet) override
     {
         inherited_planner::load(packet);
         inherited_action::load(packet);

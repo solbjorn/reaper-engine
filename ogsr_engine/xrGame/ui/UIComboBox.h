@@ -35,32 +35,31 @@ public:
     ~CUIComboBox() override;
 
     // CUIOptionsItem
-    virtual void SetCurrentValue();
-    virtual void SaveValue();
-    virtual bool IsChanged();
-    virtual void SeveBackUpValue();
-    virtual void Undo();
+    void SetCurrentValue() override;
+    void SaveValue() override;
+    [[nodiscard]] bool IsChanged() override;
+    void SeveBackUpValue() override;
+    void Undo() override;
 
-    LPCSTR GetText();
+    [[nodiscard]] gsl::czstring GetText();
 
     // methods
     CUIListBox* GetListWnd();
     void SetListLength(int length);
     void SetVertScroll(bool bVScroll = true) { m_list.SetFixedScrollBar(bVScroll); }
-    //.	virtual void		AddItem					(LPCSTR str, bool bSelected);
     CUIListBoxItem* AddItem_(LPCSTR str, int _data);
     CUIListBoxItem* AddItem_(LPCSTR str);
     virtual void Init(float x, float y, float width);
     void SetItem(int i);
 
-    virtual void Init(float x, float y, float width, float height);
+    void Init(f32 x, f32 y, f32 width, f32 height) override;
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
-    virtual void OnFocusLost();
-    virtual void OnFocusReceive();
+    void OnFocusLost() override;
+    void OnFocusReceive() override;
 
     int CurrentID() { return m_itoken_id; }
 
-    virtual void SetFont(CGameFont* pFont);
+    void SetFont(CGameFont* pFont) override;
 
 protected:
     virtual void SetState(UIState state);
@@ -69,7 +68,7 @@ protected:
     virtual void OnBtnClicked();
     void ShowList(bool bShow);
     void OnListItemSelect();
-    virtual void Update();
+    void Update() override;
 
 protected:
     bool m_bInited;

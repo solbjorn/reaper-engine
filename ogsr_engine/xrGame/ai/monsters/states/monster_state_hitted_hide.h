@@ -15,12 +15,12 @@ public:
     explicit CStateMonsterHittedHide(_Object* obj) : inherited{obj} {}
     ~CStateMonsterHittedHide() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void initialize() override;
+    void execute() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 
-    virtual bool check_completion();
-    virtual bool check_start_conditions();
+    [[nodiscard]] bool check_completion() override;
+    [[nodiscard]] bool check_start_conditions() override;
 };
 
 #include "monster_state_hitted_hide_inline.h"

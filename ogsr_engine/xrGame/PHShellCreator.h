@@ -10,7 +10,7 @@ class CPHShellSimpleCreator : public IPhysicShellCreator
 public:
     ~CPHShellSimpleCreator() override = default;
 
-    virtual void CreatePhysicsShell();
+    void CreatePhysicsShell() override;
 };
 
 #endif // PHSHELL_CREATOR_H

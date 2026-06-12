@@ -24,7 +24,7 @@ public:
 
     void SendMessage(CUIWindow*, s16 msg, void*) override;
     virtual void SetSelectionColor(u32 dwColor);
-    virtual void Draw();
+    void Draw() override;
     virtual void dummy() {}
 
 protected:

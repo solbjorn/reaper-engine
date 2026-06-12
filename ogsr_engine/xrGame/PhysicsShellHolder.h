@@ -59,25 +59,25 @@ public:
 
     IC CPhysicsShell*& PPhysicsShell() { return m_pPhysicsShell; }
 
-    IC CPhysicsShellHolder* PhysicsShellHolder() { return this; }
-    virtual CPHDestroyable* ph_destroyable() { return nullptr; }
-    virtual CPHCollisionDamageReceiver* PHCollisionDamageReceiver() { return nullptr; }
-    virtual CPHSkeleton* PHSkeleton() { return nullptr; }
-    virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
-    virtual CParticlesPlayer* cast_particles_player() { return this; }
-    virtual IDamageSource* cast_IDamageSource() { return nullptr; }
-    virtual CPHSoundPlayer* ph_sound_player() { return m_ph_sound_player; }
-    virtual CCharacterPhysicsSupport* character_physics_support() { return nullptr; }
-    virtual CCharacterPhysicsSupport* character_physics_support() const { return nullptr; }
-    virtual CIKLimbsController* character_ik_controller() { return nullptr; }
-    virtual ICollisionHitCallback* get_collision_hit_callback() { return nullptr; }
+    [[nodiscard]] CPhysicsShellHolder* PhysicsShellHolder() { return this; }
+    [[nodiscard]] virtual CPHDestroyable* ph_destroyable() { return nullptr; }
+    [[nodiscard]] virtual CPHCollisionDamageReceiver* PHCollisionDamageReceiver() { return nullptr; }
+    [[nodiscard]] virtual CPHSkeleton* PHSkeleton() { return nullptr; }
+    [[nodiscard]] CPhysicsShellHolder* cast_physics_shell_holder() override { return this; }
+    [[nodiscard]] CParticlesPlayer* cast_particles_player() override { return this; }
+    [[nodiscard]] virtual IDamageSource* cast_IDamageSource() { return nullptr; }
+    [[nodiscard]] virtual CPHSoundPlayer* ph_sound_player() { return m_ph_sound_player; }
+    [[nodiscard]] virtual CCharacterPhysicsSupport* character_physics_support() { return nullptr; }
+    [[nodiscard]] virtual CCharacterPhysicsSupport* character_physics_support() const { return nullptr; }
+    [[nodiscard]] virtual CIKLimbsController* character_ik_controller() { return nullptr; }
+    [[nodiscard]] virtual ICollisionHitCallback* get_collision_hit_callback() { return nullptr; }
     virtual void set_collision_hit_callback(ICollisionHitCallback*) {}
     virtual void enable_notificate() {}
 
-    virtual IPhysicsShell* physics_shell() const override;
-    virtual IPhysicsElement* physics_character() const override;
+    [[nodiscard]] IPhysicsShell* physics_shell() const override;
+    [[nodiscard]] IPhysicsElement* physics_character() const override;
 
-    virtual const IObjectPhysicsCollision* physics_collision() override;
+    [[nodiscard]] const IObjectPhysicsCollision* physics_collision() override;
 
 public:
     virtual void PHGetLinearVell(Fvector& velocity);
@@ -86,15 +86,15 @@ public:
     virtual void PHSetMaterial(u16 m);
     void PHSaveState(NET_Packet& P);
     void PHLoadState(IReader& P);
-    virtual f32 GetMass();
+    [[nodiscard]] virtual f32 GetMass();
     virtual void PHHit(SHit& H);
-    virtual void Hit(SHit* pHDS);
+    void Hit(SHit* pHDS) override;
     ///////////////////////////////////////////////////////////////////////
-    virtual u16 PHGetSyncItemsNumber();
-    virtual CPHSynchronize* PHGetSyncItem(u16 item);
+    [[nodiscard]] virtual u16 PHGetSyncItemsNumber();
+    [[nodiscard]] virtual CPHSynchronize* PHGetSyncItem(u16 item);
     virtual void PHUnFreeze();
     virtual void PHFreeze();
-    virtual float EffectiveGravity();
+    [[nodiscard]] virtual f32 EffectiveGravity();
     ///////////////////////////////////////////////////////////////
     virtual void create_physic_shell();
     virtual void activate_physic_shell();
@@ -103,20 +103,20 @@ public:
 
     tmc::task<void> net_Destroy() override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
-    virtual void save(NET_Packet& output_packet);
-    virtual void load(IReader& input_packet);
+    void save(NET_Packet& output_packet) override;
+    void load(IReader& input_packet) override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
 
     void init();
 
-    virtual void OnChangeVisual();
+    void OnChangeVisual() override;
     // для наследования CParticlesPlayer
     tmc::task<void> UpdateCL() override;
     void correct_spawn_pos();
 
 public:
-    virtual bool register_schedule() const;
+    [[nodiscard]] bool register_schedule() const override;
     bool ActorCanCapture() const;
     bool hasFixedBones() const;
     Fvector2 CollideSndDist() const;

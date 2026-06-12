@@ -72,8 +72,8 @@ public:
     virtual tmc::task<void> net_Destroy();
     virtual tmc::task<void> shedule_Update(u32);
     virtual tmc::task<void> UpdateCL();
-    virtual CScriptEntity* cast_script_entity() { return this; }
-    virtual DLL_Pure* _construct();
+    [[nodiscard]] virtual CScriptEntity* cast_script_entity() { return this; }
+    [[nodiscard]] virtual DLL_Pure* _construct();
 
 public:
     const Fmatrix GetUpdatedMatrix(shared_str caBoneName, const Fvector& tPositionOffset, const Fvector& tAngleOffset);
@@ -92,13 +92,13 @@ public:
     virtual void ProcessScripts();
     virtual void ResetScriptData(void* = nullptr);
     virtual void ClearActionQueue();
-    virtual bool bfAssignMovement(CScriptEntityAction* tpEntityAction);
-    virtual bool bfAssignWatch(CScriptEntityAction*);
-    virtual bool bfAssignAnimation(CScriptEntityAction*);
-    virtual bool bfAssignSound(CScriptEntityAction* tpEntityAction);
-    virtual bool bfAssignParticles(CScriptEntityAction* tpEntityAction);
-    virtual bool bfAssignObject(CScriptEntityAction*);
-    virtual bool bfAssignMonsterAction(CScriptEntityAction*);
+    [[nodiscard]] virtual bool bfAssignMovement(CScriptEntityAction* tpEntityAction);
+    [[nodiscard]] virtual bool bfAssignWatch(CScriptEntityAction*);
+    [[nodiscard]] virtual bool bfAssignAnimation(CScriptEntityAction*);
+    [[nodiscard]] virtual bool bfAssignSound(CScriptEntityAction* tpEntityAction);
+    [[nodiscard]] virtual bool bfAssignParticles(CScriptEntityAction* tpEntityAction);
+    [[nodiscard]] virtual bool bfAssignObject(CScriptEntityAction*);
+    [[nodiscard]] virtual bool bfAssignMonsterAction(CScriptEntityAction*);
 
     virtual void sound_callback(const CObject* object, int sound_type, const Fvector& position, float sound_power, float time_to_stop);
 
@@ -107,9 +107,9 @@ public:
     u32 GetActionCount() const;
     const CScriptEntityAction* GetActionByIndex(u32 action_index) const;
 
-    virtual CEntity* GetCurrentEnemy();
-    virtual CEntity* GetCurrentCorpse();
-    virtual int get_enemy_strength();
+    [[nodiscard]] virtual CEntity* GetCurrentEnemy();
+    [[nodiscard]] virtual CEntity* GetCurrentCorpse();
+    [[nodiscard]] virtual s32 get_enemy_strength();
 
     void process_sound_callbacks();
 

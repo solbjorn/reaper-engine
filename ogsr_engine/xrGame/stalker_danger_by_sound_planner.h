@@ -27,8 +27,8 @@ public:
     explicit CStalkerDangerBySoundPlanner(CAI_Stalker* object = nullptr, LPCSTR action_name = "");
     ~CStalkerDangerBySoundPlanner() override = default;
 
-    virtual void setup(CAI_Stalker* object, CPropertyStorage* storage);
-    virtual void initialize();
-    virtual void update();
-    virtual void finalize();
+    void setup(CAI_Stalker* object, CPropertyStorage* storage) override;
+    void initialize() override;
+    void update() override;
+    void finalize() override;
 };

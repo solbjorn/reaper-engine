@@ -40,7 +40,7 @@ public:
     ~IRender_DetailModel() override = 0;
 
     virtual void transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset) = 0;
-    virtual void transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, float du, float dv) = 0;
+    virtual void transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, f32 du, f32 dv) = 0;
 };
 
 inline IRender_DetailModel::~IRender_DetailModel() = default;

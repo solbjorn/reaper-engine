@@ -629,7 +629,7 @@ tmc::task<void> CApplication::OnEvent(CEvent* E, u64 P1, u64 P2)
 
         pApp->LoadBegin();
         co_await g_pGamePersistent->Start(op_server);
-        g_pGameLevel->net_Start(op_server, op_client);
+        std::ignore = g_pGameLevel->net_Start(op_server, op_client);
         pApp->LoadEnd();
 
         xr_free(op_server);

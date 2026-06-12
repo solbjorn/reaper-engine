@@ -36,7 +36,7 @@ protected:
     //////////////////////////////////////////////////////////////////////////
     // Fire Params
     //////////////////////////////////////////////////////////////////////////
-    virtual void LoadFireParams(LPCSTR section, LPCSTR prefix);
+    virtual void LoadFireParams(gsl::czstring section, gsl::czstring prefix);
     virtual bool SendHitAllowed(CObject* pUser);
     virtual void FireBullet(const Fvector& pos, const Fvector& dir, float fire_disp, const CCartridge& cartridge, u16 parent_id, u16 weapon_id, bool send_hit);
 
@@ -112,10 +112,10 @@ protected:
     // партикловая система
     //////////////////////////////////////////////////////////////////////////
     // функции родительского объекта
-    virtual const Fvector& get_CurrentFirePoint() = 0;
-    virtual const Fmatrix& get_ParticlesXFORM() = 0;
+    [[nodiscard]] virtual const Fvector& get_CurrentFirePoint() = 0;
+    [[nodiscard]] virtual const Fmatrix& get_ParticlesXFORM() = 0;
     virtual void ForceUpdateFireParticles() {}
-    virtual bool IsHudModeNow() = 0;
+    [[nodiscard]] virtual bool IsHudModeNow() = 0;
 
     ////////////////////////////////////////////////
     // общие функции для работы с партиклами оружия

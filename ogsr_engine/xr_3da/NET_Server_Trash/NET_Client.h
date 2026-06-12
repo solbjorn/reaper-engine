@@ -66,5 +66,5 @@ public:
     BOOL net_Syncronised{};
     virtual BOOL net_IsSyncronised() { return net_Syncronised; }
 
-    virtual void OnSessionTerminate(LPCSTR) {}
+    virtual void OnSessionTerminate(gsl::czstring) {}
 };

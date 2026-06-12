@@ -10,18 +10,18 @@ public:
     bool lmapped;
 
 public:
-    virtual LPCSTR getComment() { return "LEVEL: defer-base-aref"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "LEVEL: defer-base-aref"; }
 
-    virtual BOOL canBeDetailed() { return TRUE; }
-    virtual BOOL canUseSteepParallax() { return TRUE; }
+    [[nodiscard]] BOOL canBeDetailed() override { return TRUE; }
+    [[nodiscard]] BOOL canUseSteepParallax() override { return TRUE; }
 
-    virtual void Save(IWriter& fs);
-    virtual void Load(IReader& fs, u16 version);
+    void Save(IWriter& fs) override;
+    void Load(IReader& fs, u16 version) override;
 
-    virtual void SaveIni(CInifile* ini_file, LPCSTR section);
-    virtual void LoadIni(CInifile* ini_file, LPCSTR section);
+    void SaveIni(CInifile* ini_file, gsl::czstring section) override;
+    void LoadIni(CInifile* ini_file, gsl::czstring section) override;
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 
     explicit CBlender_deffer_aref(bool _lmapped = false);
     ~CBlender_deffer_aref() override;

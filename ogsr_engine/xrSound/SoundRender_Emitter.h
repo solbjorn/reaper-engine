@@ -105,41 +105,43 @@ public:
     void Event_ReleaseOwner();
 
     bool isPlaying() const { return m_current_state != stStopped; }
-    virtual bool is_2D() const { return b2D; }
-    virtual void switch_to_2D();
-    virtual void switch_to_3D();
+    [[nodiscard]] bool is_2D() const override { return b2D; }
+    void switch_to_2D() override;
+    void switch_to_3D() override;
 
-    virtual void set_position(const Fvector& pos);
+    void set_position(const Fvector3& pos) override;
 
-    virtual void set_frequency(float scale)
+    void set_frequency(f32 scale) override
     {
         VERIFY(_valid(scale));
         p_source.freq = scale;
     }
 
-    virtual void set_range(float min, float max)
+    void set_range(f32 min, f32 max) override
     {
         VERIFY(_valid(min) && _valid(max));
+
         p_source.min_distance = min;
         p_source.max_distance = max;
     }
 
-    virtual void set_volume(float vol)
+    void set_volume(f32 vol) override
     {
         if (!_valid(vol))
             vol = 0.0f;
+
         p_source.volume = vol;
     }
 
-    virtual void set_gain(float low_gain, float high_gain)
+    void set_gain(f32 low_gain, f32 high_gain) override
     {
         p_source.low_gain = low_gain;
         p_source.high_gain = high_gain;
     }
 
-    virtual void set_priority(float p) { priority_scale = p; }
-    virtual void set_time(float t); //--#SM+#--
-    virtual const CSound_params* get_params() { return &p_source; }
+    void set_priority(f32 p) override { priority_scale = p; }
+    void set_time(f32 t) override; //--#SM+#--
+    [[nodiscard]] const CSound_params* get_params() override { return &p_source; }
 
     tmc::task<std::span<u8>> obtain_block();
 
@@ -154,7 +156,7 @@ public:
     tmc::task<void> stop(bool bDeffered, f32 speed_k = 1.0f) override;
     void pause(BOOL bVal, int id);
 
-    virtual u32 play_time();
+    [[nodiscard]] u32 play_time() override;
 
     CSoundRender_Emitter();
     ~CSoundRender_Emitter() override;

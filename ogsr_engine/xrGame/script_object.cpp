@@ -16,7 +16,7 @@ CScriptObject::~CScriptObject() = default;
 DLL_Pure* CScriptObject::_construct()
 {
     std::ignore = CGameObject::_construct();
-    CScriptEntity::_construct();
+    std::ignore = CScriptEntity::_construct();
 
     return this;
 }

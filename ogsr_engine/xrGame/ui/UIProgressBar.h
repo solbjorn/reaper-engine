@@ -15,7 +15,6 @@ public:
     typedef CUIWindow inherited;
 
 protected:
-    //	bool				m_bIsHorizontal;
     enum EOrientMode
     {
         om_horz = 0,
@@ -62,14 +61,15 @@ public:
         m_MaxPos = _Max;
         UpdateProgressBar();
     }
+
     float GetRange_min() { return m_MinPos; }
     float GetRange_max() { return m_MaxPos; }
     void SetProgressPos(float _Pos);
     float GetProgressPos() { return m_ProgressPos.y; }
     void ShowBackground(bool status) { m_bBackgroundPresent = status; }
     bool IsShownBackground() { return m_bBackgroundPresent; }
-    virtual void Draw();
-    virtual void Update();
+    void Draw() override;
+    void Update() override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

@@ -25,8 +25,8 @@ public:
     inline explicit CObjectItemSingle(const CLASS_ID& clsid, LPCSTR script_clsid);
     ~CObjectItemSingle() override = default;
 
-    virtual ObjectFactory::CLIENT_BASE_CLASS* client_object() const;
-    virtual ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR section) const;
+    [[nodiscard]] ObjectFactory::CLIENT_BASE_CLASS* client_object() const override;
+    [[nodiscard]] ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR section) const override;
 };
 
 template <typename _unknown_type>
@@ -42,8 +42,8 @@ public:
     inline explicit CObjectItemSingle(const CLASS_ID& clsid, LPCSTR script_clsid);
     ~CObjectItemSingle() override = default;
 
-    virtual ObjectFactory::CLIENT_BASE_CLASS* client_object() const;
-    virtual ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR) const;
+    [[nodiscard]] ObjectFactory::CLIENT_BASE_CLASS* client_object() const override;
+    [[nodiscard]] ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR) const override;
 };
 
 #include "object_item_single_inline.h"

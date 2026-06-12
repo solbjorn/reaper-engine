@@ -26,13 +26,13 @@ protected:
     virtual void switch2_Showing();
     void switch2_Attacking(u32 state);
 
-    virtual void OnMotionMark(u32 state, const motion_marks& M);
-    virtual void OnAnimationEnd(u32 state);
-    virtual void OnStateSwitch(u32 S, u32 oldState);
+    void OnMotionMark(u32 state, const motion_marks& M) override;
+    void OnAnimationEnd(u32 state) override;
+    void OnStateSwitch(u32 S, u32 oldState) override;
 
-    virtual void DeviceUpdate() override;
+    void DeviceUpdate() override;
     tmc::task<void> UpdateCL() override;
-    virtual void PlayAnimDeviceSwitch() override;
+    void PlayAnimDeviceSwitch() override;
 
     void state_Attacking(float dt);
 
@@ -43,33 +43,32 @@ protected:
 
 protected:
     ALife::EHitType m_eHitType_1;
-    // float				fHitPower_1;
     Fvector4 fvHitPower_1;
     float fHitImpulse_1;
 
     ALife::EHitType m_eHitType_2;
-    // float				fHitPower_2;
     Fvector4 fvHitPower_2;
     float fHitImpulse_2;
-    virtual void LoadFireParams(LPCSTR section, LPCSTR prefix);
 
-    virtual size_t GetWeaponTypeForCollision() const override { return Knife_and_other; }
+    void LoadFireParams(gsl::czstring section, gsl::czstring prefix) override;
+
+    [[nodiscard]] size_t GetWeaponTypeForCollision() const override { return Knife_and_other; }
     // TODO: рассчитать здесь позицию для коллизии
-    virtual Fvector GetPositionForCollision() override { return Device.vCameraPosition; }
-    virtual Fvector GetDirectionForCollision() override { return Device.vCameraDirection; }
+    [[nodiscard]] Fvector GetPositionForCollision() override { return Device.vCameraPosition; }
+    [[nodiscard]] Fvector GetDirectionForCollision() override { return Device.vCameraDirection; }
 
 public:
     CWeaponKnife();
     ~CWeaponKnife() override;
 
-    void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
 
-    virtual void Fire2Start();
-    virtual void FireStart();
+    void Fire2Start() override;
+    void FireStart() override;
 
     [[nodiscard]] bool Action(EGameActions cmd, u32 flags) override;
 
-    virtual void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
+    void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count) override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

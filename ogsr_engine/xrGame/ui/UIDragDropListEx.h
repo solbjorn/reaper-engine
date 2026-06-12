@@ -86,7 +86,7 @@ public:
     CUIDragDropListEx();
     ~CUIDragDropListEx() override;
 
-    void Init(float x, float y, float w, float h);
+    void Init(f32 x, f32 y, f32 w, f32 h) override;
 
     using DRAG_DROP_EVENT = CallMe::Delegate<bool(CUICellItem*)>;
 
@@ -154,7 +154,7 @@ public:
 
     u32 ItemsCount();
     CUICellItem* GetItemIdx(u32 idx);
-    virtual CUICellItem* RemoveItem(CUICellItem* itm, bool force_root);
+    [[nodiscard]] virtual CUICellItem* RemoveItem(CUICellItem* itm, bool force_root);
     void CreateDragItem(CUICellItem* itm);
 
     void DestroyDragItem();
@@ -167,8 +167,8 @@ public:
 
 public:
     // UIWindow overriding
-    virtual void Draw();
-    virtual void Update();
+    void Draw() override;
+    void Update() override;
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 
@@ -204,7 +204,7 @@ public:
     ~CUICellContainer() override;
 
 protected:
-    virtual void Draw();
+    void Draw() override;
 
     IC const Ivector2& CellsCapacity() { return m_cellsCapacity; }
     void SetCellsCapacity(const Ivector2& c);

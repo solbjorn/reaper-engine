@@ -15,9 +15,9 @@ public:
     CUIListItem();
     ~CUIListItem() override;
 
-    virtual void Init(float x, float y, float width, float height);
-    virtual void Init(const char* str, float x, float y, float width, float height);
-    virtual void InitTexture(LPCSTR tex_name);
+    void Init(f32 x, f32 y, f32 width, f32 height) override;
+    void Init(gsl::czstring str, f32 x, f32 y, f32 width, f32 height) override;
+    void InitTexture(gsl::czstring tex_name) override;
 
     void* GetData() { return m_pData; }
     void SetData(void* pData) { m_pData = pData; }
@@ -37,7 +37,7 @@ public:
 
     virtual void MarkSelected(bool) {}
     // переопределяем критерий подсвечивания текста
-    virtual bool IsHighlightText();
+    [[nodiscard]] bool IsHighlightText() override;
     virtual void SetHighlightText(bool Highlight) { m_bHighlightText = Highlight; }
 
 protected:

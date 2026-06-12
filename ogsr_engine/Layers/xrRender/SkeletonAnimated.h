@@ -38,8 +38,6 @@ public:
     }
 };
 
-// typedef void	( * MotionMarkCallback)		(CBlend*		P);
-
 //*** The visual itself ***************************************************************************
 
 class CKinematicsAnimated : public CKinematics, public IKinematicsAnimated
@@ -60,18 +58,17 @@ private:
     void Bone_Motion_Start_IM(CBoneData* bd, CBlend* handle);
     void Bone_Motion_Stop_IM(CBoneData* bd, CBlend* handle);
 
-public:
     // Calculation
 private:
-    void LL_BuldBoneMatrixDequatize(const CBoneData* bd, u8 channel_mask, SKeyTable& keys);
-    void LL_BoneMatrixBuild(CBoneInstance& bi, const Fmatrix* parent, const SKeyTable& keys);
-    virtual void BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 mask_channel = (1 << 0));
+    void LL_BuldBoneMatrixDequatize(const CBoneData* bd, u8 channel_mask, SKeyTable& keys) override;
+    void LL_BoneMatrixBuild(CBoneInstance& bi, const Fmatrix* parent, const SKeyTable& keys) override;
+    void BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 mask_channel = (1 << 0)) override;
 
 public:
-    virtual void LL_AddTransformToBone(KinematicsABT::additional_bone_transform& offset); //--#SM+#--
-    virtual void LL_ClearAdditionalTransform(u16 bone_id = BI_NONE); //--#SM+#--
+    void LL_AddTransformToBone(KinematicsABT::additional_bone_transform& offset) override; //--#SM+#--
+    void LL_ClearAdditionalTransform(u16 bone_id = BI_NONE) override; //--#SM+#--
 
-    virtual void OnCalculateBones();
+    void OnCalculateBones() override;
 
 private:
     u32 Update_LastTime{};
@@ -98,8 +95,8 @@ private:
 
 protected:
     // internal functions
-    virtual void IBoneInstances_Create();
-    virtual void IBoneInstances_Destroy();
+    void IBoneInstances_Create() override;
+    void IBoneInstances_Destroy() override;
 
     void IBlend_Startup();
     void ChannelFactorsStartup();
@@ -109,38 +106,38 @@ private:
     void IBlendSetup(CBlend& B, u16 part, u8 channel, MotionID motion_ID, BOOL bMixing, float blendAccrue, float blendFalloff, float Speed, BOOL noloop,
                      PlayCallback Callback, LPVOID CallbackParam);
     void IFXBlendSetup(CBlend& B, MotionID motion_ID, float blendAccrue, float blendFalloff, float Power, float Speed, u16 bone);
-    //.	bool						LoadMotions				(LPCSTR N, IReader *data);
+
 public:
-    std::pair<LPCSTR, LPCSTR> LL_MotionDefName_dbg(MotionID ID);
-    void LL_DumpBlends_dbg();
+    [[nodiscard]] std::pair<gsl::czstring, gsl::czstring> LL_MotionDefName_dbg(MotionID ID) override;
+    void LL_DumpBlends_dbg() override;
 
-    u32 LL_PartBlendsCount(u32 bone_part_id);
-    CBlend* LL_PartBlend(u32 bone_part_id, u32 n);
-    void LL_IterateBlends(IterateBlendsCallback& callback);
+    [[nodiscard]] u32 LL_PartBlendsCount(u32 bone_part_id) override;
+    [[nodiscard]] CBlend* LL_PartBlend(u32 bone_part_id, u32 n) override;
+    void LL_IterateBlends(IterateBlendsCallback& callback) override;
 
-    void SetUpdateTracksCalback(IUpdateTracksCallback* callback);
-    IUpdateTracksCallback* GetUpdateTracksCalback() { return m_update_tracks_callback; }
+    void SetUpdateTracksCalback(IUpdateTracksCallback* callback) override;
+    [[nodiscard]] IUpdateTracksCallback* GetUpdateTracksCalback() override { return m_update_tracks_callback; }
 
-    u16 LL_MotionsSlotCount() { return (u16)m_Motions.size(); }
-    const shared_motions& LL_MotionsSlot(u16 idx) { return m_Motions[idx].motions; }
+    [[nodiscard]] u16 LL_MotionsSlotCount() override { return (u16)m_Motions.size(); }
+    [[nodiscard]] const shared_motions& LL_MotionsSlot(u16 idx) override { return m_Motions[idx].motions; }
 
-    IC CMotionDef* LL_GetMotionDef(MotionID id) { return m_Motions[id.slot].motions.motion_def(id.idx); }
-    IC CMotion* LL_GetRootMotion(MotionID id) { return &m_Motions[id.slot].bone_motions[iRoot]->at(id.idx); }
-    IC CMotion* LL_GetMotion(MotionID id, u16 bone_id) { return &m_Motions[id.slot].bone_motions[bone_id]->at(id.idx); }
+    [[nodiscard]] CMotionDef* LL_GetMotionDef(MotionID id) override { return m_Motions[id.slot].motions.motion_def(id.idx); }
+    [[nodiscard]] CMotion* LL_GetRootMotion(MotionID id) override { return &m_Motions[id.slot].bone_motions[iRoot]->at(id.idx); }
+    [[nodiscard]] CMotion* LL_GetMotion(MotionID id, u16 bone_id) override { return &m_Motions[id.slot].bone_motions[bone_id]->at(id.idx); }
 
-    virtual IBlendDestroyCallback* GetBlendDestroyCallback();
-    virtual void SetBlendDestroyCallback(IBlendDestroyCallback* cb);
+    [[nodiscard]] IBlendDestroyCallback* GetBlendDestroyCallback() override;
+    void SetBlendDestroyCallback(IBlendDestroyCallback* cb) override;
     // Low level interface
-    MotionID LL_MotionID(LPCSTR B);
-    u16 LL_PartID(LPCSTR B);
+    [[nodiscard]] MotionID LL_MotionID(gsl::czstring B) override;
+    [[nodiscard]] u16 LL_PartID(gsl::czstring B) override;
 
     CBlend* LL_PlayFX(u16 bone, MotionID motion, float blendAccrue, float blendFalloff, float Speed, float Power);
-    CBlend* LL_PlayCycle(u16 partition, MotionID motion, BOOL bMixing, float blendAccrue, float blendFalloff, float Speed, BOOL noloop, PlayCallback Callback,
-                         LPVOID CallbackParam, u8 channel = 0);
-    CBlend* LL_PlayCycle(u16 partition, MotionID motion, BOOL bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel = 0);
+    [[nodiscard]] CBlend* LL_PlayCycle(u16 partition, MotionID motion, BOOL bMixing, f32 blendAccrue, f32 blendFalloff, f32 Speed, BOOL noloop,
+                                       PlayCallback Callback, void* CallbackParam, u8 channel = 0) override;
+    [[nodiscard]] CBlend* LL_PlayCycle(u16 partition, MotionID motion, BOOL bMixIn, PlayCallback Callback, void* CallbackParam, u8 channel = 0) override;
     void LL_FadeCycle(u16 partition, float falloff, u8 mask_channel = (1 << 0));
-    void LL_CloseCycle(u16 partition, u8 mask_channel = (1 << 0));
-    void LL_SetChannelFactor(u16 channel, float factor);
+    void LL_CloseCycle(u16 partition, u8 mask_channel = (1 << 0)) override;
+    void LL_SetChannelFactor(u16 channel, f32 factor) override;
 
     CBlendInstance& LL_GetBlendInstance(u16 bone_id)
     {
@@ -150,33 +147,35 @@ public:
     }
 
     // Main functionality
-    void UpdateTracks(); // Update motions
-    void LL_UpdateTracks(float dt, bool b_force, bool leave_blends); // Update motions
+    void UpdateTracks() override; // Update motions
+    void LL_UpdateTracks(f32 dt, bool b_force, bool leave_blends) override; // Update motions
     void LL_UpdateFxTracks(float dt);
     void DestroyCycle(CBlend& B);
 
     // cycles
-    MotionID ID_Cycle(const shared_str& N) override;
-    MotionID ID_Cycle_Safe(const shared_str& N) override;
-    CBlend* PlayCycle(const shared_str& N, BOOL bMixIn = TRUE, PlayCallback Callback = nullptr, LPVOID CallbackParam = nullptr, u8 channel = 0) override;
-    CBlend* PlayCycle(MotionID M, BOOL bMixIn = TRUE, PlayCallback Callback = nullptr, LPVOID CallbackParam = nullptr, u8 channel = 0);
-    CBlend* PlayCycle(u16 partition, MotionID M, BOOL bMixIn = TRUE, PlayCallback Callback = nullptr, LPVOID CallbackParam = nullptr, u8 channel = 0);
+    [[nodiscard]] MotionID ID_Cycle(const shared_str& N) override;
+    [[nodiscard]] MotionID ID_Cycle_Safe(const shared_str& N) override;
+    [[nodiscard]] CBlend* PlayCycle(const shared_str& N, BOOL bMixIn = TRUE, PlayCallback Callback = nullptr, void* CallbackParam = nullptr,
+                                    u8 channel = 0) override;
+    [[nodiscard]] CBlend* PlayCycle(MotionID M, BOOL bMixIn = TRUE, PlayCallback Callback = nullptr, void* CallbackParam = nullptr, u8 channel = 0) override;
+    [[nodiscard]] CBlend* PlayCycle(u16 partition, MotionID M, BOOL bMixIn = TRUE, PlayCallback Callback = nullptr, void* CallbackParam = nullptr,
+                                    u8 channel = 0) override;
     // fx'es
     [[nodiscard]] MotionID ID_FX(std::string_view N) override;
     [[nodiscard]] MotionID ID_FX_Safe(std::string_view N) override;
     [[nodiscard]] CBlend* PlayFX(std::string_view N, f32 power_scale) override;
     [[nodiscard]] CBlend* PlayFX(MotionID M, f32 power_scale) override;
 
-    const CPartition& partitions() const { return *m_Partition; }
+    [[nodiscard]] const CPartition& partitions() const override { return *m_Partition; }
 
     // General "Visual" stuff
-    virtual void Copy(dxRender_Visual* pFrom);
-    virtual void Load(const char* N, IReader* data, u32 dwFlags);
-    virtual void Release();
-    virtual void Spawn();
-    virtual IKinematicsAnimated* dcast_PKinematicsAnimated() { return this; }
-    virtual IRenderVisual* dcast_RenderVisual() { return this; }
-    virtual IKinematics* dcast_PKinematics() { return this; }
+    void Copy(dxRender_Visual* pFrom) override;
+    void Load(gsl::czstring N, IReader* data, u32 dwFlags) override;
+    void Release() override;
+    void Spawn() override;
+    [[nodiscard]] IKinematicsAnimated* dcast_PKinematicsAnimated() override { return this; }
+    [[nodiscard]] IRenderVisual* dcast_RenderVisual() override { return this; }
+    [[nodiscard]] IKinematics* dcast_PKinematics() override { return this; }
 
     CKinematicsAnimated();
     ~CKinematicsAnimated() override;
@@ -192,7 +191,7 @@ public:
         return (blend_cycles[bone_part_id]);
     }
 
-    virtual float get_animation_length(MotionID motion_ID);
+    [[nodiscard]] f32 get_animation_length(MotionID motion_ID) override;
 };
 
 inline CKinematicsAnimated* PKinematicsAnimated(IRenderVisual* V) { return V ? smart_cast<CKinematicsAnimated*>(V->dcast_PKinematicsAnimated()) : nullptr; }

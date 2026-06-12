@@ -63,11 +63,11 @@ public:
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
     void Init();
-    virtual void Update();
-    virtual void Draw();
-    virtual void Show(bool status);
+    void Update() override;
+    void Draw() override;
+    void Show(bool status) override;
     void Reload();
-    virtual void Reset();
+    void Reset() override;
 
     CUIXml m_ui_task_item_xml;
 };

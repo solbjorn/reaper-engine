@@ -15,7 +15,7 @@ public:
     virtual void Calculate(CEffect_Rain& owner) = 0;
     virtual void Render(CEffect_Rain& owner) = 0;
 
-    virtual const Fsphere& GetDropBounds() const = 0;
+    [[nodiscard]] virtual const Fsphere& GetDropBounds() const = 0;
 };
 
 inline IRainRender::~IRainRender() = default;

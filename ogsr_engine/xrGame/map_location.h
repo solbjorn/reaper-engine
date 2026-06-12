@@ -68,7 +68,7 @@ public:
     explicit CMapLocation(LPCSTR type, u16 object_id, bool is_user_loc = false);
     ~CMapLocation() override;
 
-    virtual void destroy();
+    void destroy() override;
     LPCSTR GetHint();
     void SetHint(const shared_str& hint);
     bool PointerEnabled() { return SpotEnabled() && !!m_flags.test(ePointerEnabled); }
@@ -132,10 +132,10 @@ public:
     explicit CRelationMapLocation(const shared_str& type, u16 object_id, u16 pInvOwnerActorID, u16 pInvOwnerEntityID);
     ~CRelationMapLocation() override;
 
-    virtual bool Update(); // returns actual
+    bool Update() override; // returns actual
 
-    virtual void UpdateMiniMap(CUICustomMap* map);
-    virtual void UpdateLevelMap(CUICustomMap* map);
+    void UpdateMiniMap(CUICustomMap* map) override;
+    void UpdateLevelMap(CUICustomMap* map) override;
 
 #ifdef DEBUG
     virtual void Dump();

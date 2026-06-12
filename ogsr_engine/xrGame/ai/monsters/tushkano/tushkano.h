@@ -15,7 +15,7 @@ public:
     CTushkano();
     ~CTushkano() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     void CheckSpecParams(u32) override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();

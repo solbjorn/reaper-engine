@@ -160,7 +160,13 @@ public:
     tmc::task<void> net_Destroy();
 };
 
-class CHelicopter : public CEntity, public CShootingObject, public CRocketLauncher, public CPHSkeleton, public CPHDestroyable, public CHitImmunity, public CExplosive
+class CHelicopter : public CEntity,
+                    public CShootingObject,
+                    public CRocketLauncher,
+                    public CPHSkeleton,
+                    public CPHDestroyable,
+                    public CHitImmunity,
+                    public CExplosive
 {
     RTTI_DECLARE_TYPEINFO(CHelicopter, CEntity, CShootingObject, CRocketLauncher, CPHSkeleton, CPHDestroyable, CHitImmunity, CExplosive);
 
@@ -246,7 +252,6 @@ protected:
     // sound, light, particles...
     ref_sound m_engineSound;
     ref_sound m_brokenSound;
-    //	ref_sound						m_explodeSound;
     ref_light m_light_render{};
     CLAItem* m_lanim{};
     u16 m_light_bone, m_smoke_bone;
@@ -263,10 +268,12 @@ protected:
 
     void TurnLighting(bool bOn);
     void TurnEngineSound(bool bOn);
+
     // explosive
-    virtual void OnAfterExplosion() {}
-    virtual void GetRayExplosionSourcePos(Fvector& pos) { random_point_in_object_box(pos, this); }
-    virtual void ActivateExplosionBox(const Fvector&, Fvector&) {}
+    void OnAfterExplosion() override {}
+    void GetRayExplosionSourcePos(Fvector& pos) override { random_point_in_object_box(pos, this); }
+    void ActivateExplosionBox(const Fvector&, Fvector&) override {}
+
     // general
     EHeliState m_curState;
 
@@ -290,44 +297,44 @@ public:
     void setState_script(u32 s) { setState((CHelicopter::EHeliState)s); }
 
     void init();
-    virtual void reinit();
+    void reinit() override;
 
-    virtual void Load(LPCSTR section);
-    virtual void reload(LPCSTR section);
+    void Load(gsl::czstring section) override;
+    void reload(gsl::czstring section) override;
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
     void net_Export(CSE_Abstract*) override {}
-    virtual void net_Relcase(CObject* O);
-    virtual void save(NET_Packet& output_packet);
-    virtual void load(IReader& input_packet);
+    void net_Relcase(CObject* O) override;
+    void save(NET_Packet& output_packet) override;
+    void load(IReader& input_packet) override;
 
     void SpawnInitPhysics(CSE_Abstract*) override;
-    virtual CPhysicsShellHolder* PPhysicsShellHolder() { return PhysicsShellHolder(); }
-    virtual void net_Save(NET_Packet& P);
-    virtual BOOL net_SaveRelevant() { return (inherited::net_SaveRelevant() && PPhysicsShell()) || m_exploded; }
+    [[nodiscard]] CPhysicsShellHolder* PPhysicsShellHolder() override { return PhysicsShellHolder(); }
+    void net_Save(NET_Packet& P) override;
+    [[nodiscard]] BOOL net_SaveRelevant() override { return (inherited::net_SaveRelevant() && PPhysicsShell()) || m_exploded; }
 
-    virtual BOOL renderable_ShadowGenerate() { return FALSE; }
-    virtual BOOL renderable_ShadowReceive() { return TRUE; }
+    [[nodiscard]] BOOL renderable_ShadowGenerate() override { return FALSE; }
+    [[nodiscard]] BOOL renderable_ShadowReceive() override { return TRUE; }
 
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     tmc::task<void> UpdateCL() override;
     tmc::task<void> shedule_Update(u32 time_delta) override;
     void MoveStep();
 
-    virtual void Hit(SHit* pHDS);
-    virtual void PHHit(SHit& H);
+    void Hit(SHit* pHDS) override;
+    void PHHit(SHit& H) override;
     // CEntity
-    virtual void HitSignal(float, Fvector&, CObject*, s16) {}
-    virtual void HitImpulse(float, Fvector&, Fvector&) {}
+    void HitSignal(f32, Fvector3&, CObject*, s16) override {}
+    void HitImpulse(f32, Fvector3&, Fvector3&) override {}
 
-    virtual const Fmatrix& get_ParticlesXFORM();
-    virtual const Fvector& get_CurrentFirePoint();
-    virtual bool IsHudModeNow() { return false; }
+    [[nodiscard]] const Fmatrix& get_ParticlesXFORM() override;
+    [[nodiscard]] const Fvector& get_CurrentFirePoint() override;
+    [[nodiscard]] bool IsHudModeNow() override { return false; }
 
-    virtual CGameObject* cast_game_object() { return this; }
-    virtual CExplosive* cast_explosive() { return this; }
-    virtual CPHSkeleton* PHSkeleton() { return this; }
+    [[nodiscard]] CGameObject* cast_game_object() override { return this; }
+    [[nodiscard]] CExplosive* cast_explosive() override { return this; }
+    [[nodiscard]] CPHSkeleton* PHSkeleton() override { return this; }
 
 public:
     // for scripting
@@ -368,7 +375,7 @@ public:
     int GetHuntState();
     int GetBodyState();
 
-    virtual DLL_Pure* _construct();
+    [[nodiscard]] DLL_Pure* _construct() override;
     float GetSafeAltitude() { return m_movement.GetSafeAltitude(); }
     float GetHeliHealth() const { return inherited::GetfHealth(); }
     float SetHeliHealth(float value) { return inherited::SetfHealth(value); }

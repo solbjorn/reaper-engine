@@ -15,7 +15,7 @@ CInventoryItemObject::~CInventoryItemObject() = default;
 
 DLL_Pure* CInventoryItemObject::_construct()
 {
-    CInventoryItem::_construct();
+    std::ignore = CInventoryItem::_construct();
     std::ignore = CPhysicItem::_construct();
 
     return this;
@@ -28,38 +28,10 @@ void CInventoryItemObject::Load(LPCSTR section)
 }
 
 LPCSTR CInventoryItemObject::Name() { return (CInventoryItem::Name()); }
-
 LPCSTR CInventoryItemObject::NameShort() { return (CInventoryItem::NameShort()); }
-/*
-LPCSTR CInventoryItemObject::NameComplex	()
-{
-    return						(CInventoryItem::NameComplex());
-}
-*/
 
 void CInventoryItemObject::Hit(SHit* pHDS)
 {
-    /*
-    CPhysicItem::Hit			(
-        P,
-        dir,
-        who,
-        element,
-        position_in_object_space,
-        impulse,
-        hit_type
-    );
-
-    CInventoryItem::Hit			(
-        P,
-        dir,
-        who,
-        element,
-        position_in_object_space,
-        impulse,
-        hit_type
-    );
-    */
     CPhysicItem::Hit(pHDS);
     CInventoryItem::Hit(pHDS);
 }

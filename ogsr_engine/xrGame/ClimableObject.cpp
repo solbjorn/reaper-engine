@@ -56,7 +56,7 @@ private:
 public:
     explicit CPHLeaderGeomShell(CClimableObject* climable);
 
-    void near_callback(CPHObject* obj);
+    void near_callback(CPHObject* obj) override;
 };
 
 CPHLeaderGeomShell::CPHLeaderGeomShell(CClimableObject* climable) : m_pClimable{climable} {}
@@ -71,7 +71,7 @@ void CPHLeaderGeomShell::near_callback(CPHObject* obj)
 }
 
 CClimableObject::CClimableObject() = default;
-CClimableObject::~CClimableObject() {}
+CClimableObject::~CClimableObject() = default;
 
 void CClimableObject::Load(LPCSTR section) { inherited::Load(section); }
 
@@ -94,13 +94,13 @@ tmc::task<bool> CClimableObject::net_Spawn(CSE_Abstract* DC)
             m_box.m_halfsize.x = f_min_width;
             shift.set(1.f, 0.f, 0.f);
         };
-        m_norm.mul(m_box.m_halfsize.x), b._22, m_axis.set(XFORM().j); m_axis.mul(m_box.m_halfsize.y), m_side.set(XFORM().j); m_side.mul(m_box.m_halfsize.y), m_norm.set(XFORM().j);
-        if (m_box.m_halfsize.y < f_min_width) {
+        m_norm.mul(m_box.m_halfsize.x), b._22, m_axis.set(XFORM().j); m_axis.mul(m_box.m_halfsize.y), m_side.set(XFORM().j);
+        m_side.mul(m_box.m_halfsize.y), m_norm.set(XFORM().j); if (m_box.m_halfsize.y < f_min_width) {
             m_box.m_halfsize.y = f_min_width;
             shift.set(0.f, 1.f, 0.f);
         };
-        m_norm.mul(m_box.m_halfsize.y), b._33, m_axis.set(XFORM().k); m_axis.mul(m_box.m_halfsize.z), m_side.set(XFORM().k); m_side.mul(m_box.m_halfsize.z), m_norm.set(XFORM().k);
-        if (m_box.m_halfsize.z < f_min_width) {
+        m_norm.mul(m_box.m_halfsize.y), b._33, m_axis.set(XFORM().k); m_axis.mul(m_box.m_halfsize.z), m_side.set(XFORM().k);
+        m_side.mul(m_box.m_halfsize.z), m_norm.set(XFORM().k); if (m_box.m_halfsize.z < f_min_width) {
             m_box.m_halfsize.z = f_min_width;
             shift.set(0.f, 0.f, 1.f);
         };

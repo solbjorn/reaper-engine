@@ -58,14 +58,14 @@ public:
     [[nodiscard]] virtual bool OnMouse(f32 x, f32 y, EUIMessages mouse_action);
     virtual void OnMouseMove();
     virtual void OnMouseScroll(float);
-    virtual bool OnDbClick();
+    [[nodiscard]] virtual bool OnDbClick();
     [[nodiscard]] virtual bool OnMouseDown(sf::Mouse::Button);
     virtual void OnMouseUp(sf::Mouse::Button);
     virtual void OnFocusReceive();
     virtual void OnFocusLost();
     virtual void UpdateFocus(bool = false);
     virtual void CommitFocus(bool = false);
-    virtual bool CapturesFocusToo();
+    [[nodiscard]] virtual bool CapturesFocusToo();
     bool HasChildMouseHandler();
 
     // захватить/освободить мышь окном
@@ -119,10 +119,10 @@ public:
     IC float GetPosTop() const { return m_wndPos.y; }
 
     // прорисовка окна
-    virtual void Draw();
-    virtual void Draw(float x, float y);
-    // обновление окна передпрорисовкой
-    virtual void Update();
+    void Draw() override;
+    void Draw(f32 x, f32 y) override;
+    // обновление окна перед прорисовкой
+    void Update() override;
 
     void SetPPMode();
     void ResetPPMode();

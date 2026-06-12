@@ -45,7 +45,8 @@ public:
     IC void add_vertex(const _data_type& data, const _vertex_id_type& vertex_id);
     IC void remove_vertex(const _vertex_id_type& vertex_id);
     IC void add_edge(const _vertex_id_type& vertex_id0, const _vertex_id_type& vertex_id1, const _edge_weight_type& edge_weight);
-    IC void add_edge(const _vertex_id_type& vertex_id0, const _vertex_id_type& vertex_id1, const _edge_weight_type& edge_weight0, const _edge_weight_type& edge_weight1);
+    IC void add_edge(const _vertex_id_type& vertex_id0, const _vertex_id_type& vertex_id1, const _edge_weight_type& edge_weight0,
+                     const _edge_weight_type& edge_weight1);
     IC void remove_edge(const _vertex_id_type& vertex_id0, const _vertex_id_type& vertex_id1);
     IC u32 vertex_count() const;
     IC u32 edge_count() const;
@@ -66,8 +67,8 @@ public:
 template <typename _data_type, typename _edge_weight_type = float, typename _vertex_id_type = u32>
 class CGraphAbstractSerialize : public CGraphAbstract<_data_type, _edge_weight_type, _vertex_id_type>, public IPureSerializeObject<IReader, IWriter>
 {
-    RTTI_DECLARE_TYPEINFO(CGraphAbstractSerialize<_data_type, _edge_weight_type, _vertex_id_type>, CGraphAbstract<_data_type, _edge_weight_type, _vertex_id_type>,
-                          IPureSerializeObject<IReader, IWriter>);
+    RTTI_DECLARE_TYPEINFO(CGraphAbstractSerialize<_data_type, _edge_weight_type, _vertex_id_type>,
+                          CGraphAbstract<_data_type, _edge_weight_type, _vertex_id_type>, IPureSerializeObject<IReader, IWriter>);
 
 public:
     using inherited = CGraphAbstract<_data_type, _edge_weight_type, _vertex_id_type>;
@@ -79,8 +80,8 @@ public:
 
     ~CGraphAbstractSerialize() override = default;
 
-    virtual void save(IWriter& stream);
-    virtual void load(IReader& stream);
+    void save(IWriter& stream) override;
+    void load(IReader& stream) override;
 };
 
 #include "graph_abstract_inline.h"

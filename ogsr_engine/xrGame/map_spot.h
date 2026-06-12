@@ -18,12 +18,12 @@ public:
     explicit CMapSpot(CMapLocation*);
     ~CMapSpot() override;
 
-    virtual void Load(CUIXml* xml, LPCSTR path);
+    virtual void Load(CUIXml* xml, gsl::czstring path);
     CMapLocation* MapLocation() { return m_map_location; }
-    virtual LPCSTR GetHint();
-    virtual void Update();
+    [[nodiscard]] virtual gsl::czstring GetHint();
+    void Update() override;
     [[nodiscard]] bool OnMouseDown(sf::Mouse::Button mouse_btn) override;
-    virtual void OnFocusLost();
+    void OnFocusLost() override;
 };
 
 class CMapSpotPointer : public CMapSpot
@@ -37,7 +37,7 @@ public:
     explicit CMapSpotPointer(CMapLocation*);
     ~CMapSpotPointer() override;
 
-    virtual LPCSTR GetHint();
+    [[nodiscard]] gsl::czstring GetHint() override;
 };
 
 class CMiniMapSpot : public CMapSpot
@@ -52,6 +52,6 @@ public:
     explicit CMiniMapSpot(CMapLocation*);
     ~CMiniMapSpot() override;
 
-    virtual void Load(CUIXml* xml, LPCSTR path);
-    virtual void Draw();
+    void Load(CUIXml* xml, gsl::czstring path) override;
+    void Draw() override;
 };

@@ -32,12 +32,12 @@ public:
 
     tmc::task<void> OnFrame() override;
     tmc::task<void> OnRender() override;
-    CUIWindow* MainWnd() { return m_UIWindow; }
-    bool IsActive() { return m_bActive; }
+    [[nodiscard]] CUIWindow* MainWnd() { return m_UIWindow; }
+    [[nodiscard]] bool IsActive() { return m_bActive; }
 
     // IInputReceiver
-    virtual void IR_OnMouseMove(int x, int y);
-    virtual void IR_OnMouseStop(int x, int y);
+    void IR_OnMouseMove(s32 x, s32 y) override;
+    void IR_OnMouseStop(s32 x, s32 y) override;
 
     tmc::task<void> IR_OnKeyboardPress(xr::key_id dik) override;
     void IR_OnKeyboardRelease(xr::key_id dik) override;
@@ -75,19 +75,19 @@ public:
     explicit CUISequenceItem(CUISequencer* owner) : m_owner(owner) { m_flags.zero(); }
     ~CUISequenceItem() override = 0;
 
-    virtual void Load(CUIXml* xml, int idx) = 0;
+    virtual void Load(CUIXml* xml, s32 idx) = 0;
 
     virtual void Start() = 0;
-    virtual bool Stop(bool = false) = 0;
+    [[nodiscard]] virtual bool Stop(bool = false) = 0;
 
     virtual void Update() = 0;
     virtual void OnRender() = 0;
     virtual void OnKeyboardPress(xr::key_id dik) = 0;
 
-    virtual bool IsPlaying() = 0;
+    [[nodiscard]] virtual bool IsPlaying() = 0;
 
     [[nodiscard]] bool AllowKey(xr::key_id dik);
-    bool GrabInput() { return !!m_flags.test(etiGrabInput); }
+    [[nodiscard]] bool GrabInput() { return !!m_flags.test(etiGrabInput); }
 };
 
 inline CUISequenceItem::~CUISequenceItem() = default;
@@ -132,16 +132,16 @@ public:
     explicit CUISequenceSimpleItem(CUISequencer* owner) : CUISequenceItem{owner} {}
     ~CUISequenceSimpleItem() override;
 
-    virtual void Load(CUIXml* xml, int idx);
+    void Load(CUIXml* xml, s32 idx) override;
 
-    virtual void Start();
-    virtual bool Stop(bool bForce = false);
+    void Start() override;
+    [[nodiscard]] bool Stop(bool bForce = false) override;
 
-    virtual void Update();
-    virtual void OnRender() {}
+    void Update() override;
+    void OnRender() override {}
     void OnKeyboardPress(xr::key_id dik) override;
 
-    virtual bool IsPlaying();
+    [[nodiscard]] bool IsPlaying() override;
 };
 
 class CUISequenceVideoItem : public CUISequenceItem
@@ -167,14 +167,14 @@ public:
     explicit CUISequenceVideoItem(CUISequencer* owner);
     ~CUISequenceVideoItem() override;
 
-    virtual void Load(CUIXml* xml, int idx);
+    void Load(CUIXml* xml, s32 idx) override;
 
-    virtual void Start();
-    virtual bool Stop(bool bForce = false);
+    void Start() override;
+    [[nodiscard]] bool Stop(bool bForce = false) override;
 
-    virtual void Update();
-    virtual void OnRender();
+    void Update() override;
+    void OnRender() override;
     void OnKeyboardPress(xr::key_id) override {}
 
-    virtual bool IsPlaying();
+    [[nodiscard]] bool IsPlaying() override;
 };

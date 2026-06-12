@@ -12,12 +12,12 @@ public:
     explicit CStateGroupAttack(_Object* obj);
     ~CStateGroupAttack() override;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void setup_substates();
-    virtual void critical_finalize();
-    virtual void finalize();
-    virtual void remove_links(CObject* object);
+    void initialize() override;
+    void execute() override;
+    void setup_substates() override;
+    void critical_finalize() override;
+    void finalize() override;
+    void remove_links(CObject* object) override;
 
 protected:
     typedef CState<_Object> inherited;
@@ -39,8 +39,8 @@ protected:
     bool m_drive_out;
 
 protected:
-    bool check_home_point();
-    bool check_behinder();
+    [[nodiscard]] bool check_home_point();
+    [[nodiscard]] bool check_behinder();
 };
 
 #include "group_state_attack_inline.h"

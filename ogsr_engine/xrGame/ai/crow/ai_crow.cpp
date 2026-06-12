@@ -152,7 +152,8 @@ tmc::task<bool> CAI_Crow::net_Spawn(CSE_Abstract* DC)
     o_workload_frame = 0;
     o_workload_rframe = 0;
 
-    // без этого уже сбитые вороны "воскресают" при перезагрузке игры и начинают вести себя некорректно (начинают летать, при попадании не падают на землю) --#SM+#--
+    // без этого уже сбитые вороны "воскресают" при перезагрузке игры и начинают вести себя некорректно (начинают летать, при попадании не падают
+    // на землю) --#SM+#--
     if (GetfHealth() > 0)
     {
         st_current = ECrowStates::eFlyIdle;
@@ -188,23 +189,25 @@ tmc::task<void> CAI_Crow::net_Destroy()
 }
 
 // crow update
-void CAI_Crow::switch2_FlyUp() { smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_Anims.m_fly.GetRandom()); }
-void CAI_Crow::switch2_FlyIdle() { smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_Anims.m_idle.GetRandom()); }
+void CAI_Crow::switch2_FlyUp() { std::ignore = smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_Anims.m_fly.GetRandom()); }
+void CAI_Crow::switch2_FlyIdle() { std::ignore = smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_Anims.m_idle.GetRandom()); }
+
 void CAI_Crow::switch2_DeathDead()
 {
     // AI need to pickup this
     ISpatial* self = smart_cast<ISpatial*>(this);
     if (self)
         self->spatial.type |= STYPE_VISIBLEFORAI;
-    //
-    smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_Anims.m_death_dead.GetRandom());
+
+    std::ignore = smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_Anims.m_death_dead.GetRandom());
 }
+
 void CAI_Crow::switch2_DeathFall()
 {
     Fvector V;
     V.mul(XFORM().k, fSpeed);
-    //	m_PhysicMovementControl->SetVelocity(V);
-    smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_Anims.m_death.GetRandom(), TRUE, cb_OnHitEndPlaying, this);
+
+    std::ignore = smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_Anims.m_death.GetRandom(), TRUE, cb_OnHitEndPlaying, this);
 }
 
 void CAI_Crow::state_Flying(float fdt)
@@ -261,8 +264,6 @@ void CAI_Crow::state_Flying(float fdt)
 
 void CAI_Crow::state_DeathFall()
 {
-    Fvector tAcceleration;
-    tAcceleration.set(0, -10.f, 0);
     if (m_pPhysicsShell)
     {
         Fvector velocity;
@@ -270,9 +271,10 @@ void CAI_Crow::state_DeathFall()
         if (velocity.y > -0.001f)
             st_target = eDeathDead;
     }
+
     if (bPlayDeathIdle)
     {
-        smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_Anims.m_death_idle.GetRandom());
+        std::ignore = smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_Anims.m_death_idle.GetRandom());
         bPlayDeathIdle = false;
     }
 }
@@ -409,6 +411,7 @@ void CAI_Crow::net_Export(CSE_Abstract* E)
 }
 
 //---------------------------------------------------------------------
+
 void CAI_Crow::HitSignal(float, Fvector&, CObject*, s16)
 {
     SetfHealth(0);
@@ -416,11 +419,15 @@ void CAI_Crow::HitSignal(float, Fvector&, CObject*, s16)
     if (eDeathDead != st_current)
         st_target = eDeathFall;
     else
-        smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_Anims.m_death_dead.GetRandom());
+        std::ignore = smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_Anims.m_death_dead.GetRandom());
 }
+
 //---------------------------------------------------------------------
+
 void CAI_Crow::HitImpulse(float, Fvector&, Fvector&) {}
+
 //---------------------------------------------------------------------
+
 void CAI_Crow::CreateSkeleton()
 {
     m_pPhysicsShell = P_build_SimpleShell(this, 0.3f, false);

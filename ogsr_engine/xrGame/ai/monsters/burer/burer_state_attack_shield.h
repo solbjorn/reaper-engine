@@ -15,14 +15,14 @@ public:
     explicit CStateBurerShield(Object* obj);
     ~CStateBurerShield() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
-    virtual void critical_finalize();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
+    void critical_finalize() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 
-    virtual bool check_start_conditions();
-    virtual bool check_completion();
+    [[nodiscard]] bool check_start_conditions() override;
+    [[nodiscard]] bool check_completion() override;
 
 private:
     TTime m_last_shield_started;

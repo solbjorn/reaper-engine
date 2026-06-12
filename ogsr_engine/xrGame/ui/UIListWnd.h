@@ -27,17 +27,17 @@ public:
     CUIListWnd();
     ~CUIListWnd() override;
 
-    virtual void Init(float x, float y, float width, float height);
-    virtual void Init(float x, float y, float width, float height, float item_height);
+    void Init(f32 x, f32 y, f32 width, f32 height) override;
+    virtual void Init(f32 x, f32 y, f32 width, f32 height, f32 item_height);
 
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
     [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
-    virtual void Draw();
-    virtual void Update();
-    virtual void DetachChild(CUIWindow* pChild, bool from_destructor = false);
-    void SetScrollBarProfile(LPCSTR profile) { m_scrollbar_profile._set(profile); }
+    void Draw() override;
+    void Update() override;
+    void DetachChild(CUIWindow* pChild, bool from_destructor = false) override;
+    void SetScrollBarProfile(gsl::czstring profile) { m_scrollbar_profile._set(profile); }
 
     // Добавление элементов в листбокс
     template <class Element>
@@ -62,7 +62,7 @@ public:
 
     void SetItemHeight(float iItemHeight);
     float GetItemHeight() { return m_iItemHeight; }
-    virtual void SetHeight(float height);
+    void SetHeight(f32 height) override;
 
     void SetAlwaysShowScroll(bool flag = true) { m_bAlwaysShowScroll = flag; }
     void EnableAlwaysShowScroll(bool flag) { m_bAlwaysShowScroll_enable = flag; }
@@ -70,7 +70,7 @@ public:
     int GetItemsCount() { return m_ItemList.size(); }
 
     // подготовить все элементы заново
-    void Reset();
+    void Reset() override;
 
     void EnableScrollBar(bool enable);
     bool IsScrollBarEnabled();
@@ -83,10 +83,10 @@ public:
     IC bool IsActiveBackgroundEnabled() { return m_bActiveBackground; }
     void EnableActiveBackground(bool enable);
 
-    virtual void SetWidth(float width);
+    void SetWidth(f32 width) override;
 
     void SetTextColor(u32 color) { m_dwFontColor = color; }
-    u32 GetTextColor() { return m_dwFontColor; }
+    [[nodiscard]] u32 GetTextColor() { return m_dwFontColor; }
 
     // делает активными (как кнопки) элементы списка
     void ActivateList(bool activity);

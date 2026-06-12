@@ -52,13 +52,13 @@ public:
     tmc::task<bool> net_Spawn(CSE_Abstract* data) override;
     tmc::task<void> net_Destroy() override;
     bool inside(const Fsphere& sphere);
-    virtual void Center(Fvector& C) const;
-    virtual float Radius() const;
-    virtual BOOL UsedAI_Locations();
-    virtual void spatial_move();
+    void Center(Fvector& C) const override;
+    [[nodiscard]] f32 Radius() const override;
+    [[nodiscard]] BOOL UsedAI_Locations() override;
+    void spatial_move() override;
     IC bool actual() const;
-    virtual CSpaceRestrictor* cast_restrictor() { return this; }
-    virtual bool register_schedule() const { return false; }
+    [[nodiscard]] CSpaceRestrictor* cast_restrictor() override { return this; }
+    [[nodiscard]] bool register_schedule() const override { return false; }
 
     IC RestrictionSpace::ERestrictorTypes restrictor_type() const;
     IC void change_restrictor_type(RestrictionSpace::ERestrictorTypes);
@@ -73,11 +73,11 @@ public:
     void ScheduleUnregister();
     IC bool IsScheduled() { return b_scheduled; }
 
-    virtual void net_Relcase(CObject*);
+    void net_Relcase(CObject*) override;
     tmc::task<void> shedule_Update(u32) override;
-    virtual void feel_touch_new(CObject*);
-    virtual void feel_touch_delete(CObject*);
-    virtual BOOL feel_touch_contact(CObject*);
+    void feel_touch_new(CObject*) override;
+    void feel_touch_delete(CObject*) override;
+    [[nodiscard]] BOOL feel_touch_contact(CObject*) override;
     bool active_contact(u16) const;
     float distance_to(Fvector&);
 };

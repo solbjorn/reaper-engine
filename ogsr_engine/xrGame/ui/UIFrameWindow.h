@@ -19,20 +19,20 @@ public:
     CUIFrameWindow();
     ~CUIFrameWindow() override = default;
 
-    virtual void Init(LPCSTR base_name, float x, float y, float width, float height);
-    virtual void Init(float x, float y, float width, float height);
-    virtual void Init(LPCSTR base_name, Frect* pRect);
+    virtual void Init(gsl::czstring base_name, f32 x, f32 y, f32 width, f32 height);
+    void Init(f32 x, f32 y, f32 width, f32 height) override;
+    virtual void Init(gsl::czstring base_name, Frect* pRect);
 
-    virtual void InitTexture(const char* texture);
+    void InitTexture(gsl::czstring texture) override;
     void SetTextureColor(u32 color) { m_UIWndFrame.SetTextureColor(color); }
 
-    virtual void SetWidth(float width);
-    virtual void SetHeight(float height);
+    void SetWidth(f32 width) override;
+    void SetHeight(f32 height) override;
 
     void SetColor(u32 cl);
 
-    virtual void Draw();
-    virtual void Update();
+    void Draw() override;
+    void Update() override;
 
     // текст заголовка
     CUIStatic* UITitleText;

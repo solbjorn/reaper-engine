@@ -124,7 +124,7 @@ public:
     virtual void OnBuildVersionRespond(IClient* CL, NET_Packet& P);
 
 protected:
-    virtual IClient* new_client(SClientConnectData* cl_data);
+    [[nodiscard]] IClient* new_client(SClientConnectData* cl_data) override;
 
     virtual void Check_BuildVersion_Success(IClient* CL);
 
@@ -136,7 +136,7 @@ public:
     ~xrServer() override;
 
     // extended functionality
-    virtual u32 OnMessage(NET_Packet& P, ClientID sender); // Non-Zero means broadcasting with "flags" as returned
+    [[nodiscard]] u32 OnMessage(NET_Packet& P, ClientID sender) override; // Non-Zero means broadcasting with "flags" as returned
     virtual void OnCL_Connected(IClient* CL);
     void SendTo_LL(ClientID ID, void* data, u32 size, u32 = DPNSEND_GUARANTEED, u32 = 0) override;
 
@@ -156,7 +156,7 @@ public:
 
     // main
     tmc::task<EConnect> Connect(shared_str& session_name) override;
-    virtual void Disconnect();
+    void Disconnect() override;
     virtual void Update();
 
     void SLS_Default();

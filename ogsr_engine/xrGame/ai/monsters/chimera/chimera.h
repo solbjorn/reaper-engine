@@ -11,16 +11,16 @@ public:
     CChimera();
     ~CChimera() override;
 
-    virtual void Load(LPCSTR section);
-    virtual void reinit();
+    void Load(gsl::czstring section) override;
+    void reinit() override;
     tmc::task<void> UpdateCL() override;
 
     void CheckSpecParams(u32) override;
-    virtual void HitEntityInJump(const CEntity* pEntity);
-    virtual void jump(Fvector const& position, float factor);
+    void HitEntityInJump(const CEntity* pEntity) override;
+    void jump(Fvector3 const& position, f32 factor) override;
 
 private:
-    virtual EAction CustomVelocityIndex2Action(u32 velocity_index);
+    [[nodiscard]] EAction CustomVelocityIndex2Action(u32 velocity_index) override;
 
     typedef CBaseMonster inherited;
 
@@ -41,7 +41,7 @@ private:
     attack_params m_attack_params;
 
 public:
-    attack_params const& get_attack_params() const { return m_attack_params; }
+    [[nodiscard]] attack_params const& get_attack_params() const { return m_attack_params; }
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

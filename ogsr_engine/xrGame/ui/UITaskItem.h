@@ -62,12 +62,12 @@ public:
     explicit CUITaskRootItem(CUIEventsWnd* w);
     ~CUITaskRootItem() override;
 
-    virtual void Update();
-    virtual void SetGameTask(CGameTask* gt, u16 obj_idx);
+    void Update() override;
+    void SetGameTask(CGameTask* gt, u16 obj_idx) override;
     void OnSwitchDescriptionClicked(CUIWindow*, void*);
 
-    virtual void MarkSelected(bool);
-    virtual bool OnDbClick();
+    void MarkSelected(bool) override;
+    [[nodiscard]] bool OnDbClick() override;
 };
 
 class CUITaskSubItem : public CUITaskItem
@@ -94,10 +94,10 @@ public:
     explicit CUITaskSubItem(CUIEventsWnd* w);
     ~CUITaskSubItem() override;
 
-    virtual void Update();
-    virtual void SetGameTask(CGameTask* gt, u16 obj_idx);
+    void Update() override;
+    void SetGameTask(CGameTask* gt, u16 obj_idx) override;
     void OnActiveObjectiveClicked();
     void OnShowDescriptionClicked(CUIWindow*, void*);
-    virtual void MarkSelected(bool b);
-    virtual bool OnDbClick();
+    void MarkSelected(bool b) override;
+    [[nodiscard]] bool OnDbClick() override;
 };

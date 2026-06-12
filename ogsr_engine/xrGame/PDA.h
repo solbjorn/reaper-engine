@@ -18,18 +18,18 @@ public:
     ~CPda() override;
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
-    virtual void Load(LPCSTR section) override;
+    void Load(gsl::czstring section) override;
     tmc::task<void> net_Destroy() override;
-    virtual void net_Relcase(CObject* O) override;
+    void net_Relcase(CObject* O) override;
 
-    virtual void OnH_A_Chield() override;
-    virtual void OnH_B_Independent(bool just_before_destroy) override;
+    void OnH_A_Chield() override;
+    void OnH_B_Independent(bool just_before_destroy) override;
 
     tmc::task<void> shedule_Update(u32 dt) override;
 
-    virtual void feel_touch_new(CObject* O) override;
-    virtual void feel_touch_delete(CObject* O) override;
-    virtual BOOL feel_touch_contact(CObject* O) override;
+    void feel_touch_new(CObject* O) override;
+    void feel_touch_delete(CObject* O) override;
+    [[nodiscard]] BOOL feel_touch_contact(CObject* O) override;
 
     u16 GetOriginalOwnerID() const { return m_idOriginalOwner; }
     CInventoryOwner* GetOriginalOwner() const;
@@ -45,10 +45,10 @@ public:
     CPda* GetPdaFromOwner(CObject* owner);
     u32 ActiveContactsNum() const { return m_active_contacts.size(); }
 
-    virtual void save(NET_Packet& output_packet) override;
-    virtual void load(IReader& input_packet) override;
+    void save(NET_Packet& output_packet) override;
+    void load(IReader& input_packet) override;
 
-    virtual LPCSTR Name() override;
+    [[nodiscard]] gsl::czstring Name() override;
 
 private:
     void UpdateActiveContacts();
@@ -73,17 +73,17 @@ private:
 
 public:
     bool Is3DPDA() const { return this_is_3d_pda; }
-    virtual void OnStateSwitch(u32 S, u32 oldState) override;
-    virtual void OnAnimationEnd(u32 state) override;
+    void OnStateSwitch(u32 S, u32 oldState) override;
+    void OnAnimationEnd(u32 state) override;
 
-    virtual void PlayAnimIdle() override;
+    void PlayAnimIdle() override;
     bool ThumbAnimsAllowed() const { return joystick == BI_NONE; }
 
-    virtual void OnMoveToRuck(EItemPlace prevPlace) override;
+    void OnMoveToRuck(EItemPlace prevPlace) override;
     tmc::task<void> UpdateCL() override;
-    virtual void UpdateXForm() override;
-    virtual void OnActiveItem() override;
-    virtual void OnHiddenItem() override;
+    void UpdateXForm() override;
+    void OnActiveItem() override;
+    void OnHiddenItem() override;
 
     bool m_bZoomed{};
     float m_thumb_rot[2]{};

@@ -146,7 +146,7 @@ public:
         }
     }
 
-    virtual void load_shared(LPCSTR) {}
+    virtual void load_shared(gsl::czstring) {}
 
     SHARED_TYPE* get_sd() { return _sd; }
     const SHARED_TYPE* get_sd() const { return _sd; }

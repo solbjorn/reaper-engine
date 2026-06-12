@@ -13,7 +13,7 @@
 #include "customzone.h"
 #include "ai/monsters/telekinesis.h"
 
-class CBaseGraviZone : public CCustomZone
+class XR_NOVTABLE CBaseGraviZone : public CCustomZone
 {
     RTTI_DECLARE_TYPEINFO(CBaseGraviZone, CCustomZone);
 
@@ -24,14 +24,14 @@ public:
     CBaseGraviZone();
     ~CBaseGraviZone() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual void net_Relcase(CObject* O);
+    void net_Relcase(CObject* O) override;
 
     // воздействие зоной на объект
-    virtual void Affect(SZoneObjectInfo* O);
+    void Affect(SZoneObjectInfo* O) override;
     virtual void AffectPull(CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist);
     virtual void AffectPullAlife(CEntityAlive* EA, const Fvector& throw_in_dir, float dist);
     virtual void AffectPullDead(CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist);
@@ -39,16 +39,16 @@ public:
     virtual void ThrowInCenter(Fvector& C);
     virtual bool CheckAffectField(CPhysicsShellHolder* GO, float dist_to_radius);
     tmc::task<void> shedule_Update(u32 dt) override;
-    virtual bool BlowoutState();
-    virtual bool IdleState();
+    [[nodiscard]] bool BlowoutState() override;
+    [[nodiscard]] bool IdleState() override;
 
     void exit_Zone(SZoneObjectInfo& io) override;
 
-    virtual float RelativePower(float dist);
-    virtual float BlowoutRadiusPercent(CPhysicsShellHolder* /*GO*/) { return m_fBlowoutRadiusPercent; }
+    [[nodiscard]] f32 RelativePower(f32 dist) override;
+    [[nodiscard]] virtual f32 BlowoutRadiusPercent(CPhysicsShellHolder*) { return m_fBlowoutRadiusPercent; }
 
 protected:
-    virtual CTelekinesis& Telekinesis() = 0;
+    [[nodiscard]] virtual CTelekinesis& Telekinesis() = 0;
 
 protected:
     // сила импульса втягивания в зону (для веса 100 кг)

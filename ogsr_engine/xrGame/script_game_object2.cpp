@@ -131,7 +131,7 @@ void CScriptGameObject::play_cycle(LPCSTR anim, bool mix_in)
     {
         MotionID m = sa->ID_Cycle(shared_str{anim});
         if (m)
-            sa->PlayCycle(m, (BOOL)mix_in);
+            std::ignore = sa->PlayCycle(m, (BOOL)mix_in);
         else
             ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CGameObject : has not cycle {}", anim);
     }

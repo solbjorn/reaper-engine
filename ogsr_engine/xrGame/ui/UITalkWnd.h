@@ -35,14 +35,14 @@ public:
 
     virtual void Init();
 
-    virtual bool StopAnyMove() { return true; }
+    [[nodiscard]] bool StopAnyMove() override { return true; }
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 
-    virtual void Draw();
-    virtual void Update();
+    void Draw() override;
+    void Update() override;
 
-    virtual void Show();
-    virtual void Hide();
+    void Show() override;
+    void Hide() override;
 
     void Stop(); // deffered
 

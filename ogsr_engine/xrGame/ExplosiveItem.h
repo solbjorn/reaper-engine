@@ -21,22 +21,22 @@ public:
     CExplosiveItem();
     ~CExplosiveItem() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override { co_return co_await CInventoryItemObject::net_Spawn(DC); }
     tmc::task<void> net_Destroy() override;
-    virtual void net_Export(CSE_Abstract* E) { CInventoryItemObject::net_Export(E); }
-    virtual void net_Relcase(CObject* O);
-    virtual CGameObject* cast_game_object() { return this; }
-    virtual CExplosive* cast_explosive() { return this; }
-    virtual IDamageSource* cast_IDamageSource() { return CExplosive::cast_IDamageSource(); }
-    virtual void GetRayExplosionSourcePos(Fvector& pos);
+    void net_Export(CSE_Abstract* E) override { CInventoryItemObject::net_Export(E); }
+    void net_Relcase(CObject* O) override;
+    [[nodiscard]] CGameObject* cast_game_object() override { return this; }
+    [[nodiscard]] CExplosive* cast_explosive() override { return this; }
+    [[nodiscard]] IDamageSource* cast_IDamageSource() override { return CExplosive::cast_IDamageSource(); }
+    void GetRayExplosionSourcePos(Fvector3& pos) override;
     void ActivateExplosionBox(const Fvector&, Fvector&) override;
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
-    virtual void Hit(SHit* pHDS);
+    void Hit(SHit* pHDS) override;
     tmc::task<void> shedule_Update(u32 dt) override;
-    virtual bool shedule_Needed();
+    [[nodiscard]] bool shedule_Needed() override;
 
     tmc::task<void> UpdateCL() override;
-    virtual void ChangeCondition(float fDeltaCondition) { CInventoryItem::ChangeCondition(fDeltaCondition); }
-    virtual void StartTimerEffects();
+    void ChangeCondition(f32 fDeltaCondition) override { CInventoryItem::ChangeCondition(fDeltaCondition); }
+    void StartTimerEffects() override;
 };

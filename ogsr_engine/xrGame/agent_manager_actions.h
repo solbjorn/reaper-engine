@@ -29,7 +29,7 @@ public:
     explicit CAgentManagerActionNoOrders(CAgentManager* object, LPCSTR action_name = "");
     ~CAgentManagerActionNoOrders() override = default;
 
-    virtual void finalize();
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -63,9 +63,9 @@ public:
     explicit CAgentManagerActionKillEnemy(CAgentManager* object, LPCSTR action_name = "");
     ~CAgentManagerActionKillEnemy() override = default;
 
-    virtual void initialize();
-    virtual void finalize();
-    virtual void execute();
+    void initialize() override;
+    void finalize() override;
+    void execute() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -83,6 +83,6 @@ public:
     explicit CAgentManagerActionReactOnDanger(CAgentManager* object, LPCSTR action_name = "");
     ~CAgentManagerActionReactOnDanger() override = default;
 
-    virtual void initialize();
-    virtual void execute();
+    void initialize() override;
+    void execute() override;
 };

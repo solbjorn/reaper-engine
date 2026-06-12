@@ -3,13 +3,6 @@
 #include "state_defs.h"
 #include "control_com_defs.h"
 
-// Lain: added
-/*
-#ifdef DEBUG
-namespace debug { class text_tree; }
-#endif
-*/
-
 class XR_NOVTABLE IStateManagerBase : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IStateManagerBase);
@@ -23,16 +16,9 @@ public:
     virtual void execute_script_state() = 0;
     virtual void critical_finalize() = 0;
     virtual void remove_links(CObject* O) = 0;
-    virtual EMonsterState get_state_type() = 0;
+    [[nodiscard]] virtual EMonsterState get_state_type() = 0;
 
-    virtual bool check_control_start_conditions(ControlCom::EControlType type) = 0;
-
-    // Lain: added
-    /*
-    #ifdef DEBUG
-        virtual void            add_debug_info          (debug::text_tree& root_s) {}
-    #endif
-    */
+    [[nodiscard]] virtual bool check_control_start_conditions(ControlCom::EControlType type) = 0;
 };
 
 inline IStateManagerBase::~IStateManagerBase() = default;

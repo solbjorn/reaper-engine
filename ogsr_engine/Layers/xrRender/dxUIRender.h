@@ -11,24 +11,24 @@ public:
     dxUIRender() = default;
     ~dxUIRender() override = default;
 
-    virtual void CreateUIGeom();
-    virtual void DestroyUIGeom();
+    void CreateUIGeom() override;
+    void DestroyUIGeom() override;
 
-    virtual void SetShader(IUIShader& shader);
-    virtual void SetAlphaRef(int aref);
+    void SetShader(IUIShader& shader) override;
+    void SetAlphaRef(s32 aref) override;
 
-    virtual void SetScissor(Irect* rect = nullptr);
-    virtual void GetActiveTextureResolution(Fvector2& res);
+    void SetScissor(Irect* rect = nullptr) override;
+    void GetActiveTextureResolution(Fvector2& res) override;
 
-    virtual void PushPoint(float x, float y, float z, u32 C, float u, float v);
+    void PushPoint(f32 x, f32 y, f32 z, u32 C, f32 u, f32 v) override;
 
-    virtual void StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType);
-    virtual void FlushPrimitive();
+    void StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType) override;
+    void FlushPrimitive() override;
 
-    virtual LPCSTR UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name);
+    [[nodiscard]] gsl::czstring UpdateShaderName(gsl::czstring tex_name, gsl::czstring sh_name) override;
 
-    virtual void CacheSetXformWorld(const Fmatrix& M);
-    virtual void CacheSetCullMode(CullMode);
+    void CacheSetXformWorld(const Fmatrix& M) override;
+    void CacheSetCullMode(CullMode) override;
 
 private:
     ref_geom hGeom_TL;

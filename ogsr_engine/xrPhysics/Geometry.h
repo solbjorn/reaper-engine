@@ -34,7 +34,7 @@ protected:
 
 public:
     // get
-    virtual float volume() = 0;
+    [[nodiscard]] virtual f32 volume() = 0;
     virtual void get_mass(dMass& m) = 0; // unit dencity mass;
     void get_mass(dMass& m, const Fvector& ref_point, float density);
     void get_mass(dMass& m, const Fvector& ref_point);
@@ -47,17 +47,18 @@ public:
     void get_global_form_bt(Fmatrix& form); // for built
     virtual void get_xform(Fmatrix& form);
 
-    virtual void get_Box(Fmatrix& form, Fvector& sz) override;
-    virtual bool collide_fluids() override;
+    void get_Box(Fmatrix& form, Fvector& sz) override;
+    bool collide_fluids() override;
 
     void set_static_ref_form(const Fmatrix& form); // for built
     virtual void get_max_area_dir_bt(Fvector& dir) = 0;
-    virtual float radius() = 0;
-    virtual void get_extensions_bt(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext) = 0;
+    [[nodiscard]] virtual f32 radius() = 0;
+    virtual void get_extensions_bt(const Fvector& axis, f32 center_prg, f32& lo_ext, f32& hi_ext) = 0;
     void clear_cashed_tries();
     IC dGeomID geom() { return dGeomTransformGetGeom(m_geom_transform); }
     IC dGeomID geometry_transform() { return m_geom_transform; }
     IC dGeomID geometry() { return m_geom_transform ? (geom() ? geom() : m_geom_transform) : nullptr; }
+
     IC dGeomID geometry_bt()
     {
         if (is_transformed_bt())
@@ -65,10 +66,11 @@ public:
         else
             return geometry_transform();
     }
+
     ICF static bool is_transform(dGeomID g) { return dGeomGetClass(g) == dGeomTransformClass; }
     IC bool is_transformed_bt() { return is_transform(m_geom_transform); }
     IC u16& element_position() { return dGeomGetUserData(geometry())->element_position; }
-    virtual const Fvector& local_center() = 0;
+    [[nodiscard]] virtual const Fvector& local_center() = 0;
     virtual void get_local_form(Fmatrix& form) = 0;
     virtual void set_local_form(const Fmatrix& form) = 0;
     // set
@@ -93,7 +95,7 @@ public:
 protected:
     void init();
     void get_final_tx_bt(const dReal*& p, const dReal*& R, dReal* bufV, dReal* bufM);
-    virtual dGeomID create() = 0;
+    [[nodiscard]] virtual dGeomID create() = 0;
 
 public:
     static void get_final_tx(dGeomID g, const dReal*& p, const dReal*& R, dReal* bufV, dReal* bufM);
@@ -117,16 +119,16 @@ public:
     explicit CBoxGeom(const Fobb& box);
     ~CBoxGeom() override = default;
 
-    virtual float volume();
-    virtual float radius();
-    virtual void get_extensions_bt(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext);
-    virtual void get_max_area_dir_bt(Fvector& dir);
-    virtual void get_mass(dMass& m); // unit dencity mass;
-    virtual const Fvector& local_center();
-    virtual void get_local_form(Fmatrix& form);
-    virtual void set_local_form(const Fmatrix& form);
-    virtual dGeomID create();
-    virtual void set_position(const Fvector& ref_point);
+    [[nodiscard]] f32 volume() override;
+    [[nodiscard]] f32 radius() override;
+    void get_extensions_bt(const Fvector& axis, f32 center_prg, f32& lo_ext, f32& hi_ext) override;
+    void get_max_area_dir_bt(Fvector& dir) override;
+    void get_mass(dMass& m) override; // unit dencity mass;
+    [[nodiscard]] const Fvector& local_center() override;
+    void get_local_form(Fmatrix& form) override;
+    void set_local_form(const Fmatrix& form) override;
+    [[nodiscard]] dGeomID create() override;
+    void set_position(const Fvector& ref_point) override;
 };
 
 class CSphereGeom : public CODEGeom
@@ -140,16 +142,16 @@ public:
     explicit CSphereGeom(const Fsphere& sphere);
     ~CSphereGeom() override = default;
 
-    virtual float volume();
-    virtual float radius();
-    virtual void get_extensions_bt(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext);
-    virtual void get_max_area_dir_bt(Fvector&) {}
-    virtual void get_mass(dMass& m); // unit dencity mass;
-    virtual const Fvector& local_center();
-    virtual void get_local_form(Fmatrix& form);
-    virtual void set_local_form(const Fmatrix& form);
-    virtual dGeomID create();
-    virtual void set_position(const Fvector& ref_point);
+    [[nodiscard]] f32 volume() override;
+    [[nodiscard]] f32 radius() override;
+    void get_extensions_bt(const Fvector& axis, f32 center_prg, f32& lo_ext, f32& hi_ext) override;
+    void get_max_area_dir_bt(Fvector&) override {}
+    void get_mass(dMass& m) override; // unit dencity mass;
+    [[nodiscard]] const Fvector& local_center() override;
+    void get_local_form(Fmatrix& form) override;
+    void set_local_form(const Fmatrix& form) override;
+    [[nodiscard]] dGeomID create() override;
+    void set_position(const Fvector& ref_point) override;
 };
 
 class CCylinderGeom : public CODEGeom
@@ -163,14 +165,14 @@ public:
     explicit CCylinderGeom(const Fcylinder& cyl);
     ~CCylinderGeom() override = default;
 
-    virtual float volume();
-    virtual float radius();
-    virtual void get_extensions_bt(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext);
-    virtual void get_max_area_dir_bt(Fvector&) {}
-    virtual const Fvector& local_center();
-    virtual void get_mass(dMass& m); // unit dencity mass;
-    virtual void get_local_form(Fmatrix& form);
-    virtual void set_local_form(const Fmatrix& form);
-    virtual dGeomID create();
-    virtual void set_position(const Fvector& ref_point);
+    [[nodiscard]] f32 volume() override;
+    [[nodiscard]] f32 radius() override;
+    void get_extensions_bt(const Fvector& axis, f32 center_prg, f32& lo_ext, f32& hi_ext) override;
+    void get_max_area_dir_bt(Fvector&) override {}
+    [[nodiscard]] const Fvector& local_center() override;
+    void get_mass(dMass& m) override; // unit dencity mass;
+    void get_local_form(Fmatrix& form) override;
+    void set_local_form(const Fmatrix& form) override;
+    [[nodiscard]] dGeomID create() override;
+    void set_position(const Fvector& ref_point) override;
 };

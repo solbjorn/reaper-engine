@@ -60,7 +60,6 @@ private:
     Fmatrix XFORM_center();
 
     CParticlesObject* PlayParticles(const shared_str& name, BOOL bAutoRemove, const Fmatrix& xform);
-    //	void				PlayMotion					(MotionID);
 
     void UpdatePosition(const Fvector& tgt_pos);
 
@@ -70,25 +69,24 @@ public:
     CPhantom();
     ~CPhantom() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
 
-    virtual void net_Export(CSE_Abstract* E);
-    virtual void save(NET_Packet& output_packet);
-    virtual void load(IReader& input_packet);
+    void net_Export(CSE_Abstract* E) override;
+    void save(NET_Packet& output_packet) override;
+    void load(IReader& input_packet) override;
 
     tmc::task<void> shedule_Update(u32 DT) override;
     tmc::task<void> UpdateCL() override;
 
-    void HitSignal(float, Fvector&, CObject*, s16) override {}
-    void HitImpulse(float, Fvector&, Fvector&) override {}
-    virtual void Hit(SHit* pHDS);
+    void HitSignal(f32, Fvector3&, CObject*, s16) override {}
+    void HitImpulse(f32, Fvector3&, Fvector3&) override {}
+    void Hit(SHit* pHDS) override;
 
-    virtual BOOL IsVisibleForHUD() { return false; }
-    virtual bool IsVisibleForZones() { return false; }
+    [[nodiscard]] BOOL IsVisibleForHUD() override { return false; }
+    [[nodiscard]] bool IsVisibleForZones() override { return false; }
 
-    virtual BOOL UsedAI_Locations() { return false; }
-
-    virtual CEntity* cast_entity() { return this; }
+    [[nodiscard]] BOOL UsedAI_Locations() override { return false; }
+    [[nodiscard]] CEntity* cast_entity() override { return this; }
 };

@@ -38,7 +38,7 @@ CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : 
     if (FS.exist(fn, "$level$", nm) || FS.exist(fn, "$game_anims$", nm))
     {
         m_pMotion = xr_new<COMotion>();
-        m_pMotion->LoadMotion(fn);
+        std::ignore = m_pMotion->LoadMotion(fn);
         m_MParam = xr_new<SAnimParams>();
         m_MParam->Set(m_pMotion);
         m_MParam->Play();

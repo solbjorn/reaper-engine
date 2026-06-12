@@ -10,7 +10,7 @@ public:
     CUsableScriptObject();
     ~CUsableScriptObject() override;
 
-    virtual bool use(CGameObject* who_use);
+    [[nodiscard]] virtual bool use(CGameObject* who_use);
 
     // строчка появляющаяся при наведении на объект (если NULL, то нет)
     virtual LPCSTR tip_text();

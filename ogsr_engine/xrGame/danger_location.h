@@ -31,7 +31,7 @@ public:
     inline virtual bool operator==(const CObject*) const;
 
     virtual bool useful() const;
-    virtual const Fvector& position() const = 0;
+    [[nodiscard]] virtual const Fvector& position() const = 0;
     inline const flags& mask() const;
 };
 

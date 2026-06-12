@@ -11,7 +11,7 @@ public:
     ~CPHDestroyableNotificate() override = 0;
 
     virtual CPHDestroyableNotificate* cast_phdestroyable_notificate() { return this; }
-    virtual CPhysicsShellHolder* PPhysicsShellHolder() = 0;
+    [[nodiscard]] virtual CPhysicsShellHolder* PPhysicsShellHolder() = 0;
     virtual void spawn_init() {}
     void spawn_notificate(CSE_Abstract*);
 };

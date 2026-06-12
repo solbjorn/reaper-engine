@@ -5,9 +5,9 @@ class CBlender_dof : public IBlender
     RTTI_DECLARE_TYPEINFO(CBlender_dof, IBlender);
 
 public:
-    virtual LPCSTR getComment() { return "DoF"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "DoF"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 
     CBlender_dof();
     ~CBlender_dof() override;

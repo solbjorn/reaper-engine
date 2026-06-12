@@ -25,9 +25,9 @@ public:
     explicit CSomeMapAction(LPCSTR action_name) : inherited{static_cast<CUIMapWnd*>(nullptr), action_name} {}
     ~CSomeMapAction() override = default;
 
-    virtual void initialize() { inherited::initialize(); }
-    virtual void execute() { inherited::execute(); }
-    virtual void finalize() { inherited::finalize(); }
+    void initialize() override { inherited::initialize(); }
+    void execute() override { inherited::execute(); }
+    void finalize() override { inherited::finalize(); }
 };
 
 class CMapActionZoomControl : public CSomeMapAction
@@ -48,9 +48,9 @@ public:
     explicit CMapActionZoomControl(LPCSTR action_name) : inherited{action_name} {}
     ~CMapActionZoomControl() override = default;
 
-    virtual void execute();
-    virtual void initialize();
-    virtual void finalize();
+    void execute() override;
+    void initialize() override;
+    void finalize() override;
 };
 
 class CMapActionResize : public CMapActionZoomControl
@@ -64,8 +64,8 @@ public:
     explicit CMapActionResize(LPCSTR action_name) : inherited{action_name} {}
     ~CMapActionResize() override = default;
 
-    virtual void initialize();
-    virtual void finalize();
+    void initialize() override;
+    void finalize() override;
 };
 
 class CMapActionMinimize : public CMapActionZoomControl
@@ -79,8 +79,8 @@ public:
     explicit CMapActionMinimize(LPCSTR action_name) : inherited{action_name} {}
     ~CMapActionMinimize() override = default;
 
-    virtual void initialize();
-    virtual void finalize();
+    void initialize() override;
+    void finalize() override;
 };
 
 class CMapActionIdle : public CSomeMapAction
@@ -94,9 +94,9 @@ public:
     explicit CMapActionIdle(LPCSTR action_name) : inherited{action_name} {}
     ~CMapActionIdle() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 // evaluators
@@ -123,7 +123,7 @@ public:
     explicit CEvaluatorTargetMapShown(LPCSTR evaluator_name = nullptr) : inherited{evaluator_name} {}
     ~CEvaluatorTargetMapShown() override = default;
 
-    virtual bool evaluate();
+    [[nodiscard]] bool evaluate() override;
 };
 
 class CEvaluatorMapMinimized : public CSomeMapEvaluator
@@ -137,7 +137,7 @@ public:
     explicit CEvaluatorMapMinimized(LPCSTR evaluator_name = nullptr) : inherited{evaluator_name} {}
     ~CEvaluatorMapMinimized() override = default;
 
-    virtual bool evaluate();
+    [[nodiscard]] bool evaluate() override;
 };
 
 class CEvaluatorMapResized : public CSomeMapEvaluator
@@ -151,7 +151,7 @@ public:
     explicit CEvaluatorMapResized(LPCSTR evaluator_name = nullptr) : inherited{evaluator_name} {}
     ~CEvaluatorMapResized() override = default;
 
-    virtual bool evaluate();
+    [[nodiscard]] bool evaluate() override;
 };
 
 class CEvaluatorMapConst : public CSomeMapEvaluator
@@ -166,7 +166,7 @@ public:
     explicit CEvaluatorMapConst(bool val = false, LPCSTR evaluator_name = nullptr) : inherited{evaluator_name}, ret_value{val} {}
     ~CEvaluatorMapConst() override = default;
 
-    virtual bool evaluate() { return ret_value; }
+    [[nodiscard]] bool evaluate() override { return ret_value; }
 };
 } // namespace
 

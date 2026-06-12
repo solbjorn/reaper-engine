@@ -19,38 +19,38 @@ public:
     CEatableItemObject();
     ~CEatableItemObject() override;
 
-    virtual DLL_Pure* _construct();
+    [[nodiscard]] DLL_Pure* _construct() override;
 
-    virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
-    virtual CInventoryItem* cast_inventory_item() { return this; }
-    virtual CAttachableItem* cast_attachable_item() { return this; }
-    virtual CWeapon* cast_weapon() { return nullptr; }
-    virtual CFoodItem* cast_food_item() { return nullptr; }
-    virtual CMissile* cast_missile() { return nullptr; }
-    virtual CHudItem* cast_hud_item() { return nullptr; }
-    virtual CWeaponAmmo* cast_weapon_ammo() { return nullptr; }
-    virtual CGameObject* cast_game_object() { return this; }
+    [[nodiscard]] CPhysicsShellHolder* cast_physics_shell_holder() override { return this; }
+    [[nodiscard]] CInventoryItem* cast_inventory_item() override { return this; }
+    [[nodiscard]] CAttachableItem* cast_attachable_item() override { return this; }
+    [[nodiscard]] CWeapon* cast_weapon() override { return nullptr; }
+    [[nodiscard]] CFoodItem* cast_food_item() override { return nullptr; }
+    [[nodiscard]] CMissile* cast_missile() override { return nullptr; }
+    [[nodiscard]] CHudItem* cast_hud_item() override { return nullptr; }
+    [[nodiscard]] CWeaponAmmo* cast_weapon_ammo() override { return nullptr; }
+    [[nodiscard]] CGameObject* cast_game_object() override { return this; }
 
-    virtual void Load(LPCSTR section);
-    virtual void Hit(SHit* pHDS);
+    void Load(gsl::czstring section) override;
+    void Hit(SHit* pHDS) override;
 
-    virtual void OnH_B_Independent(bool just_before_destroy);
-    virtual void OnH_A_Independent();
-    virtual void OnH_B_Chield();
-    virtual void OnH_A_Chield();
+    void OnH_B_Independent(bool just_before_destroy) override;
+    void OnH_A_Independent() override;
+    void OnH_B_Chield() override;
+    void OnH_A_Chield() override;
     tmc::task<void> UpdateCL() override;
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual void net_Export(CSE_Abstract* E);
-    virtual void save(NET_Packet& output_packet);
-    virtual void load(IReader& input_packet);
-    virtual BOOL net_SaveRelevant() { return TRUE; }
+    void net_Export(CSE_Abstract* E) override;
+    void save(NET_Packet& output_packet) override;
+    void load(IReader& input_packet) override;
+    [[nodiscard]] BOOL net_SaveRelevant() override { return TRUE; }
     void renderable_Render(u32 context_id, IRenderable* root) override;
-    virtual void reload(LPCSTR section);
-    virtual void reinit();
-    virtual void activate_physic_shell();
-    virtual void on_activate_physic_shell();
+    void reload(gsl::czstring section) override;
+    void reinit() override;
+    void activate_physic_shell() override;
+    void on_activate_physic_shell() override;
 
 #ifdef DEBUG
 protected:
@@ -58,9 +58,9 @@ protected:
 #endif
 
 public:
-    virtual bool Useful() const;
+    [[nodiscard]] bool Useful() const override;
 
 public:
-    virtual u32 ef_weapon_type() const;
+    [[nodiscard]] u32 ef_weapon_type() const override;
 };
 XR_SOL_BASE_CLASSES(CEatableItemObject);

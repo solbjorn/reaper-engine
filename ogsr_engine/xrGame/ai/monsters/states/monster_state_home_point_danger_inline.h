@@ -33,7 +33,7 @@ void CStateMonsterDangerMoveToHomePointAbstract::initialize()
     inherited::initialize();
 
     // get the most danger position
-    get_most_danger_pos();
+    std::ignore = get_most_danger_pos();
 
     m_target_node = object->Home->get_place_in_cover();
     m_skip_camp = false;
@@ -70,7 +70,10 @@ void CStateMonsterDangerMoveToHomePointAbstract::critical_finalize()
 //////////////////////////////////////////////////////////////////////////
 
 TEMPLATE_SPECIALIZATION
-bool CStateMonsterDangerMoveToHomePointAbstract::check_start_conditions() { return (!object->Home->at_home() && !object->Home->at_home(get_most_danger_pos())); }
+bool CStateMonsterDangerMoveToHomePointAbstract::check_start_conditions()
+{
+    return (!object->Home->at_home() && !object->Home->at_home(get_most_danger_pos()));
+}
 
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterDangerMoveToHomePointAbstract::check_completion()

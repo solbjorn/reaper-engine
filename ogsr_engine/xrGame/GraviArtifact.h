@@ -19,10 +19,10 @@ public:
     CGraviArtefact();
     ~CGraviArtefact() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
 
 protected:
-    virtual void UpdateCLChild();
+    void UpdateCLChild() override;
 
     // параметры артефакта
     float m_fJumpHeight;

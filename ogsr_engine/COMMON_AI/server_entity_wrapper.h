@@ -23,8 +23,8 @@ public:
     inline explicit CServerEntityWrapper(CSE_Abstract* object = nullptr);
     ~CServerEntityWrapper() override;
 
-    virtual void save(IWriter& stream);
-    virtual void load(IReader& stream);
+    void save(IWriter& stream) override;
+    void load(IReader& stream) override;
     void save_update(IWriter&);
     void load_update(IReader&);
     IC CSE_Abstract& object() const;

@@ -53,20 +53,20 @@ public:
     [[nodiscard]] virtual bool get_active() const = 0;
     virtual void set_shadow(bool) = 0;
     virtual void set_volumetric(bool, bool manual = false) = 0;
-    virtual void set_volumetric_quality(float) = 0;
-    virtual void set_volumetric_intensity(float) = 0;
-    virtual void set_volumetric_distance(float) = 0;
+    virtual void set_volumetric_quality(f32) = 0;
+    virtual void set_volumetric_intensity(f32) = 0;
+    virtual void set_volumetric_distance(f32) = 0;
     virtual void set_indirect(bool) {}
-    virtual void set_position(const Fvector& P) = 0;
-    virtual void set_rotation(const Fvector& D, const Fvector& R) = 0;
-    virtual void set_cone(float angle) = 0;
-    virtual void set_range(float R) = 0;
+    virtual void set_position(const Fvector3& P) = 0;
+    virtual void set_rotation(const Fvector3& D, const Fvector3& R) = 0;
+    virtual void set_cone(f32 angle) = 0;
+    virtual void set_range(f32 R) = 0;
     [[nodiscard]] virtual f32 get_range() const = 0;
-    virtual void set_virtual_size(float R) = 0;
-    virtual void set_texture(LPCSTR name) = 0;
+    virtual void set_virtual_size(f32 R) = 0;
+    virtual void set_texture(gsl::czstring name) = 0;
 
     virtual void set_color(const Fcolor& C) = 0;
-    virtual void set_color(float r, float g, float b) = 0;
+    virtual void set_color(f32 r, f32 g, f32 b) = 0;
     [[nodiscard]] virtual Fcolor get_color() const = 0;
 
     virtual void set_hud_mode(bool b) = 0;
@@ -128,9 +128,9 @@ public:
     };
 
     virtual void force_mode(u32 mode) = 0;
-    virtual float get_luminocity() = 0;
-    virtual float get_luminocity_hemi() = 0;
-    virtual float* get_luminocity_hemi_cube() = 0;
+    [[nodiscard]] virtual f32 get_luminocity() = 0;
+    [[nodiscard]] virtual f32 get_luminocity_hemi() = 0;
+    [[nodiscard]] virtual f32* get_luminocity_hemi_cube() = 0;
 
     ~IRender_ObjectSpecific() override = 0;
 };
@@ -145,20 +145,20 @@ class XR_NOVTABLE IRender_Target : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IRender_Target);
 
 public:
-    virtual void set_blur(float f) = 0;
-    virtual void set_gray(float f) = 0;
-    virtual void set_duality_h(float f) = 0;
-    virtual void set_duality_v(float f) = 0;
-    virtual void set_noise(float f) = 0;
-    virtual void set_noise_scale(float f) = 0;
-    virtual void set_noise_fps(float f) = 0;
+    virtual void set_blur(f32 f) = 0;
+    virtual void set_gray(f32 f) = 0;
+    virtual void set_duality_h(f32 f) = 0;
+    virtual void set_duality_v(f32 f) = 0;
+    virtual void set_noise(f32 f) = 0;
+    virtual void set_noise_scale(f32 f) = 0;
+    virtual void set_noise_fps(f32 f) = 0;
     virtual void set_color_base(u32 f) = 0;
     virtual void set_color_gray(u32 f) = 0;
-    virtual void set_color_add(const Fvector& f) = 0;
+    virtual void set_color_add(const Fvector3& f) = 0;
     virtual u32 get_width(ctx_id_t context_id) = 0;
     virtual u32 get_height(ctx_id_t context_id) = 0;
-    virtual void set_cm_imfluence(float f) = 0;
-    virtual void set_cm_interpolate(float f) = 0;
+    virtual void set_cm_imfluence(f32 f) = 0;
+    virtual void set_cm_interpolate(f32 f) = 0;
     virtual void set_cm_textures(const shared_str& tex0, const shared_str& tex1) = 0;
 
     ~IRender_Target() override = 0;
@@ -207,42 +207,38 @@ public:
     virtual void level_Unload() = 0;
 
     void shader_option_skinning(s32 mode) { m_skinning = mode; }
-    virtual HRESULT shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcDataLen, LPCSTR pFunctionName, LPCSTR pTarget, DWORD Flags, void*& result) = 0;
+    [[nodiscard]] virtual HRESULT shader_compile(gsl::czstring name, DWORD const* pSrcData, UINT SrcDataLen, gsl::czstring pFunctionName, gsl::czstring pTarget,
+                                                 DWORD Flags, void*& result) = 0;
 
     // Information
     virtual void Statistics(CGameFont*) {}
 
-    virtual LPCSTR getShaderPath() = 0;
-    virtual IRenderVisual* getVisual(int id) = 0;
-    virtual IRender_Target* getTarget() = 0;
+    [[nodiscard]] virtual gsl::czstring getShaderPath() = 0;
+    [[nodiscard]] virtual IRenderVisual* getVisual(s32 id) = 0;
+    [[nodiscard]] virtual IRender_Target* getTarget() = 0;
 
     virtual void add_Visual(u32 context_id, IRenderable* root, IRenderVisual* V, Fmatrix& m) = 0; // add visual leaf	(no culling performed at all)
-    virtual void add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) = 0;
+    virtual void add_StaticWallmark(const wm_shader& S, const Fvector3& P, f32 s, CDB::TRI* T, Fvector3* V) = 0;
     //	Prefer this function when possible
-    virtual void add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V) = 0;
+    virtual void add_StaticWallmark(IWallMarkArray* pArray, const Fvector3& P, f32 s, CDB::TRI* T, Fvector3* V) = 0;
     virtual void clear_static_wallmarks() = 0;
-    // virtual void					add_SkeletonWallmark	(intrusive_ptr<CSkeletonWallmark> wm)						= 0;
-    // virtual void					add_SkeletonWallmark	(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size)=0;
     //	Prefer this function when possible
-    virtual void add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size) = 0;
+    virtual void add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector3& start, const Fvector3& dir, f32 size) = 0;
 
-    // virtual IBlender*				blender_create			(CLASS_ID cls)								= 0;
-    // virtual void					blender_destroy			(IBlender* &)								= 0;
-
-    virtual IRender_ObjectSpecific* ros_create() = 0;
+    [[nodiscard]] virtual IRender_ObjectSpecific* ros_create() = 0;
     virtual void ros_destroy(IRender_ObjectSpecific*&) = 0;
 
     // Lighting/glowing
-    virtual IRender_Light* light_create() = 0;
+    [[nodiscard]] virtual IRender_Light* light_create() = 0;
     virtual void light_destroy(IRender_Light*) {}
-    virtual IRender_Glow* glow_create() = 0;
+    [[nodiscard]] virtual IRender_Glow* glow_create() = 0;
     virtual void glow_destroy(IRender_Glow*) {}
 
     // Models
-    virtual IRenderVisual* model_CreateParticles(LPCSTR name) = 0;
-    virtual IRenderVisual* model_Create(LPCSTR name, IReader* data = nullptr) = 0;
-    virtual IRenderVisual* model_CreateChild(LPCSTR name, IReader* data) = 0;
-    virtual IRenderVisual* model_Duplicate(IRenderVisual* V) = 0;
+    [[nodiscard]] virtual IRenderVisual* model_CreateParticles(gsl::czstring name) = 0;
+    [[nodiscard]] virtual IRenderVisual* model_Create(gsl::czstring name, IReader* data = nullptr) = 0;
+    [[nodiscard]] virtual IRenderVisual* model_CreateChild(gsl::czstring name, IReader* data) = 0;
+    [[nodiscard]] virtual IRenderVisual* model_Duplicate(IRenderVisual* V) = 0;
 
     virtual void model_Delete(IRenderVisual*& V, BOOL bDiscard = FALSE) = 0;
     virtual void model_Logging(BOOL bEnable) = 0;
@@ -252,9 +248,9 @@ public:
     virtual void models_begin_prefetch1(bool val) = 0;
 
     // Occlusion culling
-    virtual BOOL occ_visible(vis_data& V) = 0;
-    virtual BOOL occ_visible(Fbox& B) = 0;
-    virtual BOOL occ_visible(sPoly& P) = 0;
+    [[nodiscard]] virtual BOOL occ_visible(vis_data& V) = 0;
+    [[nodiscard]] virtual BOOL occ_visible(Fbox& B) = 0;
+    [[nodiscard]] virtual BOOL occ_visible(sPoly& P) = 0;
 
     // Main
     virtual tmc::task<void> OnCameraUpdated() = 0;
@@ -263,7 +259,7 @@ public:
     virtual void AfterWorldRender(const bool save_bb_before_ui) = 0; //--#SM+#-- После рендеринга мира (до UI)
     virtual void AfterUIRender() = 0; // После рендеринга UI. Вызывать только если нам нужно отрендерить кадр для пда.
 
-    virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = nullptr) = 0;
+    virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, gsl::czstring name = nullptr) = 0;
 
     // Constructor/destructor
     ~IRender_interface() override = 0;
@@ -332,8 +328,8 @@ public:
 
 extern ShExports shader_exports;
 
-// Увеличивая или уменьшая максимальное кол-во здесь, обязательно нужно сделать тоже самое в вершинном шейдере в объявлении benders_pos. Там должно быть это значение умноженное на
-// два.
+// Увеличивая или уменьшая максимальное кол-во здесь, обязательно нужно сделать тоже самое в вершинном шейдере в объявлении benders_pos. Там должно быть это
+// значение умноженное на два.
 constexpr size_t GRASS_SHADER_DATA_COUNT = 16;
 
 struct alignas(32) GRASS_SHADER_DATA

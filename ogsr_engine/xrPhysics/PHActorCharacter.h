@@ -73,20 +73,10 @@ struct TPHCharacterRestrictor : public SPHCharacterRestrictor
 };
 
 DEFINE_VECTOR(SPHCharacterRestrictor*, RESRICTORS_V, RESTRICTOR_I);
-// typedef SPHCharacterRestrictor*		RESRICTORS_V[2];
-// typedef SPHCharacterRestrictor**	RESTRICTOR_I;
 
-IC RESTRICTOR_I begin(RESRICTORS_V& v)
-{
-    // return v;
-    return v.begin();
-}
+IC RESTRICTOR_I begin(RESRICTORS_V& v) { return v.begin(); }
 
-IC RESTRICTOR_I end(RESRICTORS_V& v)
-{
-    // return v+sizeof(RESRICTORS_V)/sizeof(SPHCharacterRestrictor*);
-    return v.end();
-}
+IC RESTRICTOR_I end(RESRICTORS_V& v) { return v.end(); }
 
 class CPHActorCharacter : public CPHSimpleCharacter
 {
@@ -105,18 +95,18 @@ public:
     CPHActorCharacter();
     ~CPHActorCharacter() override;
 
-    virtual CPHActorCharacter* CastActorCharacter() { return this; }
-    virtual void SetObjectContactCallback(ObjectContactCallbackFun* callback);
-    virtual void SetMaterial(u16 material);
-    virtual void Create(dVector3 sizes);
-    virtual void Destroy(void);
-    virtual void SetPhysicsRefObject(CPhysicsShellHolder* ref_object);
-    virtual void SetAcceleration(Fvector accel);
-    virtual void Disable();
-    virtual void Jump(const Fvector& jump_velocity);
-    virtual void InitContact(dContact* c, bool& do_collide, u16 material_idx_1, u16 material_idx_2);
+    [[nodiscard]] CPHActorCharacter* CastActorCharacter() override { return this; }
+    void SetObjectContactCallback(ObjectContactCallbackFun* callback) override;
+    void SetMaterial(u16 material) override;
+    void Create(dVector3 sizes) override;
+    void Destroy() override;
+    void SetPhysicsRefObject(CPhysicsShellHolder* ref_object) override;
+    void SetAcceleration(Fvector accel) override;
+    void Disable() override;
+    void Jump(const Fvector& jump_velocity) override;
+    void InitContact(dContact* c, bool& do_collide, u16 material_idx_1, u16 material_idx_2) override;
     void SetRestrictorRadius(CPHCharacter::ERestrictionType rtype, float r);
-    virtual void ChooseRestrictionType(ERestrictionType my_type, float my_depth, CPHCharacter* ch);
+    void ChooseRestrictionType(ERestrictionType my_type, float my_depth, CPHCharacter* ch) override;
 
 private:
     void ClearRestrictors();

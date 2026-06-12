@@ -22,7 +22,8 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
         // create entity
         E = entity_Create(s_name);
         R_ASSERT3(E, "Can't create entity.", s_name);
-        E->Spawn_Read(P);
+        std::ignore = E->Spawn_Read(P);
+
         if (!((game->Type() == E->s_gameid) || (GAME_ANY == E->s_gameid)) || !E->match_configuration() || !game->OnPreCreate(E))
         {
             F_entity_Destroy(E);
@@ -57,7 +58,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
         // Create phantom
         CSE_Abstract* Phantom = entity_Create(E->s_name.c_str());
         R_ASSERT(Phantom);
-        Phantom->Spawn_Read(P);
+        std::ignore = Phantom->Spawn_Read(P);
         Phantom->ID = PerformIDgen(0xffff);
         Phantom->ID_Phantom = Phantom->ID; // Self-linked to avoid phantom-breeding
         Phantom->owner = nullptr;

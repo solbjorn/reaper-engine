@@ -19,14 +19,15 @@ CInventoryContainer::~CInventoryContainer() = default;
 u32 CInventoryContainer::Cost() const
 {
     SItemsInfo info;
-    CalcItems(info);
+    std::ignore = CalcItems(info);
+
     return info.cost + m_cost;
 }
 
 float CInventoryContainer::RadiationRestoreSpeed() const
 {
     SItemsInfo info;
-    CalcItems(info);
+    std::ignore = CalcItems(info);
 
     return Core.Features.test(xrCore::Feature::objects_radioactive) ? (m_fRadiationRestoreSpeed + info.info[0]) : info.info[0];
 }
@@ -34,7 +35,8 @@ float CInventoryContainer::RadiationRestoreSpeed() const
 float CInventoryContainer::Weight() const
 {
     SItemsInfo info;
-    CalcItems(info);
+    std::ignore = CalcItems(info);
+
     return info.weight + m_weight;
 }
 

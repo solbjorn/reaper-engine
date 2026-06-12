@@ -46,7 +46,8 @@ private:
 public:
     virtual void ExplodeParams(const Fvector& pos, const Fvector& dir);
 
-    static float ExplosionEffect(collide::rq_results& storage, CExplosive* exp_obj, CPhysicsShellHolder* blasted_obj, const Fvector& expl_centre, const float expl_radius);
+    static float ExplosionEffect(collide::rq_results& storage, CExplosive* exp_obj, CPhysicsShellHolder* blasted_obj, const Fvector& expl_centre,
+                                 const float expl_radius);
 
     virtual tmc::task<void> OnEvent(NET_Packet& P, u16 type);
     virtual void OnAfterExplosion();
@@ -54,8 +55,8 @@ public:
     virtual void SetCurrentParentID(u16 parent_id) { m_iCurrentParentID = parent_id; }
     IC u16 CurrentParentID() const { return m_iCurrentParentID; }
 
-    virtual void SetInitiator(u16 id) { SetCurrentParentID(id); }
-    virtual u16 Initiator();
+    void SetInitiator(u16 id) override { SetCurrentParentID(id); }
+    [[nodiscard]] u16 Initiator() override;
 
     virtual void UpdateExplosionPos() {}
     virtual void GetExplVelocity(Fvector& v);
@@ -63,9 +64,9 @@ public:
     virtual void GetExplDirection(Fvector& d);
     virtual void GenExplodeEvent(const Fvector& pos, const Fvector& normal);
     virtual void FindNormal(Fvector& normal);
-    virtual CGameObject* cast_game_object() = 0;
-    virtual CExplosive* cast_explosive() { return this; }
-    virtual IDamageSource* cast_IDamageSource() { return this; }
+    [[nodiscard]] virtual CGameObject* cast_game_object() = 0;
+    [[nodiscard]] virtual CExplosive* cast_explosive() { return this; }
+    [[nodiscard]] IDamageSource* cast_IDamageSource() override { return this; }
     virtual void GetRayExplosionSourcePos(Fvector& pos);
     virtual void GetExplosionBox(Fvector& size);
     virtual void ActivateExplosionBox(const Fvector& size, Fvector& in_out_pos);

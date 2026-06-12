@@ -22,8 +22,8 @@ public:
     explicit CStateMonsterHitted(_Object* obj);
     ~CStateMonsterHitted() override;
 
-    virtual void reselect_state();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void reselect_state() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 };
 
 #include "monster_state_hitted_inline.h"

@@ -29,23 +29,7 @@ public:
     u16 m_depended_objects;
     Flags8 m_flags;
     SHit m_fatal_hit;
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /*
-                float						m_random_min ; float						m_random_hit_imp
-       ; u16							ref_bone																																;
 
-                float						m_imp_transition_factor ; float						m_lv_transition_factor
-       ; float						m_av_transition_factor																													;
-    */
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /*
-                        source_bone            =-1      ;-1- ref_bone
-                        imp_transition_factor  =1       ; коэффициент передачи импульса
-                        lv_transition_factor   =1       ; коэффициент передачи линейной скорости
-                        av_transition_factor   =1       ; коэффициент передачи угловой скорости
-    */
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     enum
     {
         fl_destroyable = 1 << 0,
@@ -71,7 +55,7 @@ public:
     IC bool Destroyable() { return !!m_flags.test(fl_destroyable); }
     IC bool Destroyed() { return !!m_flags.test(fl_destroyed); }
     IC bool CanDestroy() { return m_flags.test(fl_destroyable) && !m_flags.test(fl_destroyed); }
-    virtual bool CanRemoveObject() { return true; }
+    [[nodiscard]] virtual bool CanRemoveObject() { return true; }
     virtual void SheduleUpdate(u32);
     virtual void GenSpawnReplace(u16 source_id, LPCSTR section, shared_str visual_name);
     virtual void InitServerObject(CSE_Abstract* D);

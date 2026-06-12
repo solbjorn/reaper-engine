@@ -43,20 +43,20 @@ public:
     CWeaponAmmo();
     ~CWeaponAmmo() override;
 
-    virtual CWeaponAmmo* cast_weapon_ammo() { return this; }
-    virtual void Load(LPCSTR section);
+    [[nodiscard]] CWeaponAmmo* cast_weapon_ammo() override { return this; }
+    void Load(gsl::czstring section) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual void net_Export(CSE_Abstract* E);
-    virtual void OnH_B_Chield();
-    virtual void OnH_B_Independent(bool just_before_destroy);
+    void net_Export(CSE_Abstract* E) override;
+    void OnH_B_Chield() override;
+    void OnH_B_Independent(bool just_before_destroy) override;
     tmc::task<void> UpdateCL() override;
     void renderable_Render(u32 context_id, IRenderable* root) override;
 
-    virtual bool Useful() const;
-    virtual float Weight() const;
+    [[nodiscard]] bool Useful() const override;
+    [[nodiscard]] f32 Weight() const override;
+    [[nodiscard]] u32 Cost() const override;
 
-    virtual u32 Cost() const;
     bool Get(CCartridge& cartridge);
 
     float m_kDist, m_kDisp, m_kHit, m_kImpulse, m_kPierce, m_kAP, m_kAirRes, m_kSpeed;
@@ -70,5 +70,5 @@ public:
     bool m_tracer;
 
 public:
-    virtual CInventoryItem* can_make_killing(const CInventory* inventory) const;
+    [[nodiscard]] CInventoryItem* can_make_killing(const CInventory* inventory) const override;
 };

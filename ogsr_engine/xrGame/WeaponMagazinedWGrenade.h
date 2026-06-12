@@ -15,56 +15,56 @@ public:
     explicit CWeaponMagazinedWGrenade(ESoundTypes eSoundType = SOUND_TYPE_WEAPON_SUBMACHINEGUN);
     ~CWeaponMagazinedWGrenade() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual void net_Export(CSE_Abstract* E);
+    void net_Export(CSE_Abstract* E) override;
 
-    virtual void OnDrawUI();
-    virtual void net_Relcase(CObject* object);
+    void OnDrawUI() override;
+    void net_Relcase(CObject* object) override;
 
-    virtual void OnH_B_Independent(bool just_before_destroy);
+    void OnH_B_Independent(bool just_before_destroy) override;
 
-    virtual void save(NET_Packet& output_packet);
-    virtual void load(IReader& input_packet);
+    void save(NET_Packet& output_packet) override;
+    void load(IReader& input_packet) override;
 
-    virtual bool Attach(PIItem pIItem, bool b_send_event);
-    virtual bool Detach(const char* item_section_name, bool b_spawn_item);
-    virtual bool CanAttach(PIItem pIItem);
-    virtual bool CanDetach(const char* item_section_name);
-    virtual void InitAddons();
-    virtual bool UseScopeTexture();
-    virtual float CurrentZoomFactor();
+    [[nodiscard]] bool Attach(PIItem pIItem, bool b_send_event) override;
+    [[nodiscard]] bool Detach(gsl::czstring item_section_name, bool b_spawn_item) override;
+    [[nodiscard]] bool CanAttach(PIItem pIItem) override;
+    [[nodiscard]] bool CanDetach(gsl::czstring item_section_name) override;
+    void InitAddons() override;
+    [[nodiscard]] bool UseScopeTexture() override;
+    [[nodiscard]] f32 CurrentZoomFactor() override;
 
-    virtual void OnStateSwitch(u32 S, u32 oldState);
+    void OnStateSwitch(u32 S, u32 oldState) override;
 
-    virtual void switch2_Idle();
-    virtual void switch2_Reload();
-    virtual void state_Fire(float dt);
-    virtual void OnShot();
-    virtual void SwitchState(u32 S);
+    void switch2_Idle() override;
+    void switch2_Reload() override;
+    void state_Fire(f32 dt) override;
+    void OnShot() override;
+    void SwitchState(u32 S) override;
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
-    virtual void ReloadMagazine();
+    void ReloadMagazine() override;
 
     [[nodiscard]] bool Action(EGameActions cmd, u32 flags) override;
 
-    virtual void UpdateSounds();
-    virtual void StopHUDSounds();
+    void UpdateSounds() override;
+    void StopHUDSounds() override;
 
     // переключение в режим подствольника
-    virtual bool SwitchMode();
+    [[nodiscard]] bool SwitchMode() override;
     void PerformSwitchGL();
-    void OnAnimationEnd(u32 state);
+    void OnAnimationEnd(u32 state) override;
 
-    virtual bool IsNecessaryItem(const shared_str& item_sect);
+    [[nodiscard]] bool IsNecessaryItem(const shared_str& item_sect) override;
 
     // виртуальные функции для проигрывания анимации HUD
-    virtual void PlayAnimShow();
-    virtual void PlayAnimHide();
-    virtual void PlayAnimReload();
-    virtual void PlayAnimIdle();
-    virtual void PlayAnimShoot();
+    void PlayAnimShow() override;
+    void PlayAnimHide() override;
+    void PlayAnimReload() override;
+    void PlayAnimIdle() override;
+    void PlayAnimShoot() override;
     virtual void PlayAnimModeSwitch();
 
     HUD_SOUND sndShotG;
@@ -90,11 +90,11 @@ public:
     // название косточки для гранаты подствольника в HUD
     shared_str grenade_bone_name;
 
-    int GetAmmoElapsed2() const override { return iAmmoElapsed2; }
-    bool IsGrenadeMode() const override { return m_bGrenadeMode; }
-    virtual float Weight() const;
+    [[nodiscard]] s32 GetAmmoElapsed2() const override { return iAmmoElapsed2; }
+    [[nodiscard]] bool IsGrenadeMode() const override { return m_bGrenadeMode; }
+    [[nodiscard]] f32 Weight() const override;
 
-    bool IsPartlyReloading() const override
+    [[nodiscard]] bool IsPartlyReloading() const override
     {
         if (m_bGrenadeMode)
             return m_set_next_ammoType_on_reload == u32(-1) && iAmmoElapsed2 > 0 && !IsMisfire();

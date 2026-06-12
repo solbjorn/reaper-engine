@@ -25,24 +25,24 @@ public:
     CBastArtefact();
     ~CBastArtefact() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     tmc::task<void> shedule_Update(u32 dt) override;
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
 
-    virtual void Hit(SHit* pHDS);
+    void Hit(SHit* pHDS) override;
 
-    virtual bool Useful() const;
+    [[nodiscard]] bool Useful() const override;
 
-    virtual void feel_touch_new(CObject* O);
-    virtual void feel_touch_delete(CObject* O);
-    virtual BOOL feel_touch_contact(CObject* O);
+    void feel_touch_new(CObject* O) override;
+    void feel_touch_delete(CObject* O) override;
+    [[nodiscard]] BOOL feel_touch_contact(CObject* O) override;
 
-    bool IsAttacking() { return !!m_AttakingEntity; }
+    [[nodiscard]] bool IsAttacking() { return !!m_AttakingEntity; }
 
 protected:
-    virtual void UpdateCLChild();
+    void UpdateCLChild() override;
 
     static void ObjectContactCallback(bool&, bool, dContact& c, SGameMtl*, SGameMtl*);
     // столкновение мочалки с сущностью
@@ -74,6 +74,6 @@ protected:
     CEntityAlive* m_AttakingEntity{};
 
 public:
-    virtual void setup_physic_shell();
+    void setup_physic_shell() override;
 };
 XR_SOL_BASE_CLASSES(CBastArtefact);

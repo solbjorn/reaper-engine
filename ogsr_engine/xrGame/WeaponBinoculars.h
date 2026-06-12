@@ -18,30 +18,30 @@ protected:
     HUD_SOUND sndZoomIn;
     HUD_SOUND sndZoomOut;
 
-    virtual size_t GetWeaponTypeForCollision() const override { return Binocular; }
-    virtual Fvector GetPositionForCollision() override { return Device.vCameraPosition; }
-    virtual Fvector GetDirectionForCollision() override { return Device.vCameraDirection; }
+    [[nodiscard]] size_t GetWeaponTypeForCollision() const override { return Binocular; }
+    [[nodiscard]] Fvector GetPositionForCollision() override { return Device.vCameraPosition; }
+    [[nodiscard]] Fvector GetDirectionForCollision() override { return Device.vCameraDirection; }
 
 public:
     CWeaponBinoculars();
     ~CWeaponBinoculars() override;
 
-    void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
 
-    virtual void OnZoomIn();
-    virtual void OnZoomOut();
+    void OnZoomIn() override;
+    void OnZoomOut() override;
     tmc::task<void> net_Destroy() override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
 
-    virtual void save(NET_Packet& output_packet);
-    virtual void load(IReader& input_packet);
+    void save(NET_Packet& output_packet) override;
+    void load(IReader& input_packet) override;
 
     [[nodiscard]] bool Action(EGameActions cmd, u32 flags) override;
     tmc::task<void> UpdateCL() override;
-    virtual void OnDrawUI();
-    virtual bool use_crosshair() const { return false; }
-    virtual void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
-    virtual void net_Relcase(CObject* object);
+    void OnDrawUI() override;
+    [[nodiscard]] bool use_crosshair() const override { return false; }
+    void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count) override;
+    void net_Relcase(CObject* object) override;
     float GetZoomFactor() { return m_fRTZoomFactor; }
     void SetZoomFactor(float _zoom) { m_fRTZoomFactor = _zoom; }
 

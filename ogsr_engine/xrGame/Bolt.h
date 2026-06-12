@@ -14,27 +14,27 @@ public:
     CBolt();
     ~CBolt() override;
 
-    virtual void OnH_A_Chield();
+    void OnH_A_Chield() override;
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
 
-    virtual bool Activate(bool = false);
-    virtual void Deactivate(bool = false);
+    bool Activate(bool = false) override;
+    void Deactivate(bool = false) override;
 
-    virtual void SetInitiator(u16 id);
-    virtual u16 Initiator();
+    void SetInitiator(u16 id) override;
+    [[nodiscard]] u16 Initiator() override;
 
-    virtual void Throw();
+    void Throw() override;
     [[nodiscard]] bool Action(EGameActions cmd, u32 flags) override;
-    virtual bool Useful() const;
-    virtual void Destroy();
-    virtual void activate_physic_shell();
-    virtual void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
+    [[nodiscard]] bool Useful() const override;
+    void Destroy() override;
+    void activate_physic_shell() override;
+    void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count) override;
 
-    virtual BOOL UsedAI_Locations() { return FALSE; }
-    virtual IDamageSource* cast_IDamageSource() { return this; }
+    [[nodiscard]] BOOL UsedAI_Locations() override { return FALSE; }
+    [[nodiscard]] IDamageSource* cast_IDamageSource() override { return this; }
 
-    virtual bool StopSprintOnFire() { return false; }
+    [[nodiscard]] bool StopSprintOnFire() override { return false; }
 
 protected:
-    virtual size_t GetWeaponTypeForCollision() const override { return Bolt; }
+    [[nodiscard]] size_t GetWeaponTypeForCollision() const override { return Bolt; }
 };

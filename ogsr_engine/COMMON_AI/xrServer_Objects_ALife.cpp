@@ -1175,9 +1175,10 @@ const CSE_Abstract* CSE_ALifeSmartZone::base() const { return this; }
 
 CSE_Abstract* CSE_ALifeSmartZone::init()
 {
-    inherited1::init();
-    inherited2::init();
-    return (this);
+    std::ignore = inherited1::init();
+    std::ignore = inherited2::init();
+
+    return this;
 }
 
 void CSE_ALifeSmartZone::__STATE_Read(NET_Packet& tNetPacket, u16 size) { inherited1::__STATE_Read(tNetPacket, size); }

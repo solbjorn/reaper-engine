@@ -39,7 +39,7 @@ public:
 
     void InitFromXML(CUIXml& xml, LPCSTR path);
     void SetVelocity(float v);
-    virtual void Update() override;
+    void Update() override;
 };
 
 class CUIArtefactDetectorSimple : public CUIArtefactDetectorBase
@@ -95,8 +95,8 @@ public:
 
     ~CUIArtefactDetectorElite() override = default;
 
-    virtual void update() override;
-    virtual void Draw() override;
+    void update() override;
+    void Draw() override;
 
     void construct(CEliteDetector* p);
     void Clear();
@@ -118,7 +118,7 @@ public:
 
     ~CUIArtefactDetectorAdv() override = default;
 
-    virtual void update() override;
+    void update() override;
     void construct(CAdvancedDetector* p);
     void SetValue(const Fvector& v2);
     float CurrentYRotation() const;

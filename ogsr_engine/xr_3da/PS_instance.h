@@ -34,12 +34,12 @@ public:
     IC void PSI_SetLifeTime(float life_time) { m_iLifeTime = iFloor(life_time * 1000); }
 
     virtual void Play(BOOL hudMode = FALSE) = 0;
-    virtual BOOL Locked() { return FALSE; }
+    [[nodiscard]] virtual BOOL Locked() { return FALSE; }
 
-    virtual shared_str shedule_Name() const { return shared_str("particle_instance"); }
+    [[nodiscard]] shared_str shedule_Name() const override { return shared_str{"particle_instance"}; }
 
     tmc::task<void> shedule_Update(u32 dt) override;
-    virtual IRenderable* dcast_Renderable() { return this; }
+    [[nodiscard]] IRenderable* dcast_Renderable() override { return this; }
 };
 
 #endif

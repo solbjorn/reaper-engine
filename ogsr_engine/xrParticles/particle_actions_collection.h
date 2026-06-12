@@ -7,11 +7,11 @@
 
 namespace PAPI
 {
-#define _METHODS \
-    virtual void Load(IReader& F); \
-    virtual void Save(IWriter& F); \
-    virtual void Execute(ParticleEffect* pe, const float dt); \
-    virtual void Transform(const Fmatrix& m)
+#define _METHODS() \
+    void Load(IReader& F) override; \
+    void Save(IWriter& F) override; \
+    void Execute(ParticleEffect* pe, const float dt) override; \
+    void Transform(const Fmatrix& m) override
 
 struct PAAvoid : public ParticleAction
 {
@@ -26,7 +26,7 @@ public:
 
     ~PAAvoid() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PABounce : public ParticleAction
@@ -42,7 +42,7 @@ public:
 
     ~PABounce() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PACopyVertexB : public ParticleAction
@@ -54,7 +54,7 @@ public:
 
     ~PACopyVertexB() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PADamping : public ParticleAction
@@ -68,7 +68,7 @@ public:
 
     ~PADamping() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PAExplosion : public ParticleAction
@@ -86,7 +86,7 @@ public:
 
     ~PAExplosion() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PAFollow : public ParticleAction
@@ -100,7 +100,7 @@ public:
 
     ~PAFollow() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PAGravitate : public ParticleAction
@@ -114,7 +114,7 @@ public:
 
     ~PAGravitate() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PAGravity : public ParticleAction
@@ -127,7 +127,7 @@ public:
 
     ~PAGravity() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PAJet : public ParticleAction
@@ -145,7 +145,7 @@ public:
 
     ~PAJet() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PAKillOld : public ParticleAction
@@ -158,7 +158,7 @@ public:
 
     ~PAKillOld() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PAMatchVelocity : public ParticleAction
@@ -172,7 +172,7 @@ public:
 
     ~PAMatchVelocity() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PAMove : public ParticleAction
@@ -182,7 +182,7 @@ struct PAMove : public ParticleAction
 public:
     ~PAMove() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PAOrbitLine : public ParticleAction
@@ -198,7 +198,7 @@ public:
 
     ~PAOrbitLine() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PAOrbitPoint : public ParticleAction
@@ -214,7 +214,7 @@ public:
 
     ~PAOrbitPoint() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PARandomAccel : public ParticleAction
@@ -227,7 +227,7 @@ public:
 
     ~PARandomAccel() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PARandomDisplace : public ParticleAction
@@ -240,7 +240,7 @@ public:
 
     ~PARandomDisplace() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PARandomVelocity : public ParticleAction
@@ -253,7 +253,7 @@ public:
 
     ~PARandomVelocity() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PARestore : public ParticleAction
@@ -265,7 +265,7 @@ public:
 
     ~PARestore() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PAScatter : public ParticleAction
@@ -281,7 +281,7 @@ public:
 
     ~PAScatter() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PASink : public ParticleAction
@@ -295,7 +295,7 @@ public:
 
     ~PASink() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PASinkVelocity : public ParticleAction
@@ -309,7 +309,7 @@ public:
 
     ~PASinkVelocity() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PASpeedLimit : public ParticleAction
@@ -322,7 +322,7 @@ public:
 
     ~PASpeedLimit() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PASource : public ParticleAction
@@ -353,7 +353,7 @@ public:
 
     ~PASource() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PATargetColor : public ParticleAction
@@ -369,7 +369,7 @@ public:
 
     ~PATargetColor() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PATargetSize : public ParticleAction
@@ -382,7 +382,7 @@ public:
 
     ~PATargetSize() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PATargetRotate : public ParticleAction
@@ -395,7 +395,7 @@ public:
 
     ~PATargetRotate() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PATargetVelocity : public ParticleAction
@@ -409,7 +409,7 @@ public:
 
     ~PATargetVelocity() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PAVortex : public ParticleAction
@@ -427,7 +427,7 @@ public:
 
     ~PAVortex() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 
 struct PATurbulence : public ParticleAction
@@ -444,7 +444,7 @@ public:
 
     ~PATurbulence() override = default;
 
-    _METHODS;
+    _METHODS();
 };
 } // namespace PAPI
 

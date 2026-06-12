@@ -52,13 +52,13 @@ public:
     CPoltergeist();
     ~CPoltergeist() override;
 
-    virtual void Load(LPCSTR section);
-    virtual void reload(LPCSTR section);
-    virtual void reinit();
+    void Load(gsl::czstring section) override;
+    void reload(gsl::czstring section) override;
+    void reinit() override;
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual void net_Relcase(CObject* O);
+    void net_Relcase(CObject* O) override;
 
     tmc::task<void> UpdateCL() override;
     tmc::task<void> shedule_Update(u32 dt) override;
@@ -69,13 +69,13 @@ public:
     tmc::task<void> Die(CObject* who) override;
     void OnDie();
 
-    virtual CMovementManager* create_movement_manager();
+    [[nodiscard]] CMovementManager* create_movement_manager() override;
 
-    virtual void ForceFinalAnimation();
+    void ForceFinalAnimation() override;
 
-    virtual void on_activate();
+    void on_activate() override;
     tmc::task<void> on_deactivate() override;
-    virtual void Hit(SHit* pHDS);
+    void Hit(SHit* pHDS) override;
 
     bool detected_enemy();
     float get_fly_around_distance() const { return m_fly_around_distance; }
@@ -108,7 +108,7 @@ public:
     void DisableHide() { m_disable_hide = true; }
 
 public:
-    virtual bool run_home_point_when_enemy_inaccessible() const { return false; }
+    [[nodiscard]] bool run_home_point_when_enemy_inaccessible() const override { return false; }
 
 private:
     void Hide();
@@ -179,7 +179,7 @@ public:
     explicit CPolterSpecialAbility(CPoltergeist* polter);
     ~CPolterSpecialAbility() override;
 
-    virtual void load(LPCSTR section);
+    virtual void load(gsl::czstring section);
     virtual void update_schedule();
     virtual void update_frame();
     virtual void on_hide();
@@ -265,8 +265,8 @@ public:
     explicit CPolterFlame(CPoltergeist* polter);
     ~CPolterFlame() override;
 
-    virtual void load(LPCSTR section);
-    virtual void update_schedule();
+    void load(gsl::czstring section) override;
+    void update_schedule() override;
     tmc::task<void> on_destroy() override;
     tmc::task<void> on_die() override;
 
@@ -324,9 +324,9 @@ public:
     explicit CPolterTele(CPoltergeist* polter);
     ~CPolterTele() override;
 
-    virtual void load(LPCSTR section);
-    virtual void update_schedule();
-    virtual void update_frame();
+    void load(gsl::czstring section) override;
+    void update_schedule() override;
+    void update_frame() override;
     tmc::task<void> on_destroy() override;
     tmc::task<void> on_die() override;
 

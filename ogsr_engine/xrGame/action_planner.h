@@ -19,16 +19,16 @@
 template <typename _object_type, bool _reverse_search = false, typename _world_operator = CActionBase<_object_type>,
           typename _condition_evaluator = CPropertyEvaluator<_object_type>, typename _world_operator_ptr = _world_operator*,
           typename _condition_evaluator_ptr = _condition_evaluator*>
-class CActionPlanner : public CProblemSolver<GraphEngineSpace::CWorldProperty, GraphEngineSpace::CWorldState, _world_operator, _condition_evaluator, u32, _reverse_search,
-                                             _world_operator_ptr, _condition_evaluator_ptr>
+class CActionPlanner : public CProblemSolver<GraphEngineSpace::CWorldProperty, GraphEngineSpace::CWorldState, _world_operator, _condition_evaluator, u32,
+                                             _reverse_search, _world_operator_ptr, _condition_evaluator_ptr>
 {
     RTTI_DECLARE_TYPEINFO(CActionPlanner<_object_type, _reverse_search, _world_operator, _condition_evaluator, _world_operator_ptr, _condition_evaluator_ptr>,
-                          CProblemSolver<GraphEngineSpace::CWorldProperty, GraphEngineSpace::CWorldState, _world_operator, _condition_evaluator, u32, _reverse_search,
-                                         _world_operator_ptr, _condition_evaluator_ptr>);
+                          CProblemSolver<GraphEngineSpace::CWorldProperty, GraphEngineSpace::CWorldState, _world_operator, _condition_evaluator, u32,
+                                         _reverse_search, _world_operator_ptr, _condition_evaluator_ptr>);
 
 public:
-    using inherited = CProblemSolver<GraphEngineSpace::CWorldProperty, GraphEngineSpace::CWorldState, _world_operator, _condition_evaluator, u32, _reverse_search,
-                                     _world_operator_ptr, _condition_evaluator_ptr>;
+    using inherited = CProblemSolver<GraphEngineSpace::CWorldProperty, GraphEngineSpace::CWorldState, _world_operator, _condition_evaluator, u32,
+                                     _reverse_search, _world_operator_ptr, _condition_evaluator_ptr>;
     using COperator = typename inherited::COperator;
     using CConditionEvaluator = typename inherited::CConditionEvaluator;
     using condition_evaluator_ptr = _condition_evaluator_ptr;
@@ -81,8 +81,8 @@ public:
     IC bool initialized() const;
     IC void add_condition(_world_operator* action, _condition_type condition_id, _value_type condition_value);
     IC void add_effect(_world_operator* action, _condition_type condition_id, _value_type condition_value);
-    IC virtual void add_operator(const _edge_type& operator_id, _operator_ptr _operator);
-    IC virtual void add_evaluator(const _condition_type& condition_id, _condition_evaluator_ptr evaluator);
+    inline void add_operator(const _edge_type& operator_id, _operator_ptr _operator) override;
+    inline void add_evaluator(const _condition_type& condition_id, _condition_evaluator_ptr evaluator) override;
     IC _object_type& object() const;
     virtual void save(NET_Packet& packet);
     virtual void load(IReader& packet);

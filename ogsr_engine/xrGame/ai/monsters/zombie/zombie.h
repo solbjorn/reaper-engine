@@ -21,21 +21,21 @@ public:
     CZombie();
     ~CZombie() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
+    void reinit() override;
+    void reload(gsl::czstring section) override;
 
-    virtual void Hit(SHit* pHDS);
+    void Hit(SHit* pHDS) override;
 
-    virtual bool ability_pitch_correction() { return false; }
+    [[nodiscard]] bool ability_pitch_correction() override { return false; }
 
     tmc::task<void> shedule_Update(u32 dt) override;
 
     static void BoneCallback(CBoneInstance* B);
     void vfAssignBones();
 
-    virtual bool use_center_to_aim() const { return true; }
+    [[nodiscard]] bool use_center_to_aim() const override { return true; }
 
     CBoneInstance* bone_spine;
     CBoneInstance* bone_head;

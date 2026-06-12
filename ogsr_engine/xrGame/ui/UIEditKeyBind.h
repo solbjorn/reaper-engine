@@ -20,24 +20,24 @@ public:
     ~CUIEditKeyBind() override;
 
     // options item
-    virtual void Register(const char* entry, const char* group);
-    virtual void SetCurrentValue();
-    virtual void SaveValue();
-    virtual void OnMessage(const char* message);
-    virtual bool IsChanged();
+    void Register(gsl::czstring entry, gsl::czstring group) override;
+    void SetCurrentValue() override;
+    void SaveValue() override;
+    void OnMessage(gsl::czstring message) override;
+    [[nodiscard]] bool IsChanged() override;
 
     // CUIWindow methods
-    virtual void Init(float x, float y, float width, float height);
-    virtual void Update();
+    void Init(f32 x, f32 y, f32 width, f32 height) override;
+    void Update() override;
     [[nodiscard]] bool OnMouseDown(sf::Mouse::Button mouse_btn) override;
-    virtual void OnFocusLost();
+    void OnFocusLost() override;
     [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
     // IUITextControl
-    virtual void SetText(const char* text);
+    void SetText(gsl::czstring text) override;
 
 protected:
     void BindAction2Key();
-    virtual void InitTexture(LPCSTR texture, bool horizontal = true);
+    void InitTexture(gsl::czstring texture, bool horizontal = true) override;
 
     bool m_bEditMode{};
     bool m_bChanged{};

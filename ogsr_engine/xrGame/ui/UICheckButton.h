@@ -11,21 +11,22 @@ public:
     CUICheckButton();
     ~CUICheckButton() override;
 
-    virtual void Update();
+    void Update() override;
 
     // CUIOptionsItem
-    virtual void SetCurrentValue();
-    virtual void SaveValue();
-    virtual bool IsChanged();
-    virtual void SeveBackUpValue();
-    virtual void Undo();
+    void SetCurrentValue() override;
+    void SaveValue() override;
+    [[nodiscard]] bool IsChanged() override;
+    void SeveBackUpValue() override;
+    void Undo() override;
 
-    virtual void Init(float x, float y, float width, float height);
-    virtual void InitTexture(LPCSTR tex_name);
-    void SetTextX(float) override {}
+    void Init(f32 x, f32 y, f32 width, f32 height) override;
+    void InitTexture(gsl::czstring tex_name) override;
+    void SetTextX(f32) override {}
 
     // состояние кнопки
-    bool GetCheck() { return m_eButtonState == BUTTON_PUSHED; }
+    [[nodiscard]] bool GetCheck() { return m_eButtonState == BUTTON_PUSHED; }
+
     void SetCheck(bool ch)
     {
         m_eButtonState = ch ? BUTTON_PUSHED : BUTTON_NORMAL;

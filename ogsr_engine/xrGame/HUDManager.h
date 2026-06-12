@@ -64,7 +64,7 @@ public:
 
     tmc::task<void> OnEvent(CEvent*, u64, u64) override;
 
-    virtual void Load();
+    void Load() override;
 
     void Render_First(ctx_id_t context_id) override;
     void Render_Last(ctx_id_t context_id) override;
@@ -72,7 +72,7 @@ public:
 
     virtual void RenderUI();
 
-    virtual IC CUI* GetUI() { return pUI; }
+    [[nodiscard]] CUI* GetUI() override { return pUI; }
 
     void Hit(int idx, float, const Fvector& dir);
     CFontManager& Font() { return *(UI()->Font()); }
@@ -85,13 +85,14 @@ public:
     void ShowCrosshair(bool show);
 
     void SetHitmarkType(LPCSTR tex_name);
-    virtual void OnScreenRatioChanged();
-    virtual void OnDisconnected();
-    virtual void OnConnected();
+    void OnScreenRatioChanged() override;
+    void OnDisconnected() override;
+    void OnConnected() override;
 
-    virtual void RenderActiveItemUI();
-    virtual bool RenderActiveItemUIQuery();
+    void RenderActiveItemUI() override;
+    [[nodiscard]] bool RenderActiveItemUIQuery() override;
 
-    virtual void net_Relcase(CObject* object);
-    CHUDTarget* GetTarget() const { return m_pHUDTarget; }
+    void net_Relcase(CObject* object) override;
+
+    [[nodiscard]] CHUDTarget* GetTarget() const { return m_pHUDTarget; }
 };

@@ -13,14 +13,14 @@ public:
     explicit CCameraFirstEye(CObject* p, u32 flags = 0);
     ~CCameraFirstEye() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     void Move(EGameActions cmd, f32 val = 0.0f, f32 factor = 1.0f) override;
 
-    virtual void OnActivate(CCameraBase* old_cam);
-    virtual void Update(Fvector& point, Fvector& noise_angle);
+    void OnActivate(CCameraBase* old_cam) override;
+    void Update(Fvector3& point, Fvector3& noise_angle) override;
 
-    float GetWorldYaw() const override { return -yaw; }
-    float GetWorldPitch() const override { return pitch; }
+    [[nodiscard]] f32 GetWorldYaw() const override { return -yaw; }
+    [[nodiscard]] f32 GetWorldPitch() const override { return pitch; }
 };
 
 #endif // __CAMERALOOK_H__

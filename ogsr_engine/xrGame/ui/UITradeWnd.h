@@ -30,8 +30,8 @@ public:
 
     void InitTrade(CInventoryOwner* pOur, CInventoryOwner* pOthers);
 
-    virtual void Draw();
-    virtual void Update();
+    void Draw() override;
+    void Update() override;
     virtual void Show();
     virtual void Hide();
 

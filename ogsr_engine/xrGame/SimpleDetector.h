@@ -16,7 +16,7 @@ public:
     ~CSimpleDetector() override = default;
 
 protected:
-    virtual void UpdateAf() override;
-    virtual void CreateUI() override;
+    void UpdateAf() override;
+    void CreateUI() override;
     CUIArtefactDetectorSimple& ui();
 };

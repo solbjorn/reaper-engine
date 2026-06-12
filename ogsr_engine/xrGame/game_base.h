@@ -139,15 +139,6 @@ protected:
 
     u32 m_round_start_time{};
     string64 m_round_start_time_str;
-    //	u32								buy_time;
-    //	s32								fraglimit; //dm,tdm,ah
-    //	s32								timelimit; //dm
-    //	u32								damageblocklimit;//dm,tdm
-    //	xr_vector<game_TeamState>		teams;//dm,tdm,ah
-    // for Artefact Hunt
-    //	u8								artefactsNum;//ah
-    //	u16								artefactBearerID;//ah,ZoneMap
-    //	u8								teamInPossession;//ah,ZoneMap
 
     virtual void switch_Phase(u32 new_phase);
     virtual void OnSwitchPhase(u32, u32) {}
@@ -161,7 +152,7 @@ public:
     s32 Round() const { return m_round; }
     u32 StartTime() const { return m_start_time; }
     virtual tmc::task<void> Create(shared_str&) { co_return; }
-    virtual LPCSTR type_name() const { return "base game"; }
+    [[nodiscard]] virtual gsl::czstring type_name() const { return "base game"; }
     // for scripting enhancement
     static CLASS_ID getCLASS_ID(bool bServer);
     virtual game_PlayerState* createPlayerState() { return xr_new<game_PlayerState>(); }
@@ -178,15 +169,15 @@ private:
     float m_fETimeFactor;
     //-------------------------------------------------------
 public:
-    virtual ALife::_TIME_ID GetGameTime();
-    virtual float GetGameTimeFactor();
-    void SetGameTimeFactor(ALife::_TIME_ID GameTime, const float fTimeFactor);
-    virtual void SetGameTimeFactor(const float fTimeFactor);
+    [[nodiscard]] virtual ALife::_TIME_ID GetGameTime();
+    [[nodiscard]] virtual f32 GetGameTimeFactor();
+    void SetGameTimeFactor(ALife::_TIME_ID GameTime, const f32 fTimeFactor);
+    virtual void SetGameTimeFactor(const f32 fTimeFactor);
 
-    virtual ALife::_TIME_ID GetEnvironmentGameTime();
-    virtual float GetEnvironmentGameTimeFactor();
-    void SetEnvironmentGameTimeFactor(ALife::_TIME_ID GameTime, const float fTimeFactor);
-    virtual void SetEnvironmentGameTimeFactor(const float fTimeFactor);
+    [[nodiscard]] virtual ALife::_TIME_ID GetEnvironmentGameTime();
+    [[nodiscard]] virtual f32 GetEnvironmentGameTimeFactor();
+    void SetEnvironmentGameTimeFactor(ALife::_TIME_ID GameTime, const f32 fTimeFactor);
+    virtual void SetEnvironmentGameTimeFactor(const f32 fTimeFactor);
 };
 
 extern float g_fTimeFactor;

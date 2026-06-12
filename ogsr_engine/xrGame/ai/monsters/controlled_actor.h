@@ -21,11 +21,11 @@ public:
 
     ~CControlledActor() override = default;
 
-    virtual void reinit();
-    virtual float mouse_scale_factor() { return flt_max; }
-    virtual void release();
-    virtual void install(CActor*);
-    virtual void install();
+    void reinit() override;
+    [[nodiscard]] f32 mouse_scale_factor() override { return flt_max; }
+    void release() override;
+    void install(CActor*) override;
+    void install() override;
     [[nodiscard]] bool authorized(EGameActions cmd) override;
 
     void look_point(const Fvector& point);

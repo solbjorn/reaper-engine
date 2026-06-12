@@ -49,7 +49,7 @@ public:
 
     void update_schedule();
     void on_contact(CObject*);
-    virtual BOOL feel_touch_contact(CObject*);
+    [[nodiscard]] BOOL feel_touch_contact(CObject*) override;
 
     void activate(bool = false);
     void deactivate(bool = false);

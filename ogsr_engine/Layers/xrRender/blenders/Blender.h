@@ -19,7 +19,7 @@ public:
     u16 version;
     u16 pad;
 
-    CBlender_DESC()
+    constexpr CBlender_DESC()
     {
         CLS = CLASS_ID(0);
 
@@ -47,12 +47,12 @@ protected:
     string64 oT_Name;
 
 public:
-    CBlender_DESC& getDescription() { return description; }
-    virtual LPCSTR getName() { return description.cName; }
-    virtual LPCSTR getComment() = 0;
+    [[nodiscard]] CBlender_DESC& getDescription() { return description; }
+    [[nodiscard]] virtual gsl::czstring getName() { return description.cName; }
+    [[nodiscard]] virtual gsl::czstring getComment() = 0;
 
-    virtual BOOL canBeDetailed() { return FALSE; }
-    virtual BOOL canUseSteepParallax() { return FALSE; }
+    [[nodiscard]] virtual BOOL canBeDetailed() { return FALSE; }
+    [[nodiscard]] virtual BOOL canUseSteepParallax() { return FALSE; }
 
     virtual void Compile(CBlender_Compile& C);
 
@@ -78,14 +78,14 @@ protected:
 public:
     ~IBlenderXr() override = default;
 
-    static IBlenderXr* Create(CLASS_ID cls);
+    [[nodiscard]] static IBlenderXr* Create(CLASS_ID cls);
     static void Destroy(IBlenderXr*& B);
 
-    virtual void Save(IWriter& fs);
-    virtual void Load(IReader& fs, u16 version);
+    void Save(IWriter& fs) override;
+    void Load(IReader& fs, u16 version) override;
 
-    virtual void SaveIni(CInifile* ini_file, LPCSTR section);
-    virtual void LoadIni(CInifile* ini_file, LPCSTR section);
+    void SaveIni(CInifile* ini_file, gsl::czstring section) override;
+    void LoadIni(CInifile* ini_file, gsl::czstring section) override;
 };
 
 #endif // AFX_BLENDER_H__A023332E_C09B_4D93_AA53_57C052CCC075__INCLUDED_

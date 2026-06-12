@@ -13,16 +13,16 @@ class XR_NOVTABLE IRenderVisual : public virtual RTTI::Enable
 public:
     ~IRenderVisual() override = 0;
 
-    virtual vis_data& getVisData() = 0;
+    [[nodiscard]] virtual vis_data& getVisData() = 0;
     virtual u32 getType() const = 0;
 
     bool _ignore_optimization{};
 
-    virtual shared_str getDebugName() = 0;
+    [[nodiscard]] virtual shared_str getDebugName() = 0;
 
-    virtual IKinematics* dcast_PKinematics() { return nullptr; }
-    virtual IKinematicsAnimated* dcast_PKinematicsAnimated() { return nullptr; }
-    virtual IParticleCustom* dcast_ParticleCustom() { return nullptr; }
+    [[nodiscard]] virtual IKinematics* dcast_PKinematics() { return nullptr; }
+    [[nodiscard]] virtual IKinematicsAnimated* dcast_PKinematicsAnimated() { return nullptr; }
+    [[nodiscard]] virtual IParticleCustom* dcast_ParticleCustom() { return nullptr; }
 };
 
 inline IRenderVisual::~IRenderVisual() = default;

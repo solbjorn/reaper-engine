@@ -16,9 +16,9 @@ public:
     CUIRadioButton();
     ~CUIRadioButton() override;
 
-    virtual void Init(float x, float y, float width, float height);
-    virtual void InitTexture(LPCSTR tex_name);
-    void SetTextX(float) override {}
+    void Init(f32 x, f32 y, f32 width, f32 height) override;
+    void InitTexture(gsl::czstring tex_name) override;
+    void SetTextX(f32) override {}
 };
 
 #endif

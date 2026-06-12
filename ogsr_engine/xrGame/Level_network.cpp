@@ -191,7 +191,7 @@ void CLevel::Send(NET_Packet& P, u32, u32)
     // optimize the case when server located in our memory
     ClientID _clid;
     _clid.set(1);
-    Server->OnMessage(P, _clid);
+    std::ignore = Server->OnMessage(P, _clid);
 }
 
 void CLevel::net_Update()

@@ -282,11 +282,11 @@ void CActor::steer_Vehicle(float angle)
     u16 anim_type = car->DriverAnimationType();
     SVehicleAnimCollection& anims = m_vehicle_anims->m_vehicles_type_collections[anim_type];
     if (angle == 0.f)
-        smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(anims.idles[0]);
+        std::ignore = smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(anims.idles[0]);
     else if (angle > 0.f)
-        smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(anims.steer_right);
+        std::ignore = smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(anims.steer_right);
     else
-        smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(anims.steer_left);
+        std::ignore = smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(anims.steer_left);
 }
 
 namespace
@@ -332,7 +332,7 @@ void CActor::g_SetAnimation(u32 mstate_rl)
             m_current_legs.invalidate();
             m_current_torso.invalidate();
 
-            smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_anims->m_dead_stop);
+            std::ignore = smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_anims->m_dead_stop);
         }
 
         return;
@@ -596,7 +596,8 @@ void CActor::g_SetAnimation(u32 mstate_rl)
     if (m_current_head != M_head)
     {
         if (M_head)
-            smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(M_head);
+            std::ignore = smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(M_head);
+
         m_current_head = M_head;
     }
 

@@ -54,9 +54,9 @@ protected:
     Fvector AABB;
 
 protected:
-    virtual dGeomID dSpacedGeom() = 0;
+    [[nodiscard]] virtual dGeomID dSpacedGeom() = 0;
     virtual void get_spatial_params() = 0;
-    virtual void spatial_register();
+    void spatial_register() override;
     void SetRayMotions() { m_flags.set(fl_ray_motions, TRUE); }
     void UnsetRayMotions() { m_flags.set(fl_ray_motions, FALSE); }
 
@@ -83,9 +83,9 @@ public:
     void step(float time);
     virtual void PhDataUpdate(dReal step) = 0;
     virtual void PhTune(dReal step) = 0;
-    virtual void spatial_move();
-    virtual void InitContact(dContact* c, bool& do_collide, u16 /*material_idx_1*/, u16 /*material_idx_2*/) = 0;
-    virtual void CutVelocity(float, float) {}
+    void spatial_move() override;
+    virtual void InitContact(dContact* c, bool& do_collide, u16, u16) = 0;
+    virtual void CutVelocity(f32, f32) {}
 
     void Freeze();
     void UnFreeze();
@@ -93,9 +93,8 @@ public:
     void NetInterpolationON() { m_flags.set(st_net_interpolation, TRUE); }
     void NetInterpolationOFF() { m_flags.set(st_net_interpolation, TRUE); }
     bool NetInterpolation() { return !!(m_flags.test(st_net_interpolation)); }
-    virtual u16 get_elements_number() = 0;
-    virtual CPHSynchronize* get_element_sync(u16 element) = 0;
-    // virtual void StepFrameUpdate(dReal step)=0;
+    [[nodiscard]] virtual u16 get_elements_number() = 0;
+    [[nodiscard]] virtual CPHSynchronize* get_element_sync(u16 element) = 0;
 
     CPHObject();
     ~CPHObject() override = 0;
@@ -112,8 +111,8 @@ public:
     virtual void Collide();
     virtual void near_callback(CPHObject*) {}
     virtual void RMotionsQuery(qResultVec&) {}
-    virtual CPHMoveStorage* MoveStorage() { return nullptr; }
-    virtual ECastType CastType() { return tpNotDefinite; }
+    [[nodiscard]] virtual CPHMoveStorage* MoveStorage() { return nullptr; }
+    [[nodiscard]] virtual ECastType CastType() { return tpNotDefinite; }
     virtual void vis_update_activate() {}
     virtual void vis_update_deactivate() {}
     IC CLBits& collide_bits() { return m_collide_bits; }

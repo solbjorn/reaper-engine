@@ -54,8 +54,8 @@ public:
     ~CCustomZone() override;
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
-    virtual void net_Export(CSE_Abstract* E);
-    virtual void Load(LPCSTR section);
+    void net_Export(CSE_Abstract* E) override;
+    void Load(gsl::czstring section) override;
     tmc::task<void> net_Destroy() override;
 
     tmc::task<void> UpdateCL() override;
@@ -63,14 +63,14 @@ public:
     tmc::task<void> shedule_Update(u32 dt) override;
     virtual void enter_Zone(SZoneObjectInfo& io);
     virtual void exit_Zone(SZoneObjectInfo& io);
-    virtual void feel_touch_new(CObject* O);
-    virtual void feel_touch_delete(CObject* O);
-    virtual BOOL feel_touch_contact(CObject* O);
-    virtual BOOL feel_touch_on_contact(CObject* O);
+    void feel_touch_new(CObject* O) override;
+    void feel_touch_delete(CObject* O) override;
+    [[nodiscard]] BOOL feel_touch_contact(CObject* O) override;
+    [[nodiscard]] BOOL feel_touch_on_contact(CObject* O) override;
     virtual float effective_radius();
-    virtual float distance_to_center(CObject* O);
+    [[nodiscard]] virtual f32 distance_to_center(CObject* O);
     virtual void Postprocess(float) {}
-    virtual void net_Relcase(CObject* O);
+    void net_Relcase(CObject* O) override;
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     void OnOwnershipTake(u16 id);
 
@@ -79,11 +79,11 @@ public:
 
     // вычисление силы хита в зависимости от расстояния до центра зоны
     // относительный размер силы (от 0 до 1)
-    virtual float RelativePower(float dist);
+    [[nodiscard]] virtual f32 RelativePower(f32 dist);
     // абсолютный размер
-    float Power(float dist);
+    [[nodiscard]] f32 Power(f32 dist);
 
-    virtual CCustomZone* cast_custom_zone() { return this; }
+    [[nodiscard]] CCustomZone* cast_custom_zone() override { return this; }
 
     // различные состояния в которых может находиться зона
     typedef enum
@@ -150,10 +150,10 @@ protected:
     virtual void OnStateSwitch(EZoneState new_state);
     virtual void CheckForAwaking();
     // обработка зоны в различных состояниях
-    virtual bool IdleState();
-    virtual bool AwakingState();
-    virtual bool BlowoutState();
-    virtual bool AccumulateState();
+    [[nodiscard]] virtual bool IdleState();
+    [[nodiscard]] virtual bool AwakingState();
+    [[nodiscard]] virtual bool BlowoutState();
+    [[nodiscard]] virtual bool AccumulateState();
 
     bool Enable();
     bool Disable();
@@ -178,7 +178,6 @@ protected:
 
     u32 m_dwDeltaTime;
     u32 m_dwPeriod;
-    //	bool					m_bZoneReady;
     // если в зоне есть не disabled объекты
     bool m_bZoneActive{};
 
@@ -309,9 +308,10 @@ protected:
     DEFINE_VECTOR(SZoneObjectInfo, OBJECT_INFO_VEC, OBJECT_INFO_VEC_IT);
     OBJECT_INFO_VEC m_ObjectInfoMap;
 
-    void CreateHit(u16 id_to, u16 id_from, const Fvector& hit_dir, float hit_power, s16 bone_id, const Fvector& pos_in_bone, float hit_impulse, ALife::EHitType hit_type);
+    void CreateHit(u16 id_to, u16 id_from, const Fvector& hit_dir, float hit_power, s16 bone_id, const Fvector& pos_in_bone, float hit_impulse,
+                   ALife::EHitType hit_type);
 
-    virtual void Hit(SHit* pHDS);
+    void Hit(SHit* pHDS) override;
 
     // для визуализации зоны
     void PlayIdleParticles();
@@ -327,7 +327,7 @@ protected:
     void PlayObjectIdleParticles(CGameObject* pObject);
     void StopObjectIdleParticles(CGameObject* pObject);
 
-    virtual bool IsVisibleForZones() { return false; }
+    [[nodiscard]] bool IsVisibleForZones() override { return false; }
 
     // обновление, если зона передвигается
     virtual void OnMove();
@@ -349,8 +349,7 @@ protected:
     // выброс артефактов из зоны
     void ThrowOutArtefact(CArtefact* pArtefact);
 
-    // void	PrefetchArtefacts			();
-    virtual BOOL AlwaysTheCrow();
+    [[nodiscard]] BOOL AlwaysTheCrow() override;
 
 protected:
     DEFINE_VECTOR(CArtefact*, ARTEFACT_VECTOR, ARTEFACT_VECTOR_IT);
@@ -398,9 +397,9 @@ protected:
     u32 LastBlowoutTime{};
 
 public:
-    virtual u32 ef_anomaly_type() const;
-    virtual u32 ef_weapon_type() const;
-    virtual bool register_schedule() const { return true; }
+    [[nodiscard]] u32 ef_anomaly_type() const override;
+    [[nodiscard]] u32 ef_weapon_type() const override;
+    [[nodiscard]] bool register_schedule() const override { return true; }
 
     // optimization FAST/SLOW mode
     bool o_fastmode{};

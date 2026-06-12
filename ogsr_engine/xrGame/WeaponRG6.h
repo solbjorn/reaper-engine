@@ -16,16 +16,15 @@ public:
     ~CWeaponRG6() override;
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
 
 protected:
-    virtual void FireTrace(const Fvector& P, const Fvector& D);
+    void FireTrace(const Fvector3& P, const Fvector3& D) override;
     virtual void LaunchGrenade(const Fvector& P, const Fvector& D);
+    [[nodiscard]] u8 AddCartridge(u8 cnt) override;
 
-    virtual u8 AddCartridge(u8 cnt);
-
-    virtual size_t GetWeaponTypeForCollision() const override { return RG_6; }
+    [[nodiscard]] size_t GetWeaponTypeForCollision() const override { return RG_6; }
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

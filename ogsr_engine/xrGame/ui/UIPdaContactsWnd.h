@@ -28,10 +28,10 @@ public:
 
     void Init();
 
-    virtual void Update();
-    virtual void Reset();
+    void Update() override;
+    void Reset() override;
 
-    virtual void Show(bool status);
+    void Show(bool status) override;
 
     void AddContact(CPda* pda, u16 owner_id);
     void RemoveContact(CPda* pda);
@@ -60,6 +60,6 @@ public:
     explicit CUIPdaContactItem(CUIPdaContactsWnd* cw) : m_cw{cw} {}
     ~CUIPdaContactItem() override;
 
-    virtual void SetSelected(bool b);
+    void SetSelected(bool b) override;
     [[nodiscard]] bool OnMouseDown(sf::Mouse::Button mouse_btn) override;
 };

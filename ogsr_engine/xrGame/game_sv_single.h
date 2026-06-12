@@ -19,22 +19,22 @@ public:
     game_sv_Single();
     ~game_sv_Single() override;
 
-    virtual LPCSTR type_name() const { return "single"; }
+    [[nodiscard]] gsl::czstring type_name() const override { return "single"; }
     tmc::task<void> Create(shared_str& options) override;
 
-    virtual void OnCreate(u16 id_who);
+    void OnCreate(u16 id_who) override;
     [[nodiscard]] BOOL OnTouch(u16 eid_who, u16 eid_what, BOOL = FALSE) override;
-    virtual void OnDetach(u16 eid_who, u16 eid_what);
+    void OnDetach(u16 eid_who, u16 eid_what) override;
 
     // Main
-    virtual void Update();
-    virtual ALife::_TIME_ID GetGameTime();
-    virtual float GetGameTimeFactor();
-    virtual void SetGameTimeFactor(const float fTimeFactor);
+    void Update() override;
+    [[nodiscard]] ALife::_TIME_ID GetGameTime() override;
+    [[nodiscard]] f32 GetGameTimeFactor() override;
+    void SetGameTimeFactor(const f32 fTimeFactor) override;
 
-    virtual ALife::_TIME_ID GetEnvironmentGameTime();
-    virtual float GetEnvironmentGameTimeFactor();
-    virtual void SetEnvironmentGameTimeFactor(const float fTimeFactor);
+    [[nodiscard]] ALife::_TIME_ID GetEnvironmentGameTime() override;
+    [[nodiscard]] f32 GetEnvironmentGameTimeFactor() override;
+    void SetEnvironmentGameTimeFactor(const f32 fTimeFactor) override;
 
     [[nodiscard]] bool change_level(NET_Packet& net_packet, ClientID sender) override;
     void save_game(NET_Packet& net_packet, ClientID) override;
@@ -42,15 +42,15 @@ public:
     void switch_distance(NET_Packet& net_packet, ClientID) override;
     void teleport_object(NET_Packet& packet, u16 id) override;
 
-    virtual void add_restriction(NET_Packet& packet, u16 id);
-    virtual void remove_restriction(NET_Packet& packet, u16 id);
-    virtual void remove_all_restrictions(NET_Packet& packet, u16 id);
+    void add_restriction(NET_Packet& packet, u16 id) override;
+    void remove_restriction(NET_Packet& packet, u16 id) override;
+    void remove_all_restrictions(NET_Packet& packet, u16 id) override;
 
-    virtual bool custom_sls_default() { return !!m_alife_simulator; }
-    virtual void sls_default();
+    [[nodiscard]] bool custom_sls_default() override { return !!m_alife_simulator; }
+    void sls_default() override;
 
-    virtual shared_str level_name(const shared_str& server_options) const;
-    virtual void on_death(CSE_Abstract* e_dest, CSE_Abstract* e_src);
+    [[nodiscard]] shared_str level_name(const shared_str& server_options) const override;
+    void on_death(CSE_Abstract* e_dest, CSE_Abstract* e_src) override;
     tmc::task<void> restart_simulator(gsl::czstring saved_game_name);
 
     IC xrServer& server() const

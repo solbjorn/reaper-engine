@@ -169,11 +169,6 @@ void CRender::create()
     m_skinning = -1;
     m_MSAASample = -1;
 
-    // Supported OS versions: Windows 10 or newer
-    // https://www.codeproject.com/Articles/5336372/Windows-Version-Detection
-    auto sharedUserData = (BYTE*)0x7ffe0000;
-    R_ASSERT(*(ULONG*)(sharedUserData + 0x26c) >= 10);
-
     // hardware
     static constexpr const char* hwerr = "Hardware doesn't meet minimum feature-level";
     R_ASSERT(HW.Caps.raster.dwMRT_count >= 3, hwerr);
@@ -749,35 +744,37 @@ HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffe
 }
 
 //--------------------------------------------------------------------------------------------------------------
+
 class includer final : public ID3DInclude
 {
-    IReader* R{};
+private:
+    IReader* rd{nullptr};
 
 public:
-    STDMETHOD(Open)(D3D10_INCLUDE_TYPE, LPCSTR pFileName, LPCVOID, LPCVOID* ppData, UINT* pBytes) override
+    STDMETHOD(Open)(D3D10_INCLUDE_TYPE, gsl::czstring path, const void*, const void** data, u32* len) override
     {
-        string_path pname;
-        strconcat(sizeof(pname), pname, RImplementation.getShaderPath(), pFileName);
-        R = FS.r_open("$game_shaders$", pname);
-        if (!R)
+        rd = FS.r_open("$game_shaders$", xr::format("{}{}", RImplementation.getShaderPath(), path).c_str());
+        if (rd == nullptr)
         {
             // possibly in shared directory or somewhere else - open directly
-            R = FS.r_open("$game_shaders$", pFileName);
-            if (!R)
+            rd = FS.r_open("$game_shaders$", path);
+            if (rd == nullptr)
                 return E_FAIL;
         }
 
-        R->skip_bom(pFileName);
+        rd->skip_bom(path);
 
-        *ppData = R->pointer();
-        *pBytes = R->elapsed();
+        *data = rd->pointer();
+        *len = rd->elapsed();
+
         return D3D_OK;
     }
 
-    STDMETHOD(Close)(LPCVOID) override
+    STDMETHOD(Close)(const void*) override
     {
-        if (R)
-            FS.r_close(R);
+        if (rd != nullptr)
+            FS.r_close(rd);
+
         return D3D_OK;
     }
 };

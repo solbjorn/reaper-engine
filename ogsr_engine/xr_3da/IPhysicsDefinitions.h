@@ -24,7 +24,7 @@ public:
     virtual void get_LinearVel(Fvector& velocity) = 0;
     virtual void get_AngularVel(Fvector& velocity) = 0;
     virtual const Fvector& mass_Center() = 0;
-    virtual u16 numberOfGeoms() = 0;
+    [[nodiscard]] virtual u16 numberOfGeoms() = 0;
     virtual IPhysicsGeometry* geometry(u16 i) const = 0;
 };
 

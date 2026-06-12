@@ -202,7 +202,7 @@ tmc::task<bool> CHelicopter::net_Spawn(CSE_Abstract* DC)
     IKinematicsAnimated* A = smart_cast<IKinematicsAnimated*>(Visual());
     if (A)
     {
-        A->PlayCycle(heli->startup_animation);
+        std::ignore = A->PlayCycle(heli->startup_animation);
         K->CalculateBones(TRUE);
     }
 

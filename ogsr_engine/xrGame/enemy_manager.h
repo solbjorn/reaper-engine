@@ -54,14 +54,14 @@ public:
     explicit CEnemyManager(CCustomMonster* object);
     ~CEnemyManager() override = default;
 
-    virtual void reload(LPCSTR section);
-    virtual bool useful(const CEntityAlive* object) const;
-    virtual bool is_useful(const CEntityAlive* object) const;
-    virtual float evaluate(const CEntityAlive* object) const;
-    virtual float do_evaluate(const CEntityAlive* object) const;
-    virtual void update();
-    IC u32 last_enemy_time() const;
-    IC const CEntityAlive* last_enemy() const;
+    void reload(gsl::czstring section) override;
+    [[nodiscard]] virtual bool useful(const CEntityAlive* object) const;
+    [[nodiscard]] bool is_useful(const CEntityAlive* object) const override;
+    [[nodiscard]] virtual f32 evaluate(const CEntityAlive* object) const;
+    [[nodiscard]] f32 do_evaluate(const CEntityAlive* object) const override;
+    void update() override;
+    [[nodiscard]] u32 last_enemy_time() const;
+    [[nodiscard]] const CEntityAlive* last_enemy() const;
     inline void set_useful_callback(sol::function&& function, sol::object&& object);
     void remove_links(CObject* object);
 

@@ -86,9 +86,9 @@ public:
 public:
     ~CControlAnimation() override = default;
 
-    virtual void reinit();
-    virtual void update_frame();
-    virtual void reset_data();
+    void reinit() override;
+    void update_frame() override;
+    void reset_data() override;
 
     void add_anim_event(MotionID, float, u32);
 

@@ -12,32 +12,31 @@ public:
     CWeaponPistol();
     ~CWeaponPistol() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
 
     tmc::task<void> net_Destroy() override;
-    virtual void OnH_B_Chield();
+    void OnH_B_Chield() override;
 
-    virtual void OnAnimationEnd(u32 state);
+    void OnAnimationEnd(u32 state) override;
 
     // анимации
-    virtual void PlayAnimShow() override;
-    virtual void PlayAnimIdleSprint() override;
-    virtual void PlayAnimIdleMoving() override;
-    virtual void PlayAnimIdleMovingSlow() override;
-    virtual void PlayAnimIdleMovingCrouch() override;
-    virtual void PlayAnimIdleMovingCrouchSlow() override;
-    virtual void PlayAnimIdle() override;
-    virtual void PlayAnimAim() override;
-    virtual void PlayAnimHide() override;
-    virtual void PlayAnimReload() override;
-    virtual void PlayAnimShoot() override;
+    void PlayAnimShow() override;
+    void PlayAnimIdleSprint() override;
+    void PlayAnimIdleMoving() override;
+    void PlayAnimIdleMovingSlow() override;
+    void PlayAnimIdleMovingCrouch() override;
+    void PlayAnimIdleMovingCrouchSlow() override;
+    void PlayAnimIdle() override;
+    void PlayAnimAim() override;
+    void PlayAnimHide() override;
+    void PlayAnimReload() override;
+    void PlayAnimShoot() override;
 
-    virtual void UpdateSounds();
+    void UpdateSounds() override;
 
 protected:
-    virtual bool AllowFireWhileWorking() { return true; }
-
-    virtual size_t GetWeaponTypeForCollision() const override { return Pistol; }
+    [[nodiscard]] bool AllowFireWhileWorking() override { return true; }
+    [[nodiscard]] size_t GetWeaponTypeForCollision() const override { return Pistol; }
 
     HUD_SOUND sndClose;
     ESoundTypes m_eSoundClose;

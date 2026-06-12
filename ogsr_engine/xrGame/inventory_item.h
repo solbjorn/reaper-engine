@@ -85,40 +85,39 @@ public:
     CInventoryItem();
     ~CInventoryItem() override;
 
-    virtual void Load(LPCSTR section);
+    virtual void Load(gsl::czstring section);
     void ReloadNames();
 
-    virtual LPCSTR Name();
-    virtual LPCSTR NameShort();
-    //.	virtual LPCSTR				NameComplex			();
+    [[nodiscard]] virtual gsl::czstring Name();
+    [[nodiscard]] virtual gsl::czstring NameShort();
     shared_str ItemDescription() { return m_Description; }
     virtual void GetBriefInfo(xr_string&, xr_string&, xr_string&) {}
     virtual bool NeedBriefInfo() { return m_need_brief_info; }
 
     virtual tmc::task<void> OnEvent(NET_Packet& P, u16 type);
 
-    virtual bool Useful() const; // !!! Переопределить. (см. в Inventory.cpp)
-    virtual bool Attach(PIItem, bool) { return false; }
-    virtual bool Detach(PIItem) { return false; }
+    [[nodiscard]] virtual bool Useful() const; // !!! Переопределить. (см. в Inventory.cpp)
+    [[nodiscard]] virtual bool Attach(PIItem, bool) { return false; }
+    [[nodiscard]] virtual bool Detach(PIItem) { return false; }
     // при детаче спаунится новая вещь при заданно названии секции
-    virtual bool Detach(const char* item_section_name, bool b_spawn_item);
-    virtual bool CanAttach(PIItem) { return false; }
-    virtual bool CanDetach(LPCSTR) { return false; }
+    [[nodiscard]] virtual bool Detach(gsl::czstring item_section_name, bool b_spawn_item);
+    [[nodiscard]] virtual bool CanAttach(PIItem) { return false; }
+    [[nodiscard]] virtual bool CanDetach(gsl::czstring) { return false; }
 
-    virtual EHandDependence HandDependence() const { return hd1Hand; }
-    virtual bool IsSingleHanded() const { return true; }
+    [[nodiscard]] virtual EHandDependence HandDependence() const { return hd1Hand; }
+    [[nodiscard]] virtual bool IsSingleHanded() const { return true; }
     virtual bool Activate(bool = false); // !!! Переопределить. (см. в Inventory.cpp)
     virtual void Deactivate(bool = false); // !!! Переопределить. (см. в Inventory.cpp)
     [[nodiscard]] virtual bool Action(EGameActions, u32) { return false; } // true если известная команда, иначе false
 
     virtual void OnH_B_Chield();
-    virtual void OnH_A_Chield();
+    void OnH_A_Chield() override;
     virtual void OnH_B_Independent(bool);
-    virtual void OnH_A_Independent();
+    void OnH_A_Independent() override;
 
     virtual void save(NET_Packet& output_packet);
     virtual void load(IReader& input_packet);
-    virtual BOOL net_SaveRelevant() { return TRUE; }
+    [[nodiscard]] virtual BOOL net_SaveRelevant() { return TRUE; }
 
 #ifdef DEBUG
     virtual tmc::task<void> UpdateCL();
@@ -134,15 +133,15 @@ public:
     BOOL IsInvalid() const;
 
     BOOL IsQuestItem() const { return m_flags.test(FIsQuestItem); }
-    virtual u32 Cost() const { return m_cost; }
+    [[nodiscard]] virtual u32 Cost() const { return m_cost; }
     virtual void SetCost(u32 cost) { m_cost = cost; }
-    virtual float Weight() const { return m_weight; }
+    [[nodiscard]] virtual f32 Weight() const { return m_weight; }
 
     float m_fPsyHealthRestoreSpeed{};
-    virtual float PsyHealthRestoreSpeed() const { return m_fPsyHealthRestoreSpeed; }
-
     float m_fRadiationRestoreSpeed{};
-    virtual float RadiationRestoreSpeed() const { return m_fRadiationRestoreSpeed; }
+
+    virtual float PsyHealthRestoreSpeed() const { return m_fPsyHealthRestoreSpeed; }
+    [[nodiscard]] virtual f32 RadiationRestoreSpeed() const { return m_fRadiationRestoreSpeed; }
 
 public:
     CInventory* m_pCurrentInventory{};
@@ -173,8 +172,8 @@ public:
 
     bool GetInvShowCondition() const;
 
-    float GetCondition() const { return m_fCondition; }
-    virtual float GetConditionToShow() const { return GetCondition(); }
+    [[nodiscard]] f32 GetCondition() const { return m_fCondition; }
+    [[nodiscard]] virtual f32 GetConditionToShow() const { return GetCondition(); }
 
     void ChangeCondition(float fDeltaCondition);
 
@@ -199,10 +198,10 @@ public:
     void Ruck(bool on_ruck) { m_flags.set(Fruck, on_ruck); }
     bool RuckDefault() { return !!m_flags.test(FRuckDefault); }
 
-    virtual bool CanTake() const { return !!m_flags.test(FCanTake); }
-    bool CanTrade() const;
-    virtual bool IsNecessaryItem(CInventoryItem* item);
-    virtual bool IsNecessaryItem(const shared_str&) { return false; }
+    [[nodiscard]] virtual bool CanTake() const { return !!m_flags.test(FCanTake); }
+    [[nodiscard]] bool CanTrade() const;
+    [[nodiscard]] virtual bool IsNecessaryItem(CInventoryItem* item);
+    [[nodiscard]] virtual bool IsNecessaryItem(const shared_str&) { return false; }
 
 protected:
     xr_vector<u8> m_slots;
@@ -220,11 +219,9 @@ public:
 public:
     virtual void activate_physic_shell();
 
-    virtual bool IsSprintAllowed() const { return !!m_flags.test(FAllowSprint); }
-
-    virtual float GetControlInertionFactor() const { return m_fControlInertionFactor; }
-
-    virtual bool StopSprintOnFire() { return true; }
+    [[nodiscard]] virtual bool IsSprintAllowed() const { return !!m_flags.test(FAllowSprint); }
+    [[nodiscard]] virtual f32 GetControlInertionFactor() const { return m_fControlInertionFactor; }
+    [[nodiscard]] virtual bool StopSprintOnFire() { return true; }
 
 protected:
     virtual void UpdateXForm();
@@ -232,26 +229,28 @@ protected:
 public:
     virtual tmc::task<bool> net_Spawn(CSE_Abstract* DC);
     virtual tmc::task<void> net_Destroy();
-    virtual void reload(LPCSTR section);
+    void reload(gsl::czstring section) override;
     virtual void reinit();
     virtual bool can_kill() const;
     virtual CInventoryItem* can_kill(CInventory*) const;
     virtual const CInventoryItem* can_kill(const xr_vector<const CGameObject*>&) const;
-    virtual CInventoryItem* can_make_killing(const CInventory*) const;
-    virtual bool ready_to_kill() const;
-    IC bool useful_for_NPC() const;
+    [[nodiscard]] virtual CInventoryItem* can_make_killing(const CInventory*) const;
+    [[nodiscard]] virtual bool ready_to_kill() const;
+    [[nodiscard]] bool useful_for_NPC() const;
 
 #ifdef DEBUG
     tmc::task<void> OnRender() override;
 #endif
 
 public:
-    virtual DLL_Pure* _construct();
+    [[nodiscard]] DLL_Pure* _construct() override;
+
     IC CPhysicsShellHolder& object() const
     {
         VERIFY(m_object);
         return (*m_object);
     }
+
     virtual void on_activate_physic_shell() { R_ASSERT(0); } // sea
 
 protected:
@@ -259,7 +258,7 @@ protected:
     float m_holder_fov_modifier;
 
 public:
-    virtual void modify_holder_params(float& range, float& fov) const;
+    virtual void modify_holder_params(f32& range, f32& fov) const;
 
 protected:
     IC CInventoryOwner& inventory_owner() const;
@@ -268,16 +267,16 @@ private:
     CPhysicsShellHolder* m_object;
 
 public:
-    virtual CInventoryItem* cast_inventory_item() { return this; }
-    virtual CAttachableItem* cast_attachable_item() { return this; }
-    virtual CPhysicsShellHolder* cast_physics_shell_holder() { return nullptr; }
-    virtual CEatableItem* cast_eatable_item() { return nullptr; }
-    virtual CWeapon* cast_weapon() { return nullptr; }
-    virtual CFoodItem* cast_food_item() { return nullptr; }
-    virtual CMissile* cast_missile() { return nullptr; }
-    virtual CHudItem* cast_hud_item() { return nullptr; }
-    virtual CWeaponAmmo* cast_weapon_ammo() { return nullptr; }
-    virtual CGameObject* cast_game_object() { return nullptr; }
+    [[nodiscard]] virtual CInventoryItem* cast_inventory_item() { return this; }
+    [[nodiscard]] CAttachableItem* cast_attachable_item() override { return this; }
+    [[nodiscard]] virtual CPhysicsShellHolder* cast_physics_shell_holder() { return nullptr; }
+    [[nodiscard]] virtual CEatableItem* cast_eatable_item() { return nullptr; }
+    [[nodiscard]] virtual CWeapon* cast_weapon() { return nullptr; }
+    [[nodiscard]] virtual CFoodItem* cast_food_item() { return nullptr; }
+    [[nodiscard]] virtual CMissile* cast_missile() { return nullptr; }
+    [[nodiscard]] virtual CHudItem* cast_hud_item() { return nullptr; }
+    [[nodiscard]] virtual CWeaponAmmo* cast_weapon_ammo() { return nullptr; }
+    [[nodiscard]] virtual CGameObject* cast_game_object() { return nullptr; }
 
 private:
     u8 loaded_belt_index{std::numeric_limits<u8>::max()};

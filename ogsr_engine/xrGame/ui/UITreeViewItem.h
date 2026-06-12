@@ -85,7 +85,7 @@ public:
     // Redefine some stuff
     // ATTENTION! Для корректного функционирования значков [+-] вызов SetText
     // Должен предшествовать SetRoot
-    virtual void SetText(LPCSTR str);
+    void SetText(gsl::czstring str) override;
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
 
     // Ctor and Dtor
@@ -126,7 +126,7 @@ DEF_VECTOR(GroupTree, shared_str);
 
 //////////////////////////////////////////////////////////////////////////
 
-void CreateTreeBranch(shared_str nestingTree, shared_str leafName, CUIListWnd* pListToAdd, int leafProperty, CGameFont* pRootFont, u32 rootColor, CGameFont* pLeafFont,
-                      u32 leafColor, bool markRead);
+void CreateTreeBranch(shared_str nestingTree, shared_str leafName, CUIListWnd* pListToAdd, int leafProperty, CGameFont* pRootFont, u32 rootColor,
+                      CGameFont* pLeafFont, u32 leafColor, bool markRead);
 
 #endif // UI_TREE_VIEW_ITEM_H_

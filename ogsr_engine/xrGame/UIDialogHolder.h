@@ -59,18 +59,18 @@ public:
     CDialogHolder();
     ~CDialogHolder() override;
 
-    virtual shared_str shedule_Name() const { return shared_str("CDialogHolder"); }
+    [[nodiscard]] shared_str shedule_Name() const override { return shared_str{"CDialogHolder"}; }
     tmc::task<void> shedule_Update(u32 dt) override;
-    virtual float shedule_Scale() const;
-    virtual bool shedule_Needed() { return true; }
+    [[nodiscard]] f32 shedule_Scale() const override;
+    [[nodiscard]] bool shedule_Needed() override { return true; }
 
     // dialogs
-    CUIDialogWnd* MainInputReceiver();
+    [[nodiscard]] CUIDialogWnd* MainInputReceiver();
     virtual void StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators);
     void StartStopMenu_script(std::unique_ptr<CUIDialogWndEx>& pDialog, bool bDoHideIndicators);
     void AddDialogToRender(CUIWindow* pDialog);
     void RemoveDialogToRender(CUIWindow* pDialog);
     tmc::task<void> OnFrame() override;
-    virtual bool UseIndicators() { return true; }
+    [[nodiscard]] virtual bool UseIndicators() { return true; }
 };
 XR_SOL_BASE_CLASSES(CDialogHolder);

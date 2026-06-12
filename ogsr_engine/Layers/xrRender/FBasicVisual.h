@@ -45,7 +45,8 @@ class dxRender_Visual : public IRenderVisual
 
 public:
     shared_str dbg_name;
-    virtual shared_str getDebugName() { return dbg_name; }
+
+    [[nodiscard]] shared_str getDebugName() override { return dbg_name; }
 
     // Common data for rendering
     ref_shader shader{}; // pipe state, shared
@@ -63,14 +64,14 @@ public:
     inline void setRZFlag(const bool f) { renderFlag = f; }
     /************************* End add *************************************/
 
-    virtual void Render(CBackend&, float, bool) {} // LOD - Level Of Detail  [0..1], Ignored
-    virtual void Load(const char* N, IReader* data, u32 dwFlags);
+    virtual void Render(CBackend&, f32, bool) {} // LOD - Level Of Detail  [0..1], Ignored
+    virtual void Load(gsl::czstring N, IReader* data, u32 dwFlags);
     virtual void Release(); // Shared memory release
     virtual void Copy(dxRender_Visual* from);
     virtual void Spawn() {}
     virtual void Depart() {}
 
-    virtual vis_data& getVisData() { return vis; }
+    [[nodiscard]] vis_data& getVisData() override { return vis; }
     u32 getType() const override { return Type; }
 
     dxRender_Visual();

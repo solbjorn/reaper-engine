@@ -713,9 +713,9 @@ CMemoryManager* CAI_Stalker::create_memory_manager() { return (xr_new<CMemoryMan
 DLL_Pure* CAI_Stalker::_construct()
 {
     m_pPhysics_support = xr_new<CCharacterPhysicsSupport>(CCharacterPhysicsSupport::etStalker, this);
-    CCustomMonster::_construct();
-    CObjectHandler::_construct();
-    CStepManager::_construct();
+    std::ignore = CCustomMonster::_construct();
+    std::ignore = CObjectHandler::_construct();
+    std::ignore = CStepManager::_construct();
 
     m_actor_relation_flags.zero();
     m_animation_manager = xr_new<CStalkerAnimationManager>();

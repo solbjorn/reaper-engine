@@ -15,8 +15,8 @@ public:
     explicit CStateMonsterLookActor(_Object* obj) : inherited{obj} {}
     ~CStateMonsterLookActor() override = default;
 
-    virtual void execute();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void execute() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 };
 
 template <typename _Object>
@@ -32,7 +32,7 @@ public:
     explicit CStateMonsterTurnAwayFromActor(_Object* obj) : inherited{obj} {}
     ~CStateMonsterTurnAwayFromActor() override = default;
 
-    virtual void execute();
+    void execute() override;
 };
 
 template <typename _Object>
@@ -48,7 +48,7 @@ public:
     explicit CStateMonstertTestIdle(_Object* obj) : inherited{obj} {}
     ~CStateMonstertTestIdle() override = default;
 
-    virtual void execute();
+    void execute() override;
 };
 
 #include "state_test_look_actor_inline.h"

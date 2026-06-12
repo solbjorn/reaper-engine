@@ -24,15 +24,15 @@ public:
     CUIEditBox();
     ~CUIEditBox() override;
 
-    virtual void Init(float x, float y, float width, float heigt);
+    void Init(f32 x, f32 y, f32 width, f32 heigt) override;
 
     // CUIOptionsItem
-    virtual void SetCurrentValue();
-    virtual void SaveValue();
-    virtual bool IsChanged();
+    void SetCurrentValue() override;
+    void SaveValue() override;
+    [[nodiscard]] bool IsChanged() override;
 
     // CUIMultiTextureOwner
-    virtual void InitTexture(const char* texture);
+    void InitTexture(gsl::czstring texture) override;
 
 protected:
     CUIFrameLineWnd m_frameLine;

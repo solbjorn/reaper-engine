@@ -16,19 +16,19 @@ public:
     ~CWeaponRPG7() override;
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
-    virtual void OnStateSwitch(u32 S, u32 oldState);
+    void OnStateSwitch(u32 S, u32 oldState) override;
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
-    virtual void ReloadMagazine();
-    virtual void Load(LPCSTR section);
-    virtual void switch2_Fire();
-    virtual void on_a_hud_attach();
+    void ReloadMagazine() override;
+    void Load(gsl::czstring section) override;
+    void switch2_Fire() override;
+    void on_a_hud_attach() override;
 
-    virtual void FireStart();
-    virtual void SwitchState(u32 S);
+    void FireStart() override;
+    void SwitchState(u32 S) override;
 
     void UpdateMissileVisibility();
-    virtual void UnloadMagazine(bool spawn_ammo = true);
-    virtual void PlayAnimReload();
+    void UnloadMagazine(bool spawn_ammo = true) override;
+    void PlayAnimReload() override;
 
 protected:
     shared_str m_sGrenadeBoneName;
@@ -36,7 +36,7 @@ protected:
 
     shared_str m_sRocketSection;
 
-    virtual size_t GetWeaponTypeForCollision() const override { return RPG; }
+    [[nodiscard]] size_t GetWeaponTypeForCollision() const override { return RPG; }
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

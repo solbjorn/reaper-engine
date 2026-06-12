@@ -60,7 +60,7 @@ public:
     explicit CObjectPropertyEvaluatorState(CWeapon* item, CAI_Stalker* owner, u32 state, bool equality = true);
     ~CObjectPropertyEvaluatorState() override = default;
 
-    virtual _value_type evaluate();
+    [[nodiscard]] _value_type evaluate() override;
 };
 
 class CObjectPropertyEvaluatorWeaponHidden : public CObjectPropertyEvaluatorBase<CWeapon>
@@ -74,7 +74,7 @@ public:
     explicit CObjectPropertyEvaluatorWeaponHidden(CWeapon* item, CAI_Stalker* owner);
     ~CObjectPropertyEvaluatorWeaponHidden() override = default;
 
-    virtual _value_type evaluate();
+    [[nodiscard]] _value_type evaluate() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -93,7 +93,7 @@ public:
     explicit CObjectPropertyEvaluatorAmmo(CWeapon* item, CAI_Stalker* owner, u32 ammo_type);
     ~CObjectPropertyEvaluatorAmmo() override = default;
 
-    virtual _value_type evaluate();
+    [[nodiscard]] _value_type evaluate() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -112,7 +112,7 @@ public:
     explicit CObjectPropertyEvaluatorEmpty(CWeapon* item, CAI_Stalker* owner, u32 ammo_type);
     ~CObjectPropertyEvaluatorEmpty() override = default;
 
-    virtual _value_type evaluate();
+    [[nodiscard]] _value_type evaluate() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -131,7 +131,7 @@ public:
     explicit CObjectPropertyEvaluatorFull(CWeapon* item, CAI_Stalker* owner, u32 ammo_type);
     ~CObjectPropertyEvaluatorFull() override = default;
 
-    virtual _value_type evaluate();
+    [[nodiscard]] _value_type evaluate() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -150,7 +150,7 @@ public:
     explicit CObjectPropertyEvaluatorReady(CWeapon* item, CAI_Stalker* owner, u32 ammo_type);
     ~CObjectPropertyEvaluatorReady() override = default;
 
-    virtual _value_type evaluate();
+    [[nodiscard]] _value_type evaluate() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -172,7 +172,7 @@ public:
     explicit CObjectPropertyEvaluatorQueue(CWeapon* item, CAI_Stalker* owner, u32 type);
     ~CObjectPropertyEvaluatorQueue() override = default;
 
-    virtual _value_type evaluate();
+    [[nodiscard]] _value_type evaluate() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -190,8 +190,8 @@ public:
     explicit CObjectPropertyEvaluatorNoItems(CAI_Stalker* owner);
     ~CObjectPropertyEvaluatorNoItems() override = default;
 
-    virtual _value_type evaluate();
-    IC CAI_Stalker& object() const;
+    [[nodiscard]] _value_type evaluate() override;
+    [[nodiscard]] inline CAI_Stalker& object() const;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -211,7 +211,7 @@ public:
     explicit CObjectPropertyEvaluatorMissile(CMissile* item, CAI_Stalker* owner, u32 state, bool equality = true);
     ~CObjectPropertyEvaluatorMissile() override = default;
 
-    virtual _value_type evaluate();
+    [[nodiscard]] _value_type evaluate() override;
 };
 
 #include "object_property_evaluators_inline.h"

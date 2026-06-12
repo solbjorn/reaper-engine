@@ -20,20 +20,28 @@ public:
 
 protected:
     void _Load_hw(Fvisual& V, const void* data) override;
-    virtual void _CollectBoneFaces(Fvisual* V, u32 iBase, u32 iCount);
+    void _CollectBoneFaces(Fvisual* V, u32 iBase, u32 iCount) override;
     void _EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id, u32 iBase) const;
-    virtual void _FillVerticesHW1W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces);
-    virtual void _FillVerticesHW2W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces);
-    virtual void _FillVerticesHW3W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces);
-    virtual void _FillVerticesHW4W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces);
-    virtual void _FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16 bone_id, u32 iBase);
+    void _FillVerticesHW1W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector3& normal, f32 size, Fvisual* V, u16* indices,
+                           CBoneData::FacesVec& faces) override;
+    void _FillVerticesHW2W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector3& normal, f32 size, Fvisual* V, u16* indices,
+                           CBoneData::FacesVec& faces) override;
+    void _FillVerticesHW3W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector3& normal, f32 size, Fvisual* V, u16* indices,
+                           CBoneData::FacesVec& faces) override;
+    void _FillVerticesHW4W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector3& normal, f32 size, Fvisual* V, u16* indices,
+                           CBoneData::FacesVec& faces) override;
+    void _FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector3& normal, f32 size, u16 bone_id, u32 iBase) override;
 
-    virtual BOOL _PickBoneHW1W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces);
-    virtual BOOL _PickBoneHW2W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces);
-    virtual BOOL _PickBoneHW3W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces);
-    virtual BOOL _PickBoneHW4W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces);
+    [[nodiscard]] BOOL _PickBoneHW1W(IKinematics::pick_result& r, f32 range, const Fvector3& S, const Fvector3& D, Fvisual* V, u16* indices,
+                                     CBoneData::FacesVec& faces) override;
+    [[nodiscard]] BOOL _PickBoneHW2W(IKinematics::pick_result& r, f32 range, const Fvector3& S, const Fvector3& D, Fvisual* V, u16* indices,
+                                     CBoneData::FacesVec& faces) override;
+    [[nodiscard]] BOOL _PickBoneHW3W(IKinematics::pick_result& r, f32 range, const Fvector3& S, const Fvector3& D, Fvisual* V, u16* indices,
+                                     CBoneData::FacesVec& faces) override;
+    [[nodiscard]] BOOL _PickBoneHW4W(IKinematics::pick_result& r, f32 range, const Fvector3& S, const Fvector3& D, Fvisual* V, u16* indices,
+                                     CBoneData::FacesVec& faces) override;
 
-    virtual BOOL _PickBone(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, u16 bone_id, u32 iBase);
+    [[nodiscard]] BOOL _PickBone(IKinematics::pick_result& r, f32 range, const Fvector3& S, const Fvector3& D, u16 bone_id, u32 iBase) override;
 };
 
 inline CSkeletonX_ext::~CSkeletonX_ext() = default;
@@ -50,14 +58,14 @@ public:
     CSkeletonX_ST() = default;
     ~CSkeletonX_ST() override = default;
 
-    virtual void Render(CBackend& cmd_list, float LOD, bool) override;
-    virtual void Load(const char* N, IReader* data, u32 dwFlags);
-    virtual void Copy(dxRender_Visual* pFrom);
-    virtual void Release();
-    virtual void AfterLoad(CKinematics* parent, u16 child_idx);
-    virtual void EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id);
-    virtual BOOL PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id);
-    virtual void FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16 bone_id);
+    void Render(CBackend& cmd_list, f32 LOD, bool) override;
+    void Load(gsl::czstring N, IReader* data, u32 dwFlags) override;
+    void Copy(dxRender_Visual* pFrom) override;
+    void Release() override;
+    void AfterLoad(CKinematics* parent, u16 child_idx) override;
+    void EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id) override;
+    [[nodiscard]] BOOL PickBone(IKinematics::pick_result& r, f32 dist, const Fvector3& start, const Fvector3& dir, u16 bone_id) override;
+    void FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector3& normal, f32 size, u16 bone_id) override;
 };
 
 class CSkeletonX_PM : public FProgressive, public CSkeletonX_ext
@@ -72,14 +80,14 @@ public:
     CSkeletonX_PM() = default;
     ~CSkeletonX_PM() override = default;
 
-    virtual void Render(CBackend& cmd_list, float LOD, bool) override;
-    virtual void Load(const char* N, IReader* data, u32 dwFlags);
-    virtual void Copy(dxRender_Visual* pFrom);
-    virtual void Release();
-    virtual void AfterLoad(CKinematics* parent, u16 child_idx);
-    virtual void EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id);
-    virtual BOOL PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id);
-    virtual void FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16 bone_id);
+    void Render(CBackend& cmd_list, f32 LOD, bool) override;
+    void Load(gsl::czstring N, IReader* data, u32 dwFlags) override;
+    void Copy(dxRender_Visual* pFrom) override;
+    void Release() override;
+    void AfterLoad(CKinematics* parent, u16 child_idx) override;
+    void EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id) override;
+    [[nodiscard]] BOOL PickBone(IKinematics::pick_result& r, f32 dist, const Fvector3& start, const Fvector3& dir, u16 bone_id) override;
+    void FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector3& normal, f32 size, u16 bone_id) override;
 };
 
 #endif // FSkinnedH

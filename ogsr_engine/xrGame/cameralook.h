@@ -15,14 +15,14 @@ public:
     explicit CCameraLook(CObject* p, u32 flags = 0);
     ~CCameraLook() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     void Move(EGameActions cmd, f32 val = 0.0f, f32 factor = 1.0f) override;
 
-    virtual void OnActivate(CCameraBase* old_cam);
-    void Update(Fvector& point, Fvector&) override;
+    void OnActivate(CCameraBase* old_cam) override;
+    void Update(Fvector3& point, Fvector3&) override;
 
-    float GetWorldYaw() const override { return -yaw; }
-    float GetWorldPitch() const override { return pitch; }
+    [[nodiscard]] f32 GetWorldYaw() const override { return -yaw; }
+    [[nodiscard]] f32 GetWorldPitch() const override { return pitch; }
 };
 
 class CCameraLook2 : public CCameraLook
@@ -43,7 +43,7 @@ public:
     explicit CCameraLook2(CObject* p, u32 flags = 0) : CCameraLook{p, flags} {}
     ~CCameraLook2() override = default;
 
-    virtual void OnActivate(CCameraBase* old_cam);
-    void Update(Fvector& point, Fvector&) override;
-    virtual void Load(LPCSTR section);
+    void OnActivate(CCameraBase* old_cam) override;
+    void Update(Fvector3& point, Fvector3&) override;
+    void Load(gsl::czstring section) override;
 };

@@ -37,7 +37,7 @@ protected:
     // звук текущего выстрела
     HUD_SOUND* m_pSndShotCurrent{};
 
-    virtual void StopHUDSounds();
+    void StopHUDSounds() override;
 
     // дополнительная информация о глушителе
     LPCSTR m_sSilencerFlameParticles{};
@@ -55,7 +55,7 @@ protected:
     u32 dwUpdateSounds_Frame;
 
 protected:
-    virtual void OnMagazineEmpty();
+    void OnMagazineEmpty() override;
 
     virtual void switch2_Idle();
     virtual void switch2_Fire();
@@ -66,15 +66,13 @@ protected:
     virtual void switch2_Hidden();
     virtual void switch2_Showing();
 
-    virtual void OnShot();
-
+    void OnShot() override;
     virtual void OnEmptyClick();
 
-    virtual void OnAnimationEnd(u32 state);
-    virtual void OnStateSwitch(u32 S, u32 oldState);
+    void OnAnimationEnd(u32 state) override;
+    void OnStateSwitch(u32 S, u32 oldState) override;
 
     virtual void UpdateSounds();
-
     bool TryReload();
 
 protected:
@@ -87,49 +85,49 @@ public:
     explicit CWeaponMagazined(ESoundTypes eSoundType = SOUND_TYPE_WEAPON_SUBMACHINEGUN);
     ~CWeaponMagazined() override;
 
-    virtual void Load(LPCSTR section);
-    virtual CWeaponMagazined* cast_weapon_magazined() { return this; }
+    void Load(gsl::czstring section) override;
+    [[nodiscard]] CWeaponMagazined* cast_weapon_magazined() override { return this; }
 
-    virtual void SetDefaults();
-    virtual void FireStart();
-    virtual void FireEnd();
-    virtual void Reload();
-    virtual void Misfire() override;
-    virtual void DeviceSwitch() override;
+    void SetDefaults() override;
+    void FireStart() override;
+    void FireEnd() override;
+    void Reload() override;
+    void Misfire() override;
+    void DeviceSwitch() override;
 
 protected:
-    virtual void DeviceUpdate() override;
+    void DeviceUpdate() override;
 
 public:
     tmc::task<void> UpdateCL() override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual void net_Export(CSE_Abstract* E);
+    void net_Export(CSE_Abstract* E) override;
 
-    virtual void OnH_A_Chield();
+    void OnH_A_Chield() override;
 
-    virtual bool Attach(PIItem pIItem, bool b_send_event);
-    virtual bool Detach(const char* item_section_name, bool b_spawn_item);
-    virtual bool CanAttach(PIItem pIItem);
-    virtual bool CanDetach(const char* item_section_name);
+    [[nodiscard]] bool Attach(PIItem pIItem, bool b_send_event) override;
+    [[nodiscard]] bool Detach(gsl::czstring item_section_name, bool b_spawn_item) override;
+    [[nodiscard]] bool CanAttach(PIItem pIItem) override;
+    [[nodiscard]] bool CanDetach(gsl::czstring item_section_name) override;
 
-    virtual void InitAddons();
+    void InitAddons() override;
     virtual void InitZoomParams(LPCSTR section, bool useTexture);
 
     [[nodiscard]] bool Action(EGameActions cmd, u32 flags) override;
     virtual void UnloadMagazine(bool spawn_ammo = true);
 
-    virtual void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
+    void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count) override;
 
     //////////////////////////////////////////////
     // для стрельбы очередями или одиночными
     //////////////////////////////////////////////
 public:
-    virtual bool SwitchMode();
-    virtual bool SingleShotMode() { return 1 == m_iQueueSize; }
+    [[nodiscard]] virtual bool SwitchMode();
+    [[nodiscard]] virtual bool SingleShotMode() { return 1 == m_iQueueSize; }
     virtual void SetQueueSize(int size);
-    IC int GetQueueSize() const { return m_iQueueSize; }
-    virtual bool StopedAfterQueueFired() { return m_bStopedAfterQueueFired; }
+    [[nodiscard]] s32 GetQueueSize() const { return m_iQueueSize; }
+    [[nodiscard]] virtual bool StopedAfterQueueFired() { return m_bStopedAfterQueueFired; }
     virtual void StopedAfterQueueFired(bool value) { m_bStopedAfterQueueFired = value; }
 
 protected:
@@ -171,26 +169,26 @@ protected:
     // режим приближения
     //////////////////////////////////////////////
 public:
-    virtual void OnZoomIn();
-    virtual void OnZoomOut();
-    virtual void OnZoomChanged();
+    void OnZoomIn() override;
+    void OnZoomOut() override;
+    void OnZoomChanged() override;
     virtual void OnNextFireMode(bool = false);
     virtual void OnPrevFireMode(bool = false);
-    virtual bool HasFireModes() { return m_bHasDifferentFireModes; }
-    virtual int GetCurrentFireMode() { return m_bHasDifferentFireModes ? m_aFireModes[m_iCurFireMode] : 1; }
-    virtual LPCSTR GetCurrentFireModeStr() { return m_sCurFireMode; }
+    [[nodiscard]] virtual bool HasFireModes() { return m_bHasDifferentFireModes; }
+    [[nodiscard]] virtual s32 GetCurrentFireMode() { return m_bHasDifferentFireModes ? m_aFireModes[m_iCurFireMode] : 1; }
+    [[nodiscard]] virtual gsl::czstring GetCurrentFireModeStr() { return m_sCurFireMode; }
 
-    virtual void save(NET_Packet& output_packet);
-    virtual void load(IReader& input_packet);
+    void save(NET_Packet& output_packet) override;
+    void load(IReader& input_packet) override;
 
 protected:
-    virtual bool AllowFireWhileWorking() { return false; }
+    [[nodiscard]] virtual bool AllowFireWhileWorking() { return false; }
 
     // виртуальные функции для проигрывания анимации HUD
     virtual void PlayAnimShow();
     virtual void PlayAnimHide();
     virtual void PlayAnimReload();
-    virtual void PlayAnimIdle();
+    void PlayAnimIdle() override;
 
     bool LaserSwitch{}, TorchSwitch{}, HeadLampSwitch{}, NightVisionSwitch{};
     bool CartridgeInTheChamberEnabled{};
@@ -200,24 +198,24 @@ private:
     string128 guns_aim_anm;
 
 protected:
-    virtual const char* GetAnimAimName();
+    [[nodiscard]] virtual gsl::czstring GetAnimAimName();
 
     virtual void PlayAnimAim();
     virtual void PlayAnimShoot();
     virtual void PlayAnimFakeShoot();
-    virtual void PlayAnimDeviceSwitch() override;
+    void PlayAnimDeviceSwitch() override;
     virtual void PlayAnimCheckMisfire();
     virtual void PlayReloadSound();
 
-    virtual int ShotsFired() { return m_iShotNum; }
-    virtual float GetWeaponDeterioration();
+    [[nodiscard]] s32 ShotsFired() override { return m_iShotNum; }
+    [[nodiscard]] f32 GetWeaponDeterioration() override;
 
-    virtual void OnDrawUI();
-    virtual void net_Relcase(CObject* object);
+    void OnDrawUI() override;
+    void net_Relcase(CObject* object) override;
 
-    bool ScopeRespawn(PIItem);
+    [[nodiscard]] bool ScopeRespawn(PIItem);
 
-    virtual void OnMotionMark(u32 state, const motion_marks& M) override;
-    int CheckAmmoBeforeReload(u32& v_ammoType);
+    void OnMotionMark(u32 state, const motion_marks& M) override;
+    [[nodiscard]] s32 CheckAmmoBeforeReload(u32& v_ammoType);
 };
 XR_SOL_BASE_CLASSES(CWeaponMagazined);

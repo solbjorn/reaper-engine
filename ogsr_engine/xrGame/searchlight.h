@@ -38,22 +38,22 @@ public:
     CProjector();
     ~CProjector() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> shedule_Update(u32 dt) override; // Called by sheduler
     tmc::task<void> UpdateCL() override; // Called each frame, so no need for dt
 
-    virtual BOOL UsedAI_Locations();
+    [[nodiscard]] BOOL UsedAI_Locations() override;
 
-    virtual bool bfAssignWatch(CScriptEntityAction* tpEntityAction);
-    virtual bool bfAssignObject(CScriptEntityAction* tpEntityAction);
+    [[nodiscard]] bool bfAssignWatch(CScriptEntityAction* tpEntityAction) override;
+    [[nodiscard]] bool bfAssignObject(CScriptEntityAction* tpEntityAction) override;
 
     Fvector GetCurrentDirection();
 
     void TurnOn();
     void TurnOff();
 
-    virtual void Hit(SHit* pHDS);
+    void Hit(SHit* pHDS) override;
 
     IC void SetCurrentYaw(float _yaw) { _current.yaw = _yaw; }
     IC void SetTargetYaw(float _yaw) { _target.yaw = _yaw; }

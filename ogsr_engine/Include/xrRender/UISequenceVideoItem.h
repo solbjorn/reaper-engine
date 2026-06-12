@@ -10,10 +10,10 @@ public:
 
     virtual void Copy(IUISequenceVideoItem& _in) = 0;
 
-    virtual bool HasTexture() = 0;
+    [[nodiscard]] virtual bool HasTexture() = 0;
     virtual void CaptureTexture() = 0;
     virtual void ResetTexture() = 0;
-    virtual BOOL video_IsPlaying() = 0;
+    [[nodiscard]] virtual BOOL video_IsPlaying() = 0;
     virtual void video_Sync(u32 _time) = 0;
     virtual void video_Play(BOOL looped, u32 _time = 0xFFFFFFFF) = 0;
     virtual void video_Stop() = 0;

@@ -7,9 +7,9 @@ class CBlender_fluid_advect : public IBlender
 public:
     ~CBlender_fluid_advect() override = default;
 
-    virtual LPCSTR getComment() { return "INTERNAL: 3dfluid maths"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: 3dfluid maths"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 };
 
 class CBlender_fluid_advect_velocity : public IBlender
@@ -19,9 +19,9 @@ class CBlender_fluid_advect_velocity : public IBlender
 public:
     ~CBlender_fluid_advect_velocity() override = default;
 
-    virtual LPCSTR getComment() { return "INTERNAL: 3dfluid maths"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: 3dfluid maths"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 };
 
 class CBlender_fluid_simulate : public IBlender
@@ -31,9 +31,9 @@ class CBlender_fluid_simulate : public IBlender
 public:
     ~CBlender_fluid_simulate() override = default;
 
-    virtual LPCSTR getComment() { return "INTERNAL: 3dfluid maths"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: 3dfluid maths"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 };
 
 class CBlender_fluid_obst : public IBlender
@@ -43,9 +43,9 @@ class CBlender_fluid_obst : public IBlender
 public:
     ~CBlender_fluid_obst() override = default;
 
-    virtual LPCSTR getComment() { return "INTERNAL: 3dfluid maths 2"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: 3dfluid maths 2"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 };
 
 class CBlender_fluid_emitter : public IBlender
@@ -55,9 +55,9 @@ class CBlender_fluid_emitter : public IBlender
 public:
     ~CBlender_fluid_emitter() override = default;
 
-    virtual LPCSTR getComment() { return "INTERNAL: 3dfluid emitters"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: 3dfluid emitters"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 };
 
 class CBlender_fluid_obstdraw : public IBlender
@@ -67,9 +67,9 @@ class CBlender_fluid_obstdraw : public IBlender
 public:
     ~CBlender_fluid_obstdraw() override = default;
 
-    virtual LPCSTR getComment() { return "INTERNAL: 3dfluid maths 2"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: 3dfluid maths 2"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 };
 
 class CBlender_fluid_raydata : public IBlender
@@ -79,9 +79,9 @@ class CBlender_fluid_raydata : public IBlender
 public:
     ~CBlender_fluid_raydata() override = default;
 
-    virtual LPCSTR getComment() { return "INTERNAL: 3dfluid maths 2"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: 3dfluid maths 2"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 };
 
 class CBlender_fluid_raycast : public IBlender
@@ -91,7 +91,7 @@ class CBlender_fluid_raycast : public IBlender
 public:
     ~CBlender_fluid_raycast() override = default;
 
-    virtual LPCSTR getComment() { return "INTERNAL: 3dfluid maths 2"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: 3dfluid maths 2"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 };

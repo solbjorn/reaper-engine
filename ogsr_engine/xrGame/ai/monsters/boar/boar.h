@@ -15,13 +15,13 @@ public:
     CAI_Boar();
     ~CAI_Boar() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
-    virtual void reinit();
+    void reinit() override;
 
     tmc::task<void> UpdateCL() override;
 
-    IC virtual bool CanExecRotationJump() { return true; }
+    [[nodiscard]] virtual bool CanExecRotationJump() { return true; }
     void CheckSpecParams(u32) override {}
 
     // look at enemy
@@ -31,7 +31,7 @@ public:
     float _cur_delta, _target_delta;
     bool look_at_enemy;
 
-    IC virtual bool ability_can_drag() { return true; }
+    [[nodiscard]] bool ability_can_drag() override { return true; }
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

@@ -47,90 +47,93 @@ public:
     CPHShell();
     ~CPHShell() override;
 
-    virtual void applyImpulseTrace(const Fvector& pos, const Fvector& dir, float val, const u16 id);
-    virtual void applyHit(const Fvector& pos, const Fvector& dir, float val, const u16 id, ALife::EHitType hit_type);
+    void applyImpulseTrace(const Fvector3& pos, const Fvector3& dir, f32 val, const u16 id) override;
+    void applyHit(const Fvector3& pos, const Fvector3& dir, f32 val, const u16 id, ALife::EHitType hit_type) override;
 
     static void BonesCallback(CBoneInstance* B);
     static void StataticRootBonesCallBack(CBoneInstance* B);
-    virtual BoneCallbackFun* GetBonesCallback() { return BonesCallback; }
-    virtual BoneCallbackFun* GetStaticObjectBonesCallback() { return StataticRootBonesCallBack; }
-    virtual void add_Element(CPhysicsElement* E);
-    virtual void ToAnimBonesPositions();
-    virtual bool AnimToVelocityState(float dt, float l_limit, float a_limit);
-    virtual void SetBonesCallbacksOverwrite(bool v);
+    [[nodiscard]] BoneCallbackFun* GetBonesCallback() override { return BonesCallback; }
+    [[nodiscard]] BoneCallbackFun* GetStaticObjectBonesCallback() override { return StataticRootBonesCallBack; }
+    void add_Element(CPhysicsElement* E) override;
+    void ToAnimBonesPositions() override;
+    [[nodiscard]] bool AnimToVelocityState(f32 dt, f32 l_limit, f32 a_limit) override;
+    void SetBonesCallbacksOverwrite(bool v) override;
     void SetPhObjectInElements();
-    virtual void EnableObject(CPHObject*);
+    void EnableObject(CPHObject*) override;
     virtual void DisableObject();
-    virtual void SetAirResistance(dReal linear = default_k_l, dReal angular = default_k_w)
+
+    void SetAirResistance(f32 linear = default_k_l, f32 angular = default_k_w) override
     {
         xr_vector<CPHElement*>::iterator i;
         for (i = elements.begin(); elements.end() != i; ++i)
             (*i)->SetAirResistance(linear, angular);
     }
-    virtual void GetAirResistance(float& linear, float& angular) { (*elements.begin())->GetAirResistance(linear, angular); }
-    virtual void add_Joint(CPhysicsJoint* J);
 
-    virtual CPHIsland* PIsland() { return &Island(); }
-    virtual void applyImpulseTrace(const Fvector& pos, const Fvector& dir, float val);
+    void GetAirResistance(f32& linear, f32& angular) override { (*elements.begin())->GetAirResistance(linear, angular); }
+    void add_Joint(CPhysicsJoint* J) override;
 
-    virtual void Update();
+    [[nodiscard]] CPHIsland* PIsland() override { return &Island(); }
+    void applyImpulseTrace(const Fvector3& pos, const Fvector3& dir, f32 val) override;
 
-    virtual void Activate(const Fmatrix& m0, float, const Fmatrix& m2, bool disable = false);
-    virtual void Activate(const Fmatrix& transform, const Fvector& lin_vel, const Fvector& ang_vel, bool disable = false);
+    void Update() override;
 
-    virtual void Activate(bool disable = false, bool not_set_bone_callbacks = false);
-    virtual void Activate(const Fmatrix&, bool = false) {}
+    void Activate(const Fmatrix& m0, f32, const Fmatrix& m2, bool disable = false) override;
+    void Activate(const Fmatrix& transform, const Fvector3& lin_vel, const Fvector3& ang_vel, bool disable = false) override;
+
+    void Activate(bool disable = false, bool not_set_bone_callbacks = false) override;
+    void Activate(const Fmatrix&, bool = false) override {}
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
-    virtual CPhysicsShellAnimator* PPhysicsShellAnimator() { return m_pPhysicsShellAnimatorC; }
+    [[nodiscard]] CPhysicsShellAnimator* PPhysicsShellAnimator() override { return m_pPhysicsShellAnimatorC; }
 #endif
 
 private:
     void activate(bool disable);
 
 public:
-    virtual void Build(bool disable = false);
-    virtual void RunSimulation(bool place_current_forms = true);
+    void Build(bool disable = false) override;
+    void RunSimulation(bool place_current_forms = true) override;
     void PresetActive();
     void AfterSetActive();
     void PureActivate();
-    virtual void Deactivate();
-    virtual const CGID& GetCLGroup() const;
-    virtual void RegisterToCLGroup(CGID g);
-    virtual bool IsGroupObject();
-    virtual void SetIgnoreStatic();
-    virtual void SetIgnoreDynamic();
-    virtual void SetStatic();
-    virtual void SetDynamic();
+    void Deactivate() override;
+    [[nodiscard]] const CGID& GetCLGroup() const override;
+    void RegisterToCLGroup(CGID g) override;
+    [[nodiscard]] bool IsGroupObject() override;
+    void SetIgnoreStatic() override;
+    void SetIgnoreDynamic() override;
+    void SetStatic() override;
+    void SetDynamic() override;
 
-    virtual void SetRagDoll();
-    virtual void SetIgnoreRagDoll();
+    void SetRagDoll() override;
+    void SetIgnoreRagDoll() override;
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
-    virtual void CreateShellAnimator();
-    virtual void SetIgnoreAnimated();
-    virtual bool Animated();
+    void CreateShellAnimator() override;
+    void SetIgnoreAnimated() override;
+    [[nodiscard]] bool Animated() override;
 #endif
 
-    virtual void SetSmall();
-    virtual void SetIgnoreSmall();
-    virtual void setMass(float M);
+    void SetSmall() override;
+    void SetIgnoreSmall() override;
+    void setMass(f32 M) override;
 
-    virtual void setMass1(float M);
-    virtual void setEquelInertiaForEls(const dMass& M);
-    virtual void addEquelInertiaToEls(const dMass& M);
-    virtual float getMass();
-    virtual void setDensity(float M);
-    virtual float getDensity();
-    virtual float getVolume();
-    virtual void get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext);
-    virtual void applyForce(const Fvector& dir, float val);
-    virtual void applyForce(float x, float y, float z);
-    virtual void applyImpulse(const Fvector& dir, float val);
-    virtual void applyGravityAccel(const Fvector& accel);
-    virtual void setTorque(const Fvector& torque);
-    virtual void setForce(const Fvector& force);
-    virtual void set_JointResistance(float force)
+    void setMass1(f32 M) override;
+    void setEquelInertiaForEls(const dMass& M) override;
+    void addEquelInertiaToEls(const dMass& M) override;
+    [[nodiscard]] f32 getMass() override;
+    void setDensity(f32 M) override;
+    [[nodiscard]] f32 getDensity() override;
+    [[nodiscard]] f32 getVolume() override;
+    void get_Extensions(const Fvector3& axis, f32 center_prg, f32& lo_ext, f32& hi_ext) override;
+    void applyForce(const Fvector3& dir, f32 val) override;
+    void applyForce(f32 x, f32 y, f32 z) override;
+    void applyImpulse(const Fvector& dir, f32 val) override;
+    void applyGravityAccel(const Fvector3& accel) override;
+    void setTorque(const Fvector3& torque) override;
+    void setForce(const Fvector3& force) override;
+
+    void set_JointResistance(f32 force) override
     {
         JOINT_I i;
         for (i = joints.begin(); joints.end() != i; ++i)
@@ -138,112 +141,115 @@ public:
             (*i)->SetForce(force);
             (*i)->SetVelocity();
         }
-        //(*i)->SetForceAndVelocity(force);
     }
-    virtual void set_DynamicLimits(float l_limit = default_l_limit, float w_limit = default_w_limit);
-    virtual void set_DynamicScales(float l_scale = default_l_scale, float w_scale = default_w_scale);
-    virtual void set_ContactCallback(ContactCallbackFun* callback);
-    virtual void set_ObjectContactCallback(ObjectContactCallbackFun* callback);
-    virtual void add_ObjectContactCallback(ObjectContactCallbackFun* callback);
-    virtual void remove_ObjectContactCallback(ObjectContactCallbackFun* callback);
-    virtual void set_CallbackData(void* cd);
-    virtual void* get_CallbackData();
-    virtual void set_PhysicsRefObject(CPhysicsShellHolder* ref_object);
+
+    void set_DynamicLimits(f32 l_limit = default_l_limit, f32 w_limit = default_w_limit) override;
+    void set_DynamicScales(f32 l_scale = default_l_scale, f32 w_scale = default_w_scale) override;
+    void set_ContactCallback(ContactCallbackFun* callback) override;
+    void set_ObjectContactCallback(ObjectContactCallbackFun* callback) override;
+    void add_ObjectContactCallback(ObjectContactCallbackFun* callback) override;
+    void remove_ObjectContactCallback(ObjectContactCallbackFun* callback) override;
+    void set_CallbackData(void* cd) override;
+    [[nodiscard]] void* get_CallbackData() override;
+    void set_PhysicsRefObject(CPhysicsShellHolder* ref_object) override;
 
     // breakbable interface
-    virtual bool isBreakable();
-    virtual bool isFractured();
-    virtual CPHShellSplitterHolder* SplitterHolder() { return m_spliter_holder; }
-    virtual void SplitProcess(PHSHELL_PAIR_VECTOR& out_shels);
-    virtual void BlockBreaking()
+    [[nodiscard]] bool isBreakable() override;
+    [[nodiscard]] bool isFractured() override;
+    [[nodiscard]] CPHShellSplitterHolder* SplitterHolder() override { return m_spliter_holder; }
+    void SplitProcess(PHSHELL_PAIR_VECTOR& out_shels) override;
+
+    void BlockBreaking() override
     {
         if (m_spliter_holder)
             m_spliter_holder->SetUnbreakable();
     }
-    virtual void UnblockBreaking()
+
+    void UnblockBreaking() override
     {
         if (m_spliter_holder)
             m_spliter_holder->SetBreakable();
     }
-    virtual bool IsBreakingBlocked() { return m_spliter_holder && m_spliter_holder->IsUnbreakable(); }
+
+    [[nodiscard]] bool IsBreakingBlocked() override { return m_spliter_holder && m_spliter_holder->IsUnbreakable(); }
     ///////	////////////////////////////////////////////////////////////////////////////////////////////
-    virtual void get_LinearVel(Fvector& velocity) override;
-    virtual void get_AngularVel(Fvector& velocity) override;
-    virtual void set_LinearVel(const Fvector& velocity);
-    virtual void set_AngularVel(const Fvector& velocity);
-    virtual void TransformPosition(const Fmatrix& form);
-    virtual void SetGlTransformDynamic(const Fmatrix& form);
-    virtual void set_ApplyByGravity(bool flag);
-    virtual bool get_ApplyByGravity();
-    virtual void SetMaterial(u16 m);
-    virtual void SetMaterial(LPCSTR m);
-    virtual ELEMENT_STORAGE& Elements() { return elements; }
-    virtual CPhysicsElement* get_Element(u16 bone_id);
-    virtual CPhysicsElement* get_Element(const shared_str& bone_name);
-    virtual CPhysicsElement* get_Element(LPCSTR bone_name);
-    virtual CPhysicsElement* get_ElementByStoreOrder(u16 num);
-    virtual u16 get_ElementsNumber() override { return (u16)elements.size(); }
-    virtual CPHSynchronize* get_ElementSync(u16 element);
-    virtual u16 get_elements_number() { return get_ElementsNumber(); }
-    virtual CPHSynchronize* get_element_sync(u16 element) { return get_ElementSync(element); }
-    virtual CPhysicsElement* NearestToPoint(const Fvector& point);
-    virtual CPhysicsJoint* get_Joint(u16 bone_id);
-    virtual CPhysicsJoint* get_Joint(const shared_str& bone_name);
-    virtual CPhysicsJoint* get_Joint(LPCSTR bone_name);
-    virtual CPhysicsJoint* get_JointByStoreOrder(u16 num);
-    virtual u16 get_JointsNumber();
-    virtual CODEGeom* get_GeomByID(u16 bone_id);
+    void get_LinearVel(Fvector3& velocity) override;
+    void get_AngularVel(Fvector3& velocity) override;
+    void set_LinearVel(const Fvector3& velocity) override;
+    void set_AngularVel(const Fvector3& velocity) override;
+    void TransformPosition(const Fmatrix& form) override;
+    void SetGlTransformDynamic(const Fmatrix& form) override;
+    void set_ApplyByGravity(bool flag) override;
+    [[nodiscard]] bool get_ApplyByGravity() override;
+    void SetMaterial(u16 m) override;
+    void SetMaterial(gsl::czstring m) override;
+    [[nodiscard]] ELEMENT_STORAGE& Elements() override { return elements; }
+    [[nodiscard]] CPhysicsElement* get_Element(u16 bone_id) override;
+    [[nodiscard]] CPhysicsElement* get_Element(const shared_str& bone_name) override;
+    [[nodiscard]] CPhysicsElement* get_Element(gsl::czstring bone_name) override;
+    [[nodiscard]] CPhysicsElement* get_ElementByStoreOrder(u16 num) override;
+    [[nodiscard]] u16 get_ElementsNumber() override { return (u16)elements.size(); }
+    [[nodiscard]] CPHSynchronize* get_ElementSync(u16 element) override;
+    [[nodiscard]] u16 get_elements_number() override { return get_ElementsNumber(); }
+    [[nodiscard]] CPHSynchronize* get_element_sync(u16 element) override { return get_ElementSync(element); }
+    [[nodiscard]] CPhysicsElement* NearestToPoint(const Fvector3& point) override;
+    [[nodiscard]] CPhysicsJoint* get_Joint(u16 bone_id) override;
+    [[nodiscard]] CPhysicsJoint* get_Joint(const shared_str& bone_name) override;
+    [[nodiscard]] CPhysicsJoint* get_Joint(gsl::czstring bone_name) override;
+    [[nodiscard]] CPhysicsJoint* get_JointByStoreOrder(u16 num) override;
+    [[nodiscard]] u16 get_JointsNumber() override;
+    [[nodiscard]] CODEGeom* get_GeomByID(u16 bone_id) override;
 
-    virtual void SetAnimated(bool v) override;
+    void SetAnimated(bool v) override;
 
-    virtual void Enable();
-    virtual void Disable();
-    virtual void DisableCollision();
-    virtual void EnableCollision();
-    virtual void DisableCharacterCollision();
-    virtual void SetRemoveCharacterCollLADisable() { m_flags.set(flRemoveCharacterCollisionAfterDisable, TRUE); }
-    virtual bool isEnabled() { return CPHObject::is_active(); }
-    virtual bool isActive() { return !!m_flags.test(flActive); }
-    virtual bool isFullActive() { return isActive() && !m_flags.test(flActivating); }
+    void Enable() override;
+    void Disable() override;
+    void DisableCollision() override;
+    void EnableCollision() override;
+    void DisableCharacterCollision() override;
+    void SetRemoveCharacterCollLADisable() override { m_flags.set(flRemoveCharacterCollisionAfterDisable, TRUE); }
+    [[nodiscard]] bool isEnabled() override { return CPHObject::is_active(); }
+    [[nodiscard]] bool isActive() override { return !!m_flags.test(flActive); }
+    [[nodiscard]] bool isFullActive() override { return isActive() && !m_flags.test(flActivating); }
     void SetNotActivating() { m_flags.set(flActivating, FALSE); }
     // CPHObject
-    virtual void vis_update_activate();
-    virtual void vis_update_deactivate();
-    virtual void PureStep(float step);
-    virtual void CollideAll();
-    virtual void PhDataUpdate(dReal step);
-    virtual void PhTune(dReal step);
-    virtual void InitContact(dContact*, bool&, u16, u16) {}
-    virtual void FreezeContent();
-    virtual void UnFreezeContent();
-    virtual void Freeze();
-    virtual void UnFreeze();
-    virtual void NetInterpolationModeON() { CPHObject::NetInterpolationON(); }
-    virtual void NetInterpolationModeOFF() { CPHObject::NetInterpolationOFF(); }
+    void vis_update_activate() override;
+    void vis_update_deactivate() override;
+    void PureStep(f32 step) override;
+    void CollideAll() override;
+    void PhDataUpdate(dReal step) override;
+    void PhTune(dReal step) override;
+    void InitContact(dContact*, bool&, u16, u16) override {}
+    void FreezeContent() override;
+    void UnFreezeContent() override;
+    void Freeze() override;
+    void UnFreeze() override;
+    void NetInterpolationModeON() override { CPHObject::NetInterpolationON(); }
+    void NetInterpolationModeOFF() override { CPHObject::NetInterpolationOFF(); }
     virtual void StepFrameUpdate(dReal) {}
-    virtual CPHMoveStorage* MoveStorage() { return &m_traced_geoms; }
-    virtual void build_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map = nullptr);
-    virtual void preBuild_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map);
-    virtual void ZeroCallbacks();
-    virtual void ResetCallbacks(u16 id, VisMask& mask);
+    [[nodiscard]] CPHMoveStorage* MoveStorage() override { return &m_traced_geoms; }
+    void build_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map = nullptr) override;
+    void preBuild_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map) override;
+    void ZeroCallbacks() override;
+    void ResetCallbacks(u16 id, VisMask& mask) override;
     void PlaceBindToElForms();
-    virtual void SetCallbacks(BoneCallbackFun* callback);
-    virtual void EnabledCallbacks(BOOL val);
-    virtual void set_DisableParams(const SAllDDOParams& params);
-    virtual void UpdateRoot();
-    virtual void SmoothElementsInertia(float k);
-    virtual void InterpolateGlobalTransform(Fmatrix* m);
-    virtual void InterpolateGlobalPosition(Fvector* v);
-    virtual void GetGlobalTransformDynamic(Fmatrix* m);
-    virtual void GetGlobalPositionDynamic(Fvector* v);
-    virtual Fmatrix& ObjectInRoot() { return m_object_in_root; }
-    virtual void ObjectToRootForm(const Fmatrix& form);
-    virtual dSpaceID dSpace() { return m_space; }
-    virtual void SetTransform(const Fmatrix& m0);
-    virtual void AddTracedGeom(u16 element = 0, u16 geom = 0);
-    virtual void SetAllGeomTraced();
-    virtual void SetPrefereExactIntegration();
-    virtual void CutVelocity(float l_limit, float a_limit);
+    void SetCallbacks(BoneCallbackFun* callback) override;
+    void EnabledCallbacks(BOOL val) override;
+    void set_DisableParams(const SAllDDOParams& params) override;
+    void UpdateRoot() override;
+    void SmoothElementsInertia(f32 k) override;
+    void InterpolateGlobalTransform(Fmatrix* m) override;
+    void InterpolateGlobalPosition(Fvector* v) override;
+    void GetGlobalTransformDynamic(Fmatrix* m) override;
+    void GetGlobalPositionDynamic(Fvector* v) override;
+    [[nodiscard]] Fmatrix& ObjectInRoot() override { return m_object_in_root; }
+    void ObjectToRootForm(const Fmatrix& form) override;
+    [[nodiscard]] virtual dSpaceID dSpace() { return m_space; }
+    void SetTransform(const Fmatrix& m0) override;
+    void AddTracedGeom(u16 element = 0, u16 geom = 0) override;
+    void SetAllGeomTraced() override;
+    void SetPrefereExactIntegration() override;
+    void CutVelocity(f32 l_limit, f32 a_limit) override;
     ///////////	//////////////////////////////////////////////////////////////////////////////////////////
     void CreateSpace();
     void PassEndElements(u16 from, u16 to, CPHShell* dest);
@@ -253,10 +259,10 @@ public:
     u16 BoneIdToRootGeom(u16 id);
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 protected:
-    virtual void get_spatial_params();
-    virtual dGeomID dSpacedGeom() { return (dGeomID)m_space; }
+    void get_spatial_params() override;
+    [[nodiscard]] dGeomID dSpacedGeom() override { return (dGeomID)m_space; }
 
-    virtual void ClearRecentlyDeactivated();
+    void ClearRecentlyDeactivated() override;
     void ClearCashedTries();
 
 private:

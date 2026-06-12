@@ -10,7 +10,7 @@ set(conformance_options "/Brepro /bigobj /permissive- /volatile:iso /Zc:inline /
 
 set(llvm_options "-march=skylake -mavx2 -mvpclmulqdq -flto -fmerge-all-constants -fforce-emit-vtables -fwhole-program-vtables /clang:-fcoro-aligned-allocation")
 
-set(warning_options "-Wextra -Wmost -Wno-error=unused-command-line-argument -Werror=format -Wformat-nonliteral -Werror=format-pedantic -Werror=format-signedness -Werror=format-type-confusion -Werror=microsoft -Werror=move -Werror=nan-infinity-disabled -Werror=parentheses -Werror=strict-aliasing -Werror=tautological-compare -Werror=typename-missing -Werror=weak-vtables")
+set(warning_options "-Wextra -Wmost -Wno-error=unused-command-line-argument -Werror=format -Wformat-nonliteral -Werror=format-pedantic -Werror=format-signedness -Werror=format-type-confusion -Werror=inconsistent-missing-override -Werror=microsoft -Werror=move -Werror=nan-infinity-disabled -Werror=parentheses -Werror=strict-aliasing -Werror=tautological-compare -Werror=typename-missing -Werror=weak-vtables")
 
 # hwloc and ASIO SDK don't behave
 # DwarFS uses `UNICODE` as an enumeration
@@ -185,8 +185,8 @@ endif()
 
 # zlib
 if(ZLIB_COMPAT)
-  set(conformance_options "${conformance_options} -DO_APPEND=_O_APPEND -DO_CREAT=_O_CREAT -DO_RDONLY=_O_RDONLY -DO_TRUNC=_O_TRUNC -DO_WRONLY=_O_WRONLY -Dclose=_close -Dopen=_open -Dread=_read -Dwrite=_write")
-  set(warning_options "${warning_options} -Wno-error=missing-format-attribute")
+  set(conformance_options "${conformance_options} -DO_APPEND=_O_APPEND -DO_BINARY=_O_BINARY -DO_CREAT=_O_CREAT -DO_RDONLY=_O_RDONLY -DO_TRUNC=_O_TRUNC -DO_WRONLY=_O_WRONLY -Dclose=_close -Dfileno=_fileno -Dopen=_open -Dread=_read -Dsetmode=_setmode -Dunlink=_unlink -Dwrite=_write")
+  set(warning_options "${warning_options} -Wno-error=format-signedness -Wno-error=missing-format-attribute")
 endif()
 
 # zstd

@@ -27,19 +27,19 @@ public:
     explicit CStateMonsterDangerMoveToHomePoint(_Object* obj);
     ~CStateMonsterDangerMoveToHomePoint() override = default;
 
-    virtual void initialize();
-    virtual void finalize();
-    virtual void critical_finalize();
+    void initialize() override;
+    void finalize() override;
+    void critical_finalize() override;
 
-    virtual bool check_start_conditions();
-    virtual bool check_completion();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    [[nodiscard]] bool check_start_conditions() override;
+    [[nodiscard]] bool check_completion() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 
-    virtual void reselect_state();
-    virtual void setup_substates();
+    void reselect_state() override;
+    void setup_substates() override;
 
 private:
-    Fvector& get_most_danger_pos();
+    [[nodiscard]] Fvector& get_most_danger_pos();
 };
 
 #include "monster_state_home_point_danger_inline.h"

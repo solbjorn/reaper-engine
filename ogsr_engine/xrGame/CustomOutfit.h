@@ -18,7 +18,7 @@ public:
     CCustomOutfit();
     ~CCustomOutfit() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
 
     // уменьшенная версия хита, для вызова, когда костюм надет на персонажа
     virtual void Hit(float P, ALife::EHitType hit_type);
@@ -34,8 +34,8 @@ public:
     // если на персонаже надет костюм
     float GetPowerLoss();
 
-    virtual void OnMoveToSlot();
-    virtual void OnMoveToRuck(EItemPlace prevPlace) override;
+    void OnMoveToSlot() override;
+    void OnMoveToRuck(EItemPlace prevPlace) override;
     void OnDrop() override;
 
 private:
@@ -55,10 +55,10 @@ public:
     float m_additional_weight{};
     float m_additional_weight2{};
     shared_str m_NightVisionSect;
-    virtual u32 ef_equipment_type() const;
+    [[nodiscard]] u32 ef_equipment_type() const override;
     const shared_str& GetFullIconName() const { return m_full_icon_name; }
 
-    virtual void net_Export(CSE_Abstract* E);
+    void net_Export(CSE_Abstract* E) override;
 
     float m_fBleedingRestoreSpeed{};
     float m_fHealthRestoreSpeed{};

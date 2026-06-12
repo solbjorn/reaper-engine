@@ -21,15 +21,15 @@ public:
     CEatableItem();
     ~CEatableItem() override;
 
-    virtual DLL_Pure* _construct();
-    virtual CEatableItem* cast_eatable_item() { return this; }
+    [[nodiscard]] DLL_Pure* _construct() override;
+    [[nodiscard]] CEatableItem* cast_eatable_item() override { return this; }
 
-    virtual void Load(LPCSTR section);
-    virtual bool Useful() const;
+    void Load(gsl::czstring section) override;
+    [[nodiscard]] bool Useful() const override;
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
 
-    virtual void OnH_B_Independent(bool just_before_destroy);
+    void OnH_B_Independent(bool just_before_destroy) override;
     virtual void UseBy(CEntityAlive* npc);
     bool Empty() const { return m_iPortionsNum == 0; }
     virtual void ZeroAllEffects();

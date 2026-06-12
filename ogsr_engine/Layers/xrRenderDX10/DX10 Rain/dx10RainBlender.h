@@ -8,9 +8,9 @@ class CBlender_rain : public IBlender
 public:
     ~CBlender_rain() override = default;
 
-    virtual LPCSTR getComment() { return "INTERNAL: DX10 rain blender"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: DX10 rain blender"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 };
 
 class CBlender_rain_msaa : public IBlender
@@ -24,9 +24,9 @@ public:
     CBlender_rain_msaa() = default;
     ~CBlender_rain_msaa() override = default;
 
-    virtual LPCSTR getComment() { return "INTERNAL: DX10 MSAA rain blender"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: DX10 MSAA rain blender"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
     virtual void SetDefine(LPCSTR Name, LPCSTR Definition);
 };
 

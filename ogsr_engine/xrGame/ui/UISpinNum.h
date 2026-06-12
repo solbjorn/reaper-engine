@@ -17,26 +17,26 @@ public:
     CUISpinNum();
     ~CUISpinNum() override = default;
 
-    virtual void Init(float x, float y, float width, float height);
+    void Init(f32 x, f32 y, f32 width, f32 height) override;
 
     // CUIOptionsItem
-    virtual void SetCurrentValue();
-    virtual void SaveValue();
-    virtual bool IsChanged();
+    void SetCurrentValue() override;
+    void SaveValue() override;
+    [[nodiscard]] bool IsChanged() override;
 
-    virtual void OnBtnUpClick();
-    virtual void OnBtnDownClick();
+    void OnBtnUpClick() override;
+    void OnBtnDownClick() override;
 
-    void SetMax(int max) { m_iMax = max; }
-    void SetMin(int min) { m_iMin = min; }
-    int Value() const { return m_iVal; }
+    void SetMax(s32 max) { m_iMax = max; }
+    void SetMin(s32 min) { m_iMin = min; }
+    [[nodiscard]] s32 Value() const { return m_iVal; }
 
 protected:
     void SetValue();
-    virtual bool CanPressUp();
-    virtual bool CanPressDown();
-    virtual void IncVal();
-    virtual void DecVal();
+    [[nodiscard]] bool CanPressUp() override;
+    [[nodiscard]] bool CanPressDown() override;
+    void IncVal() override;
+    void DecVal() override;
 
     int m_iMax{100};
     int m_iMin{};
@@ -53,25 +53,25 @@ public:
     CUISpinFlt();
     ~CUISpinFlt() override = default;
 
-    virtual void Init(float x, float y, float width, float height);
+    void Init(f32 x, f32 y, f32 width, f32 height) override;
 
     // CUIOptionsItem
-    virtual void SetCurrentValue();
-    virtual void SaveValue();
-    virtual bool IsChanged();
+    void SetCurrentValue() override;
+    void SaveValue() override;
+    [[nodiscard]] bool IsChanged() override;
 
-    virtual void OnBtnUpClick();
-    virtual void OnBtnDownClick();
+    void OnBtnUpClick() override;
+    void OnBtnDownClick() override;
 
-    void SetMax(float max);
-    void SetMin(float min);
+    void SetMax(f32 max);
+    void SetMin(f32 min);
 
 protected:
     void SetValue();
-    virtual bool CanPressUp();
-    virtual bool CanPressDown();
-    virtual void IncVal();
-    virtual void DecVal();
+    [[nodiscard]] bool CanPressUp() override;
+    [[nodiscard]] bool CanPressDown() override;
+    void IncVal() override;
+    void DecVal() override;
 
     float m_fMax{100.0f};
     float m_fMin{};

@@ -23,16 +23,16 @@ public:
     explicit CMonsterStateManager(_Object* obj) : inherited{obj} {}
     ~CMonsterStateManager() override = 0;
 
-    virtual void reinit();
-    virtual void update();
-    virtual void force_script_state(EMonsterState state);
-    virtual void execute_script_state();
-    virtual void critical_finalize();
-    virtual void remove_links(CObject* object) = 0;
+    void reinit() override;
+    void update() override;
+    void force_script_state(EMonsterState state) override;
+    void execute_script_state() override;
+    void critical_finalize() override;
+    void remove_links(CObject* object) override = 0;
 
-    virtual EMonsterState get_state_type();
+    [[nodiscard]] EMonsterState get_state_type() override;
 
-    virtual bool check_control_start_conditions(ControlCom::EControlType type) { return inherited::check_control_start_conditions(type); }
+    [[nodiscard]] bool check_control_start_conditions(ControlCom::EControlType type) override { return inherited::check_control_start_conditions(type); }
 
 protected:
     bool can_eat();

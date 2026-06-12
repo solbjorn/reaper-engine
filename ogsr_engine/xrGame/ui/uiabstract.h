@@ -12,11 +12,11 @@ public:
     ~IUIFontControl() override = 0;
 
     virtual void SetTextColor(u32 color) = 0;
-    virtual u32 GetTextColor() = 0;
+    [[nodiscard]] virtual u32 GetTextColor() = 0;
     virtual void SetFont(CGameFont* pFont) = 0;
-    virtual CGameFont* GetFont() = 0;
+    [[nodiscard]] virtual CGameFont* GetFont() = 0;
     virtual void SetTextAlignment(ETextAlignment alignment) = 0;
-    virtual ETextAlignment GetTextAlignment() = 0;
+    [[nodiscard]] virtual ETextAlignment GetTextAlignment() = 0;
 };
 
 inline IUIFontControl::~IUIFontControl() = default;
@@ -35,8 +35,8 @@ class XR_NOVTABLE IUITextControl : public IUIFontControl
 public:
     ~IUITextControl() override = 0;
 
-    virtual void SetText(LPCSTR text) = 0;
-    virtual LPCSTR GetText() = 0;
+    virtual void SetText(gsl::czstring text) = 0;
+    [[nodiscard]] virtual gsl::czstring GetText() = 0;
 };
 
 inline IUITextControl::~IUITextControl() = default;
@@ -49,10 +49,10 @@ class XR_NOVTABLE IUISimpleTextureControl : public virtual RTTI::Enable
 public:
     ~IUISimpleTextureControl() override = 0;
 
-    virtual void CreateShader(const char* tex, const char* sh = "hud\\default") = 0;
+    virtual void CreateShader(gsl::czstring tex, gsl::czstring sh = "hud\\default") = 0;
     virtual void SetShader(const ui_shader& sh) = 0;
     virtual void SetTextureColor(u32 color) = 0;
-    virtual u32 GetTextureColor() const = 0;
+    [[nodiscard]] virtual u32 GetTextureColor() const = 0;
     virtual void SetOriginalRect(const Frect& r) = 0;
     virtual void SetOriginalRectEx(const Frect& r) = 0;
 };
@@ -66,9 +66,9 @@ class XR_NOVTABLE IUIMultiTextureOwner : public virtual RTTI::Enable
 public:
     ~IUIMultiTextureOwner() override = 0;
 
-    virtual void InitTexture(const char* texture) = 0;
-    virtual bool GetTextureAvailability() = 0;
-    virtual bool GetTextureVisible() = 0;
+    virtual void InitTexture(gsl::czstring texture) = 0;
+    [[nodiscard]] virtual bool GetTextureAvailability() = 0;
+    [[nodiscard]] virtual bool GetTextureVisible() = 0;
 };
 
 inline IUIMultiTextureOwner::~IUIMultiTextureOwner() = default;
@@ -81,8 +81,8 @@ public:
     CUIMultiTextureOwner() = default;
     ~CUIMultiTextureOwner() override = default;
 
-    virtual bool GetTextureAvailability() { return m_bTextureAvailable; }
-    virtual bool GetTextureVisible() { return m_bTextureVisible; }
+    [[nodiscard]] bool GetTextureAvailability() override { return m_bTextureAvailable; }
+    [[nodiscard]] bool GetTextureVisible() override { return m_bTextureVisible; }
 
 protected:
     bool m_bTextureAvailable{};
@@ -96,9 +96,9 @@ class XR_NOVTABLE IUISingleTextureOwner : public CUIMultiTextureOwner, public IU
 public:
     ~IUISingleTextureOwner() override = 0;
 
-    virtual void InitTextureEx(const char* texture, const char* shader) = 0;
+    virtual void InitTextureEx(gsl::czstring texture, gsl::czstring shader) = 0;
     virtual void SetStretchTexture(bool stretch) = 0;
-    virtual bool GetStretchTexture() = 0;
+    [[nodiscard]] virtual bool GetStretchTexture() = 0;
 };
 
 inline IUISingleTextureOwner::~IUISingleTextureOwner() = default;
@@ -111,8 +111,8 @@ public:
     CUISingleTextureOwner() = default;
     ~CUISingleTextureOwner() override = default;
 
-    virtual void SetStretchTexture(bool stretch) { m_bStretchTexture = stretch; }
-    virtual bool GetStretchTexture() { return m_bStretchTexture; }
+    void SetStretchTexture(bool stretch) override { m_bStretchTexture = stretch; }
+    [[nodiscard]] bool GetStretchTexture() override { return m_bStretchTexture; }
 
 protected:
     bool m_bStretchTexture;
@@ -136,21 +136,16 @@ class XR_NOVTABLE IUISimpleWindow : public virtual RTTI::Enable
 public:
     ~IUISimpleWindow() override = 0;
 
-    virtual void Init(float x, float y, float width, float height) = 0;
+    virtual void Init(f32 x, f32 y, f32 width, f32 height) = 0;
     virtual void Draw() = 0;
-    virtual void Draw(float x, float y) = 0;
+    virtual void Draw(f32 x, f32 y) = 0;
     virtual void Update() = 0;
     virtual void SetWndPos(const Fvector2& pos) = 0;
-    virtual void SetWndPos(float x, float y) = 0;
+    virtual void SetWndPos(f32 x, f32 y) = 0;
     virtual void SetWndSize(const Fvector2& size) = 0;
     virtual void SetWndRect(const Frect& rect) = 0;
-    virtual void SetHeight(float height) = 0;
-    virtual void SetWidth(float width) = 0;
-    /*
-    private:
-                            IUISimpleWindow									(const IUISimpleWindow& other);
-        IUISimpleWindow&	operator =										( const IUISimpleWindow& other );
-    */
+    virtual void SetHeight(f32 height) = 0;
+    virtual void SetWidth(f32 width) = 0;
 };
 
 inline IUISimpleWindow::~IUISimpleWindow() = default;
@@ -163,35 +158,40 @@ public:
     CUISimpleWindow() = default;
     ~CUISimpleWindow() override = default;
 
-    virtual void Init(float x, float y, float width, float height)
+    void Init(f32 x, f32 y, f32 width, f32 height) override
     {
         m_wndPos.set(x, y);
         m_wndSize.set(width, height);
     }
-    virtual void SetWndPos(const Fvector2& pos) { m_wndPos.set(pos.x, pos.y); }
-    virtual void SetWndPos(float x, float y) { m_wndPos.set(x, y); }
+
+    void SetWndPos(const Fvector2& pos) override { m_wndPos.set(pos.x, pos.y); }
+    void SetWndPos(f32 x, f32 y) override { m_wndPos.set(x, y); }
     IC Fvector2 GetWndPos() const { return m_wndPos; }
-    virtual void SetWndSize(const Fvector2& size) { m_wndSize = size; }
+    void SetWndSize(const Fvector2& size) override { m_wndSize = size; }
     IC Fvector2 GetWndSize() const { return m_wndSize; }
-    virtual void SetHeight(float height) { m_wndSize.y = height; }
+    void SetHeight(f32 height) override { m_wndSize.y = height; }
     IC float GetHeight() const { return m_wndSize.y; }
-    virtual void SetWidth(float width) { m_wndSize.x = width; }
+    void SetWidth(f32 width) override { m_wndSize.x = width; }
     IC float GetWidth() const { return m_wndSize.x; }
     IC void SetVisible(bool vis) { m_bShowMe = vis; }
     IC bool GetVisible() const { return m_bShowMe; }
     IC void SetAlignment(EWindowAlignment al) { m_alignment = al; }
+
     virtual void SetWndRect(float x, float y, float width, float height)
     {
         m_wndPos.set(x, y);
         m_wndSize.set(width, height);
     }
-    virtual void SetWndRect(const Frect& rect) { SetWndRect(rect.lt.x, rect.lt.y, rect.width(), rect.height()); }
+
+    void SetWndRect(const Frect& rect) override { SetWndRect(rect.lt.x, rect.lt.y, rect.width(), rect.height()); }
+
     IC Frect GetWndRect() const
     {
         Frect r;
         GetWndRect(r);
         return r;
     }
+
     IC void GetWndRect(Frect& res) const
     {
         switch (m_alignment)
@@ -206,11 +206,13 @@ public:
         default: NODEFAULT;
         }
     }
+
     void MoveWndDelta(float dx, float dy)
     {
         m_wndPos.x += dx;
         m_wndPos.y += dy;
     }
+
     void MoveWndDelta(const Fvector2& d) { MoveWndDelta(d.x, d.y); }
 
 protected:

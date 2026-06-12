@@ -34,29 +34,29 @@ public:
     CCustomRocket();
     ~CCustomRocket() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual BOOL AlwaysTheCrow() { return TRUE; }
+    [[nodiscard]] BOOL AlwaysTheCrow() override { return TRUE; }
 
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
+    void reinit() override;
+    void reload(gsl::czstring section) override;
 
-    virtual void OnH_A_Independent();
-    virtual void OnH_B_Independent(bool just_before_destroy);
-    virtual void OnH_B_Chield();
-    virtual void OnH_A_Chield();
+    void OnH_A_Independent() override;
+    void OnH_B_Independent(bool just_before_destroy) override;
+    void OnH_B_Chield() override;
+    void OnH_A_Chield() override;
     tmc::task<void> UpdateCL() override;
 
-    virtual BOOL UsedAI_Locations() { return (FALSE); }
-    virtual bool Useful() const { return (m_eState == eInactive); }
+    [[nodiscard]] BOOL UsedAI_Locations() override { return (FALSE); }
+    [[nodiscard]] virtual bool Useful() const { return m_eState == eInactive; }
 
     // создание физической оболочки
-    virtual void activate_physic_shell();
-    virtual void create_physic_shell();
+    void activate_physic_shell() override;
+    void create_physic_shell() override;
 
-    void PhDataUpdate(float) override;
-    void PhTune(float) override;
+    void PhDataUpdate(f32) override;
+    void PhTune(f32) override;
 
     //////////////////////////////////////////////////////////////////////////
     //	Rocket Properties

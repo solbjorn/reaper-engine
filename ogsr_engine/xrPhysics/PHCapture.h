@@ -68,8 +68,8 @@ private:
     static void object_contactCallbackFun(bool& do_colide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/);
 
     ///////////CPHObject/////////////////////////////
-    virtual void PhDataUpdate(dReal step);
-    virtual void PhTune(dReal step);
+    void PhDataUpdate(dReal step) override;
+    void PhTune(dReal step) override;
 
     Fvector GetCapturePosition();
 

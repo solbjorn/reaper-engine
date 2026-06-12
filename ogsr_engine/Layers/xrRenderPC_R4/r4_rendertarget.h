@@ -286,7 +286,12 @@ public:
     }
 
     void u_setrt(CBackend& cmd_list, const ref_rt& _1, const ref_rt& _2, ID3DDepthStencilView* zb);
-    void u_setrt(CBackend& cmd_list, const ref_rt& _1, const ref_rt& _2, const ref_rt& _zb) { u_setrt(cmd_list, _1, _2, _zb ? _zb->pZRT[cmd_list.context_id] : nullptr); }
+
+    void u_setrt(CBackend& cmd_list, const ref_rt& _1, const ref_rt& _2, const ref_rt& _zb)
+    {
+        u_setrt(cmd_list, _1, _2, _zb ? _zb->pZRT[cmd_list.context_id] : nullptr);
+    }
+
     void u_setrt(CBackend& cmd_list, u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTargetView* _2, ID3DRenderTargetView* _3, ID3DDepthStencilView* zb);
 
     void u_setrt(CBackend& cmd_list, u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTargetView* _2, ID3DRenderTargetView* _3, const ref_rt& _zb)
@@ -363,19 +368,19 @@ public:
     u32 get_width(ctx_id_t context_id) override { return dwWidth[context_id]; }
     u32 get_height(ctx_id_t context_id) override { return dwHeight[context_id]; }
 
-    void set_blur(float f) { param_blur = f; }
-    void set_gray(float f) { param_gray = f; }
-    void set_duality_h(float f) { param_duality_h = _abs(f); }
-    void set_duality_v(float f) { param_duality_v = _abs(f); }
-    void set_noise(float f) { param_noise = f; }
-    void set_noise_scale(float f) { param_noise_scale = f; }
-    void set_noise_fps(float f) { param_noise_fps = _abs(f) + EPS_S; }
-    void set_color_base(u32 f) { param_color_base = f; }
-    void set_color_gray(u32 f) { param_color_gray = f; }
-    void set_color_add(const Fvector& f) { param_color_add = f; }
-    void set_cm_imfluence(float f) { param_color_map_influence = f; }
-    void set_cm_interpolate(float f) { param_color_map_interpolate = f; }
-    void set_cm_textures(const shared_str& tex0, const shared_str& tex1) { color_map_manager.SetTextures(tex0, tex1); }
+    void set_blur(f32 f) override { param_blur = f; }
+    void set_gray(f32 f) override { param_gray = f; }
+    void set_duality_h(f32 f) override { param_duality_h = _abs(f); }
+    void set_duality_v(f32 f) override { param_duality_v = _abs(f); }
+    void set_noise(f32 f) override { param_noise = f; }
+    void set_noise_scale(f32 f) override { param_noise_scale = f; }
+    void set_noise_fps(f32 f) override { param_noise_fps = _abs(f) + EPS_S; }
+    void set_color_base(u32 f) override { param_color_base = f; }
+    void set_color_gray(u32 f) override { param_color_gray = f; }
+    void set_color_add(const Fvector3& f) override { param_color_add = f; }
+    void set_cm_imfluence(f32 f) override { param_color_map_influence = f; }
+    void set_cm_interpolate(f32 f) override { param_color_map_interpolate = f; }
+    void set_cm_textures(const shared_str& tex0, const shared_str& tex1) override { color_map_manager.SetTextures(tex0, tex1); }
 
     //	Need to reset stencil only when marker overflows.
     //	Don't clear when render for the first time

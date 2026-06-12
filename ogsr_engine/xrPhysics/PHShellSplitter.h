@@ -45,8 +45,10 @@ private:
     CPHShell* m_pShell; // purpose: to extract elements and joints corresponded splitters
     SPLITTER_STORAGE m_splitters; //
     GEOM_MAP m_geom_root_map; // to find geom pointer by bone id
-    virtual void PhTune(dReal); // call fractures PhTune for element splitters m_pShell->m_elements[m_splitters[i]->m_element]->m_pFracturesHolder->PhTune()
-    virtual void PhDataUpdate(dReal); // call fractures PhDataUpdate for element splitters m_pShell->m_elements[m_splitters[i]->m_element]->m_pFracturesHolder->PhDataUpdate()
+
+    void PhTune(dReal) override; // call fractures PhTune for element splitters m_pShell->m_elements[m_splitters[i]->m_element]->m_pFracturesHolder->PhTune()
+    void PhDataUpdate(dReal)
+        override; // call fractures PhDataUpdate for element splitters m_pShell->m_elements[m_splitters[i]->m_element]->m_pFracturesHolder->PhDataUpdate()
     bool CheckSplitter(u16 aspl); //
     shell_root SplitJoint(u16 aspl); // create new shell moving into it departed elements and joints
     shell_root ElementSingleSplit(const element_fracture& split_elem, const CPHElement* source_element);

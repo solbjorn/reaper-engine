@@ -12,13 +12,13 @@ public:
     CAmebaZone();
     ~CAmebaZone() override;
 
-    virtual void Affect(SZoneObjectInfo* O);
+    void Affect(SZoneObjectInfo* O) override;
 
 protected:
-    virtual void PhTune(dReal step);
-    void PhDataUpdate(dReal) override {}
-    virtual bool BlowoutState();
-    virtual void SwitchZoneState(EZoneState new_state);
-    virtual void Load(LPCSTR section);
-    virtual float distance_to_center(CObject* O);
+    void PhTune(f32 step) override;
+    void PhDataUpdate(f32) override {}
+    [[nodiscard]] bool BlowoutState() override;
+    void SwitchZoneState(EZoneState new_state) override;
+    void Load(gsl::czstring section) override;
+    [[nodiscard]] f32 distance_to_center(CObject* O) override;
 };

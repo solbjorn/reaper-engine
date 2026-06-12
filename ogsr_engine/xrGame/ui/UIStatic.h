@@ -46,17 +46,17 @@ public:
     ~CUIStatic() override;
 
     // IUISimpleWindow--------------------------------------------------------------------------------------
-    virtual void Init(float x, float y, float width, float height);
-    virtual void Draw();
-    virtual void Update();
+    void Init(f32 x, f32 y, f32 width, f32 height) override;
+    void Draw() override;
+    void Update() override;
 
     // IUISingleTextureOwner--------------------------------------------------------------------------------
-    virtual void CreateShader(const char* tex, const char* sh = "hud\\default");
+    void CreateShader(gsl::czstring tex, gsl::czstring sh = "hud\\default") override;
     virtual ui_shader& GetShader();
-    virtual void SetTextureColor(u32 color);
-    virtual u32 GetTextureColor() const;
-    virtual void SetOriginalRect(const Frect& r) { m_UIStaticItem.SetOriginalRect(r); }
-    virtual void SetOriginalRectEx(const Frect& r) { m_UIStaticItem.SetOriginalRectEx(r); }
+    void SetTextureColor(u32 color) override;
+    [[nodiscard]] u32 GetTextureColor() const override;
+    void SetOriginalRect(const Frect& r) override { m_UIStaticItem.SetOriginalRect(r); }
+    void SetOriginalRectEx(const Frect& r) override { m_UIStaticItem.SetOriginalRectEx(r); }
     void ResetOriginalRect() { m_UIStaticItem.ResetOriginalRect(); }
 
     virtual Frect GetOriginalRect() const { return m_UIStaticItem.GetOriginalRect(); }
@@ -68,15 +68,15 @@ public:
     virtual void SetColor(u32 color) { m_UIStaticItem.SetColor(color); }
     u32 GetColor() const { return m_UIStaticItem.GetColor(); }
     u32& GetColorRef() { return m_UIStaticItem.GetColorRef(); }
-    virtual void InitTexture(LPCSTR tex_name);
-    virtual void InitTextureEx(LPCSTR tex_name, LPCSTR sh_name = "hud\\default");
+    void InitTexture(gsl::czstring tex_name) override;
+    void InitTextureEx(gsl::czstring tex_name, gsl::czstring sh_name = "hud\\default") override;
     CUIStaticItem* GetStaticItem() { return &m_UIStaticItem; }
     void SetOriginalRect(float x, float y, float width, float height) { m_UIStaticItem.SetOriginalRect(x, y, width, height); }
     void SetHeadingPivot(const Fvector2& p, const Fvector2& offset, bool fixedLT) { m_UIStaticItem.SetHeadingPivot(p, offset, fixedLT); }
     void ResetHeadingPivot() { m_UIStaticItem.ResetHeadingPivot(); }
 
     void SetMask(CUIFrameWindow* pMask);
-    virtual void SetTextureOffset(float x, float y) { m_TextureOffset.set(x, y); }
+    virtual void SetTextureOffset(f32 x, f32 y) { m_TextureOffset.set(x, y); }
     Fvector2 GetTextureOffeset() const { return m_TextureOffset; }
     void TextureOn() { m_bTextureEnable = true; }
     void TextureOff() { m_bTextureEnable = false; }
@@ -101,19 +101,19 @@ public:
     virtual void DrawText();
     virtual void DrawHighlightedText();
 
-    virtual void OnFocusReceive();
-    virtual void OnFocusLost();
+    void OnFocusReceive() override;
+    void OnFocusLost() override;
 
     // IUITextControl
-    virtual void SetText(LPCSTR str);
-    void SetTextST(LPCSTR str_id);
-    virtual LPCSTR GetText();
-    virtual void SetTextColor(u32 color);
-    virtual u32 GetTextColor();
-    virtual void SetFont(CGameFont* pFont);
-    virtual CGameFont* GetFont();
-    virtual void SetTextAlignment(ETextAlignment alignment);
-    virtual ETextAlignment GetTextAlignment();
+    void SetText(gsl::czstring str) override;
+    void SetTextST(gsl::czstring str_id);
+    [[nodiscard]] gsl::czstring GetText() override;
+    void SetTextColor(u32 color) override;
+    [[nodiscard]] u32 GetTextColor() override;
+    void SetFont(CGameFont* pFont) override;
+    [[nodiscard]] CGameFont* GetFont() override;
+    void SetTextAlignment(ETextAlignment alignment) override;
+    [[nodiscard]] ETextAlignment GetTextAlignment() override;
 
     // text additional
     void SetTextComplexMode(bool md);
@@ -121,13 +121,10 @@ public:
     u32 GetTextAlign_script();
     void SetTextColor_script(int a, int r, int g, int b) { SetTextColor(color_argb(a, r, g, b)); }
     u32& GetTextColorRef();
-    // #pragma todo("Satan->Satan : delete next two functions")
-    //	virtual void			SetTextAlign		(CGameFont::EAligment align);
-    //	CGameFont::EAligment	GetTextAlign		();
     void AdjustHeightToText();
     void AdjustWidthToText();
     void HighlightText(bool bHighlight) { m_bEnableTextHighlighting = bHighlight; }
-    virtual bool IsHighlightText();
+    [[nodiscard]] virtual bool IsHighlightText();
 
     virtual void ClipperOn();
     virtual void ClipperOff();
@@ -136,7 +133,7 @@ public:
     void TextureClipper(Frect* pClipRect = nullptr);
     void TextureClipper(Frect* pClipRect, CUIStaticItem& UIStaticItem);
 
-    void SetShader(const ui_shader& sh);
+    void SetShader(const ui_shader& sh) override;
     CUIStaticItem& GetUIStaticItem() { return m_UIStaticItem; }
 
     virtual void SetTextX(float text_x) { m_TextOffset.x = text_x; }
@@ -149,8 +146,8 @@ public:
     float GetTextX() { return m_TextOffset.x; }
     float GetTextY() { return m_TextOffset.y; }
 
-    virtual void SetStretchTexture(bool stretch_texture) { m_bStretchTexture = stretch_texture; }
-    bool GetStretchTexture() { return m_bStretchTexture; }
+    void SetStretchTexture(bool stretch_texture) override { m_bStretchTexture = stretch_texture; }
+    [[nodiscard]] bool GetStretchTexture() override { return m_bStretchTexture; }
 
     void SetClipRect(Frect r);
     Frect GetSelfClipRect();
@@ -158,7 +155,6 @@ public:
 
     // Анализируем текст на помещаемость его по длинне в заданную ширину, и если нет, то всталяем
     // "\n" реализуем таким образом wordwrap
-    //	static void PreprocessText				(STRING &str, float width, CGameFont *pFont);
     enum EElipsisPosition
     {
         eepNone,

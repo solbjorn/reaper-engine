@@ -157,7 +157,7 @@ tmc::task<bool> CHangingLamp::net_Spawn(CSE_Abstract* DC)
 
     IKinematicsAnimated* kanim = smart_cast<IKinematicsAnimated*>(Visual());
     if (kanim != nullptr)
-        kanim->PlayCycle(shared_str{"idle"});
+        std::ignore = kanim->PlayCycle(shared_str{"idle"});
 
     IKinematics* kin = smart_cast<IKinematics*>(Visual());
     if (kin)

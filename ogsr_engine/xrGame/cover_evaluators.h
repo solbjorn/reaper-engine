@@ -75,7 +75,8 @@ public:
     ~CCoverEvaluatorCloseToEnemy() override = default;
 
     IC void initialize(const Fvector& start_position, bool fake_call = false);
-    IC void setup(const Fvector& enemy_position, float min_enemy_distance, float max_enemy_distance, float deviation = 0.f, const std::function<bool(const CCoverPoint*)>& = {});
+    IC void setup(const Fvector& enemy_position, float min_enemy_distance, float max_enemy_distance, float deviation = 0.f,
+                  const std::function<bool(const CCoverPoint*)>& = {});
     void evaluate(const CCoverPoint* cover_point, float);
 };
 
@@ -154,7 +155,8 @@ public:
     inline explicit CCoverEvaluatorAngle(CRestrictedObject* object);
     ~CCoverEvaluatorAngle() override = default;
 
-    IC void setup(const Fvector& enemy_position, float min_enemy_distance, float max_enemy_distance, u32 level_vertex_id, const std::function<bool(const CCoverPoint*)>& = {});
+    IC void setup(const Fvector& enemy_position, float min_enemy_distance, float max_enemy_distance, u32 level_vertex_id,
+                  const std::function<bool(const CCoverPoint*)>& = {});
     void initialize(const Fvector& start_position, bool fake_call = false);
     void evaluate(const CCoverPoint* cover_point, float);
 };
@@ -204,7 +206,7 @@ public:
 
     void setup(GameGraph::_GRAPH_ID game_vertex_id, float max_distance, const std::function<bool(const CCoverPoint*)>& = {});
     void evaluate(const CCoverPoint* cover_point, float);
-    virtual void finalize();
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////

@@ -29,13 +29,13 @@ public:
     explicit CStateBloodsuckerVampireExecute(_Object* obj) : inherited{obj} {}
     ~CStateBloodsuckerVampireExecute() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
-    virtual void critical_finalize();
-    virtual bool check_start_conditions();
-    virtual bool check_completion();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
+    void critical_finalize() override;
+    [[nodiscard]] bool check_start_conditions() override;
+    [[nodiscard]] bool check_completion() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 
 private:
     void execute_vampire_prepare();

@@ -1653,8 +1653,8 @@ DLL_Pure* CActor::_construct()
     m_pPhysics_support = xr_new<CCharacterPhysicsSupport>(CCharacterPhysicsSupport::etActor, this);
 
     std::ignore = CEntityAlive::_construct();
-    CInventoryOwner::_construct();
-    CStepManager::_construct();
+    std::ignore = CInventoryOwner::_construct();
+    std::ignore = CStepManager::_construct();
 
     return this;
 }

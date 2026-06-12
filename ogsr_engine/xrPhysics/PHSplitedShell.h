@@ -10,12 +10,12 @@ class CPHSplitedShell : public CPHShell
 private:
     float m_max_AABBradius{dInfinity};
 
-    virtual void SetMaxAABBRadius(float size) { m_max_AABBradius = size; }
+    void SetMaxAABBRadius(f32 size) override { m_max_AABBradius = size; }
 
 protected:
-    virtual void Collide();
-    virtual void get_spatial_params();
-    virtual void DisableObject();
+    void Collide() override;
+    void get_spatial_params() override;
+    void DisableObject() override;
 
 public:
     CPHSplitedShell() = default;

@@ -32,8 +32,8 @@ public:
 
     void Init(LPCSTR box_template);
     void Clear();
-    virtual void SetText(LPCSTR str);
-    virtual LPCSTR GetText();
+    void SetText(gsl::czstring str) override;
+    [[nodiscard]] gsl::czstring GetText() override;
     LPCSTR GetHost();
     LPCSTR GetPassword();
     LPCSTR GetUserPassword();

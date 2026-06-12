@@ -16,14 +16,14 @@ public:
     CHairsZone() = default;
     ~CHairsZone() override = default;
 
-    virtual void Affect(SZoneObjectInfo* O);
-    virtual void Load(LPCSTR section);
+    void Affect(SZoneObjectInfo* O) override;
+    void Load(gsl::czstring section) override;
 
 protected:
     f32 m_min_speed_to_react{};
 
-    virtual bool BlowoutState();
-    virtual void CheckForAwaking();
+    [[nodiscard]] bool BlowoutState() override;
+    void CheckForAwaking() override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

@@ -12,14 +12,14 @@ public:
     CPHStaticGeomShell();
     ~CPHStaticGeomShell() override;
 
-    void get_spatial_params();
-    virtual void EnableObject(CPHObject*) { CPHUpdateObject::Activate(); }
-    virtual dGeomID dSpacedGeom() { return dSpacedGeometry(); }
-    virtual void PhDataUpdate(dReal step);
-    virtual void PhTune(dReal) {}
-    virtual void InitContact(dContact*, bool&, u16, u16) {}
-    virtual u16 get_elements_number() { return 0; }
-    virtual CPHSynchronize* get_element_sync(u16) { return nullptr; }
+    void get_spatial_params() override;
+    void EnableObject(CPHObject*) override { CPHUpdateObject::Activate(); }
+    [[nodiscard]] dGeomID dSpacedGeom() override { return dSpacedGeometry(); }
+    void PhDataUpdate(dReal step) override;
+    void PhTune(dReal) override {}
+    void InitContact(dContact*, bool&, u16, u16) override {}
+    [[nodiscard]] u16 get_elements_number() override { return 0; }
+    [[nodiscard]] CPHSynchronize* get_element_sync(u16) override { return nullptr; }
 
     void Activate(const Fmatrix& form);
     void Deactivate();

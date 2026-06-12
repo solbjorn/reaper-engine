@@ -22,16 +22,16 @@ public:
     CTeleWhirlwindObject();
     ~CTeleWhirlwindObject() override;
 
-    virtual bool init(CTelekinesis* tele, CPhysicsShellHolder* obj, float s, float h, u32 ttk, bool rot = true);
+    [[nodiscard]] bool init(CTelekinesis* tele, CPhysicsShellHolder* obj, f32 s, f32 h, u32 ttk, bool rot = true) override;
     void set_throw_power(float throw_pow);
-    virtual bool can_activate(CPhysicsShellHolder* obj);
+    [[nodiscard]] bool can_activate(CPhysicsShellHolder* obj) override;
     void raise() override;
-    virtual void raise_update();
-    virtual void keep();
-    virtual void release();
+    void raise_update() override;
+    void keep() override;
+    void release() override;
     void fire(const Fvector&, float) override;
-    virtual void switch_state(ETelekineticState new_state);
-    virtual bool destroy_object(const Fvector dir, float val);
+    void switch_state(ETelekineticState new_state) override;
+    [[nodiscard]] virtual bool destroy_object(const Fvector3 dir, f32 val);
 };
 
 class CTeleWhirlwind : public CTelekinesis
@@ -61,11 +61,11 @@ public:
     void clear_impacts();
     void set_destroing_particles(const shared_str& destroying_particles) { m_destroying_particles = destroying_particles; }
     const shared_str& destroing_particles() { return m_destroying_particles; }
-    virtual CTelekineticObject* activate(CPhysicsShellHolder* obj, float strength, float height, u32 max_time_keep, bool rot = true);
-    virtual void clear();
-    virtual void clear_notrelevant();
-    virtual CTelekineticObject* alloc_tele_object() { return static_cast<CTelekineticObject*>(xr_new<CTeleWhirlwindObject>()); }
-    float keep_radius() { return m_keep_radius; }
+    [[nodiscard]] CTelekineticObject* activate(CPhysicsShellHolder* obj, f32 strength, f32 height, u32 max_time_keep, bool rot = true) override;
+    void clear() override;
+    void clear_notrelevant() override;
+    [[nodiscard]] CTelekineticObject* alloc_tele_object() override { return static_cast<CTelekineticObject*>(xr_new<CTeleWhirlwindObject>()); }
+    [[nodiscard]] float keep_radius() { return m_keep_radius; }
     void set_throw_power(float throw_pow);
 };
 

@@ -27,7 +27,7 @@ public:
     IC float& health() { return m_fHealth; }
     IC float& max_health() { return m_fHealthMax; }
 
-    virtual CEntityCondition* cast_entity_condition() { return nullptr; }
+    [[nodiscard]] virtual CEntityCondition* cast_entity_condition() { return nullptr; }
 };
 
 class CEntityCondition : public CEntityConditionSimple, public CHitImmunity
@@ -42,7 +42,7 @@ public:
     explicit CEntityCondition(CEntityAlive* object);
     ~CEntityCondition() override;
 
-    virtual void LoadCondition(LPCSTR section);
+    virtual void LoadCondition(gsl::czstring section);
     virtual void remove_links(const CObject* object);
 
     virtual void save(NET_Packet& output_packet);
@@ -52,9 +52,9 @@ public:
     IC float GetRadiation() const { return m_fRadiation; }
     IC float GetPsyHealth() const { return m_fPsyHealth; }
     IC float GetEntityMorale() const { return m_fEntityMorale; }
-    virtual float GetAlcohol() { return 0.f; }
-    virtual float GetSatiety() { return 0.f; }
-    virtual float GetThirst() { return 0.f; }
+    [[nodiscard]] virtual f32 GetAlcohol() { return 0.0f; }
+    [[nodiscard]] virtual f32 GetSatiety() { return 0.0f; }
+    [[nodiscard]] virtual f32 GetThirst() { return 0.0f; }
 
     IC float GetHealthLost() const { return m_fHealthLost; }
 
@@ -62,9 +62,9 @@ public:
     void ChangePower(float value);
     void ChangeRadiation(float value);
     void ChangePsyHealth(float value);
-    virtual void ChangeSatiety(float) {}
-    virtual void ChangeAlcohol(float) {}
-    virtual void ChangeThirst(float) {}
+    virtual void ChangeSatiety(f32) {}
+    virtual void ChangeAlcohol(f32) {}
+    virtual void ChangeThirst(f32) {}
 
     IC void SetMaxPower(float val)
     {
@@ -77,7 +77,7 @@ public:
 
     void ChangeEntityMorale(float value);
 
-    virtual CWound* ConditionHit(SHit* pHDS);
+    [[nodiscard]] virtual CWound* ConditionHit(SHit* pHDS);
     // обновления состояния с течением времени
     virtual void UpdateCondition();
     void UpdateWounds();
@@ -192,7 +192,7 @@ public:
     IC float& radiation() { return (m_fRadiation); }
     IC float& hit_bone_scale() { return (m_fHitBoneScale); }
     IC float& wound_bone_scale() { return (m_fWoundBoneScale); }
-    virtual CEntityCondition* cast_entity_condition() { return this; }
+    [[nodiscard]] CEntityCondition* cast_entity_condition() override { return this; }
     virtual float GetParamByName(LPCSTR name);
     IC SConditionChangeV& GetChangeValues() { return m_change_v; }
 

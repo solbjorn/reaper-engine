@@ -20,9 +20,9 @@ public:
     ~CUITabControl() override;
 
     // options item
-    virtual void SetCurrentValue();
-    virtual void SaveValue();
-    virtual bool IsChanged();
+    void SetCurrentValue() override;
+    void SaveValue() override;
+    [[nodiscard]] bool IsChanged() override;
 
     [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
     virtual void OnTabChange(int iCur, int iPrev);

@@ -27,7 +27,7 @@ public:
         m_object = obj;
     }
 
-    virtual void load(LPCSTR) {}
+    virtual void load(gsl::czstring) {}
 
     virtual void reinit()
     {
@@ -41,8 +41,8 @@ public:
     virtual void update_schedule() {}
     virtual void update_frame() {}
 
-    virtual CControl_ComControlled* ced() { return nullptr; }
-    virtual CControl_ComControlling* cing() { return nullptr; }
+    [[nodiscard]] virtual CControl_ComControlled* ced() { return nullptr; }
+    [[nodiscard]] virtual CControl_ComControlling* cing() { return nullptr; }
 
     void set_active(bool val = true)
     {
@@ -53,7 +53,7 @@ public:
     bool is_active() { return m_active; }
     bool is_inited() { return m_inited; }
 
-    virtual bool check_start_conditions() { return true; }
+    [[nodiscard]] virtual bool check_start_conditions() { return true; }
 
 protected:
     virtual void activate() {}
@@ -86,7 +86,7 @@ public:
     }
 
     virtual void reset_data() {}
-    virtual ControlCom::IComData* data() { return nullptr; }
+    [[nodiscard]] virtual ControlCom::IComData* data() { return nullptr; }
 
     // init/deinit current work
     virtual void on_capture() { reset_data(); }
@@ -137,7 +137,7 @@ class CControl_ComControlledStorage : public CControl_ComControlled
 public:
     ~CControl_ComControlledStorage() override = default;
 
-    virtual ControlCom::IComData* data() { return &m_data; }
+    [[nodiscard]] ControlCom::IComData* data() override { return &m_data; }
 
 protected:
     T m_data;
@@ -154,12 +154,13 @@ class CControl_ComPure : public CControl_Com, public CControl_ComControlledStora
 public:
     ~CControl_ComPure() override = default;
 
-    virtual CControl_ComControlled* ced() { return this; }
+    [[nodiscard]] CControl_ComControlled* ced() override { return this; }
 
-    virtual void reinit()
+    void reinit() override
     {
         CControl_Com::reinit();
         CControl_ComControlledStorage<T>::reinit();
+
         set_active();
     }
 };
@@ -174,12 +175,13 @@ class CControl_ComBase : public CControl_Com, public CControl_ComControlling
 public:
     ~CControl_ComBase() override = default;
 
-    virtual CControl_ComControlling* cing() { return this; }
+    [[nodiscard]] CControl_ComControlling* cing() override { return this; }
 
-    virtual void reinit()
+    void reinit() override
     {
         CControl_Com::reinit();
         CControl_ComControlling::reinit();
+
         set_active();
     }
 };
@@ -195,15 +197,15 @@ class CControl_ComCustom : public CControl_Com, public CControl_ComControlledSto
 public:
     ~CControl_ComCustom() override = default;
 
-    virtual CControl_ComControlled* ced() { return this; }
-    virtual CControl_ComControlling* cing() { return this; }
+    [[nodiscard]] CControl_ComControlled* ced() override { return this; }
+    [[nodiscard]] CControl_ComControlling* cing() override { return this; }
 
-    virtual void reinit()
+    void reinit() override
     {
         CControl_Com::reinit();
         CControl_ComControlledStorage<T>::reinit();
         CControl_ComControlling::reinit();
     }
 
-    virtual bool check_start_conditions() { return false; }
+    [[nodiscard]] bool check_start_conditions() override { return false; }
 };

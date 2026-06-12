@@ -24,12 +24,12 @@ public:
     IRenderable();
     ~IRenderable() override;
 
-    IRender_ObjectSpecific* renderable_ROS();
-    virtual bool renderable_HUD() const { return renderable.hud; }
+    [[nodiscard]] IRender_ObjectSpecific* renderable_ROS();
+    [[nodiscard]] virtual bool renderable_HUD() const { return renderable.hud; }
     virtual void renderable_HUD(bool value) { renderable.hud = value; }
     virtual void renderable_Render(u32 context_id, IRenderable* root) = 0;
-    virtual BOOL renderable_ShadowGenerate() { return FALSE; }
-    virtual BOOL renderable_ShadowReceive() { return FALSE; }
+    [[nodiscard]] virtual BOOL renderable_ShadowGenerate() { return false; }
+    [[nodiscard]] virtual BOOL renderable_ShadowReceive() { return false; }
 };
 
 #endif // IRENDERABLE_H_INCLUDED

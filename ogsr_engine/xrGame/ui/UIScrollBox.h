@@ -17,7 +17,7 @@ public:
     void SetVertical();
 
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
-    virtual void Draw();
+    void Draw() override;
 
 protected:
     bool m_bIsHorizontal;

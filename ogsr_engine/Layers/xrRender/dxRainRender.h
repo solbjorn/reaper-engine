@@ -10,10 +10,10 @@ public:
     dxRainRender();
     ~dxRainRender() override;
 
-    virtual void Render(CEffect_Rain& owner);
-    virtual void Calculate(CEffect_Rain& owner) override;
+    void Render(CEffect_Rain& owner) override;
+    void Calculate(CEffect_Rain& owner) override;
 
-    virtual const Fsphere& GetDropBounds() const;
+    [[nodiscard]] const Fsphere& GetDropBounds() const override;
 
 private:
     // Visualization	(rain)

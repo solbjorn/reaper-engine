@@ -40,8 +40,8 @@ public:
     virtual void SetSingleShoot(BOOL Single) { bSingleShoot = Single; }
     void Update();
 
-    virtual void Shot(float angle);
-    virtual void GetDeltaAngle(Fvector& delta_angle);
+    virtual void Shot(f32 angle);
+    virtual void GetDeltaAngle(Fvector3& delta_angle);
     virtual void GetLastDelta(Fvector& delta_angle);
     virtual void Clear();
 

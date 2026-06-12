@@ -78,7 +78,7 @@ public:
     inline virtual void initialize();
     inline virtual void execute();
     inline virtual void finalize();
-    inline virtual edge_value_type weight(const CSConditionState&, const CSConditionState&) const;
+    [[nodiscard]] inline edge_value_type weight(const CSConditionState&, const CSConditionState&) const override;
     IC void set_inertia_time(u32 inertia_time);
     IC u32 start_level_time() const;
     IC u32 inertia_time() const;

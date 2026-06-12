@@ -20,7 +20,7 @@ CExplosiveRocket::~CExplosiveRocket() = default;
 DLL_Pure* CExplosiveRocket::_construct()
 {
     std::ignore = CCustomRocket::_construct();
-    CInventoryItem::_construct();
+    std::ignore = CInventoryItem::_construct();
 
     return this;
 }

@@ -15,23 +15,24 @@ public:
     ~CUISpinText() override = default;
 
     // CUIOptionsItem
-    virtual void SetCurrentValue();
-    virtual void SaveValue();
-    virtual bool IsChanged();
+    void SetCurrentValue() override;
+    void SaveValue() override;
+    [[nodiscard]] bool IsChanged() override;
 
     // own
-    virtual void OnBtnUpClick();
-    virtual void OnBtnDownClick();
+    void OnBtnUpClick() override;
+    void OnBtnDownClick() override;
 
     void AddItem_(const char* item, int id);
-    LPCSTR GetTokenText();
+    [[nodiscard]] gsl::czstring GetTokenText();
 
 protected:
-    virtual bool CanPressUp();
-    virtual bool CanPressDown();
-    virtual void IncVal() {}
-    virtual void DecVal() {}
+    [[nodiscard]] bool CanPressUp() override;
+    [[nodiscard]] bool CanPressDown() override;
+    void IncVal() override {}
+    void DecVal() override {}
     void SetItem();
+
     struct SInfo
     {
         shared_str _orig;

@@ -50,7 +50,7 @@ public:
     xr_map<K*, ITEM_INFO> m_ItemInfos;
 
 protected:
-    virtual void feel_touch_new(CObject* O) override
+    void feel_touch_new(CObject* O) override
     {
         auto pK = smart_cast<K*>(O);
         auto it = m_TypesMap.find(O->cNameSect());
@@ -60,7 +60,8 @@ protected:
         m_ItemInfos[pK].snd_time = 0.0f;
         m_ItemInfos[pK].curr_ref = &(it->second);
     }
-    virtual void feel_touch_delete(CObject* O) override
+
+    void feel_touch_delete(CObject* O) override
     {
         K* pK = smart_cast<K*>(O);
         R_ASSERT(pK);
@@ -131,7 +132,7 @@ class CAfList : public CDetectList<CArtefact>
     RTTI_DECLARE_TYPEINFO(CAfList, CDetectList<CArtefact>);
 
 protected:
-    virtual BOOL feel_touch_contact(CObject* O) override;
+    [[nodiscard]] BOOL feel_touch_contact(CObject* O) override;
 
 public:
     CAfList() = default;
@@ -159,32 +160,32 @@ public:
     ~CCustomDetector() override;
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
-    virtual void Load(LPCSTR section) override;
+    void Load(gsl::czstring section) override;
 
-    virtual void OnH_A_Chield() override;
-    virtual void OnH_B_Independent(bool just_before_destroy) override;
+    void OnH_A_Chield() override;
+    void OnH_B_Independent(bool just_before_destroy) override;
 
     tmc::task<void> shedule_Update(u32 dt) override;
     tmc::task<void> UpdateCL() override;
 
     bool IsWorking() const;
 
-    virtual void OnMoveToSlot() override;
-    virtual void OnMoveToRuck(EItemPlace prevPlace) override;
+    void OnMoveToSlot() override;
+    void OnMoveToRuck(EItemPlace prevPlace) override;
 
-    virtual void OnActiveItem() override;
-    virtual void OnHiddenItem() override;
-    virtual void OnStateSwitch(u32 S, u32 oldState) override;
-    virtual void OnAnimationEnd(u32 state) override;
-    virtual void UpdateXForm() override;
+    void OnActiveItem() override;
+    void OnHiddenItem() override;
+    void OnStateSwitch(u32 S, u32 oldState) override;
+    void OnAnimationEnd(u32 state) override;
+    void UpdateXForm() override;
 
     void ToggleDetector(bool bFastMode);
     void HideDetector(bool bFastMode);
     void ShowDetector(bool bFastMode);
     float m_fAfDetectRadius;
-    virtual bool CheckCompatibility(CHudItem* itm) override;
+    [[nodiscard]] bool CheckCompatibility(CHudItem* itm) override;
 
-    virtual u32 ef_detector_type() const override { return 1; }
+    [[nodiscard]] u32 ef_detector_type() const override { return 1; }
 
 protected:
     bool CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate);
@@ -202,9 +203,9 @@ protected:
 
     HUD_SOUND sndShow, sndHide;
 
-    virtual size_t GetWeaponTypeForCollision() const override { return Detector; }
-    virtual Fvector GetPositionForCollision() override;
-    virtual Fvector GetDirectionForCollision() override;
+    [[nodiscard]] size_t GetWeaponTypeForCollision() const override { return Detector; }
+    [[nodiscard]] Fvector GetPositionForCollision() override;
+    [[nodiscard]] Fvector GetDirectionForCollision() override;
 };
 
 class CZoneList : public CDetectList<CCustomZone>
@@ -212,7 +213,7 @@ class CZoneList : public CDetectList<CCustomZone>
     RTTI_DECLARE_TYPEINFO(CZoneList, CDetectList<CCustomZone>);
 
 protected:
-    virtual BOOL feel_touch_contact(CObject* O) override;
+    [[nodiscard]] BOOL feel_touch_contact(CObject* O) override;
 
 public:
     CZoneList() = default;

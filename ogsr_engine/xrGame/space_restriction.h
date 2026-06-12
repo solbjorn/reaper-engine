@@ -78,10 +78,12 @@ public:
     inline explicit CSpaceRestriction(CSpaceRestrictionManager* space_restriction_manager, shared_str out_restrictions, shared_str in_restrictions);
     ~CSpaceRestriction() override = default;
 
-    void initialize();
+    void initialize() override;
     void remove_border();
+
     template <typename T1, typename T2>
     IC void add_border(T1 p1, T2 p2);
+
     u32 accessible_nearest(const Fvector& position, Fvector& result);
     bool accessible(const Fsphere& sphere);
     bool accessible(u32 level_vertex_id, float radius);
@@ -90,7 +92,7 @@ public:
     IC bool applied() const;
     IC bool inside(const Fsphere& sphere);
     IC bool inside(u32 level_vertex_id, bool partially_inside);
-    virtual shared_str name() const;
+    [[nodiscard]] shared_str name() const override;
 };
 
 #include "space_restriction_inline.h"

@@ -89,11 +89,11 @@ private:
 public:
     ~CControllerAnimation() override = default;
 
-    virtual void reinit();
-    virtual void on_event(ControlCom::EEventType, ControlCom::IEventData*);
-    virtual void on_start_control(ControlCom::EControlType type);
-    virtual void on_stop_control(ControlCom::EControlType type);
-    virtual void update_frame();
+    void reinit() override;
+    void on_event(ControlCom::EEventType, ControlCom::IEventData*) override;
+    void on_start_control(ControlCom::EControlType type) override;
+    void on_stop_control(ControlCom::EControlType type) override;
+    void update_frame() override;
 
     // load
     void load();

@@ -35,15 +35,12 @@ CAI_Trader::~CAI_Trader()
 
 void CAI_Trader::Load(LPCSTR section)
 {
-    //	setEnabled						(FALSE);
     inherited::Load(section);
 
-    // fHealth							= pSettings->r_float	(section,"Health");
     SetfHealth(pSettings->r_float(section, "Health"));
 
     float max_weight = pSettings->r_float(section, "max_item_mass");
     inventory().SetMaxWeight(max_weight * 1000);
-    //	inventory().SetMaxRuck(1000000);
     inventory().CalcTotalWeight();
 }
 
@@ -68,15 +65,9 @@ void CAI_Trader::reload(LPCSTR section)
 bool CAI_Trader::bfAssignSound(CScriptEntityAction* tpEntityAction)
 {
     if (!CScriptEntity::bfAssignSound(tpEntityAction))
-    {
-        // m_cur_head_anim_type	= MonsterSpace::eHeadAnimNone;
-        return (false);
-    }
+        return false;
 
-    // CScriptSoundAction	&l_tAction	= tpEntityAction->m_tSoundAction;
-    // m_cur_head_anim_type = l_tAction.m_tHeadAnimType;
-
-    return (true);
+    return true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -129,11 +120,6 @@ tmc::task<bool> CAI_Trader::net_Spawn(CSE_Abstract* DC)
     setEnabled(TRUE);
 
     set_money(l_tpTrader->m_dwMoney, false);
-
-    // Установка callback на кости
-    // CBoneInstance			*bone_head =
-    // &smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head")); bone_head->set_callback
-    // (bctCustom,BoneCallback,this);
 
     shedule.t_min = 100;
     shedule.t_max = 2500; // This equaltiy is broken by Dima :-( // 30 * NET_Latency / 4;
@@ -198,6 +184,7 @@ void CAI_Trader::feel_touch_new(CObject* O)
 {
     if (!g_Alive())
         return;
+
     if (Remote())
         return;
 
@@ -260,6 +247,7 @@ void CAI_Trader::g_fireParams(CHudItem*, Fvector& P, Fvector& D, const bool)
 }
 
 void CAI_Trader::Think() {}
+
 tmc::task<void> CAI_Trader::Die(CObject* who) { co_await inherited::Die(who); }
 
 void CAI_Trader::Hit(SHit* pHDS)
@@ -342,8 +330,8 @@ DLL_Pure* CAI_Trader::_construct()
     m_sound_player = xr_new<CSoundPlayer>(this);
 
     std::ignore = CEntityAlive::_construct();
-    CInventoryOwner::_construct();
-    CScriptEntity::_construct();
+    std::ignore = CInventoryOwner::_construct();
+    std::ignore = CScriptEntity::_construct();
 
     return this;
 }
@@ -360,5 +348,4 @@ bool CAI_Trader::AllowItemToTrade(CInventoryItem const* item, EItemPlace place) 
 }
 
 void CAI_Trader::dialog_sound_start(LPCSTR phrase) { animation().external_sound_start(phrase); }
-
 void CAI_Trader::dialog_sound_stop() { animation().external_sound_stop(); }

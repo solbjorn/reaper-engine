@@ -38,26 +38,26 @@ public:
     CArtefact();
     ~CArtefact() override = default;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
 
-    virtual void OnH_A_Chield();
-    virtual void OnH_B_Independent(bool just_before_destroy);
+    void OnH_A_Chield() override;
+    void OnH_B_Independent(bool just_before_destroy) override;
 
     tmc::task<void> UpdateCL() override;
     tmc::task<void> shedule_Update(u32 dt) override;
     tmc::task<void> UpdateWorkload();
 
-    virtual bool CanTake() const;
+    [[nodiscard]] bool CanTake() const override;
 
-    virtual BOOL renderable_ShadowGenerate() { return FALSE; }
-    virtual BOOL renderable_ShadowReceive() { return TRUE; }
-    virtual void create_physic_shell();
+    [[nodiscard]] BOOL renderable_ShadowGenerate() override { return FALSE; }
+    [[nodiscard]] BOOL renderable_ShadowReceive() override { return TRUE; }
+    void create_physic_shell() override;
 
     // for smart_cast
-    virtual CArtefact* cast_artefact() { return this; }
+    [[nodiscard]] CArtefact* cast_artefact() override { return this; }
 
 protected:
     virtual void UpdateCLChild() {}
@@ -118,13 +118,13 @@ public:
 public:
     void Hide(bool = false) override;
     void Show(bool = false) override;
-    virtual void UpdateXForm();
+    void UpdateXForm() override;
     [[nodiscard]] bool Action(EGameActions cmd, u32 flags) override;
-    virtual void PlayAnimIdle();
-    virtual void OnStateSwitch(u32 S, u32 oldState);
-    virtual void OnAnimationEnd(u32 state);
-    virtual bool IsHidden() const { return GetState() == eHidden; }
-    virtual void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
+    void PlayAnimIdle() override;
+    void OnStateSwitch(u32 S, u32 oldState) override;
+    void OnAnimationEnd(u32 state) override;
+    [[nodiscard]] bool IsHidden() const override { return GetState() == eHidden; }
+    void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count) override;
 
     // optimization FAST/SLOW mode
     u32 o_render_frame{};

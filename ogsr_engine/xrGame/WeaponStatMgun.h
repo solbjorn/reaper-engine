@@ -27,22 +27,22 @@ private:
     void ResetBoneCallbacks();
     // casts
 public:
-    virtual CHolderCustom* cast_holder_custom() { return this; }
+    [[nodiscard]] CHolderCustom* cast_holder_custom() override { return this; }
 
     // general
 public:
     CWeaponStatMgun();
     ~CWeaponStatMgun() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual void net_Export(CSE_Abstract* E);
+    void net_Export(CSE_Abstract* E) override;
 
     tmc::task<void> UpdateCL() override;
 
-    virtual void Hit(SHit* pHDS);
+    void Hit(SHit* pHDS) override;
 
     // shooting
 private:
@@ -63,12 +63,12 @@ private:
 
 protected:
     void UpdateBarrelDir();
-    virtual const Fvector& get_CurrentFirePoint();
-    virtual const Fmatrix& get_ParticlesXFORM();
-    virtual bool IsHudModeNow() { return false; }
+    [[nodiscard]] const Fvector& get_CurrentFirePoint() override;
+    [[nodiscard]] const Fmatrix& get_ParticlesXFORM() override;
+    [[nodiscard]] bool IsHudModeNow() override { return false; }
 
-    virtual void FireStart();
-    virtual void FireEnd();
+    void FireStart() override;
+    void FireEnd() override;
     virtual void UpdateFire();
     virtual void OnShot();
     void AddShotEffector();
@@ -82,19 +82,19 @@ public:
     void OnKeyboardPress(EGameActions cmd) override;
     void OnKeyboardRelease(EGameActions cmd) override;
     void OnKeyboardHold(EGameActions) override;
-    virtual CInventory* GetInventory() { return nullptr; }
+    [[nodiscard]] CInventory* GetInventory() override { return nullptr; }
     tmc::task<void> cam_Update(f32, f32 = 90.0f) override;
 
     void renderable_Render(u32 context_id, IRenderable* root) override;
 
-    virtual bool attach_Actor(CGameObject* actor);
-    virtual void detach_Actor();
-    virtual bool allowWeapon() const { return false; }
-    virtual bool HUDView() const { return true; }
-    virtual Fvector ExitPosition() { return Fvector{}; }
+    [[nodiscard]] bool attach_Actor(CGameObject* actor) override;
+    void detach_Actor() override;
+    [[nodiscard]] bool allowWeapon() const override { return false; }
+    [[nodiscard]] bool HUDView() const override { return true; }
+    [[nodiscard]] Fvector3 ExitPosition() override { return Fvector3{}; }
 
-    virtual CCameraBase* Camera() { return camera; }
+    [[nodiscard]] CCameraBase* Camera() override { return camera; }
 
     void Action(EGameActions id, u32 flags) override;
-    virtual void SetParam(int id, Fvector2 val);
+    void SetParam(s32 id, Fvector2 val) override;
 };

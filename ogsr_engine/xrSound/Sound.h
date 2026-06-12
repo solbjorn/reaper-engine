@@ -285,19 +285,19 @@ class XR_NOVTABLE CSound_emitter : public virtual RTTI::Enable
 public:
     ~CSound_emitter() override = 0;
 
-    virtual bool is_2D() const = 0;
+    [[nodiscard]] virtual bool is_2D() const = 0;
     virtual void switch_to_2D() = 0;
     virtual void switch_to_3D() = 0;
-    virtual void set_position(const Fvector& pos) = 0;
-    virtual void set_frequency(float freq) = 0;
-    virtual void set_range(float min, float max) = 0;
-    virtual void set_volume(float vol) = 0;
-    virtual void set_priority(float vol) = 0;
-    virtual void set_time(float t) = 0; //--#SM+#--
-    virtual void set_gain(float low_gain, float high_gain) = 0;
+    virtual void set_position(const Fvector3& pos) = 0;
+    virtual void set_frequency(f32 freq) = 0;
+    virtual void set_range(f32 min, f32 max) = 0;
+    virtual void set_volume(f32 vol) = 0;
+    virtual void set_priority(f32 vol) = 0;
+    virtual void set_time(f32 t) = 0; //--#SM+#--
+    virtual void set_gain(f32 low_gain, f32 high_gain) = 0;
     virtual tmc::task<void> stop(bool bDeffered, f32 speed_k = 1.0f) = 0;
-    virtual const CSound_params* get_params() = 0;
-    virtual u32 play_time() = 0;
+    [[nodiscard]] virtual const CSound_params* get_params() = 0;
+    [[nodiscard]] virtual u32 play_time() = 0;
 };
 
 inline CSound_emitter::~CSound_emitter() = default;
@@ -352,12 +352,13 @@ class XR_NOVTABLE CSound_manager_interface : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CSound_manager_interface);
 
 public:
-    virtual void _initialize(int stage) = 0;
+    virtual void _initialize(s32 stage) = 0;
     virtual void _clear() = 0;
 
 protected:
     friend class ref_sound_data;
-    virtual void _create_data(ref_sound_data& S, LPCSTR fName, esound_type sound_type, u32 game_type) = 0;
+
+    virtual void _create_data(ref_sound_data& S, gsl::czstring fName, esound_type sound_type, u32 game_type) = 0;
 
 public:
     ~CSound_manager_interface() override = 0;
@@ -368,22 +369,22 @@ public:
     virtual void _restart() = 0;
     virtual bool i_locked() const = 0;
 
-    virtual void create(ref_sound& S, LPCSTR fName, esound_type sound_type, u32 game_type) = 0;
-    virtual void attach_tail(ref_sound& S, LPCSTR fName) = 0;
+    virtual void create(ref_sound& S, gsl::czstring fName, esound_type sound_type, u32 game_type) = 0;
+    virtual void attach_tail(ref_sound& S, gsl::czstring fName) = 0;
     virtual void clone(ref_sound& S, const ref_sound& from, esound_type sound_type, u32 game_type) = 0;
     virtual tmc::task<void> destroy(std::array<std::byte, 16>& arg) = 0;
     virtual void queue_destroy(ref_sound& S) = 0;
     virtual tmc::task<void> stop_emitters() = 0;
-    virtual int pause_emitters(bool val) = 0;
+    [[nodiscard]] virtual s32 pause_emitters(bool val) = 0;
 
-    virtual void play(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f) = 0;
-    virtual void play_at_pos(ref_sound& S, CObject* O, const Fvector& pos, u32 flags = 0, float delay = 0.f) = 0;
-    virtual void play_no_feedback(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f, Fvector* pos = nullptr, float* vol = nullptr,
-                                  float* freq = nullptr, Fvector2* range = nullptr) = 0;
+    virtual void play(ref_sound& S, CObject* O, u32 flags = 0, f32 delay = 0.0f) = 0;
+    virtual void play_at_pos(ref_sound& S, CObject* O, const Fvector3& pos, u32 flags = 0, f32 delay = 0.0f) = 0;
+    virtual void play_no_feedback(ref_sound& S, CObject* O, u32 flags = 0, f32 delay = 0.0f, Fvector3* pos = nullptr, f32* vol = nullptr, f32* freq = nullptr,
+                                  Fvector2* range = nullptr) = 0;
     virtual void queue_stop(ref_sound& S, bool deferred, f32 speed_k = 1.0f) = 0;
 
-    virtual void set_master_volume(float f = 1.f) = 0;
-    virtual void set_master_gain(float low_pass, float high_pass) = 0;
+    virtual void set_master_volume(f32 f = 1.0f) = 0;
+    virtual void set_master_gain(f32 low_pass, f32 high_pass) = 0;
 
     virtual void set_geometry_env(IReader* I) = 0;
     virtual void set_geometry_som(IReader* I) = 0;
@@ -394,14 +395,14 @@ public:
     virtual tmc::task<void> render() = 0;
     virtual void statistic(CSound_stats* s0, CSound_stats_ext* s1) = 0;
 
-    virtual float get_occlusion_to(const Fvector& hear_pt, const Fvector& snd_pt, float dispersion = 0.2f) = 0;
+    [[nodiscard]] virtual f32 get_occlusion_to(const Fvector3& hear_pt, const Fvector3& snd_pt, f32 dispersion = 0.2f) = 0;
 
     virtual void object_relcase(CObject* obj) = 0;
     virtual const Fvector& listener_position() = 0;
 
-    virtual float get_time() const = 0;
+    [[nodiscard]] virtual f32 get_time() const = 0;
 
-    virtual CSound_environment* DbgCurrentEnv() = 0;
+    [[nodiscard]] virtual CSound_environment* DbgCurrentEnv() = 0;
     virtual void DbgCurrentEnvPaused(bool v) = 0;
     virtual void DbgCurrentEnvSave() = 0;
 };

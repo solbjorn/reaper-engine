@@ -30,8 +30,8 @@ public:
 public:
     ~CControlDirectionBase() override = default;
 
-    virtual void reinit();
-    virtual void update_frame();
+    void reinit() override;
+    void update_frame() override;
 
     void use_path_direction(bool reversed = false);
 

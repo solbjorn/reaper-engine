@@ -19,11 +19,11 @@ public:
     explicit CStateMonsterRestFun(_Object* obj);
     ~CStateMonsterRestFun() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual bool check_completion();
-    virtual bool check_start_conditions();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void initialize() override;
+    void execute() override;
+    [[nodiscard]] bool check_completion() override;
+    [[nodiscard]] bool check_start_conditions() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 };
 
 #include "monster_state_rest_fun_inline.h"

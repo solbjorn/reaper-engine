@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "xrServer_Objects_ALife_Monsters.h"
+
 #include "ai_space.h"
 #include "alife_simulator.h"
 #include "alife_object_registry.h"
@@ -114,7 +115,7 @@ bool CSE_ALifeOnlineOfflineGroup::synchronize_location()
     MEMBERS::iterator I = m_members.begin();
     MEMBERS::iterator E = m_members.end();
     for (; I != E; ++I)
-        (*I).second->synchronize_location();
+        std::ignore = (*I).second->synchronize_location();
 
     MEMBER& member = *(*m_members.begin()).second;
     o_Position = member.o_Position;

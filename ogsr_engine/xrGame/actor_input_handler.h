@@ -18,7 +18,7 @@ public:
     virtual void release();
 
     [[nodiscard]] virtual bool authorized(EGameActions) { return true; }
-    virtual float mouse_scale_factor() { return 1.f; }
+    [[nodiscard]] virtual f32 mouse_scale_factor() { return 1.0f; }
 
 protected:
     CActor* m_actor{};

@@ -16,11 +16,11 @@ public:
     CTorridZone();
     ~CTorridZone() override;
 
-    virtual void UpdateWorkload(u32 dt);
+    void UpdateWorkload(u32 dt) override;
     tmc::task<void> shedule_Update(u32 dt) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
 
-    virtual bool IsVisibleForZones() { return true; }
-    virtual void GoEnabledState();
-    virtual void GoDisabledState();
+    [[nodiscard]] bool IsVisibleForZones() override { return true; }
+    void GoEnabledState() override;
+    void GoDisabledState() override;
 };

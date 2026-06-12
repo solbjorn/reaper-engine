@@ -26,7 +26,7 @@ public:
     explicit CMonsterEffector(const SPPInfo& ppi, float life_time, float attack_time = 0.0f, float release_time = 0.0f, float spec_factor = 1.f);
     ~CMonsterEffector() override = default;
 
-    virtual BOOL Process(SPPInfo& pp);
+    [[nodiscard]] BOOL Process(SPPInfo& pp) override;
 };
 
 //////////////////////////////////////////////////////////////////////////

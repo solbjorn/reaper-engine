@@ -19,25 +19,25 @@ public:
     CHudItemObject();
     ~CHudItemObject() override;
 
-    virtual DLL_Pure* _construct();
-    virtual CHudItem* cast_hud_item() { return this; }
+    [[nodiscard]] DLL_Pure* _construct() override;
+    [[nodiscard]] CHudItem* cast_hud_item() override { return this; }
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     [[nodiscard]] bool Action(EGameActions cmd, u32 flags) override;
-    virtual void SwitchState(u32 S);
-    virtual void OnStateSwitch(u32 S, u32 oldState);
+    void SwitchState(u32 S) override;
+    void OnStateSwitch(u32 S, u32 oldState) override;
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
-    virtual void OnH_A_Chield();
-    virtual void OnH_B_Chield();
-    virtual void OnH_B_Independent(bool just_before_destroy);
-    virtual void OnH_A_Independent();
+    void OnH_A_Chield() override;
+    void OnH_B_Chield() override;
+    void OnH_B_Independent(bool just_before_destroy) override;
+    void OnH_A_Independent() override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual bool Activate(bool = false);
-    virtual void Deactivate(bool = false);
+    [[nodiscard]] bool Activate(bool = false) override;
+    void Deactivate(bool = false) override;
     tmc::task<void> UpdateCL() override;
     void renderable_Render(u32 context_id, IRenderable* root) override;
     void on_renderable_Render(u32 context_id, IRenderable* root) override;
 
-    virtual bool use_parent_ai_locations() const { return (Device.dwFrame != dwXF_Frame); }
+    [[nodiscard]] bool use_parent_ai_locations() const override { return Device.dwFrame != dwXF_Frame; }
 };

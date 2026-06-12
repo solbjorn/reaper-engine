@@ -27,7 +27,7 @@ public:
     explicit CPPEffectorPsyDogAura(const SPPInfo& ppi, u32 time_to_fade);
     ~CPPEffectorPsyDogAura() override = default;
 
-    virtual BOOL update();
+    [[nodiscard]] BOOL update() override;
     void switch_off();
 };
 

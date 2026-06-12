@@ -29,8 +29,8 @@ public:
     inline virtual void reload(LPCSTR);
     inline virtual void update();
     inline bool add(T* object);
-    inline virtual bool is_useful(T* object) const;
-    inline virtual float do_evaluate(T*) const;
+    [[nodiscard]] inline virtual bool is_useful(T* object) const;
+    [[nodiscard]] inline virtual float do_evaluate(T*) const;
     inline virtual void reset();
 
     inline T* selected() const;

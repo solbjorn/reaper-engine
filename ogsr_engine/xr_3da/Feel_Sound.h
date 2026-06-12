@@ -13,6 +13,6 @@ class Sound : public virtual RTTI::Enable
 public:
     ~Sound() override = default;
 
-    virtual void feel_sound_new(CObject*, int, CSound_UserDataPtr, const Fvector&, float, float) {}
+    virtual void feel_sound_new(CObject*, s32, CSound_UserDataPtr, const Fvector3&, f32, f32) {}
 };
 } // namespace Feel

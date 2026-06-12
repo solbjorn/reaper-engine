@@ -5,9 +5,9 @@ class CBlender_bloom_build : public IBlender
     RTTI_DECLARE_TYPEINFO(CBlender_bloom_build, IBlender);
 
 public:
-    virtual LPCSTR getComment() { return "INTERNAL: combine to bloom target"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: combine to bloom target"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 
     CBlender_bloom_build();
     ~CBlender_bloom_build() override;
@@ -18,9 +18,9 @@ class CBlender_bloom_build_msaa : public IBlender
     RTTI_DECLARE_TYPEINFO(CBlender_bloom_build_msaa, IBlender);
 
 public:
-    virtual LPCSTR getComment() { return "INTERNAL: combine to bloom target msaa"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: combine to bloom target msaa"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 
     CBlender_bloom_build_msaa();
     ~CBlender_bloom_build_msaa() override;
@@ -31,9 +31,9 @@ class CBlender_postprocess_msaa : public IBlender
     RTTI_DECLARE_TYPEINFO(CBlender_postprocess_msaa, IBlender);
 
 public:
-    virtual LPCSTR getComment() { return "INTERNAL: combine to bloom target msaa"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: combine to bloom target msaa"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 
     CBlender_postprocess_msaa();
     ~CBlender_postprocess_msaa() override;
@@ -44,9 +44,9 @@ class CBlender_ssfx_bloom_build : public IBlender
     RTTI_DECLARE_TYPEINFO(CBlender_ssfx_bloom_build, IBlender);
 
 public:
-    virtual LPCSTR getComment() { return "SSFX Bloom"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "SSFX Bloom"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 
     CBlender_ssfx_bloom_build();
     ~CBlender_ssfx_bloom_build() override;
@@ -57,9 +57,9 @@ class CBlender_ssfx_bloom_lens : public IBlender
     RTTI_DECLARE_TYPEINFO(CBlender_ssfx_bloom_lens, IBlender);
 
 public:
-    virtual LPCSTR getComment() { return "SSFX Bloom Lens"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "SSFX Bloom Lens"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 
     CBlender_ssfx_bloom_lens();
     ~CBlender_ssfx_bloom_lens() override;
@@ -70,9 +70,9 @@ class CBlender_ssfx_bloom_downsample : public IBlender
     RTTI_DECLARE_TYPEINFO(CBlender_ssfx_bloom_downsample, IBlender);
 
 public:
-    virtual LPCSTR getComment() { return "SSFX Bloom Downsample"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "SSFX Bloom Downsample"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 
     CBlender_ssfx_bloom_downsample();
     ~CBlender_ssfx_bloom_downsample() override;
@@ -83,9 +83,9 @@ class CBlender_ssfx_bloom_upsample : public IBlender
     RTTI_DECLARE_TYPEINFO(CBlender_ssfx_bloom_upsample, IBlender);
 
 public:
-    virtual LPCSTR getComment() { return "SSFX Bloom Upsample"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "SSFX Bloom Upsample"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 
     CBlender_ssfx_bloom_upsample();
     ~CBlender_ssfx_bloom_upsample() override;

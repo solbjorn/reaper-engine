@@ -24,17 +24,17 @@ public:
     explicit CStateMonsterAttackCamp(_Object* obj);
     ~CStateMonsterAttackCamp() override = default;
 
-    virtual void initialize();
-    virtual void finalize();
-    virtual void critical_finalize();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void initialize() override;
+    void finalize() override;
+    void critical_finalize() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 
-    virtual bool check_completion();
-    virtual bool check_start_conditions();
+    [[nodiscard]] bool check_completion() override;
+    [[nodiscard]] bool check_start_conditions() override;
 
-    virtual void check_force_state();
-    virtual void reselect_state();
-    virtual void setup_substates();
+    void check_force_state() override;
+    void reselect_state() override;
+    void setup_substates() override;
 };
 
 #include "monster_state_attack_camp_inline.h"

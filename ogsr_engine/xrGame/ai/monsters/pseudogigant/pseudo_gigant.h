@@ -48,19 +48,19 @@ public:
     CPseudoGigant();
     ~CPseudoGigant() override;
 
-    virtual void Load(LPCSTR section);
-    virtual void reinit();
+    void Load(gsl::czstring section) override;
+    void reinit() override;
 
-    virtual bool ability_earthquake() { return true; }
-    virtual void event_on_step();
+    [[nodiscard]] bool ability_earthquake() override { return true; }
+    void event_on_step() override;
 
-    virtual bool check_start_conditions(ControlCom::EControlType type);
-    virtual void on_activate_control(ControlCom::EControlType);
+    [[nodiscard]] bool check_start_conditions(ControlCom::EControlType type) override;
+    void on_activate_control(ControlCom::EControlType) override;
 
-    virtual void on_threaten_execute();
+    void on_threaten_execute() override;
 
-    virtual void HitEntityInJump(const CEntity* pEntity);
-    virtual void TranslateActionToPathParams();
+    void HitEntityInJump(const CEntity* pEntity) override;
+    void TranslateActionToPathParams() override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

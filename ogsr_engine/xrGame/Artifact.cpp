@@ -141,7 +141,7 @@ tmc::task<bool> CArtefact::net_Spawn(CSE_Abstract* DC)
     /////////////////////////////////////////
     IKinematicsAnimated* K = smart_cast<IKinematicsAnimated*>(Visual());
     if (K)
-        K->PlayCycle(shared_str{"idle"});
+        std::ignore = K->PlayCycle(shared_str{"idle"});
 
     o_fastmode = true; // start initially with fast-mode enabled
     o_render_frame = 0;
@@ -599,7 +599,7 @@ tmc::task<void> SArtefactActivation::ChangeEffects()
     {
         IKinematicsAnimated* K = smart_cast<IKinematicsAnimated*>(m_af->Visual());
         if (K)
-            K->PlayCycle(state_def.m_animation);
+            std::ignore = K->PlayCycle(state_def.m_animation);
     }
 }
 

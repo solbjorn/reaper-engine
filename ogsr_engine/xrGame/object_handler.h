@@ -60,20 +60,20 @@ public:
     CObjectHandler();
     ~CObjectHandler() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     virtual void reinit(CAI_Stalker* object);
-    virtual void reload(LPCSTR section);
+    void reload(gsl::czstring section) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     virtual void update();
-    virtual void OnItemTake(CInventoryItem* inventory_item);
-    virtual void OnItemDrop(CInventoryItem* inventory_item);
-    virtual void attach(CInventoryItem* inventory_item);
-    virtual void detach(CInventoryItem* inventory_item);
+    void OnItemTake(CInventoryItem* inventory_item) override;
+    void OnItemDrop(CInventoryItem* inventory_item) override;
+    void attach(CInventoryItem* inventory_item) override;
+    void detach(CInventoryItem* inventory_item) override;
     CInventoryItem* best_weapon() const;
-    void set_goal(MonsterSpace::EObjectAction object_action, CGameObject* game_object = nullptr, u32 min_queue_size = -1, u32 max_queue_size = -1, u32 min_queue_interval = 300,
-                  u32 max_queue_interval = 300);
-    void set_goal(MonsterSpace::EObjectAction object_action, CInventoryItem* inventory_item, u32 min_queue_size = -1, u32 max_queue_size = -1, u32 min_queue_interval = 300,
-                  u32 max_queue_interval = 300);
+    void set_goal(MonsterSpace::EObjectAction object_action, CGameObject* game_object = nullptr, u32 min_queue_size = -1, u32 max_queue_size = -1,
+                  u32 min_queue_interval = 300, u32 max_queue_interval = 300);
+    void set_goal(MonsterSpace::EObjectAction object_action, CInventoryItem* inventory_item, u32 min_queue_size = -1, u32 max_queue_size = -1,
+                  u32 min_queue_interval = 300, u32 max_queue_interval = 300);
     bool goal_reached();
     IC bool hammer_is_clutched() const;
     IC bool const& infinite_ammo() const;

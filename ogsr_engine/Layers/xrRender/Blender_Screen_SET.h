@@ -18,15 +18,15 @@ public:
     xrP_BOOL oFog;
     xrP_BOOL oClamp;
 
-    virtual LPCSTR getComment() { return "basic (simple)"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "basic (simple)"; }
 
-    virtual void Save(IWriter& fs);
-    virtual void Load(IReader& fs, u16 version);
+    void Save(IWriter& fs) override;
+    void Load(IReader& fs, u16 version) override;
 
-    virtual void SaveIni(CInifile* ini_file, LPCSTR section);
-    virtual void LoadIni(CInifile* ini_file, LPCSTR section);
+    void SaveIni(CInifile* ini_file, gsl::czstring section) override;
+    void LoadIni(CInifile* ini_file, gsl::czstring section) override;
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 
     CBlender_Screen_SET();
     ~CBlender_Screen_SET() override;

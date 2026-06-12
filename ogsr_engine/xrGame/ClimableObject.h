@@ -24,18 +24,18 @@ public:
     CClimableObject();
     ~CClimableObject() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
     tmc::task<void> shedule_Update(u32 dt) override; // Called by sheduler
     tmc::task<void> UpdateCL() override; // Called each frame, so no need for dt
-    virtual void Center(Fvector& C) const;
-    virtual float Radius() const;
+    void Center(Fvector& C) const override;
+    [[nodiscard]] f32 Radius() const override;
 
     virtual void OnRender();
 
 protected:
-    virtual BOOL UsedAI_Locations();
+    [[nodiscard]] BOOL UsedAI_Locations() override;
 
 public:
     const Fvector& Axis() const { return m_axis; }
@@ -70,5 +70,5 @@ public:
     static void ObjectContactCallback(bool&, bool bo1, dContact& c, SGameMtl*, SGameMtl*);
 
 public:
-    virtual bool register_schedule() const { return false; }
+    [[nodiscard]] bool register_schedule() const override { return false; }
 };

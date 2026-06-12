@@ -11,12 +11,12 @@
 #include "associative_vector.h"
 #include "object_broker.h"
 
-template <typename _operator_condition, typename _condition_state, typename _operator, typename _condition_evaluator, typename _operator_id_type, bool _reverse_search = false,
-          typename _operator_ptr = _operator*, typename _condition_evaluator_ptr = _condition_evaluator*>
+template <typename _operator_condition, typename _condition_state, typename _operator, typename _condition_evaluator, typename _operator_id_type,
+          bool _reverse_search = false, typename _operator_ptr = _operator*, typename _condition_evaluator_ptr = _condition_evaluator*>
 class CProblemSolver : public virtual RTTI::Enable
 {
-    RTTI_DECLARE_TYPEINFO(
-        CProblemSolver<_operator_condition, _condition_state, _operator, _condition_evaluator, _operator_id_type, _reverse_search, _operator_ptr, _condition_evaluator_ptr>);
+    RTTI_DECLARE_TYPEINFO(CProblemSolver<_operator_condition, _condition_state, _operator, _condition_evaluator, _operator_id_type, _reverse_search,
+                                         _operator_ptr, _condition_evaluator_ptr>);
 
 public:
     enum
@@ -25,7 +25,8 @@ public:
     };
 
 private:
-    typedef CProblemSolver<_operator_condition, _condition_state, _operator, _condition_evaluator, _operator_id_type, _reverse_search, _operator_ptr, _condition_evaluator_ptr>
+    typedef CProblemSolver<_operator_condition, _condition_state, _operator, _condition_evaluator, _operator_id_type, _reverse_search, _operator_ptr,
+                           _condition_evaluator_ptr>
         self_type;
 
 public:
@@ -101,8 +102,8 @@ private:
         }
     }; // struct helper
 
-protected:
 #ifdef DEBUG
+protected:
     IC void validate_properties(const CState& conditions) const;
 #endif
 
@@ -124,7 +125,7 @@ public:
     IC edge_value_type estimate_edge_weight(const _index_type& vertex_index) const;
 
     // operator interface
-    IC virtual void add_operator(const _operator_id_type& operator_id, _operator_ptr _op);
+    inline virtual void add_operator(const _operator_id_type& operator_id, _operator_ptr _op);
     IC virtual void remove_operator(const _operator_id_type& operator_id);
     IC _operator_ptr get_operator(const _operator_id_type& operator_id);
     IC const OPERATOR_VECTOR& operators() const;
@@ -135,7 +136,7 @@ public:
     IC const CState& target_state() const;
 
     // evaluator interface
-    IC virtual void add_evaluator(const condition_type& condition_id, condition_evaluator_ptr_type evaluator);
+    inline virtual void add_evaluator(const condition_type& condition_id, condition_evaluator_ptr_type evaluator);
     IC virtual void remove_evaluator(const condition_type& condition_id);
     IC condition_evaluator_ptr_type evaluator(const condition_type& condition_id) const;
     IC const EVALUATORS& evaluators() const;

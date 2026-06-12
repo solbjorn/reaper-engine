@@ -24,9 +24,9 @@ public:
     explicit CStateMonsterSquadRest(_Object* obj);
     ~CStateMonsterSquadRest() override;
 
-    virtual void reselect_state();
-    virtual void setup_substates();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void reselect_state() override;
+    void setup_substates() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 };
 
 #include "monster_state_squad_rest_inline.h"

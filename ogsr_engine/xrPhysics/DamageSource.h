@@ -8,8 +8,8 @@ public:
     ~IDamageSource() override = 0;
 
     virtual void SetInitiator(u16 id) = 0;
-    virtual u16 Initiator() = 0;
-    virtual IDamageSource* cast_IDamageSource() { return this; }
+    [[nodiscard]] virtual u16 Initiator() = 0;
+    [[nodiscard]] virtual IDamageSource* cast_IDamageSource() { return this; }
 };
 
 inline IDamageSource::~IDamageSource() = default;

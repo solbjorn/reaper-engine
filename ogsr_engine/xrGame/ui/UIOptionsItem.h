@@ -18,7 +18,7 @@ protected:
     virtual void SetCurrentValue() = 0;
     virtual void SaveValue();
 
-    virtual bool IsChanged() = 0;
+    [[nodiscard]] virtual bool IsChanged() = 0;
     virtual void SeveBackUpValue() {}
     virtual void Undo() { SetCurrentValue(); }
 

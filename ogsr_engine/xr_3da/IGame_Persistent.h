@@ -100,7 +100,7 @@ public:
 
     ShadersExternalData m_pGShaderConstants; //--#SM+#--
 
-    virtual bool OnRenderPPUI_query() { return FALSE; } // should return true if we want to have second function called
+    [[nodiscard]] virtual bool OnRenderPPUI_query() { return false; } // should return true if we want to have second function called
     virtual void OnRenderPPUI_main() {}
     virtual void OnRenderPPUI_PP() {}
 
@@ -118,7 +118,7 @@ public:
     virtual void OnSectorChanged(sector_id_t) {}
 
     virtual void RegisterModel(IRenderVisual* V) = 0;
-    virtual float MtlTransparent(u32 mtl_idx) = 0;
+    [[nodiscard]] virtual f32 MtlTransparent(u32 mtl_idx) = 0;
 
     IGame_Persistent();
     static tmc::task<std::unique_ptr<IGame_Persistent>> co_create();
@@ -144,8 +144,8 @@ public:
     ~IMainMenu() override = 0;
 
     virtual tmc::task<void> Activate(bool bActive) = 0;
-    virtual bool IsActive() = 0;
-    virtual bool CanSkipSceneRendering() = 0;
+    [[nodiscard]] virtual bool IsActive() = 0;
+    [[nodiscard]] virtual bool CanSkipSceneRendering() = 0;
     virtual void DestroyInternal(bool bForce) = 0;
 };
 

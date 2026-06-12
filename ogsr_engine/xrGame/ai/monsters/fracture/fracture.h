@@ -15,8 +15,8 @@ public:
     CFracture();
     ~CFracture() override;
 
-    virtual void Load(LPCSTR section);
-    virtual void CheckSpecParams(u32 spec_params);
+    void Load(gsl::czstring section) override;
+    void CheckSpecParams(u32 spec_params) override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

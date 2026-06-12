@@ -399,7 +399,7 @@ void CUIInventoryWnd::AttachAddon(PIItem item_to_upgrade)
     PlaySnd(eInventorySndAction::eInvAttachAddon);
 
     R_ASSERT(item_to_upgrade);
-    item_to_upgrade->Attach(CurrentIItem(), true);
+    std::ignore = item_to_upgrade->Attach(CurrentIItem(), true);
 
     SetCurrentItem(nullptr);
 }
@@ -407,7 +407,7 @@ void CUIInventoryWnd::AttachAddon(PIItem item_to_upgrade)
 void CUIInventoryWnd::DetachAddon(const char* addon_name)
 {
     PlaySnd(eInventorySndAction::eInvDetachAddon);
-    CurrentIItem()->Detach(addon_name, true);
+    std::ignore = CurrentIItem()->Detach(addon_name, true);
 }
 
 void CUIInventoryWnd::SendEvent_ActivateSlot(PIItem pItem)

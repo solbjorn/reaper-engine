@@ -52,12 +52,13 @@ public:
     inline virtual bool applicable_reverse(const CSConditionState& condition, const CSConditionState& start, const CSConditionState& self_condition) const;
 
     template <typename T>
-    IC const CSConditionState& apply(const CSConditionState& condition, const CSConditionState& self_condition, CSConditionState& result, CSConditionState& current,
-                                     T& problem_solver) const;
+    IC const CSConditionState& apply(const CSConditionState& condition, const CSConditionState& self_condition, CSConditionState& result,
+                                     CSConditionState& current, T& problem_solver) const;
     inline virtual const CSConditionState& apply(const CSConditionState& condition, const CSConditionState& self_condition, CSConditionState& result) const;
 
-    inline virtual bool apply_reverse(const CSConditionState& condition, const CSConditionState& start, CSConditionState& result, const CSConditionState& self_condition) const;
-    inline virtual _edge_value_type weight(const CSConditionState&, const CSConditionState&) const;
+    inline virtual bool apply_reverse(const CSConditionState& condition, const CSConditionState& start, CSConditionState& result,
+                                      const CSConditionState& self_condition) const;
+    [[nodiscard]] inline virtual _edge_value_type weight(const CSConditionState&, const CSConditionState&) const;
 };
 
 #include "operator_abstract_inline.h"

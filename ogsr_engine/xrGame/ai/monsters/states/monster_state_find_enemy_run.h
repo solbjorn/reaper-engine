@@ -18,10 +18,10 @@ public:
     explicit CStateMonsterFindEnemyRun(_Object* obj);
     ~CStateMonsterFindEnemyRun() override;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual bool check_completion();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void initialize() override;
+    void execute() override;
+    [[nodiscard]] bool check_completion() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 };
 
 #include "monster_state_find_enemy_run_inline.h"

@@ -278,7 +278,7 @@ void CAI_Dog::start_animation()
 
     b_state_anim = true;
     com_man().script_capture(ControlCom::eControlAnimation);
-    smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(shared_str{get_current_animation()}, TRUE, animation_end, this);
+    std::ignore = smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(shared_str{get_current_animation()}, TRUE, animation_end, this);
     b_state_end = false;
 }
 
@@ -331,7 +331,8 @@ void CAI_Dog::reload(LPCSTR section)
     pcstr jump_ataka_01 = READ_IF_EXISTS(pSettings, r_string, section, "anim_jump_ataka_01", nullptr /*"jump_ataka_01"*/);
     pcstr jump_ataka_02 = READ_IF_EXISTS(pSettings, r_string, section, "anim_jump_ataka_02", "jump_right_0" /*"jump_ataka_02"*/);
     pcstr jump_ataka_03 = READ_IF_EXISTS(pSettings, r_string, section, "anim_jump_ataka_03", nullptr /*"jump_ataka_03"*/);
-    com_man().load_jump_data(nullptr, jump_ataka_01, jump_ataka_02, jump_ataka_03, MonsterMovement::eVelocityParameterRunNormal, MonsterMovement::eVelocityParameterRunNormal, 0);
+    com_man().load_jump_data(nullptr, jump_ataka_01, jump_ataka_02, jump_ataka_03, MonsterMovement::eVelocityParameterRunNormal,
+                             MonsterMovement::eVelocityParameterRunNormal, 0);
 }
 
 void CAI_Dog::HitEntityInJump(const CEntity* pEntity)

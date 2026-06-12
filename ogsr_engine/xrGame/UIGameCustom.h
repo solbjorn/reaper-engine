@@ -71,7 +71,7 @@ public:
     xr_vector<st_vec::size_type> m_custom_statics_sorted;
 
     virtual void SetClGame(game_cl_GameState*) {}
-    virtual float shedule_Scale() const;
+    [[nodiscard]] f32 shedule_Scale() const override;
     tmc::task<void> shedule_Update(u32 dt) override;
 
     CUIGameCustom();
@@ -104,8 +104,8 @@ public:
     SDrawStaticStruct* GetCustomStatic(LPCSTR id);
     void RemoveCustomStatic(LPCSTR id);
 
-    virtual shared_str shedule_Name() const { return shared_str("CUIGameCustom"); }
-    virtual bool shedule_Needed() { return true; }
+    [[nodiscard]] shared_str shedule_Name() const override { return shared_str{"CUIGameCustom"}; }
+    [[nodiscard]] bool shedule_Needed() override { return true; }
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

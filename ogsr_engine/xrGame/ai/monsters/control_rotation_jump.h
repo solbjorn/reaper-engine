@@ -47,12 +47,12 @@ private:
 public:
     ~CControlRotationJump() override = default;
 
-    virtual void reinit();
+    void reinit() override;
 
     void on_event(ControlCom::EEventType type, ControlCom::IEventData*) override;
-    virtual void activate();
-    virtual void on_release();
-    virtual bool check_start_conditions();
+    void activate() override;
+    void on_release() override;
+    [[nodiscard]] bool check_start_conditions() override;
 
 private:
     void build_line_first();

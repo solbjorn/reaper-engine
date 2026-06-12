@@ -11,7 +11,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "UIDialogWnd.h"
-// #include "UIListWnd.h"
 #include "UIScrollView.h"
 
 class CUIXml;
@@ -27,14 +26,12 @@ public:
     ~CUIGameLog() override;
 
     CUIPdaMsgListItem* AddPdaMessage(LPCSTR msg, float delay);
-    virtual void Update();
+    void Update() override;
 
     void SetTextAtrib(CGameFont* pFont, u32 color);
     u32 GetTextColor();
 
 private:
-    // typedef xr_set<int, std::greater<int> > ToDelIndexes;
-    // typedef ToDelIndexes::iterator			ToDelIndexes_it;
     xr_vector<CUIWindow*> toDelList;
     float kill_msg_height;
     u32 txt_color;

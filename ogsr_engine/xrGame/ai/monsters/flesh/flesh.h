@@ -15,12 +15,11 @@ public:
     CAI_Flesh();
     ~CAI_Flesh() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
 
-    virtual void CheckSpecParams(u32 spec_params);
-
-    virtual bool ability_can_drag() { return true; }
+    void CheckSpecParams(u32 spec_params) override;
+    [[nodiscard]] bool ability_can_drag() override { return true; }
 
 private:
     bool ConeSphereIntersection(Fvector ConeVertex, float ConeAngle, Fvector ConeDir, Fvector SphereCenter, float SphereRadius);

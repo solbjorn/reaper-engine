@@ -34,6 +34,7 @@ private:
 protected:
     void add_evaluators();
     void add_actions();
+
 #ifdef LOG_ACTION
 public:
     virtual LPCSTR action2string(const _action_id_type& action_id);
@@ -44,7 +45,7 @@ public:
     CStalkerPlanner();
     ~CStalkerPlanner() override;
 
-    virtual void setup(CAI_Stalker* object);
+    void setup(CAI_Stalker* object) override;
     virtual void update(u32);
     IC void affect_cover(bool value);
     IC bool affect_cover() const;

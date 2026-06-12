@@ -145,7 +145,7 @@ tmc::task<void> CUISequencer::Stop()
         else
         {
             CUISequenceItem* pCurrItem = m_items.front();
-            pCurrItem->Stop(true);
+            std::ignore = pCurrItem->Stop(true);
         }
     }
 

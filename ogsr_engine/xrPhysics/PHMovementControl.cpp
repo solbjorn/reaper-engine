@@ -1217,7 +1217,7 @@ void CPHMovementControl::UpdateObjectBox(CPHCharacter* ach)
     Calculate(Fvector().set(0, 0, 0), Fvector().set(1, 0, 0), 0, 0, 0, 0);
     m_character->SetObjectRadius(R);
     ach->ChooseRestrictionType(CPHCharacter::rtStalker, 1.f, m_character);
-    m_character->UpdateRestrictionType(ach);
+    std::ignore = m_character->UpdateRestrictionType(ach);
 }
 
 void CPHMovementControl::SetPathDir(const Fvector& v)

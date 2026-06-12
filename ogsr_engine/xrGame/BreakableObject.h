@@ -38,18 +38,18 @@ public:
     CBreakableObject();
     ~CBreakableObject() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
     tmc::task<void> shedule_Update(u32 dt) override; // Called by sheduler
     tmc::task<void> UpdateCL() override;
-    virtual BOOL renderable_ShadowGenerate() { return FALSE; }
-    virtual BOOL renderable_ShadowReceive() { return TRUE; }
+    [[nodiscard]] BOOL renderable_ShadowGenerate() override { return FALSE; }
+    [[nodiscard]] BOOL renderable_ShadowReceive() override { return TRUE; }
 
-    virtual void Hit(SHit* pHDS);
+    void Hit(SHit* pHDS) override;
 
     void net_Export(CSE_Abstract*) override;
-    virtual BOOL UsedAI_Locations();
+    [[nodiscard]] BOOL UsedAI_Locations() override;
 
 private:
     void Init();
@@ -63,7 +63,7 @@ private:
     void CheckHitBreak(float power, ALife::EHitType hit_type);
     void ProcessDamage();
     void SendDestroy();
-    void enable_notificate();
+    void enable_notificate() override;
 
     static void ObjectContactCallback(bool&, bool, dContact& c, SGameMtl*, SGameMtl*);
 };

@@ -38,16 +38,16 @@ public:
     ~CUIEncyclopediaWnd() override;
 
     virtual void Init();
-    virtual void Show(bool status);
+    void Show(bool status) override;
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
-    virtual void Draw();
+    void Draw() override;
 
     CEncyclopediaArticle* AddArticle(shared_str, bool);
     void DeleteArticles();
     bool HasArticle(shared_str);
 
     void ReloadArticles();
-    virtual void Reset();
+    void Reset() override;
 
     void FillEncyclopedia();
     void UpdateArticles();

@@ -40,13 +40,13 @@ public:
 
     virtual CInventoryOwner* cast_inventory_owner() { return this; }
 
-    virtual DLL_Pure* _construct();
+    [[nodiscard]] virtual DLL_Pure* _construct();
     virtual tmc::task<bool> net_Spawn(CSE_Abstract* DC);
     tmc::task<void> net_Destroy() override;
     void Init();
-    virtual void Load(LPCSTR section);
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
+    virtual void Load(gsl::czstring section);
+    void reinit() override;
+    void reload(gsl::czstring section) override;
     virtual tmc::task<void> OnEvent(NET_Packet& P, u16 type);
 
     // serialization
@@ -78,7 +78,7 @@ public:
 
     virtual void EnableTalk() { m_bAllowTalk = true; }
     virtual void DisableTalk() { m_bAllowTalk = false; }
-    virtual bool IsTalkEnabled() { return m_bAllowTalk; }
+    [[nodiscard]] virtual bool IsTalkEnabled() { return m_bAllowTalk; }
 
     void EnableTrade() { m_bAllowTrade = true; }
     void DisableTrade() { m_bAllowTrade = false; }
@@ -112,7 +112,7 @@ public:
     // сюжетная информация
 public:
     // персонаж получил новую порцию информации
-    virtual bool OnReceiveInfo(shared_str info_id) const;
+    [[nodiscard]] virtual bool OnReceiveInfo(shared_str info_id) const;
     // убрать информацию
     virtual void OnDisableInfo(shared_str info_id) const;
     // передать/удалить информацию через сервер
@@ -142,13 +142,13 @@ public:
     }
 
     // возвращает текуший разброс стрельбы (в радианах) с учетом движения
-    virtual float GetWeaponAccuracy() const;
+    [[nodiscard]] virtual f32 GetWeaponAccuracy() const;
     virtual float ArtefactsAddWeight(bool = true) const;
     // максимальный переносимы вес
-    virtual float GetCarryWeight() const;
+    [[nodiscard]] virtual f32 GetCarryWeight() const;
     virtual float MaxCarryWeight() const;
 
-    virtual CCustomOutfit* GetOutfit() const { return nullptr; }
+    [[nodiscard]] virtual CCustomOutfit* GetOutfit() const { return nullptr; }
 
     //////////////////////////////////////////////////////////////////////////
     // игровые характеристики персонажа
@@ -189,7 +189,7 @@ public:
     virtual void OnItemDrop(CInventoryItem* inventory_item);
 
     virtual void OnItemDropUpdate();
-    virtual bool use_bolts() const { return true; }
+    [[nodiscard]] virtual bool use_bolts() const { return true; }
     virtual void spawn_supplies();
 
     CInventoryItem* GetCurrentOutfit() const;
@@ -207,7 +207,7 @@ public:
     IC const u32& ammo_in_box_to_spawn() const { return m_ammo_in_box_to_spawn; }
 
 public:
-    virtual bool unlimited_ammo() = 0;
+    [[nodiscard]] virtual bool unlimited_ammo() = 0;
     virtual void on_weapon_shot_start(CWeapon*);
     virtual void on_weapon_shot_stop(CWeapon*);
     virtual void on_weapon_hide(CWeapon*);
@@ -228,9 +228,9 @@ public:
     void sell_useless_items();
     virtual void on_before_sell(CInventoryItem*) {}
     virtual void on_before_buy(CInventoryItem*) {}
-    virtual bool use_default_throw_force();
-    virtual float missile_throw_force();
-    virtual bool use_throw_randomness();
+    [[nodiscard]] virtual bool use_default_throw_force();
+    [[nodiscard]] virtual f32 missile_throw_force();
+    [[nodiscard]] virtual bool use_throw_randomness();
     virtual bool NeedOsoznanieMode() { return m_need_osoznanie_mode; }
 
     void SetNextItemSlot(u32);

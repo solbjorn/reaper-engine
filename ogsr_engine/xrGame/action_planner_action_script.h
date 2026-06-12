@@ -23,14 +23,14 @@ public:
     _object_type* m_object;
 
 public:
-    inline explicit CActionPlannerActionScript(const xr_vector<COperatorCondition>& conditions, const xr_vector<COperatorCondition>& effects, _object_type* object = nullptr,
-                                               LPCSTR action_name = "");
+    inline explicit CActionPlannerActionScript(const xr_vector<COperatorCondition>& conditions, const xr_vector<COperatorCondition>& effects,
+                                               _object_type* object = nullptr, LPCSTR action_name = "");
     inline explicit CActionPlannerActionScript(_object_type* object = nullptr, LPCSTR action_name = "");
     ~CActionPlannerActionScript() override = default;
 
     virtual void setup(_object_type* object, CPropertyStorage*);
-    virtual void setup(CScriptGameObject* object, CPropertyStorage* storage);
-    IC _object_type& object() const;
+    void setup(CScriptGameObject* object, CPropertyStorage* storage) override;
+    [[nodiscard]] inline _object_type& object() const;
 };
 
 #include "action_planner_action_script_inline.h"

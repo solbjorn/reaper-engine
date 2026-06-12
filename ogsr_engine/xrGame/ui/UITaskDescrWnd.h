@@ -24,7 +24,7 @@ public:
     CUITaskDescrWnd();
     ~CUITaskDescrWnd() override;
 
-    virtual void Draw();
+    void Draw() override;
     void Init(CUIXml* doc, LPCSTR start_from);
     void ClearAll();
     void AddArticle(LPCSTR article);

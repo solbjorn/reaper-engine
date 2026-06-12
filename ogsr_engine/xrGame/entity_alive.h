@@ -21,9 +21,8 @@ private:
     u32 m_used_time;
 
 public:
-    virtual CEntityAlive* cast_entity_alive() { return this; }
+    [[nodiscard]] CEntityAlive* cast_entity_alive() override { return this; }
 
-public:
     bool m_bMobility;
     float m_fAccuracy;
     float m_fIntelligence;
@@ -33,8 +32,6 @@ public:
 private:
     bool m_is_agresive;
     bool m_is_start_attack;
-    // m_PhysicMovementControl
-    // CPHMovementControl		*m_PhysicMovementControl;
 
 public:
     // General
@@ -42,35 +39,29 @@ public:
     ~CEntityAlive() override;
 
     // Core events
-    [[nodiscard]] virtual DLL_Pure* _construct();
-    virtual void Load(LPCSTR section);
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
+    [[nodiscard]] DLL_Pure* _construct() override;
+    void Load(gsl::czstring section) override;
+    void reinit() override;
+    void reload(gsl::czstring section) override;
 
     // object serialization
-    virtual void save(NET_Packet& output_packet);
-    virtual void load(IReader& input_packet);
+    void save(NET_Packet& output_packet) override;
+    void load(IReader& input_packet) override;
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual BOOL net_SaveRelevant();
+    [[nodiscard]] BOOL net_SaveRelevant() override;
 
     tmc::task<void> shedule_Update(u32 dt) override;
-    virtual void create_anim_mov_ctrl(CBlend* b);
-    virtual void destroy_anim_mov_ctrl();
+    void create_anim_mov_ctrl(CBlend* b) override;
+    void destroy_anim_mov_ctrl() override;
 
     void HitImpulse(float, Fvector&, Fvector&) override;
-    virtual void Hit(SHit* pHDS);
+    void Hit(SHit* pHDS) override;
     tmc::task<void> Die(CObject* who) override;
-    virtual void g_WeaponBones(int& L, int& R1, int& R2) = 0;
+    virtual void g_WeaponBones(s32& L, s32& R1, s32& R2) = 0;
     void set_lock_corpse(bool b_l_corpse);
     bool is_locked_corpse();
-
-    //	virtual float			GetfHealth				() const;
-    //	virtual float			SetfHealth				(float value);
-
-    //	virtual float			g_Health				()	const;
-    //	virtual float			g_MaxHealth				()	const;
 
     virtual float g_Radiation() const;
     virtual float SetfRadiation(float value);
@@ -78,24 +69,21 @@ public:
     float CalcCondition(float) override;
 
     // Visibility related
-    virtual float ffGetFov() const = 0;
-    virtual float ffGetRange() const = 0;
+    [[nodiscard]] virtual f32 ffGetFov() const = 0;
+    [[nodiscard]] virtual f32 ffGetRange() const = 0;
 
-    virtual bool human_being() const { return (false); }
+    [[nodiscard]] virtual bool human_being() const { return false; }
 
-public:
-    // IC	CPHMovementControl*					PMovement					()						{return m_PhysicMovementControl;}
+    [[nodiscard]] u16 PHGetSyncItemsNumber() override;
+    [[nodiscard]] CPHSynchronize* PHGetSyncItem(u16 item) override;
+    void PHUnFreeze() override;
+    void PHFreeze() override;
 
-    virtual u16 PHGetSyncItemsNumber();
-    virtual CPHSynchronize* PHGetSyncItem(u16 item);
-    virtual void PHUnFreeze();
-    virtual void PHFreeze();
-
-    virtual void PHGetLinearVell(Fvector& velocity);
-    virtual CPHSoundPlayer* ph_sound_player();
-    virtual CIKLimbsController* character_ik_controller();
-    virtual ICollisionHitCallback* get_collision_hit_callback();
-    virtual void set_collision_hit_callback(ICollisionHitCallback* cc);
+    void PHGetLinearVell(Fvector& velocity) override;
+    [[nodiscard]] CPHSoundPlayer* ph_sound_player() override;
+    [[nodiscard]] CIKLimbsController* character_ik_controller() override;
+    [[nodiscard]] ICollisionHitCallback* get_collision_hit_callback() override;
+    void set_collision_hit_callback(ICollisionHitCallback* cc) override;
 
 protected:
     DEFINE_VECTOR(CWound*, WOUND_VECTOR, WOUND_VECTOR_IT);
@@ -150,8 +138,8 @@ protected:
 
     // отношения между существами и персонажами в зоне
 public:
-    virtual ALife::ERelationType tfGetRelationType(const CEntityAlive* tpEntityAlive) const;
-    virtual bool is_relation_enemy(const CEntityAlive* tpEntityAlive) const;
+    [[nodiscard]] virtual ALife::ERelationType tfGetRelationType(const CEntityAlive* tpEntityAlive) const;
+    [[nodiscard]] virtual bool is_relation_enemy(const CEntityAlive* tpEntityAlive) const;
 
 public:
     MONSTER_COMMUNITY* monster_community;
@@ -162,10 +150,11 @@ private:
     bool b_eating{};
 
 protected:
-    virtual CEntityConditionSimple* create_entity_condition(CEntityConditionSimple* ec);
+    [[nodiscard]] CEntityConditionSimple* create_entity_condition(CEntityConditionSimple* ec) override;
 
 public:
     IC CEntityCondition& conditions() const;
+
     IC CMaterialManager& material() const
     {
         VERIFY(m_material_manager);
@@ -178,13 +167,13 @@ protected:
     u32 m_ef_detector_type{std::numeric_limits<u32>::max()};
 
 public:
-    virtual u32 ef_creature_type() const;
-    virtual u32 ef_weapon_type() const;
-    virtual u32 ef_detector_type() const;
+    [[nodiscard]] u32 ef_creature_type() const override;
+    [[nodiscard]] u32 ef_weapon_type() const override;
+    [[nodiscard]] u32 ef_detector_type() const override;
 
 public:
-    virtual CVisualMemoryManager* visual_memory() const { return nullptr; }
-    virtual void net_Relcase(CObject* O);
+    [[nodiscard]] virtual CVisualMemoryManager* visual_memory() const { return nullptr; }
+    void net_Relcase(CObject* O) override;
 
 public:
     IC bool const& is_agresive() const;

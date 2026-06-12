@@ -16,13 +16,13 @@ public:
     explicit CStateMonsterControlledAttack(_Object* obj);
     ~CStateMonsterControlledAttack() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
-    virtual void critical_finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
+    void critical_finalize() override;
 
 private:
-    const CEntityAlive* get_enemy();
+    [[nodiscard]] const CEntityAlive* get_enemy();
 };
 
 #include "monster_state_controlled_attack_inline.h"

@@ -22,11 +22,11 @@ public:
     explicit CStatePoltergeistAttackHidden(_Object* obj);
     ~CStatePoltergeistAttackHidden() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void initialize() override;
+    void execute() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 
-    bool check_home_point();
+    [[nodiscard]] bool check_home_point();
 
 private:
     void select_target_for_move();

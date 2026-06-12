@@ -27,7 +27,7 @@ inline DLL_Pure::~DLL_Pure() = default;
 namespace xr
 {
 template <typename T>
-inline std::unique_ptr<DLL_Pure> client_factory(std::unique_ptr<T>& self)
+[[nodiscard]] constexpr std::unique_ptr<DLL_Pure> client_factory(std::unique_ptr<T>& self)
 {
     return absl::WrapUnique(static_cast<DLL_Pure*>(self.release()));
 }

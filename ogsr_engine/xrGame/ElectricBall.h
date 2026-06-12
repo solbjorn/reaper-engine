@@ -18,9 +18,9 @@ public:
     CElectricBall();
     ~CElectricBall() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
 
 protected:
-    virtual void UpdateCLChild();
+    void UpdateCLChild() override;
 };
 XR_SOL_BASE_CLASSES(CElectricBall);

@@ -569,10 +569,10 @@ void CCustomZone::UpdateWorkload(u32 dt)
 
     switch (m_eZoneState)
     {
-    case eZoneStateIdle: IdleState(); break;
-    case eZoneStateAwaking: AwakingState(); break;
-    case eZoneStateBlowout: BlowoutState(); break;
-    case eZoneStateAccumulate: AccumulateState(); break;
+    case eZoneStateIdle: std::ignore = IdleState(); break;
+    case eZoneStateAwaking: std::ignore = AwakingState(); break;
+    case eZoneStateBlowout: std::ignore = BlowoutState(); break;
+    case eZoneStateAccumulate: std::ignore = AccumulateState(); break;
     case eZoneStateDisabled: break;
     default: NODEFAULT;
     }

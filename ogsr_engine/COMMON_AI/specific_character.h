@@ -124,7 +124,7 @@ protected:
     }
 
     // загрузка из XML файла
-    virtual void load_shared(LPCSTR);
+    void load_shared(gsl::czstring) override;
     static void InitXmlIdToIndex();
 
     shared_str m_OwnId;

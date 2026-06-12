@@ -78,13 +78,15 @@ public:
 protected:
     shared_str m_InfoId;
 
-    void load_shared(LPCSTR);
-    SInfoPortionData* info_data()
+    void load_shared(gsl::czstring) override;
+
+    [[nodiscard]] SInfoPortionData* info_data()
     {
         VERIFY(inherited_shared::get_sd());
         return inherited_shared::get_sd();
     }
-    const SInfoPortionData* info_data() const
+
+    [[nodiscard]] const SInfoPortionData* info_data() const
     {
         VERIFY(inherited_shared::get_sd());
         return inherited_shared::get_sd();

@@ -18,7 +18,7 @@ public:
     explicit CVampirePPEffector(const SPPInfo& ppi, float life_time);
     ~CVampirePPEffector() override = default;
 
-    virtual BOOL Process(SPPInfo& pp);
+    [[nodiscard]] BOOL Process(SPPInfo& pp) override;
 };
 
 //////////////////////////////////////////////////////////////////////////

@@ -29,12 +29,12 @@ protected:
 public:
     ~CSpaceRestrictionBase() override = 0;
 
-    bool inside(u32 level_vertex_id, bool partially_inside);
-    bool inside(u32 level_vertex_id, bool partially_inside, float radius);
-    virtual bool inside(const Fsphere& sphere) = 0;
-    virtual bool shape() const = 0;
-    virtual bool default_restrictor() const = 0;
-    virtual Fsphere sphere() const = 0;
+    [[nodiscard]] bool inside(u32 level_vertex_id, bool partially_inside);
+    [[nodiscard]] bool inside(u32 level_vertex_id, bool partially_inside, float radius);
+    [[nodiscard]] virtual bool inside(const Fsphere& sphere) = 0;
+    [[nodiscard]] virtual bool shape() const = 0;
+    [[nodiscard]] virtual bool default_restrictor() const = 0;
+    [[nodiscard]] virtual Fsphere sphere() const = 0;
 
 public:
 #ifdef DEBUG

@@ -87,15 +87,17 @@ private:
     s32 sky_rays_uptodate;
 
 public:
-    virtual void force_mode(u32 mode) { MODE = mode; }
-    virtual float get_luminocity()
+    void force_mode(u32 mode) override { MODE = mode; }
+
+    [[nodiscard]] f32 get_luminocity() override
     {
         float result = _max(approximate.x, _max(approximate.y, approximate.z));
         clamp(result, 0.f, 1.f);
         return (result);
     }
-    virtual float get_luminocity_hemi() { return get_hemi(); }
-    virtual float* get_luminocity_hemi_cube() { return smooth.hemi_cube; }
+
+    [[nodiscard]] f32 get_luminocity_hemi() override { return get_hemi(); }
+    [[nodiscard]] f32* get_luminocity_hemi_cube() override { return smooth.hemi_cube; }
 
     void add(light* L);
     void update(IRenderable* O);

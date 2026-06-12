@@ -25,9 +25,9 @@ public:
     explicit CStalkerActionDangerGrenadeTakeCover(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionDangerGrenadeTakeCover() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -45,9 +45,9 @@ public:
     explicit CStalkerActionDangerGrenadeWaitForExplosion(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionDangerGrenadeWaitForExplosion() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -68,9 +68,9 @@ public:
     explicit CStalkerActionDangerGrenadeTakeCoverAfterExplosion(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionDangerGrenadeTakeCoverAfterExplosion() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -88,9 +88,9 @@ public:
     explicit CStalkerActionDangerGrenadeLookAround(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionDangerGrenadeLookAround() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -108,7 +108,7 @@ public:
     explicit CStalkerActionDangerGrenadeSearch(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionDangerGrenadeSearch() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };

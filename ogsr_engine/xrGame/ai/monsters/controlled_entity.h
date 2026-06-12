@@ -27,10 +27,10 @@ class XR_NOVTABLE CControlledEntityBase : public virtual RTTI::Enable
 public:
     ~CControlledEntityBase() override = 0;
 
-    virtual bool is_under_control() = 0;
+    [[nodiscard]] virtual bool is_under_control() = 0;
 
     virtual void set_data(const SControlledInfo& info) = 0;
-    virtual SControlledInfo& get_data() = 0;
+    [[nodiscard]] virtual SControlledInfo& get_data() = 0;
 
     virtual void set_task_follow(const CEntity* e) = 0;
     virtual void set_task_attack(const CEntity* e) = 0;
@@ -65,24 +65,24 @@ public:
 
     ~CControlledEntity() override = default;
 
-    virtual bool is_under_control() { return !!m_controller; }
+    [[nodiscard]] bool is_under_control() override { return !!m_controller; }
 
-    virtual void set_data(const SControlledInfo& info) { m_data = info; }
-    virtual SControlledInfo& get_data() { return m_data; }
+    void set_data(const SControlledInfo& info) override { m_data = info; }
+    [[nodiscard]] SControlledInfo& get_data() override { return m_data; }
 
-    virtual void set_task_follow(const CEntity* e);
-    virtual void set_task_attack(const CEntity* e);
+    void set_task_follow(const CEntity* e) override;
+    void set_task_attack(const CEntity* e) override;
 
-    virtual void set_under_control(CController* controller);
-    virtual void free_from_control();
+    void set_under_control(CController* controller) override;
+    void free_from_control() override;
 
-    virtual void on_reinit();
-    virtual void on_die();
-    virtual void on_destroy();
+    void on_reinit() override;
+    void on_die() override;
+    void on_destroy() override;
 
     void init_external(_Object* obj) { m_object = obj; }
 
-    CController* get_controller() { return m_controller; }
+    [[nodiscard]] CController* get_controller() { return m_controller; }
 };
 
 #include "controlled_entity_inline.h"

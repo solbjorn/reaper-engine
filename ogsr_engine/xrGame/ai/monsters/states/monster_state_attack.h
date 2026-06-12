@@ -29,10 +29,10 @@ public:
     explicit CStateMonsterAttack(_Object* obj, state_ptr state_run, state_ptr state_melee);
     ~CStateMonsterAttack() override;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void setup_substates();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void initialize() override;
+    void execute() override;
+    void setup_substates() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 
 protected:
     bool check_steal_state();

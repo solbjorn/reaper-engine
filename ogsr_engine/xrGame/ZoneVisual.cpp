@@ -6,8 +6,8 @@
 
 #include "../Include/xrRender/RenderVisual.h"
 
-CVisualZone::CVisualZone() {}
-CVisualZone::~CVisualZone() {}
+CVisualZone::CVisualZone() = default;
+CVisualZone::~CVisualZone() = default;
 
 tmc::task<bool> CVisualZone::net_Spawn(CSE_Abstract* DC)
 {
@@ -18,27 +18,19 @@ tmc::task<bool> CVisualZone::net_Spawn(CSE_Abstract* DC)
     IKinematicsAnimated* SA = smart_cast<IKinematicsAnimated*>(Visual());
     m_attack_animation = SA->ID_Cycle(Z->attack_animation);
     m_idle_animation = SA->ID_Cycle(Z->startup_animation);
-    SA->PlayCycle(m_idle_animation);
+    std::ignore = SA->PlayCycle(m_idle_animation);
     setVisible(TRUE);
 
     co_return ret;
 }
 
 tmc::task<void> CVisualZone::net_Destroy() { co_await inherited::net_Destroy(); }
-
-void CVisualZone::AffectObjects()
-{
-    inherited::AffectObjects();
-    //	smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(*m_attack_animation);
-}
+void CVisualZone::AffectObjects() { inherited::AffectObjects(); }
 
 void CVisualZone::SwitchZoneState(EZoneState new_state)
 {
     if (m_eZoneState == eZoneStateBlowout && new_state != eZoneStateBlowout)
-    {
-        //	IKinematicsAnimated*	SA=smart_cast<IKinematicsAnimated*>(Visual());
-        smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_idle_animation);
-    }
+        std::ignore = smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_idle_animation);
 
     inherited::SwitchZoneState(new_state);
 }
@@ -54,9 +46,10 @@ void CVisualZone::Load(LPCSTR section)
 void CVisualZone::UpdateBlowout()
 {
     inherited::UpdateBlowout();
+
     if (m_dwAttackAnimaionStart >= (u32)m_iPreviousStateTime && m_dwAttackAnimaionStart < (u32)m_iStateTime)
-        smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_attack_animation);
+        std::ignore = smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_attack_animation);
 
     if (m_dwAttackAnimaionEnd >= (u32)m_iPreviousStateTime && m_dwAttackAnimaionEnd < (u32)m_iStateTime)
-        smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_idle_animation);
+        std::ignore = smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_idle_animation);
 }

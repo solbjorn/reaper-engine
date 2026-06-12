@@ -27,10 +27,10 @@ public:
 
     void AddIconedPdaMessage(LPCSTR textureName, Frect originalRect, LPCSTR message, int iDelay);
 
-    virtual void Update();
+    void Update() override;
 
 protected:
-    virtual void Init(float, float, float, float);
+    void Init(f32, f32, f32, f32) override;
 
     CUIGameLog* m_pGameLog{};
 };

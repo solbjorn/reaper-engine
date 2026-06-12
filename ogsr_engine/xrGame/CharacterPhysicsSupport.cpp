@@ -172,18 +172,20 @@ void CCharacterPhysicsSupport::in_NetSpawn(CSE_Abstract* e)
     CPHDestroyable::Init(); // this zerows colbacks !!;
     IKinematicsAnimated* ka = smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual());
     m_death_anims.setup(ka, m_EntityAlife.cNameSect().c_str(), pSettings);
+
     if (!m_EntityAlife.g_Alive())
     {
         if (m_eType == etStalker)
-            ka->PlayCycle(shared_str{"waunded_1_idle_0"});
+            std::ignore = ka->PlayCycle(shared_str{"waunded_1_idle_0"});
         else
-            ka->PlayCycle(shared_str{"death_init"});
+            std::ignore = ka->PlayCycle(shared_str{"death_init"});
     }
     else if (!m_EntityAlife.animation_movement_controlled())
     {
-        ka->PlayCycle(shared_str{"death_init"}); /// непонятно зачем это вообще надо запускать
-                                                 /// этот хак нужен, потому что некоторым монстрам
-                                                 /// анимация после спона, может быть вообще не назначена
+        // непонятно зачем это вообще надо запускать
+        // этот хак нужен, потому что некоторым монстрам
+        // анимация после спона, может быть вообще не назначена
+        std::ignore = ka->PlayCycle(shared_str{"death_init"});
     }
 
     ka->dcast_PKinematics()->CalculateBones_Invalidate();
@@ -280,33 +282,16 @@ void CCharacterPhysicsSupport::in_NetDestroy()
 }
 
 void CCharacterPhysicsSupport::in_NetSave(NET_Packet& P) { CPHSkeleton::SaveNetState(P); }
-
-void CCharacterPhysicsSupport::in_Init()
-{
-    // b_death_anim_on					= false;
-    // m_pPhysicsShell					= NULL;
-    // m_saved_impulse					= 0.f;
-}
+void CCharacterPhysicsSupport::in_Init() {}
 
 void CCharacterPhysicsSupport::in_shedule_Update(u32 DT)
 {
-    // CPHSkeleton::Update(DT);
     if (!m_EntityAlife.use_simplified_visual())
         CPHDestroyable::SheduleUpdate(DT);
     else if (m_pPhysicsShell && m_pPhysicsShell->isFullActive() && !m_pPhysicsShell->isEnabled())
-    {
         m_EntityAlife.deactivate_physics_shell();
-    }
-    movement()->in_shedule_Update(DT);
 
-#if 0
-	if( anim_mov_state.active )
-	{
-		DBG_OpenCashedDraw( );
-		DBG_DrawMatrix( mXFORM, 0.5f );
-		DBG_ClosedCashedDraw( 5000 );
-	}
-#endif
+    movement()->in_shedule_Update(DT);
 }
 
 #ifdef DEBUG
@@ -319,6 +304,7 @@ bool g_bCopDeathAnim{true};
 
 const float cmp_angle = M_PI / 10.f;
 const float cmp_ldisp = 0.1f;
+
 IC bool cmp(const Fmatrix& f0, const Fmatrix& f1)
 {
     Fmatrix if0;
@@ -434,10 +420,9 @@ IC void CCharacterPhysicsSupport::UpdateDeathAnims()
 {
     VERIFY(m_pPhysicsShell->isFullActive());
 
-    if (!m_flags.test(fl_death_anim_on) &&
-        !is_imotion(m_interactive_motion)) //! m_flags.test(fl_use_death_motion)//!b_death_anim_on&&m_pPhysicsShell->isFullActive()
+    if (!m_flags.test(fl_death_anim_on) && !is_imotion(m_interactive_motion))
     {
-        smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual())->PlayCycle(shared_str{"death_init"});
+        std::ignore = smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual())->PlayCycle(shared_str{"death_init"});
         m_flags.set(fl_death_anim_on, TRUE);
     }
 }
@@ -449,6 +434,7 @@ void CCharacterPhysicsSupport::in_UpdateCL()
 
     update_animation_collision();
     CalculateTimeDelta();
+
     if (m_pPhysicsShell)
     {
         VERIFY(m_pPhysicsShell->isFullActive());
@@ -742,9 +728,8 @@ void CCharacterPhysicsSupport::ActivateShell(CObject* who)
     {
         const Fmatrix sv_xform = mXFORM;
         mXFORM.set(start_xform);
-        // anim_mov_blend->blendPower = 1;
         anim_mov_blend->timeCurrent += Device.fTimeDelta * anim_mov_blend->speed;
-        m_pPhysicsShell->AnimToVelocityState(Device.fTimeDelta, 2 * default_l_limit, 10.f * default_w_limit);
+        std::ignore = m_pPhysicsShell->AnimToVelocityState(Device.fTimeDelta, 2 * default_l_limit, 10.f * default_w_limit);
         mXFORM.set(sv_xform);
     }
 }

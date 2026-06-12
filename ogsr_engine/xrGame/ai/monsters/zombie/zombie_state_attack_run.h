@@ -18,12 +18,12 @@ public:
     explicit CStateZombieAttackRun(_Object* obj);
     ~CStateZombieAttackRun() override;
 
-    virtual void initialize();
-    virtual void execute();
+    void initialize() override;
+    void execute() override;
 
-    virtual bool check_completion();
-    virtual bool check_start_conditions();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    [[nodiscard]] bool check_completion() override;
+    [[nodiscard]] bool check_start_conditions() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 
 private:
     void choose_action();

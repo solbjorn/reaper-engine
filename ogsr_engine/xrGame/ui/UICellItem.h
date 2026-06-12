@@ -34,25 +34,24 @@ public:
 
     [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
     [[nodiscard]] bool OnMouse(f32, f32, EUIMessages mouse_action) override;
-    virtual void Draw();
-    virtual void Update();
+    void Draw() override;
+    void Update() override;
     virtual void UpdateItemText();
 
     virtual void OnAfterChild(CUIDragDropListEx*) {}
 
-    u32 ChildsCount();
+    [[nodiscard]] u32 ChildsCount();
     void PushChild(CUICellItem*);
-    CUICellItem* PopChild();
-    CUICellItem* Child(u32 idx) { return m_childs[idx]; }
-    bool HasChild(CUICellItem* item);
-    virtual bool EqualTo(CUICellItem* itm);
-    IC const Ivector2& GetGridSize() { return m_grid_size; } // size in grid
+    [[nodiscard]] CUICellItem* PopChild();
+    [[nodiscard]] CUICellItem* Child(u32 idx) { return m_childs[idx]; }
+    [[nodiscard]] bool HasChild(CUICellItem* item);
+    [[nodiscard]] virtual bool EqualTo(CUICellItem* itm);
+    [[nodiscard]] const Ivector2& GetGridSize() { return m_grid_size; } // size in grid
     void SetAccelerator(xr::key_id dik) { m_accelerator = dik; }
     [[nodiscard]] xr::key_id GetAccelerator() const { return m_accelerator; }
 
-    virtual CUIDragItem* CreateDragItem();
-
-    CUIDragDropListEx* OwnerList() { return m_pParentList; }
+    [[nodiscard]] virtual CUIDragItem* CreateDragItem();
+    [[nodiscard]] CUIDragDropListEx* OwnerList() { return m_pParentList; }
 
     static CUICellItem* m_mouse_selected_item;
 
@@ -90,12 +89,12 @@ public:
     virtual void Init(const ui_shader& sh, const Frect& rect, const Frect& text_rect);
     CUIStatic* wnd() { return &m_static; }
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
-    virtual void Draw();
+    void Draw() override;
     tmc::task<void> OnRender() override;
     tmc::task<void> OnFrame() override;
-    CUICellItem* ParentItem() { return m_pParent; }
+    [[nodiscard]] CUICellItem* ParentItem() { return m_pParent; }
     void SetBackList(CUIDragDropListEx* l);
-    CUIDragDropListEx* BackList() { return m_back_list; }
-    Fvector2 GetPosition();
-    virtual bool CapturesFocusToo() { return false; }
+    [[nodiscard]] CUIDragDropListEx* BackList() { return m_back_list; }
+    [[nodiscard]] Fvector2 GetPosition();
+    [[nodiscard]] bool CapturesFocusToo() override { return false; }
 };

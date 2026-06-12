@@ -23,17 +23,18 @@ public:
     CScriptZone();
     ~CScriptZone() override;
 
-    virtual void reinit();
+    void reinit() override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual void net_Relcase(CObject* O);
+    void net_Relcase(CObject* O) override;
     tmc::task<void> shedule_Update(u32 dt) override;
-    virtual void feel_touch_new(CObject* O);
-    virtual void feel_touch_delete(CObject* O);
-    virtual BOOL feel_touch_contact(CObject* O);
+    void feel_touch_new(CObject* O) override;
+    void feel_touch_delete(CObject* O) override;
+    [[nodiscard]] BOOL feel_touch_contact(CObject* O) override;
     bool active_contact(u16 id) const;
-    virtual bool IsVisibleForZones() { return false; }
-    virtual bool register_schedule() const { return true; }
+    [[nodiscard]] bool IsVisibleForZones() override { return false; }
+    [[nodiscard]] bool register_schedule() const override { return true; }
+
 #ifdef DEBUG
     virtual void OnRender();
 #endif

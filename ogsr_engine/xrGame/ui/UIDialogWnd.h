@@ -34,7 +34,7 @@ public:
 
     virtual void Show();
     virtual void Hide();
-    virtual void Update();
+    void Update() override;
 
     virtual tmc::task<bool> IR_OnKeyboardPress(xr::key_id dik);
     [[nodiscard]] virtual bool IR_OnKeyboardRelease(xr::key_id dik);
@@ -46,9 +46,9 @@ public:
 
     CDialogHolder* GetHolder() { return m_pHolder; }
     void SetHolder(CDialogHolder* h) { m_pHolder = h; }
-    virtual bool StopAnyMove() { return true; }
-    virtual bool NeedCursor() const { return true; }
-    virtual bool WorkInPause() const { return m_bWorkInPause; }
+    [[nodiscard]] virtual bool StopAnyMove() { return true; }
+    [[nodiscard]] virtual bool NeedCursor() const { return true; }
+    [[nodiscard]] virtual bool WorkInPause() const { return m_bWorkInPause; }
 };
 XR_SOL_BASE_CLASSES(CUIDialogWnd);
 

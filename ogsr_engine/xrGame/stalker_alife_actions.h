@@ -25,9 +25,9 @@ public:
     explicit CStalkerActionGatherItems(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionGatherItems() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -48,7 +48,7 @@ public:
     explicit CStalkerActionNoALife(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionNoALife() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };

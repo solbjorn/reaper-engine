@@ -43,7 +43,7 @@ public:
     IC void init(_object_type* object, LPCSTR evaluator_name);
     inline virtual void setup(_object_type* object, CPropertyStorage* storage);
     inline virtual void Load(LPCSTR);
-    inline virtual _value_type evaluate();
+    [[nodiscard]] inline virtual _value_type evaluate();
     IC _value_type property(const _condition_type& condition_id) const;
 
     virtual void save(NET_Packet&) {}

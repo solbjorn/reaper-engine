@@ -20,10 +20,11 @@ private:
     const CCoverPoint* m_cover;
 
 public:
-    inline explicit CDangerCoverLocation(const CCoverPoint* cover, u32 level_time, u32 interval, float radius, const squad_mask_type& mask = squad_mask_type(-1));
+    inline explicit CDangerCoverLocation(const CCoverPoint* cover, u32 level_time, u32 interval, float radius,
+                                         const squad_mask_type& mask = squad_mask_type(-1));
     ~CDangerCoverLocation() override = default;
 
-    virtual const Fvector& position() const;
+    [[nodiscard]] const Fvector& position() const override;
 };
 
 #include "danger_cover_location_inline.h"

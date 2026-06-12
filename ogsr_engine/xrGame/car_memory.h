@@ -33,10 +33,10 @@ public:
     explicit car_memory(CCar* object);
     ~car_memory() override = default;
 
-    virtual void reload(LPCSTR section);
+    void reload(gsl::czstring section) override;
 
-    virtual BOOL feel_vision_isRelevant(CObject* object);
-    virtual void camera(Fvector& position, Fvector& direction, Fvector& normal, float& field_of_view, float& aspect_ratio, float& near_plane, float& far_plane);
+    [[nodiscard]] BOOL feel_vision_isRelevant(CObject* object) override;
+    void camera(Fvector3& position, Fvector3& direction, Fvector3& normal, f32& field_of_view, f32& aspect_ratio, f32& near_plane, f32& far_plane) override;
     void set_camera(const Fvector& position, const Fvector& direction, const Fvector& normal);
 };
 

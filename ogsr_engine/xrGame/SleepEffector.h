@@ -28,7 +28,7 @@ public:
     explicit CSleepEffectorPP(const SPPInfo& ppi, float life_time, float attack_time = 0.0f, float release_time = 0.0f);
     ~CSleepEffectorPP() override = default;
 
-    virtual BOOL Process(SPPInfo& pp);
+    [[nodiscard]] BOOL Process(SPPInfo& pp) override;
 
     // текущий статус сна
     enum SLEEP_STATE

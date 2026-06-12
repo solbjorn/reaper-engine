@@ -10,15 +10,15 @@ class CBlender_Detail_Still : public IBlenderXr
     RTTI_DECLARE_TYPEINFO(CBlender_Detail_Still, IBlenderXr);
 
 public:
-    virtual LPCSTR getComment() { return "LEVEL: detail objects"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "LEVEL: detail objects"; }
 
-    virtual void Save(IWriter& fs);
-    virtual void Load(IReader& fs, u16 version);
+    void Save(IWriter& fs) override;
+    void Load(IReader& fs, u16 version) override;
 
-    virtual void SaveIni(CInifile* ini_file, LPCSTR section);
-    virtual void LoadIni(CInifile* ini_file, LPCSTR section);
+    void SaveIni(CInifile* ini_file, gsl::czstring section) override;
+    void LoadIni(CInifile* ini_file, gsl::czstring section) override;
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 
     CBlender_Detail_Still();
     ~CBlender_Detail_Still() override;

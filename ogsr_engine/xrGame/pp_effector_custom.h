@@ -15,13 +15,13 @@ public:
     explicit CPPEffectorCustom(const SPPInfo& ppi, bool one_instance = false, bool destroy_from_engine = true);
     ~CPPEffectorCustom() override = default;
 
-    EEffectorPPType get_type() { return m_type; }
+    [[nodiscard]] EEffectorPPType get_type() { return m_type; }
 
 protected:
-    virtual BOOL Process(SPPInfo& pp);
+    [[nodiscard]] BOOL Process(SPPInfo& pp) override;
 
     // update factor; if return FALSE - destroy
-    virtual BOOL update() { return TRUE; }
+    [[nodiscard]] virtual BOOL update() { return TRUE; }
 
 private:
     SPPInfo m_state;
@@ -42,8 +42,8 @@ public:
     CPPEffectorCustomController() = default;
     ~CPPEffectorCustomController() override = default;
 
-    IC virtual void load(LPCSTR section);
-    IC virtual bool active() { return !!m_effector; }
+    inline virtual void load(gsl::czstring section);
+    [[nodiscard]] inline virtual bool active() { return !!m_effector; }
 
 protected:
     _Effector* m_effector{};
@@ -104,7 +104,7 @@ public:
     explicit CPPEffectorControlled(CPPEffectorController* controller, const SPPInfo& ppi, bool one_instance = false, bool destroy_from_engine = true);
     ~CPPEffectorControlled() override = default;
 
-    virtual BOOL update();
+    [[nodiscard]] BOOL update() override;
     IC void set_factor(float value) { m_factor = value; }
 };
 
@@ -120,12 +120,12 @@ public:
 
     virtual void frame_update();
 
-    virtual bool check_completion() = 0;
-    virtual bool check_start_conditions() = 0;
+    [[nodiscard]] virtual bool check_completion() = 0;
+    [[nodiscard]] virtual bool check_start_conditions() = 0;
     virtual void update_factor() = 0;
 
     // factory method
-    virtual CPPEffectorControlled* create_effector() = 0;
+    [[nodiscard]] virtual CPPEffectorControlled* create_effector() = 0;
 
 protected:
     void activate();

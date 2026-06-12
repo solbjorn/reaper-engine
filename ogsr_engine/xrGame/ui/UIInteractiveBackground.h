@@ -32,8 +32,8 @@ public:
     CUIInteractiveBackground() = default;
     ~CUIInteractiveBackground() override = default;
 
-    virtual void Init(float x, float y, float width, float height);
-    virtual void Init(LPCSTR texture_e, float x, float y, float width, float height);
+    void Init(f32 x, f32 y, f32 width, f32 height) override;
+    virtual void Init(gsl::czstring texture_e, f32 x, f32 y, f32 width, f32 height);
     T* CreateE();
     T* CreateD();
     T* CreateT();
@@ -42,15 +42,15 @@ public:
     T* GetD();
     T* GetT();
     T* GetH();
-    virtual void InitEnabledState(LPCSTR texture_e);
-    virtual void InitDisabledState(LPCSTR texture_d);
-    virtual void InitHighlightedState(LPCSTR texture_h);
-    virtual void InitTouchedState(LPCSTR texture_t);
+    virtual void InitEnabledState(gsl::czstring texture_e);
+    virtual void InitDisabledState(gsl::czstring texture_d);
+    virtual void InitHighlightedState(gsl::czstring texture_h);
+    virtual void InitTouchedState(gsl::czstring texture_t);
     virtual void SetState(UIState state);
-    virtual void Draw();
+    void Draw() override;
 
-    virtual void SetWidth(float width);
-    virtual void SetHeight(float heigth);
+    void SetWidth(f32 width) override;
+    void SetHeight(f32 heigth) override;
 
 protected:
     T* m_stateCurrent{};

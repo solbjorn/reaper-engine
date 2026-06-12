@@ -54,7 +54,7 @@ public:
     explicit CCameraBase(CObject* p, u32 flags);
     ~CCameraBase() override;
 
-    virtual void Load(LPCSTR section);
+    virtual void Load(gsl::czstring section);
 
     void SetParent(CObject* p)
     {
@@ -65,7 +65,7 @@ public:
     virtual void OnActivate(CCameraBase*) {}
     virtual void OnDeactivate() {}
     virtual void Move(EGameActions, f32 = 0.0f, f32 = 1.0f) {}
-    virtual void Update(Fvector&, Fvector&) {}
+    virtual void Update(Fvector3&, Fvector3&) {}
 
     virtual void Get(Fvector& P, Fvector& D, Fvector& N) const
     {
@@ -88,6 +88,6 @@ public:
         roll = R;
     }
 
-    virtual float GetWorldYaw() const { return 0.0f; }
-    virtual float GetWorldPitch() const { return 0.0f; }
+    [[nodiscard]] virtual f32 GetWorldYaw() const { return 0.0f; }
+    [[nodiscard]] virtual f32 GetWorldPitch() const { return 0.0f; }
 };

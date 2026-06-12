@@ -36,7 +36,7 @@ public:
     void Destroy();
 
 private:
-    virtual BOOL Process(SPPInfo& pp);
+    [[nodiscard]] BOOL Process(SPPInfo& pp) override;
 };
 
 CAlienEffectorPP::CAlienEffectorPP(const SPPInfo& ppi, EEffectorPPType type) : CEffectorPP(type, flt_max, false)
@@ -106,7 +106,8 @@ public:
 
 CAlienEffector::CAlienEffector(ECamEffectorType type, CAI_Bloodsucker* obj) : inherited(type, flt_max)
 {
-    dangle_target.set(angle_normalize(Random.randFs(DELTA_ANGLE_X)), angle_normalize(Random.randFs(DELTA_ANGLE_Y)), angle_normalize(Random.randFs(DELTA_ANGLE_Z)));
+    dangle_target.set(angle_normalize(Random.randFs(DELTA_ANGLE_X)), angle_normalize(Random.randFs(DELTA_ANGLE_Y)),
+                      angle_normalize(Random.randFs(DELTA_ANGLE_Z)));
     dangle_current.set(0.f, 0.f, 0.f);
 
     monster = obj;

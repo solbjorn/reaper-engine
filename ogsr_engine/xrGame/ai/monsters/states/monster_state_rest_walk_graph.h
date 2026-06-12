@@ -15,8 +15,8 @@ public:
     explicit CStateMonsterRestWalkGraph(_Object* obj);
     ~CStateMonsterRestWalkGraph() override;
 
-    virtual void execute();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void execute() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 };
 
 #include "monster_state_rest_walk_graph_inline.h"

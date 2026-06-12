@@ -29,7 +29,7 @@ protected:
     u32 m_forget_killer_time;
 
 protected:
-    virtual CEntityConditionSimple* create_entity_condition(CEntityConditionSimple* ec);
+    [[nodiscard]] virtual CEntityConditionSimple* create_entity_condition(CEntityConditionSimple* ec);
 
 public:
     /*virtual*/ IC float GetfHealth() const { return m_entity_condition->GetHealth(); }
@@ -45,7 +45,7 @@ public:
     int id_Squad;
     int id_Group;
 
-    virtual void ChangeTeam(int team, int squad, int group);
+    virtual void ChangeTeam(s32 team, s32 squad, s32 group);
 
     struct SEntityState
     {
@@ -63,14 +63,14 @@ public:
     CEntity();
     ~CEntity() override;
 
-    [[nodiscard]] virtual DLL_Pure* _construct();
-    [[nodiscard]] virtual CEntity* cast_entity() { return this; }
+    [[nodiscard]] DLL_Pure* _construct() override;
+    [[nodiscard]] CEntity* cast_entity() override { return this; }
 
 public:
     // Core events
-    virtual void Load(LPCSTR section);
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
+    void Load(gsl::czstring section) override;
+    void reinit() override;
+    void reload(gsl::czstring section) override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
 
@@ -79,12 +79,11 @@ public:
     bool IsFocused() const;
     bool IsMyCamera() const;
 
-    //	virtual float			g_Health			()const	{ return GetfHealth();}
     /*	virtual*/ IC float GetMaxHealth() const { return m_entity_condition->max_health(); }
     /*	virtual*/ IC void SetMaxHealth(float v) { m_entity_condition->max_health() = v; }
 
     /*virtual*/ IC BOOL g_Alive() const { return GetfHealth() > 0; }
-    virtual BOOL g_State(SEntityState&) const { return FALSE; }
+    [[nodiscard]] virtual BOOL g_State(SEntityState&) const { return FALSE; }
 
     bool AlreadyDie() { return 0 != GetLevelDeathTime() ? true : false; }
     ALife::_TIME_ID GetGameDeathTime() const { return m_game_death_time; }
@@ -97,8 +96,8 @@ public:
     int g_Group() const { return id_Group; }
 
     // Health calculations
-    virtual void Hit(SHit* pHDS);
-    virtual void HitSignal(float P, Fvector& local_dir, CObject* who, s16 element) = 0;
+    void Hit(SHit* pHDS) override;
+    virtual void HitSignal(f32 P, Fvector& local_dir, CObject* who, s16 element) = 0;
     virtual void HitImpulse(float P, Fvector& vWorldDir, Fvector& vLocalDir) = 0;
 
     virtual tmc::task<void> Die(CObject*);
@@ -107,7 +106,7 @@ public:
     // Events
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
 
-    virtual BOOL IsVisibleForHUD() { return g_Alive(); }
+    [[nodiscard]] virtual BOOL IsVisibleForHUD() { return g_Alive(); }
     virtual void g_fireParams(CHudItem*, Fvector&, Fvector&, const bool = false) {}
 
     // time of entity death
@@ -121,7 +120,7 @@ private:
 
 public:
     IC u16 killer_id() const { return m_killer_id; }
-    virtual bool use_simplified_visual() const { return false; }
+    [[nodiscard]] virtual bool use_simplified_visual() const { return false; }
 
 public:
     virtual void on_before_change_team();

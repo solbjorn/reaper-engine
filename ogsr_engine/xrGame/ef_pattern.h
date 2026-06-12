@@ -65,5 +65,5 @@ public:
     ~CPatternFunction() override;
 
     virtual void vfLoadEF(LPCSTR caEFFileName);
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };

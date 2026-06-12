@@ -61,15 +61,18 @@ public:
 
 protected:
     shared_str m_ArticleId;
-    virtual void load_shared(LPCSTR);
+
+    void load_shared(gsl::czstring) override;
     static void InitXmlIdToIndex();
 
 public:
-    const shared_str Id() { return m_ArticleId; }
-    SArticleData* data()
+    [[nodiscard]] const shared_str Id() { return m_ArticleId; }
+
+    [[nodiscard]] SArticleData* data()
     {
         VERIFY(inherited_shared::get_sd());
         return inherited_shared::get_sd();
     }
+
     bool readed;
 };

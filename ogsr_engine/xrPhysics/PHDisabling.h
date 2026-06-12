@@ -56,7 +56,7 @@ protected:
     virtual void ReEnable() = 0;
     virtual void UpdateL1() = 0;
     virtual void UpdateL2() = 0;
-    virtual dBodyID get_body() = 0;
+    [[nodiscard]] virtual dBodyID get_body() = 0;
 };
 
 inline CBaseDisableData::~CBaseDisableData() = default;
@@ -69,7 +69,7 @@ public:
     ~CPHDisablingBase() override = default;
 
     void UpdateValues(const Fvector& new_pos, const Fvector& new_vel);
-    virtual void UpdateL2();
+    void UpdateL2() override;
     virtual void set_DisableParams(const SOneDDOParams& params);
 
 protected:
@@ -97,7 +97,7 @@ public:
     ~CPHDisablingRotational() override = default;
 
     void Reinit();
-    virtual void UpdateL1();
+    void UpdateL1() override;
     virtual void set_DisableParams(const SAllDDOParams& params);
 };
 
@@ -110,7 +110,7 @@ public:
     ~CPHDisablingTranslational() override = default;
 
     void Reinit();
-    virtual void UpdateL1();
+    void UpdateL1() override;
     virtual void set_DisableParams(const SAllDDOParams& params);
 };
 
@@ -122,9 +122,9 @@ public:
     ~CPHDisablingFull() override = default;
 
     void Reinit();
-    virtual void UpdateL1();
-    virtual void UpdateL2();
-    virtual void set_DisableParams(const SAllDDOParams& params);
+    void UpdateL1() override;
+    void UpdateL2() override;
+    void set_DisableParams(const SAllDDOParams& params) override;
 };
 
 #endif

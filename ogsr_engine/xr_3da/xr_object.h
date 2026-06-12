@@ -81,18 +81,18 @@ public:
     void MakeMeCrow();
 
     ICF void IAmNotACrowAnyMore() { Props.crow = 0; }
-    virtual BOOL AlwaysTheCrow() { return FALSE; }
+    [[nodiscard]] virtual BOOL AlwaysTheCrow() { return FALSE; }
 
     // Network
     ICF BOOL Local() const { return Props.net_Local; }
     ICF BOOL Remote() const { return !Props.net_Local; }
     ICF u16 ID() const { return Props.net_ID; }
     ICF void setID(u16 _ID) { Props.net_ID = _ID; }
-    virtual BOOL Ready() { return Props.net_Ready; }
+    [[nodiscard]] virtual BOOL Ready() { return Props.net_Ready; }
     [[nodiscard]] bool GetTmpPreDestroy() const { return !!Props.bPreDestroy; }
     void SetTmpPreDestroy(bool b) { Props.bPreDestroy = b; }
-    virtual float shedule_Scale() const { return Device.vCameraPosition.distance_to(Position()) / 200.f; }
-    virtual bool shedule_Needed() { return processing_enabled(); }
+    [[nodiscard]] f32 shedule_Scale() const override { return Device.vCameraPosition.distance_to(Position()) / 200.0f; }
+    [[nodiscard]] bool shedule_Needed() override { return processing_enabled(); }
 
     // Parentness
     IC CObject* H_Parent() { return Parent; }
@@ -103,33 +103,36 @@ public:
 
     // Geometry xform
     virtual void Center(Fvector& C) const;
+
     IC const Fmatrix& XFORM() const
     {
         VERIFY(_valid(renderable.xform));
         return renderable.xform;
     }
+
     ICF Fmatrix& XFORM() { return renderable.xform; }
-    virtual void spatial_register();
-    virtual void spatial_move();
+
+    void spatial_register() override;
+    void spatial_move() override;
     void spatial_update(float eps_P, float eps_R);
 
     ICF Fvector& Direction() { return renderable.xform.k; }
     ICF const Fvector& Direction() const { return renderable.xform.k; }
     ICF Fvector& Position() { return renderable.xform.c; }
     ICF const Fvector& Position() const { return renderable.xform.c; }
-    virtual float Radius() const;
+    [[nodiscard]] virtual f32 Radius() const;
     virtual const Fbox& BoundingBox() const;
 
     sector_id_t Sector() const { return H_Root()->spatial.sector_id; }
     IC IRender_ObjectSpecific* ROS() { return renderable_ROS(); }
-    virtual BOOL renderable_ShadowGenerate() { return TRUE; }
-    virtual BOOL renderable_ShadowReceive() { return TRUE; }
+    [[nodiscard]] BOOL renderable_ShadowGenerate() override { return true; }
+    [[nodiscard]] BOOL renderable_ShadowReceive() override { return true; }
 
     // Accessors and converters
     ICF IRenderVisual* Visual() const { return renderable.visual; }
     ICF ICollisionForm* CFORM() const { return collidable.model; }
-    virtual CObject* dcast_CObject() { return this; }
-    virtual IRenderable* dcast_Renderable() { return this; }
+    [[nodiscard]] CObject* dcast_CObject() override { return this; }
+    [[nodiscard]] IRenderable* dcast_Renderable() override { return this; }
     virtual void OnChangeVisual() {}
 
     // Name management
@@ -139,7 +142,7 @@ public:
     void cNameSect_set(shared_str N);
     ICF shared_str cNameVisual() const { return NameVisual; }
     void cNameVisual_set(shared_str N);
-    virtual shared_str shedule_Name() const { return cName(); }
+    [[nodiscard]] shared_str shedule_Name() const override { return cName(); }
     ICF LPCSTR Name_script() const { return NameObject.c_str(); }
 
     // Properties
@@ -164,8 +167,8 @@ public:
     CObject();
     ~CObject() override;
 
-    virtual void Load(LPCSTR section);
-    virtual void reload(LPCSTR) {}
+    virtual void Load(gsl::czstring section);
+    virtual void reload(gsl::czstring) {}
 
     // Update
     tmc::task<void> shedule_Update(u32 dt) override; // Called by sheduler
@@ -175,12 +178,12 @@ public:
     virtual tmc::task<bool> net_Spawn(CSE_Abstract*);
     virtual tmc::task<void> net_Destroy();
     virtual void net_Export(CSE_Abstract*) {} // export to server
-    virtual BOOL net_Relevant() { return FALSE; } // relevant for export to server
+    [[nodiscard]] virtual BOOL net_Relevant() { return FALSE; } // relevant for export to server
     virtual void net_Relcase(CObject*) {} // destroy all links to another objects
 
     // Position stack
     [[nodiscard]] auto ps_Size() const { return PositionStack.size(); }
-    virtual SavedPosition ps_Element(u32 ID) const;
+    [[nodiscard]] virtual SavedPosition ps_Element(u32 ID) const;
 
     virtual void ForceTransform(const Fmatrix& m) = 0;
     virtual void ForceTransformAndDirection(const Fmatrix& m) = 0;
@@ -197,7 +200,7 @@ public:
     virtual const IObjectPhysicsCollision* physics_collision() { return nullptr; }
 
 public:
-    virtual bool register_schedule() const { return true; }
+    [[nodiscard]] virtual bool register_schedule() const { return true; }
 };
 
 #endif //__XR_OBJECT_H__

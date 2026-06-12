@@ -25,17 +25,17 @@ public:
     ~CPhysicItem() override;
 
     void init();
-    virtual void reinit();
-    virtual void Load(LPCSTR section);
-    virtual void reload(LPCSTR section);
-    virtual void OnH_B_Independent(bool just_before_destroy);
-    virtual void OnH_B_Chield();
+    void reinit() override;
+    void Load(gsl::czstring section) override;
+    void reload(gsl::czstring section) override;
+    void OnH_B_Independent(bool just_before_destroy) override;
+    void OnH_B_Chield() override;
     tmc::task<void> UpdateCL() override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual void activate_physic_shell();
-    virtual void setup_physic_shell();
+    void activate_physic_shell() override;
+    void setup_physic_shell() override;
     virtual void create_box_physic_shell();
     virtual void create_box2sphere_physic_shell();
-    virtual void create_physic_shell();
+    void create_physic_shell() override;
 };

@@ -46,8 +46,8 @@ public:
 
     ~CControlDirection() override = default;
 
-    virtual void reinit();
-    virtual void update_frame();
+    void reinit() override;
+    void update_frame() override;
 
     // services
     bool is_face_target(const Fvector& position, float eps_angle);

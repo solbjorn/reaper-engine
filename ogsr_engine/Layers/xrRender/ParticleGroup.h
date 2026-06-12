@@ -107,41 +107,40 @@ public:
     CParticleGroup();
     ~CParticleGroup() override;
 
-    virtual void OnFrame(u32 dt);
+    void OnFrame(u32 dt) override;
 
-    virtual void Copy(dxRender_Visual*) { FATAL("Can't duplicate particle system - NOT IMPLEMENTED"); }
+    void Copy(dxRender_Visual*) override { FATAL("Can't duplicate particle system - NOT IMPLEMENTED"); }
 
-    virtual void OnDeviceCreate();
-    virtual void OnDeviceDestroy();
+    void OnDeviceCreate() override;
+    void OnDeviceDestroy() override;
 
-    virtual void UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM);
+    void UpdateParent(const Fmatrix& m, const Fvector3& velocity, BOOL bXFORM) override;
 
     BOOL Compile(CPGDef* def);
 
     const CPGDef* GetDefinition() { return m_Def; }
 
-    virtual void Play();
-    virtual void Stop(BOOL bDefferedStop = TRUE);
-    virtual BOOL IsPlaying() { return m_RT_Flags.is(flRT_Playing); }
+    void Play() override;
+    void Stop(BOOL bDefferedStop = TRUE) override;
+    [[nodiscard]] BOOL IsPlaying() override { return m_RT_Flags.is(flRT_Playing); }
 
-    virtual void SetHudMode(BOOL b);
-    virtual BOOL GetHudMode();
+    void SetHudMode(BOOL b) override;
+    [[nodiscard]] BOOL GetHudMode() override;
 
-    virtual float GetTimeLimit()
+    [[nodiscard]] f32 GetTimeLimit() override
     {
         VERIFY(m_Def);
         return m_Def->m_fTimeLimit;
     }
 
-    virtual const shared_str Name()
+    [[nodiscard]] const shared_str Name() override
     {
         VERIFY(m_Def);
         return m_Def->m_Name;
     }
 
-    virtual u32 ParticlesCount();
+    [[nodiscard]] u32 ParticlesCount() override;
 };
-
 } // namespace PS
 
 #define PGD_VERSION 0x0003

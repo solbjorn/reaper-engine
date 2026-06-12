@@ -11,9 +11,9 @@ public:
     typedef CWeaponCustomPistol inherited;
 
 protected:
-    virtual void switch2_Fire();
-    virtual void OnAnimationEnd(u32 state);
-    virtual size_t GetWeaponTypeForCollision() const override { return SniperRifle; }
+    void switch2_Fire() override;
+    void OnAnimationEnd(u32 state) override;
+    [[nodiscard]] size_t GetWeaponTypeForCollision() const override { return SniperRifle; }
 
 public:
     CWeaponSVD();

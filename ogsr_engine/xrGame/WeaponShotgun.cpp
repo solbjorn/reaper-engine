@@ -348,7 +348,8 @@ void CWeaponShotgun::OnAnimationEnd(u32 state)
         break;
     }
     case eSubstateReloadInProcess: {
-        AddCartridge(1);
+        std::ignore = AddCartridge(1);
+
         if (m_stop_triStateReload || !HaveCartridgeInInventory(1) || std::ssize(m_magazine) >= iMagazineSize)
             m_sub_state = eSubstateReloadEnd;
 

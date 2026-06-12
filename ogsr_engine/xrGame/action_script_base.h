@@ -22,13 +22,13 @@ protected:
 public:
     _object_type* m_object;
 
-    inline explicit CActionScriptBase(const xr_vector<COperatorCondition>& conditions, const xr_vector<COperatorCondition>& effects, _object_type* object = nullptr,
-                                      LPCSTR action_name = "");
+    inline explicit CActionScriptBase(const xr_vector<COperatorCondition>& conditions, const xr_vector<COperatorCondition>& effects,
+                                      _object_type* object = nullptr, LPCSTR action_name = "");
     inline explicit CActionScriptBase(_object_type* object = nullptr, LPCSTR action_name = "");
     ~CActionScriptBase() override = default;
 
     virtual void setup(_object_type* object, CPropertyStorage*);
-    virtual void setup(CScriptGameObject* object, CPropertyStorage* storage);
+    void setup(CScriptGameObject* object, CPropertyStorage* storage) override;
 };
 
 #include "action_script_base_inline.h"

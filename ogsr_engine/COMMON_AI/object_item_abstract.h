@@ -22,11 +22,11 @@ public:
     inline explicit CObjectItemAbstract(CLASS_ID clsid, LPCSTR script_clsid);
     ~CObjectItemAbstract() override = default;
 
-    inline CLASS_ID clsid() const;
-    inline shared_str script_clsid() const;
+    [[nodiscard]] inline CLASS_ID clsid() const;
+    [[nodiscard]] inline shared_str script_clsid() const;
 
-    virtual ObjectFactory::CLIENT_BASE_CLASS* client_object() const = 0;
-    virtual ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR section) const = 0;
+    [[nodiscard]] virtual ObjectFactory::CLIENT_BASE_CLASS* client_object() const = 0;
+    [[nodiscard]] virtual ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR section) const = 0;
 };
 
 #include "object_item_abstract_inline.h"

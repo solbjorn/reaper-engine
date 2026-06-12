@@ -37,7 +37,7 @@ public:
 
     void InitInventory();
     void InitInventory_delayed();
-    virtual bool StopAnyMove() { return !!Core.Features.test(xrCore::Feature::more_hide_weapon); }
+    [[nodiscard]] bool StopAnyMove() override { return !!Core.Features.test(xrCore::Feature::more_hide_weapon); }
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
@@ -45,11 +45,11 @@ public:
 
     IC CInventory* GetInventory() { return m_pInv; }
 
-    virtual void Update();
-    virtual void Draw();
+    void Update() override;
+    void Draw() override;
 
-    virtual void Show();
-    virtual void Hide();
+    void Show() override;
+    void Hide() override;
 
     void HideSlotsHighlight();
     void ShowSlotsHighlight(PIItem InvItem);

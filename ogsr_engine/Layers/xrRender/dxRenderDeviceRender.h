@@ -14,44 +14,46 @@ public:
     dxRenderDeviceRender();
     ~dxRenderDeviceRender() override;
 
-    virtual void Copy(IRenderDeviceRender& _in);
+    void Copy(IRenderDeviceRender& _in) override;
 
     //	Gamma correction functions
-    virtual void setGamma(float fGamma);
-    virtual void setBrightness(float fGamma);
-    virtual void setContrast(float fGamma);
-    virtual void updateGamma();
+    void setGamma(f32 fGamma) override;
+    void setBrightness(f32 fGamma) override;
+    void setContrast(f32 fGamma) override;
+    void updateGamma() override;
 
     //	Destroy
-    virtual void OnDeviceDestroy(BOOL bKeepTextures);
+    void OnDeviceDestroy(BOOL bKeepTextures) override;
     tmc::task<void> DestroyHW() override;
     tmc::task<void> Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, f32& fWidth_2, f32& fHeight_2) override;
+
     //	Init
-    virtual void SetupStates();
+    void SetupStates() override;
     tmc::task<void> OnDeviceCreate() override;
     tmc::task<void> Create(HWND hWnd, u32& dwWidth, u32& dwHeight, f32& fWidth_2, f32& fHeight_2) override;
-    virtual void SetupGPU(BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF);
+    void SetupGPU(BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF) override;
+
     //	Overdraw
-    virtual void overdrawBegin();
-    virtual void overdrawEnd();
+    void overdrawBegin() override;
+    void overdrawEnd() override;
 
     //	Resources control
-    virtual void DeferredLoad(BOOL E);
+    void DeferredLoad(BOOL E) override;
     tmc::task<void> ResourcesDeferredUpload() override;
     void ResourcesGetMemoryUsage(xr::render_memory_usage& usage) const override;
     void ResourcesDumpMemoryUsage() const override;
 
     //	Device state
     tmc::task<DeviceState> GetDeviceState() override;
-    virtual BOOL GetForceGPU_REF();
-    virtual u32 GetCacheStatPolys();
-    virtual void Begin() override;
-    virtual void Clear() override;
+    [[nodiscard]] BOOL GetForceGPU_REF() override;
+    [[nodiscard]] u32 GetCacheStatPolys() override;
+    void Begin() override;
+    void Clear() override;
     tmc::task<void> End() override;
-    virtual void ClearTarget() override;
-    virtual void SetCacheXform(Fmatrix& mView, Fmatrix& mProject);
+    void ClearTarget() override;
+    void SetCacheXform(Fmatrix& mView, Fmatrix& mProject) override;
 
-    IResourceManager* GetResourceManager() const override;
+    [[nodiscard]] IResourceManager* GetResourceManager() const override;
 
     void editor_new() override;
     void editor_end() override;

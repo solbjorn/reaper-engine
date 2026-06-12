@@ -45,12 +45,13 @@ public:
     inline explicit CSpaceRestrictionComposition(CSpaceRestrictionHolder* space_restriction_holder, shared_str space_restrictors);
     ~CSpaceRestrictionComposition() override;
 
-    virtual void initialize();
-    virtual bool inside(const Fsphere& sphere);
-    IC virtual shared_str name() const;
-    IC virtual bool shape() const;
-    IC virtual bool default_restrictor() const;
-    virtual Fsphere sphere() const;
+    void initialize() override;
+    [[nodiscard]] bool inside(const Fsphere& sphere) override;
+    [[nodiscard]] inline shared_str name() const override;
+    [[nodiscard]] inline bool shape() const override;
+    [[nodiscard]] inline bool default_restrictor() const override;
+    [[nodiscard]] Fsphere sphere() const override;
+
 #ifdef DEBUG
     void test_correctness();
 #endif

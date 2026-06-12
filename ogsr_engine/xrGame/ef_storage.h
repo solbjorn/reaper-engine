@@ -103,11 +103,12 @@ public:
         return (value);
     }
 
-    virtual float ffGetValue()
+    [[nodiscard]] f32 ffGetValue() override
     {
         if (T::ef_storage().non_alife().member())
-            return (get_value(T::ef_storage().non_alife()));
-        return (get_value(T::ef_storage().alife()));
+            return get_value(T::ef_storage().non_alife());
+
+        return get_value(T::ef_storage().alife());
     }
 };
 

@@ -10,53 +10,6 @@
 
 #include "script_export_space.h"
 
-#define SERVER_ENTITY_DECLARE_BEGIN0(__A, ...) \
-    class __VA_ARGS__ __A : public virtual RTTI::Enable \
-    { \
-        RTTI_DECLARE_TYPEINFO(__A); \
-\
-    public: \
-        DECLARE_SCRIPT_REGISTER_FUNCTION();
-
-#define SERVER_ENTITY_DECLARE_BEGIN(__A, __B, ...) \
-    class __VA_ARGS__ __A : public __B \
-    { \
-        RTTI_DECLARE_TYPEINFO(__A, __B); \
-\
-    public: \
-        typedef __B inherited; \
-        DECLARE_SCRIPT_REGISTER_FUNCTION();
-
-#define SERVER_ENTITY_DECLARE_BEGIN2(__A, __B, __C, ...) \
-    class __VA_ARGS__ __A : public __B, public __C \
-    { \
-        RTTI_DECLARE_TYPEINFO(__A, __B, __C); \
-\
-    public: \
-        typedef __B inherited1; \
-        typedef __C inherited2; \
-        DECLARE_SCRIPT_REGISTER_FUNCTION();
-
-#define SERVER_ENTITY_DECLARE_BEGIN3(__A, __B, __C, __D, ...) \
-    class __VA_ARGS__ __A : public __B, public __C, public __D \
-    { \
-        RTTI_DECLARE_TYPEINFO(__A, __B, __C, __D); \
-\
-    public: \
-        typedef __B inherited1; \
-        typedef __C inherited2; \
-        typedef __D inherited3; \
-        DECLARE_SCRIPT_REGISTER_FUNCTION();
-
-#define SERVER_ENTITY_DECLARE_END \
-public: \
-    virtual void UPDATE_Read(NET_Packet& P); \
-    virtual void UPDATE_Write(NET_Packet& P); \
-    virtual void __STATE_Read(NET_Packet& P, u16 size); \
-    virtual void __STATE_Write(NET_Packet& P); \
-    } \
-    ;
-
 struct SRotation
 {
     f32 yaw{}, pitch{}, roll{};

@@ -65,8 +65,8 @@ public:
     virtual void Save(IWriter& fs) = 0;
     virtual void Load(IReader& fs, u16 version) = 0;
 
-    virtual void SaveIni(CInifile* ini_file, LPCSTR section) = 0;
-    virtual void LoadIni(CInifile* ini_file, LPCSTR section) = 0;
+    virtual void SaveIni(CInifile* ini_file, gsl::czstring section) = 0;
+    virtual void LoadIni(CInifile* ini_file, gsl::czstring section) = 0;
 };
 
 inline CPropertyBase::~CPropertyBase() = default;

@@ -43,7 +43,7 @@ protected:
     IC void make_inactual();
     IC virtual void before_search(const _vertex_id_type, const _vertex_id_type);
     IC virtual void after_search();
-    IC virtual bool check_vertex(const _vertex_id_type vertex_id) const;
+    [[nodiscard]] inline virtual bool check_vertex(const _vertex_id_type vertex_id) const;
 
 public:
     inline explicit CAbstractPathManager(CRestrictedObject* object);
@@ -54,7 +54,7 @@ public:
     IC void set_evaluator(_VertexEvaluator* evaluator);
     IC void set_dest_vertex(const _vertex_id_type vertex_id);
     IC _vertex_id_type dest_vertex_id() const;
-    IC virtual bool completed() const;
+    [[nodiscard]] inline virtual bool completed() const;
     IC bool failed() const;
     IC void reset();
     IC virtual void select_intermediate_vertex();
@@ -72,7 +72,8 @@ public:
 template <typename _Graph, typename _VertexEvaluator, typename _vertex_id_type, typename _index_type>
 class CBasePathManager : public CAbstractPathManager<_Graph, _VertexEvaluator, _vertex_id_type, _index_type>
 {
-    RTTI_DECLARE_TYPEINFO(CBasePathManager<_Graph, _VertexEvaluator, _vertex_id_type, _index_type>, CAbstractPathManager<_Graph, _VertexEvaluator, _vertex_id_type, _index_type>);
+    RTTI_DECLARE_TYPEINFO(CBasePathManager<_Graph, _VertexEvaluator, _vertex_id_type, _index_type>,
+                          CAbstractPathManager<_Graph, _VertexEvaluator, _vertex_id_type, _index_type>);
 
 public:
     ~CBasePathManager() override = default;

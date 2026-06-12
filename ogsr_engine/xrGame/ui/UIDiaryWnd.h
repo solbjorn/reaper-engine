@@ -69,12 +69,12 @@ public:
     ~CUIDiaryWnd() override;
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
-    virtual void Draw();
-    virtual void Reset();
+    void Draw() override;
+    void Reset() override;
 
     void Init();
     void AddNews();
-    virtual void Show(bool status);
+    void Show(bool status) override;
 
     void FillNews();
     void ReloadJournal();

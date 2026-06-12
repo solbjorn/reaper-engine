@@ -25,9 +25,9 @@ public:
     explicit CStalkerActionDangerBySoundListenTo(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionDangerBySoundListenTo() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -45,9 +45,9 @@ public:
     explicit CStalkerActionDangerBySoundCheck(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionDangerBySoundCheck() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -65,9 +65,9 @@ public:
     explicit CStalkerActionDangerBySoundTakeCover(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionDangerBySoundTakeCover() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -85,9 +85,9 @@ public:
     explicit CStalkerActionDangerBySoundLookOut(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionDangerBySoundLookOut() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -105,7 +105,7 @@ public:
     explicit CStalkerActionDangerBySoundLookAround(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionDangerBySoundLookAround() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };

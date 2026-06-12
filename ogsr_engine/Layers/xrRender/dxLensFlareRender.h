@@ -10,10 +10,10 @@ class dxFlareRender : public IFlareRender
 public:
     ~dxFlareRender() override = default;
 
-    virtual void Copy(IFlareRender& _in);
+    void Copy(IFlareRender& _in) override;
 
-    virtual void CreateShader(LPCSTR sh_name, LPCSTR tex_name);
-    virtual void DestroyShader();
+    void CreateShader(gsl::czstring sh_name, gsl::czstring tex_name) override;
+    void DestroyShader() override;
 
     // private:
 public:
@@ -27,12 +27,12 @@ class dxLensFlareRender : public ILensFlareRender
 public:
     ~dxLensFlareRender() override = default;
 
-    virtual void Copy(ILensFlareRender& _in);
+    void Copy(ILensFlareRender& _in) override;
 
-    virtual void Render(CLensFlare& owner, BOOL bSun, BOOL bFlares, BOOL bGradient);
+    void Render(CLensFlare& owner, BOOL bSun, BOOL bFlares, BOOL bGradient) override;
 
-    virtual void OnDeviceCreate();
-    virtual void OnDeviceDestroy();
+    void OnDeviceCreate() override;
+    void OnDeviceDestroy() override;
 
 private:
     ref_geom hGeom;

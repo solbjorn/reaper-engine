@@ -879,8 +879,8 @@ void player_hud::load(const shared_str& player_hud_sect, bool force)
 
     if (!b_reload)
     {
-        m_model->PlayCycle(shared_str{"hand_idle_doun"});
-        m_model_2->PlayCycle(shared_str{"hand_idle_doun"});
+        std::ignore = m_model->PlayCycle(shared_str{"hand_idle_doun"});
+        std::ignore = m_model_2->PlayCycle(shared_str{"hand_idle_doun"});
     }
     else
     {
@@ -1348,7 +1348,7 @@ void player_hud::attach_item(CHudItem* item)
         pi->m_parent_hud_item = item;
 
         if (item_idx == 0 && m_attached_items[1])
-            m_attached_items[1]->m_parent_hud_item->CheckCompatibility(item);
+            std::ignore = m_attached_items[1]->m_parent_hud_item->CheckCompatibility(item);
 
         item->on_a_hud_attach();
 
@@ -1376,7 +1376,7 @@ void player_hud::detach_item_idx(u16 idx)
             if (m_attached_items[0])
                 re_sync_anim(2);
             else
-                m_model_2->PlayCycle(shared_str{"hand_idle_doun"});
+                std::ignore = m_model_2->PlayCycle(shared_str{"hand_idle_doun"});
         }
         else if (idx == 0)
         {
@@ -1387,20 +1387,20 @@ void player_hud::detach_item_idx(u16 idx)
                 if (pm)
                 {
                     const motion_descr& M = pm->m_animations[0];
-                    m_model->PlayCycle(0, M.mid, false);
-                    m_model->PlayCycle(2, M.mid, false);
+                    std::ignore = m_model->PlayCycle(0, M.mid, false);
+                    std::ignore = m_model->PlayCycle(2, M.mid, false);
                 }
             }
             else
             {
-                m_model->PlayCycle(shared_str{"hand_idle_doun"});
+                std::ignore = m_model->PlayCycle(shared_str{"hand_idle_doun"});
             }
         }
 
         if (!m_attached_items[0] && !m_attached_items[1])
         {
-            m_model->PlayCycle(shared_str{"hand_idle_doun"});
-            m_model_2->PlayCycle(shared_str{"hand_idle_doun"});
+            std::ignore = m_model->PlayCycle(shared_str{"hand_idle_doun"});
+            std::ignore = m_model_2->PlayCycle(shared_str{"hand_idle_doun"});
         }
     }
 
@@ -1883,7 +1883,7 @@ void player_hud::updateMovementLayerState()
     if (pActor->AnyMove() && need_blend)
     {
         CEntity::SEntityState state;
-        pActor->g_State(state);
+        std::ignore = pActor->g_State(state);
 
         CWeapon* wep = nullptr;
 

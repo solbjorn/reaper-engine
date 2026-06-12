@@ -1,7 +1,7 @@
 #ifndef __DAMAGABLE_ITEM_H
 #define __DAMAGABLE_ITEM_H
 
-class CDamagableItem : public virtual RTTI::Enable
+class XR_NOVTABLE CDamagableItem : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CDamagableItem);
 
@@ -12,18 +12,20 @@ protected:
 
 public:
     CDamagableItem() = default;
-    ~CDamagableItem() override = default;
+    ~CDamagableItem() override = 0;
 
-    virtual void Init(float max_health, u16 level_num);
+    virtual void Init(f32 max_health, u16 level_num);
     void HitEffect();
     void RestoreEffect();
     float DamageLevelToHealth(u16 dl);
 
 protected:
     u16 DamageLevel();
-    virtual float Health() = 0;
+    [[nodiscard]] virtual f32 Health() = 0;
     virtual void ApplyDamage(u16 level);
 };
+
+inline CDamagableItem::~CDamagableItem() = default;
 
 class CDamagableHealthItem : public CDamagableItem
 {
@@ -37,12 +39,12 @@ private:
 public:
     ~CDamagableHealthItem() override = default;
 
-    virtual void Init(float max_health, u16 level_num);
+    void Init(f32 max_health, u16 level_num) override;
     void Hit(float P);
     void SetHealth(float health) { m_health = health; }
 
 protected:
-    virtual float Health() { return m_health; }
+    [[nodiscard]] f32 Health() override { return m_health; }
 };
 
 #endif // __DAMAGABLE_ITEM_H

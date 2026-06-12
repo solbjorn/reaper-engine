@@ -22,7 +22,7 @@ tmc::task<void> CLevel::cl_Process_Spawn(NET_Packet& P)
     CSE_Abstract* E = F_entity_Create(s_name.c_str());
     R_ASSERT2(E, s_name.c_str());
 
-    E->Spawn_Read(P);
+    std::ignore = E->Spawn_Read(P);
     if (E->s_flags.is(M_SPAWN_UPDATE))
         E->UPDATE_Read(P);
 

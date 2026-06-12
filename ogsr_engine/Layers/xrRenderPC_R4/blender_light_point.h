@@ -5,9 +5,9 @@ class CBlender_accum_point : public IBlender
     RTTI_DECLARE_TYPEINFO(CBlender_accum_point, IBlender);
 
 public:
-    virtual LPCSTR getComment() { return "INTERNAL: accumulate point light"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: accumulate point light"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 
     CBlender_accum_point();
     ~CBlender_accum_point() override;
@@ -18,9 +18,9 @@ class CBlender_accum_point_msaa : public IBlender
     RTTI_DECLARE_TYPEINFO(CBlender_accum_point_msaa, IBlender);
 
 public:
-    virtual LPCSTR getComment() { return "INTERNAL: accumulate point light msaa"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: accumulate point light msaa"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 
     CBlender_accum_point_msaa();
     ~CBlender_accum_point_msaa() override;

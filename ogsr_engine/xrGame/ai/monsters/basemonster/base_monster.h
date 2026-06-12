@@ -62,117 +62,117 @@ public:
     CBaseMonster();
     ~CBaseMonster() override;
 
-    virtual Feel::Sound* dcast_FeelSound() { return this; }
-    virtual CCharacterPhysicsSupport* character_physics_support() { return m_pPhysics_support; }
-    virtual CPHDestroyable* ph_destroyable();
-    virtual CEntityAlive* cast_entity_alive() { return this; }
-    virtual CEntity* cast_entity() { return this; }
-    virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
-    virtual CParticlesPlayer* cast_particles_player() { return this; }
-    virtual CCustomMonster* cast_custom_monster() { return this; }
-    virtual CScriptEntity* cast_script_entity() { return this; }
-    virtual CBaseMonster* cast_base_monster() { return this; }
+    [[nodiscard]] Feel::Sound* dcast_FeelSound() override { return this; }
+    [[nodiscard]] CCharacterPhysicsSupport* character_physics_support() override { return m_pPhysics_support; }
+    [[nodiscard]] CPHDestroyable* ph_destroyable() override;
+    [[nodiscard]] CEntityAlive* cast_entity_alive() override { return this; }
+    [[nodiscard]] CEntity* cast_entity() override { return this; }
+    [[nodiscard]] CPhysicsShellHolder* cast_physics_shell_holder() override { return this; }
+    [[nodiscard]] CParticlesPlayer* cast_particles_player() override { return this; }
+    [[nodiscard]] CCustomMonster* cast_custom_monster() override { return this; }
+    [[nodiscard]] CScriptEntity* cast_script_entity() override { return this; }
+    [[nodiscard]] CBaseMonster* cast_base_monster() override { return this; }
 
-    virtual CInventoryOwner* cast_inventory_owner() { return this; }
-    virtual bool unlimited_ammo() { return false; }
-    virtual CGameObject* cast_game_object() { return this; }
+    [[nodiscard]] CInventoryOwner* cast_inventory_owner() override { return this; }
+    [[nodiscard]] bool unlimited_ammo() override { return false; }
+    [[nodiscard]] CGameObject* cast_game_object() override { return this; }
 
 public:
-    virtual BOOL renderable_ShadowReceive() { return TRUE; }
+    [[nodiscard]] BOOL renderable_ShadowReceive() override { return TRUE; }
     tmc::task<void> Die(CObject* who) override;
-    virtual void HitSignal(float amount, Fvector& vLocalDir, CObject* who, s16 element);
-    virtual void Hit(SHit* pHDS);
-    virtual void PHHit(SHit& H);
+    void HitSignal(f32 amount, Fvector3& vLocalDir, CObject* who, s16 element) override;
+    void Hit(SHit* pHDS) override;
+    void PHHit(SHit& H) override;
     void SelectAnimation(const Fvector&, const Fvector&, float) override;
 
-    virtual void Load(LPCSTR section);
-    virtual void PostLoad(LPCSTR);
-    virtual DLL_Pure* _construct();
+    void Load(gsl::czstring section) override;
+    virtual void PostLoad(gsl::czstring);
+    [[nodiscard]] DLL_Pure* _construct() override;
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual void net_Save(NET_Packet& P);
-    virtual BOOL net_SaveRelevant();
-    virtual void net_Export(CSE_Abstract* E);
-    virtual void net_Relcase(CObject* O);
+    void net_Save(NET_Packet& P) override;
+    [[nodiscard]] BOOL net_SaveRelevant() override;
+    void net_Export(CSE_Abstract* E) override;
+    void net_Relcase(CObject* O) override;
 
     // save/load server serialization
-    virtual void save(NET_Packet& output_packet) { inherited::save(output_packet); }
-    virtual void load(IReader& input_packet) { inherited::load(input_packet); }
+    void save(NET_Packet& output_packet) override { inherited::save(output_packet); }
+    void load(IReader& input_packet) override { inherited::load(input_packet); }
 
     tmc::task<void> UpdateCL() override;
     tmc::task<void> shedule_Update(u32 dt) override;
 
     virtual void InitThink() {}
-    virtual void Think();
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
+    void Think() override;
+    void reinit() override;
+    void reload(gsl::czstring section) override;
 
     virtual void init() {}
 
-    virtual void feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector& Position, float power, float time_to_stop);
-    virtual BOOL feel_vision_isRelevant(CObject* O);
-    virtual BOOL feel_touch_on_contact(CObject* O);
-    virtual BOOL feel_touch_contact(CObject*);
+    void feel_sound_new(CObject* who, s32 eType, CSound_UserDataPtr user_data, const Fvector3& Position, f32 power, f32 time_to_stop) override;
+    [[nodiscard]] BOOL feel_vision_isRelevant(CObject* O) override;
+    [[nodiscard]] BOOL feel_touch_on_contact(CObject* O) override;
+    [[nodiscard]] BOOL feel_touch_contact(CObject*) override;
 
     [[nodiscard]] bool useful(const CItemManager*, const CGameObject* object) const override;
     [[nodiscard]] float evaluate(const CItemManager*, const CGameObject*) const override;
 
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     void OnHUDDraw(ctx_id_t context_id, CCustomHUD* hud, IRenderable* root) override { inherited::OnHUDDraw(context_id, hud, root); }
-    virtual u16 PHGetSyncItemsNumber() { return inherited::PHGetSyncItemsNumber(); }
-    virtual CPHSynchronize* PHGetSyncItem(u16 item) { return inherited::PHGetSyncItem(item); }
-    virtual void PHUnFreeze() { return inherited::PHUnFreeze(); }
-    virtual void PHFreeze() { return inherited::PHFreeze(); }
-    virtual BOOL UsedAI_Locations() { return inherited::UsedAI_Locations(); }
+    [[nodiscard]] u16 PHGetSyncItemsNumber() override { return inherited::PHGetSyncItemsNumber(); }
+    [[nodiscard]] CPHSynchronize* PHGetSyncItem(u16 item) override { return inherited::PHGetSyncItem(item); }
+    void PHUnFreeze() override { return inherited::PHUnFreeze(); }
+    void PHFreeze() override { return inherited::PHFreeze(); }
+    [[nodiscard]] BOOL UsedAI_Locations() override { return inherited::UsedAI_Locations(); }
 
-    virtual const SRotation Orientation() const { return inherited::Orientation(); }
+    [[nodiscard]] const SRotation Orientation() const override { return inherited::Orientation(); }
     void renderable_Render(u32 context_id, IRenderable* root) override { inherited::renderable_Render(context_id, root); }
 
-    virtual void on_restrictions_change();
+    void on_restrictions_change() override;
 
     virtual void SetAttackEffector();
-
     virtual void update_fsm();
-
     virtual void post_fsm_update();
+
     void squad_notify();
 
-    virtual bool IsTalkEnabled() { return false; }
+    [[nodiscard]] bool IsTalkEnabled() override { return false; }
 
-    virtual void HitEntity(const CEntity* pEntity, float fDamage, float impulse, Fvector& dir, ALife::EHitType hit_type = ALife::eHitTypeWound, bool draw_hit_marks = true);
+    virtual void HitEntity(const CEntity* pEntity, f32 fDamage, f32 impulse, Fvector3& dir, ALife::EHitType hit_type = ALife::eHitTypeWound,
+                           bool draw_hit_marks = true);
     virtual void HitEntityInJump(const CEntity*) {}
 
-    virtual void on_before_sell(CInventoryItem* item);
+    void on_before_sell(CInventoryItem* item) override;
     float GetSatiety() { return 0.5f; }
     void ChangeSatiety(float) {}
     // ---------------------------------------------------------------------------------
     // Process scripts
     // ---------------------------------------------------------------------------------
-    virtual bool bfAssignMovement(CScriptEntityAction* tpEntityAction);
+    [[nodiscard]] bool bfAssignMovement(CScriptEntityAction* tpEntityAction) override;
     bool AssignGamePathIfNeeded(Fvector target_pos, u32 level_vertex);
-    virtual bool bfAssignObject(CScriptEntityAction* tpEntityAction);
-    virtual bool bfAssignWatch(CScriptEntityAction* tpEntityAction);
-    virtual bool bfAssignAnimation(CScriptEntityAction* tpEntityAction);
-    virtual bool bfAssignMonsterAction(CScriptEntityAction* tpEntityAction);
-    virtual bool bfAssignSound(CScriptEntityAction* tpEntityAction);
+    [[nodiscard]] bool bfAssignObject(CScriptEntityAction* tpEntityAction) override;
+    [[nodiscard]] bool bfAssignWatch(CScriptEntityAction* tpEntityAction) override;
+    [[nodiscard]] bool bfAssignAnimation(CScriptEntityAction* tpEntityAction) override;
+    [[nodiscard]] bool bfAssignMonsterAction(CScriptEntityAction* tpEntityAction) override;
+    [[nodiscard]] bool bfAssignSound(CScriptEntityAction* tpEntityAction) override;
 
-    virtual void vfFinishAction(CScriptEntityAction* tpEntityAction);
+    void vfFinishAction(CScriptEntityAction* tpEntityAction) override;
 
-    virtual void ProcessScripts();
+    void ProcessScripts() override;
 
-    virtual CEntity* GetCurrentEnemy();
-    virtual CEntity* GetCurrentCorpse();
-    virtual int get_enemy_strength();
+    [[nodiscard]] CEntity* GetCurrentEnemy() override;
+    [[nodiscard]] CEntity* GetCurrentCorpse() override;
+    [[nodiscard]] s32 get_enemy_strength() override;
 
-    virtual void SetScriptControl(const bool bScriptControl, shared_str caSciptName);
+    void SetScriptControl(const bool bScriptControl, shared_str caSciptName) override;
 
     virtual void SetEnemy(const CEntityAlive* sent);
     bool m_force_real_speed;
     bool m_script_processing_active;
     bool m_script_state_must_execute;
 
-    virtual void jump(const Fvector&, float) {}
+    virtual void jump(const Fvector3&, f32) {}
 
     bool m_skip_transfer_enemy;
     IC void skip_transfer_enemy(bool value) { m_skip_transfer_enemy = value; }
@@ -189,24 +189,24 @@ public:
     virtual void LookPosition(Fvector to_point); // каждый монстр может по-разному реализвать эту функ (e.g. кровосос с поворотом головы и т.п.)
 
     // Team
-    virtual void ChangeTeam(int team, int squad, int group);
+    void ChangeTeam(s32 team, s32 squad, s32 group) override;
 
     // ---------------------------------------------------------------------------------
     // Abilities
     // ---------------------------------------------------------------------------------
-    virtual bool ability_invisibility() { return false; }
-    virtual bool ability_can_drag() { return false; }
-    virtual bool ability_psi_attack() { return false; }
-    virtual bool ability_earthquake() { return false; }
+    [[nodiscard]] virtual bool ability_invisibility() { return false; }
+    [[nodiscard]] virtual bool ability_can_drag() { return false; }
+    [[nodiscard]] virtual bool ability_psi_attack() { return false; }
+    [[nodiscard]] virtual bool ability_earthquake() { return false; }
     virtual bool ability_can_jump() { return false; }
-    virtual bool ability_distant_feel() { return false; }
+    [[nodiscard]] virtual bool ability_distant_feel() { return false; }
     virtual bool ability_run_attack() { return false; }
     virtual bool ability_rotation_jump() { return false; }
-    virtual bool ability_jump_over_physics() { return false; }
-    virtual bool ability_pitch_correction() { return true; }
+    [[nodiscard]] virtual bool ability_jump_over_physics() { return false; }
+    [[nodiscard]] virtual bool ability_pitch_correction() { return true; }
     // ---------------------------------------------------------------------------------
 
-    virtual void event_on_step() {}
+    void event_on_step() override {}
     virtual void on_threaten_execute() {}
     // ---------------------------------------------------------------------------------
     // Memory
@@ -223,7 +223,7 @@ protected:
     CControlPathBuilder* m_movement_manager;
 
 protected:
-    virtual CMovementManager* create_movement_manager();
+    [[nodiscard]] CMovementManager* create_movement_manager() override;
 
     // --------------------------------------------------------------------------------------
     // Monster Settings
@@ -262,7 +262,7 @@ public:
     const CEntityAlive* EatedCorpse{};
     // Lain: added
     bool check_eated_corpse_draggable();
-    virtual bool is_base_monster_with_enemy() { return !!EnemyMan.get_enemy(); }
+    [[nodiscard]] bool is_base_monster_with_enemy() override { return !!EnemyMan.get_enemy(); }
 
     bool hear_dangerous_sound;
     bool hear_interesting_sound;
@@ -296,13 +296,6 @@ public:
 
 private:
     bool m_force_anti_aim;
-
-    //	//-----------------------------------------------------------------
-    //	// Spawn Inventory Item
-    //	//-----------------------------------------------------------------
-    // private:
-    //	LPCSTR					m_item_section;
-    //	float					m_spawn_probability;
 
     //--------------------------------------------------------------------
     // Berserk
@@ -350,7 +343,7 @@ public:
     u32 m_prev_sound_type;
     u32 get_attack_rebuild_time();
 
-    IC virtual EAction CustomVelocityIndex2Action(u32) { return ACT_STAND_IDLE; }
+    [[nodiscard]] virtual EAction CustomVelocityIndex2Action(u32) { return ACT_STAND_IDLE; }
     virtual void TranslateActionToPathParams();
 
     bool state_invisible;
@@ -383,7 +376,7 @@ public:
 
     CControlManagerCustom& com_man() { return m_com_manager; }
 
-    virtual bool check_start_conditions(ControlCom::EControlType);
+    [[nodiscard]] virtual bool check_start_conditions(ControlCom::EControlType);
     virtual void on_activate_control(ControlCom::EControlType) {}
 
 protected:
@@ -408,9 +401,9 @@ protected:
         critical_wound_type_legs
     };
 
-    virtual void load_critical_wound_bones();
-    virtual bool critical_wound_external_conditions_suitable();
-    virtual void critical_wounded_state_start();
+    void load_critical_wound_bones() override;
+    [[nodiscard]] bool critical_wound_external_conditions_suitable() override;
+    void critical_wounded_state_start() override;
 
     void fill_bones_body_parts(LPCSTR body_part, CriticalWoundType wound_type);
 
@@ -462,7 +455,7 @@ public:
     float get_feel_enemy_who_just_hit_max_distance() { return m_feel_enemy_who_just_hit_max_distance; }
     float get_feel_enemy_who_made_sound_max_distance() { return m_feel_enemy_who_made_sound_max_distance; }
     float get_feel_enemy_max_distance() { return m_feel_enemy_max_distance; }
-    virtual bool can_use_agressive_jump(const CObject*) { return false; }
+    [[nodiscard]] virtual bool can_use_agressive_jump(const CObject*) { return false; }
 
 private:
     steering_behaviour::manager* m_steer_manager{};
@@ -557,8 +550,8 @@ private:
     TTime m_first_tick_object_not_at_home{};
 
 public:
-    virtual bool run_home_point_when_enemy_inaccessible() const { return true; }
-    virtual bool need_shotmark() const { return true; }
+    [[nodiscard]] virtual bool run_home_point_when_enemy_inaccessible() const { return true; }
+    [[nodiscard]] virtual bool need_shotmark() const { return true; }
 };
 XR_SOL_BASE_CLASSES(CBaseMonster);
 

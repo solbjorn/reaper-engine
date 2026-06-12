@@ -58,29 +58,33 @@ public:
         if (!m_b_enabled)
             Show(m_b_enabled);
     }
-    bool GetEnabled() { return m_b_enabled; }
-    virtual void Show(bool b);
-    virtual void Enable(bool b);
-    virtual void Init(float x, float y, float length, bool bIsHorizontal, LPCSTR profile = "default");
+
+    [[nodiscard]] bool GetEnabled() { return m_b_enabled; }
+
+    void Show(bool b) override;
+    void Enable(bool b) override;
+    virtual void Init(f32 x, f32 y, f32 length, bool bIsHorizontal, gsl::czstring profile = "default");
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
     [[nodiscard]] bool OnKeyboardHold(xr::key_id dik) override;
 
-    virtual void Draw();
+    void Draw() override;
 
-    virtual void SetWidth(float width);
-    virtual void SetHeight(float height);
+    void SetWidth(f32 width) override;
+    void SetHeight(f32 height) override;
 
-    virtual void Reset();
+    void Reset() override;
     void Refresh();
     void SetStepSize(int step);
     void SetRange(int iMin, int iMax);
+
     void GetRange(int& iMin, int& iMax)
     {
         iMin = m_iMinPos;
         iMax = m_iMaxPos;
     }
+
     int GetMaxRange() { return m_iMaxPos; }
     int GetMinRange() { return m_iMinPos; }
 
@@ -89,6 +93,7 @@ public:
         m_iPageSize = _max(0, iPage);
         UpdateScrollBar();
     }
+
     int GetPageSize() { return m_iPageSize; }
 
     void SetScrollPos(int iPos)
@@ -96,6 +101,7 @@ public:
         SetScrollPosClamped(iPos);
         UpdateScrollBar();
     }
+
     int GetScrollPos() { return _max(m_iMinPos, m_iScrollPos); }
 
     void TryScrollInc();

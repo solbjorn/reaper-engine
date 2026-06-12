@@ -10,11 +10,11 @@ public:
     game_cl_Single();
     ~game_cl_Single() override = default;
 
-    virtual CUIGameCustom* createGameUI();
-    virtual bool IsServerControlHits() { return true; }
+    [[nodiscard]] CUIGameCustom* createGameUI() override;
+    [[nodiscard]] bool IsServerControlHits() override { return true; }
 
-    virtual ALife::_TIME_ID GetEnvironmentGameTime() { return GetGameTime(); }
-    virtual float GetEnvironmentGameTimeFactor() { return GetGameTimeFactor(); }
+    [[nodiscard]] ALife::_TIME_ID GetEnvironmentGameTime() override { return GetGameTime(); }
+    [[nodiscard]] f32 GetEnvironmentGameTimeFactor() override { return GetGameTimeFactor(); }
 
     void OnDifficultyChanged();
 };

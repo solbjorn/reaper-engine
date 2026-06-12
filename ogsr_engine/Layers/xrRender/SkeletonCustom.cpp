@@ -343,7 +343,7 @@ void CKinematics::LL_Validate()
 
         // TODO: container is created in stack!
         xr_vector<xr_vector<u16>> groups;
-        LL_GetBoneGroups(groups);
+        std::ignore = LL_GetBoneGroups(groups);
 
         // TODO: container is created in stack!
         xr_vector<u16> b_parts(LL_BoneCount(), BI_NONE);

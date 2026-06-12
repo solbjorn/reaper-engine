@@ -16,14 +16,14 @@ public:
     explicit CStateMonsterAttackOnRun(_Object* obj);
     ~CStateMonsterAttackOnRun() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
-    virtual void critical_finalize();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
+    void critical_finalize() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 
-    virtual bool check_completion();
-    virtual bool check_start_conditions();
+    [[nodiscard]] bool check_completion() override;
+    [[nodiscard]] bool check_start_conditions() override;
 
 private:
     enum phaze
@@ -80,7 +80,7 @@ private:
     void set_movement_phaze(phaze new_phaze);
     void choose_next_atack_animation();
     void select_prepare_fallback_target();
-    virtual bool check_control_start_conditions(ControlCom::EControlType type);
+    [[nodiscard]] bool check_control_start_conditions(ControlCom::EControlType type) override;
 };
 
 inline bool is_valid_point_to_move(Fvector const& point);

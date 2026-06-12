@@ -115,34 +115,34 @@ public:
     CAI_Crow();
     ~CAI_Crow() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
     void init();
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual BOOL renderable_ShadowGenerate() { return FALSE; }
-    virtual BOOL renderable_ShadowReceive() { return FALSE; }
+    [[nodiscard]] BOOL renderable_ShadowGenerate() override { return FALSE; }
+    [[nodiscard]] BOOL renderable_ShadowReceive() override { return FALSE; }
     void renderable_Render(u32 context_id, IRenderable* root) override;
     tmc::task<void> shedule_Update(u32 DT) override;
     tmc::task<void> UpdateCL() override;
 
-    virtual CEntity* cast_entity() { return this; }
+    [[nodiscard]] CEntity* cast_entity() override { return this; }
 
-    virtual void net_Export(CSE_Abstract* E);
+    void net_Export(CSE_Abstract* E) override;
 
-    void g_fireParams(CHudItem*, Fvector&, Fvector&, const bool = false) override {}
-    virtual void g_WeaponBones(int&, int&, int&) {}
+    void g_fireParams(CHudItem*, Fvector3&, Fvector3&, const bool = false) override {}
+    virtual void g_WeaponBones(s32&, s32&, s32&) {}
 
-    void HitSignal(float, Fvector&, CObject*, s16) override;
-    void HitImpulse(float, Fvector&, Fvector&) override;
-    virtual void Hit(SHit* pHDS);
+    void HitSignal(f32, Fvector3&, CObject*, s16) override;
+    void HitImpulse(f32, Fvector3&, Fvector3&) override;
+    void Hit(SHit* pHDS) override;
     tmc::task<void> Die(CObject* who) override;
-    virtual float ffGetFov() const { return 150.f; }
-    virtual float ffGetRange() const { return 30.f; }
+    [[nodiscard]] virtual f32 ffGetFov() const { return 150.f; }
+    [[nodiscard]] virtual f32 ffGetRange() const { return 30.f; }
 
-    virtual BOOL IsVisibleForHUD() { return FALSE; }
-    virtual bool IsVisibleForZones() { return false; }
-    virtual BOOL UsedAI_Locations();
-    virtual void create_physic_shell();
+    [[nodiscard]] BOOL IsVisibleForHUD() override { return FALSE; }
+    [[nodiscard]] bool IsVisibleForZones() override { return false; }
+    [[nodiscard]] BOOL UsedAI_Locations() override;
+    void create_physic_shell() override;
 };
 
 #endif

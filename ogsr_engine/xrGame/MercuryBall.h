@@ -19,10 +19,10 @@ public:
     CMercuryBall();
     ~CMercuryBall() override;
 
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
 
 protected:
-    virtual void UpdateCLChild();
+    void UpdateCLChild() override;
 
     // время последнего обновления поведения шара
     ALife::_TIME_ID m_timeLastUpdate;

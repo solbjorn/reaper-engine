@@ -58,12 +58,12 @@ public:
     explicit CStalkerMovementManager(CAI_Stalker* object);
     ~CStalkerMovementManager() override;
 
-    virtual void Load(LPCSTR section);
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
+    void Load(gsl::czstring section) override;
+    void reinit() override;
+    void reload(gsl::czstring section) override;
     virtual void update(u32);
-    virtual void on_travel_point_change(const u32& previous_travel_point_index);
-    virtual void on_restrictions_change();
+    void on_travel_point_change(const u32& previous_travel_point_index) override;
+    void on_restrictions_change() override;
     void initialize();
     IC float path_direction_angle();
     IC bool turn_in_place() const;
@@ -110,7 +110,7 @@ private:
     bool m_force_update{};
 
 public:
-    virtual void on_build_path();
+    void on_build_path() override;
     void update_object_on_the_way(const CGameObject* object, const float& distance);
     bool is_object_on_the_way(const CGameObject* object, const float& distance);
     void force_update(const bool& force_update);

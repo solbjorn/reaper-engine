@@ -17,7 +17,7 @@ public:
     ~CUIArtefactPanel() override = default;
 
     virtual void InitIcons(const TIItemContainer& artefacts);
-    virtual void Draw();
+    void Draw() override;
     void InitFromXML(CUIXml& xml, LPCSTR path, int index);
 
 protected:

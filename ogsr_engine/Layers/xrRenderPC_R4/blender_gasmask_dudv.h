@@ -5,9 +5,9 @@ class CBlender_gasmask_dudv : public IBlender
     RTTI_DECLARE_TYPEINFO(CBlender_gasmask_dudv, IBlender);
 
 public:
-    virtual LPCSTR getComment() { return "Gasmask_dudv"; }
+    [[nodiscard]] gsl::czstring getComment() override { return "Gasmask_dudv"; }
 
-    virtual void Compile(CBlender_Compile& C);
+    void Compile(CBlender_Compile& C) override;
 
     CBlender_gasmask_dudv();
     ~CBlender_gasmask_dudv() override;

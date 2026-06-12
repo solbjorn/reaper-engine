@@ -26,19 +26,19 @@ public:
     explicit CStateGroupEat(_Object* obj);
     ~CStateGroupEat() override;
 
-    virtual void reinit();
-    virtual void initialize();
-    virtual void finalize();
-    virtual void critical_finalize();
-    virtual void remove_links(CObject* object);
+    void reinit() override;
+    void initialize() override;
+    void finalize() override;
+    void critical_finalize() override;
+    void remove_links(CObject* object) override;
 
-    virtual void reselect_state();
-    virtual void setup_substates();
-    virtual bool check_completion();
-    virtual bool check_start_conditions();
+    void reselect_state() override;
+    void setup_substates() override;
+    [[nodiscard]] bool check_completion() override;
+    [[nodiscard]] bool check_start_conditions() override;
 
 private:
-    bool hungry();
+    [[nodiscard]] bool hungry();
 };
 
 #include "group_state_eat_inline.h"

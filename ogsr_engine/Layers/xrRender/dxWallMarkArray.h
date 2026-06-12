@@ -10,12 +10,12 @@ class dxWallMarkArray : public IWallMarkArray
 public:
     ~dxWallMarkArray() override;
 
-    virtual void Copy(IWallMarkArray& _in);
+    void Copy(IWallMarkArray& _in) override;
 
-    virtual void AppendMark(LPCSTR s_textures);
-    virtual void clear();
-    virtual bool empty();
-    virtual wm_shader GenerateWallmark();
+    void AppendMark(gsl::czstring s_textures) override;
+    void clear() override;
+    [[nodiscard]] bool empty() override;
+    [[nodiscard]] wm_shader GenerateWallmark() override;
 
     ref_shader* dxGenerateWallmark();
 

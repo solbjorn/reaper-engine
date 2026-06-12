@@ -211,7 +211,7 @@ tmc::task<bool> CActor::net_Spawn(CSE_Abstract* DC)
         mstate_real &= ~ACTOR_DEFS::mcAnyMove;
 
         IKinematicsAnimated* K = smart_cast<IKinematicsAnimated*>(Visual());
-        K->PlayCycle(shared_str{"death_init"});
+        std::ignore = K->PlayCycle(shared_str{"death_init"});
 
         // остановить звук тяжелого дыхания
         co_await m_HeavyBreathSnd.stop();

@@ -179,8 +179,8 @@ CSE_ALifeItem::~CSE_ALifeItem() = default;
 
 CSE_Abstract* CSE_ALifeItem::init()
 {
-    inherited1::init();
-    inherited2::init();
+    std::ignore = inherited1::init();
+    std::ignore = inherited2::init();
 
     return base();
 }

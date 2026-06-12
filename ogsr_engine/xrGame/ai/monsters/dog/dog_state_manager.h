@@ -15,7 +15,7 @@ public:
     explicit CStateManagerDog(CAI_Dog* monster);
     ~CStateManagerDog() override = default;
 
-    virtual void execute();
-    bool check_eat();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void execute() override;
+    [[nodiscard]] bool check_eat();
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 };

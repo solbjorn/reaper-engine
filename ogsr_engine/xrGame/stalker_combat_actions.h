@@ -33,9 +33,9 @@ public:
     explicit CStalkerActionGetItemToKill(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionGetItemToKill() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -53,9 +53,9 @@ public:
     explicit CStalkerActionMakeItemKilling(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionMakeItemKilling() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -73,10 +73,10 @@ public:
     explicit CStalkerActionRetreatFromEnemy(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionRetreatFromEnemy() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
-    virtual edge_value_type weight(const CSConditionState&, const CSConditionState&) const;
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
+    [[nodiscard]] edge_value_type weight(const CSConditionState&, const CSConditionState&) const override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -99,9 +99,9 @@ public:
     explicit CStalkerActionGetReadyToKill(bool affect_properties, CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionGetReadyToKill() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -119,9 +119,9 @@ public:
     explicit CStalkerActionKillEnemy(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionKillEnemy() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -143,9 +143,9 @@ public:
     explicit CStalkerActionTakeCover(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionTakeCover() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -166,9 +166,9 @@ public:
     explicit CStalkerActionLookOut(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionLookOut() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -186,9 +186,9 @@ public:
     explicit CStalkerActionHoldPosition(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionHoldPosition() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -206,9 +206,9 @@ public:
     explicit CStalkerActionGetDistance(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionGetDistance() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -226,9 +226,9 @@ public:
     explicit CStalkerActionDetourEnemy(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionDetourEnemy() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -246,9 +246,9 @@ public:
     explicit CStalkerActionSearchEnemy(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionSearchEnemy() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -266,9 +266,9 @@ public:
     explicit CStalkerActionPostCombatWait(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionPostCombatWait() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -286,9 +286,9 @@ public:
     explicit CStalkerActionHideFromGrenade(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionHideFromGrenade() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -306,9 +306,9 @@ public:
     explicit CStalkerActionSuddenAttack(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionSuddenAttack() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -326,9 +326,9 @@ public:
     explicit CStalkerActionKillEnemyIfPlayerOnThePath(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionKillEnemyIfPlayerOnThePath() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -346,9 +346,9 @@ public:
     explicit CStalkerActionCriticalHit(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionCriticalHit() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 float current_cover(CAI_Stalker* object);

@@ -14,13 +14,13 @@ public:
     CMosquitoBald();
     ~CMosquitoBald() override;
 
-    virtual void Load(LPCSTR section);
-    virtual void Postprocess(f32);
+    void Load(gsl::czstring section) override;
+    void Postprocess(f32) override;
 
-    virtual void Affect(SZoneObjectInfo* O);
+    void Affect(SZoneObjectInfo* O) override;
 
 protected:
-    virtual bool BlowoutState();
+    [[nodiscard]] bool BlowoutState() override;
 
     // для того чтобы blowout обновился один раз
     // после того как зона перключилась в другое состояние

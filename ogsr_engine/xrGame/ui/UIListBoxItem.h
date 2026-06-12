@@ -12,13 +12,12 @@ public:
     CUIListBoxItem();
     ~CUIListBoxItem() override;
 
-    virtual void SetSelected(bool b);
-    //	virtual void	Update();
-    virtual void Draw();
+    void SetSelected(bool b) override;
+    void Draw() override;
     [[nodiscard]] bool OnMouseDown(sf::Mouse::Button mouse_btn) override;
-    virtual bool OnDbClick();
-    virtual void OnFocusReceive();
-    virtual CGameFont* GetFont();
+    [[nodiscard]] bool OnDbClick() override;
+    void OnFocusReceive() override;
+    [[nodiscard]] CGameFont* GetFont() override;
     void SetTextColor(u32 color, u32 color_s);
     void InitDefault();
     void SetTAG(u32 value);

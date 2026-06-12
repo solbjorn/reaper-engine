@@ -114,7 +114,7 @@ bool CBaseGraviZone ::IdleState()
 
                 if (GO && GO->PPhysicsShell() && !Telekinesis().is_active_object(GO))
                 {
-                    Telekinesis().activate(GO, 0.1f, m_fTeleHeight, m_dwTimeToTele);
+                    std::ignore = Telekinesis().activate(GO, 0.1f, m_fTeleHeight, m_dwTimeToTele);
                     PlayTeleParticles(GO);
                 }
             }

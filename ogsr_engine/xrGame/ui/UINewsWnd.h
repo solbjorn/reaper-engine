@@ -27,9 +27,9 @@ public:
     void Init(LPCSTR xml_name, LPCSTR start_from);
     void AddNews();
     void LoadNews();
-    virtual void Show(bool status);
-    virtual void Update();
-    virtual void Reset();
+    void Show(bool status) override;
+    void Update() override;
+    void Reset() override;
 
     CUIScrollView* UIScrollWnd;
 

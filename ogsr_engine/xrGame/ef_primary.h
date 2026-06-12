@@ -27,9 +27,9 @@ public:
 
     ~CDistanceFunction() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 
-    virtual u32 dwfGetDiscreteValue(u32 dwDiscretizationValue)
+    [[nodiscard]] u32 dwfGetDiscreteValue(u32 dwDiscretizationValue) override
     {
         float fTemp = ffGetValue();
         if (fTemp <= m_fMinResultValue)
@@ -58,7 +58,7 @@ public:
 
     ~CPersonalHealthFunction() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CPersonalMoraleFunction : public CBaseFunction
@@ -78,7 +78,7 @@ public:
 
     ~CPersonalMoraleFunction() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CPersonalCreatureTypeFunction : public CBaseFunction
@@ -98,7 +98,7 @@ public:
 
     ~CPersonalCreatureTypeFunction() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CPersonalWeaponTypeFunction : public CBaseFunction
@@ -118,9 +118,9 @@ public:
 
     ~CPersonalWeaponTypeFunction() override = default;
 
-    u32 dwfGetWeaponType();
-    float ffGetTheBestWeapon();
-    virtual float ffGetValue();
+    [[nodiscard]] u32 dwfGetWeaponType();
+    [[nodiscard]] f32 ffGetTheBestWeapon();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CPersonalAccuracyFunction : public CBaseFunction
@@ -140,7 +140,7 @@ public:
 
     ~CPersonalAccuracyFunction() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CPersonalIntelligenceFunction : public CBaseFunction
@@ -160,7 +160,7 @@ public:
 
     ~CPersonalIntelligenceFunction() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CPersonalRelationFunction : public CBaseFunction
@@ -180,7 +180,7 @@ public:
 
     ~CPersonalRelationFunction() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CPersonalGreedFunction : public CBaseFunction
@@ -200,7 +200,7 @@ public:
 
     ~CPersonalGreedFunction() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CPersonalAggressivenessFunction : public CBaseFunction
@@ -220,7 +220,7 @@ public:
 
     ~CPersonalAggressivenessFunction() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CEnemyMoraleFunction : public CBaseFunction
@@ -240,7 +240,7 @@ public:
 
     ~CEnemyMoraleFunction() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CEnemyEquipmentCostFunction : public CBaseFunction
@@ -260,7 +260,7 @@ public:
 
     ~CEnemyEquipmentCostFunction() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CEnemyRukzakWeightFunction : public CBaseFunction
@@ -280,7 +280,7 @@ public:
 
     ~CEnemyRukzakWeightFunction() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CEnemyAnomalityFunction : public CBaseFunction
@@ -300,7 +300,7 @@ public:
 
     ~CEnemyAnomalityFunction() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CGraphPointType0 : public CBaseFunction
@@ -320,7 +320,7 @@ public:
 
     ~CGraphPointType0() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CPersonalEyeRange : public CBaseFunction
@@ -340,7 +340,7 @@ public:
 
     ~CPersonalEyeRange() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CPersonalMaxHealth : public CBaseFunction
@@ -360,8 +360,8 @@ public:
 
     ~CPersonalMaxHealth() override = default;
 
-    virtual float ffGetValue();
-    virtual u32 dwfGetDiscreteValue(u32 dwDiscretizationValue = 1);
+    [[nodiscard]] f32 ffGetValue() override;
+    [[nodiscard]] u32 dwfGetDiscreteValue(u32 dwDiscretizationValue = 1) override;
 };
 
 class CEquipmentType : public CBaseFunction
@@ -381,7 +381,7 @@ public:
 
     ~CEquipmentType() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CItemDeterioration : public CBaseFunction
@@ -401,7 +401,7 @@ public:
 
     ~CItemDeterioration() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CEquipmentPreference : public CBaseFunction
@@ -421,7 +421,7 @@ public:
 
     ~CEquipmentPreference() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CMainWeaponType : public CBaseFunction
@@ -441,7 +441,7 @@ public:
 
     ~CMainWeaponType() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CMainWeaponPreference : public CBaseFunction
@@ -461,7 +461,7 @@ public:
 
     ~CMainWeaponPreference() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CItemValue : public CBaseFunction
@@ -481,7 +481,7 @@ public:
 
     ~CItemValue() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CWeaponAmmoCount : public CBaseFunction
@@ -501,8 +501,8 @@ public:
 
     ~CWeaponAmmoCount() override = default;
 
-    virtual float ffGetValue();
-    virtual u32 dwfGetDiscreteValue(u32 dwDiscretizationValue = 1);
+    [[nodiscard]] f32 ffGetValue() override;
+    [[nodiscard]] u32 dwfGetDiscreteValue(u32 dwDiscretizationValue = 1) override;
 };
 
 class CEnemyAnomalyType : public CBaseFunction
@@ -522,7 +522,7 @@ public:
 
     ~CEnemyAnomalyType() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CDetectorType : public CBaseFunction
@@ -542,7 +542,7 @@ public:
 
     ~CDetectorType() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };
 
 class CEnemyDistanceToGraphPoint : public CBaseFunction
@@ -562,5 +562,5 @@ public:
 
     ~CEnemyDistanceToGraphPoint() override = default;
 
-    virtual float ffGetValue();
+    [[nodiscard]] f32 ffGetValue() override;
 };

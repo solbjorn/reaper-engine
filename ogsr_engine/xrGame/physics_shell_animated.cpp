@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "physics_shell_animated.h"
+
 #include "PhysicsCommon.h"
 #include "PhysicsShell.h"
 #include "PhysicsShellHolder.h"
@@ -14,7 +15,7 @@ bool physics_shell_animated::update(const Fmatrix& xrorm)
     VERIFY(physics_shell);
 
     if (update_velocity)
-        physics_shell->AnimToVelocityState(Device.fTimeDelta, default_l_limit * 10, default_w_limit * 10);
+        std::ignore = physics_shell->AnimToVelocityState(Device.fTimeDelta, default_l_limit * 10, default_w_limit * 10);
 
     physics_shell->mXFORM.set(xrorm);
     physics_shell->PKinematics()->CalculateBones();

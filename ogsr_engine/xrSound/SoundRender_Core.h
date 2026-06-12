@@ -22,7 +22,7 @@ class XR_NOVTABLE CSoundRender_Core : public CSound_manager_interface
     RTTI_DECLARE_TYPEINFO(CSoundRender_Core, CSound_manager_interface);
 
 protected:
-    virtual void _create_data(ref_sound_data& S, LPCSTR fName, esound_type sound_type, u32 game_type);
+    void _create_data(ref_sound_data& S, gsl::czstring fName, esound_type sound_type, u32 game_type) override;
 
 public:
     struct SListener
@@ -113,44 +113,45 @@ public:
     ~CSoundRender_Core() override;
 
     // General
-    virtual void _initialize(int stage) = 0;
-    virtual void _clear() = 0;
-    virtual void _restart();
+    void _initialize(s32 stage) override = 0;
+    void _clear() override = 0;
+    void _restart() override;
 
     // Sound interface
     void verify_refsound(ref_sound& S);
-    virtual void create(ref_sound& S, LPCSTR fName, esound_type sound_type, u32 game_type);
-    virtual void attach_tail(ref_sound& S, LPCSTR fName);
+    void create(ref_sound& S, gsl::czstring fName, esound_type sound_type, u32 game_type) override;
+    void attach_tail(ref_sound& S, gsl::czstring fName) override;
 
-    virtual void clone(ref_sound& S, const ref_sound& from, esound_type sound_type, u32 game_type);
+    void clone(ref_sound& S, const ref_sound& from, esound_type sound_type, u32 game_type) override;
     tmc::task<void> destroy(std::array<std::byte, 16>& arg) override;
     void queue_destroy(ref_sound& S) override;
     tmc::task<void> stop_emitters() override;
-    virtual int pause_emitters(bool val);
+    [[nodiscard]] s32 pause_emitters(bool val) override;
 
-    virtual void play(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f);
-    virtual void play_at_pos(ref_sound& S, CObject* O, const Fvector& pos, u32 flags = 0, float delay = 0.f);
-    virtual void play_no_feedback(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f, Fvector* pos = nullptr, float* vol = nullptr, float* freq = nullptr,
-                                  Fvector2* range = nullptr);
+    void play(ref_sound& S, CObject* O, u32 flags = 0, f32 delay = 0.0f) override;
+    void play_at_pos(ref_sound& S, CObject* O, const Fvector3& pos, u32 flags = 0, f32 delay = 0.0f) override;
+    void play_no_feedback(ref_sound& S, CObject* O, u32 flags = 0, f32 delay = 0.0f, Fvector3* pos = nullptr, f32* vol = nullptr, f32* freq = nullptr,
+                          Fvector2* range = nullptr) override;
     void queue_stop(ref_sound& S, bool deferred, f32 speed_k = 1.0f) override;
 
-    virtual void set_master_volume(float f) = 0;
-    virtual void set_master_gain(float low_pass, float high_pass);
-    virtual void set_geometry_env(IReader* I);
-    virtual void set_geometry_som(IReader* I);
-    virtual void set_geometry_occ(CDB::MODEL* M);
-    virtual void set_handler(sound_event* E);
+    void set_master_volume(f32 f) override = 0;
+    void set_master_gain(f32 low_pass, f32 high_pass) override;
+
+    void set_geometry_env(IReader* I) override;
+    void set_geometry_som(IReader* I) override;
+    void set_geometry_occ(CDB::MODEL* M) override;
+    void set_handler(sound_event* E) override;
 
     tmc::task<void> update(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R) override;
     tmc::task<void> render() override;
-    virtual void statistic(CSound_stats* dest, CSound_stats_ext* ext);
+    void statistic(CSound_stats* dest, CSound_stats_ext* ext) override;
 
     // listener
     const auto& listener_params() const { return Listener; }
     const Fvector& listener_position() override { return Listener.position; }
-    virtual void update_listener(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R, float dt) = 0;
+    virtual void update_listener(const Fvector3& P, const Fvector3& D, const Fvector3& N, const Fvector3& R, f32 dt) = 0;
 
-    virtual float get_time() const { return Timer.GetElapsed_sec(); }
+    [[nodiscard]] f32 get_time() const override { return Timer.GetElapsed_sec(); }
 
     // eax listener
     void i_eax_listener_set(CSound_environment* E);
@@ -161,9 +162,9 @@ public:
     bool i_efx_commit_setting();
     void i_efx_disable();
 
-    virtual CSound_environment* DbgCurrentEnv() override { return e_target; }
-    virtual void DbgCurrentEnvPaused(bool v) override { e_currentPaused = v; }
-    virtual void DbgCurrentEnvSave() override { env_save_all(); }
+    [[nodiscard]] CSound_environment* DbgCurrentEnv() override { return e_target; }
+    void DbgCurrentEnvPaused(bool v) override { e_currentPaused = v; }
+    void DbgCurrentEnvSave() override { env_save_all(); }
 
 public:
     CSoundRender_Source* i_create_source(LPCSTR name);
@@ -172,9 +173,9 @@ public:
     bool i_allow_play(const CSoundRender_Emitter* E) const;
     bool i_locked() const override { return bLocked; }
 
-    virtual void object_relcase(CObject* obj);
+    void object_relcase(CObject* obj) override;
 
-    virtual float get_occlusion_to(const Fvector& hear_pt, const Fvector& snd_pt, float dispersion = 0.2f);
+    [[nodiscard]] f32 get_occlusion_to(const Fvector3& hear_pt, const Fvector3& snd_pt, f32 dispersion = 0.2f) override;
     float get_occlusion(const Fvector& snd_pt, Occ* occ);
     float calc_occlusion(const Fvector& hear_pt, const Fvector& snd_pt, Occ* occ);
     CSoundRender_Environment* get_environment_def();

@@ -78,7 +78,7 @@ class XR_NOVTABLE CHudItem : public CHUDState
     RTTI_DECLARE_TYPEINFO(CHudItem, CHUDState);
 
 protected:
-    virtual DLL_Pure* _construct();
+    [[nodiscard]] virtual DLL_Pure* _construct();
 
     Flags16 m_huditem_flags;
     enum
@@ -108,7 +108,7 @@ public:
     ~CHudItem() override = 0;
 
     virtual void Load(LPCSTR section);
-    virtual CHudItem* cast_hud_item() { return this; }
+    [[nodiscard]] virtual CHudItem* cast_hud_item() { return this; }
 
     virtual void PlaySound(HUD_SOUND& snd, const Fvector& position, bool overlap = false);
 
@@ -122,9 +122,9 @@ public:
 
     virtual void OnDrawUI() {}
 
-    virtual bool IsHidden() const { return GetState() == eHidden; } // Does weapon is in hidden state
-    virtual bool IsHiding() const { return GetState() == eHiding; }
-    virtual bool IsShowing() const { return GetState() == eShowing; }
+    [[nodiscard]] virtual bool IsHidden() const { return GetState() == eHidden; } // Does weapon is in hidden state
+    [[nodiscard]] virtual bool IsHiding() const { return GetState() == eHiding; }
+    [[nodiscard]] virtual bool IsShowing() const { return GetState() == eShowing; }
     // посылка сообщения на сервер о смене состояния оружия
     void SwitchState(u32 S) override;
     // прием сообщения с сервера и его обработка
@@ -139,7 +139,7 @@ public:
     virtual tmc::task<bool> net_Spawn(CSE_Abstract*);
     virtual tmc::task<void> net_Destroy();
 
-    virtual bool Activate(bool = false);
+    [[nodiscard]] virtual bool Activate(bool = false);
     virtual void Deactivate(bool = false);
 
     virtual void OnActiveItem() {}
@@ -152,7 +152,7 @@ public:
     virtual void PlayAnimIdle();
     bool TryPlayAnimIdle();
     virtual bool IsZoomed() const { return false; }
-    // virtual void	PlayAnimBore		();
+
     virtual void PlayAnimIdleMoving();
     virtual void PlayAnimIdleMovingSlow();
     virtual void PlayAnimIdleSprint();
@@ -162,7 +162,7 @@ public:
     virtual void PlayAnimIdleMovingCrouchSlow();
     virtual void PlayAnimDeviceSwitch() {}
 
-    virtual bool NeedBlendAnm();
+    [[nodiscard]] virtual bool NeedBlendAnm();
 
     virtual tmc::task<void> UpdateCL();
     virtual void renderable_Render(u32 context_id, IRenderable* root);
@@ -194,10 +194,10 @@ public:
     void PlayBlendAnm(LPCSTR name, float speed = 1.f, float power = 1.f, bool stop_old = true);
 
     virtual void render_hud_mode() {}
-    virtual bool need_renderable() { return true; }
+    [[nodiscard]] virtual bool need_renderable() { return true; }
     virtual void render_item_3d_ui() {}
-    virtual bool render_item_3d_ui_query() { return false; }
-    virtual bool CheckCompatibility(CHudItem*) { return true; }
+    [[nodiscard]] virtual bool render_item_3d_ui_query() { return false; }
+    [[nodiscard]] virtual bool CheckCompatibility(CHudItem*) { return true; }
 
 protected:
     BOOL hud_mode;
@@ -322,7 +322,8 @@ private:
     float saved_rq_range{};
     Fvector m_nearwall_last_pos{}, m_nearwall_last_rot{};
 
-    Fvector m_strafe_offset[3][2]{}, m_lookout_offset[3][2]{}, m_jump_offset[3][2]{}, m_fall_offset[2][2]{}, m_landing_offset[2][2]{}, m_move_offset[3]{}, m_walk_offset[3]{};
+    Fvector m_strafe_offset[3][2]{}, m_lookout_offset[3][2]{}, m_jump_offset[3][2]{}, m_fall_offset[2][2]{}, m_landing_offset[2][2]{}, m_move_offset[3]{},
+        m_walk_offset[3]{};
     Fvector current_difference[2]{}, current_strafe[2]{}, current_lookout[2]{}, current_jump[2]{}, current_move[2]{}, current_walk[2]{};
 
     float m_base_fov{};

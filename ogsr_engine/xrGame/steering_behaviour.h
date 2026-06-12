@@ -48,14 +48,14 @@ public:
         explicit params(vec_arg factor, float min_factor_dist = base::s_min_factor_dist) : enabled{true}, factor{factor}, min_factor_dist{min_factor_dist} {}
         ~params() override = default;
 
-        virtual bool update() = 0;
+        [[nodiscard]] virtual bool update() = 0;
     };
 
 public:
     explicit base(params* params_) : m_p_params{params_} {}
     ~base() override { xr_delete(m_p_params); }
 
-    virtual vec calc_acceleration() = 0;
+    [[nodiscard]] virtual vec calc_acceleration() = 0;
 
     void set_enabled(bool value) { m_p_params->enabled = value; }
     bool is_enabled() const { return m_p_params->enabled; }
@@ -96,14 +96,14 @@ public:
 
         ~params() override = default;
 
-        virtual bool update() = 0;
+        [[nodiscard]] bool update() override = 0;
     };
 
 public:
     explicit evade(params* params_) : base{params_}, m_p_params{params_} {}
     ~evade() override = default;
 
-    virtual vec calc_acceleration();
+    [[nodiscard]] vec calc_acceleration() override;
 
 private:
     params* m_p_params;
@@ -137,14 +137,14 @@ public:
 
         ~params() override = default;
 
-        virtual bool update() = 0;
+        [[nodiscard]] bool update() override = 0;
     };
 
 public:
     explicit pursue(params* params_) : base{params_}, m_p_params{params_} {}
     ~pursue() override = default;
 
-    virtual vec calc_acceleration();
+    [[nodiscard]] vec calc_acceleration() override;
 
 private:
     params* m_p_params;
@@ -174,14 +174,14 @@ public:
 
         ~params() override = default;
 
-        virtual bool update() = 0;
+        [[nodiscard]] bool update() override = 0;
     };
 
 public:
     explicit restrictor(params* params_) : base{params_}, m_p_params{params_} {}
     ~restrictor() override = default;
 
-    virtual vec calc_acceleration();
+    [[nodiscard]] vec calc_acceleration() override;
 
 private:
     params* m_p_params;
@@ -218,14 +218,14 @@ public:
 
         ~params() override = default;
 
-        virtual bool update() = 0;
+        [[nodiscard]] bool update() override = 0;
     };
 
 public:
     explicit wander(params* params_) : base{params_}, m_p_params{params_}, m_wander_angle{0} {}
     ~wander() override = default;
 
-    virtual vec calc_acceleration();
+    [[nodiscard]] vec calc_acceleration() override;
 
 private:
     float& proj_x(vec& v);
@@ -266,7 +266,7 @@ public:
 
         ~params() override = default;
 
-        virtual bool update() = 0;
+        [[nodiscard]] bool update() override = 0;
         virtual bool test_obstacle(const vec& dest, vec& obstacle, vec& normal) = 0;
     };
 
@@ -274,7 +274,7 @@ public:
     explicit containment(params* params_) : base{params_}, m_p_params{params_} {}
     ~containment() override = default;
 
-    virtual vec calc_acceleration();
+    [[nodiscard]] vec calc_acceleration() override;
 
 private:
     params* m_p_params;
@@ -302,25 +302,25 @@ public:
 
         explicit params(vec_arg cohesion_factor, vec_arg separation_factor, float max_separate_range, float min_factor_dist = base::s_min_factor_dist,
                         vec (*pf_random_dir)() = &detail::random_vec)
-            : base::params{separation_factor, min_factor_dist}, cohesion_factor{cohesion_factor}, separation_factor{separation_factor}, max_separate_range{max_separate_range},
-              pf_random_dir{pf_random_dir}
+            : base::params{separation_factor, min_factor_dist}, cohesion_factor{cohesion_factor}, separation_factor{separation_factor},
+              max_separate_range{max_separate_range}, pf_random_dir{pf_random_dir}
         {}
 
         ~params() override = default;
 
         // this function should supply nearest object to group with
         virtual void first_nearest(vec& v) = 0; // start supplying nearest
-        virtual bool nomore_nearest() = 0;
+        [[nodiscard]] virtual bool nomore_nearest() = 0;
         virtual void next_nearest(vec& v) = 0; // next nearest, false if finished
 
-        virtual bool update() = 0;
+        [[nodiscard]] bool update() override = 0;
     };
 
 public:
     explicit grouping(params* params_) : base{params_}, m_p_params{params_} {}
     ~grouping() override = default;
 
-    virtual vec calc_acceleration();
+    [[nodiscard]] vec calc_acceleration() override;
 
 private:
     params* m_p_params;

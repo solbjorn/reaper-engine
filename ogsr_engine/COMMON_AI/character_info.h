@@ -90,7 +90,7 @@ protected:
     static void InitXmlIdToIndex();
 
     // загрузка из XML файла
-    virtual void load_shared(LPCSTR);
+    void load_shared(gsl::czstring) override;
 
     // индекс загруженного профиля
     shared_str m_ProfileId;

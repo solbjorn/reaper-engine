@@ -51,25 +51,25 @@ public:
     ~CCustomDetectorSHOC() override;
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
-    virtual void Load(LPCSTR section);
+    void Load(gsl::czstring section) override;
 
-    virtual void OnH_A_Chield();
-    virtual void OnH_B_Independent(bool just_before_destroy);
+    void OnH_A_Chield() override;
+    void OnH_B_Independent(bool just_before_destroy) override;
 
     tmc::task<void> shedule_Update(u32 dt) override;
     tmc::task<void> UpdateCL() override;
 
-    virtual void feel_touch_new(CObject* O);
-    virtual void feel_touch_delete(CObject* O);
-    virtual BOOL feel_touch_contact(CObject* O);
+    void feel_touch_new(CObject* O) override;
+    void feel_touch_delete(CObject* O) override;
+    [[nodiscard]] BOOL feel_touch_contact(CObject* O) override;
 
     void TurnOn();
     void TurnOff();
-    bool IsWorking() { return m_bWorking; }
+    [[nodiscard]] bool IsWorking() { return m_bWorking; }
 
-    virtual void OnMoveToSlot() override;
-    virtual void OnMoveToRuck(EItemPlace prevPlace) override;
-    virtual void OnMoveToBelt() override;
+    void OnMoveToSlot() override;
+    void OnMoveToRuck(EItemPlace prevPlace) override;
+    void OnMoveToBelt() override;
 
 protected:
     void StopAllSounds();
@@ -102,7 +102,7 @@ protected:
     u32 m_ef_detector_type;
 
 public:
-    virtual u32 ef_detector_type() const;
+    [[nodiscard]] u32 ef_detector_type() const override;
 };
 
 class CSimpleDetectorSHOC : public CCustomDetectorSHOC

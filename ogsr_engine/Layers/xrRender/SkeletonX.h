@@ -66,23 +66,31 @@ protected:
     void _FillVerticesSoft2W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16* indices, CBoneData::FacesVec& faces);
     void _FillVerticesSoft3W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16* indices, CBoneData::FacesVec& faces);
     void _FillVerticesSoft4W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16* indices, CBoneData::FacesVec& faces);
-    virtual void _FillVerticesHW1W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces) = 0;
-    virtual void _FillVerticesHW2W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces) = 0;
-    virtual void _FillVerticesHW3W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces) = 0;
-    virtual void _FillVerticesHW4W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces) = 0;
-    virtual void _FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16 bone_id, u32 iBase) = 0;
+    virtual void _FillVerticesHW1W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector3& normal, f32 size, Fvisual* V, u16* indices,
+                                   CBoneData::FacesVec& faces) = 0;
+    virtual void _FillVerticesHW2W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector3& normal, f32 size, Fvisual* V, u16* indices,
+                                   CBoneData::FacesVec& faces) = 0;
+    virtual void _FillVerticesHW3W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector3& normal, f32 size, Fvisual* V, u16* indices,
+                                   CBoneData::FacesVec& faces) = 0;
+    virtual void _FillVerticesHW4W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector3& normal, f32 size, Fvisual* V, u16* indices,
+                                   CBoneData::FacesVec& faces) = 0;
+    virtual void _FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector3& normal, f32 size, u16 bone_id, u32 iBase) = 0;
 
     BOOL _PickBoneSoft1W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces);
     BOOL _PickBoneSoft2W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces);
     BOOL _PickBoneSoft3W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces);
     BOOL _PickBoneSoft4W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces);
 
-    virtual BOOL _PickBoneHW1W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces) = 0;
-    virtual BOOL _PickBoneHW2W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces) = 0;
-    virtual BOOL _PickBoneHW3W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces) = 0;
-    virtual BOOL _PickBoneHW4W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces) = 0;
+    [[nodiscard]] virtual BOOL _PickBoneHW1W(IKinematics::pick_result& r, f32 range, const Fvector3& S, const Fvector3& D, Fvisual* V, u16* indices,
+                                             CBoneData::FacesVec& faces) = 0;
+    [[nodiscard]] virtual BOOL _PickBoneHW2W(IKinematics::pick_result& r, f32 range, const Fvector3& S, const Fvector3& D, Fvisual* V, u16* indices,
+                                             CBoneData::FacesVec& faces) = 0;
+    [[nodiscard]] virtual BOOL _PickBoneHW3W(IKinematics::pick_result& r, f32 range, const Fvector3& S, const Fvector3& D, Fvisual* V, u16* indices,
+                                             CBoneData::FacesVec& faces) = 0;
+    [[nodiscard]] virtual BOOL _PickBoneHW4W(IKinematics::pick_result& r, f32 range, const Fvector3& S, const Fvector3& D, Fvisual* V, u16* indices,
+                                             CBoneData::FacesVec& faces) = 0;
 
-    virtual BOOL _PickBone(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, u16 bone_id, u32 iBase) = 0;
+    [[nodiscard]] virtual BOOL _PickBone(IKinematics::pick_result& r, f32 range, const Fvector3& S, const Fvector3& D, u16 bone_id, u32 iBase) = 0;
 
 public:
     CSkeletonX() = default;
@@ -93,8 +101,8 @@ public:
     virtual void SetParent(CKinematics* K) { Parent = K; }
     virtual void AfterLoad(CKinematics* parent, u16 child_idx) = 0;
     virtual void EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id) = 0;
-    virtual BOOL PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id) = 0;
-    virtual void FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16 bone_id) = 0;
+    [[nodiscard]] virtual BOOL PickBone(IKinematics::pick_result& r, f32 dist, const Fvector3& start, const Fvector3& dir, u16 bone_id) = 0;
+    virtual void FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector3& normal, f32 size, u16 bone_id) = 0;
 
 protected:
     void _DuplicateIndices(IReader* data);
@@ -111,8 +119,8 @@ void get_pos_bones(const vertBoned3W& vert, Fvector& p, CKinematics* Parent);
 void get_pos_bones(const vertBoned4W& vert, Fvector& p, CKinematics* Parent);
 
 template <typename T_vertex, typename T_buffer>
-[[nodiscard]] inline BOOL pick_bone(T_buffer vertices, CKinematics* Parent, IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices,
-                                    CBoneData::FacesVec& faces)
+[[nodiscard]] inline BOOL pick_bone(T_buffer vertices, CKinematics* Parent, IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D,
+                                    u16* indices, CBoneData::FacesVec& faces)
 {
     for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); it++)
     {

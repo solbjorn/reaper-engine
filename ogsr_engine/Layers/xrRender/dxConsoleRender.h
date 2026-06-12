@@ -11,8 +11,8 @@ public:
     dxConsoleRender();
     ~dxConsoleRender() override = default;
 
-    virtual void Copy(IConsoleRender& _in);
-    virtual void OnRender(bool bGame);
+    void Copy(IConsoleRender& _in) override;
+    void OnRender(bool bGame) override;
 
 private:
     ref_shader m_Shader;

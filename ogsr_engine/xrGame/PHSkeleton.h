@@ -41,7 +41,7 @@ private:
     void UnsplitSingle(CPHSkeleton* SO);
 
 protected:
-    virtual CPhysicsShellHolder* PPhysicsShellHolder() = 0;
+    [[nodiscard]] CPhysicsShellHolder* PPhysicsShellHolder() override = 0;
     [[nodiscard]] virtual CPHSkeleton* PHSkeleton() { return this; }
     virtual void SpawnInitPhysics(CSE_Abstract* D) = 0;
     virtual void SaveNetState(NET_Packet&);

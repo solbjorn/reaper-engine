@@ -20,8 +20,8 @@ public:
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual void AffectObjects();
-    virtual void SwitchZoneState(EZoneState new_state);
-    virtual void Load(LPCSTR section);
+    void AffectObjects() override;
+    void SwitchZoneState(EZoneState new_state) override;
+    void Load(gsl::czstring section) override;
     virtual void UpdateBlowout();
 };

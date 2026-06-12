@@ -18,10 +18,8 @@ public:
     typedef game_GameState inherited;
 
 protected:
-    //	u32								m_RPointFreezeTime;
     xrServer* m_server;
     GameEventQueue* m_event_queue;
-    //	BOOL							m_bVotingEnabled;
 
     // Events
     virtual void OnEvent(NET_Packet& tNetPacket, u16 type, u32, ClientID sender);
@@ -50,7 +48,7 @@ public:
     // Signals
     virtual void signal_Syncronize();
 
-    virtual void OnSwitchPhase(u32 old_phase, u32 new_phase);
+    void OnSwitchPhase(u32 old_phase, u32 new_phase) override;
 
     // Utilities
     void u_EventGen(NET_Packet& P, u16 type, u16 dest);
@@ -85,10 +83,10 @@ public:
     virtual void remove_restriction(NET_Packet&, u16);
     virtual void remove_all_restrictions(NET_Packet&, u16);
 
-    virtual bool custom_sls_default() { return false; }
+    [[nodiscard]] virtual bool custom_sls_default() { return false; }
     virtual void sls_default() {}
 
-    virtual shared_str level_name(const shared_str& server_options) const;
+    [[nodiscard]] virtual shared_str level_name(const shared_str& server_options) const;
     virtual void on_death(CSE_Abstract* e_dest, CSE_Abstract* e_src);
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();

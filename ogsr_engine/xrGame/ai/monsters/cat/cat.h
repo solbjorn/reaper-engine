@@ -13,16 +13,15 @@ public:
     CCat();
     ~CCat() override;
 
-    virtual void Load(LPCSTR section);
-    virtual void reinit();
+    void Load(gsl::czstring section) override;
+    void reinit() override;
 
     tmc::task<void> UpdateCL() override;
 
-    virtual void CheckSpecParams(u32 spec_params);
+    void CheckSpecParams(u32 spec_params) override;
 
     void try_to_jump();
-
-    virtual void HitEntityInJump(const CEntity* pEntity);
+    void HitEntityInJump(const CEntity* pEntity) override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

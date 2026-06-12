@@ -11,9 +11,9 @@ public:
     dxThunderboltRender();
     ~dxThunderboltRender() override;
 
-    virtual void Copy(IThunderboltRender& _in);
+    void Copy(IThunderboltRender& _in) override;
 
-    virtual void Render(CEffect_Thunderbolt& owner);
+    void Render(CEffect_Thunderbolt& owner) override;
 
 private:
     ref_geom hGeom_model;

@@ -111,8 +111,8 @@ public:
     static constexpr u32 GetInterpolationSteps() { return 0; }
     static void PhisStepsCallback(u32 Time0, u32 Time1);
 
-    virtual void OnMessage(void* data, u32 size);
-    virtual void OnConnectRejected();
+    void OnMessage(void* data, u32 size) override;
+    void OnConnectRejected() override;
 
 private:
     CObject* pCurrentControlEntity{};
@@ -188,11 +188,11 @@ public:
     shared_str m_caClientOptions;
 
     // Starting/Loading
-    virtual BOOL net_Start(LPCSTR op_server, LPCSTR op_client);
-    void net_Load(LPCSTR) override;
-    virtual void net_Save(LPCSTR name);
+    [[nodiscard]] BOOL net_Start(gsl::czstring op_server, gsl::czstring op_client) override;
+    void net_Load(gsl::czstring) override;
+    void net_Save(gsl::czstring name) override;
     tmc::task<void> net_Stop() override;
-    virtual void net_Update();
+    void net_Update() override;
 
     tmc::task<bool> Load_GameSpecific_Before() override;
     tmc::task<bool> Load_GameSpecific_After() override;
@@ -215,8 +215,8 @@ public:
     tmc::task<void> IR_OnKeyboardPress(xr::key_id btn) override;
     void IR_OnKeyboardRelease(xr::key_id btn) override;
     tmc::task<void> IR_OnKeyboardHold(xr::key_id btn) override;
-    virtual void IR_OnMouseMove(int, int);
-    virtual void IR_OnMouseStop(int, int);
+    void IR_OnMouseMove(s32, s32) override;
+    void IR_OnMouseStop(s32, s32) override;
     tmc::task<void> IR_OnMouseWheel(gsl::index direction) override;
     tmc::task<void> IR_OnActivate() override;
 
@@ -250,7 +250,7 @@ public:
     ~CLevel() override;
 
     // название текущего уровня
-    virtual shared_str name() const;
+    [[nodiscard]] shared_str name() const override;
 
     // gets the time from the game simulation
 
@@ -264,7 +264,7 @@ public:
     float GetGameTimeFactor();
     void SetGameTimeFactor(const float fTimeFactor);
     void SetGameTimeFactor(ALife::_TIME_ID GameTime, const float fTimeFactor);
-    virtual void SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTimeFactor);
+    void SetEnvironmentGameTimeFactor(u64 const& GameTime, f32 const& fTimeFactor) override;
 
     void GetGameTimeForShaders(u32& hours, u32& minutes, u32& seconds, u32& milliseconds) override;
 
@@ -285,7 +285,6 @@ protected:
 
 public:
     CMapManager& MapManager() { return *m_map_manager; }
-    //	CFogOfWarMngr&			FogOfWarMngr				()	{return *m_pFogOfWarMngr;}
 
     // работа с пулями
 protected:
@@ -310,9 +309,9 @@ private:
 public:
     bool is_removing_objects() { return m_is_removing_objects; }
     tmc::task<void> remove_objects();
-    virtual void OnSessionTerminate(LPCSTR reason);
+    void OnSessionTerminate(gsl::czstring reason) override;
     void OnDestroyObject(u16 id) override;
-    virtual void OnChangeCurrentWeather(const char* sect) override;
+    void OnChangeCurrentWeather(gsl::czstring sect) override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

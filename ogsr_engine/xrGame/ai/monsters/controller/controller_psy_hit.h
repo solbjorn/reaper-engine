@@ -35,17 +35,17 @@ private:
 public:
     ~CControllerPsyHit() override = default;
 
-    virtual void load(LPCSTR section);
-    virtual void reinit();
-    virtual void update_frame();
-    virtual bool check_start_conditions();
-    virtual void activate();
-    virtual void deactivate();
+    void load(gsl::czstring section) override;
+    void reinit() override;
+    void update_frame() override;
+    bool check_start_conditions() override;
+    void activate() override;
+    void deactivate() override;
 
     void on_event(ControlCom::EEventType type, ControlCom::IEventData*) override;
 
     void on_death();
-    bool tube_ready() const;
+    [[nodiscard]] bool tube_ready() const;
 
 private:
     void stop();

@@ -14,10 +14,10 @@ public:
     explicit CPHScriptCondition(const sol::function& func);
     ~CPHScriptCondition() override;
 
-    virtual bool is_true();
-    virtual bool obsolete() const;
-    virtual bool compare(const CPHReqComparerV* v) const { return v->compare(this); }
-    virtual bool compare(const CPHScriptCondition* v) const { return m_lua_function == v->m_lua_function; }
+    [[nodiscard]] bool is_true() override;
+    [[nodiscard]] bool obsolete() const override;
+    [[nodiscard]] bool compare(const CPHReqComparerV* v) const override { return v->compare(this); }
+    [[nodiscard]] bool compare(const CPHScriptCondition* v) const override { return m_lua_function == v->m_lua_function; }
 };
 
 class CPHScriptAction : public CPHAction, public CPHReqComparerV
@@ -32,10 +32,10 @@ public:
     explicit CPHScriptAction(const CPHScriptAction& action);
     ~CPHScriptAction() override;
 
-    virtual void run();
-    virtual bool obsolete() const;
-    virtual bool compare(const CPHReqComparerV* v) const { return v->compare(this); }
-    virtual bool compare(const CPHScriptAction* v) const { return m_lua_function == v->m_lua_function; }
+    void run() override;
+    [[nodiscard]] bool obsolete() const override;
+    [[nodiscard]] bool compare(const CPHReqComparerV* v) const override { return v->compare(this); }
+    [[nodiscard]] bool compare(const CPHScriptAction* v) const override { return m_lua_function == v->m_lua_function; }
 };
 
 class CPHScriptObjectCondition : public CPHCondition, public CPHReqComparerV
@@ -50,11 +50,11 @@ public:
     explicit CPHScriptObjectCondition(const CPHScriptObjectCondition& object);
     ~CPHScriptObjectCondition() override;
 
-    virtual bool is_true();
-    virtual bool obsolete() const;
-    virtual bool compare(const sol::object& v) const { return m_lua_object == v; }
-    virtual bool compare(const CPHReqComparerV* v) const { return v->compare(this); }
-    virtual bool compare(const CPHScriptObjectCondition* v) const;
+    [[nodiscard]] bool is_true() override;
+    [[nodiscard]] bool obsolete() const override;
+    [[nodiscard]] virtual bool compare(const sol::object& v) const { return m_lua_object == v; }
+    [[nodiscard]] bool compare(const CPHReqComparerV* v) const override { return v->compare(this); }
+    [[nodiscard]] bool compare(const CPHScriptObjectCondition* v) const override;
 };
 
 class CPHScriptObjectAction : public CPHAction, public CPHReqComparerV
@@ -70,11 +70,11 @@ public:
     explicit CPHScriptObjectAction(const CPHScriptObjectAction& object);
     ~CPHScriptObjectAction() override;
 
-    virtual void run();
-    virtual bool obsolete() const;
-    virtual bool compare(const sol::object& v) const { return m_lua_object == v; }
-    virtual bool compare(const CPHReqComparerV* v) const { return v->compare(this); }
-    virtual bool compare(const CPHScriptObjectAction* v) const;
+    void run() override;
+    [[nodiscard]] bool obsolete() const override;
+    [[nodiscard]] virtual bool compare(const sol::object& v) const { return m_lua_object == v; }
+    [[nodiscard]] bool compare(const CPHReqComparerV* v) const override { return v->compare(this); }
+    [[nodiscard]] bool compare(const CPHScriptObjectAction* v) const override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -90,11 +90,11 @@ public:
     explicit CPHScriptObjectConditionN(const sol::object& object, const sol::function& function);
     ~CPHScriptObjectConditionN() override;
 
-    virtual bool is_true();
-    virtual bool obsolete() const;
-    virtual bool compare(const sol::object& v) const { return m_object == v; }
-    virtual bool compare(const CPHReqComparerV* v) const { return v->compare(this); }
-    virtual bool compare(const CPHScriptObjectConditionN* v) const { return m_callback == v->m_callback && m_object == v->m_object; }
+    [[nodiscard]] bool is_true() override;
+    [[nodiscard]] bool obsolete() const override;
+    [[nodiscard]] virtual bool compare(const sol::object& v) const { return m_object == v; }
+    [[nodiscard]] bool compare(const CPHReqComparerV* v) const override { return v->compare(this); }
+    [[nodiscard]] bool compare(const CPHScriptObjectConditionN* v) const override { return m_callback == v->m_callback && m_object == v->m_object; }
 };
 
 class CPHScriptObjectActionN : public CPHAction, public CPHReqComparerV
@@ -109,11 +109,11 @@ public:
     explicit CPHScriptObjectActionN(const sol::object& object, const sol::function& function);
     ~CPHScriptObjectActionN() override;
 
-    virtual void run();
-    virtual bool obsolete() const;
-    virtual bool compare(const sol::object& v) const { return m_object == v; }
-    virtual bool compare(const CPHReqComparerV* v) const { return v->compare(this); }
-    virtual bool compare(const CPHScriptObjectActionN* v) const { return m_callback == v->m_callback && m_object == v->m_object; }
+    void run() override;
+    [[nodiscard]] bool obsolete() const override;
+    [[nodiscard]] virtual bool compare(const sol::object& v) const { return m_object == v; }
+    [[nodiscard]] bool compare(const CPHReqComparerV* v) const override { return v->compare(this); }
+    [[nodiscard]] bool compare(const CPHScriptObjectActionN* v) const override { return m_callback == v->m_callback && m_object == v->m_object; }
 };
 
 class CPHScriptGameObjectCondition : public CPHScriptObjectConditionN
@@ -124,17 +124,20 @@ public:
     CObject* m_obj;
     bool b_obsolete{};
 
-    explicit CPHScriptGameObjectCondition(const sol::object& object, const sol::function& function, CObject* gobj) : CPHScriptObjectConditionN{object, function}, m_obj{gobj} {}
+    explicit CPHScriptGameObjectCondition(const sol::object& object, const sol::function& function, CObject* gobj)
+        : CPHScriptObjectConditionN{object, function}, m_obj{gobj}
+    {}
     ~CPHScriptGameObjectCondition() override = default;
 
-    virtual bool is_true()
+    [[nodiscard]] bool is_true() override
     {
         b_obsolete = CPHScriptObjectConditionN::is_true();
         return b_obsolete;
     }
-    virtual bool compare(const CObject* v) const { return m_obj->ID() == v->ID(); }
-    virtual bool compare(const CPHReqComparerV* v) const { return v->compare(this); }
-    virtual bool obsolete() const { return b_obsolete; }
+
+    [[nodiscard]] virtual bool compare(const CObject* v) const { return m_obj->ID() == v->ID(); }
+    [[nodiscard]] bool compare(const CPHReqComparerV* v) const override { return v->compare(this); }
+    [[nodiscard]] bool obsolete() const override { return b_obsolete; }
 };
 
 class CPHScriptGameObjectAction : public CPHScriptObjectActionN
@@ -144,11 +147,13 @@ class CPHScriptGameObjectAction : public CPHScriptObjectActionN
 public:
     CObject* m_obj;
 
-    explicit CPHScriptGameObjectAction(const sol::object& object, const sol::function& function, CObject* gobj) : CPHScriptObjectActionN{object, function}, m_obj{gobj} {}
+    explicit CPHScriptGameObjectAction(const sol::object& object, const sol::function& function, CObject* gobj)
+        : CPHScriptObjectActionN{object, function}, m_obj{gobj}
+    {}
     ~CPHScriptGameObjectAction() override = default;
 
-    virtual bool compare(const CPHReqComparerV* v) const { return v->compare(this); }
-    virtual bool compare(const CObject* v) const { return m_obj->ID() == v->ID(); }
+    [[nodiscard]] bool compare(const CPHReqComparerV* v) const override { return v->compare(this); }
+    [[nodiscard]] virtual bool compare(const CObject* v) const { return m_obj->ID() == v->ID(); }
 };
 
 class CPHSriptReqObjComparer : public CPHReqComparerV
@@ -162,10 +167,10 @@ public:
     explicit CPHSriptReqObjComparer(const CPHSriptReqObjComparer& object) : m_lua_object{object.m_lua_object} {}
     ~CPHSriptReqObjComparer() override = default;
 
-    virtual bool compare(const CPHScriptObjectCondition* v) const { return v->compare(m_lua_object); }
-    virtual bool compare(const CPHScriptObjectAction* v) const { return v->compare(m_lua_object); }
-    virtual bool compare(const CPHScriptObjectConditionN* v) const { return v->compare(m_lua_object); }
-    virtual bool compare(const CPHScriptObjectActionN* v) const { return v->compare(m_lua_object); }
+    [[nodiscard]] bool compare(const CPHScriptObjectCondition* v) const override { return v->compare(m_lua_object); }
+    [[nodiscard]] bool compare(const CPHScriptObjectAction* v) const override { return v->compare(m_lua_object); }
+    [[nodiscard]] bool compare(const CPHScriptObjectConditionN* v) const override { return v->compare(m_lua_object); }
+    [[nodiscard]] bool compare(const CPHScriptObjectActionN* v) const override { return v->compare(m_lua_object); }
 };
 
 class CPHSriptReqGObjComparer : public CPHReqComparerV
@@ -178,6 +183,6 @@ public:
     explicit CPHSriptReqGObjComparer(CObject* object) : m_object{object} {}
     ~CPHSriptReqGObjComparer() override = default;
 
-    virtual bool compare(const CPHScriptGameObjectAction* v) const { return v->compare(m_object); }
-    virtual bool compare(const CPHScriptGameObjectCondition* v) const { return v->compare(m_object); }
+    [[nodiscard]] bool compare(const CPHScriptGameObjectAction* v) const override { return v->compare(m_object); }
+    [[nodiscard]] bool compare(const CPHScriptGameObjectCondition* v) const override { return v->compare(m_object); }
 };

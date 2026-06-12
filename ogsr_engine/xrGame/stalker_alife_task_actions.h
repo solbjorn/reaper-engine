@@ -30,9 +30,9 @@ public:
     explicit CStalkerActionSolveZonePuzzle(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionSolveZonePuzzle() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ public:
     explicit CStalkerActionSmartTerrain(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionSmartTerrain() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };

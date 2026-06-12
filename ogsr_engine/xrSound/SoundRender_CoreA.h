@@ -74,9 +74,9 @@ public:
     BOOL EAXTestSupport(BOOL bDeferred);
 
 protected:
-    virtual void i_eax_set(const GUID* guid, u32 prop, void* val, u32 sz);
-    virtual void i_eax_get(const GUID* guid, u32 prop, void* val, u32 sz);
-    virtual void update_listener(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R, float dt);
+    void i_eax_set(const GUID* guid, u32 prop, void* val, u32 sz) override;
+    void i_eax_get(const GUID* guid, u32 prop, void* val, u32 sz) override;
+    void update_listener(const Fvector3& P, const Fvector3& D, const Fvector3& N, const Fvector3& R, f32 dt) override;
 
     bool init_device_list();
     void init_device_properties(const bool& is_al_soft);
@@ -90,11 +90,11 @@ public:
     CSoundRender_CoreA();
     ~CSoundRender_CoreA() override;
 
-    virtual void _initialize(int stage);
-    virtual void _clear();
-    virtual void _restart();
+    void _initialize(s32 stage) override;
+    void _clear() override;
+    void _restart() override;
 
-    virtual void set_master_volume(float f);
+    void set_master_volume(f32 f) override;
 };
 
 #endif

@@ -30,14 +30,14 @@ public:
     inline explicit CStateGroupAttackRun(_Object* obj);
     ~CStateGroupAttackRun() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
-    virtual void critical_finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
+    void critical_finalize() override;
 
-    virtual bool check_completion();
-    virtual bool check_start_conditions();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    [[nodiscard]] bool check_completion() override;
+    [[nodiscard]] bool check_start_conditions() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 };
 
 #include "group_state_attack_run_inline.h"

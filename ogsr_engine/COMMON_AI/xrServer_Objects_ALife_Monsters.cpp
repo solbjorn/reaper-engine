@@ -468,9 +468,10 @@ bool CSE_ALifeTrader::match_configuration() const { return (!strstr(Core.Params,
 
 CSE_Abstract* CSE_ALifeTrader::init()
 {
-    inherited1::init();
-    inherited2::init();
-    return (base());
+    std::ignore = inherited1::init();
+    std::ignore = inherited2::init();
+
+    return base();
 }
 
 CSE_Abstract* CSE_ALifeTrader::base() { return (inherited1::base()); }
@@ -635,20 +636,17 @@ CSE_ALifeAnomalousZone::CSE_ALifeAnomalousZone(LPCSTR caSection) : CSE_ALifeCust
 
 CSE_Abstract* CSE_ALifeAnomalousZone::init()
 {
-    inherited::init();
-    return (base());
+    std::ignore = inherited::init();
+    return base();
 }
 
 CSE_Abstract* CSE_ALifeAnomalousZone::base() { return (inherited::base()); }
-
 const CSE_Abstract* CSE_ALifeAnomalousZone::base() const { return (inherited::base()); }
 
 CSE_ALifeAnomalousZone::~CSE_ALifeAnomalousZone() = default;
 
 u32 CSE_ALifeAnomalousZone::ef_anomaly_type() const { return (pSettings->r_u32(name(), "ef_anomaly_type")); }
-
 u32 CSE_ALifeAnomalousZone::ef_weapon_type() const { return (pSettings->r_u32(name(), "ef_weapon_type")); }
-
 u32 CSE_ALifeAnomalousZone::ef_creature_type() const { return (inherited::ef_weapon_type()); }
 
 void CSE_ALifeAnomalousZone::__STATE_Read(NET_Packet& tNetPacket, u16 size)
@@ -932,15 +930,11 @@ void CSE_ALifeCreatureAbstract::UPDATE_Read(NET_Packet& tNetPacket)
 }
 
 u8 CSE_ALifeCreatureAbstract::g_team() { return s_team; }
-
 u8 CSE_ALifeCreatureAbstract::g_squad() { return s_squad; }
-
 u8 CSE_ALifeCreatureAbstract::g_group() { return s_group; }
 
 bool CSE_ALifeCreatureAbstract::used_ai_locations() const { return (true); }
-
 bool CSE_ALifeCreatureAbstract::__can_switch_online() const { return inherited::__can_switch_online(); }
-
 bool CSE_ALifeCreatureAbstract::__can_switch_offline() const { return inherited::__can_switch_offline() && g_Health() > 0.f; }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -1010,23 +1004,21 @@ CALifeMonsterBrain* CSE_ALifeMonsterAbstract::create_brain() { return (xr_new<CA
 
 CSE_Abstract* CSE_ALifeMonsterAbstract::init()
 {
-    inherited1::init();
-    inherited2::init();
+    std::ignore = inherited1::init();
+    std::ignore = inherited2::init();
 
     if (spawn_ini().section_exist("alife") && spawn_ini().line_exist("alife", "terrain"))
         setup_location_types(m_tpaTerrain, &spawn_ini(), spawn_ini().r_string("alife", "terrain"));
 
     m_brain = create_brain();
 
-    return (base());
+    return base();
 }
 
 CSE_Abstract* CSE_ALifeMonsterAbstract::base() { return (inherited1::base()); }
 
 u32 CSE_ALifeMonsterAbstract::ef_creature_type() const { return (inherited1::ef_creature_type()); }
-
 u32 CSE_ALifeMonsterAbstract::ef_weapon_type() const { return (inherited1::ef_weapon_type()); }
-
 u32 CSE_ALifeMonsterAbstract::ef_detector_type() const { return (inherited1::ef_detector_type()); }
 
 const CSE_Abstract* CSE_ALifeMonsterAbstract::base() const { return (inherited1::base()); }
@@ -1060,10 +1052,9 @@ void CSE_ALifeMonsterAbstract::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 void CSE_ALifeMonsterAbstract::UPDATE_Write(NET_Packet& tNetPacket)
 {
     inherited1::UPDATE_Write(tNetPacket);
+
     tNetPacket.w(&m_tNextGraphID, sizeof(m_tNextGraphID));
     tNetPacket.w(&m_tPrevGraphID, sizeof(m_tPrevGraphID));
-    //	tNetPacket.w				(&m_fGoingSpeed,			sizeof(m_fGoingSpeed));
-    //	tNetPacket.w				(&m_fCurSpeed,				sizeof(m_fCurSpeed));
     tNetPacket.w(&m_fDistanceFromPoint, sizeof(m_fDistanceFromPoint));
     tNetPacket.w(&m_fDistanceToPoint, sizeof(m_fDistanceToPoint));
 }
@@ -1071,10 +1062,9 @@ void CSE_ALifeMonsterAbstract::UPDATE_Write(NET_Packet& tNetPacket)
 void CSE_ALifeMonsterAbstract::UPDATE_Read(NET_Packet& tNetPacket)
 {
     inherited1::UPDATE_Read(tNetPacket);
+
     tNetPacket.r(&m_tNextGraphID, sizeof(m_tNextGraphID));
     tNetPacket.r(&m_tPrevGraphID, sizeof(m_tPrevGraphID));
-    //	tNetPacket.r				(&m_fGoingSpeed,			sizeof(m_fGoingSpeed));
-    //	tNetPacket.r				(&m_fCurSpeed,				sizeof(m_fCurSpeed));
     tNetPacket.r(&m_fDistanceFromPoint, sizeof(m_fDistanceFromPoint));
     tNetPacket.r(&m_fDistanceToPoint, sizeof(m_fDistanceToPoint));
 }
@@ -1090,8 +1080,8 @@ CSE_ALifeCreatureActor::CSE_ALifeCreatureActor(LPCSTR caSection)
 {
     if (pSettings->section_exist(caSection) && pSettings->line_exist(caSection, "visual"))
         set_visual(pSettings->r_string(caSection, "visual"));
+
     m_u16NumItems = 0;
-    //	fArmor						= 0.f;
     fRadiation = 0.f;
     accel.set(0.f, 0.f, 0.f);
     velocity.set(0.f, 0.f, 0.f);
@@ -1106,13 +1096,13 @@ bool CSE_ALifeCreatureActor::match_configuration() const { return (true); }
 
 CSE_Abstract* CSE_ALifeCreatureActor::init()
 {
-    inherited1::init();
-    inherited2::init();
-    return (inherited1::base());
+    std::ignore = inherited1::init();
+    std::ignore = inherited2::init();
+
+    return inherited1::base();
 }
 
 CSE_Abstract* CSE_ALifeCreatureActor::base() { return (inherited1::base()); }
-
 const CSE_Abstract* CSE_ALifeCreatureActor::base() const { return (inherited1::base()); }
 
 void CSE_ALifeCreatureActor::__STATE_Read(NET_Packet& tNetPacket, u16 size)
@@ -1443,26 +1433,25 @@ void CSE_ALifePsyDogPhantom::UPDATE_Write(NET_Packet& tNetPacket) { inherited::U
 //////////////////////////////////////////////////////////////////////////
 // CSE_ALifeHumanAbstract
 //////////////////////////////////////////////////////////////////////////
-CSE_ALifeHumanAbstract::CSE_ALifeHumanAbstract(LPCSTR caSection) : CSE_ALifeTraderAbstract(caSection), CSE_ALifeMonsterAbstract(caSection) {}
 
-CSE_ALifeHumanAbstract::~CSE_ALifeHumanAbstract() {}
+CSE_ALifeHumanAbstract::CSE_ALifeHumanAbstract(LPCSTR caSection) : CSE_ALifeTraderAbstract{caSection}, CSE_ALifeMonsterAbstract{caSection} {}
+CSE_ALifeHumanAbstract::~CSE_ALifeHumanAbstract() = default;
 
 CALifeMonsterBrain* CSE_ALifeHumanAbstract::create_brain()
 {
     m_brain = xr_new<CALifeHumanBrain>(this);
-    return (m_brain);
+    return m_brain;
 }
 
 CSE_Abstract* CSE_ALifeHumanAbstract::init()
 {
-    inherited1::init();
-    inherited2::init();
+    std::ignore = inherited1::init();
+    std::ignore = inherited2::init();
 
-    return (base());
+    return base();
 }
 
 CSE_Abstract* CSE_ALifeHumanAbstract::base() { return (inherited2::base()); }
-
 const CSE_Abstract* CSE_ALifeHumanAbstract::base() const { return (inherited2::base()); }
 
 void CSE_ALifeHumanAbstract::__STATE_Write(NET_Packet& tNetPacket)
@@ -1556,13 +1545,12 @@ void CSE_ALifeHumanStalker::load(NET_Packet& tNetPacket)
 CSE_ALifeOnlineOfflineGroup::CSE_ALifeOnlineOfflineGroup(LPCSTR caSection) : CSE_ALifeDynamicObject(caSection), CSE_ALifeSchedulable(caSection) {}
 
 CSE_Abstract* CSE_ALifeOnlineOfflineGroup::base() { return (this); }
-
 const CSE_Abstract* CSE_ALifeOnlineOfflineGroup::base() const { return (this); }
 
 CSE_Abstract* CSE_ALifeOnlineOfflineGroup::init()
 {
-    inherited1::init();
-    inherited2::init();
+    std::ignore = inherited1::init();
+    std::ignore = inherited2::init();
 
 #ifdef XRGAME_EXPORTS
     m_brain = xr_new<CALifeOnlineOfflineGroupBrain>(this);
@@ -1571,7 +1559,7 @@ CSE_Abstract* CSE_ALifeOnlineOfflineGroup::init()
     VERIFY(m_members.empty());
     m_flags.set(flUsedAI_Locations, FALSE);
 
-    return (this);
+    return this;
 }
 
 CSE_ALifeOnlineOfflineGroup::~CSE_ALifeOnlineOfflineGroup()
@@ -1585,21 +1573,18 @@ void CSE_ALifeOnlineOfflineGroup::__STATE_Write(NET_Packet& tNetPacket)
 {
     inherited1::__STATE_Write(tNetPacket);
 
-#if 1
     tNetPacket.w_u32(m_members.size());
 
     MEMBERS::iterator I = m_members.begin();
     MEMBERS::iterator E = m_members.end();
     for (; I != E; ++I)
         save_data((*I).first, tNetPacket);
-#endif
 }
 
 void CSE_ALifeOnlineOfflineGroup::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
     inherited1::__STATE_Read(tNetPacket, size);
 
-#if 1
     u32 container_size = tNetPacket.r_u32();
     for (u32 i = 0; i < container_size; ++i)
     {
@@ -1607,9 +1592,7 @@ void CSE_ALifeOnlineOfflineGroup::__STATE_Read(NET_Packet& tNetPacket, u16 size)
         load_data(first, tNetPacket);
         m_members.emplace(first, nullptr);
     }
-#endif
 }
 
 void CSE_ALifeOnlineOfflineGroup::UPDATE_Write(NET_Packet& tNetPacket) { inherited1::UPDATE_Write(tNetPacket); }
-
 void CSE_ALifeOnlineOfflineGroup::UPDATE_Read(NET_Packet& tNetPacket) { inherited1::UPDATE_Read(tNetPacket); }

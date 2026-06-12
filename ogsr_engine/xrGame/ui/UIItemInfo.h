@@ -10,8 +10,6 @@ class CUIWpnParams;
 class CUIArtefactParams;
 class CPhysicsShellHolder;
 
-// extern const char * const 		fieldsCaptionColor;
-
 class CUIItemInfo : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIItemInfo, CUIWindow);
@@ -38,7 +36,7 @@ public:
     void TryAddArtefactInfo(const shared_str& af_section);
     void TryAddCustomInfo(CPhysicsShellHolder& obj);
 
-    virtual void Draw();
+    void Draw() override;
 
     bool m_b_force_drawing{};
     CUIStatic* UIName{};

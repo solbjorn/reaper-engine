@@ -24,11 +24,11 @@ public:
     explicit CStateMonsterLookToUnprotectedArea(_Object* obj);
     ~CStateMonsterLookToUnprotectedArea() override;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void initialize() override;
+    void execute() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 
-    virtual bool check_completion();
+    [[nodiscard]] bool check_completion() override;
 };
 
 #include "state_look_unprotected_area_inline.h"

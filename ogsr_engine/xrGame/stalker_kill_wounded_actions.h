@@ -25,9 +25,9 @@ public:
     explicit CStalkerActionReachWounded(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionReachWounded() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -41,16 +41,13 @@ class CStalkerActionAimWounded : public CStalkerActionCombatBase
 protected:
     typedef CStalkerActionCombatBase inherited;
 
-private:
-    //	float				m_speed;
-
 public:
     explicit CStalkerActionAimWounded(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionAimWounded() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -68,9 +65,9 @@ public:
     explicit CStalkerActionPrepareWounded(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionPrepareWounded() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -88,9 +85,9 @@ public:
     explicit CStalkerActionKillWounded(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionKillWounded() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -108,6 +105,6 @@ public:
     explicit CStalkerActionPauseAfterKill(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionPauseAfterKill() override = default;
 
-    virtual void initialize();
-    virtual void execute();
+    void initialize() override;
+    void execute() override;
 };

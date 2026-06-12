@@ -97,7 +97,8 @@ void COMotion::Save(IWriter& F)
 
 bool COMotion::Load(IReader& F)
 {
-    CCustomMotion::Load(F);
+    std::ignore = CCustomMotion::Load(F);
+
     u16 vers = F.r_u16();
     if (vers == 0x0003)
     {

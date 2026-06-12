@@ -35,10 +35,12 @@ public:
 
     template <typename T>
     IC T& operator()(const T*);
+
     template <typename T>
     IC const T& operator()(const T*) const;
-    virtual void load(IReader& file_stream);
-    virtual void save(IWriter& memory_stream);
+
+    void load(IReader& file_stream) override;
+    void save(IWriter& memory_stream) override;
 };
 
 #include "alife_registry_container_inline.h"

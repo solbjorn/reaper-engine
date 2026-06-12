@@ -10,22 +10,22 @@ class CUILabel : public CUIFrameLineWnd, public CUILinesOwner // IUITextControl
     RTTI_DECLARE_TYPEINFO(CUILabel, CUIFrameLineWnd, CUILinesOwner);
 
 public:
-    CLAItem* m_lanim{};
-    float m_lainm_start_time{-1.f};
+    CLAItem* m_lanim{nullptr};
+    float m_lainm_start_time{-1.0f};
 
     // IUISimpleWindow
-    virtual void SetWidth(float width);
-    virtual void SetHeight(float height);
-    virtual void SetFont(CGameFont* pFont);
+    void SetWidth(f32 width) override;
+    void SetHeight(f32 height) override;
+    void SetFont(CGameFont* pFont) override;
     // CUIFrameLineWnd
-    virtual void Init(float x, float y, float width, float height);
-    virtual void Draw();
-    virtual void Update();
+    void Init(f32 x, f32 y, f32 width, f32 height) override;
+    void Draw() override;
+    void Update() override;
 
     // own
     CUILabel();
     ~CUILabel() override = default;
 
-    void SetLightAnim(LPCSTR lanim);
+    void SetLightAnim(gsl::czstring lanim);
 };
 XR_SOL_BASE_CLASSES(CUILabel);

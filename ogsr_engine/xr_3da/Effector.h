@@ -22,7 +22,7 @@ public:
     void SetHudAffect(bool val) { bHudAffect = val; }
     bool GetHudAffect() { return bHudAffect; }
     IC ECamEffectorType GetType() { return eType; }
-    virtual BOOL Valid() { return fLifeTime > 0.0f; }
+    [[nodiscard]] virtual BOOL Valid() { return fLifeTime > 0.0f; }
 
     virtual tmc::task<bool> ProcessCam(SCamEffectorInfo&)
     {
@@ -31,6 +31,6 @@ public:
     }
 
     virtual void ProcessIfInvalid(SCamEffectorInfo&) {}
-    virtual BOOL AllowProcessingIfInvalid() { return FALSE; }
-    virtual bool AbsolutePositioning() { return false; }
+    [[nodiscard]] virtual BOOL AllowProcessingIfInvalid() { return FALSE; }
+    [[nodiscard]] virtual bool AbsolutePositioning() { return false; }
 };

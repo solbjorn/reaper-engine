@@ -39,9 +39,9 @@ public:
         return (*m_storage);
     }
 
-    virtual float ffGetValue() = 0;
+    [[nodiscard]] virtual f32 ffGetValue() = 0;
 
-    virtual u32 dwfGetDiscreteValue(u32 dwDiscretizationValue = 2)
+    [[nodiscard]] virtual u32 dwfGetDiscreteValue(u32 dwDiscretizationValue = 2)
     {
         float fTemp = ffGetValue();
         if (fTemp <= m_fMinResultValue)

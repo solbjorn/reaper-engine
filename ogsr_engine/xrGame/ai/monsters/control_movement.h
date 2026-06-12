@@ -19,8 +19,8 @@ public:
 
     ~CControlMovement() override = default;
 
-    virtual void reinit();
-    virtual void update_frame();
+    void reinit() override;
+    void update_frame() override;
 
     float velocity_current() { return m_velocity_current; }
     float velocity_target() { return m_data.velocity_target; }

@@ -41,12 +41,12 @@ public:
     explicit CControlPathBuilder(CCustomMonster* monster);
     ~CControlPathBuilder() override;
 
-    virtual void load(LPCSTR);
-    virtual void reinit();
-    virtual void update_schedule();
+    void load(gsl::czstring) override;
+    void reinit() override;
+    void update_schedule() override;
 
-    virtual void on_travel_point_change(const u32& previous_travel_point_index);
-    virtual void on_build_path();
+    void on_travel_point_change(const u32& previous_travel_point_index) override;
+    void on_build_path() override;
     [[nodiscard]] bool can_use_distributed_computations() const override;
 
     // services

@@ -19,10 +19,10 @@ private:
 public:
     ~CControlMovementBase() override = default;
 
-    virtual void load(LPCSTR section);
+    void load(gsl::czstring section) override;
 
-    virtual void reinit();
-    virtual void update_frame();
+    void reinit() override;
+    void update_frame() override;
 
     void load_velocity(LPCSTR section, LPCSTR line, u32 param);
     SVelocityParam& get_velocity(u32 velocity_id);

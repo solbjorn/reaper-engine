@@ -291,7 +291,9 @@ bool CUISequenceSimpleItem::Stop(bool bForce)
         if (ui_game_sp && ui_game_sp->PdaMenu->IsShown())
             HUD().GetUI()->StartStopMenu(ui_game_sp->PdaMenu, true);
     }
-    inherited::Stop();
+
+    std::ignore = inherited::Stop();
+
     return true;
 }
 
@@ -324,7 +326,7 @@ void CUISequenceSimpleItem::OnKeyboardPress(xr::key_id dik)
             {
                 m_flags.set(etiCanBeStopped, TRUE);
                 m_stop_lua_functions.clear();
-                Stop();
+                std::ignore = Stop();
             }
         }
     }

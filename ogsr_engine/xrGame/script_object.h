@@ -19,12 +19,12 @@ public:
     CScriptObject();
     ~CScriptObject() override;
 
-    virtual DLL_Pure* _construct();
-    virtual void reinit();
+    [[nodiscard]] DLL_Pure* _construct() override;
+    void reinit() override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> net_Destroy() override;
-    virtual BOOL UsedAI_Locations();
+    [[nodiscard]] BOOL UsedAI_Locations() override;
     tmc::task<void> shedule_Update(u32 DT) override;
     tmc::task<void> UpdateCL() override;
-    virtual CScriptEntity* cast_script_entity() { return this; }
+    [[nodiscard]] CScriptEntity* cast_script_entity() override { return this; }
 };

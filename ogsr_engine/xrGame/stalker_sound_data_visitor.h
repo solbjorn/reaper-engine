@@ -24,8 +24,8 @@ public:
     inline explicit CStalkerSoundDataVisitor(CAI_Stalker* object);
     ~CStalkerSoundDataVisitor() override;
 
-    virtual void visit(CStalkerSoundData* data);
-    IC CAI_Stalker& object() const;
+    void visit(CStalkerSoundData* data) override;
+    [[nodiscard]] inline CAI_Stalker& object() const;
 };
 
 #include "stalker_sound_data_visitor_inline.h"

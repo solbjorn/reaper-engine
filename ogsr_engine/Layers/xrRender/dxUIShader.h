@@ -17,10 +17,9 @@ private:
 public:
     ~dxUIShader() override = default;
 
-    virtual void Copy(IUIShader& _in);
-    virtual void create(LPCSTR sh, LPCSTR tex = nullptr, bool no_cache = false);
-    virtual bool inited() { return hShader; }
-    // virtual void destroy();
+    void Copy(IUIShader& _in) override;
+    void create(gsl::czstring sh, gsl::czstring tex = nullptr, bool no_cache = false) override;
+    [[nodiscard]] bool inited() override { return hShader; }
 
 private:
     ref_shader hShader;

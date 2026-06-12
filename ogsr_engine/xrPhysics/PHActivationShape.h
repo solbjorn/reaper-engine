@@ -42,14 +42,14 @@ public:
     void set_rotation(const Fmatrix& rot);
 
 private:
-    virtual void PhDataUpdate(dReal step);
-    virtual void PhTune(dReal step);
-    virtual void CutVelocity(float l_limit, float a_limit);
-    virtual void InitContact(dContact* c, bool& do_collide, u16, u16);
-    virtual dGeomID dSpacedGeom();
-    virtual void get_spatial_params();
-    virtual u16 get_elements_number() { return 0; }
-    virtual CPHSynchronize* get_element_sync(u16) { return nullptr; }
+    void PhDataUpdate(dReal step) override;
+    void PhTune(dReal step) override;
+    void CutVelocity(f32 l_limit, f32 a_limit) override;
+    void InitContact(dContact* c, bool& do_collide, u16, u16) override;
+    [[nodiscard]] dGeomID dSpacedGeom() override;
+    void get_spatial_params() override;
+    [[nodiscard]] u16 get_elements_number() override { return 0; }
+    [[nodiscard]] CPHSynchronize* get_element_sync(u16) override { return nullptr; }
 };
 
 #endif

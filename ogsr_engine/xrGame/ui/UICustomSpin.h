@@ -24,11 +24,11 @@ public:
     ~CUICustomSpin() override;
 
     // CUIWindow
-    void Init(float x, float y, float width, float) override;
+    void Init(f32 x, f32 y, f32 width, f32) override;
     void SendMessage(CUIWindow* pWnd, s16 msg, void* = nullptr) override;
-    virtual void Draw();
-    virtual void Update();
-    virtual void Enable(bool status);
+    void Draw() override;
+    void Update() override;
+    void Enable(bool status) override;
 
     // own
     virtual void OnBtnUpClick();
@@ -39,8 +39,8 @@ public:
     void SetTextColorD(u32 color);
 
 protected:
-    virtual bool CanPressUp() = 0;
-    virtual bool CanPressDown() = 0;
+    [[nodiscard]] virtual bool CanPressUp() = 0;
+    [[nodiscard]] virtual bool CanPressDown() = 0;
     virtual void IncVal() = 0;
     virtual void DecVal() = 0;
 

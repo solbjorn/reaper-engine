@@ -17,7 +17,7 @@ public:
     ~CFileStreamReader() override = default;
 
     virtual void construct(LPCSTR file_name, gsl::index window_size);
-    virtual void destroy();
+    void destroy() override;
 };
 
 #endif // FILE_STREAM_READER_H

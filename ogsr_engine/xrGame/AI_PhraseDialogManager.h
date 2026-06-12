@@ -20,8 +20,8 @@ public:
     CAI_PhraseDialogManager();
     ~CAI_PhraseDialogManager() override;
 
-    virtual void ReceivePhrase(DIALOG_SHARED_PTR& phrase_dialog);
-    virtual void UpdateAvailableDialogs(CPhraseDialogManager* partner);
+    void ReceivePhrase(DIALOG_SHARED_PTR& phrase_dialog) override;
+    void UpdateAvailableDialogs(CPhraseDialogManager* partner) override;
     virtual void AnswerPhrase(DIALOG_SHARED_PTR& phrase_dialog);
 
     virtual void SetStartDialog(shared_str phrase_dialog);

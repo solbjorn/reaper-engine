@@ -29,9 +29,9 @@ public:
     explicit CStalkerActionBase(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionBase() override = default;
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
+    void initialize() override;
+    void execute() override;
+    void finalize() override;
 
     [[nodiscard]] CAI_Stalker& object() const
     {
@@ -51,5 +51,5 @@ public:
     explicit CStalkerActionAlreadyDead(CAI_Stalker* object, LPCSTR action_name = "");
     ~CStalkerActionAlreadyDead() override = default;
 
-    virtual void execute();
+    void execute() override;
 };

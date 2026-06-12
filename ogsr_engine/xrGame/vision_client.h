@@ -15,7 +15,7 @@ class CObject;
 class CEntity;
 class CVisualMemoryManager;
 
-class vision_client : public ISheduled, public Feel::Vision
+class XR_NOVTABLE vision_client : public ISheduled, public Feel::Vision
 {
     RTTI_DECLARE_TYPEINFO(vision_client, ISheduled, Feel::Vision);
 
@@ -38,15 +38,15 @@ public:
     explicit vision_client(CEntity* object, const u32& update_interval);
     ~vision_client() override;
 
-    virtual float shedule_Scale() const;
+    [[nodiscard]] f32 shedule_Scale() const override;
     tmc::task<void> shedule_Update(u32 dt) override;
-    virtual shared_str shedule_Name() const;
-    virtual bool shedule_Needed();
+    [[nodiscard]] shared_str shedule_Name() const override;
+    [[nodiscard]] bool shedule_Needed() override;
 
-    virtual float feel_vision_mtl_transp(CObject* object, u32 element);
+    [[nodiscard]] f32 feel_vision_mtl_transp(CObject* object, u32 element) override;
 
-    virtual BOOL feel_vision_isRelevant(CObject* object) = 0;
-    virtual void camera(Fvector& position, Fvector& direction, Fvector& normal, float& field_of_view, float& aspect_ratio, float& near_plane, float& far_plane) = 0;
+    [[nodiscard]] BOOL feel_vision_isRelevant(CObject* object) override = 0;
+    virtual void camera(Fvector3& position, Fvector3& direction, Fvector3& normal, f32& field_of_view, f32& aspect_ratio, f32& near_plane, f32& far_plane) = 0;
 
     virtual void reinit();
     virtual void reload(LPCSTR section);

@@ -47,8 +47,8 @@ public:
     CUIMultiTextStatic();
     ~CUIMultiTextStatic() override;
 
-    virtual void Draw();
-    virtual void Update();
+    void Draw() override;
+    void Update() override;
     // Добавить надпись
     // Return:	Указатель на добавленную запись
     SinglePhrase* AddPhrase();
@@ -70,7 +70,7 @@ private:
 public:
     ~CUICaption() override = default;
 
-    virtual void Draw();
+    void Draw() override;
     void addCustomMessage(const shared_str& msg_name, float x, float y, float font_size, CGameFont* pFont, CGameFont::EAligment al, u32 color,
                           LPCSTR def_str = "");
     EffectParams* customizeMessage(const shared_str& msg_name, const CUITextBanner::TextBannerStyles styleName);

@@ -109,11 +109,11 @@ public:
 
     // -------------------------------------------------------------------
     // Control Interface
-    virtual void reinit();
-    virtual void update_frame();
+    void reinit() override;
+    void update_frame() override;
     void on_event(ControlCom::EEventType type, ControlCom::IEventData*) override;
-    virtual void on_start_control(ControlCom::EControlType type);
-    virtual void on_stop_control(ControlCom::EControlType type);
+    void on_start_control(ControlCom::EControlType type) override;
+    void on_stop_control(ControlCom::EControlType type) override;
 
     // -------------------------------------------------------------------
 

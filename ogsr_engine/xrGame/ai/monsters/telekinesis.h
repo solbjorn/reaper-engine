@@ -22,7 +22,7 @@ public:
     // allocates relevant TelekineticObject
 
     // активировать объект
-    virtual CTelekineticObject* activate(CPhysicsShellHolder* obj, float strength, float height, u32 max_time_keep, bool rot = true);
+    [[nodiscard]] virtual CTelekineticObject* activate(CPhysicsShellHolder* obj, f32 strength, f32 height, u32 max_time_keep, bool rot = true);
 
     // деактивировать все объекты
     void deactivate();
@@ -72,7 +72,7 @@ public:
     void remove_links(CObject* O);
 
 protected:
-    virtual CTelekineticObject* alloc_tele_object() { return xr_new<CTelekineticObject>(); }
+    [[nodiscard]] virtual CTelekineticObject* alloc_tele_object() { return xr_new<CTelekineticObject>(); }
 
 private:
     // обновление на шагах физики

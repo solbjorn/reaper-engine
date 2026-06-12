@@ -21,14 +21,14 @@ public:
     explicit CStateMonsterAttackMoveToHomePoint(_Object* obj);
     ~CStateMonsterAttackMoveToHomePoint() override = default;
 
-    virtual void initialize();
-    virtual void finalize();
-    virtual void critical_finalize();
-    virtual void execute();
-    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
+    void initialize() override;
+    void finalize() override;
+    void critical_finalize() override;
+    void execute() override;
+    void remove_links(CObject* object) override { inherited::remove_links(object); }
 
-    virtual bool check_start_conditions();
-    virtual bool check_completion();
+    [[nodiscard]] bool check_start_conditions() override;
+    [[nodiscard]] bool check_completion() override;
 
 private:
     void select_target();

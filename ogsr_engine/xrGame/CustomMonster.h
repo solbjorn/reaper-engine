@@ -112,15 +112,15 @@ public:
     net_update NET_Last;
     //------------------------------
 
-    virtual BOOL feel_touch_on_contact(CObject*);
-    virtual BOOL feel_touch_contact(CObject*);
+    [[nodiscard]] BOOL feel_touch_on_contact(CObject*) override;
+    [[nodiscard]] BOOL feel_touch_contact(CObject*) override;
     // utils
     void mk_orientation(Fvector& dir, Fmatrix& mR);
     void mk_rotation(Fvector& dir, SRotation& R);
 
     // stream executors
     virtual void Exec_Action(float);
-    virtual void Exec_Look(float dt);
+    virtual void Exec_Look(f32 dt);
     tmc::task<void> Exec_Visibility();
     void eye_pp_s0();
     void eye_pp_s1();
@@ -133,25 +133,25 @@ public:
     ~CCustomMonster() override;
 
 public:
-    virtual CEntityAlive* cast_entity_alive() { return this; }
-    virtual CEntity* cast_entity() { return this; }
+    [[nodiscard]] CEntityAlive* cast_entity_alive() override { return this; }
+    [[nodiscard]] CEntity* cast_entity() override { return this; }
 
 public:
-    virtual DLL_Pure* _construct();
+    [[nodiscard]] DLL_Pure* _construct() override;
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     tmc::task<void> Die(CObject* who) override;
 
     virtual void HitSignal(float, Fvector&, CObject*);
-    virtual void g_WeaponBones(int&, int&, int&) {}
+    void g_WeaponBones(s32&, s32&, s32&) override {}
     tmc::task<void> shedule_Update(u32 DT) override;
     tmc::task<void> UpdateCL() override;
 
-    virtual void net_Export(CSE_Abstract*);
-    virtual void net_Relcase(CObject* O);
+    void net_Export(CSE_Abstract*) override;
+    void net_Relcase(CObject* O) override;
 
     virtual void SelectAnimation(const Fvector& _view, const Fvector& _move, float speed) = 0;
 
-    virtual bool is_base_monster_with_enemy() { return false; }
+    [[nodiscard]] virtual bool is_base_monster_with_enemy() { return false; }
 
     // debug
 #ifdef DEBUG
@@ -165,51 +165,50 @@ public:
     IC void vfNormalizeSafe(Fvector& Vector);
 
 public:
-    virtual float ffGetFov() const { return eye_fov; }
-    virtual float ffGetRange() const { return eye_range; }
+    [[nodiscard]] f32 ffGetFov() const override { return eye_fov; }
+    [[nodiscard]] f32 ffGetRange() const override { return eye_range; }
     void set_fov(float new_fov);
     void set_range(float new_range);
-    //	virtual	void				feel_touch_new			(CObject	*O);
     virtual BOOL feel_visible_isRelevant(CObject* O);
-    virtual Feel::Sound* dcast_FeelSound() { return this; }
-    virtual void Hit(SHit* pHDS);
+    [[nodiscard]] Feel::Sound* dcast_FeelSound() override { return this; }
+    void Hit(SHit* pHDS) override;
 
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     tmc::task<void> net_Destroy() override;
-    virtual BOOL UsedAI_Locations();
+    [[nodiscard]] BOOL UsedAI_Locations() override;
     ///////////////////////////////////////////////////////////////////////
-    virtual u16 PHGetSyncItemsNumber() { return inherited ::PHGetSyncItemsNumber(); }
-    virtual CPHSynchronize* PHGetSyncItem(u16 item) { return inherited ::PHGetSyncItem(item); }
-    virtual void PHUnFreeze() { return inherited ::PHUnFreeze(); }
-    virtual void PHFreeze() { return inherited ::PHFreeze(); }
+    [[nodiscard]] u16 PHGetSyncItemsNumber() override { return inherited::PHGetSyncItemsNumber(); }
+    [[nodiscard]] CPHSynchronize* PHGetSyncItem(u16 item) override { return inherited::PHGetSyncItem(item); }
+    void PHUnFreeze() override { return inherited::PHUnFreeze(); }
+    void PHFreeze() override { return inherited::PHFreeze(); }
     ///////////////////////////////////////////////////////////////////////
-public:
-    virtual void Load(LPCSTR section);
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
-    virtual const SRotation Orientation() const;
+
+    void Load(gsl::czstring section) override;
+    void reinit() override;
+    void reload(gsl::czstring section) override;
+    [[nodiscard]] const SRotation Orientation() const override;
     virtual float get_custom_pitch_speed(float def_speed) { return def_speed; }
-    virtual bool human_being() const { return (false); }
+    [[nodiscard]] bool human_being() const override { return false; }
     virtual void PitchCorrection();
 
-    virtual void save(NET_Packet& output_packet);
-    virtual void load(IReader& input_packet);
-    virtual BOOL net_SaveRelevant() { return inherited::net_SaveRelevant(); }
+    void save(NET_Packet& output_packet) override;
+    void load(IReader& input_packet) override;
+    [[nodiscard]] BOOL net_SaveRelevant() override { return inherited::net_SaveRelevant(); }
 
-    virtual const MonsterSpace::SBoneRotation& head_orientation() const;
+    [[nodiscard]] virtual const MonsterSpace::SBoneRotation& head_orientation() const;
 
     virtual void UpdatePositionAnimation();
-    virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
-    virtual CParticlesPlayer* cast_particles_player() { return this; }
-    virtual CCustomMonster* cast_custom_monster() { return this; }
-    virtual CScriptEntity* cast_script_entity() { return this; }
+    [[nodiscard]] CPhysicsShellHolder* cast_physics_shell_holder() override { return this; }
+    [[nodiscard]] CParticlesPlayer* cast_particles_player() override { return this; }
+    [[nodiscard]] CCustomMonster* cast_custom_monster() override { return this; }
+    [[nodiscard]] CScriptEntity* cast_script_entity() override { return this; }
 
     void load_killer_clsids(LPCSTR section);
     bool is_special_killer(CObject* obj);
 
     IC CMemoryManager& memory() const;
-    virtual float feel_vision_mtl_transp(CObject* O, u32 element);
-    virtual void feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power, float time_to_stop);
+    [[nodiscard]] f32 feel_vision_mtl_transp(CObject* O, u32 element) override;
+    void feel_sound_new(CObject* who, s32 type, CSound_UserDataPtr user_data, const Fvector3& Position, f32 power, f32 time_to_stop) override;
 
     [[nodiscard]] virtual bool useful(const CItemManager*, const CGameObject* object) const;
     [[nodiscard]] virtual float evaluate(const CItemManager*, const CGameObject* object) const;
@@ -228,9 +227,9 @@ private:
     CSound_UserDataVisitor* m_sound_user_data_visitor{};
 
 protected:
-    virtual CSound_UserDataVisitor* create_sound_visitor();
-    virtual CMemoryManager* create_memory_manager();
-    virtual CMovementManager* create_movement_manager();
+    [[nodiscard]] virtual CSound_UserDataVisitor* create_sound_visitor();
+    [[nodiscard]] virtual CMemoryManager* create_memory_manager();
+    [[nodiscard]] virtual CMovementManager* create_movement_manager();
 
 public:
     IC CMovementManager& movement() const;
@@ -242,21 +241,21 @@ protected:
     float m_fog_density_factor;
 
 public:
-    virtual void update_range_fov(float& new_range, float& new_fov, float start_range, float start_fov);
+    virtual void update_range_fov(f32& new_range, f32& new_fov, f32 start_range, f32 start_fov);
 
 public:
     tmc::task<void> update_sound_player();
     virtual void on_restrictions_change();
-    virtual LPCSTR visual_name(CSE_Abstract* server_entity);
+    [[nodiscard]] gsl::czstring visual_name(CSE_Abstract* server_entity) override;
 
 private:
     bool m_already_dead{};
 
 public:
     IC const bool& already_dead() const { return m_already_dead; }
-    virtual bool use_simplified_visual() const { return already_dead(); }
+    [[nodiscard]] bool use_simplified_visual() const override { return already_dead(); }
     virtual void on_enemy_change(const CEntityAlive*);
-    virtual CVisualMemoryManager* visual_memory() const;
+    [[nodiscard]] CVisualMemoryManager* visual_memory() const override;
 
 public:
     IC float client_update_fdelta() const;
@@ -283,7 +282,7 @@ protected:
 protected:
     virtual void load_critical_wound_bones() {}
 
-    virtual bool critical_wound_external_conditions_suitable() { return true; }
+    [[nodiscard]] virtual bool critical_wound_external_conditions_suitable() { return true; }
     virtual void critical_wounded_state_start() {}
 
     bool update_critical_wounded(const u16& bone_id, const float& power);
@@ -310,12 +309,12 @@ private:
     bool m_movement_enabled_before_animation_controller;
 
 public:
-    virtual void create_anim_mov_ctrl(CBlend* b);
-    virtual void destroy_anim_mov_ctrl();
+    void create_anim_mov_ctrl(CBlend* b) override;
+    void destroy_anim_mov_ctrl() override;
 
     bool m_visible_for_zones{true};
 
-    virtual bool IsVisibleForZones() { return m_visible_for_zones; }
+    [[nodiscard]] bool IsVisibleForZones() override { return m_visible_for_zones; }
     void ForceTransform(const Fmatrix& m) override;
 
     // -----------------------------------------------------------------------------
