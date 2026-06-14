@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "dRayMotions.h"
-#include "dCylinder/dCylinder.h"
+#include "dcylinder/dCylinder.h"
 
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");

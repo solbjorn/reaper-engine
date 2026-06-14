@@ -1,21 +1,20 @@
 #include "stdafx.h"
 
-#include "inventory.h"
+#include "Inventory.h"
 
-#include "actor.h"
+#include "Actor.h"
 #include "trade.h"
-#include "weapon.h"
+#include "Weapon.h"
 
 #include "ui/UIInventoryUtilities.h"
 
 #include "eatable_item.h"
 #include "script_engine.h"
-#include "xrmessages.h"
-// #include "game_cl_base.h"
+#include "xrMessages.h"
 #include "xr_level_controller.h"
-#include "level.h"
+#include "Level.h"
 #include "ai_space.h"
-#include "entitycondition.h"
+#include "EntityCondition.h"
 #include "game_base_space.h"
 #include "clsid_game.h"
 #include "CustomOutfit.h"
@@ -26,9 +25,9 @@
 #include "script_game_object.h"
 
 #include "UIGameSP.h"
-#include "HudManager.h"
+#include "HUDManager.h"
 #include "ui/UIInventoryWnd.h"
-#include "ui/UIPDAWnd.h"
+#include "ui/UIPdaWnd.h"
 
 using namespace InventoryUtilities;
 

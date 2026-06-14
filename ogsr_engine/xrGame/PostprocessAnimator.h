@@ -1,9 +1,9 @@
 #ifndef __ppanimator_included__
 #define __ppanimator_included__
 
-#include "..\xr_3da\envelope.h"
-#include "..\xr_3da\EffectorPP.h"
-#include "..\xr_3da\cameramanager.h"
+#include "../xr_3da/envelope.h"
+#include "../xr_3da/EffectorPP.h"
+#include "../xr_3da/CameraManager.h"
 
 class CEffectorController;
 

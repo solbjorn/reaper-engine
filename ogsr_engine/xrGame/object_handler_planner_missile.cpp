@@ -7,11 +7,12 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "object_handler_planner.h"
 #include "object_property_evaluators.h"
 #include "object_actions.h"
 #include "object_handler_space.h"
-#include "missile.h"
+#include "Missile.h"
 #include "object_handler_planner_impl.h"
 #include "ai/stalker/ai_stalker.h"
 

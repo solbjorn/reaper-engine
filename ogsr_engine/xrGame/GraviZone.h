@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "customzone.h"
+#include "CustomZone.h"
 #include "ai/monsters/telekinesis.h"
 
 class XR_NOVTABLE CBaseGraviZone : public CCustomZone

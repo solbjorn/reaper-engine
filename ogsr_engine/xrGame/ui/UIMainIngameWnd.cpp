@@ -5,20 +5,20 @@
 #include "UIMessagesWindow.h"
 #include "../UIZoneMap.h"
 
-#include "../actor.h"
+#include "../Actor.h"
 #include "../HUDManager.h"
 #include "../PDA.h"
 #include "../character_info.h"
-#include "../inventory.h"
+#include "../Inventory.h"
 #include "../UIGameSP.h"
-#include "../weaponmagazined.h"
-#include "../missile.h"
+#include "../WeaponMagazined.h"
+#include "../Missile.h"
 #include "../Grenade.h"
-#include "../xrServer_objects_ALife.h"
+#include "../xrServer_Objects_ALife.h"
 #include "../alife_simulator.h"
 #include "../alife_object_registry.h"
 #include "../game_cl_base.h"
-#include "../level.h"
+#include "../Level.h"
 #include "../seniority_hierarchy_holder.h"
 
 #include "../date_time.h"
@@ -30,7 +30,7 @@
 #include "UIXmlInit.h"
 #include "UIPdaMsgListItem.h"
 #include "../alife_registry_wrappers.h"
-#include "../actorcondition.h"
+#include "../ActorCondition.h"
 
 #include "../string_table.h"
 #include "clsid_game.h"
@@ -51,7 +51,7 @@
 
 #ifdef DEBUG
 #include "../attachable_item.h"
-#include "..\..\xr_3da\xr_input.h"
+#include "../../xr_3da/xr_input.h"
 #endif
 
 using namespace InventoryUtilities;

@@ -4,13 +4,13 @@
 
 #pragma once
 
-#include "..\xr_3da\xr_object.h"
+#include "../xr_3da/xr_object.h"
 #include "xrServer_Space.h"
 #include "alife_space.h"
 #include "UsableScriptObject.h"
 #include "script_binder.h"
 #include "Hit.h"
-#include "..\xr_3da\feel_touch.h"
+#include "../xr_3da/Feel_Touch.h"
 
 class CPhysicsShell;
 class CSE_Abstract;

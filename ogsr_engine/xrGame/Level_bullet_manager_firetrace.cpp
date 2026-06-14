@@ -7,20 +7,20 @@
 
 #include "Level_Bullet_Manager.h"
 
-#include "entity.h"
-#include "../xr_3da/gamemtllib.h"
-#include "level.h"
-#include "gamepersistent.h"
+#include "Entity.h"
+#include "../xr_3da/GameMtlLib.h"
+#include "Level.h"
+#include "GamePersistent.h"
 #include "game_cl_base.h"
-#include "xrmessages.h"
+#include "xrMessages.h"
 #include "clsid_game.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "Actor.h"
-#include "AI/Stalker/ai_stalker.h"
+#include "ai/stalker/ai_stalker.h"
 #include "character_info.h"
-#include "../xrcdb/xr_collide_defs.h"
-#include "weapon.h"
-#include "ai/monsters/BaseMonster/base_monster.h"
+#include "../xrCDB/xr_collide_defs.h"
+#include "Weapon.h"
+#include "ai/monsters/basemonster/base_monster.h"
 
 // расстояния не пролетев которого пуля не трогает того кто ее пустил
 #define PARENT_IGNORE_DIST 3.f

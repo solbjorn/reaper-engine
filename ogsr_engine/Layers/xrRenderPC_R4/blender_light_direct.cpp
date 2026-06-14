@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
-#include "Blender_light_direct.h"
+#include "blender_light_direct.h"
 
 CBlender_accum_direct::CBlender_accum_direct() { description.CLS = 0; }
-CBlender_accum_direct::~CBlender_accum_direct() {}
+CBlender_accum_direct::~CBlender_accum_direct() = default;
 
 void CBlender_accum_direct::Compile(CBlender_Compile& C)
 {

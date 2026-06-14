@@ -5,9 +5,9 @@
 #ifndef DetailManagerH
 #define DetailManagerH
 
-#include "../../xrCore/xrpool.h"
-#include "detailformat.h"
-#include "detailmodel.h"
+#include "../../xrCore/xrPool.h"
+#include "DetailFormat.h"
+#include "DetailModel.h"
 
 constexpr inline int dm_max_decompress{7};
 constexpr inline int dm_cache1_count{4}; //

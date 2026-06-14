@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fhierrarhyvisual.h"
+#include "FHierrarhyVisual.h"
 #include "../../xr_3da/bone.h"
 #include "../../Include/xrRender/Kinematics.h"
 #include "../../xr_3da/vismask.h"

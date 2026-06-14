@@ -9,14 +9,15 @@
 #include "stdafx.h"
 
 #include "stalker_animation_manager.h"
+
 #include "ai/stalker/ai_stalker.h"
 #include "sight_manager.h"
 #include "stalker_movement_manager.h"
 #include "stalker_animation_data.h"
 
-#include "weapon.h"
-#include "missile.h"
-#include "inventory.h"
+#include "Weapon.h"
+#include "Missile.h"
+#include "Inventory.h"
 #include "stalker_animation_manager_impl.h"
 
 namespace
@@ -228,7 +229,8 @@ MotionID CStalkerAnimationManager::legs_no_move_animation()
     if (angle_difference(target, current) < EPS_L)
     {
         float head_current = movement.head_orientation().current.yaw;
-        if (movement.mental_state() != MonsterSpace::eMentalStateFree || (!object().sight().turning_in_place() && angle_difference(current, head_current) <= standing_turn_angle))
+        if (movement.mental_state() != MonsterSpace::eMentalStateFree ||
+            (!object().sight().turning_in_place() && angle_difference(current, head_current) <= standing_turn_angle))
         {
             if (movement.mental_state() == MonsterSpace::eMentalStateFree)
                 return (animation[1]);

@@ -1,11 +1,12 @@
 #include "stdafx.h"
 
 #include "WeaponStatMgun.h"
-#include "level.h"
+
+#include "Level.h"
 #include "entity_alive.h"
-#include "hudsound.h"
-#include "actor.h"
-#include "actorEffector.h"
+#include "HudSound.h"
+#include "Actor.h"
+#include "ActorEffector.h"
 #include "EffectorShot.h"
 
 const Fvector& CWeaponStatMgun::get_CurrentFirePoint() { return m_fire_pos; }

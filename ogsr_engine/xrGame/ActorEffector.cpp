@@ -3,10 +3,10 @@
 #include "ActorEffector.h"
 
 #include "PostprocessAnimator.h"
-#include "../xr_3da/effectorPP.h"
+#include "../xr_3da/EffectorPP.h"
 #include "../xr_3da/ObjectAnimator.h"
 #include "object_broker.h"
-#include "actor.h"
+#include "Actor.h"
 
 void AddEffector(CActor* A, int type, const shared_str& sect_name)
 {
@@ -252,7 +252,10 @@ tmc::task<bool> CAnimatorCamLerpEffector::ProcessCam(SCamEffectorInfo& info)
     co_return true;
 }
 
-CAnimatorCamLerpEffectorConst::CAnimatorCamLerpEffectorConst() : m_factor(0.0f) { SetFactorFunc(CallMe::fromMethod<&CAnimatorCamLerpEffectorConst::GetFactor>(this)); }
+CAnimatorCamLerpEffectorConst::CAnimatorCamLerpEffectorConst() : m_factor(0.0f)
+{
+    SetFactorFunc(CallMe::fromMethod<&CAnimatorCamLerpEffectorConst::GetFactor>(this));
+}
 
 CCameraEffectorControlled::CCameraEffectorControlled(CEffectorController* c) : m_controller(c)
 {
@@ -337,7 +340,8 @@ constexpr float ANGLE_SPEED{1.5f};
 CControllerPsyHitCamEffector::CControllerPsyHitCamEffector(const Fvector& src_pos, const Fvector& target_pos, float time, float base_fov, float dest_fov)
     : inherited{eCEControllerPsyHit, flt_max}, m_time_total{time}, m_position_source{src_pos}, m_base_fov{base_fov}, m_dest_fov{dest_fov}
 {
-    m_dangle_target.set(angle_normalize(Random.randFs(DELTA_ANGLE_X)), angle_normalize(Random.randFs(DELTA_ANGLE_Y)), angle_normalize(Random.randFs(DELTA_ANGLE_Z)));
+    m_dangle_target.set(angle_normalize(Random.randFs(DELTA_ANGLE_X)), angle_normalize(Random.randFs(DELTA_ANGLE_Y)),
+                        angle_normalize(Random.randFs(DELTA_ANGLE_Z)));
 
     m_direction.sub(target_pos, src_pos);
     m_distance = m_direction.magnitude();

@@ -1,7 +1,7 @@
 #ifndef dxStatGraphRender_included
 #define dxStatGraphRender_included
 
-#include "..\..\Include\xrRender\StatGraphRender.h"
+#include "../../Include/xrRender/StatGraphRender.h"
 #include "../../xr_3da/StatGraph.h"
 
 class dxStatGraphRender : public IStatGraphRender

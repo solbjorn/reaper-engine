@@ -1,7 +1,7 @@
 #pragma once
 
-#include "..\xr_3da\feel_touch.h"
-#include "../../customzone.h"
+#include "../xr_3da/Feel_Touch.h"
+#include "../../CustomZone.h"
 
 class CCustomMonster;
 

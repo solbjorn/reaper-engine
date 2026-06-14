@@ -7,10 +7,13 @@
 
 #include "../Include/xrRender/RenderVisual.h"
 #include "../Include/xrRender/ParticleCustom.h"
-#include "..\xr_3da\render.h"
-#include "..\xr_3da\IGame_Persistent.h"
+#include "../xr_3da/Render.h"
+#include "../xr_3da/IGame_Persistent.h"
 
-CParticlesObject::CParticlesObject(LPCSTR p_name, BOOL bAutoRemove, bool destroy_on_game_load) : inherited(destroy_on_game_load) { Init(p_name, INVALID_SECTOR_ID, bAutoRemove); }
+CParticlesObject::CParticlesObject(LPCSTR p_name, BOOL bAutoRemove, bool destroy_on_game_load) : inherited(destroy_on_game_load)
+{
+    Init(p_name, INVALID_SECTOR_ID, bAutoRemove);
+}
 
 void CParticlesObject::Init(LPCSTR p_name, sector_id_t sector_id, BOOL bAutoRemove)
 {

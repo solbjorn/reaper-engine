@@ -2,21 +2,21 @@
 
 #include "WeaponMagazined.h"
 
-#include "hudmanager.h"
+#include "HUDManager.h"
 #include "weaponBM16.h"
-#include "entity.h"
-#include "actor.h"
-#include "torch.h"
+#include "Entity.h"
+#include "Actor.h"
+#include "Torch.h"
 #include "ParticlesObject.h"
-#include "scope.h"
-#include "silencer.h"
+#include "Scope.h"
+#include "Silencer.h"
 #include "GrenadeLauncher.h"
-#include "inventory.h"
-#include "xrserver_objects_alife_items.h"
+#include "Inventory.h"
+#include "xrServer_Objects_ALife_Items.h"
 #include "ActorEffector.h"
 #include "EffectorZoomInertion.h"
 #include "xr_level_controller.h"
-#include "level.h"
+#include "Level.h"
 #include "object_broker.h"
 #include "string_table.h"
 #include "WeaponBinoculars.h"
@@ -849,9 +849,10 @@ void CWeaponMagazined::switch2_Idle()
 }
 
 #ifdef DEBUG
-#include "ai\stalker\ai_stalker.h"
+#include "ai/stalker/ai_stalker.h"
 #include "object_handler_planner.h"
 #endif
+
 void CWeaponMagazined::switch2_Fire()
 {
     CInventoryOwner* io = smart_cast<CInventoryOwner*>(H_Parent());

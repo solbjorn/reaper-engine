@@ -1,13 +1,9 @@
 #include "stdafx.h"
 
 #include "bone.h"
-#include "gamemtllib.h"
 
-// u16 CBone::get_game_mtl_idx() const { return GMLib.GetMaterialIdx(game_mtl.c_str()); }
-//
-// static const Fobb dummy = Fobb().identity();
-//
-// const Fobb& CBone::get_obb() const { return dummy; }
+#include "GameMtlLib.h"
+
 //////////////////////////////////////////////////////////////////////////
 // BoneInstance methods
 
@@ -45,7 +41,3 @@ void CBoneData::CalculateM2B(const Fmatrix& parent)
 
     m2b_transform.invert();
 }
-
-// u16 CBoneData::GetNumChildren() const { return (u16)children.size(); }
-// IBoneData& CBoneData::GetChild(u16 id) { return *children[id]; }
-// const IBoneData& CBoneData::GetChild(u16 id) const { return *children[id]; }

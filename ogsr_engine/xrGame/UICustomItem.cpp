@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
-#include "uicustomitem.h"
-#include "hudmanager.h"
+#include "UICustomItem.h"
+
+#include "HUDManager.h"
 
 CUICustomItem::CUICustomItem()
 {
@@ -14,7 +15,7 @@ CUICustomItem::CUICustomItem()
 }
 //--------------------------------------------------------------------
 
-CUICustomItem::~CUICustomItem() {}
+CUICustomItem::~CUICustomItem() = default;
 
 void CUICustomItem::Render(const Fvector2& pos, u32 color, float x1, float y1, float x2, float y2)
 {

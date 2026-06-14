@@ -12,7 +12,7 @@
 
 #include "patrol_path.h"
 #include "patrol_point.h"
-#include "levelgamedef.h"
+#include "LevelGameDef.h"
 #include "ai_space.h"
 #include "level_graph.h"
 #include "game_graph.h"

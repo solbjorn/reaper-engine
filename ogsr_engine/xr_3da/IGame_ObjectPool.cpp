@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "igame_objectpool.h"
+#include "IGame_ObjectPool.h"
 
-#include "igame_level.h"
+#include "IGame_Level.h"
 #include "IGame_Persistent.h"
 #include "xr_object.h"
 

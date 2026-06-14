@@ -10,7 +10,7 @@
 
 #include "damage_manager.h"
 
-#include "..\xr_3da\xr_object.h"
+#include "../xr_3da/xr_object.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xr_3da/bone.h"
 

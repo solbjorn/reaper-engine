@@ -8,11 +8,11 @@
 #include "ExplosiveRocket.h"
 
 #include "ai_space.h"
-#include "xrserver_objects_alife_items.h"
-#include "level.h"
+#include "xrServer_Objects_ALife_Items.h"
+#include "Level.h"
 #include "level_graph.h"
 #include "ai_object_location.h"
-#include "actor.h"
+#include "Actor.h"
 
 CExplosiveRocket::CExplosiveRocket() = default;
 CExplosiveRocket::~CExplosiveRocket() = default;

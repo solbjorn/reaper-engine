@@ -2,15 +2,15 @@
 
 #include "UI.h"
 
-#include "..\xr_3da\xr_IOConsole.h"
+#include "../xr_3da/XR_IOConsole.h"
 #include "Entity.h"
 #include "HUDManager.h"
 #include "UIGameSP.h"
-#include "actor.h"
-#include "level.h"
+#include "Actor.h"
+#include "Level.h"
 #include "game_cl_base.h"
-#include "inventory.h"
-#include "huditem.h"
+#include "Inventory.h"
+#include "HudItem.h"
 
 #include "ui/UIMainIngameWnd.h"
 #include "ui/UIMessagesWindow.h"

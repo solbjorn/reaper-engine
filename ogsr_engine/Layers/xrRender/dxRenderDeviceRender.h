@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\..\Include\xrRender\RenderDeviceRender.h"
+#include "../../Include/xrRender/RenderDeviceRender.h"
 #include "r__dsgraph_structure.h"
 #include "xr_effgamma.h"
 

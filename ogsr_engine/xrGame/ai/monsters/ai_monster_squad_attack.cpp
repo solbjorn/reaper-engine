@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
 #include "ai_monster_squad.h"
-#include "../../entity.h"
+
+#include "../../Entity.h"
 #include "../../entity_alive.h"
 #include "../monsters/basemonster/base_monster.h "
 #include "monster_home.h"
@@ -38,22 +39,10 @@ void CMonsterSquad::ProcessAttack()
     for (auto it_enemy = m_enemy_map.begin(); it_enemy != m_enemy_map.end(); ++it_enemy)
     {
         ENTITY_VEC* monsters = &(*it_enemy).second;
-        if (!monsters->size())
-        {
+        if (monsters->empty())
             continue;
-        }
 
         Attack_AssignTargetDir(it_enemy->second, it_enemy->first);
-
-        // a squad of CBaseMonster-s ?
-        // 		if ( smart_cast<CBaseMonster*>(*(monsters->begin())) )
-        // 		{
-        // 			assign_monsters_target_dirs(it_enemy->second, it_enemy->first);
-        // 		}
-        // 		else
-        // 		{
-        // 			Attack_AssignTargetDir(it_enemy->second, it_enemy->first);
-        // 		}
     }
 }
 
@@ -63,7 +52,10 @@ struct sort_predicate
 
     sort_predicate(const CEntity* pEnemy) : enemy(pEnemy) {}
 
-    bool operator()(const CEntity* pE1, const CEntity* pE2) const { return (pE1->Position().distance_to(enemy->Position()) > pE2->Position().distance_to(enemy->Position())); }
+    bool operator()(const CEntity* pE1, const CEntity* pE2) const
+    {
+        return (pE1->Position().distance_to(enemy->Position()) > pE2->Position().distance_to(enemy->Position()));
+    }
 };
 
 void CMonsterSquad::set_rat_squad_index(const CEntity* m_enemy)

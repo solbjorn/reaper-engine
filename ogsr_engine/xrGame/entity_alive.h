@@ -1,6 +1,6 @@
 #pragma once
 
-#include "entity.h"
+#include "Entity.h"
 
 DEFINE_VECTOR(shared_str, STR_VECTOR, STR_VECTOR_IT);
 

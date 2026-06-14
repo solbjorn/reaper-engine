@@ -2,16 +2,16 @@
 
 #include "UIInventoryWnd.h"
 
-#include "../actor.h"
-#include "../silencer.h"
-#include "../scope.h"
-#include "../grenadelauncher.h"
+#include "../Actor.h"
+#include "../Silencer.h"
+#include "../Scope.h"
+#include "../GrenadeLauncher.h"
 #include "../Artifact.h"
 #include "../eatable_item.h"
 #include "../BottleItem.h"
 #include "../WeaponMagazined.h"
 #include "../WeaponMagazinedWGrenade.h"
-#include "../inventory.h"
+#include "../Inventory.h"
 #include "../game_base.h"
 #include "../game_cl_base.h"
 #include "../xr_level_controller.h"
@@ -20,8 +20,8 @@
 #include "../CustomOutfit.h"
 #include "../string_table.h"
 
-#include "../Medkit.h"
-#include "../Antirad.h"
+#include "../medkit.h"
+#include "../antirad.h"
 
 #include <regex>
 
@@ -320,18 +320,8 @@ bool CUIInventoryWnd::TryUseItem(PIItem itm)
 bool CUIInventoryWnd::DropItem(PIItem itm, CUIDragDropListEx* lst)
 {
     if (lst == m_pUIOutfitList)
-    {
         return TryUseItem(itm);
-        /*
-                CCustomOutfit*		pOutfit		= smart_cast<CCustomOutfit*>	(CurrentIItem());
-                if(pOutfit)
-                    ToSlot			(CurrentItem(), true);
-                else
-                    EatItem				(CurrentIItem());
 
-                return				true;
-        */
-    }
     CUICellItem* _citem = lst->ItemsCount() ? lst->GetItemIdx(0) : nullptr;
     PIItem _iitem = _citem ? (PIItem)_citem->m_pData : nullptr;
 

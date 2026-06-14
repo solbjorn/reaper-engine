@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
-#include "phrasedialog.h"
+#include "PhraseDialog.h"
 
-#include "phrasedialogmanager.h"
-#include "gameobject.h"
+#include "PhraseDialogManager.h"
+#include "GameObject.h"
 #include "ai_debug.h"
 
 #include "script_engine.h"

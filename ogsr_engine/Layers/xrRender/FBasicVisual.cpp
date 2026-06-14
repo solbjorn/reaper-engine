@@ -4,9 +4,9 @@
 
 #include "stdafx.h"
 
-#include "../../xr_3da/render.h"
+#include "../../xr_3da/Render.h"
 
-#include "fbasicvisual.h"
+#include "FBasicVisual.h"
 #include "../../xr_3da/fmesh.h"
 
 //////////////////////////////////////////////////////////////////////

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "customoutfit.h"
+#include "CustomOutfit.h"
 
 #include "PhysicsShell.h"
 #include "inventory_space.h"
@@ -9,15 +9,15 @@
 #include "game_cl_base.h"
 #include "Level.h"
 #include "BoneProtections.h"
-#include "..\Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/RenderVisual.h"
 #include "UIGameSP.h"
-#include "HudManager.h"
+#include "HUDManager.h"
 #include "ui/UIInventoryWnd.h"
 #include "player_hud.h"
-#include "xrserver_objects_alife_items.h"
+#include "xrServer_Objects_ALife_Items.h"
 
-#include "torch.h"
+#include "Torch.h"
 
 CCustomOutfit::CCustomOutfit()
 {

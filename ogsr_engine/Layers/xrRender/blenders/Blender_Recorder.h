@@ -5,7 +5,7 @@
 #ifndef AFX_BLENDER_RECORDER_H__1F549674_8674_4EB2_95E6_E6BC19218A6C__INCLUDED_
 #define AFX_BLENDER_RECORDER_H__1F549674_8674_4EB2_95E6_E6BC19218A6C__INCLUDED_
 
-#include "..\tss.h"
+#include "../tss.h"
 
 class CBlender_Compile
 {

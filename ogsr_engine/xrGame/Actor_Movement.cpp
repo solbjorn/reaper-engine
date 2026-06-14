@@ -3,17 +3,18 @@
 
 #include "stdafx.h"
 
-#include "actor.h"
-#include "inventory.h"
-#include "weapon.h"
-#include "../xr_3da/camerabase.h"
+#include "Actor.h"
+
+#include "Inventory.h"
+#include "Weapon.h"
+#include "../xr_3da/CameraBase.h"
 #include "xrMessages.h"
 
-#include "level.h"
+#include "Level.h"
 #include "HUDManager.h"
 #include "UI.h"
 #include "string_table.h"
-#include "actorcondition.h"
+#include "ActorCondition.h"
 #include "game_cl_base.h"
 #include "WeaponMagazined.h"
 #include "CharacterPhysicsSupport.h"

@@ -7,11 +7,11 @@
 #include "ShootingObject.h"
 #include "hud_item_object.h"
 #include "Actor_Flags.h"
-#include "..\Include/xrRender/KinematicsAnimated.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 #include "game_cl_single.h"
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Items.h"
-#include "actor.h"
+#include "Actor.h"
 #include "firedeps.h"
 
 // refs

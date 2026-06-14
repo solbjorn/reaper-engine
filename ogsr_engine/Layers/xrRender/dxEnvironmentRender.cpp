@@ -2,7 +2,7 @@
 
 #include "dxEnvironmentRender.h"
 
-#include "blenders/blender.h"
+#include "blenders/Blender.h"
 #include "ResourceManager.h"
 
 #include "../../xr_3da/Environment.h"
@@ -24,8 +24,9 @@ constexpr std::array<Fvector, 24> XR_ALIGNED_DEFAULT hbox_verts{
     Fvector{-1.f, -0.01f, 1.f}, Fvector{-1.f, -1.f, 1.f} // half
 };
 
-constexpr std::array<u16, 20 * 3> XR_ALIGNED_DEFAULT hbox_faces{0, 2,  3, 3, 1, 0, 4, 5, 7,  7,  6,  4, 0,  1,  9, 9, 8, 0,  8, 9, 5, 5, 4,  8, 1,  3, 10, 10, 9, 1,
-                                                                9, 10, 7, 7, 5, 9, 3, 2, 11, 11, 10, 3, 10, 11, 6, 6, 7, 10, 2, 0, 8, 8, 11, 2, 11, 8, 4,  4,  6, 11};
+constexpr std::array<u16, 20 * 3> XR_ALIGNED_DEFAULT hbox_faces{0,  2, 3,  3,  1, 0, 4,  5,  7, 7, 6, 4,  0,  1, 9,  9, 8, 0, 8,  9,
+                                                                5,  5, 4,  8,  1, 3, 10, 10, 9, 1, 9, 10, 7,  7, 5,  9, 3, 2, 11, 11,
+                                                                10, 3, 10, 11, 6, 6, 7,  10, 2, 0, 8, 8,  11, 2, 11, 8, 4, 4, 6,  11};
 
 struct alignas(8) v_skybox
 {
@@ -260,8 +261,8 @@ void dxEnvironmentRender::RenderClouds(CEnvironment& env)
     wind_dir.set(wd0.x, wd0.z, wd1.x, wd1.z).mul(0.5f).add(0.5f).mul(255.f);
     u32 i_offset, v_offset;
     u32 C0 = color_rgba(iFloor(wind_dir.x), iFloor(wind_dir.y), iFloor(wind_dir.w), iFloor(wind_dir.z));
-    u32 C1 = color_rgba(iFloor(env.CurrentEnv->clouds_color.x * 255.f), iFloor(env.CurrentEnv->clouds_color.y * 255.f), iFloor(env.CurrentEnv->clouds_color.z * 255.f),
-                        iFloor(env.CurrentEnv->clouds_color.w * 255.f));
+    u32 C1 = color_rgba(iFloor(env.CurrentEnv->clouds_color.x * 255.f), iFloor(env.CurrentEnv->clouds_color.y * 255.f),
+                        iFloor(env.CurrentEnv->clouds_color.z * 255.f), iFloor(env.CurrentEnv->clouds_color.w * 255.f));
 
     // Fill index buffer
     u16* pib = RImplementation.Index.Lock(env.CloudsIndices.size(), i_offset);

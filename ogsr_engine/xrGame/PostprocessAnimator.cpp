@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "postprocessanimator.h"
+#include "PostprocessAnimator.h"
 
 #include "ActorEffector.h"
 

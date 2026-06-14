@@ -2,9 +2,10 @@
 
 #include "dTriCollideK.h"
 #include "dSortTriPrimitive.h"
-#include "../dCylinder/dCylinder.h"
+#include "../dcylinder/dCylinder.h"
 #include "../MathUtils.h"
-#include "level.h"
+#include "Level.h"
+
 #ifdef DEBUG
 #include "../phdebug.h"
 #endif

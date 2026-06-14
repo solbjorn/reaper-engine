@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "physicsshell.h"
+#include "PhysicsShell.h"
 
 #include "PHDynamicData.h"
 #include "Physics.h"
@@ -9,8 +9,8 @@
 #include "PHJoint.h"
 #include "PHJointDestroyInfo.h"
 #include "PHSplitedShell.h"
-#include "gameobject.h"
-#include "physicsshellholder.h"
+#include "GameObject.h"
+#include "PhysicsShellHolder.h"
 #include "../Include/xrRender/Kinematics.h"
 
 extern CPHWorld* ph_world;

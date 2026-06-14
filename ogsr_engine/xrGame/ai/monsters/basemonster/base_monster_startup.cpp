@@ -3,7 +3,7 @@
 #include "base_monster.h"
 
 #include "../../../ai_space.h"
-#include "../../../hit.h"
+#include "../../../Hit.h"
 #include "../../../PHDestroyable.h"
 #include "../../../CharacterPhysicsSupport.h"
 #include "PHMovementControl.h"
@@ -23,16 +23,16 @@
 #include "../control_movement_base.h"
 #include "../monster_home.h"
 #include "../../../ai_object_location.h"
-#include "../../../level.h"
-#include "xrserver_objects_alife_monsters.h"
+#include "../../../Level.h"
+#include "xrServer_Objects_ALife_Monsters.h"
 #include "../../../alife_simulator.h"
 #include "../../../alife_object_registry.h"
 #include "../../../xrServer.h"
 #include "../../../inventory_item.h"
 #include "xrServer_Objects_ALife.h"
 #include "../anti_aim_ability.h"
-#include "../../../actor.h"
-#include "../../../actorcondition.h"
+#include "../../../Actor.h"
+#include "../../../ActorCondition.h"
 
 namespace
 {

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../../effectorshot.h"
+#include "../../EffectorShot.h"
 
 IC Fvector CAI_Stalker::weapon_shot_effector_direction(const Fvector& current) const
 {

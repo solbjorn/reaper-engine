@@ -9,10 +9,10 @@
 
 #include "PhysicsShell.h"
 #include "PDA.h"
-#include "inventoryowner.h"
-#include "xrserver_objects_alife_items.h"
-#include "../xr_3da/NET_Server_Trash/net_utils.h"
-#include "actor.h"
+#include "InventoryOwner.h"
+#include "xrServer_Objects_ALife_Items.h"
+#include "../xr_3da/NET_Server_Trash/NET_utils.h"
+#include "Actor.h"
 
 CInfoDocument::CInfoDocument() = default;
 CInfoDocument::~CInfoDocument() = default;
@@ -90,6 +90,6 @@ void CInfoDocument::OnH_B_Independent(bool just_before_destroy) { inherited::OnH
 
 void CInfoDocument::script_register(sol::state_view& lua)
 {
-    lua.new_usertype<CInfoDocument>("CInfoDocument", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CInfoDocument>), sol::base_classes,
-                                    xr::sol_bases<CInfoDocument>());
+    lua.new_usertype<CInfoDocument>("CInfoDocument", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CInfoDocument>),
+                                    sol::base_classes, xr::sol_bases<CInfoDocument>());
 }

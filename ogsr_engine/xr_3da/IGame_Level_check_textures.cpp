@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "igame_level.h"
+#include "IGame_Level.h"
 
 void IGame_Level::LL_CheckTextures()
 {

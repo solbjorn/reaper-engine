@@ -1,7 +1,7 @@
 #ifndef dxFontRender_included
 #define dxFontRender_included
 
-#include "..\..\Include\xrRender\FontRender.h"
+#include "../../Include/xrRender/FontRender.h"
 
 class dxFontRender : public IFontRender
 {

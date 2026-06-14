@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "soundrender_emitter.h"
+#include "SoundRender_Emitter.h"
 
-#include "soundrender_core.h"
+#include "SoundRender_Core.h"
 #include "SoundRender_Source.h"
 
 extern u32 psSoundModel;

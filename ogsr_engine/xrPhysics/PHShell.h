@@ -7,7 +7,7 @@ class CPHShellSplitterHolder;
 #include "PHElement.h"
 #include "PHDefs.h"
 #include "PHShellSplitter.h"
-#include "phmovestorage.h"
+#include "PHMoveStorage.h"
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
 class CPhysicsShellAnimator;

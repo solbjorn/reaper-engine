@@ -1,6 +1,6 @@
 #include "../stdafx.h"
 
-#include "net_server.h"
+#include "NET_Server.h"
 
 ClientID BroadcastCID(0xffffffff);
 

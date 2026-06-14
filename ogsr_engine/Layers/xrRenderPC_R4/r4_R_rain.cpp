@@ -2,8 +2,8 @@
 
 #include "r4_R_sun_support.h"
 
-#include "../../xr_3da/igame_persistent.h"
-#include "../../xr_3da/irenderable.h"
+#include "../../xr_3da/IGame_Persistent.h"
+#include "../../xr_3da/IRenderable.h"
 #include "../xrRender/FBasicVisual.h"
 
 namespace
@@ -156,8 +156,9 @@ tmc::task<void> CRender::rain_run()
     // build viewport xform
     const float view_dim = float(limit);
     const float fTexelOffs = (0.5f / o.smapsize);
-    const Fmatrix m_viewport{view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f + fTexelOffs, view_dim / 2.f + fTexelOffs,
-                             0.0f,           1.0f};
+    const Fmatrix m_viewport{
+        view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f + fTexelOffs, view_dim / 2.f + fTexelOffs,
+        0.0f,           1.0f};
     Fmatrix m_viewport_inv;
     m_viewport_inv.invert_44(m_viewport);
 

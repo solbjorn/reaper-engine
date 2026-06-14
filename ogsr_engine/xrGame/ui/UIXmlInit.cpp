@@ -2,8 +2,8 @@
 
 #include "UIXmlInit.h"
 
-#include "../hudmanager.h"
-#include "../level.h"
+#include "../HUDManager.h"
+#include "../Level.h"
 #include "../UICustomItem.h"
 
 #include "../string_table.h"

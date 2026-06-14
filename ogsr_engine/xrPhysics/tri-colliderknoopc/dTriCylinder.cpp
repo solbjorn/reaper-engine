@@ -1,9 +1,11 @@
 #include "stdafx.h"
+
 #include "dTriColliderCommon.h"
-#include "../dCylinder/dCylinder.h"
+#include "../dcylinder/dCylinder.h"
 #include "dTriCylinder.h"
 #include "../MathUtils.h"
-#include "dcTrilistCollider.h"
+#include "dcTriListCollider.h"
+
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
@@ -264,7 +266,8 @@ int Check(int check) { return check; }
 #define RETURN0 return 0
 #endif
 
-int dcTriListCollider::dTriCyl(const dReal* v0, const dReal* v1, const dReal* v2, Triangle* T, dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip)
+int dcTriListCollider::dTriCyl(const dReal* v0, const dReal* v1, const dReal* v2, Triangle* T, dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact,
+                               int skip)
 {
     // VERIFY (skip >= (int)sizeof(dContactGeom));
     VERIFY(dGeomGetClass(o1) == dCylinderClassUser);

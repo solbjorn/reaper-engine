@@ -4,8 +4,8 @@
 
 #include "HUDManager.h"
 #include "UICursor.h"
-#include "level.h"
-#include "actor.h"
+#include "Level.h"
+#include "Actor.h"
 #include "ui/UIScriptWnd.h"
 #include "xr_level_controller.h"
 

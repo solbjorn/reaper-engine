@@ -17,12 +17,12 @@
 #include "alife_graph_registry.h"
 #include "alife_group_registry.h"
 #include "alife_registry_container.h"
-#include "xrserver.h"
-#include "level.h"
+#include "xrServer.h"
+#include "Level.h"
 #include "../xr_3da/x_ray.h"
 #include "saved_game_wrapper.h"
 #include "string_table.h"
-#include "..\xr_3da\IGame_Persistent.h"
+#include "../xr_3da/IGame_Persistent.h"
 #include "script_engine.h"
 
 namespace zstd

@@ -8,14 +8,14 @@
 
 #include "stdafx.h"
 
-#include "level.h"
+#include "Level.h"
 
-#include "actor.h"
+#include "Actor.h"
 #include "script_game_object.h"
 #include "patrol_path_storage.h"
 #include "xrServer.h"
 #include "client_spawn_manager.h"
-#include "..\xr_3da\IGame_Persistent.h"
+#include "../xr_3da/IGame_Persistent.h"
 #include "game_cl_base.h"
 #include "date_time.h"
 #include "ai_space.h"
@@ -29,8 +29,8 @@
 #include "alife_time_manager.h"
 #include "map_manager.h"
 #include "map_location.h"
-#include "phworld.h"
-#include "../xrcdb/xr_collide_defs.h"
+#include "PHWorld.h"
+#include "../xrCDB/xr_collide_defs.h"
 #include "../xr_3da/Rain.h"
 #include "script_rq_result.h"
 #include "monster_community.h"
@@ -43,7 +43,7 @@
 #include "actor_statistic_mgr.h"
 #include "ai/monsters/ai_monster_effector.h"
 #include "graph_engine.h"
-#include "postprocessanimator.h"
+#include "PostprocessAnimator.h"
 #include "relation_registry.h"
 
 #include "UIGameCustom.h"
@@ -60,7 +60,7 @@
 
 #include "game_sv_single.h"
 
-#include "../xr_3da/fdemorecord.h"
+#include "../xr_3da/FDemoRecord.h"
 
 static LPCSTR command_line() { return (Core.Params); }
 

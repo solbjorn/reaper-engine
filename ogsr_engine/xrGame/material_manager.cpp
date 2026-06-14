@@ -12,7 +12,7 @@
 
 #include "ai/monsters/basemonster/base_monster.h"
 #include "alife_space.h"
-#include "phmovementcontrol.h"
+#include "PHMovementControl.h"
 #include "entity_alive.h"
 #include "CharacterPhysicsSupport.h"
 

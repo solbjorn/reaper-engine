@@ -1,7 +1,7 @@
 #ifndef dxLensFlareRender_included
 #define dxLensFlareRender_included
 
-#include "..\..\Include\xrRender\LensFlareRender.h"
+#include "../../Include/xrRender/LensFlareRender.h"
 
 class dxFlareRender : public IFlareRender
 {

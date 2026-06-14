@@ -11,10 +11,10 @@
 #include "inventory_item.h"
 
 #include "inventory_item_impl.h"
-#include "inventory.h"
+#include "Inventory.h"
 #include "Physics.h"
-#include "xrserver_objects_alife.h"
-#include "xrserver_objects_alife_items.h"
+#include "xrServer_Objects_ALife.h"
+#include "xrServer_Objects_ALife_Items.h"
 #include "entity_alive.h"
 #include "Level.h"
 #include "game_cl_base.h"
@@ -23,10 +23,10 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
 #include "object_broker.h"
-#include "..\xr_3da\IGame_Persistent.h"
+#include "../xr_3da/IGame_Persistent.h"
 #include "alife_registry_wrappers.h"
 #include "alife_simulator_header.h"
-#include "grenade.h"
+#include "Grenade.h"
 
 #ifdef DEBUG
 #include "debug_renderer.h"

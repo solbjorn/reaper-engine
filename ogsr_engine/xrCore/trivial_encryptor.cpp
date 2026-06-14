@@ -1,8 +1,9 @@
 #include "stdafx.h"
 
 #include "trivial_encryptor.h"
-#if __has_include("..\build_config_overrides\trivial_encryptor_ovr.h")
-#include "..\build_config_overrides\trivial_encryptor_ovr.h"
+
+#if __has_include("../build_config_overrides/trivial_encryptor_ovr.h")
+#include "../build_config_overrides/trivial_encryptor_ovr.h"
 #define TE_CUSTOM_OVR
 #endif
 

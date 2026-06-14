@@ -2,14 +2,14 @@
 
 #include "Level.h"
 
-#include "HUDmanager.h"
+#include "HUDManager.h"
 #include "LevelGameDef.h"
 #include "ai_space.h"
 #include "ParticlesObject.h"
 #include "script_engine.h"
 #include "game_cl_base.h"
 #include "../xr_3da/x_ray.h"
-#include "../xr_3da/gamemtllib.h"
+#include "../xr_3da/GameMtlLib.h"
 #include "PhysicsCommon.h"
 #include "level_sounds.h"
 #include "GamePersistent.h"

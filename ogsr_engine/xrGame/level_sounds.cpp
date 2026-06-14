@@ -3,7 +3,7 @@
 #include "level_sounds.h"
 
 #include "Actor_Flags.h"
-#include "level.h"
+#include "Level.h"
 
 //-----------------------------------------------------------------------------
 // static level sounds

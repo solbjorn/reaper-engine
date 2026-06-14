@@ -4,7 +4,7 @@
 #ifndef FVisualH
 #define FVisualH
 
-#include "fbasicvisual.h"
+#include "FBasicVisual.h"
 
 class Fvisual : public dxRender_Visual, public IRender_Mesh
 {

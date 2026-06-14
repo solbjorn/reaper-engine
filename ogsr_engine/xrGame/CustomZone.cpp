@@ -1,26 +1,26 @@
 #include "stdafx.h"
 
-#include "customzone.h"
+#include "CustomZone.h"
 
-#include "hit.h"
+#include "Hit.h"
 #include "PHDestroyable.h"
-#include "actor.h"
-#include "hudmanager.h"
+#include "Actor.h"
+#include "HUDManager.h"
 #include "ParticlesObject.h"
-#include "xrserver_objects_alife_monsters.h"
+#include "xrServer_Objects_ALife_Monsters.h"
 #include "../xr_3da/LightAnimLibrary.h"
-#include "level.h"
+#include "Level.h"
 #include "game_cl_base.h"
-#include "..\xr_3da\IGame_Persistent.h"
-#include "artifact.h"
+#include "../xr_3da/IGame_Persistent.h"
+#include "Artifact.h"
 #include "ai_object_location.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "zone_effector.h"
-#include "breakableobject.h"
+#include "BreakableObject.h"
 #include "game_object_space.h"
 #include "script_game_object.h"
 
-#include "..\xr_3da\XR_IOConsole.h"
+#include "../xr_3da/XR_IOConsole.h"
 
 //////////////////////////////////////////////////////////////////////////
 

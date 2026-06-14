@@ -3,9 +3,9 @@
 #include "PHObject.h"
 #include "Physics.h"
 #include "MathUtils.h"
-#include "phvalidevalues.h"
+#include "PHValideValues.h"
 #include "PHActivationShape.h"
-#include "Extendedgeom.h"
+#include "ExtendedGeom.h"
 #include "SpaceUtils.h"
 #include "MathUtils.h"
 #include "../xr_3da/GameMtlLib.h"
@@ -19,7 +19,7 @@
 
 #include "PHDynamicData.h"
 #include "PHSynchronize.h"
-#include "phnetstate.h"
+#include "PHNetState.h"
 
 namespace
 {

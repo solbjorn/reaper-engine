@@ -2,9 +2,9 @@
 
 #include "HUDManager.h"
 
-#include "hudtarget.h"
-#include "actor.h"
-#include "..\xr_3da\igame_level.h"
+#include "HUDTarget.h"
+#include "Actor.h"
+#include "../xr_3da/IGame_Level.h"
 #include "clsid_game.h"
 #include "Car.h"
 #include "ui/UIMessagesWindow.h"
@@ -332,7 +332,9 @@ void CHUDManager::ShowCrosshair(bool show) { m_pHUDTarget->m_bShowCrosshair = sh
 void CHUDManager::Hit(int idx, float, const Fvector& dir) { HitMarker.Hit(idx, dir); }
 
 void CHUDManager::SetHitmarkType(LPCSTR tex_name) { HitMarker.InitShader(tex_name); }
-#include "ui\UIMainInGameWnd.h"
+
+#include "ui/UIMainIngameWnd.h"
+
 void CHUDManager::OnScreenRatioChanged()
 {
     xr_delete(pUI->UIMainIngameWnd);
@@ -372,6 +374,7 @@ void CHUDManager::net_Relcase(CObject* object)
 }
 
 #include "player_hud.h"
+
 bool CHUDManager::RenderActiveItemUIQuery()
 {
     if (!psHUD_Flags.is(HUD_WEAPON_RT))

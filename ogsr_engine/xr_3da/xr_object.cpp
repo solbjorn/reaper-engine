@@ -2,8 +2,8 @@
 
 #include "xr_object.h"
 
-#include "igame_level.h"
-#include "render.h"
+#include "IGame_Level.h"
+#include "Render.h"
 #include "xrLevel.h"
 
 #include "../Include/xrRender/RenderVisual.h"

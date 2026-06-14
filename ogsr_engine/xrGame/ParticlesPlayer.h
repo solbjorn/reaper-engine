@@ -6,7 +6,7 @@
 #pragma once
 
 #include "ParticlesObject.h"
-#include "..\xr_3da\bone.h"
+#include "../xr_3da/bone.h"
 
 DEFINE_VECTOR(CParticlesObject*, PARTICLES_PTR_VECTOR, PARTICLES_PTR_VECTOR_IT);
 
@@ -21,14 +21,9 @@ public:
     struct SParticlesInfo
     {
         CParticlesObject* ps;
-        // Fvector				dir;
-        // Fmatrix				x_form;
         Fvector angles;
         u16 sender_id; // id - объекта, который запустил партиклы
         u32 life_time; // время жизни партикла (-1) - бесконечно
-
-        // int					cur_time;	//текущее время существования партикла
-        // bool				auto_stop;	//автоматическая остановка партиклов, когда закончится время
     };
 
     DEFINE_VECTOR(SParticlesInfo, ParticlesInfoList, ParticlesInfoListIt);

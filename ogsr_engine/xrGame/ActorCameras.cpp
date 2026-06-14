@@ -2,9 +2,9 @@
 
 #include "Actor.h"
 
-#include "../xr_3da/camerabase.h"
+#include "../xr_3da/CameraBase.h"
 
-#include "hit.h"
+#include "Hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
 
@@ -13,16 +13,16 @@
 
 #include "SleepEffector.h"
 #include "ActorEffector.h"
-#include "level.h"
+#include "Level.h"
 #include "../xrCDB/cl_intersect.h"
-#include "../xr_3da/gamemtllib.h"
-#include "elevatorstate.h"
+#include "../xr_3da/GameMtlLib.h"
+#include "ElevatorState.h"
 #include "CharacterPhysicsSupport.h"
 #include "EffectorShot.h"
-#include "phcollidevalidator.h"
+#include "PHCollideValidator.h"
 #include "PHShell.h"
 
-#include "physics.h"
+#include "Physics.h"
 #include "PHActivationShape.h"
 #include "debug_renderer.h"
 

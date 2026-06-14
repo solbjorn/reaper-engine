@@ -1,13 +1,13 @@
 #include "stdafx.h"
 
-#include "igame_level.h"
-#include "feel_touch.h"
+#include "IGame_Level.h"
+#include "Feel_Touch.h"
 #include "xr_object.h"
 
 using namespace Feel;
 
 Touch::Touch() : pure_relcase(CallMe::fromMethod<&Touch::feel_touch_relcase>(this)) {}
-Touch::~Touch() {}
+Touch::~Touch() = default;
 
 BOOL Touch::feel_touch_contact(CObject*) { return TRUE; }
 

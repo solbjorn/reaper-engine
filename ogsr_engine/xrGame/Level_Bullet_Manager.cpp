@@ -9,7 +9,7 @@
 #include "Level.h"
 #include "game_cl_base.h"
 #include "Actor.h"
-#include "gamepersistent.h"
+#include "GamePersistent.h"
 #include "Weapon.h"
 #include "mt_config.h"
 

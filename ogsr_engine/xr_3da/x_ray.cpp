@@ -10,15 +10,15 @@
 
 #include "x_ray.h"
 
-#include "igame_level.h"
-#include "igame_persistent.h"
+#include "IGame_Level.h"
+#include "IGame_Persistent.h"
 #include "Render.h"
 
 #include "xr_input.h"
-#include "xr_ioconsole.h"
+#include "XR_IOConsole.h"
 #include "std_classes.h"
 #include "LightAnimLibrary.h"
-#include "../xrcdb/ispatial.h"
+#include "../xrCDB/ISpatial.h"
 #include "ILoadingScreen.h"
 #include "splash.h"
 

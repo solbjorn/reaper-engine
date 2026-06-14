@@ -1,7 +1,7 @@
 #ifndef r_constantsH
 #define r_constantsH
 
-#include "../../xrcore/xr_resource.h"
+#include "../../xrCore/xr_resource.h"
 #include "../xrRenderDX10/dx10ConstantBuffer.h"
 
 class CBackend;

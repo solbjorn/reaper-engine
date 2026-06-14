@@ -9,7 +9,7 @@
 #include "../../../ActorCondition.h"
 #include "../ai_monster_effector.h"
 #include "../../../../Include/xrRender/KinematicsAnimated.h"
-#include "../../../level.h"
+#include "../../../Level.h"
 #include "../../../sound_player.h"
 #include "../../../ai_monster_space.h"
 #include "../../../UIGameCustom.h"
@@ -42,7 +42,7 @@
 #include "controller_psy_hit.h"
 #include "../monster_cover_manager.h"
 #include "controller_psy_aura.h"
-#include "../../../hudmanager.h"
+#include "../../../HUDManager.h"
 
 const u32 _pmt_psy_attack_delay = 2000;
 const float _pmt_psy_attack_min_angle = deg(5);

@@ -5,14 +5,14 @@
 
 // Our headers
 #include "context.h"
-#include "engine.h"
+#include "Engine.h"
 #include "defines.h"
 #include "device.h"
-#include "fs.h"
+#include "FS.h"
 
-#include "../xrcdb/xrxrc.h"
+#include "../xrCDB/xrXRC.h"
 
-#include "../xrSound/sound.h"
+#include "../xrSound/Sound.h"
 
 extern CInifile* pGameIni;
 

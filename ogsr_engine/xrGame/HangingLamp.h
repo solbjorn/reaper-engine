@@ -5,8 +5,8 @@
 #ifndef HangingLampH
 #define HangingLampH
 
-#include "gameobject.h"
-#include "physicsshellholder.h"
+#include "GameObject.h"
+#include "PhysicsShellHolder.h"
 #include "PHSkeleton.h"
 #include "script_export_space.h"
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "control_combase.h"
-#include "../../../Include\xrRender\Kinematics.h"
+#include "../../../Include/xrRender/Kinematics.h"
 
 struct SControlRotationJumpData : public ControlCom::IComData
 {

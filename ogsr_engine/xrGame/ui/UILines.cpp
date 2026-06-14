@@ -10,7 +10,7 @@
 
 #include "UILines.h"
 
-#include "../HUDmanager.h"
+#include "../HUDManager.h"
 #include "UIXmlInit.h"
 #include "uilinestd.h"
 
@@ -35,7 +35,7 @@ CUILines::CUILines()
     m_wndPos.set(0.f, 0.f);
 }
 
-CUILines::~CUILines() {}
+CUILines::~CUILines() = default;
 
 void CUILines::SetTextComplexMode(bool mode)
 {

@@ -1,5 +1,5 @@
 #include "PHSynchronize.h"
-#include "xrserver_space.h"
+#include "xrServer_Space.h"
 
 #pragma once
 
@@ -11,7 +11,6 @@ namespace ACTOR_DEFS
 {
 enum ESoundCcount
 {
-    //	SND_HIT_COUNT=8,
     SND_DIE_COUNT = 4
 };
 

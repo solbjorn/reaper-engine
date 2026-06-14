@@ -3,18 +3,18 @@
 #include "helicopter.h"
 
 #include "Actor_Flags.h"
-#include "xrserver_objects_alife.h"
+#include "xrServer_Objects_ALife.h"
 #include "PhysicsShell.h"
-#include "level.h"
+#include "Level.h"
 #include "ai_sounds.h"
 #include "clsid_game.h"
-#include "..\Include/xrRender/Kinematics.h"
-#include "..\Include/xrRender/KinematicsAnimated.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 #include "game_object_space.h"
 #include "script_game_object.h"
 #include "../xr_3da/LightAnimLibrary.h"
-#include "HudManager.h"
-#include "physicscommon.h"
+#include "HUDManager.h"
+#include "PhysicsCommon.h"
 
 CHelicopter::CHelicopter()
 {

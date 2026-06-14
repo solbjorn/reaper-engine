@@ -2,7 +2,7 @@
 
 #include "../../../../Include/xrRender/Kinematics.h"
 #include "../../../Actor.h"
-#include "../../../inventory.h"
+#include "../../../Inventory.h"
 #include "../../../../xr_3da/CameraBase.h"
 
 #include "../../../HUDManager.h"
@@ -10,9 +10,6 @@
 #define TEMPLATE_SPECIALIZATION template <typename _Object>
 
 #define CStateBloodsuckerVampireExecuteAbstract CStateBloodsuckerVampireExecute<_Object>
-
-// #define VAMPIRE_MIN_DIST		0.5f
-// #define VAMPIRE_MAX_DIST		1.f
 
 TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireExecuteAbstract::initialize()

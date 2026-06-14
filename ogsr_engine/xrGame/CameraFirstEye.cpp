@@ -4,15 +4,14 @@
 
 #include "xr_level_controller.h"
 
-#include "..\xr_3da\xr_object.h"
+#include "../xr_3da/xr_object.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CCameraFirstEye::CCameraFirstEye(CObject* p, u32 flags) : CCameraBase(p, flags) {}
-
-CCameraFirstEye::~CCameraFirstEye() {}
+CCameraFirstEye::CCameraFirstEye(CObject* p, u32 flags) : CCameraBase{p, flags} {}
+CCameraFirstEye::~CCameraFirstEye() = default;
 
 void CCameraFirstEye::Load(LPCSTR section)
 {

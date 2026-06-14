@@ -17,13 +17,13 @@
 #include "ai_object_location.h"
 #include "level_graph.h"
 #include "stalker_movement_manager.h"
-#include "../xr_3da/gamemtllib.h"
+#include "../xr_3da/GameMtlLib.h"
 #include "agent_manager.h"
 #include "agent_member_manager.h"
 #include "ai_space.h"
-#include "actor.h"
-#include "../xr_3da/camerabase.h"
-#include "gamepersistent.h"
+#include "Actor.h"
+#include "../xr_3da/CameraBase.h"
+#include "GamePersistent.h"
 #include "actor_memory.h"
 #include "client_spawn_manager.h"
 #include "client_spawn_manager.h"
@@ -31,8 +31,8 @@
 #include "alife_registry_wrappers.h"
 #include "alife_simulator_header.h"
 #include "holder_custom.h"
-#include "inventory.h"
-#include "torch.h"
+#include "Inventory.h"
+#include "Torch.h"
 
 #ifndef MASTER_GOLD
 #include "clsid_game.h"
@@ -41,8 +41,15 @@
 
 struct SRemoveOfflinePredicate
 {
-    bool operator()(const MemorySpace::CVisibleObject& object) const { return !object.m_object || !!object.m_object->getDestroy() || object.m_object->H_Parent(); }
-    bool operator()(const MemorySpace::CNotYetVisibleObject& object) const { return !object.m_object || !!object.m_object->getDestroy() || object.m_object->H_Parent(); }
+    bool operator()(const MemorySpace::CVisibleObject& object) const
+    {
+        return !object.m_object || !!object.m_object->getDestroy() || object.m_object->H_Parent();
+    }
+
+    bool operator()(const MemorySpace::CNotYetVisibleObject& object) const
+    {
+        return !object.m_object || !!object.m_object->getDestroy() || object.m_object->H_Parent();
+    }
 };
 
 struct CVisibleObjectPredicate
@@ -282,7 +289,8 @@ float CVisualMemoryManager::get_object_velocity(const CGameObject* game_object, 
     return (pos1.vPosition.distance_to(pos0.vPosition) / (float(pos1.dwTime) / 1000.f - float(pos0.dwTime) / 1000.f));
 }
 
-float CVisualMemoryManager::get_visible_value(float distance, float object_distance, float time_delta, float object_velocity, float luminocity, float trans) const
+float CVisualMemoryManager::get_visible_value(float distance, float object_distance, float time_delta, float object_velocity, float luminocity,
+                                              float trans) const
 {
     float always_visible_distance = current_state().m_always_visible_distance;
     if (object_distance <= always_visible_distance)
@@ -298,8 +306,8 @@ float CVisualMemoryManager::get_visible_value(float distance, float object_dista
     clamp(fog, 0.f, 1.f);
     float fog_factor = 1.f - pow(fog, current_state().m_fog_pow);
 
-    return (time_delta / current_state().m_time_quant * luminocity * (1.f + current_state().m_velocity_factor * object_velocity) * (distance - object_distance) /
-            (distance - always_visible_distance) * fog_factor * trans);
+    return (time_delta / current_state().m_time_quant * luminocity * (1.f + current_state().m_velocity_factor * object_velocity) *
+            (distance - object_distance) / (distance - always_visible_distance) * fog_factor * trans);
 }
 
 MemorySpace::CNotYetVisibleObject* CVisualMemoryManager::not_yet_visible_object(const CGameObject* game_object)
@@ -312,7 +320,10 @@ MemorySpace::CNotYetVisibleObject* CVisualMemoryManager::not_yet_visible_object(
     return (&*I);
 }
 
-void CVisualMemoryManager::add_not_yet_visible_object(const CNotYetVisibleObject& not_yet_visible_object) { m_not_yet_visible_objects.push_back(not_yet_visible_object); }
+void CVisualMemoryManager::add_not_yet_visible_object(const CNotYetVisibleObject& not_yet_visible_object)
+{
+    m_not_yet_visible_objects.push_back(not_yet_visible_object);
+}
 
 u32 CVisualMemoryManager::get_prev_time(const CGameObject* game_object) const
 {
@@ -644,7 +655,8 @@ void CVisualMemoryManager::update(float time_delta)
     {
         if (m_object->is_relation_enemy(Actor()))
         {
-            xr_vector<CNotYetVisibleObject>::iterator I = std::find_if(m_not_yet_visible_objects.begin(), m_not_yet_visible_objects.end(), CNotYetVisibleObjectPredicate(Actor()));
+            xr_vector<CNotYetVisibleObject>::iterator I =
+                std::find_if(m_not_yet_visible_objects.begin(), m_not_yet_visible_objects.end(), CNotYetVisibleObjectPredicate(Actor()));
             if (I != m_not_yet_visible_objects.end())
                 Actor()->SetActorVisibility(m_object->ID(), clampr((*I).m_value / visibility_threshold(), 0.f, 1.f));
             else

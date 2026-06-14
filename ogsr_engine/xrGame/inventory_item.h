@@ -11,7 +11,7 @@
 #include "inventory_space.h"
 #include "hit_immunity.h"
 #include "attachable_item.h"
-#include "ui\UIIconParams.h"
+#include "ui/UIIconParams.h"
 
 class CUIInventoryCellItem;
 

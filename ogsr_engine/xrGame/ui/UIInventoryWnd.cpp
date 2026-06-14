@@ -6,23 +6,22 @@
 #include "UIXmlInit.h"
 #include "../string_table.h"
 
-#include "../actor.h"
-#include "../uigamesp.h"
-#include "../hudmanager.h"
+#include "../Actor.h"
+#include "../UIGameSP.h"
+#include "../HUDManager.h"
 
 #include "../CustomOutfit.h"
-
-#include "../weapon.h"
+#include "../Weapon.h"
 
 #include "../eatable_item.h"
-#include "../inventory.h"
+#include "../Inventory.h"
 
 #include "UIInventoryUtilities.h"
 
 #include "../InfoPortion.h"
-#include "../level.h"
+#include "../Level.h"
 #include "../game_base_space.h"
-#include "../entitycondition.h"
+#include "../EntityCondition.h"
 
 #include "../game_cl_base.h"
 #include "../ActorCondition.h"

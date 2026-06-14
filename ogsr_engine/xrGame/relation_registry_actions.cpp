@@ -1,9 +1,10 @@
 #include "stdafx.h"
 
 #include "relation_registry.h"
+
 #include "alife_registry_wrappers.h"
 
-#include "actor.h"
+#include "Actor.h"
 #include "ai/stalker/ai_stalker.h"
 
 #include "seniority_hierarchy_holder.h"
@@ -176,7 +177,8 @@ void RELATION_REGISTRY::Action(CEntityAlive* from, CEntityAlive* to, ERelationAc
                 for (std::size_t i = 0; i < group.members().size(); i++)
                     ChangeGoodwill(group.members()[i]->ID(), from->ID(), delta_goodwill);
 
-                ChangeCommunityGoodwill(stalker->Community(), from->ID(), (CHARACTER_GOODWILL)(CHARACTER_COMMUNITY::sympathy(stalker->Community()) * (float)delta_goodwill));
+                ChangeCommunityGoodwill(stalker->Community(), from->ID(),
+                                        (CHARACTER_GOODWILL)(CHARACTER_COMMUNITY::sympathy(stalker->Community()) * (float)delta_goodwill));
             }
             if (delta_reputation)
                 inv_owner_from->ChangeReputation(delta_reputation);
@@ -283,7 +285,8 @@ void RELATION_REGISTRY::Action(CEntityAlive* from, CEntityAlive* to, ERelationAc
                 for (std::size_t i = 0; i < group.members().size(); i++)
                     ChangeGoodwill(group.members()[i]->ID(), from->ID(), delta_goodwill);
 
-                ChangeCommunityGoodwill(stalker->Community(), from->ID(), (CHARACTER_GOODWILL)(CHARACTER_COMMUNITY::sympathy(stalker->Community()) * (float)delta_goodwill));
+                ChangeCommunityGoodwill(stalker->Community(), from->ID(),
+                                        (CHARACTER_GOODWILL)(CHARACTER_COMMUNITY::sympathy(stalker->Community()) * (float)delta_goodwill));
             }
 
             if (delta_reputation)

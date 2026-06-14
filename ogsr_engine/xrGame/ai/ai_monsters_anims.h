@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include "../../Include\xrRender\Kinematics.h"
-#include "../../Include\xrRender\KinematicsAnimated.h"
-#include "../../Include\xrRender\animation_motion.h"
+#include "../../Include/xrRender/Kinematics.h"
+#include "../../Include/xrRender/KinematicsAnimated.h"
+#include "../../Include/xrRender/animation_motion.h"
 #include "../ai_debug.h"
 
 using ANIM_VECTOR = xr_vector<MotionID>;

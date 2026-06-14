@@ -4,7 +4,7 @@
 
 #include "stdafx.h"
 
-#include "Blender_Detail_still.h"
+#include "Blender_detail_still.h"
 #include "uber_deffer.h"
 
 //////////////////////////////////////////////////////////////////////

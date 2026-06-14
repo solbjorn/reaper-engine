@@ -1,13 +1,14 @@
 #include "stdafx.h"
 
 #include "UINewsWnd.h"
+
 #include "xrUIXmlParser.h"
 #include "UIXmlInit.h"
 #include "../UI.h"
 #include "../HUDManager.h"
-#include "../level.h"
+#include "../Level.h"
 #include "../game_news.h"
-#include "../actor.h"
+#include "../Actor.h"
 #include "../alife_registry_wrappers.h"
 #include "UIInventoryUtilities.h"
 #include "UINewsItemWnd.h"
@@ -15,8 +16,8 @@
 
 #define NEWS_XML "news.xml"
 
-CUINewsWnd::CUINewsWnd() {}
-CUINewsWnd::~CUINewsWnd() {}
+CUINewsWnd::CUINewsWnd() = default;
+CUINewsWnd::~CUINewsWnd() = default;
 
 void CUINewsWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 {

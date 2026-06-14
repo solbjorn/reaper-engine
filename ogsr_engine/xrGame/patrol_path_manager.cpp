@@ -10,7 +10,7 @@
 
 #include "patrol_path_manager.h"
 
-#include "gameobject.h"
+#include "GameObject.h"
 #include "script_game_object.h"
 #include "restricted_object.h"
 #include "script_engine.h"

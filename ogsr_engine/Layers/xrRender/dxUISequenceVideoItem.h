@@ -1,7 +1,7 @@
 #ifndef dxUISequenceVideoItem_included
 #define dxUISequenceVideoItem_included
 
-#include "..\..\Include\xrRender\UISequenceVideoItem.h"
+#include "../../Include/xrRender/UISequenceVideoItem.h"
 
 class dxUISequenceVideoItem : public IUISequenceVideoItem
 {

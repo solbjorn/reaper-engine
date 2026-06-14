@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../state.h"
-#include "../../../entitycondition.h"
+#include "../../../EntityCondition.h"
 #include "../states/state_data.h"
 
 template <typename _Object>

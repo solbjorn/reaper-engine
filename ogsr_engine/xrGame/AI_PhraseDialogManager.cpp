@@ -10,15 +10,15 @@
 #include "AI_PhraseDialogManager.h"
 
 #include "PhraseDialog.h"
-#include "inventoryowner.h"
+#include "InventoryOwner.h"
 #include "character_info.h"
-#include "gameobject.h"
+#include "GameObject.h"
 #include "relation_registry.h"
 
-#include "uigamesp.h"
-#include "hudmanager.h"
-#include "level.h"
-#include "ui/UItalkWnd.h"
+#include "UIGameSP.h"
+#include "HUDManager.h"
+#include "Level.h"
+#include "ui/UITalkWnd.h"
 
 CAI_PhraseDialogManager::CAI_PhraseDialogManager() = default;
 CAI_PhraseDialogManager::~CAI_PhraseDialogManager() = default;

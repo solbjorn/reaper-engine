@@ -25,7 +25,7 @@
 #include "UIPdaSpot.h"
 #include "map_spot.h"
 
-#include "..\..\xr_3da\xr_input.h" //remove me !!!
+#include "../../xr_3da/xr_input.h" //remove me !!!
 
 namespace
 {

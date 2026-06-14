@@ -1,11 +1,11 @@
 #include "StdAfx.h"
 
-#include "physicsshell.h"
-#include "phinterpolation.h"
-#include "phelement.h"
-#include "phobject.h"
-#include "phworld.h"
-#include "phshell.h"
+#include "PhysicsShell.h"
+#include "PHInterpolation.h"
+#include "PHElement.h"
+#include "PHObject.h"
+#include "PHWorld.h"
+#include "PHShell.h"
 
 void CPHElement::get_State(SPHNetState& state)
 {
@@ -17,17 +17,18 @@ void CPHElement::get_State(SPHNetState& state)
     get_AngularVel(state.angular_vel);
     getForce(state.force);
     getTorque(state.torque);
+
     if (!isActive())
     {
         state.enabled = false;
         return;
     }
+
     state.enabled = !!dBodyIsEnabled(m_body);
 }
 
 void CPHElement::set_State(const SPHNetState& state)
 {
-    // bUpdate=true;
     m_flags.set(flUpdate, TRUE);
     SetGlobalPositionDynamic(state.position);
     setQuaternion(state.quaternion);

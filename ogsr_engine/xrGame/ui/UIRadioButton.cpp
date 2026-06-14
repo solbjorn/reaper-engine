@@ -5,7 +5,8 @@
 
 #include "stdafx.h"
 
-#include ".\uiradiobutton.h"
+#include "UIRadioButton.h"
+
 #include "UILines.h"
 
 CUIRadioButton::CUIRadioButton() { SetTextAlignment(CGameFont::alLeft); }

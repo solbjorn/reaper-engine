@@ -1,16 +1,16 @@
 #include "stdafx.h"
 
-#include "weaponammo.h"
+#include "WeaponAmmo.h"
 
 #include "PhysicsShell.h"
-#include "xrserver_objects_alife_items.h"
+#include "xrServer_Objects_ALife_Items.h"
 #include "Actor_Flags.h"
-#include "inventory.h"
-#include "weapon.h"
-#include "level_bullet_manager.h"
+#include "Inventory.h"
+#include "Weapon.h"
+#include "Level_Bullet_Manager.h"
 #include "ai_space.h"
-#include "../xr_3da/gamemtllib.h"
-#include "level.h"
+#include "../xr_3da/GameMtlLib.h"
+#include "Level.h"
 #include "string_table.h"
 
 namespace

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "../../xrCDB/frustum.h"
+#include "../../xrCDB/Frustum.h"
 
 #include "../xrRenderDX10/StateManager/dx10StateManager.h"
 #include "../xrRenderDX10/StateManager/dx10ShaderResourceStateCache.h"

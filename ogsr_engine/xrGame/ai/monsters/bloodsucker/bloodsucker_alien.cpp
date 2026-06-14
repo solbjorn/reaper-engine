@@ -4,9 +4,9 @@
 
 #include "bloodsucker.h"
 
-#include "../../../level.h"
-#include "../../../actor.h"
-#include "../../../inventory.h"
+#include "../../../Level.h"
+#include "../../../Actor.h"
+#include "../../../Inventory.h"
 #include "../../../HudItem.h"
 #include "../../../../xr_3da/CustomHUD.h"
 #include "../../../ActorEffector.h"

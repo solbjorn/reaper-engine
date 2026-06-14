@@ -1,13 +1,13 @@
 #include "stdafx.h"
 
-#include "CameraLook.h"
+#include "cameralook.h"
 
-#include "actor.h"
+#include "Actor.h"
 #include "actor_memory.h"
 #include "visual_memory_manager.h"
 #include "xr_level_controller.h"
 
-#include "../xr_3da/Cameramanager.h"
+#include "../xr_3da/CameraManager.h"
 #include "../xr_3da/xr_input.h"
 
 CCameraLook::CCameraLook(CObject* p, u32 flags) : CCameraBase(p, flags) {}
@@ -21,7 +21,7 @@ void CCameraLook::Load(LPCSTR section)
     prev_d = 0;
 }
 
-CCameraLook::~CCameraLook() {}
+CCameraLook::~CCameraLook() = default;
 
 void CCameraLook::Update(Fvector& point, Fvector&)
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "phsimplecharacter.h"
+#include "PHSimpleCharacter.h"
 #include "ExtendedGeom.h"
 
 struct SPHCharacterRestrictor

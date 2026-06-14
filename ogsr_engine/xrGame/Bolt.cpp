@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "bolt.h"
+#include "Bolt.h"
 
 #include "ParticlesObject.h"
 #include "PhysicsShell.h"
@@ -14,7 +14,7 @@ CBolt::CBolt()
     m_thrower_id = u16(-1);
 }
 
-CBolt::~CBolt() {}
+CBolt::~CBolt() = default;
 
 void CBolt::OnH_A_Chield()
 {

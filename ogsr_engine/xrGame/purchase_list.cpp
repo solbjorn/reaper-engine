@@ -10,10 +10,10 @@
 
 #include "purchase_list.h"
 
-#include "inventoryowner.h"
-#include "gameobject.h"
+#include "InventoryOwner.h"
+#include "GameObject.h"
 #include "ai_object_location.h"
-#include "level.h"
+#include "Level.h"
 #include "xrServer_Object_Base.h"
 #include "xrServer_Objects_ALife.h"
 

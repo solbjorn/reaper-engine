@@ -7,7 +7,7 @@
 
 #include "Tracer.h"
 
-#include "..\xr_3da\render.h"
+#include "../xr_3da/Render.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

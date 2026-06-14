@@ -1,23 +1,23 @@
 #include "stdafx.h"
 
-#include "level.h"
+#include "Level.h"
 
-#include "HUDmanager.h"
-#include "..\xr_3da\XR_IOConsole.h"
+#include "HUDManager.h"
+#include "../xr_3da/XR_IOConsole.h"
 #include "entity_alive.h"
 #include "game_sv_single.h"
 #include "alife_simulator.h"
 #include "alife_simulator_header.h"
 #include "level_graph.h"
-#include "../xr_3da/fdemorecord.h"
+#include "../xr_3da/FDemoRecord.h"
 #include "xr_level_controller.h"
 #include "game_cl_base.h"
 #include "stalker_movement_manager.h"
 #include "Inventory.h"
 #include "xrServer.h"
 
-#include "actor.h"
-#include "huditem.h"
+#include "Actor.h"
+#include "HudItem.h"
 #include "ui/UIDialogWnd.h"
 #include "clsid_game.h"
 #include "../xr_3da/xr_input.h"
@@ -29,7 +29,7 @@
 #include "UIGameSP.h"
 
 #ifdef DEBUG
-#include "ai/monsters/BaseMonster/base_monster.h"
+#include "ai/monsters/basemonster/base_monster.h"
 
 extern void try_change_current_entity();
 extern void restore_actor();
@@ -232,7 +232,8 @@ void CLevel::IR_OnKeyboardRelease(xr::key_id key)
     if (game && Game().OnKeyboardRelease(_curr))
         return;
 
-    if (key != xr::key_id{sf::Keyboard::Scancode::LAlt} && key != xr::key_id{sf::Keyboard::Scancode::RAlt} && key != xr::key_id{sf::Keyboard::Scancode::F4} && Actor() != nullptr)
+    if (key != xr::key_id{sf::Keyboard::Scancode::LAlt} && key != xr::key_id{sf::Keyboard::Scancode::RAlt} && key != xr::key_id{sf::Keyboard::Scancode::F4} &&
+        Actor() != nullptr)
         Actor()->callback(GameObject::eOnKeyRelease)(key, _curr);
 
     if (b_ui_exist && HUD().GetUI()->MainInputReceiver())
@@ -272,7 +273,8 @@ tmc::task<void> CLevel::IR_OnKeyboardHold(xr::key_id key)
     if (Device.Paused())
         co_return;
 
-    if (key != xr::key_id{sf::Keyboard::Scancode::LAlt} && key != xr::key_id{sf::Keyboard::Scancode::RAlt} && key != xr::key_id{sf::Keyboard::Scancode::F4} && Actor() != nullptr)
+    if (key != xr::key_id{sf::Keyboard::Scancode::LAlt} && key != xr::key_id{sf::Keyboard::Scancode::RAlt} && key != xr::key_id{sf::Keyboard::Scancode::F4} &&
+        Actor() != nullptr)
         Actor()->callback(GameObject::eOnKeyHold)(key, _curr);
 
     if (CURRENT_ENTITY())

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "cat.h"
+
 #include "cat_state_manager.h"
 
 #include "../control_animation_base.h"
@@ -16,7 +17,7 @@
 #include "../states/monster_state_hear_danger_sound.h"
 #include "../states/monster_state_hitted.h"
 #include "../states/state_test_look_actor.h"
-#include "../../../entitycondition.h"
+#include "../../../EntityCondition.h"
 #include "../states/monster_state_help_sound.h"
 
 CStateManagerCat::CStateManagerCat(CCat* obj) : inherited(obj)

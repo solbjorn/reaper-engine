@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "phmovestorage.h"
+#include "PHMoveStorage.h"
 
 #include "ode/src/collision_kernel.h"
 

@@ -2,9 +2,9 @@
 
 #include "Environment.h"
 
-#include "render.h"
+#include "Render.h"
 #include "xr_efflensflare.h"
-#include "rain.h"
+#include "Rain.h"
 #include "thunderbolt.h"
 #include "xrHemisphere.h"
 #include "perlin.h"
@@ -13,7 +13,7 @@
 #include "IGame_Level.h"
 #include "IGame_Persistent.h"
 
-#include "../xrcore/xrCore.h"
+#include "../xrCore/xrCore.h"
 
 #include "../Include/xrRender/EnvironmentRender.h"
 #include "../Include/xrRender/LensFlareRender.h"

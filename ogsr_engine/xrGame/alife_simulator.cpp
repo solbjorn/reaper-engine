@@ -12,7 +12,7 @@
 
 #include "xrServer_Objects_ALife.h"
 #include "ai_space.h"
-#include "..\xr_3da\IGame_Persistent.h"
+#include "../xr_3da/IGame_Persistent.h"
 #include "script_engine.h"
 #include "relation_registry.h"
 
@@ -35,7 +35,8 @@ CALifeSimulator::CALifeSimulator(xrServer* server, shared_str* command_line) : C
     setup_command_line(command_line);
 
     IGame_Persistent::params& p = g_pGamePersistent->m_game_params;
-    R_ASSERT2(xr_strlen(p.m_game_or_spawn) > 0 && std::is_eq(xr_strcmp(p.m_alife, "alife")) && std::is_eq(xr_strcmp(p.m_game_type, "single")), "Invalid server options!");
+    R_ASSERT2(xr_strlen(p.m_game_or_spawn) > 0 && std::is_eq(xr_strcmp(p.m_alife, "alife")) && std::is_eq(xr_strcmp(p.m_game_type, "single")),
+              "Invalid server options!");
 
     string256 temp;
     strcpy_s(temp, p.m_game_or_spawn);

@@ -1,12 +1,12 @@
 #include "stdafx.h"
 
-#include "actor.h"
+#include "Actor.h"
 
 #include "UIGameSP.h"
 #include "UI.h"
 #include "PDA.h"
 #include "HUDManager.h"
-#include "level.h"
+#include "Level.h"
 #include "string_table.h"
 #include "PhraseDialog.h"
 #include "character_info.h"
@@ -26,13 +26,13 @@
 #include "ui/UITalkWnd.h"
 #include "game_object_space.h"
 #include "encyclopedia_article.h"
-#include "GameTaskManager.h"
-#include "GameTaskdefs.h"
-#include "infoportion.h"
+#include "GametaskManager.h"
+#include "GameTaskDefs.h"
+#include "InfoPortion.h"
 #include "ai/monsters/basemonster/base_monster.h"
 #include "ai/trader/ai_trader.h"
 #include "CustomDetector.h"
-#include "inventory.h"
+#include "Inventory.h"
 
 void CActor::AddEncyclopediaArticle(const CInfoPortion* info_portion, bool revert) const
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../BaseMonster/base_monster.h"
+#include "../basemonster/base_monster.h"
 #include "../controlled_entity.h"
 #include "script_export_space.h"
 

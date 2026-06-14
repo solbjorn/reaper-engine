@@ -8,14 +8,14 @@
 #include "HudItem.h"
 
 #include "player_hud.h"
-#include "../xr_3da/gamemtllib.h"
+#include "../xr_3da/GameMtlLib.h"
 #include "HUDManager.h"
 #include "Weapon.h"
 #include "ActorCondition.h"
 #include "Missile.h"
 #include "../xr_3da/x_ray.h"
-#include "../../xr_3da/igame_persistent.h"
-#include "Pda.h"
+#include "../../xr_3da/IGame_Persistent.h"
+#include "PDA.h"
 
 #include <array>
 

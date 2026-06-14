@@ -1,8 +1,10 @@
 #include "StdAfx.h"
+
 #include "UIArtefactPanel.h"
+
 #include "UIInventoryUtilities.h"
 #include "UIXmlInit.h"
-#include "../artifact.h"
+#include "../Artifact.h"
 
 void CUIArtefactPanel::InitFromXML(CUIXml& xml, LPCSTR path, int index)
 {

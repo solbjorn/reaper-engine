@@ -1,9 +1,9 @@
 #ifndef _CPS_Instance_H_
 #define _CPS_Instance_H_
 
-#include "../xrcdb/ispatial.h"
-#include "isheduled.h"
-#include "irenderable.h"
+#include "../xrCDB/ISpatial.h"
+#include "ISheduled.h"
+#include "IRenderable.h"
 
 class XR_NOVTABLE CPS_Instance : public ISpatial, public ISheduled, public IRenderable
 {

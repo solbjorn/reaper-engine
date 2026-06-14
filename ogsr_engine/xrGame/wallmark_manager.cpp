@@ -3,14 +3,14 @@
 #include "wallmark_manager.h"
 
 #include "Level.h"
-#include "..\xr_3da\GameMtlLib.h"
+#include "../xr_3da/GameMtlLib.h"
 #include "CalculateTriangle.h"
 
 #ifdef DEBUG
 #include "phdebug.h"
 #endif
 
-CWalmarkManager::CWalmarkManager() {}
+CWalmarkManager::CWalmarkManager() = default;
 CWalmarkManager::~CWalmarkManager() { Clear(); }
 
 void CWalmarkManager::Clear() { m_wallmarks->clear(); }
@@ -18,9 +18,7 @@ void CWalmarkManager::Clear() { m_wallmarks->clear(); }
 void CWalmarkManager::PlaceWallmarks(const Fvector& start_pos)
 {
     m_pos = start_pos;
-    //.	LPCSTR				sect				= pSettings->r_string(m_owner->cNameSect(), "wallmark_section");
     Load("explosion_marks");
-
     StartWorkflow();
 }
 
@@ -37,32 +35,20 @@ void CWalmarkManager::StartWorkflow()
 
     CDB::TRI* T_array = Level().ObjectSpace.GetStaticTris();
     Fvector* V_array = Level().ObjectSpace.GetStaticVerts();
-    //.	Triangle		ntri;
-    //.	float			ndist					= dInfinity;
-    //.	Fvector			npoint;
     u32 wm_count = 0;
 
     for (auto& Res : *XRC.r_get())
     {
-        //.		DBG_DrawTri(Res, D3DCOLOR_XRGB(0,255,0) );
-
         if (wm_count >= max_wallmarks_count)
             break;
 
-        //.		Triangle					tri;
         Fvector end_point;
-        //.		ETriDist					c;
         Fvector pdir;
         float pfSParam;
         float pfTParam;
-
-        //.		CalculateTriangle			(T_array+Res->id,cast_fp(m_pos),tri);
-
-        //.		float dist					= DistToTri(&tri,cast_fp(m_pos),cast_fp(pdir),cast_fp(end_point),c,V_array);
         Fvector _tri[3];
 
         CDB::TRI* _t = T_array + Res.id;
-
         _tri[0] = V_array[_t->verts[0]];
         _tri[1] = V_array[_t->verts[1]];
         _tri[2] = V_array[_t->verts[2]];
@@ -88,9 +74,6 @@ void CWalmarkManager::StartWorkflow()
 
 void CWalmarkManager::Load(LPCSTR section)
 {
-    //.	m_trace_dist	= pSettings->r_float(section,"dist");
-    //.	m_wallmark_size	= pSettings->r_float(section,"size");
-
     // кровавые отметки на стенах
     string256 tmp;
     LPCSTR wallmarks_name = pSettings->r_string(section, "wallmarks");
@@ -104,7 +87,6 @@ void CWalmarkManager::Load(LPCSTR section)
 
 float Distance(const Fvector& rkPoint, const Fvector rkTri[3], float& pfSParam, float& pfTParam, Fvector& closest, Fvector& dir)
 {
-    //.    Fvector kDiff = rkTri.Origin() - rkPoint;
     Fvector kDiff;
     kDiff.sub(rkTri[0], rkPoint); //
 
@@ -113,26 +95,13 @@ float Distance(const Fvector& rkPoint, const Fvector rkTri[3], float& pfSParam, 
     Fvector Edge1;
     Edge1.sub(rkTri[2], rkTri[0]); //
 
-    //.    float fA00 = rkTri.Edge0().SquaredLength();
     float fA00 = Edge0.square_magnitude();
-
-    //.    float fA01 = rkTri.Edge0().Dot(rkTri.Edge1());
     float fA01 = Edge0.dotproduct(Edge1);
-
-    //.    float fA11 = rkTri.Edge1().SquaredLength();
     float fA11 = Edge1.square_magnitude();
-
-    //.    float fB0 = kDiff.Dot(rkTri.Edge0());
     float fB0 = kDiff.dotproduct(Edge0);
-
-    //.	float fB1 = kDiff.Dot(rkTri.Edge1());
     float fB1 = kDiff.dotproduct(Edge1);
-
-    //.    float fC = kDiff.SquaredLength();
     float fC = kDiff.square_magnitude();
-
     float fDet = _abs(fA00 * fA11 - fA01 * fA01);
-
     float fS = fA01 * fB1 - fA11 * fB0;
     float fT = fA01 * fB0 - fA00 * fB1;
     float fSqrDist;

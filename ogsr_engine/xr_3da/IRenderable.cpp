@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "irenderable.h"
+#include "IRenderable.h"
 
 IRenderable::IRenderable() { renderable.xform.identity(); }
 

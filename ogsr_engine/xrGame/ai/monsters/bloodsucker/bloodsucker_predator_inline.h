@@ -7,7 +7,7 @@
 #include "../monster_cover_manager.h"
 #include "../monster_home.h"
 
-#include "../../../actor.h"
+#include "../../../Actor.h"
 #include "../../../actor_memory.h"
 #include "../../../visual_memory_manager.h"
 

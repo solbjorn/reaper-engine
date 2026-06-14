@@ -19,7 +19,7 @@
 #include "level_path_manager.h"
 #include "movement_manager_space.h"
 #include "detail_path_manager_space.h"
-#include "entitycondition.h"
+#include "EntityCondition.h"
 #include "ai_object_location.h"
 #include "patrol_path_manager.h"
 #include "stalker_velocity_holder.h"

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "fs_internal.h"
+#include "FS_internal.h"
 #include "trivial_encryptor.h"
 
 #include <filesystem>

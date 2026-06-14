@@ -1,15 +1,15 @@
 #include "stdafx.h"
 
-#include "phactorcharacter.h"
+#include "PHActorCharacter.h"
 
-#include "Extendedgeom.h"
+#include "ExtendedGeom.h"
 #include "PhysicsCommon.h"
 #include "GameObject.h"
 #include "PhysicsShellHolder.h"
 #include "ai/stalker/ai_stalker.h"
 #include "Actor.h"
 #include "../xr_3da/GameMtlLib.h"
-#include "level.h"
+#include "Level.h"
 
 namespace
 {
@@ -21,19 +21,13 @@ CPHActorCharacter::CPHActorCharacter()
 {
     SetRestrictionType(CPHCharacter::rtActor);
 
-    // std::fill(m_restrictors_index,m_restrictors_index+CPHCharacter::rtNone,end(m_restrictors));
-    // m_restrictors_index[CPHCharacter::rtStalker]		=begin(m_restrictors)+0;
-    // m_restrictors_index[CPHCharacter::rtMonsterMedium]	=begin(m_restrictors)+1;
-
-    {
-        m_restrictors.resize(3);
-        m_restrictors[0] = (xr_new<stalker_restrictor>());
-        m_restrictors[1] = xr_new<stalker_small_restrictor>();
-        m_restrictors[2] = (xr_new<medium_monster_restrictor>());
-    }
+    m_restrictors.resize(3);
+    m_restrictors[0] = xr_new<stalker_restrictor>();
+    m_restrictors[1] = xr_new<stalker_small_restrictor>();
+    m_restrictors[2] = xr_new<medium_monster_restrictor>();
 }
 
-CPHActorCharacter::~CPHActorCharacter(void) { ClearRestrictors(); }
+CPHActorCharacter::~CPHActorCharacter() { ClearRestrictors(); }
 
 void CPHActorCharacter::Create(dVector3 sizes)
 {

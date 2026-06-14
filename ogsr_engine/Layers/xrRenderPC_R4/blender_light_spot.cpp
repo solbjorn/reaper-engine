@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
-#include "Blender_light_spot.h"
+#include "blender_light_spot.h"
 
 CBlender_accum_spot::CBlender_accum_spot() { description.CLS = 0; }
-CBlender_accum_spot::~CBlender_accum_spot() {}
+CBlender_accum_spot::~CBlender_accum_spot() = default;
 
 void CBlender_accum_spot::Compile(CBlender_Compile& C)
 {

@@ -10,11 +10,11 @@
 
 #include "ai_crow.h"
 
-#include "physicsshell.h"
-#include "../../hudmanager.h"
-#include "../../level.h"
+#include "PhysicsShell.h"
+#include "../../HUDManager.h"
+#include "../../Level.h"
 #include "../../../Include/xrRender/Kinematics.h"
-#include "xrserver_objects_alife_monsters.h"
+#include "xrServer_Objects_ALife_Monsters.h"
 
 void CAI_Crow::SAnim::Load(IKinematicsAnimated* visual, LPCSTR prefix)
 {

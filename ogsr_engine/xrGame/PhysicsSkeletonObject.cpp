@@ -1,15 +1,15 @@
 #include "stdafx.h"
 
-#include "physicsskeletonobject.h"
+#include "PhysicsSkeletonObject.h"
 
 #include "PhysicsShell.h"
-#include "phsynchronize.h"
-#include "xrserver_objects_alife.h"
+#include "PHSynchronize.h"
+#include "xrServer_Objects_ALife.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xr_3da/xr_collide_form.h"
 
-CPhysicsSkeletonObject::CPhysicsSkeletonObject() {}
-CPhysicsSkeletonObject::~CPhysicsSkeletonObject() {}
+CPhysicsSkeletonObject::CPhysicsSkeletonObject() = default;
+CPhysicsSkeletonObject::~CPhysicsSkeletonObject() = default;
 
 tmc::task<bool> CPhysicsSkeletonObject::net_Spawn(CSE_Abstract* DC)
 {

@@ -2,15 +2,15 @@
 
 #include "xr_collide_form.h"
 
-#include "igame_level.h"
+#include "IGame_Level.h"
 #include "xr_object.h"
 #include "x_ray.h"
 #include "xrLevel.h"
 #include "fmesh.h"
-#include "../xrCDB/frustum.h"
+#include "../xrCDB/Frustum.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "bone.h"
-#include "objectdump.h"
+#include "ObjectDump.h"
 
 namespace
 {

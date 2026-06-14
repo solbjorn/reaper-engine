@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "WeaponBM16.h"
+#include "weaponBM16.h"
 
 void CWeaponBM16::script_register(sol::state_view& lua)
 {

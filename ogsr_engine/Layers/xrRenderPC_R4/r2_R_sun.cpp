@@ -4,8 +4,8 @@
 
 #include "../xrRender/FBasicVisual.h"
 
-#include "../../xr_3da/igame_persistent.h"
-#include "../../xr_3da/irenderable.h"
+#include "../../xr_3da/IGame_Persistent.h"
+#include "../../xr_3da/IRenderable.h"
 
 namespace
 {
@@ -324,7 +324,8 @@ tmc::task<void> CRender::accumulate_cascade(u32 cascade_ind)
     // Accumulate
     Target->phase_accumulator(cmd_list);
     Target->rt_smap_depth->set_slice_read(cmd_list.context_id);
-    Target->accum_direct_cascade(cmd_list, cascade_ind, cascade.cull_xform, m_sun_cascades[cascade_ind == SE_SUN_NEAR ? cascade_ind : (cascade_ind - 1)].cull_xform, cascade.bias);
+    Target->accum_direct_cascade(cmd_list, cascade_ind, cascade.cull_xform,
+                                 m_sun_cascades[cascade_ind == SE_SUN_NEAR ? cascade_ind : (cascade_ind - 1)].cull_xform, cascade.bias);
 
     co_return;
 }

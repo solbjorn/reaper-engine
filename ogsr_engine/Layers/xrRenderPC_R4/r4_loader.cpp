@@ -3,7 +3,7 @@
 #include "r4.h"
 
 #include "../xrRender/ResourceManager.h"
-#include "../xrRender/fbasicvisual.h"
+#include "../xrRender/FBasicVisual.h"
 #include "../../xr_3da/fmesh.h"
 #include "../../xr_3da/xrLevel.h"
 #include "../../xr_3da/x_ray.h"

@@ -6,8 +6,8 @@
 
 #include "ResourceManager.h"
 
-#include "blenders\blender.h"
-#include "blenders\blender_recorder.h"
+#include "blenders/Blender.h"
+#include "blenders/Blender_Recorder.h"
 #include "tss.h"
 
 IBlender* CResourceManager::_GetBlender(LPCSTR Name)

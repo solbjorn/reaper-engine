@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
 #include "alife_space.h"
-#include "hit.h"
-#include "phdestroyable.h"
-#include "physicsshellholder.h"
+#include "Hit.h"
+#include "PHDestroyable.h"
+#include "PhysicsShellHolder.h"
 #include "xrMessages.h"
 #include "object_factory.h"
 #include "xrServer_Objects_ALife.h"

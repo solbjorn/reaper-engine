@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
 #include "holder_custom.h"
-#include "actor.h"
+
+#include "Actor.h"
 
 bool CHolderCustom::attach_Actor(CGameObject* actor)
 {

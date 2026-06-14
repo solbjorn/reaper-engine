@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "detailmodel.h"
+#include "DetailModel.h"
 
-#include "xrstripify.h"
+#include "xrStripify.h"
 
 CDetail::~CDetail() = default;
 

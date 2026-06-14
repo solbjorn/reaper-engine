@@ -2,8 +2,8 @@
 
 #include "level_debug.h"
 
-#include "..\xr_3da\xr_object.h"
-#include "level.h"
+#include "../xr_3da/xr_object.h"
+#include "Level.h"
 #include "HUDManager.h"
 
 #ifdef DEBUG

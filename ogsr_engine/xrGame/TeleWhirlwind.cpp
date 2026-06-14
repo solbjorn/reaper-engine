@@ -1,12 +1,13 @@
 #include "stdafx.h"
 
-#include "telewhirlwind.h"
+#include "TeleWhirlwind.h"
+
 #include "PhysicsShell.h"
 #include "PhysicsShellHolder.h"
-#include "level.h"
-#include "hit.h"
-#include "phdestroyable.h"
-#include "xrmessages.h"
+#include "Level.h"
+#include "Hit.h"
+#include "PHDestroyable.h"
+#include "xrMessages.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "PHWorld.h"
 

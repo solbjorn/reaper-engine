@@ -2,8 +2,8 @@
 
 #include "../xrRender/dxEnvironmentRender.h"
 
-#include "../../xr_3da/environment.h"
-#include "../../xr_3da/igame_persistent.h"
+#include "../../xr_3da/Environment.h"
+#include "../../xr_3da/IGame_Persistent.h"
 
 tmc::task<void> CRenderTarget::phase_combine()
 {
@@ -177,7 +177,9 @@ tmc::task<void> CRenderTarget::phase_combine()
         RCache.set_c("fog_color", fogclr);
 
         if (!RImplementation.o.dx10_msaa)
+        {
             RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+        }
         else
         {
             RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x81, 0);

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "PHObject.h"
-#include "phcollidevalidator.h"
+#include "PHCollideValidator.h"
 
 CGID CPHCollideValidator::freeGroupID = 0;
 _flags<CLClassBits> CPHCollideValidator::ClassFlags = {CLClassBits(0)};

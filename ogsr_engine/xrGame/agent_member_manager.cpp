@@ -14,7 +14,7 @@
 #include "object_broker.h"
 #include "agent_manager.h"
 #include "agent_memory_manager.h"
-#include "explosive.h"
+#include "Explosive.h"
 #include "sound_player.h"
 
 class CMemberPredicate2

@@ -13,7 +13,7 @@
 #include "stalker_decision_space.h"
 #include "script_game_object.h"
 #include "ai/ai_monsters_misc.h"
-#include "inventory.h"
+#include "Inventory.h"
 #include "alife_simulator.h"
 #include "alife_object_registry.h"
 #include "memory_manager.h"
@@ -25,7 +25,7 @@
 #include "ai/stalker/ai_stalker.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "alife_human_brain.h"
-#include "actor.h"
+#include "Actor.h"
 #include "actor_memory.h"
 #include "stalker_movement_manager.h"
 #include "agent_manager.h"
@@ -44,7 +44,8 @@ constexpr float wounded_enemy_reached_distance{3.f};
 // CStalkerPropertyEvaluatorALife
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerPropertyEvaluatorALife::CStalkerPropertyEvaluatorALife(CAI_Stalker* object, LPCSTR evaluator_name) : inherited{object ? object->lua_game_object() : nullptr, evaluator_name}
+CStalkerPropertyEvaluatorALife::CStalkerPropertyEvaluatorALife(CAI_Stalker* object, LPCSTR evaluator_name)
+    : inherited{object ? object->lua_game_object() : nullptr, evaluator_name}
 {}
 
 _value_type CStalkerPropertyEvaluatorALife::evaluate() { return (!!ai().get_alife()); }
@@ -53,7 +54,8 @@ _value_type CStalkerPropertyEvaluatorALife::evaluate() { return (!!ai().get_alif
 // CStalkerPropertyEvaluatorAlive
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerPropertyEvaluatorAlive::CStalkerPropertyEvaluatorAlive(CAI_Stalker* object, LPCSTR evaluator_name) : inherited{object ? object->lua_game_object() : nullptr, evaluator_name}
+CStalkerPropertyEvaluatorAlive::CStalkerPropertyEvaluatorAlive(CAI_Stalker* object, LPCSTR evaluator_name)
+    : inherited{object ? object->lua_game_object() : nullptr, evaluator_name}
 {}
 
 _value_type CStalkerPropertyEvaluatorAlive::evaluate() { return (!!object().g_Alive()); }
@@ -62,7 +64,8 @@ _value_type CStalkerPropertyEvaluatorAlive::evaluate() { return (!!object().g_Al
 // CStalkerPropertyEvaluatorItems
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerPropertyEvaluatorItems::CStalkerPropertyEvaluatorItems(CAI_Stalker* object, LPCSTR evaluator_name) : inherited{object ? object->lua_game_object() : nullptr, evaluator_name}
+CStalkerPropertyEvaluatorItems::CStalkerPropertyEvaluatorItems(CAI_Stalker* object, LPCSTR evaluator_name)
+    : inherited{object ? object->lua_game_object() : nullptr, evaluator_name}
 {}
 
 _value_type CStalkerPropertyEvaluatorItems::evaluate() { return (!!m_object->memory().item().selected()); }
@@ -203,7 +206,8 @@ _value_type CStalkerPropertyEvaluatorAnomaly::evaluate()
     if (!m_object->memory().enemy().selected())
         return (true);
 
-    u32 result = dwfChooseAction(2000, m_object->panic_threshold(), 0.f, 0.f, 0.f, m_object->g_Team(), m_object->g_Squad(), m_object->g_Group(), 0, 1, 2, 3, 4, m_object, 300.f);
+    u32 result = dwfChooseAction(2000, m_object->panic_threshold(), 0.f, 0.f, 0.f, m_object->g_Team(), m_object->g_Squad(), m_object->g_Group(), 0, 1, 2, 3, 4,
+                                 m_object, 300.f);
     return (!result);
 }
 
@@ -223,7 +227,8 @@ _value_type CStalkerPropertyEvaluatorInsideAnomaly::evaluate()
     if (!m_object->memory().enemy().selected())
         return (true);
 
-    u32 result = dwfChooseAction(2000, m_object->panic_threshold(), 0.f, 0.f, 0.f, m_object->g_Team(), m_object->g_Squad(), m_object->g_Group(), 0, 1, 2, 3, 4, m_object, 300.f);
+    u32 result = dwfChooseAction(2000, m_object->panic_threshold(), 0.f, 0.f, 0.f, m_object->g_Team(), m_object->g_Squad(), m_object->g_Group(), 0, 1, 2, 3, 4,
+                                 m_object, 300.f);
     return (!result);
 }
 
@@ -231,12 +236,14 @@ _value_type CStalkerPropertyEvaluatorInsideAnomaly::evaluate()
 // CStalkerPropertyEvaluatorPanic
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerPropertyEvaluatorPanic::CStalkerPropertyEvaluatorPanic(CAI_Stalker* object, LPCSTR evaluator_name) : inherited{object ? object->lua_game_object() : nullptr, evaluator_name}
+CStalkerPropertyEvaluatorPanic::CStalkerPropertyEvaluatorPanic(CAI_Stalker* object, LPCSTR evaluator_name)
+    : inherited{object ? object->lua_game_object() : nullptr, evaluator_name}
 {}
 
 _value_type CStalkerPropertyEvaluatorPanic::evaluate()
 {
-    u32 result = dwfChooseAction(2000, m_object->panic_threshold(), 0.f, 0.f, 0.f, m_object->g_Team(), m_object->g_Squad(), m_object->g_Group(), 0, 1, 2, 3, 4, m_object, 300.f);
+    u32 result = dwfChooseAction(2000, m_object->panic_threshold(), 0.f, 0.f, 0.f, m_object->g_Team(), m_object->g_Squad(), m_object->g_Group(), 0, 1, 2, 3, 4,
+                                 m_object, 300.f);
     return (!!result);
 }
 

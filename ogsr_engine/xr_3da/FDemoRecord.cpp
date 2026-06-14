@@ -1,10 +1,10 @@
 #include "stdafx.h"
 
-#include "fDemoRecord.h"
+#include "FDemoRecord.h"
 
-#include "igame_level.h"
+#include "IGame_Level.h"
 #include "x_ray.h"
-#include "xr_ioconsole.h"
+#include "XR_IOConsole.h"
 #include "xr_input.h"
 #include "xr_object.h"
 #include "CustomHUD.h"

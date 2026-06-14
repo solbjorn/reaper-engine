@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "fracture.h"
+
 #include "fracture_state_manager.h"
 
 #include "../control_animation_base.h"
@@ -15,7 +16,7 @@
 #include "../states/monster_state_hear_danger_sound.h"
 #include "../states/monster_state_hitted.h"
 
-#include "../../../entitycondition.h"
+#include "../../../EntityCondition.h"
 
 CStateManagerFracture::CStateManagerFracture(CFracture* obj) : inherited(obj)
 {
@@ -27,7 +28,7 @@ CStateManagerFracture::CStateManagerFracture(CFracture* obj) : inherited(obj)
     add_state(eStateHitted, xr_new<CStateMonsterHitted<CFracture>>(obj));
 }
 
-CStateManagerFracture::~CStateManagerFracture() {}
+CStateManagerFracture::~CStateManagerFracture() = default;
 
 void CStateManagerFracture::execute()
 {

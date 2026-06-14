@@ -1,10 +1,11 @@
 #include "stdafx.h"
 
-#include "nogravityzone.h"
-#include "physicsshell.h"
+#include "NoGravityZone.h"
+
+#include "PhysicsShell.h"
 #include "entity_alive.h"
 #include "PHMovementControl.h"
-#include "PhWorld.h"
+#include "PHWorld.h"
 #include "CharacterPhysicsSupport.h"
 
 extern CPHWorld* ph_world;
@@ -44,7 +45,8 @@ void CNoGravityZone::switchGravity(SZoneObjectInfo& io, bool val)
             CPhysicsElement* e = shell->get_ElementByStoreOrder(u16(Random.randI(0, shell->get_ElementsNumber())));
             if (e->isActive())
             {
-                e->applyImpulseTrace(Fvector().random_point(e->getRadius()), Fvector().random_dir(), shell->getMass() * ph_world->Gravity() * fixed_step, e->m_SelfID);
+                e->applyImpulseTrace(Fvector().random_point(e->getRadius()), Fvector().random_dir(), shell->getMass() * ph_world->Gravity() * fixed_step,
+                                     e->m_SelfID);
             }
         }
         // shell->SetAirResistance(0.f,0.f);

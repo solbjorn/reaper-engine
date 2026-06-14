@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "stalker_danger_grenade_actions.h"
+
 #include "ai/stalker/ai_stalker.h"
 #include "script_game_object.h"
 #include "stalker_movement_manager.h"
@@ -22,8 +23,8 @@
 #include "cover_point.h"
 #include "agent_manager.h"
 #include "agent_member_manager.h"
-#include "inventory.h"
-#include "weapon.h"
+#include "Inventory.h"
+#include "Weapon.h"
 
 using namespace StalkerDecisionSpace;
 
@@ -115,7 +116,9 @@ void CStalkerActionDangerGrenadeTakeCover::finalize() { inherited::finalize(); }
 // CStalkerActionDangerGrenadeWaitForExplosion
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDangerGrenadeWaitForExplosion::CStalkerActionDangerGrenadeWaitForExplosion(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
+CStalkerActionDangerGrenadeWaitForExplosion::CStalkerActionDangerGrenadeWaitForExplosion(CAI_Stalker* object, LPCSTR action_name)
+    : inherited{object, action_name}
+{}
 
 void CStalkerActionDangerGrenadeWaitForExplosion::initialize()
 {
@@ -148,7 +151,9 @@ void CStalkerActionDangerGrenadeWaitForExplosion::finalize() { inherited::finali
 // CStalkerActionDangerGrenadeTakeCoverAfterExplosion
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDangerGrenadeTakeCoverAfterExplosion::CStalkerActionDangerGrenadeTakeCoverAfterExplosion(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
+CStalkerActionDangerGrenadeTakeCoverAfterExplosion::CStalkerActionDangerGrenadeTakeCoverAfterExplosion(CAI_Stalker* object, LPCSTR action_name)
+    : inherited{object, action_name}
+{}
 
 void CStalkerActionDangerGrenadeTakeCoverAfterExplosion::initialize()
 {

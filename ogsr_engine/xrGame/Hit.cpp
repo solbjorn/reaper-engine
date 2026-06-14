@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
-#include "hit.h"
+#include "Hit.h"
 
 #include "ode_include.h"
-#include "../xr_3da/NET_Server_Trash/net_utils.h"
+#include "../xr_3da/NET_Server_Trash/NET_utils.h"
 #include "xrMessages.h"
 #include "Level.h"
 

@@ -11,8 +11,8 @@
 #include "server_entity_wrapper.h"
 
 #include "xrServer_Objects.h"
-#include "xrmessages.h"
-#include "../../xr_3da/NET_Server_Trash/net_utils.h"
+#include "xrMessages.h"
+#include "../../xr_3da/NET_Server_Trash/NET_utils.h"
 
 struct ISE_Abstract;
 

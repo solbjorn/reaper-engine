@@ -4,7 +4,7 @@
 
 #include "D3DUtils.h"
 
-#include "../../xr_3da/gamefont.h"
+#include "../../xr_3da/GameFont.h"
 #include "du_box.h"
 #include "du_sphere.h"
 #include "du_sphere_part.h"

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "../xrRender/uber_deffer.h"
-#include "Blender_deffer_model.h"
+#include "blender_deffer_model.h"
 
 CBlender_deffer_model::CBlender_deffer_model()
 {
@@ -14,7 +14,8 @@ CBlender_deffer_model::CBlender_deffer_model()
     oAREF.max = 255;
     oBlend.value = FALSE;
 }
-CBlender_deffer_model::~CBlender_deffer_model() {}
+
+CBlender_deffer_model::~CBlender_deffer_model() = default;
 
 void CBlender_deffer_model::Save(IWriter& fs)
 {

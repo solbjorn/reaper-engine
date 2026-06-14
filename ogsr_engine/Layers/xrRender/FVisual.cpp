@@ -5,11 +5,11 @@
 #include "stdafx.h"
 
 #include "../../xr_3da/fmesh.h"
-#include "fvisual.h"
+#include "FVisual.h"
 
 #include "../xrRenderDX10/dx10BufferUtils.h"
 
-#include <Utilities\FlexibleVertexFormat.h>
+#include <Utilities/FlexibleVertexFormat.h>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

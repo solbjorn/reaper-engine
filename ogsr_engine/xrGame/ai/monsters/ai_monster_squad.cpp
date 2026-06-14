@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
 #include "ai_monster_squad.h"
-#include "../../entity.h"
+
+#include "../../Entity.h"
 #include "../../entity_alive.h"
 #include "../../memory_manager.h"
 
@@ -13,7 +14,7 @@ CMonsterSquad::CMonsterSquad()
     m_locked_corpses.reserve(10);
 }
 
-CMonsterSquad::~CMonsterSquad() {}
+CMonsterSquad::~CMonsterSquad() = default;
 
 void CMonsterSquad::RegisterMember(CEntity* pE)
 {
@@ -225,7 +226,10 @@ u8 CMonsterSquad::get_count(const CEntity* object, float radius)
 //////////////////////////////////////////////////////////////////////////
 // Corpses
 //////////////////////////////////////////////////////////////////////////
-bool CMonsterSquad::is_locked_corpse(const CEntityAlive* corpse) { return (std::find(m_locked_corpses.begin(), m_locked_corpses.end(), corpse) != m_locked_corpses.end()); }
+bool CMonsterSquad::is_locked_corpse(const CEntityAlive* corpse)
+{
+    return (std::find(m_locked_corpses.begin(), m_locked_corpses.end(), corpse) != m_locked_corpses.end());
+}
 
 void CMonsterSquad::lock_corpse(const CEntityAlive* corpse) { m_locked_corpses.push_back(corpse); }
 

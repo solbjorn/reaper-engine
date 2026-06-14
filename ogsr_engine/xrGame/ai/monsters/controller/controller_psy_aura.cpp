@@ -3,12 +3,13 @@
 #include "controller_psy_aura.h"
 
 #include "controller.h"
-#include "../../../actor.h"
-#include "../../../level.h"
+#include "../../../Actor.h"
+#include "../../../Level.h"
 #include "../../../CameraEffector.h"
 #include "../../../ActorEffector.h"
 
-CPPEffectorControllerAura::CPPEffectorControllerAura(const SPPInfo& ppi, u32 time_to_fade, const ref_sound& snd_left, const ref_sound& snd_right) : inherited(ppi)
+CPPEffectorControllerAura::CPPEffectorControllerAura(const SPPInfo& ppi, u32 time_to_fade, const ref_sound& snd_left, const ref_sound& snd_right)
+    : inherited(ppi)
 {
     m_time_to_fade = time_to_fade;
     m_effector_state = eStateFadeIn;

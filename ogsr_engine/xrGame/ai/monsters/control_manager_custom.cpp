@@ -1,13 +1,14 @@
 #include "stdafx.h"
 
 #include "control_manager_custom.h"
-#include "BaseMonster/base_monster.h"
+
+#include "basemonster/base_monster.h"
 #include "control_sequencer.h"
 #include "control_run_attack.h"
 #include "control_threaten.h"
 #include "PhysicsShell.h"
 #include "../../detail_path_manager.h"
-#include "../../level.h"
+#include "../../Level.h"
 #include "control_animation_base.h"
 #include "control_critical_wound.h"
 
@@ -451,7 +452,8 @@ bool CControlManagerCustom::check_if_jump_possible(Fvector const& target, bool c
     return m_man->check_start_conditions(ControlCom::eControlJump);
 }
 
-bool CControlManagerCustom::jump_if_possible(const Fvector& target, CEntityAlive* target_object, bool use_direction_to_target, bool use_velocity_bounce, bool check_possibility)
+bool CControlManagerCustom::jump_if_possible(const Fvector& target, CEntityAlive* target_object, bool use_direction_to_target, bool use_velocity_bounce,
+                                             bool check_possibility)
 {
     if (!m_object->check_start_conditions(ControlCom::eControlJump))
         return false;

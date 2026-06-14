@@ -3,9 +3,9 @@
 #include "UICellItem.h"
 
 #include "../xr_level_controller.h"
-#include "..\..\xr_3da\xr_input.h"
+#include "../../xr_3da/xr_input.h"
 #include "../HUDManager.h"
-#include "../level.h"
+#include "../Level.h"
 #include "../object_broker.h"
 #include "UIDragDropListEx.h"
 #include "../WeaponMagazinedWGrenade.h"
@@ -36,7 +36,6 @@ bool CUICellItem::OnMouse(f32, f32, EUIMessages mouse_action)
 {
     if (mouse_action == WINDOW_LBUTTON_DOWN)
     {
-        // GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_LBUTTON_CLICK, NULL );
         GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_SELECTED, nullptr);
         m_mouse_selected_item = this;
 
@@ -433,7 +432,8 @@ void CUICellItem::ColorizeItems(std::initializer_list<CUIDragDropListEx*> args)
     }
     else
     {
-        // Надо подумать, какое условие тут сделать. Аддоны например, могут быть не именно аддонами, а фейк-предметами, например. Лушчше наверно вообще без каких-либо условий.
+        // Надо подумать, какое условие тут сделать. Аддоны например, могут быть не именно аддонами, а фейк-предметами, например. Лушчше наверно вообще без
+        // каких-либо условий.
         ColorizeWeapons(inventoryitem->object().cNameSect());
     }
 }

@@ -1,23 +1,23 @@
 #include "stdafx.h"
 
-#include "pda.h"
+#include "PDA.h"
 
-#include "hudmanager.h"
+#include "HUDManager.h"
 #include "PhysicsShell.h"
 #include "Entity.h"
-#include "actor.h"
+#include "Actor.h"
 
-#include "xrserver.h"
+#include "xrServer.h"
 #include "xrServer_Objects_ALife_Items.h"
-#include "level.h"
+#include "Level.h"
 
 #include "specific_character.h"
 #include "alife_registry_wrappers.h"
 #include "UIGameSP.h"
-#include "ui/UIPDAWnd.h"
+#include "ui/UIPdaWnd.h"
 #include "player_hud.h"
 #include "ai_sounds.h"
-#include "inventory.h"
+#include "Inventory.h"
 
 namespace
 {

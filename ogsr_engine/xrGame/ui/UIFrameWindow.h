@@ -1,8 +1,8 @@
 #pragma once
 
-#include "uiwindow.h"
+#include "UIWindow.h"
 
-#include "../uiframerect.h"
+#include "../UIFrameRect.h"
 
 class CUIStatic;
 

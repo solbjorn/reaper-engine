@@ -1,6 +1,6 @@
 #pragma once
 
-#include "iinputreceiver.h"
+#include "IInputReceiver.h"
 
 extern Flags32 psHUD_Flags;
 

@@ -1,10 +1,10 @@
 #include "stdafx.h"
 
 #include "alife_space.h"
-#include "hit.h"
+#include "Hit.h"
 #include "PHDestroyable.h"
-#include "car.h"
-#include "../xr_3da/NET_Server_Trash/net_utils.h"
+#include "Car.h"
+#include "../xr_3da/NET_Server_Trash/NET_utils.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "MathUtils.h"
 #include "game_object_space.h"
@@ -493,8 +493,8 @@ void CCar::SDoor::GetExitPosition(Fvector& pos)
                add.mul(bb.m_halfsize.y * fsignum(pf.j.y)), abs(pf.k.y), add.set(pf.k); add.mul(bb.m_halfsize.z * fsignum(pf.k.y)));
         pos.sub(add);
 
-        MIN_OF(bb.m_halfsize.x, add1.set(pf.i); add1.mul(bb.m_halfsize.x), bb.m_halfsize.y, add1.set(pf.j); add1.mul(bb.m_halfsize.y), bb.m_halfsize.z, add1.set(pf.k);
-               add1.mul(bb.m_halfsize.z));
+        MIN_OF(bb.m_halfsize.x, add1.set(pf.i); add1.mul(bb.m_halfsize.x), bb.m_halfsize.y, add1.set(pf.j);
+               add1.mul(bb.m_halfsize.y), bb.m_halfsize.z, add1.set(pf.k); add1.mul(bb.m_halfsize.z));
 
         Fvector dir_from_car;
         dir_from_car.sub(pf.c, pcar->Position());

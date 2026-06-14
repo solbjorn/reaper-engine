@@ -12,7 +12,7 @@
 
 #include "space_restriction_manager.h"
 #include "xrServer_Objects_ALife_Monsters.h"
-#include "level.h"
+#include "Level.h"
 #include "ai_space.h"
 #include "level_graph.h"
 #include "space_restriction.h"
@@ -21,9 +21,9 @@
 #include "alife_simulator.h"
 #include "alife_object_registry.h"
 #include "game_graph.h"
-#include "custommonster.h"
+#include "CustomMonster.h"
 
-CRestrictedObject::~CRestrictedObject() {}
+CRestrictedObject::~CRestrictedObject() = default;
 
 template <typename StrType>
 static void construct_string(StrType& result, xr_vector<ALife::_OBJECT_ID>& restrictions, const CSE_ALifeMonsterAbstract* monster)

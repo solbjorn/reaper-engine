@@ -3,20 +3,20 @@
 #include "poltergeist.h"
 
 #include "poltergeist_state_manager.h"
-#include "../../../characterphysicssupport.h"
+#include "../../../CharacterPhysicsSupport.h"
 #include "PHMovementControl.h"
 #include "PhysicsShellHolder.h"
 #include "../../../ai_debug.h"
 #include "poltergeist_movement.h"
 #include "../../../detail_path_manager.h"
 #include "../monster_velocity_space.h"
-#include "../../../level.h"
+#include "../../../Level.h"
 #include "../../../level_debug.h"
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 #include "../control_path_builder_base.h"
 #include "PhysicsShell.h"
-#include "../../../actor.h"
+#include "../../../Actor.h"
 #include "../../../actor_memory.h"
 #include "../../../visual_memory_manager.h"
 #include "ActorEffector.h"
@@ -46,7 +46,8 @@ void CPoltergeist::Load(LPCSTR section)
     anim().accel_chain_add(eAnimWalkFwd, eAnimRun);
 
     invisible_vel.set(pSettings->r_float(section, "Velocity_Invisible_Linear"), pSettings->r_float(section, "Velocity_Invisible_Angular"));
-    movement().detail().add_velocity(MonsterMovement::eVelocityParameterInvisible, CDetailPathManager::STravelParams(invisible_vel.linear, invisible_vel.angular));
+    movement().detail().add_velocity(MonsterMovement::eVelocityParameterInvisible,
+                                     CDetailPathManager::STravelParams(invisible_vel.linear, invisible_vel.angular));
 
     anim().AddReplacedAnim(&m_bDamaged, eAnimWalkFwd, eAnimWalkDamaged);
     anim().AddReplacedAnim(&m_bDamaged, eAnimRun, eAnimRunDamaged);
@@ -105,7 +106,8 @@ void CPoltergeist::Load(LPCSTR section)
     LPCSTR polter_type = pSettings->r_string(section, "type");
 
     m_fly_around_level = READ_IF_EXISTS(pSettings, r_float, section, "detection_fly_around_level", 5.f);
-    m_fly_around_distance = READ_IF_EXISTS(pSettings, r_float, section, "detection_fly_around_distance", std::is_eq(xr_strcmp(polter_type, "flamer")) ? 8.0f : 30.0f);
+    m_fly_around_distance =
+        READ_IF_EXISTS(pSettings, r_float, section, "detection_fly_around_distance", std::is_eq(xr_strcmp(polter_type, "flamer")) ? 8.0f : 30.0f);
 
     m_fly_around_change_direction_time = READ_IF_EXISTS(pSettings, r_float, section, "detection_fly_around_change_direction_time", 5);
 
@@ -201,12 +203,13 @@ void CPoltergeist::update_detection()
     {
         if (!m_detection_pp_type_index)
         {
-            for (m_detection_pp_type_index = (u32)effPoltergeistTeleDetectStartEffect; Actor()->Cameras().GetPPEffector((EEffectorPPType)m_detection_pp_type_index);
-                 ++m_detection_pp_type_index)
+            for (m_detection_pp_type_index = (u32)effPoltergeistTeleDetectStartEffect;
+                 Actor()->Cameras().GetPPEffector((EEffectorPPType)m_detection_pp_type_index); ++m_detection_pp_type_index)
             {
             }
 
-            AddEffector(Actor(), m_detection_pp_type_index, shared_str{m_detection_pp_effector_name}, CallMe::fromMethod<&CPoltergeist::get_post_process_factor>(this));
+            AddEffector(Actor(), m_detection_pp_type_index, shared_str{m_detection_pp_effector_name},
+                        CallMe::fromMethod<&CPoltergeist::get_post_process_factor>(this));
         }
     }
     else if (m_detection_pp_type_index != 0)

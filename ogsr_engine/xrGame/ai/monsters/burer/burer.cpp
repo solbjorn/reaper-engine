@@ -3,12 +3,12 @@
 #include "burer.h"
 
 #include "PhysicsShell.h"
-#include "../../../characterphysicssupport.h"
-#include "../../../actor.h"
+#include "../../../CharacterPhysicsSupport.h"
+#include "../../../Actor.h"
 #include "burer_state_manager.h"
 #include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../../sound_player.h"
-#include "../../../level.h"
+#include "../../../Level.h"
 #include "../../../ai_monster_space.h"
 #include "../../../level_debug.h"
 #include "../monster_velocity_space.h"
@@ -21,7 +21,7 @@
 #include "../../../Inventory.h"
 #include "../../../ActorCondition.h"
 #include "../../../xr_level_controller.h"
-#include "../../../weapon.h"
+#include "../../../Weapon.h"
 
 #include "../control_direction_base.h"
 
@@ -61,8 +61,8 @@ void CBurer::reload(LPCSTR section)
         return;
 
     // add specific sounds
-    sound().add_deferred(pSettings->r_string(section, "sound_gravi_attack"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 2,
-                         u32(MonsterSound::eBaseChannel), eMonsterSoundGraviAttack, get_head_bone_name());
+    sound().add_deferred(pSettings->r_string(section, "sound_gravi_attack"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING,
+                         MonsterSound::eHighPriority + 2, u32(MonsterSound::eBaseChannel), eMonsterSoundGraviAttack, get_head_bone_name());
 
     sound().add_deferred(pSettings->r_string(section, "sound_tele_attack"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 3,
                          u32(MonsterSound::eBaseChannel), eMonsterSoundTeleAttack, get_head_bone_name());
@@ -145,12 +145,14 @@ void CBurer::Load(LPCSTR section)
     anim().AddAnim(eAnimStandIdle, "stand_idle_", -1, &velocity_none, PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
     anim().AddAnim(eAnimStandTurnLeft, "stand_turn_ls_", -1, &velocity_turn, PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
     anim().AddAnim(eAnimStandTurnRight, "stand_turn_rs_", -1, &velocity_turn, PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-    //	anim().AddAnim(eAnimStandDamaged,	"stand_idle_dmg_",		-1, &velocity_none,		PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
+    //	anim().AddAnim(eAnimStandDamaged,	"stand_idle_dmg_",		-1, &velocity_none,		PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l",
+    //"fx_stand_r");
 
     anim().AddAnim(eAnimWalkFwd, "stand_walk_fwd_", -1, &velocity_walk, PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
     // anim().AddAnim(eAnimWalkDamaged,	"stand_walk_fwd_dmg_",	-1, &velocity_walk_dmg,	PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
     anim().AddAnim(eAnimRun, "stand_run_fwd_", -1, &velocity_run, PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-    // anim().AddAnim(eAnimRunDamaged,		"stand_run_dmg_",		-1,	&velocity_run_dmg,	PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
+    // anim().AddAnim(eAnimRunDamaged,		"stand_run_dmg_",		-1,	&velocity_run_dmg,	PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l",
+    // "fx_stand_r");
 
     anim().AddAnim(eAnimAttack, "stand_attack_", -1, &velocity_turn, PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
 
@@ -173,14 +175,16 @@ void CBurer::Load(LPCSTR section)
     pcstr run_anim_tr = READ_IF_EXISTS(pSettings, r_string, section, "run_animation_tr", "stand_run_fwd_" /*"stand_run_fwd_turn_right_"*/);
     anim().AddAnim(eAnimRunTurnRight, run_anim_tr, -1, &velocity_run, PS_STAND);
 
-    // 	anim().AddAnim(eAnimScared,			"stand_scared_",		-1, &velocity_none,		PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-    // 	anim().AddAnim(eAnimSteal,			"stand_steal_",			-1, &velocity_steal,	PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-    // 	anim().AddAnim(eAnimEat,			"sit_eat_",				-1, &velocity_none,		PS_SIT); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
+    // 	anim().AddAnim(eAnimScared,			"stand_scared_",		-1, &velocity_none,		PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l",
+    // "fx_stand_r"); 	anim().AddAnim(eAnimSteal,			"stand_steal_",			-1, &velocity_steal,	PS_STAND); //, 	"fx_stand_f", "fx_stand_b",
+    // "fx_stand_l", "fx_stand_r"); 	anim().AddAnim(eAnimEat,			"sit_eat_",				-1, &velocity_none,		PS_SIT); //, 	"fx_stand_f",
+    // "fx_stand_b", "fx_stand_l", "fx_stand_r");
     //
-    // 	anim().AddAnim(eAnimSitIdle,		"sit_idle_",			-1, &velocity_none,		PS_SIT); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-    // 	anim().AddAnim(eAnimCheckCorpse,	"sit_check_corpse_",	-1, &velocity_none,		PS_SIT); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-    // 	anim().AddAnim(eAnimSitStandUp,		"sit_stand_up_",		-1, &velocity_none,		PS_SIT); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-    // 	anim().AddAnim(eAnimStandSitDown,	"stand_sit_down_",		-1, &velocity_none,		PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
+    // 	anim().AddAnim(eAnimSitIdle,		"sit_idle_",			-1, &velocity_none,		PS_SIT); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l",
+    // "fx_stand_r"); 	anim().AddAnim(eAnimCheckCorpse,	"sit_check_corpse_",	-1, &velocity_none,		PS_SIT); //, 	"fx_stand_f", "fx_stand_b",
+    // "fx_stand_l", "fx_stand_r"); 	anim().AddAnim(eAnimSitStandUp,		"sit_stand_up_",		-1, &velocity_none,		PS_SIT); //, 	"fx_stand_f",
+    // "fx_stand_b", "fx_stand_l", "fx_stand_r"); 	anim().AddAnim(eAnimStandSitDown,	"stand_sit_down_",		-1, &velocity_none,		PS_STAND); //, "fx_stand_f",
+    // "fx_stand_b", "fx_stand_l", "fx_stand_r");
 
     //	anim().AddTransition(PS_SIT,		PS_STAND,		eAnimSitStandUp,	false);
     //	anim().AddTransition(PS_STAND,		PS_SIT,			eAnimStandSitDown,	false);
@@ -361,8 +365,8 @@ void CBurer::UpdateGraviObject()
         CPhysicsShellHolder* obj = smart_cast<CPhysicsShellHolder*>(m_nearest[i]);
         if (!obj || !obj->m_pPhysicsShell || (obj->spawn_ini() && obj->spawn_ini()->section_exist("ph_heavy")) ||
             (pSettings->line_exist(obj->cNameSect().c_str(), "ph_heavy") && pSettings->r_bool(obj->cNameSect().c_str(), "ph_heavy")) ||
-            (pSettings->line_exist(obj->cNameSect().c_str(), "quest_item") && pSettings->r_bool(obj->cNameSect().c_str(), "quest_item")) || obj->hasFixedBones() ||
-            !obj->m_pPhysicsShell->get_ApplyByGravity())
+            (pSettings->line_exist(obj->cNameSect().c_str(), "quest_item") && pSettings->r_bool(obj->cNameSect().c_str(), "quest_item")) ||
+            obj->hasFixedBones() || !obj->m_pPhysicsShell->get_ApplyByGravity())
             continue;
 
         Fvector dir;

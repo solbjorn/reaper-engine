@@ -5,7 +5,7 @@
 #ifndef D3DUtilsH
 #define D3DUtilsH
 
-#include "..\..\Include\xrRender\DrawUtils.h"
+#include "../../Include/xrRender/DrawUtils.h"
 //----------------------------------------------------
 
 #define DU_DRAW_DIP RCache.dbg_DIP

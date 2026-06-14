@@ -3,7 +3,7 @@
 #include "PHMovementControl.h"
 
 #include "alife_space.h"
-#include "entity.h"
+#include "Entity.h"
 #include "PHDynamicData.h"
 #include "Physics.h"
 #include "PHAICharacter.h"

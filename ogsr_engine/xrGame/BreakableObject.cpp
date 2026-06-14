@@ -2,12 +2,12 @@
 
 #include "BreakableObject.h"
 
-#include "xrserver_objects_alife.h"
+#include "xrServer_Objects_ALife.h"
 #include "PHStaticGeomShell.h"
 #include "PhysicsShell.h"
 #include "Physics.h"
 #include "../xr_3da/xr_collide_form.h"
-#include "../xr_3da/NET_Server_Trash/net_utils.h"
+#include "../xr_3da/NET_Server_Trash/NET_utils.h"
 #include "clsid_game.h"
 #include "../Include/xrRender/Kinematics.h"
 

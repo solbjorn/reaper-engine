@@ -2,7 +2,7 @@
 
 #include "energy_holder.h"
 
-#include "../../gameobject.h"
+#include "../../GameObject.h"
 
 CEnergyHolder::CEnergyHolder()
 {
@@ -11,7 +11,7 @@ CEnergyHolder::CEnergyHolder()
     m_enable = true;
 }
 
-CEnergyHolder::~CEnergyHolder() {}
+CEnergyHolder::~CEnergyHolder() = default;
 
 void CEnergyHolder::reinit()
 {

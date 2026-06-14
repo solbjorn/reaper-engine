@@ -12,11 +12,11 @@
 #include "script_export_space.h"
 #include "xr_time.h"
 #include "character_info_defs.h"
-#include "..\xr_3da\CameraBase.h"
+#include "../xr_3da/CameraBase.h"
 #include "ui/UIStatic.h"
 #include "../COMMON_AI/PATH/patrol_path.h"
 
-#include "gameobject.h"
+#include "GameObject.h"
 #include "ai_space.h"
 #include "script_engine.h"
 
@@ -120,11 +120,12 @@ class CActionBase;
 template <typename _object_type>
 class CPropertyEvaluator;
 
-template <typename _object_type, bool _reverse_search, typename _world_operator, typename _condition_evaluator, typename _world_operator_ptr, typename _condition_evaluator_ptr>
+template <typename _object_type, bool _reverse_search, typename _world_operator, typename _condition_evaluator, typename _world_operator_ptr,
+          typename _condition_evaluator_ptr>
 class CActionPlanner;
 
-using CScriptActionPlanner = CActionPlanner<CScriptGameObject, false, CActionBase<CScriptGameObject>, CPropertyEvaluator<CScriptGameObject>, CActionBase<CScriptGameObject>*,
-                                            CPropertyEvaluator<CScriptGameObject>*>;
+using CScriptActionPlanner = CActionPlanner<CScriptGameObject, false, CActionBase<CScriptGameObject>, CPropertyEvaluator<CScriptGameObject>,
+                                            CActionBase<CScriptGameObject>*, CPropertyEvaluator<CScriptGameObject>*>;
 
 namespace SightManager
 {
@@ -493,7 +494,8 @@ public:
     void set_desired_position(const Fvector* desired_position);
     void set_desired_direction();
     void set_desired_direction(const Fvector* desired_direction);
-    void set_patrol_path(LPCSTR path_name, const PatrolPathManager::EPatrolStartType patrol_start_type, const PatrolPathManager::EPatrolRouteType patrol_route_type, bool random);
+    void set_patrol_path(LPCSTR path_name, const PatrolPathManager::EPatrolStartType patrol_start_type,
+                         const PatrolPathManager::EPatrolRouteType patrol_route_type, bool random);
     void set_dest_level_vertex_id(u32 level_vertex_id);
     u32 level_vertex_id() const;
     float level_vertex_light(const u32& level_vertex_id) const;
@@ -518,17 +520,18 @@ public:
     void remove_memory_object(CScriptGameObject*);
     int active_sound_count();
     int active_sound_count(bool only_playing);
-    [[nodiscard]] const CCoverPoint* best_cover(const Fvector& position, const Fvector& enemy_position, f32 radius, f32 min_enemy_distance, f32 max_enemy_distance,
-                                                sol::function callback);
-    [[nodiscard]] const CCoverPoint* best_cover(const Fvector& position, const Fvector& enemy_position, f32 radius, f32 min_enemy_distance, f32 max_enemy_distance);
+    [[nodiscard]] const CCoverPoint* best_cover(const Fvector& position, const Fvector& enemy_position, f32 radius, f32 min_enemy_distance,
+                                                f32 max_enemy_distance, sol::function callback);
+    [[nodiscard]] const CCoverPoint* best_cover(const Fvector& position, const Fvector& enemy_position, f32 radius, f32 min_enemy_distance,
+                                                f32 max_enemy_distance);
     [[nodiscard]] const CCoverPoint* safe_cover(const Fvector& position, f32 radius, f32 min_distance, sol::function callback);
     [[nodiscard]] const CCoverPoint* safe_cover(const Fvector& position, f32 radius, f32 min_distance);
     [[nodiscard]] const CCoverPoint* ambush_cover(const Fvector& position, const Fvector& enemy_position, f32 radius, f32 min_distance, sol::function callback);
     [[nodiscard]] const CCoverPoint* ambush_cover(const Fvector& position, const Fvector& enemy_position, f32 radius, f32 min_distance);
-    [[nodiscard]] const CCoverPoint* angle_cover(const Fvector& position, f32 radius, const Fvector& enemy_position, f32 min_enemy_distance, f32 max_enemy_distance,
-                                                 u32 enemy_vertex_id, sol::function callback);
-    [[nodiscard]] const CCoverPoint* angle_cover(const Fvector& position, f32 radius, const Fvector& enemy_position, f32 min_enemy_distance, f32 max_enemy_distance,
-                                                 u32 enemy_vertex_id);
+    [[nodiscard]] const CCoverPoint* angle_cover(const Fvector& position, f32 radius, const Fvector& enemy_position, f32 min_enemy_distance,
+                                                 f32 max_enemy_distance, u32 enemy_vertex_id, sol::function callback);
+    [[nodiscard]] const CCoverPoint* angle_cover(const Fvector& position, f32 radius, const Fvector& enemy_position, f32 min_enemy_distance,
+                                                 f32 max_enemy_distance, u32 enemy_vertex_id);
     [[nodiscard]] CInifile* spawn_ini() const;
     [[nodiscard]] bool active_zone_contact(u16 id);
 

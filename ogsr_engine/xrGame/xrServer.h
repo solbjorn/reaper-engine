@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "../xr_3da/NET_Server_Trash/net_server.h"
+#include "../xr_3da/NET_Server_Trash/NET_Server.h"
 #include "game_sv_base.h"
 #include "id_generator.h"
 

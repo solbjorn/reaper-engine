@@ -7,10 +7,12 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "actor_memory.h"
-#include "actor.h"
-#include "../xr_3da/camerabase.h"
-#include "gamepersistent.h"
+
+#include "Actor.h"
+#include "../xr_3da/CameraBase.h"
+#include "GamePersistent.h"
 
 CActorMemory::CActorMemory(CActor* actor) : inherited(actor, 100), m_actor(actor) { VERIFY(m_actor); }
 
@@ -23,7 +25,8 @@ BOOL CActorMemory::feel_vision_isRelevant(CObject* O)
     return (TRUE);
 }
 
-void CActorMemory::camera(Fvector& position, Fvector& direction, Fvector& normal, float& field_of_view, float& aspect_ratio, float& near_plane, float& far_plane)
+void CActorMemory::camera(Fvector& position, Fvector& direction, Fvector& normal, float& field_of_view, float& aspect_ratio, float& near_plane,
+                          float& far_plane)
 {
     CCameraBase& camera = *m_actor->cam_Active();
     camera.Get(position, direction, normal);

@@ -1,11 +1,15 @@
 #ifndef R_BACKEND_RUNTIMEH
 #define R_BACKEND_RUNTIMEH
 
-#include "sh_texture.h"
-#include "sh_rt.h"
+#include "SH_Texture.h"
+#include "SH_RT.h"
 
 #include "../xrRenderDX10/dx10R_Backend_Runtime.h"
 #include "../xrRenderDX10/StateManager/dx10State.h"
+
+// Works and avoids storing 6 redundant self-references inside CBackend (in embedded structures), safe to ignore.
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Winvalid-offsetof");
 
 ICF CBackend& R_hemi::cmd_list()
 {
@@ -48,6 +52,8 @@ ICF CBackend& dx10StateManager::cmd_list()
     char* pos = reinterpret_cast<char*>(this) - offsetof(CBackend, StateManager);
     return *reinterpret_cast<CBackend*>(pos);
 }
+
+XR_DIAG_POP();
 
 IC void R_xforms::set_c_w(R_constant* C)
 {

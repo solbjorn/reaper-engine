@@ -1,7 +1,7 @@
 #pragma once
 
 #include "inventory_item_object.h"
-#include "..\xr_3da\feel_touch.h"
+#include "../xr_3da/Feel_Touch.h"
 #include "HudSound.h"
 #include "CustomZone.h"
 #include "Artifact.h"

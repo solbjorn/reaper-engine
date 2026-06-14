@@ -6,7 +6,7 @@
 
 #include "ParticlesPlayer.h"
 
-#include "..\xr_3da\xr_object.h"
+#include "../xr_3da/xr_object.h"
 #include "../Include/xrRender/Kinematics.h"
 
 //-------------------------------------------------------------------------------------

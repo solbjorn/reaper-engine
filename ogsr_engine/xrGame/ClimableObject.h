@@ -1,6 +1,6 @@
 #pragma once
 
-#include "physicsshellholder.h"
+#include "PhysicsShellHolder.h"
 
 class CPHLeaderGeomShell;
 class CPHCharacter;

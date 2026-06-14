@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIDiaryWnd.h"
+
 #include "UIFrameWindow.h"
 #include "UIFrameLineWnd.h"
 #include "UINewsWnd.h"
@@ -12,8 +13,8 @@
 #include "UIListWnd.h"
 #include "UITreeViewItem.h"
 #include "UIEncyclopediaArticleWnd.h"
-#include "../level.h"
-#include "../actor.h"
+#include "../Level.h"
+#include "../Actor.h"
 #include "../alife_registry_wrappers.h"
 #include "../encyclopedia_article.h"
 #include "UIPdaAux.h"
@@ -203,8 +204,8 @@ void CUIDiaryWnd::OnSrcListItemClicked(CUIWindow*, void* p)
         {
             if (Actor()->encyclopedia_registry->registry().objects_ptr())
             {
-                for (ARTICLE_VECTOR::iterator it = Actor()->encyclopedia_registry->registry().objects().begin(); it != Actor()->encyclopedia_registry->registry().objects().end();
-                     it++)
+                for (ARTICLE_VECTOR::iterator it = Actor()->encyclopedia_registry->registry().objects().begin();
+                     it != Actor()->encyclopedia_registry->registry().objects().end(); it++)
                 {
                     if (ARTICLE_DATA::eJournalArticle == it->article_type && m_ArticlesDB[pSelItem->GetValue()]->Id() == it->article_id)
                     {
@@ -284,8 +285,8 @@ void CUIDiaryWnd::UpdateJournal()
                 auto& a = m_ArticlesDB.emplace_back(std::make_unique<CEncyclopediaArticle>());
                 a->Load(it->article_id);
                 bool bReaded = it->readed;
-                CreateTreeBranch(a->data()->group, a->data()->name, m_SrcListWnd, m_ArticlesDB.size() - 1, m_pTreeRootFont, m_uTreeRootColor, m_pTreeItemFont, m_uTreeItemColor,
-                                 bReaded);
+                CreateTreeBranch(a->data()->group, a->data()->name, m_SrcListWnd, m_ArticlesDB.size() - 1, m_pTreeRootFont, m_uTreeRootColor, m_pTreeItemFont,
+                                 m_uTreeItemColor, bReaded);
             }
         }
 

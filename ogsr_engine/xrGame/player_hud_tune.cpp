@@ -2,10 +2,10 @@
 
 #include "player_hud.h"
 
-#include "level.h"
+#include "Level.h"
 #include "debug_renderer.h"
 #include "../xr_3da/xr_input.h"
-#include "HudManager.h"
+#include "HUDManager.h"
 #include "HudItem.h"
 #include "Weapon.h"
 

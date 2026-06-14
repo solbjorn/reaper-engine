@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../../xr_3da/render.h"
-#include "../../xrcdb/ispatial.h"
+#include "../../xr_3da/Render.h"
+#include "../../xrCDB/ISpatial.h"
+
 #include "r__dsgraph_types.h"
 #include "r__sector.h"
 

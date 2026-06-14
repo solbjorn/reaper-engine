@@ -1,9 +1,11 @@
 #include "stdafx.h"
+
 #include "control_path_builder_base.h"
+
 #include "cover_point.h"
 #include "../../cover_manager.h"
 #include "../../cover_evaluators.h"
-#include "BaseMonster/base_monster.h"
+#include "basemonster/base_monster.h"
 #include "../../detail_path_manager.h"
 #include "../../level_location_selector.h"
 #include "../../level_path_manager.h"
@@ -17,6 +19,7 @@ bool CControlPathBuilderBase::target_point_need_update()
 {
     if ((m_state & eStatePathFailed) == eStatePathFailed)
         return true;
+
     else if (m_state == eStatePathValid)
     {
         // если путь ещё не завершен
@@ -175,7 +178,8 @@ void CControlPathBuilderBase::find_node()
 {
     // нода в прямой видимости?
     m_man->path_builder().restrictions().add_border(m_object->Position(), m_target_found.position());
-    m_target_found.set_node(ai().level_graph().check_position_in_direction(m_object->ai_location().level_vertex_id(), m_object->Position(), m_target_found.position()));
+    m_target_found.set_node(
+        ai().level_graph().check_position_in_direction(m_object->ai_location().level_vertex_id(), m_object->Position(), m_target_found.position()));
     m_man->path_builder().restrictions().remove_border();
 
     if (ai().level_graph().valid_vertex_id(m_target_found.node()) && m_man->path_builder().accessible(m_target_found.node()))

@@ -19,7 +19,7 @@
 #include "level_path_manager.h"
 #include "detail_path_manager.h"
 #include "ai_object_location.h"
-#include "custommonster.h"
+#include "CustomMonster.h"
 #include "level_path_builder.h"
 #include "detail_path_builder.h"
 #include "mt_config.h"
@@ -44,10 +44,6 @@ void CMovementManager::process_game_path()
             break;
 
         m_path_state = ePathStateBuildGamePath;
-
-        //				if (time_over())
-        //					break;
-
         [[fallthrough]];
     }
     case ePathStateBuildGamePath: {

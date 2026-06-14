@@ -1,7 +1,7 @@
 #pragma once
 
-#include "weaponpistol.h"
-#include "rocketlauncher.h"
+#include "WeaponPistol.h"
+#include "RocketLauncher.h"
 #include "script_export_space.h"
 
 class CWeaponRPG7 : public CWeaponCustomPistol, public CRocketLauncher

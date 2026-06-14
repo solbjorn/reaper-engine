@@ -6,12 +6,12 @@
 
 #include "entity_alive.h"
 #include "script_entity.h"
-#include "..\xr_3da\feel_vision.h"
-#include "..\xr_3da\feel_sound.h"
-#include "..\xr_3da\feel_touch.h"
-#include "..\Include/xrRender/KinematicsAnimated.h"
+#include "../xr_3da/Feel_Vision.h"
+#include "../xr_3da/Feel_Sound.h"
+#include "../xr_3da/Feel_Touch.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 #include "associative_vector.h"
-#include "ai\monsters\anomaly_detector.h"
+#include "ai/monsters/anomaly_detector.h"
 
 namespace MonsterSpace
 {
@@ -331,4 +331,4 @@ XR_SOL_BASE_CLASSES(CCustomMonster);
 // console_commands.cpp
 extern int g_AI_inactive_time;
 
-#include "custommonster_inline.h"
+#include "CustomMonster_inline.h"

@@ -4,7 +4,7 @@
 #include "../../xr_3da/SkeletonMotions.h"
 #include "animation_blend.h"
 
-#include "../../layers/xrrender/KinematicAnimatedDefs.h"
+#include "../../Layers/xrRender/KinematicAnimatedDefs.h"
 #include "../../Layers/xrRender/KinematicsAddBoneTransform.h"
 
 class IKinematics;

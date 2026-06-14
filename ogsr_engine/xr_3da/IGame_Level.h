@@ -4,8 +4,7 @@
 #include "../xrCDB/xr_area.h"
 #include "../xrSound/Sound.h"
 #include "EventAPI.h"
-#include "iinputreceiver.h"
-// #include "CameraManager.h"
+#include "IInputReceiver.h"
 #include "xr_object_list.h"
 
 // refs

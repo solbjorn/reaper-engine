@@ -1,10 +1,10 @@
 #include "stdafx.h"
 
-#include "xrserver.h"
+#include "xrServer.h"
 
-#include "xrmessages.h"
-#include "hudmanager.h"
-#include "xrserver_objects.h"
+#include "xrMessages.h"
+#include "HUDManager.h"
+#include "xrServer_Objects.h"
 #include "Level.h"
 
 namespace

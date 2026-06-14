@@ -3,7 +3,7 @@
 ///////////////////////////Implemetation//for//CPhysicsElement//////////////////
 
 #include "Geometry.h"
-#include "phdefs.h"
+#include "PHDefs.h"
 #include "PhysicsCommon.h"
 #include "PHSynchronize.h"
 #include "PHDisabling.h"

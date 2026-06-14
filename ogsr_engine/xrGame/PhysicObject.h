@@ -1,8 +1,8 @@
 #pragma once
 
-#include "gameobject.h"
-#include "physicsshellholder.h"
-#include "physicsskeletonobject.h"
+#include "GameObject.h"
+#include "PhysicsShellHolder.h"
+#include "PhysicsSkeletonObject.h"
 #include "PHSkeleton.h"
 #include "script_export_space.h"
 

@@ -12,8 +12,8 @@
 #include "ai/stalker/ai_stalker.h"
 #include "inventory_item.h"
 #include "script_game_object.h"
-#include "inventory.h"
-#include "weaponmagazined.h"
+#include "Inventory.h"
+#include "WeaponMagazined.h"
 #include "movement_manager_space.h"
 #include "detail_path_manager_space.h"
 #include "memory_manager.h"
@@ -56,7 +56,8 @@ void CStalkerActionNoALife::initialize()
     object().sight().setup(CSightAction(SightManager::eSightTypeCover, false, true));
 
     m_stop_weapon_handling_time = Device.dwTimeGlobal;
-    if (object().inventory().ActiveItem() && object().best_weapon() && (object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
+    if (object().inventory().ActiveItem() && object().best_weapon() &&
+        (object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
         m_stop_weapon_handling_time += xr::random_u32(30000, 60000);
 
 #else

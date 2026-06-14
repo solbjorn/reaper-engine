@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../control_combase.h"
-#include "../../../../Include\xrRender\Kinematics.h"
+#include "../../../../Include/xrRender/Kinematics.h"
 #include "../../../../xr_3da/bone.h"
 
 class CControllerPsyHit : public CControl_ComCustom<>

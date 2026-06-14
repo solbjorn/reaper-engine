@@ -10,12 +10,12 @@
 
 #include "stdafx.h"
 
-#include "gravizone.h"
+#include "GraviZone.h"
 
 #include "PhysicsShell.h"
 #include "entity_alive.h"
-#include "phmovementcontrol.h"
-#include "xrmessages.h"
+#include "PHMovementControl.h"
+#include "xrMessages.h"
 #include "PhysicsShellHolder.h"
 #include "Level.h"
 #include "CharacterPhysicsSupport.h"

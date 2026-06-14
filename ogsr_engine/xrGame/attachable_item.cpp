@@ -10,9 +10,9 @@
 
 #include "attachable_item.h"
 
-#include "physicsshellholder.h"
-#include "inventoryowner.h"
-#include "inventory.h"
+#include "PhysicsShellHolder.h"
+#include "InventoryOwner.h"
+#include "Inventory.h"
 #include "../xr_3da/xr_input.h"
 #include "HUDManager.h"
 
@@ -44,7 +44,6 @@ void CAttachableItem::reload(LPCSTR section)
     m_offset.setHPB(VPUSH(angle_offset));
     m_offset.c = position_offset;
     m_bone_name._set(pSettings->r_string(section, "attach_bone_name"));
-    //	enable							(m_auto_attach = !!(READ_IF_EXISTS(pSettings,r_bool,section,"auto_attach",TRUE)));
     enable(false);
 
 #ifdef DEBUG

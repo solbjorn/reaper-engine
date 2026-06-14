@@ -4,17 +4,17 @@
 
 #pragma once
 
-#include "..\xr_3da\igame_level.h"
-#include "../xr_3da/NET_Server_Trash/net_client.h"
+#include "../xr_3da/IGame_Level.h"
+#include "../xr_3da/NET_Server_Trash/NET_Client.h"
 #include "script_export_space.h"
-#include "..\xr_3da\StatGraph.h"
+#include "../xr_3da/StatGraph.h"
 #include "xrMessages.h"
 #include "alife_space.h"
 #include "xrDebug.h"
 #include "xrServer.h"
 #include "xr_level_controller.h"
 
-#include "../xr_3da/feel_touch.h"
+#include "../xr_3da/Feel_Touch.h"
 
 class CHUDManager;
 class CParticlesObject;

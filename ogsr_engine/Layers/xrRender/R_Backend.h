@@ -2,19 +2,19 @@
 #define r_backendH
 
 #include "LightTrack.h"
-#include "r_DStreams.h"
+#include "R_DStreams.h"
 #include "r_constants_cache.h"
-#include "r_backend_xform.h"
-#include "r_backend_hemi.h"
-#include "r_backend_tree.h"
+#include "R_Backend_xform.h"
+#include "R_Backend_hemi.h"
+#include "R_Backend_tree.h"
 
 #include "../xrRenderDX10/StateManager/dx10ShaderResourceStateCache.h"
 #include "../xrRenderDX10/StateManager/dx10StateManager.h"
 
-#include "../xrRenderPC_R4/r_backend_lod.h"
+#include "../xrRenderPC_R4/R_Backend_LOD.h"
 #include "../xrRenderPC_R4/SMAP_Allocator.h"
 
-#include "fvf.h"
+#include "FVF.h"
 
 constexpr inline u32 CULL_CCW{D3DCULL_CCW};
 constexpr inline u32 CULL_CW{D3DCULL_CW};

@@ -2,20 +2,20 @@
 
 #include "controller_psy_hit.h"
 
-#include "../BaseMonster/base_monster.h"
+#include "../basemonster/base_monster.h"
 #include "controller.h"
 #include "../control_animation_base.h"
 #include "../control_direction_base.h"
 #include "../control_movement_base.h"
-#include "../../../level.h"
-#include "../../../actor.h"
+#include "../../../Level.h"
+#include "../../../Actor.h"
 #include "../../../ActorEffector.h"
 #include "../../../../xr_3da/CameraBase.h"
 #include "../../../CharacterPhysicsSupport.h"
 #include "../../../level_debug.h"
 #include "../../../ActorCondition.h"
-#include "../../../HudManager.h"
-#include "../../../inventory.h"
+#include "../../../HUDManager.h"
+#include "../../../Inventory.h"
 
 void CControllerPsyHit::load(LPCSTR section)
 {

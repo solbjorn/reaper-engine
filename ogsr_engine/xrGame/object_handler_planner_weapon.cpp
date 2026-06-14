@@ -12,7 +12,7 @@
 #include "object_property_evaluators.h"
 #include "object_actions.h"
 #include "object_handler_space.h"
-#include "weapon.h"
+#include "Weapon.h"
 #include "object_handler_planner_impl.h"
 #include "ai/stalker/ai_stalker.h"
 
@@ -21,8 +21,8 @@ using namespace ObjectHandlerSpace;
 void CObjectHandlerPlanner::add_evaluators(CWeapon* weapon)
 {
     u16 id = weapon->ID();
+
     // dynamic state properties
-    //.	add_evaluator		(uid(id,eWorldPropertyHidden)		,xr_new<CObjectPropertyEvaluatorState>(weapon,m_object,CWeapon::eHidden));
     add_evaluator(uid(id, eWorldPropertyHidden), xr_new<CObjectPropertyEvaluatorWeaponHidden>(weapon, m_object));
 
     // dynamic member properties

@@ -2,14 +2,14 @@
 
 #include "poltergeist.h"
 
-#include "xrmessages.h"
+#include "xrMessages.h"
 #include "../../../ai_object_location.h"
 #include "level_graph.h"
-#include "../../../level.h"
+#include "../../../Level.h"
 #include "../../../ai_space.h"
 #include "../../../restricted_object.h"
-#include "../../../actor.h"
-#include "../../../actorEffector.h"
+#include "../../../Actor.h"
+#include "../../../ActorEffector.h"
 #include "../ai_monster_effector.h"
 
 CPolterFlame::CPolterFlame(CPoltergeist* polter) : inherited{polter} {}

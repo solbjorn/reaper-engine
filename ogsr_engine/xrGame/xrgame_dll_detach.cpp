@@ -10,7 +10,7 @@
 #include "ui/UIInventoryUtilities.h"
 #include "ui/UILine.h"
 #include "ui/UIWpnParams.h"
-#include "UI/UIXmlInit.h"
+#include "ui/UIXmlInit.h"
 
 #include "InfoPortion.h"
 #include "PhraseDialog.h"

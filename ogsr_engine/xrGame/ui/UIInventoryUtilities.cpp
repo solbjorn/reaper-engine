@@ -16,7 +16,7 @@
 
 #include "../InfoPortion.h"
 #include "../game_base_space.h"
-#include "../actor.h"
+#include "../Actor.h"
 
 #define EQUIPMENT_ICONS "ui\\ui_icon_equipment"
 

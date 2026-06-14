@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "weaponwalther.h"
+#include "WeaponWalther.h"
 
 CWeaponWalther::CWeaponWalther() : CWeaponPistol{}
 {

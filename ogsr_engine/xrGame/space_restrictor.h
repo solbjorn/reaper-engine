@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include "gameobject.h"
+#include "GameObject.h"
 #include "restriction_space.h"
-#include "..\xr_3da\feel_touch.h"
+#include "../xr_3da/Feel_Touch.h"
 
 class CSpaceRestrictor : public CGameObject, public Feel::Touch
 {

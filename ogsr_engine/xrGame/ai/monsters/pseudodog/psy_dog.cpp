@@ -2,23 +2,23 @@
 
 #include "psy_dog.h"
 
-#include "Level_graph.h"
+#include "level_graph.h"
 #include "../../../ai_space.h"
 #include "../../../alife_simulator.h"
 #include "xrServer_Object_Base.h"
-#include "../../../xrserver.h"
+#include "../../../xrServer.h"
 #include "../../../ai_object_location.h"
-#include "../../../level.h"
+#include "../../../Level.h"
 #include "../control_movement_base.h"
 #include "../monster_velocity_space.h"
 #include "../../../restricted_object.h"
-#include "../../../actor.h"
+#include "../../../Actor.h"
 #include "../ai_monster_effector.h"
 #include "../../../ActorEffector.h"
 #include "psy_dog_aura.h"
 #include "psy_dog_state_manager.h"
 #include "../../../alife_object_registry.h"
-#include "xrServer_Objects_Alife_Monsters.h"
+#include "xrServer_Objects_ALife_Monsters.h"
 
 CPsyDog::CPsyDog()
 {
@@ -26,6 +26,7 @@ CPsyDog::CPsyDog()
     m_max_phantoms_count = NULL;
     m_phantoms_die_time = nullptr;
 }
+
 CPsyDog::~CPsyDog()
 {
     xr_delete(m_aura);

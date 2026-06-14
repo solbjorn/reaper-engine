@@ -2,7 +2,7 @@
 
 #include "dxRainRender.h"
 
-#include "../../xr_3da/iGame_persistent.h"
+#include "../../xr_3da/IGame_Persistent.h"
 #include "../../xr_3da/perlin.h"
 #include "../../xr_3da/Rain.h"
 
@@ -155,7 +155,8 @@ void dxRainRender::Render(CEffect_Rain& owner)
         u32 v_offset, i_offset;
         u32 vCount_Lock = particles_cache * DM_Drop->number_vertices;
         u32 iCount_Lock = particles_cache * DM_Drop->number_indices;
-        IRender_DetailModel::fvfVertexOut* v_ptr = (IRender_DetailModel::fvfVertexOut*)RImplementation.Vertex.Lock(vCount_Lock, hGeom_Drops->vb_stride, v_offset);
+        IRender_DetailModel::fvfVertexOut* v_ptr =
+            (IRender_DetailModel::fvfVertexOut*)RImplementation.Vertex.Lock(vCount_Lock, hGeom_Drops->vb_stride, v_offset);
         u16* i_ptr = _IS.Lock(iCount_Lock, i_offset);
         while (P)
         {

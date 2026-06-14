@@ -10,7 +10,7 @@
 
 #include "vision_client.h"
 
-#include "entity.h"
+#include "Entity.h"
 #include "visual_memory_manager.h"
 
 IC const CEntity& vision_client::object() const

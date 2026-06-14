@@ -1,6 +1,6 @@
 #pragma once
 
-#include "uibutton.h"
+#include "UIButton.h"
 
 class CUIScrollBox : public CUIStatic
 {

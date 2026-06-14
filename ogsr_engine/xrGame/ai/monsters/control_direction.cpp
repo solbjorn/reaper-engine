@@ -1,6 +1,8 @@
 #include "stdafx.h"
+
 #include "control_direction.h"
-#include "BaseMonster/base_monster.h"
+
+#include "basemonster/base_monster.h"
 #include "control_manager.h"
 
 #include "../../detail_path_manager.h"
@@ -104,10 +106,12 @@ void CControlDirection::pitch_correction()
 
     // extended feature to pitch by path (wall climbing)
     // distance between two travel point must be more than 1.f
-    if (m_object->control().path_builder().is_moving_on_path() && (m_object->movement().detail().path().size() > m_object->movement().detail().curr_travel_point_index() + 1))
+    if (m_object->control().path_builder().is_moving_on_path() &&
+        (m_object->movement().detail().path().size() > m_object->movement().detail().curr_travel_point_index() + 1))
     {
         const DetailPathManager::STravelPathPoint cur_point = m_object->movement().detail().path()[m_object->movement().detail().curr_travel_point_index()];
-        const DetailPathManager::STravelPathPoint next_point = m_object->movement().detail().path()[m_object->movement().detail().curr_travel_point_index() + 1];
+        const DetailPathManager::STravelPathPoint next_point =
+            m_object->movement().detail().path()[m_object->movement().detail().curr_travel_point_index() + 1];
 
         if (cur_point.position.distance_to_sqr(next_point.position) > 1)
         {

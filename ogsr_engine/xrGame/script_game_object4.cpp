@@ -18,7 +18,7 @@
 #include "sight_manager_space.h"
 #include "sight_control_action.h"
 #include "sight_manager.h"
-#include "inventoryBox.h"
+#include "InventoryBox.h"
 
 #include "WeaponBinoculars.h"
 #include "WeaponKnife.h"
@@ -33,7 +33,7 @@
 #include "agent_member_manager.h"
 #include "player_hud.h"
 
-#include "HudManager.h"
+#include "HUDManager.h"
 #include "UIGameSP.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -237,28 +237,28 @@ bool CScriptGameObject::IsInvBoxEmpty()
     else
         return ib->IsEmpty();
 }
+
 // KD
 // functions for testing object class
-#include "car.h"
+#include "Car.h"
 #include "helicopter.h"
-#include "actor.h"
-#include "customoutfit.h"
-#include "customzone.h"
-#include "ai\monsters\basemonster\base_monster.h"
+#include "Actor.h"
+#include "CustomOutfit.h"
+#include "CustomZone.h"
+#include "ai/monsters/basemonster/base_monster.h"
 #include "Artifact.h"
 #include "medkit.h"
 #include "antirad.h"
-#include "scope.h"
-#include "silencer.h"
-#include "torch.h"
+#include "Scope.h"
+#include "Silencer.h"
+#include "Torch.h"
 #include "GrenadeLauncher.h"
 #include "searchlight.h"
 #include "WeaponAmmo.h"
-#include "grenade.h"
+#include "Grenade.h"
 #include "BottleItem.h"
 #include "WeaponMagazinedWGrenade.h"
 #include "WeaponShotgun.h"
-#include "Actor.h"
 #include "../xr_3da/CameraBase.h"
 
 #define TEST_OBJECT_CLASS(A, B) \

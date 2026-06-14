@@ -2,10 +2,10 @@
 
 #include "UIGameCustom.h"
 
-#include "ui.h"
+#include "UI.h"
 #include "ui/UIInventoryUtilities.h"
-#include "level.h"
-#include "hudmanager.h"
+#include "Level.h"
+#include "HUDManager.h"
 #include "ui/UIMultiTextStatic.h"
 #include "ui/UIXmlInit.h"
 #include "object_broker.h"
@@ -103,7 +103,8 @@ void CUIGameCustom::AddCustomMessage(LPCSTR id, float x, float y, float font_siz
     GameCaptions()->addCustomMessage(shared_str{id}, x, y, font_size, pFont, (CGameFont::EAligment)alignment, color, "");
 }
 
-void CUIGameCustom::AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont* pFont, u16 alignment, u32 color, /*LPCSTR def_text,*/ float flicker)
+void CUIGameCustom::AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont* pFont, u16 alignment, u32 color,
+                                     /*LPCSTR def_text,*/ float flicker)
 {
     AddCustomMessage(id, x, y, font_size, pFont, alignment, color);
     GameCaptions()->customizeMessage(shared_str{id}, CUITextBanner::tbsFlicker)->fPeriod = flicker;

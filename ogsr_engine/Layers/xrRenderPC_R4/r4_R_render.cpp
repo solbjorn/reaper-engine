@@ -2,8 +2,8 @@
 
 #include "../xrRender/FBasicVisual.h"
 
-#include "../../xr_3da/customhud.h"
-#include "../../xr_3da/igame_persistent.h"
+#include "../../xr_3da/CustomHUD.h"
+#include "../../xr_3da/IGame_Persistent.h"
 #include "../../xr_3da/xr_object.h"
 
 tmc::task<void> CRender::main_run()

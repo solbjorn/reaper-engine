@@ -2,11 +2,11 @@
 
 #include "Rain.h"
 
-#include "igame_persistent.h"
-#include "environment.h"
+#include "IGame_Persistent.h"
+#include "Environment.h"
 
-#include "render.h"
-#include "igame_level.h"
+#include "Render.h"
+#include "IGame_Level.h"
 #include "xr_object.h"
 
 // Warning: duplicated in dxRainRender

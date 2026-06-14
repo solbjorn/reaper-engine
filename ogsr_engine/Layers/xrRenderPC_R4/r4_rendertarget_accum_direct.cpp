@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "../../xr_3da/environment.h"
-#include "../../xr_3da/igame_persistent.h"
+#include "../../xr_3da/Environment.h"
+#include "../../xr_3da/IGame_Persistent.h"
 
 namespace
 {
@@ -11,7 +11,8 @@ namespace
 constexpr std::array<Fvector3, 8> XR_ALIGNED_DEFAULT corners{Fvector3{-1.0f, -1.0f, 0.7f},  Fvector3{-1.0f, -1.0f, +1.0f}, Fvector3{-1.0f, +1.0f, +1.0f},
                                                              Fvector3{-1.0f, +1.0f, 0.7f},  Fvector3{+1.0f, +1.0f, +1.0f}, Fvector3{+1.0f, +1.0f, 0.7f},
                                                              Fvector3{+1.0f, -1.0f, +1.0f}, Fvector3{+1.0f, -1.0f, 0.7f}};
-constexpr std::array<u16, 16 * 3> XR_ALIGNED_DEFAULT facetable{3, 2, 1, 3, 1, 0, 7, 6, 5, 5, 6, 4, 3, 5, 2, 4, 2, 5, 1, 6, 7, 7, 0, 1, 5, 3, 0, 7, 5, 0, 1, 4, 6, 2, 4, 1};
+constexpr std::array<u16, 16 * 3> XR_ALIGNED_DEFAULT facetable{3, 2, 1, 3, 1, 0, 7, 6, 5, 5, 6, 4, 3, 5, 2, 4, 2, 5,
+                                                               1, 6, 7, 7, 0, 1, 5, 3, 0, 7, 5, 0, 1, 4, 6, 2, 4, 1};
 } // namespace
 
 void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, const Fmatrix& xform, const Fmatrix& xform_prev, float fBias)

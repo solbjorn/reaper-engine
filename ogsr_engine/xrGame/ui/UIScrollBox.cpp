@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
-#include "uiscrollbox.h"
-#include "..\uicursor.h"
+#include "UIScrollBox.h"
+
+#include "../UICursor.h"
 
 CUIScrollBox::CUIScrollBox()
 {
@@ -10,7 +11,6 @@ CUIScrollBox::CUIScrollBox()
 }
 
 void CUIScrollBox::SetHorizontal() { m_bIsHorizontal = true; }
-
 void CUIScrollBox::SetVertical() { m_bIsHorizontal = false; }
 
 bool CUIScrollBox::OnMouse(f32 x, f32 y, EUIMessages mouse_action)

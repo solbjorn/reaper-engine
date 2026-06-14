@@ -2,8 +2,8 @@
 
 #include "ik_anim_state.h"
 
-#include "..\Include/xrRender/KinematicsAnimated.h"
-#include "../xr_3da/Motion.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
+#include "../xr_3da/motion.h"
 
 namespace
 {

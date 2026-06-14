@@ -9,7 +9,7 @@
 #pragma once
 
 #include "associative_vector.h"
-#include "..\xr_3da\xrLevel.h"
+#include "../xr_3da/xrLevel.h"
 
 namespace GameGraph
 {

@@ -10,7 +10,7 @@
 
 #include "xrMessages.h"
 #include "xrServer_Object_Base.h"
-#include "phnetstate.h"
+#include "PHNetState.h"
 
 //------------------------------------------------------------------------------
 // Version history

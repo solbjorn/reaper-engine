@@ -2,7 +2,7 @@
 
 #include "xrRender_console.h"
 
-#include "../../xr_3da/xr_ioconsole.h"
+#include "../../xr_3da/XR_IOConsole.h"
 #include "../../xr_3da/xr_ioc_cmd.h"
 
 #include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"

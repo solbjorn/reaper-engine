@@ -1,7 +1,10 @@
 #include "stdafx.h"
+
 #include "dx103DFluidGrid.h"
+
 #include "../dx10BufferUtils.h"
-#include <Utilities\FlexibleVertexFormat.h>
+
+#include <Utilities/FlexibleVertexFormat.h>
 
 struct VS_INPUT_FLUIDSIM_STRUCT
 {
@@ -47,8 +50,9 @@ void dx103DFluidGrid::Initialize(int gridWidth, int gridHeight, int gridDepth)
 
 void dx103DFluidGrid::CreateVertexBuffers()
 {
-    static constexpr D3DVERTEXELEMENT9 layoutDesc[] = {
-        {0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0}, {0, 12, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0}, D3DDECL_END()};
+    static constexpr D3DVERTEXELEMENT9 layoutDesc[] = {{0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
+                                                       {0, 12, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
+                                                       D3DDECL_END()};
 
     u32 vSize = FVF::ComputeVertexSize(layoutDesc, 0);
 

@@ -1,7 +1,7 @@
 #ifndef GamePersistentH
 #define GamePersistentH
 
-#include "..\xr_3da\IGame_Persistent.h"
+#include "../xr_3da/IGame_Persistent.h"
 
 class CMainMenu;
 class CUICursor;

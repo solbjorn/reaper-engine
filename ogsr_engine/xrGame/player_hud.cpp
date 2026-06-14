@@ -3,12 +3,12 @@
 #include "player_hud.h"
 
 #include "physic_item.h"
-#include "actor.h"
+#include "Actor.h"
 #include "ActorEffector.h"
 #include "HudItem.h"
 #include "ui_base.h"
-#include "level.h"
-#include "weapon.h"
+#include "Level.h"
+#include "Weapon.h"
 
 player_hud* g_player_hud{};
 
@@ -19,16 +19,8 @@ float CalculateMotionStartSeconds(float fStartFromTime, float fMotionLength)
 {
     R_ASSERT(fStartFromTime >= -1.0f);
 
-    // if (fStartFromTime >= 0.0f)
-    //{
-    //     // Выставляем время в точных значениях
-    //     clamp(fStartFromTime, 0.0f, fMotionLength);
-    //     return abs(fStartFromTime);
-    // }
-    // else
-    { // Выставляем время в процентных значениях (от всей длины анимации)
-        return (abs(fStartFromTime) * fMotionLength);
-    }
+    // Выставляем время в процентных значениях (от всей длины анимации)
+    return abs(fStartFromTime) * fMotionLength;
 }
 } // namespace
 

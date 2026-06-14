@@ -1,16 +1,16 @@
 #include "stdafx.h"
 
-#include "weaponmagazinedwgrenade.h"
+#include "WeaponMagazinedWGrenade.h"
 
 #include "HUDManager.h"
-#include "entity.h"
+#include "Entity.h"
 #include "ParticlesObject.h"
 #include "GrenadeLauncher.h"
-#include "xrserver_objects_alife_items.h"
+#include "xrServer_Objects_ALife_Items.h"
 #include "ExplosiveRocket.h"
 #include "Actor_Flags.h"
 #include "xr_level_controller.h"
-#include "level.h"
+#include "Level.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "object_broker.h"
 #include "game_base_space.h"
@@ -23,13 +23,13 @@
 #include "alife_registry_wrappers.h"
 #include "alife_simulator_header.h"
 
-#include "inventory.h"
-#include "inventoryOwner.h"
+#include "Inventory.h"
+#include "InventoryOwner.h"
 
 #include "../xr_3da/x_ray.h"
 
 #ifdef DEBUG
-#include "phdebug.h"
+#include "PHDebug.h"
 #endif
 
 namespace

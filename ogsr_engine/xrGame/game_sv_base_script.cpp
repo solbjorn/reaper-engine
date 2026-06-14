@@ -13,12 +13,12 @@
 #include "xrMessages.h"
 #include "ui/UIInventoryUtilities.h"
 #include "xr_time.h"
-#include "UI/UIGameTutorial.h"
+#include "ui/UIGameTutorial.h"
 #include "string_table.h"
 #include "object_broker.h"
 #include "player_hud.h"
 
-#include "../xr_3da/NET_Server_Trash/net_utils.h"
+#include "../xr_3da/NET_Server_Trash/NET_utils.h"
 
 #include <Objbase.h>
 

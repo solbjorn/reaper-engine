@@ -1,12 +1,13 @@
 #include "stdafx.h"
 
 #include "PHDestroyableNotificate.h"
+
 #include "alife_space.h"
-#include "hit.h"
+#include "Hit.h"
 #include "PHDestroyable.h"
 #include "Level.h"
 #include "xrServer_Object_Base.h"
-#include "..\xr_3da\xr_object.h"
+#include "../xr_3da/xr_object.h"
 #include "PhysicsShellHolder.h"
 #include "xrServer_Objects.h"
 

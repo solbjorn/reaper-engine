@@ -1,8 +1,10 @@
 #include "stdafx.h"
+
 #include "control_movement_base.h"
+
 #include "control_animation_base.h"
 #include "control_direction_base.h"
-#include "BaseMonster/base_monster.h"
+#include "basemonster/base_monster.h"
 #include "monster_velocity_space.h"
 #include "../../detail_path_manager.h"
 
@@ -34,7 +36,8 @@ void CControlMovementBase::load(LPCSTR section)
     SVelocityParam velocity_param;
     m_velocities.try_emplace(eVelocityParameterIdle, velocity_param);
     m_man->path_builder().detail().add_velocity(
-        eVelocityParameterIdle, CDetailPathManager::STravelParams(velocity_param.velocity.linear, velocity_param.velocity.angular_path, velocity_param.velocity.angular_real));
+        eVelocityParameterIdle,
+        CDetailPathManager::STravelParams(velocity_param.velocity.linear, velocity_param.velocity.angular_path, velocity_param.velocity.angular_real));
 }
 
 void CControlMovementBase::load_velocity(LPCSTR section, LPCSTR line, u32 velocity_id)
@@ -45,7 +48,8 @@ void CControlMovementBase::load_velocity(LPCSTR section, LPCSTR line, u32 veloci
     m_velocities.try_emplace(velocity_id, velocity_param);
 
     m_man->path_builder().detail().add_velocity(
-        velocity_id, CDetailPathManager::STravelParams(velocity_param.velocity.linear, velocity_param.velocity.angular_path, velocity_param.velocity.angular_real));
+        velocity_id,
+        CDetailPathManager::STravelParams(velocity_param.velocity.linear, velocity_param.velocity.angular_path, velocity_param.velocity.angular_real));
 }
 
 SVelocityParam& CControlMovementBase::get_velocity(u32 velocity_id)

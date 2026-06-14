@@ -2,7 +2,7 @@
 
 #include "interactive_motion.h"
 
-#include "physicsshell.h"
+#include "PhysicsShell.h"
 #include "PhysicsShellHolder.h"
 #include "MathUtils.h"
 #include "../Include/xrRender/Kinematics.h"

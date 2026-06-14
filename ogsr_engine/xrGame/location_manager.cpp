@@ -8,11 +8,11 @@
 
 #include "stdafx.h"
 
-#include "gameobject.h"
+#include "GameObject.h"
 #include "location_manager.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 
-CLocationManager::~CLocationManager() {}
+CLocationManager::~CLocationManager() = default;
 
 void CLocationManager::Load(LPCSTR section)
 {

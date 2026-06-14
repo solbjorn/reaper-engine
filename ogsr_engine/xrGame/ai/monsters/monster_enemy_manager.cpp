@@ -1,12 +1,13 @@
 #include "stdafx.h"
 
 #include "monster_enemy_manager.h"
-#include "BaseMonster/base_monster.h"
+
+#include "basemonster/base_monster.h"
 #include "../ai_monsters_misc.h"
 #include "../../ai_object_location.h"
 #include "../../memory_manager.h"
 #include "../../visual_memory_manager.h"
-#include "../../actor.h"
+#include "../../Actor.h"
 #include "../../actor_memory.h"
 
 CMonsterEnemyManager::CMonsterEnemyManager() = default;
@@ -68,7 +69,8 @@ void CMonsterEnemyManager::update()
     // обновить опасность врага
     danger_type = eNone;
 
-    switch (dwfChooseAction(0, monster->panic_threshold(), 0.f, 0.f, 0.f, monster->g_Team(), monster->g_Squad(), monster->g_Group(), 0, 1, 2, 3, 4, monster, 30.f))
+    switch (
+        dwfChooseAction(0, monster->panic_threshold(), 0.f, 0.f, 0.f, monster->g_Team(), monster->g_Squad(), monster->g_Group(), 0, 1, 2, 3, 4, monster, 30.f))
     {
     case 4:
     case 3:
@@ -242,7 +244,10 @@ bool CMonsterEnemyManager::is_faced(const CEntityAlive* object0, const CEntityAl
     return (false);
 }
 
-bool CMonsterEnemyManager::is_enemy(const CEntityAlive* obj) { return ((monster->g_Team() != obj->g_Team()) && monster->is_relation_enemy(obj) && obj->g_Alive()); }
+bool CMonsterEnemyManager::is_enemy(const CEntityAlive* obj)
+{
+    return ((monster->g_Team() != obj->g_Team()) && monster->is_relation_enemy(obj) && obj->g_Alive());
+}
 
 const Fvector& CMonsterEnemyManager::get_enemy_position() { return position; }
 
@@ -252,8 +257,8 @@ void CMonsterEnemyManager::transfer_enemy(CBaseMonster* friend_monster)
     if (!friend_monster->EnemyMan.get_enemy())
         return;
 
-    monster->EnemyMemory.add_enemy(friend_monster->EnemyMan.get_enemy(), friend_monster->EnemyMan.get_enemy_position(), friend_monster->EnemyMan.get_enemy_vertex(),
-                                   friend_monster->EnemyMan.get_enemy_time_last_seen());
+    monster->EnemyMemory.add_enemy(friend_monster->EnemyMan.get_enemy(), friend_monster->EnemyMan.get_enemy_position(),
+                                   friend_monster->EnemyMan.get_enemy_vertex(), friend_monster->EnemyMan.get_enemy_time_last_seen());
 }
 
 u32 CMonsterEnemyManager::see_enemy_duration() { return ((m_time_start_see_enemy == 0) ? 0 : (time() - m_time_start_see_enemy)); }

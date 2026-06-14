@@ -2,14 +2,14 @@
 
 #include "step_manager.h"
 
-#include "..\Include/xrRender/KinematicsAnimated.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 #include "step_manager_defs.h"
 #include "entity_alive.h"
-#include "level.h"
-#include "gamepersistent.h"
+#include "Level.h"
+#include "GamePersistent.h"
 #include "material_manager.h"
 #include "IKLimbsController.h"
-#include "actor.h"
+#include "Actor.h"
 #include "game_object_space.h"
 #include "script_game_object.h"
 

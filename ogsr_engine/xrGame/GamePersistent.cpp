@@ -1,17 +1,17 @@
 #include "stdafx.h"
 
-#include "gamepersistent.h"
+#include "GamePersistent.h"
 
 #include "../xr_3da/fmesh.h"
-#include "..\xr_3da\XR_IOConsole.h"
-#include "../xr_3da/gamemtllib.h"
+#include "../xr_3da/XR_IOConsole.h"
+#include "../xr_3da/GameMtlLib.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "MainMenu.h"
 #include "UICursor.h"
 #include "game_base_space.h"
-#include "level.h"
+#include "Level.h"
 #include "ParticlesObject.h"
-#include "actor.h"
+#include "Actor.h"
 #include "stalker_animation_data_storage.h"
 #include "stalker_velocity_holder.h"
 #include "ActorEffector.h"
@@ -26,12 +26,12 @@
 #include "xrServer.h"
 
 #include "ai_debug.h"
-#include "UI/UIGameTutorial.h"
+#include "ui/UIGameTutorial.h"
 
 #include "xr_level_controller.h"
 
 #ifndef MASTER_GOLD
-#include "custommonster.h"
+#include "CustomMonster.h"
 #endif // MASTER_GOLD
 
 namespace

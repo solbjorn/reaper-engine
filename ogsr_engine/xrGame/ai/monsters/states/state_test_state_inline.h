@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../level.h"
+#include "../../../Level.h"
 #include "state_move_to_point.h"
 #include "state_custom_action.h"
 
@@ -9,7 +9,10 @@
 #define CStateMonsterTestStateAbstract CStateMonsterTestState<_Object>
 
 TEMPLATE_SPECIALIZATION
-CStateMonsterTestStateAbstract::CStateMonsterTestState(_Object* obj) : inherited(obj) { add_state(eStateCustom, xr_new<CStateMonsterMoveToPointEx<_Object>>(obj)); }
+CStateMonsterTestStateAbstract::CStateMonsterTestState(_Object* obj) : inherited(obj)
+{
+    add_state(eStateCustom, xr_new<CStateMonsterMoveToPointEx<_Object>>(obj));
+}
 
 TEMPLATE_SPECIALIZATION
 void CStateMonsterTestStateAbstract::reselect_state() { select_state(eStateCustom); }

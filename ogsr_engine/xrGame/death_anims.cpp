@@ -6,7 +6,7 @@
 #include "Weapon.h"
 #include "WeaponShotgun.h"
 #include "Explosive.h"
-#include "..\Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/Kinematics.h"
 
 #include "../xr_3da/IGame_Level.h"
 

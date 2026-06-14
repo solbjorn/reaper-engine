@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "phmovementcontrol.h"
+#include "PHMovementControl.h"
 
 #include "ExtendedGeom.h"
 #include "MathUtils.h"

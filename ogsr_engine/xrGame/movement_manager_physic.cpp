@@ -12,8 +12,8 @@
 
 #include "PHMovementControl.h"
 #include "detail_path_manager.h"
-#include "level.h"
-#include "custommonster.h"
+#include "Level.h"
+#include "CustomMonster.h"
 #include "IColisiondamageInfo.h"
 
 // Lain: added
@@ -95,8 +95,8 @@ bool CMovementManager::move_along_path() const
     return (true);
 }
 
-Fvector CMovementManager::path_position(const float& velocity, const Fvector& position, const float& time_delta, u32& current_travel_point, float& dist, float& dist_to_target,
-                                        Fvector& dir_to_target)
+Fvector CMovementManager::path_position(const float& velocity, const Fvector& position, const float& time_delta, u32& current_travel_point, float& dist,
+                                        float& dist_to_target, Fvector& dir_to_target)
 {
     VERIFY(current_travel_point < (detail().path().size() - 1));
 
@@ -246,8 +246,8 @@ void CMovementManager::move_along_path(CPHMovementControl* movement_control, Fve
 
     // получить физ. объекты в радиусе
     m_nearest_objects.clear();
-    std::ignore =
-        Level().ObjectSpace.GetNearest(m_nearest_objects, dest_position, DISTANCE_PHISICS_ENABLE_CHARACTERS + (movement_control->IsCharacterEnabled() ? 0.5f : 0.0f), &object());
+    std::ignore = Level().ObjectSpace.GetNearest(m_nearest_objects, dest_position,
+                                                 DISTANCE_PHISICS_ENABLE_CHARACTERS + (movement_control->IsCharacterEnabled() ? 0.5f : 0.0f), &object());
 
     // установить позицию
     VERIFY(dist >= 0.f);

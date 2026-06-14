@@ -2,16 +2,16 @@
 
 #include "SimpleDetectorSHOC.h"
 
-#include "customzone.h"
-#include "hudmanager.h"
-#include "artifact.h"
-#include "inventory.h"
-#include "level.h"
+#include "CustomZone.h"
+#include "HUDManager.h"
+#include "Artifact.h"
+#include "Inventory.h"
+#include "Level.h"
 #include "map_manager.h"
-#include "cameraEffector.h"
-#include "actor.h"
+#include "CameraEffector.h"
+#include "Actor.h"
 #include "ai_sounds.h"
-#include "actorcondition.h"
+#include "ActorCondition.h"
 #include "ActorEffector.h"
 
 ZONE_INFO_SHOC::~ZONE_INFO_SHOC()

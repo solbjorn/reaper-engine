@@ -1,7 +1,7 @@
 #ifndef CPHOBJECT
 #define CPHOBJECT
 
-#include "../xrcdb/ispatial.h"
+#include "../xrCDB/ISpatial.h"
 #include "PHItemList.h"
 #include "PHIsland.h"
 

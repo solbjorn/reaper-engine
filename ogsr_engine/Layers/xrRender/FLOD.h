@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fhierrarhyvisual.h"
+#include "FHierrarhyVisual.h"
 
 class FLOD : public FHierrarhyVisual
 {

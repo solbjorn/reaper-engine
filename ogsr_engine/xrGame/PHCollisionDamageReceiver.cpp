@@ -1,15 +1,15 @@
 #include "stdafx.h"
 
-#include "phcollisiondamagereceiver.h"
+#include "PHCollisionDamageReceiver.h"
 
 #include "PhysicsShellHolder.h"
 #include "xr_ini.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "geometry.h"
+#include "Geometry.h"
 #include "PhysicsShell.h"
 #include "../xr_3da/GameMtlLib.h"
 #include "Physics.h"
-#include "../xr_3da/NET_Server_Trash/net_utils.h"
+#include "../xr_3da/NET_Server_Trash/NET_utils.h"
 #include "xrMessages.h"
 #include "CharacterPhysicsSupport.h"
 

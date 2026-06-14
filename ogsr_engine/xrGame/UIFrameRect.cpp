@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
-#include "uiFrameRect.h"
+#include "UIFrameRect.h"
 
-#include "hudmanager.h"
-#include "ui\uitexturemaster.h"
+#include "HUDManager.h"
+#include "ui/UITextureMaster.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -19,11 +19,8 @@ CUIFrameRect::~CUIFrameRect() = default;
 
 //--------------------------------------------------------------------
 
-void CUIFrameRect::Init(LPCSTR texture, float x, float y, float w, float h) //, DWORD align)
+void CUIFrameRect::Init(LPCSTR texture, float x, float y, float w, float h)
 {
-    // SetPos			(x,y);
-    // SetSize			(w,h);
-    // SetAlign		(align);
     CUISimpleWindow::Init(x, y, w, h);
     InitTexture(texture);
 }
@@ -206,9 +203,6 @@ void CUIFrameRect::SetWndRect(const Frect& rect)
 
 void CUIFrameRect::SetWndPos(const Fvector2& pos)
 {
-    //.	Fvector2 _old_pos = GetWndPos();
-    //.	if(_old_pos.similar(pos,EPS,EPS))	return;
-
     CUISimpleWindow::SetWndPos(pos);
     uFlags.set(flValidSize, false);
 }

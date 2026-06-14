@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include "..\xr_3da\effectorPP.h"
-#include "..\xr_3da\effector.h"
-#include "..\xr_3da\cameramanager.h"
+#include "../xr_3da/EffectorPP.h"
+#include "../xr_3da/Effector.h"
+#include "../xr_3da/CameraManager.h"
 
 #define SLEEP_EFFECTOR_TYPE_ID 8
 #define FATIGUE_EFFECTOR_TYPE_ID 33

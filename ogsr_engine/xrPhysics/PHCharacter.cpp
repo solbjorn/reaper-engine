@@ -1,13 +1,13 @@
 #include "stdafx.h"
 
-#include "phcharacter.h"
+#include "PHCharacter.h"
 #include "PHDynamicData.h"
 #include "Physics.h"
 #include "ExtendedGeom.h"
 #include "PhysicsShellHolder.h"
-#include "tri-colliderKNoOPC/__aabb_tri.h"
+#include "tri-colliderknoopc/__aabb_tri.h"
 #include "ode/src/util.h"
-#include "../xr_3da/gamemtllib.h"
+#include "../xr_3da/GameMtlLib.h"
 
 CPHCharacter::CPHCharacter() : CPHDisablingTranslational()
 {
@@ -32,11 +32,13 @@ void CPHCharacter::FreezeContent()
     dBodyDisable(m_body);
     CPHObject::FreezeContent();
 }
+
 void CPHCharacter::UnFreezeContent()
 {
     dBodyEnable(m_body);
     CPHObject::UnFreezeContent();
 }
+
 void CPHCharacter::getForce(Fvector& force)
 {
     if (!b_exist)
@@ -44,6 +46,7 @@ void CPHCharacter::getForce(Fvector& force)
 
     force.set(*(const Fvector*)dBodyGetForce(m_body));
 }
+
 void CPHCharacter::setForce(const Fvector& force)
 {
     if (!b_exist)
@@ -63,16 +66,16 @@ void CPHCharacter::get_State(SPHNetState& state)
     state.quaternion.identity();
     state.previous_quaternion.identity();
     state.torque.set(0.f, 0.f, 0.f);
-    //	state.accel = GetAcceleration();
-    //	state.max_velocity = GetMaximumVelocity();
 
     if (!b_exist)
     {
         state.enabled = false;
         return;
     }
+
     state.enabled = CPHObject::is_active(); //!!dBodyIsEnabled(m_body);
 }
+
 void CPHCharacter::set_State(const SPHNetState& state)
 {
     m_body_interpolation.SetPosition(state.previous_position, 0);
@@ -80,9 +83,6 @@ void CPHCharacter::set_State(const SPHNetState& state)
     SetPosition(state.position);
     SetVelocity(state.linear_vel);
     setForce(state.force);
-
-    //	SetAcceleration(state.accel);
-    //	SetMaximumVelocity(state.max_velocity);
 
     if (!b_exist)
         return;
@@ -134,7 +134,6 @@ void CPHCharacter::CutVelocity(float l_limit, float /*a_limit*/)
 const Fmatrix& CPHCharacter::XFORM() const { return m_phys_ref_object->XFORM(); }
 
 void CPHCharacter::get_LinearVel(Fvector& velocity) { GetVelocity(velocity); }
-
 void CPHCharacter::get_AngularVel(Fvector& velocity) { velocity.set(0, 0, 0); }
 
 const Fvector& CPHCharacter::mass_Center() { return cast_fv(dBodyGetLinearVel(m_body)); }
@@ -143,6 +142,7 @@ void virtual_move_collide_callback(bool& do_collide, bool bo1, dContact& c, SGam
 {
     if (!do_collide)
         return;
+
     do_collide = false;
     SGameMtl* oposite_matrial = bo1 ? material_1 : material_2;
     if (oposite_matrial->Flags.test(SGameMtl::flPassable))

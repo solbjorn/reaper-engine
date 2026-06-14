@@ -10,7 +10,7 @@
 
 #include "xrServer_Objects_Abstract.h"
 
-#include "../xr_3da/NET_Server_Trash/net_utils.h"
+#include "../xr_3da/NET_Server_Trash/NET_utils.h"
 #include "xrMessages.h"
 
 ////////////////////////////////////////////////////////////////////////////

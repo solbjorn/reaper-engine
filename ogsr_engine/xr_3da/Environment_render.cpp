@@ -2,11 +2,11 @@
 
 #include "Environment.h"
 
-#include "render.h"
+#include "Render.h"
 #include "xr_efflensflare.h"
-#include "rain.h"
+#include "Rain.h"
 #include "thunderbolt.h"
-#include "igame_level.h"
+#include "IGame_Level.h"
 
 //-----------------------------------------------------------------------------
 // Environment render

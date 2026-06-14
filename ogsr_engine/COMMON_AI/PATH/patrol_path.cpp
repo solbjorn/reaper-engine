@@ -10,7 +10,7 @@
 
 #include "patrol_path.h"
 
-#include "levelgamedef.h"
+#include "LevelGameDef.h"
 
 CPatrolPath::CPatrolPath([[maybe_unused]] shared_str name)
 {

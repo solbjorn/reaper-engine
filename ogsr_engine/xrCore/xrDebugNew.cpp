@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "xrdebug.h"
+#include "xrDebug.h"
 
 #include "stacktrace_collector.h"
 

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "f1.h"
+#include "F1.h"
 
 CF1::CF1() = default;
 CF1::~CF1() = default;

@@ -1,6 +1,8 @@
 #include "stdafx.h"
+
 #include "ai_monster_motion_stats.h"
-#include "BaseMonster/base_monster.h"
+
+#include "basemonster/base_monster.h"
 
 void CMotionStats::update()
 {
@@ -14,12 +16,12 @@ void CMotionStats::update()
     if ((index + 1) >= MAX_ELEMS)
     {
         for (u32 i = 0; i < (MAX_ELEMS - 1); i++)
-        {
             _data[i] = _data[i + 1];
-        }
     }
     else
+    {
         index++;
+    }
 }
 
 bool CMotionStats::is_good_motion(u32 elems_checked)

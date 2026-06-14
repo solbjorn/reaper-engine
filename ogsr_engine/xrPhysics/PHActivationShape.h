@@ -2,7 +2,7 @@
 #define PH_ACTIVATION_SHAPE
 
 #include "MathUtils.h"
-#include "phvalidevalues.h"
+#include "PHValideValues.h"
 
 class CPHActivationShape : public CPHObject
 {

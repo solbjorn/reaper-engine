@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
-#include "Blender_light_mask.h"
+#include "blender_light_mask.h"
 
 CBlender_accum_direct_mask::CBlender_accum_direct_mask() { description.CLS = 0; }
-CBlender_accum_direct_mask::~CBlender_accum_direct_mask() {}
+CBlender_accum_direct_mask::~CBlender_accum_direct_mask() = default;
 
 //	TODO: DX10:	implement CBlender_accum_direct_mask::Compile
 void CBlender_accum_direct_mask::Compile(CBlender_Compile& C)

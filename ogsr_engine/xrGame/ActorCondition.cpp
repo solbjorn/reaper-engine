@@ -1,21 +1,21 @@
 #include "stdafx.h"
 
-#include "actorcondition.h"
+#include "ActorCondition.h"
 
-#include "actor.h"
-#include "actorEffector.h"
-#include "inventory.h"
-#include "level.h"
-#include "sleepeffector.h"
+#include "Actor.h"
+#include "ActorEffector.h"
+#include "Inventory.h"
+#include "Level.h"
+#include "SleepEffector.h"
 #include "game_base_space.h"
-#include "xrserver.h"
+#include "xrServer.h"
 #include "ai_space.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
 #include "object_broker.h"
-#include "weapon.h"
+#include "Weapon.h"
 #include "PDA.h"
-#include "ai/monsters/BaseMonster/base_monster.h"
+#include "ai/monsters/basemonster/base_monster.h"
 
 #include "UI.h"
 #include "HUDManager.h"
@@ -237,26 +237,6 @@ void CActorCondition::AffectDamage_InjuriousMaterialAndMonstersInfluence()
         radiation_influence += monster->get_radiation_influence();
         fire_influence += monster->get_fire_influence();
     }
-    /*
-        CPda* const pda						=	m_object->GetPDA();
-
-        if ( pda )
-        {
-            using monsters = xr_vector<CObject*>;
-
-            for ( monsters::const_iterator	it	=	pda->feel_touch.begin();
-                                            it	!=	pda->feel_touch.end();
-                                            ++it )
-            {
-                CBaseMonster* const	monster		=	smart_cast<CBaseMonster*>(*it);
-                if ( !monster || !monster->g_Alive() ) continue;
-
-                psy_influence					+=	monster->get_psy_influence();
-                radiation_influence				+=	monster->get_radiation_influence();
-                fire_influence					+=	monster->get_fire_influence();
-            }
-        }
-    */
 
     struct
     {
@@ -289,24 +269,12 @@ void CActorCondition::AffectDamage_InjuriousMaterialAndMonstersInfluence()
             }
 
         } // for
-
     } // while
 }
 
-#include "characterphysicssupport.h"
-float CActorCondition::GetInjuriousMaterialDamage()
-{
-    /*
-        u16 mat_injurios = m_object->character_physics_support()->movement()->injurious_material_idx();
+#include "CharacterPhysicsSupport.h"
 
-        if(mat_injurios!=GAMEMTL_NONE_IDX)
-        {
-            const SGameMtl* mtl		= GMLib.GetMaterialByIdx(mat_injurios);
-            return					mtl->fInjuriousSpeed;
-        }else
-    */
-    return 0.0f;
-}
+float CActorCondition::GetInjuriousMaterialDamage() { return 0.0f; }
 
 void CActorCondition::UpdateSatiety()
 {

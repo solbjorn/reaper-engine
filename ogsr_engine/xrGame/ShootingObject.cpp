@@ -10,14 +10,14 @@
 #include "ParticlesObject.h"
 #include "WeaponAmmo.h"
 
-#include "actor.h"
+#include "Actor.h"
 #include "game_cl_base.h"
-#include "level.h"
-#include "level_bullet_manager.h"
+#include "Level.h"
+#include "Level_Bullet_Manager.h"
 #include "clsid_game.h"
 #include "game_cl_single.h"
 
-#include "weapon.h"
+#include "Weapon.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
 

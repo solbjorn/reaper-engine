@@ -4,7 +4,7 @@
 
 #include "../xr_3da/Feel_Sound.h"
 #include "../xr_3da/xr_object.h"
-#include "../xr_3da/igame_level.h"
+#include "../xr_3da/IGame_Level.h"
 #include "../xr_3da/xrLevel.h"
 
 namespace xxh

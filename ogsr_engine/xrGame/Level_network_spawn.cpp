@@ -4,13 +4,13 @@
 
 #include "xrServer_Objects_ALife_All.h"
 #include "game_cl_base.h"
-#include "net_queue.h"
+#include "NET_Queue.h"
 #include "ai_space.h"
 #include "game_level_cross_table.h"
 #include "level_graph.h"
 #include "client_spawn_manager.h"
-#include "..\xr_3da\xr_object.h"
-#include "..\xr_3da\IGame_Persistent.h"
+#include "../xr_3da/xr_object.h"
+#include "../xr_3da/IGame_Persistent.h"
 
 tmc::task<void> CLevel::cl_Process_Spawn(NET_Packet& P)
 {

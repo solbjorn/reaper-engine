@@ -2,11 +2,11 @@
 
 #include "../../xr_3da/_d3d_extensions.h"
 #include "../../xr_3da/xrLevel.h"
-#include "../../xr_3da/igame_persistent.h"
-#include "../../xr_3da/environment.h"
+#include "../../xr_3da/IGame_Persistent.h"
+#include "../../xr_3da/Environment.h"
 
 #include "R_light.h"
-#include "light_db.h"
+#include "Light_DB.h"
 
 void CLight_DB::Load(IReader* fs)
 {

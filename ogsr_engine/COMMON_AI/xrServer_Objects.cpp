@@ -8,7 +8,7 @@
 
 #include "stdafx.h"
 
-#include "../xr_3da/NET_Server_Trash/net_utils.h"
+#include "../xr_3da/NET_Server_Trash/NET_utils.h"
 #include "xrServer_Objects.h"
 #include "game_base_space.h"
 
@@ -16,8 +16,8 @@
 // CSE_Shape
 ////////////////////////////////////////////////////////////////////////////
 
-CSE_Shape::CSE_Shape() {}
-CSE_Shape::~CSE_Shape() {}
+CSE_Shape::CSE_Shape() = default;
+CSE_Shape::~CSE_Shape() = default;
 
 void CSE_Shape::cform_read(NET_Packet& tNetPacket)
 {

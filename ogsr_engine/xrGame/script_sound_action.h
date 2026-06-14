@@ -13,7 +13,7 @@
 #include "ai_sounds.h"
 #include "ai_monster_space.h"
 #include "script_sound.h"
-#include "AI/monsters/monster_sound_defs.h"
+#include "ai/monsters/monster_sound_defs.h"
 
 class CScriptSoundAction : public CScriptAbstractAction
 {
@@ -40,12 +40,12 @@ public:
     MonsterSpace::EMonsterHeadAnimType m_tHeadAnimType;
 
     inline CScriptSoundAction();
-    inline explicit CScriptSoundAction(LPCSTR caSoundToPlay, LPCSTR caBoneName, const Fvector& tPositionOffset = {}, const Fvector& tAngleOffset = {}, bool bLooped = false,
-                                       ESoundTypes sound_type = SOUND_TYPE_NO_SOUND);
+    inline explicit CScriptSoundAction(LPCSTR caSoundToPlay, LPCSTR caBoneName, const Fvector& tPositionOffset = {}, const Fvector& tAngleOffset = {},
+                                       bool bLooped = false, ESoundTypes sound_type = SOUND_TYPE_NO_SOUND);
     inline explicit CScriptSoundAction(LPCSTR caSoundToPlay, const Fvector& tPosition, const Fvector& tAngleOffset = {}, bool bLooped = false,
                                        ESoundTypes sound_type = SOUND_TYPE_NO_SOUND);
-    inline explicit CScriptSoundAction(CScriptSound& sound, LPCSTR caBoneName, const Fvector& tPositionOffset = {}, const Fvector& tAngleOffset = {}, bool bLooped = false,
-                                       ESoundTypes sound_type = SOUND_TYPE_NO_SOUND);
+    inline explicit CScriptSoundAction(CScriptSound& sound, LPCSTR caBoneName, const Fvector& tPositionOffset = {}, const Fvector& tAngleOffset = {},
+                                       bool bLooped = false, ESoundTypes sound_type = SOUND_TYPE_NO_SOUND);
     inline explicit CScriptSoundAction(CScriptSound& sound, const Fvector& tPosition, const Fvector& tAngleOffset = {}, bool bLooped = false,
                                        ESoundTypes sound_type = SOUND_TYPE_NO_SOUND);
     ////////////////////////////////////////////////////////////////////////////////////

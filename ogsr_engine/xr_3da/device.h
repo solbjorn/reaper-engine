@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../xrcore/ftimer.h"
+#include "../xrCore/FTimer.h"
 #include "pure.h"
-#include "stats.h"
+#include "Stats.h"
 
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/RenderDeviceRender.h"

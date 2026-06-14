@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 
-#include "../../Include/xrApi/xrAPI.h"
+#include "../../Include/xrAPI/xrAPI.h"
 
 IRender_interface* Render = nullptr;
 IRenderFactory* RenderFactory = nullptr;

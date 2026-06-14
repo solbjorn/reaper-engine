@@ -11,7 +11,7 @@
 #include "ai_monsters_misc.h"
 
 #include "../ai_space.h"
-#include "../custommonster.h"
+#include "../CustomMonster.h"
 #include "../ef_storage.h"
 #include "../seniority_hierarchy_holder.h"
 #include "../team_hierarchy_holder.h"
@@ -22,7 +22,7 @@
 #include "../ef_pattern.h"
 #include "../memory_manager.h"
 #include "../enemy_manager.h"
-#include "../level.h"
+#include "../Level.h"
 #include "../agent_manager.h"
 #include "../agent_member_manager.h"
 #include "stalker/ai_stalker.h"

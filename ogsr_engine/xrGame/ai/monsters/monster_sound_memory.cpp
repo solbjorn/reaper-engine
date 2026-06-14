@@ -1,6 +1,8 @@
 #include "stdafx.h"
+
 #include "monster_sound_memory.h"
-#include "BaseMonster/base_monster.h"
+
+#include "basemonster/base_monster.h"
 
 namespace
 {
@@ -16,7 +18,8 @@ constexpr u32 time_help_sound_remember{10000};
 
 TSoundDangerValue tagSoundElement::ConvertSoundType(ESoundTypes stype)
 {
-    if (((stype & SOUND_TYPE_WEAPON) != SOUND_TYPE_WEAPON) && ((stype & SOUND_TYPE_MONSTER) != SOUND_TYPE_MONSTER) && ((stype & SOUND_TYPE_WORLD) != SOUND_TYPE_WORLD))
+    if (((stype & SOUND_TYPE_WEAPON) != SOUND_TYPE_WEAPON) && ((stype & SOUND_TYPE_MONSTER) != SOUND_TYPE_MONSTER) &&
+        ((stype & SOUND_TYPE_WORLD) != SOUND_TYPE_WORLD))
         return NONE_DANGEROUS_SOUND;
 
     CHECK_SOUND_TYPE(stype, SOUND_TYPE_WEAPON_RECHARGING, WEAPON_RECHARGING);
@@ -43,7 +46,7 @@ CMonsterSoundMemory::CMonsterSoundMemory()
     m_time_help_sound = 0;
     m_help_node = u32(-1);
 }
-CMonsterSoundMemory::~CMonsterSoundMemory() {}
+CMonsterSoundMemory::~CMonsterSoundMemory() = default;
 
 void CMonsterSoundMemory::init_external(CBaseMonster* M, TTime mem_time)
 {

@@ -1,8 +1,9 @@
 #include "stdafx.h"
 
 #include "control_path_builder.h"
+
 #include "control_manager.h"
-#include "BaseMonster/base_monster.h"
+#include "basemonster/base_monster.h"
 #include "../../game_location_selector.h"
 #include "../../level_location_selector.h"
 #include "../../detail_path_manager.h"
@@ -10,12 +11,12 @@
 #include "../../ai_space.h"
 #include "../../movement_manager_space.h"
 #include "../../level_path_manager.h"
-#include "../../actor.h"
-#include "../../Actor_Memory.h"
+#include "../../Actor.h"
+#include "../../actor_memory.h"
 #include "../../visual_memory_manager.h"
 
 CControlPathBuilder::CControlPathBuilder(CCustomMonster* monster) : CMovementManager{monster} {}
-CControlPathBuilder::~CControlPathBuilder() {}
+CControlPathBuilder::~CControlPathBuilder() = default;
 
 void CControlPathBuilder::load(LPCSTR) {}
 

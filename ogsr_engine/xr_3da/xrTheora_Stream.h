@@ -1,7 +1,7 @@
 #ifndef xrTheora_StreamH
 #define xrTheora_StreamH
 
-#include "../xrCore/Stream_Reader.h"
+#include "../xrCore/stream_reader.h"
 
 #include <theora/theora.h>
 

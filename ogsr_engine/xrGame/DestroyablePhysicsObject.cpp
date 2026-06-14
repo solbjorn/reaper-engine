@@ -2,7 +2,7 @@
 
 #include "DestroyablePhysicsObject.h"
 
-#include "hit.h"
+#include "Hit.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "xrServer_Objects_ALife.h"
 #include "game_object_space.h"

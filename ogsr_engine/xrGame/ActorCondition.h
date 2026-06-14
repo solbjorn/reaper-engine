@@ -5,7 +5,7 @@
 
 #include "EntityCondition.h"
 #include "actor_defs.h"
-#include "..\xr_3da\feel_touch.h"
+#include "../xr_3da/Feel_Touch.h"
 
 class CActor;
 

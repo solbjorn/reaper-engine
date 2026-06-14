@@ -1,6 +1,6 @@
 #pragma once
 
-#include "weaponcustompistol.h"
+#include "WeaponCustomPistol.h"
 #include "script_export_space.h"
 
 class CWeaponShotgun : public CWeaponCustomPistol

@@ -23,7 +23,7 @@ class CDUInterface;
 #include "Sound.h"
 #endif
 
-#include "..\..\Include\xrRender\DrawUtils.h"
+#include "../../Include/xrRender/DrawUtils.h"
 
 class XR_NOVTABLE ISE_Shape : public virtual RTTI::Enable
 {

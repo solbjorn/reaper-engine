@@ -7,8 +7,8 @@
 #include "map_location.h"
 #include "map_manager.h"
 
-#include "level.h"
-#include "actor.h"
+#include "Level.h"
+#include "Actor.h"
 #include "script_engine.h"
 #include "script_game_object.h"
 #include "ai_space.h"
@@ -17,7 +17,7 @@
 #include "alife_story_registry.h"
 #include "game_object_space.h"
 #include "object_broker.h"
-#include "ui/uitexturemaster.h"
+#include "ui/UITextureMaster.h"
 #include "alife_registry_wrappers.h"
 #include "alife_simulator_header.h"
 

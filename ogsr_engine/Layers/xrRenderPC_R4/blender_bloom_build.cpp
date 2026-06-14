@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
-#include "Blender_bloom_build.h"
+#include "blender_bloom_build.h"
 
 CBlender_bloom_build::CBlender_bloom_build() { description.CLS = 0; }
-CBlender_bloom_build::~CBlender_bloom_build() {}
+CBlender_bloom_build::~CBlender_bloom_build() = default;
 
 void CBlender_bloom_build::Compile(CBlender_Compile& C)
 {

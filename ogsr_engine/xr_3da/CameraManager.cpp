@@ -11,12 +11,12 @@
 #include "EffectorPP.h"
 #include "Environment.h"
 #include "FDemoRecord.h"
-#include "igame_level.h"
-#include "igame_persistent.h"
+#include "IGame_Level.h"
+#include "IGame_Persistent.h"
 
 #include "x_ray.h"
-#include "gamefont.h"
-#include "render.h"
+#include "GameFont.h"
+#include "Render.h"
 
 #define effCustomEffectorStartID 10000
 

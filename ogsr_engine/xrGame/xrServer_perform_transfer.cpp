@@ -1,8 +1,9 @@
 #include "stdafx.h"
 
-#include "xrserver.h"
-#include "xrmessages.h"
-#include "xrserver_objects.h"
+#include "xrServer.h"
+
+#include "xrMessages.h"
+#include "xrServer_Objects.h"
 
 void xrServer::Perform_transfer(NET_Packet& PR, NET_Packet& PT, CSE_Abstract* what, CSE_Abstract* from, CSE_Abstract* to)
 {

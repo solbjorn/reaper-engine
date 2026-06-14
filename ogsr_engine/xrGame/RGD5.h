@@ -1,6 +1,6 @@
 #pragma once
 
-#include "grenade.h"
+#include "Grenade.h"
 #include "script_export_space.h"
 
 class CRGD5 : public CGrenade

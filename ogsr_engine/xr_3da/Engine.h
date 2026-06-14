@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "engineAPI.h"
-#include "eventAPI.h"
+#include "EngineAPI.h"
+#include "EventAPI.h"
 
 class light;
 

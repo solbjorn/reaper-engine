@@ -10,7 +10,7 @@
 
 #include "script_particle_action.h"
 
-#include "particlesobject.h"
+#include "ParticlesObject.h"
 
 CScriptParticleAction::~CScriptParticleAction() = default;
 

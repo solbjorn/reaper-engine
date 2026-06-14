@@ -4,8 +4,8 @@
 
 #include "stdafx.h"
 
-#include "wound.h"
-#include "../xr_3da/NET_Server_Trash/net_utils.h"
+#include "Wound.h"
+#include "../xr_3da/NET_Server_Trash/NET_utils.h"
 #include "../xr_3da/bone.h"
 
 CWound::CWound(u16 bone_num) : m_iBoneNum{bone_num}, m_iParticleBoneNum{BI_NONE} { m_Wounds.resize(ALife::eHitTypeMax, 0.0f); }

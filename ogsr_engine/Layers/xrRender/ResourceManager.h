@@ -5,7 +5,7 @@
 #ifndef ResourceManagerH
 #define ResourceManagerH
 
-#include "shader.h"
+#include "Shader.h"
 #include "tss_def.h"
 #include "TextureDescrManager.h"
 

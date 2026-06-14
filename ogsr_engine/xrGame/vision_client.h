@@ -9,7 +9,7 @@
 #ifndef VISION_CLIENT_H
 #define VISION_CLIENT_H
 
-#include "..\xr_3da\feel_vision.h"
+#include "../xr_3da/Feel_Vision.h"
 
 class CObject;
 class CEntity;

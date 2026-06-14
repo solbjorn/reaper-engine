@@ -8,11 +8,12 @@
 
 #pragma once
 
-#include "inventory.h"
+#include "Inventory.h"
 
 IC CInventoryOwner& CInventoryItem::inventory_owner() const
 {
     VERIFY(m_pCurrentInventory);
     VERIFY(m_pCurrentInventory->GetOwner());
-    return (*m_pCurrentInventory->GetOwner());
+
+    return *m_pCurrentInventory->GetOwner();
 }

@@ -2,13 +2,13 @@
 
 #include "zone_effector.h"
 
-#include "level.h"
+#include "Level.h"
 #include "clsid_game.h"
-#include "..\xr_3da\xr_object.h"
-#include "..\xr_3da\cameramanager.h"
-#include "actor.h"
-#include "actoreffector.h"
-#include "postprocessanimator.h"
+#include "../xr_3da/xr_object.h"
+#include "../xr_3da/CameraManager.h"
+#include "Actor.h"
+#include "ActorEffector.h"
+#include "PostprocessAnimator.h"
 
 CZoneEffector::CZoneEffector() = default;
 CZoneEffector::~CZoneEffector() { Stop(); }

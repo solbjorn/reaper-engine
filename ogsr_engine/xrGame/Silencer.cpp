@@ -5,7 +5,7 @@
 
 #include "stdafx.h"
 
-#include "silencer.h"
+#include "Silencer.h"
 
 CSilencer::CSilencer() = default;
 CSilencer::~CSilencer() = default;

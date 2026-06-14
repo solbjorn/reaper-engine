@@ -1,9 +1,10 @@
 #include "stdafx.h"
 
 #include "controller_animation.h"
+
 #include "controller.h"
 #include "../../../detail_path_manager.h"
-#include "../../../level.h"
+#include "../../../Level.h"
 #include "../control_direction_base.h"
 #include "../control_path_builder_base.h"
 #include "controller_direction.h"
@@ -315,8 +316,8 @@ bool CControllerAnimation::is_moving()
 // then set negative speed
 void CControllerAnimation::set_path_params()
 {
-    bool moving_action = ((m_current_legs_action & eLegsTypeStealMotion) == eLegsTypeStealMotion) || ((m_current_legs_action & eLegsTypeWalk) == eLegsTypeWalk) ||
-        ((m_current_legs_action & eLegsTypeRun) == eLegsTypeRun);
+    bool moving_action = ((m_current_legs_action & eLegsTypeStealMotion) == eLegsTypeStealMotion) ||
+        ((m_current_legs_action & eLegsTypeWalk) == eLegsTypeWalk) || ((m_current_legs_action & eLegsTypeRun) == eLegsTypeRun);
 
     if (moving_action)
     {

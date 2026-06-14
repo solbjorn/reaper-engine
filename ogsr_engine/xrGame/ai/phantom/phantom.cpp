@@ -2,11 +2,11 @@
 
 #include "phantom.h"
 
-#include "../../../xr_3da/NET_Server_Trash/net_utils.h"
-#include "level.h"
+#include "../../../xr_3da/NET_Server_Trash/NET_utils.h"
+#include "Level.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "../../../xr_3da/motion.h"
-#include "../../../Include\xrRender\KinematicsAnimated.h"
+#include "../../../Include/xrRender/KinematicsAnimated.h"
 
 CPhantom::CPhantom()
 {

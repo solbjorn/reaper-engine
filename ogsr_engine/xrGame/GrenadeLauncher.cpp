@@ -5,10 +5,10 @@
 
 #include "stdafx.h"
 
-#include "grenadelauncher.h"
+#include "GrenadeLauncher.h"
 
 CGrenadeLauncher::CGrenadeLauncher() { m_fGrenadeVel = 0.f; }
-CGrenadeLauncher::~CGrenadeLauncher() {}
+CGrenadeLauncher::~CGrenadeLauncher() = default;
 
 tmc::task<bool> CGrenadeLauncher::net_Spawn(CSE_Abstract* DC) { co_return co_await inherited::net_Spawn(DC); }
 

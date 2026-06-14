@@ -3,14 +3,14 @@
 #include "Car.h"
 
 #include "alife_space.h"
-#include "hit.h"
+#include "Hit.h"
 #include "PHDestroyable.h"
-#include "phworld.h"
-#include "actor.h"
+#include "PHWorld.h"
+#include "Actor.h"
 #include "cameralook.h"
-#include "camerafirsteye.h"
-#include "level.h"
-#include "../xr_3da/cameramanager.h"
+#include "CameraFirstEye.h"
+#include "Level.h"
+#include "../xr_3da/CameraManager.h"
 
 #ifdef DEBUG
 #include "ode_include.h"

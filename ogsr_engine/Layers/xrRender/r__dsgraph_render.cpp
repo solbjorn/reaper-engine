@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
-#include "../../xr_3da/render.h"
-#include "../../xr_3da/irenderable.h"
-#include "../../xr_3da/igame_persistent.h"
-#include "../../xr_3da/environment.h"
+#include "../../xr_3da/Render.h"
+#include "../../xr_3da/IRenderable.h"
+#include "../../xr_3da/IGame_Persistent.h"
+#include "../../xr_3da/Environment.h"
 #include "../../xr_3da/CustomHUD.h"
 
 #include "FBasicVisual.h"
@@ -39,7 +39,8 @@ void R_dsgraph_structure::water_node_ssr(float key, _MatrixItemS& val)
     cmd_list.set_xform_world(val.Matrix);
     cmd_list.apply_lmaterial(val.pObject);
 
-    cmd_list.set_c("cam_pos", RImplementation.Target->Position_previous.x, RImplementation.Target->Position_previous.y, RImplementation.Target->Position_previous.z, 0.0f);
+    cmd_list.set_c("cam_pos", RImplementation.Target->Position_previous.x, RImplementation.Target->Position_previous.y,
+                   RImplementation.Target->Position_previous.z, 0.0f);
 
     // Previous matrix data
     cmd_list.set_c("m_current", RImplementation.Target->Matrix_current);

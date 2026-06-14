@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "xrserver.h"
+#include "xrServer.h"
 
-#include "xrserver_objects.h"
+#include "xrServer_Objects.h"
 
 namespace
 {

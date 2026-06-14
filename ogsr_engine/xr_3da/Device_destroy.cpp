@@ -2,8 +2,8 @@
 
 #include "device.h"
 
-#include "render.h"
-#include "xr_IOConsole.h"
+#include "Render.h"
+#include "XR_IOConsole.h"
 #include "xr_input.h"
 
 #include "../Include/xrRender/DrawUtils.h"

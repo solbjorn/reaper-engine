@@ -2,11 +2,11 @@
 
 #include "searchlight.h"
 
-#include "..\xr_3da\LightAnimLibrary.h"
+#include "../xr_3da/LightAnimLibrary.h"
 #include "script_entity_action.h"
 #include "xrServer_Objects_ALife.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "..\xr_3da\CameraBase.h"
+#include "../xr_3da/CameraBase.h"
 #include "game_object_space.h"
 #include "script_game_object.h"
 
@@ -245,9 +245,11 @@ void CProjector::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CProjector>(
         "projector", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CProjector>), "current_yaw",
-        sol::property(&CProjector::GetCurrentYaw, &CProjector::SetCurrentYaw), "current_pitch", sol::property(&CProjector::GetCurrentPitch, &CProjector::SetCurrentPitch),
-        "target_yaw", sol::property(&CProjector::GetTargetYaw, &CProjector::SetTargetYaw), "target_pitch", sol::property(&CProjector::GetTargetPitch, &CProjector::SetTargetPitch),
-        "set_volumetric", [](CProjector* self, const bool val) { self->light_render->set_volumetric(val); }, "set_volumetric_quality",
+        sol::property(&CProjector::GetCurrentYaw, &CProjector::SetCurrentYaw), "current_pitch",
+        sol::property(&CProjector::GetCurrentPitch, &CProjector::SetCurrentPitch), "target_yaw",
+        sol::property(&CProjector::GetTargetYaw, &CProjector::SetTargetYaw), "target_pitch",
+        sol::property(&CProjector::GetTargetPitch, &CProjector::SetTargetPitch), "set_volumetric",
+        [](CProjector* self, const bool val) { self->light_render->set_volumetric(val); }, "set_volumetric_quality",
         [](CProjector* self, const float val) { self->light_render->set_volumetric_quality(val); }, "set_volumetric_intensity",
         [](CProjector* self, const float val) { self->light_render->set_volumetric_intensity(val); }, "set_volumetric_distance",
         [](CProjector* self, const float val) { self->light_render->set_volumetric_distance(val); }, sol::base_classes, xr::sol_bases<CProjector>());

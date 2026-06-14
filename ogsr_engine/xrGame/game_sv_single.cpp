@@ -2,16 +2,16 @@
 
 #include "game_sv_single.h"
 
-#include "xrserver_objects_alife_monsters.h"
+#include "xrServer_Objects_ALife_Monsters.h"
 #include "alife_simulator.h"
 #include "alife_object_registry.h"
 #include "alife_graph_registry.h"
 #include "alife_time_manager.h"
-#include "../xr_3da/NET_Server_Trash/net_utils.h"
+#include "../xr_3da/NET_Server_Trash/NET_utils.h"
 #include "object_broker.h"
-#include "gamepersistent.h"
+#include "GamePersistent.h"
 #include "xrServer.h"
-#include "..\xr_3da\x_ray.h"
+#include "../xr_3da/x_ray.h"
 #include "ui/UILoadingScreen.h"
 #include "Actor_Flags.h"
 

@@ -4,7 +4,7 @@
 
 #include "stdafx.h"
 
-#include "uieditbox.h"
+#include "UIEditBox.h"
 
 #include "UIColorAnimatorWrapper.h"
 
@@ -16,7 +16,7 @@ CUIEditBox::CUIEditBox()
     m_lines.SetTextComplexMode(false);
 }
 
-CUIEditBox::~CUIEditBox(void) {}
+CUIEditBox::~CUIEditBox() = default;
 
 void CUIEditBox::Init(float x, float y, float width, float height)
 {

@@ -4,7 +4,7 @@
 
 #include "UIXmlInit.h"
 #include "UI3tButton.h"
-#include "../gametask.h"
+#include "../GameTask.h"
 #include "../string_table.h"
 #include "UIEventsWnd.h"
 #include "UIEditBoxEx.h"
@@ -12,9 +12,9 @@
 #include "UIInventoryUtilities.h"
 #include "../map_location.h"
 #include "../map_manager.h"
-#include "../level.h"
-#include "../actor.h"
-#include "../gametaskmanager.h"
+#include "../Level.h"
+#include "../Actor.h"
+#include "../GametaskManager.h"
 
 CUITaskItem::CUITaskItem(CUIEventsWnd* w) : m_EventsWnd{w} {}
 CUITaskItem::~CUITaskItem() = default;

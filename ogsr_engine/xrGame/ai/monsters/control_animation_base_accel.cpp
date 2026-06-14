@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
 #include "control_animation_base.h"
-#include "BaseMonster/base_monster.h"
+
+#include "basemonster/base_monster.h"
 #include "../../detail_path_manager.h"
 #include "monster_velocity_space.h"
 
@@ -70,7 +71,8 @@ bool CControlAnimationBase::accel_chain_get(float cur_speed, EMotionAnim target_
             float from = param->velocity.linear * param->min_factor;
             float to = param->velocity.linear * param->max_factor;
 
-            if (((from <= cur_speed + EPS_L) && (cur_speed <= to + EPS_L)) || ((cur_speed < from) && (IT == I->begin())) || ((cur_speed + EPS_L >= to) && (IT + 1 == I->end())))
+            if (((from <= cur_speed + EPS_L) && (cur_speed <= to + EPS_L)) || ((cur_speed < from) && (IT == I->begin())) ||
+                ((cur_speed + EPS_L >= to) && (IT + 1 == I->end())))
             {
                 best_anim = IT;
                 best_param = &item_it->velocity;
@@ -152,7 +154,8 @@ bool CControlAnimationBase::accel_check_braking(float before_interval, float nom
         return (braking_mode = true);
 
     // проверить точки пути, где необходимо остановиться
-    float dist = m_man->path_builder().object().Position().distance_to(m_man->path_builder().detail().path()[curr_travel_point_index + 1].position); // дистанция до найденной точки
+    float dist = m_man->path_builder().object().Position().distance_to(
+        m_man->path_builder().detail().path()[curr_travel_point_index + 1].position); // дистанция до найденной точки
     for (u32 i = curr_travel_point_index + 1; i < m_man->path_builder().detail().path().size() - 1; i++)
     {
         dist += m_man->path_builder().detail().path()[i].position.distance_to(m_man->path_builder().detail().path()[i + 1].position);

@@ -2,9 +2,9 @@
 
 #include "UIGameCustom.h"
 
-#include "level.h"
-#include "hudmanager.h"
-#include "ui/uistatic.h"
+#include "Level.h"
+#include "HUDManager.h"
+#include "ui/UIStatic.h"
 
 namespace
 {
@@ -15,13 +15,14 @@ void CUIGameCustom::script_register(sol::state_view& lua)
 {
     lua.new_usertype<SDrawStaticStruct>("SDrawStaticStruct", sol::no_constructor, "m_endTime", &SDrawStaticStruct::m_endTime, "wnd", &SDrawStaticStruct::wnd);
 
-    lua.new_usertype<CUIGameCustom>("CUIGameCustom", sol::no_constructor, "AddDialogToRender", &CUIGameCustom::AddDialogToRender, "RemoveDialogToRender",
-                                    &CUIGameCustom::RemoveDialogToRender, "AddCustomMessage",
-                                    sol::overload(sol::resolve<void(LPCSTR, float, float, float, CGameFont*, u16, u32, float)>(&CUIGameCustom::AddCustomMessage),
-                                                  sol::resolve<void(LPCSTR, float, float, float, CGameFont*, u16, u32)>(&CUIGameCustom::AddCustomMessage)),
-                                    "CustomMessageOut", &CUIGameCustom::CustomMessageOut, "RemoveCustomMessage", &CUIGameCustom::RemoveCustomMessage, "AddCustomStatic",
-                                    sol::overload(&CUIGameCustom::AddCustomStatic, &::AddCustomStatic), "RemoveCustomStatic", &CUIGameCustom::RemoveCustomStatic, "GetCustomStatic",
-                                    &CUIGameCustom::GetCustomStatic);
+    lua.new_usertype<CUIGameCustom>(
+        "CUIGameCustom", sol::no_constructor, "AddDialogToRender", &CUIGameCustom::AddDialogToRender, "RemoveDialogToRender",
+        &CUIGameCustom::RemoveDialogToRender, "AddCustomMessage",
+        sol::overload(sol::resolve<void(LPCSTR, float, float, float, CGameFont*, u16, u32, float)>(&CUIGameCustom::AddCustomMessage),
+                      sol::resolve<void(LPCSTR, float, float, float, CGameFont*, u16, u32)>(&CUIGameCustom::AddCustomMessage)),
+        "CustomMessageOut", &CUIGameCustom::CustomMessageOut, "RemoveCustomMessage", &CUIGameCustom::RemoveCustomMessage, "AddCustomStatic",
+        sol::overload(&CUIGameCustom::AddCustomStatic, &::AddCustomStatic), "RemoveCustomStatic", &CUIGameCustom::RemoveCustomStatic, "GetCustomStatic",
+        &CUIGameCustom::GetCustomStatic);
 
     lua.set_function("get_hud", [] { return HUD().GetUI()->UIGame(); });
 }

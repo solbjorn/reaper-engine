@@ -5,12 +5,12 @@
 #include "UITradeWnd.h"
 #include "UITalkDialogWnd.h"
 
-#include "../actor.h"
+#include "../Actor.h"
 #include "../HUDManager.h"
 #include "../UIGameSP.h"
 #include "../PDA.h"
 #include "../character_info.h"
-#include "../level.h"
+#include "../Level.h"
 
 #include "../PhraseDialog.h"
 #include "../PhraseDialogManager.h"
@@ -18,10 +18,10 @@
 #include "../game_cl_base.h"
 #include "../string_table.h"
 #include "../xr_level_controller.h"
-#include "../../xr_3da/cameraBase.h"
+#include "../../xr_3da/CameraBase.h"
 #include "UIXmlInit.h"
 #include "UIInventoryUtilities.h"
-#include "../inventory.h"
+#include "../Inventory.h"
 
 #include "../Include/xrRender/Kinematics.h"
 

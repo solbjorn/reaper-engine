@@ -7,7 +7,7 @@
 #include "UIScrollView.h"
 #include "UI3tButton.h"
 #include "../UI.h"
-#include "../actor.h"
+#include "../Actor.h"
 #include "../HUDManager.h"
 #include "../UIGameSP.h"
 #include "UIPdaWnd.h"
@@ -15,7 +15,7 @@
 #include "UIInventoryUtilities.h"
 
 #include "../game_news.h"
-#include "../level.h"
+#include "../Level.h"
 #include "../alife_registry_wrappers.h"
 
 #define TALK_XML "talk.xml"

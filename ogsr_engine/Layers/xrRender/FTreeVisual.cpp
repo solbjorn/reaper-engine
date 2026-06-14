@@ -1,11 +1,11 @@
 #include "stdafx.h"
 
-#include "../../xr_3da/igame_persistent.h"
-#include "../../xr_3da/igame_level.h"
-#include "../../xr_3da/environment.h"
+#include "../../xr_3da/IGame_Persistent.h"
+#include "../../xr_3da/IGame_Level.h"
+#include "../../xr_3da/Environment.h"
 #include "../../xr_3da/fmesh.h"
 
-#include "ftreevisual.h"
+#include "FTreeVisual.h"
 
 FTreeVisual::FTreeVisual() = default;
 FTreeVisual::~FTreeVisual() = default;
@@ -148,7 +148,8 @@ void FTreeVisual::Render(CBackend& cmd_list, float, bool)
         grass_shader_data.dir[0].set(0.0f, -99.0f, 0.0f, 1.0f);
 
         Fvector4* c_grass{};
-        cmd_list.get_ConstantDirect(strBendersPos, sizeof(grass_shader_data.pos) + sizeof(grass_shader_data.dir), reinterpret_cast<void**>(&c_grass), nullptr, nullptr);
+        cmd_list.get_ConstantDirect(strBendersPos, sizeof(grass_shader_data.pos) + sizeof(grass_shader_data.dir), reinterpret_cast<void**>(&c_grass), nullptr,
+                                    nullptr);
         VERIFY(c_grass);
 
         if (c_grass)

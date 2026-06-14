@@ -1,7 +1,7 @@
 #ifndef ParticlesObjectH
 #define ParticlesObjectH
 
-#include "..\xr_3da\PS_instance.h"
+#include "../xr_3da/PS_instance.h"
 
 constexpr inline Fvector zero_vel{};
 

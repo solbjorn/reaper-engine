@@ -1,7 +1,9 @@
 #include "stdafx.h"
+
 #include "dxLensFlareRender.h"
+
 #include "../../xr_3da/xr_efflensflare.h"
-#include "../../xr_3da/iGame_persistent.h"
+#include "../../xr_3da/IGame_Persistent.h"
 
 #define MAX_Flares 24
 

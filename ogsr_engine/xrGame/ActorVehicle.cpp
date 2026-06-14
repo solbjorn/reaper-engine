@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "actor.h"
+#include "Actor.h"
 
-#include "../xr_3da/camerabase.h"
+#include "../xr_3da/CameraBase.h"
 
 #include "ActorEffector.h"
 #include "holder_custom.h"
@@ -12,17 +12,17 @@
 #endif
 
 #include "alife_space.h"
-#include "hit.h"
+#include "Hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
-#include "..\Include/xrRender/Kinematics.h"
-#include "..\Include/xrRender/KinematicsAnimated.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 #include "PHShellSplitter.h"
 
 #include "actor_anim_defs.h"
 #include "game_object_space.h"
-#include "characterphysicssupport.h"
-#include "inventory.h"
+#include "CharacterPhysicsSupport.h"
+#include "Inventory.h"
 
 #include "script_game_object.h"
 

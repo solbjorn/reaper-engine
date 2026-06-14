@@ -3,25 +3,25 @@
 #include "InventoryOwner.h"
 
 #include "entity_alive.h"
-#include "pda.h"
-#include "actor.h"
+#include "PDA.h"
+#include "Actor.h"
 #include "trade.h"
-#include "inventory.h"
-#include "xrserver_objects_alife_items.h"
+#include "Inventory.h"
+#include "xrServer_Objects_ALife_Items.h"
 #include "character_info.h"
 #include "script_game_object.h"
 #include "script_engine.h"
 #include "AI_PhraseDialogManager.h"
-#include "level.h"
+#include "Level.h"
 #include "game_base_space.h"
 #include "PhraseDialog.h"
-#include "xrserver.h"
+#include "xrServer.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "alife_registry_wrappers.h"
 #include "relation_registry.h"
 #include "ai_object_location.h"
 #include "game_object_space.h"
-#include "AI/Monsters/BaseMonster/base_monster.h"
+#include "ai/monsters/basemonster/base_monster.h"
 #include "trade_parameters.h"
 #include "purchase_list.h"
 #include "clsid_game.h"
@@ -236,9 +236,6 @@ bool CInventoryOwner::OfferTalk(CInventoryOwner* talk_partner)
     CEntityAlive* pPartnerEntityAlive = smart_cast<CEntityAlive*>(talk_partner);
     R_ASSERT(pPartnerEntityAlive);
 
-    //	ALife::ERelationType relation = RELATION_REGISTRY().GetRelationType(this, talk_partner);
-    //	if(relation == ALife::eRelationTypeEnemy) return false;
-
     if (!pOurEntityAlive->g_Alive() || !pPartnerEntityAlive->g_Alive())
         return false;
 
@@ -258,8 +255,8 @@ void CInventoryOwner::StartTalk(CInventoryOwner* talk_partner, bool start_trade)
 }
 
 #include "UIGameSP.h"
-#include "HUDmanager.h"
-#include "ui\UITalkWnd.h"
+#include "HUDManager.h"
+#include "ui/UITalkWnd.h"
 
 void CInventoryOwner::StopTalk()
 {
@@ -328,7 +325,8 @@ void CInventoryOwner::spawn_supplies()
 
     if (!ai().get_alife())
     {
-        CSE_Abstract* abstract = Level().spawn_item("device_pda", game_object->Position(), game_object->ai_location().level_vertex_id(), game_object->ID(), true);
+        CSE_Abstract* abstract =
+            Level().spawn_item("device_pda", game_object->Position(), game_object->ai_location().level_vertex_id(), game_object->ID(), true);
         CSE_ALifeItemPDA* pda = smart_cast<CSE_ALifeItemPDA*>(abstract);
         R_ASSERT(pda);
         pda->m_original_owner = (u16)game_object->ID();

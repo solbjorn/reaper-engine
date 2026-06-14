@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "..\xr_3da\xrLevel.h"
+#include "../xr_3da/xrLevel.h"
 
 class CALifeSpawnHeader : public virtual RTTI::Enable
 {

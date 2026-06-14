@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////
 #include "StdAfx.h"
 
-#include "phcharacter.h"
+#include "PHCharacter.h"
 #include "Physics.h"
 #include "ExtendedGeom.h"
 #include "PHCapture.h"
@@ -11,7 +11,7 @@
 #include "Actor.h"
 #include "Inventory.h"
 #include "ai/stalker/ai_stalker.h"
-#include "ai/monsters/BaseMonster/base_monster.h"
+#include "ai/monsters/basemonster/base_monster.h"
 
 extern class CPHWorld* ph_world;
 
@@ -288,7 +288,8 @@ void CPHCapture::Release()
     }
     m_body = nullptr;
 
-    if (e_state == cstPulling && m_taget_element && !m_taget_object->getDestroy() && m_taget_object->PPhysicsShell() && m_taget_object->PPhysicsShell()->isActive())
+    if (e_state == cstPulling && m_taget_element && !m_taget_object->getDestroy() && m_taget_object->PPhysicsShell() &&
+        m_taget_object->PPhysicsShell()->isActive())
         m_taget_element->set_DynamicLimits();
 
     b_failed = false;

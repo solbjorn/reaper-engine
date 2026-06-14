@@ -13,7 +13,7 @@
 #include "../ai_monster_squad.h"
 #include "../ai_monster_squad_manager.h"
 
-#include "../../../actor.h"
+#include "../../../Actor.h"
 
 #define TEMPLATE_SPECIALIZATION template <typename _Object>
 

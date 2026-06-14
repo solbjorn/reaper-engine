@@ -2,9 +2,9 @@
 
 #include "Level.h"
 
-#include "HUDmanager.h"
-#include "..\xr_3da\xrLevel.h"
-#include "xrserver.h"
+#include "HUDManager.h"
+#include "../xr_3da/xrLevel.h"
+#include "xrServer.h"
 
 void CLevel::net_Save(LPCSTR name) // Game Save
 {

@@ -10,7 +10,7 @@
 
 #include "sight_manager.h"
 
-#include "custommonster.h"
+#include "CustomMonster.h"
 #include "ai/stalker/ai_stalker.h"
 #include "detail_path_manager.h"
 #include "level_graph.h"
@@ -23,7 +23,7 @@ using namespace StalkerSpace;
 // #define SIGHT_DEBUG
 
 CSightManager::CSightManager(CAI_Stalker* object) : inherited{object} {}
-CSightManager::~CSightManager() {}
+CSightManager::~CSightManager() = default;
 
 void CSightManager::Load(LPCSTR) {}
 

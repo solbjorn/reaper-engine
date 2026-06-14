@@ -4,13 +4,13 @@
 
 #include "script_engine.h"
 #include "ai_space.h"
-#include "gameobject.h"
+#include "GameObject.h"
 #include "script_game_object.h"
-#include "infoportion.h"
-#include "inventoryowner.h"
+#include "InfoPortion.h"
+#include "InventoryOwner.h"
 #include "ai_debug.h"
 #include "ui/xrUIXmlParser.h"
-#include "actor.h"
+#include "Actor.h"
 
 CPhraseScript::CPhraseScript() = default;
 CPhraseScript::~CPhraseScript() = default;

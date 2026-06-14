@@ -5,8 +5,7 @@
 
 #include "stdafx.h"
 
-#include "exooutfit.h"
+#include "ExoOutfit.h"
 
-CExoOutfit::CExoOutfit() {}
-
-CExoOutfit::~CExoOutfit() {}
+CExoOutfit::CExoOutfit() = default;
+CExoOutfit::~CExoOutfit() = default;

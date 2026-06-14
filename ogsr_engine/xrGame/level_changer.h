@@ -9,7 +9,7 @@
 #pragma once
 
 #include "GameObject.h"
-#include "..\xr_3da\feel_touch.h"
+#include "../xr_3da/Feel_Touch.h"
 #include "game_graph_space.h"
 
 class CLevelChanger : public CGameObject, public Feel::Touch

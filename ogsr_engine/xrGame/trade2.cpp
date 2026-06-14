@@ -2,15 +2,15 @@
 
 #include "trade.h"
 
-#include "actor.h"
+#include "Actor.h"
 #include "ai/stalker/ai_stalker.h"
 #include "ai/trader/ai_trader.h"
-#include "artifact.h"
-#include "inventory.h"
-#include "xrmessages.h"
+#include "Artifact.h"
+#include "Inventory.h"
+#include "xrMessages.h"
 #include "character_info.h"
 #include "relation_registry.h"
-#include "level.h"
+#include "Level.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
 #include "trade_parameters.h"
@@ -193,7 +193,8 @@ u32 CTrade::GetItemPrice(PIItem pItem, bool b_buying)
     {
         deficit_factor = pThis.inv_owner->deficit_factor(pItem->object().cNameSect());
 
-        clamp(deficit_factor, READ_IF_EXISTS(pSettings, r_float, "trade", "min_deficit_factor", 1), READ_IF_EXISTS(pSettings, r_float, "trade", "max_deficit_factor", 1));
+        clamp(deficit_factor, READ_IF_EXISTS(pSettings, r_float, "trade", "min_deficit_factor", 1),
+              READ_IF_EXISTS(pSettings, r_float, "trade", "max_deficit_factor", 1));
     }
 
     const float original_result = base_cost * condition_factor * action_factor;

@@ -4,7 +4,7 @@
 
 #include "stdafx.h"
 
-#include "blender_Lm(EbB).h"
+#include "Blender_Lm(EbB).h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -18,7 +18,7 @@ CBlender_LmEbB::CBlender_LmEbB()
     oBlend.value = FALSE;
 }
 
-CBlender_LmEbB::~CBlender_LmEbB() {}
+CBlender_LmEbB::~CBlender_LmEbB() = default;
 
 void CBlender_LmEbB::Save(IWriter& fs)
 {

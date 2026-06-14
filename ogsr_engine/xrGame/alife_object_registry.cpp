@@ -10,7 +10,7 @@
 
 #include "alife_object_registry.h"
 
-#include "../xr_3da/NET_Server_Trash/net_utils.h"
+#include "../xr_3da/NET_Server_Trash/NET_utils.h"
 #include "ai_debug.h"
 
 #include "game_object_space.h"

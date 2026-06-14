@@ -6,14 +6,14 @@
 #include "PhysicsCommon.h"
 #include "Level.h"
 #include "ExtendedGeom.h"
-#include "draymotions.h"
+#include "dRayMotions.h"
 #include "PHCollideValidator.h"
-#include "../xr_3da/gamemtllib.h"
+#include "../xr_3da/GameMtlLib.h"
 
 #include "PHCommander.h"
 #include "PHSimpleCalls.h"
 #include "PHSynchronize.h"
-#include "phnetstate.h"
+#include "PHNetState.h"
 
 #ifdef DEBUG
 #include "PHDebug.h"

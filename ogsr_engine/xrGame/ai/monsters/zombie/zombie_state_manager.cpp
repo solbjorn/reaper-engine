@@ -1,5 +1,7 @@
 #include "stdafx.h"
+
 #include "zombie.h"
+
 #include "zombie_state_manager.h"
 
 #include "../control_animation_base.h"
@@ -12,7 +14,7 @@
 #include "../states/monster_state_eat.h"
 #include "../states/monster_state_hear_int_sound.h"
 #include "zombie_state_attack_run.h"
-#include "../../../entitycondition.h"
+#include "../../../EntityCondition.h"
 #include "../../../detail_path_manager.h"
 #include "../states/monster_state_controlled.h"
 #include "../states/monster_state_help_sound.h"
@@ -20,14 +22,15 @@
 CStateManagerZombie::CStateManagerZombie(CZombie* obj) : inherited(obj)
 {
     add_state(eStateRest, xr_new<CStateMonsterRest<CZombie>>(obj));
-    add_state(eStateAttack, xr_new<CStateMonsterAttack<CZombie>>(obj, xr_new<CStateZombieAttackRun<CZombie>>(obj), xr_new<CStateMonsterAttackMelee<CZombie>>(obj)));
+    add_state(eStateAttack,
+              xr_new<CStateMonsterAttack<CZombie>>(obj, xr_new<CStateZombieAttackRun<CZombie>>(obj), xr_new<CStateMonsterAttackMelee<CZombie>>(obj)));
     add_state(eStateEat, xr_new<CStateMonsterEat<CZombie>>(obj));
     add_state(eStateHearInterestingSound, xr_new<CStateMonsterHearInterestingSound<CZombie>>(obj));
     add_state(eStateControlled, xr_new<CStateMonsterControlled<CZombie>>(obj));
     add_state(eStateHearHelpSound, xr_new<CStateMonsterHearHelpSound<CZombie>>(obj));
 }
 
-CStateManagerZombie::~CStateManagerZombie() {}
+CStateManagerZombie::~CStateManagerZombie() = default;
 
 void CStateManagerZombie::execute()
 {

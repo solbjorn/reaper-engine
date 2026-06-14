@@ -8,17 +8,17 @@
 #include "r2_types.h"
 #include "r4_rendertarget.h"
 
-#include "../xrRender/hom.h"
-#include "../xrRender/detailmanager.h"
-#include "../xrRender/modelpool.h"
-#include "../xrRender/wallmarksengine.h"
+#include "../xrRender/HOM.h"
+#include "../xrRender/DetailManager.h"
+#include "../xrRender/ModelPool.h"
+#include "../xrRender/WallmarksEngine.h"
 
-#include "../xrRender/light_db.h"
-#include "../xrRender/light_render_direct.h"
+#include "../xrRender/Light_DB.h"
+#include "../xrRender/Light_Render_Direct.h"
 #include "../xrRender/LightTrack.h"
 #include "../xrRender/r_sun_cascades.h"
 
-#include "../../xr_3da/irenderable.h"
+#include "../../xr_3da/IRenderable.h"
 #include "../../xr_3da/fmesh.h"
 
 class dxRender_Visual;

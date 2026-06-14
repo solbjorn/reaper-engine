@@ -5,18 +5,18 @@
 
 #include "stdafx.h"
 
-#include "customrocket.h"
+#include "CustomRocket.h"
 
 #include "ParticlesObject.h"
 #include "PhysicsShell.h"
-#include "extendedgeom.h"
-#include "level.h"
+#include "ExtendedGeom.h"
+#include "Level.h"
 #include "xrMessages.h"
-#include "../xr_3da/gamemtllib.h"
+#include "../xr_3da/GameMtlLib.h"
 #include "tri-colliderknoopc/dTriList.h"
-#include "..\Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "CalculateTriangle.h"
-#include "actor.h"
+#include "Actor.h"
 
 #ifdef DEBUG
 #include "PHDebug.h"

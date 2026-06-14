@@ -1,18 +1,18 @@
 #include "stdafx.h"
 
-#include "../../xr_3da/render.h"
+#include "../../xr_3da/Render.h"
 
 #include "../xrRender/ResourceManager.h"
 #include "../xrRender/tss.h"
-#include "../xrRender/blenders/blender.h"
-#include "../xrRender/blenders/blender_recorder.h"
+#include "../xrRender/blenders/Blender.h"
+#include "../xrRender/blenders/Blender_Recorder.h"
 
 #include "../xrRenderDX10/dx10BufferUtils.h"
 #include "../xrRenderDX10/dx10ConstantBuffer.h"
 
 #include "../xrRender/ShaderResourceTraits.h"
 
-#include <Utilities\FlexibleVertexFormat.h>
+#include <Utilities/FlexibleVertexFormat.h>
 
 SHS* CResourceManager::_CreateHS(LPCSTR Name) { return CreateShader<SHS>(Name); }
 void CResourceManager::_DeleteHS(const SHS* HS) { DestroyShader(HS); }

@@ -4,7 +4,7 @@
 
 #include "stdafx.h"
 
-#include "..\ResourceManager.h"
+#include "../ResourceManager.h"
 #include "Blender_Recorder.h"
 #include "Blender.h"
 

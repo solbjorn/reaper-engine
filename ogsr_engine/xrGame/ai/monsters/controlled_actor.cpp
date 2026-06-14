@@ -2,12 +2,12 @@
 
 #include "controlled_actor.h"
 
-#include "../../actor.h"
+#include "../../Actor.h"
 #include "../../../xr_3da/CameraBase.h"
 #include "../../xr_level_controller.h"
-#include "../../level.h"
+#include "../../Level.h"
 #include "ai_monster_utils.h"
-#include "../../inventory.h"
+#include "../../Inventory.h"
 
 #define SPEED_MIN 0.5f
 #define SPEED_MAX 4.f

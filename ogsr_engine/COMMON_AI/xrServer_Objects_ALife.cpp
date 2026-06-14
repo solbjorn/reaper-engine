@@ -10,7 +10,7 @@
 
 #include "xrServer_Objects_ALife.h"
 
-#include "../xr_3da/NET_Server_Trash/net_utils.h"
+#include "../xr_3da/NET_Server_Trash/NET_utils.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "game_base_space.h"
 #include "object_broker.h"
@@ -19,8 +19,8 @@
 #include "character_info.h"
 
 #ifndef XRGAME_EXPORTS
-#include "..\xr_3da\bone.h"
-#include "..\xr_3da\defines.h"
+#include "../xr_3da/bone.h"
+#include "../xr_3da/defines.h"
 LPCSTR GAME_CONFIG = "game.ltx";
 #else
 #include "../xr_3da/Render.h"

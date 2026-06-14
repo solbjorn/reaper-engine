@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../Engine.h"
 
 // Дефайны директплея, надо убрать.
@@ -7,7 +8,7 @@
 #define DPNSEND_NONSEQUENTIAL 0x0010
 #define DPNSEND_PRIORITY_HIGH 0x0080
 
-#include "net_utils.h"
-#include "net_messages.h"
+#include "NET_utils.h"
+#include "NET_Messages.h"
 
 extern ClientID BroadcastCID;

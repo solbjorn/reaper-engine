@@ -2,7 +2,7 @@
 
 #include "ResourceManager.h"
 
-#include "blenders\blender.h"
+#include "blenders/Blender.h"
 
 bool bShadersXrExport{false};
 

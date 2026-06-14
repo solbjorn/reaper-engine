@@ -11,7 +11,7 @@
 #include "../state_manager.h"
 
 #include "../../../ai_debug.h"
-#include "../../../level.h"
+#include "../../../Level.h"
 #include "../../../level_debug.h"
 
 #include "../control_animation_base.h"
@@ -20,14 +20,12 @@
 #include "../../../patrol_path_manager.h"
 #include "../../../patrol_path_manager_space.h"
 
-// #include "ai/monsters/ai_monster_squad.h"
-// #include "ai/monsters/ai_monster_squad_manager.h"
 #include "level_graph.h"
 #include "../../../game_path_manager.h"
 #include "../../../alife_simulator.h"
 #include "../../../alife_group_registry.h"
 #include "../../../alife_object_registry.h"
-#include "xrServer_Objects_Alife_Monsters.h"
+#include "xrServer_Objects_ALife_Monsters.h"
 
 using namespace MonsterSpace;
 using namespace MonsterSound;
@@ -214,7 +212,8 @@ bool CBaseMonster::bfAssignMovement(CScriptEntityAction* tpEntityAction)
             u32 vertex_id = u32(-1);
             for (u32 tries = 0; tries < 3; ++tries)
             {
-                vertex_id = ai().level_graph().check_position_in_direction(leader->ai_location().level_vertex_id(), leader_pos, leader_pos + m_offset_from_leader);
+                vertex_id =
+                    ai().level_graph().check_position_in_direction(leader->ai_location().level_vertex_id(), leader_pos, leader_pos + m_offset_from_leader);
 
                 if (ai().level_graph().valid_vertex_id(vertex_id))
                 {
@@ -351,8 +350,12 @@ bool CBaseMonster::bfAssignSound(CScriptEntityAction* tpEntityAction)
 
     switch (l_tAction.m_monster_sound)
     {
-    case eMonsterSoundIdle: sound().play(eMonsterSoundIdle, 0, 0, (l_tAction.m_monster_sound_delay == int(-1)) ? db().m_dwIdleSndDelay : l_tAction.m_monster_sound_delay); break;
-    case eMonsterSoundEat: sound().play(eMonsterSoundEat, 0, 0, (l_tAction.m_monster_sound_delay == int(-1)) ? db().m_dwEatSndDelay : l_tAction.m_monster_sound_delay); break;
+    case eMonsterSoundIdle:
+        sound().play(eMonsterSoundIdle, 0, 0, (l_tAction.m_monster_sound_delay == int(-1)) ? db().m_dwIdleSndDelay : l_tAction.m_monster_sound_delay);
+        break;
+    case eMonsterSoundEat:
+        sound().play(eMonsterSoundEat, 0, 0, (l_tAction.m_monster_sound_delay == int(-1)) ? db().m_dwEatSndDelay : l_tAction.m_monster_sound_delay);
+        break;
     case eMonsterSoundAggressive:
         sound().play(eMonsterSoundAggressive, 0, 0, (l_tAction.m_monster_sound_delay == int(-1)) ? db().m_dwAttackSndDelay : l_tAction.m_monster_sound_delay);
         break;

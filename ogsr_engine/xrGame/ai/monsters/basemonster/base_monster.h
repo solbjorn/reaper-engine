@@ -24,7 +24,7 @@
 #include "../ai_monster_shared_data.h"
 #include "../monster_sound_defs.h"
 #include "../monster_aura.h"
-#include "../../../inventoryowner.h"
+#include "../../../InventoryOwner.h"
 #include "../ai_monster_squad.h"
 
 class CCharacterPhysicsSupport;

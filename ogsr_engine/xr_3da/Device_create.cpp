@@ -1,11 +1,7 @@
 #include "stdafx.h"
 
-// #include "resourcemanager.h"
 #include "../Include/xrRender/DrawUtils.h"
-// #include "xr_effgamma.h"
-#include "render.h"
-
-// #include "../xrcdb/xrxrc.h"
+#include "Render.h"
 
 namespace
 {

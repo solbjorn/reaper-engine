@@ -6,10 +6,10 @@
 
 #include "LightTrack.h"
 
-#include "../../include/xrRender/RenderVisual.h"
+#include "../../Include/xrRender/RenderVisual.h"
 #include "../../xr_3da/xr_object.h"
-#include "../../xr_3da/igame_persistent.h"
-#include "../../xr_3da/environment.h"
+#include "../../xr_3da/IGame_Persistent.h"
+#include "../../xr_3da/Environment.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

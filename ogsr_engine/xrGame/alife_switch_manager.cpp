@@ -15,10 +15,10 @@
 #include "alife_object_registry.h"
 #include "alife_schedule_registry.h"
 #include "game_level_cross_table.h"
-#include "xrserver.h"
+#include "xrServer.h"
 #include "ai_space.h"
 #include "level_graph.h"
-#include "level.h"
+#include "Level.h"
 
 using namespace ALife;
 

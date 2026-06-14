@@ -9,9 +9,10 @@
 #include "stdafx.h"
 
 #include "stalker_kill_wounded_actions.h"
+
 #include "ai/stalker/ai_stalker.h"
-#include "inventory.h"
-#include "weaponmagazined.h"
+#include "Inventory.h"
+#include "WeaponMagazined.h"
 #include "stalker_movement_manager.h"
 #include "movement_manager_space.h"
 #include "detail_path_manager_space.h"
@@ -28,7 +29,7 @@
 #include "stalker_decision_space.h"
 #include "agent_manager.h"
 #include "agent_enemy_manager.h"
-#include "../Include\xrRender\Kinematics.h"
+#include "../Include/xrRender/Kinematics.h"
 
 using namespace StalkerSpace;
 using namespace StalkerDecisionSpace;

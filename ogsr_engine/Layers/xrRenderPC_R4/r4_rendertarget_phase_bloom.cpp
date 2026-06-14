@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "../../xr_3da/environment.h"
-#include "../../xr_3da/igame_persistent.h"
+#include "../../xr_3da/Environment.h"
+#include "../../xr_3da/IGame_Persistent.h"
 
 namespace
 {

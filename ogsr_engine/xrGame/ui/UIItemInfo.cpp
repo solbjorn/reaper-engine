@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "uiiteminfo.h"
+#include "UIItemInfo.h"
 
-#include "uistatic.h"
+#include "UIStatic.h"
 #include "UIXmlInit.h"
 
 #include "UIListWnd.h"
@@ -10,7 +10,7 @@
 #include "UIScrollView.h"
 
 #include "../string_table.h"
-#include "../Inventory_Item.h"
+#include "../inventory_item.h"
 #include "UIInventoryUtilities.h"
 #include "../PhysicsShellHolder.h"
 #include "UIWpnParams.h"

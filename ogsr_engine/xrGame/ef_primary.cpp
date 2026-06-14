@@ -8,14 +8,14 @@
 
 #include "stdafx.h"
 
-#include "weapon.h"
+#include "Weapon.h"
 #include "entity_alive.h"
-#include "inventoryowner.h"
+#include "InventoryOwner.h"
 #include "alife_simulator.h"
 #include "ef_storage.h"
 #include "ai_space.h"
 #include "game_graph.h"
-#include "inventory.h"
+#include "Inventory.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "clsid_game.h"
 #include "ef_primary.h"
@@ -402,8 +402,8 @@ float CMainWeaponPreference::ffGetValue()
     {
         CSE_ALifeHumanAbstract* l_tpALifeHumanAbstract = smart_cast<CSE_ALifeHumanAbstract*>(ef_storage().alife().member());
         R_ASSERT2(l_tpALifeHumanAbstract, "Non-human object in EquipmentPreference evaluation function");
-        return (l_tpALifeHumanAbstract->brain()
-                    .m_cpMainWeaponPreferences[ef_storage().m_pfMainWeaponType->dwfGetDiscreteValue(iFloor(ef_storage().m_pfMainWeaponType->ffGetMaxResultValue() + .5f))]);
+        return (l_tpALifeHumanAbstract->brain().m_cpMainWeaponPreferences[ef_storage().m_pfMainWeaponType->dwfGetDiscreteValue(
+            iFloor(ef_storage().m_pfMainWeaponType->ffGetMaxResultValue() + .5f))]);
     }
 }
 #else
@@ -447,8 +447,8 @@ float CMainWeaponPreference::ffGetValue()
     {
         CSE_ALifeHumanAbstract* l_tpALifeHumanAbstract = smart_cast<CSE_ALifeHumanAbstract*>(ef_storage().alife().member());
         R_ASSERT2(l_tpALifeHumanAbstract, "Non-human object in EquipmentPreference evaluation function");
-        return (l_tpALifeHumanAbstract
-                    ->m_cpMainWeaponPreferences[ef_storage().m_pfMainWeaponType->dwfGetDiscreteValue(iFloor(ef_storage().m_pfMainWeaponType->ffGetMaxResultValue() + .5f))]);
+        return (l_tpALifeHumanAbstract->m_cpMainWeaponPreferences[ef_storage().m_pfMainWeaponType->dwfGetDiscreteValue(
+            iFloor(ef_storage().m_pfMainWeaponType->ffGetMaxResultValue() + .5f))]);
     }
 }
 #endif

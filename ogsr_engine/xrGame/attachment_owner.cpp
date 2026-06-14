@@ -13,9 +13,9 @@
 #include "attachable_item.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "inventory_item.h"
-#include "physicsshellholder.h"
+#include "PhysicsShellHolder.h"
 
-CAttachmentOwner::~CAttachmentOwner() {}
+CAttachmentOwner::~CAttachmentOwner() = default;
 
 void CAttachmentOwner::reload(LPCSTR section)
 {

@@ -1,5 +1,6 @@
 #include "stdafx.h"
-#include "render.h"
+
+#include "Render.h"
 
 // resources
 IRender_Light::~IRender_Light() { ::Render->light_destroy(this); }

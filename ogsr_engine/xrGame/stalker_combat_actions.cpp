@@ -9,14 +9,15 @@
 #include "stdafx.h"
 
 #include "stalker_combat_actions.h"
+
 #include "ai/stalker/ai_stalker.h"
 #include "script_game_object.h"
 #include "stalker_decision_space.h"
-#include "inventory.h"
+#include "Inventory.h"
 #include "cover_evaluators.h"
 #include "cover_point.h"
 #include "cover_manager.h"
-#include "missile.h"
+#include "Missile.h"
 #include "stalker_movement_restriction.h"
 #include "movement_manager_space.h"
 #include "detail_path_manager_space.h"
@@ -32,10 +33,10 @@
 #include "agent_location_manager.h"
 #include "danger_cover_location.h"
 #include "ai/stalker/ai_stalker_space.h"
-#include "weapon.h"
+#include "Weapon.h"
 #include "danger_manager.h"
 #include "detail_path_manager.h"
-#include "weaponmagazined.h"
+#include "WeaponMagazined.h"
 #include "stalker_animation_manager.h"
 
 #define DISABLE_COVER_BEFORE_DETOUR
@@ -106,7 +107,8 @@ void CStalkerActionGetItemToKill::execute()
     object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_body_state(object().movement().body_state() == MonsterSpace::eBodyStateCrouch ? MonsterSpace::eBodyStateCrouch : MonsterSpace::eBodyStateStand);
+    object().movement().set_body_state(object().movement().body_state() == MonsterSpace::eBodyStateCrouch ? MonsterSpace::eBodyStateCrouch :
+                                                                                                            MonsterSpace::eBodyStateStand);
     object().movement().set_movement_type(MonsterSpace::eMovementTypeWalk);
     object().set_goal(MonsterSpace::eObjectActionIdle);
 }
@@ -125,8 +127,9 @@ void CStalkerActionMakeItemKilling::initialize()
 
     object().sight().clear();
     object().sight().add_action(eSightActionTypeWatchItem, xr_new<CSightControlAction>(1.f, 3000u, CSightAction(SightManager::eSightTypePathDirection)));
-    object().sight().add_action(eSightActionTypeWatchEnemy,
-                                xr_new<CSightControlAction>(1.f, 3000u, CSightAction(SightManager::eSightTypePosition, object().memory().enemy().selected()->Position(), false)));
+    object().sight().add_action(
+        eSightActionTypeWatchEnemy,
+        xr_new<CSightControlAction>(1.f, 3000u, CSightAction(SightManager::eSightTypePosition, object().memory().enemy().selected()->Position(), false)));
 
     object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
 }
@@ -223,9 +226,10 @@ void CStalkerActionRetreatFromEnemy::execute()
         {
             object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
             //			u32												min_queue_size, max_queue_size, min_queue_interval, max_queue_interval;
-            //			float											distance = object().memory().enemy().selected()->Position().distance_to(object().Position());
-            //			select_queue_params								(distance,min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
-            //			object().CObjectHandler::set_goal				(eObjectActionFire1,object().best_weapon(),min_queue_size, max_queue_size, min_queue_interval,
+            //			float											distance =
+            //object().memory().enemy().selected()->Position().distance_to(object().Position()); 			select_queue_params
+            //(distance,min_queue_size, max_queue_size, min_queue_interval, max_queue_interval); 			object().CObjectHandler::set_goal
+            //(eObjectActionFire1,object().best_weapon(),min_queue_size, max_queue_size, min_queue_interval,
             // max_queue_interval);
             fire();
             object().sight().setup(CSightAction(object().memory().enemy().selected(), true, true));
@@ -378,7 +382,8 @@ void CStalkerActionKillEnemy::initialize()
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_nearest_accessible_position();
     object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
-    //	object().movement().set_body_state			(m_storage->property(eWorldPropertyUseCrouchToLookOut) ? MonsterSpace::eBodyStateCrouch : MonsterSpace::eBodyStateStand);
+    //	object().movement().set_body_state			(m_storage->property(eWorldPropertyUseCrouchToLookOut) ? MonsterSpace::eBodyStateCrouch :
+    //MonsterSpace::eBodyStateStand);
     object().movement().set_movement_type(MonsterSpace::eMovementTypeStand);
     m_storage->set_property(eWorldPropertyLookedOut, false);
     m_storage->set_property(eWorldPropertyPositionHolded, false);
@@ -586,7 +591,8 @@ void CStalkerActionLookOut::execute()
 
     Fvector position = mem_object.m_object_params.m_position;
     object().m_ce_close->setup(position, 0.f, 170.f, 10.f);
-    const CCoverPoint* point = ai().cover_manager().best_cover(object().Position(), 10.f, *object().m_ce_close); //,CStalkerMovementRestrictor(m_object,true,false));
+    const CCoverPoint* point =
+        ai().cover_manager().best_cover(object().Position(), 10.f, *object().m_ce_close); //,CStalkerMovementRestrictor(m_object,true,false));
     if (!point || (point->position().similar(object().Position()) && object().movement().path_completed()))
     {
         object().m_ce_close->setup(position, 0.f, 170.f, 10.f);
@@ -705,8 +711,9 @@ void CStalkerActionDetourEnemy::initialize()
 
 #ifdef DISABLE_COVER_BEFORE_DETOUR
     if (object().agent_manager().member().member(m_object).cover())
-        object().agent_manager().location().add(xr_new<CDangerCoverLocation>(object().agent_manager().member().member(m_object).cover(), Device.dwTimeGlobal, TEMP_DANGER_INTERVAL,
-                                                                             TEMP_DANGER_DISTANCE, object().agent_manager().member().mask(&object())));
+        object().agent_manager().location().add(xr_new<CDangerCoverLocation>(object().agent_manager().member().member(m_object).cover(), Device.dwTimeGlobal,
+                                                                             TEMP_DANGER_INTERVAL, TEMP_DANGER_DISTANCE,
+                                                                             object().agent_manager().member().mask(&object())));
 #endif
 
     object().agent_manager().member().member(m_object).cover(nullptr);
@@ -864,7 +871,8 @@ void CStalkerActionPostCombatWait::initialize()
     if (m_storage->property(eWorldPropertyKilledWounded))
         action = MonsterSpace::eObjectActionIdle;
 
-    if (object().inventory().ActiveItem() && object().best_weapon() && (object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
+    if (object().inventory().ActiveItem() && object().best_weapon() &&
+        (object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
         object().set_goal(action, object().best_weapon());
     else
     {
@@ -920,7 +928,8 @@ void CStalkerActionGetDistance::execute()
 
     Fvector position = mem_object.m_object_params.m_position;
 
-    if (object().inventory().ActiveItem() && object().best_weapon() && (object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
+    if (object().inventory().ActiveItem() && object().best_weapon() &&
+        (object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
         aim_ready();
 
     object().sight().setup(CSightAction(SightManager::eSightTypePosition, position, true));
@@ -929,7 +938,8 @@ void CStalkerActionGetDistance::execute()
         return;
 
     object().m_ce_best_by_time->setup(position, 10.f, object().ffGetRange(), 10.f);
-    const CCoverPoint* point = ai().cover_manager().best_cover(object().Position(), 10.f, *object().m_ce_best_by_time, CStalkerMovementRestrictor(m_object, true));
+    const CCoverPoint* point =
+        ai().cover_manager().best_cover(object().Position(), 10.f, *object().m_ce_best_by_time, CStalkerMovementRestrictor(m_object, true));
     if (!point)
     {
         object().m_ce_best_by_time->setup(position, 10.f, object().ffGetRange(), 10.f);
@@ -1201,7 +1211,8 @@ void CStalkerActionCriticalHit::initialize()
         u32 min_queue_size, max_queue_size, min_queue_interval, max_queue_interval;
         float distance = object().memory().enemy().selected()->Position().distance_to(object().Position());
         select_queue_params(distance, min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
-        object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
+        object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval,
+                                          max_queue_interval);
     }
     else
     {

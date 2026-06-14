@@ -2,7 +2,7 @@
 
 #include "script_ui_registrator.h"
 
-#include "UI\UIMultiTextStatic.h"
+#include "ui/UIMultiTextStatic.h"
 #include "MainMenu.h"
 
 CMainMenu* MainMenu();

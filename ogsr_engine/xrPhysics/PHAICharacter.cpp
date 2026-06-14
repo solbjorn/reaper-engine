@@ -1,16 +1,16 @@
 #include "stdafx.h"
 
-#include "phaicharacter.h"
+#include "PHAICharacter.h"
 
 #include "PHDynamicData.h"
 #include "Physics.h"
 #include "ExtendedGeom.h"
-#include "tri-colliderKNoOPC\__aabb_tri.h"
+#include "tri-colliderknoopc/__aabb_tri.h"
 
 #ifdef DEBUG
 #include "../xr_3da/StatGraph.h"
 #include "PHDebug.h"
-#include "level.h"
+#include "Level.h"
 #include "debug_renderer.h"
 #endif
 

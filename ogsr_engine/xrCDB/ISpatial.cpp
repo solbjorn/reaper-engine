@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "../xr_3da/Engine.h"
-#include "../xr_3da/render.h"
+#include "../xr_3da/Render.h"
 
 #ifdef DEBUG
 #include "../xr_3da/PS_Instance.h"

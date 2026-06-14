@@ -1,7 +1,7 @@
 #ifndef dxConsoleRender_included
 #define dxConsoleRender_included
 
-#include "..\..\Include\xrRender\ConsoleRender.h"
+#include "../../Include/xrRender/ConsoleRender.h"
 
 class dxConsoleRender : public IConsoleRender
 {

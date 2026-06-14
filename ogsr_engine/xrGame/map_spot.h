@@ -1,4 +1,5 @@
 #pragma once
+
 #include "ui/UIStatic.h"
 
 class CMapLocation;

@@ -1,25 +1,25 @@
 #include "stdafx.h"
 
-#include "ScriptXmlInit.h"
+#include "ScriptXMLInit.h"
 
-#include "ui\UIXmlInit.h"
-#include "ui\UITextureMaster.h"
-#include "ui\UICheckButton.h"
-#include "ui\UISpinNum.h"
-#include "ui\UISpinText.h"
-#include "ui\UIComboBox.h"
-#include "ui\UIListWnd.h"
-#include "ui\UITabControl.h"
-#include "ui\UIFrameWindow.h"
-#include "ui\UILabel.h"
-#include "ui\UIKeyBinding.h"
-#include "ui\UIEditBox.h"
-#include "ui\UIEditBoxEx.h"
-#include "ui\UIAnimatedStatic.h"
-#include "ui\UITrackBar.h"
-#include "ui\UIMMShniaga.h"
-#include "ui\UIScrollView.h"
-#include "ui\UIProgressBar.h"
+#include "ui/UIXmlInit.h"
+#include "ui/UITextureMaster.h"
+#include "ui/UICheckButton.h"
+#include "ui/UISpinNum.h"
+#include "ui/UISpinText.h"
+#include "ui/UIComboBox.h"
+#include "ui/UIListWnd.h"
+#include "ui/UITabControl.h"
+#include "ui/UIFrameWindow.h"
+#include "ui/UILabel.h"
+#include "ui/UIKeyBinding.h"
+#include "ui/UIEditBox.h"
+#include "ui/UIEditBoxEx.h"
+#include "ui/UIAnimatedStatic.h"
+#include "ui/UITrackBar.h"
+#include "ui/UIMMShniaga.h"
+#include "ui/UIScrollView.h"
+#include "ui/UIProgressBar.h"
 
 namespace
 {
@@ -254,12 +254,13 @@ CUIProgressBar* CScriptXmlInit::InitProgressBar(LPCSTR path, CUIWindow* parent)
 void CScriptXmlInit::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CScriptXmlInit>(
-        "CScriptXmlInit", sol::no_constructor, sol::call_constructor, sol::constructors<CScriptXmlInit()>(), "ParseFile", &CScriptXmlInit::ParseFile, "ParseShTexInfo",
-        &CScriptXmlInit::ParseShTexInfo, "InitWindow", &CScriptXmlInit::InitWindow, "InitFrame", &CScriptXmlInit::InitFrame, "InitFrameLine", &CScriptXmlInit::InitFrameLine,
-        "InitLabel", &CScriptXmlInit::InitLabel, "InitEditBox", &CScriptXmlInit::InitEditBox, "InitEditBoxEx", &CScriptXmlInit::InitEditBoxEx, "InitStatic",
-        &CScriptXmlInit::InitStatic, "InitAnimStatic", &CScriptXmlInit::InitAnimStatic, "InitCheck", &CScriptXmlInit::InitCheck, "InitSpinNum", &CScriptXmlInit::InitSpinNum,
-        "InitSpinFlt", &CScriptXmlInit::InitSpinFlt, "InitSpinText", &CScriptXmlInit::InitSpinText, "InitComboBox", &CScriptXmlInit::InitComboBox, "InitButton",
-        &CScriptXmlInit::InitButton, "Init3tButton", &CScriptXmlInit::Init3tButton, "InitList", &CScriptXmlInit::InitList, "InitTab", &CScriptXmlInit::InitTab, "InitTrackBar",
+        "CScriptXmlInit", sol::no_constructor, sol::call_constructor, sol::constructors<CScriptXmlInit()>(), "ParseFile", &CScriptXmlInit::ParseFile,
+        "ParseShTexInfo", &CScriptXmlInit::ParseShTexInfo, "InitWindow", &CScriptXmlInit::InitWindow, "InitFrame", &CScriptXmlInit::InitFrame, "InitFrameLine",
+        &CScriptXmlInit::InitFrameLine, "InitLabel", &CScriptXmlInit::InitLabel, "InitEditBox", &CScriptXmlInit::InitEditBox, "InitEditBoxEx",
+        &CScriptXmlInit::InitEditBoxEx, "InitStatic", &CScriptXmlInit::InitStatic, "InitAnimStatic", &CScriptXmlInit::InitAnimStatic, "InitCheck",
+        &CScriptXmlInit::InitCheck, "InitSpinNum", &CScriptXmlInit::InitSpinNum, "InitSpinFlt", &CScriptXmlInit::InitSpinFlt, "InitSpinText",
+        &CScriptXmlInit::InitSpinText, "InitComboBox", &CScriptXmlInit::InitComboBox, "InitButton", &CScriptXmlInit::InitButton, "Init3tButton",
+        &CScriptXmlInit::Init3tButton, "InitList", &CScriptXmlInit::InitList, "InitTab", &CScriptXmlInit::InitTab, "InitTrackBar",
         &CScriptXmlInit::InitTrackBar, "InitKeyBinding", &CScriptXmlInit::InitKeyBinding, "InitMMShniaga", &CScriptXmlInit::InitMMShniaga, "InitScrollView",
         &CScriptXmlInit::InitScrollView, "InitAutoStaticGroup", &CScriptXmlInit::InitAutoStaticGroup, "InitProgressBar", &CScriptXmlInit::InitProgressBar);
 }

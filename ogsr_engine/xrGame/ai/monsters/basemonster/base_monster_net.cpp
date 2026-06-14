@@ -2,12 +2,12 @@
 
 #include "base_monster.h"
 
-#include "xrserver_objects_alife_monsters.h"
+#include "xrServer_Objects_ALife_Monsters.h"
 #include "../../../ai_object_location.h"
 #include "game_graph.h"
-#include "../../../../xr_3da/NET_Server_Trash/net_utils.h"
+#include "../../../../xr_3da/NET_Server_Trash/NET_utils.h"
 #include "../../../ai_space.h"
-#include "../../../hit.h"
+#include "../../../Hit.h"
 #include "../../../PHDestroyable.h"
 #include "../../../CharacterPhysicsSupport.h"
 

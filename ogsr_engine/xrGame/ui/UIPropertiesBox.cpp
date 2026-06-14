@@ -2,8 +2,8 @@
 
 #include "UIPropertiesBox.h"
 
-#include "../hudmanager.h"
-#include "../level.h"
+#include "../HUDManager.h"
+#include "../Level.h"
 #include "UIListBoxItem.h"
 #include "UIXmlInit.h"
 
@@ -16,7 +16,7 @@ CUIPropertiesBox::CUIPropertiesBox()
     m_UIListWnd.SetImmediateSelection(true);
 }
 
-CUIPropertiesBox::~CUIPropertiesBox() {}
+CUIPropertiesBox::~CUIPropertiesBox() = default;
 
 void CUIPropertiesBox::Init(float x, float y, float width, float height)
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../Include\xrRender\animation_motion.h"
+#include "../../../Include/xrRender/animation_motion.h"
 #include "control_com_defs.h"
 
 class CControl_Manager;

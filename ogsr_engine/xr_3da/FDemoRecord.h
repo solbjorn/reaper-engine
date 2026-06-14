@@ -1,7 +1,7 @@
 #pragma once
 
-#include "iinputreceiver.h"
-#include "effector.h"
+#include "IInputReceiver.h"
+#include "Effector.h"
 #include "GameFont.h"
 
 class CDemoRecord : public CEffectorCam, public IInputReceiver, public pureRender

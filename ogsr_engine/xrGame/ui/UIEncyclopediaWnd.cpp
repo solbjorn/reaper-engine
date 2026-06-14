@@ -21,7 +21,7 @@
 #include "UIEncyclopediaArticleWnd.h"
 #include "../encyclopedia_article.h"
 #include "../alife_registry_wrappers.h"
-#include "../actor.h"
+#include "../Actor.h"
 #include "../object_broker.h"
 #include "../string_table.h"
 

@@ -1,8 +1,9 @@
 #include "stdafx.h"
 
 #include "actor_input_handler.h"
-#include "actor.h"
-#include "level.h"
+
+#include "Actor.h"
+#include "Level.h"
 
 void CActorInputHandler::reinit() { m_actor = nullptr; }
 

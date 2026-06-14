@@ -3,9 +3,12 @@
 ///////////////////////////////////
 
 #include "StdAfx.h"
+
 #include "UIOptionsManager.h"
+
 #include "UIOptionsItem.h"
-#include "..\..\xr_3da\xr_ioconsole.h"
+
+#include "../../xr_3da/XR_IOConsole.h"
 
 CUIOptionsManager::CUIOptionsManager()
 {
@@ -144,5 +147,4 @@ void CUIOptionsManager::OptionsPostAccept()
 }
 
 void CUIOptionsManager::DoVidRestart() { m_b_vid_restart = true; }
-
 void CUIOptionsManager::DoSndRestart() { m_b_snd_restart = true; }

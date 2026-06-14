@@ -1,7 +1,7 @@
 #pragma once
 
 #include "HUDCrosshair.h"
-#include "..\xrcdb\xr_collide_defs.h"
+#include "../xrCDB/xr_collide_defs.h"
 
 constexpr inline u32 C_ON_ENEMY{D3DCOLOR_XRGB(0xff, 0, 0)};
 constexpr inline u32 C_ON_NEUTRAL{D3DCOLOR_XRGB(0xff, 0xff, 0x80)};

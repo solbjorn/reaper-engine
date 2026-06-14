@@ -5,7 +5,7 @@
 
 #include "stdafx.h"
 
-#include "scientificoutfit.h"
+#include "ScientificOutfit.h"
 
 CScientificOutfit::CScientificOutfit() = default;
 CScientificOutfit::~CScientificOutfit() = default;

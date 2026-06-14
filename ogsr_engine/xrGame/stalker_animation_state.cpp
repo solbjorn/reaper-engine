@@ -7,12 +7,13 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_animation_state.h"
+
 #include "object_broker.h"
-#include "..\Include/xrRender/KinematicsAnimated.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 
 CStalkerAnimationState::CStalkerAnimationState() { m_in_place = xr_new<IN_PLACE_ANIMATIONS>(); }
-
 CStalkerAnimationState::CStalkerAnimationState(const CStalkerAnimationState& stalker_animation_state) { clone(stalker_animation_state.m_in_place, m_in_place); }
 
 CStalkerAnimationState::~CStalkerAnimationState() { xr_delete(m_in_place); }

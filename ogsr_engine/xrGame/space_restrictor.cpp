@@ -11,7 +11,7 @@
 #include "space_restrictor.h"
 
 #include "xrServer_Objects_ALife.h"
-#include "level.h"
+#include "Level.h"
 #include "space_restriction_manager.h"
 #include "restriction_space.h"
 #include "ai_space.h"
@@ -24,7 +24,7 @@
 #include "debug_renderer.h"
 #endif
 
-CSpaceRestrictor::~CSpaceRestrictor() {}
+CSpaceRestrictor::~CSpaceRestrictor() = default;
 
 void CSpaceRestrictor::Center(Fvector& C) const { XFORM().transform_tiny(C, CFORM()->getSphere().P); }
 
@@ -344,8 +344,8 @@ float CSpaceRestrictor::distance_to(Fvector& P)
     return min_dist;
 }
 
-#include "hudmanager.h"
-#include "Debug_Renderer.h"
+#include "HUDManager.h"
+#include "debug_renderer.h"
 
 void CSpaceRestrictor::OnRender()
 {

@@ -10,7 +10,7 @@
 
 #include "UIMessagesWindow.h"
 
-#include "../level.h"
+#include "../Level.h"
 #include "UIGameLog.h"
 #include "xrUIXmlParser.h"
 #include "UIXmlInit.h"
@@ -20,7 +20,7 @@
 #include "../string_table.h"
 
 CUIMessagesWindow::CUIMessagesWindow() { Init(0, 0, UI_BASE_WIDTH, UI_BASE_HEIGHT); }
-CUIMessagesWindow::~CUIMessagesWindow() {}
+CUIMessagesWindow::~CUIMessagesWindow() = default;
 
 void CUIMessagesWindow::Init(float, float, float, float)
 {

@@ -3,8 +3,8 @@
 #include "poltergeist.h"
 
 #include "../../../PhysicsShellHolder.h"
-#include "../../../level.h"
-#include "../../../actor.h"
+#include "../../../Level.h"
+#include "../../../Actor.h"
 #include "IColisiondamageInfo.h"
 
 CPolterTele::CPolterTele(CPoltergeist* polter) : inherited{polter} {}

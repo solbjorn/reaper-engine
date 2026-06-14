@@ -10,12 +10,12 @@
 
 #include "ai_stalker.h"
 
-#include "../../pda.h"
-#include "../../inventory.h"
-#include "xrmessages.h"
-#include "../../shootingobject.h"
-#include "../../../xr_3da/NET_Server_Trash/net_utils.h"
-#include "level.h"
+#include "../../PDA.h"
+#include "../../Inventory.h"
+#include "xrMessages.h"
+#include "../../ShootingObject.h"
+#include "../../../xr_3da/NET_Server_Trash/NET_utils.h"
+#include "Level.h"
 #include "../../ai_monster_space.h"
 #include "../../stalker_planner.h"
 #include "../../script_game_object.h"

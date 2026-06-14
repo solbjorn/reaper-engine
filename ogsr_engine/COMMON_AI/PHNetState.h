@@ -41,7 +41,7 @@ private:
 
 DEFINE_VECTOR(SPHNetState, PHNETSTATE_VECTOR, PHNETSTATE_I);
 
-#include "..\xr_3da\vismask.h"
+#include "../xr_3da/vismask.h"
 
 struct SPHBonesData
 {

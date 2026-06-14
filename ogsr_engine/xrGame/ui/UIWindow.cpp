@@ -7,7 +7,7 @@
 
 #include "../UICursor.h"
 #include "../MainMenu.h"
-#include "HudManager.h"
+#include "HUDManager.h"
 #include "../Include/xrRender/DebugRender.h"
 
 // #define LOG_ALL_WNDS

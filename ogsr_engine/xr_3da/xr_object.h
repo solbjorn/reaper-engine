@@ -4,9 +4,9 @@
 #include "../xrCDB/ISpatial.h"
 #include "device.h"
 #include "EngineAPI.h"
-#include "isheduled.h"
-#include "irenderable.h"
-#include "icollidable.h"
+#include "ISheduled.h"
+#include "IRenderable.h"
+#include "ICollidable.h"
 
 class IObjectPhysicsCollision;
 // refs

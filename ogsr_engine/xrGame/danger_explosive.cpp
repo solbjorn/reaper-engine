@@ -7,9 +7,11 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "danger_explosive.h"
-#include "gameobject.h"
-#include "explosive.h"
+
+#include "GameObject.h"
+#include "Explosive.h"
 
 bool CDangerExplosive::operator==(const u16& object_id) const
 {
@@ -18,5 +20,6 @@ bool CDangerExplosive::operator==(const u16& object_id) const
 
     const CGameObject* game_object = smart_cast<const CGameObject*>(m_grenade);
     VERIFY(game_object);
+
     return (game_object->ID() == object_id);
 }

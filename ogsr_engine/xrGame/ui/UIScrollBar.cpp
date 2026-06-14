@@ -1,13 +1,13 @@
 #include "stdafx.h"
 
-#include "uiscrollbar.h"
+#include "UIScrollBar.h"
 
 #include "UI3tButton.h"
 #include "UIScrollBox.h"
 #include "UIXmlInit.h"
 #include "UITextureMaster.h"
 
-#include "..\uicursor.h"
+#include "../UICursor.h"
 
 CUIScrollBar::CUIScrollBar()
 {
@@ -29,7 +29,7 @@ CUIScrollBar::CUIScrollBar()
     m_StaticBackground = xr_new<CUIStaticItem>();
 }
 
-CUIScrollBar::~CUIScrollBar(void) { xr_delete(m_StaticBackground); }
+CUIScrollBar::~CUIScrollBar() { xr_delete(m_StaticBackground); }
 
 void CUIScrollBar::Init(float x, float y, float length, bool bIsHorizontal, LPCSTR profile)
 {
@@ -151,7 +151,8 @@ void CUIScrollBar::UpdateScrollBar()
         if (m_bIsHorizontal)
         {
             // set width
-            clamp(box_sz, _min(GetHeight(), GetWidth() - m_IncButton->GetWidth() - m_DecButton->GetWidth()), GetWidth() - m_IncButton->GetWidth() - m_DecButton->GetWidth());
+            clamp(box_sz, _min(GetHeight(), GetWidth() - m_IncButton->GetWidth() - m_DecButton->GetWidth()),
+                  GetWidth() - m_IncButton->GetWidth() - m_DecButton->GetWidth());
             m_ScrollBox->SetWidth(box_sz);
             m_ScrollBox->SetHeight(GetHeight());
             // set pos
@@ -162,7 +163,8 @@ void CUIScrollBar::UpdateScrollBar()
         else
         {
             // set height
-            clamp(box_sz, _min(GetWidth(), GetHeight() - m_IncButton->GetHeight() - m_DecButton->GetHeight()), GetHeight() - m_IncButton->GetHeight() - m_DecButton->GetHeight());
+            clamp(box_sz, _min(GetWidth(), GetHeight() - m_IncButton->GetHeight() - m_DecButton->GetHeight()),
+                  GetHeight() - m_IncButton->GetHeight() - m_DecButton->GetHeight());
             m_ScrollBox->SetHeight(box_sz);
             m_ScrollBox->SetWidth(GetWidth());
             // set pos

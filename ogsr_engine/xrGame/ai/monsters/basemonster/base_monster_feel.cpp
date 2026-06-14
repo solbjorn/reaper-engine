@@ -10,20 +10,20 @@
 
 #include "base_monster.h"
 
-#include "../../../actor.h"
+#include "../../../Actor.h"
 #include "../../../ActorEffector.h"
 #include "../ai_monster_effector.h"
-#include "../../../hudmanager.h"
+#include "../../../HUDManager.h"
 #include "clsid_game.h"
 #include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../../sound_player.h"
-#include "../../../level.h"
+#include "../../../Level.h"
 #include "../../../script_game_object.h"
 #include "../../../game_object_space.h"
 #include "../../../ai_monster_space.h"
 #include "../control_animation_base.h"
 #include "../../../UIGameCustom.h"
-#include "../../../UI/UIStatic.h"
+#include "../../../ui/UIStatic.h"
 #include "../../../ai_object_location.h"
 #include "../../../../xr_3da/CameraBase.h"
 
@@ -109,7 +109,8 @@ void CBaseMonster::HitEntity(const CEntity* pEntity, float fDamage, float impuls
         HS.weaponID = (ID()); //		l_P.w_u16	(ID());
         HS.dir = (hit_dir); //		l_P.w_dir	(hit_dir);
         HS.power = (fDamage); //		l_P.w_float	(fDamage);
-        HS.boneID = (smart_cast<IKinematics*>(pEntityNC->Visual())->LL_GetBoneRoot()); //		l_P.w_s16	(smart_cast<IKinematics*>(pEntityNC->Visual())->LL_GetBoneRoot());
+        HS.boneID = (smart_cast<IKinematics*>(pEntityNC->Visual())
+                         ->LL_GetBoneRoot()); //		l_P.w_s16	(smart_cast<IKinematics*>(pEntityNC->Visual())->LL_GetBoneRoot());
         HS.p_in_bone_space = (position_in_bone_space); //		l_P.w_vec3	(position_in_bone_space);
         HS.impulse = (impulse); //		l_P.w_float	(impulse);
         HS.hit_type = hit_type; //		l_P.w_u16	( u16(ALife::eHitTypeWound) );
@@ -287,10 +288,10 @@ void CBaseMonster::SetAttackEffector()
     CActor* pA = smart_cast<CActor*>(Level().CurrentEntity());
     if (pA)
     {
-        Actor()->Cameras().AddCamEffector(xr_new<CMonsterEffectorHit>(db().m_attack_effector.ce_time, db().m_attack_effector.ce_amplitude, db().m_attack_effector.ce_period_number,
-                                                                      db().m_attack_effector.ce_power));
-        Actor()->Cameras().AddPPEffector(
-            xr_new<CMonsterEffector>(db().m_attack_effector.ppi, db().m_attack_effector.time, db().m_attack_effector.time_attack, db().m_attack_effector.time_release));
+        Actor()->Cameras().AddCamEffector(xr_new<CMonsterEffectorHit>(db().m_attack_effector.ce_time, db().m_attack_effector.ce_amplitude,
+                                                                      db().m_attack_effector.ce_period_number, db().m_attack_effector.ce_power));
+        Actor()->Cameras().AddPPEffector(xr_new<CMonsterEffector>(db().m_attack_effector.ppi, db().m_attack_effector.time, db().m_attack_effector.time_attack,
+                                                                  db().m_attack_effector.time_release));
     }
 }
 

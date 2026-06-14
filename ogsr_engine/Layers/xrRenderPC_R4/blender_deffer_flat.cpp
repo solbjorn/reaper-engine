@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "../xrRender/uber_deffer.h"
-#include "Blender_deffer_flat.h"
+#include "blender_deffer_flat.h"
 
 CBlender_deffer_flat::CBlender_deffer_flat()
 {
@@ -11,7 +11,7 @@ CBlender_deffer_flat::CBlender_deffer_flat()
     oTessellation.IDselected = 0;
 }
 
-CBlender_deffer_flat::~CBlender_deffer_flat() {}
+CBlender_deffer_flat::~CBlender_deffer_flat() = default;
 
 void CBlender_deffer_flat::Save(IWriter& fs)
 {

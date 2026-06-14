@@ -2,10 +2,10 @@
 
 #include "xr_ioc_cmd.h"
 
-#include "igame_level.h"
+#include "IGame_Level.h"
 #include "x_ray.h"
-#include "cameramanager.h"
-#include "environment.h"
+#include "CameraManager.h"
+#include "Environment.h"
 #include "xr_input.h"
 #include "CustomHUD.h"
 #include "GameFont.h"

@@ -4,7 +4,7 @@
 
 #include "../xrCDB/cl_intersect.h"
 #include "../xr_3da/device.h"
-#include "../xr_3da/gamemtllib.h"
+#include "../xr_3da/GameMtlLib.h"
 
 #include "SoundRender_Core.h"
 #include "SoundRender_Emitter.h"

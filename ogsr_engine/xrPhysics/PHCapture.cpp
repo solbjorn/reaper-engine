@@ -1,14 +1,14 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////
 #include "StdAfx.h"
 
-#include "phcharacter.h"
+#include "PHCharacter.h"
 #include "Physics.h"
 #include "ExtendedGeom.h"
 #include "PHCapture.h"
 #include "entity_alive.h"
-#include "phmovementcontrol.h"
+#include "PHMovementControl.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "characterphysicssupport.h"
+#include "CharacterPhysicsSupport.h"
 #include "Actor.h"
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////

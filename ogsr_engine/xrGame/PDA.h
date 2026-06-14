@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\xr_3da\feel_touch.h"
+#include "../xr_3da/Feel_Touch.h"
 #include "hud_item_object.h"
 #include "InfoPortionDefs.h"
 #include "character_info_defs.h"

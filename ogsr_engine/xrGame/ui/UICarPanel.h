@@ -1,6 +1,6 @@
 #pragma once
 
-#include "uiwindow.h"
+#include "UIWindow.h"
 
 class CUICarPanel : public CUIWindow
 {

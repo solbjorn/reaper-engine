@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../entity.h"
-#include "../../../Include\xrRender\Kinematics.h"
-#include "../../../Include\xrRender\animation_motion.h"
+#include "../../Entity.h"
+#include "../../../Include/xrRender/Kinematics.h"
+#include "../../../Include/xrRender/animation_motion.h"
 
 class CParticlesObject;
 

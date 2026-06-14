@@ -2,7 +2,7 @@
 
 #include "Actor.h"
 #include "Artifact.h"
-#include "ai/monsters/BaseMonster/base_monster.h"
+#include "ai/monsters/basemonster/base_monster.h"
 #include "Car.h"
 #include "CustomMonster.h"
 #include "CustomOutfit.h"
@@ -15,7 +15,7 @@
 #include "ExplosiveItem.h"
 #include "Grenade.h"
 #include "HangingLamp.h"
-#include "Helicopter.h"
+#include "helicopter.h"
 #include "HudItem.h"
 #include "hud_item_object.h"
 #include "Inventory.h"

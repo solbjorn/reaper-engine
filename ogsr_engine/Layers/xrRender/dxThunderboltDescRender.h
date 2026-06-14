@@ -1,7 +1,7 @@
 #ifndef dxThunderboltDescRender_included
 #define dxThunderboltDescRender_included
 
-#include "..\..\Include\xrRender\ThunderboltDescRender.h"
+#include "../../Include/xrRender/ThunderboltDescRender.h"
 
 class IRender_DetailModel;
 

@@ -4,7 +4,7 @@
 
 #include "xr_efflensflare.h"
 #include "thunderbolt.h"
-#include "rain.h"
+#include "Rain.h"
 
 #include "IGame_Level.h"
 #include "../COMMON_AI/object_broker.h"

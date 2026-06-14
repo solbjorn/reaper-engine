@@ -10,7 +10,7 @@
 
 #include "../../xr_3da/context.h"
 
-#include "hwcaps.h"
+#include "HWCaps.h"
 #include "stats_manager.h"
 
 class CHW : public pureAppActivate, public pureAppDeactivate

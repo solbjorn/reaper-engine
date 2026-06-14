@@ -4,7 +4,7 @@
 
 #include "../xrRender/ShaderResourceTraits.h"
 #include "../xrRender/SkeletonCustom.h"
-#include "../xrRender/fbasicvisual.h"
+#include "../xrRender/FBasicVisual.h"
 #include "../xrRender/LightTrack.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 #include "../xrRender/dxUIShader.h"
@@ -12,9 +12,9 @@
 #include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"
 
 #include "../../xr_3da/CustomHUD.h"
-#include "../../xr_3da/environment.h"
+#include "../../xr_3da/Environment.h"
 #include "../../xr_3da/GameFont.h"
-#include "../../xr_3da/igame_persistent.h"
+#include "../../xr_3da/IGame_Persistent.h"
 #include "../../xr_3da/xr_object.h"
 
 namespace xxh

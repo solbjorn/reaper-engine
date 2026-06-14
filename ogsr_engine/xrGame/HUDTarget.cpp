@@ -5,17 +5,17 @@
 
 #include "stdafx.h"
 
-#include "hudtarget.h"
+#include "HUDTarget.h"
 
-#include "hudmanager.h"
+#include "HUDManager.h"
 #include "../xr_3da/GameMtlLib.h"
 
-#include "..\xr_3da\Environment.h"
-#include "..\xr_3da\CustomHUD.h"
+#include "../xr_3da/Environment.h"
+#include "../xr_3da/CustomHUD.h"
 #include "Actor.h"
-#include "level.h"
+#include "Level.h"
 #include "game_cl_base.h"
-#include "..\xr_3da\IGame_Persistent.h"
+#include "../xr_3da/IGame_Persistent.h"
 
 #include "InventoryOwner.h"
 #include "relation_registry.h"
@@ -25,13 +25,13 @@
 #include "entity_alive.h"
 
 #include "inventory_item.h"
-#include "inventory.h"
+#include "Inventory.h"
 #include "monster_community.h"
 #include "HudItem.h"
 #include "Weapon.h"
 #include "PDA.h"
 
-#include <ai/monsters/poltergeist/poltergeist.h>
+#include "ai/monsters/poltergeist/poltergeist.h"
 
 namespace
 {

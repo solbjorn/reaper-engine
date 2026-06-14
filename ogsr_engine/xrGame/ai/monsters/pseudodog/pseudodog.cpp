@@ -5,7 +5,7 @@
 #include "pseudodog_state_manager.h"
 #include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../../sound_player.h"
-#include "../../../level.h"
+#include "../../../Level.h"
 #include "../../../ai_monster_space.h"
 #include "../monster_velocity_space.h"
 #include "../control_animation_base.h"

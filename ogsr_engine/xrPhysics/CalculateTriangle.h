@@ -4,7 +4,7 @@
 #include "MathUtils.h"
 #include "Level.h"
 #include "Geometry.h"
-#include "tri-colliderknoopc/dtricollidermath.h"
+#include "tri-colliderknoopc/dTriColliderMath.h"
 
 ICF void GetNormal(CDB::TRI* XTri, Fvector& n)
 {
@@ -47,8 +47,8 @@ ICF void CalculateTriangle(CDB::TRI* XTri, dGeomID g, Triangle& triangle)
     CalculateTriangle(XTri, p, triangle);
 }
 
-inline bool TriContainPoint(const dReal* v0, const dReal* v1, const dReal* v2, const dReal* triSideAx0, const dReal* triSideAx1, const dReal* triSideAx2, const dReal* triAx,
-                            const dReal* pos, u16& c)
+inline bool TriContainPoint(const dReal* v0, const dReal* v1, const dReal* v2, const dReal* triSideAx0, const dReal* triSideAx1, const dReal* triSideAx2,
+                            const dReal* triAx, const dReal* pos, u16& c)
 {
     c = 0;
     dVector3 cross0, cross1, cross2;
@@ -73,7 +73,8 @@ inline bool TriContainPoint(const dReal* v0, const dReal* v1, const dReal* v2, c
     return true;
 }
 
-ICF bool TriContainPoint(const dReal* v0, const dReal* v1, const dReal* v2, const dReal* triAx, const dReal* triSideAx0, const dReal* triSideAx1, const dReal* pos, u16& c)
+ICF bool TriContainPoint(const dReal* v0, const dReal* v1, const dReal* v2, const dReal* triAx, const dReal* triSideAx0, const dReal* triSideAx1,
+                         const dReal* pos, u16& c)
 {
     dVector3 triSideAx2 = {v0[0] - v2[0], v0[1] - v2[1], v0[2] - v2[2]};
     return TriContainPoint(v0, v1, v2, triSideAx0, triSideAx1, triSideAx2, triAx, pos, c);

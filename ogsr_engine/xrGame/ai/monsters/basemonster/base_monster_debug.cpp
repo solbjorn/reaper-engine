@@ -1,14 +1,16 @@
 #include "stdafx.h"
+
 #include "base_monster.h"
-#include "../../../level.h"
+
+#include "../../../Level.h"
 #include "../../../level_debug.h"
-#include "../../../entitycondition.h"
+#include "../../../EntityCondition.h"
 #include "../../../ai_debug.h"
 #include "../state_defs.h"
 #include "../state_manager.h"
 #include "PHMovementControl.h"
-#include "../../../characterphysicssupport.h"
-#include "../../../actor.h"
+#include "../../../CharacterPhysicsSupport.h"
+#include "../../../Actor.h"
 
 #ifdef DEBUG
 CBaseMonster::SDebugInfo CBaseMonster::show_debug_info()
@@ -56,7 +58,8 @@ CBaseMonster::SDebugInfo CBaseMonster::show_debug_info()
 
     if (EnemyMan.get_enemy())
     {
-        sprintf_s(text, "SeeEnemy[%u] EnemySeeMe[%u] TimeLastSeen[%u]", EnemyMan.see_enemy_now(), EnemyMan.enemy_see_me_now(), EnemyMan.get_enemy_time_last_seen());
+        sprintf_s(text, "SeeEnemy[%u] EnemySeeMe[%u] TimeLastSeen[%u]", EnemyMan.see_enemy_now(), EnemyMan.enemy_see_me_now(),
+                  EnemyMan.get_enemy_time_last_seen());
         DBG().text(this).add_item(text, x, y += delta_y, color);
     }
 
@@ -140,8 +143,8 @@ CBaseMonster::SDebugInfo CBaseMonster::show_debug_info()
     DBG().text(this).add_item(text, x, y += delta_y, color);
 
     DBG().text(this).add_item("------- Attack Distances -------------", x, y += delta_y, delimiter_color);
-    sprintf_s(text, "MinDist[%.3f] MaxDist[%.3f] As_Step[%.3f] As_MinDist[%.3f]", MeleeChecker.get_min_distance(), MeleeChecker.get_max_distance(), MeleeChecker.dbg_as_step(),
-              MeleeChecker.dbg_as_min_dist());
+    sprintf_s(text, "MinDist[%.3f] MaxDist[%.3f] As_Step[%.3f] As_MinDist[%.3f]", MeleeChecker.get_min_distance(), MeleeChecker.get_max_distance(),
+              MeleeChecker.dbg_as_step(), MeleeChecker.dbg_as_min_dist());
     DBG().text(this).add_item(text, x, y += delta_y, color);
 
     if (EnemyMan.get_enemy())

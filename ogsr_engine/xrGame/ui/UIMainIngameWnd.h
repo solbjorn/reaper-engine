@@ -11,7 +11,7 @@
 
 #include "UICarPanel.h"
 #include "UIMotionIcon.h"
-#include "../hudsound.h"
+#include "../HudSound.h"
 #include "../script_export_space.h"
 
 struct GAME_NEWS_DATA;

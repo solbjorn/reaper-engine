@@ -6,7 +6,7 @@
 
 #include "FHierrarhyVisual.h"
 
-#include "../../xr_3da/Fmesh.h"
+#include "../../xr_3da/fmesh.h"
 #include "../../xr_3da/Render.h"
 
 //////////////////////////////////////////////////////////////////////

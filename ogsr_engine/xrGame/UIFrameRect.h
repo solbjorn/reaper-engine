@@ -1,7 +1,7 @@
 #ifndef __XR_UIFRAMERECT_H__
 #define __XR_UIFRAMERECT_H__
 
-#include "uistaticitem.h"
+#include "UIStaticItem.h"
 #include "ui/uiabstract.h"
 
 class CUIFrameRect : public CUISimpleWindow, CUIMultiTextureOwner // public CUICustomItem

@@ -1,11 +1,11 @@
 #include "stdafx.h"
 
 #include "ResourceManager.h"
-#include "blenders\Blender_Recorder.h"
-#include "blenders\Blender.h"
+#include "blenders/Blender_Recorder.h"
+#include "blenders/Blender.h"
 
-#include "../../xr_3da/igame_persistent.h"
-#include "../../xr_3da/environment.h"
+#include "../../xr_3da/IGame_Persistent.h"
+#include "../../xr_3da/Environment.h"
 
 #include "dxRenderDeviceRender.h"
 

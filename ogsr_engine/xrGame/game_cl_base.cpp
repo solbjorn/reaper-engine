@@ -2,15 +2,15 @@
 
 #include "game_cl_base.h"
 
-#include "hudmanager.h"
-#include "level.h"
+#include "HUDManager.h"
+#include "Level.h"
 #include "GamePersistent.h"
 #include "UIGameCustom.h"
 #include "script_engine.h"
-#include "xr_Level_controller.h"
+#include "xr_level_controller.h"
 #include "ui/UIMainIngameWnd.h"
-#include "UI/UIGameTutorial.h"
-#include "UI/UIMessagesWindow.h"
+#include "ui/UIGameTutorial.h"
+#include "ui/UIMessagesWindow.h"
 #include "string_table.h"
 
 game_cl_GameState::game_cl_GameState()

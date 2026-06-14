@@ -2,11 +2,11 @@
 
 #include "UIInventoryWnd.h"
 
-#include "../level.h"
-#include "../actor.h"
+#include "../Level.h"
+#include "../Actor.h"
 #include "../ActorCondition.h"
-#include "../hudmanager.h"
-#include "../inventory.h"
+#include "../HUDManager.h"
+#include "../Inventory.h"
 #include "UIInventoryUtilities.h"
 
 #include "UICellItem.h"
@@ -22,7 +22,6 @@
 #include "../../xr_3da/xr_input.h"
 
 CUICellItem* CUIInventoryWnd::CurrentItem() { return m_pCurrentCellItem; }
-
 PIItem CUIInventoryWnd::CurrentIItem() { return (m_pCurrentCellItem) ? (PIItem)m_pCurrentCellItem->m_pData : nullptr; }
 
 void CUIInventoryWnd::SetCurrentItem(CUICellItem* itm)

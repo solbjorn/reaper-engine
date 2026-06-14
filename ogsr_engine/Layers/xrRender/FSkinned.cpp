@@ -11,7 +11,7 @@
 #include "../xrRenderDX10/dx10BufferUtils.h"
 #include "../../xr_3da/EnnumerateVertices.h"
 
-#include <Utilities\FlexibleVertexFormat.h>
+#include <Utilities/FlexibleVertexFormat.h>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

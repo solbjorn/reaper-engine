@@ -4,7 +4,8 @@
 
 #include "stdafx.h"
 
-#include ".\uicheckbutton.h"
+#include "UICheckButton.h"
+
 #include "../HUDManager.h"
 #include "UILines.h"
 
@@ -14,7 +15,7 @@ CUICheckButton::CUICheckButton()
     m_bCheckMode = true;
 }
 
-CUICheckButton::~CUICheckButton() {}
+CUICheckButton::~CUICheckButton() = default;
 
 void CUICheckButton::SetDependControl(CUIWindow* pWnd) { m_pDependControl = pWnd; }
 

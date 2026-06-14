@@ -11,7 +11,7 @@
 #include "hit_memory_manager.h"
 
 #include "memory_space.h"
-#include "custommonster.h"
+#include "CustomMonster.h"
 #include "ai_object_location.h"
 #include "level_graph.h"
 #include "script_game_object.h"
@@ -21,7 +21,7 @@
 #include "game_object_space.h"
 #include "client_spawn_manager.h"
 #include "memory_manager.h"
-#include "..\xr_3da\IGame_Persistent.h"
+#include "../xr_3da/IGame_Persistent.h"
 
 #ifndef MASTER_GOLD
 #include "clsid_game.h"
@@ -135,7 +135,8 @@ void CHitMemoryManager::add(float amount, const Fvector& vLocalDir, const CObjec
     }
     else
     {
-        (*J).fill(entity_alive, m_object, (!m_stalker ? (*J).m_squad_mask.get() : ((*J).m_squad_mask.get() | m_stalker->agent_manager().member().mask(m_stalker))));
+        (*J).fill(entity_alive, m_object,
+                  (!m_stalker ? (*J).m_squad_mask.get() : ((*J).m_squad_mask.get() | m_stalker->agent_manager().member().mask(m_stalker))));
         (*J).m_amount = _max(amount, (*J).m_amount);
     }
 }

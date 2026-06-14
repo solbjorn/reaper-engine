@@ -2,7 +2,7 @@
 
 #include "UIScriptWnd.h"
 
-#include "../HudManager.h"
+#include "../HUDManager.h"
 #include "../object_broker.h"
 
 struct event_comparer
@@ -39,7 +39,10 @@ void CUIDialogWndEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 bool CUIDialogWndEx::Load(LPCSTR) { return true; }
 
-void CUIDialogWndEx::AddCallback(LPCSTR control_id, s16 event, sol::function function) { m_callbacks.emplace_back(std::move(function), shared_str{control_id}, event); }
+void CUIDialogWndEx::AddCallback(LPCSTR control_id, s16 event, sol::function function)
+{
+    m_callbacks.emplace_back(std::move(function), shared_str{control_id}, event);
+}
 
 bool CUIDialogWndEx::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
 {

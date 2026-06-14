@@ -4,12 +4,12 @@
 
 #include "stdafx.h"
 
-#include "uidialogwnd.h"
+#include "UIDialogWnd.h"
 
-#include "../hudmanager.h"
+#include "../HUDManager.h"
 #include "../xr_level_controller.h"
-#include "..\..\xr_3da\xr_ioconsole.h"
-#include "../level.h"
+#include "../../xr_3da/XR_IOConsole.h"
+#include "../Level.h"
 #include "../GameObject.h"
 
 CUIDialogWnd::CUIDialogWnd() { Hide(); }

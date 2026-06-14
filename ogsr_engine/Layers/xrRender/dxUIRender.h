@@ -1,7 +1,7 @@
 #ifndef dxUIRender_included
 #define dxUIRender_included
 
-#include "..\..\Include\xrRender\UIRender.h"
+#include "../../Include/xrRender/UIRender.h"
 
 class dxUIRender : public IUIRender
 {

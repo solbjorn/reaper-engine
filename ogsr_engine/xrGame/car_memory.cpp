@@ -9,7 +9,7 @@
 #include "stdafx.h"
 
 #include "car_memory.h"
-#include "car.h"
+#include "Car.h"
 
 car_memory::car_memory(CCar* object) : inherited(object, 100), m_object(object)
 {
@@ -28,13 +28,9 @@ void car_memory::reload(LPCSTR section)
     m_far_plane = pSettings->r_float(section, "view_far_plane");
 }
 
-#include "actor.h"
+#include "Actor.h"
 
-BOOL car_memory::feel_vision_isRelevant(CObject* object)
-{
-    return !!smart_cast<CActor*>(object);
-    //.	return			(FALSE);
-}
+BOOL car_memory::feel_vision_isRelevant(CObject* object) { return !!smart_cast<CActor*>(object); }
 
 void car_memory::camera(Fvector& position, Fvector& direction, Fvector& normal, float& field_of_view, float& aspect_ratio, float& near_plane, float& far_plane)
 {

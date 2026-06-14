@@ -1,50 +1,15 @@
 #include "stdafx.h"
 
 #include "control_manager.h"
-#include "control_combase.h"
-#include "BaseMonster/base_monster.h"
 
-// Lain: added
-/*
-#ifdef DEBUG
-#include "../../debug_text_tree.h"
-#endif
-*/
+#include "control_combase.h"
+#include "basemonster/base_monster.h"
 
 enum EActiveComAction
 {
     eRemove = u32(0),
     eAdd
 };
-
-/*
-static const char*   make_xrstr (ControlCom::EControlType e)
-{
-    switch ( e )
-    {
-        case ControlCom::eControlMovement: return "eControlMovement";
-        case ControlCom::eControlPath: return "eControlPath";
-        case ControlCom::eControlDir: return "eControlDir";
-        case ControlCom::eControlAnimation: return "eControlAnimation";
-        case ControlCom::eControlSequencer: return "eControlSequencer";
-        case ControlCom::eControlTripleAnimation: return "eControlTripleAnimation";
-        case ControlCom::eControlJump: return "eControlJump";
-        case ControlCom::eControlRotationJump: return "eControlRotationJump";
-        case ControlCom::eControlRunAttack: return "eControlRunAttack";
-        case ControlCom::eControlThreaten: return "eControlThreaten";
-        case ControlCom::eControlMeleeJump: return "eControlMeleeJump";
-        case ControlCom::eControlAnimationBase: return "eControlAnimationBase";
-        case ControlCom::eControlMovementBase: return "eControlMovementBase";
-        case ControlCom::eControlPathBase: return "eControlPathBase";
-        case ControlCom::eControlDirBase: return "eControlDirBase";
-        case ControlCom::eControlCustom: return "eControlCustom";
-        case ControlCom::eComCustom1: return "eComCustom1";
-        case ControlCom::eComCriticalWound: return "eComCriticalWound";
-        case ControlCom::eControllersCount: return "eControllersCount";
-        default: return "eControlInvalid";
-    }
-}
-*/
 
 CControl_Manager::CControl_Manager(CBaseMonster* obj)
 {
@@ -66,11 +31,7 @@ CControl_Manager::~CControl_Manager()
     xr_delete(m_movement);
 }
 
-void CControl_Manager::init_external()
-{
-    // for (CONTROLLERS_MAP_IT it = m_control_elems.begin(); it != m_control_elems.end(); ++it)
-    //	it->second->init_external(this, m_object);
-}
+void CControl_Manager::init_external() {}
 
 void CControl_Manager::load(LPCSTR section)
 {
@@ -227,28 +188,6 @@ void CControl_Manager::capture(CControl_Com* com, ControlCom::EControlType type)
 
     // 1. Check if can capture
     CControl_Com* capturer = target->ced()->capturer();
-
-    /*
-        #ifdef DEBUG
-            if ( capturer && !is_base(capturer) )
-            {
-                if ( CBaseMonster* p_monster = m_object )
-                {
-                    debug::text_tree root_s;
-                    p_monster->add_debug_info(root_s);
-                    debug::log_text_tree(root_s);
-
-                    debug::text_tree& args_s = root_s.add_line("func_args");
-                    args_s.add_line("com", make_xrstr(com_type(com)));
-                    args_s.add_line("type", make_xrstr(type));
-                    args_s.add_line("target", make_xrstr(com_type(target)));
-                    args_s.add_line("capturer", make_xrstr(com_type(capturer)));
-                }
-            }
-
-            VERIFY(!capturer || is_base(capturer));
-        #endif
-    */
 
     if (target->is_active())
     {
@@ -426,31 +365,3 @@ void CControl_Manager::check_active_com(CControl_Com* com, bool b_add)
             (*it) = nullptr; // do not remove just mark
     }
 }
-
-// Lain: made secure
-/*
-#ifdef DEBUG
-
-void CControl_Manager::add_debug_info(debug::text_tree& root_s)
-{
-    u32 index = 0;
-    for ( auto it=m_control_elems.begin(); it!=m_control_elems.end(); ++it, ++index )
-    {
-        if ( !it->second->is_inited() ) continue;
-
-        debug::text_tree& con_s = root_s.add_line(make_xrstr(it->first), it->second->is_active());
-
-        if ( it->second->ced() )
-        {
-            con_s.add_line("Capturer", it->second->ced()->capturer() ?
-                            make_xrstr(com_type(it->second->ced()->capturer())) : "-");
-            con_s.add_line("Locked", it->second->ced()->is_locked());
-        }
-        else
-        {
-            con_s.add_line("IsBase", "-");
-        }
-    }
-}
-#endif //DEBUG
-*/

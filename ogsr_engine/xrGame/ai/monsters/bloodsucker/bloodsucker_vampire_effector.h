@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../../../xr_3da/effectorPP.h"
+#include "../../../../xr_3da/EffectorPP.h"
 #include "../../../CameraEffector.h"
-#include "../../../../xr_3da/cameramanager.h"
+#include "../../../../xr_3da/CameraManager.h"
 
 class CVampirePPEffector : public CEffectorPP
 {

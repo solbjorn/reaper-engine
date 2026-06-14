@@ -4,28 +4,28 @@
 
 #include "stdafx.h"
 
-#include "explosive.h"
+#include "Explosive.h"
 
 #include "PhysicsShell.h"
-#include "entity.h"
+#include "Entity.h"
 #include "ParticlesObject.h"
 
 // для вызова статических функций поражения осколками
 #include "Weapon.h"
 
-#include "actor.h"
-#include "actoreffector.h"
-#include "level.h"
-#include "level_bullet_manager.h"
-#include "xrmessages.h"
-#include "../xr_3da/gamemtllib.h"
+#include "Actor.h"
+#include "ActorEffector.h"
+#include "Level.h"
+#include "Level_Bullet_Manager.h"
+#include "xrMessages.h"
+#include "../xr_3da/GameMtlLib.h"
 #include "clsid_game.h"
 #include "Physics.h"
 #include "MathUtils.h"
-#include "phvalidevalues.h"
+#include "PHValideValues.h"
 #include "PHActivationShape.h"
 #include "game_base_space.h"
-#include "..\Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "../xr_3da/IGame_Persistent.h"
 
 #ifdef DEBUG

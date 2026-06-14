@@ -15,7 +15,7 @@
 #include "visual_memory_manager.h"
 #include "enemy_manager.h"
 #include "memory_space.h"
-#include "custommonster.h"
+#include "CustomMonster.h"
 #include "ai_object_location.h"
 #include "level_graph.h"
 #include "sound_user_data_visitor.h"
@@ -24,7 +24,7 @@
 #include "ai/stalker/ai_stalker.h"
 #include "client_spawn_manager.h"
 
-#include "..\xr_3da\IGame_Persistent.h"
+#include "../xr_3da/IGame_Persistent.h"
 
 #ifndef MASTER_GOLD
 #include "clsid_game.h"

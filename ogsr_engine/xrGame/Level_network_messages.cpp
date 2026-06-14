@@ -1,12 +1,12 @@
 #include "stdafx.h"
 
-#include "level.h"
+#include "Level.h"
 
-#include "entity.h"
-#include "xrserver_objects.h"
-#include "xrmessages.h"
+#include "Entity.h"
+#include "xrServer_Objects.h"
+#include "xrMessages.h"
 #include "game_cl_base.h"
-#include "net_queue.h"
+#include "NET_Queue.h"
 #include "Physics.h"
 #include "xrServer.h"
 #include "Actor.h"
@@ -15,7 +15,7 @@
 #include "level_graph.h"
 #include "clsid_game.h"
 
-#include "HudManager.h"
+#include "HUDManager.h"
 #include "UIGameSP.h"
 
 tmc::task<void> CLevel::ClientReceive()

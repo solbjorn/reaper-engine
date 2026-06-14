@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "cardamageparticles.h"
+#include "CarDamageParticles.h"
 
 #ifdef DEBUG
 #include "ode_include.h"
@@ -9,7 +9,7 @@
 #endif
 
 #include "alife_space.h"
-#include "hit.h"
+#include "Hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
 #include "../Include/xrRender/Kinematics.h"

@@ -2,7 +2,7 @@
 
 #include "UIMap.h"
 
-#include "../level.h"
+#include "../Level.h"
 #include "../map_location.h"
 #include "../map_manager.h"
 #include "../map_spot.h"
@@ -15,7 +15,7 @@
 #include "../UICursor.h"
 #include "../UIGameSP.h"
 #include "../HUDManager.h"
-#include "UiPdaWnd.h"
+#include "UIPdaWnd.h"
 
 CUICustomMap::CUICustomMap()
 {
@@ -25,7 +25,7 @@ CUICustomMap::CUICustomMap()
     SetPointerDistance(0.0f);
 }
 
-CUICustomMap::~CUICustomMap() {}
+CUICustomMap::~CUICustomMap() = default;
 
 void CUICustomMap::Update()
 {

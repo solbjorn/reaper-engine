@@ -3,9 +3,9 @@
 
 #include "SkeletonMotions.h"
 
-#include "Fmesh.h"
+#include "fmesh.h"
 #include "motion.h"
-#include "..\Include\xrRender\Kinematics.h"
+#include "../Include/xrRender/Kinematics.h"
 
 motions_container* g_pMotionsContainer{};
 

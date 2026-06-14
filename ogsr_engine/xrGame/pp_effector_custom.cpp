@@ -1,12 +1,14 @@
 #include "stdafx.h"
 
 #include "pp_effector_custom.h"
-#include "actor.h"
+
+#include "Actor.h"
 #include "ActorEffector.h"
 
 #define TRANSLATE_TYPE(val) EEffectorPPType(val ? (this)->typeId() : hash_64(reinterpret_cast<uintptr_t>(this), 32))
 
-CPPEffectorCustom::CPPEffectorCustom(const SPPInfo& ppi, bool one_instance, bool destroy_from_engine) : inherited(TRANSLATE_TYPE(one_instance), flt_max, destroy_from_engine)
+CPPEffectorCustom::CPPEffectorCustom(const SPPInfo& ppi, bool one_instance, bool destroy_from_engine)
+    : inherited(TRANSLATE_TYPE(one_instance), flt_max, destroy_from_engine)
 {
     m_state = ppi;
     m_factor = 0.f;

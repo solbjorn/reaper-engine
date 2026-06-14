@@ -5,7 +5,8 @@
 #include "stdafx.h"
 
 #include "CameraBase.h"
-#include "igame_level.h"
+
+#include "IGame_Level.h"
 
 CCameraBase::CCameraBase(CObject* p, u32 flags)
 {
@@ -13,7 +14,7 @@ CCameraBase::CCameraBase(CObject* p, u32 flags)
     m_Flags.assign(flags);
 }
 
-CCameraBase::~CCameraBase() {}
+CCameraBase::~CCameraBase() = default;
 
 void CCameraBase::Load(LPCSTR section)
 {

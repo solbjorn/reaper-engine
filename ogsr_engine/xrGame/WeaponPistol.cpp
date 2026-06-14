@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
-#include "weaponpistol.h"
+#include "WeaponPistol.h"
 
 #include "ParticlesObject.h"
-#include "actor.h"
+#include "Actor.h"
 
 #include "../xr_3da/x_ray.h"
 

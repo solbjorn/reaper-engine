@@ -5,7 +5,7 @@
 #pragma once
 
 #include "CameraEffector.h"
-#include "../xr_3da/cameramanager.h"
+#include "../xr_3da/CameraManager.h"
 #include "WeaponMagazined.h"
 #include "script_export_space.h"
 

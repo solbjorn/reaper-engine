@@ -13,12 +13,12 @@
 #include "script_engine.h"
 #include "ai/stalker/ai_stalker_space.h"
 #include "ai_space.h"
-#include "..\xr_3da\xr_object.h"
-#include "..\Include/xrRender/Kinematics.h"
-#include "..\Include/xrRender/KinematicsAnimated.h"
+#include "../xr_3da/xr_object.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 #include "sound_collection_storage.h"
 #include "object_broker.h"
-#include "level.h"
+#include "Level.h"
 
 CSoundPlayer::CSoundPlayer(CObject* object)
 {

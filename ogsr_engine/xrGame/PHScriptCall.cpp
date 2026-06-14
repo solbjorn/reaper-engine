@@ -2,7 +2,7 @@
 
 #include "PHScriptCall.h"
 
-#include "..\xr_3da\xr_object.h"
+#include "../xr_3da/xr_object.h"
 
 CPHScriptCondition::CPHScriptCondition(const sol::function& func) { m_lua_function = func; }
 CPHScriptCondition::CPHScriptCondition(const CPHScriptCondition& func) { m_lua_function = func.m_lua_function; }

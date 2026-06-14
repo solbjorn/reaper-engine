@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include "gravizone.h"
-#include "telewhirlwind.h"
+#include "GraviZone.h"
+#include "TeleWhirlwind.h"
 #include "PhysicsShellHolder.h"
 #include "script_export_space.h"
 #include "PHDestroyable.h"

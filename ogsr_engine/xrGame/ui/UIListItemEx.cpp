@@ -9,7 +9,7 @@
 
 #include "stdafx.h"
 
-#include ".\uilistitemex.h"
+#include "UIListItemEx.h"
 
 CUIListItemEx::CUIListItemEx()
 {

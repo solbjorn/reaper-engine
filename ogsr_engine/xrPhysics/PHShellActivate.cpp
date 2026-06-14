@@ -8,7 +8,7 @@
 #include "PHJointDestroyInfo.h"
 #include "PHCollideValidator.h"
 #include "Level.h"
-#include "physicsshellholder.h"
+#include "PhysicsShellHolder.h"
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
 #include "PhysicsShellAnimator.h"

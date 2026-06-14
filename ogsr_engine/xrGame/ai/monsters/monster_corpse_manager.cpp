@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
 #include "monster_corpse_manager.h"
-#include "BaseMonster/base_monster.h"
+
+#include "basemonster/base_monster.h"
 #include "../../ai_object_location.h"
 
 void CMonsterCorpseManager::init_external(CBaseMonster* M) { monster = M; }

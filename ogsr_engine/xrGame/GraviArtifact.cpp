@@ -7,12 +7,13 @@
 #include "stdafx.h"
 
 #include "GraviArtifact.h"
+
 #include "PhysicsShell.h"
-#include "level.h"
-#include "xrmessages.h"
+#include "Level.h"
+#include "xrMessages.h"
 #include "game_cl_base.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "phworld.h"
+#include "PHWorld.h"
 
 extern CPHWorld* ph_world;
 
@@ -33,7 +34,6 @@ void CGraviArtefact::Load(LPCSTR section)
 
     if (pSettings->line_exist(section, "jump_height"))
         m_fJumpHeight = pSettings->r_float(section, "jump_height");
-    //	m_fEnergy = pSettings->r_float(section,"energy");
 }
 
 void CGraviArtefact::UpdateCLChild()

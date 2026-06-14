@@ -3,10 +3,10 @@
 #include "WeaponBinocularsVision.h"
 
 #include "WeaponBinoculars.h"
-#include "ui\UIFrameWindow.h"
+#include "ui/UIFrameWindow.h"
 #include "entity_alive.h"
 #include "visual_memory_manager.h"
-#include "actor.h"
+#include "Actor.h"
 #include "actor_memory.h"
 #include "relation_registry.h"
 #include "object_broker.h"
@@ -14,8 +14,8 @@
 #include "game_base_space.h"
 #include "Level.h"
 #include "game_cl_base.h"
-#include "AI/Monsters/BaseMonster/base_monster.h"
-#include "..\xr_3da\IGame_Persistent.h"
+#include "ai/monsters/basemonster/base_monster.h"
+#include "../xr_3da/IGame_Persistent.h"
 #include "HUDTarget.h"
 
 #define RECT_SIZE 16
@@ -217,8 +217,8 @@ void CBinocularsVision::Update()
 
 void CBinocularsVision::Draw()
 {
-    // Бессмысленно пытаться рендерить рамочки для 3д прицела. Они попадают только в кадр вне прицела. В кадр для прицела пытаться их редерить бессмысленно, т.к. туда идёт кадр до
-    // начала рендера UI.
+    // Бессмысленно пытаться рендерить рамочки для 3д прицела. Они попадают только в кадр вне прицела. В кадр для прицела пытаться их редерить бессмысленно,
+    // т.к. туда идёт кадр до начала рендера UI.
     if (Device.m_SecondViewport.IsSVPActive())
         return;
 

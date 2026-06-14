@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "soundrender_coreA.h"
+#include "SoundRender_CoreA.h"
 
-#include "soundrender_targetA.h"
+#include "SoundRender_TargetA.h"
 
 namespace soundSmoothingParams
 {

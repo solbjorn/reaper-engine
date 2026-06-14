@@ -3,11 +3,11 @@
 
 #include "__aabb_tri.h"
 #include "../ode_include.h"
-#include "../mathutils.h"
+#include "../MathUtils.h"
 #include "dcTriangle.h"
 
-inline bool TriContainPoint(const dReal* v0, const dReal* v1, const dReal* v2, const dReal* triSideAx0, const dReal* triSideAx1, const dReal* triSideAx2, const dReal* triAx,
-                            const dReal* pos)
+inline bool TriContainPoint(const dReal* v0, const dReal* v1, const dReal* v2, const dReal* triSideAx0, const dReal* triSideAx1, const dReal* triSideAx2,
+                            const dReal* triAx, const dReal* pos)
 {
     dVector3 cross0, cross1, cross2;
     dCROSS(cross0, =, triAx, triSideAx0);
@@ -22,7 +22,8 @@ inline bool TriContainPoint(const dReal* v0, const dReal* v1, const dReal* v2, c
     return true;
 }
 
-inline bool TriContainPoint(const dReal* v0, const dReal* v1, const dReal* v2, const dReal* triAx, const dReal* triSideAx0, const dReal* triSideAx1, const dReal* pos)
+inline bool TriContainPoint(const dReal* v0, const dReal* v1, const dReal* v2, const dReal* triAx, const dReal* triSideAx0, const dReal* triSideAx1,
+                            const dReal* pos)
 {
     dVector3 triSideAx2 = {v0[0] - v2[0], v0[1] - v2[1], v0[2] - v2[2]};
     return TriContainPoint(v0, v1, v2, triSideAx0, triSideAx1, triSideAx2, triAx, pos);
@@ -89,7 +90,8 @@ ICF void InitTriangle(CDB::TRI* XTri, Triangle& triangle, const Point* VRT)
 
 ICF void InitTriangle(CDB::TRI* XTri, Triangle& triangle, const Fvector* V_array)
 {
-    const Point vertices[3]{Point((const dReal*)&V_array[XTri->verts[0]]), Point((const dReal*)&V_array[XTri->verts[1]]), Point((const dReal*)&V_array[XTri->verts[2]])};
+    const Point vertices[3]{Point((const dReal*)&V_array[XTri->verts[0]]), Point((const dReal*)&V_array[XTri->verts[1]]),
+                            Point((const dReal*)&V_array[XTri->verts[2]])};
     InitTriangle(XTri, triangle, vertices);
 }
 

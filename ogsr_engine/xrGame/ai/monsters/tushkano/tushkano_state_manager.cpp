@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "tushkano.h"
+
 #include "tushkano_state_manager.h"
 
 #include "../control_animation_base.h"
@@ -17,7 +18,7 @@
 #include "../states/monster_state_controlled.h"
 #include "../states/monster_state_help_sound.h"
 
-#include "../../../entitycondition.h"
+#include "../../../EntityCondition.h"
 
 CStateManagerTushkano::CStateManagerTushkano(CTushkano* obj) : inherited(obj)
 {
@@ -31,7 +32,7 @@ CStateManagerTushkano::CStateManagerTushkano(CTushkano* obj) : inherited(obj)
     add_state(eStateHearHelpSound, xr_new<CStateMonsterHearHelpSound<CTushkano>>(obj));
 }
 
-CStateManagerTushkano::~CStateManagerTushkano() {}
+CStateManagerTushkano::~CStateManagerTushkano() = default;
 
 void CStateManagerTushkano::execute()
 {
@@ -40,7 +41,6 @@ void CStateManagerTushkano::execute()
     if (!object->is_under_control())
     {
         const CEntityAlive* enemy = object->EnemyMan.get_enemy();
-        //		const CEntityAlive* corpse	=
         object->CorpseMan.get_corpse();
 
         if (enemy)

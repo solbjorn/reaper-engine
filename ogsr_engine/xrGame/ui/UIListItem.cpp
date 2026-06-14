@@ -4,7 +4,7 @@
 
 #include "stdafx.h"
 
-#include "UIlistitem.h"
+#include "UIListItem.h"
 
 CUIListItem::CUIListItem()
 {
@@ -17,7 +17,7 @@ CUIListItem::CUIListItem()
     SetTextAlignment(CGameFont::alLeft);
 }
 
-CUIListItem::~CUIListItem() {}
+CUIListItem::~CUIListItem() = default;
 
 void CUIListItem::Init(float x, float y, float width, float height)
 {

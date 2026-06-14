@@ -3,8 +3,9 @@
 #include "stdafx.h"
 
 #include "HitMarker.h"
-#include "..\xr_3da\render.h"
-#include "..\xr_3da\LightAnimLibrary.h"
+
+#include "../xr_3da/Render.h"
+#include "../xr_3da/LightAnimLibrary.h"
 #include "UIStaticItem.h"
 
 //--------------------------------------------------------------------

@@ -16,11 +16,11 @@
 #include "movement_manager_space.h"
 #include "detail_path_manager_space.h"
 #include "stalker_movement_manager.h"
-#include "inventory.h"
-#include "weapon.h"
+#include "Inventory.h"
+#include "Weapon.h"
 #include "clsid_game.h"
 #include "xr_level_controller.h"
-#include "weaponmagazined.h"
+#include "WeaponMagazined.h"
 
 using namespace StalkerDecisionSpace;
 

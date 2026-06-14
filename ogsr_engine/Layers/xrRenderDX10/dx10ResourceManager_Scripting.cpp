@@ -3,8 +3,8 @@
 #include "../xrRender/ResourceManager.h"
 
 #include "../xrRender/tss.h"
-#include "../xrRender/blenders/blender.h"
-#include "../xrRender/blenders/blender_recorder.h"
+#include "../xrRender/blenders/Blender.h"
+#include "../xrRender/blenders/Blender_Recorder.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 
 #include "../../xrExternal/sol.h"

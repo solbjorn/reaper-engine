@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
-#include "custommonster.h"
+#include "CustomMonster.h"
+
 #include "movement_manager.h"
 
 IC void conv_angle(float& c)

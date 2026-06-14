@@ -2,19 +2,18 @@
 
 #include "UIPdaWnd.h"
 
-#include "../Pda.h"
+#include "../PDA.h"
 #include "xrUIXmlParser.h"
 #include "UIXmlInit.h"
 #include "UIInventoryUtilities.h"
 
 #include "../HUDManager.h"
-#include "../level.h"
+#include "../Level.h"
 #include "../game_cl_base.h"
 
 #include "UIStatic.h"
 #include "UIFrameWindow.h"
 #include "UITabControl.h"
-// #include "UIPdaCommunication.h"
 #include "UIPdaContactsWnd.h"
 #include "UIMapWnd.h"
 #include "UIDiaryWnd.h"
@@ -27,11 +26,11 @@
 #include "UIMessagesWindow.h"
 #include "UIMainIngameWnd.h"
 #include "UITabButton.h"
-#include "../actor.h"
+#include "../Actor.h"
 #include "UIPdaSpot.h"
 #include "player_hud.h"
 #include "../../xr_3da/XR_IOConsole.h"
-#include "inventory.h"
+#include "Inventory.h"
 
 #define PDA_XML "pda.xml"
 

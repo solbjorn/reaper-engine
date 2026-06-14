@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "xrstripify.h"
+#include "xrStripify.h"
 
 #include "NvTriStrip.h"
 #include "VertexCache.h"

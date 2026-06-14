@@ -15,8 +15,8 @@
 #include "xrServer_Objects_ALife.h"
 #include "script_binder_object.h"
 #include "script_game_object.h"
-#include "gameobject.h"
-#include "level.h"
+#include "GameObject.h"
+#include "Level.h"
 
 CScriptBinder::CScriptBinder() { init(); }
 CScriptBinder::~CScriptBinder() { VERIFY(!m_object); }
@@ -25,21 +25,14 @@ void CScriptBinder::init() { m_object = nullptr; }
 
 void CScriptBinder::clear()
 {
-    // try {
     xr_delete(m_object);
-    //}
-    // catch(...) {
-    //	m_object			= 0;
-    //}
     init();
 }
 
 void CScriptBinder::reinit()
 {
     if (m_object)
-    {
         m_object->reinit();
-    }
 }
 
 void CScriptBinder::Load(LPCSTR) {}

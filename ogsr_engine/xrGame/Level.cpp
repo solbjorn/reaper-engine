@@ -2,24 +2,24 @@
 
 #include "Level.h"
 
-#include "../xr_3da/fdemorecord.h"
-#include "../xr_3da/fdemoplay.h"
-#include "../xr_3da/environment.h"
+#include "../xr_3da/FDemoRecord.h"
+#include "../xr_3da/FDemoPlay.h"
+#include "../xr_3da/Environment.h"
 #include "../xr_3da/IGame_Persistent.h"
 #include "ParticlesObject.h"
 #include "xrServer.h"
-#include "net_queue.h"
+#include "NET_Queue.h"
 #include "game_cl_base.h"
 #include "entity_alive.h"
-#include "hudmanager.h"
+#include "HUDManager.h"
 #include "ai_space.h"
 #include "ai_debug.h"
-#include "PHdynamicdata.h"
+#include "PHDynamicData.h"
 #include "Physics.h"
 #include "ShootingObject.h"
 #include "Level_Bullet_Manager.h"
 #include "script_engine.h"
-#include "infoportion.h"
+#include "InfoPortion.h"
 #include "patrol_path_storage.h"
 #include "date_time.h"
 #include "space_restriction_manager.h"
@@ -29,16 +29,16 @@
 #include "ClimableObject.h"
 #include "level_graph.h"
 #include "mt_config.h"
-#include "phcommander.h"
+#include "PHCommander.h"
 #include "map_manager.h"
-#include "../xr_3da/cameramanager.h"
+#include "../xr_3da/CameraManager.h"
 #include "level_sounds.h"
-#include "car.h"
+#include "Car.h"
 #include "trade_parameters.h"
 #include "clsid_game.h"
 #include "MainMenu.h"
 #include "../xr_3da/XR_IOConsole.h"
-#include "Debug_Renderer.h"
+#include "debug_renderer.h"
 #include "Actor_Flags.h"
 #include "level_changer.h"
 #include "player_hud.h"
@@ -48,13 +48,12 @@
 #ifdef DEBUG
 #include "level_debug.h"
 #include "ai/stalker/ai_stalker.h"
-#include "physicobject.h"
 #endif
 
 #include "LevelDebugScript.h"
-#include "physicobject.h"
+#include "PhysicObject.h"
 #include "UIGameSP.h"
-#include "ui/UIPDAWnd.h"
+#include "ui/UIPdaWnd.h"
 #include "ui/UIBtnHint.h"
 
 extern CAI_Space* g_ai_space;
@@ -686,11 +685,8 @@ void CLevel::OnChangeCurrentWeather(const char* sect)
 
 u32 GameID() { return Game().Type(); }
 
-#include "..\xr_3da\IGame_Persistent.h"
-
-GlobalFeelTouch::GlobalFeelTouch() {}
-
-GlobalFeelTouch::~GlobalFeelTouch() {}
+GlobalFeelTouch::GlobalFeelTouch() = default;
+GlobalFeelTouch::~GlobalFeelTouch() = default;
 
 struct delete_predicate_by_time
 {

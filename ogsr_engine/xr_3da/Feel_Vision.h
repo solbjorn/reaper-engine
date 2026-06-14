@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../xrcdb/xr_collide_defs.h"
-#include "render.h"
+#include "../xrCDB/xr_collide_defs.h"
+#include "Render.h"
 #include "pure_relcase.h"
 
 class CObject;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "weaponmagazined.h"
+#include "WeaponMagazined.h"
 #include "script_export_space.h"
 
 class CWeaponVintorez : public CWeaponMagazined

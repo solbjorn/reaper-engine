@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "xrserver.h"
+#include "xrServer.h"
 
-#include "xrserver_objects.h"
+#include "xrServer_Objects.h"
 
 bool xrServer::Process_event_reject(NET_Packet& P, const u16 id_parent, const u16 id_entity, bool send_message)
 {

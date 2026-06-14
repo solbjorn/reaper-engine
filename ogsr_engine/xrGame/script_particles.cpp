@@ -10,7 +10,7 @@
 
 #include "script_particles.h"
 
-#include "../xr_3da/objectanimator.h"
+#include "../xr_3da/ObjectAnimator.h"
 #include "../Include/xrRender/RenderVisual.h"
 #include "../Include/xrRender/ParticleCustom.h"
 

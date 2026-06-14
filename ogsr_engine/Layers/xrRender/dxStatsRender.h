@@ -1,7 +1,7 @@
 #ifndef dxStatsRender_included
 #define dxStatsRender_included
 
-#include "..\..\Include\xrRender\StatsRender.h"
+#include "../../Include/xrRender/StatsRender.h"
 
 class dxStatsRender : public IStatsRender
 {

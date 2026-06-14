@@ -4,7 +4,7 @@
 
 #include "stdafx.h"
 
-#include "blender_BmmD.h"
+#include "Blender_BmmD.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

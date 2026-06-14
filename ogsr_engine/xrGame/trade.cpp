@@ -2,15 +2,15 @@
 
 #include "trade.h"
 
-#include "actor.h"
+#include "Actor.h"
 #include "ai/stalker/ai_stalker.h"
 #include "ai/trader/ai_trader.h"
-#include "artifact.h"
-#include "inventory.h"
-#include "xrmessages.h"
+#include "Artifact.h"
+#include "Inventory.h"
+#include "xrMessages.h"
 #include "character_info.h"
 #include "relation_registry.h"
-#include "level.h"
+#include "Level.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
 

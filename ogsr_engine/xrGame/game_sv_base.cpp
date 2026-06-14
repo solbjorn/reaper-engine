@@ -6,11 +6,11 @@
 #include "LevelGameDef.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "script_engine.h"
-#include "level.h"
+#include "Level.h"
 #include "ai_space.h"
 #include "game_sv_event_queue.h"
-#include "..\xr_3da\XR_IOConsole.h"
-#include "..\xr_3da\xr_ioc_cmd.h"
+#include "../xr_3da/XR_IOConsole.h"
+#include "../xr_3da/xr_ioc_cmd.h"
 #include "string_table.h"
 
 game_PlayerState* game_sv_GameState::get_it(u32 it)

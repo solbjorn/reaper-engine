@@ -5,8 +5,8 @@
 #include "dTriColliderMath.h"
 #include "__aabb_tri.h"
 #include "../MathUtils.h"
-#include "../phworld.h"
-#include "../../XR_3DA/gamemtllib.h"
+#include "../PHWorld.h"
+#include "../../xr_3da/GameMtlLib.h"
 
 #ifdef DEBUG
 #include "../debug_output.h"
@@ -181,7 +181,8 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
 
         // if(ignored_tries[I-B])continue;
         CDB::TRI* Tr = T_array + *I;
-        const Point vertices[3]{Point((const dReal*)&V_array[Tr->verts[0]]), Point((const dReal*)&V_array[Tr->verts[1]]), Point((const dReal*)&V_array[Tr->verts[2]])};
+        const Point vertices[3]{Point((const dReal*)&V_array[Tr->verts[0]]), Point((const dReal*)&V_array[Tr->verts[1]]),
+                                Point((const dReal*)&V_array[Tr->verts[2]])};
         if (!aabb_tri_aabb(Point(p), Point((const float*)&AABB), vertices))
             continue;
 
@@ -312,8 +313,8 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
                 for (auto& it : pos_tries)
                 {
                     VERIFY(neg_tri.T);
-                    if (TriContainPoint((const dReal*)&V_array[it.T->verts[0]], (const dReal*)&V_array[it.T->verts[1]], (const dReal*)&V_array[it.T->verts[2]], it.norm, it.side0,
-                                        it.side1, p))
+                    if (TriContainPoint((const dReal*)&V_array[it.T->verts[0]], (const dReal*)&V_array[it.T->verts[1]], (const dReal*)&V_array[it.T->verts[2]],
+                                        it.norm, it.side0, it.side1, p))
                         if (negative_tri_set_ignored_by_positive_tri(neg_tri, it, V_array))
                         {
                             include = false;
@@ -327,7 +328,8 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
                 VERIFY(neg_tri.T && std::isfinite(neg_tri.dist));
                 if (neg_tri_contains_point)
                 {
-                    int bret = primitive.CollidePlain(neg_tri.side0, neg_tri.side1, neg_tri.norm, neg_tri.T, neg_tri.dist, o1, o2, flags, CONTACT(contact, 0), skip);
+                    int bret =
+                        primitive.CollidePlain(neg_tri.side0, neg_tri.side1, neg_tri.norm, neg_tri.T, neg_tri.dist, o1, o2, flags, CONTACT(contact, 0), skip);
                     *pushing_neg = !!bret;
                     if (*pushing_neg)
                         ret = bret;

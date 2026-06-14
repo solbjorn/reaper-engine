@@ -8,7 +8,7 @@
 
 #include "alife_space.h"
 #include "xrServer_Space.h"
-#include "..\xr_3da\render.h"
+#include "../xr_3da/Render.h"
 
 class CCartridge;
 class CParticlesObject;

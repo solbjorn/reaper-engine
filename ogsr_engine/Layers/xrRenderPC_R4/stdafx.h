@@ -28,14 +28,14 @@ XR_DIAG_POP();
 #include "../xrRender/R_Backend.h"
 #include "../xrRender/R_Backend_Runtime.h"
 
-#include "../xrRender/resourcemanager.h"
+#include "../xrRender/ResourceManager.h"
 
 #include "../../xr_3da/vis_common.h"
-#include "../../xr_3da/render.h"
+#include "../../xr_3da/Render.h"
 #include "../../xr_3da/_d3d_extensions.h"
-#include "../../xr_3da/igame_level.h"
-#include "../xrRender/blenders\blender.h"
-#include "../xrRender/blenders\blender_clsid.h"
+#include "../../xr_3da/IGame_Level.h"
+#include "../xrRender/blenders/Blender.h"
+#include "../xrRender/blenders/Blender_CLSID.h"
 #include "../xrRender/xrRender_console.h"
 #include "r4.h"
 

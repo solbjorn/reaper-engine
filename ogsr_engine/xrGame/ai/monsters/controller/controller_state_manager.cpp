@@ -1,5 +1,7 @@
 #include "stdafx.h"
+
 #include "controller.h"
+
 #include "controller_state_manager.h"
 
 #include "controller_animation.h"
@@ -21,7 +23,7 @@
 #include "../states/monster_state_hitted.h"
 #include "../states/monster_state_attack.h"
 
-#include "../../../entitycondition.h"
+#include "../../../EntityCondition.h"
 
 #include "../states/state_test_state.h"
 

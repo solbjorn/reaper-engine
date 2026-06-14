@@ -5,7 +5,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "../xrcdb/xr_collide_defs.h"
+#include "../xrCDB/xr_collide_defs.h"
 
 // refs
 class IRender_DetailModel;

@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
-#include "Blender_combine.h"
+#include "blender_combine.h"
 
 CBlender_combine::CBlender_combine() { description.CLS = 0; }
-CBlender_combine::~CBlender_combine() {}
+CBlender_combine::~CBlender_combine() = default;
 
 void CBlender_combine::Compile(CBlender_Compile& C)
 {

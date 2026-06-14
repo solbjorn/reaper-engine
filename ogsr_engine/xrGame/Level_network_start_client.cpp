@@ -2,11 +2,11 @@
 
 #include "Level.h"
 
-#include "HUDmanager.h"
-#include "PHdynamicdata.h"
+#include "HUDManager.h"
+#include "PHDynamicData.h"
 #include "Physics.h"
-#include "..\xr_3da\x_ray.h"
-#include "..\xr_3da\igame_persistent.h"
+#include "../xr_3da/x_ray.h"
+#include "../xr_3da/IGame_Persistent.h"
 #include "PhysicsGamePars.h"
 #include "ai_space.h"
 #include "Actor_Flags.h"

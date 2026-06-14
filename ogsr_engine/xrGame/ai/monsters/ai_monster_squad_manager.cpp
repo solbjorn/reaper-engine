@@ -1,15 +1,16 @@
 #include "stdafx.h"
 
 #include "ai_monster_squad_manager.h"
+
 #include "ai_monster_squad.h"
-#include "../../entity.h"
+#include "../../Entity.h"
 
 //////////////////////////////////////////////////////////////////////////
 // SQUAD MANAGER Implementation
 //////////////////////////////////////////////////////////////////////////
 CMonsterSquadManager* g_monster_squad{};
 
-CMonsterSquadManager::CMonsterSquadManager() {}
+CMonsterSquadManager::CMonsterSquadManager() = default;
 
 CMonsterSquadManager::~CMonsterSquadManager()
 {
@@ -18,9 +19,7 @@ CMonsterSquadManager::~CMonsterSquadManager()
         for (u32 squad_id = 0; squad_id < team[team_id].size(); squad_id++)
         {
             for (u32 group_id = 0; group_id < team[team_id][squad_id].size(); group_id++)
-            {
                 xr_delete(team[team_id][squad_id][group_id]);
-            }
         }
     }
 }

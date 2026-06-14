@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "eventapi.h"
+#include "EventAPI.h"
 
-#include "xr_ioconsole.h"
+#include "XR_IOConsole.h"
 
 class CEvent
 {

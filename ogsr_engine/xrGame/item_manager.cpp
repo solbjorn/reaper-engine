@@ -11,7 +11,7 @@
 #include "item_manager.h"
 
 #include "inventory_item.h"
-#include "custommonster.h"
+#include "CustomMonster.h"
 #include "ai_object_location.h"
 #include "level_graph.h"
 #include "restricted_object.h"

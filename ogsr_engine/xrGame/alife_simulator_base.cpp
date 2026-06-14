@@ -20,7 +20,7 @@
 #include "alife_smart_terrain_registry.h"
 #include "alife_group_registry.h"
 #include "alife_registry_container.h"
-#include "xrserver.h"
+#include "xrServer.h"
 #include "level_graph.h"
 
 using namespace ALife;

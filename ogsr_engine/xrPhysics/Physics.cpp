@@ -4,8 +4,8 @@
 #include "Physics.h"
 #include "tri-colliderknoopc/dTriList.h"
 #include "PHContactBodyEffector.h"
-#include "../xr_3da/gamemtllib.h"
-#include "gameobject.h"
+#include "../xr_3da/GameMtlLib.h"
+#include "GameObject.h"
 #include "PhysicsShellHolder.h"
 #include "PHCollideValidator.h"
 

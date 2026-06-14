@@ -2,7 +2,7 @@
 
 #include "../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../../xr_3da/bone.h"
-#include "../../../xr_3da/cameramanager.h"
+#include "../../../xr_3da/CameraManager.h"
 
 typedef u32 TTime;
 

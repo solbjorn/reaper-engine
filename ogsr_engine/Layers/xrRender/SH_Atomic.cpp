@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
-#include "sh_atomic.h"
+#include "SH_Atomic.h"
+
 #include "ResourceManager.h"
 
 ///////////////////////////////////////////////////////////////////////

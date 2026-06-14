@@ -8,9 +8,9 @@
 #include "r_constants.h"
 #include "../../xrCore/xr_resource.h"
 
-#include "sh_atomic.h"
-#include "sh_texture.h"
-#include "sh_rt.h"
+#include "SH_Atomic.h"
+#include "SH_Texture.h"
+#include "SH_RT.h"
 
 using sh_list = xr_vector<shared_str>;
 

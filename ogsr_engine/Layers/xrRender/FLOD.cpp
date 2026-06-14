@@ -1,6 +1,8 @@
 #include "stdafx.h"
+
 #include "../../xr_3da/fmesh.h"
-#include "flod.h"
+
+#include "FLOD.h"
 
 static constexpr D3DVERTEXELEMENT9 dwDecl[] = {{0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0}, // pos-0
                                                {0, 12, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 1}, // pos-1

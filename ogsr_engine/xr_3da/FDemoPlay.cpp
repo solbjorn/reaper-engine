@@ -4,10 +4,10 @@
 
 #include "stdafx.h"
 
-#include "fdemoplay.h"
+#include "FDemoPlay.h"
 
-#include "igame_level.h"
-#include "xr_ioconsole.h"
+#include "IGame_Level.h"
+#include "XR_IOConsole.h"
 #include "motion.h"
 #include "Render.h"
 #include "CameraManager.h"

@@ -11,7 +11,7 @@
 #include "PhysicsShellHolder.h"
 #include "game_object_space.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "..\Include/xrRender/KinematicsAnimated.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 #include "ode/src/util.h"
 
 #ifdef DEBUG

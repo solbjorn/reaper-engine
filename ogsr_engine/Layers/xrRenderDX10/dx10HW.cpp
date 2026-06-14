@@ -9,8 +9,8 @@
 #include "../../xr_3da/xr_input.h"
 #include "../../Include/xrAPI/xrAPI.h"
 
-#include "StateManager\dx10SamplerStateCache.h"
-#include "StateManager\dx10StateCache.h"
+#include "StateManager/dx10SamplerStateCache.h"
+#include "StateManager/dx10StateCache.h"
 
 #include "sleep.h"
 

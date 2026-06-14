@@ -1,6 +1,6 @@
 #pragma once
 
-#include "xrcdb.h"
+#include "xrCDB.h"
 
 class CObject;
 

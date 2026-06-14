@@ -2,11 +2,11 @@
 
 #include "helicopter.h"
 
-#include "level.h"
+#include "Level.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
-#include "..\Include/xrRender/KinematicsAnimated.h"
-#include "..\Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "../xr_3da/LightAnimLibrary.h"
 #include "PhysicsShell.h"
 #include "clsid_game.h"
@@ -19,7 +19,7 @@
 #include "team_hierarchy_holder.h"
 #include "squad_hierarchy_holder.h"
 
-#include "extendedgeom.h"
+#include "ExtendedGeom.h"
 
 bool CHelicopter::isObjectVisible(CObject* O)
 {

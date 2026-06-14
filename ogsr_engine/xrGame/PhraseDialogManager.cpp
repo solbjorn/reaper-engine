@@ -11,11 +11,11 @@
 
 #include "ai_space.h"
 #include "script_engine.h"
-#include "gameobject.h"
+#include "GameObject.h"
 #include "script_game_object.h"
 
-CPhraseDialogManager::CPhraseDialogManager() {}
-CPhraseDialogManager::~CPhraseDialogManager() {}
+CPhraseDialogManager::CPhraseDialogManager() = default;
+CPhraseDialogManager::~CPhraseDialogManager() = default;
 
 const DIALOG_SHARED_PTR& CPhraseDialogManager::GetDialogByID(const shared_str& dialog_id) const
 {

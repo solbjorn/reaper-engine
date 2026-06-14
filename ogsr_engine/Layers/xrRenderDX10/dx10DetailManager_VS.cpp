@@ -2,8 +2,8 @@
 
 #include "../xrRender/DetailManager.h"
 
-#include "../../xr_3da/igame_persistent.h"
-#include "../../xr_3da/environment.h"
+#include "../../xr_3da/IGame_Persistent.h"
+#include "../../xr_3da/Environment.h"
 
 #include "../xrRenderDX10/dx10BufferUtils.h"
 
@@ -71,8 +71,8 @@ void CDetailManager::hw_Render(CBackend& cmd_list, float fade_distance, const Fv
     hw_Render_dump(cmd_list, consts, wave.div(PI_MUL_2), dir2, 0, 1, fade_distance, light_position);
 }
 
-void CDetailManager::hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, u32 var_id, u32 lod_id, float fade_distance,
-                                    const Fvector* light_position)
+void CDetailManager::hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, u32 var_id, u32 lod_id,
+                                    float fade_distance, const Fvector* light_position)
 {
     XR_TRACY_ZONE_SCOPED();
 
@@ -138,7 +138,8 @@ void CDetailManager::hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, 
                     cmd_list.set_c(strGrassSetup, ps_ssfx_int_grass_params_1);
 
                     Fvector4* c_grass{};
-                    cmd_list.get_ConstantDirect(strPos, sizeof(grass_shader_data.pos) + sizeof(grass_shader_data.dir), reinterpret_cast<void**>(&c_grass), nullptr, nullptr);
+                    cmd_list.get_ConstantDirect(strPos, sizeof(grass_shader_data.pos) + sizeof(grass_shader_data.dir), reinterpret_cast<void**>(&c_grass),
+                                                nullptr, nullptr);
                     R_ASSERT(c_grass);
 
                     if (c_grass)

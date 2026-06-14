@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
 #include "monster_enemy_memory.h"
-#include "BaseMonster/base_monster.h"
+
+#include "basemonster/base_monster.h"
 #include "../../memory_manager.h"
 #include "../../visual_memory_manager.h"
 #include "../../enemy_manager.h"
@@ -10,10 +11,10 @@
 #include "dog/dog.h"
 #include "ai_monster_squad.h"
 #include "ai_monster_squad_manager.h"
-#include "../../actor.h"
+#include "../../Actor.h"
 #include "../../actor_memory.h"
 
-CMonsterEnemyMemory::~CMonsterEnemyMemory() {}
+CMonsterEnemyMemory::~CMonsterEnemyMemory() = default;
 
 void CMonsterEnemyMemory::init_external(CBaseMonster* M, TTime mem_time)
 {
@@ -62,7 +63,8 @@ void CMonsterEnemyMemory::update()
                 float const xz_dist = monster->Position().distance_to_xz(enemy->Position());
                 float const y_dist = _abs(monster->Position().y - enemy->Position().y);
 
-                if (monster->CCustomMonster::useful(&monster->memory().enemy(), enemy) && y_dist < 10 && xz_dist < monster->get_feel_enemy_who_made_sound_max_distance())
+                if (monster->CCustomMonster::useful(&monster->memory().enemy(), enemy) && y_dist < 10 &&
+                    xz_dist < monster->get_feel_enemy_who_made_sound_max_distance())
                 {
                     add_enemy(enemy);
 
@@ -160,8 +162,8 @@ void CMonsterEnemyMemory::remove_non_actual()
     for (auto it = m_objects.begin(); it != m_objects.end();)
     {
         // проверить условия удаления
-        if (!it->first || !it->first->g_Alive() || it->first->getDestroy() || (it->second.time + time_memory < cur_time) || (it->first->g_Team() == monster->g_Team()) ||
-            !monster->memory().enemy().is_useful(it->first))
+        if (!it->first || !it->first->g_Alive() || it->first->getDestroy() || (it->second.time + time_memory < cur_time) ||
+            (it->first->g_Team() == monster->g_Team()) || !monster->memory().enemy().is_useful(it->first))
             it = m_objects.erase(it);
         else
             it++;

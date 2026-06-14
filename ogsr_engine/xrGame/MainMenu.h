@@ -1,7 +1,7 @@
 #pragma once
 
-#include "..\xr_3da\iinputreceiver.h"
-#include "..\xr_3da\IGame_Persistent.h"
+#include "../xr_3da/IInputReceiver.h"
+#include "../xr_3da/IGame_Persistent.h"
 #include "UIDialogHolder.h"
 #include "ui/UIWndCallback.h"
 #include "ui_base.h"

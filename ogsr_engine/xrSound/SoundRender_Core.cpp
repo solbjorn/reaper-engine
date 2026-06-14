@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
-#include "soundrender_core.h"
+#include "SoundRender_Core.h"
 
-#include "soundrender_emitter.h"
-#include "soundrender_source.h"
+#include "SoundRender_Emitter.h"
+#include "SoundRender_Source.h"
 
 #include "../xr_3da/device.h"
 #include "../xr_3da/xrLevel.h"

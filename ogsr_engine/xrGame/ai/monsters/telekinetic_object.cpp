@@ -2,12 +2,12 @@
 
 #include "telekinetic_object.h"
 
-#include "../../physicsshellholder.h"
+#include "../../PhysicsShellHolder.h"
 #include "PhysicsShell.h"
 #include "PHInterpolation.h"
 #include "PHElement.h"
-#include "../../level.h"
-#include "../../gameobject.h"
+#include "../../Level.h"
+#include "../../GameObject.h"
 
 #define FIRE_TIME 3000
 #define RAISE_MAX_TIME 5000
@@ -20,7 +20,6 @@ bool CTelekineticObject::init(CTelekinesis*, CPhysicsShellHolder* obj, float s, 
     if (!can_activate(obj))
         return false;
 
-    // state				= TS_Raise;
     switch_state(TS_Raise);
     object = obj;
 
@@ -31,10 +30,7 @@ bool CTelekineticObject::init(CTelekinesis*, CPhysicsShellHolder* obj, float s, 
     time_to_keep = ttk;
 
     strength = s;
-
     time_fire_started = 0;
-    // time_raise_started	= Device.dwTimeGlobal;
-
     m_rotate = rot;
 
     if (object->m_pPhysicsShell)
@@ -221,7 +217,8 @@ void CTelekineticObject::fire(const Fvector& target, float power)
 
     // выполнить бросок
     for (u32 i = 0; i < object->m_pPhysicsShell->get_ElementsNumber(); i++)
-        object->m_pPhysicsShell->get_ElementByStoreOrder(u16(i))->applyImpulse(dir, power * 20.f * object->m_pPhysicsShell->getMass() / object->m_pPhysicsShell->Elements().size());
+        object->m_pPhysicsShell->get_ElementByStoreOrder(u16(i))->applyImpulse(
+            dir, power * 20.f * object->m_pPhysicsShell->getMass() / object->m_pPhysicsShell->Elements().size());
 }
 
 bool CTelekineticObject::check_height()

@@ -1,10 +1,10 @@
 #include "stdafx.h"
 
-#include "radioactivezone.h"
+#include "RadioactiveZone.h"
 
-#include "hudmanager.h"
-#include "level.h"
-#include "xrmessages.h"
+#include "HUDManager.h"
+#include "Level.h"
+#include "xrMessages.h"
 #include "clsid_game.h"
 #include "game_base_space.h"
 #include "Hit.h"
@@ -52,9 +52,7 @@ void CRadioactiveZone::Affect(SZoneObjectInfo* O)
         float impulse = 0.f;
         if (power > EPS)
         {
-            //.			m_dwDeltaTime = 0;
             position_in_bone_space.set(0.f, 0.f, 0.f);
-
             CreateHit(GO->ID(), ID(), dir, power, BI_NONE, position_in_bone_space, impulse, ALife::eHitTypeRadiation);
         }
     }
@@ -62,7 +60,8 @@ void CRadioactiveZone::Affect(SZoneObjectInfo* O)
 
 void CRadioactiveZone::feel_touch_new(CObject* O) { inherited::feel_touch_new(O); }
 
-#include "actor.h"
+#include "Actor.h"
+
 BOOL CRadioactiveZone::feel_touch_contact(CObject* O)
 {
     CActor* A = smart_cast<CActor*>(O);

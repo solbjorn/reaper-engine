@@ -19,7 +19,7 @@
 #include "game_graph.h"
 #include "xrServer.h"
 
-#include "level.h"
+#include "Level.h"
 #include "map_manager.h"
 
 void CSE_ALifeDynamicObject::on_spawn() {}

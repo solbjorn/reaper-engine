@@ -1,24 +1,24 @@
 #include "stdafx.h"
 
-#include "torch.h"
+#include "Torch.h"
 
-#include "entity.h"
-#include "actor.h"
+#include "Entity.h"
+#include "Actor.h"
 #include "../xr_3da/LightAnimLibrary.h"
 #include "PhysicsShell.h"
-#include "xrserver_objects_alife_items.h"
+#include "xrServer_Objects_ALife_Items.h"
 #include "ai_sounds.h"
 
 #include "HUDManager.h"
-#include "level.h"
+#include "Level.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "../xr_3da/camerabase.h"
-#include "inventory.h"
+#include "../xr_3da/CameraBase.h"
+#include "Inventory.h"
 #include "game_base_space.h"
 
 #include "HUDTarget.h"
 #include "UIGameCustom.h"
-#include "actorEffector.h"
+#include "ActorEffector.h"
 #include "CustomOutfit.h"
 
 namespace

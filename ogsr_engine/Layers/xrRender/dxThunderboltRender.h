@@ -1,7 +1,7 @@
 #ifndef dxThunderboltRender_included
 #define dxThunderboltRender_included
 
-#include "..\..\Include\xrRender\ThunderboltRender.h"
+#include "../../Include/xrRender/ThunderboltRender.h"
 
 class dxThunderboltRender : public IThunderboltRender
 {

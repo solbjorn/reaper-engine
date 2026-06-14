@@ -11,7 +11,7 @@
 #include "../ai_monster_squad_manager.h"
 #include "group_state_attack_run.h"
 #include "../../../entity_alive.h"
-#include "../../../actor.h"
+#include "../../../Actor.h"
 
 #define TEMPLATE_SPECIALIZATION template <typename _Object>
 
@@ -280,7 +280,8 @@ void CStateGroupAttackAbstract::execute()
                     break;
 
                 case eStateAttack_ControlFire:
-                    if (object->Position().distance_to(enemy_pos) > 7.f + m_delta_distance || Device.dwTimeGlobal - m_time_start_drive_out > object->m_drive_out_time)
+                    if (object->Position().distance_to(enemy_pos) > 7.f + m_delta_distance ||
+                        Device.dwTimeGlobal - m_time_start_drive_out > object->m_drive_out_time)
                     {
                         if (object->get_custom_anim_state())
                         {

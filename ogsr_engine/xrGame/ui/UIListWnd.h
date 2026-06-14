@@ -1,8 +1,8 @@
 #pragma once
 
 #include "UIListItemEx.h"
-#include "uiwindow.h"
-#include "uiscrollbar.h"
+#include "UIListWnd.h"
+#include "UIScrollBar.h"
 
 #include "../script_export_space.h"
 

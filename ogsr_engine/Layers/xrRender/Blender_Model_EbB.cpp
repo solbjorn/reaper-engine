@@ -4,7 +4,7 @@
 
 #include "stdafx.h"
 
-#include "blender_Model_EbB.h"
+#include "Blender_Model_EbB.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -18,7 +18,7 @@ CBlender_Model_EbB::CBlender_Model_EbB()
     oBlend.value = FALSE;
 }
 
-CBlender_Model_EbB::~CBlender_Model_EbB() {}
+CBlender_Model_EbB::~CBlender_Model_EbB() = default;
 
 void CBlender_Model_EbB::Save(IWriter& fs)
 {

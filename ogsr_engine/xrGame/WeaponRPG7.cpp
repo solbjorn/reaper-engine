@@ -1,11 +1,11 @@
 #include "stdafx.h"
 
-#include "weaponrpg7.h"
+#include "WeaponRPG7.h"
 
-#include "xrserver_objects_alife_items.h"
-#include "explosiverocket.h"
-#include "entity.h"
-#include "level.h"
+#include "xrServer_Objects_ALife_Items.h"
+#include "ExplosiveRocket.h"
+#include "Entity.h"
+#include "Level.h"
 #include "player_hud.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "game_object_space.h"
@@ -92,8 +92,9 @@ void CWeaponRPG7::on_a_hud_attach()
     UpdateMissileVisibility();
 }
 
-#include "inventory.h"
-#include "inventoryOwner.h"
+#include "Inventory.h"
+#include "InventoryOwner.h"
+
 void CWeaponRPG7::switch2_Fire()
 {
     m_iShotNum = 0;

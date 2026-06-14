@@ -6,13 +6,13 @@
 #include "blender_deffer_model.h"
 #include "blender_deffer_aref.h"
 
-#include "../xrRender/blender_BmmD.h"
-#include "../xrRender/blender_screen_set.h"
-#include "../xrRender/blender_tree.h"
-#include "../xrRender/blender_detail_still.h"
-#include "../xrRender/blender_particle.h"
+#include "../xrRender/Blender_BmmD.h"
+#include "../xrRender/Blender_Screen_SET.h"
+#include "../xrRender/Blender_tree.h"
+#include "../xrRender/Blender_detail_still.h"
+#include "../xrRender/Blender_Particle.h"
 #include "../xrRender/Blender_Model_EbB.h"
-#include "../xrRender/blender_Lm(EbB).h"
+#include "../xrRender/Blender_Lm(EbB).h"
 
 namespace
 {

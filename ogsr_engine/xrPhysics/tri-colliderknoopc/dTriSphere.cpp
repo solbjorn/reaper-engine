@@ -3,7 +3,7 @@
 #include "dTriColliderCommon.h"
 #include "dTriColliderMath.h"
 #include "dTriSphere.h"
-#include "dctrilistcollider.h"
+#include "dcTriListCollider.h"
 
 ////////////////////////////////////////////////////////////////////////////
 IC dReal dcTriListCollider::PointSphereTest(const dReal* center, const dReal radius, const dReal* pt, dReal* norm)
@@ -40,7 +40,8 @@ inline dReal dcTriListCollider::FragmentonSphereTest(const dReal* center, const 
     dReal from1_dist = center_prg - pt1_prg;
     if (center_prg < pt1_prg || center_prg > pt2_prg)
         return -1;
-    dVector3 line_to_center = {-pt1[0] - direction[0] * from1_dist + center[0], -pt1[1] - direction[1] * from1_dist + center[1], -pt1[2] - direction[2] * from1_dist + center[2]};
+    dVector3 line_to_center = {-pt1[0] - direction[0] * from1_dist + center[0], -pt1[1] - direction[1] * from1_dist + center[1],
+                               -pt1[2] - direction[2] * from1_dist + center[2]};
 
     float mag = dSqrt(dDOT(line_to_center, line_to_center));
     // dNormalize3(norm);
@@ -124,7 +125,8 @@ IC bool dcTriListCollider::PointSphereTest(const dReal* center, const dReal radi
 }
 /////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
-int dcTriListCollider::dSortedTriSphere(const dReal*, const dReal*, const dReal* triAx, CDB::TRI* T, dReal dist, dxGeom* Sphere, dxGeom* Geometry, int, dContactGeom* Contacts, int)
+int dcTriListCollider::dSortedTriSphere(const dReal*, const dReal*, const dReal* triAx, CDB::TRI* T, dReal dist, dxGeom* Sphere, dxGeom* Geometry, int,
+                                        dContactGeom* Contacts, int)
 {
     // const dReal* v1=(dReal*)T->verts[1];
     // const dReal* v2=(dReal*)T->verts[2];
@@ -160,7 +162,8 @@ int dcTriListCollider::dSortedTriSphere(const dReal*, const dReal*, const dReal*
     return 0;
 }
 
-int dcTriListCollider::dTriSphere(const dReal* v0, const dReal* v1, const dReal* v2, Triangle* T, dxGeom* Sphere, dxGeom* Geometry, int, dContactGeom* Contacts, int)
+int dcTriListCollider::dTriSphere(const dReal* v0, const dReal* v1, const dReal* v2, Triangle* T, dxGeom* Sphere, dxGeom* Geometry, int, dContactGeom* Contacts,
+                                  int)
 {
     const dVector3& triSideAx0 = T->side0;
     const dVector3& triSideAx1 = T->side1;

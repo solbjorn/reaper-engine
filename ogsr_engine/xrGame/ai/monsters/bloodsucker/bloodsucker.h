@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../BaseMonster/base_monster.h"
+#include "../basemonster/base_monster.h"
 #include "../ai_monster_bones.h"
 #include "../controlled_actor.h"
 #include "../anim_triple.h"

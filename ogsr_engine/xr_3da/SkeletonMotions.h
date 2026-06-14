@@ -3,7 +3,7 @@
 #define SkeletonMotionsH
 
 #include "bone.h"
-#include "skeletonmotiondefs.h"
+#include "SkeletonMotionDefs.h"
 
 // refs
 class IKinematicsAnimated;

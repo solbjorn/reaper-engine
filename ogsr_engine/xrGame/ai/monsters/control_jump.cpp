@@ -1,12 +1,13 @@
 #include "stdafx.h"
 
 #include "control_jump.h"
-#include "BaseMonster/base_monster.h"
+
+#include "basemonster/base_monster.h"
 #include "control_manager.h"
 #include "PHMovementControl.h"
-#include "../../../Include\xrRender\Kinematics.h"
+#include "../../../Include/xrRender/Kinematics.h"
 #include "../../detail_path_manager.h"
-#include "../../level.h"
+#include "../../Level.h"
 #include "control_animation_base.h"
 #include "control_direction_base.h"
 #include "control_movement_base.h"
@@ -16,11 +17,6 @@
 #include "level_graph.h"
 #include "../../ai_object_location.h"
 #include "../../CharacterPhysicsSupport.h"
-/*
-#ifdef DEBUG
-#include "../../level_debug.h"
-#endif
-*/
 
 #include "../../trajectories.h"
 #include "PHWorld.h"
@@ -595,8 +591,8 @@ bool CControlJump::jump_intersect_geometry(Fvector const& target, CObject* const
     Fvector const traj_start = m_object->Position() + Fvector().set(0, 1.2f, 0);
     Fvector const traj_target = target + Fvector().set(0, 1.2f, 0) - (normalize(start_to_target) * 1);
 
-    if (trajectory_intersects_geometry(m_jump_time, traj_start, traj_target, velocity, collide_position, m_object, ignored_object, temp_rq_results, pass_jump_picks,
-                                       pass_collide_tris, sizes))
+    if (trajectory_intersects_geometry(m_jump_time, traj_start, traj_target, velocity, collide_position, m_object, ignored_object, temp_rq_results,
+                                       pass_jump_picks, pass_collide_tris, sizes))
     {
         /*
         #ifdef DEBUG

@@ -11,7 +11,7 @@
 
 #include "UIComboBox.h"
 
-#include "uilistboxitem.h"
+#include "UIListBoxItem.h"
 #include "UITextureMaster.h"
 #include "UIScrollBar.h"
 
@@ -24,8 +24,6 @@ CUIComboBox::CUIComboBox()
     AttachChild(&m_frameLine);
     AttachChild(&m_text);
 
-    //.	AttachChild			(&m_btn);
-
     AttachChild(&m_frameWnd);
     AttachChild(&m_list);
 
@@ -36,7 +34,7 @@ CUIComboBox::CUIComboBox()
     m_textColor[0] = 0xff00ff00;
 }
 
-CUIComboBox::~CUIComboBox() {}
+CUIComboBox::~CUIComboBox() = default;
 
 void CUIComboBox::SetListLength(int length)
 {

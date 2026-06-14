@@ -7,10 +7,10 @@
 #include "../xr_3da/xr_collide_form.h"
 #include "PhysicsShell.h"
 #include "Physics.h"
-#include "xrserver_objects_alife.h"
+#include "xrServer_Objects_ALife.h"
 #include "PHElement.h"
-#include "..\Include/xrRender/Kinematics.h"
-#include "..\Include/xrRender/KinematicsAnimated.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 #include "game_object_space.h"
 #include "script_game_object.h"
 

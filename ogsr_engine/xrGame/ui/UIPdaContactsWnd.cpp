@@ -3,9 +3,9 @@
 #include "UIPdaContactsWnd.h"
 
 #include "UIPdaAux.h"
-#include "../Pda.h"
+#include "../PDA.h"
 #include "UIXmlInit.h"
-#include "../actor.h"
+#include "../Actor.h"
 #include "UICharacterInfo.h"
 #include "UIFrameWindow.h"
 #include "UIFrameLineWnd.h"

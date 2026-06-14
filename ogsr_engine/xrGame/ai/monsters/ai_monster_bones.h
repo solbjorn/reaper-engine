@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../include/xrRender/animation_motion.h"
+#include "../../../Include/xrRender/animation_motion.h"
 #include "../../../xr_3da/bone.h"
 
 #define AXIS_X (1 << 0)

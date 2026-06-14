@@ -1,8 +1,8 @@
 #pragma once
 
 #include "inventory_item_object.h"
-#include "..\xr_3da\feel_touch.h"
-#include "hudsound.h"
+#include "../xr_3da/Feel_Touch.h"
+#include "HudSound.h"
 
 class CCustomZone;
 
@@ -13,7 +13,6 @@ struct ZONE_TYPE_SHOC
     float min_freq;
     float max_freq;
     // звук реакции детектора на конкретную зону
-    //	ref_sound	detect_snd;
     HUD_SOUND detect_snds;
 
     shared_str zone_map_location;

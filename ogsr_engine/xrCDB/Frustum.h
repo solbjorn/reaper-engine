@@ -5,7 +5,7 @@
 
 #include "xrCDB.h"
 
-#include "fixedvector.h"
+#include "FixedVector.h"
 
 enum EFC_Visible : u32
 {

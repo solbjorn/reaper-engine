@@ -1,7 +1,7 @@
 #ifndef dxWallMarkArray_included
 #define dxWallMarkArray_included
 
-#include "..\..\Include\xrRender\WallMarkArray.h"
+#include "../../Include/xrRender/WallMarkArray.h"
 
 class dxWallMarkArray : public IWallMarkArray
 {

@@ -7,8 +7,10 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "danger_object_location.h"
-#include "gameobject.h"
+
+#include "GameObject.h"
 
 const Fvector& CDangerObjectLocation::position() const { return (m_object->Position()); }
 

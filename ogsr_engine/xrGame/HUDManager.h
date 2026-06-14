@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\xr_3da\CustomHUD.h"
+#include "../xr_3da/CustomHUD.h"
 #include "HitMarker.h"
 #include "UI.h"
 

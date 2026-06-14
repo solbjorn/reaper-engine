@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "Helicopter.h"
+#include "helicopter.h"
 
-#include "level.h"
+#include "Level.h"
 #include "patrol_path.h"
 #include "patrol_path_storage.h"
 #include "script_game_object.h"

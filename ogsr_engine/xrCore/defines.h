@@ -5,10 +5,10 @@
 // which can't include the precompiled header.
 
 // KRodin: это инклудить только здесь и нигде больше!
-#if __has_include("..\build_config_overrides\build_config_defines.h")
-#include "..\build_config_overrides\build_config_defines.h"
+#if __has_include("../build_config_overrides/build_config_defines.h")
+#include "../build_config_overrides/build_config_defines.h"
 #else
-#include "..\build_config_defines.h"
+#include "../build_config_defines.h"
 #endif
 
 // Require function-like macros to end with a ';'

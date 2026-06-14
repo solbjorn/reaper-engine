@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "hwcaps.h"
+#include "HWCaps.h"
 
 constexpr u32 GetGpuNum() { return 1; }
 

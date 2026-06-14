@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "level.h"
+#include "Level.h"
 
 #define TEMPLATE_SPECIALIZATION template <typename _object_type>
 #define CBaseAction CActionBase<_object_type>
@@ -27,8 +27,6 @@ inline void CBaseAction::init(_object_type* object, [[maybe_unused]] LPCSTR acti
     m_use_log = false;
     m_action_name = action_name;
     m_switched = false;
-//	if (xr_strlen(m_action_name))
-//		debug_log		(eActionStateConstructed);
 #endif
 }
 
@@ -40,6 +38,7 @@ inline void CBaseAction::setup(_object_type* object, CPropertyStorage* storage)
     m_object = object;
     m_storage = storage;
     m_inertia_time = 0;
+
 #ifdef LOG_ACTION
     m_switched = false;
     if (m_use_log && xr_strlen(m_action_name))
@@ -56,6 +55,7 @@ inline void CBaseAction::initialize()
     if (m_use_log && xr_strlen(m_action_name))
         debug_log(eActionStateInitialized);
 #endif
+
     m_start_level_time = Device.dwTimeGlobal;
     m_first_time = true;
 
@@ -70,6 +70,7 @@ TEMPLATE_SPECIALIZATION
 inline void CBaseAction::execute()
 {
     m_first_time = false;
+
 #ifdef LOG_ACTION
     if (m_use_log && xr_strlen(m_action_name) && m_switched)
         debug_log(eActionStateExecuted);

@@ -9,12 +9,13 @@
 #include "stdafx.h"
 
 #include "object_property_evaluators.h"
-#include "weapon.h"
+
+#include "Weapon.h"
 #include "ai/stalker/ai_stalker.h"
-#include "inventory.h"
-#include "missile.h"
-#include "fooditem.h"
-#include "weaponmagazined.h"
+#include "Inventory.h"
+#include "Missile.h"
+#include "FoodItem.h"
+#include "WeaponMagazined.h"
 
 //////////////////////////////////////////////////////////////////////////
 // CObjectPropertyEvaluatorState
@@ -56,7 +57,8 @@ CObjectPropertyEvaluatorAmmo::_value_type CObjectPropertyEvaluatorAmmo::evaluate
 // CObjectPropertyEvaluatorEmpty
 //////////////////////////////////////////////////////////////////////////
 
-CObjectPropertyEvaluatorEmpty::CObjectPropertyEvaluatorEmpty(CWeapon* item, CAI_Stalker* owner, u32 ammo_type) : inherited(item, owner), m_ammo_type(ammo_type) {}
+CObjectPropertyEvaluatorEmpty::CObjectPropertyEvaluatorEmpty(CWeapon* item, CAI_Stalker* owner, u32 ammo_type) : inherited(item, owner), m_ammo_type(ammo_type)
+{}
 
 CObjectPropertyEvaluatorEmpty::_value_type CObjectPropertyEvaluatorEmpty::evaluate()
 {
@@ -84,7 +86,8 @@ CObjectPropertyEvaluatorFull::_value_type CObjectPropertyEvaluatorFull::evaluate
 // CObjectPropertyEvaluatorReady
 //////////////////////////////////////////////////////////////////////////
 
-CObjectPropertyEvaluatorReady::CObjectPropertyEvaluatorReady(CWeapon* item, CAI_Stalker* owner, u32 ammo_type) : inherited(item, owner), m_ammo_type(ammo_type) {}
+CObjectPropertyEvaluatorReady::CObjectPropertyEvaluatorReady(CWeapon* item, CAI_Stalker* owner, u32 ammo_type) : inherited(item, owner), m_ammo_type(ammo_type)
+{}
 
 CObjectPropertyEvaluatorReady::_value_type CObjectPropertyEvaluatorReady::evaluate()
 {

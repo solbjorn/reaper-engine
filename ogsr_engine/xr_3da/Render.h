@@ -1,31 +1,24 @@
 #ifndef _RENDER_H_
 #define _RENDER_H_
 
-#include "../xrCDB/frustum.h"
+#include "../xrCDB/Frustum.h"
 
 #include "vis_common.h"
-// #include "IRenderDetailModel.h"
 
 #include "../Include/xrAPI/xrAPI.h"
 #include "../Include/xrRender/FactoryPtr.h"
+
 class IUIShader;
 typedef FactoryPtr<IUIShader> wm_shader;
-// #include "../Include/xrRender/WallMarkArray.h"
 
 // refs
 class IRenderable;
-// class IRenderVisual;
-
-// class IBlender;
-// class CSkeletonWallmark;
-// class CKinematics;
 struct FSlideWindowItem;
 
 //	Igor
 class IRenderVisual;
 class IKinematics;
 class CGameFont;
-// class IRenderDetailModel;
 
 extern const float fLightSmoothFactor;
 extern int g_3dscopes_fps_factor;

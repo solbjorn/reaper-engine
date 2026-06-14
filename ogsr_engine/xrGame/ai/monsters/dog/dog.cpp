@@ -16,7 +16,7 @@
 #include "level_graph.h"
 #include "../../../ai_space.h"
 #include "../../../ai_object_location.h"
-#include "../../../actor.h"
+#include "../../../Actor.h"
 
 CAI_Dog::CAI_Dog()
 {
@@ -30,7 +30,6 @@ CAI_Dog::CAI_Dog()
 
     com_man().add_ability(ControlCom::eControlJump);
     com_man().add_ability(ControlCom::eControlRotationJump);
-    //	com_man().add_ability(ControlCom::eControlMeleeJump);
 }
 
 CAI_Dog::~CAI_Dog() { xr_delete(StateMan); }

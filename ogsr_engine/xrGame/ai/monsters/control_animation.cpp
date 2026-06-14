@@ -2,7 +2,7 @@
 
 #include "control_animation.h"
 
-#include "BaseMonster/base_monster.h"
+#include "basemonster/base_monster.h"
 #include "control_manager.h"
 
 void SAnimationPart::set_motion(MotionID const& m)

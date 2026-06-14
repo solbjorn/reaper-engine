@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "xrtheora_stream.h"
+#include "xrTheora_Stream.h"
 
 CTheoraStream::CTheoraStream()
 {

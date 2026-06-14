@@ -11,7 +11,7 @@
 #include "xrServer_Objects_ALife_Items.h"
 
 #include "xrMessages.h"
-#include "../xr_3da/NET_Server_Trash/net_utils.h"
+#include "../xr_3da/NET_Server_Trash/NET_utils.h"
 #include "clsid_game.h"
 
 #ifdef XRGAME_EXPORTS

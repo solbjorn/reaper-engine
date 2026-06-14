@@ -1,9 +1,10 @@
 #include "stdafx.h"
 
 #include "monster_hit_memory.h"
-#include "BaseMonster/base_monster.h"
 
-CMonsterHitMemory::~CMonsterHitMemory() {}
+#include "basemonster/base_monster.h"
+
+CMonsterHitMemory::~CMonsterHitMemory() = default;
 
 void CMonsterHitMemory::init_external(CBaseMonster* M, TTime mem_time)
 {
@@ -60,7 +61,10 @@ struct predicate_old_hit
     }
 };
 
-void CMonsterHitMemory::remove_non_actual() { m_hits.erase(std::remove_if(m_hits.begin(), m_hits.end(), predicate_old_hit(time_memory, Device.dwTimeGlobal)), m_hits.end()); }
+void CMonsterHitMemory::remove_non_actual()
+{
+    m_hits.erase(std::remove_if(m_hits.begin(), m_hits.end(), predicate_old_hit(time_memory, Device.dwTimeGlobal)), m_hits.end());
+}
 
 Fvector CMonsterHitMemory::get_last_hit_dir()
 {
@@ -151,4 +155,7 @@ struct predicate_old_info
     IC bool operator()(const SMonsterHit& hit_info) { return (object == hit_info.object); }
 };
 
-void CMonsterHitMemory::remove_hit_info(const CObject* obj) { m_hits.erase(std::remove_if(m_hits.begin(), m_hits.end(), predicate_old_info(obj)), m_hits.end()); }
+void CMonsterHitMemory::remove_hit_info(const CObject* obj)
+{
+    m_hits.erase(std::remove_if(m_hits.begin(), m_hits.end(), predicate_old_info(obj)), m_hits.end());
+}

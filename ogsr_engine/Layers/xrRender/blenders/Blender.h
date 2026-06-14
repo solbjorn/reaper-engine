@@ -5,7 +5,7 @@
 #ifndef AFX_BLENDER_H__A023332E_C09B_4D93_AA53_57C052CCC075__INCLUDED_
 #define AFX_BLENDER_H__A023332E_C09B_4D93_AA53_57C052CCC075__INCLUDED_
 
-#include "../../xr_3da/properties.h"
+#include "../../xr_3da/Properties.h"
 #include "Blender_Recorder.h"
 
 class CBlender_DESC

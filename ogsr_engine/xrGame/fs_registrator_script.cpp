@@ -2,7 +2,7 @@
 
 #include "fs_registrator.h"
 
-#include "LocatorApi.h"
+#include "LocatorAPI.h"
 
 #include <filesystem>
 #include <iomanip>

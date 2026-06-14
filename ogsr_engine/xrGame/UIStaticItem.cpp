@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "uistaticitem.h"
+#include "UIStaticItem.h"
 
-#include "hudmanager.h"
+#include "HUDManager.h"
 
 CUIStaticItem::CUIStaticItem()
 {
@@ -29,7 +29,6 @@ void CUIStaticItem::CreateShader(LPCSTR tex, LPCSTR sh)
 #endif
 
     uFlags.set(flValidRect, FALSE);
-    // uFlags.set(flValidOriginalRect, FALSE); // вызывать через ResetOriginalRect
 }
 
 void CUIStaticItem::SetShader(const ui_shader& sh) { hShader = sh; }
@@ -37,7 +36,6 @@ void CUIStaticItem::SetShader(const ui_shader& sh) { hShader = sh; }
 void CUIStaticItem::Init(LPCSTR tex, LPCSTR sh, float left, float top, u32 align)
 {
     uFlags.set(flValidRect, FALSE);
-    // uFlags.set(flValidOriginalRect, FALSE); // вызывать через ResetOriginalRect
 
     CreateShader(tex, sh);
     SetPos(left, top);

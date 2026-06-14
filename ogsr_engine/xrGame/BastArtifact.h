@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "artifact.h"
-#include "..\xr_3da\feel_touch.h"
+#include "Artifact.h"
+#include "../xr_3da/Feel_Touch.h"
 #include "entity_alive.h"
 
 struct SGameMtl;

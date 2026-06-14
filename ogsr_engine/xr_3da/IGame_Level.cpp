@@ -1,13 +1,13 @@
 #include "stdafx.h"
 
-#include "igame_level.h"
+#include "IGame_Level.h"
 
-#include "igame_persistent.h"
+#include "IGame_Persistent.h"
 #include "x_ray.h"
 #include "std_classes.h"
-#include "customHUD.h"
-#include "render.h"
-#include "gamefont.h"
+#include "CustomHUD.h"
+#include "Render.h"
+#include "GameFont.h"
 #include "xrLevel.h"
 #include "CameraManager.h"
 

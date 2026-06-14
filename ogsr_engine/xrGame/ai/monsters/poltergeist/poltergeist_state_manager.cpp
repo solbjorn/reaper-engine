@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "poltergeist.h"
+
 #include "poltergeist_state_manager.h"
 
 #include "../control_animation_base.h"
@@ -16,7 +17,7 @@
 #include "../states/monster_state_hear_int_sound.h"
 #include "../states/monster_state_hear_danger_sound.h"
 #include "../states/monster_state_hitted.h"
-#include "../../../entitycondition.h"
+#include "../../../EntityCondition.h"
 
 CStateManagerPoltergeist::CStateManagerPoltergeist(CPoltergeist* obj) : inherited(obj)
 {
@@ -29,7 +30,7 @@ CStateManagerPoltergeist::CStateManagerPoltergeist(CPoltergeist* obj) : inherite
     add_state(eStateHearDangerousSound, xr_new<CStateMonsterHearDangerousSound<CPoltergeist>>(obj));
 }
 
-CStateManagerPoltergeist::~CStateManagerPoltergeist() {}
+CStateManagerPoltergeist::~CStateManagerPoltergeist() = default;
 
 void CStateManagerPoltergeist::reinit()
 {
