@@ -22,6 +22,7 @@ RD /s /q 3rd_party\Src\Xiph\theora\_Build
 RD /s /q 3rd_party\Src\Xiph\vorbis\_Build
 RD /s /q 3rd_party\Src\archiving\archive\_Build
 RD /s /q 3rd_party\Src\archiving\dwarfs\_Build
+RD /s /q 3rd_party\Src\archiving\dwarfs\_Build2
 RD /s /q 3rd_party\Src\archiving\minizip\_Build
 RD /s /q 3rd_party\Src\archiving\squashfs\_Build
 RD /s /q 3rd_party\Src\crypto\_Build
@@ -39,6 +40,7 @@ RD /s /q 3rd_party\Src\formatting\cpptrace\_Build
 RD /s /q 3rd_party\Src\formatting\fmt\_Build
 RD /s /q 3rd_party\Src\formatting\re2\_Build
 RD /s /q 3rd_party\Src\formatting\scn\_Build
+RD /s /q 3rd_party\Src\formatting\scn\_Build2
 RD /s /q 3rd_party\Src\i18n\SheenBidi\_Build
 RD /s /q 3rd_party\Src\i18n\budouxc\_Build
 RD /s /q 3rd_party\Src\i18n\unibreak\_Build

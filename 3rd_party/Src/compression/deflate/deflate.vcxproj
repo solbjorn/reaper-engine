@@ -41,6 +41,7 @@
     <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\deflatestatic.lib</NMakeOutput>
     <NMakeBuildCommandLine>
       set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
+      set "LIBC_OPTIONS=$(libcOptions)"
       md _Build
       cd _Build
       echo * > .gitignore

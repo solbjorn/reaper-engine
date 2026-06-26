@@ -20,9 +20,10 @@
   </PropertyGroup-->
 
   <PropertyGroup Label="UserMacros">
-    <ConformanceOptions>/Brepro /bigobj /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__STDC__ /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /Zc:checkGwOdr /Zc:forScope /Zc:templateScope /Zc:u8EscapeEncoding /Zc:wchar_t /JMC- /EHsc /DNOMINMAX /DSTRICT -fstrict-aliasing -fno-delayed-template-parsing -fno-wrapv /D_CRT_STDIO_ISO_WIDE_SPECIFIERS -fno-ms-compatibility -fgnuc-version=0 /clang:-std=c++26 /utf-8 /D_UNICODE /DUNICODE</ConformanceOptions>
-    <LLVMOptions>-march=skylake -mavx2 -mbmi -mbmi2 -mvpclmulqdq -flto -fmerge-all-constants -fforce-emit-vtables -fwhole-program-vtables /clang:-fcoro-aligned-allocation /clang:-fopenmp</LLVMOptions>
-    <libcxxOptions>/clang:-stdlib=libc++ /clang:-stdlib++-isystem /clang:$(SolutionDir)\3rd_party\Src\system\llvm\_Build\$(Configuration)\$(PlatformShortName)\include\c++\v1 /D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS /D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST /D_LIBCPP_REMOVE_TRANSITIVE_INCLUDES -Dfdopen=_fdopen -D_YVALS -D_YVALS_CORE_H_</libcxxOptions>
+    <ConformanceOptions>/Brepro /bigobj /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__STDC__ /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /Zc:checkGwOdr /Zc:forScope /Zc:templateScope /Zc:u8EscapeEncoding /Zc:wchar_t /JMC- /EHsc- /DNOMINMAX /DSTRICT -fstrict-aliasing -fno-delayed-template-parsing -fno-wrapv /D_CRT_STDIO_ISO_WIDE_SPECIFIERS -fno-ms-compatibility -fgnuc-version=0 /clang:-std=c++26 /utf-8 /D_UNICODE /DUNICODE</ConformanceOptions>
+    <LLVMOptions>-fuse-ld=lld-link -gcodeview-ghash -march=skylake -mavx2 -mbmi -mbmi2 -mvpclmulqdq -flto -fmerge-all-constants -fforce-emit-vtables -fwhole-program-vtables /clang:-fcoro-aligned-allocation /clang:-fopenmp /clang:-fopenmp-extensions</LLVMOptions>
+    <libcOptions>-I$(SolutionDir)\3rd_party\Src\system\llvm\include</libcOptions>
+    <libcxxOptions>/clang:-stdlib=libc++ /clang:-stdlib++-isystem /clang:$(SolutionDir)\3rd_party\Src\system\llvm\_Build\$(Configuration)\$(PlatformShortName)\include\c++\v1 /D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS /D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST /D_LIBCPP_REMOVE_TRANSITIVE_INCLUDES -Dfdopen=_fdopen -D_YVALS -D_YVALS_CORE_H_ $(libcOptions)</libcxxOptions>
     <libcxxPath>$(SolutionDir)\3rd_party\Src\system\llvm\_Build\$(Configuration)\$(PlatformShortName)\lib</libcxxPath>
     <WarningOptions>/W4 -Wextra -Wabstract-vbase-init -Wcast-qual -Wcomma -Wdelete-non-virtual-dtor -Wdeprecated -Weffc++ -Wextra-semi -Wextra-semi-stmt -Wfloat-equal -Wformat -Wformat-nonliteral -Wformat-pedantic -Wformat-signedness -Wformat-type-confusion -Wfunction-effects -Wheader-hygiene -Wimplicit-fallthrough -Winconsistent-missing-destructor-override -Wloop-analysis -Wmicrosoft -Wmissing-prototypes -Wmissing-variable-declarations -Wnewline-eof -Wnon-virtual-dtor -Wnrvo -Woverriding-method-mismatch -Wpacked -Wredundant-parens -Wself-assign -Wstrict-aliasing -Wundefined-internal-type -Wundefined-reinterpret-cast -Wunreachable-code-aggressive -Wunused-macros -Wunused-member-function -Wunused-template -Wweak-vtables -Wzero-as-null-pointer-constant</WarningOptions>
     <ErrorOptions>-Werror -Wno-error=deprecated-declarations -Wno-error=overloaded-virtual -Wno-error=unused-command-line-argument</ErrorOptions>
@@ -40,13 +41,14 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions>%(AdditionalOptions) $(ConformanceOptions) $(LLVMOptions) $(libcxxOptions) $(WarningOptions) $(ErrorOptions) /Gw /D_MSVC_STL_HARDENING=1</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)'=='Release'">%(AdditionalOptions) /DNDEBUG /D_ITERATOR_DEBUG_LEVEL=0</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)'=='Debug'">%(AdditionalOptions) /D_ITERATOR_DEBUG_LEVEL=2</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)'=='Debug'">%(AdditionalOptions) /D_ITERATOR_DEBUG_LEVEL=0</AdditionalOptions>
     </ClCompile>
 
     <Link>
       <LargeAddressAware>true</LargeAddressAware>
       <AdditionalOptions>%(AdditionalOptions) /Brepro</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)'=='Release'">%(AdditionalOptions) /opt:lldlto=3 /opt:lldltocgo=3</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)'=='Release'">%(AdditionalOptions) /DEBUG:GHASH /OPT:REF /OPT:ICF /opt:lldlto=3 /opt:lldltocgo=3 /opt:lldtailmerge</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)'=='Debug'">%(AdditionalOptions) /DEBUG:GHASH /OPT:REF /OPT:ICF</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
 </Project>

@@ -41,7 +41,7 @@
     <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\theora.lib</NMakeOutput>
     <NMakeBuildCommandLine>
       set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
-      set "LIBC_OPTIONS=/FI$(SolutionDir)\3rd_party\Src\Xiph\theora\include\override.h"
+      set "LIBC_OPTIONS=$(libcOptions) /FI$(SolutionDir)\3rd_party\Src\Xiph\theora\include\override.h"
       md _Build
       cd _Build
       echo * > .gitignore

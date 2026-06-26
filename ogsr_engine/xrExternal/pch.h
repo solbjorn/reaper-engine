@@ -14,7 +14,11 @@
 #include "tracy.h"
 
 #ifndef DISCORDPP_IMPLEMENTATION
+#define DISCORD_API __declspec(dllimport)
+
 #include <discordpp.h>
+
+#undef DISCORD_API
 #endif
 
 #endif // !__XREXTERNAL_PCH_H

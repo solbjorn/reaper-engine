@@ -18,9 +18,7 @@
       <BuildDependency Project="3rd_party/Src/system/llvm/llvm.vcxproj" />
     </Project>
     <Project Path="3rd_party/Src/crypto/crypto.vcxproj" Id="4a9a3601-fa0a-4bfc-a5ff-0531cc9e0cd1">
-      <BuildDependency Project="3rd_party/Src/compression/brotli/brotli.vcxproj" />
-      <BuildDependency Project="3rd_party/Src/compression/zlib/zlib.vcxproj" />
-      <BuildDependency Project="3rd_party/Src/compression/zstd/zstd.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/system/llvm/llvm.vcxproj" />
     </Project>
     <Project Path="3rd_party/Src/luajit2/luajit2.vcxproj" Id="632aeeb6-dc06-4e15-9551-b2b09a4b73c5" />
     <Project Path="3rd_party/Src/tmc/hwloc/hwloc.vcxproj" Id="a3f8db74-fed0-4ed3-9e51-f5b4e5ac9713" />
@@ -186,7 +184,9 @@
       <BuildDependency Project="3rd_party/Src/system/llvm/llvm.vcxproj" />
     </Project>
     <Project Path="3rd_party/Src/system/llvm/llvm.vcxproj" Id="a2f5a99e-1330-4dc5-90da-c55d0fcc6bdf" />
-    <Project Path="3rd_party/Src/system/mimalloc/mimalloc.vcxproj" Id="c0e0a539-f615-4317-b12c-24b77195b41a" />
+    <Project Path="3rd_party/Src/system/mimalloc/mimalloc.vcxproj" Id="c0e0a539-f615-4317-b12c-24b77195b41a">
+      <BuildDependency Project="3rd_party/Src/system/llvm/llvm.vcxproj" />
+    </Project>
   </Folder>
   <Folder Name="/3rd_party/Utility/">
     <Project Path="3rd_party/Src/utility/pugixml/pugixml.vcxproj" Id="f254d5d1-d566-4af3-b402-4df3a717daf2">
@@ -240,6 +240,7 @@
   <Project Path="ogsr_engine/xrExternal/xrExternal.vcxproj" Id="6d4e1cd0-9d48-4210-982e-93827a58256e">
     <BuildDependency Project="3rd_party/Src/FreeType/freetype/freetype.vcxproj" />
     <BuildDependency Project="3rd_party/Src/FreeType/plutosvg/plutosvg.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/formatting/assert/assert.vcxproj" />
     <BuildDependency Project="3rd_party/Src/luajit2/luajit2.vcxproj" />
     <BuildDependency Project="3rd_party/Src/system/llvm/llvm.vcxproj" />
     <BuildDependency Project="3rd_party/Src/tmc/hwloc/hwloc.vcxproj" />

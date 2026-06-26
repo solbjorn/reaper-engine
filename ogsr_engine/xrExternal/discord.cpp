@@ -1,6 +1,8 @@
 #include "pch.h"
 
 #ifdef XR_DISCORD
+#define DISCORD_API __declspec(dllimport)
+
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wcast-qual");
 XR_DIAG_IGNORE("-Wmissing-prototypes");
@@ -10,4 +12,6 @@ XR_DIAG_IGNORE("-Wold-style-cast");
 #include <discordpp.h>
 
 XR_DIAG_POP();
+
+#undef DISCORD_API
 #endif

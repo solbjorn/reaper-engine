@@ -10,16 +10,6 @@
 
 #include <filesystem>
 
-namespace ssl
-{
-XR_DIAG_PUSH();
-XR_DIAG_IGNORE("-Wold-style-cast");
-
-#include <openssl/crypto.h>
-
-XR_DIAG_POP();
-} // namespace ssl
-
 #include <direct.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -162,8 +152,6 @@ CLocatorAPI::CLocatorAPI()
     dwAllocGranularity = sys_inf.dwAllocationGranularity;
     m_iLockRescan = 0;
     dwOpenCounter = 0;
-
-    R_ASSERT(ssl::OPENSSL_init_crypto(OPENSSL_INIT_LOAD_CRYPTO_STRINGS | OPENSSL_INIT_ADD_ALL_CIPHERS | OPENSSL_INIT_ADD_ALL_DIGESTS, nullptr) > 0);
 }
 
 CLocatorAPI::~CLocatorAPI()

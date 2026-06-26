@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+libdir=@CMAKE_INSTALL_PREFIX@/lib
+includedir=@CMAKE_INSTALL_PREFIX@/include
+
+Name: BoringSSL-libssl
+Description: BoringSSL TLS Library
+URL: https://github.com/google/boringssl
+Version: 4.0.0
+Requires.private: libcrypto
+Libs: -L${libdir} -lssl
+Cflags: -I${includedir}

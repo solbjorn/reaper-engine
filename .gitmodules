@@ -96,9 +96,9 @@
 [submodule "3rd_party/Src/compression/zxc/zxc"]
 	path = 3rd_party/Src/compression/zxc/zxc
 	url = https://github.com/hellobertrand/zxc.git
-[submodule "3rd_party/Src/crypto/openssl"]
-	path = 3rd_party/Src/crypto/openssl
-	url = https://github.com/openssl/openssl.git
+[submodule "3rd_party/Src/crypto/boringssl"]
+	path = 3rd_party/Src/crypto/boringssl
+	url = https://github.com/google/boringssl.git
 [submodule "3rd_party/Src/formatting/assert/libassert"]
 	path = 3rd_party/Src/formatting/assert/libassert
 	url = https://github.com/jeremy-rifkin/libassert.git
@@ -108,6 +108,9 @@
 [submodule "3rd_party/Src/formatting/enchantum"]
 	path = 3rd_party/Src/formatting/enchantum
 	url = https://github.com/ZXShady/enchantum.git
+[submodule "3rd_party/Src/formatting/fast_float"]
+	path = 3rd_party/Src/formatting/fast_float
+	url = https://github.com/fastfloat/fast_float.git
 [submodule "3rd_party/Src/formatting/fmt/fmt"]
 	path = 3rd_party/Src/formatting/fmt/fmt
 	url = https://github.com/fmtlib/fmt.git
@@ -209,6 +212,9 @@
 [submodule "3rd_party/Src/utility/pugixml/pugixml"]
 	path = 3rd_party/Src/utility/pugixml/pugixml
 	url = https://github.com/zeux/pugixml.git
+[submodule "3rd_party/Src/utility/range-v3"]
+	path = 3rd_party/Src/utility/range-v3
+	url = https://github.com/ericniebler/range-v3.git
 [submodule "3rd_party/Src/utility/rtti"]
 	path = 3rd_party/Src/utility/rtti
 	url = https://github.com/solbjorn/rtti.git

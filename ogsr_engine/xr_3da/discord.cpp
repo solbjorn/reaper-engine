@@ -5,7 +5,11 @@
 #include "x_ray.h"
 #include "xr_ioc_cmd.h"
 
+#define DISCORD_API __declspec(dllimport)
+
 #include <discordpp.h>
+
+#undef DISCORD_API
 
 namespace xxh
 {

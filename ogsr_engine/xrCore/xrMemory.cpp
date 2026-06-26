@@ -7,6 +7,11 @@
 #endif
 
 #ifdef USE_MIMALLOC
+// string.h
+#undef _strdup
+
+#define MI_SHARED_LIB
+
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wc++98-compat-extra-semi");
 XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
@@ -15,6 +20,8 @@ XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
 #include <mimalloc-new-delete.h>
 
 XR_DIAG_POP();
+
+#undef MI_SHARED_LIB
 
 #pragma comment(lib, "mimalloc.lib")
 #endif

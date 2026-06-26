@@ -43,10 +43,17 @@
       set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
       set "LIBCXX_OPTIONS=$(libcxxOptions) /FI$(SolutionDir)\3rd_party\Src\system\abseil\include\override.h"
       set "LIBCXX_PATH=$(libcxxPath)"
+      md _Build2
+      cd _Build2
+      echo * > .gitignore
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" ..\..\fast_float
+      cmake --build . --config $(Configuration)
+      cmake --install . --config $(Configuration)
+      cd ..
       md _Build
       cd _Build
       echo * > .gitignore
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\formatting\re2\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\system\abseil\_Build\$(Configuration)\$(PlatformShortName)" -DBUILD_TESTING=OFF -DSCN_DOCS=OFF -DSCN_EXAMPLES=OFF -DSCN_BENCHMARKS=OFF -DSCN_BENCHMARKS_BINARYSIZE=OFF -DSCN_BENCHMARKS_BUILDTIME=OFF -DSCN_REGEX_BACKEND="re2" ..\scnlib
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\formatting\re2\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\formatting\scn\_Build2\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\system\abseil\_Build\$(Configuration)\$(PlatformShortName)" -DBUILD_TESTING=OFF -DSCN_DOCS=OFF -DSCN_EXAMPLES=OFF -DSCN_BENCHMARKS=OFF -DSCN_BENCHMARKS_BINARYSIZE=OFF -DSCN_BENCHMARKS_BUILDTIME=OFF -DSCN_REGEX_BACKEND="re2" -DSCN_USE_EXTERNAL_FAST_FLOAT=ON ..\scnlib
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)
       copy /Y "scn.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\scn.lib"
