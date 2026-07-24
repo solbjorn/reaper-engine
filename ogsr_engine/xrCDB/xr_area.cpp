@@ -38,11 +38,13 @@ void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range, float t
     if (S->feedback->is_2D())
         snd_position.add(Sound->listener_position());
 
-    VERIFY(p && _valid(range));
+    XR_ASSERT(p != nullptr);
+    XR_DEBUG_ASSERT(_valid(range));
     range = _min(range, p->max_ai_distance);
-    VERIFY(_valid(snd_position));
-    VERIFY(_valid(p->max_ai_distance));
-    VERIFY(_valid(p->volume));
+
+    XR_DEBUG_ASSERT(_valid(snd_position));
+    XR_DEBUG_ASSERT(_valid(p->max_ai_distance));
+    XR_DEBUG_ASSERT(_valid(p->volume));
 
     // Query objects
     const Fvector bb_size{range, range, range};
@@ -55,26 +57,26 @@ void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range, float t
         if (L == nullptr)
             continue;
 
-        CObject* CO = isp->dcast_CObject();
-        VERIFY(CO);
-        if (CO->getDestroy())
+        if (XR_ASSERT_VAL(isp->dcast_CObject() != nullptr)->getDestroy())
             continue;
 
         // Energy and signal
-        VERIFY(_valid(isp->spatial.sphere.P));
+        XR_DEBUG_ASSERT(_valid(isp->spatial.sphere.P));
+
         const f32 dist = snd_position.distance_to(isp->spatial.sphere.P);
         if (dist > p->max_ai_distance)
             continue;
 
-        VERIFY(_valid(dist));
-        VERIFY(!fis_zero(p->max_ai_distance), S->handle->file_name());
+        XR_DEBUG_ASSERT(_valid(dist));
+        XR_DEBUG_ASSERT(!fis_zero(p->max_ai_distance), S->handle->file_name());
 
         f32 Power = (1.f - dist / p->max_ai_distance) * p->volume;
-        VERIFY(_valid(Power));
+        XR_DEBUG_ASSERT(_valid(Power));
+
         if (Power > EPS_S)
         {
             const f32 occ = Sound->get_occlusion_to(isp->spatial.sphere.P, snd_position);
-            VERIFY(_valid(occ));
+            XR_DEBUG_ASSERT(_valid(occ));
 
             Power *= occ;
             if (Power > EPS_S)
@@ -90,13 +92,11 @@ void IGame_Level::SoundEvent_Dispatch()
     while (!snd_Events.empty())
     {
         _esound_delegate& D = snd_Events.back();
-        VERIFY(D.dest && D.source);
+        XR_ASSERT(D.dest != nullptr && D.source != nullptr);
 
         if (D.source->feedback)
-        {
             D.dest->feel_sound_new(D.source->g_object, D.source->g_type, D.source->g_userdata,
                                    D.source->feedback->is_2D() ? Device.vCameraPosition : D.source->feedback->get_params()->position, D.power, D.time_to_stop);
-        }
 
         snd_Events.pop_back();
     }
@@ -201,15 +201,13 @@ bool deserialize_callback(IReader& reader) { return g_pGameLevel->Load_GameSpeci
 
 void CObjectSpace::Load()
 {
-    IReader* F = FS.r_open("$level$", "level.cform");
-    R_ASSERT(F);
-
+    const auto F = XR_ASSERT_VAL(absl::WrapUnique(FS.r_open("$level$", "level.cform")));
     hdrCFORM H;
-    F->r(&H, sizeof(hdrCFORM));
+    F->r(&H, sizeof(H));
+    XR_ASSERT(H.version == CFORM_CURRENT_VERSION);
+
     const Fvector* verts = static_cast<const Fvector*>(F->pointer());
     const CDB::TRI* tris = reinterpret_cast<const CDB::TRI*>(verts + H.vertcount);
-    R_ASSERT(CFORM_CURRENT_VERSION == H.version);
-
     F->seek(0);
     xxh::XXH64_hash_t xxh = xxh::XXH3_64bits(F->pointer(), gsl::narrow_cast<size_t>(F->length()));
 
@@ -230,8 +228,6 @@ void CObjectSpace::Load()
     g_SpatialSpacePhysic->initialize(H.aabb);
     Sound->set_geometry_occ(&Static);
     Sound->set_handler(_sound_event);
-
-    FS.r_close(F);
 }
 
 //----------------------------------------------------------------------
@@ -239,8 +235,7 @@ void CObjectSpace::Load()
 #ifdef DEBUG
 void CObjectSpace::dbgRender()
 {
-    R_ASSERT(bDebug);
-
+    XR_ASSERT(bDebug);
     RCache.set_Shader(sh_debug);
 
     for (auto& obb : q_debug.boxes)

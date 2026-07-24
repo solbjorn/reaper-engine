@@ -38,8 +38,6 @@ public:
     virtual void DestroyUIGeom() = 0;
 
     virtual void SetShader(IUIShader& shader) = 0;
-    virtual void SetAlphaRef(s32 aref) = 0;
-
     virtual void SetScissor(Irect* rect = nullptr) = 0;
     virtual void GetActiveTextureResolution(Fvector2& res) = 0;
 

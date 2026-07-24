@@ -67,9 +67,9 @@ inline bool TriPlaneContainPoint(Triangle* T) { return T->dist > 0.f; }
 inline void PlanePoint(const Triangle& tri, const dReal* from, const dReal* to, float from_dist, dReal* point)
 {
     dVector3 dir = {to[0] - from[0], to[1] - from[1], to[2] - from[2]};
-    dReal cosinus = (tri.dist - from_dist);
-    VERIFY2(cosinus < 0.f, "wrong positions");
+    dReal cosinus = XR_ASSERT_VAL(tri.dist - from_dist < 0.0f);
     dReal mul = (from_dist) / cosinus;
+
     dir[0] *= mul;
     dir[1] *= mul;
     dir[2] *= mul;

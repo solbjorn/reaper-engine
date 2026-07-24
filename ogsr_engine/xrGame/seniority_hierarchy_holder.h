@@ -22,10 +22,7 @@ private:
         max_team_count = 64
     };
 
-private:
-    typedef svector<CTeamHierarchyHolder*, max_team_count> TEAM_REGISTRY;
-
-private:
+    using TEAM_REGISTRY = std::inplace_vector<CTeamHierarchyHolder*, max_team_count>;
     TEAM_REGISTRY m_teams;
 
 public:

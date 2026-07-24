@@ -19,7 +19,7 @@ tmc::task<bool> CLevel::Load_GameSpecific_Before()
 {
     // AI space
     co_await g_pGamePersistent->LoadTitle("st_loading_ai_objects");
-    ASSERT_FMT(ai().get_alife(), "ai().get_alife() does not exist!");
+    XR_ASSERT(ai().get_alife() != nullptr, "A-Life doesn't exist");
 
     co_return true;
 }
@@ -124,31 +124,14 @@ tmc::task<bool> CLevel::Load_GameSpecific_After()
     co_return true;
 }
 
-struct translation_pair
-{
-    u32 m_id;
-    u16 m_index;
-
-    IC translation_pair(u32 id, u16 index)
-    {
-        m_id = id;
-        m_index = index;
-    }
-
-    IC bool operator==(const u16& id) const { return (m_id == id); }
-
-    IC bool operator<(const translation_pair& pair) const { return (m_id < pair.m_id); }
-
-    IC bool operator<(const u16& id) const { return (m_id < id); }
-};
-
 void CLevel::Load_GameSpecific_CFORM_Serialize(IWriter& writer) { writer.w_u64(GMLib.get_hash()); }
 bool CLevel::Load_GameSpecific_CFORM_Deserialize(IReader& reader) { return reader.r_u64() == GMLib.get_hash(); }
 
 void CLevel::Load_GameSpecific_CFORM(std::span<CDB::TRI> T)
 {
-    typedef xr_vector<translation_pair> ID_INDEX_PAIRS;
-    ID_INDEX_PAIRS translator;
+    using translation_pair = std::pair<u32, u16>;
+    xr_vector<translation_pair> translator;
+
     translator.reserve(GMLib.CountMaterial());
     u16 default_id = (u16)GMLib.GetMaterialIdx("default");
     translator.emplace_back(u32(-1), default_id);
@@ -175,37 +158,28 @@ void CLevel::Load_GameSpecific_CFORM(std::span<CDB::TRI> T)
     {
         for (auto& I : T)
         {
-            const auto i = std::find(translator.cbegin(), translator.cend(), (u16)I.material);
-            if (i != translator.end())
-            {
-                I.material = (*i).m_index;
-                const SGameMtl* mtl = GMLib.GetMaterialByIdx((*i).m_index);
-                I.suppress_shadows = mtl->Flags.is(SGameMtl::flSuppressShadows);
-                I.suppress_wm = mtl->Flags.is(SGameMtl::flSuppressWallmarks);
-                continue;
-            }
+            const auto i =
+                XR_ASSERT_VAL(std::ranges::find(translator, I.material, &translation_pair::first) != translator.end(), "game material not found", +I.material);
 
-            Debug.fatal(DEBUG_INFO, "Game material '%d' not found", I.material);
+            I.material = i->second;
+            const SGameMtl* mtl = GMLib.GetMaterialByIdx(i->second);
+            I.suppress_shadows = mtl->Flags.is(SGameMtl::flSuppressShadows);
+            I.suppress_wm = mtl->Flags.is(SGameMtl::flSuppressWallmarks);
         }
 
         return;
     }
 
-    std::sort(translator.begin(), translator.end());
-    {
-        for (auto& I : T)
-        {
-            const auto i = std::lower_bound(translator.cbegin(), translator.cend(), (u16)I.material);
-            if ((i != translator.cend()) && ((*i).m_id == I.material))
-            {
-                I.material = (*i).m_index;
-                const SGameMtl* mtl = GMLib.GetMaterialByIdx((*i).m_index);
-                I.suppress_shadows = mtl->Flags.is(SGameMtl::flSuppressShadows);
-                I.suppress_wm = mtl->Flags.is(SGameMtl::flSuppressWallmarks);
-                continue;
-            }
+    std::ranges::sort(translator, {}, &translation_pair::first);
 
-            Debug.fatal(DEBUG_INFO, "Game material '%d' not found", I.material);
-        }
+    for (auto& I : T)
+    {
+        const auto i = std::ranges::lower_bound(translator, I.material, {}, &translation_pair::first);
+        XR_ASSERT(i != translator.end() && i->first == I.material, "game material not found", +I.material);
+
+        I.material = i->second;
+        const SGameMtl* mtl = GMLib.GetMaterialByIdx(i->second);
+        I.suppress_shadows = mtl->Flags.is(SGameMtl::flSuppressShadows);
+        I.suppress_wm = mtl->Flags.is(SGameMtl::flSuppressWallmarks);
     }
 }

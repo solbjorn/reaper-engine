@@ -38,7 +38,8 @@ void FProgressive::Load(const char* N, IReader* data, u32 dwFlags)
     nSWI.reserved[2] = lods->r_u32();
     nSWI.reserved[3] = lods->r_u32();
     nSWI.count = lods->r_u32();
-    VERIFY(NULL == nSWI.sw);
+
+    XR_ASSERT(nSWI.sw == nullptr);
     nSWI.sw = xr_alloc<FSlideWindow>(nSWI.count);
     lods->r(nSWI.sw, nSWI.count * sizeof(FSlideWindow));
 
@@ -54,7 +55,8 @@ void FProgressive::Load(const char* N, IReader* data, u32 dwFlags)
         xSWI->reserved[2] = def->r_u32();
         xSWI->reserved[3] = def->r_u32();
         xSWI->count = def->r_u32();
-        VERIFY(NULL == xSWI->sw);
+
+        XR_ASSERT(xSWI->sw == nullptr);
         xSWI->sw = xr_alloc<FSlideWindow>(xSWI->count);
         def->r(xSWI->sw, xSWI->count * sizeof(FSlideWindow));
     }
@@ -66,8 +68,9 @@ void FProgressive::Render(CBackend& cmd_list, float LOD, bool use_fast_geo)
 
     if (m_fast && use_fast_geo)
     {
-        int lod_id = iFloor((1.f - clampr(LOD, 0.f, 1.f)) * float(xSWI->count - 1) + 0.5f);
-        VERIFY(lod_id >= 0 && lod_id < int(xSWI->count));
+        const int lod_id = iFloor((1.f - clampr(LOD, 0.f, 1.f)) * float(xSWI->count - 1) + 0.5f);
+        XR_ASSERT(lod_id >= 0 && lod_id < s64{xSWI->count}, "", lod_id, xSWI->count);
+
         FSlideWindow& SW = xSWI->sw[lod_id];
         cmd_list.set_Geometry(m_fast->rm_geom);
         cmd_list.Render(D3DPT_TRIANGLELIST, m_fast->vBase, 0, SW.num_verts, m_fast->iBase + SW.offset, SW.num_tris);
@@ -82,7 +85,9 @@ void FProgressive::Render(CBackend& cmd_list, float LOD, bool use_fast_geo)
             lod_id = iFloor((1.f - LOD) * float(nSWI.count - 1) + 0.5f);
             last_lod = lod_id;
         }
-        VERIFY(lod_id >= 0 && lod_id < int(nSWI.count));
+
+        XR_ASSERT(lod_id >= 0 && lod_id < s64{nSWI.count}, "", lod_id, nSWI.count);
+
         FSlideWindow& SW = nSWI.sw[lod_id];
         cmd_list.set_Geometry(rm_geom);
         cmd_list.Render(D3DPT_TRIANGLELIST, vBase, 0, SW.num_verts, iBase + SW.offset, SW.num_tris);

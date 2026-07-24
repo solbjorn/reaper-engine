@@ -138,7 +138,7 @@ IC void CBaseAction::debug_log(const EActionStates state_state) const
         Msg("[{:6}] action {} is finalized", Device.dwTimeGlobal, m_action_name);
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 

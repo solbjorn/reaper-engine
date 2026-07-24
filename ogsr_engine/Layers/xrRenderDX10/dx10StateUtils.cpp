@@ -21,7 +21,7 @@ D3D_FILL_MODE ConvertFillMode(D3DFILLMODE Mode)
     {
     case D3DFILL_WIREFRAME: return D3D_FILL_SOLID;
     case D3DFILL_SOLID: return D3D_FILL_WIREFRAME;
-    default: VERIFY(!"Unexpected fill mode!"); return D3D_FILL_SOLID;
+    default: xr::unreachable();
     }
 }
 
@@ -32,7 +32,7 @@ D3D_CULL_MODE ConvertCullMode(D3DCULL Mode)
     case D3DCULL_NONE: return D3D_CULL_NONE;
     case D3DCULL_CW: return D3D_CULL_FRONT;
     case D3DCULL_CCW: return D3D_CULL_BACK;
-    default: VERIFY(!"Unexpected cull mode!"); return D3D_CULL_NONE;
+    default: xr::unreachable();
     }
 }
 
@@ -48,7 +48,7 @@ D3D_COMPARISON_FUNC ConvertCmpFunction(D3DCMPFUNC Func)
     case D3DCMP_NOTEQUAL: return D3D_COMPARISON_NOT_EQUAL;
     case D3DCMP_GREATEREQUAL: return D3D_COMPARISON_GREATER_EQUAL;
     case D3DCMP_ALWAYS: return D3D_COMPARISON_ALWAYS;
-    default: VERIFY(!"ConvertCmpFunction can't convert argument!"); return D3D_COMPARISON_ALWAYS;
+    default: xr::unreachable();
     }
 }
 
@@ -64,7 +64,7 @@ D3D_STENCIL_OP ConvertStencilOp(D3DSTENCILOP Op)
     case D3DSTENCILOP_INVERT: return D3D_STENCIL_OP_INVERT;
     case D3DSTENCILOP_INCR: return D3D_STENCIL_OP_INCR;
     case D3DSTENCILOP_DECR: return D3D_STENCIL_OP_DECR;
-    default: VERIFY(!"ConvertStencilOp can't convert argument!"); return D3D_STENCIL_OP_KEEP;
+    default: xr::unreachable();
     }
 }
 
@@ -83,15 +83,11 @@ D3D_BLEND ConvertBlendArg(D3DBLEND Arg)
     case D3DBLEND_DESTCOLOR: return D3D_BLEND_DEST_COLOR;
     case D3DBLEND_INVDESTCOLOR: return D3D_BLEND_INV_DEST_COLOR;
     case D3DBLEND_SRCALPHASAT: return D3D_BLEND_SRC_ALPHA_SAT;
-    // case D3DBLEND_BOTHSRCALPHA:
-    //	return ;
-    // case D3DBLEND_BOTHINVSRCALPHA:
-    //	return ;
     case D3DBLEND_BLENDFACTOR: return D3D_BLEND_BLEND_FACTOR;
     case D3DBLEND_INVBLENDFACTOR: return D3D_BLEND_INV_BLEND_FACTOR;
     case D3DBLEND_SRCCOLOR2: return D3D_BLEND_SRC1_COLOR;
     case D3DBLEND_INVSRCCOLOR2: return D3D_BLEND_INV_SRC1_COLOR;
-    default: VERIFY(!"ConvertBlendArg can't convert argument!"); return D3D_BLEND_ONE;
+    default: xr::unreachable();
     }
 }
 
@@ -104,7 +100,7 @@ D3D_BLEND_OP ConvertBlendOp(D3DBLENDOP Op)
     case D3DBLENDOP_REVSUBTRACT: return D3D_BLEND_OP_REV_SUBTRACT;
     case D3DBLENDOP_MIN: return D3D_BLEND_OP_MIN;
     case D3DBLENDOP_MAX: return D3D_BLEND_OP_MAX;
-    default: VERIFY(!"ConvertBlendOp can't convert argument!"); return D3D_BLEND_OP_ADD;
+    default: xr::unreachable();
     }
 }
 
@@ -117,13 +113,12 @@ D3D_TEXTURE_ADDRESS_MODE ConvertTextureAddressMode(D3DTEXTUREADDRESS Mode)
     case D3DTADDRESS_CLAMP: return D3D_TEXTURE_ADDRESS_CLAMP;
     case D3DTADDRESS_BORDER: return D3D_TEXTURE_ADDRESS_BORDER;
     case D3DTADDRESS_MIRRORONCE: return D3D_TEXTURE_ADDRESS_MIRROR_ONCE;
-    default: VERIFY(!"ConvertTextureAddressMode can't convert argument!"); return D3D_TEXTURE_ADDRESS_CLAMP;
+    default: xr::unreachable();
     }
 }
 
 void ResetDescription(D3D_RASTERIZER_DESC& desc)
 {
-    std::memset(&desc, 0, sizeof(desc));
     desc.FillMode = D3D_FILL_SOLID;
     desc.CullMode = D3D_CULL_BACK;
     desc.FrontCounterClockwise = FALSE;
@@ -132,20 +127,17 @@ void ResetDescription(D3D_RASTERIZER_DESC& desc)
     desc.SlopeScaledDepthBias = 0.0f;
     desc.DepthClipEnable = TRUE;
     desc.ScissorEnable = FALSE;
-    if (RImplementation.o.dx10_msaa)
-        desc.MultisampleEnable = TRUE;
-    else
-        desc.MultisampleEnable = FALSE;
+    desc.MultisampleEnable = RImplementation.o.dx10_msaa;
     desc.AntialiasedLineEnable = FALSE;
 }
 
 void ResetDescription(D3D_DEPTH_STENCIL_DESC& desc)
 {
-    std::memset(&desc, 0, sizeof(desc));
     desc.DepthEnable = TRUE;
     desc.DepthWriteMask = D3D_DEPTH_WRITE_MASK_ALL;
     desc.DepthFunc = D3D_COMPARISON_LESS;
     desc.StencilEnable = TRUE;
+
     if (!RImplementation.o.dx10_msaa)
     {
         desc.StencilReadMask = 0xFF;
@@ -170,28 +162,24 @@ void ResetDescription(D3D_DEPTH_STENCIL_DESC& desc)
 
 void ResetDescription(D3D_BLEND_DESC& desc)
 {
-    std::memset(&desc, 0, sizeof(desc));
-
     desc.AlphaToCoverageEnable = FALSE;
     desc.IndependentBlendEnable = FALSE;
 
-    for (int i = 0; i < 8; ++i)
+    for (auto& rt : desc.RenderTarget)
     {
-        desc.RenderTarget[i].SrcBlend = D3D_BLEND_ONE;
-        desc.RenderTarget[i].DestBlend = D3D_BLEND_ZERO;
-        desc.RenderTarget[i].BlendOp = D3D_BLEND_OP_ADD;
-        desc.RenderTarget[i].SrcBlendAlpha = D3D_BLEND_ONE;
-        desc.RenderTarget[i].DestBlendAlpha = D3D_BLEND_ZERO;
-        desc.RenderTarget[i].BlendOpAlpha = D3D_BLEND_OP_ADD;
-        desc.RenderTarget[i].BlendEnable = FALSE;
-        desc.RenderTarget[i].RenderTargetWriteMask = D3D_COLOR_WRITE_ENABLE_ALL;
+        rt.SrcBlend = D3D_BLEND_ONE;
+        rt.DestBlend = D3D_BLEND_ZERO;
+        rt.BlendOp = D3D_BLEND_OP_ADD;
+        rt.SrcBlendAlpha = D3D_BLEND_ONE;
+        rt.DestBlendAlpha = D3D_BLEND_ZERO;
+        rt.BlendOpAlpha = D3D_BLEND_OP_ADD;
+        rt.BlendEnable = FALSE;
+        rt.RenderTargetWriteMask = D3D_COLOR_WRITE_ENABLE_ALL;
     }
 }
 
 void ResetDescription(D3D_SAMPLER_DESC& desc)
 {
-    std::memset(&desc, 0, sizeof(desc));
-
     desc.Filter = D3D_FILTER_MIN_MAG_MIP_LINEAR;
     desc.AddressU = D3D_TEXTURE_ADDRESS_CLAMP;
     desc.AddressV = D3D_TEXTURE_ADDRESS_CLAMP;
@@ -370,8 +358,8 @@ void ValidateState(D3D_RASTERIZER_DESC&) {}
 
 void ValidateState(D3D_DEPTH_STENCIL_DESC& desc)
 {
-    VERIFY((desc.DepthEnable == 0) || (desc.DepthEnable == 1));
-    VERIFY((desc.StencilEnable == 0) || (desc.StencilEnable == 1));
+    XR_ASSERT((desc.DepthEnable == 0 || desc.DepthEnable == 1) && (desc.StencilEnable == 0 || desc.StencilEnable == 1), "", desc.DepthEnable,
+              desc.StencilEnable);
 
     if (!desc.DepthEnable)
     {
@@ -398,48 +386,48 @@ void ValidateState(D3D_DEPTH_STENCIL_DESC& desc)
 
 void ValidateState(D3D_BLEND_DESC& desc)
 {
-    BOOL bBlendEnable = FALSE;
+    bool bBlendEnable{false};
 
-    for (int i = 0; i < 8; ++i)
+    for (const auto& rt : desc.RenderTarget)
     {
-        VERIFY((desc.RenderTarget[i].BlendEnable == 0) || (desc.RenderTarget[i].BlendEnable == 1));
-        bBlendEnable |= desc.RenderTarget[i].BlendEnable;
+        XR_ASSERT(rt.BlendEnable == 0 || rt.BlendEnable == 1, "", rt.BlendEnable);
+        bBlendEnable |= rt.BlendEnable;
     }
 
-    for (int i = 0; i < 8; ++i)
+    for (auto& rt : desc.RenderTarget)
     {
         if (!bBlendEnable)
         {
-            desc.RenderTarget[i].SrcBlend = D3D_BLEND_ONE;
-            desc.RenderTarget[i].DestBlend = D3D_BLEND_ZERO;
-            desc.RenderTarget[i].BlendOp = D3D_BLEND_OP_ADD;
-            desc.RenderTarget[i].SrcBlendAlpha = D3D_BLEND_ONE;
-            desc.RenderTarget[i].DestBlendAlpha = D3D_BLEND_ZERO;
-            desc.RenderTarget[i].BlendOpAlpha = D3D_BLEND_OP_ADD;
-        }
-        else
-        {
-            switch (desc.RenderTarget[i].SrcBlendAlpha)
-            {
-            case D3D_BLEND_SRC_COLOR: desc.RenderTarget[i].SrcBlendAlpha = D3D_BLEND_SRC_ALPHA; break;
-            case D3D_BLEND_INV_SRC_COLOR: desc.RenderTarget[i].SrcBlendAlpha = D3D_BLEND_INV_SRC_ALPHA; break;
-            case D3D_BLEND_DEST_COLOR: desc.RenderTarget[i].SrcBlendAlpha = D3D_BLEND_DEST_ALPHA; break;
-            case D3D_BLEND_INV_DEST_COLOR: desc.RenderTarget[i].SrcBlendAlpha = D3D_BLEND_INV_DEST_ALPHA; break;
-            case D3D_BLEND_SRC1_COLOR: desc.RenderTarget[i].SrcBlendAlpha = D3D_BLEND_SRC1_ALPHA; break;
-            case D3D_BLEND_INV_SRC1_COLOR: desc.RenderTarget[i].SrcBlendAlpha = D3D_BLEND_INV_SRC1_ALPHA; break;
-            default: break;
-            }
+            rt.SrcBlend = D3D_BLEND_ONE;
+            rt.DestBlend = D3D_BLEND_ZERO;
+            rt.BlendOp = D3D_BLEND_OP_ADD;
+            rt.SrcBlendAlpha = D3D_BLEND_ONE;
+            rt.DestBlendAlpha = D3D_BLEND_ZERO;
+            rt.BlendOpAlpha = D3D_BLEND_OP_ADD;
 
-            switch (desc.RenderTarget[i].DestBlendAlpha)
-            {
-            case D3D_BLEND_SRC_COLOR: desc.RenderTarget[i].DestBlendAlpha = D3D_BLEND_SRC_ALPHA; break;
-            case D3D_BLEND_INV_SRC_COLOR: desc.RenderTarget[i].DestBlendAlpha = D3D_BLEND_INV_SRC_ALPHA; break;
-            case D3D_BLEND_DEST_COLOR: desc.RenderTarget[i].DestBlendAlpha = D3D_BLEND_DEST_ALPHA; break;
-            case D3D_BLEND_INV_DEST_COLOR: desc.RenderTarget[i].DestBlendAlpha = D3D_BLEND_INV_DEST_ALPHA; break;
-            case D3D_BLEND_SRC1_COLOR: desc.RenderTarget[i].DestBlendAlpha = D3D_BLEND_SRC1_ALPHA; break;
-            case D3D_BLEND_INV_SRC1_COLOR: desc.RenderTarget[i].DestBlendAlpha = D3D_BLEND_INV_SRC1_ALPHA; break;
-            default: break;
-            }
+            continue;
+        }
+
+        switch (rt.SrcBlendAlpha)
+        {
+        case D3D_BLEND_SRC_COLOR: rt.SrcBlendAlpha = D3D_BLEND_SRC_ALPHA; break;
+        case D3D_BLEND_INV_SRC_COLOR: rt.SrcBlendAlpha = D3D_BLEND_INV_SRC_ALPHA; break;
+        case D3D_BLEND_DEST_COLOR: rt.SrcBlendAlpha = D3D_BLEND_DEST_ALPHA; break;
+        case D3D_BLEND_INV_DEST_COLOR: rt.SrcBlendAlpha = D3D_BLEND_INV_DEST_ALPHA; break;
+        case D3D_BLEND_SRC1_COLOR: rt.SrcBlendAlpha = D3D_BLEND_SRC1_ALPHA; break;
+        case D3D_BLEND_INV_SRC1_COLOR: rt.SrcBlendAlpha = D3D_BLEND_INV_SRC1_ALPHA; break;
+        default: break;
+        }
+
+        switch (rt.DestBlendAlpha)
+        {
+        case D3D_BLEND_SRC_COLOR: rt.DestBlendAlpha = D3D_BLEND_SRC_ALPHA; break;
+        case D3D_BLEND_INV_SRC_COLOR: rt.DestBlendAlpha = D3D_BLEND_INV_SRC_ALPHA; break;
+        case D3D_BLEND_DEST_COLOR: rt.DestBlendAlpha = D3D_BLEND_DEST_ALPHA; break;
+        case D3D_BLEND_INV_DEST_COLOR: rt.DestBlendAlpha = D3D_BLEND_INV_DEST_ALPHA; break;
+        case D3D_BLEND_SRC1_COLOR: rt.DestBlendAlpha = D3D_BLEND_SRC1_ALPHA; break;
+        case D3D_BLEND_INV_SRC1_COLOR: rt.DestBlendAlpha = D3D_BLEND_INV_SRC1_ALPHA; break;
+        default: break;
         }
     }
 }

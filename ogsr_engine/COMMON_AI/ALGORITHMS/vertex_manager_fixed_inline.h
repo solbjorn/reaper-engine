@@ -31,8 +31,8 @@ inline void CFixedVertexManager::init()
 {
     CDataStorageBase::init();
     CDataStorageAllocator::init();
-    ++m_current_path_id;
 
+    ++m_current_path_id;
     if (!m_current_path_id)
     {
         std::memset(m_indexes, 0, m_max_node_count * sizeof(IndexVertex));
@@ -42,10 +42,11 @@ inline void CFixedVertexManager::init()
 
 TEMPLATE_SPECIALIZATION
 inline bool CFixedVertexManager::is_opened(const TCompoundVertex& vertex) const { return !!vertex.opened(); }
+
 TEMPLATE_SPECIALIZATION
 inline bool CFixedVertexManager::is_visited(const TIndex& vertex_id) const
 {
-    VERIFY(vertex_id < m_max_node_count);
+    XR_ASSERT(vertex_id < m_max_node_count);
     return m_indexes[vertex_id].m_path_id == m_current_path_id;
 }
 
@@ -55,26 +56,30 @@ inline bool CFixedVertexManager::is_closed(const TCompoundVertex& vertex) const 
 TEMPLATE_SPECIALIZATION
 inline TCompoundVertex& CFixedVertexManager::get_node(const TIndex& vertex_id) const
 {
-    VERIFY(vertex_id < m_max_node_count);
-    VERIFY(is_visited(vertex_id));
+    XR_ASSERT(vertex_id < m_max_node_count && is_visited(vertex_id), "", vertex_id, m_max_node_count, is_visited(vertex_id));
     return *m_indexes[vertex_id].m_vertex;
 }
 
 TEMPLATE_SPECIALIZATION
 inline TCompoundVertex& CFixedVertexManager::create_vertex(TCompoundVertex& vertex, const TIndex& vertex_id)
 {
-    VERIFY(vertex_id < m_max_node_count);
+    XR_ASSERT(vertex_id < m_max_node_count);
+
     m_indexes[vertex_id].m_vertex = &vertex;
     m_indexes[vertex_id].m_path_id = m_current_path_id;
     vertex._index = vertex_id;
+
     return vertex;
 }
 
 TEMPLATE_SPECIALIZATION
 inline void CFixedVertexManager::add_opened(TCompoundVertex& vertex) { vertex._opened = true; }
+
 TEMPLATE_SPECIALIZATION
 inline void CFixedVertexManager::add_closed(TCompoundVertex& vertex) { vertex._opened = false; }
+
 TEMPLATE_SPECIALIZATION
 inline TPathId CFixedVertexManager::current_path_id() const { return m_current_path_id; }
+
 #undef TEMPLATE_SPECIALIZATION
 #undef CFixedVertexManager

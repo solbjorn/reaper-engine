@@ -277,7 +277,7 @@ void CGameTaskManager::SetActiveTask(const TASK_ID& id, u16 idx, const bool safe
         auto* t = ActiveTask();
         if (t && t->m_Objectives.size() < (idx + 1))
         {
-            ASSERT_FMT(!t->m_Objectives.empty(), "!![%s] m_Objectives is empty! Something strange!", std::source_location::current().function_name());
+            XR_ASSERT(!t->m_Objectives.empty(), "no objectives for task", id, idx);
             g_active_task_objective_id = t->m_Objectives.size() - 1; // Некторые таски могут содержать всего один objective
 
             if (g_active_task_objective_id == 0)

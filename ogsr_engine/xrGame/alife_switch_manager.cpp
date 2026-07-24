@@ -66,8 +66,8 @@ void CALifeSwitchManager::add_online(CSE_ALifeDynamicObject* object, bool update
         Msg("  new vertex: {}", object->m_tNodeID);
     }
 
-    ASSERT_FMT(!object->used_ai_locations() || ai().level_graph().valid_vertex_id(object->m_tNodeID), "Invalid vertex %u for object %s", object->m_tNodeID,
-               object->name_replace());
+    XR_ASSERT(!object->used_ai_locations() || ai().level_graph().valid_vertex_id(object->m_tNodeID), "invalid object vertex ID", object->name_replace(),
+              object->m_tNodeID);
 
 #ifdef DEBUG
     if (psAI_Flags.test(aiALife))

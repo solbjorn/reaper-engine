@@ -32,9 +32,9 @@ constexpr float erp{1.f};
 #define CHECK_POS(pos, msg, br) \
     if (!valid_pos(pos, phBoundaries)) \
     { \
-        Msg("pos:{},{},{}", pos.x, pos.y, pos.z); \
+        Msg("pos: {}", pos); \
         Log(msg); \
-        VERIFY(!br); \
+        XR_ASSERT(!br); \
     } \
     XR_MACRO_END()
 #else
@@ -102,14 +102,12 @@ void RestoreVelocityState(V_PH_WORLD_STATE& state)
 } // namespace
 
 CPHActivationShape::CPHActivationShape() { m_flags.set(flFixedRotation, TRUE); }
-
-CPHActivationShape::~CPHActivationShape() { VERIFY(!m_body && !m_geom); }
+CPHActivationShape::~CPHActivationShape() { XR_ASSERT(m_body == nullptr && m_geom == nullptr); }
 
 void CPHActivationShape::Create(const Fvector start_pos, const Fvector start_size, CPhysicsShellHolder* ref_obj, EType _type /*=etBox*/, u16 flags)
 {
-    VERIFY(ref_obj);
-    R_ASSERT(_valid(start_pos));
-    R_ASSERT(_valid(start_size));
+    XR_ASSERT(ref_obj != nullptr);
+    XR_ASSERT(_valid(start_pos) && _valid(start_size));
 
     m_body = dBodyCreate(nullptr);
     dMass m;
@@ -121,7 +119,7 @@ void CPHActivationShape::Create(const Fvector start_pos, const Fvector start_siz
     {
     case etBox: m_geom = dCreateBox(nullptr, start_size.x, start_size.y, start_size.z); break;
     case etSphere: m_geom = dCreateSphere(nullptr, start_size.x); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     dGeomCreateUserData(m_geom);
@@ -138,9 +136,11 @@ void CPHActivationShape::Create(const Fvector start_pos, const Fvector start_siz
 
 void CPHActivationShape::Destroy()
 {
-    VERIFY(m_geom && m_body);
+    XR_ASSERT(m_geom != nullptr && m_body != nullptr);
+
     spatial_unregister();
     CPHObject::deactivate();
+
     dGeomDestroyUserData(m_geom);
     dGeomDestroy(m_geom);
     m_geom = nullptr;
@@ -163,7 +163,8 @@ bool CPHActivationShape::Activate(const Fvector need_size, u16 steps, float, flo
     }
 #endif
 
-    VERIFY(m_geom && m_body);
+    XR_ASSERT(m_geom != nullptr && m_body != nullptr);
+
     CPHObject::activate();
     ph_world->Freeze();
     UnFreeze();

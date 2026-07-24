@@ -37,17 +37,18 @@ private:
     // animations
     struct SAnim
     {
-        typedef svector<MotionID, MAX_ANIM_COUNT> MotionSVec;
-        MotionSVec m_Animations;
-        const MotionID& GetRandom() { return m_Animations[Random.randI(0, m_Animations.size())]; }
+        std::inplace_vector<MotionID, MAX_ANIM_COUNT> m_Animations;
+
+        [[nodiscard]] const MotionID& GetRandom() const { return m_Animations[Random.randI(0, m_Animations.size())]; }
         void Load(IKinematicsAnimated* visual, LPCSTR prefix);
     };
 
     struct SSound
     {
-        typedef svector<ref_sound, MAX_SND_COUNT> SoundSVec;
-        SoundSVec m_Sounds;
-        ref_sound& GetRandom() { return m_Sounds[Random.randI(0, m_Sounds.size())]; }
+        std::inplace_vector<ref_sound, MAX_SND_COUNT> m_Sounds;
+
+        [[nodiscard]] ref_sound& GetRandom() { return m_Sounds[Random.randI(0, m_Sounds.size())]; }
+
         void Load(LPCSTR prefix);
         void SetPosition(const Fvector& pos);
         void Unload();

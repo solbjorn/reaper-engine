@@ -50,58 +50,53 @@ void CPostprocessAnimator::Load(LPCSTR name)
     m_Name._set(name);
 
     string_path full_path;
-    if (!FS.exist(full_path, "$level$", name))
-        if (!FS.exist(full_path, "$game_anims$", name))
-            Debug.fatal(DEBUG_INFO, "Can't find motion file '%s'.", name);
+    XR_ASSERT(FS.exist(full_path, "$level$", name) || FS.exist(full_path, "$game_anims$", name), "can't find motion file", m_Name);
 
     LPCSTR ext = strext(full_path);
     if (ext)
     {
-        if (std::is_eq(xr_strcmp(ext, POSTPROCESS_FILE_EXTENSION)))
+        XR_ASSERT(std::is_eq(xr_strcmp(ext, POSTPROCESS_FILE_EXTENSION)), "invalid animation set file extension", full_path);
+
+        const auto F = absl::WrapUnique(FS.r_open(full_path));
+        u32 dwVersion = F->r_u32();
+
+        // load base color
+        VERIFY(m_Params[0]);
+        m_Params[0]->load(*F);
+        // load add color
+        VERIFY(m_Params[1]);
+        m_Params[1]->load(*F);
+        // load gray color
+        VERIFY(m_Params[2]);
+        m_Params[2]->load(*F);
+        // load gray value
+        VERIFY(m_Params[3]);
+        m_Params[3]->load(*F);
+        // load blur value
+        VERIFY(m_Params[4]);
+        m_Params[4]->load(*F);
+        // load duality horizontal
+        VERIFY(m_Params[5]);
+        m_Params[5]->load(*F);
+        // load duality vertical
+        VERIFY(m_Params[6]);
+        m_Params[6]->load(*F);
+        // load noise intensity
+        VERIFY(m_Params[7]);
+        m_Params[7]->load(*F);
+        // load noise granularity
+        VERIFY(m_Params[8]);
+        m_Params[8]->load(*F);
+        // load noise fps
+        VERIFY(m_Params[9]);
+        m_Params[9]->load(*F);
+
+        if (dwVersion >= 0x0002)
         {
-            IReader* F = FS.r_open(full_path);
-            u32 dwVersion = F->r_u32();
-            // load base color
-            VERIFY(m_Params[0]);
-            m_Params[0]->load(*F);
-            // load add color
-            VERIFY(m_Params[1]);
-            m_Params[1]->load(*F);
-            // load gray color
-            VERIFY(m_Params[2]);
-            m_Params[2]->load(*F);
-            // load gray value
-            VERIFY(m_Params[3]);
-            m_Params[3]->load(*F);
-            // load blur value
-            VERIFY(m_Params[4]);
-            m_Params[4]->load(*F);
-            // load duality horizontal
-            VERIFY(m_Params[5]);
-            m_Params[5]->load(*F);
-            // load duality vertical
-            VERIFY(m_Params[6]);
-            m_Params[6]->load(*F);
-            // load noise intensity
-            VERIFY(m_Params[7]);
-            m_Params[7]->load(*F);
-            // load noise granularity
-            VERIFY(m_Params[8]);
-            m_Params[8]->load(*F);
-            // load noise fps
-            VERIFY(m_Params[9]);
-            m_Params[9]->load(*F);
-            if (dwVersion >= 0x0002)
-            {
-                VERIFY(m_Params[10]);
-                m_Params[10]->load(*F);
-                F->r_stringZ(m_EffectorParams.cm_tex1);
-            }
-            // close reader
-            FS.r_close(F);
+            VERIFY(m_Params[10]);
+            m_Params[10]->load(*F);
+            F->r_stringZ(m_EffectorParams.cm_tex1);
         }
-        else
-            FATAL("ERROR: Can't support files with many animations set. Incorrect file.");
     }
 
     f_length = GetLength();
@@ -194,16 +189,12 @@ BOOL CPostprocessAnimator::Process(SPPInfo& PPInfo)
     }
 
     if (0 == m_Params[pp_noise_f]->get_keys_count())
-    {
         m_EffectorParams.noise.fps = pp_identity.noise.fps;
-    }
     else
         m_EffectorParams.noise.fps *= 100.0f;
 
     PPInfo.lerp(pp_identity, m_EffectorParams, m_factor);
-
-    if (PPInfo.noise.grain <= 0.0f)
-        FATAL("noise.grain cant be zero! see postprocess %s", m_Name.c_str());
+    XR_ASSERT(PPInfo.noise.grain > 0.0f, "invalid grain in postprocess", m_Name);
 
     if (fsimilar(m_factor, 0.0001f, EPS_S))
         return FALSE;

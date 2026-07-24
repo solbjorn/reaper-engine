@@ -104,6 +104,6 @@ void CMovementManager::process_level_path()
             m_path_state = ePathStateBuildLevelPath;
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }

@@ -52,11 +52,11 @@ protected:
     u32 uFlags;
 
 public:
-    enum : u32
+    enum flags : u32
     {
-        fsGradient = (1 << 0),
-        fsDeviceIndependent = (1 << 1),
-        fsMultibyte = (1 << 3),
+        fsGradient = 1u << 0,
+        fsDeviceIndependent = 1u << 1,
+        fsMultibyte = 1u << 2,
     };
 
     IC const Fvector& GetCharTC(u16 c) const { return TCMap[c]; }
@@ -102,7 +102,7 @@ private:
     void vOutNext(xr::detail::string_view fmt, xr::detail::format_args args);
 
 public:
-    BOOL IsMultibyte() const { return (uFlags & fsMultibyte); }
+    [[nodiscard]] constexpr bool IsMultibyte() const { return !!(uFlags & fsMultibyte); }
 
     u32 SmartLength(const char* S);
 

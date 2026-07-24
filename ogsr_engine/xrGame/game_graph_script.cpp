@@ -21,17 +21,9 @@ void set_accessible(const CGameGraph* self, u32 vertex_id, bool value) { self->a
 
 [[nodiscard]] u32 vertex_count(const CGameGraph* self) { return self->header().vertex_count(); }
 
-[[nodiscard]] Fvector CVertex__level_point(const CGameGraph::CVertex* vertex)
-{
-    THROW(vertex);
-    return vertex->level_point();
-}
+[[nodiscard]] Fvector CVertex__level_point(const CGameGraph::CVertex* vertex) { return XR_ASSERT_VAL(vertex != nullptr)->level_point(); }
 
-[[nodiscard]] Fvector CVertex__game_point(const CGameGraph::CVertex* vertex)
-{
-    THROW(vertex);
-    return vertex->game_point();
-}
+[[nodiscard]] Fvector CVertex__game_point(const CGameGraph::CVertex* vertex) { return XR_ASSERT_VAL(vertex != nullptr)->game_point(); }
 
 [[nodiscard]] const CGameLevelCrossTable* get_cross_table() { return &ai().cross_table(); }
 

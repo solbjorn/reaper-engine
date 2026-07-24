@@ -9,8 +9,8 @@
 #pragma once
 
 #define TEMPLATE_SPECIALIZATION \
-    template <typename TDistance, typename TPriorityQueue, typename TVertexManager, typename TVertexAllocator, bool EuclidianHeuristics, typename TPathBuilder, \
-              typename TIteration, typename TVertexData>
+    template <typename TDistance, typename TPriorityQueue, typename TVertexManager, typename TVertexAllocator, bool EuclidianHeuristics, \
+              typename TPathBuilder, typename TIteration, typename TVertexData>
 
 #define CSAStar CAStar<TDistance, TPriorityQueue, TVertexManager, TVertexAllocator, EuclidianHeuristics, TPathBuilder, TIteration, TVertexData>
 
@@ -24,8 +24,9 @@ TEMPLATE_SPECIALIZATION
 template <typename TPathManager>
 inline void CSAStar::initialize(TPathManager& path_manager)
 {
-    THROW2(!this->m_search_started, "Recursive graph engine usage is not allowed!");
+    XR_ASSERT(!this->m_search_started, "recursive graph engine usage not allowed");
     this->m_search_started = true;
+
     auto& data_storage = this->data_storage();
     // initialize data structures before we started path search
     data_storage.init();

@@ -69,7 +69,7 @@ void CSightAction::execute()
         execute_fire_object();
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 
@@ -220,7 +220,7 @@ void CSightAction::execute_cover_look_over()
         }
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 
@@ -271,14 +271,15 @@ void CSightAction::execute_fire_object()
         }
 
         m_object->feel_vision_get(objects);
-        if (std::find(objects.begin(), objects.end(), m_object_to_look) != objects.end())
+
+        if (std::ranges::find(objects, m_object_to_look) != objects.end())
         {
-            m_vector3d = m_object->feel_vision_get_vispoint(const_cast<CGameObject*>(m_object_to_look));
+            m_vector3d = m_object->feel_vision_get_vispoint(m_object_to_look);
             execute_position();
-            break;
         }
+
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }

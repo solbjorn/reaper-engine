@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "PHStaticGeomShell.h"
+
 #include "SpaceUtils.h"
 #include "GameObject.h"
 #include "PhysicsShellHolder.h"
@@ -64,24 +65,20 @@ CPHStaticGeomShell* P_BuildStaticGeomShell(CGameObject* obj, ObjectContactCallba
 
 CPHStaticGeomShell* P_BuildStaticGeomShell(CGameObject* obj, ObjectContactCallbackFun* object_contact_callback)
 {
+    IRenderVisual* V = XR_ASSERT_VAL(obj->Visual() != nullptr);
+    auto K = XR_ASSERT_VAL(smart_cast<IKinematics*>(V) != nullptr);
     Fobb b;
-    IRenderVisual* V = obj->Visual();
-    R_ASSERT2(V, "need visual to build");
 
-    smart_cast<IKinematics*>(V)->CalculateBones(); //. bForce - was TRUE
+    K->CalculateBones(); //. bForce - was TRUE
     V->getVisData().box.getradius(b.m_halfsize);
 
     b.xform_set(Fidentity);
     CPHStaticGeomShell* pUnbrokenObject = P_BuildStaticGeomShell(obj, object_contact_callback, b);
 
-    IKinematics* K = smart_cast<IKinematics*>(V);
-    VERIFY(K);
     K->CalculateBones();
+
     for (u16 k = 0; k < K->LL_BoneCount(); k++)
-    {
         K->LL_GetBoneInstance(k).set_callback(bctPhysics, cb, K->LL_GetBoneInstance(k).callback_param(), TRUE);
-        // K->LL_GetBoneInstance(k).set_callback_overwrite(TRUE);
-        // K->LL_GetBoneInstance(k).Callback = cb;
-    }
+
     return pUnbrokenObject;
 }

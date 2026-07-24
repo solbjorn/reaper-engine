@@ -94,12 +94,12 @@ struct vertBoned1W // (3+3+3+3+2+1)*4 = 15*4 = 60 bytes
     float u, v;
     u32 matrix;
 
-    void get_pos(Fvector& p) const { p.set(P); }
+    constexpr void get_pos(Fvector& p) const { p.set(P); }
+
 #ifdef DEBUG
-    static const u8 bones_count = 1;
-    u16 get_bone_id(u8 bone) const
+    [[nodiscard]] constexpr u16 get_bone_id(u8 bone) const
     {
-        VERIFY(bone < bones_count);
+        XR_ASSERT(bone < 1);
         return u16(matrix);
     }
 #endif
@@ -117,14 +117,10 @@ struct vertBoned2W // (1+3+3 + 1+3+3 + 2)*4 = 16*4 = 64 bytes
     float w;
     float u, v;
 
-    void get_pos(Fvector& p) const { p.set(P); }
+    constexpr void get_pos(Fvector& p) const { p.set(P); }
+
 #ifdef DEBUG
-    static const u8 bones_count = 2;
-    u16 get_bone_id(u8 bone) const
-    {
-        VERIFY(bone < bones_count);
-        return bone == 0 ? matrix0 : matrix1;
-    }
+    [[nodiscard]] constexpr u16 get_bone_id(u8 bone) const { return XR_ASSERT_VAL(bone < 2) == 0 ? matrix0 : matrix1; }
 #endif
 };
 static_assert(sizeof(vertBoned2W) == 64);
@@ -141,14 +137,10 @@ struct vertBoned3W // 70 bytes
     float w[2];
     float u, v;
 
-    void get_pos(Fvector& p) const { p.set(P); }
+    constexpr void get_pos(Fvector& p) const { p.set(P); }
+
 #ifdef DEBUG
-    static const u8 bones_count = 3;
-    u16 get_bone_id(u8 bone) const
-    {
-        VERIFY(bone < bones_count);
-        return m[bone];
-    }
+    [[nodiscard]] constexpr u16 get_bone_id(u8 bone) const { return m[XR_ASSERT_VAL(bone < 3)]; }
 #endif
 };
 static_assert(sizeof(vertBoned3W) == 70);
@@ -165,14 +157,10 @@ struct vertBoned4W // 76 bytes
     float w[3];
     float u, v;
 
-    void get_pos(Fvector& p) const { p.set(P); }
+    constexpr void get_pos(Fvector& p) const { p.set(P); }
+
 #ifdef DEBUG
-    static const u8 bones_count = 4;
-    u16 get_bone_id(u8 bone) const
-    {
-        VERIFY(bone < bones_count);
-        return m[bone];
-    }
+    [[nodiscard]] constexpr u16 get_bone_id(u8 bone) const { return m[XR_ASSERT_VAL(bone < 4)]; }
 #endif
 };
 static_assert(sizeof(vertBoned4W) == 76);
@@ -291,6 +279,7 @@ struct SJointIKData
     void Export(IWriter& F)
     {
         F.w_u32(type);
+
         for (int k = 0; k < 3; k++)
         {
             // Kostya Slipchenko say:
@@ -299,8 +288,8 @@ struct SJointIKData
             // F.w_float	(_min(-limits[k].limit.x,-limits[k].limit.y)); // min (swap special for ODE)
             // F.w_float	(_max(-limits[k].limit.x,-limits[k].limit.y)); // max (swap special for ODE)
 
-            VERIFY(fsimilar(_min(-limits[k].limit.x, -limits[k].limit.y), -limits[k].limit.y));
-            VERIFY(fsimilar(_max(-limits[k].limit.x, -limits[k].limit.y), -limits[k].limit.x));
+            XR_DEBUG_ASSERT(fsimilar(_min(-limits[k].limit.x, -limits[k].limit.y), -limits[k].limit.y));
+            XR_DEBUG_ASSERT(fsimilar(_max(-limits[k].limit.x, -limits[k].limit.y), -limits[k].limit.x));
 
             F.w_float(-limits[k].limit.y); // min (swap special for ODE)
             F.w_float(-limits[k].limit.x); // max (swap special for ODE)
@@ -308,6 +297,7 @@ struct SJointIKData
             F.w_float(limits[k].spring_factor);
             F.w_float(limits[k].damping_factor);
         }
+
         F.w_float(spring_factor);
         F.w_float(damping_factor);
 
@@ -427,35 +417,6 @@ public:
     IC BOOL IsRoot() { return !parent; }
     shared_str& NameRef() { return name; }
 
-    //// transformation
-    // const Fvector& _Offset() { return mot_offset; }
-    // const Fvector& _Rotate() { return mot_rotate; }
-    // float _Length() { return mot_length; }
-    // IC Fmatrix& _RTransform() { return rest_transform; }
-    // IC Fmatrix& _RITransform() { return rest_i_transform; }
-    // IC Fmatrix& _LRTransform() { return local_rest_transform; }
-    // IC Fmatrix& _MTransform() { return mot_transform; }
-
-    // IC Fmatrix& _LTransform() { return mTransform; } //{return last_transform;}
-    // IC const Fmatrix& _LTransform() const { return mTransform; }
-
-    // IC Fmatrix& _RenderTransform() { return mRenderTransform; } //{return render_transform;}
-    // IC Fvector& _RestOffset() { return rest_offset; }
-    // IC Fvector& _RestRotate() { return rest_rotate; }
-
-    // void _Update(const Fvector& T, const Fvector& R)
-    //{
-    //     mot_offset.set(T);
-    //     mot_rotate.set(R);
-    //     mot_length = rest_length;
-    // }
-    // void Reset()
-    //{
-    //     mot_offset.set(rest_offset);
-    //     mot_rotate.set(rest_rotate);
-    //     mot_length = rest_length;
-    // }
-
     // IO
     void Save(IWriter& F);
     void Load_0(IReader& F);
@@ -507,13 +468,15 @@ public:
     DEFINE_VECTOR(FacesVec, ChildFacesVec, ChildFacesVecIt);
     ChildFacesVec child_faces; // shared
 
-    explicit CBoneData(u16 ID) : SelfID{ID} { VERIFY(SelfID != BI_NONE); }
+    explicit CBoneData(u16 ID) : SelfID{ID} { XR_ASSERT(ID != BI_NONE); }
     ~CBoneData() override = default;
 
 #ifdef DEBUG
-    typedef svector<int, 128> BoneDebug;
+    using BoneDebug = std::inplace_vector<s32, 128>;
+
     void DebugQuery(BoneDebug& L);
 #endif
+
     IC void SetParentID(u16 id) { ParentID = id; }
 
     IC u16 GetSelfID() const { return SelfID; }

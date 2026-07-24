@@ -10,7 +10,8 @@
 
 #define TEMPLATE_SPECIALIZATION template <typename _DataStorage, typename _dist_type, typename _index_type, typename _iteration_type>
 
-#define CNearestVertexPathManager CPathManager<CLevelGraph, _DataStorage, SNearestVertex<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>
+#define CNearestVertexPathManager \
+    CPathManager<CLevelGraph, _DataStorage, SNearestVertex<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>
 
 TEMPLATE_SPECIALIZATION
 IC void CNearestVertexPathManager::setup(const _Graph* _graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path, const _index_type& _start_node_index,
@@ -24,14 +25,13 @@ IC void CNearestVertexPathManager::setup(const _Graph* _graph, _DataStorage* _da
 
     m_target_position = parameters.m_target_position;
     m_best_distance_to_target = flt_max;
-    VERIFY(this->path);
-    this->path->clear();
+    XR_ASSERT_VAL(this->path != nullptr)->clear();
 }
 
 TEMPLATE_SPECIALIZATION
 IC bool CNearestVertexPathManager::is_goal_reached(const _index_type& node_index)
 {
-    VERIFY(this->path);
+    XR_ASSERT(this->path != nullptr);
     this->best_node = this->graph->vertex(node_index);
 
     const float current_distance = m_target_position.distance_to_xz_sqr(this->graph->vertex_position(this->best_node));
@@ -42,39 +42,40 @@ IC bool CNearestVertexPathManager::is_goal_reached(const _index_type& node_index
         this->path->push_back(node_index);
     }
 
-    return (false);
+    return false;
 }
 
 TEMPLATE_SPECIALIZATION
 inline _dist_type CNearestVertexPathManager::evaluate(const _index_type&, const _index_type&, const _Graph::const_iterator&)
 {
-    VERIFY(this->graph);
-    return (m_cell_dist);
+    XR_ASSERT(this->graph != nullptr);
+    return m_cell_dist;
 }
 
 TEMPLATE_SPECIALIZATION
 inline _dist_type CNearestVertexPathManager::estimate(const _index_type&) const
 {
-    VERIFY(this->graph);
-    return (_dist_type(0));
+    XR_ASSERT(this->graph != nullptr);
+    return _dist_type(0);
 }
 
 TEMPLATE_SPECIALIZATION
 IC bool CNearestVertexPathManager::is_accessible(const _index_type& vertex_id) const
 {
     if (!inherited::is_accessible(vertex_id))
-        return (false);
+        return false;
 
     int x4, y4;
     this->graph->unpack_xz(this->graph->vertex(vertex_id), x4, y4);
-    return (u32(_sqr(x0 - x4) + _sqr(y0 - y4)) <= max_range_sqr);
+
+    return u32(_sqr(x0 - x4) + _sqr(y0 - y4)) <= max_range_sqr;
 }
 
 TEMPLATE_SPECIALIZATION
 IC bool CNearestVertexPathManager::is_limit_reached(const _iteration_type iteration_count) const
 {
-    VERIFY(this->data_storage);
-    return ((iteration_count >= this->max_iteration_count) || (this->data_storage->get_visited_node_count() >= this->max_visited_node_count));
+    XR_ASSERT(this->data_storage != nullptr);
+    return iteration_count >= this->max_iteration_count || this->data_storage->get_visited_node_count() >= this->max_visited_node_count;
 }
 
 TEMPLATE_SPECIALIZATION

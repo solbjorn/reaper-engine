@@ -126,7 +126,7 @@ void CDetailManager::Load()
 
     // Header
     std::ignore = dtFS->r_chunk_safe(0, &dtH, sizeof(dtH));
-    R_ASSERT(dtH.version == DETAIL_VERSION);
+    XR_ASSERT(dtH.version == DETAIL_VERSION, "", fn);
 
     u32 m_count = dtH.object_count;
     objects.reserve(m_count);
@@ -243,9 +243,6 @@ void CDetailManager::UpdateVisibleM(const Fvector& EYE)
             {
                 Slot* PS = *MS.slots[_i];
                 Slot& S = *PS;
-
-                //				if ( ( _i + 1 ) < dwCC );
-                //					_mm_prefetch( (char *) *MS.slots[ _i + 1 ]  , _MM_HINT_T1 );
 
                 // if slot empty - continue
                 if (S.empty)

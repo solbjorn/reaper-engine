@@ -127,12 +127,13 @@ public:
         u32 bDistort : 1;
         u32 bWmark : 1;
         u32 bLandscape : 1;
+        u32 aref : 1;
         u32 isLandscape : 1;
         u32 isWater : 1;
     };
 
     Sflags flags;
-    svector<ref_pass, SHADER_PASSES_MAX> passes;
+    std::inplace_vector<ref_pass, SHADER_PASSES_MAX> passes;
 
     ShaderElement();
     ~ShaderElement() override;

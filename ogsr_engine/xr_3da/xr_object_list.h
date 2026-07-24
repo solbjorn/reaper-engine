@@ -26,9 +26,7 @@ public:
         int* m_ID;
         RELCASE_CALLBACK m_Callback;
 
-        explicit SRelcasePair(int* id, const RELCASE_CALLBACK& cb) : m_ID{id}, m_Callback{cb} {}
-
-        bool operator==(const RELCASE_CALLBACK& cb) const { return m_Callback == cb; }
+        constexpr explicit SRelcasePair(int* id, const RELCASE_CALLBACK& cb) : m_ID{id}, m_Callback{cb} {}
     };
 
     typedef xr_vector<SRelcasePair> RELCASE_CALLBACK_VEC;

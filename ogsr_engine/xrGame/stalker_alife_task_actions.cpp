@@ -213,12 +213,11 @@ void CStalkerActionSmartTerrain::execute()
 
     object().sound().play(eStalkerSoundHumming, 60000, 10000);
 
-    CSE_ALifeHumanAbstract* stalker = smart_cast<CSE_ALifeHumanAbstract*>(ai().alife().objects().object(m_object->ID()));
-    VERIFY(stalker);
-    VERIFY(stalker->m_smart_terrain_id != 0xffff);
+    auto stalker = XR_ASSERT_VAL(smart_cast<CSE_ALifeHumanAbstract*>(ai().alife().objects().object(m_object->ID())) != nullptr, "", m_object->ID());
+    XR_ASSERT(stalker->m_smart_terrain_id != std::numeric_limits<ALife::_OBJECT_ID>::max(), "", stalker->name());
+    CALifeSmartTerrainTask* task = XR_ASSERT_VAL(stalker->brain().smart_terrain().task(stalker) != nullptr, "smart terrain returned no task", stalker->name(),
+                                                 stalker->m_smart_terrain_id);
 
-    CALifeSmartTerrainTask* task = stalker->brain().smart_terrain().task(stalker);
-    THROW2(task, "Smart terrain is assigned but returns no task");
     if (object().ai_location().game_vertex_id() != task->game_vertex_id())
     {
         object().movement().set_path_type(MovementManager::ePathTypeGamePath);

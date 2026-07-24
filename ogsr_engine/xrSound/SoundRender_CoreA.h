@@ -18,7 +18,7 @@ XR_DIAG_POP();
         alGetError(); \
         expr; \
         ALenum error = alGetError(); \
-        VERIFY2(error == AL_NO_ERROR, (LPCSTR)alGetString(error)); \
+        XR_ASSERT(error == AL_NO_ERROR, alGetString(error)); \
     } \
     XR_MACRO_END()
 
@@ -27,7 +27,7 @@ XR_DIAG_POP();
         alcGetError(pDevice); \
         expr; \
         ALCenum error = alcGetError(pDevice); \
-        VERIFY2(error == ALC_NO_ERROR, (LPCSTR)alcGetString(pDevice, error)); \
+        XR_ASSERT(error == ALC_NO_ERROR, alcGetString(pDevice, error)); \
     } \
     XR_MACRO_END()
 

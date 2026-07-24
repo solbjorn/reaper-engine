@@ -19,7 +19,8 @@ void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
     const D3DVERTEXELEMENT9* vFormat{};
 
     // read vertices
-    R_ASSERT(data->find_chunk(OGF_GCONTAINER));
+    XR_ASSERT(data->find_chunk(OGF_GCONTAINER) > 0, "", N);
+
     {
         // verts
         u32 ID = data->r_u32();
@@ -27,8 +28,7 @@ void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
         vCount = data->r_u32();
         vFormat = RImplementation.getVB_Format(ID);
 
-        VERIFY(!p_rm_Vertices);
-
+        XR_ASSERT(p_rm_Vertices == nullptr, "", N);
         p_rm_Vertices = RImplementation.getVB(ID);
         p_rm_Vertices->AddRef();
 
@@ -39,13 +39,14 @@ void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
         iCount = data->r_u32();
         dwPrimitives = iCount / 3;
 
-        VERIFY(!p_rm_Indices);
+        XR_ASSERT(p_rm_Indices == nullptr, "", N);
         p_rm_Indices = RImplementation.getIB(ID);
         p_rm_Indices->AddRef();
     }
 
     // load tree-def
-    R_ASSERT(data->find_chunk(OGF_TREEDEF2));
+    XR_ASSERT(data->find_chunk(OGF_TREEDEF2) > 0, "", N);
+
     {
         data->r(&xform, sizeof(xform));
         data->r(&c_scale, sizeof(c_scale));
@@ -145,14 +146,14 @@ void FTreeVisual::Render(CBackend& cmd_list, float, bool)
             grass_shader_data.pos[0].set(Device.vCameraPosition, -1);
         else
             grass_shader_data.pos[0].set(0, 0, 0, -1);
+
         grass_shader_data.dir[0].set(0.0f, -99.0f, 0.0f, 1.0f);
 
-        Fvector4* c_grass{};
+        Fvector4* c_grass{nullptr};
         cmd_list.get_ConstantDirect(strBendersPos, sizeof(grass_shader_data.pos) + sizeof(grass_shader_data.dir), reinterpret_cast<void**>(&c_grass), nullptr,
                                     nullptr);
-        VERIFY(c_grass);
 
-        if (c_grass)
+        if (c_grass != nullptr)
             xr_memcpy(c_grass, &grass_shader_data.pos, sizeof(grass_shader_data.pos) + sizeof(grass_shader_data.dir));
     }
 }
@@ -218,23 +219,24 @@ void FTreeVisual_PM::Release() { inherited::Release(); }
 void FTreeVisual_PM::Load(const char* N, IReader* data, u32 dwFlags)
 {
     inherited::Load(N, data, dwFlags);
-    R_ASSERT(data->find_chunk(OGF_SWICONTAINER));
-    {
-        u32 ID = data->r_u32();
-        pSWI = RImplementation.getSWI(ID);
-    }
+
+    XR_ASSERT(data->find_chunk(OGF_SWICONTAINER) > 0, "", N);
+    pSWI = RImplementation.getSWI(data->r_u32());
 }
 
 void FTreeVisual_PM::Render(CBackend& cmd_list, float LOD, bool use_fast_geo)
 {
     inherited::Render(cmd_list, LOD, use_fast_geo);
+
     int lod_id = last_lod;
     if (LOD >= 0.f)
     {
         lod_id = iFloor((1.f - LOD) * float(pSWI->count - 1) + 0.5f);
         last_lod = lod_id;
     }
-    VERIFY(lod_id >= 0 && lod_id < int(pSWI->count));
+
+    XR_ASSERT(lod_id >= 0 && lod_id < s64{pSWI->count}, "", lod_id, pSWI->count);
+
     FSlideWindow& SW = pSWI->sw[lod_id];
     cmd_list.set_Geometry(rm_geom);
     cmd_list.Render(D3DPT_TRIANGLELIST, vBase, 0, SW.num_verts, iBase + SW.offset, SW.num_tris);

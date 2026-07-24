@@ -184,7 +184,7 @@ public:
 
     [[nodiscard]] CPHSynchronize* get_element_sync(u16 element) override
     {
-        VERIFY(element == 0);
+        XR_ASSERT(element == 0);
         return static_cast<CPHSynchronize*>(this);
     }
 

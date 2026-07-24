@@ -8,7 +8,7 @@
 
 tmc::task<void> CSoundRender_Core::i_start(CSoundRender_Emitter* E) const
 {
-    R_ASSERT(E);
+    XR_ASSERT(E != nullptr);
 
     // Search lowest-priority target
     float Ptest = E->priority();

@@ -74,16 +74,13 @@ void CEventAPI::Destroy(CEvent*& E)
     if (--E->dwRefCount != 0)
         return;
 
-    auto I = std::find(Events.begin(), Events.end(), E);
-    R_ASSERT(I != Events.end());
-
-    Events.erase(I);
+    Events.erase(XR_ASSERT_VAL(std::ranges::find(Events, E) != Events.end()));
     xr_delete(E);
 }
 
 CEvent* CEventAPI::handler_attach_locked(gsl::czstring N, IEventReceiver* H)
 {
-    R_ASSERT(lock.is_locked());
+    XR_ASSERT(lock.is_locked());
 
     CEvent* E = Create(N);
     E->Attach(H);
@@ -102,7 +99,7 @@ void CEventAPI::handler_detach_locked(CEvent*& E, const IEventReceiver* H)
     if (E == nullptr)
         return;
 
-    R_ASSERT(lock.is_locked());
+    XR_ASSERT(lock.is_locked());
 
     E->Detach(H);
     Destroy(E);
@@ -157,7 +154,7 @@ tmc::task<void> CEventAPI::OnFrame()
 
 bool CEventAPI::peek_locked(gsl::czstring EName)
 {
-    R_ASSERT(lock.is_locked());
+    XR_ASSERT(lock.is_locked());
 
     if (Events_Deferred.empty())
         return false;

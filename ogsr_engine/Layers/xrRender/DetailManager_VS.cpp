@@ -77,7 +77,8 @@ void CDetailManager::hw_Load_Geom()
                 }
             }
         }
-        R_CHK(dx10BufferUtils::CreateVertexBuffer(&hw_VB, pVOriginal, dwVerts * vSize));
+
+        XR_ASSERT(xr::hr(dx10BufferUtils::CreateVertexBuffer(&hw_VB, pVOriginal, dwVerts * vSize)));
         HW.stats_manager.increment_stats_vb(hw_VB);
         xr_free(pVOriginal);
     }
@@ -100,7 +101,8 @@ void CDetailManager::hw_Load_Geom()
                 offset = u16(offset + u16(D.number_vertices));
             }
         }
-        R_CHK(dx10BufferUtils::CreateIndexBuffer(&hw_IB, pIOriginal, dwIndices * 2));
+
+        XR_ASSERT(xr::hr(dx10BufferUtils::CreateIndexBuffer(&hw_IB, pIOriginal, dwIndices * 2)));
         HW.stats_manager.increment_stats_ib(hw_IB);
         xr_free(pIOriginal);
     }

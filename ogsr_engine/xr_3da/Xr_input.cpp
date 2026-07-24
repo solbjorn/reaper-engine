@@ -32,15 +32,15 @@ tmc::task<void> CInput::co_CInput(u32 device)
     co_await iCapture(&dummyController);
 
     if (!pDI)
-        CHK_DX(DirectInput8Create(GetModuleHandle(nullptr), DIRECTINPUT_VERSION, IID_IDirectInput8W, (void**)&pDI, nullptr));
+        XR_ASSERT(xr::hr(DirectInput8Create(GetModuleHandle(nullptr), DIRECTINPUT_VERSION, IID_IDirectInput8W, (void**)&pDI, nullptr)));
 
     // KEYBOARD
     if (device & keyboard_device_key)
-        CHK_DX(CreateInputDevice(&pKeyboard, GUID_SysKeyboard, &c_dfDIKeyboard, KEYBOARDBUFFERSIZE));
+        XR_ASSERT(xr::hr(CreateInputDevice(&pKeyboard, GUID_SysKeyboard, &c_dfDIKeyboard, KEYBOARDBUFFERSIZE)));
 
     // MOUSE
     if (device & mouse_device_key)
-        CHK_DX(CreateInputDevice(&pMouse, GUID_SysMouse, &c_dfDIMouse2, MOUSEBUFFERSIZE));
+        XR_ASSERT(xr::hr(CreateInputDevice(&pMouse, GUID_SysMouse, &c_dfDIMouse2, MOUSEBUFFERSIZE)));
 
     Device.seqAppActivate.Add(this);
     Device.seqAppDeactivate.Add(this);
@@ -83,13 +83,12 @@ CInput::~CInput(void)
 HRESULT CInput::CreateInputDevice(IDirectInputDevice8W** device, GUID guidDevice, const DIDATAFORMAT* pdidDataFormat, u32 buf_size)
 {
     // Obtain an interface to the input device
-    //.	CHK_DX( pDI->CreateDeviceEx( guidDevice, IID_IDirectInputDevice8, (void**)device, NULL ) );
-    CHK_DX(pDI->CreateDevice(guidDevice, /*IID_IDirectInputDevice8,*/ device, NULL));
+    XR_ASSERT(xr::hr(pDI->CreateDevice(guidDevice, device, nullptr)));
 
     // Set the device data format. Note: a data format specifies which
     // controls on a device we are interested in, and how they should be
     // reported.
-    CHK_DX((*device)->SetDataFormat(pdidDataFormat));
+    XR_ASSERT(xr::hr((*device)->SetDataFormat(pdidDataFormat)));
 
     // setup the buffer size for the keyboard data
     DIPROPDWORD dipdw;
@@ -99,7 +98,7 @@ HRESULT CInput::CreateInputDevice(IDirectInputDevice8W** device, GUID guidDevice
     dipdw.diph.dwHow = DIPH_DEVICE;
     dipdw.dwData = buf_size;
 
-    CHK_DX((*device)->SetProperty(DIPROP_BUFFERSIZE, &dipdw.diph));
+    XR_ASSERT(xr::hr((*device)->SetProperty(DIPROP_BUFFERSIZE, &dipdw.diph)));
 
     return S_OK;
 }
@@ -108,10 +107,12 @@ void CInput::Attach()
 {
     // Set the cooperativity level to let DirectInput know how this device
     // should interact with the system and with other DirectInput applications.
-    if (pKeyboard)
-        R_CHK(pKeyboard->SetCooperativeLevel(Device.m_hWnd, (is_exclusive_mode ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND));
-    if (pMouse)
-        R_CHK(pMouse->SetCooperativeLevel(Device.m_hWnd, (is_exclusive_mode ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND | DISCL_NOWINKEY));
+    if (pKeyboard != nullptr)
+        XR_ASSERT(xr::hr(pKeyboard->SetCooperativeLevel(Device.m_hWnd, (is_exclusive_mode ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND)));
+
+    if (pMouse != nullptr)
+        XR_ASSERT(
+            xr::hr(pMouse->SetCooperativeLevel(Device.m_hWnd, (is_exclusive_mode ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND | DISCL_NOWINKEY)));
 }
 
 //-----------------------------------------------------------------------
@@ -129,6 +130,7 @@ void CInput::SetMouseAcquire(BOOL bAcquire)
     if (pMouse)
         bAcquire ? pMouse->Acquire() : pMouse->Unacquire();
 }
+
 void CInput::SetKBDAcquire(BOOL bAcquire)
 {
     if (pKeyboard)
@@ -310,7 +312,7 @@ private:
 public:
     constexpr keyconv()
     {
-        for (auto [dik, scan] : xr::views_enumerate(to_scan))
+        for (auto [dik, scan] : std::views::enumerate(to_scan))
         {
             scan = init(dik);
 
@@ -344,9 +346,7 @@ tmc::task<void> CInput::KeyUpdate()
     DWORD dwElements = KEYBOARDBUFFERSIZE;
     DIDEVICEOBJECTDATA od[KEYBOARDBUFFERSIZE];
 
-    VERIFY(pKeyboard);
-
-    hr = pKeyboard->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0);
+    hr = XR_ASSERT_VAL(pKeyboard != nullptr)->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0);
     if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
     {
         hr = pKeyboard->Acquire();
@@ -449,9 +449,7 @@ tmc::task<void> CInput::MouseUpdate()
     DWORD dwElements = MOUSEBUFFERSIZE;
     DIDEVICEOBJECTDATA od[MOUSEBUFFERSIZE];
 
-    VERIFY(pMouse);
-
-    hr = pMouse->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0);
+    hr = XR_ASSERT_VAL(pMouse != nullptr)->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0);
     if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
     {
         hr = pMouse->Acquire();
@@ -650,7 +648,7 @@ tmc::task<void> CInput::isButtonsOnHold(xr::bitset<sf::Mouse::ButtonCount> mouse
 
 tmc::task<void> CInput::iCapture(IInputReceiver* p)
 {
-    VERIFY(p);
+    XR_ASSERT(p != nullptr);
 
     if (pMouse)
         co_await MouseUpdate();

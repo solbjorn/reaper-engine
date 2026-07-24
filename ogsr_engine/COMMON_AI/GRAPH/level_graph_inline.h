@@ -23,30 +23,34 @@ ICF bool CLevelGraph::valid_vertex_id(u32 id) const
 ICF const CLevelGraph::CVertex* CLevelGraph::vertex(const u32 vertex_id) const
 {
 #ifdef CRASH_ON_INVALID_VERTEX_ID
-    ASSERT_FMT(valid_vertex_id(vertex_id), "invalid vertex_id %u", vertex_id);
-    return (m_nodes + vertex_id);
+    XR_ASSERT(valid_vertex_id(vertex_id), "invalid vertex ID", vertex_id);
 #else
-#if _M_X64
+    XR_DEBUG_ASSERT(valid_vertex_id(vertex_id), "invalid vertex ID", vertex_id);
+#endif
+
     return (valid_vertex_id(vertex_id)) ? (m_nodes + vertex_id) : (m_nodes + header().vertex_count() - 1);
-#else
-    return (m_nodes + vertex_id);
-#endif
-#endif
 }
 
 ICF u32 CLevelGraph::vertex(const CVertex* vertex_p) const
 {
-    VERIFY((vertex_p >= m_nodes) && valid_vertex_id(u32(vertex_p - m_nodes)));
-    return (u32(vertex_p - m_nodes));
+    const auto id = XR_ASSERT_VAL(vertex_p >= m_nodes) - m_nodes;
+
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+    XR_ASSERT(valid_vertex_id(id));
+#else
+    XR_DEBUG_ASSERT(valid_vertex_id(id));
+#endif
+
+    return id;
 }
 
 ICF u32 CLevelGraph::vertex(const CVertex& vertex_r) const { return (vertex(&vertex_r)); }
 
 IC void CLevelGraph::unpack_xz(const CLevelGraph::CPosition& vertex_position, u32& x, u32& z) const
 {
-    VERIFY(vertex_position.xz() < (1 << MAX_NODE_BIT_COUNT) - 1);
-    x = vertex_position.xz() / m_row_length;
-    z = vertex_position.xz() % m_row_length;
+    const auto xz = XR_ASSERT_VAL(vertex_position.xz() < (1uz << MAX_NODE_BIT_COUNT) - 1);
+    x = xz / m_row_length;
+    z = xz % m_row_length;
 }
 
 IC void CLevelGraph::unpack_xz(const CLevelGraph::CPosition& vertex_position, int& x, int& z) const
@@ -95,24 +99,24 @@ IC const CLevelGraph::CPosition& CLevelGraph::vertex_position(CLevelGraph::CPosi
     const auto [box_x, box_y, box_z] = header().box().min.arr;
     const auto cell_size = header().cell_size();
 
-    VERIFY(iFloor((source_position.z - box_z) / cell_size + .5f) < (int)m_row_length);
+    XR_DEBUG_ASSERT(iFloor((source_position.z - box_z) / cell_size + 0.5f) < m_row_length);
 
-    const int packed_xz = iFloor((source_position.x - box_x) / cell_size + .5f) * m_row_length + iFloor((source_position.z - box_z) / cell_size + .5f);
-    VERIFY(packed_xz < (1 << MAX_NODE_BIT_COUNT) - 1);
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+    dest_position.xz(
+        XR_ASSERT_VAL(iFloor((source_position.x - box_x) / cell_size + 0.5f) * m_row_length + iFloor((source_position.z - box_z) / cell_size + 0.5f) <
+                      (1uz << MAX_NODE_BIT_COUNT) - 1));
+#else
+    dest_position.xz(
+        XR_DEBUG_ASSERT_VAL(iFloor((source_position.x - box_x) / cell_size + 0.5f) * m_row_length + iFloor((source_position.z - box_z) / cell_size + 0.5f) <
+                            (1uz << MAX_NODE_BIT_COUNT) - 1));
+#endif
 
-    int packed_y = iFloor(65535.f * (source_position.y - box_y) / header().factor_y() + EPS_S);
-    clamp(packed_y, 0, 65535);
+    dest_position.y(std::clamp(iFloor(65535.0f * (source_position.y - box_y) / header().factor_y() + EPS_S), 0, 65535));
 
-    dest_position.xz(u32(packed_xz));
-    dest_position.y(u16(packed_y));
     return dest_position;
 }
 
-IC const Fvector CLevelGraph::vertex_position(u32 vertex_id) const
-{
-    Fvector t = vertex_position(vertex(vertex_id));
-    return (t);
-}
+IC const Fvector CLevelGraph::vertex_position(u32 vertex_id) const { return vertex_position(vertex(vertex_id)); }
 
 IC const Fvector CLevelGraph::vertex_position(const CLevelGraph::CVertex& vertex) const
 {
@@ -184,10 +188,15 @@ IC bool CLevelGraph::inside(const u32 vertex_id, const Fvector2& position) const
     [[maybe_unused]] const auto [box_x, box_y, box_z] = header().box().min.arr;
     const auto cell_size = header().cell_size();
 
-    const int packed_xz = iFloor((position.x - box_x) / cell_size + .5f) * m_row_length + iFloor((position.y - box_z) / cell_size + .5f);
-    VERIFY(packed_xz < (1 << MAX_NODE_BIT_COUNT) - 1);
-    const bool b = vertex(vertex_id)->position().xz() == u32(packed_xz);
-    return b;
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+    return vertex(vertex_id)->position().xz() ==
+        XR_ASSERT_VAL(iFloor((position.x - box_x) / cell_size + 0.5f) * m_row_length + iFloor((position.y - box_z) / cell_size + 0.5f) <
+                      (1uz << MAX_NODE_BIT_COUNT) - 1);
+#else
+    return vertex(vertex_id)->position().xz() ==
+        XR_DEBUG_ASSERT_VAL(iFloor((position.x - box_x) / cell_size + 0.5f) * m_row_length + iFloor((position.y - box_z) / cell_size + 0.5f) <
+                            (1uz << MAX_NODE_BIT_COUNT) - 1);
+#endif
 }
 
 IC float CLevelGraph::vertex_plane_y(const CLevelGraph::CVertex& vertex, const float X, const float Z) const
@@ -271,7 +280,7 @@ IC bool CLevelGraph::is_accessible(const u32 vertex_id) const { return (valid_ve
 IC void CLevelGraph::set_invalid_vertex(u32& vertex_id, CVertex** vertex) const
 {
     vertex_id = u32(-1);
-    VERIFY(!valid_vertex_id(vertex_id));
+    XR_DEBUG_ASSERT(!valid_vertex_id(vertex_id));
 
     if (vertex)
         *vertex = nullptr;
@@ -279,8 +288,15 @@ IC void CLevelGraph::set_invalid_vertex(u32& vertex_id, CVertex** vertex) const
 
 IC u32 CLevelGraph::vertex_id(const CLevelGraph::CVertex* vertex) const
 {
-    VERIFY(valid_vertex_id(u32(vertex - m_nodes)));
-    return (u32(vertex - m_nodes));
+    const auto id = XR_ASSERT_VAL(vertex >= m_nodes) - m_nodes;
+
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+    XR_ASSERT(valid_vertex_id(id));
+#else
+    XR_DEBUG_ASSERT(valid_vertex_id(id));
+#endif
+
+    return id;
 }
 
 IC Fvector CLevelGraph::v3d(const Fvector2& vector2d) const { return (Fvector().set(vector2d.x, 0.f, vector2d.y)); }
@@ -389,20 +405,13 @@ IC bool CLevelGraph::create_straight_path(u32 start_vertex_id, const Fvector2& s
                     next2.set(box.min.x, box.max.y);
                     break;
                 }
-                default: NODEFAULT;
+                default: xr::unreachable();
                 }
-#ifdef DEBUG
-                VERIFY(_valid(next1));
-                VERIFY(_valid(next2));
-                u32 dwIntersect =
-#endif
-                    intersect_no_check(start_point.x, start_point.y, finish_point.x, finish_point.y, next1.x, next1.y, next2.x, next2.y, &tIntersectPoint.x,
-                                       &tIntersectPoint.z);
-#ifdef DEBUG
-                VERIFY(dwIntersect);
-                VERIFY(_valid(tIntersectPoint.x));
-                VERIFY(_valid(tIntersectPoint.z));
-#endif
+
+                XR_DEBUG_ASSERT(_valid(next1) && _valid(next2));
+                XR_ASSERT(intersect_no_check(start_point.x, start_point.y, finish_point.x, finish_point.y, next1.x, next1.y, next2.x, next2.y,
+                                             &tIntersectPoint.x, &tIntersectPoint.z) > 0);
+                XR_DEBUG_ASSERT(_valid(tIntersectPoint.x) && _valid(tIntersectPoint.z));
 
                 clamp(tIntersectPoint.x, _min(next1.x, next2.x), _max(next1.x, next2.x));
                 clamp(tIntersectPoint.z, _min(next1.y, next2.y), _max(next1.y, next2.y));
@@ -422,24 +431,18 @@ IC bool CLevelGraph::create_straight_path(u32 start_vertex_id, const Fvector2& s
                     tpaOutputPoints.push_back(path_node);
                     return (true);
                 }
+
                 found = true;
                 prev_vertex_id = cur_vertex_id;
                 cur_vertex_id = next_vertex_id;
 
-#ifdef DEBUG
-                if (tpaOutputPoints.size() > 100000)
-                {
-                    Msg("CLevelGraph::create_straight_path : Loop became infinite ({},[{}][{}][{}],[{}][{}][{}])", start_vertex_id, VPUSH(v3d(start_point)),
-                        VPUSH(v3d(finish_point)));
-                    R_ASSERT2(false, "Loop became infinite :-( call Dima and SAVE YOUR LOG!");
-                }
-#endif
-
+                XR_DEBUG_ASSERT(tpaOutputPoints.size() <= 100000, "infinite loop", start_vertex_id, v3d(start_point), v3d(finish_point));
                 break;
             }
         }
+
         if (!found)
-            return (false);
+            return false;
     }
 }
 
@@ -504,13 +507,13 @@ IC void CLevelGraph::clear_mask(const xr_vector<u32>& mask)
 
 IC void CLevelGraph::set_mask(u32 vertex_id)
 {
-    VERIFY(m_access_mask[vertex_id]);
+    XR_ASSERT(m_access_mask[vertex_id], "", vertex_id);
     m_access_mask[vertex_id] = false;
 }
 
 IC void CLevelGraph::clear_mask(u32 vertex_id)
 {
-    VERIFY(!m_access_mask[vertex_id]);
+    XR_ASSERT(!m_access_mask[vertex_id], "", vertex_id);
     m_access_mask[vertex_id] = true;
 }
 

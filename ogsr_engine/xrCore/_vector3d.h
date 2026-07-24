@@ -383,18 +383,20 @@ public:
     // Normalize
     [[nodiscard]] constexpr T normalize_magn()
     {
-        VERIFY(square_magnitude() > std::numeric_limits<T>::min());
+        XR_DEBUG_ASSERT(square_magnitude() > std::numeric_limits<T>::min());
+
         T len = magnitude();
         T inv_len = T(1) / len;
         x *= inv_len;
         y *= inv_len;
         z *= inv_len;
+
         return len;
     }
 
     constexpr SelfRef normalize()
     {
-        VERIFY(square_magnitude() > std::numeric_limits<T>::min());
+        XR_DEBUG_ASSERT(square_magnitude() > std::numeric_limits<T>::min());
 
         T mag = _sqrt(T{1} / (x * x + y * y + z * z));
         x *= mag;
@@ -421,11 +423,13 @@ public:
     // Normalize
     constexpr SelfRef normalize(const Self& v)
     {
-        VERIFY((v.x * v.x + v.y * v.y + v.z * v.z) > flt_zero);
+        XR_DEBUG_ASSERT(v.x * v.x + v.y * v.y + v.z * v.z > flt_zero);
+
         T mag = _sqrt(1 / (v.x * v.x + v.y * v.y + v.z * v.z));
         x = v.x * mag;
         y = v.y * mag;
         z = v.z * mag;
+
         return *this;
     }
 

@@ -82,17 +82,8 @@ public:
     void SetHudMode(BOOL b) override { m_RT_Flags.set(flRT_HUDmode, b); }
     [[nodiscard]] BOOL GetHudMode() override { return m_RT_Flags.is(flRT_HUDmode); }
 
-    [[nodiscard]] f32 GetTimeLimit() override
-    {
-        VERIFY(m_Def);
-        return m_Def->m_Flags.is(CPEDef::dfTimeLimit) ? m_Def->m_fTimeLimit : -1.f;
-    }
-
-    [[nodiscard]] const shared_str Name() override
-    {
-        VERIFY(m_Def);
-        return m_Def->m_Name;
-    }
+    [[nodiscard]] f32 GetTimeLimit() override { return XR_ASSERT_VAL(m_Def != nullptr)->m_Flags.is(CPEDef::dfTimeLimit) ? m_Def->m_fTimeLimit : -1.0f; }
+    [[nodiscard]] const shared_str Name() override { return XR_ASSERT_VAL(m_Def != nullptr)->m_Name; }
 
     void SetDestroyCB(DestroyCallback destroy_cb) { m_DestroyCallback = destroy_cb; }
     void SetCollisionCB(CollisionCallback collision_cb) { m_CollisionCallback = collision_cb; }

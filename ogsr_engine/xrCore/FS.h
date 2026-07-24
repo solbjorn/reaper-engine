@@ -32,7 +32,7 @@ public:
 
 public:
     IWriter() = default;
-    ~IWriter() override { R_ASSERT3(chunk_pos.empty(), "Opened chunk not closed.", fName.c_str()); }
+    ~IWriter() override { XR_ASSERT(chunk_pos.size() == 0, "opened chunk not closed", fName, chunk_pos); }
 
     // kernel
     virtual void seek(gsl::index pos) = 0;
@@ -83,19 +83,24 @@ public:
     // quant writing functions
     IC void w_float_q16(float a, float min, float max)
     {
-        VERIFY(a >= min && a <= max);
+        XR_ASSERT(a >= min && a <= max, "", a, min, max);
+
         float q = (a - min) / (max - min);
         w_u16(u16(iFloor(q * 65535.f + .5f)));
     }
+
     IC void w_float_q8(float a, float min, float max)
     {
-        VERIFY(a >= min && a <= max);
+        XR_ASSERT(a >= min && a <= max, "", a, min, max);
+
         float q = (a - min) / (max - min);
         w_u8(u8(iFloor(q * 255.f + .5f)));
     }
+
     IC void w_angle16(float a) { w_float_q16(angle_normalize(a), 0, PI_MUL_2); }
     IC void w_angle8(float a) { w_float_q8(angle_normalize(a), 0, PI_MUL_2); }
     IC void w_dir(const Fvector& D) { w_u16(pvCompress(D)); }
+
     void w_sdir(const Fvector& D);
 
 private:
@@ -267,7 +272,8 @@ public:
     {
         u16 val = r_u16();
         float A = (float(val) * (max - min)) / 65535.f + min; // floating-point-error possible
-        VERIFY((A >= min - EPS_S) && (A <= max + EPS_S));
+        XR_ASSERT(A >= min - EPS_S && A <= max + EPS_S, "", A, min, max);
+
         return A;
     }
 
@@ -275,7 +281,8 @@ public:
     {
         u8 val = r_u8();
         float A = (float(val) / 255.0001f) * (max - min) + min; // floating-point-error possible
-        VERIFY((A >= min) && (A <= max));
+        XR_ASSERT(A >= min && A <= max, "", A, min, max);
+
         return A;
     }
 
@@ -352,8 +359,6 @@ public:
         // Встречаются объекты, в которых dwSize последнего чанка больше чем реальный размер чанка который там есть.
         // К примеру, в одной из моделей гранат получается превышение на 9 байт.
         // Не знаю, от чего такое бывает, но попробуем обработать эту ситуацию.
-        // R_ASSERT((u32)impl().tell() + dwSize <= (u32)impl().length());
-
         if (impl().elapsed() >= dwSize)
         {
             m_last_pos = impl().tell() + dwSize;
@@ -449,8 +454,6 @@ public:
         }
 
         // см. комментарии выше в функции find_chunk
-        // R_ASSERT((u32)impl().tell() + dwSize <= (u32)impl().length());
-
         if (impl().elapsed() >= dwSize)
         {
             m_last_pos = impl().tell() + dwSize;
@@ -485,8 +488,9 @@ public:
         gsl::index dwSize = find_chunk(ID);
         if (dwSize != 0)
         {
-            R_ASSERT(dwSize == dest_size);
+            XR_ASSERT(dwSize == dest_size, "", ID);
             r(dest, dwSize);
+
             return TRUE;
         }
         else
@@ -531,7 +535,7 @@ public:
     void seek(gsl::index ptr)
     {
         Pos = ptr;
-        R_ASSERT((Pos <= Size) && (Pos >= 0));
+        XR_ASSERT(Pos >= 0 && Pos <= Size, "", Pos, Size);
     }
 
     [[nodiscard]] gsl::index length() const { return Size; }
@@ -543,7 +547,7 @@ public:
     void advance(gsl::index cnt)
     {
         Pos += cnt;
-        R_ASSERT((Pos <= Size) && (Pos >= 0));
+        XR_ASSERT(Pos >= 0 && Pos <= Size, "", Pos, Size);
     }
 
     void close();
@@ -691,8 +695,10 @@ public:
     {
         auto& val = *reinterpret_cast<const u16*>(&data[Pos]);
         advance(sizeof(val));
+
         float A = (float(val) * (max - min)) / 65535.f + min; // floating-point-error possible
-        VERIFY((A >= min - EPS_S) && (A <= max + EPS_S));
+        XR_ASSERT(A >= min - EPS_S && A <= max + EPS_S, "", A, min, max);
+
         return A;
     }
 
@@ -700,8 +706,10 @@ public:
     {
         auto& val = *reinterpret_cast<const u8*>(&data[Pos]);
         advance(sizeof(val));
+
         float A = (float(val) / 255.0001f) * (max - min) + min; // floating-point-error possible
-        VERIFY(A >= min && A <= max);
+        XR_ASSERT(A >= min && A <= max, "", A, min, max);
+
         return A;
     }
 

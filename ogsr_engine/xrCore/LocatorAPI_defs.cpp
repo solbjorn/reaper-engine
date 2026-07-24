@@ -34,7 +34,6 @@ void FS_File::set(const xr_string& nm, s64 sz, s64 modif, u32 attr, bool lower)
 
 FS_Path::FS_Path(LPCSTR _Root, LPCSTR _Add, LPCSTR _DefExt, LPCSTR _FilterCaption, u32 flags)
 {
-    //	VERIFY			(_Root&&_Root[0]);
     string_path temp;
     strcpy_s(temp, _Root);
     if (_Add)
@@ -61,7 +60,7 @@ FS_Path::~FS_Path()
 void FS_Path::_set(LPSTR add)
 {
     // m_Add
-    R_ASSERT(add);
+    XR_ASSERT(add != nullptr);
     xr_free(m_Add);
     m_Add = xr_strlwr(xr_strdup(add));
 
@@ -77,7 +76,6 @@ void FS_Path::_set(LPSTR add)
 void FS_Path::_set_root(gsl::czstring root)
 {
     // m_Root
-    //	R_ASSERT		(root);
     xr_free(m_Root);
     m_Root = xr_strlwr(xr_strdup(root));
     if (m_Root[0] && m_Root[xr_strlen(m_Root) - 1] != '\\')
@@ -94,11 +92,12 @@ void FS_Path::_set_root(gsl::czstring root)
 
 LPCSTR FS_Path::_update(string_path& dest, LPCSTR src) const
 {
-    R_ASSERT(dest);
-    R_ASSERT(src);
+    XR_ASSERT(dest != nullptr && src != nullptr);
+
     string_path temp;
     strcpy_s(temp, sizeof(temp), src);
     strconcat(sizeof(dest), dest, m_Path, temp);
+
     return xr_strlwr(dest);
 }
 

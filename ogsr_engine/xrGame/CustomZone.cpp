@@ -574,7 +574,7 @@ void CCustomZone::UpdateWorkload(u32 dt)
     case eZoneStateBlowout: std::ignore = BlowoutState(); break;
     case eZoneStateAccumulate: std::ignore = AccumulateState(); break;
     case eZoneStateDisabled: break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     // вычислить время срабатывания зоны

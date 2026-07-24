@@ -16,8 +16,7 @@ void register_file_mapping(void* address, const u32& size, LPCSTR file_name)
 {
     std::scoped_lock<decltype(g_file_mappings_Mutex)> lock(g_file_mappings_Mutex);
 
-    FILE_MAPPINGS::const_iterator I = g_file_mappings.find(*(u32*)&address);
-    VERIFY(I == g_file_mappings.end());
+    XR_DEBUG_ASSERT(g_file_mappings.find(*(u32*)&address) == g_file_mappings.end());
     g_file_mappings.try_emplace(*(u32*)&address, size, shared_str(file_name));
 
     g_file_mapped_memory += size;
@@ -28,8 +27,7 @@ void unregister_file_mapping(void* address, const u32& size)
 {
     std::scoped_lock<decltype(g_file_mappings_Mutex)> lock(g_file_mappings_Mutex);
 
-    FILE_MAPPINGS::iterator I = g_file_mappings.find(*(u32*)&address);
-    VERIFY(I != g_file_mappings.end());
+    const auto I = XR_DEBUG_ASSERT_VAL(g_file_mappings.find(*(u32*)&address) != g_file_mappings.end());
 
     g_file_mapped_memory -= (*I).second.first;
     --g_file_mapped_count;
@@ -122,7 +120,7 @@ void IWriter::open_chunk(u32 type)
 
 void IWriter::close_chunk()
 {
-    VERIFY(!chunk_pos.empty());
+    XR_ASSERT(!chunk_pos.empty());
 
     const auto pos = tell();
     seek(chunk_pos.top());
@@ -286,7 +284,7 @@ void IReader::skip_bom(const char* dbg_name)
 
 void IReader::r(void* p, gsl::index cnt)
 {
-    R_ASSERT(Pos + cnt <= Size);
+    XR_ASSERT(Pos + cnt <= Size);
     std::memcpy(p, pointer(), gsl::narrow_cast<size_t>(cnt));
     advance(cnt);
 
@@ -331,7 +329,7 @@ void IReader::r_string(char* dest, gsl::index tgt_sz)
 {
     const char* src = reinterpret_cast<const char*>(data) + Pos;
     const auto sz = advance_term_string();
-    R_ASSERT2(sz < (tgt_sz - 1), "Dest string less than needed.");
+    XR_ASSERT(sz < tgt_sz - 1, "destination buffer overflow", src);
 
     strncpy(dest, src, gsl::narrow_cast<size_t>(sz));
     dest[sz] = '\0';
@@ -352,7 +350,7 @@ void IReader::r_stringZ(char* dest, gsl::index tgt_sz)
     while ((src[Pos] != 0) && (!eof()))
     {
         sz++;
-        ASSERT_FMT(sz < (tgt_sz - 1), "!![%s] Dest string less than needed for: [%s]", std::source_location::current().function_name(), src);
+        XR_ASSERT(sz < tgt_sz - 1, "destination buffer overflow", src);
         *dest++ = src[Pos++];
     }
 
@@ -438,8 +436,9 @@ CVirtualFileReader::CVirtualFileReader(gsl::czstring cFileName)
     Pos = 0;
 
     // Open the file
-    hSrcFile = CreateFileA(cFileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
-    R_ASSERT3(hSrcFile != INVALID_HANDLE_VALUE, cFileName, Debug.error2string(GetLastError()));
+    hSrcFile =
+        XR_ASSERT_VAL(::CreateFileA(cFileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr) != INVALID_HANDLE_VALUE,
+                      "", cFileName, xr::GetLastError());
 
     LARGE_INTEGER sz;
     GetFileSizeEx(hSrcFile, &sz);
@@ -448,11 +447,10 @@ CVirtualFileReader::CVirtualFileReader(gsl::czstring cFileName)
     if (Size == 0)
         Msg("~~[{}] Found empty file: [{}]", std::source_location::current().function_name(), cFileName);
 
-    hSrcMap = CreateFileMapping(hSrcFile, nullptr, PAGE_READONLY, 0, 0, nullptr);
-    R_ASSERT3(hSrcMap != INVALID_HANDLE_VALUE, cFileName, Debug.error2string(GetLastError()));
+    hSrcMap = XR_ASSERT_VAL(::CreateFileMapping(hSrcFile, nullptr, PAGE_READONLY, 0, 0, nullptr) != INVALID_HANDLE_VALUE, "", cFileName, xr::GetLastError());
 
-    data = static_cast<const std::byte*>(MapViewOfFile(hSrcMap, FILE_MAP_READ, 0, 0, 0));
-    R_ASSERT3(!Size || data, cFileName, Debug.error2string(GetLastError()));
+    data = static_cast<const std::byte*>(::MapViewOfFile(hSrcMap, FILE_MAP_READ, 0, 0, 0));
+    XR_ASSERT(data != nullptr || Size == 0, "", cFileName, xr::GetLastError());
 
 #ifdef DEBUG
     register_file_mapping(data, Size, cFileName);

@@ -511,23 +511,12 @@ void CInventoryOwner::set_money(u32 amount, bool bSendEvent)
         CGameObject* object = smart_cast<CGameObject*>(this);
         CSE_ALifeTraderAbstract* traderAbstract = smart_cast<CSE_ALifeTraderAbstract*>(object->alife_object());
         traderAbstract->m_dwMoney = m_money;
-
-        /*NET_Packet packet;
-        object->u_EventGen(packet, GE_MONEY, object->ID());
-        packet.w_u32(m_money);
-        object->u_EventSend(packet);*/
     }
 }
 
 bool CInventoryOwner::use_default_throw_force() { return (true); }
 
-float CInventoryOwner::missile_throw_force()
-{
-    NODEFAULT;
-#ifdef DEBUG
-    return (0.f);
-#endif
-}
+float CInventoryOwner::missile_throw_force() { xr::unreachable(); }
 
 bool CInventoryOwner::use_throw_randomness() { return (true); }
 

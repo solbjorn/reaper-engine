@@ -78,8 +78,9 @@ void CSpaceRestrictionShape::fill_shape(const CCF_Shape::shape_def& shape)
         }
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
+
     ai().level_graph().iterate_vertices(start, dest, CBorderMergePredicate(this));
 
 #ifdef DEBUG

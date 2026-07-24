@@ -286,18 +286,10 @@ void CUIWindow::DoDetachChild(CUIWindow* pChild, bool from_destructor)
 
 void CUIWindow::DetachChild(CUIWindow* pChild, bool from_destructor)
 {
-    if (!pChild)
+    if (pChild == nullptr)
         return;
 
-    __try
-    {
-        m_ChildWndList.remove(pChild);
-    }
-    __except (ExceptStackTrace("Exception catched in m_ChildWndList.remove(pChild)"))
-    {
-        FATAL("Exception catched in m_ChildWndList.remove(pChild)! Please send logs and minidumps to the engine developers!");
-    }
-
+    m_ChildWndList.remove(pChild);
     DoDetachChild(pChild, from_destructor);
 }
 
@@ -311,15 +303,12 @@ void CUIWindow::DetachAll()
 
 void CUIWindow::GetAbsoluteRect(Frect& r)
 {
-    //.	Frect rect;
-
     if (!GetParent())
     {
         GetWndRect(r);
         return;
     }
 
-    //.	rect = GetParent()->GetAbsoluteRect();
     GetParent()->GetAbsoluteRect(r);
 
     Frect rr;
@@ -328,7 +317,6 @@ void CUIWindow::GetAbsoluteRect(Frect& r)
     r.top += rr.top;
     r.right = r.left + GetWidth();
     r.bottom = r.top + GetHeight();
-    //.	return			rect;
 }
 
 // реакция на мышь
@@ -493,9 +481,7 @@ void CUIWindow::SetMouseCapture(CUIWindow* pChildWindow, bool capture_status)
     }
     else
     {
-        ASSERT_FMT_DBG((m_pMouseCapturer && m_pMouseCapturer == pChildWindow), "[{}]: [{}] trying to reset m_pMouseCapturer[{}]",
-                       std::source_location::current().function_name(), pChildWindow->WindowName(),
-                       m_pMouseCapturer != nullptr ? std::string_view{m_pMouseCapturer->WindowName()} : std::string_view{});
+        XR_ASSERT(m_pMouseCapturer != nullptr && m_pMouseCapturer == pChildWindow, "", pChildWindow->WindowName());
         m_pMouseCapturer = nullptr;
     }
 }
@@ -515,11 +501,8 @@ bool CUIWindow::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)
     {
         const auto size = m_ChildWndList.size();
 
-        auto* Wnd = *(iter++);
-
-        ASSERT_FMT_DBG(Wnd, "!![{}][{}] Child wnd is nullptr! Something strange!", std::source_location::current().function_name(), this->WindowName_script());
-
-        if (Wnd != nullptr && Wnd->IsEnabled() && Wnd->OnKeyboard(dik, keyboard_action))
+        auto Wnd = XR_ASSERT_VAL(*(iter++) != nullptr, "", this->WindowName_script());
+        if (Wnd->IsEnabled() && Wnd->OnKeyboard(dik, keyboard_action))
             return true;
 
         if (size != m_ChildWndList.size())
@@ -547,11 +530,8 @@ bool CUIWindow::OnKeyboardHold(xr::key_id dik)
     {
         const auto size = m_ChildWndList.size();
 
-        auto* Wnd = *(iter++);
-
-        ASSERT_FMT_DBG(Wnd, "!![{}][{}] Child wnd is nullptr! Something strange!", std::source_location::current().function_name(), this->WindowName_script());
-
-        if (Wnd != nullptr && Wnd->IsEnabled() && Wnd->OnKeyboardHold(dik))
+        auto Wnd = XR_ASSERT_VAL(*(iter++) != nullptr, "", this->WindowName_script());
+        if (Wnd->IsEnabled() && Wnd->OnKeyboardHold(dik))
             return true;
 
         if (size != m_ChildWndList.size())

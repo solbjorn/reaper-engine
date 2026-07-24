@@ -14,7 +14,8 @@ void CBlender_accum_point::Compile(CBlender_Compile& C)
     switch (C.iElement)
     {
     case SE_L_FILL: break;
-    case SE_L_UNSHADOWED: // unshadowed
+    case SE_L_UNSHADOWED:
+        // unshadowed
         C.r_Pass("accum_volume", "accum_omni_unshadowed_nomsaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 
         C.r_dx10Texture("s_position", r2_RT_P);
@@ -28,7 +29,8 @@ void CBlender_accum_point::Compile(CBlender_Compile& C)
         C.r_dx10Sampler("smp_rtlinear");
         C.r_End();
         break;
-    case SE_L_NORMAL: // normal
+    case SE_L_NORMAL:
+        // normal
         C.r_Pass("accum_volume", "accum_omni_normal_nomsaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 
         C.r_dx10Texture("s_position", r2_RT_P);
@@ -47,7 +49,8 @@ void CBlender_accum_point::Compile(CBlender_Compile& C)
         C.r_dx10Sampler("smp_smap");
         C.r_End();
         break;
-    case SE_L_FULLSIZE: // normal-fullsize
+    case SE_L_FULLSIZE:
+        // normal-fullsize
         C.r_Pass("accum_volume", "accum_omni_normal_nomsaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_diffuse", r2_RT_albedo);
@@ -69,7 +72,7 @@ void CBlender_accum_point::Compile(CBlender_Compile& C)
 }
 
 CBlender_accum_point_msaa::CBlender_accum_point_msaa() { description.CLS = 0; }
-CBlender_accum_point_msaa::~CBlender_accum_point_msaa() {}
+CBlender_accum_point_msaa::~CBlender_accum_point_msaa() = default;
 
 //	TODO: DX10: Implement CBlender_accum_point::Compile
 void CBlender_accum_point_msaa::Compile(CBlender_Compile& C)
@@ -78,8 +81,10 @@ void CBlender_accum_point_msaa::Compile(CBlender_Compile& C)
 
     if (Name != nullptr)
     {
-        const auto res = scn::scan_int<s32>(Definition);
-        R_ASSERT(res, res.error().msg());
+        const std::string_view val{Definition};
+        const auto res = scn::scan_int<s32>(val);
+        XR_ASSERT(res, res.error().msg(), Name, val);
+
         RImplementation.m_MSAASample = res->value();
     }
     else
@@ -92,7 +97,8 @@ void CBlender_accum_point_msaa::Compile(CBlender_Compile& C)
     switch (C.iElement)
     {
     case SE_L_FILL: break;
-    case SE_L_UNSHADOWED: // unshadowed
+    case SE_L_UNSHADOWED:
+        // unshadowed
         C.r_Pass("accum_volume", "accum_omni_unshadowed_msaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 
         C.r_dx10Texture("s_position", r2_RT_P);
@@ -106,7 +112,8 @@ void CBlender_accum_point_msaa::Compile(CBlender_Compile& C)
         C.r_dx10Sampler("smp_rtlinear");
         C.r_End();
         break;
-    case SE_L_NORMAL: // normal
+    case SE_L_NORMAL:
+        // normal
         C.r_Pass("accum_volume", "accum_omni_normal_msaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 
         C.r_dx10Texture("s_position", r2_RT_P);
@@ -125,7 +132,8 @@ void CBlender_accum_point_msaa::Compile(CBlender_Compile& C)
         C.r_dx10Sampler("smp_smap");
         C.r_End();
         break;
-    case SE_L_FULLSIZE: // normal-fullsize
+    case SE_L_FULLSIZE:
+        // normal-fullsize
         C.r_Pass("accum_volume", "accum_omni_normal_msaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 
         C.r_dx10Texture("s_position", r2_RT_P);

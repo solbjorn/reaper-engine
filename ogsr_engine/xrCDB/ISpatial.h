@@ -33,7 +33,7 @@ constexpr inline f32 c_spatial_min{8.0f};
 
 //////////////////////////////////////////////////////////////////////////
 
-enum : u32
+enum spatial_type : u32
 {
     STYPE_RENDERABLE = (1 << 0),
     STYPE_LIGHTSOURCE = (1 << 1),

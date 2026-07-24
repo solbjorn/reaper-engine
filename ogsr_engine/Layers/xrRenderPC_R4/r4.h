@@ -83,8 +83,7 @@ public:
     // Global vertex-buffer container
     xr_vector<FSlideWindowItem> SWIs;
     xr_vector<ref_shader> Shaders;
-    typedef svector<D3DVERTEXELEMENT9, MAXD3DDECLLENGTH + 1> VertexDeclarator;
-    xr_vector<VertexDeclarator> nDC, xDC;
+    xr_vector<std::inplace_vector<D3DVERTEXELEMENT9, MAXD3DDECLLENGTH + 1>> nDC, xDC;
     xr_vector<ID3DVertexBuffer*> nVB, xVB;
     xr_vector<ID3DIndexBuffer*> nIB, xIB;
     xr_vector<dxRender_Visual*> Visuals;

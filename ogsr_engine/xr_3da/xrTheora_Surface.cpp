@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "xrTheora_Surface.h"
+
 #include "xrTheora_Stream.h"
 
 CTheoraSurface::CTheoraSurface() = default;
@@ -31,7 +32,8 @@ void CTheoraSurface::Play(BOOL _looped, u32 _time)
 
 BOOL CTheoraSurface::Update(u32 _time)
 {
-    VERIFY(Valid());
+    XR_ASSERT(ready);
+
     BOOL redraw = FALSE;
 
     if (playing)
@@ -60,7 +62,8 @@ BOOL CTheoraSurface::Update(u32 _time)
 
 BOOL CTheoraSurface::Load(const char* fname)
 {
-    VERIFY(FALSE == ready);
+    XR_ASSERT(!ready, "", fname);
+
     m_rgb = xr_new<CTheoraStream>();
     BOOL res = m_rgb->Load(fname);
     if (res)
@@ -81,20 +84,21 @@ BOOL CTheoraSurface::Load(const char* fname)
                 res = FALSE;
         }
     }
+
     if (res)
     {
 #ifdef DEBUG
         if (m_alpha)
         {
-            VERIFY(m_rgb->tm_total == m_alpha->tm_total);
-            VERIFY(m_rgb->t_info.frame_width == m_alpha->t_info.frame_width);
-            VERIFY(m_rgb->t_info.frame_height == m_alpha->t_info.frame_height);
-            VERIFY(m_rgb->t_info.pixelformat == m_alpha->t_info.pixelformat);
+            XR_ASSERT(m_rgb->tm_total == m_alpha->tm_total);
+            XR_ASSERT(m_rgb->t_info.frame_width == m_alpha->t_info.frame_width);
+            XR_ASSERT(m_rgb->t_info.frame_height == m_alpha->t_info.frame_height);
+            XR_ASSERT(m_rgb->t_info.pixelformat == m_alpha->t_info.pixelformat);
         }
 #endif
-        //.		VERIFY3			(btwIsPow2(m_rgb->t_info.frame_width)&&btwIsPow2(m_rgb->t_info.frame_height),"Invalid size.",fname);
-        tm_total = m_rgb->tm_total;
-        VERIFY(0 != tm_total);
+
+        tm_total = XR_ASSERT_VAL(m_rgb->tm_total != 0, "", fname);
+
         // reset playback
         Reset();
         // open SDL video
@@ -105,17 +109,15 @@ BOOL CTheoraSurface::Load(const char* fname)
         xr_delete(m_rgb);
         xr_delete(m_alpha);
     }
+
     if (res)
-    {
-        R_ASSERT(Device.m_pRender);
-    }
+        XR_ASSERT(Device.m_pRender != nullptr, "", fname);
+
     return res;
 }
 
 u32 CTheoraSurface::Width(bool bRealSize)
 {
-    //	return				m_rgb->t_info.frame_width;
-
     if (bRealSize)
         return m_rgb->t_info.frame_width;
     else
@@ -124,8 +126,6 @@ u32 CTheoraSurface::Width(bool bRealSize)
 
 u32 CTheoraSurface::Height(bool bRealSize)
 {
-    //	return				m_rgb->t_info.frame_height;
-
     if (bRealSize)
         return m_rgb->t_info.frame_height;
     else
@@ -134,8 +134,7 @@ u32 CTheoraSurface::Height(bool bRealSize)
 
 void CTheoraSurface::DecompressFrame(u32* data, u32 _width, int& _pos)
 {
-    VERIFY(m_rgb);
-    yuv_buffer* yuv_rgb = m_rgb->CurrentFrame();
+    yuv_buffer* yuv_rgb = XR_ASSERT_VAL(m_rgb != nullptr)->CurrentFrame();
     yuv_buffer* yuv_alpha = m_alpha ? m_alpha->CurrentFrame() : nullptr;
 
     u32 width = Width(true);
@@ -159,7 +158,7 @@ void CTheoraSurface::DecompressFrame(u32* data, u32 _width, int& _pos)
         uv_w = 2;
         uv_h = 2;
         break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     constexpr float K = 0.256788f + 0.504129f + 0.097906f;

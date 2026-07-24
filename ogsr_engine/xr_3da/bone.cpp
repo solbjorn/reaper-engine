@@ -7,16 +7,8 @@
 //////////////////////////////////////////////////////////////////////////
 // BoneInstance methods
 
-void CBoneInstance::set_param(u32 idx, float data)
-{
-    VERIFY(idx < MAX_BONE_PARAMS);
-    param[idx] = data;
-}
-float CBoneInstance::get_param(u32 idx)
-{
-    VERIFY(idx < MAX_BONE_PARAMS);
-    return param[idx];
-}
+void CBoneInstance::set_param(u32 idx, float data) { param[XR_ASSERT_VAL(idx < MAX_BONE_PARAMS)] = data; }
+float CBoneInstance::get_param(u32 idx) { return param[XR_ASSERT_VAL(idx < MAX_BONE_PARAMS)]; }
 
 #ifdef DEBUG
 void CBoneData::DebugQuery(BoneDebug& L)

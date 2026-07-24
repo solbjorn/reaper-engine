@@ -70,30 +70,29 @@ void CAgentExplosiveManager::register_explosive(const CExplosive* explosive, con
 bool CAgentExplosiveManager::process_explosive(CMemberOrder& member)
 {
     float min_dist_sqr = std::numeric_limits<float>::max();
-    CDangerExplosive* best_grenade{};
+    CDangerExplosive* best_grenade{nullptr};
 
-    xr_vector<CDangerExplosive>::iterator I = m_explosives.begin();
-    xr_vector<CDangerExplosive>::iterator E = m_explosives.end();
-    for (; I != E; ++I)
+    for (auto& expl : m_explosives)
     {
-        if (!member.object().memory().visual().visible_now((*I).m_game_object))
+        if (!member.object().memory().visual().visible_now(expl.m_game_object))
             continue;
 
-        float dist_sqr = (*I).m_game_object->Position().distance_to_sqr(member.object().Position());
-        if (dist_sqr < min_dist_sqr)
+        if (const f32 dist_sqr = expl.m_game_object->Position().distance_to_sqr(member.object().Position()); dist_sqr < min_dist_sqr)
         {
-            if ((*I).m_reactor && ((*I).m_reactor->Position().distance_to_sqr((*I).m_game_object->Position()) <= min_dist_sqr))
+            if (expl.m_reactor != nullptr && expl.m_reactor->Position().distance_to_sqr(expl.m_game_object->Position()) <= min_dist_sqr)
                 continue;
+
             min_dist_sqr = dist_sqr;
-            best_grenade = &*I;
+            best_grenade = &expl;
         }
     }
 
-    if (!best_grenade)
-        return (false);
+    if (best_grenade == nullptr)
+        return false;
 
     best_grenade->m_reactor = &member.object();
-    return (true);
+
+    return true;
 }
 
 void CAgentExplosiveManager::react_on_explosives()

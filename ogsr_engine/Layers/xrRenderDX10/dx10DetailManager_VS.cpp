@@ -137,22 +137,21 @@ void CDetailManager::hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, 
                 {
                     cmd_list.set_c(strGrassSetup, ps_ssfx_int_grass_params_1);
 
-                    Fvector4* c_grass{};
+                    Fvector4* c_grass{nullptr};
                     cmd_list.get_ConstantDirect(strPos, sizeof(grass_shader_data.pos) + sizeof(grass_shader_data.dir), reinterpret_cast<void**>(&c_grass),
                                                 nullptr, nullptr);
-                    R_ASSERT(c_grass);
 
-                    if (c_grass)
-                        xr_memcpy(c_grass, &grass_shader_data.pos, sizeof(grass_shader_data.pos) + sizeof(grass_shader_data.dir));
+                    xr_memcpy(XR_ASSERT_VAL(c_grass != nullptr, "", strPos), &grass_shader_data.pos,
+                              sizeof(grass_shader_data.pos) + sizeof(grass_shader_data.dir));
                 }
 
-                Fvector4* c_ExData{};
+                Fvector4* c_ExData{nullptr};
                 cmd_list.get_ConstantDirect(strExData, hw_BatchSize * sizeof(Fvector4), reinterpret_cast<void**>(&c_ExData), nullptr, nullptr);
-                R_ASSERT(c_ExData);
+                XR_ASSERT(c_ExData != nullptr, "", strExData);
 
-                Fvector4* c_storage{};
+                Fvector4* c_storage{nullptr};
                 cmd_list.get_ConstantDirect(strArray, hw_BatchSize * sizeof(Fvector4) * 4, reinterpret_cast<void**>(&c_storage), nullptr, nullptr);
-                R_ASSERT(c_storage);
+                XR_ASSERT(c_storage != nullptr, "", strArray);
 
                 u32 dwBatch = 0;
 
@@ -192,8 +191,7 @@ void CDetailManager::hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, 
                         float s = Instance.c_sun;
                         c_storage[base + 3].set(s, s, s, h);
 
-                        if (c_ExData)
-                            c_ExData[dwBatch].set(Instance.normal.x, Instance.normal.y, Instance.normal.z, Instance.alpha);
+                        c_ExData[dwBatch].set(Instance.normal.x, Instance.normal.y, Instance.normal.z, Instance.alpha);
 
                         dwBatch++;
                         if (dwBatch == hw_BatchSize)
@@ -210,7 +208,7 @@ void CDetailManager::hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, 
 
                             //	Remap constants to memory directly (just in case anything goes wrong)
                             cmd_list.get_ConstantDirect(strArray, hw_BatchSize * sizeof(Fvector4) * 4, reinterpret_cast<void**>(&c_storage), nullptr, nullptr);
-                            R_ASSERT(c_storage);
+                            XR_ASSERT(c_storage != nullptr, "", strArray);
                         }
                     }
                 }

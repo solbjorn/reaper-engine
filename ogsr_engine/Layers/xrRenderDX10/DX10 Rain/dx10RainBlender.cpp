@@ -106,8 +106,10 @@ void CBlender_rain_msaa::Compile(CBlender_Compile& C)
 
     if (Name != nullptr)
     {
-        const auto res = scn::scan_int<s32>(Definition);
-        R_ASSERT(res, res.error().msg());
+        const std::string_view val{Definition};
+        const auto res = scn::scan_int<s32>(val);
+        XR_ASSERT(res, res.error().msg(), Name, val);
+
         RImplementation.m_MSAASample = res->value();
     }
     else

@@ -9,8 +9,8 @@
 #pragma once
 
 #define TEMPLATE_SPECIALIZATION \
-    template <typename TDistance, typename TPriorityQueue, typename TVertexManager, typename TVertexAllocator, bool EuclidianHeuristics, typename TPathBuilder, \
-              typename TIteration, typename TVertexData>
+    template <typename TDistance, typename TPriorityQueue, typename TVertexManager, typename TVertexAllocator, bool EuclidianHeuristics, \
+              typename TPathBuilder, typename TIteration, typename TVertexData>
 
 #define CSDijkstra CDijkstra<TDistance, TPriorityQueue, TVertexManager, TVertexAllocator, EuclidianHeuristics, TPathBuilder, TIteration, TVertexData>
 
@@ -23,16 +23,20 @@ inline CSDijkstra::CDijkstra(const u32 max_vertex_count)
 
 TEMPLATE_SPECIALIZATION
 inline CSDijkstra::~CDijkstra() { xr_delete(m_data_storage); }
+
 TEMPLATE_SPECIALIZATION
 inline typename CSDijkstra::CDataStorage& CSDijkstra::data_storage() { return *m_data_storage; }
+
 TEMPLATE_SPECIALIZATION
 inline const typename CSDijkstra::CDataStorage& CSDijkstra::data_storage() const { return *m_data_storage; }
+
 TEMPLATE_SPECIALIZATION
 template <typename TPathManager>
 inline void CSDijkstra::initialize(TPathManager& path_manager)
 {
-    THROW2(!m_search_started, "Recursive graph engine usage is not allowed!");
+    XR_ASSERT(!m_search_started, "recursive graph engine usage not allowed");
     m_search_started = true;
+
     // initialize data structures before we started path search
     data_storage().init();
     // initialize path manager before we started path search

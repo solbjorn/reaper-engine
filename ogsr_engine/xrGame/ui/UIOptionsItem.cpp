@@ -67,12 +67,7 @@ void CUIOptionsItem::SaveOptBoolValue(bool val)
 
 xr_string CUIOptionsItem::GetOptTokenValue() const { return Console->GetToken(m_entry.c_str()); }
 
-const xr_token* CUIOptionsItem::GetOptToken()
-{
-    const auto* token = Console->GetXRToken(m_entry.c_str());
-    ASSERT_FMT(token, "Can't find token [%s]", m_entry.c_str());
-    return token;
-}
+const xr_token* CUIOptionsItem::GetOptToken() { return XR_ASSERT_VAL(Console->GetXRToken(m_entry.c_str()) != nullptr, "can't find token", m_entry); }
 
 void CUIOptionsItem::SaveOptTokenValue(const char* val) { SaveOptStringValue(val); }
 

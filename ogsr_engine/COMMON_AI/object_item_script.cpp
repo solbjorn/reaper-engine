@@ -16,28 +16,22 @@ ObjectFactory::CLIENT_BASE_CLASS* CObjectItemScript::client_object() const
 {
     sol::userdata data = m_client_creator();
     std::unique_ptr<ObjectFactory::CLIENT_SCRIPT_BASE_CLASS>& ptr = data["factory"](data);
+    ObjectFactory::CLIENT_SCRIPT_BASE_CLASS* object = XR_ASSERT_VAL(ptr.release() != nullptr);
 
-    ObjectFactory::CLIENT_SCRIPT_BASE_CLASS* object = ptr.release();
-    R_ASSERT(object);
-
-    return object->_construct();
+    return XR_ASSERT_VAL(object->_construct() != nullptr);
 }
 
 ObjectFactory::SERVER_BASE_CLASS* CObjectItemScript::server_object(LPCSTR section) const
 {
     sol::userdata data = m_server_creator(section);
     std::unique_ptr<ObjectFactory::SERVER_SCRIPT_BASE_CLASS>& ptr = data["factory"](data);
+    ObjectFactory::SERVER_SCRIPT_BASE_CLASS* object = XR_ASSERT_VAL(ptr.release() != nullptr, "", section);
 
-    ObjectFactory::SERVER_SCRIPT_BASE_CLASS* object = ptr.release();
-    R_ASSERT(object);
-
-    ObjectFactory::SERVER_BASE_CLASS* o = object->init();
-    R_ASSERT(o);
-
-    return o;
+    return XR_ASSERT_VAL(object->init() != nullptr, "", section);
 }
 
-CObjectItemScript::CObjectItemScript(sol::function&& client_creator, sol::function&& server_creator, CLASS_ID clsid, LPCSTR script_clsid) : inherited{clsid, script_clsid}
+CObjectItemScript::CObjectItemScript(sol::function&& client_creator, sol::function&& server_creator, CLASS_ID clsid, LPCSTR script_clsid)
+    : inherited{clsid, script_clsid}
 {
     m_client_creator = std::move(client_creator);
     m_server_creator = std::move(server_creator);

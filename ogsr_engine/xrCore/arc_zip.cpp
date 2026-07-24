@@ -79,11 +79,11 @@ zip::reader::reader(gsl::czstring path)
 {
     reset(static_cast<xr::detail::mz_zip_reader*>(mz::mz_zip_reader_create()));
     mz::mz_zip_reader_set_password_cb(get(), this, &xr::zip::reader::password);
-    R_ASSERT(mz::mz_zip_reader_open_file(get(), path) == MZ_OK);
+    XR_ASSERT(mz::mz_zip_reader_open_file(get(), path) == MZ_OK, "", path);
 
     mz::mz_zip_file* info;
-    R_ASSERT(mz::mz_zip_reader_entry_get_info(get(), &info) == MZ_OK);
-    R_ASSERT(file_info() == info);
+    XR_ASSERT(mz::mz_zip_reader_entry_get_info(get(), &info) == MZ_OK, "", path);
+    XR_ASSERT(file_info() == info, "", path);
 }
 
 s32 zip::reader::password(void*, void*, mz::mz_zip_file*, gsl::zstring password, s32 max_password)
@@ -107,13 +107,13 @@ void zip::reader::index(CallMe::Delegate<void(gsl::czstring, s64, s64, s64)> reg
 {
     void* handle;
 
-    R_ASSERT(mz::mz_zip_reader_is_open(get()) == MZ_OK);
-    R_ASSERT(mz::mz_zip_reader_get_zip_handle(get(), &handle) == MZ_OK);
+    XR_ASSERT(mz::mz_zip_reader_is_open(get()) == MZ_OK);
+    XR_ASSERT(mz::mz_zip_reader_get_zip_handle(get(), &handle) == MZ_OK);
 
     if (mz::mz_zip_entry_is_open(handle) == MZ_OK)
         mz::mz_zip_reader_entry_close(get());
 
-    R_ASSERT(mz::mz_zip_locate_first_entry(handle, static_cast<void*>(&reg), &xr::zip::reader::index_one) == MZ_END_OF_LIST);
+    XR_ASSERT(mz::mz_zip_locate_first_entry(handle, static_cast<void*>(&reg), &xr::zip::reader::index_one) == MZ_END_OF_LIST);
     file_info() = nullptr;
 }
 
@@ -121,14 +121,14 @@ void zip::reader::goto_entry(s64 cd_pos) const
 {
     void* handle;
 
-    R_ASSERT(mz::mz_zip_reader_is_open(get()) == MZ_OK);
-    R_ASSERT(mz::mz_zip_reader_get_zip_handle(get(), &handle) == MZ_OK);
+    XR_ASSERT(mz::mz_zip_reader_is_open(get()) == MZ_OK);
+    XR_ASSERT(mz::mz_zip_reader_get_zip_handle(get(), &handle) == MZ_OK);
 
     if (mz::mz_zip_entry_is_open(handle) == MZ_OK)
         mz::mz_zip_reader_entry_close(get());
 
-    R_ASSERT(mz::mz_zip_goto_entry(handle, cd_pos) == MZ_OK);
-    R_ASSERT(mz::mz_zip_entry_get_info(handle, &file_info()) == MZ_OK);
+    XR_ASSERT(mz::mz_zip_goto_entry(handle, cd_pos) == MZ_OK);
+    XR_ASSERT(mz::mz_zip_entry_get_info(handle, &file_info()) == MZ_OK);
 }
 
 // Stream reader for a file inside ZIP
@@ -208,12 +208,12 @@ zip_stream::zip_stream(xr::zip& zip, s64 cd_pos, gsl::index base, gsl::index sz)
     reopen();
 }
 
-zip_stream::~zip_stream() { R_ASSERT(mz::mz_zip_reader_entry_close(rd().get()) == MZ_OK); }
+zip_stream::~zip_stream() { XR_ASSERT(mz::mz_zip_reader_entry_close(rd().get()) == MZ_OK); }
 
 void zip_stream::reopen()
 {
     rd().goto_entry(cd_pos);
-    R_ASSERT(mz::mz_zip_reader_entry_open(rd().get()) == MZ_OK);
+    XR_ASSERT(mz::mz_zip_reader_entry_open(rd().get()) == MZ_OK);
 
     if (fbase > 0)
         skip(fbase);
@@ -254,7 +254,7 @@ void zip_stream::skip(gsl::index len)
     {
         const auto skip = std::min(bsize, left);
 
-        R_ASSERT(mz::mz_zip_reader_entry_read(rd().get(), &buf[0], gsl::narrow_cast<s32>(skip)) == skip);
+        XR_ASSERT(mz::mz_zip_reader_entry_read(rd().get(), &buf[0], gsl::narrow_cast<s32>(skip)) == skip);
         left -= skip;
     }
 
@@ -273,7 +273,7 @@ void zip_stream::next()
     {
         buf->resize(gsl::narrow_cast<size_t>(buf->bsize));
 
-        R_ASSERT(mz::mz_zip_reader_entry_read(rd().get(), &(*buf)[gsl::narrow_cast<size_t>(read)], gsl::narrow_cast<s32>(left)) == left);
+        XR_ASSERT(mz::mz_zip_reader_entry_read(rd().get(), &(*buf)[gsl::narrow_cast<size_t>(read)], gsl::narrow_cast<s32>(left)) == left);
         pos += left;
     }
 
@@ -308,7 +308,7 @@ pick:
     if (read == buf->bsize)
         return;
 
-    R_ASSERT(read == wnd[0]);
+    XR_ASSERT(read == wnd[0]);
 
     if (pos > foff)
         reopen();
@@ -340,7 +340,7 @@ void zip_stream::r(void* buffer, gsl::index buffer_size)
             const auto direct = xr::rounddown(std::ssize(out), wnd[5]);
             if (direct > 0)
             {
-                R_ASSERT(mz::mz_zip_reader_entry_read(rd().get(), &out[0], gsl::narrow_cast<s32>(direct)) == direct);
+                XR_ASSERT(mz::mz_zip_reader_entry_read(rd().get(), &out[0], gsl::narrow_cast<s32>(direct)) == direct);
                 pos += direct;
 
                 out = out.subspan(gsl::narrow_cast<size_t>(direct));
@@ -375,7 +375,7 @@ void zip_stream::r(void* buffer, gsl::index buffer_size)
             buf.resize(gsl::narrow_cast<size_t>(read + precache));
             precache = std::min(precache, fsize - foff - read);
 
-            R_ASSERT(mz::mz_zip_reader_entry_read(rd().get(), &buf[gsl::narrow_cast<size_t>(read)], gsl::narrow_cast<s32>(precache)) == precache);
+            XR_ASSERT(mz::mz_zip_reader_entry_read(rd().get(), &buf[gsl::narrow_cast<size_t>(read)], gsl::narrow_cast<s32>(precache)) == precache);
             pos += precache;
             read += precache;
         }
@@ -398,7 +398,7 @@ CStreamReader* zip_stream::open_chunk(u32 chunk_id)
     if (size == 0)
         return nullptr;
 
-    R_ASSERT(!compressed, "cannot stream compressed chunks");
+    XR_ASSERT(!compressed, "cannot stream compressed chunks", chunk_id);
 
     return xr_new<xr::zip_stream>(zip, cd_pos, tell(), size);
 }
@@ -441,11 +441,11 @@ IReader* CLocatorAPI::archive::read_zip(const struct file& desc, u32) const
     const auto& rd = obj.value;
 
     rd.goto_entry(std::bit_cast<s64>(desc.cb));
-    R_ASSERT(mz::mz_zip_reader_entry_open(rd.get()) == MZ_OK);
-    const auto close = gsl::finally([&rd] { R_ASSERT(mz::mz_zip_reader_entry_close(rd.get()) == MZ_OK); });
+    XR_ASSERT(mz::mz_zip_reader_entry_open(rd.get()) == MZ_OK, "", path);
+    const auto close = gsl::finally([&rd] { XR_ASSERT(mz::mz_zip_reader_entry_close(rd.get()) == MZ_OK); });
 
     auto dest = xr_alloc<std::byte>(desc.size_real);
-    R_ASSERT(mz::mz_zip_reader_entry_read(rd.get(), dest, gsl::narrow_cast<s32>(desc.size_real)) == desc.size_real);
+    XR_ASSERT(mz::mz_zip_reader_entry_read(rd.get(), dest, gsl::narrow_cast<s32>(desc.size_real)) == desc.size_real, "", path);
 
     return xr_new<CTempReader>(dest, desc.size_real, 0z);
 }

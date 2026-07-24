@@ -12,7 +12,7 @@
 #define CSALifeAbstractRegistry CALifeAbstractRegistry<_index_type, _data_type>
 
 TEMPLATE_SPECIALIZATION
-IC CSALifeAbstractRegistry::CALifeAbstractRegistry() {}
+IC CSALifeAbstractRegistry::CALifeAbstractRegistry() = default;
 
 TEMPLATE_SPECIALIZATION
 CSALifeAbstractRegistry::~CALifeAbstractRegistry() { delete_data(m_objects); }
@@ -32,10 +32,10 @@ IC typename CSALifeAbstractRegistry::OBJECT_REGISTRY& CSALifeAbstractRegistry::o
 TEMPLATE_SPECIALIZATION
 IC void CSALifeAbstractRegistry::add(const _index_type& index, _data_type& data, bool no_assert)
 {
-    const_iterator I = objects().find(index);
+    const auto I = objects().find(index);
     if (I != objects().end())
     {
-        THROW2(no_assert, "Specified object has been already found in the specified registry!");
+        XR_ASSERT(no_assert, "duplicate object in the registry", index);
         return;
     }
 
@@ -45,10 +45,10 @@ IC void CSALifeAbstractRegistry::add(const _index_type& index, _data_type& data,
 TEMPLATE_SPECIALIZATION
 IC void CSALifeAbstractRegistry::remove(const _index_type& index, bool no_assert)
 {
-    iterator I = m_objects.find(index);
+    const auto I = m_objects.find(index);
     if (I == objects().end())
     {
-        THROW2(no_assert, "Specified object hasn't been found in the specified registry!");
+        XR_ASSERT(no_assert, "no such object in the registry", index);
         return;
     }
 
@@ -58,14 +58,14 @@ IC void CSALifeAbstractRegistry::remove(const _index_type& index, bool no_assert
 TEMPLATE_SPECIALIZATION
 IC _data_type* CSALifeAbstractRegistry::object(const _index_type& index, bool no_assert)
 {
-    iterator I = m_objects.find(index);
+    const auto I = m_objects.find(index);
     if (I == objects().end())
     {
-        THROW2(no_assert, "Specified object hasn't been found in the specified registry!");
+        XR_ASSERT(no_assert, "no such object in the registry", index);
         return nullptr;
     }
 
-    return (&(*I).second);
+    return &I->second;
 }
 
 #undef TEMPLATE_SPECIALIZATION

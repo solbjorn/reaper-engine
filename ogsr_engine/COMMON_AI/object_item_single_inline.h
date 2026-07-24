@@ -16,11 +16,7 @@ TEMPLATE_SPECIALIZATION
 IC CSObjectItemSingle::CObjectItemSingle(const CLASS_ID& clsid, LPCSTR script_clsid) : inherited(clsid, script_clsid) {}
 
 TEMPLATE_SPECIALIZATION
-ObjectFactory::CLIENT_BASE_CLASS* CSObjectItemSingle::client_object() const
-{
-    FATAL("Cannot instantiate client object, because client class is not declared!");
-    return nullptr;
-}
+ObjectFactory::CLIENT_BASE_CLASS* CSObjectItemSingle::client_object() const { XR_PANIC("can't instantiate client object, client class is not declared"); }
 
 TEMPLATE_SPECIALIZATION
 ObjectFactory::SERVER_BASE_CLASS* CSObjectItemSingle::server_object(LPCSTR section) const { return (xr_new<SERVER_TYPE>(section)->init()); }
@@ -36,10 +32,9 @@ ObjectFactory::CLIENT_BASE_CLASS* CObjectItemSingle<_unknown_type, true>::client
 }
 
 template <typename _unknown_type>
-ObjectFactory::SERVER_BASE_CLASS* CObjectItemSingle<_unknown_type, true>::server_object(LPCSTR) const
+ObjectFactory::SERVER_BASE_CLASS* CObjectItemSingle<_unknown_type, true>::server_object(gsl::czstring section) const
 {
-    FATAL("Cannot instantiate server object, because server class is not declared!");
-    return nullptr;
+    XR_PANIC("can't instantiate server object, server class is not declared", section);
 }
 
 #undef TEMPLATE_SPECIALIZATION

@@ -18,32 +18,30 @@ IC CAbstractGraph::~CGraphAbstract() { clear(); }
 TEMPLATE_SPECIALIZATION
 IC void CAbstractGraph::add_vertex(const _data_type& data, const _vertex_id_type& vertex_id)
 {
-    VERIFY(!vertex(vertex_id));
+    XR_ASSERT(vertex(vertex_id) == nullptr);
     m_vertices.emplace(vertex_id, xr_new<CVertex>(data, vertex_id, &m_edge_count));
 }
 
 TEMPLATE_SPECIALIZATION
 IC void CAbstractGraph::remove_vertex(const _vertex_id_type& vertex_id)
 {
-    vertex_iterator I = m_vertices.find(vertex_id);
-    VERIFY(m_vertices.end() != I);
+    const auto I = XR_ASSERT_VAL(m_vertices.find(vertex_id) != m_vertices.end());
+
     auto v = *I;
     delete_data(v);
+
     m_vertices.erase(I);
 }
 
 TEMPLATE_SPECIALIZATION
 IC void CAbstractGraph::add_edge(const _vertex_id_type& vertex_id0, const _vertex_id_type& vertex_id1, const _edge_weight_type& edge_weight)
 {
-    CVertex* _vertex0 = vertex(vertex_id0);
-    VERIFY(_vertex0);
-    CVertex* _vertex1 = vertex(vertex_id1);
-    VERIFY(_vertex1);
-    _vertex0->add_edge(_vertex1, edge_weight);
+    XR_ASSERT_VAL(vertex(vertex_id0) != nullptr)->add_edge(XR_ASSERT_VAL(vertex(vertex_id1) != nullptr), edge_weight);
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CAbstractGraph::add_edge(const _vertex_id_type& vertex_id0, const _vertex_id_type& vertex_id1, const _edge_weight_type& edge_weight0, const _edge_weight_type& edge_weight1)
+IC void CAbstractGraph::add_edge(const _vertex_id_type& vertex_id0, const _vertex_id_type& vertex_id1, const _edge_weight_type& edge_weight0,
+                                 const _edge_weight_type& edge_weight1)
 {
     add_edge(vertex_id0, vertex_id1, edge_weight0);
     add_edge(vertex_id1, vertex_id0, edge_weight1);
@@ -52,10 +50,8 @@ IC void CAbstractGraph::add_edge(const _vertex_id_type& vertex_id0, const _verte
 TEMPLATE_SPECIALIZATION
 IC void CAbstractGraph::remove_edge(const _vertex_id_type& vertex_id0, const _vertex_id_type& vertex_id1)
 {
-    CVertex* _vertex = vertex(vertex_id0);
-    VERIFY(_vertex);
-    VERIFY(vertex(vertex_id1));
-    _vertex->remove_edge(vertex_id1);
+    XR_ASSERT(vertex(vertex_id1) != nullptr);
+    XR_ASSERT_VAL(vertex(vertex_id0) != nullptr)->remove_edge(vertex_id1);
 }
 
 TEMPLATE_SPECIALIZATION
@@ -72,7 +68,8 @@ IC void CAbstractGraph::clear()
 {
     while (!vertices().empty())
         remove_vertex(vertices().begin()->first);
-    VERIFY(!m_edge_count);
+
+    XR_ASSERT(m_edge_count == 0);
 }
 
 TEMPLATE_SPECIALIZATION
@@ -139,20 +136,20 @@ IC bool CAbstractGraph::operator==(const CGraphAbstract& obj) const
 TEMPLATE_SPECIALIZATION
 IC const _edge_weight_type CAbstractGraph::get_edge_weight(const _vertex_id_type vertex_index0, const _vertex_id_type vertex_index1, const_iterator i) const
 {
-    VERIFY(edge(vertex_index0, vertex_index1));
-    return ((*i).weight());
+    XR_DEBUG_ASSERT(edge(vertex_index0, vertex_index1) != nullptr);
+    return i->weight();
 }
 
 TEMPLATE_SPECIALIZATION
 IC bool CAbstractGraph::is_accessible(const _vertex_id_type) const { return true; }
 
 TEMPLATE_SPECIALIZATION
-IC const typename CAbstractGraph::CVertex* CAbstractGraph::value(const _vertex_id_type, const_iterator i) const { return ((*i).vertex()); }
+IC const typename CAbstractGraph::CVertex* CAbstractGraph::value(const _vertex_id_type, const_iterator i) const { return i->vertex(); }
 
 TEMPLATE_SPECIALIZATION
 IC void CAbstractGraph::begin(const CVertex* vertex, const_iterator& b, const_iterator& e) const
 {
-    VERIFY(vertex);
+    XR_ASSERT(vertex != nullptr);
     b = vertex->edges().begin();
     e = vertex->edges().end();
 }
@@ -237,6 +234,7 @@ IC void CAbstractGraph::load(IReader& stream)
 
         this->add_vertex(data, vertex_id);
     }
+
     chunk0->close();
 
     chunk0 = stream.open_chunk(2);
@@ -248,9 +246,7 @@ IC void CAbstractGraph::load(IReader& stream)
         _vertex_id_type vertex_id0;
         load_data(vertex_id0, *chunk0);
 
-        u32 n = chunk0->r_u32();
-        VERIFY(n);
-        for (u32 i = 0; i < n; ++i)
+        for (u32 i = 0, n = XR_ASSERT_VAL(chunk0->r_u32() > 0); i < n; ++i)
         {
             _vertex_id_type vertex_id1;
             load_data(vertex_id1, *chunk0);
@@ -258,9 +254,10 @@ IC void CAbstractGraph::load(IReader& stream)
             _edge_weight_type edge_weight;
             load_data(edge_weight, *chunk0);
 
-            this->add_edge(vertex_id0, vertex_id1, edge_weight);
+            this->add_edge(vertex_id0, std::move(vertex_id1), std::move(edge_weight));
         }
     }
+
     chunk0->close();
 }
 

@@ -28,8 +28,10 @@ u16 CKinematics::LL_BoneID(const shared_str& B) const
 const char* CKinematics::LL_BoneName_dbg(const u16 ID) const
 {
     for (const auto& bone : bone_map_N)
+    {
         if (bone.second == ID)
             return bone.first.c_str();
+    }
 
     return nullptr;
 }
@@ -94,18 +96,13 @@ CKinematics::~CKinematics()
     // wallmarks
     ClearWallmarks();
 
-    if (m_lod)
-    {
-        if (CKinematics* lod_kinematics = smart_cast<CKinematics*>(m_lod))
-        {
-            if (lod_kinematics->m_is_original_lod)
-            {
-                lod_kinematics->Release();
-            }
-        }
+    if (m_lod == nullptr)
+        return;
 
-        xr_delete(m_lod);
-    }
+    if (auto lod_kinematics = smart_cast<CKinematics*>(m_lod); lod_kinematics != nullptr && lod_kinematics->m_is_original_lod)
+        lod_kinematics->Release();
+
+    xr_delete(m_lod);
 }
 
 void CKinematics::IBoneInstances_Create()
@@ -125,12 +122,7 @@ void CKinematics::IBoneInstances_Destroy()
     }
 }
 
-CSkeletonX* CKinematics::LL_GetChild(u32 idx)
-{
-    IRenderVisual* V = children[idx];
-    CSkeletonX* B = smart_cast<CSkeletonX*>(V);
-    return B;
-}
+CSkeletonX* CKinematics::LL_GetChild(u32 idx) { return smart_cast<CSkeletonX*>(children[idx]); }
 
 void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
 {
@@ -147,13 +139,11 @@ void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
         {
             string_path lod_name;
             LD->r_string(lod_name, sizeof(lod_name));
-            //.         strconcat		(sizeof(name_load),name_load, short_name, ":lod:", lod_name.c_str());
-            m_lod = (dxRender_Visual*)RImplementation.model_CreateChild(lod_name, nullptr);
 
-            if (CKinematics* lod_kinematics = smart_cast<CKinematics*>(m_lod))
+            m_lod = XR_ASSERT_VAL(smart_cast<dxRender_Visual*>(RImplementation.model_CreateChild(lod_name, nullptr)) != nullptr, "can't create LOD model", N);
+
+            if (auto lod_kinematics = smart_cast<CKinematics*>(m_lod); lod_kinematics != nullptr)
                 lod_kinematics->m_is_original_lod = true;
-
-            VERIFY3(m_lod, "Cant create LOD model for", N);
         }
 
         LD->close();
@@ -189,8 +179,7 @@ void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
     // TODO: container is created in stack!
     xr_vector<shared_str> L_parents;
 
-    R_ASSERT(data->find_chunk(OGF_S_BONE_NAMES));
-
+    XR_ASSERT(data->find_chunk(OGF_S_BONE_NAMES) > 0, "", N);
     visimask.zero();
 
     u32 dwCount = data->r_u32();
@@ -222,27 +211,25 @@ void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
 
     // Attach bones to their parents
     iRoot = BI_NONE;
-    for (u32 i = 0; i < bones->size(); i++)
+
+    for (auto [i, P, B] : std::views::zip(std::views::iota(0z, std::ssize(*bones)), L_parents, *bones))
     {
-        shared_str P = L_parents[i];
-        CBoneData* B = (*bones)[i];
         if (P.empty())
         {
             // no parent - this is root bone
-            R_ASSERT(BI_NONE == iRoot);
-            iRoot = u16(i);
+            XR_ASSERT(iRoot == BI_NONE, "", N, i);
+            iRoot = gsl::narrow_cast<u16>(i);
+
             B->SetParentID(BI_NONE);
             continue;
         }
-        else
-        {
-            u16 ID = LL_BoneID(P);
-            R_ASSERT(ID != BI_NONE);
-            (*bones)[ID]->children.push_back(B);
-            B->SetParentID(ID);
-        }
+
+        const u16 ID = XR_ASSERT_VAL(LL_BoneID(P) != BI_NONE, N, i, P);
+        (*bones)[ID]->children.push_back(B);
+        B->SetParentID(ID);
     }
-    R_ASSERT(BI_NONE != iRoot);
+
+    XR_ASSERT(iRoot != BI_NONE, "", N);
 
     // Free parents
     L_parents.clear();
@@ -383,8 +370,7 @@ void CKinematics::Copy(dxRender_Visual* P)
 {
     inherited::Copy(P);
 
-    CKinematics* pFrom = smart_cast<CKinematics*>(P);
-    VERIFY(pFrom);
+    auto pFrom = XR_ASSERT_VAL(smart_cast<CKinematics*>(P) != nullptr);
     pUserData = pFrom->pUserData;
     bones = pFrom->bones;
     iRoot = pFrom->iRoot;
@@ -398,7 +384,7 @@ void CKinematics::Copy(dxRender_Visual* P)
 
     CalculateBones_Invalidate();
 
-    m_lod = (pFrom->m_lod) ? (dxRender_Visual*)RImplementation.model_Duplicate(pFrom->m_lod) : nullptr;
+    m_lod = pFrom->m_lod != nullptr ? smart_cast<dxRender_Visual*>(RImplementation.model_Duplicate(pFrom->m_lod)) : nullptr;
 }
 
 void CKinematics::CalculateBones_Invalidate()
@@ -462,10 +448,8 @@ void CKinematics::Release()
 
 void CKinematics::LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive)
 {
-    ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", std::source_location::current().function_name(), dbg_name.c_str(),
-               bone_id);
+    visimask.set(XR_ASSERT_VAL(bone_id < LL_BoneCount(), "invalid bone ID", dbg_name), !!val);
 
-    visimask.set(bone_id, !!val);
     if (!visimask.is(bone_id))
         bone_instances[bone_id].mTransform.scale(0.f, 0.f, 0.f);
     else
@@ -475,8 +459,8 @@ void CKinematics::LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive)
 
     if (bRecursive)
     {
-        for (xr_vector<CBoneData*>::iterator C = (*bones)[bone_id]->children.begin(); C != (*bones)[bone_id]->children.end(); C++)
-            LL_SetBoneVisible((*C)->GetSelfID(), val, bRecursive);
+        for (auto child : (*bones)[bone_id]->children)
+            LL_SetBoneVisible(child->GetSelfID(), val, bRecursive);
     }
 
     Visibility_Invalidate();
@@ -507,57 +491,62 @@ void CKinematics::Visibility_Update()
 {
     XR_TRACY_ZONE_SCOPED();
 
-    Update_Visibility = FALSE;
+    Update_Visibility = false;
+
     // check visible
-    for (u32 c_it = 0; c_it < children.size(); c_it++)
+    for (std::size_t i{0}; i < children.size();)
     {
-        CSkeletonX* _c = smart_cast<CSkeletonX*>(children[c_it]);
-        VERIFY(_c);
-        if (!_c->has_visible_bones())
+        auto& child = children[i];
+
+        if (XR_ASSERT_VAL(smart_cast<CSkeletonX*>(child) != nullptr)->has_visible_bones())
         {
-            // move into invisible list
-            children_invisible.push_back(children[c_it]);
-            std::swap(children[c_it], children.back());
-            children.pop_back();
-            Update_Visibility = TRUE;
+            ++i;
+            continue;
         }
+
+        // move into invisible list
+        children_invisible.emplace_back(child);
+        std::swap(child, children.back());
+        children.pop_back();
+
+        Update_Visibility = true;
     }
 
     // check invisible
-    for (u32 _it = 0; _it < children_invisible.size(); _it++)
+    for (std::size_t i{0}; i < children_invisible.size();)
     {
-        CSkeletonX* _c = smart_cast<CSkeletonX*>(children_invisible[_it]);
-        VERIFY(_c);
-        if (_c->has_visible_bones())
+        auto& child = children_invisible[i];
+
+        if (!XR_ASSERT_VAL(smart_cast<CSkeletonX*>(child) != nullptr)->has_visible_bones())
         {
-            // move into visible list
-            children.push_back(children_invisible[_it]);
-            std::swap(children_invisible[_it], children_invisible.back());
-            children_invisible.pop_back();
-            Update_Visibility = TRUE;
+            ++i;
+            continue;
         }
+
+        // move into visible list
+        children.emplace_back(child);
+        std::swap(child, children_invisible.back());
+        children_invisible.pop_back();
+
+        Update_Visibility = true;
     }
-}
-
-IC static void RecursiveBindTransform(CKinematics* K, xr_vector<Fmatrix>& matrices, u16 bone_id, const Fmatrix& parent)
-{
-    CBoneData& BD = K->LL_GetData(bone_id);
-    Fmatrix& BM = matrices[bone_id];
-    // Build matrix
-    BM.mul_43(parent, BD.bind_transform);
-    for (xr_vector<CBoneData*>::iterator C = BD.children.begin(); C != BD.children.end(); C++)
-        RecursiveBindTransform(K, matrices, (*C)->GetSelfID(), BM);
-}
-
-void CKinematics::LL_GetBindTransform(xr_vector<Fmatrix>& matrices)
-{
-    matrices.resize(LL_BoneCount());
-    RecursiveBindTransform(this, matrices, iRoot, Fidentity);
 }
 
 namespace
 {
-void BuildMatrix(Fmatrix& mView, float invsz, const Fvector norm, const Fvector& from)
+void RecursiveBindTransform(CKinematics* K, std::span<Fmatrix> matrices, u16 bone_id, const Fmatrix& parent)
+{
+    CBoneData& BD = K->LL_GetData(bone_id);
+    Fmatrix& BM = matrices[bone_id];
+
+    // Build matrix
+    BM.mul_43(parent, BD.bind_transform);
+
+    for (auto child : BD.children)
+        RecursiveBindTransform(K, matrices, child->GetSelfID(), BM);
+}
+
+void BuildMatrix(Fmatrix& mView, f32 invsz, Fvector norm, Fvector from)
 {
     // build projection
     Fmatrix mScale;
@@ -573,6 +562,12 @@ void BuildMatrix(Fmatrix& mView, float invsz, const Fvector norm, const Fvector&
     mView.mulA_43(mScale);
 }
 } // namespace
+
+void CKinematics::LL_GetBindTransform(xr_vector<Fmatrix>& matrices)
+{
+    matrices.resize(LL_BoneCount());
+    RecursiveBindTransform(this, matrices, iRoot, Fidentity);
+}
 
 void CKinematics::EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id)
 {
@@ -740,15 +735,10 @@ void CKinematics::CalculateWallmarks(bool hud)
 
 void CKinematics::RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT*& V)
 {
-    VERIFY(wm);
-    VERIFY(V);
-    VERIFY2(bones, "Invalid visual. Bones already released.");
-    VERIFY2(bone_instances, "Invalid visual. bone_instances already deleted.");
-
-    if (!wm || !bones || !bone_instances)
-        return;
-
     XR_TRACY_ZONE_SCOPED();
+
+    XR_ASSERT(wm && V != nullptr);
+    XR_ASSERT(bones != nullptr && bone_instances != nullptr);
 
     // skin vertices
     for (u32 f_idx = 0; f_idx < wm->m_Faces.size(); f_idx++)
@@ -826,12 +816,7 @@ void CKinematics::RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT*&
     wm->XFORM()->transform_tiny(wm->m_Bounds.P, wm->m_LocalBounds.P);
 }
 
-void CKinematics::ClearWallmarks()
-{
-    //	for (SkeletonWMVecIt it=wallmarks.begin(); it!=wallmarks.end(); it++)
-    //		xr_delete	(*it);
-    wallmarks.clear();
-}
+void CKinematics::ClearWallmarks() { wallmarks.clear(); }
 
 int CKinematics::LL_GetBoneGroups(xr_vector<xr_vector<u16>>& groups)
 {
@@ -851,18 +836,12 @@ int CKinematics::LL_GetBoneGroups(xr_vector<xr_vector<u16>>& groups)
 }
 
 #ifdef DEBUG
-CSkeletonWallmark::~CSkeletonWallmark()
-{
-    if (used_in_render != u32(-1))
-    {
-        Msg("used_in_render={}", used_in_render);
-        VERIFY(used_in_render == u32(-1));
-    }
-}
+CSkeletonWallmark::~CSkeletonWallmark() { XR_ASSERT(used_in_render == std::numeric_limits<u32>::max()); }
 #endif
 
 /************************* Add by Zander *************************************************************/
 /************************* Дебаговые функции для исследования моделей. *******************************/
+
 static Fbox& get_mesh_RC_data(FHierrarhyVisual* pHV, const u32 id) { return pHV->children.at(id)->getVisData().box; }
 
 Fvector3 CKinematics::RC_VisBox(const u32 id)

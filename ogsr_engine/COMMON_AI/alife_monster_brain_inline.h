@@ -8,17 +8,8 @@
 
 #pragma once
 
-IC CALifeMonsterBrain::object_type& CALifeMonsterBrain::object() const
-{
-    VERIFY(m_object);
-    return (*m_object);
-}
-
-IC CALifeMonsterBrain::movement_manager_type& CALifeMonsterBrain::movement() const
-{
-    VERIFY(m_movement_manager);
-    return (*m_movement_manager);
-}
+IC CALifeMonsterBrain::object_type& CALifeMonsterBrain::object() const { return *XR_ASSERT_VAL(m_object != nullptr); }
+IC CALifeMonsterBrain::movement_manager_type& CALifeMonsterBrain::movement() const { return *XR_ASSERT_VAL(m_movement_manager != nullptr); }
 
 inline bool CALifeMonsterBrain::can_choose_alife_tasks() const { return m_can_choose_alife_tasks; }
 inline void CALifeMonsterBrain::can_choose_alife_tasks(bool value) { m_can_choose_alife_tasks = value; }

@@ -13,12 +13,7 @@
 #define CSGraphEdge CEdge<_edge_weight_type, _vertex_type>
 
 TEMPLATE_SPECIALIZATION
-IC CSGraphEdge::CEdge(const _edge_weight_type& weight, _vertex_type* vertex)
-{
-    m_weight = weight;
-    VERIFY(vertex);
-    m_vertex = vertex;
-}
+IC CSGraphEdge::CEdge(const _edge_weight_type& weight, _vertex_type* vertex) : m_weight{weight}, m_vertex{vertex} { XR_ASSERT(vertex != nullptr); }
 
 TEMPLATE_SPECIALIZATION
 IC const _edge_weight_type& CSGraphEdge::weight() const { return (m_weight); }

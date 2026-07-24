@@ -29,7 +29,7 @@ public:
     {
         const std::array<u64, 2> arr{low, high};
 
-        for (auto [k, val] : xr::views_enumerate(arr))
+        for (auto [k, val] : std::views::enumerate(arr))
         {
             auto bitset = val;
 
@@ -76,9 +76,7 @@ public:
 
     [[nodiscard]] constexpr u64 to_u64(gsl::index part) const
     {
-        const auto base = gsl::narrow_cast<size_t>(part * 64);
-        R_ASSERT(base < storage.size());
-
+        const auto base = XR_ASSERT_VAL(gsl::narrow_cast<size_t>(part * 64) < storage.size());
         size_t index{base};
         u64 value = storage.test(index);
 

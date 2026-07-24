@@ -193,59 +193,61 @@ std::optional<sol::state> __declspec(align(TMC_CACHE_LINE_SIZE)) lua;
 
 void lua_panic(s32 code)
 {
-    xr_string data;
-    size_t len;
+    auto L = lua->lua_state();
+    xr_string description;
+    std::size_t len;
 
-    gsl::czstring desc = lua_tolstring(lua->lua_state(), -1, &len);
-    if (desc != nullptr)
+    if (const auto desc = lua_tolstring(L, -1, &len); desc != nullptr)
     {
-        data.assign(desc, len);
-        lua_pop(lua->lua_state(), 1);
-
-        desc = data.c_str();
+        description.assign(desc, len);
+        lua_pop(L, 1);
     }
     else
     {
-        desc = "An unexpected error occurred and panic has been invoked";
+        description = "An unexpected error occurred and panic has been invoked";
     }
 
-    xr_string expr = "script " + sol::to_string(sol::call_status{code}) + " error";
-    Debug.backend(expr.c_str(), desc, nullptr, nullptr, DEBUG_INFO);
+    XR_PANIC(xr::format("script {} error", sol::to_string(sol::call_status{code})), code, description);
 }
 
-void lua_trace(bool)
+[[nodiscard]] std::string lua_trace()
 {
     auto L = lua->lua_state();
     luaL_traceback(L, L, nullptr, 0);
-    size_t len;
 
-    gsl::czstring stack = lua_tolstring(L, -1, &len);
+    std::size_t len;
+    xr_string data;
+
+    const auto stack = lua_tolstring(L, -1, &len);
     if (stack == nullptr)
-        return;
+        return data;
 
-    xr_string data(stack, len);
+    if (len < xr_strlen("stack traceback:") + 2)
+        return data;
+
+    data.assign(stack, len);
     lua_pop(L, 1);
 
-    Log(data);
+    return data;
 }
 
 class lua_scoped_handler
 {
 private:
-    decltype(std::declval<xrDebug>().get_lua_panic()) old_panic{};
-    decltype(std::declval<xrDebug>().get_lua_trace()) old_trace{};
+    decltype(std::declval<xrDebug>().get_lua_panic()) old_panic{nullptr};
+    decltype(std::declval<xrDebug>().get_lua_trace()) old_trace{nullptr};
 
 public:
     constexpr lua_scoped_handler()
     {
-        old_panic = Debug.set_lua_panic(lua_panic);
-        old_trace = Debug.set_lua_trace(lua_trace);
+        old_panic = Debug.set_lua_panic(&lua_panic);
+        old_trace = Debug.set_lua_trace(&lua_trace);
     }
 
     constexpr ~lua_scoped_handler()
     {
-        R_ASSERT(Debug.set_lua_trace(old_trace) == lua_trace);
-        R_ASSERT(Debug.set_lua_panic(old_panic) == lua_panic);
+        XR_ASSERT(Debug.set_lua_trace(old_trace) == &lua_trace);
+        XR_ASSERT(Debug.set_lua_panic(old_panic) == &lua_panic);
     }
 };
 
@@ -276,19 +278,19 @@ void do_file(gsl::czstring caScriptName, gsl::czstring caNameSpaceName)
     lua->script(script, l_caLuaFileName);
 }
 
-[[nodiscard]] bool lua_function(gsl::czstring ns, gsl::czstring fn) { return !!lua->get<sol::optional<sol::function>>(std::tie(ns, fn)); }
+[[nodiscard]] bool lua_function(std::string_view ns, std::string_view fn) { return !!lua->get<sol::optional<sol::function>>(std::tie(ns, fn)); }
 } // namespace
 
 // export
 void CResourceManager::LS_Load()
 {
-    R_ASSERT(!lua, "! LuaJIT is already running");
+    XR_ASSERT(!lua, "Lua VM is already running");
     lua.emplace();
-    R_ASSERT(lua, "! ERROR : Cannot initialize LUA VM!");
 
+    XR_ASSERT(lua, "can't initialize Lua VM");
     lua->open_libraries();
-    const lua_scoped_handler sc;
 
+    const lua_scoped_handler sc;
     lua->set_function("log", sol::resolve<void(std::string_view)>(&Log));
 
     lua->new_usertype<adopt_dx10sampler>("_dx10sampler", sol::no_constructor, sol::call_constructor,
@@ -320,8 +322,7 @@ void CResourceManager::LS_Load()
                   "decrsat", D3DSTENCILOP_DECRSAT, "invert", D3DSTENCILOP_INVERT, "incr", D3DSTENCILOP_INCR, "decr", D3DSTENCILOP_DECR);
 
     // load shaders
-    xr_vector<char*>* folder = FS.file_list_open("$game_shaders$", RImplementation.getShaderPath(), FS_ListFiles | FS_RootOnly);
-    VERIFY(folder != nullptr);
+    auto folder = XR_ASSERT_VAL(FS.file_list_open("$game_shaders$", RImplementation.getShaderPath(), FS_ListFiles | FS_RootOnly) != nullptr);
     const auto _ = gsl::finally([&folder] { FS.file_list_close(folder); });
 
     for (const auto path : *folder)
@@ -350,20 +351,16 @@ gsl::index CResourceManager::LS_mem() const { return lua ? gsl::narrow_cast<gsl:
 
 BOOL CResourceManager::_lua_HasShader(LPCSTR s_shader)
 {
-    string256 undercorated;
-    for (int i = 0, l = xr_strlen(s_shader) + 1; i < l; i++)
-        undercorated[i] = ('\\' == s_shader[i]) ? '_' : s_shader[i];
+    xr_string undecorated{s_shader};
+    std::ranges::replace(undecorated, '\\', '_');
 
-    if (lua_function(undercorated, "normal") || lua_function(undercorated, "l_special"))
+    if (lua_function(undecorated, "normal") || lua_function(undecorated, "l_special"))
         return true;
 
     // If not found - try to find new ones
     for (gsl::index i{0}; i < SHADER_ELEMENTS_MAX; ++i)
     {
-        string16 buff;
-        std::snprintf(buff, sizeof(buff), "element_%zd", i);
-
-        if (lua_function(undercorated, buff))
+        if (lua_function(undecorated, xr::format("element_{}", i)))
             return true;
     }
 
@@ -376,10 +373,8 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
     Shader S;
 
     // undecorate
-    string256 undercorated;
-    for (int i = 0, l = xr_strlen(d_shader) + 1; i < l; i++)
-        undercorated[i] = ('\\' == d_shader[i]) ? '_' : d_shader[i];
-    LPCSTR s_shader = undercorated;
+    xr_string s_shader{d_shader};
+    std::ranges::replace(s_shader, '\\', '_');
 
     // Access to template
     C.BT = nullptr;
@@ -392,19 +387,17 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
 
     const lua_scoped_handler sc;
     // Choose workflow here: old (using named stages) or new (explicitly declaring stage number)
-    bool bUseNewWorkflow{};
+    bool bUseNewWorkflow{false};
 
-    for (auto [i, elem] : xr::views_enumerate(S.E))
+    for (auto [i, elem] : std::views::enumerate(S.E))
     {
-        string16 buff;
-        std::snprintf(buff, sizeof(buff), "element_%zd", i);
-
-        if (!lua_function(s_shader, buff))
+        auto func = xr::format("element_{}", i);
+        if (!lua_function(s_shader, func))
             continue;
 
         C.iElement = i;
         C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
-        elem._set(C._lua_Compile(s_shader, buff));
+        elem._set(C._lua_Compile(s_shader, std::move(func)));
 
         bUseNewWorkflow = true;
     }
@@ -427,11 +420,8 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
 
             /// SSS fix water for DX10
             // Water Flag
-            if (S.E[0]->flags.bDistort)
-            {
-                if (strstr(s_shader, "effects_water") != nullptr)
-                    S.E[0]->flags.isWater = TRUE;
-            }
+            if (S.E[0]->flags.bDistort && s_shader.contains("effects_water"))
+                S.E[0]->flags.isWater = true;
         }
 
         // Compile element	(LOD1)
@@ -468,11 +458,8 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
     }
 
     // Search equal in shaders array
-    for (auto sh : v_shaders)
-    {
-        if (S.equal(sh))
-            return sh;
-    }
+    if (const auto iter = std::ranges::find_if(v_shaders, [&S] [[nodiscard]] (auto sh) { return S.equal(sh); }); iter != v_shaders.end())
+        return *iter;
 
     // Create _new_ entry
     Shader* N = v_shaders.emplace_back(xr_new<Shader>());
@@ -482,7 +469,7 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
     return N;
 }
 
-ShaderElement* CBlender_Compile::_lua_Compile(LPCSTR namesp, LPCSTR name)
+ShaderElement* CBlender_Compile::_lua_Compile(std::string_view namesp, std::string_view name)
 {
     ShaderElement E;
     SH = &E;
@@ -493,7 +480,7 @@ ShaderElement* CBlender_Compile::_lua_Compile(LPCSTR namesp, LPCSTR name)
     const auto t_1 = L_textures.size() > 1 ? std::string_view{L_textures[1]} : std::string_view{"null"};
     const auto t_d = detail_texture.c_str() != nullptr ? std::string_view{detail_texture} : std::string_view{"null"};
 
-    bool bFirstPass{};
+    bool bFirstPass{false};
     adopt_compiler ac{this, bFirstPass};
     sol::function element = (*lua)[namesp][name];
 

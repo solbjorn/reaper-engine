@@ -57,7 +57,7 @@ struct SArtefactActivation
     ~SArtefactActivation();
 
     CArtefact* m_af;
-    svector<SStateDef, eMax> m_activation_states;
+    std::inplace_vector<SStateDef, eMax> m_activation_states;
     EActivationStates m_cur_activation_state;
     float m_cur_state_time;
 

@@ -150,7 +150,7 @@ tmc::task<bool> CLevel::net_start5()
     if (net_start_result_total)
     {
         NET_Packet NP;
-        NP.w_begin(M_CLIENTREADY);
+        NP.w_begin(gsl::narrow<u16>(xr::msg::M_CLIENTREADY));
         Send(NP, net_flags(TRUE, TRUE));
     }
 

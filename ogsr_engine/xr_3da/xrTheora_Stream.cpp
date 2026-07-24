@@ -125,9 +125,8 @@ BOOL CTheoraStream::ParseHeaders()
         }
         else
         {
-            int ret = ReadData(); // someone needs more data
-            if (ret == 0)
-                FATAL("End of file while searching for codec headers.");
+            // someone needs more data
+            XR_ASSERT(ReadData() > 0, "unexpected EOF while parsing codec headers");
         }
     }
 
@@ -174,39 +173,37 @@ BOOL CTheoraStream::ParseHeaders()
 
 BOOL CTheoraStream::Decode(u32 tm_play)
 {
-    VERIFY(tm_play < tm_total);
-    ogg_int64_t t_frame;
-    t_frame = iFloor(tm_play * fpms);
+    ogg_int64_t t_frame = iFloor(XR_ASSERT_VAL(tm_play < tm_total) * fpms);
     ogg_int64_t k_frame = t_frame - t_frame % key_rate;
 
     if (d_frame < t_frame)
     {
-        BOOL result = FALSE;
         ogg_packet o_packet;
+        bool result{false};
+
         while (d_frame < t_frame)
         {
-            while (FALSE == result)
+            while (!result)
             {
                 // theora is one in, one out...
                 if (ogg_stream_packetout(&o_stream_state, &o_packet) > 0 && !theora_packet_isheader(&o_packet))
                 {
                     d_frame++;
+
                     //. hack preroll
                     if (d_frame < k_frame)
                     {
-                        //.						dbg_log				((stderr,"%04d: preroll\n",d_frame));
-                        VERIFY((0 != d_frame % key_rate) || (0 == d_frame % key_rate) && theora_packet_iskeyframe(&o_packet));
+                        XR_DEBUG_ASSERT((0 != d_frame % key_rate) || (0 == d_frame % key_rate) && theora_packet_iskeyframe(&o_packet));
                         continue;
                     }
 
-                    VERIFY((d_frame != k_frame) || ((d_frame == k_frame) && theora_packet_iskeyframe(&o_packet)));
+                    XR_DEBUG_ASSERT((d_frame != k_frame) || ((d_frame == k_frame) && theora_packet_iskeyframe(&o_packet)));
 
                     // real decode
-                    int res = theora_decode_packetin(&t_state, &o_packet);
-                    VERIFY(res != OC_BADPACKET);
+                    XR_ASSERT(theora_decode_packetin(&t_state, &o_packet) != OC_BADPACKET);
 
                     if (d_frame >= t_frame)
-                        result = TRUE;
+                        result = true;
                 }
                 else
                 {
@@ -215,8 +212,9 @@ BOOL CTheoraStream::Decode(u32 tm_play)
             }
 
             // check eof
-            VERIFY(!(FALSE == result && source->eof()));
-            if (FALSE == result)
+            XR_DEBUG_ASSERT(result || !source->eof());
+
+            if (!result)
             {
                 // no data yet for somebody.  Grab another page
                 if (ReadData())
@@ -226,23 +224,23 @@ BOOL CTheoraStream::Decode(u32 tm_play)
                 }
             }
         }
+
         // all right - get yuv buffer
-        VERIFY(TRUE == result);
-        VERIFY(d_frame == t_frame);
+        XR_ASSERT(result && d_frame == t_frame, "", result, d_frame, t_frame);
         theora_decode_YUVout(&t_state, &t_yuv_buffer);
-        //.		dbg_log								((stderr,"%04d: yuv out\n",d_frame));
+
         return TRUE;
     }
+
     return FALSE;
 }
 
 BOOL CTheoraStream::Load(const char* fname)
 {
-    VERIFY(source == nullptr);
+    XR_ASSERT(source == nullptr, "", fname);
 
     // open source
-    source = FS.rs_open(fname);
-    VERIFY(source);
+    source = XR_ASSERT_VAL(FS.rs_open(fname) != nullptr, "", fname);
 
     // parse headers
     BOOL res = ParseHeaders();

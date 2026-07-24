@@ -14,6 +14,8 @@ IC const Fvector& cast_fv(const float* fp) { return *((const Fvector*)fp); }
 
 ICF void accurate_normalize(float* a)
 {
+    XR_ASSERT(a != nullptr);
+
     dReal sqr_magnitude = a[0] * a[0] + a[1] * a[1] + a[2] * a[2];
     dReal epsilon = 1.192092896e-05F;
     if (sqr_magnitude > epsilon)
@@ -26,7 +28,6 @@ ICF void accurate_normalize(float* a)
     }
 
     dReal a0, a1, a2, aa0, aa1, aa2, l;
-    VERIFY(a);
     a0 = a[0];
     a1 = a[1];
     a2 = a[2];
@@ -80,12 +81,19 @@ ICF void accurate_normalize(float* a)
         }
     }
 }
+
 IC float dXZMag(const float* v) { return _sqrt(v[0] * v[0] + v[2] * v[2]); }
 IC float dXZMag(const Fvector& v) { return dXZMag(cast_fp(v)); }
 IC float dXZDot(const float* v0, const float* v1) { return v0[0] * v1[0] + v0[2] * v1[2]; }
-IC float dXZDotNormalized(const Fvector& v0, const Fvector& v1) { return (v0.x * v1.x + v0.z * v1.z) / _sqrt((v0.x * v0.x + v0.z * v0.z) * (v1.x * v1.x + v1.z * v1.z)); }
+
+IC float dXZDotNormalized(const Fvector& v0, const Fvector& v1)
+{
+    return (v0.x * v1.x + v0.z * v1.z) / _sqrt((v0.x * v0.x + v0.z * v0.z) * (v1.x * v1.x + v1.z * v1.z));
+}
+
 IC float dXZDotNormalized(const float* v0, const float* v1) { return dXZDotNormalized(cast_fv(v0), cast_fv(v1)); }
 IC float dXZDot(const Fvector& v0, const Fvector& v1) { return v0.x * v1.x + v0.z * v1.z; }
+
 IC void dVectorSet(dReal* vd, const dReal* vs)
 {
     vd[0] = vs[0];
@@ -380,10 +388,11 @@ IC u8 TransferenceAndThrowVelToThrowDir(const Fvector& transference, float throw
         throw_dir[0].y = tgA.x * s;
         throw_dir[0].normalize();
         break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
     return ret;
 }
+
 #define MAX_OF(x, on_x, y, on_y, z, on_z) \
     if (x > y) \
     { \
@@ -534,16 +543,19 @@ IC u8 TransferenceAndThrowVelToThrowDir(const Fvector& transference, float throw
 
 struct SInertVal
 {
-    float val{};
-    const float inertion;
+    f32 val{0.0f};
+    const f32 inertion;
 
-    SInertVal(float inert) : inertion{inert} { R_ASSERT(inert > 0.f && inert < 1.f); }
+    explicit SInertVal(f32 inert) : inertion{inert} { XR_ASSERT(inert > 0.0f && inert < 1.0f, "invalid inertion value", inert); }
     SInertVal& operator=(const SInertVal& v) = delete;
 
     IC void new_val(float new_val) { val = inertion * val + (1 - inertion) * new_val; }
 };
 
-IC float DET(const Fmatrix& a) { return ((a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) + a._13 * (a._21 * a._32 - a._22 * a._31))); }
+IC float DET(const Fmatrix& a)
+{
+    return ((a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) + a._13 * (a._21 * a._32 - a._22 * a._31)));
+}
 
 IC bool valid_pos(const Fvector& P, const Fbox& B)
 {
@@ -557,13 +569,8 @@ constexpr inline float DET_CHECK_EPS{0.15f}; // scale -35%  !? ;)
 #ifdef DEBUG
 #define VERIFY_RMATRIX(M) \
     { \
-        float d = DET(M); \
-        if (!fsimilar(d, 1.f, DET_CHECK_EPS)) \
-        { \
-            Log("matrix--- ", M); \
-            Log("determinant- ", d); \
-            VERIFY2(0, "Is not valid rotational matrix"); \
-        } \
+        if (const auto d = DET(M); !fsimilar(d, 1.0f, DET_CHECK_EPS)) \
+            PANIC("invalid rotational matrix", M, d); \
     } \
     XR_MACRO_END()
 #else

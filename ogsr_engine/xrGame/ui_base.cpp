@@ -62,11 +62,12 @@ sPoly2D* C2DFrustum::ClipPoly(sPoly2D& S, sPoly2D& D) const
         cls[src->size()] = cls[0];
         src->push_back((*src)[0]);
         Fvector2 dir_pt, dir_uv;
-        float denum, t;
+
         for (u32 j = 0; j < src->size() - 1; j++)
         {
             if ((*src)[j].pt.similar((*src)[j + 1].pt, EPS_S))
                 continue;
+
             if (negative(cls[j]))
             {
                 dest->push_back((*src)[j]);
@@ -75,13 +76,14 @@ sPoly2D* C2DFrustum::ClipPoly(sPoly2D& S, sPoly2D& D) const
                     // segment intersects plane
                     dir_pt.sub((*src)[j + 1].pt, (*src)[j].pt);
                     dir_uv.sub((*src)[j + 1].uv, (*src)[j].uv);
-                    denum = P.n.dotproduct(dir_pt);
-                    if (!fis_zero(denum))
+
+                    if (const auto denum = P.n.dotproduct(dir_pt); !fis_zero(denum))
                     {
-                        t = -cls[j] / denum; // VERIFY(t<=1.f && t>=0);
-                        dest->last().pt.mad((*src)[j].pt, dir_pt, t);
-                        dest->last().uv.mad((*src)[j].uv, dir_uv, t);
-                        dest->inc();
+                        auto& poly = dest->emplace_back();
+                        const auto t = -cls[j] / denum;
+
+                        poly.pt.mad((*src)[j].pt, dir_pt, t);
+                        poly.uv.mad((*src)[j].uv, dir_uv, t);
                     }
                 }
             }
@@ -94,13 +96,14 @@ sPoly2D* C2DFrustum::ClipPoly(sPoly2D& S, sPoly2D& D) const
                     // segment intersects plane
                     dir_pt.sub((*src)[j + 1].pt, (*src)[j].pt);
                     dir_uv.sub((*src)[j + 1].uv, (*src)[j].uv);
-                    denum = P.n.dotproduct(dir_pt);
-                    if (!fis_zero(denum))
+
+                    if (const auto denum = P.n.dotproduct(dir_pt); !fis_zero(denum))
                     {
-                        t = -cls[j] / denum; // VERIFY(t<=1.f && t>=0);
-                        dest->last().pt.mad((*src)[j].pt, dir_pt, t);
-                        dest->last().uv.mad((*src)[j].uv, dir_uv, t);
-                        dest->inc();
+                        auto& poly = dest->emplace_back();
+                        const auto t = -cls[j] / denum;
+
+                        poly.pt.mad((*src)[j].pt, dir_pt, t);
+                        poly.uv.mad((*src)[j].uv, dir_uv, t);
                     }
                 }
             }

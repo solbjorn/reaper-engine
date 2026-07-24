@@ -16,38 +16,28 @@ IC bool CDetailPathManager::failed() const { return (m_failed); }
 
 IC bool CDetailPathManager::completed(bool bRealCompleted) const
 {
-    return (m_path.empty() || ((bRealCompleted || !m_state_patrol_path) ? (curr_travel_point_index() == m_path.size() - 1) : curr_travel_point_index() >= m_last_patrol_point));
+    return (m_path.empty() ||
+            ((bRealCompleted || !m_state_patrol_path) ? (curr_travel_point_index() == m_path.size() - 1) : curr_travel_point_index() >= m_last_patrol_point));
 }
 
 IC const xr_vector<DetailPathManager::STravelPathPoint>& CDetailPathManager::path() const { return (m_path); }
 
 IC const DetailPathManager::STravelPathPoint& CDetailPathManager::curr_travel_point() const { return (m_path[curr_travel_point_index()]); }
 
-IC u32 CDetailPathManager::curr_travel_point_index() const
-{
-    VERIFY(!m_path.empty() && (m_current_travel_point < m_path.size()));
-    return (m_current_travel_point);
-}
+IC u32 CDetailPathManager::curr_travel_point_index() const { return XR_ASSERT_VAL(m_current_travel_point < m_path.size()); }
 
 IC void CDetailPathManager::set_start_position(const Fvector& start_position) { m_start_position = start_position; }
-
 IC void CDetailPathManager::set_start_direction(const Fvector& start_direction) { m_start_direction = start_direction; }
 
 IC void CDetailPathManager::set_dest_position(const Fvector& dest_position)
 {
-#ifdef DEBUG
-    if (!(!m_restricted_object || m_restricted_object->accessible(dest_position)))
-    {
-        LogStackTrace("error call stack");
-    }
-#endif // DEBUG
-    THROW2(!m_restricted_object || m_restricted_object->accessible(dest_position), "Old movement destination is not accessible after changing restrictions!");
+    XR_ASSERT(m_restricted_object == nullptr || m_restricted_object->accessible(dest_position), "new destination not accesible", dest_position);
 
-    bool value = !!m_dest_position.similar(dest_position, .1f);
-    if (!value)
+    const bool same = m_dest_position.similar(dest_position, 0.1f);
+    if (!same)
         m_corrected_dest_position = dest_position;
 
-    m_actuality = m_actuality && value;
+    m_actuality = m_actuality && same;
     m_dest_position = dest_position;
 }
 
@@ -58,11 +48,9 @@ IC void CDetailPathManager::set_dest_direction(const Fvector& dest_direction)
 }
 
 IC const Fvector& CDetailPathManager::start_position() const { return (m_start_position); }
-
 IC const Fvector& CDetailPathManager::start_direction() const { return (m_start_direction); }
 
 IC const Fvector& CDetailPathManager::dest_position() const { return (m_dest_position); }
-
 IC const Fvector& CDetailPathManager::dest_direction() const { return (m_dest_direction); }
 
 inline void CDetailPathManager::set_path_type(const DetailPathManager::EDetailPathType path_type)
@@ -73,8 +61,11 @@ inline void CDetailPathManager::set_path_type(const DetailPathManager::EDetailPa
 
 IC void CDetailPathManager::adjust_point(const Fvector2& source, float yaw, float magnitude, Fvector2& dest) const
 {
-    dest.x = -_sin(yaw);
-    dest.y = _cos(yaw);
+    f32 sin, cos;
+    DirectX::XMScalarSinCos(&sin, &cos, yaw);
+
+    dest.x = -sin;
+    dest.y = cos;
     dest.mad(source, dest, magnitude);
 }
 

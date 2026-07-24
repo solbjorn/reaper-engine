@@ -25,7 +25,7 @@ private:
 public:
     constexpr pvUVAdjustment_init()
     {
-        for (auto [idx, elem] : xr::views_enumerate(tbl))
+        for (auto [idx, elem] : std::views::enumerate(tbl))
         {
             gsl::index xbits{idx >> 7};
             gsl::index ybits{idx & pvBOTTOM_MASK};
@@ -88,13 +88,6 @@ u16 pvCompress(const Fvector& vec)
     float w = 126.0f / (tmp.x + tmp.y + tmp.z);
     int xbits = iFloor(tmp.x * w);
     int ybits = iFloor(tmp.y * w);
-
-    /*
-    VERIFY( xbits <  127 );
-    VERIFY( xbits >= 0   );
-    VERIFY( ybits <  127 );
-    VERIFY( ybits >= 0   );
-    */
 
     // Now we can be sure that 0<=xp<=126, 0<=yp<=126, 0<=xp+yp<=126
 

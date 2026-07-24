@@ -28,10 +28,9 @@ dxRainRender::dxRainRender()
     RainPerlin->SetOctaves(2);
     RainPerlin->SetAmplitude(0.66666f);
 
-    IReader* F = FS.r_open("$game_meshes$", "dm\\rain.dm");
-    ASSERT_FMT(F, "Can't open file [dm\\rain.dm]!");
-
-    DM_Drop = ::RImplementation.model_CreateDM(F);
+    static constexpr gsl::czstring path{"dm\\rain.dm"};
+    const auto F = XR_ASSERT_VAL(absl::WrapUnique(FS.r_open("$game_meshes$", path)), "rain model not found", path);
+    DM_Drop = ::RImplementation.model_CreateDM(F.get());
 
     SH_Rain.create("effects\\rain", "fx\\fx_rain");
     hGeom_Rain.create(FVF::F_LIT, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
@@ -39,8 +38,6 @@ dxRainRender::dxRainRender()
 
     if (RImplementation.o.ssfx_rain)
         SH_Splash.create("effects\\rain_splash", "fx\\fx_rain");
-
-    FS.r_close(F);
 }
 
 dxRainRender::~dxRainRender() { ::RImplementation.model_Delete(DM_Drop); }

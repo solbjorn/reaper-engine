@@ -58,13 +58,14 @@ string512 g_sBenchmarkName;
 static void InitSettings()
 {
     string_path fname;
+
     std::ignore = FS.update_path(fname, "$game_config$", "system.ltx");
     pSettings = xr_new<CInifile>(fname, true);
-    CHECK_OR_EXIT(!pSettings->sections().empty(), xr::format("Cannot find file {}.\nReinstalling application may fix this problem.", fname));
+    XR_ASSERT(!pSettings->sections().empty(), "can't find file", fname);
 
     std::ignore = FS.update_path(fname, "$game_config$", "game.ltx");
     pGameIni = xr_new<CInifile>(fname, true);
-    CHECK_OR_EXIT(!pGameIni->sections().empty(), xr::format("Cannot find file {}.\nReinstalling application may fix this problem.", fname));
+    XR_ASSERT(!pGameIni->sections().empty(), "can't find file", fname);
 
     IS_OGSR_GA = strstr(READ_IF_EXISTS(pSettings, r_string, "mod_ver", "mod_ver", "nullptr"), "OGSR");
 }
@@ -544,7 +545,7 @@ tmc::task<void> main_async(std::string_view cmdline, void* handle, std::atomic<x
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, char* lpCmdLine, int)
 {
     gModulesLoaded = true;
-    Debug._initialize();
+    xrDebug::_initialize();
 
     int ret = WinMain_impl(hInstance, lpCmdLine);
     ExitFromWinMain = true;
@@ -618,8 +619,7 @@ tmc::task<void> CApplication::OnEvent(CEvent* E, u64 P1, u64 P2)
         LPSTR op_server = LPSTR(P1);
         auto op_client = reinterpret_cast<gsl::zstring>(gsl::narrow_cast<uintptr_t>(P2)) ?: xr_strdup("localhost");
 
-        R_ASSERT(g_pGameLevel == nullptr);
-        R_ASSERT(g_pGamePersistent != nullptr);
+        XR_ASSERT(g_pGamePersistent != nullptr && g_pGameLevel == nullptr);
 
         co_await Device.execute_async("main_menu off");
         co_await Console->Hide();
@@ -651,8 +651,7 @@ tmc::task<void> CApplication::OnEvent(CEvent* E, u64 P1, u64 P2)
                 co_await Device.execute_async("main_menu on");
         }
 
-        R_ASSERT(g_pGamePersistent != nullptr);
-        co_await g_pGamePersistent->Disconnect();
+        co_await XR_ASSERT_VAL(g_pGamePersistent != nullptr)->Disconnect();
     }
 }
 
@@ -661,8 +660,7 @@ BOOL g_appLoaded = FALSE;
 
 void CApplication::LoadBegin()
 {
-    ll_dwReference++;
-    if (1 == ll_dwReference)
+    if (++ll_dwReference == 1)
     {
         g_appLoaded = FALSE;
 
@@ -719,8 +717,6 @@ void CApplication::LoadTitleInt() { loadingScreen->SetStageTip(); }
 
 tmc::task<void> CApplication::LoadStage()
 {
-    VERIFY(ll_dwReference);
-
     Msg("* phase time: {} ms", phase_timer.GetElapsed_ms());
     Msg("* phase cmem: {} K", Memory.mem_usage() / 1024);
 
@@ -764,10 +760,13 @@ void CApplication::Level_Append(LPCSTR folder)
 void CApplication::Level_Scan()
 {
     xr_vector<char*>* folder = FS.file_list_open("$game_levels$", FS_ListFolders | FS_RootOnly);
-    R_ASSERT(folder && folder->size());
+    XR_ASSERT(folder != nullptr && !folder->empty());
+
     for (u32 i = 0; i < folder->size(); i++)
         Level_Append((*folder)[i]);
+
     FS.file_list_close(folder);
+
 #ifdef DEBUG
     folder = FS.file_list_open("$game_levels$", "$debug$\\", FS_ListFolders | FS_RootOnly);
     if (folder)
@@ -852,7 +851,7 @@ gsl::index CApplication::Level_ID(gsl::czstring name) const
     char buffer[256];
     strconcat(sizeof(buffer), buffer, name, "\\");
 
-    for (auto [id, level] : xr::views_enumerate(Levels))
+    for (auto [id, level] : std::views::enumerate(Levels))
     {
         if (std::is_eq(xr::strcasecmp(buffer, level.folder)))
             return id;

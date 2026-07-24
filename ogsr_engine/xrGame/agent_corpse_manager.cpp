@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "agent_corpse_manager.h"
+
 #include "member_order.h"
 #include "ai/stalker/ai_stalker.h"
 #include "memory_manager.h"
@@ -36,30 +37,29 @@ struct CRemoveOfflineCorpsesPredicate
 bool CAgentCorpseManager::process_corpse(CMemberOrder& member)
 {
     float min_dist_sqr{std::numeric_limits<float>::max()};
-    CMemberCorpse* best_corpse{};
+    CMemberCorpse* best_corpse{nullptr};
 
-    xr_vector<CMemberCorpse>::iterator I = m_corpses.begin();
-    xr_vector<CMemberCorpse>::iterator E = m_corpses.end();
-    for (; I != E; ++I)
+    for (auto& corp : m_corpses)
     {
-        if (!member.object().memory().visual().visible_now((*I).corpse()))
+        if (!member.object().memory().visual().visible_now(corp.corpse()))
             continue;
 
-        float dist_sqr = (*I).corpse()->Position().distance_to_sqr(member.object().Position());
-        if (dist_sqr < min_dist_sqr)
+        if (const f32 dist_sqr = corp.corpse()->Position().distance_to_sqr(member.object().Position()); dist_sqr < min_dist_sqr)
         {
-            if ((*I).reactor() && ((*I).reactor()->Position().distance_to_sqr((*I).corpse()->Position()) <= min_dist_sqr))
+            if (corp.reactor() != nullptr && corp.reactor()->Position().distance_to_sqr(corp.corpse()->Position()) <= min_dist_sqr)
                 continue;
+
             min_dist_sqr = dist_sqr;
-            best_corpse = &*I;
+            best_corpse = &corp;
         }
     }
 
-    if (!best_corpse)
-        return (false);
+    if (best_corpse == nullptr)
+        return false;
 
     best_corpse->reactor(&member.object());
-    return (true);
+
+    return true;
 }
 
 void CAgentCorpseManager::react_on_member_death()

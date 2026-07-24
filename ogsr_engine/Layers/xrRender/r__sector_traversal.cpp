@@ -23,13 +23,13 @@ void CPortalTraverser::traverse(CSector* start, CFrustum& F, Fvector& vBase, Fma
         f_portals.reserve(16);
     }
 
-    R_ASSERT(start);
     i_marker++;
     i_options = options;
     i_vBase = vBase;
     i_mXFORM = mXFORM;
     i_mXFORM_01.mul(m_viewport_01, mXFORM);
-    i_start = start;
+    i_start = XR_ASSERT_VAL(start != nullptr);
+
     r_sectors.clear();
     _scissor scissor;
     scissor.set(0, 0, 1, 1);
@@ -38,7 +38,6 @@ void CPortalTraverser::traverse(CSector* start, CFrustum& F, Fvector& vBase, Fma
 
     if (options & VQ_SCISSOR)
     {
-        // dbg_sectors					= r_sectors;
         // merge scissor info
         for (u32 s = 0; s < r_sectors.size(); s++)
         {
@@ -218,11 +217,11 @@ void CPortalTraverser::traverse_sector(CSector* sector, CFrustum& F, _scissor& R
         }
 
         // Clip by frustum
-        CPortal::Poly& POLY = PORTAL->getPoly();
-        S.assign(POLY);
+        S.assign_range(PORTAL->getPoly());
         D.clear();
+
         sPoly* P = F.ClipPoly(S, D);
-        if (nullptr == P)
+        if (P == nullptr)
             continue;
 
         // Scissor and optimized HOM-testing

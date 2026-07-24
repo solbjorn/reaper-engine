@@ -8,7 +8,9 @@
 
 #pragma once
 
-IC CSightAction::CSightAction() : m_sight_type{SightManager::eSightTypeCurrentDirection}, m_torso_look{false}, m_path{false}, m_object_to_look{nullptr}, m_memory_object{nullptr} {}
+IC CSightAction::CSightAction()
+    : m_sight_type{SightManager::eSightTypeCurrentDirection}, m_torso_look{false}, m_path{false}, m_object_to_look{nullptr}, m_memory_object{nullptr}
+{}
 
 IC CSightAction::CSightAction(const ESightType& sight_type, bool torso_look, bool path)
     : m_sight_type{sight_type}, m_torso_look{torso_look}, m_path{path}, m_object_to_look{nullptr}, m_memory_object{nullptr}
@@ -19,8 +21,8 @@ IC CSightAction::CSightAction(const ESightType& sight_type, const Fvector& vecto
 {}
 
 IC CSightAction::CSightAction(const CGameObject* object_to_look, bool torso_look, bool fire_object, bool no_pitch)
-    : m_sight_type{fire_object ? SightManager::eSightTypeFireObject : SightManager::eSightTypeObject}, m_torso_look{torso_look}, m_path{false}, m_no_pitch{no_pitch},
-      m_object_to_look{object_to_look}, m_memory_object{nullptr}
+    : m_sight_type{fire_object ? SightManager::eSightTypeFireObject : SightManager::eSightTypeObject}, m_torso_look{torso_look}, m_path{false},
+      m_no_pitch{no_pitch}, m_object_to_look{object_to_look}, m_memory_object{nullptr}
 {}
 
 IC CSightAction::CSightAction(const CMemoryInfo* memory_object, bool torso_look)
@@ -60,12 +62,8 @@ IC bool CSightAction::operator==(const CSightAction& sight_action) const
     case SightManager::eSightTypeSearch: return ((m_path == sight_action.m_path) && (m_torso_look == sight_action.m_torso_look));
     case SightManager::eSightTypeCoverLookOver: return (m_time == sight_action.m_time);
     case SightManager::eSightTypeFireObject: return ((m_torso_look == sight_action.m_torso_look) && (m_object_to_look == sight_action.m_object_to_look));
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
-
-#ifdef DEBUG
-    return (true);
-#endif
 }
 
 IC void CSightAction::set_vector3d(const Fvector& vector3d) { m_vector3d = vector3d; }

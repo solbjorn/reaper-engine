@@ -56,7 +56,7 @@ void CLevelGraph::draw_nodes()
     F->SetHeightI(.02f);
     F->OutI(0.f, 0.5f, "{},{},{}", VPUSH(P));
 
-    svector<u32, 128> linked;
+    std::inplace_vector<u32, 128> linked;
     {
         const_iterator i, e;
         begin(ID, i, e);

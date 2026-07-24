@@ -18,9 +18,9 @@ static void ApplyTexgen(CBackend& cmd_list, const Fmatrix& mVP)
 
 void PS::OnEffectParticleBirth(void* owner, u32, PAPI::Particle& m, u32)
 {
-    CParticleEffect* PE = static_cast<CParticleEffect*>(owner);
-    VERIFY(PE);
+    auto PE = static_cast<CParticleEffect*>(XR_ASSERT_VAL(owner != nullptr));
     CPEDef* PED = PE->GetDefinition();
+
     if (PED)
     {
         if (PED->m_Flags.is(CPEDef::dfRandomFrame))
@@ -29,20 +29,17 @@ void PS::OnEffectParticleBirth(void* owner, u32, PAPI::Particle& m, u32)
             m.flags.set(Particle::ANIMATE_CCW, TRUE);
     }
 }
-void PS::OnEffectParticleDead(void*, u32, PAPI::Particle&, u32)
-{
-    //	CPEDef* PE = static_cast<CPEDef*>(owner);
-}
+
+void PS::OnEffectParticleDead(void*, u32, PAPI::Particle&, u32) {}
+
 //------------------------------------------------------------------------------
 // class CParticleEffect
 //------------------------------------------------------------------------------
 
 CParticleEffect::CParticleEffect()
 {
-    m_HandleEffect = ParticleManager()->CreateEffect(1);
-    VERIFY(m_HandleEffect >= 0);
-    m_HandleActionList = ParticleManager()->CreateActionList();
-    VERIFY(m_HandleActionList >= 0);
+    m_HandleEffect = XR_ASSERT_VAL(ParticleManager()->CreateEffect(1) >= 0);
+    m_HandleActionList = XR_ASSERT_VAL(ParticleManager()->CreateActionList() >= 0);
     m_RT_Flags.zero();
     m_Def = nullptr;
     m_fElapsedLimit = 0.f;
@@ -56,6 +53,7 @@ CParticleEffect::CParticleEffect()
 CParticleEffect::~CParticleEffect()
 {
     OnDeviceDestroy();
+
     ParticleManager()->DestroyEffect(m_HandleEffect);
     ParticleManager()->DestroyActionList(m_HandleActionList);
 }
@@ -64,20 +62,18 @@ void CParticleEffect::Play()
 {
     m_RT_Flags.set(flRT_DefferedStop, FALSE);
     m_RT_Flags.set(flRT_Playing, TRUE);
+
     ParticleManager()->PlayEffect(m_HandleActionList);
 }
 
 void CParticleEffect::Stop(BOOL bDefferedStop)
 {
     ParticleManager()->StopEffect(m_HandleEffect, m_HandleActionList, bDefferedStop);
+
     if (bDefferedStop)
-    {
         m_RT_Flags.set(flRT_DefferedStop, TRUE);
-    }
     else
-    {
         m_RT_Flags.set(flRT_Playing, FALSE);
-    }
 }
 
 void CParticleEffect::RefreshShader()
@@ -213,7 +209,8 @@ u32 CParticleEffect::ParticlesCount() { return ParticleManager()->GetParticlesCo
 //------------------------------------------------------------------------------
 // Render
 //------------------------------------------------------------------------------
-void CParticleEffect::Copy(dxRender_Visual*) { FATAL("Can't duplicate particle system - NOT IMPLEMENTED"); }
+
+void CParticleEffect::Copy(dxRender_Visual*) { XR_PANIC("can't duplicate particle system - NOT IMPLEMENTED"); }
 
 void CParticleEffect::OnDeviceCreate()
 {

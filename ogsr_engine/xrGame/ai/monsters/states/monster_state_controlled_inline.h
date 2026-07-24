@@ -32,7 +32,7 @@ void CStateMonsterControlledAbstract::execute()
             select_state(eStateControlled_Attack);
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     get_state_current()->execute();

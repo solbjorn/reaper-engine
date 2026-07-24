@@ -332,21 +332,21 @@ Fvector CScriptGameObject::bone_position(LPCSTR bone_name) const
     if (!k)
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "IKinematics : cannot call bone_position!");
-        return Fvector();
+        return Fvector{};
     }
 
     u16 bone_id;
-
-    if (xr_strlen(bone_name))
+    if (bone_name != nullptr && bone_name[0] != '\0')
         bone_id = k->LL_BoneID(bone_name);
     else
         bone_id = k->LL_GetBoneRoot();
 
-    ASSERT_FMT_DBG(bone_id != BI_NONE, "model doesn't have bone [{}] for section [{}]", bone_name, object().cNameSect());
+    XR_ASSERT(bone_id != BI_NONE, "model doesn't have bone", object().cNameSect(), bone_name);
 
     Fmatrix matrix;
     matrix.mul_43(object().XFORM(), k->LL_GetBoneInstance(bone_id).mTransform);
-    return (matrix.c);
+
+    return matrix.c;
 }
 
 //////////////////////////////////////////////////////////////////////////

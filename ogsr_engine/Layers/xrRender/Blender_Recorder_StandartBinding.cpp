@@ -15,8 +15,12 @@ namespace
 #define BIND_DECLARE(xf) \
     class cl_xform_##xf final : public R_constant_setup \
     { \
+        RTTI_DECLARE_TYPEINFO(cl_xform_##xf, R_constant_setup); \
+\
+    public: \
         void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.xforms.set_c_##xf(C); } \
     } binder_##xf
+
 BIND_DECLARE(w);
 BIND_DECLARE(v);
 BIND_DECLARE(p);
@@ -27,8 +31,12 @@ BIND_DECLARE(wvp);
 #define DECLARE_TREE_BIND(c) \
     class cl_tree_##c final : public R_constant_setup \
     { \
+        RTTI_DECLARE_TYPEINFO(cl_tree_##c, R_constant_setup); \
+\
+    public: \
         void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.tree.set_c_##c(C); } \
     } tree_binder_##c
+
 DECLARE_TREE_BIND(m_xform_v);
 DECLARE_TREE_BIND(m_xform);
 DECLARE_TREE_BIND(consts);
@@ -40,16 +48,25 @@ DECLARE_TREE_BIND(c_sun);
 
 class cl_hemi_cube_pos_faces final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(cl_hemi_cube_pos_faces, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.hemi.set_c_pos_faces(C); }
 } binder_hemi_cube_pos_faces;
 
 class cl_hemi_cube_neg_faces final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(cl_hemi_cube_neg_faces, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.hemi.set_c_neg_faces(C); }
 } binder_hemi_cube_neg_faces;
 
 class cl_material final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(cl_material, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.hemi.set_c_material(C); }
 } binder_material;
 
@@ -57,6 +74,9 @@ constexpr Fmatrix mTexelAdjust{0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 
 
 class cl_texgen final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(cl_texgen, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         Fmatrix mTexgen;
@@ -68,6 +88,9 @@ class cl_texgen final : public R_constant_setup
 
 class cl_VPtexgen final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(cl_VPtexgen, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         Fmatrix mTexgen;
@@ -80,7 +103,9 @@ class cl_VPtexgen final : public R_constant_setup
 // fog
 class cl_fog_plane final : public R_constant_setup
 {
-    Fvector4 result;
+    RTTI_DECLARE_TYPEINFO(cl_fog_plane, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         // Plane
@@ -93,7 +118,8 @@ class cl_fog_plane final : public R_constant_setup
         // Near/Far
         float A = g_pGamePersistent->Environment().CurrentEnv->fog_near;
         float B = 1 / (g_pGamePersistent->Environment().CurrentEnv->fog_far - A);
-        result.set(-plane.x * B, -plane.y * B, -plane.z * B, 1 - (plane.w - A) * B); // view-plane
+        // view-plane
+        const Fvector4 result{-plane.x * B, -plane.y * B, -plane.z * B, 1.0f - (plane.w - A) * B};
 
         cmd_list.set_c(C, result);
     }
@@ -102,14 +128,16 @@ class cl_fog_plane final : public R_constant_setup
 // fog-params
 class cl_fog_params final : public R_constant_setup
 {
-    Fvector4 result;
+    RTTI_DECLARE_TYPEINFO(cl_fog_params, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         // Near/Far
         float n = g_pGamePersistent->Environment().CurrentEnv->fog_near;
         float f = g_pGamePersistent->Environment().CurrentEnv->fog_far;
-        float r = 1 / (f - n);
-        result.set(-n * r, n, f, r);
+        float r = 1.0f / (f - n);
+        const Fvector4 result{-n * r, n, f, r};
 
         cmd_list.set_c(C, result);
     }
@@ -118,11 +146,13 @@ class cl_fog_params final : public R_constant_setup
 // fog-color
 class cl_fog_color final : public R_constant_setup
 {
-    Fvector4 result;
+    RTTI_DECLARE_TYPEINFO(cl_fog_color, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
-        result.set(desc.fog_color, desc.fog_density);
+        const Fvector4 result{desc.fog_color.x, desc.fog_color.y, desc.fog_color.z, desc.fog_density};
 
         cmd_list.set_c(C, result);
     }
@@ -130,11 +160,13 @@ class cl_fog_color final : public R_constant_setup
 
 class cl_wind_params final : public R_constant_setup
 {
-    Fvector4 result;
+    RTTI_DECLARE_TYPEINFO(cl_wind_params, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         CEnvDescriptor& E = *g_pGamePersistent->Environment().CurrentEnv;
-        result.set(E.wind_direction, E.wind_velocity, E.m_fTreeAmplitudeIntensity, 0.0f);
+        const Fvector4 result{E.wind_direction, E.wind_velocity, E.m_fTreeAmplitudeIntensity, 0.0f};
 
         cmd_list.set_c(C, result);
     }
@@ -143,6 +175,9 @@ class cl_wind_params final : public R_constant_setup
 // times
 class cl_times final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(cl_times, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         float t = Device.fTimeGlobal;
@@ -153,6 +188,9 @@ class cl_times final : public R_constant_setup
 // eye-params
 class cl_eye_P final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(cl_eye_P, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         Fvector& V = Device.vCameraPosition;
@@ -163,6 +201,9 @@ class cl_eye_P final : public R_constant_setup
 // eye-params
 class cl_eye_D final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(cl_eye_D, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         Fvector& V = Device.vCameraDirection;
@@ -173,6 +214,9 @@ class cl_eye_D final : public R_constant_setup
 // eye-params
 class cl_eye_N final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(cl_eye_N, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         Fvector& V = Device.vCameraTop;
@@ -183,11 +227,13 @@ class cl_eye_N final : public R_constant_setup
 // D-Light0
 class cl_sun0_color final : public R_constant_setup
 {
-    Fvector4 result;
+    RTTI_DECLARE_TYPEINFO(cl_sun0_color, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
-        result.set(desc.sun_color, 0);
+        const Fvector4 result{desc.sun_color.x, desc.sun_color.y, desc.sun_color.z, 0.0f};
 
         cmd_list.set_c(C, result);
     }
@@ -195,11 +241,13 @@ class cl_sun0_color final : public R_constant_setup
 
 class cl_sun0_dir_w final : public R_constant_setup
 {
-    Fvector4 result;
+    RTTI_DECLARE_TYPEINFO(cl_sun0_dir_w, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
-        result.set(desc.sun_dir, 0);
+        const Fvector4 result{desc.sun_dir.x, desc.sun_dir.y, desc.sun_dir.z, 0.0f};
 
         cmd_list.set_c(C, result);
     }
@@ -207,14 +255,16 @@ class cl_sun0_dir_w final : public R_constant_setup
 
 class cl_sun0_dir_e final : public R_constant_setup
 {
-    Fvector4 result;
+    RTTI_DECLARE_TYPEINFO(cl_sun0_dir_e, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         Fvector D;
         CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
         cmd_list.xforms.m_v.transform_dir(D, desc.sun_dir);
         D.normalize();
-        result.set(D, 0);
+        const Fvector4 result{D.x, D.y, D.z, 0.0f};
 
         cmd_list.set_c(C, result);
     }
@@ -222,11 +272,13 @@ class cl_sun0_dir_e final : public R_constant_setup
 
 class cl_amb_color final : public R_constant_setup
 {
-    Fvector4 result;
+    RTTI_DECLARE_TYPEINFO(cl_amb_color, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         CEnvDescriptorMixer& desc = *g_pGamePersistent->Environment().CurrentEnv;
-        result.set(desc.ambient, desc.weight);
+        const Fvector4 result{desc.ambient.x, desc.ambient.y, desc.ambient.z, desc.weight};
 
         cmd_list.set_c(C, result);
     }
@@ -234,6 +286,9 @@ class cl_amb_color final : public R_constant_setup
 
 class cl_hemi_color final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(cl_hemi_color, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
@@ -243,17 +298,23 @@ class cl_hemi_color final : public R_constant_setup
 
 class cl_sky_color final : public R_constant_setup
 {
-    Fvector4 result{};
+    RTTI_DECLARE_TYPEINFO(cl_sky_color, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
-        auto* desc = g_pGamePersistent->Environment().CurrentEnv;
-        result.set(desc->sky_color, desc->sky_rotation);
+        auto& desc = *g_pGamePersistent->Environment().CurrentEnv;
+        const Fvector4 result{desc.sky_color.x, desc.sky_color.y, desc.sky_color.z, desc.sky_rotation};
+
         cmd_list.set_c(C, result);
     }
 } binder_sky_color;
 
 class cl_screen_res final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(cl_screen_res, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         cmd_list.set_c(C, (float)Device.dwWidth, (float)Device.dwHeight, 1.0f / (float)Device.dwWidth, 1.0f / (float)Device.dwHeight);
@@ -262,117 +323,119 @@ class cl_screen_res final : public R_constant_setup
 
 class cl_screen_params final : public R_constant_setup
 {
-    Fvector4 result;
+    RTTI_DECLARE_TYPEINFO(cl_screen_params, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
-        result.set(Device.fFOV, Device.fASPECT, tan(deg2rad(Device.fFOV) / 2), g_pGamePersistent->Environment().CurrentEnv->far_plane * 0.75f);
-
+        const Fvector4 result{Device.fFOV, Device.fASPECT, tan(deg2rad(Device.fFOV) / 2.0f), g_pGamePersistent->Environment().CurrentEnv->far_plane * 0.75f};
         cmd_list.set_c(C, result);
     }
 } binder_screen_params;
 
 class cl_hud_params final : public R_constant_setup //--#SM+#--
 {
+    RTTI_DECLARE_TYPEINFO(cl_hud_params, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, g_pGamePersistent->m_pGShaderConstants.hud_params); }
 } binder_hud_params;
 
 class cl_script_params final : public R_constant_setup //--#SM+#--
 {
+    RTTI_DECLARE_TYPEINFO(cl_script_params, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, g_pGamePersistent->m_pGShaderConstants.m_script_params); }
 } binder_script_params;
 
 class cl_blend_mode final : public R_constant_setup //--#SM+#--
 {
+    RTTI_DECLARE_TYPEINFO(cl_blend_mode, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, g_pGamePersistent->m_pGShaderConstants.m_blender_mode); }
 } binder_blend_mode;
 
 class cl_rain_params final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(cl_rain_params, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         cmd_list.set_c(C, g_pGamePersistent->Environment().CurrentEnv->rain_density, g_pGamePersistent->Environment().wetness_factor, 0.0f, 0.0f);
     }
 } binder_rain_params;
 
+template <std::size_t start_val>
 class cl_artifacts final : public R_constant_setup
 {
-    Fmatrix result{};
+    RTTI_DECLARE_TYPEINFO(cl_artifacts<start_val>, R_constant_setup);
 
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
-        result._11 = shader_exports.get_artefact_position(start_val).x;
-        result._12 = shader_exports.get_artefact_position(start_val).y;
-        result._13 = shader_exports.get_artefact_position(start_val + 1).x;
-        result._14 = shader_exports.get_artefact_position(start_val + 1).y;
-        result._21 = shader_exports.get_artefact_position(start_val + 2).x;
-        result._22 = shader_exports.get_artefact_position(start_val + 2).y;
-        result._23 = shader_exports.get_artefact_position(start_val + 3).x;
-        result._24 = shader_exports.get_artefact_position(start_val + 3).y;
-        result._31 = shader_exports.get_artefact_position(start_val + 4).x;
-        result._32 = shader_exports.get_artefact_position(start_val + 4).y;
-        result._33 = shader_exports.get_artefact_position(start_val + 5).x;
-        result._34 = shader_exports.get_artefact_position(start_val + 5).y;
-        result._41 = shader_exports.get_artefact_position(start_val + 6).x;
-        result._42 = shader_exports.get_artefact_position(start_val + 6).y;
-        result._43 = shader_exports.get_artefact_position(start_val + 7).x;
-        result._44 = shader_exports.get_artefact_position(start_val + 7).y;
+        const Fmatrix result{shader_exports.get_artefact_position(start_val).x,     shader_exports.get_artefact_position(start_val).y,
+                             shader_exports.get_artefact_position(start_val + 1).x, shader_exports.get_artefact_position(start_val + 1).y,
+                             shader_exports.get_artefact_position(start_val + 2).x, shader_exports.get_artefact_position(start_val + 2).y,
+                             shader_exports.get_artefact_position(start_val + 3).x, shader_exports.get_artefact_position(start_val + 3).y,
+                             shader_exports.get_artefact_position(start_val + 4).x, shader_exports.get_artefact_position(start_val + 4).y,
+                             shader_exports.get_artefact_position(start_val + 5).x, shader_exports.get_artefact_position(start_val + 5).y,
+                             shader_exports.get_artefact_position(start_val + 6).x, shader_exports.get_artefact_position(start_val + 6).y,
+                             shader_exports.get_artefact_position(start_val + 7).x, shader_exports.get_artefact_position(start_val + 7).y};
 
         cmd_list.set_c(C, result);
     }
+};
 
-    u32 start_val;
+cl_artifacts<0> binder_artifacts;
+cl_artifacts<8> binder_artifacts2;
+cl_artifacts<16> binder_artifacts3;
 
-public:
-    cl_artifacts() = delete;
-    cl_artifacts(u32 v) : start_val(v) {}
-} binder_artifacts{0}, binder_artifacts2{8}, binder_artifacts3{16};
-
+template <std::size_t start_val>
 class cl_anomalys final : public R_constant_setup
 {
-    Fmatrix result{};
+    RTTI_DECLARE_TYPEINFO(cl_anomalys<start_val>, R_constant_setup);
 
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
-        result._11 = shader_exports.get_anomaly_position(start_val).x;
-        result._12 = shader_exports.get_anomaly_position(start_val).y;
-        result._13 = shader_exports.get_anomaly_position(start_val + 1).x;
-        result._14 = shader_exports.get_anomaly_position(start_val + 1).y;
-        result._21 = shader_exports.get_anomaly_position(start_val + 2).x;
-        result._22 = shader_exports.get_anomaly_position(start_val + 2).y;
-        result._23 = shader_exports.get_anomaly_position(start_val + 3).x;
-        result._24 = shader_exports.get_anomaly_position(start_val + 3).y;
-        result._31 = shader_exports.get_anomaly_position(start_val + 4).x;
-        result._32 = shader_exports.get_anomaly_position(start_val + 4).y;
-        result._33 = shader_exports.get_anomaly_position(start_val + 5).x;
-        result._34 = shader_exports.get_anomaly_position(start_val + 5).y;
-        result._41 = shader_exports.get_anomaly_position(start_val + 6).x;
-        result._42 = shader_exports.get_anomaly_position(start_val + 6).y;
-        result._43 = shader_exports.get_anomaly_position(start_val + 7).x;
-        result._44 = shader_exports.get_anomaly_position(start_val + 7).y;
+        const Fmatrix result{shader_exports.get_anomaly_position(start_val).x,     shader_exports.get_anomaly_position(start_val).y,
+                             shader_exports.get_anomaly_position(start_val + 1).x, shader_exports.get_anomaly_position(start_val + 1).y,
+                             shader_exports.get_anomaly_position(start_val + 2).x, shader_exports.get_anomaly_position(start_val + 2).y,
+                             shader_exports.get_anomaly_position(start_val + 3).x, shader_exports.get_anomaly_position(start_val + 3).y,
+                             shader_exports.get_anomaly_position(start_val + 4).x, shader_exports.get_anomaly_position(start_val + 4).y,
+                             shader_exports.get_anomaly_position(start_val + 5).x, shader_exports.get_anomaly_position(start_val + 5).y,
+                             shader_exports.get_anomaly_position(start_val + 6).x, shader_exports.get_anomaly_position(start_val + 6).y,
+                             shader_exports.get_anomaly_position(start_val + 7).x, shader_exports.get_anomaly_position(start_val + 7).y};
 
         cmd_list.set_c(C, result);
     }
+};
 
-    u32 start_val;
-
-public:
-    cl_anomalys() = delete;
-    cl_anomalys(u32 v) : start_val(v) {}
-} binder_anomalys{0}, binder_anomalys2{8}, binder_anomalys3{16};
+cl_anomalys<0> binder_anomalys;
+cl_anomalys<8> binder_anomalys2;
+cl_anomalys<16> binder_anomalys3;
 
 class cl_detector final : public R_constant_setup
 {
-    Fvector4 result;
+    RTTI_DECLARE_TYPEINFO(cl_detector, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
-        result.set((float)(shader_exports.get_detector_params().x), (float)(shader_exports.get_detector_params().y), 0.f, 0.f);
-
+        const Fvector4 result{gsl::narrow_cast<f32>(shader_exports.get_detector_params().x), gsl::narrow_cast<f32>(shader_exports.get_detector_params().y),
+                              0.0f, 0.0f};
         cmd_list.set_c(C, result);
     }
 } binder_detector;
 
 class cl_ogsr_game_time final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(cl_ogsr_game_time, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         u32 hours{0}, mins{0}, secs{0}, milisecs{0};
@@ -384,20 +447,29 @@ class cl_ogsr_game_time final : public R_constant_setup
 
 class cl_inv_v final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(cl_inv_v, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, cmd_list.xforms.m_invv); }
 } binder_inv_v;
 
 class cl_pda_params final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(cl_pda_params, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         const auto& P = shader_exports.get_pda_params();
-        cmd_list.set_c(C, P.x, P.y, 0.f, P.z);
+        cmd_list.set_c(C, P.x, P.y, 0.0f, P.z);
     }
 } binder_pda_params;
 
 class cl_actor_params final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(cl_actor_params, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         const auto& P = shader_exports.get_actor_params();
@@ -427,151 +499,241 @@ namespace
 {
 class ssfx_wpn_dof_1 final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_wpn_dof_1, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_wpn_dof_1); }
 } ssfx_wpn_dof_1;
 
 class ssfx_wpn_dof_2 final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_wpn_dof_2, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_wpn_dof_2, 0.f, 0.f, 0.f); }
 } ssfx_wpn_dof_2;
 
 class ssfx_blood_decals final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_blood_decals, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_blood_decals); }
 } ssfx_blood_decals;
 
 class ssfx_hud_drops_1 final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_hud_drops_1, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_hud_drops_1); }
 } ssfx_hud_drops_1;
 
 class ssfx_hud_drops_2 final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_hud_drops_2, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_hud_drops_2); }
 } ssfx_hud_drops_2;
 
 class ssfx_lightsetup_1 final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_lightsetup_1, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_lightsetup_1); }
 } ssfx_lightsetup_1;
 
 class ssfx_is_underground final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_is_underground, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_is_underground ? 1.f : 0.f, 0.f, 0.f, 0.f); }
 } ssfx_is_underground;
 
 class ssfx_wetsurfaces_1 final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_wetsurfaces_1, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_wetsurfaces_1); }
 } ssfx_wetsurfaces_1;
 
 class ssfx_wetsurfaces_2 final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_wetsurfaces_2, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_wetsurfaces_2); }
 } ssfx_wetsurfaces_2;
 
 class ssfx_gloss final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_gloss, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_gloss_minmax.x, ps_ssfx_gloss_minmax.y, ps_ssfx_gloss_factor, 0.f); }
 } ssfx_gloss;
 
 class ssfx_florafixes_1 final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_florafixes_1, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_florafixes_1); }
 } ssfx_florafixes_1;
 
 class ssfx_florafixes_2 final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_florafixes_2, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_florafixes_2); }
 } ssfx_florafixes_2;
 
 class ssfx_wind_grass final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_wind_grass, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_wind_grass); }
 } ssfx_wind_grass;
 
 class ssfx_wind_trees final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_wind_trees, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_wind_trees); }
 } ssfx_wind_trees;
 
 class ssfx_wind_anim final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_wind_anim, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, g_pGamePersistent->Environment().wind_anim); }
 } ssfx_wind_anim;
 
 class ssfx_lut final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_lut, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_lut); }
 } ssfx_lut;
 
 class ssfx_shadow_bias final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_shadow_bias, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_shadow_bias.x, ps_ssfx_shadow_bias.y, 0.f, 0.f); }
 } ssfx_shadow_bias;
 
 class ssfx_terrain_offset final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_terrain_offset, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_terrain_offset); }
 } ssfx_terrain_offset;
 
 class ssfx_ssr_2 final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_ssr_2, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_ssr_2); }
 } ssfx_ssr_2;
 
 class ssfx_volumetric : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_volumetric, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_volumetric); }
 } ssfx_volumetric;
 
 class ssfx_water final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_water, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_water); }
 } ssfx_water;
 
 class ssfx_water_setup1 final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_water_setup1, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_water_setup1); }
 } ssfx_water_setup1;
 
 class ssfx_water_setup2 final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_water_setup2, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_water_setup2); }
 } ssfx_water_setup2;
 
 class ssfx_ao final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_ao, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_ao); }
 } ssfx_ao;
 
 class ssfx_ao_setup1 final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_ao_setup1, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_ao_setup1); }
 } ssfx_ao_setup1;
 
 class ssfx_il final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_il, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_il); }
 } ssfx_il;
 
 class ssfx_il_setup1 final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_il_setup1, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_il_setup1); }
 } ssfx_il_setup1;
 
 class ssfx_hud_hemi final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_hud_hemi, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_hud_hemi, 0.f, 0.f, 0.f); }
 } ssfx_hud_hemi;
 
 class ssfx_issvp final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_issvp, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, Device.m_SecondViewport.IsSVPFrame() ? 1.f : 0.f, 0.f, 0.f, 0.f); }
 } ssfx_issvp;
 
 class ssfx_bloom_1 final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_bloom_1, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         Fvector4 BloomSetup;
@@ -586,61 +748,97 @@ class ssfx_bloom_1 final : public R_constant_setup
 
 class ssfx_bloom_2 final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_bloom_2, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_bloom_2); }
 } ssfx_bloom_2;
 
 class ssfx_terrain_pom final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_terrain_pom, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_terrain_pom); }
 } ssfx_terrain_pom;
 
 class ssfx_pom final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(ssfx_pom, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_pom); }
 } ssfx_pom;
 
 class r__color_gamma final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(r__color_gamma, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_r__color_gamma); }
 } r__color_gamma;
 
 class r__color_slope final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(r__color_slope, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_r__color_slope); }
 } r__color_slope;
 
 class r__color_offset final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(r__color_offset, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_r__color_offset); }
 } r__color_offset;
 
 class r__color_power final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(r__color_power, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_r__color_power); }
 } r__color_power;
 
 class r__color_saturation final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(r__color_saturation, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_r__color_saturation); }
 } r__color_saturation;
 
 class r__color_contrast final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(r__color_contrast, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_r__color_contrast); }
 } r__color_contrast;
 
 class r__color_red final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(r__color_red, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_r__color_red); }
 } r__color_red;
 
 class r__color_green final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(r__color_green, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_r__color_green); }
 } r__color_green;
 
 class r__color_blue final : public R_constant_setup
 {
+    RTTI_DECLARE_TYPEINFO(r__color_blue, R_constant_setup);
+
+public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_r__color_blue); }
 } r__color_blue;
 } // namespace

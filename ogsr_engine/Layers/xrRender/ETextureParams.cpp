@@ -4,8 +4,9 @@
 
 void STextureParams::Load(IReader& F, const char* dbg_name)
 {
-    R_ASSERT(F.find_chunk_thm(THM_CHUNK_TEXTUREPARAM, dbg_name));
-    F.r(&fmt, sizeof(ETFormat));
+    XR_ASSERT(F.find_chunk_thm(THM_CHUNK_TEXTUREPARAM, dbg_name) > 0, "", dbg_name);
+
+    F.r(&fmt, sizeof(fmt));
     flags.assign(F.r_u32());
     border_color = F.r_u32();
     fade_color = F.r_u32();

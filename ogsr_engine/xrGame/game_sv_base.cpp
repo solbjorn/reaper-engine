@@ -174,8 +174,8 @@ tmc::task<void> game_sv_GameState::Create(shared_str&) { co_return; }
 
 void game_sv_GameState::u_EventGen(NET_Packet& P, u16 type, u16 dest)
 {
-    P.w_begin(M_EVENT);
-    P.w_u32(Level().timeServer()); // Device.TimerAsync());
+    P.w_begin(gsl::narrow<u16>(xr::msg::M_EVENT));
+    P.w_u32(Level().timeServer());
     P.w_u16(type);
     P.w_u16(dest);
 }
@@ -241,7 +241,7 @@ void game_sv_GameState::OnEvent(NET_Packet& tNetPacket, u16 type, u32, ClientID 
         m_server->OnBuildVersionRespond(CL, tNetPacket);
     }
     break;
-    default: FATAL("Game Event %u not implemented!!!", type);
+    default: XR_PANIC("invalid game event type", type, sender);
     }
 }
 

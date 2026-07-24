@@ -311,14 +311,13 @@ void CCar::RestoreNetState(CSE_PHSkeleton* /*po*/)
     if (!se_obj)
         return;
 
-    auto po = smart_cast<CSE_PHSkeleton*>(se_obj);
-    ASSERT_FMT(po, "[%s]: %s is not CSE_PHSkeleton", std::source_location::current().function_name(), obj->Name_script());
+    auto po = XR_ASSERT_VAL(smart_cast<CSE_PHSkeleton*>(se_obj) != nullptr, "server object doesn't have a skeleton", obj->Name_script());
     if (!po->_flags.test(CSE_PHSkeleton::flSavedData))
         return;
+
     CPHSkeleton::RestoreNetState(po);
 
-    CSE_ALifeCar* co = smart_cast<CSE_ALifeCar*>(se_obj);
-    ASSERT_FMT(co, "[%s]: %s is not CSE_ALifeCar", std::source_location::current().function_name(), obj->Name_script());
+    auto co = XR_ASSERT_VAL(smart_cast<CSE_ALifeCar*>(se_obj) != nullptr, "server object is not a car", obj->Name_script());
     if (co->door_states.size() == m_doors.size())
     {
         /* восстановление состояния дверей отключено, пусть в дефолтном состоянии
@@ -1986,7 +1985,7 @@ tmc::task<void> CCar::ASCUpdate(EAsyncCalls c)
     case ascSndTransmission: m_car_sound->TransmissionSwitch(); break;
     case ascSndStall: co_await m_car_sound->Stop(); break;
     case ascExhoustStop: StopExhausts(); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 
@@ -2031,10 +2030,9 @@ void CCar::SyncNetState()
     if (!se_obj)
         return;
 
-    auto co = smart_cast<CSE_ALifeCar*>(se_obj);
-    ASSERT_FMT(co, "[%s]: %s is not CSE_ALifeCar", std::source_location::current().function_name(), obj->Name_script());
-
+    auto co = XR_ASSERT_VAL(smart_cast<CSE_ALifeCar*>(se_obj) != nullptr, "server object is not a car", obj->Name_script());
     co->o_Position = Position();
+
     Fvector Angle;
     XFORM().getXYZ(Angle);
     co->o_Angle = Angle;

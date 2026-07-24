@@ -17,17 +17,6 @@
 #include "Explosive.h"
 #include "sound_player.h"
 
-class CMemberPredicate2
-{
-protected:
-    ALife::_OBJECT_ID m_object_id;
-
-public:
-    IC CMemberPredicate2(const ALife::_OBJECT_ID& object_id) { m_object_id = object_id; }
-
-    IC bool operator()(const CMemberOrder* order) const { return (order->object().ID() == m_object_id); }
-};
-
 CAgentMemberManager::~CAgentMemberManager() { delete_data(m_members); }
 
 void CAgentMemberManager::add(CEntity* member)
@@ -36,11 +25,10 @@ void CAgentMemberManager::add(CEntity* member)
     if (!stalker || !stalker->g_Alive())
         return;
 
-    ASSERT_FMT(sizeof(squad_mask_type) * 8 > members().size(), "[%s]: too many stalkers in group [team:%d][squad:%d][group:%d]!",
-               std::source_location::current().function_name(), m_members.front()->object().g_Team(), m_members.front()->object().g_Squad(),
-               m_members.front()->object().g_Group());
+    XR_ASSERT(members().size() <= sizeof(squad_mask_type) * 8, "too many stalkers in group", m_members.front()->object().g_Group(),
+              m_members.front()->object().g_Team(), m_members.front()->object().g_Squad());
+    XR_DEBUG_ASSERT(std::find_if(m_members.begin(), m_members.end(), CMemberPredicate(stalker)) == m_members.end());
 
-    VERIFY(std::find_if(m_members.begin(), m_members.end(), CMemberPredicate(stalker)) == m_members.end());
     m_members.push_back(xr_new<CMemberOrder>(stalker));
 }
 
@@ -91,19 +79,6 @@ void CAgentMemberManager::remove_links(CObject* object)
 
 void CAgentMemberManager::register_in_combat(const CAI_Stalker* object)
 {
-    //	if (!object->group_behaviour())
-    //		return;
-
-#if 0 // def DEBUG
-	Msg							(
-		"%6d registering stalker %s in combat: 0x%08x -> 0x%08x",
-		Device.dwTimeGlobal,
-		*object->cName(),
-		m_combat_mask,
-		m_combat_mask | mask(object)
-	);
-#endif // DEBUG
-
     squad_mask_type m = mask(object);
     m_actuality = m_actuality && ((m_combat_mask | m) == m_combat_mask);
     m_combat_mask |= m;
@@ -111,21 +86,6 @@ void CAgentMemberManager::register_in_combat(const CAI_Stalker* object)
 
 void CAgentMemberManager::unregister_in_combat(const CAI_Stalker* object)
 {
-    //	if (!object->group_behaviour()) {
-    //		VERIFY					(!registered_in_combat(object));
-    //		return;
-    //	}
-
-#if 0 // def DEBUG
-	Msg							(
-		"%6d UNregistering stalker %s in combat: 0x%08x -> 0x%08x",
-		Device.dwTimeGlobal,
-		*object->cName(),
-		m_combat_mask,
-		(m_combat_mask & (squad_mask_type(-1) ^ mask(object)))
-	);
-#endif // DEBUG
-
     squad_mask_type m = mask(object);
     m_actuality = m_actuality && ((m_combat_mask & (squad_mask_type(-1) ^ m)) == m_combat_mask);
     m_combat_mask &= squad_mask_type(-1) ^ m;
@@ -198,16 +158,15 @@ bool CAgentMemberManager::can_cry_noninfo_phrase() const
 
 MemorySpace::squad_mask_type CAgentMemberManager::mask(const ALife::_OBJECT_ID& object_id) const
 {
-    const_iterator I = std::find_if(members().begin(), members().end(), CMemberPredicate2(object_id));
-    VERIFY(I != members().end());
-    return (MemorySpace::squad_mask_type(1) << (I - members().begin()));
+    return MemorySpace::squad_mask_type{1}
+    << (XR_ASSERT_VAL(std::ranges::find(members(), object_id, [] [[nodiscard]] (const auto it) { return it->object().ID(); }) != members().end()) -
+        members().begin());
 }
 
 CMemberOrder* CAgentMemberManager::get_member(const ALife::_OBJECT_ID& object_id)
 {
-    iterator I = std::find_if(members().begin(), members().end(), CMemberPredicate2(object_id));
-    if (I == members().end())
-        return nullptr;
+    if (const auto it = std::ranges::find(members(), object_id, [] [[nodiscard]] (const auto it) { return it->object().ID(); }); it != members().end())
+        return *it;
 
-    return (&**I);
+    return nullptr;
 }

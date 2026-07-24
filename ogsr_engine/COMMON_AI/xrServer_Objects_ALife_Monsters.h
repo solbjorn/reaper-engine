@@ -362,7 +362,7 @@ public:
     ALife::EHitType m_tHitType;
     shared_str m_out_space_restrictors;
     shared_str m_in_space_restrictors;
-    svector<float, ALife::eHitTypeMax> m_fpImmunityFactors;
+    std::inplace_vector<f32, ALife::eHitTypeMax> m_fpImmunityFactors;
 
     ALife::_OBJECT_ID m_smart_terrain_id;
 
@@ -391,11 +391,7 @@ public:
     [[nodiscard]] CSE_ALifeSchedulable* cast_schedulable() override { return this; }
     [[nodiscard]] CSE_ALifeMonsterAbstract* cast_monster_abstract() override { return this; }
 
-    [[nodiscard]] CALifeMonsterBrain& brain() const
-    {
-        VERIFY(m_brain);
-        return (*m_brain);
-    }
+    [[nodiscard]] CALifeMonsterBrain& brain() const { return *XR_ASSERT_VAL(m_brain != nullptr); }
 
     [[nodiscard]] virtual CALifeMonsterBrain* create_brain();
     [[nodiscard]] u32 ef_creature_type() const override;
@@ -668,11 +664,7 @@ public:
     [[nodiscard]] bool natural_weapon() const override { return false; }
     [[nodiscard]] bool natural_detector() const override { return false; }
 
-    [[nodiscard]] CALifeHumanBrain& brain() const
-    {
-        VERIFY(m_brain);
-        return (*m_brain);
-    }
+    [[nodiscard]] CALifeHumanBrain& brain() const { return *XR_ASSERT_VAL(m_brain != nullptr); }
 
     [[nodiscard]] CALifeMonsterBrain* create_brain() override;
 

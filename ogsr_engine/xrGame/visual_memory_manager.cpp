@@ -26,7 +26,6 @@
 #include "GamePersistent.h"
 #include "actor_memory.h"
 #include "client_spawn_manager.h"
-#include "client_spawn_manager.h"
 #include "memory_manager.h"
 #include "alife_registry_wrappers.h"
 #include "alife_simulator_header.h"
@@ -312,12 +311,11 @@ float CVisualMemoryManager::get_visible_value(float distance, float object_dista
 
 MemorySpace::CNotYetVisibleObject* CVisualMemoryManager::not_yet_visible_object(const CGameObject* game_object)
 {
-    xr_vector<MemorySpace::CNotYetVisibleObject>::iterator I =
-        std::find_if(m_not_yet_visible_objects.begin(), m_not_yet_visible_objects.end(), CNotYetVisibleObjectPredicate(game_object));
-    if (I == m_not_yet_visible_objects.end())
-        return nullptr;
+    if (const auto it = std::ranges::find(m_not_yet_visible_objects, game_object->ID(), [] [[nodiscard]] (const auto& obj) { return obj.m_object->ID(); });
+        it != m_not_yet_visible_objects.end())
+        return std::to_address(it);
 
-    return (&*I);
+    return nullptr;
 }
 
 void CVisualMemoryManager::add_not_yet_visible_object(const CNotYetVisibleObject& not_yet_visible_object)
@@ -574,7 +572,7 @@ MemorySpace::CVisibleObject* CVisualMemoryManager::visible_object(const CGameObj
     if (I == m_objects->end())
         return nullptr;
 
-    return (&*I);
+    return std::to_address(I);
 }
 
 MemorySpace::squad_mask_type CVisualMemoryManager::mask() const

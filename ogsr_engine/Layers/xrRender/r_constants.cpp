@@ -8,8 +8,6 @@
 
 R_constant_table::~R_constant_table() { RImplementation.Resources->_DeleteConstantTable(this); }
 
-void R_constant_table::fatal(LPCSTR S) { FATAL("%s", S); }
-
 ref_constant R_constant_table::get(LPCSTR S) const
 {
     // assumption - sorted by name
@@ -66,9 +64,10 @@ void R_constant_table::merge(const R_constant_table* T)
         }
         else
         {
-            VERIFY2(!(C->destination & src->destination & RC_dest_sampler), "Can't have samplers or textures with the same name for PS, VS and GS.");
+            XR_ASSERT(!(C->destination & src->destination & RC_dest_sampler), "", C->destination, src->destination);
             C->destination |= src->destination;
-            VERIFY(C->type == src->type);
+            XR_ASSERT(C->type == src->type);
+
             R_constant_load& sL = src->get_load(src->destination);
             R_constant_load& dL = C->get_load(src->destination);
             dL.index = sL.index;
@@ -79,18 +78,14 @@ void R_constant_table::merge(const R_constant_table* T)
     if (!table_tmp.empty())
     {
         // Append
-        std::ranges::move(table_tmp, std::back_inserter(table));
-
+        table.append_range(std::views::as_rvalue(table_tmp));
         // Sort
-        std::ranges::sort(table, [](const ref_constant& C1, const ref_constant& C2) { return std::is_lt(xr_strcmp(C1->name, C2->name)); });
+        std::ranges::sort(table, {}, [] [[nodiscard]] (const auto& constant) { return std::string_view{constant->name}; });
     }
 
     //	TODO:	DX10:	Implement merge with validity check
     for (auto [tbl, that] : std::views::zip(m_CBTable, T->m_CBTable))
-    {
-        tbl.reserve(tbl.size() + that.size());
         tbl.append_range(that);
-    }
 }
 
 void R_constant_table::clear()

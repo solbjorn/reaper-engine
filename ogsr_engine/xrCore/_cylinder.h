@@ -34,6 +34,7 @@ public:
         _vector3<T>::generate_orthonormal_basis(kW, kU, kV);
         _vector3<T> kD;
         kD.set(kU.dotproduct(dir), kV.dotproduct(dir), kW.dotproduct(dir));
+
 #ifdef DEBUG
         if (kD.square_magnitude() <= std::numeric_limits<T>::min())
         {
@@ -41,9 +42,11 @@ public:
             Msg("kU :{},{},{}", kU.x, kU.y, kU.z);
             Msg("kV :{},{},{}", kV.x, kV.y, kV.z);
             Msg("kW :{},{},{}", kW.x, kW.y, kW.z);
-            VERIFY2(0, "KD is zero");
+
+            XR_PANIC("KD is zero");
         }
 #endif
+
         T fDLength = kD.normalize_magn();
         T fInvDLength = 1.0f / fDLength;
         _vector3<T> kDiff;
@@ -137,7 +140,6 @@ public:
         if (fDiscr < 0.0f)
         {
             // line does not intersect cylinder wall
-            // VERIFY( iQuantity == 0 );
             return 0;
         }
         else if (fDiscr > 0.0f)

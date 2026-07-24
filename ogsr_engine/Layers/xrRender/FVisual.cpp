@@ -21,6 +21,7 @@ Fvisual::~Fvisual()
 {
     HW.stats_manager.decrement_stats_vb(p_rm_Vertices);
     HW.stats_manager.decrement_stats_ib(p_rm_Indices);
+
     xr_delete(m_fast);
 }
 
@@ -30,7 +31,9 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
 {
     dxRender_Visual::Load(N, data, dwFlags);
 
-    auto dcl = std::vector<D3DVERTEXELEMENT9>(MAXD3DDECLLENGTH + 1);
+    std::vector<D3DVERTEXELEMENT9> dcl;
+    dcl.reserve(MAXD3DDECLLENGTH + 1);
+
     const D3DVERTEXELEMENT9* vFormat = nullptr;
     dwPrimitives = 0;
     BOOL loaded_v = false;
@@ -42,10 +45,10 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
         vBase = data->r_u32();
         vCount = data->r_u32();
 
-        VERIFY(NULL == p_rm_Vertices);
-
+        XR_ASSERT(p_rm_Vertices == nullptr);
         p_rm_Vertices = RImplementation.getVB(ID);
         p_rm_Vertices->AddRef();
+
         vFormat = RImplementation.getVB_Format(ID);
         loaded_v = true;
 
@@ -55,7 +58,7 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
         iCount = data->r_u32();
         dwPrimitives = iCount / 3;
 
-        VERIFY(NULL == p_rm_Indices);
+        XR_ASSERT(p_rm_Indices == nullptr);
         p_rm_Indices = RImplementation.getIB(ID);
         p_rm_Indices->AddRef();
 
@@ -74,7 +77,7 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
             m_fast->vBase = def->r_u32();
             m_fast->vCount = def->r_u32();
 
-            VERIFY(NULL == m_fast->p_rm_Vertices);
+            XR_ASSERT(m_fast->p_rm_Vertices == nullptr);
             m_fast->p_rm_Vertices = RImplementation.getVB(ID, true);
             m_fast->p_rm_Vertices->AddRef();
             fmt = RImplementation.getVB_Format(ID, true);
@@ -85,7 +88,7 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
             m_fast->iCount = def->r_u32();
             m_fast->dwPrimitives = m_fast->iCount / 3;
 
-            VERIFY(NULL == m_fast->p_rm_Indices);
+            XR_ASSERT(m_fast->p_rm_Indices == nullptr);
             m_fast->p_rm_Indices = RImplementation.getIB(ID, true);
             m_fast->p_rm_Indices->AddRef();
 
@@ -95,69 +98,46 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
     }
 
     // read vertices
-    if (!loaded_v && (dwFlags & VLOAD_NOVERTICES) == 0)
+    if (!loaded_v && !(dwFlags & VLOAD_NOVERTICES))
     {
-        if (data->find_chunk(OGF_VCONTAINER))
-        {
-            R_ASSERT(0, "pls notify andy about this.");
+        XR_ASSERT(data->find_chunk(OGF_VCONTAINER) == 0, "", N);
+        XR_ASSERT(data->find_chunk(OGF_VERTICES) > 0, "", N);
 
-            u32 ID = data->r_u32();
-            vBase = data->r_u32();
-            vCount = data->r_u32();
-            VERIFY(NULL == p_rm_Vertices);
-            p_rm_Vertices = RImplementation.getVB(ID);
-            p_rm_Vertices->AddRef();
-            vFormat = RImplementation.getVB_Format(ID);
-        }
-        else
-        {
-            R_ASSERT(data->find_chunk(OGF_VERTICES));
-            vBase = 0;
-            u32 fvf = data->r_u32();
-            CHK_DX(FVF::CreateDeclFromFVF(fvf, dcl));
-            vFormat = dcl.data();
-            vCount = data->r_u32();
-            u32 vStride = FVF::ComputeVertexSize(fvf);
+        vBase = 0;
+        u32 fvf = data->r_u32();
+        XR_ASSERT(FVF::CreateDeclFromFVF(fvf, dcl));
 
-            VERIFY(NULL == p_rm_Vertices);
-            R_CHK(dx10BufferUtils::CreateVertexBuffer(&p_rm_Vertices, data->pointer(), vCount * vStride));
-            HW.stats_manager.increment_stats_vb(p_rm_Vertices);
-        }
+        vFormat = dcl.data();
+        vCount = data->r_u32();
+        u32 vStride = FVF::ComputeVertexSize(fvf);
+
+        XR_ASSERT(p_rm_Vertices == nullptr);
+        XR_ASSERT(xr::hr(dx10BufferUtils::CreateVertexBuffer(&p_rm_Vertices, data->pointer(), vCount * vStride)));
+        HW.stats_manager.increment_stats_vb(p_rm_Vertices);
     }
 
     // indices
     if (!loaded_v)
     {
-        dwPrimitives = 0;
-        if (data->find_chunk(OGF_ICONTAINER))
-        {
-            R_ASSERT(0, "pls notify andy about this.");
+        XR_ASSERT(data->find_chunk(OGF_ICONTAINER) == 0, "", N);
+        XR_ASSERT(data->find_chunk(OGF_INDICES) > 0, "", N);
 
-            u32 ID = data->r_u32();
-            iBase = data->r_u32();
-            iCount = data->r_u32();
-            dwPrimitives = iCount / 3;
-            VERIFY(NULL == p_rm_Indices);
-            p_rm_Indices = RImplementation.getIB(ID);
-            p_rm_Indices->AddRef();
-        }
-        else
-        {
-            R_ASSERT(data->find_chunk(OGF_INDICES));
-            iBase = 0;
-            iCount = data->r_u32();
-            dwPrimitives = iCount / 3;
+        iBase = 0;
+        iCount = data->r_u32();
+        dwPrimitives = iCount / 3;
 
-            VERIFY(NULL == p_rm_Indices);
-            R_CHK(dx10BufferUtils::CreateIndexBuffer(&p_rm_Indices, data->pointer(), iCount * 2));
-            HW.stats_manager.increment_stats_ib(p_rm_Indices);
-        }
+        XR_ASSERT(p_rm_Indices == nullptr);
+        XR_ASSERT(xr::hr(dx10BufferUtils::CreateIndexBuffer(&p_rm_Indices, data->pointer(), iCount * 2)));
+        HW.stats_manager.increment_stats_ib(p_rm_Indices);
     }
 
     if (dwFlags & VLOAD_NOVERTICES)
         return;
-    else
-        rm_geom.create(vFormat, p_rm_Vertices, p_rm_Indices);
+
+    rm_geom.create(vFormat, p_rm_Vertices, p_rm_Indices);
+
+    simplified_fast_geom = m_fast != nullptr && shader->E[3] && shader->E[3]->flags.aref && m_fast->rm_geom->dcl->dx10_dcl_code.size() == 2 &&
+        rm_geom->dcl->dx10_dcl_code.size() > 2;
 }
 
 void Fvisual::Render(CBackend& cmd_list, float, bool use_fast_geo)

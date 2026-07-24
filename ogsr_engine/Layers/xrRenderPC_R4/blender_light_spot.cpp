@@ -15,7 +15,8 @@ void CBlender_accum_spot::Compile(CBlender_Compile& C)
     switch (C.iElement)
     {
     case SE_L_FILL: break;
-    case SE_L_UNSHADOWED: // unshadowed
+    case SE_L_UNSHADOWED:
+        // unshadowed
         C.r_Pass("accum_volume", "accum_spot_unshadowed_nomsaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 
         C.r_dx10Texture("s_position", r2_RT_P);
@@ -30,7 +31,8 @@ void CBlender_accum_spot::Compile(CBlender_Compile& C)
 
         C.r_End();
         break;
-    case SE_L_NORMAL: // normal
+    case SE_L_NORMAL:
+        // normal
         C.r_Pass("accum_volume", "accum_spot_normal_nomsaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 
         C.r_dx10Texture("s_position", r2_RT_P);
@@ -50,7 +52,8 @@ void CBlender_accum_spot::Compile(CBlender_Compile& C)
 
         C.r_End();
         break;
-    case SE_L_FULLSIZE: // normal-fullsize
+    case SE_L_FULLSIZE:
+        // normal-fullsize
         C.r_Pass("accum_volume", "accum_spot_fullsize_nomsaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 
         C.r_dx10Texture("s_position", r2_RT_P);
@@ -73,7 +76,7 @@ void CBlender_accum_spot::Compile(CBlender_Compile& C)
 }
 
 CBlender_accum_spot_msaa::CBlender_accum_spot_msaa() { description.CLS = 0; }
-CBlender_accum_spot_msaa::~CBlender_accum_spot_msaa() {}
+CBlender_accum_spot_msaa::~CBlender_accum_spot_msaa() = default;
 
 void CBlender_accum_spot_msaa::Compile(CBlender_Compile& C)
 {
@@ -84,8 +87,10 @@ void CBlender_accum_spot_msaa::Compile(CBlender_Compile& C)
 
     if (Name != nullptr)
     {
-        const auto res = scn::scan_int<s32>(Definition);
-        R_ASSERT(res, res.error().msg());
+        const std::string_view val{Definition};
+        const auto res = scn::scan_int<s32>(val);
+        XR_ASSERT(res, res.error().msg(), Name, val);
+
         RImplementation.m_MSAASample = res->value();
     }
     else
@@ -96,7 +101,8 @@ void CBlender_accum_spot_msaa::Compile(CBlender_Compile& C)
     switch (C.iElement)
     {
     case SE_L_FILL: break;
-    case SE_L_UNSHADOWED: // unshadowed
+    case SE_L_UNSHADOWED:
+        // unshadowed
         C.r_Pass("accum_volume", "accum_spot_unshadowed_msaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 
         C.r_dx10Texture("s_position", r2_RT_P);
@@ -111,7 +117,8 @@ void CBlender_accum_spot_msaa::Compile(CBlender_Compile& C)
 
         C.r_End();
         break;
-    case SE_L_NORMAL: // normal
+    case SE_L_NORMAL:
+        // normal
         C.r_Pass("accum_volume", "accum_spot_normal_msaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 
         C.r_dx10Texture("s_position", r2_RT_P);
@@ -131,7 +138,8 @@ void CBlender_accum_spot_msaa::Compile(CBlender_Compile& C)
 
         C.r_End();
         break;
-    case SE_L_FULLSIZE: // normal-fullsize
+    case SE_L_FULLSIZE:
+        // normal-fullsize
         C.r_Pass("accum_volume", "accum_spot_fullsize_msaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 
         C.r_dx10Texture("s_position", r2_RT_P);
@@ -156,7 +164,7 @@ void CBlender_accum_spot_msaa::Compile(CBlender_Compile& C)
 }
 
 CBlender_accum_volumetric_msaa::CBlender_accum_volumetric_msaa() { description.CLS = 0; }
-CBlender_accum_volumetric_msaa::~CBlender_accum_volumetric_msaa() {}
+CBlender_accum_volumetric_msaa::~CBlender_accum_volumetric_msaa() = default;
 
 void CBlender_accum_volumetric_msaa::Compile(CBlender_Compile& C)
 {
@@ -164,8 +172,10 @@ void CBlender_accum_volumetric_msaa::Compile(CBlender_Compile& C)
 
     if (Name != nullptr)
     {
-        const auto res = scn::scan_int<s32>(Definition);
-        R_ASSERT(res, res.error().msg());
+        const std::string_view val{Definition};
+        const auto res = scn::scan_int<s32>(val);
+        XR_ASSERT(res, res.error().msg(), Name, val);
+
         RImplementation.m_MSAASample = res->value();
     }
     else
@@ -175,7 +185,8 @@ void CBlender_accum_volumetric_msaa::Compile(CBlender_Compile& C)
 
     switch (C.iElement)
     {
-    case 0: // masking
+    case 0:
+        // masking
         C.r_Pass("accum_volumetric", "accum_volumetric_msaa", false, FALSE, FALSE);
 
         C.r_dx10Texture("s_lmap", C.L_textures[0]);

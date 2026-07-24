@@ -27,8 +27,8 @@ public:
 
         Msg("DestroySingleton::RefCounter: [{}]", _refcount);
 
-        VERIFY(_on_self_delete == false);
-        VERIFY(_refcount == 0);
+        XR_ASSERT(_on_self_delete == false);
+        XR_ASSERT(_refcount == 0);
 
         xr_delete(_self);
     }

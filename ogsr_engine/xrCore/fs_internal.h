@@ -17,10 +17,10 @@ private:
 public:
     explicit CFileWriter(gsl::czstring name, bool exclusive)
     {
-        R_ASSERT(name && name[0]);
+        XR_ASSERT(name != nullptr && name[0] != '\0');
 
         fName._set(name);
-        VerifyPath(fName.c_str());
+        VerifyPath(fName);
 
         if (exclusive)
         {
@@ -57,8 +57,7 @@ public:
         if (hf != nullptr && count > 0)
         {
             const auto cnt = gsl::narrow_cast<size_t>(count);
-            const auto W = _fwrite_nolock(_ptr, sizeof(char), cnt, hf);
-            R_ASSERT3(W == cnt, "Can't write mem block to file. Disk maybe full.", _sys_errlist[errno]);
+            XR_ASSERT(::_fwrite_nolock(_ptr, sizeof(std::byte), cnt, hf) == cnt, "failed to write to file", fName, errno, xr::GetLastError());
         }
     }
 

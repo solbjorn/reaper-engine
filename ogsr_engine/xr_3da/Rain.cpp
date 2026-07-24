@@ -241,8 +241,7 @@ void CEffect_Rain::p_destroy()
 // _delete_ node from _list_
 void CEffect_Rain::p_remove(Particle* P, Particle*& LST)
 {
-    VERIFY(P);
-    Particle* prev = P->prev;
+    Particle* prev = XR_ASSERT_VAL(P != nullptr)->prev;
     P->prev = nullptr;
     Particle* next = P->next;
     P->next = nullptr;
@@ -259,8 +258,7 @@ void CEffect_Rain::p_remove(Particle* P, Particle*& LST)
 // insert node at the top of the head
 void CEffect_Rain::p_insert(Particle* P, Particle*& LST)
 {
-    VERIFY(P);
-    P->prev = nullptr;
+    XR_ASSERT_VAL(P != nullptr)->prev = nullptr;
     P->next = LST;
 
     if (LST)

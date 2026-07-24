@@ -197,7 +197,7 @@ tmc::task<void> CGameObject::OnEvent(NET_Packet& P, u16 type)
                 Device.dwFrame);
 
         if (!Level().is_removing_objects())
-            ASSERT_FMT(ID() != 0, "![%s] cannot destory actor!", std::source_location::current().function_name());
+            XR_ASSERT(ID() != 0, "destroying actor is not allowed");
 
         setDestroy(TRUE);
     }
@@ -337,8 +337,9 @@ tmc::task<bool> CGameObject::net_Spawn(CSE_Abstract* DC)
     // load custom user data from server
     if (!E->client_data.empty())
     {
-        IReader ireader = IReader(&*E->client_data.begin(), E->client_data.size());
-        net_Load(ireader); // вызов load(IReader& input_packet)
+        // вызов load(IReader& input_packet)
+        IReader ireader{E->client_data.data(), std::ssize(E->client_data)};
+        net_Load(ireader);
     }
 
     // if we have a parent
@@ -685,7 +686,7 @@ CObject::SavedPosition CGameObject::ps_Element(u32 ID) const
 
 void CGameObject::u_EventGen(NET_Packet& P, u32 type, u32 dest)
 {
-    P.w_begin(M_EVENT);
+    P.w_begin(gsl::narrow<u16>(xr::msg::M_EVENT));
     P.w_u32(Level().timeServer());
     P.w_u16(u16(type & 0xffff));
     P.w_u16(u16(dest & 0xffff));
@@ -693,11 +694,7 @@ void CGameObject::u_EventGen(NET_Packet& P, u32 type, u32 dest)
 
 void CGameObject::u_EventSend(NET_Packet& P, u32 dwFlags) { Level().Send(P, dwFlags); }
 
-void CGameObject::OnH_B_Chield()
-{
-    inherited::OnH_B_Chield();
-    /// PHSetPushOut();????
-}
+void CGameObject::OnH_B_Chield() { inherited::OnH_B_Chield(); }
 
 void CGameObject::OnH_B_Independent(bool just_before_destroy)
 {
@@ -726,7 +723,6 @@ void CGameObject::OnRender()
 #endif
 
 BOOL CGameObject::UsedAI_Locations() { return (m_server_flags.test(CSE_ALifeObject::flUsedAI_Locations)); }
-
 void CGameObject::SetUseAI_Locations(bool _use) { m_server_flags.set(CSE_ALifeObject::flUsedAI_Locations, _use); }
 
 BOOL CGameObject::TestServerFlag(u32 Flag) const { return (m_server_flags.test(Flag)); }
@@ -738,16 +734,14 @@ void CGameObject::add_visual_callback(visual_callback* callback)
 
     if (m_visual_callback.empty())
         SetKinematicsCallback(true);
-    //		smart_cast<IKinematics*>(Visual())->Callback(VisualCallback,this);
-    m_visual_callback.push_back(callback);
+
+    m_visual_callback.emplace_back(callback);
 }
 
 void CGameObject::remove_visual_callback(visual_callback* callback)
 {
-    CALLBACK_VECTOR_IT I = std::find(m_visual_callback.begin(), m_visual_callback.end(), callback);
-    VERIFY(I != m_visual_callback.end());
+    m_visual_callback.erase(XR_ASSERT_VAL(std::ranges::find(m_visual_callback, callback) != m_visual_callback.end()));
 
-    std::ignore = m_visual_callback.erase(I);
     if (m_visual_callback.empty())
         SetKinematicsCallback(false);
 }
@@ -765,27 +759,18 @@ void CGameObject::SetKinematicsCallback(bool set)
 
 void VisualCallback(IKinematics* tpKinematics)
 {
-    CGameObject* game_object = static_cast<CGameObject*>(static_cast<CObject*>(tpKinematics->GetUpdateCallbackParam()));
-    VERIFY(game_object);
-
-    CGameObject::CALLBACK_VECTOR_IT I = game_object->visual_callbacks().begin();
-    CGameObject::CALLBACK_VECTOR_IT E = game_object->visual_callbacks().end();
-    for (; I != E; ++I)
-        (*I)(tpKinematics);
+    for (auto& cb : XR_ASSERT_VAL(smart_cast<CGameObject*>(static_cast<CObject*>(tpKinematics->GetUpdateCallbackParam())) != nullptr)->visual_callbacks())
+        cb(tpKinematics);
 }
 
 CScriptGameObject* CGameObject::lua_game_object() const
 {
-    if (!m_spawned)
-    {
-        Msg("!! [{}] you are trying to use a destroyed object name=[{}] getDestroy={}", std::source_location::current().function_name(), cName(), getDestroy());
-        LogStackTrace("!!stack trace:\n", false);
-    }
+    XR_ASSERT(m_spawned);
 
-    THROW(m_spawned);
-    if (!m_lua_game_object)
+    if (m_lua_game_object == nullptr)
         m_lua_game_object = xr_new<CScriptGameObject>(const_cast<CGameObject*>(this));
-    return (m_lua_game_object);
+
+    return m_lua_game_object;
 }
 
 void CGameObject::DestroyObject()

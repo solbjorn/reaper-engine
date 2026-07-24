@@ -135,9 +135,6 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR _vspec, LPCSTR _pspec, BOO
         strconcat(sizeof(hs), hs, "DX11\\tess", params);
         strconcat(sizeof(ds), ds, "DX11\\tess", params);
 
-        VERIFY(strstr(vs, "bump") != nullptr);
-        VERIFY(strstr(ps, "bump") != nullptr);
-
         C.r_TessPass(vs, hs, ds, "null", ps, FALSE);
         C.r_ComputePass("null");
         RImplementation.clearAllShaderOptions();

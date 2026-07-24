@@ -20,17 +20,16 @@ void xrServer::Process_event_ownership(NET_Packet& P, ClientID sender, u16 ID, B
 
     u16 id_parent = ID, id_entity;
     P.r_u16(id_entity);
-    CSE_Abstract* e_parent = game->get_entity_from_eid(id_parent);
-    CSE_Abstract* e_entity = game->get_entity_from_eid(id_entity);
 
 #ifdef DEBUG
     Msg("sv ownership id_parent {} id_entity {} [{}]", ent_name_safe(id_parent), ent_name_safe(id_entity), Device.dwFrame);
 #endif
 
-    if (!e_entity)
+    CSE_Abstract* e_entity = game->get_entity_from_eid(id_entity);
+    if (e_entity == nullptr)
         return;
 
-    R_ASSERT(/*e_entity &&*/ e_parent);
+    CSE_Abstract* e_parent = XR_ASSERT_VAL(game->get_entity_from_eid(id_parent) != nullptr);
 
     if (0xffff != e_entity->ID_Parent)
     {

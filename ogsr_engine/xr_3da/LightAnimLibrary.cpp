@@ -25,17 +25,17 @@ void CLAItem::InitDefault() { Keys[0] = 0x00000000; }
 
 void CLAItem::Load(IReader& F)
 {
-    R_ASSERT(F.find_chunk(CHUNK_ITEM_COMMON));
+    XR_ASSERT(F.find_chunk(CHUNK_ITEM_COMMON) > 0);
     F.r_stringZ(cName);
     fFPS = F.r_float();
     iFrameCount = F.r_u32();
 
-    int key_cnt, key;
-    R_ASSERT(F.find_chunk(CHUNK_ITEM_KEYS));
-    key_cnt = F.r_u32();
-    for (int i = 0; i < key_cnt; i++)
+    XR_ASSERT(F.find_chunk(CHUNK_ITEM_KEYS) > 0);
+    const auto key_cnt = F.r_u32();
+
+    for (u32 i{0}; i < key_cnt; ++i)
     {
-        key = F.r_u32();
+        const auto key = F.r_u32();
         Keys[key] = F.r_u32();
     }
 }
@@ -50,86 +50,78 @@ void CLAItem::Save(IWriter& F)
 
     F.open_chunk(CHUNK_ITEM_KEYS);
     F.w_u32(Keys.size());
+
     for (auto& k : Keys)
     {
         F.w_u32(k.first);
         F.w_u32(k.second);
     }
+
     F.close_chunk();
 }
 
-void CLAItem::InsertKey(int frame, u32 color)
-{
-    R_ASSERT(frame <= iFrameCount);
-    Keys[frame] = color;
-}
+void CLAItem::InsertKey(int frame, u32 color) { Keys[XR_ASSERT_VAL(frame <= iFrameCount)] = color; }
 
 void CLAItem::DeleteKey(int frame)
 {
-    R_ASSERT(frame <= iFrameCount);
-    if (0 == frame)
+    if (frame == 0)
         return;
-    KeyPairIt it = Keys.find(frame);
-    if (it != Keys.end())
+
+    if (const auto it = Keys.find(XR_ASSERT_VAL(frame <= iFrameCount)); it != Keys.end())
         Keys.erase(it);
 }
 
 void CLAItem::MoveKey(int from, int to)
 {
-    R_ASSERT(from <= iFrameCount);
-    R_ASSERT(to <= iFrameCount);
-    KeyPairIt it = Keys.find(from);
-    if (it != Keys.end())
+    if (const auto it = Keys.find(XR_ASSERT_VAL(from <= iFrameCount)); it != Keys.end())
     {
-        Keys[to] = it->second;
+        Keys[XR_ASSERT_VAL(to <= iFrameCount)] = it->second;
         Keys.erase(it);
     }
 }
 
 void CLAItem::Resize(int new_len)
 {
-    VERIFY((new_len >= 1));
-    if (new_len != iFrameCount)
+    if (XR_ASSERT_VAL(new_len >= 1) == iFrameCount)
+        return;
+
+    if (new_len > iFrameCount)
     {
-        if (new_len > iFrameCount)
-        {
-            int old_len = iFrameCount;
-            iFrameCount = new_len;
-            MoveKey(old_len, new_len);
-        }
-        else
-        {
-            KeyPairIt I = Keys.upper_bound(new_len - 1);
-            if (I != Keys.end())
-                Keys.erase(I, Keys.end());
-            iFrameCount = new_len;
-        }
+        int old_len = iFrameCount;
+        iFrameCount = new_len;
+        MoveKey(old_len, new_len);
+    }
+    else
+    {
+        if (const auto I = Keys.upper_bound(new_len - 1); I != Keys.end())
+            Keys.erase(I, Keys.end());
+
+        iFrameCount = new_len;
     }
 }
 
 u32 CLAItem::InterpolateRGB(int frame)
 {
-    R_ASSERT(frame <= iFrameCount);
-
-    KeyPairIt A = Keys.find(frame);
-    KeyPairIt B;
+    auto A = Keys.find(XR_ASSERT_VAL(frame <= iFrameCount));
     if (A != Keys.end())
-    { // ключ - возвращаем цвет ключа
+    {
+        // ключ - возвращаем цвет ключа
         return A->second;
     }
-    else
-    { // не ключ
-        B = Keys.upper_bound(frame); // ищем следующий ключ
-        if (B == Keys.end())
-        { // если его нет вернем цвет последнего ключа
-            B--;
-            return B->second;
-        }
-        A = B; // иначе в A занесем предыдущий ключ
-        A--;
+
+    // не ключ
+    auto B = Keys.upper_bound(frame); // ищем следующий ключ
+    if (B == Keys.end())
+    {
+        // если его нет вернем цвет последнего ключа
+        return (--B)->second;
     }
 
-    R_ASSERT(Keys.size() > 1);
+    // иначе в A занесем предыдущий ключ
+    A = B;
+    --A;
+
+    XR_ASSERT(Keys.size() > 1, "", frame);
 
     // интерполируем цвет
     Fcolor c0{A->second};
@@ -305,7 +297,7 @@ CLAItem* ELightAnimLibrary::FindItem(LPCSTR name)
 
 CLAItem* ELightAnimLibrary::AppendItem(LPCSTR name, CLAItem* src)
 {
-    VERIFY2(FindItem(name) == nullptr, "Duplicate name found.");
+    XR_DEBUG_ASSERT(FindItem(name) == nullptr, "duplicate name", name);
 
     CLAItem* I = xr_new<CLAItem>();
     if (src)

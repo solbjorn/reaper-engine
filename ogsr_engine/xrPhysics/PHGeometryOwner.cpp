@@ -23,7 +23,6 @@ CPHGeometryOwner::~CPHGeometryOwner()
 void CPHGeometryOwner::build_Geom(CODEGeom& geom)
 {
     geom.build(m_mass_center);
-    // geom.set_body(m_body);
     geom.set_material(ul_material);
 
     if (contact_callback)
@@ -214,7 +213,7 @@ void CPHGeometryOwner::add_Shape(const SBoneShape& shape, const Fmatrix& offset)
     }
 
     case SBoneShape::stNone: break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 
@@ -237,7 +236,7 @@ void CPHGeometryOwner::add_Shape(const SBoneShape& shape)
     }
 
     case SBoneShape::stNone: break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 
@@ -291,7 +290,7 @@ ObjectContactCallbackFun* CPHGeometryOwner::get_ObjectContactCallback() { return
 
 void CPHGeometryOwner::set_CallbackData(void* cd)
 {
-    VERIFY(b_builded);
+    XR_ASSERT(b_builded);
 
     GEOM_I i = m_geoms.begin(), e = m_geoms.end();
     for (; i != e; ++i)
@@ -300,7 +299,7 @@ void CPHGeometryOwner::set_CallbackData(void* cd)
 
 void* CPHGeometryOwner::get_CallbackData()
 {
-    VERIFY(b_builded);
+    XR_ASSERT(b_builded);
     return (*m_geoms.begin())->get_callback_data();
 }
 
@@ -351,7 +350,8 @@ void CPHGeometryOwner::get_mc_vs_transform(Fvector& mc, const Fmatrix& m)
 {
     mc.set(m_mass_center);
     m.transform_tiny(mc);
-    VERIFY2(_valid(mc), "invalid mc in_set_transform");
+
+    XR_DEBUG_ASSERT(_valid(mc));
 }
 
 void CPHGeometryOwner::setStaticForm(const Fmatrix& form)

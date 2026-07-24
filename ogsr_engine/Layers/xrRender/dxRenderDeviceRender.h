@@ -33,10 +33,6 @@ public:
     tmc::task<void> Create(HWND hWnd, u32& dwWidth, u32& dwHeight, f32& fWidth_2, f32& fHeight_2) override;
     void SetupGPU(BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF) override;
 
-    //	Overdraw
-    void overdrawBegin() override;
-    void overdrawEnd() override;
-
     //	Resources control
     void DeferredLoad(BOOL E) override;
     tmc::task<void> ResourcesDeferredUpload() override;
@@ -75,40 +71,35 @@ public:
     ID3DIndexBuffer* QuadIB;
     ID3DIndexBuffer* old_QuadIB;
 
-    ctx_id_t alloc_context();
+    [[nodiscard]] ctx_id_t alloc_context();
 
-    ICF R_dsgraph_structure& get_context(ctx_id_t id)
+    [[nodiscard]] ICF auto& get_imm_context() { return contexts_pool[R__IMM_CTX_ID]; }
+
+    [[nodiscard]] ICF auto& get_context(ctx_id_t id)
     {
-        VERIFY(id < R__NUM_CONTEXTS);
+        auto& ret = contexts_pool[XR_ASSERT_VAL(id < R__NUM_CONTEXTS)];
+        XR_ASSERT(contexts_used.test(id) && ret.context_id == id, "", id, ret.context_id);
 
-        VERIFY(contexts_used.test(id));
-        VERIFY(contexts_pool[id].context_id == id);
-
-        return contexts_pool[id];
+        return ret;
     }
 
     ICF void release_context(ctx_id_t id)
     {
-        VERIFY(id != R__IMM_CTX_ID); // never release immediate context
-        VERIFY(id < R__NUM_PARALLEL_CONTEXTS);
-
-        VERIFY(contexts_used.test(id));
-        VERIFY(contexts_pool[id].context_id != R__INVALID_CTX_ID);
+        // never release immediate context
+        XR_ASSERT(id < R__NUM_CONTEXTS && id != R__IMM_CTX_ID, "", id);
+        XR_ASSERT(contexts_used.test(id) && contexts_pool[id].context_id != R__INVALID_CTX_ID);
 
         contexts_used.reset(id);
     }
 
-    ICF R_dsgraph_structure& get_imm_context() { return contexts_pool[R__IMM_CTX_ID]; }
-
     void cleanup_contexts();
-
-protected:
-    xr::bitset<R__NUM_CONTEXTS> contexts_used;
-    R_dsgraph_structure contexts_pool[R__NUM_CONTEXTS];
 
 private:
     CGammaControl m_Gamma;
 
 protected:
-    bool b_loaded{};
+    bool b_loaded{false};
+
+    xr::bitset<R__NUM_CONTEXTS> contexts_used;
+    std::array<R_dsgraph_structure, R__NUM_CONTEXTS> contexts_pool;
 };

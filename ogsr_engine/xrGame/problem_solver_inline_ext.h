@@ -15,22 +15,7 @@
 TEMPLATE_SPECIALIZATION
 IC typename CProblemSolverAbstract::condition_evaluator_ptr_type CProblemSolverAbstract::evaluator(const condition_type& condition_id) const
 {
-    auto I = evaluators().find(condition_id);
-    THROW(evaluators().end() != I);
-
-    if (I == evaluators().end())
-    {
-        u16 object_id = condition_id >> 16;
-        u16 action_id = condition_id & 0xffff;
-        auto obj = Level().Objects.net_Find(object_id);
-
-        Msg("! [CProblemSolverAbstract::evaluator]: condition_id {} ( {}, {}, {} ) not found in evaluators()", condition_id, object_id,
-            obj != nullptr ? std::string_view{obj->cName()} : std::string_view{}, action_id);
-
-        return nullptr;
-    }
-
-    return (*I).second;
+    return XR_ASSERT_VAL(evaluators().find(condition_id) != evaluators().end(), "", condition_id)->second;
 }
 
 TEMPLATE_SPECIALIZATION

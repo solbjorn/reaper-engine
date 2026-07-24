@@ -57,11 +57,11 @@ CHitMemoryManager::~CHitMemoryManager()
 
 const MemorySpace::CHitObject* CHitMemoryManager::hit(const CEntityAlive* object) const
 {
-    VERIFY(m_hits);
+    XR_ASSERT(m_hits != nullptr);
 
     HITS::const_iterator I = std::find_if(m_hits->begin(), m_hits->end(), CHitObjectPredicate(object));
-    if (m_hits->end() != I)
-        return (&*I);
+    if (I != m_hits->end())
+        return std::to_address(I);
 
     return nullptr;
 }

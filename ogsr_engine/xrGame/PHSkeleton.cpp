@@ -82,10 +82,9 @@ bool CPHSkeleton::Spawn(CSE_Abstract* D)
 
     if (po->_flags.test(CSE_PHSkeleton::flSpawnCopy))
     {
-        CPHSkeleton* source = smart_cast<CPHSkeleton*>(Level().Objects.net_Find(po->source_id));
-        ASSERT_FMT(source, "no source: '%s'", D->s_name.c_str());
-
+        auto source = XR_ASSERT_VAL(smart_cast<CPHSkeleton*>(Level().Objects.net_Find(po->source_id)) != nullptr, "source not found", D->s_name);
         source->UnsplitSingle(this);
+
         m_flags.set(CSE_PHSkeleton::flSpawnCopy, FALSE);
         po->_flags.set(CSE_PHSkeleton::flSpawnCopy, FALSE);
         po->source_id = BI_NONE;
@@ -512,8 +511,7 @@ void CPHSkeleton::SyncNetState()
     if (obj->PPhysicsShell() && obj->PPhysicsShell()->isActive())
         m_flags.set(CSE_PHSkeleton::flActive, obj->PPhysicsShell()->isEnabled());
 
-    auto po = smart_cast<CSE_PHSkeleton*>(se_obj);
-    ASSERT_FMT(po, "[%s]: %s is not CSE_PHSkeleton", std::source_location::current().function_name(), obj->Name_script());
+    auto po = XR_ASSERT_VAL(smart_cast<CSE_PHSkeleton*>(se_obj) != nullptr, "server object doesn't have a skeleton", obj->Name_script());
     po->_flags.assign(m_flags.get());
 
     auto& saved_bones = po->saved_bones;

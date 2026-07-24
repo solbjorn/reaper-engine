@@ -39,39 +39,32 @@ void CObjectAnimator::SetActiveMotion(COMotion* mot)
 void CObjectAnimator::LoadMotions(LPCSTR fname)
 {
     string_path full_path;
-    if (!FS.exist(full_path, "$level$", fname))
-    {
-        if (!FS.exist(full_path, "$game_anims$", fname))
-            Debug.fatal(DEBUG_INFO, "Can't find motion file '%s'.", fname);
-    }
+    XR_ASSERT(FS.exist(full_path, "$level$", fname) || FS.exist(full_path, "$game_anims$", fname), "can't find motion file", fname);
 
     LPCSTR ext = strext(full_path);
     if (ext)
     {
         Clear();
+
         if (0 == xr_strcmp(ext, ".anm"))
         {
             COMotion* M = xr_new<COMotion>();
-            if (M->LoadMotion(full_path))
-                m_Motions.push_back(M);
-            else
-                FATAL("ERROR: Can't load motion. Incorrect file version.");
+            XR_ASSERT(M->LoadMotion(full_path), "can't load motion", full_path);
+            m_Motions.push_back(M);
         }
         else if (0 == xr_strcmp(ext, ".anms"))
         {
-            IReader* F = FS.r_open(full_path);
-            u32 dwMCnt = F->r_u32();
-            VERIFY(dwMCnt);
+            const auto F = absl::WrapUnique(FS.r_open(full_path));
+            const auto dwMCnt = XR_ASSERT_VAL(F->r_u32() > 0);
+
             for (u32 i = 0; i < dwMCnt; i++)
             {
                 COMotion* M = xr_new<COMotion>();
-                bool bRes = M->Load(*F);
-                if (!bRes)
-                    FATAL("ERROR: Can't load motion. Incorrect file version.");
+                XR_ASSERT(M->Load(*F), "can't load motion", full_path, dwMCnt, i);
                 m_Motions.push_back(M);
             }
-            FS.r_close(F);
         }
+
         std::ranges::sort(m_Motions, [](COMotion* a, COMotion* b) { return a->name < b->name; });
     }
 }
@@ -97,34 +90,26 @@ void CObjectAnimator::Update(float dt)
 
 COMotion* CObjectAnimator::Play(bool loop, LPCSTR name)
 {
-    if (name && name[0])
+    if (name != nullptr && name[0] != '\0')
     {
-        auto it = std::lower_bound(m_Motions.begin(), m_Motions.end(), name, [](const COMotion* a, gsl::czstring b) { return std::is_lt(xr_strcmp(a->name, b)); });
-        if ((it != m_Motions.end()) && (0 == xr_strcmp((*it)->Name(), name)))
-        {
-            bLoop = loop;
-            SetActiveMotion(*it);
-            m_MParam.Play();
-            return *it;
-        }
-        else
-        {
-            Debug.fatal(DEBUG_INFO, "OBJ ANIM::Cycle '%s' not found.", name);
-        }
+        auto it = std::ranges::lower_bound(m_Motions, name, [](auto a, auto b) { return std::is_lt(xr_strcmp(a, b)); }, &COMotion::name);
+        XR_ASSERT(it != m_Motions.end() && std::is_eq(xr_strcmp((*it)->Name(), name)), "anim cycle not found", name);
+
+        bLoop = loop;
+        SetActiveMotion(*it);
+        m_MParam.Play();
+
+        return *it;
     }
     else
     {
-        if (!m_Motions.empty())
-        {
-            bLoop = loop;
-            SetActiveMotion(m_Motions.front());
-            m_MParam.Play();
-            return m_Motions.front();
-        }
-        else
-        {
-            Debug.fatal(DEBUG_INFO, "OBJ ANIM::Cycle '%s' not found.", name);
-        }
+        XR_ASSERT(!m_Motions.empty(), "anim cycle not found", name);
+
+        bLoop = loop;
+        SetActiveMotion(m_Motions.front());
+        m_MParam.Play();
+
+        return m_Motions.front();
     }
 }
 

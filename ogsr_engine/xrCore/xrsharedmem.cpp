@@ -105,7 +105,7 @@ void smem_container::dump()
     std::FILE* f{};
 
     std::ignore = FS.update_path(path, "$logs$", "$smem_dump$.txt");
-    R_ASSERT(fopen_s(&f, path, "w") == 0);
+    XR_ASSERT(::fopen_s(&f, path, "w") == 0, "", path);
     const auto _ = gsl::finally([f] { std::fclose(f); });
 
     xr::impl.dump(*f);

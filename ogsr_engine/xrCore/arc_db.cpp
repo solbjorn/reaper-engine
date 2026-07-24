@@ -54,24 +54,23 @@ IReader* open_chunk(void* ptr, u32 ID, gsl::czstring archiveName, s64 archiveSiz
     unsigned long read_byte{};
     gsl::index dwSize{};
 
-    u32 dwPtr = ::SetFilePointer(ptr, 0, nullptr, FILE_BEGIN);
-    R_ASSERT3(dwPtr != INVALID_SET_FILE_POINTER, archiveName, Debug.error2string(GetLastError()));
+    XR_ASSERT(::SetFilePointer(ptr, 0, nullptr, FILE_BEGIN) != INVALID_SET_FILE_POINTER, "", archiveName, xr::GetLastError());
 
     while (true)
     {
         bool res = ::ReadFile(ptr, &dwType, 4, &read_byte, nullptr);
-        R_ASSERT3(res && read_byte == 4, archiveName, Debug.error2string(GetLastError()));
+        XR_ASSERT(res && read_byte == 4, "", archiveName, xr::GetLastError());
 
         u32 tempSize = 0;
         res = ::ReadFile(ptr, &tempSize, 4, &read_byte, nullptr);
-        R_ASSERT3(res && read_byte == 4, archiveName, Debug.error2string(GetLastError()));
+        XR_ASSERT(res && read_byte == 4, "", archiveName, xr::GetLastError());
         dwSize = tempSize;
 
         if ((dwType & ~CFS_CompressMark) == ID)
         {
             std::byte* src_data = xr_alloc<std::byte>(dwSize);
             res = ::ReadFile(ptr, src_data, gsl::narrow_cast<u32>(dwSize), &read_byte, nullptr);
-            R_ASSERT3(res && read_byte == dwSize, archiveName, Debug.error2string(GetLastError()));
+            XR_ASSERT(res && read_byte == dwSize, "", archiveName, xr::GetLastError());
 
             if (dwType & CFS_CompressMark)
             {
@@ -81,8 +80,7 @@ IReader* open_chunk(void* ptr, u32 ID, gsl::czstring archiveName, s64 archiveSiz
                 if (key != 0)
                     g_trivial_encryptor.decode(src_data, dwSize, src_data, gsl::narrow<trivial_encryptor::key_flag>(key - 1));
 
-                bool result = _decompressLZ(&dest, &dest_sz, src_data, dwSize, archiveSize);
-                CHECK_OR_EXIT(result, xr::format("[{}] Can't decompress archive [{}]", std::source_location::current().function_name(), archiveName));
+                XR_ASSERT(_decompressLZ(&dest, &dest_sz, src_data, dwSize, archiveSize), "can't decompress archive chunk", archiveName, ID, dwSize);
                 xr_free(src_data);
 
                 return xr_new<CTempReader>(dest, dest_sz, 0z);
@@ -94,8 +92,7 @@ IReader* open_chunk(void* ptr, u32 ID, gsl::czstring archiveName, s64 archiveSiz
         }
         else
         {
-            dwPtr = ::SetFilePointer(ptr, gsl::narrow<s32>(dwSize), nullptr, FILE_CURRENT);
-            R_ASSERT3(dwPtr != INVALID_SET_FILE_POINTER, archiveName, Debug.error2string(GetLastError()));
+            XR_ASSERT(::SetFilePointer(ptr, gsl::narrow<s32>(dwSize), nullptr, FILE_CURRENT) != INVALID_SET_FILE_POINTER, "", archiveName, xr::GetLastError());
         }
     }
 }
@@ -109,9 +106,7 @@ static_assert(sizeof(std::unique_ptr<xr::detail::opaque_mapping>) == sizeof(uint
 
 void CLocatorAPI::archive::open_db()
 {
-    auto map = ::CreateFileMapping(hSrcFile, nullptr, PAGE_READONLY, 0, 0, nullptr);
-    R_ASSERT(map != INVALID_HANDLE_VALUE);
-
+    auto map = XR_ASSERT_VAL(::CreateFileMapping(hSrcFile, nullptr, PAGE_READONLY, 0, 0, nullptr) != INVALID_HANDLE_VALUE, "", path);
     xr::db_cb(cb).reset(static_cast<xr::detail::opaque_mapping*>(map));
 }
 
@@ -136,8 +131,7 @@ void CLocatorAPI::archive::autoload_db()
 
 void CLocatorAPI::archive::index_db(CLocatorAPI& loc, gsl::czstring fs_entry_point) const
 {
-    IReader* hdr = xr::open_chunk(hSrcFile, 1, path.c_str(), size, key);
-    R_ASSERT(hdr);
+    const auto hdr = XR_ASSERT_VAL(absl::WrapUnique(xr::open_chunk(hSrcFile, 1, path.c_str(), size, key)), "", path);
 
     while (!hdr->eof())
     {
@@ -145,34 +139,32 @@ void CLocatorAPI::archive::index_db(CLocatorAPI& loc, gsl::czstring fs_entry_poi
         string_path name;
 
         gsl::index buffer_size = hdr->r_u16();
-        VERIFY(buffer_size < gsl::index{sizeof(name) + 4 * sizeof(u32)});
-        VERIFY(buffer_size < gsl::index{sizeof(buffer_start)});
+        XR_ASSERT(buffer_size < gsl::index{sizeof(name) + 4 * sizeof(u32)});
+        XR_ASSERT(buffer_size < gsl::index{sizeof(buffer_start)});
 
         auto buffer{buffer_start.begin()};
-        hdr->r(&*buffer, buffer_size);
+        hdr->r(std::to_address(buffer), buffer_size);
 
-        u32 size_real = *reinterpret_cast<u32*>(&*buffer);
+        u32 size_real = *reinterpret_cast<u32*>(std::to_address(buffer));
         buffer += sizeof(size_real);
 
         // Compressed size, must be equal to the real size
-        R_ASSERT(*reinterpret_cast<u32*>(&*buffer) == size_real);
+        XR_ASSERT(*reinterpret_cast<u32*>(std::to_address(buffer)) == size_real, "", path);
         buffer += sizeof(u32);
 
         // Skip unused checksum
         buffer += sizeof(u32);
 
         gsl::index name_length = buffer_size - gsl::index{4 * sizeof(u32)};
-        std::memcpy(name, &*buffer, gsl::narrow_cast<size_t>(name_length));
+        std::memcpy(name, std::to_address(buffer), gsl::narrow_cast<size_t>(name_length));
         name[name_length] = '\0';
         buffer += buffer_size - gsl::index{4 * sizeof(u32)};
 
-        u32 ptr = *reinterpret_cast<u32*>(&*buffer);
+        u32 ptr = *reinterpret_cast<u32*>(std::to_address(buffer));
         buffer += sizeof(ptr);
 
         loc.Register(fs_entry_point, &name[0], vfs_idx, ptr, size_real, 0);
     }
-
-    hdr->close();
 }
 
 IReader* CLocatorAPI::archive::read_db(const struct file& desc, u32 gran) const
@@ -190,12 +182,11 @@ IReader* CLocatorAPI::archive::read_db(const struct file& desc, u32 gran) const
 
     const gsl::index sz = end - start;
 
-    auto ptr = static_cast<std::byte*>(::MapViewOfFile(xr::db_cb(cb).get(), FILE_MAP_READ, 0, gsl::narrow<unsigned long>(start), gsl::narrow_cast<size_t>(sz)));
-    if (!ptr)
-    {
-        VERIFY3(ptr, "cannot create file mapping on file", desc.name);
+    auto ptr = XR_DEBUG_ASSERT_VAL(static_cast<std::byte*>(::MapViewOfFile(xr::db_cb(cb).get(), FILE_MAP_READ, 0, gsl::narrow<unsigned long>(start),
+                                                                           gsl::narrow_cast<size_t>(sz))) != nullptr,
+                                   "can't create mapping on file", desc.name);
+    if (ptr == nullptr)
         return nullptr;
-    }
 
 #ifdef DEBUG
     string512 temp;

@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "movement_manager.h"
+
 #include "patrol_path_manager.h"
 #include "level_path_manager.h"
 #include "detail_path_manager.h"
@@ -111,6 +112,6 @@ void CMovementManager::process_patrol_path()
             m_path_state = ePathStateSelectPatrolPoint;
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }

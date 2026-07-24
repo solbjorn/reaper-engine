@@ -207,17 +207,17 @@ tmc::task<void> CGamePersistent::OnGameStart()
 
 void CGamePersistent::UpdateGameType()
 {
-    __super::UpdateGameType();
+    IGame_Persistent::UpdateGameType();
     m_game_params.m_e_game_type = GAME_SINGLE;
 
     // TODO: KRodin: надо подумать, надо ли тут вылетать вообще. Не может ли возникнуть каких-нибудь проблем, если парсер налажал. Он же влияет не только на
     // m_game_type. На данный момент парсер может налажать, если встретит скобочки () в имени сейва.
-    ASSERT_FMT_DBG(std::is_eq(xr_strcmp(m_game_params.m_game_type, "single")), "!!failed to parse the name of the save, rename it and try to load again.");
+    XR_ASSERT(std::is_eq(xr_strcmp(m_game_params.m_game_type, "single")), "failed to parse name of the save", m_game_params.m_game_type);
 }
 
 void CGamePersistent::OnGameEnd()
 {
-    __super::OnGameEnd();
+    IGame_Persistent::OnGameEnd();
 
     xr_delete(g_stalker_animation_data_storage);
     xr_delete(g_stalker_velocity_holder);

@@ -60,8 +60,9 @@ public:
 
     constexpr SelfRef build_unit_normal(const _vector3<T>& _p, const _vector3<T>& _n)
     {
-        VERIFY(fsimilar(_n.magnitude(), 1.f, EPS));
+        XR_DEBUG_ASSERT(fsimilar(_n.magnitude(), 1.0f, EPS));
         d = -n.set(_n).dotproduct(_p);
+
         return *this;
     }
 

@@ -37,13 +37,8 @@ private:
 public:
     void DumpVideoMemoryUsage() const;
 
-    ICF ID3D11DeviceContext1* get_context(ctx_id_t context_id)
-    {
-        VERIFY(context_id < R__NUM_CONTEXTS);
-        return contexts_pool[context_id];
-    }
-
-    ICF ID3D11DeviceContext1* get_imm_context() { return contexts_pool[R__IMM_CTX_ID]; }
+    [[nodiscard]] auto get_context(ctx_id_t context_id) const { return contexts_pool[context_id]; }
+    [[nodiscard]] auto get_imm_context() const { return contexts_pool[R__IMM_CTX_ID]; }
 
     //	Variables section
     u32 BackBufferCount{};
@@ -68,7 +63,7 @@ public:
 private:
     void* waitable{};
     IDXGIAdapter3* m_pAdapter3{};
-    ID3D11DeviceContext1* contexts_pool[R__NUM_CONTEXTS]{};
+    std::array<ID3D11DeviceContext1*, R__NUM_CONTEXTS> contexts_pool{};
 
 public:
     stats_manager stats_manager{};

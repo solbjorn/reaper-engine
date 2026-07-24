@@ -1,24 +1,24 @@
 #include "stdafx.h"
+
 #include "xr_effgamma.h"
 
 void CGammaControl::Update() const
 {
-    if (HW.pDevice)
+    if (HW.pDevice == nullptr)
+        return;
+
+    IDXGIOutput* pOutput;
+    XR_ASSERT(xr::hr(HW.m_pSwapChain->GetContainingOutput(&pOutput)));
+
+    if (DXGI_GAMMA_CONTROL_CAPABILITIES GC; xr::hr(pOutput->GetGammaControlCapabilities(&GC)))
     {
-        DXGI_GAMMA_CONTROL_CAPABILITIES GC;
         DXGI_GAMMA_CONTROL G;
-        IDXGIOutput* pOutput;
 
-        CHK_DX(HW.m_pSwapChain->GetContainingOutput(&pOutput));
-        HRESULT hr = pOutput->GetGammaControlCapabilities(&GC);
-        if (SUCCEEDED(hr))
-        {
-            GenLUT(GC, G);
-            pOutput->SetGammaControl(&G);
-        }
-
-        _RELEASE(pOutput);
+        GenLUT(GC, G);
+        pOutput->SetGammaControl(&G);
     }
+
+    _RELEASE(pOutput);
 }
 
 void CGammaControl::GenLUT(const DXGI_GAMMA_CONTROL_CAPABILITIES& GC, DXGI_GAMMA_CONTROL& G) const

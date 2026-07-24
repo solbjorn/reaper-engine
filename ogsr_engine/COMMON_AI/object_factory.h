@@ -24,14 +24,6 @@ public:
     typedef ObjectFactory::CLIENT_SCRIPT_BASE_CLASS CLIENT_SCRIPT_BASE_CLASS;
     typedef ObjectFactory::SERVER_SCRIPT_BASE_CLASS SERVER_SCRIPT_BASE_CLASS;
 
-protected:
-    struct CObjectItemPredicate
-    {
-        IC bool operator()(const CObjectItemAbstract* item1, const CObjectItemAbstract* item2) const;
-        IC bool operator()(const CObjectItemAbstract* item, const CLASS_ID& clsid) const;
-    };
-
-public:
     typedef xr_vector<CObjectItemAbstract*> OBJECT_ITEM_STORAGE;
     typedef OBJECT_ITEM_STORAGE::iterator iterator;
     typedef OBJECT_ITEM_STORAGE::const_iterator const_iterator;
@@ -40,7 +32,6 @@ protected:
     mutable OBJECT_ITEM_STORAGE m_clsids;
     mutable bool m_actual;
 
-protected:
     void register_classes();
     IC void add(CObjectItemAbstract* item);
     IC const OBJECT_ITEM_STORAGE& clsids() const;

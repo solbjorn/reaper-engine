@@ -103,7 +103,7 @@ void CSoundRender_CoreA::_restart()
     {
         pDeviceList->SelectBestDeviceId(/*notification_client.GetDefaultDeviceName().c_str()*/);
 
-        R_ASSERT(snd_device_id >= 0 && snd_device_id < pDeviceList->GetNumDevices());
+        XR_ASSERT(snd_device_id >= 0 && snd_device_id < pDeviceList->GetNumDevices(), "", snd_device_id, pDeviceList->GetNumDevices());
         const ALDeviceDesc& deviceDesc = pDeviceList->GetDeviceDesc(snd_device_id);
 
         if (reopen_device(deviceDesc.name))
@@ -262,7 +262,7 @@ void CSoundRender_CoreA::_initialize(int stage)
 
     pDeviceList->SelectBestDeviceId(/*notification_client.GetDefaultDeviceName().c_str()*/);
 
-    R_ASSERT(snd_device_id >= 0 && snd_device_id < pDeviceList->GetNumDevices());
+    XR_ASSERT(snd_device_id >= 0 && snd_device_id < pDeviceList->GetNumDevices(), "", snd_device_id, pDeviceList->GetNumDevices());
     const ALDeviceDesc& deviceDesc = pDeviceList->GetDeviceDesc(snd_device_id);
 
     if (!init_context(deviceDesc))
@@ -284,8 +284,7 @@ void CSoundRender_CoreA::_initialize(int stage)
         Msg("!![{}] OpenAL AL_STOP_SOURCES_ON_DISCONNECT_SOFT error: {}", std::source_location::current().function_name(), alGetString(err));
     }
 
-    R_ASSERT(alIsExtensionPresent("AL_EXT_FLOAT32") || alIsExtensionPresent("AL_EXT_float32"),
-             "The audio backend doesn't support PCM data in IEEE 754 floating-point format");
+    XR_ASSERT(alIsExtensionPresent("AL_EXT_FLOAT32") || alIsExtensionPresent("AL_EXT_float32"), "missing required support of IEEE 754 floating point");
 
     const bool is_al_soft = deviceDesc.is_al_soft;
     init_device_properties(is_al_soft);

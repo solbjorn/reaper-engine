@@ -119,8 +119,8 @@ tmc::task<void> CSoundRender_Core::stop_emitters()
 
 int CSoundRender_Core::pause_emitters(bool val)
 {
-    m_iPauseCounter += val ? +1 : -1;
-    VERIFY(m_iPauseCounter >= 0);
+    m_iPauseCounter += val ? 1 : -1;
+    XR_ASSERT(m_iPauseCounter >= 0, "", val);
 
     for (const auto& s_emitter : s_emitters)
         s_emitter->pause(val, val ? m_iPauseCounter : m_iPauseCounter + 1);
@@ -201,10 +201,8 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
         return;
 
     // check version
-    R_ASSERT(I->find_chunk(0));
-
-    u32 version = I->r_u32();
-    VERIFY2(version == 0, "Invalid SOM version");
+    XR_ASSERT(I->find_chunk(0) > 0);
+    XR_ASSERT(I->r_u32() == 0, "invalid SOM version");
 
     struct SOM_poly
     {
@@ -218,10 +216,7 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
     CDB::Collector CL;
     {
         // load geometry
-        const auto geom = absl::WrapUnique(I->open_chunk(1));
-        VERIFY2(geom, "Corrupted SOM file");
-        if (!geom)
-            return;
+        const auto geom = XR_ASSERT_VAL(absl::WrapUnique(I->open_chunk(1)), "corrupted SOM file");
 
         // Load tris and merge them
         for (auto& poly : std::span{static_cast<const SOM_poly*>(geom->pointer()), static_cast<const SOM_poly*>(geom->end())})
@@ -254,9 +249,9 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
     {
         string256 n;
         names->r_stringZ(n, sizeof(n));
-        int id = s_environment->GetID(n);
-        R_ASSERT(id >= 0);
-        ids.push_back(u16(id));
+
+        const auto id = XR_ASSERT_VAL(s_environment->GetID(n) >= 0);
+        ids.emplace_back(id);
 
         Msg("~ set_geometry_env id={} name[{}]=environment id[{}]", ids.size() - 1, n, id);
     }
@@ -265,14 +260,13 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 
     // Load geometry
     const auto geom = absl::WrapUnique(I->open_chunk(1));
-
     hdrCFORM H;
-    geom->r(&H, sizeof(hdrCFORM));
-    R_ASSERT(H.version == CFORM_CURRENT_VERSION);
+    geom->r(&H, sizeof(H));
+    XR_ASSERT(H.version == CFORM_CURRENT_VERSION);
 
     const Fvector* verts = (const Fvector*)geom->pointer();
     xr_vector<CDB::TRI> tris(H.facecount);
-    R_ASSERT(geom->elapsed() == H.vertcount * sizeof(Fvector) + H.facecount * sizeof(CDB::TRI));
+    XR_ASSERT(geom->elapsed() == H.vertcount * sizeof(Fvector) + H.facecount * sizeof(CDB::TRI));
 
 #ifdef XR_TRIVIAL_BROKEN
     XR_DIAG_PUSH();
@@ -287,11 +281,11 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 
     for (auto& T : tris)
     {
-        const u16 id_front = (u16)((T.dummy & 0x0000ffff) >> 0); //	front face
-        const u16 id_back = (u16)((T.dummy & 0xffff0000) >> 16); //	back face
-        R_ASSERT(id_front < (u16)ids.size());
-        R_ASSERT(id_back < (u16)ids.size());
-        T.dummy = u32(ids[id_back] << 16) | u32(ids[id_front]);
+        // front face
+        const auto id_front = XR_ASSERT_VAL(((T.dummy & 0x0000ffff) >> 0) < ids.size());
+        // back face
+        const auto id_back = XR_ASSERT_VAL(((T.dummy & 0xffff0000) >> 16) < ids.size());
+        T.dummy = (u32{ids[id_back]} << 16) | ids[id_front];
     }
 
     geom_ENV = xr_new<CDB::MODEL>();
@@ -626,7 +620,7 @@ bool CSoundRender_Core::EFXTestSupport()
 
     alGenAuxiliaryEffectSlots(1, &slot);
     err = alGetError();
-    ASSERT_FMT_DBG(err == AL_NO_ERROR, "!![{}] OpenAL EFX error: [{}]", std::source_location::current().function_name(), alGetString(err));
+    XR_ASSERT(err == AL_NO_ERROR, "OpenAL EFX error", alGetString(err));
 
     return true;
 }
@@ -680,7 +674,8 @@ bool CSoundRender_Core::i_efx_commit_setting()
 
 void CSoundRender_Core::i_eax_listener_set(CSound_environment* _E)
 {
-    VERIFY(bEAX);
+    XR_ASSERT(bEAX);
+
     CSoundRender_Environment* E = static_cast<CSoundRender_Environment*>(_E);
     EAXLISTENERPROPERTIES ep;
     ep.lRoom = iFloor(E->Room); // room effect level at low frequencies

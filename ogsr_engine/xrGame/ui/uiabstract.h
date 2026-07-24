@@ -203,7 +203,7 @@ public:
             res.set(m_wndPos.x - half_w, m_wndPos.y - half_h, m_wndPos.x + half_w, m_wndPos.y + half_h);
         }
         break;
-        default: NODEFAULT;
+        default: xr::unreachable();
         }
     }
 

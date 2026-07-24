@@ -201,7 +201,7 @@ void CMonsterSquad::Idle_AssignAction(ENTITY_VEC& members)
                     }
                 command.position.mad(right_pos, random_dir, random_r);
                 break;
-            default: NODEFAULT;
+            default: xr::unreachable();
             }
 
             cur_type++;

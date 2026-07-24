@@ -103,11 +103,7 @@ void _register_open_file(T* _r, LPCSTR _fname)
 template <typename T>
 void _unregister_open_file(T* _r)
 {
-    auto it = std::find_if(g_open_files.begin(), g_open_files.end(), eq_pointer<T>(_r));
-    VERIFY(it != g_open_files.end());
-
-    _open_file& _of = *it;
-    _of._reader = nullptr;
+    XR_DEBUG_ASSERT_VAL(std::ranges::find_if(g_open_files, eq_pointer<T>(_r)) != g_open_files.end())->_reader = nullptr;
 }
 } // namespace
 
@@ -156,7 +152,7 @@ CLocatorAPI::CLocatorAPI()
 
 CLocatorAPI::~CLocatorAPI()
 {
-    VERIFY(0 == m_iLockRescan);
+    XR_ASSERT(m_iLockRescan == 0);
     _dump_open_files(1);
 }
 
@@ -225,8 +221,7 @@ void CLocatorAPI::Register(gsl::czstring entry, gsl::czstring name, gsl::index v
             desc.modif = modif;
             desc.folder = true;
 
-            auto [it, done] = files.insert(desc);
-            R_ASSERT(done);
+            XR_ASSERT(files.insert(desc).second, "", path);
         }
 
         strcpy_s(temp, path); // strcpy_s(temp, folder);
@@ -243,16 +238,15 @@ void CLocatorAPI::archive::open()
     if (hSrcFile != nullptr && cb != 0)
         return;
 
-    hSrcFile = CreateFileA(path.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
-    R_ASSERT(hSrcFile != INVALID_HANDLE_VALUE);
+    hSrcFile =
+        XR_ASSERT_VAL(::CreateFileA(path.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr) != INVALID_HANDLE_VALUE,
+                      "", path, xr::GetLastError());
 
     LARGE_INTEGER sz;
     GetFileSizeEx(hSrcFile, &sz);
-    size = sz.QuadPart;
-    R_ASSERT(size > 0);
+    size = XR_ASSERT_VAL(sz.QuadPart > 0, "", path);
 
-    u32 dwPtr = SetFilePointer(hSrcFile, 0, nullptr, FILE_BEGIN);
-    R_ASSERT3(dwPtr != INVALID_SET_FILE_POINTER, path.c_str(), Debug.error2string(GetLastError()));
+    XR_ASSERT(::SetFilePointer(hSrcFile, 0, nullptr, FILE_BEGIN) != INVALID_SET_FILE_POINTER, "", path, xr::GetLastError());
 
     switch (fmt)
     {
@@ -261,7 +255,7 @@ void CLocatorAPI::archive::open()
     case format::zip: open_zip(); break;
     case format::ar: open_ar(); break;
     case format::db: open_db(); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 
@@ -274,7 +268,7 @@ IC bool CLocatorAPI::archive::autoload()
     case format::zip: autoload_zip(); break;
     case format::ar: autoload_ar(); break;
     case format::db: autoload_db(); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     if (!header || !header->section_exist("header"))
@@ -303,7 +297,7 @@ IC void CLocatorAPI::archive::index(CLocatorAPI& loc, gsl::czstring fs_entry_poi
     case format::zip: index_zip(loc, fs_entry_point); break;
     case format::ar: index_ar(loc, fs_entry_point); break;
     case format::db: index_db(loc, fs_entry_point); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 
@@ -316,7 +310,7 @@ IC IReader* CLocatorAPI::archive::read(const struct file& desc, u32 gran) const
     case format::zip: return read_zip(desc, gran);
     case format::ar: return read_ar(desc, gran);
     case format::db: return read_db(desc, gran);
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 
@@ -329,7 +323,7 @@ IC CStreamReader* CLocatorAPI::archive::stream(const struct file& desc) const
     case format::zip: return stream_zip(desc);
     case format::ar: return stream_ar(desc);
     case format::db: return stream_db(desc);
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 
@@ -342,7 +336,7 @@ void CLocatorAPI::archive::close()
     case format::zip: close_zip(); break;
     case format::ar: close_ar(); break;
     case format::db: close_db(); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     CloseHandle(hSrcFile);
@@ -368,10 +362,10 @@ void CLocatorAPI::LoadArchive(archive& A)
     }
     else
     {
-        R_ASSERT2(read_path[0] == '$', read_path);
+        XR_ASSERT(read_path[0] == '$', "", A.path, read_path);
 
         const auto res = scn::scan<std::string_view>(std::string_view{read_path}, "{:[^\\]}");
-        R_ASSERT(res, res.error().msg());
+        XR_ASSERT(res, res.error().msg(), A.path, read_path);
         const auto alias_name = res->value();
 
         const auto P = pathes.find(alias_name);
@@ -658,7 +652,7 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
     }
     else
     {
-        CHECK_OR_EXIT(pFSltx, xr::format("Cannot open file \"{}\".\nCheck your working folder.", fs_ltx));
+        XR_ASSERT(pFSltx != nullptr, "cannot open filesystem ltx", fs_ltx);
 
         // append all pathes
         string_path id, root, add, def, capt;
@@ -678,8 +672,7 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
                 continue;
 
             std::ignore = _GetItem(buf, 1, temp, '=');
-            const auto cnt = _GetItemCount(temp, _delimiter);
-            R_ASSERT2(cnt >= 3, temp);
+            const auto cnt = XR_ASSERT_VAL(_GetItemCount(temp, _delimiter) >= 3, "", temp);
             u32 fl{};
 
             std::ignore = _GetItem(temp, 0, b_v, _delimiter);
@@ -703,17 +696,17 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 
             auto p_it = pathes.find(root);
             FS_Path* P = xr_new<FS_Path>((p_it != pathes.end()) ? p_it->second->m_Path : root, lp_add, lp_def, lp_capt, fl);
-            auto I = pathes.emplace(xr_strdup(id), P);
+
+            XR_ASSERT(pathes.emplace(xr_strdup(id), P).second, "duplicate lines in filesystem ltx", fs_ltx, id);
 
 #ifndef DEBUG
             m_Flags.set(flCacheFiles, FALSE);
 #endif // DEBUG
-
-            CHECK_OR_EXIT(I.second,
-                          "The file 'fsgame.ltx' is corrupted (it contains duplicated lines).\nPlease reinstall the game or fix the problem manually.");
         }
+
         r_close(pFSltx);
-        R_ASSERT(path_exist("$app_data_root$"));
+
+        XR_ASSERT(path_exist("$app_data_root$"));
 
         for (auto p_it = pathes.begin(); p_it != pathes.end(); p_it++)
         {
@@ -826,9 +819,9 @@ const CLocatorAPI::file* CLocatorAPI::exist(string_path& fn, LPCSTR path, LPCSTR
 
 xr_vector<char*>* CLocatorAPI::file_list_open(const char* initial, const char* folder, u32 flags)
 {
-    string_path N;
+    XR_ASSERT(initial != nullptr && initial[0] != '\0');
 
-    R_ASSERT(initial && initial[0]);
+    string_path N;
     std::ignore = update_path(N, initial, folder);
 
     return file_list_open(N, flags);
@@ -836,8 +829,9 @@ xr_vector<char*>* CLocatorAPI::file_list_open(const char* initial, const char* f
 
 xr_vector<char*>* CLocatorAPI::file_list_open(const char* _path, u32 flags)
 {
-    R_ASSERT(_path);
-    VERIFY(flags);
+    XR_ASSERT(_path != nullptr && _path[0] != '\0');
+    XR_DEBUG_ASSERT(flags != 0);
+
     // проверить нужно ли пересканировать пути
     check_pathes();
 
@@ -910,8 +904,8 @@ void CLocatorAPI::file_list_close(xr_vector<char*>*& lst)
 
 gsl::index CLocatorAPI::file_list(FS_FileSet& dest, LPCSTR path, u32 flags, LPCSTR mask)
 {
-    R_ASSERT(path);
-    VERIFY(flags);
+    XR_ASSERT(path != nullptr && path[0] != '\0' && flags != 0, "", flags);
+
     // проверить нужно ли пересканировать пути
     check_pathes();
 
@@ -1032,13 +1026,14 @@ bool CLocatorAPI::check_for_file(LPCSTR path, LPCSTR _fname, string_path& fname,
     file desc_f;
     desc_f.name = fname;
 
-    files_it I = files.find(desc_f);
+    const auto I = files.find(desc_f);
     if (I == files.end())
-        return (false);
+        return false;
 
     ++dwOpenCounter;
-    desc = &*I;
-    return (true);
+    desc = std::to_address(I);
+
+    return true;
 }
 
 template <typename T>
@@ -1111,7 +1106,8 @@ void CLocatorAPI::w_close(IWriter*& S)
 {
     if (S)
     {
-        R_ASSERT(S->fName.size());
+        XR_ASSERT(!S->fName.empty(), "", S->fName);
+
         string_path fname;
         strcpy_s(fname, S->fName.c_str());
         bool bReg = S->valid();
@@ -1160,8 +1156,8 @@ void CLocatorAPI::file_delete(LPCSTR path, LPCSTR nm)
 
 void CLocatorAPI::file_copy(LPCSTR src, LPCSTR dest)
 {
-#if __has_include("..\build_config_overrides\trivial_encryptor_ovr.h")
-    FATAL("Mamkin Hacker Detected");
+#if __has_include("../build_config_overrides/trivial_encryptor_ovr.h")
+    XR_PANIC("file copying is prohibited");
 #else
     if (exist(src))
     {
@@ -1198,8 +1194,8 @@ void CLocatorAPI::file_rename(LPCSTR src, LPCSTR dest, bool bOwerwrite)
 
             files.erase(D);
 
-            S = file_find_it(src); // Обновим снова, потому что после erase итератор может быть невалидным
-            R_ASSERT(S != files.end()); // на всякий случай
+            // Обновим снова, потому что после erase итератор может быть невалидным
+            S = XR_ASSERT_VAL(file_find_it(src) != files.end(), "", src);
         }
 
         file new_desc = *S;
@@ -1230,8 +1226,8 @@ bool CLocatorAPI::path_exist(LPCSTR path) { return pathes.contains(path); }
 
 FS_Path* CLocatorAPI::append_path(LPCSTR path_alias, LPCSTR root, LPCSTR add, BOOL recursive)
 {
-    VERIFY(root);
-    VERIFY(false == path_exist(path_alias));
+    XR_ASSERT(root != nullptr);
+    XR_DEBUG_ASSERT(!path_exist(path_alias));
 
     FS_Path* P = xr_new<FS_Path>(root, add, nullptr, nullptr, 0u);
     bool bNoRecurse = !recursive;
@@ -1242,14 +1238,7 @@ FS_Path* CLocatorAPI::append_path(LPCSTR path_alias, LPCSTR root, LPCSTR add, BO
     return P;
 }
 
-FS_Path* CLocatorAPI::get_path(LPCSTR path)
-{
-    auto P = pathes.find(path);
-    R_ASSERT2(P != pathes.end(), path);
-
-    return P->second;
-}
-
+FS_Path* CLocatorAPI::get_path(LPCSTR path) { return XR_ASSERT_VAL(pathes.find(path) != pathes.end(), "", path)->second; }
 LPCSTR CLocatorAPI::update_path(string_path& dest, LPCSTR initial, LPCSTR src) { return get_path(initial)->_update(dest, src); }
 
 s64 CLocatorAPI::get_file_age(LPCSTR nm)
@@ -1330,7 +1319,8 @@ void CLocatorAPI::lock_rescan() { m_iLockRescan++; }
 void CLocatorAPI::unlock_rescan()
 {
     m_iLockRescan--;
-    VERIFY(m_iLockRescan >= 0);
+    XR_ASSERT(m_iLockRescan >= 0);
+
     if ((0 == m_iLockRescan) && m_Flags.is(flNeedRescan))
         rescan_physical_pathes();
 }

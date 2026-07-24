@@ -55,17 +55,17 @@ void CObject::cNameVisual_set(shared_str N)
 // flagging
 void CObject::processing_activate()
 {
-    VERIFY3(255 != Props.bActiveCounter, "Invalid sequence of processing enable/disable calls: overflow", cName().c_str());
-    Props.bActiveCounter++;
-    if (0 == (Props.bActiveCounter - 1))
+    XR_ASSERT(+Props.bActiveCounter < std::numeric_limits<u8>::max(), "invalid sequence of processing enable/disable calls: overflow", cName());
+
+    if (++Props.bActiveCounter == 1)
         g_pGameLevel->Objects.o_activate(this);
 }
 
 void CObject::processing_deactivate()
 {
-    VERIFY3(0 != Props.bActiveCounter, "Invalid sequence of processing enable/disable calls: underflow", cName().c_str());
-    Props.bActiveCounter--;
-    if (0 == Props.bActiveCounter)
+    XR_ASSERT(+Props.bActiveCounter > 0, "invalid sequence of processing enable/disable calls: underflow", cName());
+
+    if (--Props.bActiveCounter == 0)
         g_pGameLevel->Objects.o_sleep(this);
 }
 
@@ -74,7 +74,7 @@ void CObject::setEnabled(BOOL _enabled)
     if (_enabled)
     {
         Props.bEnabled = 1;
-        if (collidable.model)
+        if (collidable.model != nullptr)
             spatial.type |= STYPE_COLLIDEABLE;
     }
     else
@@ -83,12 +83,14 @@ void CObject::setEnabled(BOOL _enabled)
         spatial.type &= ~STYPE_COLLIDEABLE;
     }
 }
+
 void CObject::setVisible(BOOL _visible)
 {
     if (_visible)
-    { // Parent should control object visibility itself (??????)
+    {
+        // Parent should control object visibility itself (??????)
         Props.bVisible = 1;
-        if (renderable.visual)
+        if (renderable.visual != nullptr)
             spatial.type |= STYPE_RENDERABLE;
     }
     else
@@ -100,19 +102,11 @@ void CObject::setVisible(BOOL _visible)
 
 void CObject::Center(Fvector& C) const
 {
-    ASSERT_FMT(renderable.visual, "[%s]: %s[%u] has no renderable.visual", std::source_location::current().function_name(), cName().c_str(), ID());
-    renderable.xform.transform_tiny(C, renderable.visual->getVisData().sphere.P);
+    renderable.xform.transform_tiny(C, XR_ASSERT_VAL(renderable.visual != nullptr, "object has no visual", cName(), ID())->getVisData().sphere.P);
 }
-float CObject::Radius() const
-{
-    ASSERT_FMT(renderable.visual, "[%s]: %s[%u] has no renderable.visual", std::source_location::current().function_name(), cName().c_str(), ID());
-    return renderable.visual->getVisData().sphere.R;
-}
-const Fbox& CObject::BoundingBox() const
-{
-    ASSERT_FMT(renderable.visual, "[%s]: %s[%u] has no renderable.visual", std::source_location::current().function_name(), cName().c_str(), ID());
-    return renderable.visual->getVisData().box;
-}
+
+float CObject::Radius() const { return XR_ASSERT_VAL(renderable.visual != nullptr, "object has no visual", cName(), ID())->getVisData().sphere.R; }
+const Fbox& CObject::BoundingBox() const { return XR_ASSERT_VAL(renderable.visual != nullptr, "object has no visual", cName(), ID())->getVisData().box; }
 
 //----------------------------------------------------------------------
 // Class	: CXR_Object
@@ -136,7 +130,7 @@ CObject::~CObject()
 void CObject::Load(LPCSTR section)
 {
     // Name
-    R_ASSERT(section);
+    XR_ASSERT(section != nullptr);
 
     shared_str sect{section};
     cName_set(sect);
@@ -161,7 +155,7 @@ tmc::task<bool> CObject::net_Spawn(CSE_Abstract*)
 {
     PositionStack.clear();
 
-    VERIFY(_valid(renderable.xform));
+    XR_ASSERT(_valid(renderable.xform));
 
     if (!Visual() && pSettings->line_exist(cNameSect(), "visual"))
     {
@@ -174,12 +168,12 @@ tmc::task<bool> CObject::net_Spawn(CSE_Abstract*)
     {
         if (pSettings->line_exist(cNameSect(), "cform"))
         {
-            VERIFY3(NameVisual.c_str() != nullptr, "Model isn't assigned for object, but cform requisted", cName().c_str());
+            XR_ASSERT(NameVisual.c_str() != nullptr, "no visual for object with cform", cName(), cNameSect());
             collidable.model = xr_new<CCF_Skeleton>(this);
         }
     }
 
-    R_ASSERT(spatial.space);
+    XR_ASSERT(spatial.space != nullptr);
     spatial_register();
 
     if (register_schedule())
@@ -196,7 +190,7 @@ tmc::task<bool> CObject::net_Spawn(CSE_Abstract*)
 
 tmc::task<void> CObject::net_Destroy()
 {
-    VERIFY(getDestroy());
+    XR_ASSERT(getDestroy());
 
     xr_delete(collidable.model);
 
@@ -281,19 +275,15 @@ void CObject::spatial_update(float eps_P, float eps_R)
 // Updates
 tmc::task<void> CObject::UpdateCL()
 {
-    // consistency check
 #ifdef DEBUG
-    VERIFY2(_valid(renderable.xform), *cName());
+    // consistency check
+    XR_ASSERT(_valid(renderable.xform), "", cName());
 
-    if (Device.dwFrame == dbg_update_cl)
-        Debug.fatal(DEBUG_INFO, "'UpdateCL' called twice per frame for %s", *cName());
+    XR_ASSERT(dbg_update_cl != Device.dwFrame, "object client update called twice per frame", cName(), dbg_update_cl);
     dbg_update_cl = Device.dwFrame;
 
-    if (Parent && spatial.node_ptr)
-        Debug.fatal(DEBUG_INFO, "Object %s has parent but is still registered inside spatial DB", *cName());
-
-    if ((0 == collidable.model) && (spatial.type & STYPE_COLLIDEABLE))
-        Debug.fatal(DEBUG_INFO, "Object %s registered as 'collidable' but has no collidable model", *cName());
+    XR_ASSERT(Parent == nullptr || spatial.node_ptr == nullptr, "object has parent but still registered inside spatial DB", cName());
+    XR_ASSERT(collidable.model != nullptr || !(spatial.type & STYPE_COLLIDEABLE), "object registered as 'collidable' but has no collidable model", cName());
 #endif
 
     spatial_update(base_spu_epsP * 5, base_spu_epsR * 5);
@@ -339,11 +329,7 @@ void CObject::spatial_move()
     ISpatial::spatial_move();
 }
 
-CObject::SavedPosition CObject::ps_Element(u32 ID) const
-{
-    VERIFY(gsl::narrow<s32>(ID) < ps_Size());
-    return PositionStack[ID];
-}
+CObject::SavedPosition CObject::ps_Element(u32 ID) const { return PositionStack[XR_ASSERT_VAL(ID < ps_Size())]; }
 
 void CObject::renderable_Render(u32, IRenderable*) { MakeMeCrow(); }
 
@@ -353,9 +339,8 @@ CObject* CObject::H_SetParent(CObject* new_parent, bool just_before_destroy)
         return new_parent;
 
     CObject* old_parent = Parent;
-    VERIFY2(!new_parent || !old_parent, "Before set parent - execute H_SetParent(0)");
+    XR_ASSERT(new_parent == nullptr || old_parent == nullptr);
 
-    // if (Parent) Parent->H_ChildRemove	(this);
     if (!old_parent)
         OnH_B_Chield(); // before attach
     else
@@ -372,7 +357,6 @@ CObject* CObject::H_SetParent(CObject* new_parent, bool just_before_destroy)
     else
         OnH_A_Independent(); // after detach
 
-    // if (Parent)	Parent->H_ChildAdd		(this);
     MakeMeCrow();
 
     return old_parent;
@@ -380,6 +364,7 @@ CObject* CObject::H_SetParent(CObject* new_parent, bool just_before_destroy)
 
 void CObject::OnH_A_Chield() {}
 void CObject::OnH_B_Chield() { setVisible(false); }
+
 void CObject::OnH_A_Independent() { setVisible(true); }
 void CObject::OnH_B_Independent(bool) {}
 
@@ -410,6 +395,6 @@ void CObject::setDestroy(BOOL _destroy)
     }
     else
     {
-        VERIFY(!g_pGameLevel->Objects.registered_object_to_destroy(this));
+        XR_DEBUG_ASSERT(!g_pGameLevel->Objects.registered_object_to_destroy(this));
     }
 }

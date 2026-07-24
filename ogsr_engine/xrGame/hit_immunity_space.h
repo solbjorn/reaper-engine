@@ -3,5 +3,5 @@
 namespace HitImmunity
 {
 // раны полученные различными типами хитов
-typedef svector<float, ALife::eHitTypeMax> HitTypeSVec;
+using HitTypeSVec = std::inplace_vector<f32, ALife::eHitTypeMax>;
 } // namespace HitImmunity

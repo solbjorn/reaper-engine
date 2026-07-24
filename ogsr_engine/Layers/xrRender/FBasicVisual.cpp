@@ -20,24 +20,25 @@ IRender_Mesh::~IRender_Mesh()
 }
 
 dxRender_Visual::dxRender_Visual() { vis.clear(); }
-dxRender_Visual::~dxRender_Visual() {}
+dxRender_Visual::~dxRender_Visual() = default;
 
 void dxRender_Visual::Release() {}
 
+namespace xr
+{
 namespace
 {
-constexpr const char* vis_shaders_replace = "vis_shaders_replace";
-constexpr const char* vis_shaders_override = "vis_shaders_override";
+constexpr gsl::czstring vis_shaders_replace{"vis_shaders_replace"};
+constexpr gsl::czstring vis_shaders_override{"vis_shaders_override"};
 
-bool replaceShadersLine(char* fnS, u32 fnS_size, LPCSTR item)
+[[nodiscard]] bool replaceShadersLine(gsl::zstring fnS, std::size_t fnS_size, gsl::czstring item)
 {
-    if (!pSettings->line_exist(vis_shaders_replace, item))
+    if (!pSettings->line_exist(xr::vis_shaders_replace, item))
         return false;
 
-    LPCSTR overrides = pSettings->r_string(vis_shaders_replace, item);
+    LPCSTR overrides = pSettings->r_string(xr::vis_shaders_replace, item);
     u32 cnt = _GetItemCount(overrides);
-    ASSERT_FMT(cnt % 2 == 0, "[%s]: %s: wrong format cnt = %u: %s = %s", std::source_location::current().function_name(), vis_shaders_replace, cnt, item,
-               overrides);
+    XR_ASSERT(xr::is_aligned(cnt, 2u), "wrong format for shaders replacement", xr::vis_shaders_replace, cnt, item, overrides);
 
     for (u32 i = 0; i < cnt; i += 2)
     {
@@ -54,41 +55,39 @@ bool replaceShadersLine(char* fnS, u32 fnS_size, LPCSTR item)
     return true;
 }
 
-bool replaceShaders(const char* N, char* fnS, u32 fnS_size)
+void replaceShaders(gsl::czstring N, gsl::zstring fnS, std::size_t fnS_size)
 {
-    if (!pSettings->section_exist(vis_shaders_replace))
-        return false;
+    if (!pSettings->section_exist(xr::vis_shaders_replace))
+        return;
 
-    if (replaceShadersLine(fnS, fnS_size, N))
-        return true;
+    if (xr::replaceShadersLine(fnS, fnS_size, N))
+        return;
 
     xr_string s{N};
 
     if (strchr(N, ':'))
     {
         s.erase(s.find(":"));
-        if (replaceShadersLine(fnS, fnS_size, s.c_str()))
-            return true;
+
+        if (xr::replaceShadersLine(fnS, fnS_size, s.c_str()))
+            return;
     }
 
     while (xr_string_utils::SplitFilename(s))
     {
-        if (replaceShadersLine(fnS, fnS_size, s.c_str()))
-            return true;
+        if (xr::replaceShadersLine(fnS, fnS_size, s.c_str()))
+            return;
     }
-
-    return false;
 }
 
-bool overrideShadersLine(char* fnS, u32 fnS_size, const char* item)
+[[nodiscard]] bool overrideShadersLine(gsl::zstring fnS, std::size_t fnS_size, gsl::czstring item)
 {
-    if (!pSettings->line_exist(vis_shaders_override, item))
+    if (!pSettings->line_exist(xr::vis_shaders_override, item))
         return false;
 
-    LPCSTR overrides = pSettings->r_string(vis_shaders_override, item);
+    LPCSTR overrides = pSettings->r_string(xr::vis_shaders_override, item);
     u32 cnt = _GetItemCount(overrides);
-    ASSERT_FMT(cnt % 2 == 0, "[%s]: %s: wrong format cnt = %u: %s = %s", std::source_location::current().function_name(), vis_shaders_override, cnt, item,
-               overrides);
+    XR_ASSERT(xr::is_aligned(cnt, 2u), "wrong format for shaders override", xr::vis_shaders_override, cnt, item, overrides);
 
     for (u32 i = 0; i < cnt; i += 2)
     {
@@ -104,33 +103,33 @@ bool overrideShadersLine(char* fnS, u32 fnS_size, const char* item)
 
     return true;
 }
+} // namespace
 
-bool overrideShaders(const char* fnT, char* fnS, u32 fnS_size)
+void override_shaders(gsl::czstring fnT, gsl::zstring fnS, std::size_t fnS_size)
 {
-    if (!pSettings->section_exist(vis_shaders_override))
-        return false;
+    if (!pSettings->section_exist(xr::vis_shaders_override))
+        return;
 
-    if (overrideShadersLine(fnS, fnS_size, fnT))
-        return true;
+    if (xr::overrideShadersLine(fnS, fnS_size, fnT))
+        return;
 
     xr_string s{fnT};
 
     if (strchr(fnT, ':'))
     {
         s.erase(s.find(":"));
-        if (overrideShadersLine(fnS, fnS_size, s.c_str()))
-            return true;
+
+        if (xr::overrideShadersLine(fnS, fnS_size, s.c_str()))
+            return;
     }
 
     while (xr_string_utils::SplitFilename(s))
     {
-        if (overrideShadersLine(fnS, fnS_size, s.c_str()))
-            return true;
+        if (xr::overrideShadersLine(fnS, fnS_size, s.c_str()))
+            return;
     }
-
-    return false;
 }
-} // namespace
+} // namespace xr
 
 void dxRender_Visual::Load(const char* N, IReader* data, u32)
 {
@@ -138,21 +137,19 @@ void dxRender_Visual::Load(const char* N, IReader* data, u32)
     dbg_name._set(N);
 
     // header
-    VERIFY(data);
+    XR_ASSERT(data != nullptr);
     ogf_header hdr;
-    if (data->r_chunk_safe(OGF_HEADER, &hdr, sizeof(hdr)))
-    {
-        R_ASSERT2(hdr.format_version == xrOGF_FormatVersion, "Invalid visual version");
-        Type = hdr.type;
-        if (hdr.shader_id)
-            shader = RImplementation.getShader(hdr.shader_id);
-        vis.box.set(hdr.bb.min, hdr.bb.max);
-        vis.sphere.set(hdr.bs.c, hdr.bs.r);
-    }
-    else
-    {
-        FATAL("Invalid visual");
-    }
+
+    XR_ASSERT(data->r_chunk_safe(OGF_HEADER, &hdr, sizeof(hdr)), "invalid visual", N);
+    XR_ASSERT(hdr.format_version == xrOGF_FormatVersion, "invalid visual version", N);
+
+    Type = hdr.type;
+
+    if (hdr.shader_id != 0)
+        shader = RImplementation.getShader(hdr.shader_id);
+
+    vis.box.set(hdr.bb.min, hdr.bb.max);
+    vis.sphere.set(hdr.bs.c, hdr.bs.r);
 
     // Shader
     if (data->find_chunk(OGF_TEXTURE))
@@ -160,12 +157,10 @@ void dxRender_Visual::Load(const char* N, IReader* data, u32)
         string256 fnT, fnS;
         data->r_stringZ(fnT, sizeof(fnT));
         data->r_stringZ(fnS, sizeof(fnS));
-        if (replaceShaders(N, fnS, sizeof fnS))
-        {
-        }
-        if (overrideShaders(fnT, fnS, sizeof(fnS)))
-        {
-        }
+
+        xr::replaceShaders(N, fnS, sizeof(fnS));
+        xr::override_shaders(fnT, fnS, sizeof(fnS));
+
         shader.create(fnS, fnT);
     }
 }
@@ -177,5 +172,7 @@ void dxRender_Visual::Copy(dxRender_Visual* pFrom)
     PCOPY(shader);
     PCOPY(vis);
     PCOPY(dbg_name);
+
     PCOPY(IsHudVisual);
+    PCOPY(simplified_fast_geom);
 }

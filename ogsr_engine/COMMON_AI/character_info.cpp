@@ -41,7 +41,7 @@ void CCharacterInfo::Load(shared_str id)
 #ifdef XRGAME_EXPORTS
 void CCharacterInfo::InitSpecificCharacter(shared_str new_id)
 {
-    R_ASSERT(new_id.size());
+    XR_ASSERT(!new_id.empty());
     m_SpecificCharacterId = new_id;
 
     m_SpecificCharacter.Load(m_SpecificCharacterId);
@@ -63,9 +63,8 @@ void CCharacterInfo::load_shared(LPCSTR)
     CUIXml* pXML = item_data._xml;
     pXML->SetLocalRoot(pXML->GetRoot());
 
-    const auto item_node = pXML->NavigateToNode(id_to_index::tag_name, item_data.pos_in_file);
-    R_ASSERT3(item_node, "profile id=", item_data.id.c_str());
-
+    const auto item_node =
+        XR_ASSERT_VAL(pXML->NavigateToNode(id_to_index::tag_name, item_data.pos_in_file), "node not found", m_SpecificCharacterId, item_data.id);
     pXML->SetLocalRoot(item_node);
 
     LPCSTR spec_char = pXML->Read("specific_character", 0, nullptr);
@@ -109,7 +108,7 @@ shared_str CCharacterInfo::Profile() const { return m_ProfileId; }
 
 LPCSTR CCharacterInfo::Name() const
 {
-    R_ASSERT2(m_SpecificCharacterId.size(), m_SpecificCharacter.Name());
+    XR_ASSERT(!m_SpecificCharacterId.empty(), "", m_SpecificCharacter.Name());
     return m_SpecificCharacter.Name();
 }
 
@@ -121,7 +120,7 @@ void CCharacterInfo::SetReputation(CHARACTER_REPUTATION_VALUE reputation) { m_Cu
 
 const shared_str& CCharacterInfo::IconName() const
 {
-    R_ASSERT(m_SpecificCharacterId.size());
+    XR_ASSERT(!m_SpecificCharacterId.empty(), "", m_SpecificCharacter.Name());
     return m_SpecificCharacter.IconName();
 }
 
@@ -129,7 +128,7 @@ shared_str CCharacterInfo::StartDialog() const { return m_StartDialog; }
 
 const DIALOG_ID_VECTOR& CCharacterInfo::ActorDialogs() const
 {
-    R_ASSERT(m_SpecificCharacterId.size());
+    XR_ASSERT(!m_SpecificCharacterId.empty(), "", m_SpecificCharacter.Name());
     return m_SpecificCharacter.data()->m_ActorDialogs;
 }
 

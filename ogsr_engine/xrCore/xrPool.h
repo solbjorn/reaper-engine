@@ -14,7 +14,7 @@ class poolSS
         constexpr gsl::index count{granularity - 1}; // minus one. Correct. See partition logic below.
 
         // Allocate
-        VERIFY(list == nullptr);
+        XR_ASSERT(list == nullptr);
 
         list = xr_alloc<T>(granularity);
         blocks.push_back(list);

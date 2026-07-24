@@ -49,12 +49,10 @@ void CPHActorCharacter::Create(dVector3 sizes)
 
 void SPHCharacterRestrictor::Create(CPHCharacter* ch, dVector3 sizes)
 {
-    VERIFY(ch);
-
-    if (m_character)
+    if (m_character != nullptr)
         return;
 
-    m_character = ch;
+    m_character = XR_ASSERT_VAL(ch != nullptr);
     m_restrictor = dCreateCylinder(nullptr, m_restrictor_radius, sizes[1]);
     dGeomSetPosition(m_restrictor, 0.f, sizes[1] / 2.f, 0.f);
     m_restrictor_transform = dCreateGeomTransform(nullptr);
@@ -73,14 +71,13 @@ void SPHCharacterRestrictor::Create(CPHCharacter* ch, dVector3 sizes)
     case CPHCharacter::rtStalker: static_cast<CPHActorCharacter::stalker_restrictor*>(this)->Create(ch, sizes); break;
     case CPHCharacter::rtStalkerSmall: static_cast<CPHActorCharacter::stalker_small_restrictor*>(this)->Create(ch, sizes); break;
     case CPHCharacter::rtMonsterMedium: static_cast<CPHActorCharacter::medium_monster_restrictor*>(this)->Create(ch, sizes); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 
 RESTRICTOR_I CPHActorCharacter::Restrictor(CPHCharacter::ERestrictionType rtype)
 {
-    R_ASSERT2(rtype < rtActor, "not valide restrictor");
-    return begin(m_restrictors) + rtype;
+    return begin(m_restrictors) + XR_ASSERT_VAL(rtype < rtActor, "invalid restrictor type");
 }
 
 void CPHActorCharacter::SetRestrictorRadius(CPHCharacter::ERestrictionType rtype, float r)
@@ -306,6 +303,6 @@ void CPHActorCharacter::ChooseRestrictionType(CPHCharacter::ERestrictionType my_
             ch->SetRestrictionType(rtStalkerSmall);
         }
         break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }

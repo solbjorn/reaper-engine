@@ -1,10 +1,9 @@
 #ifndef PHDEFS_H
 #define PHDEFS_H
+
 class CPHElement;
 class CPHJoint;
 class CPhysicsShell;
-// class CPHFracture;
-// class CShellSplitInfo;
 
 #include "ode_include.h"
 
@@ -12,7 +11,9 @@ IC void sub_diapasones(u16& from1, u16& to1, const u16& from0, const u16& to0)
 {
     if (from0 == to0 || from1 == to1 || to1 <= from0 || to1 == u16(-1))
         return;
-    R_ASSERT(from0 >= from1 && to0 <= to1);
+
+    XR_ASSERT(from0 >= from1 && to0 <= to1, "", from0, from1, to0, to1);
+
     u16 dip = to0 - from0;
     to1 = to1 - dip;
 }

@@ -66,8 +66,8 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName, const char* sect
     xr_strcpy(buf, cTexture);
     if (strext(buf))
         *strext(buf) = 0;
-    R_ASSERT2(FS.exist(fn, "$game_textures$", buf, ".ini"), fn);
 
+    XR_ASSERT(FS.exist(fn, "$game_textures$", buf, ".ini") != nullptr, "file not found", cTexture);
     CInifile _ini{fn, TRUE};
     CInifile* ini = &_ini;
 
@@ -193,7 +193,7 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName, const char* sect
         }
         else
         {
-            R_ASSERT(ini->section_exist("font_size"));
+            XR_ASSERT(ini->section_exist("font_size"), "", fn);
 
             fHeight = ini->r_float("font_size", "height");
 
@@ -241,21 +241,15 @@ void CGameFont::OnRender()
 
 u16 CGameFont::GetCutLengthPos(float fTargetWidth, const char* pszText)
 {
-    VERIFY(pszText);
-
-    float fCurWidth = 0.0f, fDelta = 0.0f;
-
-    // vInterval.x  ???
-
     wide_char wsStr[MAX_MB_CHARS], wsPos[MAX_MB_CHARS];
+    f32 fCurWidth{0.0f};
 
-    u16 len = mbhMulti2Wide(wsStr, wsPos, MAX_MB_CHARS, pszText);
+    u16 len = mbhMulti2Wide(wsStr, wsPos, MAX_MB_CHARS, XR_ASSERT_VAL(pszText != nullptr, "", m_font_name));
     u16 i = 1;
 
     for (; i <= len; i++)
     {
-        fDelta = (GetCharTC(wsStr[i]).z * GetWidthScale());
-
+        f32 fDelta = GetCharTC(wsStr[i]).z * GetWidthScale();
         if (IsSpaceCharacter(wsStr[i]))
             fDelta += GetfXStep() * GetWidthScale();
 
@@ -367,13 +361,13 @@ float CGameFont::CurrentHeight_() { return fCurrentHeight * vInterval.y * GetHei
 
 void CGameFont::SetHeightI(float S)
 {
-    VERIFY(uFlags & fsDeviceIndependent);
+    XR_ASSERT(uFlags & fsDeviceIndependent, "", m_font_name);
     fCurrentHeight = S * Device.dwHeight;
 }
 
 void CGameFont::SetHeight(float S)
 {
-    VERIFY(!(uFlags & fsDeviceIndependent));
+    XR_ASSERT(!(uFlags & fsDeviceIndependent), "", m_font_name);
     fCurrentHeight = S;
 }
 

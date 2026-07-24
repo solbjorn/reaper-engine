@@ -72,11 +72,8 @@ public:
         {
         case cbNCGroupObject: return DoCollideGroup(obj1, obj2); break;
         case 0: return DoCollideNonMatched(obj1, obj2); break;
-        default: NODEFAULT;
+        default: xr::unreachable();
         }
-#ifdef DEBUG
-        return false;
-#endif // DEBUG
     }
 
     static IC bool DoCollideStatic(const CPHObject& obj) { return !obj.collide_class_bits().test(cbNCStatic); }

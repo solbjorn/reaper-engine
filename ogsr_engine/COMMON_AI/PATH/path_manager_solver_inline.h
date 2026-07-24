@@ -34,7 +34,10 @@ TEMPLATE_SPECIALIZATION
 IC bool CSolverPathManager::is_goal_reached(const _index_type& vertex_id) const { return (this->graph->is_goal_reached(vertex_id)); }
 
 TEMPLATE_SPECIALIZATION
-IC const _index_type& CSolverPathManager::get_value(const_iterator& i, bool reverse_search) const { return (this->graph->value(*(this->best_node_index), i, reverse_search)); }
+IC const _index_type& CSolverPathManager::get_value(const_iterator& i, bool reverse_search) const
+{
+    return (this->graph->value(*(this->best_node_index), i, reverse_search));
+}
 
 TEMPLATE_SPECIALIZATION
 IC const typename CSolverPathManager::_edge_type& CSolverPathManager::edge(const_iterator& i) const { return ((*i).m_operator_id); }
@@ -42,17 +45,13 @@ IC const typename CSolverPathManager::_edge_type& CSolverPathManager::edge(const
 TEMPLATE_SPECIALIZATION
 IC _dist_type CSolverPathManager::evaluate(const _index_type& node_index1, const _index_type& node_index2, const const_iterator& i) const
 {
-    VERIFY(this->graph);
-    return (this->graph->get_edge_weight(node_index1, node_index2, i));
+    return XR_ASSERT_VAL(this->graph != nullptr)->get_edge_weight(node_index1, node_index2, i);
 }
 
 TEMPLATE_SPECIALIZATION
 IC _dist_type CSolverPathManager::estimate(const _index_type& vertex_id) const
 {
-    VERIFY(this->graph);
-    //	return					((_dist_type)this->graph->get_edge_weight(vertex_id,start_node_index,m_iterator));
-    return (1 * (_dist_type)this->graph->estimate_edge_weight(vertex_id));
-    //	return					((_dist_type)0);
+    return XR_ASSERT_VAL(this->graph != nullptr)->estimate_edge_weight(vertex_id);
 }
 
 TEMPLATE_SPECIALIZATION
@@ -66,7 +65,8 @@ TEMPLATE_SPECIALIZATION
 template <typename T>
 IC void CSolverPathManager::create_path(T& vertex, _DataStorage& data_storage, bool reverse_order)
 {
-    VERIFY(this->data_storage);
+    XR_ASSERT(this->data_storage != nullptr);
+
     if (m_edge_path)
         data_storage.get_edge_path(*m_edge_path, &vertex, reverse_order);
 }
@@ -75,7 +75,8 @@ TEMPLATE_SPECIALIZATION
 template <typename T>
 IC void CSolverPathManager::create_path(T& vertex)
 {
-    VERIFY(this->data_storage);
+    XR_ASSERT(this->data_storage != nullptr);
+
     if (m_edge_path)
         this->data_storage->get_edge_path(*m_edge_path, &vertex, _Graph::reverse_search);
 }

@@ -101,13 +101,12 @@ LPCSTR CSINI_IdToIndex::line_name{};
 TEMPLATE_SPECIALIZATION
 const ITEM_DATA* CSINI_IdToIndex::GetById(const T_ID& str_id, bool no_assert)
 {
-    for (const auto& item : *m_pItemDataVector)
-    {
-        if (std::is_eq(xr_strcmp(item.id, str_id)))
-            return &item;
-    }
+    if (const auto it = std::ranges::find_if(*m_pItemDataVector, [&str_id] [[nodiscard]] (const auto& item) { return std::is_eq(xr_strcmp(item.id, str_id)); });
+        it != m_pItemDataVector->end())
+        return std::to_address(it);
 
-    R_ASSERT3(no_assert, "item not found, id", str_id.c_str());
+    XR_ASSERT(no_assert, "item not found", section_name, line_name, str_id);
+
     return nullptr;
 }
 
@@ -117,8 +116,7 @@ const ITEM_DATA* CSINI_IdToIndex::GetByIndex(T_INDEX index, bool no_assert)
     if (gsl::index{index} < std::ssize(*m_pItemDataVector))
         return &(*m_pItemDataVector)[index];
 
-    if (!no_assert)
-        Debug.fatal(DEBUG_INFO, "item by index not found in section %s, line %s", section_name, line_name);
+    XR_ASSERT(no_assert, "item not found", section_name, line_name, index);
 
     return nullptr;
 }

@@ -42,40 +42,35 @@ module('{0}', package.seeall, function(m) this = m end); \
 void lua_panic(s32 code)
 {
     auto L = ai().script_engine().lua().lua_state();
-    xr_string data;
-    size_t len;
+    xr_string description;
+    std::size_t len;
 
-    gsl::czstring desc = lua_tolstring(L, -1, &len);
-    if (desc != nullptr)
+    if (const auto desc = lua_tolstring(L, -1, &len); desc != nullptr)
     {
-        data.assign(desc, len);
+        description.assign(desc, len);
         lua_pop(L, 1);
-
-        desc = data.c_str();
     }
     else
     {
-        desc = "An unexpected error occurred and panic has been invoked";
+        description = "An unexpected error occurred and panic has been invoked";
     }
 
-    xr_string expr = "script " + sol::to_string(sol::call_status{code}) + " error";
-    Debug.backend(expr.c_str(), desc, nullptr, nullptr, DEBUG_INFO);
+    XR_PANIC(xr::format("script {} error", sol::to_string(sol::call_status{code})), code, description);
 }
 
-void ScriptCrashHandler(bool dump_lua_locals)
+[[nodiscard]] std::string lua_trace()
 {
-    try
-    {
-        Log("***************************[ScriptCrashHandler]**********************************");
-        ai().script_engine().print_stack();
-        if (dump_lua_locals)
-            ai().script_engine().dump_state();
-        Log("*********************************************************************************");
-    }
-    catch (...)
-    {
-        Log("Can't dump script call stack - Engine corrupted");
-    }
+    auto trace = ai().script_engine().print_stack();
+    if (trace.empty())
+        return trace;
+
+    const auto dump = ai().script_engine().dump_state();
+    if (!dump.empty())
+        trace = xr::format("\nLua {}\n\nLua state dump:{}", trace, dump);
+    else
+        trace = xr::format("\nLua {}", trace);
+
+    return trace;
 }
 
 int auto_load(lua_State* L)
@@ -92,7 +87,7 @@ int auto_load(lua_State* L)
     return 1;
 }
 
-bool initialized{};
+bool initialized{false};
 } // namespace
 
 CScriptEngine::CScriptEngine() = default;
@@ -130,14 +125,14 @@ void CScriptEngine::reinit()
     m_virtual_machine.emplace();
     initialized = !!m_virtual_machine;
 
-    std::ignore = Debug.set_lua_panic(lua_panic);
-    std::ignore = Debug.set_lua_trace(ScriptCrashHandler);
+    std::ignore = Debug.set_lua_panic(&lua_panic);
+    std::ignore = Debug.set_lua_trace(&lua_trace);
 }
 
 void CScriptEngine::init()
 {
     reinit();
-    R_ASSERT(xr::script_engine_initialized(), "! ERROR : Cannot initialize LUA VM!");
+    XR_ASSERT(xr::script_engine_initialized(), "can't initialize Lua VM!");
 
     lua().open_libraries();
     tracy::LuaRegister(lua().lua_state());
@@ -175,8 +170,8 @@ void CScriptEngine::close()
     if (!initialized)
         return;
 
-    R_ASSERT(Debug.set_lua_trace(nullptr) == ScriptCrashHandler);
-    R_ASSERT(Debug.set_lua_panic(nullptr) == lua_panic);
+    XR_ASSERT(Debug.set_lua_trace(nullptr) == &lua_trace);
+    XR_ASSERT(Debug.set_lua_panic(nullptr) == &lua_panic);
 
     initialized = false;
     m_virtual_machine.reset();
@@ -233,10 +228,12 @@ files:
             strcpy_s(buff, ExtractFileName(fname));
             _strlwr_s(buff);
 
-            gsl::czstring nspace = std::strtok(buff, ".");
-            const auto it = xray_scripts.find(nspace);
+            std::string_view nspace{buff};
+            nspace = nspace.substr(0, nspace.find_last_of('.'));
 
-            R_ASSERT2(it == xray_scripts.end(), xr::format("ERROR: script namespace \'{}\' conflict: {} vs {}", nspace, it->second, fname));
+            const auto it = xray_scripts.find(nspace);
+            XR_ASSERT(it == xray_scripts.end(), "script namespace conflict", nspace, fname, it->second);
+
             xray_scripts.emplace(nspace, fname);
         }
     });
@@ -278,54 +275,65 @@ bool CScriptEngine::namespace_loaded(gsl::czstring name, bool remove_from_stack)
 
     lua_pushstring(L, GlobalNamespace.data());
     lua_rawget(L, LUA_GLOBALSINDEX);
+
     string256 S2;
     xr_strcpy(S2, name);
     auto S = S2;
+
     for (;;)
     {
         if (!xr_strlen(S))
         {
-            VERIFY(lua_gettop(L) >= 1);
+            XR_DEBUG_ASSERT(lua_gettop(L) >= 1);
             lua_pop(L, 1);
-            VERIFY(start == lua_gettop(L));
+            XR_DEBUG_ASSERT(lua_gettop(L) == start);
+
             return false;
         }
+
         auto S1 = strchr(S, '.');
         if (S1)
             *S1 = 0;
+
         lua_pushstring(L, S);
         lua_rawget(L, -2);
+
         if (lua_isnil(L, -1))
         {
-            // lua_settop(L,0);
-            VERIFY(lua_gettop(L) >= 2);
+            XR_DEBUG_ASSERT(lua_gettop(L) >= 2);
             lua_pop(L, 2);
-            VERIFY(start == lua_gettop(L));
-            return false; // there is no namespace!
+            XR_DEBUG_ASSERT(lua_gettop(L) == start);
+
+            return false;
         }
         else if (!lua_istable(L, -1))
         {
-            // lua_settop(L, 0);
-            VERIFY(lua_gettop(L) >= 1);
+            XR_DEBUG_ASSERT(lua_gettop(L) >= 1);
             lua_pop(L, 1);
-            VERIFY(start == lua_gettop(L));
-            R_ASSERT3(false, "Error : the namespace is already being used by the non-table object! Name: ", S);
-            return false;
+            XR_DEBUG_ASSERT(lua_gettop(L) == start);
+
+            XR_PANIC("namespace is already used by a non-table object", name, S);
         }
+
         lua_remove(L, -2);
+
         if (S1)
             S = ++S1;
         else
             break;
     }
-    if (!remove_from_stack)
-        VERIFY(lua_gettop(L) == start + 1);
+
+    if (remove_from_stack)
+    {
+        XR_DEBUG_ASSERT(lua_gettop(L) >= 1);
+        lua_pop(L, 1);
+        XR_DEBUG_ASSERT(lua_gettop(L) == start);
+    }
     else
     {
-        VERIFY(lua_gettop(L) >= 1);
-        lua_pop(L, 1);
-        VERIFY(lua_gettop(L) == start);
+        XR_DEBUG_ASSERT(lua_gettop(L) == start + 1);
     }
+
     return true;
 }
 
@@ -365,8 +373,10 @@ bool CScriptEngine::do_file(gsl::czstring caScriptName, gsl::czstring caNameSpac
 
 bool CScriptEngine::process_file_if_exists(gsl::czstring file_name, bool warn_if_not_exist)
 {
-    if (!warn_if_not_exist && no_file_exists(file_name)) // Это для оптимизации, чтоб постоянно не проверять, отсутствует ли этот файл.
+    // Это для оптимизации, чтоб постоянно не проверять, отсутствует ли этот файл.
+    if (!warn_if_not_exist && no_file_exists(file_name))
         return false;
+
     if (m_reload_modules || (*file_name && !namespace_loaded(file_name)))
     {
         string_path S;
@@ -378,7 +388,7 @@ bool CScriptEngine::process_file_if_exists(gsl::czstring file_name, bool warn_if
             {
                 LogDbg("-------------------------");
                 MsgDbg("[CScriptEngine::process_file_if_exists] WARNING: Access to nonexistent variable or loading nonexistent script '{}'", file_name);
-                FuncDbg(print_stack());
+                LogDbg(print_stack());
                 LogDbg("-------------------------");
                 add_no_file(file_name);
             }
@@ -408,17 +418,17 @@ bool CScriptEngine::process_file(gsl::czstring file_name, bool reload_modules)
 void CScriptEngine::parse_script_namespace(gsl::czstring name, gsl::zstring ns, u32 nsSize, gsl::zstring func, u32 funcSize)
 {
     auto p = std::strrchr(name, '.');
-    if (p == nullptr)
+    if (p != nullptr)
     {
-        xr_strcpy(ns, nsSize, GlobalNamespace.data());
-        p = name - 1;
-    }
-    else
-    {
-        VERIFY(u32(p - name + 1) <= nsSize);
+        XR_ASSERT(p - name + 1 <= nsSize);
 
         std::strncpy(ns, name, p - name);
         ns[p - name] = '\0';
+    }
+    else
+    {
+        xr_strcpy(ns, nsSize, GlobalNamespace.data());
+        p = name - 1;
     }
 
     xr_strcpy(func, funcSize, p + 1);
@@ -466,133 +476,135 @@ void CScriptEngine::collect_all_garbage()
 
 //*********************************************************************************************
 
-void CScriptEngine::print_stack()
+xr_string CScriptEngine::print_stack()
 {
     auto L = lua().lua_state();
     luaL_traceback(L, L, nullptr, 0);
-    size_t len;
 
-    gsl::czstring stack = lua_tolstring(L, -1, &len);
+    std::size_t len;
+    xr_string data;
+
+    const auto stack = lua_tolstring(L, -1, &len);
     if (stack == nullptr)
-        return;
+        return data;
 
-    xr_string data(stack, len);
+    if (len < xr_strlen("stack traceback:") + 2)
+        return data;
+
+    data.assign(stack, len);
     lua_pop(L, 1);
 
-    Log(data);
+    return data;
 }
 
-void CScriptEngine::dump_state()
+xr_string CScriptEngine::dump_state()
 {
-    static bool reentrantGuard = false;
-    if (reentrantGuard)
-        return;
-    reentrantGuard = true;
+    static std::atomic<bool> hit{false};
+    xr_string ret;
+
+    if (bool exp{false}; !hit.compare_exchange_strong(exp, true))
+        return ret;
 
     auto L = lua().lua_state();
-    lua_Debug l_tDebugInfo;
+    lua_Debug dbg;
 
-    for (int i = 0; lua_getstack(L, i, &l_tDebugInfo); ++i)
+    for (s32 i{0}; lua_getstack(L, i, &dbg) != 0; ++i)
     {
-        lua_getinfo(L, "nSlu", &l_tDebugInfo);
+        lua_getinfo(L, "nSlu", &dbg);
 
-        if (std::is_eq(xr_strcmp(l_tDebugInfo.what, "C")))
+        if (std::is_neq(xr_strcmp(dbg.what, "C")))
         {
-            Msg("{:2} : [C  ] {}", i, l_tDebugInfo.name ? l_tDebugInfo.name : "");
+            if (dbg.name != nullptr)
+                ret += xr::format("\n{:2}: [{:3}]: {}:{}: in function '{}':{}", i, dbg.what, dbg.short_src, dbg.currentline, dbg.name, dbg.linedefined);
+            else
+                ret += xr::format("\n{:2}: [{:3}]: {}:{}: in function <{}:{}>", i, dbg.what, dbg.short_src, dbg.currentline, dbg.short_src, dbg.linedefined);
         }
         else
         {
-            string_path temp;
-
-            if (l_tDebugInfo.name)
-                xr_sprintf(temp, "%s(%d)", l_tDebugInfo.name, l_tDebugInfo.linedefined);
-            else
-                xr_sprintf(temp, "function <%s:%d>", l_tDebugInfo.short_src, l_tDebugInfo.linedefined);
-
-            Msg("{:2} : [{:3s}] {}({}) : {}", i, l_tDebugInfo.what, l_tDebugInfo.short_src, l_tDebugInfo.currentline, temp);
+            ret += xr::format("\n{:2}: [C++]: in function '{}'", i, dbg.name != nullptr ? dbg.name : "");
         }
-
-        Log("\tLocals:");
 
         gsl::czstring name;
-        int VarID = 1;
+        s32 var{1};
 
-        while ((name = lua_getlocal(L, &l_tDebugInfo, VarID++)) != nullptr)
+        while ((name = lua_getlocal(L, &dbg, var++)) != nullptr)
         {
-            LogVariable(L, name, 1);
+            ret += LogVariable(L, name, 2);
             lua_pop(L, 1); /* remove variable value */
         }
-
-        m_dumpedObjList.clear();
-        Log("\tEnd");
     }
 
-    reentrantGuard = false;
+    hit = false;
+
+    return ret;
 }
 
-void CScriptEngine::LogTable(lua_State* l, LPCSTR S, int level)
+xr_string CScriptEngine::LogTable(lua_State* l, std::string_view S, s32 level)
 {
-    if (!lua_istable(l, -1))
-        return;
+    xr_string ret;
 
-    lua_pushnil(l); /* first key */
+    if (!lua_istable(l, -1))
+        return ret;
+
+    gsl::index i{0};
+    lua_pushnil(l);
+
     while (lua_next(l, -2) != 0)
     {
-        char sname[256];
-        char sFullName[256];
-        xr_sprintf(sname, "%s", lua_tostring(l, -2));
-        xr_sprintf(sFullName, "%s.%s", S, sname);
-        LogVariable(l, sFullName, level + 1);
+        // конвертирование не строковых значений в строки, поставит в тупик lua_next
+        // https://github.com/defold/defold/issues/9778
+        xr_string key;
 
-        lua_pop(l, 1); /* removes `value'; keeps `key' for next iteration */
+        const auto type = lua_type(l, -2);
+        switch (sol::type{type})
+        {
+        case sol::type::nil: key = xr::format("{}[nil]", S); break;
+        case sol::type::string: {
+            std::size_t len;
+            key = xr::format("{}.{}", S, std::string_view{lua_tolstring(l, -2, &len), len});
+            break;
+        }
+        case sol::type::number: key = xr::format("{}[{}]", S, lua_tonumber(l, -2)); break;
+        case sol::type::boolean: key = xr::format("{}[{}]", S, lua_toboolean(l, -2) ? "true" : "false"); break;
+        case sol::type::userdata: key = xr::format("{}[{}]", S, sol::associated_type_name(l, -2, sol::type::userdata)); break;
+        default: key = xr::format("{}[{}{}]", S, lua_typename(l, type), i); break;
+        }
+
+        ret += LogVariable(l, std::move(key), level);
+
+        lua_pop(l, 1);
+        ++i;
     }
+
+    return ret;
 }
 
-void CScriptEngine::LogVariable(lua_State* l, gsl::czstring name, int level)
+xr_string CScriptEngine::LogVariable(lua_State* l, std::string_view name, s32 level)
 {
-    gsl::czstring type;
-    int ntype = lua_type(l, -1);
-    type = lua_typename(l, ntype);
+    const auto ntype = lua_type(l, -1);
+    const auto type = lua_typename(l, ntype);
+    xr_string val;
 
-    auto tabBuffer = std::make_unique<char[]>(level + 1);
-    memset(tabBuffer.get(), '\t', level);
-
-    char value[128];
-
-    switch (ntype)
+    switch (sol::type{ntype})
     {
-    case LUA_TFUNCTION: xr_strcpy(value, "[[function]]"); break;
-    case LUA_TTHREAD: xr_strcpy(value, "[[thread]]"); break;
-    case LUA_TNUMBER: xr_sprintf(value, "%f", lua_tonumber(l, -1)); break;
-    case LUA_TBOOLEAN: xr_sprintf(value, "%s", lua_toboolean(l, -1) ? "true" : "false"); break;
-    case LUA_TSTRING: xr_sprintf(value, "%.127s", lua_tostring(l, -1)); break;
-    case LUA_TTABLE:
-        if (level <= 3)
-        {
-            Msg("{} Table: {}", tabBuffer.get(), name);
-            LogTable(l, name, level + 1);
-            return;
-        }
-        else
-        {
-            xr_sprintf(value, "[...]");
-        }
+    case sol::type::nil: val = "nil"; break;
+    case sol::type::string: {
+        std::size_t len;
+        val = xr::format("\"{}\"", std::string_view{lua_tolstring(l, -1, &len), len});
         break;
-    case LUA_TUSERDATA: {
-        auto obj = lua_touserdata(l, -1);
-
-        // Skip already dumped object
-        if (m_dumpedObjList.find(obj) != m_dumpedObjList.end())
-            return;
-        m_dumpedObjList.insert(obj);
-
-        xr_strcpy(value, sol::associated_type_name(l, -1, sol::type::userdata).c_str());
     }
-    break;
-    default: xr_strcpy(value, "[not available]"); break;
+    case sol::type::number: val = xr::format("{}", lua_tonumber(l, -1)); break;
+    case sol::type::boolean: val = lua_toboolean(l, -1) ? "true" : "false"; break;
+    case sol::type::userdata: val = sol::associated_type_name(l, -1, sol::type::userdata); break;
+    case sol::type::table: val = level < 5 ? LogTable(l, name, level + 1) : "[...]"; break;
+    case sol::type::none:
+    case sol::type::thread:
+    case sol::type::function:
+    case sol::type::lightuserdata: val = xr::format("[{}]", type); break;
+    default: val = "[not available]"; break;
     }
 
-    Msg("{} {} {} : {}", tabBuffer.get(), type, name, value);
+    return xr::format("\n{}{} {}: {}", xr_string(level * 4, ' '), type, name, val);
 }
 
 #ifdef DEBUG
@@ -610,12 +622,12 @@ void CScriptEngine::vscript_log(ScriptStorage::ELuaMessageType message, xr::deta
     case ScriptStorage::eLuaMessageTypeHookReturn: S = "[LUA HOOK_RETURN]"; break;
     case ScriptStorage::eLuaMessageTypeHookLine: S = "[LUA HOOK_LINE]"; break;
     case ScriptStorage::eLuaMessageTypeHookCount: S = "[LUA HOOK_COUNT]"; break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     Log("-----------------------------------------");
     Msg("[script_log] {} {}", S, xr::detail::vformat(fmt, args));
-    print_stack();
+    Log(print_stack());
     Log("-----------------------------------------");
 }
 #endif

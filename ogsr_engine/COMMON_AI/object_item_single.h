@@ -43,7 +43,7 @@ public:
     ~CObjectItemSingle() override = default;
 
     [[nodiscard]] ObjectFactory::CLIENT_BASE_CLASS* client_object() const override;
-    [[nodiscard]] ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR) const override;
+    [[nodiscard]] ObjectFactory::SERVER_BASE_CLASS* server_object(gsl::czstring section) const override;
 };
 
 #include "object_item_single_inline.h"

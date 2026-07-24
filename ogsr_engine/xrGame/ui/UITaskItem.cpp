@@ -234,7 +234,7 @@ void CUITaskSubItem::SetGameTask(CGameTask* gt, u16 obj_idx)
         m_stateStatic->InitTexture("ui_icons_PDA_subtask_skipped");
         m_descriptionStatic->SetTextColor(m_skipped_color);
         break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 

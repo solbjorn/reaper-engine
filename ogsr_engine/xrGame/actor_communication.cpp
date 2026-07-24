@@ -49,7 +49,7 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion* info_portion, bool rever
         case ARTICLE_DATA::eJournalArticle: p = pda_section::journal; break;
         case ARTICLE_DATA::eInfoArticle: p = pda_section::info; break;
         case ARTICLE_DATA::eTaskArticle: p = pda_section::quests; break;
-        default: NODEFAULT;
+        default: xr::unreachable();
         }
 
         auto it = std::find(updated_pda.begin(), updated_pda.end(), p);

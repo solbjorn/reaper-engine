@@ -104,13 +104,7 @@ IC const Fmatrix& CBackend::get_xform_world() { return xforms.get_W(); }
 IC const Fmatrix& CBackend::get_xform_view() { return xforms.get_V(); }
 IC const Fmatrix& CBackend::get_xform_project() { return xforms.get_P(); }
 
-IC ID3DRenderTargetView* CBackend::get_RT(u32 ID)
-{
-    VERIFY((ID >= 0) && (ID < 4));
-
-    return pRT[ID];
-}
-
+IC ID3DRenderTargetView* CBackend::get_RT(u32 ID) { return pRT[XR_ASSERT_VAL(ID < 4)]; }
 IC ID3DDepthStencilView* CBackend::get_ZB() { return pZB; }
 
 ICF void CBackend::set_States(ID3DState* _state)

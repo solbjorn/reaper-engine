@@ -96,8 +96,7 @@ static void generate_story_ids(STORY_PAIRS& result, _id_type INVALID_ID, LPCSTR 
         const auto res = scn::scan_int<u32>(N);
         R_ASSERT(res, res.error().msg());
 
-        auto ret = result.try_emplace(temp, res->value());
-        ASSERT_FMT(ret.second == true, "%s %s!", duplicated_id_description, temp.c_str());
+        XR_ASSERT(result.try_emplace(temp, res->value()).second, duplicated_id_description, section, N, temp);
     }
 
     result.try_emplace(shared_str{INVALID_ID_STRING}, INVALID_ID);
@@ -135,23 +134,20 @@ static void remove_out_restrictions(CALifeSimulator* alife, CSE_ALifeMonsterAbst
 
 static CSE_ALifeDynamicObject* CALifeSimulator__create(CALifeSimulator* self, ALife::_SPAWN_ID spawn_id)
 {
-    const CALifeSpawnRegistry::SPAWN_GRAPH::CVertex* vertex = ai().alife().spawns().spawns().vertex(spawn_id);
-    THROW2(vertex, "Invalid spawn id!");
-
-    CSE_ALifeDynamicObject* spawn = smart_cast<CSE_ALifeDynamicObject*>(&vertex->data()->object());
-    THROW(spawn);
+    const CALifeSpawnRegistry::SPAWN_GRAPH::CVertex* vertex =
+        XR_ASSERT_VAL(ai().alife().spawns().spawns().vertex(spawn_id) != nullptr, "invalid spawn ID", spawn_id);
+    auto spawn = XR_ASSERT_VAL(smart_cast<CSE_ALifeDynamicObject*>(&vertex->data()->object()) != nullptr, "", spawn_id);
 
     CSE_ALifeDynamicObject* object;
     self->create(object, spawn, spawn_id);
 
-    return (object);
+    return object;
 }
 
 static CSE_Abstract* CALifeSimulator__spawn_item(CALifeSimulator* self, LPCSTR section, const Fvector& position, u32 level_vertex_id,
                                                  GameGraph::_GRAPH_ID game_vertex_id)
 {
-    THROW(self);
-    return (self->spawn_item(section, position, level_vertex_id, game_vertex_id, ALife::_OBJECT_ID(-1)));
+    return XR_ASSERT_VAL(self != nullptr)->spawn_item(section, position, level_vertex_id, game_vertex_id, ALife::_OBJECT_ID(-1));
 }
 
 static CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self, LPCSTR section, const Fvector& position, u32 level_vertex_id,
@@ -171,7 +167,7 @@ static CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self, LPCSTR 
         return (self->spawn_item(section, position, level_vertex_id, game_vertex_id, id_parent));
 
     NET_Packet packet;
-    packet.w_begin(M_SPAWN);
+    packet.w_begin(gsl::narrow<u16>(xr::msg::M_SPAWN));
     packet.w_stringZ(section);
 
     CSE_Abstract* item = self->spawn_item(section, position, level_vertex_id, game_vertex_id, id_parent, false);
@@ -184,7 +180,7 @@ static CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self, LPCSTR 
 
     u16 dummy;
     std::ignore = packet.r_begin(dummy);
-    VERIFY(dummy == M_SPAWN);
+    XR_ASSERT(xr::msg{dummy} == xr::msg::M_SPAWN);
 
     return self->server().Process_spawn(packet, clientID);
 }
@@ -207,25 +203,21 @@ static CSE_Abstract* CALifeSimulator__spawn_ammo(CALifeSimulator* self, LPCSTR s
     if (!object || !object->m_bOnline)
     {
         CSE_Abstract* item = self->spawn_item(section, position, level_vertex_id, game_vertex_id, id_parent);
+        CSE_ALifeItemAmmo* ammo = XR_ASSERT_VAL(smart_cast<CSE_ALifeItemAmmo*>(item) != nullptr);
 
-        CSE_ALifeItemAmmo* ammo = smart_cast<CSE_ALifeItemAmmo*>(item);
-        THROW(ammo);
-        THROW(ammo->m_boxSize >= ammo_to_spawn);
-        ammo->a_elapsed = (u16)ammo_to_spawn;
+        ammo->a_elapsed = XR_ASSERT_VAL(ammo_to_spawn <= ammo->m_boxSize);
 
-        return (item);
+        return item;
     }
 
     NET_Packet packet;
-    packet.w_begin(M_SPAWN);
+    packet.w_begin(gsl::narrow<u16>(xr::msg::M_SPAWN));
     packet.w_stringZ(section);
 
     CSE_Abstract* item = self->spawn_item(section, position, level_vertex_id, game_vertex_id, id_parent, false);
+    CSE_ALifeItemAmmo* ammo = XR_ASSERT_VAL(smart_cast<CSE_ALifeItemAmmo*>(item) != nullptr);
 
-    CSE_ALifeItemAmmo* ammo = smart_cast<CSE_ALifeItemAmmo*>(item);
-    THROW(ammo);
-    THROW(ammo->m_boxSize >= ammo_to_spawn);
-    ammo->a_elapsed = (u16)ammo_to_spawn;
+    ammo->a_elapsed = XR_ASSERT_VAL(ammo_to_spawn <= ammo->m_boxSize);
 
     item->Spawn_Write(packet, FALSE);
     self->server().FreeID(item->ID, 0);
@@ -236,7 +228,7 @@ static CSE_Abstract* CALifeSimulator__spawn_ammo(CALifeSimulator* self, LPCSTR s
 
     u16 dummy;
     std::ignore = packet.r_begin(dummy);
-    VERIFY(dummy == M_SPAWN);
+    XR_ASSERT(xr::msg{dummy} == xr::msg::M_SPAWN);
 
     return self->server().Process_spawn(packet, clientID);
 }
@@ -245,12 +237,9 @@ namespace
 {
 void CALifeSimulator__release(CALifeSimulator* self, CSE_Abstract* object, bool)
 {
-    VERIFY(self);
-    //	self->release						(object,true);
+    XR_ASSERT(self != nullptr);
 
-    R_ASSERT(object);
-    CSE_ALifeObject* alife_object = smart_cast<CSE_ALifeObject*>(object);
-    THROW(alife_object);
+    auto alife_object = XR_ASSERT_VAL(smart_cast<CSE_ALifeObject*>(object) != nullptr);
     if (!alife_object->m_bOnline)
     {
         self->release(object, true);
@@ -265,7 +254,7 @@ void CALifeSimulator__release(CALifeSimulator* self, CSE_Abstract* object, bool)
 
     // awful hack, for stohe only
     NET_Packet packet;
-    packet.w_begin(M_EVENT);
+    packet.w_begin(gsl::narrow<u16>(xr::msg::M_EVENT));
     packet.w_u32(Level().timeServer());
     packet.w_u16(GE_DESTROY);
     packet.w_u16(object->ID);
@@ -315,13 +304,14 @@ static void CALifeSimulator__teleport_object(CALifeSimulator* self, u16 ID, Fvec
     self->teleport_object(ID, _gvid, _lvid, _pos);
 }
 
-static void FAKE_CALifeSimulator__teleport_object(CALifeSimulator*, const char*, Fvector, u32, GameGraph::_GRAPH_ID, u16)
-{
-    FATAL("INCORRECT ARGUMENTS! Must be: alife():teleport_object(id, position, lvid, gvid)");
-}
-
 namespace
 {
+void wrong_CALifeSimulator__teleport_object(CALifeSimulator*, gsl::czstring name, Fvector, u32, GameGraph::_GRAPH_ID, u16)
+{
+    static constexpr std::string_view pattern{"teleport_object(id, position, lvid, gvid)"};
+    XR_PANIC("invalid arguments", name, pattern);
+}
+
 [[nodiscard]] u32 get_level_id(CALifeSimulator* self) { return self->graph().level().level_id(); }
 
 [[nodiscard]] u32 get_level_id_by_name(CALifeSimulator*, gsl::czstring level_name)
@@ -338,16 +328,11 @@ namespace
     return ai().game_graph().header().level(level_id).name();
 }
 
-[[nodiscard]] CSE_ALifeCreatureActor* get_actor(const CALifeSimulator* self)
-{
-    THROW(self);
-    return self->graph().actor();
-}
+[[nodiscard]] CSE_ALifeCreatureActor* get_actor(const CALifeSimulator* self) { return XR_ASSERT_VAL(self != nullptr)->graph().actor(); }
 
 [[nodiscard]] KNOWN_INFO_VECTOR* registry(const CALifeSimulator* self, ALife::_OBJECT_ID id)
 {
-    THROW(self);
-    return self->registry(info_portions).object(id, true);
+    return XR_ASSERT_VAL(self != nullptr)->registry(info_portions).object(id, true);
 }
 
 class CFindByIDPred
@@ -376,9 +361,8 @@ static bool has_info(const CALifeSimulator* self, const ALife::_OBJECT_ID& id, L
 
 static bool dont_has_info(const CALifeSimulator* self, const ALife::_OBJECT_ID& id, LPCSTR info_id)
 {
-    THROW(self);
     // absurdly, but only because of scriptwriters needs
-    return (!has_info(self, id, info_id));
+    return !has_info(XR_ASSERT_VAL(self != nullptr), id, info_id);
 }
 
 static LPCSTR get_save_name(CALifeSimulator* sim)
@@ -426,7 +410,7 @@ void CALifeSimulator::script_register(sol::state_view& lua)
                       [](CALifeSimulator* self, const char* obj_name) { return self->spawns().spawn_id(obj_name); }),
         "actor", &get_actor, "has_info", &has_info, "dont_has_info", &dont_has_info, "switch_distance", &CALifeSimulator::switch_distance,
         "set_switch_distance", &CALifeSimulator::set_switch_distance, "teleport_object",
-        sol::overload(&FAKE_CALifeSimulator__teleport_object, &CALifeSimulator__teleport_object), "assign_story_id", &CALifeSimulator__assign_story_id,
+        sol::overload(&wrong_CALifeSimulator__teleport_object, &CALifeSimulator__teleport_object), "assign_story_id", &CALifeSimulator__assign_story_id,
         "use_ai_locations", &CALifeSimulator__use_ai_locations, "save_name", sol::property(&get_save_name), "loaded_save_name",
         sol::property(&get_loaded_save));
 

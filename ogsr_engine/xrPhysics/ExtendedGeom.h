@@ -14,37 +14,31 @@ extern u32 dbg_total_saved_tries;
 
 class CObjectContactCallback
 {
-    CObjectContactCallback* next{};
+    CObjectContactCallback* next{nullptr};
     ObjectContactCallbackFun* callback;
 
 public:
-    CObjectContactCallback(ObjectContactCallbackFun* c) : callback{c} { VERIFY(c); }
-
+    constexpr explicit CObjectContactCallback(ObjectContactCallbackFun* c) : callback{c} { XR_ASSERT(c != nullptr); }
     ~CObjectContactCallback() { xr_delete(next); }
 
     void Add(ObjectContactCallbackFun* c)
     {
-        VERIFY(c);
-        VERIFY(callback != c);
+        XR_ASSERT(c != nullptr && c != callback);
 
-        if (next)
-        {
-            next->Add(c);
-        }
-        else
-        {
+        if (next == nullptr)
             next = xr_new<CObjectContactCallback>(c);
-        }
+        else
+            next->Add(c);
     }
 
     bool HasCallback(ObjectContactCallbackFun* c)
     {
         for (CObjectContactCallback* i = this; i; i = i->next)
         {
-            VERIFY(i->callback);
-            if (c == i->callback)
+            if (c == XR_ASSERT_VAL(i->callback != nullptr))
                 return true;
         }
+
         return false;
     }
 
@@ -53,52 +47,45 @@ public:
         if (!callbacks)
             return;
 
-        VERIFY(c);
-        VERIFY(callbacks->callback);
-
-        if (c == callbacks->callback)
+        if (XR_ASSERT_VAL(c != nullptr) == XR_ASSERT_VAL(callbacks->callback != nullptr))
         {
             CObjectContactCallback* del = callbacks;
             callbacks = callbacks->next;
 
             del->next = nullptr;
             xr_delete(del);
-            VERIFY(!callbacks || !callbacks->HasCallback(c));
+
+            XR_DEBUG_ASSERT(callbacks == nullptr || !callbacks->HasCallback(c));
+            return;
         }
-        else
+
+        for (CObjectContactCallback *i = callbacks->next, *p = callbacks; i;)
         {
-            for (CObjectContactCallback *i = callbacks->next, *p = callbacks; i;)
+            XR_ASSERT(i != nullptr && i->callback != nullptr);
+            XR_ASSERT(p != nullptr && p->callback != nullptr);
+
+            if (c == i->callback)
             {
-                VERIFY(p->callback);
-                VERIFY(i->callback);
-                VERIFY(i);
-                VERIFY(p);
+                CObjectContactCallback* del = i;
+                p->next = i->next;
 
-                if (c == i->callback)
-                {
-                    CObjectContactCallback* del = i;
-                    p->next = i->next;
+                del->next = nullptr;
+                xr_delete(del);
 
-                    del->next = nullptr;
-                    xr_delete(del);
-                    VERIFY(!callbacks->HasCallback(c));
-                    break;
-                }
-
-                i = i->next;
-                p = p->next;
-                VERIFY(p->next == i);
+                XR_DEBUG_ASSERT(!callbacks->HasCallback(c));
+                break;
             }
+
+            i = i->next;
+            p = p->next;
+            XR_ASSERT(p->next == i);
         }
     }
 
     void Call(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
     {
         for (CObjectContactCallback* i = this; i; i = i->next)
-        {
-            VERIFY(i->callback);
-            i->callback(do_colide, bo1, c, material_1, material_2);
-        }
+            XR_ASSERT_VAL(i->callback != nullptr)(do_colide, bo1, c, material_1, material_2);
     }
 };
 
@@ -114,23 +101,12 @@ struct dxGeomUserData
     u16 tri_material;
     ContactCallbackFun* callback;
     void* callback_data;
-    //	ObjectContactCallbackFun	*object_callback								;
     CObjectContactCallback* object_callbacks;
     u16 element_position;
     u16 bone_id;
     xr_vector<int> cashed_tries;
     Fvector last_aabb_size;
     Fvector last_aabb_pos;
-
-    //	struct ContactsParameters
-    //	{
-    //	dReal damping;
-    //	dReal spring;
-    //	dReal bonce;
-    //	dReal bonce_vel;
-    //	dReal mu;
-    //	unsigned int maxc;
-    //	};
 };
 
 IC dxGeomUserData* dGeomGetUserData(dxGeom* geom) { return (dxGeomUserData*)dGeomGetData(geom); }

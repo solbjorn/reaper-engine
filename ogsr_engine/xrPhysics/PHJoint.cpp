@@ -15,16 +15,14 @@ namespace
 constexpr float hinge2_spring{20000.f};
 constexpr float hinge2_damping{1000.f};
 
-IC dBodyID body_for_joint(CPhysicsElement* e)
-{
-    return e->isFixed() ? nullptr : e->get_body(); // return e->get_body();//
-}
+IC dBodyID body_for_joint(CPhysicsElement* e) { return e->isFixed() ? nullptr : e->get_body(); }
 } // namespace
 
 CPHJoint::~CPHJoint()
 {
+    XR_ASSERT(!bActive);
+
     xr_delete(m_destroy_info);
-    VERIFY(!bActive);
     axes.clear();
 
     if (m_back_ref)
@@ -33,19 +31,21 @@ CPHJoint::~CPHJoint()
 
 void CPHJoint::SetBackRef(CPhysicsJoint** j)
 {
-    R_ASSERT2(*j == static_cast<CPhysicsJoint*>(this), "wronng reference");
+    XR_ASSERT(*j == static_cast<CPhysicsJoint*>(this), "wrong joint reference");
     m_back_ref = j;
 }
+
 void CPHJoint::CreateBall()
 {
     m_joint = dJointCreateBall(nullptr, nullptr);
 
     Fvector pos;
     Fmatrix first_matrix, second_matrix;
+
     CPHElement* first = (pFirst_element);
     CPHElement* second = (pSecond_element);
+    XR_ASSERT(first != nullptr && second != nullptr);
 
-    VERIFY(first && second);
     first->GetGlobalTransformDynamic(&first_matrix);
     second->GetGlobalTransformDynamic(&second_matrix);
     pos.set(0, 0, 0);
@@ -55,7 +55,7 @@ void CPHJoint::CreateBall()
     case vs_first: first_matrix.transform_tiny(pos, anchor); break;
     case vs_second: second_matrix.transform_tiny(pos, anchor); break;
     case vs_global: pShell->mXFORM.transform_tiny(pos, anchor); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     dJointAttach(m_joint, body_for_joint(first), body_for_joint(second));
@@ -72,7 +72,8 @@ void CPHJoint::CreateHinge()
 
     CPHElement* first = (pFirst_element);
     CPHElement* second = (pSecond_element);
-    VERIFY(first && second);
+    XR_ASSERT(first != nullptr && second != nullptr);
+
     first->GetGlobalTransformDynamic(&first_matrix);
     second->GetGlobalTransformDynamic(&second_matrix);
     pos.set(0, 0, 0);
@@ -82,7 +83,7 @@ void CPHJoint::CreateHinge()
     case vs_first: first_matrix.transform_tiny(pos, anchor); break;
     case vs_second: second_matrix.transform_tiny(pos, anchor); break;
     case vs_global: pShell->mXFORM.transform_tiny(pos, anchor); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     axis.set(0, 0, 0);
@@ -96,7 +97,7 @@ void CPHJoint::CreateHinge()
     dBodyID b1 = body_for_joint(first);
 
     if (!b1)
-        axis.invert(); // SwapLimits(lo,hi);
+        axis.invert();
 
     dJointAttach(m_joint, b1, body_for_joint(second));
 
@@ -123,9 +124,10 @@ void CPHJoint::CreateHinge2()
     Fvector pos;
     Fmatrix first_matrix, second_matrix;
     Fvector axis;
+
     CPHElement* first = (pFirst_element);
     CPHElement* second = (pSecond_element);
-    VERIFY(first && second);
+    XR_ASSERT(first != nullptr && second != nullptr);
 
     first->GetGlobalTransformDynamic(&first_matrix);
     second->GetGlobalTransformDynamic(&second_matrix);
@@ -136,7 +138,7 @@ void CPHJoint::CreateHinge2()
     case vs_first: first_matrix.transform_tiny(pos, anchor); break;
     case vs_second: second_matrix.transform_tiny(pos, anchor); break;
     case vs_global: pShell->mXFORM.transform_tiny(pos, anchor); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
     //////////////////////////////////////
 
@@ -199,13 +201,13 @@ void CPHJoint::CreateSlider()
     Fvector pos;
     Fmatrix first_matrix, second_matrix;
     Fvector axis;
+
     CPHElement* first = (pFirst_element);
     CPHElement* second = (pSecond_element);
+    XR_ASSERT(first != nullptr && second != nullptr);
 
-    VERIFY(first);
     first->GetGlobalTransformDynamic(&first_matrix);
     dBodyID body1 = body_for_joint(first);
-    VERIFY(second);
     second->GetGlobalTransformDynamic(&second_matrix);
     dBodyID body2 = body_for_joint(second);
     pos.set(0, 0, 0);
@@ -215,7 +217,7 @@ void CPHJoint::CreateSlider()
     case vs_first: first_matrix.transform_tiny(pos, anchor); break;
     case vs_second: second_matrix.transform_tiny(pos, anchor); break;
     case vs_global: pShell->mXFORM.transform_tiny(pos, anchor); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
     //////////////////////////////////////
 
@@ -310,12 +312,13 @@ void CPHJoint::CreateFullControl()
     Fvector pos;
     Fmatrix first_matrix, second_matrix;
     Fvector axis;
+
     CPHElement* first = (pFirst_element);
     CPHElement* second = (pSecond_element);
-    VERIFY(first);
+    XR_ASSERT(first != nullptr && second != nullptr);
+
     first->GetGlobalTransformDynamic(&first_matrix);
     dBodyID body1 = body_for_joint(first);
-    VERIFY(second);
     second->GetGlobalTransformDynamic(&second_matrix);
     dBodyID body2 = body_for_joint(second);
     pos.set(0, 0, 0);
@@ -325,7 +328,7 @@ void CPHJoint::CreateFullControl()
     case vs_first: first_matrix.transform_tiny(pos, anchor); break;
     case vs_second: second_matrix.transform_tiny(pos, anchor); break;
     case vs_global: pShell->mXFORM.transform_tiny(pos, anchor); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
     //////////////////////////////////////
 
@@ -874,11 +877,12 @@ float CPHJoint::GetAxisAngle(int axis_num)
         case 0: ret = dJointGetSliderPosition(m_joint); break;
         case 1: ret = dJointGetAMotorAngle(m_joint1, 0); break;
         }
+
         break;
-    default: R_ASSERT2(false, "type not supported"); break;
+    default: XR_PANIC("invalid axis type", eType, axis_num); break;
     }
 
-    return ret; // body_for_joint(pFirst_element) ? ret : -
+    return ret;
 }
 
 void CPHJoint::LimitAxisNum(int& axis_num)
@@ -1114,8 +1118,9 @@ void CPHJoint::CalcAxis(int ax_num, Fvector& axis, float& lo, float& hi, const F
     case vs_first: first_matrix.transform_dir(axis, axes[ax_num].direction); break;
     case vs_second: second_matrix.transform_dir(axis, axes[ax_num].direction); break;
     case vs_global: pShell->mXFORM.transform_dir(axis, axes[ax_num].direction); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
+
     lo = axes[ax_num].low;
     hi = axes[ax_num].high;
 
@@ -1148,7 +1153,7 @@ void CPHJoint::CalcAxis(int ax_num, Fvector& axis, float& lo, float& hi, const F
     case vs_first: first_matrix.transform_dir(axis, axes[ax_num].direction); break;
     case vs_second: second_matrix.transform_dir(axis, axes[ax_num].direction); break;
     case vs_global: pShell->mXFORM.transform_dir(axis, axes[ax_num].direction); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     Fmatrix inv_first_matrix;
@@ -1233,7 +1238,7 @@ void CPHJoint::GetAxisDirDynamic(int num, Fvector& axis)
         break;
     case full_control: dJointGetAMotorAxis(m_joint1, num, result); break;
     case slider: dJointGetSliderAxis(m_joint, result); break;
-    default: R_ASSERT2(false, "type not supported");
+    default: XR_PANIC("invalid axis type", eType, axis);
     }
 
     axis.set(result[0], result[1], result[2]);
@@ -1249,8 +1254,8 @@ void CPHJoint::GetAnchorDynamic(Fvector& anchor)
     case hinge2: dJointGetHingeAnchor(m_joint, result); break;
     case ball:
     case full_control: dJointGetBallAnchor(m_joint, result); break;
-    case slider: R_ASSERT2(false, "position of slider joint is undefinite"); break;
-    default: R_ASSERT2(false, "type not supported"); break;
+    case slider: XR_PANIC("position of slider joint is undefined", anchor);
+    default: XR_PANIC("invalid anchor type", eType, anchor);
     }
 
     anchor.set(result[0], result[1], result[2]);

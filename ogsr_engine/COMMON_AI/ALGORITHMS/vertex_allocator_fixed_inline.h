@@ -18,7 +18,7 @@ TEMPLATE_SPECIALIZATION
 inline CFixedVertexAllocator::CDataStorage() { m_vertices.resize(ReserveSize); }
 
 TEMPLATE_SPECIALIZATION
-inline CFixedVertexAllocator::~CDataStorage() {}
+inline CFixedVertexAllocator::~CDataStorage() = default;
 
 TEMPLATE_SPECIALIZATION
 inline void CFixedVertexAllocator::init() { m_vertex_count = 0; }
@@ -29,7 +29,7 @@ inline u32 CFixedVertexAllocator::get_visited_node_count() const { return m_vert
 TEMPLATE_SPECIALIZATION
 inline TCompoundVertex& CFixedVertexAllocator::create_vertex()
 {
-    VERIFY(m_vertex_count < ReserveSize - 1);
+    XR_ASSERT(m_vertex_count < ReserveSize - 1);
     return *(m_vertices.begin() + m_vertex_count++);
 }
 

@@ -212,9 +212,8 @@ LPCSTR movement_type(const MonsterSpace::EMovementType& movement_type)
     case MonsterSpace::eMovementTypeStand: return ("stand");
     case MonsterSpace::eMovementTypeWalk: return ("walk");
     case MonsterSpace::eMovementTypeRun: return ("run");
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
-    return ("invalid");
 }
 
 LPCSTR danger_type(const CDangerObject::EDangerType& danger_type)
@@ -229,9 +228,8 @@ LPCSTR danger_type(const CDangerObject::EDangerType& danger_type)
     case CDangerObject::eDangerTypeAttacked: return ("I am attacked");
     case CDangerObject::eDangerTypeGrenade: return ("greande nearby");
     case CDangerObject::eDangerTypeEnemySound: return ("enemy sound");
-    default: NODEFAULT;
+    default: xr::unreachable();
     };
-    return ("");
 }
 
 void CAI_Stalker::debug_planner(const script_planner* planner) { m_debug_planner = planner; }
@@ -421,7 +419,7 @@ void CAI_Stalker::OnHUDDraw(ctx_id_t context_id, CCustomHUD* hud, IRenderable* r
                 right = 0.f;
                 break;
             }
-            default: NODEFAULT;
+            default: xr::unreachable();
             }
 
             HUD().Font().pFontStat->OutNext("{}{}{}victory   : [{:5.2f}%,{:5.2f}%] -> {}", indent, indent, indent, 100.f * right, 100.f * left, description);
@@ -597,7 +595,7 @@ void CAI_Stalker::OnHUDDraw(ctx_id_t context_id, CCustomHUD* hud, IRenderable* r
         mental_state = "panic";
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     HUD().Font().pFontStat->OutNext("{}{}mental state    : {}", indent, indent, mental_state);
@@ -613,7 +611,7 @@ void CAI_Stalker::OnHUDDraw(ctx_id_t context_id, CCustomHUD* hud, IRenderable* r
         body_state = "crouch";
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     HUD().Font().pFontStat->OutNext("{}{}body state      : {}", indent, indent, body_state);
@@ -639,7 +637,7 @@ void CAI_Stalker::OnHUDDraw(ctx_id_t context_id, CCustomHUD* hud, IRenderable* r
         path_type = "no path";
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     HUD().Font().pFontStat->OutNext("{}{}path type       : {}", indent, indent, path_type);
@@ -794,7 +792,7 @@ void CAI_Stalker::OnHUDDraw(ctx_id_t context_id, CCustomHUD* hud, IRenderable* r
         sight_type = "fire object";
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     HUD().Font().pFontStat->OutNext("{}{}type            : {}", indent, indent, sight_type);
@@ -843,7 +841,7 @@ void CAI_Stalker::OnHUDDraw(ctx_id_t context_id, CCustomHUD* hud, IRenderable* r
         HUD().Font().pFontStat->OutNext("{}{}visible point   : {}", indent, indent, false ? "-" : "+");
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 
@@ -869,12 +867,10 @@ void CAI_Stalker::OnRender()
 
         xr_vector<CObject*> objects;
         feel_vision_get(objects);
-        if (std::find(objects.begin(), objects.end(), memory().enemy().selected()) != objects.end())
-        {
-            Fvector position = feel_vision_get_vispoint(const_cast<CEntityAlive*>(memory().enemy().selected()));
-            Level().debug_renderer().draw_aabb(position, .05f, .05f, .05f, D3DCOLOR_XRGB(0 * 255, 255, 0 * 255));
-            return;
-        }
+
+        if (std::ranges::find(objects, memory().enemy().selected()) != objects.end())
+            Level().debug_renderer().draw_aabb(feel_vision_get_vispoint(memory().enemy().selected()), 0.05f, 0.05f, 0.05f,
+                                               D3DCOLOR_XRGB(0 * 255, 255, 0 * 255));
 
         return;
     }
@@ -1042,21 +1038,12 @@ void draw_visiblity_rays(CCustomMonster* self, const CObject* object, collide::r
     typedef Feel::Vision::feel_visible_Item feel_visible_Item;
     typedef xr_vector<feel_visible_Item> VISIBLE_ITEMS;
 
-    feel_visible_Item* item = 0;
-    {
-        VISIBLE_ITEMS::iterator I = self->feel_visible.begin();
-        VISIBLE_ITEMS::iterator E = self->feel_visible.end();
-        for (; I != E; ++I)
-        {
-            if ((*I).O == object)
-            {
-                item = &*I;
-                break;
-            }
-        }
-    }
+    feel_visible_Item* item{nullptr};
 
-    if (!item)
+    if (const auto it = std::ranges::find(self->feel_visible, object, &feel_visible_Item::O); it != self->feel_visible.end())
+        item = std::to_address(it);
+
+    if (item == nullptr)
         return;
 
     Fvector start_position = self->eye_matrix.c;

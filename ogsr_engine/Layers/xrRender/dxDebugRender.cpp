@@ -87,42 +87,23 @@ void dxDebugRender::add_lines(Fvector const* vertices, u32 const& vertex_count, 
     }
 }
 
-void dxDebugRender::ZEnable(bool bEnable)
-{
-    // CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZENABLE,bEnable));
-    RCache.set_Z(bEnable);
-}
-
+void dxDebugRender::ZEnable(bool bEnable) { RCache.set_Z(bEnable); }
 void dxDebugRender::OnFrameEnd() { RCache.OnFrameEnd(); }
-
 void dxDebugRender::SetShader(const debug_shader& shader) { RCache.set_Shader(((dxUIShader*)&*shader)->hShader); }
-
-void dxDebugRender::SetAmbient(u32)
-{
-    //	TODO: DX10: Check if need this for DX10
-    VERIFY(!"Not implemented for DX10");
-}
 
 void dxDebugRender::SetDebugShader(dbgShaderHandle shdHandle)
 {
-    R_ASSERT(shdHandle < dbgShaderCount);
-
     constexpr LPCSTR dbgShaderParams[][2] = {
         {"hud\\default", "ui\\ui_pop_up_active_back"}, // dbgShaderWindow
     };
 
-    if (!m_dbgShaders[shdHandle])
+    if (!m_dbgShaders[XR_ASSERT_VAL(shdHandle < dbgShaderCount)])
         m_dbgShaders[shdHandle].create(dbgShaderParams[shdHandle][0], dbgShaderParams[shdHandle][1]);
 
     RCache.set_Shader(m_dbgShaders[shdHandle]);
 }
 
-void dxDebugRender::DestroyDebugShader(dbgShaderHandle shdHandle)
-{
-    R_ASSERT(shdHandle < dbgShaderCount);
-
-    m_dbgShaders[shdHandle].destroy();
-}
+void dxDebugRender::DestroyDebugShader(dbgShaderHandle shdHandle) { m_dbgShaders[XR_ASSERT_VAL(shdHandle < dbgShaderCount)].destroy(); }
 
 void dxDebugRender::dbg_DrawTRI(const Fmatrix& T, const Fvector& p1, const Fvector& p2, const Fvector& p3, u32 C) { RCache.dbg_DrawTRI(T, p1, p2, p3, C); }
 
@@ -141,9 +122,9 @@ public:
         co_return;
     }
 
-    virtual void add_lines(Fvector const* vertices, u32 const& vertex_count, u16 const* pairs, u32 const& pair_count, u32 const& color)
+    void add_lines(Fvector const* vertices, u32 const& vertex_count, u16 const* pairs, u32 const& pair_count, u32 const& color) override
     {
-        __super::add_lines(vertices, vertex_count, pairs, pair_count, color);
+        dxDebugRender::add_lines(vertices, vertex_count, pairs, pair_count, color);
     }
 } rdebug_render_impl;
 

@@ -43,7 +43,7 @@ void trivial_encryptor::initialize(key_flag what)
     else if (what == key_flag::worldwide)
         m_key = m_key_worldwide;
     else
-        R_ASSERT(false, "Unknown encryption key!");
+        XR_PANIC("unknown encryption key", what);
 
     m_current_key = what;
 

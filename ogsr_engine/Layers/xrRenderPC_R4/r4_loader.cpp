@@ -21,8 +21,7 @@
 
 tmc::task<void> CRender::level_Load(IReader* fs)
 {
-    R_ASSERT(g_pGameLevel);
-    R_ASSERT(!b_loaded);
+    XR_ASSERT(g_pGameLevel != nullptr && !b_loaded);
 
     xr::render_memory_usage usage;
     ResourcesGetMemoryUsage(usage);
@@ -42,8 +41,7 @@ tmc::task<void> CRender::level_Load(IReader* fs)
     co_await g_pGamePersistent->LoadTitle("st_loading_shaders");
 
     {
-        chunk = fs->open_chunk(fsL_SHADERS);
-        R_ASSERT2(chunk, "Level doesn't builded correctly.");
+        chunk = XR_ASSERT_VAL(fs->open_chunk(fsL_SHADERS) != nullptr, "invalid level files", fsL_SHADERS);
         u32 count = chunk->r_u32();
         Shaders.reserve(count);
 
@@ -64,11 +62,20 @@ tmc::task<void> CRender::level_Load(IReader* fs)
             *delim = '\0';
             xr_strcpy(n_tlist, delim + 1);
 
+            // Pass only the first texture if it is a list
+            delim = std::strchr(n_tlist, ',');
+            if (delim != nullptr)
+                *delim = '\0';
+
+            xr::override_shaders(n_tlist, n_sh, sizeof(n_sh));
+
+            if (delim != nullptr)
+                *delim = ',';
+
             Shaders.emplace_back(Resources->Create(n_sh, n_tlist));
         }
 
-        R_ASSERT(Shaders.size() == count);
-        chunk->close();
+        XR_ASSERT(Shaders.size() == count);
     }
 
     // Components
@@ -79,20 +86,13 @@ tmc::task<void> CRender::level_Load(IReader* fs)
     co_await g_pGamePersistent->LoadTitle("st_loading_geometry");
 
     {
-        CStreamReader* geom = FS.rs_open("$level$", "level.geom");
-        R_ASSERT2(geom, "level.geom");
-        LoadBuffers(geom, FALSE);
-        LoadSWIs(geom);
-        FS.r_close(geom);
+        const auto geom = XR_ASSERT_VAL(absl::WrapUnique(FS.rs_open("$level$", "level.geom")));
+        LoadBuffers(geom.get(), false);
+        LoadSWIs(geom.get());
     }
 
     //...and alternate/fast geometry
-    {
-        CStreamReader* geom = FS.rs_open("$level$", "level.geomx");
-        R_ASSERT2(geom, "level.geomX");
-        LoadBuffers(geom, TRUE);
-        FS.r_close(geom);
-    }
+    LoadBuffers(XR_ASSERT_VAL(absl::WrapUnique(FS.rs_open("$level$", "level.geomx"))).get(), true);
 
     // Visuals
     co_await g_pGamePersistent->LoadTitle("st_loading_spatial_db");
@@ -215,77 +215,67 @@ void CRender::level_Unload()
 
 void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 {
-    R_ASSERT2(base_fs, "Could not load geometry. File not found.");
+    XR_ASSERT(base_fs != nullptr, "geometry file not found");
 
-    xr_vector<VertexDeclarator>& _DC = _alternative ? xDC : nDC;
-    xr_vector<ID3DVertexBuffer*>& _VB = _alternative ? xVB : nVB;
-    xr_vector<ID3DIndexBuffer*>& _IB = _alternative ? xIB : nIB;
+    auto& _DC = _alternative ? xDC : nDC;
+    auto& _VB = _alternative ? xVB : nVB;
+    auto& _IB = _alternative ? xIB : nIB;
+    xr_vector<std::byte> data;
 
     // Vertex buffers
+    // Use DX9-style declarators
+    auto fs = XR_ASSERT_VAL(absl::WrapUnique(base_fs->open_chunk(fsL_VB)), "invalid geometry file", fsL_VB);
+    const auto count = fs->r_u32();
+
+    _DC.resize(count);
+    _VB.resize(count);
+
+    // decl
+    for (auto [dc, vb] : std::views::zip(_DC, _VB))
     {
-        // Use DX9-style declarators
-        CStreamReader* fs = base_fs->open_chunk(fsL_VB);
-        R_ASSERT2(fs, "Could not load geometry. File 'level.geom?' corrupted.");
-        u32 count = fs->r_u32();
-        _DC.resize(count);
-        _VB.resize(count);
+        dc.resize(MAXD3DDECLLENGTH + 1);
+        const auto buffer_size = xr::ssize_bytes(dc);
+        fs->r(dc.data(), buffer_size);
 
-        // decl
-        constexpr u32 buffer_size = (MAXD3DDECLLENGTH + 1) * sizeof(D3DVERTEXELEMENT9);
-        auto* dcl = (D3DVERTEXELEMENT9*)_alloca(buffer_size);
+        const auto vSize = FVF::ComputeVertexSize(dc.data(), 0);
+        dc.resize(FVF::GetDeclLength(dc.data()) + 1);
+        fs->advance(xr::ssize_bytes(dc) - buffer_size);
 
-        for (u32 i = 0; i < count; i++)
-        {
-            fs->r(dcl, buffer_size);
-            fs->advance(-(int)buffer_size);
-
-            u32 dcl_len = FVF::GetDeclLength(dcl) + 1;
-            _DC[i].resize(dcl_len);
-            fs->r(_DC[i].data(), dcl_len * sizeof(D3DVERTEXELEMENT9));
-
-            // count, size
-            u32 vCount = fs->r_u32();
-            u32 vSize = FVF::ComputeVertexSize(dcl, 0);
+        // count * size
+        const auto vCount = fs->r_u32();
+        const auto len = vCount * vSize;
 
 #ifndef MASTER_GOLD
-            Msg("* [Loading VB] {} verts, {} Kb", vCount, (vCount * vSize) / 1024);
+        Msg("* [Loading VB] {} verts, {} Kb", vCount, len / 1024);
 #endif
 
-            // Create and fill
-            //	TODO: DX10: Check fragmentation.
-            //	Check if buffer is less then 2048 kb
-            BYTE* pData = xr_alloc<BYTE>(vCount * vSize);
-            fs->r(pData, vCount * vSize);
-            dx10BufferUtils::CreateVertexBuffer(&_VB[i], pData, vCount * vSize);
-            xr_free(pData);
-
-            //			fs->advance			(vCount*vSize);
-        }
-        fs->close();
+        // Create and fill
+        //	TODO: DX10: Check fragmentation.
+        //	Check if buffer is less then 2048 kb
+        data.resize(len);
+        fs->r(data.data(), len);
+        XR_ASSERT(xr::hr(dx10BufferUtils::CreateVertexBuffer(&vb, data.data(), len)));
     }
 
     // Index buffers
+    fs = XR_ASSERT_VAL(absl::WrapUnique(base_fs->open_chunk(fsL_IB)), "", fsL_IB);
+    _IB.resize(fs->r_u32());
+
+    for (auto& ib : _IB)
     {
-        CStreamReader* fs = base_fs->open_chunk(fsL_IB);
-        u32 count = fs->r_u32();
-        _IB.resize(count);
-        for (u32 i = 0; i < count; i++)
-        {
-            u32 iCount = fs->r_u32();
+        const auto iCount = fs->r_u32();
+        const auto len = iCount * sizeof(u16);
 
 #ifndef MASTER_GOLD
-            Msg("* [Loading IB] {} indices, {} Kb", iCount, (iCount * 2) / 1024);
+        Msg("* [Loading IB] {} indices, {} Kb", iCount, len / 1024);
 #endif
 
-            // Create and fill
-            //	TODO: DX10: Check fragmentation.
-            //	Check if buffer is less then 2048 kb
-            BYTE* pData = xr_alloc<BYTE>(iCount * 2);
-            fs->r(pData, iCount * 2);
-            dx10BufferUtils::CreateIndexBuffer(&_IB[i], pData, iCount * 2);
-            xr_free(pData);
-        }
-        fs->close();
+        // Create and fill
+        //	TODO: DX10: Check fragmentation.
+        //	Check if buffer is less then 2048 kb
+        data.resize(len);
+        fs->r(data.data(), len);
+        XR_ASSERT(xr::hr(dx10BufferUtils::CreateIndexBuffer(&ib, data.data(), len)));
     }
 }
 
@@ -318,31 +308,31 @@ void CRender::LoadLights(IReader* fs)
 void CRender::LoadSectors(IReader* fs)
 {
     // allocate memory for portals
-    const u32 pt_size = fs->find_chunk(fsL_PORTALS);
-    R_ASSERT(0 == pt_size % sizeof(CPortal::level_portal_data_t));
+    const auto pt_size = fs->find_chunk(fsL_PORTALS);
+    XR_ASSERT(xr::is_aligned(pt_size, gsl::index{sizeof(CPortal::level_portal_data_t)}), "", pt_size, sizeof(CPortal::level_portal_data_t));
 
-    const u32 portals_count = pt_size / sizeof(CPortal::level_portal_data_t);
+    const auto portals_count = pt_size / sizeof(CPortal::level_portal_data_t);
     xr_vector<CPortal::level_portal_data_t> portals_data{portals_count};
 
     // load sectors
     xr_vector<CSector::level_sector_data_t> sectors_data;
 
-    float largest_sector_vol = 0;
     IReader* S = fs->open_chunk(fsL_SECTORS);
+    f32 largest_sector_vol{0.0f};
 
-    for (sector_id_t i = 0;; i++)
+    for (sector_id_t i{0};; ++i)
     {
-        IReader* P = S->open_chunk(i);
+        const auto P = absl::WrapUnique(S->open_chunk(i));
         if (!P)
             break;
 
+        const auto size = P->find_chunk(fsP_Portals);
+        XR_ASSERT(xr::is_aligned(size, gsl::index{sizeof(u16)}), "", i, size);
+
+        auto portals_in_sector = size / sizeof(u16);
         auto& sector_data = sectors_data.emplace_back();
-
-        u32 size = P->find_chunk(fsP_Portals);
-        R_ASSERT(0 == (size & 1));
-        u32 portals_in_sector = size / sizeof(u16);
-
         sector_data.portals_id.reserve(portals_in_sector);
+
         while (portals_in_sector)
         {
             const u16 ID = P->r_u16();
@@ -350,22 +340,18 @@ void CRender::LoadSectors(IReader* fs)
             --portals_in_sector;
         }
 
-        size = P->find_chunk(fsP_Root);
-        R_ASSERT(size == 4);
+        XR_ASSERT(P->find_chunk(fsP_Root) == sizeof(u32), "", i);
         sector_data.root_id = P->r_u32();
 
         // Search for default sector - assume "default" or "outdoor" sector is the largest one
         // XXX: hack: need to know real outdoor sector
-        auto* V = (dxRender_Visual*)getVisual(sector_data.root_id);
-        float vol = V->vis.box.getvolume();
-        if (vol > largest_sector_vol)
+        if (const auto vol = smart_cast<dxRender_Visual*>(getVisual(sector_data.root_id))->vis.box.getvolume(); vol > largest_sector_vol)
         {
             largest_sector_vol = vol;
             largest_sector_id = i;
         }
-
-        P->close();
     }
+
     S->close();
 
     // load portals
@@ -374,12 +360,12 @@ void CRender::LoadSectors(IReader* fs)
         CDB::Collector CL;
         std::ignore = fs->find_chunk(fsL_PORTALS);
 
-        for (u32 i = 0; i < portals_count; i++)
+        for (auto [i, P] : std::views::enumerate(portals_data))
         {
-            auto& P = portals_data[i];
             fs->r(&P, sizeof(P));
+            XR_ASSERT(P.vertices.size() <= P.vertices.capacity());
 
-            for (gsl::index j{2}; j < P.vertices.size(); ++j)
+            for (gsl::index j{2}; j < std::ssize(P.vertices); ++j)
                 CL.add_face_packed_D(P.vertices[0], P.vertices[j - 1], P.vertices[j], i);
         }
 
@@ -400,10 +386,8 @@ void CRender::LoadSectors(IReader* fs)
         rmPortals = nullptr;
     }
 
-    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+    for (auto& dsgraph : contexts_pool)
     {
-        auto& dsgraph = contexts_pool[id];
-
         dsgraph.reset();
         dsgraph.load(sectors_data, portals_data);
     }
@@ -414,30 +398,29 @@ void CRender::LoadSectors(IReader* fs)
 void CRender::LoadSWIs(CStreamReader* base_fs)
 {
     // allocate memory for portals
-    if (base_fs->find_chunk(fsL_SWIS))
+    if (base_fs->find_chunk(fsL_SWIS) == 0)
+        return;
+
+    const auto fs = absl::WrapUnique(base_fs->open_chunk(fsL_SWIS));
+
+    for (auto& SWI : SWIs)
+        xr_free(SWI.sw);
+
+    SWIs.clear();
+    const auto item_count = fs->r_u32();
+    SWIs.resize(item_count);
+
+    for (auto& swi : SWIs)
     {
-        CStreamReader* fs = base_fs->open_chunk(fsL_SWIS);
-        u32 item_count = fs->r_u32();
+        swi.reserved[0] = fs->r_u32();
+        swi.reserved[1] = fs->r_u32();
+        swi.reserved[2] = fs->r_u32();
+        swi.reserved[3] = fs->r_u32();
+        swi.count = fs->r_u32();
 
-        for (auto& SWI : SWIs)
-            xr_free(SWI.sw);
-
-        SWIs.clear();
-
-        SWIs.resize(item_count);
-        for (u32 c = 0; c < item_count; c++)
-        {
-            FSlideWindowItem& swi = SWIs[c];
-            swi.reserved[0] = fs->r_u32();
-            swi.reserved[1] = fs->r_u32();
-            swi.reserved[2] = fs->r_u32();
-            swi.reserved[3] = fs->r_u32();
-            swi.count = fs->r_u32();
-            VERIFY(!swi.sw);
-            swi.sw = xr_alloc<FSlideWindow>(swi.count);
-            fs->r(swi.sw, sizeof(FSlideWindow) * swi.count);
-        }
-        fs->close();
+        XR_ASSERT(swi.sw == nullptr);
+        swi.sw = xr_alloc<FSlideWindow>(swi.count);
+        fs->r(swi.sw, sizeof(FSlideWindow) * swi.count);
     }
 }
 
@@ -447,51 +430,41 @@ void CRender::Load3DFluid()
         return;
 
     string_path fn_game;
-    if (FS.exist(fn_game, "$level$", "level.fog_vol"))
+    if (FS.exist(fn_game, "$level$", "level.fog_vol") == nullptr)
+        return;
+
+    const auto F = absl::WrapUnique(FS.r_open(fn_game));
+    // Version, must be 3
+    if (F->r_u16() != 3)
+        return;
+
+    for (u32 i = 0, cnt = F->r_u32(); i < cnt; ++i)
     {
-        IReader* F = FS.r_open(fn_game);
-        u16 version = F->r_u16();
+        dx103DFluidVolume* pVolume = xr_new<dx103DFluidVolume>();
+        pVolume->Load("", F.get(), 0);
 
-        if (version == 3)
+        const auto& v = pVolume->getVisData().sphere.P;
+
+        Msg("~ Loading fog volume with profile [{}]. Position: {}", pVolume->getProfileName(), v);
+
+        //	Attach to sector's static geometry
+        for (auto& dsgraph : contexts_pool)
         {
-            u32 cnt = F->r_u32();
-            for (u32 i = 0; i < cnt; ++i)
+            auto pSector = dsgraph.get_sector(dsgraph.detect_sector(pVolume->getVisData().sphere.P));
+            //	3DFluid volume must be in render sector
+            if (pSector == nullptr)
             {
-                dx103DFluidVolume* pVolume = xr_new<dx103DFluidVolume>();
-                pVolume->Load("", F, 0);
+                Msg("!!Cannot find sector for fog volume. Position: {}", v);
 
-                const auto& v = pVolume->getVisData().sphere.P;
-
-                Msg("~ Loading fog volume with profile [{}]. Position x=[{}] y=[{}] z=[{}]", pVolume->getProfileName(), v.x, v.y, v.z);
-
-                //	Attach to sector's static geometry
-                for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
-                {
-                    auto& dsgraph = contexts_pool[id];
-                    const auto sector_id = dsgraph.detect_sector(pVolume->getVisData().sphere.P);
-                    auto* pSector = dsgraph.get_sector(sector_id);
-
-                    if (!pSector)
-                    {
-                        Msg("!!Cannot find sector for fog volume. Position x=[{}] y=[{}] z=[{}]!", v.x, v.y, v.z);
-
-                        xr_delete(pVolume);
-                        continue;
-                    }
-
-                    //	3DFluid volume must be in render sector
-                    R_ASSERT(pSector);
-
-                    dxRender_Visual* pRoot = pSector->root();
-                    //	Sector must have root
-                    R_ASSERT(pRoot);
-                    R_ASSERT(pRoot->getType() == MT_HIERRARHY);
-
-                    ((FHierrarhyVisual*)pRoot)->children.push_back(pVolume);
-                }
+                xr_delete(pVolume);
+                continue;
             }
-        }
 
-        FS.r_close(F);
+            dxRender_Visual* pRoot = pSector->root();
+            //	Sector must have root
+            XR_ASSERT(pRoot != nullptr && pRoot->getType() == MT_HIERRARHY);
+
+            smart_cast<FHierrarhyVisual*>(pRoot)->children.push_back(pVolume);
+        }
     }
 }

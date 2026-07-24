@@ -213,8 +213,10 @@ void CEnvelope::LoadA(IReader& F)
     {
         F.r_string(buf, sizeof(buf));
 
-        const auto res = scn::scan_int<size_t>(buf);
-        R_ASSERT(res, res.error().msg());
+        std::string_view val{buf};
+        const auto res = scn::scan_int<size_t>(val);
+        XR_ASSERT(res, res.error().msg(), val);
+
         keys.resize(res->value());
 
         for (u32 i = 0; i < keys.size(); i++)
@@ -223,8 +225,10 @@ void CEnvelope::LoadA(IReader& F)
             st_Key& K = *keys[i];
             F.r_string(buf, sizeof(buf));
 
-            const auto resf = scn::scan<f32, f32, f32, f32, f32, f32, f32, f32, f32>(std::string_view{buf}, "Key {} {} {} {} {} {} {} {} {}");
-            R_ASSERT(resf, resf.error().msg());
+            val = buf;
+            const auto resf = scn::scan<f32, f32, f32, f32, f32, f32, f32, f32, f32>(val, "Key {} {} {} {} {} {} {} {} {}");
+            XR_ASSERT(resf, resf.error().msg(), val);
+
             const auto [f0, f1, f2, f3, f4, f5, f6, f7, f8] = resf->values();
 
             K.value = f0;
@@ -254,8 +258,9 @@ void CEnvelope::LoadA(IReader& F)
         // behavior <pre> <post>
         F.r_string(buf, sizeof(buf));
 
-        const auto resd = scn::scan<s32, s32>(std::string_view{buf}, "Behaviors {} {}");
-        R_ASSERT(resd, resd.error().msg());
+        val = buf;
+        const auto resd = scn::scan<s32, s32>(val, "Behaviors {} {}");
+        XR_ASSERT(resd, resd.error().msg(), val);
 
         const auto [b0, b1] = resd->values();
         behavior[0] = b0;

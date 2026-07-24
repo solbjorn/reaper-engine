@@ -88,126 +88,120 @@ void dx10ShaderResourceStateCache::Apply(ctx_id_t context_id)
 
 void dx10ShaderResourceStateCache::SetPSResource(u32 uiSlot, ID3DShaderResourceView* pRes)
 {
-    VERIFY(uiSlot < CTexture::mtMaxPixelShaderTextures);
+    if (m_PSViews[XR_ASSERT_VAL(uiSlot < CTexture::mtMaxPixelShaderTextures)] == pRes)
+        return;
 
-    if (m_PSViews[uiSlot] != pRes)
+    m_PSViews[uiSlot] = pRes;
+
+    if (m_bUpdatePSViews)
     {
-        m_PSViews[uiSlot] = pRes;
-        if (m_bUpdatePSViews)
-        {
-            m_uiMinPSView = std::min(m_uiMinPSView, uiSlot);
-            m_uiMaxPSView = std::max(m_uiMaxPSView, uiSlot);
-        }
-        else
-        {
-            m_bUpdatePSViews = true;
-            m_uiMinPSView = uiSlot;
-            m_uiMaxPSView = uiSlot;
-        }
+        m_uiMinPSView = std::min(m_uiMinPSView, uiSlot);
+        m_uiMaxPSView = std::max(m_uiMaxPSView, uiSlot);
+    }
+    else
+    {
+        m_bUpdatePSViews = true;
+        m_uiMinPSView = uiSlot;
+        m_uiMaxPSView = uiSlot;
     }
 }
 
 void dx10ShaderResourceStateCache::SetGSResource(u32 uiSlot, ID3DShaderResourceView* pRes)
 {
-    VERIFY(uiSlot < CTexture::mtMaxGeometryShaderTextures);
+    if (m_GSViews[XR_ASSERT_VAL(uiSlot < CTexture::mtMaxGeometryShaderTextures)] == pRes)
+        return;
 
-    if (m_GSViews[uiSlot] != pRes)
+    m_GSViews[uiSlot] = pRes;
+
+    if (m_bUpdateGSViews)
     {
-        m_GSViews[uiSlot] = pRes;
-        if (m_bUpdateGSViews)
-        {
-            m_uiMinGSView = std::min(m_uiMinGSView, uiSlot);
-            m_uiMaxGSView = std::max(m_uiMaxGSView, uiSlot);
-        }
-        else
-        {
-            m_bUpdateGSViews = true;
-            m_uiMinGSView = uiSlot;
-            m_uiMaxGSView = uiSlot;
-        }
+        m_uiMinGSView = std::min(m_uiMinGSView, uiSlot);
+        m_uiMaxGSView = std::max(m_uiMaxGSView, uiSlot);
+    }
+    else
+    {
+        m_bUpdateGSViews = true;
+        m_uiMinGSView = uiSlot;
+        m_uiMaxGSView = uiSlot;
     }
 }
 
 void dx10ShaderResourceStateCache::SetVSResource(u32 uiSlot, ID3DShaderResourceView* pRes)
 {
-    VERIFY(uiSlot < CTexture::mtMaxVertexShaderTextures);
+    if (m_VSViews[XR_ASSERT_VAL(uiSlot < CTexture::mtMaxVertexShaderTextures)] == pRes)
+        return;
 
-    if (m_VSViews[uiSlot] != pRes)
+    m_VSViews[uiSlot] = pRes;
+
+    if (m_bUpdateVSViews)
     {
-        m_VSViews[uiSlot] = pRes;
-        if (m_bUpdateVSViews)
-        {
-            m_uiMinVSView = std::min(m_uiMinVSView, uiSlot);
-            m_uiMaxVSView = std::max(m_uiMaxVSView, uiSlot);
-        }
-        else
-        {
-            m_bUpdateVSViews = true;
-            m_uiMinVSView = uiSlot;
-            m_uiMaxVSView = uiSlot;
-        }
+        m_uiMinVSView = std::min(m_uiMinVSView, uiSlot);
+        m_uiMaxVSView = std::max(m_uiMaxVSView, uiSlot);
+    }
+    else
+    {
+        m_bUpdateVSViews = true;
+        m_uiMinVSView = uiSlot;
+        m_uiMaxVSView = uiSlot;
     }
 }
 
 void dx10ShaderResourceStateCache::SetHSResource(u32 uiSlot, ID3DShaderResourceView* pRes)
 {
-    VERIFY(uiSlot < CTexture::mtMaxHullShaderTextures);
+    if (m_HSViews[XR_ASSERT_VAL(uiSlot < CTexture::mtMaxHullShaderTextures)] == pRes)
+        return;
 
-    if (m_HSViews[uiSlot] != pRes)
+    m_HSViews[uiSlot] = pRes;
+
+    if (m_bUpdateHSViews)
     {
-        m_HSViews[uiSlot] = pRes;
-        if (m_bUpdateHSViews)
-        {
-            m_uiMinHSView = _min(m_uiMinHSView, uiSlot);
-            m_uiMaxHSView = _max(m_uiMaxHSView, uiSlot);
-        }
-        else
-        {
-            m_bUpdateHSViews = true;
-            m_uiMinHSView = uiSlot;
-            m_uiMaxHSView = uiSlot;
-        }
+        m_uiMinHSView = std::min(m_uiMinHSView, uiSlot);
+        m_uiMaxHSView = std::max(m_uiMaxHSView, uiSlot);
+    }
+    else
+    {
+        m_bUpdateHSViews = true;
+        m_uiMinHSView = uiSlot;
+        m_uiMaxHSView = uiSlot;
     }
 }
 
 void dx10ShaderResourceStateCache::SetDSResource(u32 uiSlot, ID3DShaderResourceView* pRes)
 {
-    VERIFY(uiSlot < CTexture::mtMaxHullShaderTextures);
+    if (m_DSViews[XR_ASSERT_VAL(uiSlot < CTexture::mtMaxDomainShaderTextures)] == pRes)
+        return;
 
-    if (m_DSViews[uiSlot] != pRes)
+    m_DSViews[uiSlot] = pRes;
+
+    if (m_bUpdateDSViews)
     {
-        m_DSViews[uiSlot] = pRes;
-        if (m_bUpdateDSViews)
-        {
-            m_uiMinDSView = _min(m_uiMinDSView, uiSlot);
-            m_uiMaxDSView = _max(m_uiMaxDSView, uiSlot);
-        }
-        else
-        {
-            m_bUpdateDSViews = true;
-            m_uiMinDSView = uiSlot;
-            m_uiMaxDSView = uiSlot;
-        }
+        m_uiMinDSView = std::min(m_uiMinDSView, uiSlot);
+        m_uiMaxDSView = std::max(m_uiMaxDSView, uiSlot);
+    }
+    else
+    {
+        m_bUpdateDSViews = true;
+        m_uiMinDSView = uiSlot;
+        m_uiMaxDSView = uiSlot;
     }
 }
 
 void dx10ShaderResourceStateCache::SetCSResource(u32 uiSlot, ID3DShaderResourceView* pRes)
 {
-    VERIFY(uiSlot < CTexture::mtMaxComputeShaderTextures);
+    if (m_CSViews[XR_ASSERT_VAL(uiSlot < CTexture::mtMaxComputeShaderTextures)] == pRes)
+        return;
 
-    if (m_CSViews[uiSlot] != pRes)
+    m_CSViews[uiSlot] = pRes;
+
+    if (m_bUpdateCSViews)
     {
-        m_CSViews[uiSlot] = pRes;
-        if (m_bUpdateCSViews)
-        {
-            m_uiMinCSView = _min(m_uiMinCSView, uiSlot);
-            m_uiMaxCSView = _max(m_uiMaxCSView, uiSlot);
-        }
-        else
-        {
-            m_bUpdateCSViews = true;
-            m_uiMinCSView = uiSlot;
-            m_uiMaxCSView = uiSlot;
-        }
+        m_uiMinCSView = std::min(m_uiMinCSView, uiSlot);
+        m_uiMaxCSView = std::max(m_uiMaxCSView, uiSlot);
+    }
+    else
+    {
+        m_bUpdateCSViews = true;
+        m_uiMinCSView = uiSlot;
+        m_uiMaxCSView = uiSlot;
     }
 }

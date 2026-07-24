@@ -87,7 +87,7 @@ tmc::task<void> vision_client::shedule_Update(u32 dt)
         eye_pp_s2();
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     visual().update(float(dt) / 1000.f);

@@ -35,7 +35,6 @@ private:
     string_unordered_map<shared_str, bool> no_files;
 
     bool m_reload_modules{};
-    xr_set<void*> m_dumpedObjList;
 
     [[nodiscard]] bool do_file(gsl::czstring caScriptName, gsl::czstring caNameSpaceName);
     [[nodiscard]] bool namespace_loaded(gsl::czstring caName, bool remove_from_stack = true);
@@ -72,10 +71,10 @@ public:
     void register_script_classes();
     void collect_all_garbage();
 
-    void print_stack();
-    void dump_state();
-    void LogTable(lua_State* l, LPCSTR S, int level);
-    void LogVariable(lua_State* l, gsl::czstring name, int level);
+    [[nodiscard]] xr_string print_stack();
+    [[nodiscard]] xr_string dump_state();
+    [[nodiscard]] xr_string LogTable(lua_State* l, std::string_view S, s32 level);
+    [[nodiscard]] xr_string LogVariable(lua_State* l, std::string_view name, s32 level);
 
 private:
     void vscript_log(ScriptStorage::ELuaMessageType message, xr::detail::string_view fmt, xr::detail::format_args args);

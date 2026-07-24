@@ -35,43 +35,6 @@
 #include "aint.h"
 #include "jtlimits.h"
 
-//
-// Since it is dangerous to compare floating point numbers
-// we compare them within an epsilon of tolerance
-//
-
-#if 0
-int inline equal(float x, float y, float eps = 1e-6)
-{
-    return (fabs(x-y) < eps); 
-} 
-
-int inline iszero(float x, float eps = 1e-6) 
-{
-    return fabs(x) < eps;
-}
-
-int inline greater_equal(float x, float y)
-{
-    return (x > y) || equal(x,y);
-}
-
-int inline less_equal(float x, float y)
-{
-    return (x < y) || equal(x,y);
-}
-
-int inline greater(float x, float y)
-{
-    return x > y && !equal(x,y);
-}
-
-int inline less(float x, float y)
-{
-    return x < y && !equal(x,y);
-}
-#endif
-
 void SimpleJtLimit::init(int jt_type, float a, float b, float c, float low, float high)
 {
     psi.Reset(a, b, c);
@@ -83,13 +46,14 @@ void SimpleJtLimit::init(int jt_type, float a, float b, float c, float low, floa
     {
     case SinJtLimit:
     case CosJtLimit: type = jt_type; break;
-    default: FATAL("Invalid Joint Type passed to SimpleJtLimit %d", jt_type);
+    default: XR_PANIC("invalid joint type", jt_type);
     }
 }
 
 float SimpleJtLimit::theta1(float v) const { return type == SinJtLimit ? asin1(psi.eval(v)) : acos1(psi.eval(v)); }
 float SimpleJtLimit::theta2(float v) const { return type == SinJtLimit ? asin2(psi.eval(v)) : acos2(psi.eval(v)); }
 float SimpleJtLimit::theta(int family, float v) const { return family == 1 ? theta1(v) : theta2(v); }
+
 float SimpleJtLimit::theta1_d_aux(float v, float delta) const
 {
     float d = psi.eval(v);
@@ -115,9 +79,9 @@ float SimpleJtLimit::theta1_d(float v) const
 
 float SimpleJtLimit::theta2_d(float v) const { return -theta1_d(v); }
 float SimpleJtLimit::theta_d(int family, float v) const { return family == 1 ? theta1_d(v) : theta2_d(v); }
+
 int SimpleJtLimit::Solve(int family, float v, float sin_v, float solns[2]) const
 {
-    //    const float eps = 1e-5;
     int n = -1;
 
     v = angle_normalize(v);
@@ -137,10 +101,8 @@ int SimpleJtLimit::Solve(int family, float v, float sin_v, float solns[2]) const
         }
         n = psi.solve(sin_v, solns);
     }
-    else
-        printf("Solve not implemented for cos type\n");
-    VERIFY(n != -1);
-    return n;
+
+    return XR_ASSERT_VAL(n != -1);
 }
 
 int SimpleJtLimit::Discontinuity(int family, float x[2]) const
@@ -155,31 +117,12 @@ int SimpleJtLimit::Discontinuity(int family, float x[2]) const
         else
             n = psi.roots(x);
     }
-    else
-        printf("Discontinuity not implemented for cos type\n");
-    VERIFY(n != -1);
-    return n;
+
+    return XR_ASSERT_VAL(n != -1);
 }
 
 namespace
 {
-#if 0
-void sort(int m, float *temp)
-{
-    int i, j;
-
-    // sort the points
-    for (i = 0; i < m - 1; i++)
-	for (j = i+1; j < m; j++)
-	    if (temp[i] > temp[j])
-	    {
-		float t = temp[i];
-		temp[i] = temp[j];
-		temp[j] = t;
-	    }
-}
-#else
-
 void sort(int up, float a[])
 {
     int j;
@@ -200,8 +143,6 @@ void sort(int up, float a[])
         up = j;
     }
 }
-
-#endif
 
 int sort_intersections(int m, float* temp, float psi0, float psi1)
 {
@@ -297,14 +238,9 @@ void SimpleJtLimit::PsiLimits(AngleIntList& psi1, AngleIntList& psi2) const
         {
             for (int i = 0; i < (n - 1); i++)
             {
-#if 0
-		if (iszero(y[i]-y[i+1], eps))
-		    continue;
-#else
                 // Points are closer than 2 eps then interval is nonexistent
                 if (_abs(y[i] - y[i + 1]) < 2 * eps)
                     continue;
-#endif
 
                 clip(1, y[i] + eps, y[i + 1] - eps, limits.Low(), 2 * M_PI, psi1);
                 clip(1, y[i] + eps, y[i + 1] - eps, 0, limits.High(), psi1);
@@ -316,22 +252,16 @@ void SimpleJtLimit::PsiLimits(AngleIntList& psi1, AngleIntList& psi2) const
         {
             for (int i = 0; i < (n - 1); i++)
             {
-#if 0
-		if (iszero(y[i]-y[i+1], eps))
-		    continue;
-#else
                 // Points are closer than 2 eps then interval is nonexistent
                 if (_abs(y[i] - y[i + 1]) < 2 * eps)
                     continue;
-#endif
+
                 clip(1, y[i] + eps, y[i + 1] - eps, limits.Low(), limits.High(), psi1);
             }
 
             clip(2, eps, 2 * M_PI - eps, limits.Low(), limits.High(), psi2);
         }
     }
-    else
-        printf("psi limits not yet implemented for CosJtLimit\n");
 }
 
 inline float mytan(float v)
@@ -372,7 +302,7 @@ void ComplexJtLimit::init(int jt_type, float a1, float b1, float c1, float a2, f
     {
     case SinJtLimit:
     case CosJtLimit: type = jt_type; break;
-    default: FATAL("Invalid Joint Type passed to ComplexJtLimit %d", jt_type);
+    default: XR_PANIC("invalid joint type", jt_type);
     }
 }
 
@@ -384,13 +314,10 @@ static AngleInt PosCos(-M_PI / 2, M_PI / 2);
 
 float ComplexJtLimit::theta1(float v) const { return angle_normalize(atan2(sin_eq.eval(v), cos_eq.eval(v))); }
 float ComplexJtLimit::theta2(float v) const { return angle_normalize(atan2(-sin_eq.eval(v), -cos_eq.eval(v))); }
-float ComplexJtLimit::theta(int family, float psi) const
-{
-    // printf("theta %d %lf\n", family, psi);
-    return family == 1 ? theta1(psi) : theta2(psi);
-}
+float ComplexJtLimit::theta(int family, float psi) const { return family == 1 ? theta1(psi) : theta2(psi); }
 
 inline int sign(float x) { return x < 0 ? -1 : 1; }
+
 float ComplexJtLimit::theta1_d_aux(float v, float delta) const
 {
     float e1, e2, e1d, e2d, e3;
@@ -410,10 +337,8 @@ float ComplexJtLimit::theta1_d_aux(float v, float delta) const
         float left_d = theta1_d_aux(v + delta, delta * 10.0f);
         float right_d = theta1_d_aux(v - delta, delta * 10.0f);
         if (sign(left_d) != sign(right_d))
-        {
-            printf("signs are different in special case %lf %lf\n", left_d, right_d);
             return 0.0f;
-        }
+
         return (left_d + right_d) / 2.0f;
     }
 
@@ -428,10 +353,12 @@ float ComplexJtLimit::theta1_d(float v) const
 
 float ComplexJtLimit::theta2_d(float v) const { return theta1_d(v); }
 float ComplexJtLimit::theta_d(int family, float psi) const { return family == 1 ? theta1_d(psi) : theta2_d(psi); }
+
 //
 // Critical points are where deriv equation is 0
 //
 int ComplexJtLimit::CritPoints(float p[2]) const { return deriv.roots(p); }
+
 //
 // Note you cannot determine the singularities by looking where
 // the derivative is 0 because sometimes a singularity occurs
@@ -587,12 +514,6 @@ void ComplexJtLimit::Solve2(float v, float tan_v, int& n1, float psi_1[2], int& 
             psi_1[n1++] = temp[i];
         else if (angleequal(t2, v, 1e-4f))
             psi_2[n2++] = temp[i];
-        else
-            printf("%lf not equal to %lf or %lf\n", v, t, t2);
-        /*
-            else
-                psi_2[n2++] = temp[i];
-        */
     }
 }
 
@@ -680,8 +601,6 @@ void ComplexJtLimit::PsiLimits(int num_s, const float s[], AngleIntList& psi1, A
             clip(limits.Low(), limits.High(), 2, n2, p2, psi2);
         }
     }
-    else
-        printf("psi limits not yet implemented for CosJtLimit\n");
 }
 
 void ComplexJtLimit::ResetJtLimits(float low, float high)

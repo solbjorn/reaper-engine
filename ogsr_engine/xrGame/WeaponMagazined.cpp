@@ -1182,10 +1182,7 @@ void CWeaponMagazined::InitZoomParams(LPCSTR section, bool useTexture)
     LPCSTR dynamicZoomParams = READ_IF_EXISTS(pSettings, r_string, section, "scope_dynamic_zoom", nullptr);
     if (dynamicZoomParams)
     {
-        int num_zoom_param = _GetItemCount(dynamicZoomParams);
-
-        ASSERT_FMT(num_zoom_param >= 1, "!![%s] : Invalid scope_dynamic_zoom parameter in section [%s]", std::source_location::current().function_name(),
-                   section);
+        const auto num_zoom_param = XR_ASSERT_VAL(_GetItemCount(dynamicZoomParams) >= 1, "invalid [scope_dynamic_zoom] value", section, dynamicZoomParams);
 
         string128 tmp;
         m_bScopeDynamicZoom = CInifile::IsBOOL(_GetItem(dynamicZoomParams, 0, tmp));
@@ -1783,7 +1780,7 @@ bool CWeaponMagazined::ScopeRespawn(PIItem pIItem)
             CSE_ALifeDynamicObject* sobj2 = smart_cast<CSE_ALifeDynamicObject*>(_abstract);
 
             NET_Packet P;
-            P.w_begin(M_UPDATE);
+            P.w_begin(gsl::narrow<u16>(xr::msg::M_UPDATE));
             u32 position = P.w_tell();
             P.w_u16(0);
             sobj1->STATE_Write(P);

@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "alife_monster_patrol_path_manager.h"
+
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "ai_space.h"
 #include "patrol_path_storage.h"
@@ -88,7 +89,7 @@ void CALifeMonsterPatrolPathManager::actualize()
     }
     case PatrolPathManager::ePatrolStartTypeNext:
         // we advisedly do not process this case since it is far-fetched
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     VERIFY(path().vertices().size() > m_current_vertex_index);
@@ -144,7 +145,7 @@ void CALifeMonsterPatrolPathManager::navigate()
             std::swap(m_current_vertex_index, m_previous_vertex_index);
             break;
         }
-        default: NODEFAULT;
+        default: xr::unreachable();
         }
     }
 

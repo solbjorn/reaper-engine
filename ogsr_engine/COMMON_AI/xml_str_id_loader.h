@@ -97,7 +97,7 @@ const ITEM_DATA* CSXML_IdToIndex::GetById(const shared_str& str_id, bool no_asse
         for (T_VECTOR::iterator it = m_pItemDataVector->begin(); m_pItemDataVector->end() != it; it++, i++)
             Msg("[{}]=[{}]", i, it->id);
 
-        R_ASSERT3(no_assert, "item not found, id", str_id.c_str());
+        XR_ASSERT(no_assert, "item not found", file_str, str_id);
         return nullptr;
     }
 
@@ -107,9 +107,9 @@ const ITEM_DATA* CSXML_IdToIndex::GetById(const shared_str& str_id, bool no_asse
 TEMPLATE_SPECIALIZATION
 const ITEM_DATA* CSXML_IdToIndex::GetByIndex(int index, bool no_assert)
 {
-    if ((size_t)index >= m_pItemDataVector->size())
+    if (index >= std::ssize(*m_pItemDataVector))
     {
-        R_ASSERT3(no_assert, "item by index not found in files", file_str);
+        XR_ASSERT(no_assert, "item not found by index", file_str, index, m_pItemDataVector->size());
         return nullptr;
     }
 
@@ -119,7 +119,8 @@ const ITEM_DATA* CSXML_IdToIndex::GetByIndex(int index, bool no_assert)
 TEMPLATE_SPECIALIZATION
 void CSXML_IdToIndex::DeleteIdToIndexData()
 {
-    VERIFY(m_pItemDataVector);
+    XR_ASSERT(m_pItemDataVector != nullptr);
+
     _destroy_item_data_vector_cont(m_pItemDataVector);
     xr_delete(m_pItemDataVector);
 }
@@ -127,13 +128,11 @@ void CSXML_IdToIndex::DeleteIdToIndexData()
 TEMPLATE_SPECIALIZATION
 void CSXML_IdToIndex::InitInternal()
 {
-    VERIFY(!m_pItemDataVector);
+    XR_ASSERT(m_pItemDataVector == nullptr);
     T_INIT::InitXmlIdToIndex();
 
     m_pItemDataVector = xr_new<T_VECTOR>();
-
-    VERIFY(file_str);
-    VERIFY(tag_name);
+    XR_ASSERT(file_str != nullptr && tag_name != nullptr);
 
     string_path xml_file;
     int count = _GetItemCount(file_str);
@@ -142,31 +141,24 @@ void CSXML_IdToIndex::InitInternal()
     {
         std::ignore = _GetItem(file_str, it, xml_file);
 
-        CUIXml* uiXml = xr_new<CUIXml>();
-        xr_string xml_file_full;
-        xml_file_full = xml_file;
-        xml_file_full += ".xml";
-        bool xml_result = uiXml->Init(CONFIG_PATH, GAME_PATH, xml_file_full.c_str());
-        R_ASSERT3(xml_result, "error while parsing XML file", xml_file_full.c_str());
+        auto uiXml = xr_new<CUIXml>();
+        const auto xml_file_full = xr::format("{}.xml", xml_file);
+        XR_ASSERT(uiXml->Init(CONFIG_PATH, GAME_PATH, xml_file_full.c_str()), "error parsing XML", xml_file_full, tag_name);
 
         // общий список
         int items_num = uiXml->GetNodesNum(uiXml->GetRoot(), tag_name);
 
         for (int i = 0; i < items_num; ++i)
         {
-            LPCSTR item_name = uiXml->ReadAttrib(uiXml->GetRoot(), tag_name, i, "id", nullptr);
-
-            string256 buf;
-            sprintf_s(buf, "id for item don't set, number %d in %s", i, xml_file);
-            R_ASSERT2(item_name, buf);
+            const auto item_name =
+                XR_ASSERT_VAL(uiXml->ReadAttrib(uiXml->GetRoot(), tag_name, i, "id", nullptr) != nullptr, "ID is not set for item", xml_file, tag_name, i);
 
             // проверить ID на уникальность
             for (const auto& item : *m_pItemDataVector)
-                R_ASSERT3(std::is_neq(xr_strcmp(item.id, item_name)), "duplicate item id", item_name);
+                XR_ASSERT(std::is_neq(xr_strcmp(item.id, item_name)), "duplicate item ID", xml_file, tag_name, item_name);
 
             m_pItemDataVector->emplace_back(item_name, index, i, uiXml);
-
-            index++;
+            ++index;
         }
 
         if (!items_num)

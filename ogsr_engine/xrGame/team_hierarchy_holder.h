@@ -23,10 +23,8 @@ private:
         max_squad_count = 256
     };
 
-private:
-    typedef svector<CSquadHierarchyHolder*, max_squad_count> SQUAD_REGISTRY;
+    using SQUAD_REGISTRY = std::inplace_vector<CSquadHierarchyHolder*, max_squad_count>;
 
-private:
     CSeniorityHierarchyHolder* m_seniority_manager;
     mutable SQUAD_REGISTRY m_squads;
     u32 team_id;

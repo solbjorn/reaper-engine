@@ -10,11 +10,8 @@ void dxThunderboltDescRender::Copy(IThunderboltDescRender& _in)
 
 void dxThunderboltDescRender::CreateModel(LPCSTR m_name)
 {
-    IReader* F = FS.r_open("$game_meshes$", m_name);
-    ASSERT_FMT(F, "Cannot open 'lightning_model' path=[%s].", m_name);
-
-    l_model = ::RImplementation.model_CreateDM(F);
-    FS.r_close(F);
+    const auto F = XR_ASSERT_VAL(absl::WrapUnique(FS.r_open("$game_meshes$", m_name)), "lightning model not found", m_name);
+    l_model = ::RImplementation.model_CreateDM(F.get());
 }
 
 void dxThunderboltDescRender::DestroyModel() { ::RImplementation.model_Delete(l_model); }

@@ -113,13 +113,13 @@ public:
 
     void set_frequency(f32 scale) override
     {
-        VERIFY(_valid(scale));
+        XR_DEBUG_ASSERT(_valid(scale));
         p_source.freq = scale;
     }
 
     void set_range(f32 min, f32 max) override
     {
-        VERIFY(_valid(min) && _valid(max));
+        XR_DEBUG_ASSERT(_valid(min) && _valid(max));
 
         p_source.min_distance = min;
         p_source.max_distance = max;

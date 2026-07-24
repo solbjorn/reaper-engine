@@ -11,7 +11,7 @@
 IC const Fvector& CPatrolPoint::position() const
 {
 #ifdef DEBUG
-    VERIFY(m_initialized);
+    XR_ASSERT(m_initialized);
 #endif
 
     return (m_position);
@@ -20,7 +20,7 @@ IC const Fvector& CPatrolPoint::position() const
 IC const u32& CPatrolPoint::flags() const
 {
 #ifdef DEBUG
-    VERIFY(m_initialized);
+    XR_ASSERT(m_initialized);
 #endif
 
     return (m_flags);
@@ -29,7 +29,7 @@ IC const u32& CPatrolPoint::flags() const
 IC const shared_str& CPatrolPoint::name() const
 {
 #ifdef DEBUG
-    VERIFY(m_initialized);
+    XR_ASSERT(m_initialized);
 #endif
 
     return (m_name);
@@ -39,18 +39,19 @@ inline const u32& CPatrolPoint::level_vertex_id([[maybe_unused]] const CLevelGra
                                                 [[maybe_unused]] const CGameGraph* game_graph) const
 {
 #ifdef DEBUG
-    VERIFY(m_initialized);
+    XR_ASSERT(m_initialized);
     verify_vertex_id(level_graph, cross, game_graph);
 #endif
 
     return m_level_vertex_id;
 }
 
-inline const GameGraph::_GRAPH_ID& CPatrolPoint::game_vertex_id([[maybe_unused]] const CLevelGraph* level_graph, [[maybe_unused]] const CGameLevelCrossTable* cross,
+inline const GameGraph::_GRAPH_ID& CPatrolPoint::game_vertex_id([[maybe_unused]] const CLevelGraph* level_graph,
+                                                                [[maybe_unused]] const CGameLevelCrossTable* cross,
                                                                 [[maybe_unused]] const CGameGraph* game_graph) const
 {
 #ifdef DEBUG
-    VERIFY(m_initialized);
+    XR_ASSERT(m_initialized);
     verify_vertex_id(level_graph, cross, game_graph);
 #endif
 
@@ -60,8 +61,7 @@ inline const GameGraph::_GRAPH_ID& CPatrolPoint::game_vertex_id([[maybe_unused]]
 #ifdef DEBUG
 IC void CPatrolPoint::path(const CPatrolPath* path)
 {
-    VERIFY(path);
-    VERIFY(!m_path);
+    XR_ASSERT(path != nullptr && m_path == nullptr);
     m_path = path;
 }
 #endif

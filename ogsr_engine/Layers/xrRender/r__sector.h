@@ -56,7 +56,8 @@ class CPortal : public virtual RTTI::Enable
     );
 
 public:
-    using Poly = svector<Fvector, 6>;
+    using Poly = std::inplace_vector<Fvector, 6>;
+
     struct level_portal_data_t
     {
         u16 sector_front;
@@ -75,7 +76,10 @@ public:
     u32 marker;
     BOOL bDualRender;
 
-    void setup(const level_portal_data_t& data, const xr_vector<CSector*>& portals);
+    CPortal();
+    ~CPortal() override;
+
+    void setup(const level_portal_data_t& data, std::span<const std::unique_ptr<CSector>> portals);
 
     [[nodiscard]] Poly& getPoly() { return poly; }
     [[nodiscard]] const Poly& getPoly() const { return poly; }
@@ -101,9 +105,6 @@ public:
     }
 
     [[nodiscard]] f32 distance(const Fvector& V) const { return _abs(P.classify(V)); }
-
-    CPortal();
-    ~CPortal() override;
 
 #ifdef DEBUG
     tmc::task<void> OnRender() override;
@@ -136,13 +137,13 @@ public:
     _scissor r_scissor_merged;
     u32 r_marker;
 
-public:
-    // Main interface
-    [[nodiscard]] dxRender_Visual* root() const { return m_root; }
-    void setup(const level_sector_data_t& data, const xr_vector<CPortal*>& portals);
-
     CSector() = default;
     ~CSector() override = default;
+
+    // Main interface
+    [[nodiscard]] dxRender_Visual* root() const { return m_root; }
+
+    void setup(const level_sector_data_t& data, std::span<const std::unique_ptr<CPortal>> portals);
 };
 
 class CPortalTraverser

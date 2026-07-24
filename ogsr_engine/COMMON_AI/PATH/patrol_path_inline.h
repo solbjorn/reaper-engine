@@ -47,8 +47,7 @@ IC const CPatrolPath::CVertex* CPatrolPath::point(const Fvector& position) const
 #ifdef DEBUG
 IC void CPatrolPath::name(const shared_str& name)
 {
-    VERIFY(!m_name.size());
-    VERIFY(name.size());
+    XR_ASSERT(m_name.empty() && !name.empty());
     m_name = name;
 }
 #endif

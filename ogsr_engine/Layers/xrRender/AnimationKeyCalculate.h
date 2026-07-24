@@ -1,14 +1,17 @@
 #pragma once
+
 //------------------------------------------------------------------------------
 // calculate
 //------------------------------------------------------------------------------
+
 IC void KEY_Interp(CKey& D, const CKey& K1, const CKey& K2, float delta)
 {
-    VERIFY(_valid(delta));
-    VERIFY(delta >= 0.f && delta <= 1.f);
+    XR_DEBUG_ASSERT(_valid(delta) && delta >= 0.0f && delta <= 1.0f, "", delta);
+
     D.Q.slerp(K1.Q, K2.Q, delta);
     D.T.lerp(K1.T, K2.T, delta);
 }
+
 struct ConsistantKey
 {
     const CKey* K;
@@ -25,36 +28,13 @@ IC bool operator<(const ConsistantKey& A, const ConsistantKey& B) // note: inver
 {
     return A.w > B.w;
 }
-/*
-IC void MakeKeysConsistant(ConsistantKey *keys, int count)
-{
-    // sort in decreasing order
-    std::sort(keys,keys+count);
 
-    // recalc
-    for (int i=0; i<count-1; i++) {
-        Fquaternion Q1,Q2;
-        Q1.add(keys[i].K->Q,keys[i+1].K->Q);
-        Q2.sub(keys[i].K->Q,keys[i+1].K->Q);
-        if (Q1.magnitude()<Q2.magnitude())	keys[i+1].K->Q.inverse_with_w();
-    }
-}
-*/
 IC void MakeKeysSelected(ConsistantKey* keys, int count)
 {
     // sort in decreasing order
     std::sort(keys, keys + count);
 }
 
-/*
-ICF float smooth(float x)
-{
-    float x0	= x*2.f-1.f;
-    float s 	= (x0<0.f)?-1.f:1.f;
-
-    return ((s*pow(_abs(x0),1.f/1.5f))+1.f)/2.f;
-}
-*/
 IC void QR2Quat(const CKeyQR& K, Fquaternion& Q)
 {
     Q.x = float(K.x) * KEY_QuantI;
@@ -81,8 +61,7 @@ IC void Dequantize(CKey& K, const CBlend& BD, const CMotion& M)
 {
     CKey* D = &K;
     const CBlend* B = &BD;
-    float time = B->timeCurrent * float(SAMPLE_FPS);
-    VERIFY(time >= 0.f);
+    const f32 time = XR_ASSERT_VAL(B->timeCurrent * SAMPLE_FPS >= 0.0f);
     u32 frame = iFloor(time);
     float delta = time - float(frame);
     u32 count = M.get_count();
@@ -122,17 +101,9 @@ IC void Dequantize(CKey& K, const CBlend& BD, const CMotion& M)
             QT8_2T(*K1t, M, T1);
             QT8_2T(*K2t, M, T2);
         }
-        /*
-        T1.x		= float(K1t->x)*M._sizeT.x+M._initT.x;
-        T1.y		= float(K1t->y)*M._sizeT.y+M._initT.y;
-        T1.z		= float(K1t->z)*M._sizeT.z+M._initT.z;
 
-        T2.x		= float(K2t->x)*M._sizeT.x+M._initT.x;
-        T2.y		= float(K2t->y)*M._sizeT.y+M._initT.y;
-        T2.z		= float(K2t->z)*M._sizeT.z+M._initT.z;
-        */
         D->T.lerp(T1, T2, delta);
-    } // if (M.test_flag(flTKeyPresent))
+    }
     else
     {
         D->T.set(M._initT);
@@ -141,8 +112,7 @@ IC void Dequantize(CKey& K, const CBlend& BD, const CMotion& M)
 
 IC void MixInterlerp(CKey& Result, const CKey* R, const CBlend* const BA[MAX_BLENDED], int b_count)
 {
-    VERIFY(MAX_BLENDED >= b_count);
-    switch (b_count)
+    switch (XR_ASSERT_VAL(b_count <= MAX_BLENDED))
     {
     case 0:
         Result.Q.set(0, 0, 0, 0);
@@ -158,16 +128,11 @@ IC void MixInterlerp(CKey& Result, const CKey* R, const CBlend* const BA[MAX_BLE
             w = 0;
         else
             w = w1 / ws;
-#ifdef DEBUG
-        //.					if (fis_zero(w0+w1) || (!_valid(w))){
-        //.						Debug.fatal		(DEBUG_INFO,"TO ALEXMX VERY IMPORTANT: (TOTAL: %f) w: %f, w0: %f, w1: %f, ws:%f, BIS:
-        //%d",w0+w1,w,w0,w1,ws,BLEND_INST.Blend.size()); .					}
-#endif
+
         KEY_Interp(Result, R[0], R[1], clampr(w, 0.f, 1.f));
     }
     break;
     default: {
-        // int 	count 	= Blend.size();
         float total = 0;
         ConsistantKey S[MAX_BLENDED];
         for (int i = 0; i < b_count; i++)
@@ -187,12 +152,6 @@ IC void MixInterlerp(CKey& Result, const CKey* R, const CBlend* const BA[MAX_BLE
                 d = S[cnt].w / total;
 
             clamp(d, 0.f, 1.f);
-
-#ifdef DEBUG
-            //.						if ((total==0) || (!_valid(S[cnt].w/total))){
-            //.							Debug.fatal		(DEBUG_INFO,"TO ALEXMX VERY IMPORTANT: (TOTAL: %f) w: %f, total: %f, count: %d, real count:
-            //%d",total,S[cnt].w,total,count,BLEND_INST.Blend.size()); .						}
-#endif
 
             KEY_Interp(Result, tmp, *S[cnt].K, d);
             tmp = Result;
@@ -216,12 +175,14 @@ IC void key_identity(CKey& k)
     k.Q.identity();
     k.T.set(0, 0, 0);
 }
+
 IC void key_add(CKey& res, const CKey& k0, const CKey& k1) // add right
 {
     res.Q.set(Fquaternion().mul(k0.Q, k1.Q));
     // res.Q.normalize();
     res.T.add(k0.T, k1.T);
 }
+
 IC void q_scale(Fquaternion& q, float v)
 {
     float angl;
@@ -230,12 +191,14 @@ IC void q_scale(Fquaternion& q, float v)
     q.rotation(ax, angl * v);
     // q.normalize();
 }
+
 IC void key_scale(CKey& res, const CKey& k, float v)
 {
     res = k;
     q_scale(res.Q, v);
     res.T.mul(v);
 }
+
 IC void key_mad(CKey& res, const CKey& k0, const CKey& k1, float v)
 {
     CKey k;
@@ -276,7 +239,6 @@ IC void q_scale_vs_basem(Fmatrix& m_res, const Fquaternion& q, const Fquaternion
 
 IC void q_add_scaled_basem(Fquaternion& q, const Fquaternion& base, const Fquaternion& q0, const Fquaternion& q1, float v1)
 {
-    // VERIFY(0.f =< v && 1.f >= v );
     Fmatrix m0;
     m0.rotation(q0);
     Fmatrix m, ml1;
@@ -328,28 +290,28 @@ IC void MixAdd(CKey& Result, const CKey* R, const float* BA, int b_count)
 IC void process_single_channel(CKey& Result, const CKey* R, const CBlend* const BA[MAX_BLENDED], int b_count)
 {
     MixInterlerp(Result, R, BA, b_count);
-    VERIFY(_valid(Result.T));
-    VERIFY(_valid(Result.Q));
+    XR_DEBUG_ASSERT(_valid(Result.T) && _valid(Result.Q), "", Result.T, Result.Q);
 }
 
 IC void MixChannels(CKey& Result, const CKey* R, const animation::channel_def* BA, int b_count)
 {
-    VERIFY(b_count > 0);
+    XR_ASSERT(b_count > 0);
     Result = R[0];
 
-    // MixinAdd(Result,R,BA,b_count);
     float lerp_factor_sum = 0.f;
+
     for (int i = 1; i < b_count; i++)
+    {
         switch (BA[i].rule.extern_)
         {
         case animation::add: key_mad(Result, CKey(Result), R[i], BA[i].factor); break;
-
         case animation::lerp:
             lerp_factor_sum += BA[i].factor;
             KEY_Interp(Result, CKey(Result), R[i], BA[i].factor / lerp_factor_sum);
             break;
-        default: NODEFAULT;
+        default: xr::unreachable();
         }
-    VERIFY(_valid(Result.T));
-    VERIFY(_valid(Result.Q));
+    }
+
+    XR_DEBUG_ASSERT(_valid(Result.T) && _valid(Result.Q), "", Result.T, Result.Q);
 }

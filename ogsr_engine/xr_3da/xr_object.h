@@ -63,7 +63,7 @@ protected:
     CObject* Parent{};
 
     // Geometric (transformation)
-    svector<SavedPosition, 4> PositionStack;
+    std::inplace_vector<SavedPosition, 4> PositionStack;
 
 public:
 #ifdef DEBUG
@@ -104,13 +104,13 @@ public:
     // Geometry xform
     virtual void Center(Fvector& C) const;
 
-    IC const Fmatrix& XFORM() const
+    [[nodiscard]] const Fmatrix& XFORM() const
     {
-        VERIFY(_valid(renderable.xform));
+        XR_DEBUG_ASSERT(_valid(renderable.xform));
         return renderable.xform;
     }
 
-    ICF Fmatrix& XFORM() { return renderable.xform; }
+    [[nodiscard]] Fmatrix& XFORM() { return renderable.xform; }
 
     void spatial_register() override;
     void spatial_move() override;

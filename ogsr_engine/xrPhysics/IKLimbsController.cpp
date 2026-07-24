@@ -16,16 +16,16 @@ CIKLimbsController::CIKLimbsController() = default;
 
 void CIKLimbsController::Create(CGameObject* O)
 {
-    VERIFY(O);
     m_legs_blend = nullptr;
+    m_object = XR_ASSERT_VAL(O != nullptr);
 
-    IKinematics* K = smart_cast<IKinematics*>(O->Visual());
-    m_object = O;
-    VERIFY(K);
+    auto K = XR_ASSERT_VAL(smart_cast<IKinematics*>(O->Visual()) != nullptr);
     u16 sz = 2;
+
     if (K->LL_UserData() && K->LL_UserData()->section_exist("ik"))
         sz = K->LL_UserData()->r_u16("ik", "num_limbs");
-    VERIFY(sz <= max_size);
+
+    XR_ASSERT(sz <= max_size);
 
     _bone_chains.reserve(sz);
     for (u16 i = 0; sz > i; ++i)
@@ -53,7 +53,7 @@ void CIKLimbsController::LimbCalculate(SCalculateData& cd)
 
 void CIKLimbsController::LimbUpdate(CIKLimb& L)
 {
-    VERIFY(m_object->Visual()->dcast_PKinematicsAnimated());
+    XR_DEBUG_ASSERT(m_object->Visual()->dcast_PKinematicsAnimated() != nullptr);
     L.Update(m_object, m_legs_blend, _pose_extrapolation);
 }
 
@@ -112,8 +112,10 @@ float CIKLimbsController::StaticObjectShift(const SCalculateData cd[max_size])
         shift = -shift_down;
     else
         shift = shift_up;
-    VERIFY(_valid(shift));
+
+    XR_DEBUG_ASSERT(_valid(shift));
     _object_shift.set_taget(shift, _abs(current_shift - shift) / static_shift_object_speed);
+
     return shift;
 }
 
@@ -188,24 +190,20 @@ void CIKLimbsController::ObjectShift(const SCalculateData cd[max_size])
         if (cd[j].m_limb->foot_step())
             ++cnt_in_step;
 
-    VERIFY(smart_cast<CPhysicsShellHolder*>(m_object));
-    // CCharacterPhysicsSupport *ch = sh->character_physics_support();
-    _object_shift.freeze(!!Device.Paused()); // ch->is_interactive_motion() ||
+    XR_DEBUG_ASSERT(smart_cast<CPhysicsShellHolder*>(m_object) != nullptr);
+    _object_shift.freeze(!!Device.Paused());
 
-    if (cnt_in_step != sz && PredictObjectShift(cd)) // cnt_in_step > 0 &&
+    if (cnt_in_step != sz && PredictObjectShift(cd))
         return;
+
     StaticObjectShift(cd);
 }
 
 void CIKLimbsController::ShiftObject()
 {
-    IKinematics* skeleton_animated = m_object->Visual()->dcast_PKinematics();
-    VERIFY(skeleton_animated);
-    //	u16 root = skeleton_animated->LL_GetBoneRoot( ) ;
-
-    // CBoneData &BD=skeleton_animated->LL_GetData(root);
-
+    IKinematics* skeleton_animated = XR_ASSERT_VAL(m_object->Visual()->dcast_PKinematics() != nullptr);
     const float y_shift = _object_shift.shift();
+
     const u16 bones_count = skeleton_animated->LL_BoneCount();
     for (u16 i = 0; i < bones_count; ++i)
         skeleton_animated->LL_GetTransform(i).c.y += y_shift;
@@ -215,10 +213,9 @@ void CIKLimbsController::ShiftObject()
         CBoneInstance& bi = skeleton_animated->LL_GetBoneInstance(i);
         if (bi.callback())
             bi.callback()(&bi);
+
         skeleton_animated->LL_GetTransform_R(i).c.y += y_shift;
     }
-    //	skeleton_animated->LL_GetTransform(root).c.y += _object_shift.shift();
-    //	skeleton_animated->Bone_Calculate(&BD, &Fidentity );
 }
 
 namespace
@@ -287,11 +284,8 @@ void CIKLimbsController::Calculate()
 void CIKLimbsController::Destroy(CGameObject* O)
 {
 #ifdef DEBUG
-    CPhysicsShellHolder* Sh = smart_cast<CPhysicsShellHolder*>(O);
-    VERIFY(Sh);
-    CIKLimbsController* ik = Sh->character_ik_controller();
-    VERIFY(ik);
-    VERIFY(ik == this);
+    auto Sh = XR_ASSERT_VAL(smart_cast<CPhysicsShellHolder*>(O) != nullptr);
+    XR_ASSERT(Sh->character_ik_controller() == this);
 #endif
 
     O->remove_visual_callback(IKVisualCallback);
@@ -303,20 +297,14 @@ void CIKLimbsController::Destroy(CGameObject* O)
 
 void CIKLimbsController::IKVisualCallback(IKinematics* K)
 {
-    // if (Device.Paused())
-    //	return;
-
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(phDbgIKOff))
         return;
 #endif
 
     CGameObject* O = ((CGameObject*)K->GetUpdateCallbackParam());
-    CPhysicsShellHolder* Sh = smart_cast<CPhysicsShellHolder*>(O);
-    VERIFY(Sh);
-    CIKLimbsController* ik = Sh->character_ik_controller();
-    VERIFY(ik);
-    ik->Calculate();
+    auto Sh = XR_ASSERT_VAL(smart_cast<CPhysicsShellHolder*>(O) != nullptr);
+    XR_ASSERT_VAL(Sh->character_ik_controller() != nullptr)->Calculate();
 }
 
 void CIKLimbsController::PlayLegs(CBlend* b) { m_legs_blend = b; }
@@ -327,28 +315,14 @@ void CIKLimbsController::Update()
     if (ph_dbg_draw_mask1.test(phDbgIKOff))
         return;
 #endif
-    IKinematicsAnimated* skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated();
-    VERIFY(skeleton_animated);
 
+    IKinematicsAnimated* skeleton_animated = XR_ASSERT_VAL(m_object->Visual()->dcast_PKinematicsAnimated() != nullptr);
     skeleton_animated->UpdateTracks();
-    update_blend(m_legs_blend);
 
+    update_blend(m_legs_blend);
     _pose_extrapolation.update(m_object->XFORM());
+
     xr_vector<CIKLimb>::iterator i = _bone_chains.begin(), e = _bone_chains.end();
     for (; e != i; ++i)
         LimbUpdate(*i);
-
-    /*
-    Fmatrix predict;
-    _pose_extrapolation.extrapolate( predict, Device.fTimeGlobal  );
-
-
-
-
-    DBG_DrawMatrix( m_object->XFORM(), 1 );
-    DBG_DrawMatrix( predict, 1 );
-
-    _pose_extrapolation.extrapolate( predict, Device.fTimeGlobal + 1  );
-    DBG_DrawMatrix( predict, 1 );
-    */
 }

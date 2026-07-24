@@ -7,7 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "alife_monster_movement_manager.h"
+
 #include "alife_monster_detail_path_manager.h"
 #include "alife_monster_patrol_path_manager.h"
 #include "object_broker.h"
@@ -29,7 +31,6 @@ CALifeMonsterMovementManager::~CALifeMonsterMovementManager()
 }
 
 bool CALifeMonsterMovementManager::completed() const { return (true); }
-
 bool CALifeMonsterMovementManager::actual() const { return (true); }
 
 void CALifeMonsterMovementManager::update()
@@ -52,10 +53,9 @@ void CALifeMonsterMovementManager::update()
     case MovementManager::ePathTypeNoPath: {
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 
 void CALifeMonsterMovementManager::on_switch_online() { detail().on_switch_online(); }
-
 void CALifeMonsterMovementManager::on_switch_offline() { detail().on_switch_offline(); }

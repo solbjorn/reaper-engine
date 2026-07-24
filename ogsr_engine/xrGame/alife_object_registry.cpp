@@ -45,7 +45,7 @@ void CALifeObjectRegistry::save(IWriter& memory_stream, CSE_ALifeDynamicObject* 
     memory_stream.w(tNetPacket.B.data, tNetPacket.B.count);
 
     // Update
-    tNetPacket.w_begin(M_UPDATE);
+    tNetPacket.w_begin(gsl::narrow<u16>(xr::msg::M_UPDATE));
     object->UPDATE_Write(tNetPacket);
 
     memory_stream.w_u16(u16(tNetPacket.B.count));
@@ -115,7 +115,7 @@ CSE_ALifeDynamicObject* CALifeObjectRegistry::get_object(IReader& file_stream)
     file_stream.r(tNetPacket.B.data, tNetPacket.B.count);
 
     std::ignore = tNetPacket.r_begin(u_id);
-    R_ASSERT2(M_SPAWN == u_id, "Invalid packet ID (!= M_SPAWN)");
+    XR_ASSERT(xr::msg{u_id} == xr::msg::M_SPAWN, "invalid packet ID");
 
     string64 s_name;
     tNetPacket.r_stringZ(s_name);
@@ -137,7 +137,7 @@ CSE_ALifeDynamicObject* CALifeObjectRegistry::get_object(IReader& file_stream)
     file_stream.r(tNetPacket.B.data, tNetPacket.B.count);
 
     std::ignore = tNetPacket.r_begin(u_id);
-    R_ASSERT2(M_UPDATE == u_id, "Invalid packet ID (!= M_UPDATE)");
+    XR_ASSERT(xr::msg{u_id} == xr::msg::M_UPDATE, "invalid packet ID");
     tpALifeDynamicObject->UPDATE_Read(tNetPacket);
 
     return tpALifeDynamicObject;

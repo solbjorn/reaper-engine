@@ -11,7 +11,6 @@ CUIStaticItem::CUIStaticItem()
     iTileY = 1;
     iRemX = 0.0f;
     iRemY = 0.0f;
-    alpha_ref = -1;
 
 #ifdef DEBUG
     dbg_tex_name = nullptr;
@@ -47,14 +46,10 @@ void CUIStaticItem::Render()
     VERIFY(g_bRendering);
 
     UIRender->SetShader(*hShader);
-    if (alpha_ref != -1)
-        UIRender->SetAlphaRef(alpha_ref);
 
     // convert&set pos
     Fvector2 bp;
     UI()->ClientToScreenScaled(bp, float(iPos.x), float(iPos.y));
-    // bp.x = (float)iFloor(bp.x);
-    // bp.y = (float)iFloor(bp.y);
 
     // actual rendering
     Fvector2 pos;
@@ -83,9 +78,6 @@ void CUIStaticItem::Render()
     UI()->PushScissor(clip_rect);
     UIRender->FlushPrimitive();
     UI()->PopScissor();
-
-    if (alpha_ref != -1)
-        UIRender->SetAlphaRef(0);
 }
 
 void CUIStaticItem::Render(float angle)
@@ -93,8 +85,6 @@ void CUIStaticItem::Render(float angle)
     VERIFY(g_bRendering);
 
     UIRender->SetShader(*hShader);
-    if (alpha_ref != -1)
-        UIRender->SetAlphaRef(alpha_ref);
 
     // convert&set pos
     Fvector2 bp_ns;
@@ -107,7 +97,4 @@ void CUIStaticItem::Render(float angle)
 
     //.	UIRender->FlushTriFan();
     UIRender->FlushPrimitive();
-
-    if (alpha_ref != -1)
-        UIRender->SetAlphaRef(alpha_ref);
 }

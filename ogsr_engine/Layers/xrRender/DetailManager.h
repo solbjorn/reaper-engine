@@ -102,8 +102,6 @@ public:
     };
 
     typedef xr_vector<xr_vector<SlotItemVec*>> vis_list;
-    typedef svector<CDetail*, dm_max_objects> DetailVec;
-    typedef DetailVec::iterator DetailIt;
     typedef poolSS<SlotItem, /*4096*/ 65536> PSS; // KD: try to avoid blinking
 
     int dither[16][16];
@@ -131,13 +129,14 @@ public:
     const DetailSlot* dtSlots{}; // note: pointer into VFS
     DetailSlot DS_empty;
 
-    DetailVec objects;
+    std::inplace_vector<CDetail*, dm_max_objects> objects;
     vis_list m_visibles[3]; // 0=still, 1=Wave1, 2=Wave2
 
     xrXRC xrc;
     CacheSlot1** cache_level1;
     Slot*** cache; // grid-cache itself
-    svector<Slot*, dm_max_cache_size> cache_task; // non-unpacked slots
+    // non-unpacked slots
+    std::inplace_vector<Slot*, dm_max_cache_size> cache_task;
     Slot* cache_pool; // just memory for slots
     int cache_cx;
     int cache_cz;

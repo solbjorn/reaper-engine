@@ -540,7 +540,7 @@ void CWeapon::Load(LPCSTR section)
             for (int it = 0; it < count; ++it)
             {
                 std::ignore = _GetItem(S, it, _addonItem);
-                ASSERT_FMT(pSettings->section_exist(_addonItem), "Section [%s] not found!", _addonItem);
+                XR_ASSERT(pSettings->section_exist(_addonItem), "section not found", _addonItem);
                 m_highlightAddons.emplace_back(_addonItem);
             }
         }
@@ -652,7 +652,7 @@ void CWeapon::Load(LPCSTR section)
         {
             xr_string ammo_section, bullet_tex;
             std::ignore = _GetItem(str, i++, ammo_section);
-            ASSERT_FMT(i < count, "Incorrect [bullet_textures_for_ammos] in section [%s]", section);
+            XR_ASSERT(i < count, "invalid [bullet_textures_for_ammos]", section, str);
 
             std::ignore = _GetItem(str, i++, bullet_tex);
             bullet_textures_for_ammos.emplace(std::move(ammo_section), std::move(bullet_tex));
@@ -671,7 +671,9 @@ void CWeapon::LoadFireParams(LPCSTR section, LPCSTR prefix)
         camDispersionInc = deg2rad(camDispersionInc);
     }
     else
+    {
         camDispersionInc = 0;
+    }
 
     CShootingObject::LoadFireParams(section, prefix);
 }
@@ -2252,10 +2254,9 @@ void CWeapon::update_visual_bullet_textures(const bool forced)
 
     const u32 id = m_set_next_ammoType_on_reload != u32(-1) ? m_set_next_ammoType_on_reload : m_ammoType;
     const auto& current_ammo_sect = m_ammoTypes[id];
-    const auto bullet_texrure_find_it = bullet_textures_for_ammos.find(current_ammo_sect);
-    ASSERT_FMT(bullet_texrure_find_it != bullet_textures_for_ammos.end(), "!!Can't find [%s] in [bullet_textures_for_ammos] of [%s]", current_ammo_sect.c_str(),
-               cNameSect().c_str());
-    const auto& bullet_texrure_name = bullet_texrure_find_it->second;
+    const auto& bullet_texrure_name = XR_ASSERT_VAL(bullet_textures_for_ammos.find(current_ammo_sect) != bullet_textures_for_ammos.end(),
+                                                    "can't find current ammo type in [bullet_textures_for_ammos]", cNameSect(), current_ammo_sect)
+                                          ->second;
 
     if (!forced && current_bullet_texture == bullet_texrure_name)
         return;

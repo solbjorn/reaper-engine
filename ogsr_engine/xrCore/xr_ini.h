@@ -48,7 +48,7 @@ public:
         if (val == "off" || val == "no")
             return false;
 
-        FATAL("Not a boolean: %s", B);
+        XR_PANIC("not a boolean", val);
     }
 
 protected:

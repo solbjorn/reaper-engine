@@ -520,7 +520,8 @@ void PH_DBG_Clear()
 void PH_DBG_Render()
 {
     if (ph_dbg_draw_mask.test(phDbgDrawZDisable))
-        CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZENABLE, 0));
+        XR_ASSERT(xr::hr(HW.pDevice->SetRenderState(D3DRS_ZENABLE, 0)));
+
     HUD().Font().pFontStat->OutSet(550, 250);
 
     if (ph_dbg_draw_mask.test(phDbgDrawEnabledAABBS))
@@ -575,7 +576,7 @@ void PH_DBG_Render()
 #endif
 
     if (ph_dbg_draw_mask.test(phDbgDrawZDisable))
-        CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZENABLE, 1));
+        XR_ASSERT(xr::hr(HW.pDevice->SetRenderState(D3DRS_ZENABLE, 1)));
 }
 
 void DBG_DrawStatBeforeFrameStep()
@@ -657,15 +658,15 @@ CFunctionGraph::~CFunctionGraph()
 
 void CFunctionGraph::Init(type_function fun, float x0, float x1, int l, int t, int w, int h, int points_num /*=500*/, u32 color /*=*/, u32 bk_color)
 {
+    XR_ASSERT(!m_function.empty() && x1 > x0, "", x0, x1);
+
     x_min = x0;
     x_max = x1;
     m_stat_graph = xr_new<CStatGraph>();
     m_function = fun;
-    R_ASSERT(!m_function.empty() && m_stat_graph);
-    R_ASSERT(x1 > x0);
-    s = (x_max - x_min) / points_num;
-    R_ASSERT(s > 0.f);
+    s = XR_ASSERT_VAL((x_max - x_min) / points_num > 0.0f);
     m_stat_graph->SetRect(l, t, w, h, bk_color, bk_color);
+
     float min = dInfinity;
     float max = -dInfinity;
     for (float x = x_min; x < x_max; x += s)
@@ -676,7 +677,7 @@ void CFunctionGraph::Init(type_function fun, float x0, float x1, int l, int t, i
         save_max(max, val);
     }
 
-    R_ASSERT(min < dInfinity && max > -dInfinity && min <= max);
+    XR_ASSERT(min < dInfinity && max > -dInfinity && min <= max, "", min, max);
     m_stat_graph->SetMinMax(min, max, points_num);
 
     for (float x = x_min; x < x_max; x += s)
@@ -688,27 +689,30 @@ void CFunctionGraph::Init(type_function fun, float x0, float x1, int l, int t, i
 
 void CFunctionGraph::AddMarker(CStatGraph::EStyle Style, float pos, u32 Color)
 {
-    VERIFY(IsActive());
+    XR_ASSERT(IsActive());
+
     ScaleMarkerPos(Style, pos);
     m_stat_graph->AddMarker(Style, pos, Color);
 }
 
 void CFunctionGraph::UpdateMarker(u32 ID, float M)
 {
-    VERIFY(IsActive());
+    XR_ASSERT(IsActive());
+
     ScaleMarkerPos(ID, M);
     m_stat_graph->UpdateMarkerPos(ID, M);
 }
 
 void CFunctionGraph::ScaleMarkerPos(u32 ID, float& p)
 {
-    VERIFY(IsActive());
+    XR_ASSERT(IsActive());
     ScaleMarkerPos(m_stat_graph->Marker(ID).m_eStyle, p);
 }
 
 void CFunctionGraph::ScaleMarkerPos(CStatGraph::EStyle Style, float& p)
 {
-    VERIFY(IsActive());
+    XR_ASSERT(IsActive());
+
     if (Style == CStatGraph::stVert)
         p = ScaleX(p);
 }
@@ -721,7 +725,7 @@ void CFunctionGraph::Clear()
 
 bool CFunctionGraph::IsActive()
 {
-    VERIFY((m_stat_graph == 0) == m_function.empty());
+    XR_ASSERT((m_stat_graph == nullptr) == m_function.empty());
     return !!m_stat_graph;
 }
 

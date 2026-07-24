@@ -34,7 +34,7 @@ struct CDestroyer
     }
 
     template <typename T, int size>
-    IC static void delete_data(svector<T, size>& data)
+    IC static void delete_data(std::inplace_vector<T, size>& data)
     {
         for (auto& it : data)
             delete_data(it);

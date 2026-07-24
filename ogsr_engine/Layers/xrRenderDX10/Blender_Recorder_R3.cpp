@@ -11,6 +11,7 @@ void CBlender_Compile::r_Stencil(BOOL Enable, u32 Func, u32 Mask, u32 WriteMask,
     RS.SetRS(D3DRS_STENCILENABLE, BC(Enable));
     if (!Enable)
         return;
+
     RS.SetRS(D3DRS_STENCILFUNC, Func);
     RS.SetRS(D3DRS_STENCILMASK, Mask);
     RS.SetRS(D3DRS_STENCILWRITEMASK, WriteMask);
@@ -27,14 +28,15 @@ void CBlender_Compile::r_Stencil(BOOL Enable, u32 Func, u32 Mask, u32 WriteMask,
 }
 
 void CBlender_Compile::r_StencilRef(u32 Ref) { RS.SetRS(D3DRS_STENCILREF, Ref); }
-
 void CBlender_Compile::r_CullMode(D3DCULL Mode) { RS.SetRS(D3DRS_CULLMODE, (u32)Mode); }
 
 void CBlender_Compile::r_dx10Texture(LPCSTR ResourceName, LPCSTR texture)
 {
-    VERIFY(ResourceName);
-    if (!texture)
+    XR_ASSERT(ResourceName != nullptr && ResourceName[0] != '\0');
+
+    if (texture == nullptr)
         return;
+
     //
     string256 TexName;
     xr_strcpy(TexName, texture);
@@ -42,56 +44,37 @@ void CBlender_Compile::r_dx10Texture(LPCSTR ResourceName, LPCSTR texture)
 
     // Find index
     ref_constant C = ctable.get(ResourceName);
-    // VERIFY(C);
     if (!C)
         return;
 
-    R_ASSERT(C->type == RC_dx10texture);
-    u32 stage = C->samp.index;
-
-    passTextures.emplace_back(stage, ref_texture(RImplementation.Resources->_CreateTexture(TexName)));
+    XR_ASSERT(C->type == RC_dx10texture, "", ResourceName, TexName);
+    passTextures.emplace_back(C->samp.index, ref_texture{RImplementation.Resources->_CreateTexture(TexName)});
 }
 
 void CBlender_Compile::i_dx10Address(u32 s, u32 address)
 {
-    if (s == u32(-1))
-    {
-        Log("s != u32(-1)");
-        return;
-    }
+    XR_ASSERT(s != std::numeric_limits<u32>::max());
+
     RS.SetSAMP(s, D3DSAMP_ADDRESSU, address);
     RS.SetSAMP(s, D3DSAMP_ADDRESSV, address);
     RS.SetSAMP(s, D3DSAMP_ADDRESSW, address);
 }
 
-void CBlender_Compile::i_dx10BorderColor(u32 s, u32 color) { RS.SetSAMP(s, D3DSAMP_BORDERCOLOR, color); }
-void CBlender_Compile::i_dx10Filter_Min(u32 s, u32 f)
-{
-    VERIFY(s != u32(-1));
-    RS.SetSAMP(s, D3DSAMP_MINFILTER, f);
-}
+void CBlender_Compile::i_dx10BorderColor(u32 s, u32 color) { RS.SetSAMP(XR_ASSERT_VAL(s != std::numeric_limits<u32>::max()), D3DSAMP_BORDERCOLOR, color); }
 
-void CBlender_Compile::i_dx10Filter_Mip(u32 s, u32 f)
-{
-    VERIFY(s != u32(-1));
-    RS.SetSAMP(s, D3DSAMP_MIPFILTER, f);
-}
-
-void CBlender_Compile::i_dx10Filter_Mag(u32 s, u32 f)
-{
-    VERIFY(s != u32(-1));
-    RS.SetSAMP(s, D3DSAMP_MAGFILTER, f);
-}
+void CBlender_Compile::i_dx10Filter_Min(u32 s, u32 f) { RS.SetSAMP(XR_ASSERT_VAL(s != std::numeric_limits<u32>::max()), D3DSAMP_MINFILTER, f); }
+void CBlender_Compile::i_dx10Filter_Mip(u32 s, u32 f) { RS.SetSAMP(XR_ASSERT_VAL(s != std::numeric_limits<u32>::max()), D3DSAMP_MIPFILTER, f); }
+void CBlender_Compile::i_dx10Filter_Mag(u32 s, u32 f) { RS.SetSAMP(XR_ASSERT_VAL(s != std::numeric_limits<u32>::max()), D3DSAMP_MAGFILTER, f); }
 
 void CBlender_Compile::i_dx10FilterAnizo(u32 s, BOOL value)
 {
-    VERIFY(s != u32(-1));
-    RS.SetSAMP(s, XRDX10SAMP_ANISOTROPICFILTER, value);
+    RS.SetSAMP(XR_ASSERT_VAL(s != std::numeric_limits<u32>::max()), XRDX10SAMP_ANISOTROPICFILTER, value);
 }
 
 void CBlender_Compile::i_dx10Filter(u32 s, u32 _min, u32 _mip, u32 _mag)
 {
-    VERIFY(s != u32(-1));
+    XR_ASSERT(s != std::numeric_limits<u32>::max());
+
     i_dx10Filter_Min(s, _min);
     i_dx10Filter_Mip(s, _mip);
     i_dx10Filter_Mag(s, _mag);
@@ -100,7 +83,8 @@ void CBlender_Compile::i_dx10Filter(u32 s, u32 _min, u32 _mip, u32 _mag)
 u32 CBlender_Compile::r_dx10Sampler(LPCSTR ResourceName)
 {
     //	TEST
-    VERIFY(ResourceName);
+    XR_ASSERT(ResourceName != nullptr && ResourceName[0] != '\0');
+
     string256 name;
     xr_strcpy(name, ResourceName);
     fix_texture_name(name);
@@ -108,73 +92,65 @@ u32 CBlender_Compile::r_dx10Sampler(LPCSTR ResourceName)
     // Find index
     ref_constant C = ctable.get(name);
     if (!C)
-        return u32(-1);
+        return std::numeric_limits<u32>::max();
 
-    R_ASSERT(C->type == RC_sampler);
+    XR_ASSERT(C->type == RC_sampler, "", name);
+
     u32 stage = C->samp.index;
-    if (stage == u32(-1))
-        return u32(-1);
+    if (stage == std::numeric_limits<u32>::max())
+        return stage;
 
     //	init defaults here
 
     //	Use D3DTADDRESS_CLAMP,	D3DTEXF_POINT,			D3DTEXF_NONE,	D3DTEXF_POINT
-    if (0 == xr_strcmp(ResourceName, "smp_nofilter"))
+    if (const std::string_view res{ResourceName}; res == "smp_nofilter")
     {
         i_dx10Address(stage, D3DTADDRESS_CLAMP);
         i_dx10Filter(stage, D3DTEXF_POINT, D3DTEXF_NONE, D3DTEXF_POINT);
     }
-
     //	Use D3DTADDRESS_CLAMP,	D3DTEXF_LINEAR,			D3DTEXF_NONE,	D3DTEXF_LINEAR
-    else if (0 == xr_strcmp(ResourceName, "smp_rtlinear"))
+    else if (res == "smp_rtlinear")
     {
         i_dx10Address(stage, D3DTADDRESS_CLAMP);
         i_dx10Filter(stage, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
     }
-
     //	Use	D3DTADDRESS_WRAP,	D3DTEXF_LINEAR,			D3DTEXF_LINEAR,	D3DTEXF_LINEAR
-    else if (0 == xr_strcmp(ResourceName, "smp_linear"))
+    else if (res == "smp_linear")
     {
         i_dx10Address(stage, D3DTADDRESS_WRAP);
         i_dx10Filter(stage, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
     }
-
     //	Use D3DTADDRESS_WRAP,	D3DTEXF_ANISOTROPIC, 	D3DTEXF_LINEAR,	D3DTEXF_ANISOTROPIC
-    else if (0 == xr_strcmp(ResourceName, "smp_base"))
+    else if (res == "smp_base")
     {
         i_dx10Address(stage, D3DTADDRESS_WRAP);
         i_dx10FilterAnizo(stage, TRUE);
-        // i_dx10Filter(stage, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
     }
-
     //	Use D3DTADDRESS_CLAMP,	D3DTEXF_LINEAR,			D3DTEXF_NONE,	D3DTEXF_LINEAR
-    else if (0 == xr_strcmp(ResourceName, "smp_material"))
+    else if (res == "smp_material")
     {
         i_dx10Address(stage, D3DTADDRESS_CLAMP);
         i_dx10Filter(stage, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
         RS.SetSAMP(stage, D3DSAMP_ADDRESSW, D3DTADDRESS_WRAP);
     }
-
-    else if (0 == xr_strcmp(ResourceName, "smp_smap"))
+    else if (res == "smp_smap")
     {
         i_dx10Address(stage, D3DTADDRESS_CLAMP);
         i_dx10Filter(stage, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
         RS.SetSAMP(stage, XRDX10SAMP_COMPARISONFILTER, TRUE);
         RS.SetSAMP(stage, XRDX10SAMP_COMPARISONFUNC, D3D_COMPARISON_LESS_EQUAL);
     }
-
-    else if (0 == xr_strcmp(ResourceName, "smp_jitter"))
+    else if (res == "smp_jitter")
     {
         i_dx10Address(stage, D3DTADDRESS_WRAP);
         i_dx10Filter(stage, D3DTEXF_POINT, D3DTEXF_NONE, D3DTEXF_POINT);
     }
-
-    else if (0 == xr_strcmp(ResourceName, "smp_linear2"))
+    else if (res == "smp_linear2")
     {
         i_dx10Address(stage, D3DTADDRESS_WRAP);
         i_dx10Filter(stage, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
     }
-
-    else if (0 == xr_strcmp(ResourceName, "smp_point"))
+    else if (res == "smp_point")
     {
         i_dx10Address(stage, D3DTADDRESS_WRAP);
         i_dx10Filter(stage, D3DTEXF_POINT, D3DTEXF_POINT, D3DTEXF_POINT);

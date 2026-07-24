@@ -73,12 +73,13 @@ DEFINE_VECTOR(intrusive_ptr<CSkeletonWallmark>, SkeletonWMVec, SkeletonWMVecIt);
 struct dbg_marker
 {
     BOOL* lock;
-    dbg_marker(BOOL* b)
+
+    constexpr explicit dbg_marker(BOOL* b) : lock{b}
     {
-        lock = b;
-        VERIFY(*lock == FALSE);
+        XR_ASSERT(*lock == FALSE);
         *lock = TRUE;
     }
+
     ~dbg_marker() { *lock = FALSE; }
 };
 
@@ -191,46 +192,27 @@ public:
 
     [[nodiscard]] CBoneInstance& LL_GetBoneInstance(u16 bone_id) override
     {
-        R_ASSERT(bone_id < LL_BoneCount(), xr::format("visual_name: {}, bone_id: {}", dbg_name, bone_id));
-        R_ASSERT(bone_instances);
-        return bone_instances[bone_id];
+        return XR_ASSERT_VAL(bone_instances != nullptr, "", dbg_name, bone_id)[XR_ASSERT_VAL(bone_id < LL_BoneCount(), "", dbg_name)];
     }
 
-    ICF const CBoneInstance& LL_GetBoneInstance(u16 bone_id) const
+    [[nodiscard]] const CBoneInstance& LL_GetBoneInstance(u16 bone_id) const
     {
-        R_ASSERT(bone_id < LL_BoneCount(), xr::format("visual_name: {}, bone_id: {}", dbg_name, bone_id));
-        R_ASSERT(bone_instances);
-        return bone_instances[bone_id];
+        return XR_ASSERT_VAL(bone_instances != nullptr, "", dbg_name, bone_id)[XR_ASSERT_VAL(bone_id < LL_BoneCount(), "", dbg_name)];
     }
 
     [[nodiscard]] CBoneData& LL_GetData(u16 bone_id) override
     {
-        ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", std::source_location::current().function_name(),
-                   dbg_name.c_str(), bone_id);
-        VERIFY(bones);
-        CBoneData& bd = *((*bones)[bone_id]);
-        return bd;
+        return *(*XR_ASSERT_VAL(bones != nullptr, "", dbg_name, bone_id))[XR_ASSERT_VAL(bone_id < LL_BoneCount(), "invalid bone ID", dbg_name)];
     }
 
     [[nodiscard]] const IBoneData& GetBoneData(u16 bone_id) const override
     {
-        ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", std::source_location::current().function_name(),
-                   dbg_name.c_str(), bone_id);
-        VERIFY(bones);
-        CBoneData& bd = *((*bones)[bone_id]);
-        return bd;
+        return *(*XR_ASSERT_VAL(bones != nullptr, "", dbg_name, bone_id))[XR_ASSERT_VAL(bone_id < LL_BoneCount(), "invalid bone ID", dbg_name)];
     }
 
-    CBoneData* LL_GetBoneData(u16 bone_id)
+    [[nodiscard]] CBoneData* LL_GetBoneData(u16 bone_id)
     {
-        ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", std::source_location::current().function_name(),
-                   dbg_name.c_str(), bone_id);
-        VERIFY(bones);
-        u32 sz = sizeof(vecBones);
-        u32 sz1 = sizeof(((*bones)[bone_id])->children);
-        Msg("sz: {}, sz1: {}", sz, sz1);
-        CBoneData* bd = ((*bones)[bone_id]);
-        return bd;
+        return (*XR_ASSERT_VAL(bones != nullptr, "", dbg_name, bone_id))[XR_ASSERT_VAL(bone_id < LL_BoneCount(), "invalid bone ID", dbg_name)];
     }
 
     [[nodiscard]] u16 LL_BoneCount() const override { return u16(bones->size()); }
@@ -242,9 +224,7 @@ public:
 
     [[nodiscard]] Fobb& LL_GetBox(u16 bone_id) override
     {
-        ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", std::source_location::current().function_name(),
-                   dbg_name.c_str(), bone_id);
-        return (*bones)[bone_id]->obb;
+        return (*XR_ASSERT_VAL(bones != nullptr, "", dbg_name, bone_id))[XR_ASSERT_VAL(bone_id < LL_BoneCount(), "invalid bone ID", dbg_name)]->obb;
     }
 
     [[nodiscard]] const Fbox& GetBox() const override { return vis.box; }
@@ -254,17 +234,9 @@ public:
 
     [[nodiscard]] u16 LL_GetBoneRoot() override { return iRoot; }
 
-    void LL_SetBoneRoot(u16 bone_id) override
-    {
-        VERIFY(bone_id < LL_BoneCount());
-        iRoot = bone_id;
-    }
+    void LL_SetBoneRoot(u16 bone_id) override { iRoot = XR_ASSERT_VAL(bone_id < LL_BoneCount(), "", dbg_name); }
 
-    [[nodiscard]] BOOL LL_GetBoneVisible(u16 bone_id) override
-    {
-        VERIFY(bone_id < LL_BoneCount());
-        return visimask.is(bone_id);
-    }
+    [[nodiscard]] BOOL LL_GetBoneVisible(u16 bone_id) override { return visimask.is(XR_ASSERT_VAL(bone_id < LL_BoneCount(), "", dbg_name)); }
 
     void LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive) override;
     [[nodiscard]] VisMask LL_GetBonesVisible() override { return visimask; }

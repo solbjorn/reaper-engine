@@ -186,12 +186,9 @@ tmc::task<void> CSoundRender_TargetA::update()
 
 void CSoundRender_TargetA::fill_parameters(CSoundRender_Core* core)
 {
-    CSoundRender_Emitter* SE = m_pEmitter;
-    VERIFY(SE);
+    XR_ASSERT(m_pEmitter != nullptr);
 
     // 3D params
-    VERIFY2(m_pEmitter, SE->source()->file_name());
-
     A_CHK(alSourcef(pSource, AL_REFERENCE_DISTANCE, m_pEmitter->p_source.min_distance));
     A_CHK(alSourcef(pSource, AL_MAX_DISTANCE, m_pEmitter->p_source.max_distance));
 
@@ -247,7 +244,7 @@ void CSoundRender_TargetA::fill_parameters(CSoundRender_Core* core)
 
 tmc::task<void> CSoundRender_TargetA::submit_buffer(ALuint BufferID) const
 {
-    R_ASSERT(m_pEmitter != nullptr);
+    XR_ASSERT(m_pEmitter != nullptr);
 
     const auto block = co_await m_pEmitter->obtain_block();
     A_CHK(alBufferData(BufferID, dataFormat, block.data(), block.size(), sampleRate));

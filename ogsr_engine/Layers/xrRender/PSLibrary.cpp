@@ -65,13 +65,11 @@ PS::CPGDef* CPSLibrary::FindPGD(const char* Name)
 bool CPSLibrary::Load(const char* nm)
 {
     IReader* F = FS.r_open(nm);
-
     if (F->length() == 0)
         return true;
 
-    R_ASSERT(F->find_chunk(PS_CHUNK_VERSION));
-    u16 ver = F->r_u16();
-    if (ver != PS_VERSION)
+    XR_ASSERT(F->find_chunk(PS_CHUNK_VERSION) > 0, "", nm);
+    if (F->r_u16() != PS_VERSION)
         return false;
 
     bool bRes = true;
@@ -222,7 +220,7 @@ bool CPSLibrary::Load2()
         }
         else
         {
-            R_ASSERT(0);
+            XR_PANIC("invalid particle file format", f.name);
         }
     }
 

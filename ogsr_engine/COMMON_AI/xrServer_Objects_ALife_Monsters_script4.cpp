@@ -9,54 +9,32 @@
 #include "stdafx.h"
 
 #include "xrServer_Objects_ALife_Monsters.h"
+
 #include "alife_human_brain.h"
 
 namespace
 {
-CALifeMonsterBrain* monster_brain(CSE_ALifeMonsterAbstract* monster)
-{
-    THROW(monster);
-    return (&monster->brain());
-}
-
-CALifeHumanBrain* human_brain(CSE_ALifeHumanAbstract* human)
-{
-    THROW(human);
-    return (&human->brain());
-}
+CALifeMonsterBrain* monster_brain(CSE_ALifeMonsterAbstract* monster) { return &XR_ASSERT_VAL(monster != nullptr)->brain(); }
+CALifeHumanBrain* human_brain(CSE_ALifeHumanAbstract* human) { return &XR_ASSERT_VAL(human != nullptr)->brain(); }
 
 void clear_smart_terrain(CSE_ALifeMonsterAbstract* monster)
 {
-    THROW(monster);
-    monster->m_smart_terrain_id = 0xffff;
+    XR_ASSERT_VAL(monster != nullptr)->m_smart_terrain_id = std::numeric_limits<ALife::_OBJECT_ID>::max();
 }
 
-void smart_terrain_task_activate(CSE_ALifeMonsterAbstract* monster)
-{
-    THROW(monster);
-    monster->m_task_reached = true;
-}
+void smart_terrain_task_activate(CSE_ALifeMonsterAbstract* monster) { XR_ASSERT_VAL(monster != nullptr)->m_task_reached = true; }
+void smart_terrain_task_deactivate(CSE_ALifeMonsterAbstract* monster) { XR_ASSERT_VAL(monster != nullptr)->m_task_reached = false; }
 
-void smart_terrain_task_deactivate(CSE_ALifeMonsterAbstract* monster)
-{
-    THROW(monster);
-    monster->m_task_reached = false;
-}
-
-ALife::_OBJECT_ID smart_terrain_id(CSE_ALifeMonsterAbstract* monster)
-{
-    THROW(monster);
-    return (monster->m_smart_terrain_id);
-}
+ALife::_OBJECT_ID smart_terrain_id(CSE_ALifeMonsterAbstract* monster) { return XR_ASSERT_VAL(monster != nullptr)->m_smart_terrain_id; }
 } // namespace
 
 void CSE_ALifeMonsterAbstract::script_register(sol::state_view& lua)
 {
-    lua.new_usertype<CSE_ALifeMonsterAbstract>("cse_alife_monster_abstract", sol::no_constructor, sol::call_constructor,
-                                               sol::factories(std::make_unique<CSE_ALifeMonsterAbstract, LPCSTR>), "smart_terrain_id", &smart_terrain_id, "m_smart_terrain_id",
-                                               &CSE_ALifeMonsterAbstract::m_smart_terrain_id, "clear_smart_terrain", &clear_smart_terrain, "brain", &monster_brain, "rank",
-                                               &CSE_ALifeMonsterAbstract::Rank, "smart_terrain_task_activate", &smart_terrain_task_activate, "smart_terrain_task_deactivate",
-                                               &smart_terrain_task_deactivate, sol::base_classes, xr::sol_bases<CSE_ALifeMonsterAbstract>());
+    lua.new_usertype<CSE_ALifeMonsterAbstract>(
+        "cse_alife_monster_abstract", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSE_ALifeMonsterAbstract, LPCSTR>),
+        "smart_terrain_id", &smart_terrain_id, "m_smart_terrain_id", &CSE_ALifeMonsterAbstract::m_smart_terrain_id, "clear_smart_terrain", &clear_smart_terrain,
+        "brain", &monster_brain, "rank", &CSE_ALifeMonsterAbstract::Rank, "smart_terrain_task_activate", &smart_terrain_task_activate,
+        "smart_terrain_task_deactivate", &smart_terrain_task_deactivate, sol::base_classes, xr::sol_bases<CSE_ALifeMonsterAbstract>());
 }
 
 void CSE_ALifeHumanAbstract::script_register(sol::state_view& lua)
@@ -72,5 +50,6 @@ void CSE_ALifeHumanAbstract::script_register(sol::state_view& lua)
 void CSE_ALifePsyDogPhantom::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CSE_ALifePsyDogPhantom>("cse_alife_psydog_phantom", sol::no_constructor, sol::call_constructor,
-                                             sol::factories(std::make_unique<CSE_ALifePsyDogPhantom, LPCSTR>), sol::base_classes, xr::sol_bases<CSE_ALifePsyDogPhantom>());
+                                             sol::factories(std::make_unique<CSE_ALifePsyDogPhantom, LPCSTR>), sol::base_classes,
+                                             xr::sol_bases<CSE_ALifePsyDogPhantom>());
 }

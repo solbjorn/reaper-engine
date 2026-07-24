@@ -73,42 +73,25 @@ void CPlanner::update()
     }
 #endif
 
-    THROW(!this->solution().empty());
+    XR_ASSERT(!this->solution().empty());
 
-    if (this->solution().empty())
+    if (initialized())
     {
-        if (initialized())
+        if (current_action_id() != this->solution().front())
         {
-            Msg("! [CPlanner::update]: {} has solution().empty()", m_object->cName());
-
-            if (current_action_id() != _action_id_type(-1))
-            {
-                current_action().finalize();
-                m_current_action_id = _action_id_type(-1);
-            }
-
-            m_initialized = false;
+            current_action().finalize();
+            m_current_action_id = this->solution().front();
+            current_action().initialize();
         }
     }
     else
     {
-        if (initialized())
-        {
-            if (current_action_id() != this->solution().front())
-            {
-                current_action().finalize();
-                m_current_action_id = this->solution().front();
-                current_action().initialize();
-            }
-        }
-        else
-        {
-            m_initialized = true;
-            m_current_action_id = this->solution().front();
-            current_action().initialize();
-        }
-        current_action().execute();
+        m_initialized = true;
+        m_current_action_id = this->solution().front();
+        current_action().initialize();
     }
+
+    current_action().execute();
 }
 
 TEMPLATE_SPECIALIZATION

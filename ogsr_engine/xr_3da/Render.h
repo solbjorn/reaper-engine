@@ -289,15 +289,12 @@ inline IResourceManager::~IResourceManager() = default;
 
 class ShExports final
 {
-    template <typename T, u32 Size>
+    template <typename T, std::size_t Size>
     struct PositionsStorage
     {
         T Positions[Size]{};
-        T& operator[](const u32& key)
-        {
-            ASSERT_FMT(key < std::size(Positions), "Out of range! key: [%u], size: [%zu]", key, std::size(Positions));
-            return Positions[key];
-        }
+
+        [[nodiscard]] constexpr T& operator[](std::size_t key) { return Positions[XR_ASSERT_VAL(key < std::size(Positions), "key out of range")]; }
     };
 
     PositionsStorage<Fvector2, 24> artefacts_position{};

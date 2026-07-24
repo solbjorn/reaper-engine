@@ -43,11 +43,7 @@ CScriptGameObject* CDangerObject_dependent_object(const CDangerObject* self)
     return (game_object && game_object->m_spawned ? game_object->lua_game_object() : nullptr);
 }
 
-Fvector CDangerObject__position(const CDangerObject* self)
-{
-    THROW(self);
-    return (self->position());
-}
+Fvector CDangerObject__position(const CDangerObject* self) { return XR_ASSERT_VAL(self != nullptr)->position(); }
 } // namespace
 
 void MemorySpace::CMemoryInfo::script_register(sol::state_view& lua)

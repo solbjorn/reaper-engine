@@ -163,7 +163,8 @@ void CPHFracturesHolder::InitNewElement(CPHElement* element, const Fmatrix& shif
 {
     element->CreateSimulBase();
     element->ReInitDynamics(shift_pivot, density);
-    VERIFY(dBodyStateValide(element->get_body()));
+
+    XR_DEBUG_ASSERT(dBodyStateValide(element->get_body()));
 }
 
 void CPHFracturesHolder::PhTune(dBodyID body)
@@ -173,11 +174,6 @@ void CPHFracturesHolder::PhTune(dBodyID body)
     // breacable joints already has their feedbacks,
     // feedbacks for rest noncontact joints stored in m_feedbacks in runtime in this function and
     // and killed by destructor
-
-    // int dBodyGetNumJoints (dBodyID b);
-    // dJointID dBodyGetJoint (dBodyID, int index);
-    // dJointGetType
-    // dJointTypeContact
 
     int num = dBodyGetNumJoints(body);
     for (int i = 0; i < num; ++i)
@@ -193,11 +189,6 @@ void CPHFracturesHolder::PhTune(dBodyID body)
             CPHJoint* ph_joint = (CPHJoint*)dJointGetData(joint);
             if (!(ph_joint && ph_joint->JointDestroyInfo()))
                 dJointSetFeedback(joint, ContactFeedBacks.add());
-            // if(!dJointGetFeedback(joint))
-            //{
-            //	m_feedbacks.push_back(dJointFeedback());
-            //	dJointSetFeedback(joint,&m_feedbacks.back());
-            // }
         }
     }
 }
@@ -222,25 +213,18 @@ u16 CPHFracturesHolder::AddFracture(const CPHFracture& fracture)
     return u16(m_fractures.size() - 1);
 }
 
-CPHFracture& CPHFracturesHolder::Fracture(u16 num)
-{
-    R_ASSERT2(num < m_fractures.size(), "out of range!");
-    return m_fractures[num];
-}
+CPHFracture& CPHFracturesHolder::Fracture(u16 num) { return m_fractures[XR_ASSERT_VAL(num < m_fractures.size())]; }
 
 void CPHFracturesHolder::DistributeAdditionalMass(const dMass& m)
 {
-    FRACTURE_I f_i = m_fractures.begin(), f_e = m_fractures.end();
-    for (; f_i != f_e; ++f_i)
+    for (auto& fr : m_fractures)
     {
-        R_ASSERT2(u16(-1) != f_i->m_start_geom_num, "fracture does not initialized!");
+        XR_ASSERT(fr.m_start_geom_num != std::numeric_limits<u16>::max(), "fracture not initialized");
 
-        if (f_i->m_end_geom_num == u16(-1))
-            f_i->MassAddToSecond(m);
+        if (fr.m_end_geom_num == std::numeric_limits<u16>::max())
+            fr.MassAddToSecond(m);
         else
-            f_i->MassAddToFirst(m);
-
-        // f_i->MassAddToFirst(m);
+            fr.MassAddToFirst(m);
     }
 }
 
@@ -256,25 +240,28 @@ void CPHFracturesHolder::SubFractureMass(u16 fracture_num)
     {
         if (f_i == fracture)
             continue;
-        R_ASSERT2(start_geom != f_i->m_start_geom_num, "Double fracture!!!");
 
-        if (start_geom > f_i->m_start_geom_num)
+        if (XR_ASSERT_VAL(start_geom != f_i->m_start_geom_num, "double fracture") > f_i->m_start_geom_num)
         {
             if (end_geom <= f_i->m_end_geom_num)
+            {
                 f_i->MassSubFromSecond(second_mass); // tag fracture is in current
+            }
             else
             {
-                R_ASSERT2(start_geom >= f_i->m_end_geom_num, "Odd fracture!!!");
+                XR_ASSERT(start_geom >= f_i->m_end_geom_num, "invalid fracture");
                 f_i->MassSubFromFirst(second_mass); // tag fracture is ouside current
             }
         }
         else
         {
             if (end_geom >= f_i->m_end_geom_num)
+            {
                 f_i->MassSubFromFirst(first_mass); // current fracture is in tag
+            }
             else
             {
-                R_ASSERT2(end_geom <= f_i->m_start_geom_num, "Odd fracture!!!");
+                XR_ASSERT(end_geom <= f_i->m_start_geom_num, "invalid fracture");
                 f_i->MassSubFromFirst(second_mass); // tag fracture is ouside current
             }
         }
@@ -283,11 +270,6 @@ void CPHFracturesHolder::SubFractureMass(u16 fracture_num)
 
 CPHFracture::CPHFracture()
 {
-    // m_bone_id=bone_id;
-    // m_position.set(position);
-    // m_direction.set(direction);
-    // m_break_force=break_force;
-    // m_break_torque=break_torque;
     m_start_geom_num = u16(-1);
     m_end_geom_num = u16(-1);
     m_breaked = false;
@@ -320,11 +302,11 @@ bool CPHFracture::Update(CPHElement* element)
     {
         bool applied_to_second = false;
         dJointID joint = dBodyGetJoint(body, i);
-        dJointFeedback* feedback = dJointGetFeedback(joint);
-        VERIFY2(feedback, "Feedback was not set!!!");
+        dJointFeedback* feedback = XR_ASSERT_VAL(dJointGetFeedback(joint) != nullptr);
         dxJoint* b_joint = (dxJoint*)joint;
         bool b_body_second = (b_joint->node[1].body == body);
         Fvector joint_position;
+
         if (dJointGetType(joint) == dJointTypeContact)
         {
             dxJointContact* c_joint = (dxJointContact*)joint;

@@ -412,7 +412,7 @@ public:
     // Multiply RES = A[4x4]*B[4x4] (WITH projection)
     constexpr SelfRef mul(const Self& A, const Self& B)
     {
-        VERIFY((this != &A) && (this != &B));
+        XR_ASSERT(this != &A && this != &B);
 
         if (std::is_constant_evaluated())
         {
@@ -447,7 +447,7 @@ public:
     // Multiply RES = A[4x3]*B[4x3] (no projection), faster than ordinary multiply
     constexpr SelfRef mul_43(const Self& A, const Self& B)
     {
-        VERIFY((this != &A) && (this != &B));
+        XR_ASSERT(this != &A && this != &B);
 
         _11 = A._11 * B._11 + A._21 * B._12 + A._31 * B._13;
         _12 = A._12 * B._11 + A._22 * B._12 + A._32 * B._13;
@@ -510,7 +510,7 @@ public:
         // faster than self-invert
         T fDetInv = (a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) + a._13 * (a._21 * a._32 - a._22 * a._31));
 
-        VERIFY(_abs(fDetInv) > flt_zero);
+        XR_DEBUG_ASSERT(_abs(fDetInv) > flt_zero);
         fDetInv = 1.0f / fDetInv;
 
         _11 = fDetInv * (a._22 * a._33 - a._23 * a._32);
@@ -600,7 +600,7 @@ public:
             T A14 = -(a21 * mn3 - a22 * mn5 + a23 * mn6);
 
             T detInv = a11 * A11 + a12 * A12 + a13 * A13 + a14 * A14;
-            VERIFY(_abs(detInv) > flt_zero);
+            XR_DEBUG_ASSERT(_abs(detInv) > flt_zero);
 
             detInv = 1.f / detInv;
 
@@ -974,7 +974,7 @@ public:
 
     constexpr SelfRef div(const Self& A, T v)
     {
-        VERIFY(_abs(v) > 0.000001f);
+        XR_DEBUG_ASSERT(_abs(v) > 0.000001f);
 
         vm[0].div(A.vm[0], v);
         vm[1].div(A.vm[1], v);
@@ -986,7 +986,7 @@ public:
 
     constexpr SelfRef div(T v)
     {
-        VERIFY(_abs(v) > 0.000001f);
+        XR_DEBUG_ASSERT(_abs(v) > 0.000001f);
 
         vm[0].div(v);
         vm[1].div(v);
@@ -1005,8 +1005,8 @@ public:
     // half_fov-angle-tangent
     constexpr SelfRef build_projection_HAT(T HAT, T fAspect, T fNearPlane, T fFarPlane)
     {
-        VERIFY(_abs(fFarPlane - fNearPlane) > EPS_S);
-        VERIFY(_abs(HAT) > EPS_S);
+        XR_DEBUG_ASSERT(_abs(fFarPlane - fNearPlane) > EPS_S);
+        XR_DEBUG_ASSERT(_abs(HAT) > EPS_S);
 
         T cot = T(1) / HAT;
         T w = fAspect * cot;

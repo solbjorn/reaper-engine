@@ -75,8 +75,8 @@ public:
     ///
     bool PhysicsOnlyMode();
     bool PhyssicsOnlyMode() { return PhysicsOnlyMode(); }
-    void GetJumpMinVelParam(Fvector& min_vel, float& time, JumpType& type, const Fvector& end_point); // returns vector of velocity of jump with minimal start speed
-                                                                                                      // in min_vel and correspondent jump time in time
+    void GetJumpMinVelParam(Fvector& min_vel, float& time, JumpType& type, const Fvector& end_point); // returns vector of velocity of jump with minimal start
+                                                                                                      // speed in min_vel and correspondent jump time in time
     float JumpMinVelTime(const Fvector& end_point); // return time of jump with min start speed
     // input: end_point and time; return velocity and type of jump
     void GetJumpParam(Fvector& velocity, JumpType& type, const Fvector& end_point, float time);
@@ -268,11 +268,13 @@ public:
     void SetPosition(const Fvector& P);
     void GetPosition(Fvector& P);
     void GetCharacterPosition(Fvector& P) { m_character->GetPosition(P); }
+
     void InterpolatePosition(Fvector& P)
     {
-        VERIFY(m_character && m_character->b_exist);
+        XR_ASSERT(m_character != nullptr && m_character->b_exist);
         m_character->IPosition(P);
     }
+
     bool TryPosition(Fvector& pos);
     bool IsCharacterEnabled() { return m_character->IsEnabled() || bExernalImpulse; }
     void DisableCharacter() { m_character->Disable(); }
@@ -343,11 +345,7 @@ public:
             m_character->SetObjectContactCallback(callback);
     }
 
-    void SetFootCallBack(ObjectContactCallbackFun* callback)
-    {
-        VERIFY(m_character);
-        m_character->SetWheelContactCallback(callback);
-    }
+    void SetFootCallBack(ObjectContactCallbackFun* callback) { XR_ASSERT_VAL(m_character)->SetWheelContactCallback(callback); }
 
     static BOOL BorderTraceCallback(collide::rq_result& result, LPVOID params);
 
@@ -361,17 +359,9 @@ public:
 
     u16 ContactBone() { return m_character->ContactBone(); }
 
-    const ICollisionDamageInfo* CollisionDamageInfo() const
-    {
-        VERIFY(m_character);
-        return m_character->CollisionDamageInfo();
-    }
+    const ICollisionDamageInfo* CollisionDamageInfo() const { return XR_ASSERT_VAL(m_character)->CollisionDamageInfo(); }
 
-    ICollisionDamageInfo* CollisionDamageInfo()
-    {
-        VERIFY(m_character);
-        return m_character->CollisionDamageInfo();
-    }
+    ICollisionDamageInfo* CollisionDamageInfo() { return XR_ASSERT_VAL(m_character)->CollisionDamageInfo(); }
 
     void GetDesiredPos(Fvector& dpos) { m_character->GetDesiredPosition(dpos); }
     bool CharacterExist() const { return (m_character && m_character->b_exist); }

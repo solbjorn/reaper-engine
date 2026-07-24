@@ -11,13 +11,14 @@
 void CLight_DB::Load(IReader* fs)
 {
     IReader* F = fs->open_chunk(fsL_LIGHT_DYNAMIC);
+
     // Light itself
     sun._set(nullptr);
 
     const size_t size = F->length();
-    const size_t element = sizeof(Flight) + 4;
+    constexpr auto element = sizeof(Flight) + 4;
     const size_t count = size / element;
-    VERIFY(count * element == size);
+    XR_ASSERT(count * element == size, "", count, element);
     v_static.reserve(count);
 
     for (size_t i = 0; i < count; i++)
@@ -60,8 +61,8 @@ void CLight_DB::Load(IReader* fs)
     }
 
     F->close();
-    R_ASSERT2(sun, "Where is sun?");
 
+    XR_ASSERT(sun);
     rain._set(xr_new<light>());
 }
 
@@ -77,10 +78,15 @@ void CLight_DB::LoadHemi()
         if (chunk)
         {
             const size_t size = chunk->length();
-            const size_t element = sizeof(R_Light);
+            constexpr auto element = sizeof(R_Light);
             const size_t count = size / element;
-            VERIFY(count * element == size);
+
+            if (const auto expected = count * element; size != expected)
+                Msg("! {}: {} has {} garbage bytes (count: {}, expected: {}, real: {})", std::source_location::current().function_name(), fn_game,
+                    size - expected, count, expected, size);
+
             v_hemi.reserve(count);
+
             for (size_t i = 0; i < count; i++)
             {
                 R_Light Ldata;
@@ -147,36 +153,15 @@ void CLight_DB::Update()
     // set sun params
     if (sun)
     {
-        light* _sun = (light*)sun._get();
         const CEnvDescriptor& E = *g_pGamePersistent->Environment().CurrentEnv;
-        VERIFY(_valid(E.sun_dir));
-
-#ifdef DEBUG
-        if (E.sun_dir.y >= 0)
-        {
-            Log("E.sun_dir", E.sun_dir);
-            Log("E.wind_direction", E.wind_direction);
-            Log("E.wind_velocity", E.wind_velocity);
-            Log("E.sun_color", E.sun_color);
-            Log("E.rain_color", E.rain_color);
-            Log("E.rain_density", E.rain_density);
-            Log("E.fog_distance", E.fog_distance);
-            Log("E.fog_density", E.fog_density);
-            Log("E.fog_color", E.fog_color);
-            Log("E.far_plane", E.far_plane);
-            Log("E.sky_rotation", E.sky_rotation);
-            Log("E.sky_color", E.sky_color);
-        }
-#endif
-
-        VERIFY2(E.sun_dir.y < 0, "Invalid sun direction settings in evironment-config");
-        Fvector dir, pos;
+        XR_DEBUG_ASSERT(_valid(E.sun_dir));
 
         // true sunlight direction
+        Fvector dir, pos;
         dir.set(E.sun_dir).normalize();
         pos.mad(Device.vCameraPosition, dir, -500.f);
 
-        sun->set_rotation(dir, _sun->right);
+        sun->set_rotation(dir, smart_cast<light*>(sun._get())->right);
         sun->set_position(pos);
         sun->set_color(E.sun_color.x * ps_r2_sun_lumscale, E.sun_color.y * ps_r2_sun_lumscale, E.sun_color.z * ps_r2_sun_lumscale);
         sun->set_range(600.f);

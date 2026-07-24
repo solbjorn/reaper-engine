@@ -77,7 +77,6 @@ public:
     void StageBegin();
     u32 Stage() { return dwStage; }
     void StageSET_Address(u32 adr);
-    void StageSET_XForm(u32 tf, u32 tc);
     void StageSET_Color(u32 a1, u32 op, u32 a2);
     void StageSET_Color3(u32 a1, u32 op, u32 a2, u32 a3);
     void StageSET_Alpha(u32 a1, u32 op, u32 a2);
@@ -118,7 +117,7 @@ public:
     ~CBlender_Compile();
 
     void _cpp_Compile(ShaderElement* _SH);
-    ShaderElement* _lua_Compile(LPCSTR namesp, LPCSTR name);
+    [[nodiscard]] ShaderElement* _lua_Compile(std::string_view namesp, std::string_view name);
 };
 
 #endif // AFX_BLENDER_RECORDER_H__1F549674_8674_4EB2_95E6_E6BC19218A6C__INCLUDED_

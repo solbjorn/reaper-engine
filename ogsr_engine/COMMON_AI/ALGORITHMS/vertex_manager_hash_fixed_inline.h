@@ -21,7 +21,8 @@ namespace hash_fixed_vertex_manager
 
 #define CHashFixedVertexManager CVertexManagerHashFixed<TPathId, TIndex, HashSize, FixSize>::CDataStorage<TPathBuilder, TVertexAllocator, TCompoundVertex>
 
-#define CHashFixedVertexManagerT typename CVertexManagerHashFixed<TPathId, TIndex, HashSize, FixSize>::template CDataStorage<TPathBuilder, TVertexAllocator, TCompoundVertex>
+#define CHashFixedVertexManagerT \
+    typename CVertexManagerHashFixed<TPathId, TIndex, HashSize, FixSize>::template CDataStorage<TPathBuilder, TVertexAllocator, TCompoundVertex>
 
 TEMPLATE_SPECIALIZATION
 inline CHashFixedVertexManager::CDataStorage(const u32 vertex_count) : CDataStorageBase(vertex_count), CDataStorageAllocator(), m_current_path_id(PathId(0))
@@ -88,25 +89,28 @@ inline bool CHashFixedVertexManager::is_visited(const Index& vertex_id) const
 
 TEMPLATE_SPECIALIZATION
 inline bool CHashFixedVertexManager::is_closed(const Vertex& vertex) const { return !is_opened(vertex); }
+
 TEMPLATE_SPECIALIZATION
 inline CHashFixedVertexManagerT::Vertex& CHashFixedVertexManager::get_node(const Index& vertex_id) const
 {
-    VERIFY(is_visited(vertex_id));
+    XR_DEBUG_ASSERT(is_visited(vertex_id));
+
     IndexVertex* vertex = m_hash[hash_index(vertex_id)];
     for (; vertex; vertex = vertex->m_next)
     {
         if (vertex->m_vertex->index() == vertex_id)
             return *vertex->m_vertex;
     }
-    NODEFAULT;
-    return *vertex->m_vertex; //-V522
+
+    xr::unreachable();
 }
 
 TEMPLATE_SPECIALIZATION
 inline CHashFixedVertexManagerT::Vertex& CHashFixedVertexManager::create_vertex(Vertex& vertex, const Index& vertex_id)
 {
     // allocating new index node
-    VERIFY(m_vertex_count < FixSize);
+    XR_ASSERT(m_vertex_count < FixSize);
+
     IndexVertex* index_vertex = m_vertices + m_vertex_count++;
     // removing old links from the node
     if (index_vertex->m_prev)
@@ -122,19 +126,26 @@ inline CHashFixedVertexManagerT::Vertex& CHashFixedVertexManager::create_vertex(
         if (m_hash[index_vertex->m_hash] && m_hash[index_vertex->m_hash]->m_path_id != current_path_id())
             m_hash[index_vertex->m_hash] = nullptr;
     }
+
     index_vertex->m_vertex = &vertex;
     index_vertex->m_path_id = current_path_id();
     vertex.index() = vertex_id;
+
     u32 index = hash_index(vertex_id);
     IndexVertex* _vertex = m_hash[index];
+
     if (!_vertex || _vertex->m_path_id != current_path_id() || _vertex->m_hash != index)
         _vertex = nullptr;
+
     m_hash[index] = index_vertex;
     index_vertex->m_next = _vertex;
     index_vertex->m_prev = nullptr;
+
     if (_vertex)
         _vertex->m_prev = index_vertex;
+
     index_vertex->m_hash = index;
+
     return vertex;
 }
 

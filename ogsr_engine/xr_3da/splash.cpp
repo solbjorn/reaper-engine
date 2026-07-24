@@ -149,7 +149,7 @@ HWND ShowSplash(HINSTANCE hInstance)
 
     UpdateLayeredWindow(hWnd, hdcScreen, &ptPos, &sizeWnd, hDC, &ptSrc, 0, &blend, LWA_ALPHA);
 
-    HWND logoInsertPos = IsDebuggerPresent() ? HWND_NOTOPMOST : HWND_TOPMOST;
+    const auto logoInsertPos = xr::is_debugger_present() ? HWND_NOTOPMOST : HWND_TOPMOST;
 
     // mmccxvii: захардкорил размер битмапа, чтобы не было бага, связанного с увеличенным масштабом интерфейса винды
     SetWindowPos(hWnd, logoInsertPos, 0, 0, splashWidth, splashHeight, SWP_NOMOVE | SWP_SHOWWINDOW);

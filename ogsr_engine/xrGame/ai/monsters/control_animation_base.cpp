@@ -341,13 +341,8 @@ SAAParam& CControlAnimationBase::AA_GetParams(MotionID motion, float time_perc)
 EPState CControlAnimationBase::GetState(EMotionAnim a)
 {
     // найти анимацию
-    ASSERT_FMT(u32(a) < m_anim_storage.size(), "[%s]: %s: a[%u] m_anim_storage.size[%zu]", std::source_location::current().function_name(),
-               m_object->cName().c_str(), a, m_anim_storage.size());
-    SAnimItem* item_it = m_anim_storage[a];
-    ASSERT_FMT(item_it, "[%s]: %s: m_anim_storage[%u] is NULL", std::source_location::current().function_name(), m_object->cName().c_str(),
-               a); // VERIFY(item_it);
-
-    return item_it->pos_state;
+    XR_ASSERT(a < m_anim_storage.size(), "", m_object->cName());
+    return XR_ASSERT_VAL(m_anim_storage[a] != nullptr, "", m_object->cName())->pos_state;
 }
 
 #define FX_CAN_PLAY_MIN_INTERVAL 50
@@ -530,10 +525,8 @@ void CControlAnimationBase::UpdateAnimCount()
             }
         }
 
-        if (count != 0)
-            (*it)->count = count;
-        else
-            FATAL("Error! No animation: %s for monster %s", (*it)->target_name.c_str(), m_object->cName().c_str());
+        XR_ASSERT(count > 0, "no animation for monster", m_object->cName(), (*it)->target_name);
+        (*it)->count = count;
     }
 }
 

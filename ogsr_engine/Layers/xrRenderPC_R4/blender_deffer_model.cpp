@@ -95,14 +95,11 @@ void CBlender_deffer_model::Compile(CBlender_Compile& C)
     if (bForward)
     {
         // forward rendering
-        LPCSTR vsname, psname;
         switch (C.iElement)
         {
-        case 0: //
-        case 1: //
-            vsname = psname = "model_def_lq";
-            C.r_Pass(vsname, psname, TRUE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, TRUE, oAREF.value);
-            // C.r_Sampler			("s_base",	C.L_textures[0]);
+        case SE_R2_NORMAL_HQ:
+        case SE_R2_NORMAL_LQ:
+            C.r_Pass("model_def_lq", "model_def_lq", true, true, false, true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, oAREF.value);
             C.r_dx10Texture("s_base", C.L_textures[0]);
             C.r_dx10Sampler("smp_base");
             C.r_End();

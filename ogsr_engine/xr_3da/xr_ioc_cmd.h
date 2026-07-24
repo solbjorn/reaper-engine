@@ -256,8 +256,9 @@ public:
     explicit CCC_String(gsl::czstring N, gsl::zstring V, gsl::index _size = 2) : IConsole_Command{N}, value{V}, size{_size}
     {
         bLowerCaseArgs = FALSE;
-        R_ASSERT(V);
-        R_ASSERT(size > 1);
+
+        XR_ASSERT(V != nullptr, "", N);
+        XR_ASSERT(_size > 1, "", N);
     }
 
     ~CCC_String() override = default;

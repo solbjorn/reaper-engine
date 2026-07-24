@@ -71,10 +71,11 @@ void CUILines::SetText(LPCSTR text)
 
         m_text = text;
         m_text_mask.clear();
+
         for (auto it = m_text.cbegin(), it_end = m_text.cend(); it != it_end; ++it)
         {
-            if (m_pFont->IsMultibyte() && *reinterpret_cast<const unsigned char*>(&*it) > std::numeric_limits<char>::max() &&
-                (it + 1) != it_end) // Костыльный поиск юникодных символов. Но для хрея пойдет, тут в рендере юникодного текста и так костыль на костыле
+            // Костыльный поиск юникодных символов. Но для хрея пойдет, тут в рендере юникодного текста и так костыль на костыле
+            if (m_pFont->IsMultibyte() && *reinterpret_cast<const u8*>(std::to_address(it)) > std::numeric_limits<s8>::max() && it + 1 != it_end)
             {
                 m_text_mask.emplace_back(true);
                 m_text_mask.emplace_back(true);
@@ -494,7 +495,7 @@ float CUILines::GetIndentByAlign() const
     case CGameFont::alLeft: return 0;
     case CGameFont::alRight: return m_wndSize.x;
     case CGameFont::alJustified: return 0;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 
@@ -507,16 +508,10 @@ float CUILines::GetVIndentByAlign()
     case valTop: r = 0; break;
     case valCenter: r = (m_wndSize.y - GetVisibleHeight()) / 2; break;
     case valBotton: r = m_wndSize.y - GetVisibleHeight(); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
-    // UI()->ClientToScreenScaledHeight(r);
-
     return r;
-
-#ifdef DEBUG
-    return 0;
-#endif
 }
 
 // %c[255,255,255,255] or %c[255,255,255]

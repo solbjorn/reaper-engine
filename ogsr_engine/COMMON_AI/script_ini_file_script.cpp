@@ -16,8 +16,8 @@ namespace
 {
 std::tuple<bool, xr_string, xr_string> r_line(const CInifile& self, gsl::czstring sect, gsl::index line)
 {
-    THROW3(self.section_exist(sect), "Cannot find section", sect);
-    THROW2(self.line_count(sect) > line, "Invalid line number");
+    XR_ASSERT(self.section_exist(sect), "can't find section", sect);
+    XR_ASSERT(line < self.line_count(sect), "invalid line number", sect);
 
     gsl::czstring n{nullptr}, v{nullptr};
     const auto result = self.r_line(sect, line, &n, &v);
@@ -51,7 +51,7 @@ CInifile* reload_system_ini()
 
     pSettings = xr_new<CInifile>(fname, true, false);
     pSettings->load_file(false, tmp.get());
-    CHECK_OR_EXIT(!pSettings->sections().empty(), xr::format("Cannot find file {}.\nReinstalling application may fix this problem.", fname));
+    XR_ASSERT(!pSettings->sections().empty(), "can't find file", fname);
 
     return pSettings;
 }

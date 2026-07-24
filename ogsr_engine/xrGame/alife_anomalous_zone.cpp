@@ -30,15 +30,7 @@ ALife::EMeetActionType CSE_ALifeAnomalousZone::tfGetActionType(CSE_ALifeSchedula
 
 bool CSE_ALifeAnomalousZone::bfActive() { return !interactive(); }
 
-CSE_ALifeDynamicObject* CSE_ALifeAnomalousZone::tpfGetBestDetector()
-{
-    VERIFY2(false, "This function shouldn't be called");
-    NODEFAULT;
-
-#ifdef DEBUG
-    return nullptr;
-#endif
-}
+CSE_ALifeDynamicObject* CSE_ALifeAnomalousZone::tpfGetBestDetector() { xr::unreachable(); }
 
 void CSE_ALifeAnomalousZone::spawn_artefacts()
 {

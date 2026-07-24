@@ -15,11 +15,6 @@
 
 IC CGameObject& CScriptGameObject::object() const
 {
-    if (m_game_object && m_game_object->lua_game_object() == this)
-        return (*m_game_object);
-
-    Msg("!! [{}] You are trying to use a destroyed object [{}]", std::source_location::current().function_name(), m_game_object->cName());
-    LogStackTrace("!!stack trace:\n", false);
-
-    return (*m_game_object);
+    XR_ASSERT(m_game_object != nullptr && m_game_object->lua_game_object() == this, "trying to use a destroyed object");
+    return *m_game_object;
 }

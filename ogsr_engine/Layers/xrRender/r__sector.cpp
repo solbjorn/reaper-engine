@@ -15,6 +15,7 @@
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
+
 CPortal::CPortal()
 {
 #ifdef DEBUG
@@ -35,18 +36,21 @@ tmc::task<void> CPortal::OnRender()
     if (!psDeviceFlags.is(rsOcclusionDraw))
         co_return;
 
-    VERIFY(poly.size());
+    XR_ASSERT(!poly.empty());
+
     // draw rect
-    DEFINE_VECTOR(FVF::L, LVec, LVecIt);
-    static LVec V;
+    static xr_vector<FVF::L> V;
     V.resize(poly.size() + 2);
+
     constexpr u32 portalColor = 0x800000FF;
     Fvector C{};
+
     for (u32 k = 0; k < poly.size(); k++)
     {
         C.add(poly[k]);
         V[k + 1].set(poly[k], portalColor);
     }
+
     V.back().set(poly[0], portalColor);
     C.div((float)poly.size());
     V[0].set(C, portalColor);
@@ -56,7 +60,7 @@ tmc::task<void> CPortal::OnRender()
     RCache.set_Shader(RImplementation.m_SelectionShader);
     RCache.set_c("tfactor", float(color_get_R(portalColor)) / 255.f, float(color_get_G(portalColor)) / 255.f, float(color_get_B(portalColor)) / 255.f,
                  float(color_get_A(portalColor)) / 255.f);
-    RCache.dbg_Draw(D3DPT_TRIANGLEFAN, &*V.begin(), V.size() - 2);
+    RCache.dbg_Draw(D3DPT_TRIANGLEFAN, V.data(), V.size() - 2);
 
     // draw wire
     if (bDebug)
@@ -67,7 +71,7 @@ tmc::task<void> CPortal::OnRender()
     RCache.set_Shader(RImplementation.m_WireShader);
     RCache.set_c("tfactor", float(color_get_R(portalColor)) / 255.f, float(color_get_G(portalColor)) / 255.f, float(color_get_B(portalColor)) / 255.f,
                  float(color_get_A(portalColor)) / 255.f);
-    RCache.dbg_Draw(D3DPT_LINESTRIP, &*(V.begin() + 1), V.size() - 2);
+    RCache.dbg_Draw(D3DPT_LINESTRIP, V.data() + 1, V.size() - 2);
 
     if (bDebug)
         RImplementation.rmNormal(RCache);
@@ -76,55 +80,49 @@ tmc::task<void> CPortal::OnRender()
 }
 #endif
 
-void CPortal::setup(const level_portal_data_t& data, const xr_vector<CSector*>& sectors)
+void CPortal::setup(const level_portal_data_t& data, std::span<const std::unique_ptr<CSector>> sectors)
 {
-    CSector* face = sectors[data.sector_front];
-    CSector* back = sectors[data.sector_back];
-
     // calc sphere
     Fbox BB;
     BB.invalidate();
+
     for (const auto& v : data.vertices)
         BB.modify(v);
+
     BB.getsphere(S.P, S.R);
 
     //
-    const auto vcnt = data.vertices.size();
-    poly.assign(data.vertices.data(), vcnt);
-    pFace = face;
-    pBack = back;
+    poly = data.vertices;
+    pFace = sectors[data.sector_front].get();
+    pBack = sectors[data.sector_back].get();
     marker = 0xffffffff;
 
-    Fvector N{}, T;
-    u32 _cnt{};
+    Fvector N{};
+    u32 _cnt{0};
 
-    for (gsl::index i{2}; i < vcnt; ++i)
+    for (gsl::index i{2}, vcnt = std::ssize(poly); i < vcnt; ++i)
     {
+        Fvector T;
         T.mknormal_non_normalized(poly[0], poly[i - 1], poly[i]);
-        float m = T.magnitude();
-        if (m > EPS_S)
+
+        if (const f32 m = T.magnitude(); m > EPS_S)
         {
             N.add(T.div(m));
-            _cnt++;
+            ++_cnt;
         }
     }
 
-    R_ASSERT2(_cnt, "Invalid portal detected");
-
-    N.div(float(_cnt));
+    N.div(gsl::narrow_cast<f32>(XR_ASSERT_VAL(_cnt > 0, "invalid portal")));
     P.build(poly[0], N);
 }
 
-void CSector::setup(const level_sector_data_t& data, const xr_vector<CPortal*>& portals)
+void CSector::setup(const level_sector_data_t& data, std::span<const std::unique_ptr<CPortal>> portals)
 {
     // Assign portal polygons
-    const auto num_portals = data.portals_id.size();
-    m_portals.resize(num_portals);
-    for (u32 idx = 0; idx < num_portals; ++idx)
-    {
-        const auto ID = data.portals_id[idx];
-        m_portals[idx] = portals[ID];
-    }
+    m_portals.resize(data.portals_id.size());
 
-    m_root = (dxRender_Visual*)RImplementation.getVisual(data.root_id);
+    for (auto [id, portal] : std::views::zip(data.portals_id, m_portals))
+        portal = portals[id].get();
+
+    m_root = smart_cast<dxRender_Visual*>(RImplementation.getVisual(data.root_id));
 }

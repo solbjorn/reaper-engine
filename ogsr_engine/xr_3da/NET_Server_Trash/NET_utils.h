@@ -34,26 +34,24 @@ public:
 
     constexpr void w(const void* p, u32 count)
     {
-        R_ASSERT(p && count && (B.count + count < NET_PacketSizeLimit));
+        XR_ASSERT(p != nullptr && count > 0);
 
         std::memcpy(&B.data[B.count], p, count);
-        B.count += count;
+        B.count = XR_ASSERT_VAL(B.count + count < NET_PacketSizeLimit, "", B.count, count);
     }
 
-    constexpr void w_seek(u32 pos, const void* p, u32 count) // random write (only inside allocated region)
+    // random write (only inside allocated region)
+    constexpr void w_seek(u32 pos, const void* p, u32 count)
     {
-        R_ASSERT(p && count && (pos + count < NET_PacketSizeLimit));
+        XR_ASSERT(p != nullptr && count > 0);
+        XR_ASSERT(pos + count < NET_PacketSizeLimit, "", pos, count);
+
         std::memcpy(&B.data[pos], p, count);
     }
 
     [[nodiscard]] constexpr u32 w_tell() const { return B.count; }
 
-    constexpr void w_advance(u32 count)
-    {
-        B.count += count;
-
-        R_ASSERT(B.count < NET_PacketSizeLimit);
-    }
+    constexpr void w_advance(u32 count) { B.count = XR_ASSERT_VAL(B.count + count < NET_PacketSizeLimit, "", B.count, count); }
 
     // writing - utilities
     constexpr void w_float(float a)
@@ -124,14 +122,16 @@ public:
 
     constexpr void w_float_q16(float a, float min, float max)
     {
-        VERIFY(a >= min && a <= max);
+        XR_ASSERT(a >= min && a <= max, "", a, min, max);
+
         float q = (a - min) / (max - min);
         w_u16(u16(iFloor(q * 65535.f + 0.5f)));
     }
 
     constexpr void w_float_q8(float a, float min, float max)
     {
-        VERIFY(a >= min && a <= max);
+        XR_ASSERT(a >= min && a <= max, "", a, min, max);
+
         float q = (a - min) / (max - min);
         w_u8(u8(iFloor(q * 255.f + 0.5f)));
     }
@@ -185,10 +185,8 @@ public:
 
     constexpr void w_chunk_close8(u32 position)
     {
-        u32 size = u32(w_tell() - position) - sizeof(u8);
-        VERIFY(size < 256);
-        u8 _size = (u8)size;
-        w_seek(position, &_size, sizeof(_size));
+        auto size = gsl::narrow_cast<u8>(XR_ASSERT_VAL(u32(w_tell() - position) - sizeof(u8) < std::numeric_limits<u8>::max()));
+        w_seek(position, &size, sizeof(size));
     }
 
     constexpr void w_chunk_open16(u32& position)
@@ -199,10 +197,8 @@ public:
 
     constexpr void w_chunk_close16(u32 position)
     {
-        u32 size = u32(w_tell() - position) - sizeof(u16);
-        VERIFY(size < 65536);
-        u16 _size = (u16)size;
-        w_seek(position, &_size, sizeof(_size));
+        auto size = gsl::narrow_cast<u16>(XR_ASSERT_VAL(u32(w_tell() - position) - sizeof(u16) < std::numeric_limits<u16>::max()));
+        w_seek(position, &size, sizeof(size));
     }
 
     // reading
@@ -215,30 +211,22 @@ public:
         return timeReceive;
     }
 
-    constexpr void r_seek(u32 pos)
-    {
-        R_ASSERT(pos < NET_PacketSizeLimit);
-        r_pos = pos;
-    }
+    constexpr void r_seek(u32 pos) { r_pos = XR_ASSERT_VAL(pos < NET_PacketSizeLimit); }
 
     [[nodiscard]] constexpr u32 r_tell() const { return r_pos; }
 
     constexpr void r(void* p, u32 count)
     {
-        R_ASSERT(p && count && (r_pos + count < NET_PacketSizeLimit));
+        XR_ASSERT(p != nullptr && count > 0);
 
         std::memcpy(p, &B.data[r_pos], count);
-        r_pos += count;
+        r_pos = XR_ASSERT_VAL(r_pos + count < NET_PacketSizeLimit, "", r_pos, count);
     }
 
     [[nodiscard]] constexpr BOOL r_eof() const { return r_pos >= B.count; }
     [[nodiscard]] constexpr u32 r_elapsed() const { return B.count - r_pos; }
 
-    constexpr void r_advance(u32 size)
-    {
-        R_ASSERT(r_pos + size < NET_PacketSizeLimit);
-        r_pos += size;
-    }
+    constexpr void r_advance(u32 size) { r_pos = XR_ASSERT_VAL(r_pos + size < NET_PacketSizeLimit, r_pos, size); }
 
     // reading - utilities
     constexpr void r_vec3(Fvector& A)
@@ -413,16 +401,20 @@ public:
     {
         u16& val = *(u16*)(&B.data[r_pos]);
         r_advance(sizeof(u16));
-        A = (float(val) * (max - min)) / 65535.f + min; // floating-point-error possible
-        VERIFY((A >= min - EPS_S) && (A <= max + EPS_S));
+
+        // floating-point-error possible
+        A = (float(val) * (max - min)) / 65535.f + min;
+        XR_ASSERT(A >= min - EPS_S && A <= max + EPS_S, "", A, min, max);
     }
 
     constexpr void r_float_q8(float& A, float min, float max)
     {
         u8& val = *(u8*)(&B.data[r_pos]);
         r_advance(sizeof(u8));
-        A = (float(val) / 255.0001f) * (max - min) + min; // floating-point-error possible
-        VERIFY((A >= min) && (A <= max));
+
+        // floating-point-error possible
+        A = (float(val) / 255.0001f) * (max - min) + min;
+        XR_ASSERT(A >= min && A <= max, "", A, min, max);
     }
 
     constexpr void r_angle16(float& A) { r_float_q16(A, 0, PI_MUL_2); }

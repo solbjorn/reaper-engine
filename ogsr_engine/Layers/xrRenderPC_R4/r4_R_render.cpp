@@ -11,7 +11,7 @@ tmc::task<void> CRender::main_run()
     XR_TRACY_ZONE_SCOPED();
 
     auto& dsgraph = get_imm_context();
-    VERIFY(dsgraph.mapDistort.empty() && dsgraph.mapHUDDistort.empty());
+    XR_ASSERT(dsgraph.mapDistort.empty() && dsgraph.mapHUDDistort.empty(), "", dsgraph.mapDistort, dsgraph.mapHUDDistort);
 
     // Check if we touch some light even trough portal
     static xr_vector<ISpatial*> spatial_lights;
@@ -23,14 +23,12 @@ tmc::task<void> CRender::main_run()
 
         spatial->spatial_updatesector(dsgraph.detect_sector(entity_pos));
         if (spatial->spatial.sector_id == INVALID_SECTOR_ID)
-            continue; // disassociated from S/P structure
-
-        VERIFY(spatial->spatial.type & STYPE_LIGHTSOURCE);
+            // disassociated from S/P structure
+            continue;
 
         // lightsource
-        auto L = smart_cast<light*>(spatial->dcast_Light());
-        VERIFY(L != nullptr);
-        Lights.add_light(L);
+        XR_ASSERT(spatial->spatial.type & STYPE_LIGHTSOURCE);
+        Lights.add_light(XR_ASSERT_VAL(smart_cast<light*>(spatial->dcast_Light()) != nullptr));
     }
 
     Device.Statistic->RenderCALC.Begin();
@@ -392,5 +390,5 @@ tmc::task<void> CRender::Render()
     if (Details)
         Details->details_clear();
 
-    VERIFY(dsgraph.mapDistort.empty() && dsgraph.mapHUDDistort.empty());
+    XR_ASSERT(dsgraph.mapDistort.empty() && dsgraph.mapHUDDistort.empty(), "", dsgraph.mapDistort, dsgraph.mapHUDDistort);
 }

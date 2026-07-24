@@ -6,23 +6,10 @@
 
 #include <SFML/Window/Joystick.hpp>
 
-tmc::task<void> IInputReceiver::IR_Capture()
-{
-    VERIFY(pInput);
-    co_await pInput->iCapture(this);
-}
+tmc::task<void> IInputReceiver::IR_Capture() { co_await XR_ASSERT_VAL(pInput != nullptr)->iCapture(this); }
+tmc::task<void> IInputReceiver::IR_Release() { co_await XR_ASSERT_VAL(pInput != nullptr)->iRelease(this); }
 
-tmc::task<void> IInputReceiver::IR_Release()
-{
-    VERIFY(pInput);
-    co_await pInput->iRelease(this);
-}
-
-void IInputReceiver::IR_GetLastMouseDelta(Ivector2& p)
-{
-    VERIFY(pInput);
-    pInput->iGetLastMouseDelta(p);
-}
+void IInputReceiver::IR_GetLastMouseDelta(Ivector2& p) { XR_ASSERT_VAL(pInput != nullptr)->iGetLastMouseDelta(p); }
 
 void IInputReceiver::IR_OnDeactivate()
 {
@@ -48,11 +35,7 @@ void IInputReceiver::IR_OnDeactivate()
     IR_OnMouseStop(4, 0);
 }
 
-bool IInputReceiver::IR_GetKeyState(xr::key_id dik) const
-{
-    VERIFY(pInput);
-    return pInput->iGetAsyncKeyState(dik);
-}
+bool IInputReceiver::IR_GetKeyState(xr::key_id dik) const { return XR_ASSERT_VAL(pInput != nullptr)->iGetAsyncKeyState(dik); }
 
 void IInputReceiver::IR_GetMousePosScreen(Ivector2& p) { GetCursorPos((LPPOINT)&p); }
 

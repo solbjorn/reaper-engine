@@ -30,21 +30,14 @@ void ParseFile(gsl::czstring path, CMemoryWriter& W, IReader* F, CXml* xml, gsl:
             I = FS.r_open(path, buff);
         }
 
-        if (!I)
-        {
+        if (I == nullptr)
             I = FS.r_open(path, file_name);
-        }
 
-        if (!I)
-        {
-            string1024 str;
-            xr_sprintf(str, "XML file[%s] parsing failed. Can't find include file:[%s]", path, file_name);
-            R_ASSERT(false, str);
-        }
+        XR_ASSERT(I != nullptr, "can't find include file", path, file_name);
 
         I->skip_bom(file_name);
-
         ParseFile(path, W, I, xml, file_name);
+
         FS.r_close(I);
     };
 
@@ -109,8 +102,7 @@ bool CXml::Init(gsl::czstring path, gsl::czstring xml_filename)
     FS.r_close(F);
 
     const auto ret = m_Doc.load_string(reinterpret_cast<gsl::czstring>(W.pointer()));
-    if (!ret)
-        FATAL("XML file: %s, value: -%d, errDescr: %s at %zd bytes", m_xml_file_name, ret.status, ret.description(), ret.offset);
+    XR_ASSERT(ret, "invalid XML file", m_xml_file_name, ret.status, ret.description(), ret.offset);
 
     m_root = m_Doc.first_child();
 
@@ -119,12 +111,13 @@ bool CXml::Init(gsl::czstring path, gsl::czstring xml_filename)
 
 pugi::xml_node CXml::NavigateToNode(pugi::xml_node start_node, gsl::czstring path, gsl::index index) const
 {
-    R_ASSERT(start_node && path, "NavigateToNode failed in XML file ", m_xml_file_name);
+    XR_ASSERT(start_node && path != nullptr, "invalid node path to nagivate", m_xml_file_name, path, index);
+
     pugi::xml_node node;
     pugi::xml_node node_parent;
     string_path buf_str{};
 
-    VERIFY(xr_strlen(path) < 200);
+    XR_DEBUG_ASSERT(xr_strlen(path) < 200);
     strcpy_s(buf_str, path);
 
     const char seps[] = ":";

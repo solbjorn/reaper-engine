@@ -65,7 +65,7 @@ private:
     const std::unique_ptr<CStreamReader> file;
 
 public:
-    explicit istream(gsl::czstring path) : Imf::IStream{path}, file{absl::WrapUnique(FS.rs_open(path))} { R_ASSERT(file); }
+    explicit istream(gsl::czstring path) : Imf::IStream{path}, file{absl::WrapUnique(FS.rs_open(path))} { XR_ASSERT(file, "", path); }
     ~istream() override = default;
 
     // Imf::IStream

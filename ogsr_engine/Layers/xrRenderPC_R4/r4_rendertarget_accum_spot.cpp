@@ -405,13 +405,10 @@ void CRenderTarget::accum_volumetric(light* L)
 
         //	Set up user clip planes
         static constexpr const char* strFrustumClipPlane = "FrustumClipPlane";
-        //	TODO: DX10: Check if it's equivalent to the previouse code.
-        // RCache.set_ClipPlanes (TRUE,ClipFrustum.planes,ClipFrustum.p_count);
 
         //	Transform frustum to clip space
         Fmatrix PlaneTransform;
         PlaneTransform.transpose(Device.mInvFullTransform);
-        // HW.pDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, 0x3F);
 
         for (gsl::index i = 0; i < 6; ++i)
         {
@@ -420,7 +417,6 @@ void CRenderTarget::accum_volumetric(light* L)
             PlaneTransform.transform(TransformedPlane, ClipPlane);
             TransformedPlane.mul(-1.0f);
             RCache.set_ca(strFrustumClipPlane, i, TransformedPlane);
-            // HW.pDevice->SetClipPlane( i, &TransformedPlane.x);
         }
 
         RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
@@ -430,7 +426,6 @@ void CRenderTarget::accum_volumetric(light* L)
         RCache.Render(D3DPT_TRIANGLELIST, 0, 0, iNumSlices * 4, 0, iNumSlices * 2);
 
         RCache.set_ColorWriteEnable();
-        RCache.set_ClipPlanes(FALSE, static_cast<Fmatrix*>(nullptr), 0);
     }
 
     RCache.set_Scissor(nullptr);

@@ -8,26 +8,27 @@
 #include "Blender_Recorder.h"
 #include "Blender.h"
 
-static int ParseName(LPCSTR N)
+static int ParseName(std::string_view N)
 {
-    if (0 == xr_strcmp(N, "$null"))
+    if (N == "$null")
         return -1;
-    if (0 == xr_strcmp(N, "$base0"))
+    if (N == "$base0")
         return 0;
-    if (0 == xr_strcmp(N, "$base1"))
+    if (N == "$base1")
         return 1;
-    if (0 == xr_strcmp(N, "$base2"))
+    if (N == "$base2")
         return 2;
-    if (0 == xr_strcmp(N, "$base3"))
+    if (N == "$base3")
         return 3;
-    if (0 == xr_strcmp(N, "$base4"))
+    if (N == "$base4")
         return 4;
-    if (0 == xr_strcmp(N, "$base5"))
+    if (N == "$base5")
         return 5;
-    if (0 == xr_strcmp(N, "$base6"))
+    if (N == "$base6")
         return 6;
-    if (0 == xr_strcmp(N, "$base7"))
+    if (N == "$base7")
         return 7;
+
     return -1;
 }
 
@@ -35,8 +36,8 @@ static int ParseName(LPCSTR N)
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CBlender_Compile::CBlender_Compile() {}
-CBlender_Compile::~CBlender_Compile() {}
+CBlender_Compile::CBlender_Compile() = default;
+CBlender_Compile::~CBlender_Compile() = default;
 
 void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
 {
@@ -59,11 +60,10 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
         sh_list& lst = L_textures;
         int id = ParseName(BT->oT_Name);
         base = BT->oT_Name;
+
         if (id >= 0)
         {
-            if (id >= int(lst.size()))
-                Debug.fatal(DEBUG_INFO, "Not enough textures for shader. Base texture: '%s'.", lst[0].c_str());
-
+            XR_ASSERT(id < lst.size(), "not enough textures for shader", lst[0]);
             base = lst[id].c_str();
         }
 
@@ -80,11 +80,10 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
             sh_list& lst = L_textures;
             int id = ParseName(BT->oT_Name);
             base = BT->oT_Name;
+
             if (id >= 0)
             {
-                if (id >= int(lst.size()))
-                    Debug.fatal(DEBUG_INFO, "Not enough textures for shader. Base texture: '%s'.", lst[0].c_str());
-
+                XR_ASSERT(id < lst.size(), "not enough textures for shader", lst[0]);
                 base = lst[id].c_str();
             }
         }
@@ -110,12 +109,10 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
 
 void CBlender_Compile::SetParams(int iPriority, bool bStrictB2F)
 {
+    XR_ASSERT(!bStrictB2F || iPriority / 2 == 1, "", iPriority, bStrictB2F);
+
     SH->flags.iPriority = iPriority;
     SH->flags.bStrictB2F = bStrictB2F;
-    if (bStrictB2F)
-    {
-        VERIFY(1 == (SH->flags.iPriority / 2));
-    }
 }
 
 void CBlender_Compile::PassBegin()
@@ -144,18 +141,16 @@ void CBlender_Compile::PassSET_ZB(BOOL bZTest, BOOL bZWrite, BOOL bInvertZTest)
 {
     if (Pass())
         bZWrite = FALSE;
+
     RS.SetRS(D3DRS_ZFUNC, bZTest ? (bInvertZTest ? D3DCMP_GREATER : D3DCMP_LESSEQUAL) : D3DCMP_ALWAYS);
     RS.SetRS(D3DRS_ZWRITEENABLE, BC(bZWrite));
-    /*
-    if (bZWrite || bZTest)				RS.SetRS	(D3DRS_ZENABLE,	D3DZB_TRUE);
-    else								RS.SetRS	(D3DRS_ZENABLE,	D3DZB_FALSE);
-    */
 }
 
 void CBlender_Compile::PassSET_ablend_mode(BOOL bABlend, u32 abSRC, u32 abDST)
 {
     if (bABlend && D3DBLEND_ONE == abSRC && D3DBLEND_ZERO == abDST)
         bABlend = FALSE;
+
     RS.SetRS(D3DRS_ALPHABLENDENABLE, BC(bABlend));
     RS.SetRS(D3DRS_SRCBLEND, bABlend ? abSRC : D3DBLEND_ONE);
     RS.SetRS(D3DRS_DESTBLEND, bABlend ? abDST : D3DBLEND_ZERO);
@@ -170,22 +165,14 @@ void CBlender_Compile::PassSET_ablend_mode(BOOL bABlend, u32 abSRC, u32 abDST)
 
 void CBlender_Compile::PassSET_ablend_aref(BOOL bATest, u32 aRef)
 {
-    clamp(aRef, 0u, 255u);
     RS.SetRS(D3DRS_ALPHATESTENABLE, BC(bATest));
     if (bATest)
-        RS.SetRS(D3DRS_ALPHAREF, u32(aRef));
+        RS.SetRS(D3DRS_ALPHAREF, std::min(aRef, 255u));
 }
 
 void CBlender_Compile::PassSET_Blend(BOOL bABlend, u32 abSRC, u32 abDST, BOOL bATest, u32 aRef)
 {
     PassSET_ablend_mode(bABlend, abSRC, abDST);
-#ifdef DEBUG
-    if (strstr(Core.Params, "-noaref"))
-    {
-        bATest = FALSE;
-        aRef = 0;
-    }
-#endif
     PassSET_ablend_aref(bATest, aRef);
 }
 

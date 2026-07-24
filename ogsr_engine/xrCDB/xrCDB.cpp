@@ -37,7 +37,7 @@ MODEL::MODEL() = default;
 MODEL::~MODEL()
 {
     syncronize(); // maybe model still in building
-    status = S_INIT;
+    status = state::S_INIT;
 
     xr_delete(tree);
     xr_free(tris);
@@ -48,11 +48,11 @@ MODEL::~MODEL()
 
 void MODEL::build(std::span<const Fvector> V, std::span<const TRI> T, build_callback* bc, void* bcp)
 {
-    R_ASSERT(S_INIT == status);
-    R_ASSERT(V.size() >= 4 && T.size() >= 2);
+    XR_ASSERT(status == state::S_INIT);
+    XR_ASSERT(V.size() >= 4 && T.size() >= 2, "", V, T);
 
     build_internal(V, T, bc, bcp);
-    status = S_READY;
+    status = state::S_READY;
 }
 
 void MODEL::build_internal(std::span<const Fvector> V, std::span<const TRI> T, build_callback* bc, void* bcp)
@@ -82,7 +82,7 @@ void MODEL::build_internal(std::span<const Fvector> V, std::span<const TRI> T, b
         bc(std::span{verts, gsl::narrow_cast<size_t>(verts_count)}, std::span{tris, gsl::narrow_cast<size_t>(tris_count)}, bcp);
 
     // Release data pointers
-    status = S_BUILD;
+    status = state::S_BUILD;
 
     MeshInterface mif;
     mif.SetNbTriangles(gsl::narrow_cast<u32>(tris_count));
@@ -105,7 +105,7 @@ void MODEL::build_internal(std::span<const Fvector> V, std::span<const TRI> T, b
 
 gsl::index MODEL::memory() const
 {
-    if (S_BUILD == status)
+    if (status == state::S_BUILD)
     {
         Log("! xrCDB: model still isn't ready");
         return 0;
@@ -159,8 +159,8 @@ void MODEL::serialize_tree(IWriter* stream) const
     // Copy the whole storage including the hidden "header" to be able to use inline
     // AVX memory copy when deserializing.
     const auto start = &reinterpret_cast<const size_t*>(root)[-1];
-    R_ASSERT(std::is_sufficiently_aligned<16>(start));
-    R_ASSERT(*start == nodes_num);
+    XR_ASSERT(std::is_sufficiently_aligned<16>(start));
+    XR_ASSERT(*start == nodes_num);
 
     stream->w(&hdr, sizeof(hdr));
     stream->w(start, gsl::narrow_cast<gsl::index>(xr::roundup(sizeof(*start) + size, 16uz)));
@@ -210,8 +210,8 @@ bool MODEL::deserialize_tree(IReader* stream)
     const auto size = hdr.nodes_num * sizeof(AABBNoLeafNode);
 
     auto start = &reinterpret_cast<size_t*>(&nodes[0])[-1];
-    R_ASSERT(std::is_sufficiently_aligned<16>(start));
-    R_ASSERT(*start == hdr.nodes_num);
+    XR_ASSERT(std::is_sufficiently_aligned<16>(start));
+    XR_ASSERT(*start == hdr.nodes_num);
 
     xr_memcpy128(start, stream->pointer(), xr::roundup(sizeof(*start) + size, 16uz));
 
@@ -324,7 +324,7 @@ bool MODEL::deserialize(const char* file, u64 xxh, deserialize_callback callback
     }
 
     FS.r_close(rstream);
-    status = S_READY;
+    status = state::S_READY;
 
     return true;
 }

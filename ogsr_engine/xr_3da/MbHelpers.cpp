@@ -25,41 +25,32 @@ unsigned short int mbhMulti2WideDumb(wide_char* WideStr, wide_char* WidePos, con
     unsigned char b1;
     wide_char wc = 0;
 
-    VERIFY(MultiStr);
-
-    if (!MultiStr[0])
+    if (!XR_ASSERT_VAL(MultiStr != nullptr)[0])
         return 0;
 
-    if (WideStr || WidePos)
-        VERIFY2(((WideStrSize > 0) && (WideStrSize < 0xFFFF)), xr::format("'WideStrSize'={}", WideStrSize));
+    if (WideStr != nullptr || WidePos != nullptr)
+        XR_ASSERT(WideStrSize > 0 && WideStrSize < std::numeric_limits<u16>::max(), "", WideStrSize);
 
     while ((b1 = MultiStr[spos++]) != 0x00)
     {
         if (WidePos)
             WidePos[dpos] = spos;
 
-        dpos++;
-
+        ++dpos;
         wc = b1;
 
-        if (WideStr)
-        {
-            VERIFY2((dpos < WideStrSize), xr::format("S1: '{}',{}<{}", MultiStr, dpos, WideStrSize));
-            WideStr[dpos] = wc;
-        }
+        if (WideStr != nullptr)
+            WideStr[XR_ASSERT_VAL(dpos < WideStrSize, "", MultiStr)] = wc;
     }
 
     if (WidePos)
         WidePos[dpos] = spos;
 
-    if (WideStr)
+    if (WideStr != nullptr)
     {
-        VERIFY2((dpos < WideStrSize), xr::format("S2: '{}',{}<{}", MultiStr, dpos, WideStrSize));
-        WideStr[dpos + 1] = 0x0000;
-    }
-
-    if (WideStr)
+        WideStr[XR_ASSERT_VAL(dpos + 1 < WideStrSize, "", MultiStr)] = L'\0';
         WideStr[0] = dpos;
+    }
 
     return dpos;
 }
@@ -73,13 +64,11 @@ unsigned short int mbhMulti2Wide(wide_char* WideStr, wide_char* WidePos, const u
     unsigned char b1, b2, b3;
     wide_char wc = 0;
 
-    VERIFY(MultiStr);
-
-    if (!MultiStr[0])
+    if (!XR_ASSERT_VAL(MultiStr != nullptr)[0])
         return 0;
 
-    if (WideStr || WidePos)
-        VERIFY2(((WideStrSize > 0) && (WideStrSize < 0xFFFF)), xr::format("'WideStrSize'={}", WideStrSize));
+    if (WideStr != nullptr || WidePos != nullptr)
+        XR_ASSERT(WideStrSize > 0 && WideStrSize < std::numeric_limits<u16>::max(), "", WideStrSize);
 
     while ((b1 = MultiStr[spos]) != 0x00)
     {
@@ -99,7 +88,7 @@ unsigned short int mbhMulti2Wide(wide_char* WideStr, wide_char* WidePos, const u
             if (!(b2 && ((b2 & BITS2_MASK) == BITS2_EXP)))
                 return mbhMulti2WideDumb(WideStr, WidePos, WideStrSize, MultiStr);
 #else // MB_DUMB_CONVERSION
-            VERIFY2((b2 && ((b2 & BITS2_MASK) == BITS2_EXP)), xr::format("B2: '{}',@{},[{}][{}]", MultiStr, spos, b1, b2));
+            XR_ASSERT((b2 & BITS2_MASK) == BITS2_EXP, "", MultiStr, spos, b1, b2);
 #endif // MB_DUMB_CONVERSION
             wc = ((b1 & ~BITS3_MASK) << 6) | (b2 & ~BITS2_MASK);
         }
@@ -110,14 +99,14 @@ unsigned short int mbhMulti2Wide(wide_char* WideStr, wide_char* WidePos, const u
             if (!(b2 && ((b2 & BITS2_MASK) == BITS2_EXP)))
                 return mbhMulti2WideDumb(WideStr, WidePos, WideStrSize, MultiStr);
 #else // MB_DUMB_CONVERSION
-            VERIFY2((b2 && ((b2 & BITS2_MASK) == BITS2_EXP)), xr::format("B31: '{}',@{},[{}][{}]", MultiStr, spos, b1, b2));
+            XR_ASSERT((b2 & BITS2_MASK) == BITS2_EXP, "", MultiStr, spos, b1, b2);
 #endif // MB_DUMB_CONVERSION
             b3 = MultiStr[spos++];
 #ifdef MB_DUMB_CONVERSION
             if (!(b3 && ((b3 & BITS2_MASK) == BITS2_EXP)))
                 return mbhMulti2WideDumb(WideStr, WidePos, WideStrSize, MultiStr);
 #else // MB_DUMB_CONVERSION
-            VERIFY2((b3 && ((b3 & BITS2_MASK) == BITS2_EXP)), xr::format("B32: '{}',@{},[{}][{}][{}]", MultiStr, spos, b1, b2, b3));
+            XR_ASSERT((b3 & BITS2_MASK) == BITS2_EXP, "", MultiStr, spos, b1, b2, b3);
 #endif // MB_DUMB_CONVERSION
             wc = ((b1 & ~BITS4_MASK) << 12) | ((b2 & ~BITS2_MASK) << 6) | (b3 & ~BITS2_MASK);
         }
@@ -126,30 +115,24 @@ unsigned short int mbhMulti2Wide(wide_char* WideStr, wide_char* WidePos, const u
 #ifdef MB_DUMB_CONVERSION
             return mbhMulti2WideDumb(WideStr, WidePos, WideStrSize, MultiStr);
 #else // MB_DUMB_CONVERSION
-            VERIFY2(0, xr::format("B1: '{}',@{},[{}]", MultiStr, spos, b1));
+            XR_PANIC("", MultiStr, spos, b1);
 #endif // MB_DUMB_CONVERSION
         }
 
         dpos++;
 
-        if (WideStr)
-        {
-            VERIFY2((dpos < WideStrSize), xr::format("S1: '{}',{}<{}", MultiStr, dpos, WideStrSize));
-            WideStr[dpos] = wc;
-        }
+        if (WideStr != nullptr)
+            WideStr[XR_ASSERT_VAL(dpos < WideStrSize, "", MultiStr)] = wc;
     }
 
     if (WidePos)
         WidePos[dpos] = spos;
 
-    if (WideStr)
+    if (WideStr != nullptr)
     {
-        VERIFY2((dpos < WideStrSize), xr::format("S2: '{}',{}<{}", MultiStr, dpos, WideStrSize));
-        WideStr[dpos + 1] = 0x0000;
-    }
-
-    if (WideStr)
+        WideStr[XR_ASSERT_VAL(dpos + 1 < WideStrSize, "", MultiStr)] = L'\0';
         WideStr[0] = dpos;
+    }
 
     return dpos;
 }

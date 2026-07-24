@@ -178,7 +178,7 @@ private:
 
     [[nodiscard]] static ktx::ktx_error_code_e write(ktx::ktxStream*, const void*, const ktx::ktx_size_t, const ktx::ktx_size_t)
     {
-        FATAL("Can't write to a read-only stream");
+        XR_PANIC("can't write to a read-only stream");
     }
 
     [[nodiscard]] static ktx::ktx_error_code_e getpos(ktx::ktxStream* str, ktx::ktx_off_t* const offset)
@@ -221,7 +221,7 @@ public:
 
 ktx_texture::ktx_texture(gsl::czstring path) : file{absl::WrapUnique(FS.rs_open(path))}, path{path}
 {
-    R_ASSERT(file);
+    XR_ASSERT(file, "", path);
 
     is.read = &ktx_texture::read;
     is.skip = &ktx_texture::skip;

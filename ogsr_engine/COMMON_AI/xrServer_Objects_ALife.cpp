@@ -92,16 +92,12 @@ CSE_ALifeObject::CSE_ALifeObject(LPCSTR caSection) : CSE_Abstract(caSection)
 }
 
 #ifdef XRGAME_EXPORTS
-CALifeSimulator& CSE_ALifeObject::alife() const
-{
-    VERIFY(m_alife_simulator);
-    return (*m_alife_simulator);
-}
+CALifeSimulator& CSE_ALifeObject::alife() const { return *XR_ASSERT_VAL(m_alife_simulator != nullptr); }
 
 Fvector CSE_ALifeObject::draw_level_position() const { return (Position()); }
 #endif
 
-CSE_ALifeObject::~CSE_ALifeObject() {}
+CSE_ALifeObject::~CSE_ALifeObject() = default;
 
 bool CSE_ALifeObject::move_offline() const { return (!m_flags.test(flOfflineNoMove)); }
 void CSE_ALifeObject::used_ai_locations(bool value) { m_flags.set(flUsedAI_Locations, value ? TRUE : FALSE); }
@@ -192,36 +188,28 @@ void CSE_ALifeObject::UPDATE_Read(NET_Packet&) {}
 
 u32 CSE_ALifeObject::ef_equipment_type() const
 {
-    string16 temp;
-    CLSID2TEXT(m_tClassID, temp);
-    R_ASSERT3(false, "Invalid alife equipment type request, virtual function is not properly overloaded!", temp);
-    return (u32(-1));
-    //	return		(6);
+    string16 cls;
+    CLSID2TEXT(m_tClassID, cls);
+
+    XR_PANIC("invalid A-Life equipment type request", cls);
 }
 
 u32 CSE_ALifeObject::ef_main_weapon_type() const
 {
-    string16 temp;
-    CLSID2TEXT(m_tClassID, temp);
-    R_ASSERT3(false, "Invalid alife main weapon type request, virtual function is not properly overloaded!", temp);
-    return (u32(-1));
-    //	return		(5);
+    string16 cls;
+    CLSID2TEXT(m_tClassID, cls);
+
+    XR_PANIC("invalid A-Life main weapon type request", cls);
 }
 
-u32 CSE_ALifeObject::ef_weapon_type() const
-{
-    //	string16					temp; CLSID2TEXT(m_tClassID,temp);
-    //	R_ASSERT3	(false,"Invalid alife weapon type request, virtual function is not properly overloaded!",temp);
-    //	return		(u32(-1));
-    return (0);
-}
+u32 CSE_ALifeObject::ef_weapon_type() const { return 0; }
 
 u32 CSE_ALifeObject::ef_detector_type() const
 {
-    string16 temp;
-    CLSID2TEXT(m_tClassID, temp);
-    R_ASSERT3(false, "Invalid alife detector type request, virtual function is not properly overloaded!", temp);
-    return (u32(-1));
+    string16 cls;
+    CLSID2TEXT(m_tClassID, cls);
+
+    XR_PANIC("invalid A-Life detector type request", cls);
 }
 
 bool CSE_ALifeObject::used_ai_locations() const { return (!!m_flags.is(flUsedAI_Locations)); }
@@ -800,7 +788,8 @@ bool CSE_ALifeObjectHangingLamp::validate()
 
 bool CSE_ALifeObjectHangingLamp::match_configuration() const
 {
-    R_ASSERT3(flags.test(flR1) || flags.test(flR2), "no renderer type set for hanging-lamp ", name_replace());
+    XR_ASSERT(flags.test(flR1) || flags.test(flR2), "no renderer type set for hanging lamp", name_replace());
+
 #ifdef XRGAME_EXPORTS
     return flags.test(flR2);
 #else
@@ -844,34 +833,34 @@ CSE_Abstract* CSE_ALifeSchedulable::init() { return (base()); }
 
 u32 CSE_ALifeSchedulable::ef_creature_type() const
 {
-    string16 temp;
-    CLSID2TEXT(base()->m_tClassID, temp);
-    R_ASSERT3(false, "Invalid alife creature type request, virtual function is not properly overloaded!", temp);
-    return (u32(-1));
+    string16 cls;
+    CLSID2TEXT(base()->m_tClassID, cls);
+
+    XR_PANIC("invalid A-Life creature type request", cls);
 }
 
 u32 CSE_ALifeSchedulable::ef_anomaly_type() const
 {
-    string16 temp;
-    CLSID2TEXT(base()->m_tClassID, temp);
-    R_ASSERT3(false, "Invalid alife anomaly type request, virtual function is not properly overloaded!", temp);
-    return (u32(-1));
+    string16 cls;
+    CLSID2TEXT(base()->m_tClassID, cls);
+
+    XR_PANIC("invalid A-Life anomaly type request", cls);
 }
 
 u32 CSE_ALifeSchedulable::ef_weapon_type() const
 {
-    string16 temp;
-    CLSID2TEXT(base()->m_tClassID, temp);
-    R_ASSERT3(false, "Invalid alife weapon type request, virtual function is not properly overloaded!", temp);
-    return (u32(-1));
+    string16 cls;
+    CLSID2TEXT(base()->m_tClassID, cls);
+
+    XR_PANIC("invalid A-Life weapon type request", cls);
 }
 
 u32 CSE_ALifeSchedulable::ef_detector_type() const
 {
-    string16 temp;
-    CLSID2TEXT(base()->m_tClassID, temp);
-    R_ASSERT3(false, "Invalid alife detector type request, virtual function is not properly overloaded!", temp);
-    return (u32(-1));
+    string16 cls;
+    CLSID2TEXT(base()->m_tClassID, cls);
+
+    XR_PANIC("invalid A-Life detector type request", cls);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -993,14 +982,14 @@ void CSE_ALifeCar::load(NET_Packet& tNetPacket)
 
 void CSE_ALifeCar::data_load(NET_Packet& tNetPacket)
 {
-    // inherited1::data_load(tNetPacket);
     inherited2::data_load(tNetPacket);
-    // VERIFY(door_states.empty());
 
     tNetPacket.r_vec3(o_Position);
     tNetPacket.r_vec3(o_Angle);
+
     door_states.clear();
     u16 doors_number = tNetPacket.r_u16();
+
     for (u16 i = 0; i < doors_number; ++i)
     {
         SDoorState ds;
@@ -1010,20 +999,24 @@ void CSE_ALifeCar::data_load(NET_Packet& tNetPacket)
 
     wheel_states.clear();
     u16 wheels_number = tNetPacket.r_u16();
+
     for (u16 i = 0; i < wheels_number; ++i)
     {
         SWheelState ws;
         ws.read(tNetPacket);
         wheel_states.push_back(ws);
     }
+
     health = tNetPacket.r_float();
 }
+
 void CSE_ALifeCar::data_save(NET_Packet& tNetPacket)
 {
-    // inherited1::data_save(tNetPacket);
     inherited2::data_save(tNetPacket);
+
     tNetPacket.w_vec3(o_Position);
     tNetPacket.w_vec3(o_Angle);
+
     {
         tNetPacket.w_u16(u16(door_states.size()));
         xr_vector<SDoorState>::iterator i = door_states.begin(), e = door_states.end();
@@ -1031,8 +1024,8 @@ void CSE_ALifeCar::data_save(NET_Packet& tNetPacket)
         {
             i->write(tNetPacket);
         }
-        // door_states.clear();
     }
+
     {
         tNetPacket.w_u16(u16(wheel_states.size()));
         xr_vector<SWheelState>::iterator i = wheel_states.begin(), e = wheel_states.end();
@@ -1040,8 +1033,8 @@ void CSE_ALifeCar::data_save(NET_Packet& tNetPacket)
         {
             i->write(tNetPacket);
         }
-        // wheel_states.clear();
     }
+
     tNetPacket.w_float(health);
 }
 

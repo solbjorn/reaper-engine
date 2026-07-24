@@ -5,8 +5,6 @@
 
 #include "xrCDB.h"
 
-#include "FixedVector.h"
-
 enum EFC_Visible : u32
 {
     fcvNone = 0,
@@ -26,7 +24,7 @@ enum EFC_Visible : u32
 #define FRUSTUM_P_ALL (FRUSTUM_P_LRTB | FRUSTUM_P_NEAR | FRUSTUM_P_FAR)
 #define FRUSTUM_SAFE (FRUSTUM_MAXPLANES * 4)
 
-using sPoly = svector<Fvector, FRUSTUM_SAFE>;
+using sPoly = std::inplace_vector<Fvector, FRUSTUM_SAFE>;
 
 #define mx 0
 #define my 1

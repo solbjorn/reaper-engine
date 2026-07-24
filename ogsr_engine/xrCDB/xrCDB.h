@@ -86,7 +86,7 @@ class MODEL : Noncopyable
 {
     friend class COLLIDER;
 
-    enum : u32
+    enum class state : s32
     {
         S_READY = 0,
         S_INIT = 1,
@@ -95,7 +95,7 @@ class MODEL : Noncopyable
 
 private:
     Opcode::Model* tree{};
-    u32 status{S_INIT}; // 0=ready, 1=init, 2=building
+    state status{state::S_INIT}; // 0=ready, 1=init, 2=building
 
     // tris
     TRI* tris{};
@@ -117,7 +117,7 @@ public:
 
     void syncronize() const
     {
-        if (S_READY != status)
+        if (status != state::S_READY)
             Log("! WARNING: syncronized CDB::query");
     }
 

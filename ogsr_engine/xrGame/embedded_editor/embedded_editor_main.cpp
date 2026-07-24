@@ -169,11 +169,16 @@ void imgui_key_map_init()
 void ImGui_UpdateKeyModifiers(ImGuiIO& io)
 {
     io.AddKeyEvent(ImGuiMod_Ctrl,
-                   pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LControl}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RControl}));
-    io.AddKeyEvent(ImGuiMod_Shift, pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RShift}));
-    io.AddKeyEvent(ImGuiMod_Alt, pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LAlt}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RAlt}));
+                   pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LControl}) ||
+                       pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RControl}));
+    io.AddKeyEvent(ImGuiMod_Shift,
+                   pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) ||
+                       pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RShift}));
+    io.AddKeyEvent(ImGuiMod_Alt,
+                   pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LAlt}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RAlt}));
     io.AddKeyEvent(ImGuiMod_Super,
-                   pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LSystem}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RSystem}));
+                   pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LSystem}) ||
+                       pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RSystem}));
 }
 
 void ImGui_ResetKeys()
@@ -268,7 +273,7 @@ void imgui_ingame_editor::RenderMainWnd()
     frames.emplace_back(framerate);
 
     ImGui::Text("TPS %.3f ms/frame (%.1f FPS)", 1000.0f / framerate, framerate);
-    ImGui::PlotHistogram("", frames.data(), gsl::narrow_cast<s32>(std::ssize(frames)), 0, nullptr, 0.0f, 300.0f, ImVec2{-0.01f, 100.0f});
+    ImGui::PlotHistogram("##FPS", frames.data(), gsl::narrow_cast<s32>(std::ssize(frames)), 0, nullptr, 0.0f, 300.0f, ImVec2{-0.01f, 100.0f});
 }
 
 void imgui_ingame_editor::RenderMainMenu()
@@ -370,7 +375,8 @@ void imgui_ingame_editor::update()
 
     b_needResetInput = true;
     b_isAltHold = pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LAlt}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RAlt});
-    b_isShiftHold = pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RShift});
+    b_isShiftHold =
+        pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RShift});
 
     auto& io = ImGui::GetIO();
     const bool is_editor_active = IsEditorActive();
@@ -456,7 +462,8 @@ bool imgui_ingame_editor::key_press(xr::key_id key)
     ImGui_UpdateKeyModifiers(io);
 
     if (key.is<sf::Mouse::Button>())
-        io.AddMouseButtonEvent(s32{ImGuiMouseButton_Left} + std::to_underlying(key.get<sf::Mouse::Button>()) - std::to_underlying(sf::Mouse::Button::Left), true);
+        io.AddMouseButtonEvent(s32{ImGuiMouseButton_Left} + std::to_underlying(key.get<sf::Mouse::Button>()) - std::to_underlying(sf::Mouse::Button::Left),
+                               true);
 
     if (const auto conv = imgui_key_map.find(key); conv != imgui_key_map.end())
         io.AddKeyEvent(conv->second, true);
@@ -484,7 +491,8 @@ bool imgui_ingame_editor::key_release(xr::key_id key)
         return true;
 
     if (key.is<sf::Mouse::Button>())
-        io.AddMouseButtonEvent(s32{ImGuiMouseButton_Left} + std::to_underlying(key.get<sf::Mouse::Button>()) - std::to_underlying(sf::Mouse::Button::Left), false);
+        io.AddMouseButtonEvent(s32{ImGuiMouseButton_Left} + std::to_underlying(key.get<sf::Mouse::Button>()) - std::to_underlying(sf::Mouse::Button::Left),
+                               false);
 
     if (const auto conv = imgui_key_map.find(key); conv != imgui_key_map.end())
         io.AddKeyEvent(conv->second, false);

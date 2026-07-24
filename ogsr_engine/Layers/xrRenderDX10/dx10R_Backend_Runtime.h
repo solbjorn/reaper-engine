@@ -5,13 +5,6 @@
 
 ICF ID3D11DeviceContext1* CBackend::context() const { return HW.get_context(context_id); }
 
-IC void CBackend::set_xform(u32, const Fmatrix&)
-{
-    stat.xforms++;
-    //	TODO: DX10: Implement CBackend::set_xform
-    // VERIFY(!"Implement CBackend::set_xform");
-}
-
 IC void CBackend::set_RT(ID3DRenderTargetView* RT, u32 ID)
 {
     if (RT != pRT[ID])
@@ -43,7 +36,6 @@ IC void CBackend::set_ZB(ID3DDepthStencilView* ZB)
 }
 
 IC void CBackend::ClearRT(ID3DRenderTargetView* rt, const Fcolor& color) { context()->ClearRenderTargetView(rt, reinterpret_cast<const float*>(&color)); }
-
 IC void CBackend::ClearZB(ID3DDepthStencilView* zb, float depth) { context()->ClearDepthStencilView(zb, D3D_CLEAR_DEPTH, depth, 0); }
 
 IC void CBackend::ClearZB(ID3DDepthStencilView* zb, float depth, u32 stencil)
@@ -178,7 +170,7 @@ ICF void CBackend::set_Indices(ID3DIndexBuffer* _ib)
 
 IC D3D_PRIMITIVE_TOPOLOGY TranslateTopology(D3DPRIMITIVETYPE T)
 {
-    static constexpr D3D_PRIMITIVE_TOPOLOGY translateTable[] = {
+    static constexpr std::array<D3D_PRIMITIVE_TOPOLOGY, 7> translateTable{
         D3D_PRIMITIVE_TOPOLOGY_UNDEFINED, //	None
         D3D_PRIMITIVE_TOPOLOGY_POINTLIST, //	D3DPT_POINTLIST = 1,
         D3D_PRIMITIVE_TOPOLOGY_LINELIST, //	D3DPT_LINELIST = 2,
@@ -188,14 +180,7 @@ IC D3D_PRIMITIVE_TOPOLOGY TranslateTopology(D3DPRIMITIVETYPE T)
         D3D_PRIMITIVE_TOPOLOGY_UNDEFINED, //	D3DPT_TRIANGLEFAN = 6,
     };
 
-    VERIFY(T < sizeof(translateTable) / sizeof(translateTable[0]));
-    VERIFY(T >= 0);
-
-    D3D_PRIMITIVE_TOPOLOGY result = translateTable[T];
-
-    VERIFY(result != D3D_PRIMITIVE_TOPOLOGY_UNDEFINED);
-
-    return result;
+    return XR_ASSERT_VAL(translateTable[T] != D3D_PRIMITIVE_TOPOLOGY_UNDEFINED);
 }
 
 IC u32 GetIndexCount(D3DPRIMITIVETYPE T, u32 iPrimitiveCount)
@@ -207,10 +192,7 @@ IC u32 GetIndexCount(D3DPRIMITIVETYPE T, u32 iPrimitiveCount)
     case D3DPT_LINESTRIP: return iPrimitiveCount + 1;
     case D3DPT_TRIANGLELIST: return iPrimitiveCount * 3;
     case D3DPT_TRIANGLESTRIP: return iPrimitiveCount + 2;
-    default: NODEFAULT;
-#ifdef DEBUG
-        return 0;
-#endif // #ifdef DEBUG
+    default: xr::unreachable();
     }
 }
 
@@ -229,6 +211,7 @@ IC void CBackend::Compute(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT T
 
     SRVSManager.Apply(context_id);
     StateManager.Apply();
+
     //	State manager may alter constants
     constants.flush();
     context()->Dispatch(ThreadGroupCountX, ThreadGroupCountY, ThreadGroupCountZ);
@@ -240,9 +223,9 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 baseV, u32, u32 countV, u32 sta
     u32 iIndexCount = GetIndexCount(T, PC);
 
     //!!! HACK !!!
-    if (hs || ds)
+    if (hs != nullptr || ds != nullptr)
     {
-        R_ASSERT(Topology == D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        XR_ASSERT(Topology == D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         Topology = D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST;
     }
 
@@ -251,11 +234,11 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 baseV, u32, u32 countV, u32 sta
     stat.polys += PC;
 
     ApplyPrimitieTopology(Topology);
-
     SRVSManager.Apply(context_id);
     ApplyRTandZB();
     ApplyVertexLayout();
     StateManager.Apply();
+
     //	State manager may alter constants
     constants.flush();
     context()->DrawIndexed(iIndexCount, startI, baseV);
@@ -279,6 +262,7 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 startV, u32 PC)
     ApplyRTandZB();
     ApplyVertexLayout();
     StateManager.Apply();
+
     //	State manager may alter constants
     constants.flush();
     context()->Draw(iVertexCount, startV);
@@ -331,44 +315,32 @@ IC void CBackend::set_Stencil(u32 _enable, u32 _func, u32 _ref, u32 _mask, u32 _
 }
 
 IC void CBackend::set_Z(u32 _enable) { StateManager.SetDepthEnable(_enable); }
-
 IC void CBackend::set_ZFunc(u32 _func) { StateManager.SetDepthFunc(_func); }
-
-IC void CBackend::set_AlphaRef(u32)
-{
-    //	TODO: DX10: Implement rasterizer state update to support alpha ref
-    VERIFY(!"Not implemented.");
-}
 
 IC void CBackend::set_ColorWriteEnable(u32 _mask) { StateManager.SetColorWriteEnable(_mask); }
 
 ICF void CBackend::set_CullMode(u32 _mode) { StateManager.SetCullMode(_mode); }
-
 ICF void CBackend::set_FillMode(u32 _mode) { StateManager.SetFillMode(_mode); }
 
 IC void CBackend::ApplyVertexLayout()
 {
-    VERIFY(vs);
-    VERIFY(decl);
-    VERIFY(m_pInputSignature);
+    XR_ASSERT(vs != nullptr && decl != nullptr && m_pInputSignature != nullptr);
+    ID3DInputLayout* layout{nullptr};
 
-    xr_map<ID3DBlob*, ID3DInputLayout*>::iterator it;
-
-    it = decl->vs_to_layout.find(m_pInputSignature);
-
-    if (it == decl->vs_to_layout.end())
+    if (const auto it = decl->vs_to_layout.find(m_pInputSignature); it == decl->vs_to_layout.end())
     {
-        ID3DInputLayout* pLayout;
-
-        CHK_DX(HW.pDevice->CreateInputLayout(&decl->dx10_dcl_code[0], decl->dx10_dcl_code.size() - 1, m_pInputSignature->GetBufferPointer(),
-                                             m_pInputSignature->GetBufferSize(), &pLayout));
-
-        it = decl->vs_to_layout.emplace(m_pInputSignature, pLayout).first;
+        XR_ASSERT(xr::hr(HW.pDevice->CreateInputLayout(&decl->dx10_dcl_code[0], decl->dx10_dcl_code.size() - 1, m_pInputSignature->GetBufferPointer(),
+                                                       m_pInputSignature->GetBufferSize(), &layout)));
+        decl->vs_to_layout.emplace(m_pInputSignature, layout);
+    }
+    else
+    {
+        layout = it->second;
     }
 
-    if (m_pInputLayout != it->second)
+    if (m_pInputLayout != layout)
     {
-        m_pInputLayout = it->second;
+        m_pInputLayout = layout;
         context()->IASetInputLayout(m_pInputLayout);
     }
 }
@@ -387,23 +359,18 @@ ICF void CBackend::set_VS(SVS* _vs)
 
 IC bool CBackend::CBuffersNeedUpdate(ref_cbuffer buf1[MaxCBuffers], ref_cbuffer buf2[MaxCBuffers], u32& uiMin, u32& uiMax)
 {
-    bool bRes = false;
-    int i = 0;
-    while ((i < MaxCBuffers) && (buf1[i] == buf2[i]))
-        ++i;
+    const std::span sp1{buf1, MaxCBuffers};
+    const std::span sp2{buf2, MaxCBuffers};
 
-    uiMin = i;
+    const auto it = std::ranges::mismatch(sp1, sp2).in1;
+    if (it == sp1.end())
+        return false;
 
-    for (; i < MaxCBuffers; ++i)
-    {
-        if (buf1[i] != buf2[i])
-        {
-            bRes = true;
-            uiMax = i;
-        }
-    }
+    uiMin = gsl::narrow_cast<u32>(std::distance(sp1.begin(), it));
+    const auto rsp1 = std::views::reverse(sp1);
+    uiMax = gsl::narrow_cast<u32>(MaxCBuffers - 1 - std::distance(rsp1.begin(), std::ranges::mismatch(rsp1, std::views::reverse(sp2)).in1));
 
-    return bRes;
+    return true;
 }
 
 IC void CBackend::set_Constants(R_constant_table* C)
@@ -447,39 +414,17 @@ IC void CBackend::set_Constants(R_constant_table* C)
 
         for (auto [uiBufferIndex, buf] : C->m_CBTable[context_id])
         {
-            if ((uiBufferIndex & CB_BufferTypeMask) == CB_BufferPixelShader)
+            const auto idx = XR_ASSERT_VAL((uiBufferIndex & CB_BufferIndexMask) < MaxCBuffers);
+
+            switch (uiBufferIndex & CB_BufferTypeMask)
             {
-                VERIFY((uiBufferIndex & CB_BufferIndexMask) < MaxCBuffers);
-                m_aPixelConstants[uiBufferIndex & CB_BufferIndexMask] = buf;
-            }
-            else if ((uiBufferIndex & CB_BufferTypeMask) == CB_BufferVertexShader)
-            {
-                VERIFY((uiBufferIndex & CB_BufferIndexMask) < MaxCBuffers);
-                m_aVertexConstants[uiBufferIndex & CB_BufferIndexMask] = buf;
-            }
-            else if ((uiBufferIndex & CB_BufferTypeMask) == CB_BufferGeometryShader)
-            {
-                VERIFY((uiBufferIndex & CB_BufferIndexMask) < MaxCBuffers);
-                m_aGeometryConstants[uiBufferIndex & CB_BufferIndexMask] = buf;
-            }
-            else if ((uiBufferIndex & CB_BufferTypeMask) == CB_BufferHullShader)
-            {
-                VERIFY((uiBufferIndex & CB_BufferIndexMask) < MaxCBuffers);
-                m_aHullConstants[uiBufferIndex & CB_BufferIndexMask] = buf;
-            }
-            else if ((uiBufferIndex & CB_BufferTypeMask) == CB_BufferDomainShader)
-            {
-                VERIFY((uiBufferIndex & CB_BufferIndexMask) < MaxCBuffers);
-                m_aDomainConstants[uiBufferIndex & CB_BufferIndexMask] = buf;
-            }
-            else if ((uiBufferIndex & CB_BufferTypeMask) == CB_BufferComputeShader)
-            {
-                VERIFY((uiBufferIndex & CB_BufferIndexMask) < MaxCBuffers);
-                m_aComputeConstants[uiBufferIndex & CB_BufferIndexMask] = buf;
-            }
-            else
-            {
-                R_ASSERT(false, "Invalid enumeration");
+            case CB_BufferPixelShader: m_aPixelConstants[idx] = buf; break;
+            case CB_BufferVertexShader: m_aVertexConstants[idx] = buf; break;
+            case CB_BufferGeometryShader: m_aGeometryConstants[idx] = buf; break;
+            case CB_BufferHullShader: m_aHullConstants[idx] = buf; break;
+            case CB_BufferDomainShader: m_aDomainConstants[idx] = buf; break;
+            case CB_BufferComputeShader: m_aComputeConstants[idx] = buf; break;
+            default: XR_PANIC("invalid buffer type", context_id, uiBufferIndex, idx);
             }
         }
 
@@ -515,6 +460,7 @@ IC void CBackend::set_Constants(R_constant_table* C)
                 else
                     tempBuffer[i] = nullptr;
             }
+
             pContext->VSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
         }
 
@@ -529,6 +475,7 @@ IC void CBackend::set_Constants(R_constant_table* C)
                 else
                     tempBuffer[i] = nullptr;
             }
+
             pContext->GSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
         }
 
@@ -543,6 +490,7 @@ IC void CBackend::set_Constants(R_constant_table* C)
                 else
                     tempBuffer[i] = nullptr;
             }
+
             pContext->HSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
         }
 
@@ -557,6 +505,7 @@ IC void CBackend::set_Constants(R_constant_table* C)
                 else
                     tempBuffer[i] = nullptr;
             }
+
             pContext->DSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
         }
 
@@ -571,6 +520,7 @@ IC void CBackend::set_Constants(R_constant_table* C)
                 else
                     tempBuffer[i] = nullptr;
             }
+
             pContext->CSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
         }
     }
@@ -578,11 +528,8 @@ IC void CBackend::set_Constants(R_constant_table* C)
     // process constant-loaders
     for (const auto& cs : C->table)
     {
-        R_constant* Cs = cs._get();
-        VERIFY(Cs);
-
-        if (Cs && Cs->handler)
-            Cs->handler->setup(*this, Cs);
+        if (auto& Cs = *XR_ASSERT_VAL(cs._get() != nullptr); Cs.handler != nullptr)
+            Cs.handler->setup(*this, &Cs);
     }
 }
 

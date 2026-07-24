@@ -93,36 +93,39 @@ bool CInifile::Sect::line_exist(gsl::czstring L, gsl::czstring* val) const
 
 gsl::czstring CInifile::Sect::r_string(gsl::czstring L) const
 {
-    if (L == nullptr || L[0] == '\0') //--#SM+#-- [fix for one of "xrDebug - Invalid handler" error log]
+    //--#SM+#-- [fix for one of "xrDebug - Invalid handler" error log]
+    if (L == nullptr || L[0] == '\0')
         Msg("!![ERROR] CInifile::Sect::r_string: S = [{}], L = [{}]", Name, L);
 
-    const auto A = Data.find(L);
-    if (A != Data.end())
-        return A->second.c_str();
-
-    FATAL("Can't find variable %s in [%s]", L, Name.c_str());
+    return XR_ASSERT_VAL(Data.find(L) != Data.end(), "can't find variable", Name, L)->second.c_str();
 }
 
 float CInifile::Sect::r_float(gsl::czstring L) const
 {
-    const auto res = scn::scan_value<f32>(std::string_view{r_string(L)});
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{r_string(L)};
+
+    const auto res = scn::scan_value<f32>(val);
+    XR_ASSERT(res, res.error().msg(), Name, L, val);
 
     return res->value();
 }
 
 u32 CInifile::Sect::r_u32(gsl::czstring L) const
 {
-    const auto res = scn::scan_int<u32>(r_string(L));
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{r_string(L)};
+
+    const auto res = scn::scan_int<u32>(val);
+    XR_ASSERT(res, res.error().msg(), Name, L, val);
 
     return res->value();
 }
 
 Fvector3 CInifile::Sect::r_fvector3(gsl::czstring L) const
 {
-    const auto res = scn::scan<f32, f32, f32>(std::string_view{r_string(L)}, "{},{},{}");
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{r_string(L)};
+
+    const auto res = scn::scan<f32, f32, f32>(val, "{},{},{}");
+    XR_ASSERT(res, res.error().msg(), Name, L, val);
 
     const auto [x, y, z] = res->values();
     return Fvector3{x, y, z};
@@ -130,8 +133,10 @@ Fvector3 CInifile::Sect::r_fvector3(gsl::czstring L) const
 
 Ivector2 CInifile::Sect::r_ivector2(gsl::czstring L) const
 {
-    const auto res = scn::scan<s32, s32>(std::string_view{r_string(L)}, "{},{}");
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{r_string(L)};
+
+    const auto res = scn::scan<s32, s32>(val, "{},{}");
+    XR_ASSERT(res, res.error().msg(), Name, L, val);
 
     const auto [x, y] = res->values();
     return Ivector2{x, y};
@@ -200,7 +205,7 @@ void insert_item(CInifile::Sect* tgt, const CInifile::Item& I)
 
 void CInifile::Load(IReader* F, gsl::czstring path, bool allow_dup_sections, const CInifile* override, bool root_level, gsl::czstring current_file)
 {
-    R_ASSERT(F);
+    XR_ASSERT(F != nullptr);
 
     string4096 str;
     string4096 str2;
@@ -209,18 +214,13 @@ void CInifile::Load(IReader* F, gsl::czstring path, bool allow_dup_sections, con
         auto I = DATA.find(Current->Name);
         if (I != DATA.end())
         {
-            if (allow_dup_sections)
+            XR_ASSERT(allow_dup_sections, "duplicate section found", Current->Name);
+
+            Sect* existing = (I->second);
+            for (auto& it : Current->Ordered_Data)
             {
-                Sect* existing = (I->second);
-                for (auto& it : Current->Ordered_Data)
-                {
-                    Item I = {it.first, it.second};
-                    insert_item(existing, I);
-                }
-            }
-            else
-            {
-                FATAL("Duplicate section '%s' found.", Current->Name.c_str());
+                Item I = {it.first, it.second};
+                insert_item(existing, I);
             }
 
             xr_delete(Current);
@@ -264,12 +264,9 @@ void CInifile::Load(IReader* F, gsl::czstring path, bool allow_dup_sections, con
 
         if (str[0] && (str[0] == '#') && strstr(str, "#include"))
         {
-            VERIFY(bReadOnly, "Allow for readonly mode only.");
+            XR_ASSERT(path != nullptr && path[0] != '\0' && bReadOnly);
 
-            string64 inc_name;
-            R_ASSERT(path && path[0]);
-
-            if (_GetItem(str, 1, inc_name, '"'))
+            if (string64 inc_name; _GetItem(str, 1, inc_name, '"') != nullptr)
             {
                 string_path fn, inc_path, folder;
                 strconcat(sizeof(fn), fn, path, inc_name);
@@ -278,11 +275,10 @@ void CInifile::Load(IReader* F, gsl::czstring path, bool allow_dup_sections, con
                 strcat_s(inc_path, folder);
 
                 const auto loadFile = [&](const string_path _fn) {
-                    IReader* I = FS.r_open(_fn);
-                    R_ASSERT(I, "Can't find include file:", _fn);
+                    const auto I = XR_ASSERT_VAL(absl::WrapUnique(FS.r_open(_fn)), "can't find include file", path, _fn);
+
                     I->skip_bom(_fn);
-                    Load(I, inc_path, allow_dup_sections, override, false, _fn);
-                    FS.r_close(I);
+                    Load(I.get(), inc_path, allow_dup_sections, override, false, _fn);
                 };
 
                 if (strstr(inc_name, "*.ltx"))
@@ -320,7 +316,7 @@ void CInifile::Load(IReader* F, gsl::czstring path, bool allow_dup_sections, con
             Current = xr_new<Sect>();
 
             // start new section
-            R_ASSERT(strchr(str, ']'), "Bad ini section found: ", str);
+            XR_ASSERT(std::strchr(str, ']') != nullptr, "bad ini section found", str);
 
             gsl::czstring inherited_names = strstr(str, "]:");
             if (inherited_names)
@@ -329,7 +325,6 @@ void CInifile::Load(IReader* F, gsl::czstring path, bool allow_dup_sections, con
 
                 if (bReadOnly)
                 {
-                    VERIFY(bReadOnly, "Allow for readonly mode only.");
                     const auto cnt = _GetItemCount(inherited_names);
 
                     for (gsl::index k{}; k < cnt; ++k)
@@ -425,7 +420,8 @@ bool CInifile::save_as(gsl::czstring new_fname)
         fName = xr_strdup(new_fname);
     }
 
-    R_ASSERT(fName && fName[0]);
+    XR_ASSERT(fName != nullptr && fName[0] != '\0');
+
     IWriter* F = FS.w_open_ex(fName);
     if (F)
     {
@@ -521,31 +517,25 @@ bool CInifile::section_exist(const shared_str& S) const { return section_exist(S
 
 CInifile::Sect& CInifile::r_section(gsl::czstring S) const
 {
-    R_ASSERT(S != nullptr && S[0] != '\0',
-             "Empty section (null\\'') passed into CInifile::r_section(). See info above ^, check your configs and 'call stack'."); //--#SM+#--
+    //--#SM+#--
+    XR_ASSERT(S != nullptr && S[0] != '\0', "", fName);
 
     char section[256];
     strcpy_s(section, S);
     _strlwr(section);
 
-    const auto I = DATA.find(section);
-    if (I == DATA.end())
-        FATAL("Can't open section '%s'", S);
-
-    return *I->second;
+    return *XR_ASSERT_VAL(DATA.find(section) != DATA.end(), "can't open section", fName, S)->second;
 }
 
 gsl::czstring CInifile::r_string(gsl::czstring S, gsl::czstring L) const
 {
-    if (S == nullptr || L == nullptr || S[0] == '\0' || L[0] == '\0') //--#SM+#-- [fix for one of "xrDebug - Invalid handler" error log]
+    //--#SM+#-- [fix for one of "xrDebug - Invalid handler" error log]
+    if (S == nullptr || L == nullptr || S[0] == '\0' || L[0] == '\0')
         Msg("!![ERROR] CInifile::r_string: S = [{}], L = [{}]", S, L);
 
-    Sect& I = r_section(S);
-    const auto A = I.Data.find(L);
-    if (A != I.Data.end())
-        return A->second.c_str();
+    auto& I = r_section(S);
 
-    FATAL("Can't find variable %s in [%s]", L, S);
+    return XR_ASSERT_VAL(I.Data.find(L) != I.Data.end(), "can't find variable", fName, S, L)->second.c_str();
 }
 
 shared_str CInifile::r_string_wb(gsl::czstring S, gsl::czstring L) const
@@ -570,98 +560,118 @@ shared_str CInifile::r_string_wb(gsl::czstring S, gsl::czstring L) const
 
 u8 CInifile::r_u8(gsl::czstring S, gsl::czstring L) const
 {
-    const auto res = scn::scan_int<u8>(r_string(S, L));
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{r_string(S, L)};
+
+    const auto res = scn::scan_int<u8>(val);
+    XR_ASSERT(res, res.error().msg(), fName, S, L, val);
 
     return res->value();
 }
 
 u8 CInifile::r_u8_hex(gsl::czstring sect, gsl::czstring line) const
 {
-    const auto res = scn::scan_int<u8>(r_string(sect, line), 16);
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{r_string(sect, line)};
+
+    const auto res = scn::scan_int<u8>(val, 16);
+    XR_ASSERT(res, res.error().msg(), fName, sect, line, val);
 
     return res->value();
 }
 
 u16 CInifile::r_u16(gsl::czstring S, gsl::czstring L) const
 {
-    const auto res = scn::scan_int<u16>(r_string(S, L));
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{r_string(S, L)};
+
+    const auto res = scn::scan_int<u16>(val);
+    XR_ASSERT(res, res.error().msg(), fName, S, L, val);
 
     return res->value();
 }
 
 u16 CInifile::r_u16_hex(gsl::czstring sect, gsl::czstring line) const
 {
-    const auto res = scn::scan_int<u16>(r_string(sect, line), 16);
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{r_string(sect, line)};
+
+    const auto res = scn::scan_int<u16>(val, 16);
+    XR_ASSERT(res, res.error().msg(), fName, sect, line, val);
 
     return res->value();
 }
 
 u32 CInifile::r_u32(gsl::czstring S, gsl::czstring L) const
 {
-    const auto res = scn::scan_int<u32>(r_string(S, L));
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{r_string(S, L)};
+
+    const auto res = scn::scan_int<u32>(val);
+    XR_ASSERT(res, res.error().msg(), fName, S, L, val);
 
     return res->value();
 }
 
 u32 CInifile::r_u32_hex(gsl::czstring sect, gsl::czstring line) const
 {
-    const auto res = scn::scan_int<u32>(r_string(sect, line), 16);
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{r_string(sect, line)};
+
+    const auto res = scn::scan_int<u32>(val, 16);
+    XR_ASSERT(res, res.error().msg(), fName, sect, line, val);
 
     return res->value();
 }
 
 s8 CInifile::r_s8(gsl::czstring S, gsl::czstring L) const
 {
-    const auto res = scn::scan_int<s8>(r_string(S, L));
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{r_string(S, L)};
+
+    const auto res = scn::scan_int<s8>(val);
+    XR_ASSERT(res, res.error().msg(), fName, S, L, val);
 
     return res->value();
 }
 
 s16 CInifile::r_s16(gsl::czstring S, gsl::czstring L) const
 {
-    const auto res = scn::scan_int<s16>(r_string(S, L));
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{r_string(S, L)};
+
+    const auto res = scn::scan_int<s16>(val);
+    XR_ASSERT(res, res.error().msg(), fName, S, L, val);
 
     return res->value();
 }
 
 s32 CInifile::r_s32(gsl::czstring S, gsl::czstring L) const
 {
-    const auto res = scn::scan_int<s32>(r_string(S, L));
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{r_string(S, L)};
+
+    const auto res = scn::scan_int<s32>(val);
+    XR_ASSERT(res, res.error().msg(), fName, S, L, val);
 
     return res->value();
 }
 
 float CInifile::r_float(gsl::czstring S, gsl::czstring L) const
 {
-    const auto res = scn::scan_value<f32>(std::string_view{r_string(S, L)});
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{r_string(S, L)};
+
+    const auto res = scn::scan_value<f32>(val);
+    XR_ASSERT(res, res.error().msg(), fName, S, L, val);
 
     return res->value();
 }
 
 Fcolor CInifile::r_fcolor(gsl::czstring S, gsl::czstring L) const
 {
-    if (const std::string_view line{r_string(S, L)}; std::ranges::count(line, ',') == 3)
+    if (const std::string_view val{r_string(S, L)}; std::ranges::count(val, ',') == 3)
     {
-        const auto res = scn::scan<f32, f32, f32, f32>(line, "{},{},{},{}");
-        R_ASSERT(res, res.error().msg());
+        const auto res = scn::scan<f32, f32, f32, f32>(val, "{},{},{},{}");
+        XR_ASSERT(res, res.error().msg(), fName, S, L, val);
 
         const auto [r, g, b, a] = res->values();
         return Fcolor{r, g, b, a};
     }
     else
     {
-        const auto res = scn::scan<f32, f32, f32>(line, "{},{},{}");
-        R_ASSERT(res, res.error().msg());
+        const auto res = scn::scan<f32, f32, f32>(val, "{},{},{}");
+        XR_ASSERT(res, res.error().msg(), fName, S, L, val);
 
         const auto [r, g, b] = res->values();
         return Fcolor{r, g, b, 1.0f};
@@ -670,18 +680,18 @@ Fcolor CInifile::r_fcolor(gsl::czstring S, gsl::czstring L) const
 
 u32 CInifile::r_color(gsl::czstring S, gsl::czstring L) const
 {
-    if (const std::string_view line{r_string(S, L)}; std::ranges::count(line, ',') == 3)
+    if (const std::string_view val{r_string(S, L)}; std::ranges::count(val, ',') == 3)
     {
-        const auto res = scn::scan<u8, u8, u8, u8>(line, "{},{},{},{}");
-        R_ASSERT(res, res.error().msg());
+        const auto res = scn::scan<u8, u8, u8, u8>(val, "{},{},{},{}");
+        XR_ASSERT(res, res.error().msg(), fName, S, L, val);
 
         const auto [r, g, b, a] = res->values();
         return color_rgba(r, g, b, a);
     }
     else
     {
-        const auto res = scn::scan<u8, u8, u8>(line, "{},{},{}");
-        R_ASSERT(res, res.error().msg());
+        const auto res = scn::scan<u8, u8, u8>(val, "{},{},{}");
+        XR_ASSERT(res, res.error().msg(), fName, S, L, val);
 
         const auto [r, g, b] = res->values();
         return color_rgba(r, g, b, 255);
@@ -690,8 +700,10 @@ u32 CInifile::r_color(gsl::czstring S, gsl::czstring L) const
 
 Ivector2 CInifile::r_ivector2(gsl::czstring S, gsl::czstring L) const
 {
-    const auto res = scn::scan<s32, s32>(std::string_view{r_string(S, L)}, "{},{}");
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{r_string(S, L)};
+
+    const auto res = scn::scan<s32, s32>(val, "{},{}");
+    XR_ASSERT(res, res.error().msg(), fName, S, L, val);
 
     const auto [x, y] = res->values();
     return Ivector2{x, y};
@@ -699,8 +711,10 @@ Ivector2 CInifile::r_ivector2(gsl::czstring S, gsl::czstring L) const
 
 Ivector3 CInifile::r_ivector3(gsl::czstring S, gsl::czstring L) const
 {
-    const auto res = scn::scan<s32, s32, s32>(std::string_view{r_string(S, L)}, "{},{},{}");
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{r_string(S, L)};
+
+    const auto res = scn::scan<s32, s32, s32>(val, "{},{},{}");
+    XR_ASSERT(res, res.error().msg(), fName, S, L, val);
 
     const auto [x, y, z] = res->values();
     return Ivector3{x, y, z};
@@ -708,8 +722,10 @@ Ivector3 CInifile::r_ivector3(gsl::czstring S, gsl::czstring L) const
 
 Ivector4 CInifile::r_ivector4(gsl::czstring S, gsl::czstring L) const
 {
-    const auto res = scn::scan<s32, s32, s32, s32>(std::string_view{r_string(S, L)}, "{},{},{},{}");
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{r_string(S, L)};
+
+    const auto res = scn::scan<s32, s32, s32, s32>(val, "{},{},{},{}");
+    XR_ASSERT(res, res.error().msg(), fName, S, L, val);
 
     const auto [x, y, z, w] = res->values();
     return Ivector4{x, y, z, w};
@@ -717,8 +733,10 @@ Ivector4 CInifile::r_ivector4(gsl::czstring S, gsl::czstring L) const
 
 Fvector2 CInifile::r_fvector2(gsl::czstring S, gsl::czstring L) const
 {
-    const auto res = scn::scan<f32, f32>(std::string_view{r_string(S, L)}, "{},{}");
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{r_string(S, L)};
+
+    const auto res = scn::scan<f32, f32>(val, "{},{}");
+    XR_ASSERT(res, res.error().msg(), fName, S, L, val);
 
     const auto [x, y] = res->values();
     return Fvector2{x, y};
@@ -726,8 +744,10 @@ Fvector2 CInifile::r_fvector2(gsl::czstring S, gsl::czstring L) const
 
 Fvector3 CInifile::r_fvector3(gsl::czstring S, gsl::czstring L) const
 {
-    const auto res = scn::scan<f32, f32, f32>(std::string_view{r_string(S, L)}, "{},{},{}");
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{r_string(S, L)};
+
+    const auto res = scn::scan<f32, f32, f32>(val, "{},{},{}");
+    XR_ASSERT(res, res.error().msg(), fName, S, L, val);
 
     const auto [x, y, z] = res->values();
     return Fvector3{x, y, z};
@@ -735,8 +755,10 @@ Fvector3 CInifile::r_fvector3(gsl::czstring S, gsl::czstring L) const
 
 Fvector4 CInifile::r_fvector4(gsl::czstring S, gsl::czstring L) const
 {
-    const auto res = scn::scan<f32, f32, f32, f32>(std::string_view{r_string(S, L)}, "{},{},{},{}");
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{r_string(S, L)};
+
+    const auto res = scn::scan<f32, f32, f32, f32>(val, "{},{},{},{}");
+    XR_ASSERT(res, res.error().msg(), fName, S, L, val);
 
     const auto [x, y, z, w] = res->values();
     return Fvector4{x, y, z, w};
@@ -787,13 +809,13 @@ void CInifile::w_clsid(gsl::czstring S, gsl::czstring L, CLASS_ID V)
 
 void CInifile::w_string(gsl::czstring S, gsl::czstring L, gsl::czstring V)
 {
-    R_ASSERT(!bReadOnly);
+    XR_ASSERT(!bReadOnly, "file is read-only", fName, S, L, V);
 
     // section
     char sect[256];
     _parse(sect, S);
     _strlwr(sect);
-    ASSERT_FMT(sect[0], "[%s]: wrong section name [%s]", std::source_location::current().function_name(), S);
+    XR_ASSERT(sect[0] != '\0', "invalid section name", fName, S, L, V);
 
     if (!section_exist(sect))
     {
@@ -808,7 +830,8 @@ void CInifile::w_string(gsl::czstring S, gsl::czstring L, gsl::czstring V)
     // parse line/value
     char line[256];
     _parse(line, L);
-    ASSERT_FMT(line[0], "[%s]: wrong param name [%s]", std::source_location::current().function_name(), L);
+    XR_ASSERT(line[0] != '\0', "invalid param name", fName, S, L, V);
+
     char value[256];
     _parse(value, V);
 
@@ -854,37 +877,28 @@ void CInifile::w_bool(gsl::czstring S, gsl::czstring L, bool V) { w_string(S, L,
 
 void CInifile::remove_line(gsl::czstring S, gsl::czstring L)
 {
-    // R_ASSERT(!bReadOnly);
+    if (!line_exist(S, L))
+        return;
 
-    if (line_exist(S, L))
-    {
-        Sect& data = r_section(S);
+    auto& data = r_section(S);
+    data.Data.erase(XR_ASSERT_VAL(data.Data.find(L) != data.Data.end(), "", fName, S, L));
 
-        auto A = data.Data.find(L);
-        R_ASSERT(A != data.Data.end());
-        data.Data.erase(A);
-
-        auto found = std::find_if(data.Ordered_Data.begin(), data.Ordered_Data.end(), [&](const auto& it) { return std::is_eq(xr_strcmp(it.first, L)); });
-        R_ASSERT(found != data.Ordered_Data.end());
-        data.Ordered_Data.erase(found);
-    }
+    const auto found =
+        XR_ASSERT_VAL(std::ranges::find_if(data.Ordered_Data, [L](const auto& it) { return std::is_eq(xr_strcmp(it.first, L)); }) != data.Ordered_Data.end(),
+                      "", fName, S, L);
+    data.Ordered_Data.erase(found);
 }
 
 void CInifile::remove_section(gsl::czstring S)
 {
-    // R_ASSERT(!bReadOnly);
+    if (!section_exist(S))
+        return;
 
-    if (section_exist(S))
-    {
-        const auto I = DATA.find(S);
-        R_ASSERT(I != DATA.end());
+    DATA.erase(XR_ASSERT_VAL(DATA.find(S) != DATA.end(), "", fName, S));
 
-        DATA.erase(I);
-
-        auto found = std::find_if(Ordered_DATA.begin(), Ordered_DATA.end(), [&](const auto& it) { return std::is_eq(xr_strcmp(it.first, S)); });
-        R_ASSERT(found != Ordered_DATA.end());
-        Ordered_DATA.erase(found);
-    }
+    const auto found = XR_ASSERT_VAL(
+        std::ranges::find_if(Ordered_DATA, [S](const auto& it) { return std::is_eq(xr_strcmp(it.first, S)); }) != Ordered_DATA.end(), "", fName, S);
+    Ordered_DATA.erase(found);
 }
 
 CInifile::Sect& CInifile::append_section(gsl::czstring name, Sect* base)

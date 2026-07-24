@@ -7,7 +7,7 @@
 class CBackend;
 class R_constant_setup;
 
-enum
+enum constant
 {
     RC_float = 0,
     RC_int = 1,
@@ -31,7 +31,7 @@ enum
     RC_4x4a // array: 4x4 matrix, transpose
 };
 
-enum : u32
+enum destination : u32
 {
     //	Don't change this since some code relies on magic numbers
     RC_dest_pixel = (1 << 0),
@@ -55,7 +55,8 @@ enum : u32
     RC_dest_geometry_cb_index_shift = 8,
 };
 
-enum //	Constant buffer index masks
+//	Constant buffer index masks
+enum index : u32
 {
     CB_BufferIndexMask = 0xF, //	Buffer index == 0..14
 
@@ -112,7 +113,7 @@ public:
         case RC_dest_hull: return hs;
         case RC_dest_domain: return ds;
         case RC_dest_compute: return cs;
-        default: FATAL("invalid enumeration for shader");
+        default: XR_PANIC("invalid shader constant destination", destination);
         }
     }
 
@@ -127,7 +128,7 @@ public:
         case RC_dest_hull: return hs;
         case RC_dest_domain: return ds;
         case RC_dest_compute: return cs;
-        default: FATAL("invalid enumeration for shader");
+        default: XR_PANIC("invalid shader constant destination", destination);
         }
     }
 
@@ -166,8 +167,6 @@ public:
     cb_table m_CBTable[R__NUM_CONTEXTS];
 
 private:
-    void fatal(LPCSTR s);
-
     [[nodiscard]] BOOL parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination);
     [[nodiscard]] BOOL parseResources(ID3DShaderReflection* pReflection, int ResNum, u32 destination);
 

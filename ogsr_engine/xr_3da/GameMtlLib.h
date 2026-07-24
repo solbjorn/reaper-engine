@@ -263,8 +263,9 @@ public:
     // game
     SGameMtlPair* GetMaterialPair(u16 i0, u16 i1) const
     {
-        const u32 mtlCount = materials.size();
-        R_ASSERT(i0 < mtlCount && i1 < mtlCount);
+        const auto mtlCount = materials.size();
+        XR_ASSERT(i0 < mtlCount && i1 < mtlCount, "", i0, i1, mtlCount);
+
         return material_pairs_rt[i1 * mtlCount + i0];
     }
 
@@ -279,12 +280,21 @@ public:
 
 #define GET_RANDOM(a_vector) (a_vector[Random.randI(a_vector.size())])
 
+#ifdef DEBUG
 #define CLONE_MTL_SOUND(_res_, _mtl_pair_, _a_vector_) \
     { \
-        VERIFY2(!(_mtl_pair_)->_a_vector_.empty(), (_mtl_pair_)->dbg_Name()); \
+        XR_ASSERT(!(_mtl_pair_)->_a_vector_.empty(), "", (_mtl_pair_)->dbg_Name()); \
         _res_.clone(GET_RANDOM((_mtl_pair_)->_a_vector_), st_Effect, sg_SourceType); \
     } \
     XR_MACRO_END()
+#else
+#define CLONE_MTL_SOUND(_res_, _mtl_pair_, _a_vector_) \
+    { \
+        XR_ASSERT(!(_mtl_pair_)->_a_vector_.empty()); \
+        _res_.clone(GET_RANDOM((_mtl_pair_)->_a_vector_), st_Effect, sg_SourceType); \
+    } \
+    XR_MACRO_END()
+#endif
 
 extern CGameMtlLibrary GMLib;
 

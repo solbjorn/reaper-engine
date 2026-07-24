@@ -145,7 +145,7 @@ private:
             data[11] = gsl::narrow_cast<u8>(value >> 24);
             break;
         }
-        default: NODEFAULT;
+        default: xr::unreachable();
         }
     }
 
@@ -172,12 +172,8 @@ public:
         case 1: return ((data[2] | (u32{data[3]} << 8) | (u32{data[4]} << 16) | (u32{data[5]} << 24)) >> 7) & 0x007fffff;
         case 2: return ((data[5] | (u32{data[6]} << 8) | (u32{data[7]} << 16) | (u32{data[8]} << 24)) >> 6) & 0x007fffff;
         case 3: return ((data[8] | (u32{data[9]} << 8) | (u32{data[10]} << 16) | (u32{data[11]} << 24)) >> 5) & 0x007fffff;
-        default: NODEFAULT;
+        default: xr::unreachable();
         }
-
-#ifdef DEBUG
-        return 0;
-#endif
     }
 
     [[nodiscard]] constexpr u32 light() const { return data[11] >> 4; }
@@ -190,12 +186,8 @@ public:
         case 1: return cover1;
         case 2: return cover2;
         case 3: return cover3;
-        default: NODEFAULT;
+        default: xr::unreachable();
         }
-
-#ifdef DEBUG
-        return std::numeric_limits<u8>::max();
-#endif
     }
 
     friend class CLevelGraph;

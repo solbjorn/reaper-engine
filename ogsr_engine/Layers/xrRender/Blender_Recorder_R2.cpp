@@ -39,7 +39,8 @@ void CBlender_Compile::r_Pass(LPCSTR _vs, LPCSTR _ps, bool bFog, BOOL bZtest, BO
 
 void CBlender_Compile::r_Constant(LPCSTR name, R_constant_setup* s)
 {
-    R_ASSERT(s);
+    XR_ASSERT(s != nullptr, "", name);
+
     ref_constant C = ctable.get(name);
     if (C)
         C->handler = s;

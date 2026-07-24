@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "dx103DFluidRenderer.h"
+
 #include "dx103DFluidBlenders.h"
 #include "../dx10BufferUtils.h"
 #include "../../xrRender/dxRenderDeviceRender.h"
@@ -105,9 +106,9 @@ void dx103DFluidRenderer::DestroyShaders()
 
 void dx103DFluidRenderer::CreateGridBox()
 {
-    CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pGridBoxVertexBuffer, dx103DFluidConsts::vertices.data(), sizeof(dx103DFluidConsts::vertices)));
+    XR_ASSERT(xr::hr(dx10BufferUtils::CreateVertexBuffer(&m_pGridBoxVertexBuffer, dx103DFluidConsts::vertices.data(), sizeof(dx103DFluidConsts::vertices))));
+    XR_ASSERT(xr::hr(dx10BufferUtils::CreateIndexBuffer(&m_pGridBoxIndexBuffer, dx103DFluidConsts::indices.data(), sizeof(dx103DFluidConsts::indices))));
 
-    CHK_DX(dx10BufferUtils::CreateIndexBuffer(&m_pGridBoxIndexBuffer, dx103DFluidConsts::indices.data(), sizeof(dx103DFluidConsts::indices)));
     HW.stats_manager.increment_stats(sizeof(dx103DFluidConsts::indices), enum_stats_buffer_type_index, D3DPOOL_MANAGED);
 
     // Define the input layout
@@ -125,7 +126,7 @@ void dx103DFluidRenderer::CreateScreenQuad()
     static constexpr std::array<Fvector, 4> XR_ALIGNED_DEFAULT svQuad{Fvector{-1.0f, 1.0f, 0.0f}, Fvector{1.0f, 1.0f, 0.0f}, Fvector{-1.0f, -1.0f, 0.0f},
                                                                       Fvector{1.0f, -1.0f, 0.0f}};
 
-    CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pQuadVertexBuffer, svQuad.data(), sizeof(svQuad)));
+    XR_ASSERT(xr::hr(dx10BufferUtils::CreateVertexBuffer(&m_pQuadVertexBuffer, svQuad.data(), sizeof(svQuad))));
     m_GeomQuadVertex.create(quadlayout, m_pQuadVertexBuffer, nullptr);
 }
 
@@ -155,7 +156,7 @@ void dx103DFluidRenderer::CreateJitterTexture()
     dataDesc.SysMemPitch = 256;
 
     ID3DTexture2D* NoiseTexture{};
-    CHK_DX(HW.pDevice->CreateTexture2D(&desc, &dataDesc, &NoiseTexture));
+    XR_ASSERT(xr::hr(HW.pDevice->CreateTexture2D(&desc, &dataDesc, &NoiseTexture)));
 
     m_JitterTexture._set(RImplementation.Resources->_CreateTexture("$user$NVjitterTex"));
     m_JitterTexture->surface_set(NoiseTexture);
@@ -215,8 +216,8 @@ void dx103DFluidRenderer::CreateHHGGTexture()
     dataDesc.pSysMem = converted;
     dataDesc.SysMemPitch = sizeof(converted);
 
-    ID3DTexture1D* HHGGTexture{};
-    CHK_DX(HW.pDevice->CreateTexture1D(&desc, &dataDesc, &HHGGTexture));
+    ID3DTexture1D* HHGGTexture;
+    XR_ASSERT(xr::hr(HW.pDevice->CreateTexture1D(&desc, &dataDesc, &HHGGTexture)));
 
     m_HHGGTexture._set(RImplementation.Resources->_CreateTexture("$user$NVHHGGTex"));
     m_HHGGTexture->surface_set(HHGGTexture);
@@ -419,25 +420,20 @@ void dx103DFluidRenderer::CalculateLighting(const dx103DFluidData& FluidData, Fo
     for (ISpatial* spatial : m_lstRenderables)
     {
         // Light
-        light* pLight = (light*)spatial->dcast_Light();
-        R_ASSERT(pLight);
-
+        const auto pLight = XR_ASSERT_VAL(smart_cast<const light*>(spatial->dcast_Light()) != nullptr);
         if (pLight->flags.bMoveable || pLight->flags.bHudMode)
             continue;
 
         float d = pLight->position.distance_to(Transform.c);
-
         float R = pLight->range + _max(size.x, _max(size.y, size.z));
         if (d >= R)
             continue;
 
         Fvector3 LightIntencity{pLight->color.r, pLight->color.g, pLight->color.b};
-
         float r = pLight->range;
         float a = clampr(1.f - d / (r + EPS), 0.f, 1.f) * (pLight->flags.bStatic ? 1.f : 2.f);
 
         LightIntencity.mul(a);
-
         LightData.m_vLightIntencity.add(LightIntencity);
     }
 }

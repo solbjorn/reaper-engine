@@ -41,23 +41,18 @@ TEMPLATE_SPECIALIZATION
 IC u64 CAbstractOperatorCondition::hash_value() const { return m_hash; }
 
 TEMPLATE_SPECIALIZATION
-IC bool CAbstractOperatorCondition::operator<(const COperatorCondition& _condition) const
+constexpr CAbstractOperatorCondition::ret_t CAbstractOperatorCondition::operator<=>(const COperatorCondition& _condition) const
 {
-    if (condition() < _condition.condition())
-        return (true);
-    if (condition() > _condition.condition())
-        return (false);
-    if (value() < _condition.value())
-        return (true);
-    return (false);
+    if (const auto ret = condition() <=> _condition.condition(); ret != ret_t::equal)
+        return ret;
+
+    return value() <=> _condition.value();
 }
 
 TEMPLATE_SPECIALIZATION
-IC bool CAbstractOperatorCondition::operator==(const COperatorCondition& _condition) const
+constexpr bool CAbstractOperatorCondition::operator==(const COperatorCondition& _condition) const
 {
-    if ((condition() == _condition.condition()) && (value() == _condition.value()))
-        return (true);
-    return (false);
+    return condition() == _condition.condition() && value() == _condition.value();
 }
 
 #undef TEMPLATE_SPECIALIZATION

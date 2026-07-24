@@ -101,13 +101,17 @@ DEFINE_VECTOR(shared_str, RStringVec, RStringVecIt);
 
 #define LogDbg Log
 #define MsgDbg Msg
-#define FuncDbg(...) __VA_ARGS__
 
 #define LOG_SECOND_THREAD_STATS
 
 #else // !_DEBUG && !OGSR_TOTAL_DBG
 
-#define LogDbg __noop
+#define LogDbg(...) \
+    do \
+    { \
+        if constexpr (false) \
+            Log(__VA_ARGS__); \
+    } while (0)
 
 #define MsgDbg(...) \
     do \
@@ -116,20 +120,7 @@ DEFINE_VECTOR(shared_str, RStringVec, RStringVecIt);
             Msg(__VA_ARGS__); \
     } while (0)
 
-#define FuncDbg __noop
-
 #endif // !_DEBUG && !OGSR_TOTAL_DBG
-
-#ifdef OGSR_TOTAL_DBG
-#define ASSERT_FMT_DBG ASSERT_FMT
-#else
-#define ASSERT_FMT_DBG(cond, ...) \
-    do \
-    { \
-        if (!(cond)) [[unlikely]] \
-            Msg(__VA_ARGS__); \
-    } while (0) // Вылета не будет, просто в лог напишем
-#endif
 
 #include "LocatorAPI.h"
 #include "FTimer.h"

@@ -45,8 +45,7 @@ void CInfoPortion::load_shared(LPCSTR)
     pXML->SetLocalRoot(pXML->GetRoot());
 
     // loading from XML
-    const auto pNode = pXML->NavigateToNode(id_to_index::tag_name, item_data.pos_in_file);
-    THROW3(pNode, "info_portion id=", item_data.id.c_str());
+    const auto pNode = XR_ASSERT_VAL(pXML->NavigateToNode(id_to_index::tag_name, item_data.pos_in_file), "", item_data.id);
 
     // список названий диалогов
     int dialogs_num = pXML->GetNodesNum(pNode, "dialog");
@@ -77,31 +76,19 @@ void CInfoPortion::load_shared(LPCSTR)
     int articles_num = pXML->GetNodesNum(pNode, "article");
 
     for (int i = 0; i < articles_num; ++i)
-    {
-        LPCSTR article_str_id = pXML->Read(pNode, "article", i, nullptr);
-        THROW(article_str_id);
-        info_data()->m_Articles.emplace_back(article_str_id);
-    }
+        info_data()->m_Articles.emplace_back(XR_ASSERT_VAL(pXML->Read(pNode, "article", i, nullptr) != nullptr));
 
     info_data()->m_ArticlesDisable.clear();
     articles_num = pXML->GetNodesNum(pNode, "article_disable");
 
     for (int i = 0; i < articles_num; ++i)
-    {
-        LPCSTR article_str_id = pXML->Read(pNode, "article_disable", i, nullptr);
-        THROW(article_str_id);
-        info_data()->m_ArticlesDisable.emplace_back(article_str_id);
-    }
+        info_data()->m_ArticlesDisable.emplace_back(XR_ASSERT_VAL(pXML->Read(pNode, "article_disable", i, nullptr) != nullptr));
 
     info_data()->m_GameTasks.clear();
     int task_num = pXML->GetNodesNum(pNode, "task");
 
     for (int i = 0; i < task_num; ++i)
-    {
-        LPCSTR task_str_id = pXML->Read(pNode, "task", i, nullptr);
-        THROW(task_str_id);
-        info_data()->m_GameTasks.emplace_back(task_str_id);
-    }
+        info_data()->m_GameTasks.emplace_back(XR_ASSERT_VAL(pXML->Read(pNode, "task", i, nullptr) != nullptr));
 }
 
 void CInfoPortion::InitXmlIdToIndex()

@@ -15,47 +15,40 @@ public:
     void import(NET_Packet& P)
     {
         data.clear();
+        std::ignore = P.r_begin(ID);
 
-        std::ignore = P.r_begin(ID); // VERIFY(M_EVENT==ID);
-        switch (ID)
+        switch (xr::msg{ID})
         {
-        case M_SPAWN: {
-            P.read_start();
-            //				timestamp = P->
-        }
-        break;
-        case M_EVENT: {
+        case xr::msg::M_SPAWN: P.read_start(); break;
+        case xr::msg::M_EVENT:
             P.r_u32(timestamp);
             P.r_u16(type);
             P.r_u16(destination);
-        }
-        break;
-        default: {
-            VERIFY(0);
-        }
-        break;
+            break;
+        default: xr::unreachable();
         }
 
-        u32 size = P.r_elapsed();
-        if (size)
+        if (const auto size = P.r_elapsed(); size > 0)
         {
             data.resize(size);
-            P.r(&*data.begin(), size);
+            P.r(data.data(), size);
         }
     }
+
     void n_export(NET_Packet& P)
     {
-        u16 ID = M_EVENT;
-        P.w_begin(ID);
+        P.w_begin(gsl::narrow<u16>(xr::msg::M_EVENT));
         P.w_u32(timestamp);
         P.w_u16(type);
         P.w_u16(destination);
-        if (data.size())
-            P.w(&*data.begin(), (u32)data.size());
+
+        if (!data.empty())
+            P.w(data.data(), data.size());
     }
+
     void implication(NET_Packet& P) const
     {
-        std::copy(data.begin(), data.end(), P.B.data);
+        std::ranges::copy(data, P.B.data);
         P.B.count = data.size();
         P.r_pos = 0;
     }

@@ -11,12 +11,15 @@ void CDetailManager::cache_Initialize()
     // Initialize cache-grid
     Slot* slt = cache_pool;
     for (u32 i = 0; i < dm_cache_line; i++)
+    {
         for (u32 j = 0; j < dm_cache_line; j++, slt++)
         {
             cache[i][j] = slt;
             cache_Task(j, i, slt);
         }
-    VERIFY(cache_Validate());
+    }
+
+    XR_DEBUG_ASSERT(cache_Validate());
 
     for (u32 _mz1 = 0; _mz1 < dm_cache1_line; _mz1++)
     {
@@ -32,10 +35,11 @@ void CDetailManager::cache_Initialize()
 
 CDetailManager::Slot* CDetailManager::cache_Query(int r_x, int r_z)
 {
-    int gx = w2cg_X(r_x + cache_cx);
-    VERIFY(gx >= 0 && u32(gx) < dm_cache_line);
-    int gz = w2cg_Z(r_z + cache_cz);
-    VERIFY(gz >= 0 && u32(gz) < dm_cache_line);
+    const auto gx = w2cg_X(r_x + cache_cx);
+    XR_ASSERT(gx >= 0 && gx < s64{dm_cache_line}, gx);
+    const auto gz = w2cg_Z(r_z + cache_cz);
+    XR_ASSERT(gz >= 0 && gz < s64{dm_cache_line}, gz);
+
     return cache[gz][gx];
 }
 
@@ -68,7 +72,7 @@ void CDetailManager::cache_Task(int gx, int gz, Slot* D)
 
     if (old_type != stPending)
     {
-        VERIFY(stPending == D->type);
+        XR_ASSERT(SlotType{D->type} == stPending);
         cache_task.push_back(D);
     }
 }
@@ -97,6 +101,7 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view)
     XR_TRACY_ZONE_SCOPED();
 
     bool bNeedMegaUpdate = (cache_cx != v_x) || (cache_cz != v_z);
+
     // *****	Cache shift
     while (cache_cx != v_x)
     {
@@ -112,7 +117,6 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view)
                 cache[z][dm_cache_line - 1] = S;
                 cache_Task(dm_cache_line - 1, z, S);
             }
-            // R_ASSERT	(cache_Validate());
         }
         else
         {
@@ -126,9 +130,9 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view)
                 cache[z][0] = S;
                 cache_Task(0, z, S);
             }
-            // R_ASSERT	(cache_Validate());
         }
     }
+
     while (cache_cz != v_z)
     {
         if (v_z > cache_cz)
@@ -143,7 +147,6 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view)
                 cache[0][x] = S;
                 cache_Task(x, 0, S);
             }
-            // R_ASSERT	(cache_Validate());
         }
         else
         {
@@ -157,7 +160,6 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view)
                 cache[dm_cache_line - 1][x] = S;
                 cache_Task(x, dm_cache_line - 1, S);
             }
-            // R_ASSERT	(cache_Validate());
         }
     }
 
@@ -167,9 +169,8 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view)
         while (!cache_task.empty())
         {
             // Decompress and remove task
-            const auto bestId = cache_task.size() - 1;
-            cache_Decompress(cache_task[bestId]);
-            std::ignore = cache_task.erase(bestId);
+            cache_Decompress(cache_task.back());
+            cache_task.pop_back();
         }
     }
     else
@@ -185,11 +186,10 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view)
         auto bestDistancesEnd = std::end(bestDistances);
         ptrdiff_t maxIdx = 0;
 
-        for (u32 i = 0, size = cache_task.size(); i < size; ++i)
+        for (auto [i, S] : std::views::enumerate(cache_task))
         {
             // Gain access to data
-            Slot* S = cache_task[i];
-            VERIFY(stPending == S->type);
+            XR_ASSERT(SlotType{S->type} == stPending);
 
             // Estimate
             Fvector C;
@@ -208,16 +208,15 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view)
         }
 
         // Because indexes become invalid after an erase, sort them and process in the reverse order to erase everything correctly
-        std::sort(bestIndexes, bestIndexes + dm_max_decompress);
+        std::ranges::sort(bestIndexes);
 
         for (int i = dm_max_decompress - 1; i >= 0; --i)
         {
-            const u32 bestId = bestIndexes[i];
-            if (bestId != invalidIndex)
+            if (const auto bestId = bestIndexes[i]; bestId != invalidIndex)
             {
                 // Decompress and remove task
                 cache_Decompress(cache_task[bestId]);
-                std::ignore = cache_task.erase(bestId);
+                cache_task.erase(cache_task.begin() + bestId);
             }
         }
     }

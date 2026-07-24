@@ -76,16 +76,8 @@ public:
 #endif
 
 protected:
-    const SCharacterProfile* data() const
-    {
-        VERIFY(inherited_shared::get_sd());
-        return inherited_shared::get_sd();
-    }
-    SCharacterProfile* data()
-    {
-        VERIFY(inherited_shared::get_sd());
-        return inherited_shared::get_sd();
-    }
+    const SCharacterProfile* data() const { return XR_ASSERT_VAL(inherited_shared::get_sd() != nullptr); }
+    SCharacterProfile* data() { return XR_ASSERT_VAL(inherited_shared::get_sd() != nullptr); }
 
     static void InitXmlIdToIndex();
 

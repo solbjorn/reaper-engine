@@ -4,8 +4,10 @@
 
 namespace
 {
-constexpr float RSQRTDIV2{0.70710678118654752440084436210485f};
-}
+constexpr f32 RSQRTDIV2{0.70710678118654752440084436210485f};
+// 120 is hard limit for lights
+constexpr f32 cone_limit = deg2rad(121.0f);
+} // namespace
 
 light::light() : ISpatial{g_SpatialSpace}
 {
@@ -42,8 +44,8 @@ light::light() : ISpatial{g_SpatialSpace}
     vis.visible = true;
     vis.pending = false;
 
-    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
-        svis[id].id = id;
+    for (auto [id, map] : std::views::enumerate(svis))
+        map.id = id;
 }
 
 light::~light()
@@ -56,13 +58,13 @@ light::~light()
     // remove from Lights_LastFrame
     for (auto& p_light : RImplementation.Lights_LastFrame)
     {
-        if (this == p_light)
-        {
-            for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
-                p_light->svis[id].resetoccq();
+        if (p_light != this)
+            continue;
 
-            p_light = nullptr;
-        }
+        for (auto& map : p_light->svis)
+            map.resetoccq();
+
+        p_light = nullptr;
     }
 
     if (vis.pending)
@@ -142,8 +144,8 @@ void light::set_cone(float angle)
 {
     if (fsimilar(cone, angle))
         return;
-    VERIFY(cone < deg2rad(121.f)); // 120 is hard limit for lights
-    cone = angle;
+
+    cone = XR_ASSERT_VAL(angle < cone_limit);
     spatial_move();
 }
 
@@ -163,8 +165,7 @@ void light::spatial_move()
     case IRender_Light::POINT: spatial.sphere.set(position, range); break;
     case IRender_Light::SPOT: {
         // minimal enclosing sphere around cone
-        VERIFY2(cone < deg2rad(121.f), "Too large light-cone angle. Maybe you have passed it in 'degrees'?");
-        if (cone >= PI_DIV_2)
+        if (XR_ASSERT_VAL(cone < cone_limit) >= PI_DIV_2)
         {
             // obtused-angled
             spatial.sphere.P.mad(position, direction, range);
@@ -315,9 +316,8 @@ void light::export_to(light_Package& package)
                     p_light = xr_new<light>();
             }
 
-            for (int f = 0; f < 6; f++)
+            for (auto [f, L] : std::views::enumerate(omnipart))
             {
-                light* L = omnipart[f];
                 Fvector R;
                 R.crossproduct(cmNorm[f], cmDir[f]);
                 L->set_type(IRender_Light::OMNIPART);

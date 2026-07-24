@@ -244,7 +244,7 @@ void CControlJump::select_next_anim_state()
     case eStatePrepareInMove: ctrl_data->global.set_motion(m_data.state_prepare_in_move.motion); break;
     case eStateGlide: ctrl_data->global.set_motion(m_data.state_glide.motion); break;
     case eStateGround: ctrl_data->global.set_motion(m_data.state_ground.motion); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     //---------------------------------------------------------------------------------------------------

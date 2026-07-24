@@ -249,17 +249,17 @@ void CStepManager::load_foot_bones(CInifile::Sect& data)
 
 void CStepManager::reload_foot_bones()
 {
+    static constexpr gsl::czstring sect{"foot_bones"};
+
     CInifile* ini = smart_cast<IKinematics*>(m_object->Visual())->LL_UserData();
-    if (ini && ini->section_exist("foot_bones"))
+    if (ini && ini->section_exist(sect))
     {
-        load_foot_bones(ini->r_section("foot_bones"));
+        load_foot_bones(ini->r_section(sect));
     }
     else
     {
-        if (!pSettings->line_exist(m_object->cNameSect().c_str(), "foot_bones"))
-            FATAL("section [foot_bones] not found in monster user_data");
-
-        load_foot_bones(pSettings->r_section(pSettings->r_string(m_object->cNameSect().c_str(), "foot_bones")));
+        XR_ASSERT(pSettings->line_exist(m_object->cNameSect().c_str(), sect), "section not found", m_object->cNameSect(), sect);
+        load_foot_bones(pSettings->r_section(pSettings->r_string(m_object->cNameSect().c_str(), sect)));
     }
 
     // проверка на соответсвие

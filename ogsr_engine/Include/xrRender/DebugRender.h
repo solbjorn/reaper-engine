@@ -34,7 +34,6 @@ public:
     virtual void ZEnable(bool bEnable) = 0;
     virtual void OnFrameEnd() = 0;
     virtual void SetShader(const debug_shader& shader) = 0;
-    virtual void SetAmbient(u32 colour) = 0;
 
     // Shaders
     virtual void SetDebugShader(dbgShaderHandle shdHandle) = 0;

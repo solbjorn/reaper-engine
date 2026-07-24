@@ -12,18 +12,20 @@ void CBlender_accum_direct_mask::Compile(CBlender_Compile& C)
 
     switch (C.iElement)
     {
-    case SE_MASK_SPOT: // spot or omni-part
+    case SE_MASK_SPOT:
+        // spot or omni-part
         C.r_Pass("accum_mask", "dumb", false, TRUE, FALSE);
         C.r_ColorWriteEnable(false, false, false, false);
         C.r_End();
         break;
-    case SE_MASK_POINT: // point
+    case SE_MASK_POINT:
+        // point
         C.r_Pass("accum_mask", "dumb", false, TRUE, FALSE);
         C.r_ColorWriteEnable(false, false, false, false);
         C.r_End();
         break;
-    case SE_MASK_DIRECT: // stencil mask for directional light
-        //	FVF::F_TL
+    case SE_MASK_DIRECT:
+        // stencil mask for directional light
         C.r_Pass("stub_notransform_t", "accum_sun_mask_nomsaa", false, FALSE, FALSE, TRUE, D3DBLEND_ZERO, D3DBLEND_ONE, TRUE, 1);
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_diffuse", r2_RT_albedo);
@@ -38,7 +40,7 @@ void CBlender_accum_direct_mask::Compile(CBlender_Compile& C)
 }
 
 CBlender_accum_direct_mask_msaa::CBlender_accum_direct_mask_msaa() { description.CLS = 0; }
-CBlender_accum_direct_mask_msaa::~CBlender_accum_direct_mask_msaa() {}
+CBlender_accum_direct_mask_msaa::~CBlender_accum_direct_mask_msaa() = default;
 
 //	TODO: DX10:	implement CBlender_accum_direct_mask::Compile
 void CBlender_accum_direct_mask_msaa::Compile(CBlender_Compile& C)
@@ -47,8 +49,10 @@ void CBlender_accum_direct_mask_msaa::Compile(CBlender_Compile& C)
 
     if (Name != nullptr)
     {
-        const auto res = scn::scan_int<s32>(Definition);
-        R_ASSERT(res, res.error().msg());
+        const std::string_view val{Definition};
+        const auto res = scn::scan_int<s32>(val);
+        XR_ASSERT(res, res.error().msg(), Name, val);
+
         RImplementation.m_MSAASample = res->value();
     }
     else
@@ -58,18 +62,20 @@ void CBlender_accum_direct_mask_msaa::Compile(CBlender_Compile& C)
 
     switch (C.iElement)
     {
-    case SE_MASK_SPOT: // spot or omni-part
+    case SE_MASK_SPOT:
+        // spot or omni-part
         C.r_Pass("accum_mask", "dumb", false, TRUE, FALSE);
         C.r_ColorWriteEnable(false, false, false, false);
         C.r_End();
         break;
-    case SE_MASK_POINT: // point
+    case SE_MASK_POINT:
+        // point
         C.r_Pass("accum_mask", "dumb", false, TRUE, FALSE);
         C.r_ColorWriteEnable(false, false, false, false);
         C.r_End();
         break;
-    case SE_MASK_DIRECT: // stencil mask for directional light
-        //	FVF::F_TL
+    case SE_MASK_DIRECT:
+        // stencil mask for directional light
         C.r_Pass("stub_notransform_t", "accum_sun_mask_msaa", false, FALSE, FALSE, TRUE, D3DBLEND_ZERO, D3DBLEND_ONE, TRUE, 1);
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_diffuse", r2_RT_albedo);

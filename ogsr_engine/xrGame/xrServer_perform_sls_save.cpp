@@ -23,7 +23,7 @@ void xrServer::SLS_Save(IWriter& fs)
         fs.w(P.B.data, P.B.count);
 
         // Update
-        P.w_begin(M_UPDATE);
+        P.w_begin(gsl::narrow<u16>(xr::msg::M_UPDATE));
         P.w_u16(E->ID);
         P.w_chunk_open8(position);
         E->UPDATE_Write(P);

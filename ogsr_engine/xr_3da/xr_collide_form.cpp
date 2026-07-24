@@ -14,7 +14,7 @@
 
 namespace
 {
-inline float DET(const Fmatrix& a)
+[[maybe_unused]] [[nodiscard]] constexpr f32 DET(const Fmatrix& a)
 {
     return ((a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) + a._13 * (a._21 * a._32 - a._22 * a._31)));
 }
@@ -36,7 +36,7 @@ void CCF_Skeleton::SElement::center(Fvector& center) const
     case SBoneShape::stBox: center.set(-b_IM.c.dotproduct(b_IM.i), -b_IM.c.dotproduct(b_IM.j), -b_IM.c.dotproduct(b_IM.k)); break;
     case SBoneShape::stSphere: center.set(s_sphere.P); break;
     case SBoneShape::stCylinder: center.set(c_cylinder.m_center); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 
@@ -66,8 +66,7 @@ IC bool RAYvsOBB(const Fmatrix& IM, const Fvector& b_hsize, const Fvector& S, co
         float d = PL.distance_to_sqr(SL);
         if (d < R * R)
         {
-            R = _sqrt(d);
-            VERIFY(R >= 0.f);
+            R = XR_ASSERT_VAL(_sqrt(d) >= 0.0f, "", d);
             return true;
         }
     }
@@ -78,7 +77,8 @@ IC bool RAYvsOBB(const Fmatrix& IM, const Fvector& b_hsize, const Fvector& S, co
 IC bool RAYvsSPHERE(const Fsphere& s_sphere, const Fvector& S, const Fvector& D, float& R, BOOL bCull)
 {
     Fsphere::ERP_Result rp_res = s_sphere.intersect(S, D, R);
-    VERIFY(R >= 0.f);
+    XR_ASSERT(R >= 0.0f);
+
     return ((rp_res == Fsphere::rpOriginOutside) || (!bCull && (rp_res == Fsphere::rpOriginInside)));
 }
 
@@ -86,7 +86,8 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const Fvector& S, const Fvect
 {
     // Actual test
     Fcylinder::ERP_Result rp_res = c_cylinder.intersect(S, D, R);
-    VERIFY(R >= 0.f);
+    XR_ASSERT(R >= 0.0f);
+
     return ((rp_res == Fcylinder::rpOriginOutside) || (!bCull && (rp_res == Fcylinder::rpOriginInside)));
 }
 
@@ -136,11 +137,11 @@ void CCF_Skeleton::BuildState()
         if (!element.valid())
             continue;
 
+        const Fmatrix& Mbone = K->LL_GetTransform(element.elem_id);
+        XR_DEBUG_ASSERT(DET(Mbone) > EPS, "", element.elem_id, dbg_object_full_dump_string(owner));
+
         SBoneShape& shape = K->LL_GetData(element.elem_id).shape;
         Fmatrix ME, T, TW;
-        const Fmatrix& Mbone = K->LL_GetTransform(element.elem_id);
-
-        VERIFY(DET(Mbone) > EPS, xr::format("0 scale bone matrix, {} \n{}", element.elem_id, dbg_object_full_dump_string(owner)));
 
         switch (element.type)
         {
@@ -204,7 +205,8 @@ void CCF_Skeleton::BuildTopLevel()
     bv_sphere.P.average(vis.sphere.P);
     bv_sphere.R += vis.sphere.R;
     bv_sphere.R *= 0.5f;
-    VERIFY(_valid(bv_sphere));
+
+    XR_ASSERT(_valid(bv_sphere));
 }
 
 void CCF_Skeleton::Calculate()

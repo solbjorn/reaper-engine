@@ -139,22 +139,17 @@ CPHSimpleCharacter::CPHSimpleCharacter() : jump_up_velocity{6.f}, m_max_velocity
     dVectorSetZero(m_safe_velocity);
 }
 
-void CPHSimpleCharacter::TestPathCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/)
+void CPHSimpleCharacter::TestPathCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl*, SGameMtl*)
 {
     do_colide = false;
-    CPHSimpleCharacter* ch{};
 
+    CPHSimpleCharacter* ch{nullptr};
     if (bo1)
-    {
         ch = static_cast<CPHSimpleCharacter*>(retrieveGeomUserData(c.geom.g1)->ph_object);
-    }
     else
-    {
         ch = static_cast<CPHSimpleCharacter*>(retrieveGeomUserData(c.geom.g2)->ph_object);
-    }
 
-    VERIFY(ch);
-    ch->b_side_contact = true;
+    XR_ASSERT_VAL(ch != nullptr)->b_side_contact = true;
 }
 
 void CPHSimpleCharacter::SetBox(const dVector3& sizes)
@@ -165,11 +160,8 @@ void CPHSimpleCharacter::SetBox(const dVector3& sizes)
         m_cyl_hight = 0.01f;
     const dReal k = 1.20f;
     dReal doun = m_radius * _sqrt(1.f - 1.f / k / k) / 2.f;
-    // m_geom_shell=dCreateCylinder(0,m_radius/k,m_cyl_hight+doun);
     dGeomCylinderSetParams(m_geom_shell, m_radius / k, m_cyl_hight + doun);
-    // m_wheel=dCreateSphere(0,m_radius);
     dGeomSphereSetRadius(m_wheel, m_radius);
-    // m_hat=dCreateSphere(0,m_radius/k);
     dGeomSphereSetRadius(m_hat, m_radius / k);
 
     dGeomSetPosition(m_hat, 0.f, m_cyl_hight, 0.f);
@@ -177,7 +169,6 @@ void CPHSimpleCharacter::SetBox(const dVector3& sizes)
 
     float test_radius = m_radius * 2.f;
     float test_height = test_radius + m_radius / 2.f;
-    // m_cap=dCreateSphere(0,test_radius);
     dGeomSphereSetRadius(m_cap, test_radius);
     dGeomSetPosition(m_cap, 0.f, test_height, 0.f);
 }
@@ -296,7 +287,8 @@ void CPHSimpleCharacter::Create(dVector3 sizes)
 
 void CPHSimpleCharacter::SwitchOFFInitContact()
 {
-    VERIFY(b_exist);
+    XR_ASSERT(b_exist);
+
     dGeomUserDataSetPhObject(m_wheel, nullptr);
     dGeomUserDataSetPhObject(m_geom_shell, nullptr);
     dGeomUserDataSetPhObject(m_hat, nullptr);
@@ -309,7 +301,8 @@ void CPHSimpleCharacter::SwitchOFFInitContact()
 
 void CPHSimpleCharacter::SwitchInInitContact()
 {
-    VERIFY(b_exist);
+    XR_ASSERT(b_exist);
+
     dGeomUserDataSetPhObject(m_wheel, (CPHObject*)this);
     dGeomUserDataSetPhObject(m_geom_shell, (CPHObject*)this);
     dGeomUserDataSetPhObject(m_hat, (CPHObject*)this);
@@ -319,10 +312,13 @@ void CPHSimpleCharacter::Destroy()
 {
     if (!b_exist)
         return;
+
+    XR_ASSERT(ph_world != nullptr);
+    XR_ASSERT(!ph_world->Processing() && !ph_world->IsFreezed(), "can't destroy physics character when processing or frozen", ph_world->Processing(),
+              ph_world->IsFreezed());
+    XR_ASSERT(!CPHObject::IsFreezed(), "can't destroy frozen physics character");
+
     b_exist = false;
-    R_ASSERT2(!ph_world->Processing(), "can not deactivate physics character shell during physics processing!!!"); // if(ph_world)
-    R_ASSERT2(!ph_world->IsFreezed(), "can not deactivate physics character when ph world is freezed!!!");
-    R_ASSERT2(!CPHObject::IsFreezed(), "can not deactivate freezed !!!");
     m_elevator_state.Deactivate();
 
     spatial_unregister();
@@ -494,11 +490,14 @@ void CPHSimpleCharacter::PhDataUpdate(dReal)
 
     if (!fis_zero(l_air))
         dBodyAddForce(m_body, -linear_velocity[0] * l_air, -linear_velocity[1] * l_air, -linear_velocity[2] * l_air);
+
     m_last_move.sub(cast_fv(dBodyGetPosition(m_body)), m_last_move);
     m_last_move.mul(1.f / fixed_step);
-    VERIFY2(dBodyStateValide(m_body), "WRONG BODYSTATE IN PhDataUpdate");
+    XR_DEBUG_ASSERT(dBodyStateValide(m_body));
+
     if (PhOutOfBoundaries(cast_fv(dBodyGetPosition(m_body))))
         Disable();
+
     VERIFY_BOUNDARIES(cast_fv(dBodyGetPosition(m_body)), phBoundaries, PhysicsRefObject());
     m_body_interpolation.UpdatePositions();
 }
@@ -961,15 +960,17 @@ void CPHSimpleCharacter::IPosition(Fvector& pos)
         m_body_interpolation.InterpolatePosition(pos);
         pos.y -= m_radius;
     }
+
     VERIFY_BOUNDARIES(pos, phBoundaries, PhysicsRefObject());
-    return;
 }
 
 void CPHSimpleCharacter::SetPosition(Fvector pos)
 {
-    VERIFY_BOUNDARIES(pos, phBoundaries, PhysicsRefObject());
     if (!b_exist)
         return;
+
+    VERIFY_BOUNDARIES(pos, phBoundaries, PhysicsRefObject());
+
     m_death_position[0] = pos.x;
     m_death_position[1] = pos.y + m_radius;
     m_death_position[2] = pos.z;
@@ -1008,12 +1009,13 @@ void CPHSimpleCharacter::GetPosition(Fvector& vpos)
 
     VERIFY_BOUNDARIES(vpos, phBoundaries, PhysicsRefObject());
 }
+
 void CPHSimpleCharacter::GetPreviousPosition(Fvector& pos)
 {
-    VERIFY(b_exist);
-    VERIFY(!ph_world->Processing());
+    XR_ASSERT(b_exist && !ph_world->Processing());
     m_body_interpolation.GetPosition(pos, 0);
 }
+
 void CPHSimpleCharacter::GetVelocity(Fvector& vvel)
 {
     if (!b_exist)
@@ -1021,15 +1023,16 @@ void CPHSimpleCharacter::GetVelocity(Fvector& vvel)
         vvel.set(m_safe_velocity[0], m_safe_velocity[1], m_safe_velocity[2]);
         return;
     }
+
     const dReal* vel = dBodyGetLinearVel(m_body);
     dVectorSet((dReal*)&vvel, vel);
-    return;
 }
 
 void CPHSimpleCharacter::SetVelocity(Fvector vel)
 {
     if (!b_exist)
         return;
+
     float sq_mag = vel.square_magnitude();
     if (sq_mag > default_l_limit * default_l_limit)
     {
@@ -1179,7 +1182,7 @@ void CPHSimpleCharacter::SafeAndLimitVelocity()
                     dBodySetLinearVel(m_body, linear_velocity[0] / f, linear_velocity[1], linear_velocity[2] / f); /// f
                 else
                     CutVelocity(l_limit, 0.f);
-                // dBodySetLinearVel(m_body,linear_velocity[0]/f,linear_velocity[1]/f,linear_velocity[2]/f);///f
+
                 if (is_control && !b_lose_control)
                 {
                     dBodySetPosition(m_body, m_safe_position[0] + linear_velocity[0] * fixed_step, m_safe_position[1] + linear_velocity[1] * fixed_step,
@@ -1188,7 +1191,9 @@ void CPHSimpleCharacter::SafeAndLimitVelocity()
                 }
             }
             else
+            {
                 dBodySetLinearVel(m_body, 0, 0, 0);
+            }
         }
     }
     else
@@ -1217,7 +1222,8 @@ void CPHSimpleCharacter::SetObjectContactCallback(ObjectContactCallbackFun* call
 
 void CPHSimpleCharacter::SetObjectContactCallbackData(void* data)
 {
-    VERIFY(b_exist);
+    XR_ASSERT(b_exist);
+
     dGeomUserDataSetCallbackData(m_hat, data);
     dGeomUserDataSetCallbackData(m_geom_shell, data);
     dGeomUserDataSetCallbackData(m_wheel, data);
@@ -1225,7 +1231,7 @@ void CPHSimpleCharacter::SetObjectContactCallbackData(void* data)
 
 void CPHSimpleCharacter::AddObjectContactCallback(ObjectContactCallbackFun* callback)
 {
-    VERIFY(b_exist);
+    XR_ASSERT(b_exist);
 
     dGeomUserDataAddObjectContactCallback(m_hat, callback);
     dGeomUserDataAddObjectContactCallback(m_geom_shell, callback);
@@ -1233,9 +1239,10 @@ void CPHSimpleCharacter::AddObjectContactCallback(ObjectContactCallbackFun* call
 }
 void CPHSimpleCharacter::RemoveObjectContactCallback(ObjectContactCallbackFun* callback)
 {
-    VERIFY(m_object_contact_callback != callback);
     if (!b_exist)
         return;
+
+    XR_ASSERT(m_object_contact_callback != callback);
 
     dGeomUserDataRemoveObjectContactCallback(m_hat, callback);
     dGeomUserDataRemoveObjectContactCallback(m_geom_shell, callback);
@@ -1244,23 +1251,6 @@ void CPHSimpleCharacter::RemoveObjectContactCallback(ObjectContactCallbackFun* c
 
 void CPHSimpleCharacter::Disable()
 {
-    // if(is_contact&&!is_control&&!b_lose_ground)
-    {
-        dGeomGetUserData(m_wheel)->pushing_neg = false;
-        dGeomGetUserData(m_wheel)->pushing_b_neg = false;
-        dGeomGetUserData(m_geom_shell)->pushing_neg = false;
-        dGeomGetUserData(m_geom_shell)->pushing_b_neg = false;
-        dGeomGetUserData(m_hat)->pushing_neg = false;
-        dGeomGetUserData(m_hat)->pushing_b_neg = false;
-        dGeomGetUserData(m_cap)->pushing_neg = false;
-        dGeomGetUserData(m_cap)->pushing_b_neg = false;
-        CPHCharacter::Disable();
-    }
-}
-void CPHSimpleCharacter::Enable()
-{
-    if (!b_exist)
-        return;
     dGeomGetUserData(m_wheel)->pushing_neg = false;
     dGeomGetUserData(m_wheel)->pushing_b_neg = false;
     dGeomGetUserData(m_geom_shell)->pushing_neg = false;
@@ -1269,8 +1259,27 @@ void CPHSimpleCharacter::Enable()
     dGeomGetUserData(m_hat)->pushing_b_neg = false;
     dGeomGetUserData(m_cap)->pushing_neg = false;
     dGeomGetUserData(m_cap)->pushing_b_neg = false;
+
+    CPHCharacter::Disable();
+}
+
+void CPHSimpleCharacter::Enable()
+{
+    if (!b_exist)
+        return;
+
+    dGeomGetUserData(m_wheel)->pushing_neg = false;
+    dGeomGetUserData(m_wheel)->pushing_b_neg = false;
+    dGeomGetUserData(m_geom_shell)->pushing_neg = false;
+    dGeomGetUserData(m_geom_shell)->pushing_b_neg = false;
+    dGeomGetUserData(m_hat)->pushing_neg = false;
+    dGeomGetUserData(m_hat)->pushing_b_neg = false;
+    dGeomGetUserData(m_cap)->pushing_neg = false;
+    dGeomGetUserData(m_cap)->pushing_b_neg = false;
+
     CPHCharacter::Enable();
 }
+
 void CPHSimpleCharacter::EnableObject(CPHObject* obj)
 {
     dGeomGetUserData(m_wheel)->pushing_neg = false;
@@ -1281,13 +1290,16 @@ void CPHSimpleCharacter::EnableObject(CPHObject* obj)
     dGeomGetUserData(m_hat)->pushing_b_neg = false;
     dGeomGetUserData(m_cap)->pushing_neg = false;
     dGeomGetUserData(m_cap)->pushing_b_neg = false;
+
     CPHCharacter::EnableObject(obj);
 }
+
 void CPHSimpleCharacter::SetWheelContactCallback(ObjectContactCallbackFun* callback)
 {
-    VERIFY(b_exist);
+    XR_ASSERT(b_exist);
     dGeomUserDataSetObjectContactCallback(m_wheel, callback);
 }
+
 void CPHSimpleCharacter::SetStaticContactCallBack(ContactCallbackFun* callback)
 {
     if (!b_exist)
@@ -1306,27 +1318,15 @@ u16 CPHSimpleCharacter::RetriveContactBone()
     m_collision_damage_info.HitDir(dir);
     collide::ray_defs Q(m_collision_damage_info.HitPos(), dir, m_radius, CDB::OPT_ONLYNEAREST | CDB::OPT_CULL,
                         collide::rqtBoth); // CDB::OPT_ONLYFIRST CDB::OPT_ONLYNEAREST
+
     RQR.r_clear();
     u16 contact_bone = 0;
-    CObject* object = smart_cast<CObject*>(m_phys_ref_object);
-    R_ASSERT(object != nullptr);
-    VERIFY(!fis_zero(Q.dir.square_magnitude()));
+    XR_DEBUG_ASSERT(!fis_zero(Q.dir.square_magnitude()));
 
-    if (object->collidable.model->RayQuery(RQR, Q))
+    if (auto object = XR_ASSERT_VAL(smart_cast<CObject*>(m_phys_ref_object) != nullptr); object->collidable.model->RayQuery(RQR, Q))
     {
         collide::rq_result* R = RQR.r_begin();
         contact_bone = (u16)R->element;
-        // int y=result.r_count();
-        // for (int k=0; k<y; ++k)
-        //{
-        //	ICollisionForm::RayQuery::Result* R = result.r_begin()+k;
-        //	if(is_Door(R->element,i))
-        //	{
-        //		i->second.Use();
-        //		return false;
-
-        //	}
-        //}
     }
     else
     {
@@ -1352,7 +1352,7 @@ u16 CPHSimpleCharacter::RetriveContactBone()
             }
         }
 
-        VERIFY(std::isfinite(sq_dist));
+        XR_DEBUG_ASSERT(std::isfinite(sq_dist));
     }
 
     return contact_bone;
@@ -1632,29 +1632,26 @@ u16 CPHSimpleCharacter::DamageInitiatorID() const
 
 CObject* CPHSimpleCharacter::DamageInitiator() const
 {
-    VERIFY(m_phys_ref_object);
+    XR_ASSERT(m_phys_ref_object != nullptr);
+
     if (m_collision_damage_info.m_dmc_type == SCollisionDamageInfo::ctStatic)
         return (CObject*)(m_phys_ref_object);
-    u16 initiator_id = DamageInitiatorID();
-    VERIFY(initiator_id != u16(-1));
+
+    const u16 initiator_id = XR_ASSERT_VAL(DamageInitiatorID() != std::numeric_limits<u16>::max());
     if (initiator_id == m_phys_ref_object->ID())
         return static_cast<CObject*>(m_phys_ref_object);
-    else
-    {
-        return Level().Objects.net_Find(initiator_id);
-    }
+
+    return Level().Objects.net_Find(initiator_id);
 }
 
 CPHSimpleCharacter::SCollisionDamageInfo::SCollisionDamageInfo() { Construct(); }
+
 void CPHSimpleCharacter::SCollisionDamageInfo::Construct()
 {
     m_contact_velocity = 0.f;
     SCollisionDamageInfo::Reinit();
-    // m_damege_contact;
-
-    // m_dmc_signum;
-    // m_dmc_type;
 }
+
 float CPHSimpleCharacter::SCollisionDamageInfo::ContactVelocity() const
 {
     dReal ret = m_contact_velocity;
@@ -1667,27 +1664,12 @@ void CPHSimpleCharacter::SCollisionDamageInfo::HitDir(Fvector& dir) const
     dir.set(m_damege_contact.geom.normal[0] * m_dmc_signum, m_damege_contact.geom.normal[1] * m_dmc_signum, m_damege_contact.geom.normal[2] * m_dmc_signum);
 }
 
-// u16 CPHSimpleCharacter::SCollisionDamageInfo::DamageInitiatorID() const
-//{
-//	//if(!m_object)
-//				//return u16(-1);
-//	CPhysicsShellHolder* object =static_cast<CPhysicsShellHolder*>(Level().Objects.net_Find(m_obj_id));
-//	if(!object)return u16(-1);
-//	IDamageSource* ds=m_object->cast_IDamageSource();
-//	if(ds) return ds->Initiator();
-//	return u16(-1);
-// }
-
 void CPHSimpleCharacter::SCollisionDamageInfo::Reinit()
 {
-    // m_damege_contact;
-
     m_obj_id = std::numeric_limits<u16>::max();
     m_hit_callback = nullptr;
     m_contact_velocity = 0;
     is_initiated = false;
-    // float					m_dmc_signum;
-    // enum{ctStatic,ctObject}	m_dmc_type;
 }
 
 bool CPHSimpleCharacter::GetAndResetInitiated()
@@ -1706,17 +1688,8 @@ void CPHSimpleCharacter::GetSmothedVelocity(Fvector& vvel)
     }
 
     vvel.set(m_last_move);
-
-    // if(IsEnabled()&&m_count<m_frames)
-    //{
-    //	vvel.set(m_mean_velocity.sum);
-    //	vvel.mul(1.f/(m_frames-m_count)/fixed_step);
-    // }
-    // else
-    //{
-    //	GetSavedVelocity(vvel);
-    // }
 }
+
 ALife::EHitType CPHSimpleCharacter::HitType() const
 {
     if (GMLib.GetMaterialByIdx(LastMaterialIDX())->Flags.test(SGameMtl::flInjurious))
@@ -1724,6 +1697,7 @@ ALife::EHitType CPHSimpleCharacter::HitType() const
     else
         return ALife::eHitTypeStrike;
 } //
+
 CElevatorState* CPHSimpleCharacter::ElevatorState() { return &m_elevator_state; }
 
 ICollisionHitCallback* CPHSimpleCharacter::HitCallback() const { return m_collision_damage_info.m_hit_callback; }
@@ -1762,7 +1736,8 @@ void CPHSimpleCharacter::TestRestrictorContactCallbackFun(bool& do_colide, bool 
     if (!actor_character)
         return;
 
-    VERIFY(static_cast<CPHSimpleCharacter*>(retrieveGeomUserData(g_this)->ph_object));
+    XR_DEBUG_ASSERT(static_cast<CPHSimpleCharacter*>(retrieveGeomUserData(g_this)->ph_object) != nullptr);
+
     save_max(restrictor_depth, c.geom.depth);
     do_colide = true;
     c.surface.mu = 0.f;
@@ -1770,14 +1745,14 @@ void CPHSimpleCharacter::TestRestrictorContactCallbackFun(bool& do_colide, bool 
 
 bool CPHSimpleCharacter::UpdateRestrictionType(CPHCharacter* ach)
 {
-    VERIFY(ph_world);
-    VERIFY(ph_world->Exist());
     if (m_restriction_type == m_new_restriction_type)
         return true;
+
+    XR_ASSERT(ph_world != nullptr && ph_world->Exist());
+
     ach->Enable();
     Enable();
     restrictor_depth = 0.f;
-    // bool state=IsEnabled();
 
     ph_world->Freeze();
     ERestrictionType old = m_restriction_type;
@@ -1786,14 +1761,15 @@ bool CPHSimpleCharacter::UpdateRestrictionType(CPHCharacter* ach)
     UnFreeze();
     ph_world->StepTouch();
     ach->SwitchOFFInitContact();
+
     if (restrictor_depth < resolve_depth)
     {
         RemoveObjectContactCallback(TestRestrictorContactCallbackFun);
         ph_world->UnFreeze();
         ach->SwitchInInitContact();
-        // if(!state)Disable();
         return true;
     }
+
     u16 num_steps = 2 * (u16)iCeil(restrictor_depth / resolve_depth);
     for (u16 i = 0; num_steps > i; ++i)
     {

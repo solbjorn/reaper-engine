@@ -143,8 +143,9 @@ void CCar::SDoor::Init()
     case 0: door_dir_in_door.set(door_dir_sign, 0.f, 0.f); break;
     case 1: door_dir_in_door.set(0.f, door_dir_sign, 0.f); break;
     case 2: door_dir_in_door.set(0.f, 0.f, door_dir_sign); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
+
     ///////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////
     ///////////////////////////define positive open///////////////////////////////////
@@ -203,7 +204,7 @@ void CCar::SDoor::Open()
     case opened:
     case opening:
     case broken: break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 
@@ -224,7 +225,7 @@ void CCar::SDoor::Close()
         break;
     case closed:
     case closing: break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 

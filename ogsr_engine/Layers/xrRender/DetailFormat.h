@@ -85,11 +85,8 @@ public:
         case 1: return (u8)id1;
         case 2: return (u8)id2;
         case 3: return (u8)id3;
-        default: NODEFAULT;
+        default: xr::unreachable();
         }
-#ifdef DEBUG
-        return 0;
-#endif
     }
 
     void w_id(u32 idx, u8 val)
@@ -100,7 +97,7 @@ public:
         case 1: id1 = val; break;
         case 2: id2 = val; break;
         case 3: id3 = val; break;
-        default: NODEFAULT;
+        default: xr::unreachable();
         }
     }
 };

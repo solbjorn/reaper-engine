@@ -137,17 +137,17 @@ void CLevelChanger::feel_touch_new(CObject* tpObject)
         }
 
         NET_Packet p;
-        p.w_begin(M_CHANGE_LEVEL);
+        p.w_begin(gsl::narrow<u16>(xr::msg::M_CHANGE_LEVEL));
         p.w(&m_game_vertex_id, sizeof(m_game_vertex_id));
         p.w(&m_level_vertex_id, sizeof(m_level_vertex_id));
         p.w_vec3(m_position);
         p.w_vec3(m_angles);
+
         Level().Send(p, net_flags(TRUE));
         return;
     }
 
     ChangeLevel();
-
     m_entrance_time = Device.fTimeGlobal;
 }
 

@@ -128,7 +128,7 @@ struct CSaver
     }
 
     template <typename T, int size>
-    IC static void save_data(const svector<T, size>& data, M& stream, const P& p)
+    IC static void save_data(const std::inplace_vector<T, size>& data, M& stream, const P& p)
     {
         stream.w_u32((u32)data.size());
         auto I = data.begin();

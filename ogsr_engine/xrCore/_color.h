@@ -264,14 +264,14 @@ struct XR_TRIVIAL Fcolor
     // Normalize
     constexpr Fcolor& normalize_rgb() noexcept
     {
-        VERIFY(magnitude_sqr_rgb() > EPS_S);
+        XR_DEBUG_ASSERT(magnitude_sqr_rgb() > EPS_S);
 
         return mul_rgb(1.f / magnitude_rgb());
     }
 
     constexpr Fcolor& normalize_rgb(const Fcolor& c) noexcept
     {
-        VERIFY(c.magnitude_sqr_rgb() > EPS_S);
+        XR_DEBUG_ASSERT(c.magnitude_sqr_rgb() > EPS_S);
 
         return mul_rgb(c, 1.f / c.magnitude_rgb());
     }
@@ -301,7 +301,10 @@ struct XR_TRIVIAL Fcolor
         return fsimilar(r, v.r, E) && fsimilar(g, v.g, E) && fsimilar(b, v.b, E) && fsimilar(a, v.a, E);
     }
 
-    [[nodiscard]] constexpr bool similar_rgb(const Fcolor& v, f32 E = EPS_L) const noexcept { return fsimilar(r, v.r, E) && fsimilar(g, v.g, E) && fsimilar(b, v.b, E); }
+    [[nodiscard]] constexpr bool similar_rgb(const Fcolor& v, f32 E = EPS_L) const noexcept
+    {
+        return fsimilar(r, v.r, E) && fsimilar(g, v.g, E) && fsimilar(b, v.b, E);
+    }
 };
 XR_TRIVIAL_ASSERT(Fcolor);
 

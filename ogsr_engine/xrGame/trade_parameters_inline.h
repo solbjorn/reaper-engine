@@ -87,10 +87,7 @@ IC void CTradeParameters::process(_action_type type, CInifile& ini_file, const s
             continue;
         }
 
-        const auto cnt = _GetItemCount(I->second.c_str());
-        ASSERT_FMT(cnt >= 2, "[%s]: invalid parameters in section [%s]: [%s] = [%s]", std::source_location::current().function_name(), section.c_str(),
-                   I->first.c_str(), I->second.c_str());
-
+        const auto cnt = XR_ASSERT_VAL(_GetItemCount(I->second.c_str()) >= 2, "invalid parameters in section", section, I->first, I->second);
         string256 temp;
         f32 from, to, min_condition;
 

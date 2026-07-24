@@ -247,9 +247,8 @@ tmc::task<bool> CDemoPlay::ProcessCam(SCamEffectorInfo& info)
 
         float ip;
         float p = fStartTime / fSpeed;
-        float t = modff(p, &ip);
+        float t = XR_ASSERT_VAL(modff(p, &ip) >= 0.0f);
         int frame = iFloor(ip);
-        VERIFY(t >= 0);
 
         if (frame >= m_count)
         {

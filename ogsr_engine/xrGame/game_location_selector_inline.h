@@ -53,7 +53,7 @@ IC void CGameLocationSelector::select_location(const _vertex_id_type start_verte
         m_failed = m_failed && (start_vertex_id == dest_vertex_id);
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 

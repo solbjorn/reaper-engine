@@ -2,7 +2,8 @@
 
 #include "stream_reader.h"
 
-void CMapStreamReader::construct(const HANDLE& file_mapping_handle, gsl::index start_offset, gsl::index file_size, gsl::index archive_size, gsl::index window_size)
+void CMapStreamReader::construct(const HANDLE& file_mapping_handle, gsl::index start_offset, gsl::index file_size, gsl::index archive_size,
+                                 gsl::index window_size)
 {
     m_file_mapping_handle = file_mapping_handle;
     m_start_offset = start_offset;
@@ -17,17 +18,16 @@ void CMapStreamReader::destroy() { unmap(); }
 
 void CMapStreamReader::map(gsl::index new_offset)
 {
-    VERIFY(new_offset <= m_file_size);
-    m_current_offset_from_start = new_offset;
+    m_current_offset_from_start = XR_ASSERT_VAL(new_offset <= m_file_size);
 
     const gsl::index granularity = FS.dwAllocGranularity;
     gsl::index start_offset = m_start_offset + new_offset;
     const gsl::index pure_start_offset = start_offset;
     start_offset = (start_offset / granularity) * granularity;
 
-    VERIFY(pure_start_offset >= start_offset);
-    const gsl::index pure_end_offset = m_window_size + pure_start_offset;
+    const gsl::index pure_end_offset = m_window_size + XR_ASSERT_VAL(pure_start_offset >= start_offset);
     gsl::index end_offset = pure_end_offset / granularity;
+
     if (pure_end_offset % granularity)
         ++end_offset;
 
@@ -37,8 +37,8 @@ void CMapStreamReader::map(gsl::index new_offset)
 
     m_current_window_size = end_offset - start_offset;
     auto ustart = gsl::narrow_cast<size_t>(start_offset);
-    m_current_map_view_of_file = static_cast<const std::byte*>(
-        MapViewOfFile(m_file_mapping_handle, FILE_MAP_READ, ustart >> 32, start_offset & std::numeric_limits<u32>::max(), gsl::narrow_cast<size_t>(m_current_window_size)));
+    m_current_map_view_of_file = static_cast<const std::byte*>(::MapViewOfFile(
+        m_file_mapping_handle, FILE_MAP_READ, ustart >> 32, start_offset & std::numeric_limits<u32>::max(), gsl::narrow_cast<size_t>(m_current_window_size)));
     m_current_pointer = m_current_map_view_of_file;
 
     const gsl::index difference = pure_start_offset - start_offset;
@@ -49,8 +49,8 @@ void CMapStreamReader::map(gsl::index new_offset)
 
 void CMapStreamReader::advance(gsl::index offset)
 {
-    VERIFY(m_current_pointer >= m_start_pointer);
-    VERIFY(m_current_pointer - m_start_pointer <= m_current_window_size);
+    XR_ASSERT(m_current_pointer >= m_start_pointer && m_current_pointer - m_start_pointer <= m_current_window_size, "", m_current_pointer, m_start_pointer,
+              m_current_window_size);
 
     const auto offset_inside_window = m_current_pointer - m_start_pointer;
     if (offset_inside_window + offset >= gsl::narrow_cast<gsl::index>(m_current_window_size))
@@ -70,8 +70,8 @@ void CMapStreamReader::advance(gsl::index offset)
 
 void CMapStreamReader::r(void* _buffer, gsl::index buffer_size)
 {
-    VERIFY(m_current_pointer >= m_start_pointer);
-    VERIFY(m_current_pointer - m_start_pointer <= m_current_window_size);
+    XR_ASSERT(m_current_pointer >= m_start_pointer && m_current_pointer - m_start_pointer <= m_current_window_size, "", m_current_pointer, m_start_pointer,
+              m_current_window_size);
 
     const auto offset_inside_window = m_current_pointer - m_start_pointer;
     if (offset_inside_window + buffer_size < m_current_window_size)
@@ -101,13 +101,15 @@ void CMapStreamReader::r(void* _buffer, gsl::index buffer_size)
 
 CStreamReader* CMapStreamReader::open_chunk(u32 chunk_id)
 {
-    BOOL compressed;
+    ::BOOL compressed;
     const auto size = find_chunk(chunk_id, &compressed);
-    if (!size)
+    if (size == 0)
         return nullptr;
 
-    R_ASSERT2(!compressed, "cannot use CMapStreamReader on compressed chunks");
+    XR_ASSERT(!compressed, "cannot use CMapStreamReader on compressed chunks", chunk_id);
+
     CMapStreamReader* result = xr_new<CMapStreamReader>();
     result->construct(file_mapping_handle(), m_start_offset + tell(), size, m_archive_size, m_window_size);
-    return (result);
+
+    return result;
 }

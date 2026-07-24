@@ -10,9 +10,8 @@ void CSoundRender_Emitter::start(ref_sound* _owner, BOOL _loop, float delay)
 {
     starting_delay = delay;
 
-    VERIFY(_owner);
-    owner_data = _owner->_p;
-    VERIFY(owner_data);
+    owner_data = XR_ASSERT_VAL(_owner != nullptr)->_p;
+    XR_ASSERT(owner_data);
 
     p_source.position.set(0, 0, 0);
     p_source.min_distance = source()->m_fMinDist; // DS3D_DEFAULTMINDISTANCE;
@@ -55,7 +54,7 @@ tmc::task<void> CSoundRender_Emitter::i_stop()
         source()->close(snd);
         Event_ReleaseOwner();
 
-        VERIFY(this == owner_data->feedback);
+        XR_ASSERT(owner_data->feedback == this);
         owner_data->feedback = nullptr;
         owner_data._set(nullptr);
     }
@@ -111,7 +110,7 @@ tmc::task<void> CSoundRender_Emitter::cancel()
         co_await stop_target();
         m_current_state = stSimulatingLooped;
         break;
-    default: FATAL("Non playing ref_sound forced out of render queue");
+    default: XR_PANIC("invalid emitter state", m_current_state);
     }
 
     canceling = false;
@@ -119,7 +118,7 @@ tmc::task<void> CSoundRender_Emitter::cancel()
 
 tmc::task<void> CSoundRender_Emitter::stop_target()
 {
-    R_ASSERT(target != nullptr);
+    XR_ASSERT(target != nullptr);
     co_await wait_prefill();
 
     target->stop();

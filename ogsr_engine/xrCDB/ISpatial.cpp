@@ -61,52 +61,44 @@ namespace
 void ISpatial::spatial_register()
 {
     spatial.type |= STYPEFLAG_INVALIDSECTOR;
-    if (spatial.node_ptr)
-    {
-        // already registered - nothing to do
-    }
-    else
-    {
-        // register
-        R_ASSERT(spatial.space);
-        spatial.space->insert(this);
-        spatial.sector_id = INVALID_SECTOR_ID;
-    }
+
+    // already registered - nothing to do
+    if (spatial.node_ptr != nullptr)
+        return;
+
+    // register
+    XR_ASSERT_VAL(spatial.space != nullptr)->insert(this);
+    spatial.sector_id = INVALID_SECTOR_ID;
 }
 
 void ISpatial::spatial_unregister()
 {
-    if (spatial.node_ptr)
-    {
-        // remove
-        spatial.space->remove(this);
-        spatial.node_ptr = nullptr;
-        spatial.sector_id = INVALID_SECTOR_ID;
-    }
-    else
-    {
-        // already unregistered
-    }
+    // already unregistered
+    if (spatial.node_ptr == nullptr)
+        return;
+
+    // remove
+    spatial.space->remove(this);
+    spatial.node_ptr = nullptr;
+    spatial.sector_id = INVALID_SECTOR_ID;
 }
 
 void ISpatial::spatial_move()
 {
-    if (spatial.node_ptr)
-    {
-        //*** somehow it was determined that object has been moved
-        spatial.type |= STYPEFLAG_INVALIDSECTOR;
+    //*** we are not registered yet, or already unregistered
+    //*** ignore request
+    if (spatial.node_ptr == nullptr)
+        return;
 
-        //*** check if we are supposed to correct it's spatial location
-        if (spatial_inside())
-            return; // ???
-        spatial.space->remove(this);
-        spatial.space->insert(this);
-    }
-    else
-    {
-        //*** we are not registered yet, or already unregistered
-        //*** ignore request
-    }
+    //*** somehow it was determined that object has been moved
+    spatial.type |= STYPEFLAG_INVALIDSECTOR;
+
+    //*** check if we are supposed to correct it's spatial location
+    if (spatial_inside())
+        return; // ???
+
+    spatial.space->remove(this);
+    spatial.space->insert(this);
 }
 
 void ISpatial::spatial_updatesector_internal(sector_id_t sector_id)
@@ -192,7 +184,7 @@ ISpatial_NODE* ISpatial_DB::_node_create()
 }
 void ISpatial_DB::_node_destroy(ISpatial_NODE*& P)
 {
-    VERIFY(P->_empty());
+    XR_DEBUG_ASSERT(P->_empty());
     stat_nodes--;
 
     allocator_pool.push_back(P);
@@ -201,10 +193,11 @@ void ISpatial_DB::_node_destroy(ISpatial_NODE*& P)
 
 void ISpatial_DB::_insert(ISpatial_NODE* N, Fvector& n_C, float n_R)
 {
+    XR_ASSERT(N != nullptr);
+
     //*** we are assured that object lives inside our node
     float n_vR = 2 * n_R;
-    VERIFY(N);
-    VERIFY(verify_sp(rt_insert_object, n_C, n_vR));
+    XR_DEBUG_ASSERT(verify_sp(rt_insert_object, n_C, n_vR));
 
     // we have to make sure we aren't the leaf node
     if (n_R <= c_spatial_min)
@@ -224,22 +217,23 @@ void ISpatial_DB::_insert(ISpatial_NODE* N, Fvector& n_C, float n_R)
         // object can be pushed further down - select "octant", calc node position
         Fvector& s_C = rt_insert_object->spatial.sphere.P;
         u32 octant = _octant(n_C, s_C);
+
         Fvector c_C;
         c_C.mad(n_C, c_spatial_offset[octant], c_R);
-        VERIFY(octant == _octant(n_C, c_C)); // check table assosiations
-        ISpatial_NODE*& chield = N->children[octant];
+        // check table assosiations
+        XR_DEBUG_ASSERT(octant == _octant(n_C, c_C));
 
+        ISpatial_NODE*& chield = N->children[octant];
         if (!chield)
         {
-            chield = _node_create();
-            VERIFY(chield);
+            chield = XR_ASSERT_VAL(_node_create() != nullptr);
             chield->_init(N);
-            VERIFY(chield);
+            XR_ASSERT(chield != nullptr);
         }
 
-        VERIFY(chield);
+        XR_ASSERT(chield != nullptr);
         _insert(chield, c_C, c_R);
-        VERIFY(chield);
+        XR_ASSERT(chield != nullptr);
     }
     else
     {
@@ -260,17 +254,11 @@ void ISpatial_DB::insert(ISpatial* S)
     BOOL bValid = _valid(S->spatial.sphere.R) && _valid(S->spatial.sphere.P);
     if (!bValid)
     {
-        CObject* O = smart_cast<CObject*>(S);
-        if (O)
-            FATAL("Invalid OBJECT position or radius (%s)", O->cName().c_str());
-        else
-        {
-            CPS_Instance* P = smart_cast<CPS_Instance*>(S);
-            if (P)
-                FATAL("Invalid PS spatial position{%3.2f,%3.2f,%3.2f} or radius{%3.2f}", VPUSH(S->spatial.sphere.P), S->spatial.sphere.R);
-            else
-                FATAL("Invalid OTHER spatial position{%3.2f,%3.2f,%3.2f} or radius{%3.2f}", VPUSH(S->spatial.sphere.P), S->spatial.sphere.R);
-        }
+        if (auto O = smart_cast<CObject*>(S); O != nullptr)
+            XR_PANIC("invalid object position or radius", O->cName());
+
+        XR_ASSERT(smart_cast<CPS_Instance*>(S) == nullptr, "invalid particle position or radius", S->spatial.sphere.P, S->spatial.sphere.R);
+        XR_PANIC("invalid spatial position or radius", S->spatial.sphere.P, S->spatial.sphere.R);
     }
 #endif
 
@@ -279,7 +267,8 @@ void ISpatial_DB::insert(ISpatial* S)
         // Object inside our DB
         rt_insert_object = S;
         _insert(m_root, m_center, m_bounds);
-        VERIFY(S->spatial_inside());
+
+        XR_DEBUG_ASSERT(S->spatial_inside());
     }
     else
     {
@@ -305,7 +294,7 @@ void ISpatial_DB::_remove(ISpatial_NODE* N, ISpatial_NODE* N_sub)
     //*** we are assured that node contains N_sub and this subnode is empty
     gsl::index octant{std::ssize(N->children)};
 
-    for (auto [id, ch] : xr::views_enumerate(N->children))
+    for (auto [id, ch] : std::views::enumerate(N->children))
     {
         if (N_sub == ch)
         {
@@ -314,7 +303,7 @@ void ISpatial_DB::_remove(ISpatial_NODE* N, ISpatial_NODE* N_sub)
         }
     }
 
-    VERIFY(N_sub->_empty());
+    XR_DEBUG_ASSERT(N_sub->_empty());
 
     if (octant < std::ssize(N->children))
         _node_destroy(N->children[gsl::narrow_cast<size_t>(octant)]);
@@ -353,7 +342,7 @@ void ISpatial_DB::update()
         return;
 
     cs.Enter();
-    VERIFY(verify());
+    XR_DEBUG_ASSERT(verify());
     cs.Leave();
 }
 #endif

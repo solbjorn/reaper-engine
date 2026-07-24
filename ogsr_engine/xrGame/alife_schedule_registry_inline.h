@@ -18,12 +18,12 @@ inline void CALifeScheduleRegistry::update()
 
 IC CSE_ALifeSchedulable* CALifeScheduleRegistry::object(const ALife::_OBJECT_ID& id, bool no_assert) const
 {
-    _const_iterator I = objects().find(id);
+    const auto I = objects().find(id);
     if (I == objects().end())
     {
-        THROW2(no_assert, "The spesified object hasn't been found in the schedule registry!");
+        XR_ASSERT(no_assert, "object not found in the registry", id);
         return nullptr;
     }
 
-    return ((*I).second);
+    return I->second;
 }

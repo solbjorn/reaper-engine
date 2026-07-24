@@ -18,43 +18,24 @@ void CUISequenceItem::Load(CUIXml* xml, int idx)
 
     int disabled_cnt = xml->GetNodesNum(xml->GetLocalRoot(), "disabled_key");
     for (int i = 0; i < disabled_cnt; ++i)
-    {
-        LPCSTR str = xml->Read("disabled_key", i, nullptr);
-        m_disabled_actions.push_back(action_name_to_id(str));
-    }
+        m_disabled_actions.emplace_back(action_name_to_id(xml->Read("disabled_key", i, nullptr)));
 
-    LPCSTR str;
-    bool function_exists;
-    int j;
     int f_num = xml->GetNodesNum(xml->GetLocalRoot(), "function_on_start");
     m_start_lua_functions.resize(f_num);
-    for (j = 0; j < f_num; ++j)
-    {
-        str = xml->Read(xml->GetLocalRoot(), "function_on_start", j, nullptr);
-        function_exists = ai().script_engine().function(str, m_start_lua_functions[j]);
-        THROW3(function_exists, "Cannot find script function described in tutorial item ", str);
-    }
+
+    for (int j = 0; j < f_num; ++j)
+        XR_ASSERT(ai().script_engine().function(xml->Read(xml->GetLocalRoot(), "function_on_start", j, nullptr), m_start_lua_functions[j]));
 
     f_num = xml->GetNodesNum(xml->GetLocalRoot(), "function_on_stop");
     m_stop_lua_functions.resize(f_num);
-    for (j = 0; j < f_num; ++j)
-    {
-        str = xml->Read(xml->GetLocalRoot(), "function_on_stop", j, nullptr);
-        function_exists = ai().script_engine().function(str, m_stop_lua_functions[j]);
-        THROW3(function_exists, "Cannot find script function described in tutorial item ", str);
-    }
+
+    for (int j = 0; j < f_num; ++j)
+        XR_ASSERT(ai().script_engine().function(xml->Read(xml->GetLocalRoot(), "function_on_stop", j, nullptr), m_stop_lua_functions[j]));
 
     xml->SetLocalRoot(_stored_root);
 }
 
-bool CUISequenceItem::AllowKey(xr::key_id dik)
-{
-    const auto it = std::find(m_disabled_actions.begin(), m_disabled_actions.end(), get_binded_action(dik));
-    if (it == m_disabled_actions.end())
-        return true;
-
-    return false;
-}
+bool CUISequenceItem::AllowKey(xr::key_id dik) { return std::ranges::find(m_disabled_actions, get_binded_action(dik)) == m_disabled_actions.end(); }
 
 namespace
 {

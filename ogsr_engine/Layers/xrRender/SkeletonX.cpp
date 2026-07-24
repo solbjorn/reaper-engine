@@ -77,9 +77,10 @@ void CSkeletonX::_Render(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iO
     }
 
     cmd_list.stat.r.s_dynamic.add(vCount);
+
     switch (RenderMode)
     {
-    case RM_SKINNING_SOFT: FATAL("cannot use soft render!");
+    case RM_SKINNING_SOFT: XR_PANIC("can't use soft render", Parent->dbg_name);
     case RM_SINGLE: {
         Fmatrix W;
         W.mul_43(cmd_list.xforms.m_w, Parent->LL_GetTransform_R(u16(RMS_boneid)));
@@ -177,15 +178,12 @@ void CSkeletonX::_Render(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iO
 
 void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
 {
+    // Load vertices
+    XR_ASSERT(data->find_chunk(OGF_VERTICES) > 0, "", N);
     xr_vector<u16> bids;
 
-    // Load vertices
-    R_ASSERT(data->find_chunk(OGF_VERTICES));
-
-    // u16			hw_bones_cnt		= u16((HW.Caps.geometry.dwRegisters-22)/3);
     //	Igor: some shaders in r1 need more free constant registers
     u16 hw_bones_cnt = HW.Caps.geometry.dwRegisters;
-
     u16 sw_bones_cnt = 0;
 
     u32 dwVertType, it /*, size, crc*/;
@@ -252,7 +250,7 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
             if (bids.end() == std::find(bids.begin(), bids.end(), VB.matrix1))
                 bids.push_back(VB.matrix1);
         }
-        //.			R_ASSERT(sw_bones_cnt<=hw_bones_cnt);
+
         if (sw_bones_cnt <= hw_bones_cnt)
         {
             // HW- two weights
@@ -285,7 +283,7 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
                     bids.push_back(VB.m[i]);
             }
         }
-        //.			R_ASSERT(sw_bones_cnt<=hw_bones_cnt);
+
         if ((sw_bones_cnt <= hw_bones_cnt))
         {
             RenderMode = RM_SKINNING_3B;
@@ -317,7 +315,7 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
                     bids.push_back(VB.m[i]);
             }
         }
-        //.			R_ASSERT(sw_bones_cnt<=hw_bones_cnt);
+
         if (sw_bones_cnt <= hw_bones_cnt)
         {
             RenderMode = RM_SKINNING_4B;
@@ -326,20 +324,16 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
         }
         else
         {
-            // crc = crc32(data->pointer(), size);
             Vertices4W.create(dwVertCount, (const vertBoned4W*)data->pointer());
             RImplementation.shader_option_skinning(-1);
         }
     }
     break;
-    default: Debug.fatal(DEBUG_INFO, "Invalid vertex type in skinned model '%s'", N);
+    default: XR_PANIC("invalid vertex type in skinned model", N, dwVertType);
     }
 
     if (!bids.empty())
-    {
-        // crc = crc32(&*bids.begin(), bids.size() * sizeof(u16));
-        BonesUsed.create(bids.size(), &*bids.begin());
-    }
+        BonesUsed.create(bids.size(), bids.data());
 }
 
 BOOL CSkeletonX::has_visible_bones()
@@ -350,10 +344,11 @@ BOOL CSkeletonX::has_visible_bones()
     }
 
     for (u32 it = 0; it < BonesUsed.size(); it++)
+    {
         if (Parent->LL_GetBoneVisible(BonesUsed[it]))
-        {
             return TRUE;
-        }
+    }
+
     return FALSE;
 }
 
@@ -443,7 +438,8 @@ BOOL CSkeletonX::_PickBoneSoft4W(IKinematics::pick_result& r, float dist, const 
 // Fill Vertices
 void CSkeletonX::_FillVerticesSoft1W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16* indices, CBoneData::FacesVec& faces)
 {
-    VERIFY(*Vertices1W);
+    XR_ASSERT(*Vertices1W != nullptr);
+
     for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); it++)
     {
         Fvector p[3];
@@ -486,7 +482,8 @@ void CSkeletonX::_FillVerticesSoft1W(const Fmatrix& view, CSkeletonWallmark& wm,
 
 void CSkeletonX::_FillVerticesSoft2W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16* indices, CBoneData::FacesVec& faces)
 {
-    VERIFY(*Vertices2W);
+    XR_ASSERT(*Vertices2W != nullptr);
+
     for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); it++)
     {
         Fvector p[3];
@@ -534,7 +531,8 @@ void CSkeletonX::_FillVerticesSoft2W(const Fmatrix& view, CSkeletonWallmark& wm,
 
 void CSkeletonX::_FillVerticesSoft3W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16* indices, CBoneData::FacesVec& faces)
 {
-    VERIFY(*Vertices3W);
+    XR_ASSERT(*Vertices3W != nullptr);
+
     for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); ++it)
     {
         Fvector p[3];
@@ -577,7 +575,8 @@ void CSkeletonX::_FillVerticesSoft3W(const Fmatrix& view, CSkeletonWallmark& wm,
 
 void CSkeletonX::_FillVerticesSoft4W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16* indices, CBoneData::FacesVec& faces)
 {
-    VERIFY(*Vertices4W);
+    XR_ASSERT(*Vertices4W != nullptr);
+
     for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); ++it)
     {
         Fvector p[3];
@@ -621,13 +620,10 @@ void CSkeletonX::_FillVerticesSoft4W(const Fmatrix& view, CSkeletonWallmark& wm,
 void CSkeletonX::_DuplicateIndices(IReader* data)
 {
     //	We will have trouble with container since don't know were to take readable indices
-    VERIFY(!data->find_chunk(OGF_ICONTAINER));
+    XR_ASSERT(data->find_chunk(OGF_ICONTAINER) == 0);
     //	Index buffer replica since we can't read from index buffer in DX10
-    // ref_smem<u16>			Indices;
-    R_ASSERT(data->find_chunk(OGF_INDICES));
-    u32 iCount = data->r_u32();
+    XR_ASSERT(data->find_chunk(OGF_INDICES) > 0);
 
-    // u32 size = iCount * 2;
-    // u32 crc = crc32(data->pointer(), size);
+    const auto iCount = data->r_u32();
     m_Indices.create(iCount, (const u16*)data->pointer());
 }

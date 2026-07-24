@@ -41,6 +41,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="assert.h">
+      <Filter>Core</Filter>
+    </ClInclude>
     <ClCompile Include="imgui.h">
       <Filter>ImGui</Filter>
     </ClCompile>

@@ -333,10 +333,6 @@ void line_edit_control::assign_char_pairs(init_mode mode)
 void line_edit_control::create_key_state(sf::Keyboard::Scancode dik, key_state state)
 {
     Base* prev = m_actions[std::to_underlying(dik)];
-    // if ( m_actions[dik] )
-    //{
-    //  xr_delete( m_actions[dik] );
-    // }
     m_actions[std::to_underlying(dik)] = xr_new<text_editor::key_state_base>(state, prev);
 }
 
@@ -348,18 +344,15 @@ void line_edit_control::create_char_pair(sf::Keyboard::Scancode dik, char c, cha
 
 void line_edit_control::assign_callback(sf::Keyboard::Scancode dik, key_state state, Callback const& callback)
 {
-    VERIFY(std::to_underlying(dik) < sf::Keyboard::ScancodeCount);
-
-    Base* prev_action = m_actions[std::to_underlying(dik)];
+    Base* prev_action = m_actions[XR_ASSERT_VAL(std::to_underlying(dik) < sf::Keyboard::ScancodeCount)];
     m_actions[std::to_underlying(dik)] = xr_new<text_editor::callback_base>(callback, state);
     m_actions[std::to_underlying(dik)]->on_assign(prev_action);
 }
 
 void line_edit_control::insert_character(char c)
 {
-    VERIFY(m_inserted_pos < (m_buffer_size - 1 /*trailing zero*/));
     m_inserted[m_inserted_pos] = c;
-    m_inserted[m_inserted_pos + 1] = 0;
+    m_inserted[XR_ASSERT_VAL(m_inserted_pos + 1 < m_buffer_size)] = '\0';
     m_inserted_pos++;
 }
 

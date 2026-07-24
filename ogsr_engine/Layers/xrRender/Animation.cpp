@@ -9,9 +9,4 @@ const channal_rule channels::rules[channels::max] = {{lerp, lerp}, {lerp, lerp},
 channels::channels() { init(); }
 
 void channels::init() { std::fill(factors, factors + max, 1.f); }
-
-void channels::set_factor(u16 channel, float factor)
-{
-    VERIFY(channel < max);
-    factors[channel] = factor;
-}
+void channels::set_factor(u16 channel, float factor) { factors[XR_ASSERT_VAL(channel < max)] = factor; }

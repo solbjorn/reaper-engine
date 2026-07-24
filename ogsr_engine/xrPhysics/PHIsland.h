@@ -96,7 +96,6 @@ public:
 
     IC void Merge(CPHIsland* island)
     {
-        // VERIFY2(b_active&&island->b_active,"no active island");
         CPHIsland* first_island = DActiveIsland();
         CPHIsland* second_island = island->DActiveIsland();
         if (first_island == second_island)
@@ -114,11 +113,11 @@ public:
 
         first_island->nj += second_island->nj;
         first_island->nb += second_island->nb;
-        VERIFY(!(*(first_island->m_bodies_tail)));
-        VERIFY(!(*(first_island->m_joints_tail)));
-        VERIFY(!((!(first_island->nj)) && (first_island->firstjoint)));
+
+        XR_ASSERT(*first_island->m_bodies_tail == nullptr && *first_island->m_joints_tail == nullptr);
+        XR_ASSERT(first_island->nj > 0 || first_island->firstjoint == nullptr, "", first_island->nj);
+
         second_island->m_self_active = first_island;
-        // second_island->b_active=false;
         m_flags.merge(second_island->m_flags);
     }
 
@@ -162,7 +161,8 @@ public:
 
     IC void AddBody(dxBody* body)
     {
-        VERIFY2(m_nj == nj && m_nb == nb && m_flags.is_active(), "can not remove/add during processing phase");
+        XR_ASSERT(m_nj == nj && m_nb == nb && m_flags.is_active(), "can't modify during processing");
+
         dWorldAddBody(DWorld(), body);
         m_first_body = body;
         if (m_nb == 0)
@@ -174,7 +174,8 @@ public:
 
     IC void RemoveBody(dxBody* body)
     {
-        VERIFY2(m_nj == nj && m_nb == nb && m_flags.is_active(), "can not remove/add during processing phase");
+        XR_ASSERT(m_nj == nj && m_nb == nb && m_flags.is_active(), "can't modify during processing");
+
         if (m_first_body == body)
             m_first_body = (dxBody*)body->next;
         if (m_bodies_tail == (dxBody**)(&(body->next)))
@@ -187,14 +188,14 @@ public:
 
     IC void AddJoint(dxJoint* joint)
     {
-        VERIFY2(m_nj == nj && m_nb == nb && m_flags.is_active(), "can not remove/add during processing phase");
+        XR_ASSERT(m_nj == nj && m_nb == nb && m_flags.is_active(), "can't modify during processing");
 
         dWorldAddJoint(DWorld(), joint);
         m_first_joint = joint;
 
         if (!m_nj)
         {
-            VERIFY(joint->next == nullptr);
+            XR_ASSERT(joint->next == nullptr);
             m_joints_tail = (dxJoint**)(&(joint->next));
         }
 
@@ -206,10 +207,11 @@ public:
         if (!nj)
         {
             m_joints_tail = (dxJoint**)(&(joint->next));
-            VERIFY(!firstjoint);
+            XR_ASSERT(firstjoint == nullptr);
         }
+
         dWorldAddJoint(DWorld(), joint);
-        VERIFY(!(*(m_joints_tail)));
+        XR_ASSERT(*m_joints_tail == nullptr);
     }
 
     IC void DisconnectJoint(dxJoint* joint) { dWorldRemoveJoint(DWorld(), joint); }
@@ -218,18 +220,23 @@ public:
     IC void DisconnectBody(dxBody* body) { dWorldRemoveBody(DWorld(), body); }
     IC void RemoveJoint(dxJoint* joint)
     {
-        VERIFY2(m_nj == nj && m_nb == nb && m_flags.is_active(), "can not remove/add during processing phase");
+        XR_ASSERT(m_nj == nj && m_nb == nb && m_flags.is_active(), "can't modify during processing");
+
         if (m_first_joint == joint)
             m_first_joint = (dxJoint*)joint->next;
         if (m_joints_tail == (dxJoint**)(&(joint->next)))
         {
             m_joints_tail = (dxJoint**)joint->tome;
         }
+
         dWorldRemoveJoint(DWorld(), joint);
-        VERIFY(!*(m_joints_tail));
+        XR_ASSERT(*m_joints_tail == nullptr);
+
         m_nj--;
     }
+
     void SetPrefereExactIntegration() { m_flags.set_prefere_exact_integration(); }
+
     void Step(dReal step);
     void Enable();
     void Repair();

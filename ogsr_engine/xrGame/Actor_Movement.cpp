@@ -641,10 +641,7 @@ bool isActorAccelerated(u32 mstate, bool ZoomMode)
 
 bool CActor::CanAccelerate()
 {
-    bool can_accel = !conditions().IsLimping() && !character_physics_support()->movement()->PHCapture() &&
-        //		&& !m_bZoomAimingMode
-        //		&& !(mstate_real&mcLookout)
-        (m_time_lock_accel < Device.dwTimeGlobal);
+    bool can_accel = !conditions().IsLimping() && !character_physics_support()->movement()->PHCapture() && (m_time_lock_accel < Device.dwTimeGlobal);
 
     return can_accel;
 }
@@ -664,10 +661,8 @@ bool CActor::CanSprint()
 
 bool CActor::CanJump(float weight)
 {
-    bool can_Jump = /*!IsLimping() &&*/
-        !character_physics_support()->movement()->PHCapture() && ((mstate_real & ACTOR_DEFS::mcJump) == 0) && (m_fJumpTime <= 0.f) &&
-        (!m_hit_slowmo_jump || (fis_zero(hit_slowmo) && m_time_lock_accel < Device.dwTimeGlobal)) && !m_bJumpKeyPressed // && ((mstate_real&mcCrouch)==0);
-        && !conditions().IsCantJump(weight);
+    bool can_Jump = !character_physics_support()->movement()->PHCapture() && ((mstate_real & ACTOR_DEFS::mcJump) == 0) && (m_fJumpTime <= 0.f) &&
+        (!m_hit_slowmo_jump || (fis_zero(hit_slowmo) && m_time_lock_accel < Device.dwTimeGlobal)) && !m_bJumpKeyPressed && !conditions().IsCantJump(weight);
 
     return can_Jump;
 }

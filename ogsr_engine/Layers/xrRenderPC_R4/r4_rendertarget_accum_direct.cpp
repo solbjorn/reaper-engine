@@ -185,7 +185,7 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, cons
             Fvector4* pv = (Fvector4*)RImplementation.Vertex.Lock(ver_count, g_combine_cuboid.stride(), Offset);
 
             Fmatrix inv_XDcombine;
-            if (/*ps_r2_ls_flags_ext.is(R2FLAGEXT_SUN_ZCULLING) &&*/ sub_phase == SE_SUN_FAR)
+            if (sub_phase == SE_SUN_FAR)
                 inv_XDcombine.invert(xform_prev);
             else
                 inv_XDcombine.invert(xform);
@@ -197,6 +197,7 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, cons
                 pv->set(tmp_vec.x, tmp_vec.y, tmp_vec.z, 1);
                 pv++;
             }
+
             RImplementation.Vertex.Unlock(ver_count, g_combine_cuboid.stride());
         }
 

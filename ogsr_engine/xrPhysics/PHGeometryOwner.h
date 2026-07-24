@@ -55,11 +55,9 @@ public:
 
     void SetMaterial(u16 m);
     void SetMaterial(LPCSTR m) { SetMaterial(GMLib.GetMaterialIdx(m)); } // aux
-    IC CODEGeom* Geom(u16 num) const
-    {
-        R_ASSERT2(num < m_geoms.size(), "out of range");
-        return m_geoms[num];
-    }
+
+    [[nodiscard]] CODEGeom* Geom(u16 num) const { return m_geoms[XR_ASSERT_VAL(num < m_geoms.size())]; }
+
     CODEGeom* GeomByBoneID(u16 bone_id);
     u16 numberOfGeoms(); // aux
     dGeomID dSpacedGeometry(); // aux

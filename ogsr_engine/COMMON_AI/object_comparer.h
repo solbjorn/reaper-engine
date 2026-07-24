@@ -38,7 +38,7 @@ struct CComparer
     }
 
     template <typename T, int size>
-    IC static bool compare(const svector<T, size>& v1, const svector<T, size>& v2, const P& p)
+    IC static bool compare(const std::inplace_vector<T, size>& v1, const std::inplace_vector<T, size>& v2, const P& p)
     {
         if (v1.size() != v2.size())
             return p();

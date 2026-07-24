@@ -17,16 +17,18 @@ IC const xr_vector<_world_property>& CConditionStateAbstract::conditions() const
 TEMPLATE_SPECIALIZATION
 IC void CConditionStateAbstract::add_condition_back(const _world_property& condition)
 {
-    THROW(m_conditions.empty() || (m_conditions.back().condition() < condition.condition()));
-    m_conditions.push_back(condition);
+    XR_ASSERT(m_conditions.empty() || m_conditions.back().condition() < condition.condition());
+
+    m_conditions.emplace_back(condition);
     m_hash ^= condition.hash_value();
 }
 
 TEMPLATE_SPECIALIZATION
 IC void CConditionStateAbstract::add_condition(const _world_property& condition)
 {
-    auto I = std::lower_bound(m_conditions.begin(), m_conditions.end(), condition);
-    THROW((I == m_conditions.end()) || ((*I).condition() != condition.condition()));
+    const auto I = std::ranges::lower_bound(m_conditions, condition);
+    XR_ASSERT(I == m_conditions.end() || I->condition() != condition.condition());
+
     m_conditions.insert(I, condition);
     m_hash ^= condition.hash_value();
 }
@@ -34,9 +36,10 @@ IC void CConditionStateAbstract::add_condition(const _world_property& condition)
 TEMPLATE_SPECIALIZATION
 IC void CConditionStateAbstract::remove_condition(const typename _world_property::condition_type& condition)
 {
-    auto I = std::lower_bound(m_conditions.begin(), m_conditions.end(), _world_property(condition, typename _world_property::value_type(0)));
-    THROW((I != m_conditions.end()) && ((*I).condition() == condition));
-    m_hash ^= (*I).hash_value();
+    const auto I = std::ranges::lower_bound(m_conditions, _world_property{condition, typename _world_property::value_type{0}});
+    XR_ASSERT(I != m_conditions.end() && I->condition() == condition);
+
+    m_hash ^= I->hash_value();
     m_conditions.erase(I);
 }
 
@@ -171,12 +174,10 @@ IC u64 CConditionStateAbstract::hash_value() const { return m_hash; }
 TEMPLATE_SPECIALIZATION
 IC const _world_property* CConditionStateAbstract::property(const typename _world_property::condition_type& condition) const
 {
-    typename xr_vector<_world_property>::const_iterator I =
-        std::lower_bound(conditions().begin(), conditions().end(), _world_property(condition, typename _world_property::value_type(0)));
-    if (I == m_conditions.end())
-        return nullptr;
+    if (const auto it = std::ranges::lower_bound(conditions(), _world_property{condition, typename _world_property::value_type{0}}); it != conditions().end())
+        return std::to_address(it);
 
-    return (&*I);
+    return nullptr;
 }
 
 #undef TEMPLATE_SPECIALIZATION

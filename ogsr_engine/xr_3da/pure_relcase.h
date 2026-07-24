@@ -11,11 +11,7 @@ private:
     int m_ID;
 
 public:
-    explicit pure_relcase(const CObjectList::RELCASE_CALLBACK& cb)
-    {
-        R_ASSERT(g_pGameLevel);
-        g_pGameLevel->Objects.relcase_register(cb, &m_ID);
-    }
+    explicit pure_relcase(const CObjectList::RELCASE_CALLBACK& cb) { XR_ASSERT_VAL(g_pGameLevel != nullptr)->Objects.relcase_register(cb, &m_ID); }
 
     ~pure_relcase() override;
 };

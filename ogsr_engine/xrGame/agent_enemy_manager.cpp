@@ -459,39 +459,37 @@ void CAgentEnemyManager::assign_wounded()
     const auto combat_member_count = population(object().member().combat_mask());
     VERIFY(combat_member_count == std::ssize(object().member().combat_members()));
 
-    gsl::index population_level{};
+    gsl::index population_level{0};
     while (population(assigned) < combat_member_count)
     {
-        CMemberEnemy* enemy{};
-        const CAI_Stalker* processor{};
         float best_distance_sqr = std::numeric_limits<float>::max();
+        const CAI_Stalker* processor{nullptr};
+        CMemberEnemy* enemy{nullptr};
 
         for (int i = 0; i < 2; ++i)
         {
-            ENEMIES::iterator I = m_enemies.begin();
-            ENEMIES::iterator E = m_enemies.end();
-            for (; I != E; ++I)
+            for (auto& en : m_enemies)
             {
-                if (population((*I).m_distribute_mask.get()) > population_level)
+                if (population(en.m_distribute_mask.get()) > population_level)
                     continue;
 
-                squad_mask_type J = (*I).m_mask.get();
+                squad_mask_type J = en.m_mask.get();
                 J &= (assigned ^ squad_mask_type(-1));
                 for (; J; J &= J - 1)
                 {
                     squad_mask_type K = (J & (J - 1)) ^ J;
-                    CAgentMemberManager::iterator i = object().member().member(K);
-                    float distance_sqr = (*i)->object().Position().distance_to_sqr((*I).m_object->Position());
-                    if (distance_sqr < best_distance_sqr)
+                    auto i = object().member().member(K);
+
+                    if (const f32 distance_sqr = (*i)->object().Position().distance_to_sqr(en.m_object->Position()); distance_sqr < best_distance_sqr)
                     {
                         best_distance_sqr = distance_sqr;
-                        enemy = &*I;
+                        enemy = &en;
                         processor = &(*i)->object();
                     }
                 }
             }
 
-            if (enemy)
+            if (enemy != nullptr)
                 break;
 
             ++population_level;

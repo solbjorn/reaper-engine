@@ -7,7 +7,7 @@
 
 void CSoundRender_Target::start(CSoundRender_Emitter* E)
 {
-    R_ASSERT(E);
+    XR_ASSERT(E != nullptr);
 
     // *** Initial buffer startup ***
     // 1. Fill parameters
@@ -19,7 +19,7 @@ void CSoundRender_Target::start(CSoundRender_Emitter* E)
 
 tmc::task<void> CSoundRender_Target::render()
 {
-    VERIFY(!rendering);
+    XR_ASSERT(!rendering);
 
     rendering = true;
     co_return;
@@ -33,12 +33,12 @@ void CSoundRender_Target::stop()
 
 tmc::task<void> CSoundRender_Target::rewind()
 {
-    R_ASSERT(rendering);
+    XR_ASSERT(rendering);
     co_return;
 }
 
 tmc::task<void> CSoundRender_Target::update()
 {
-    R_ASSERT(m_pEmitter != nullptr);
+    XR_ASSERT(m_pEmitter != nullptr);
     co_return;
 }

@@ -7,11 +7,11 @@
 #include "xr_object.h"
 
 IGame_ObjectPool::IGame_ObjectPool() = default;
-IGame_ObjectPool::~IGame_ObjectPool() { R_ASSERT(m_PrefetchObjects.empty()); }
+IGame_ObjectPool::~IGame_ObjectPool() { XR_ASSERT(m_PrefetchObjects.size() == 0, "", m_PrefetchObjects); }
 
 void IGame_ObjectPool::prefetch()
 {
-    R_ASSERT(m_PrefetchObjects.empty());
+    XR_ASSERT(m_PrefetchObjects.size() == 0, "", m_PrefetchObjects);
 
     int p_count = 0;
     ::Render->model_Logging(FALSE);
@@ -25,20 +25,25 @@ void IGame_ObjectPool::prefetch()
         CTimer T;
         T.Start();
         Render->models_begin_prefetch1(true);
+
         for (const auto& item : sect.Ordered_Data)
         {
             if (pSettings->section_exist(item.first.c_str()))
             {
                 CLASS_ID CLS = pSettings->r_clsid(item.first.c_str(), "class");
                 p_count++;
+
                 CObject* pObject = (CObject*)NEW_INSTANCE(CLS);
                 pObject->Load(item.first.c_str());
                 pObject->reload(item.first.c_str());
-                VERIFY2(pObject->cNameSect().c_str(), item.first.c_str());
+                XR_ASSERT(pObject->cNameSect().c_str() != nullptr, "", item.first);
+
                 m_PrefetchObjects.push_back(pObject);
             }
             else
+            {
                 Msg("! [{}] unknown section {} in {}", std::source_location::current().function_name(), item.first, section);
+            }
         }
 
         Render->models_begin_prefetch1(false);

@@ -15,20 +15,22 @@ CParticleManager PM;
 
 IParticleManager* PAPI::ParticleManager() { return &PM; }
 
-CParticleManager::CParticleManager() {}
-CParticleManager::~CParticleManager() {}
+CParticleManager::CParticleManager() = default;
+CParticleManager::~CParticleManager() = default;
 
 ParticleEffect* CParticleManager::GetEffectPtr(int effect_id)
 {
     std::scoped_lock<std::mutex> m(pm_Locked);
-    R_ASSERT(effect_id >= 0 && effect_id < (int)m_effect_vec.size());
+
+    XR_ASSERT(effect_id >= 0 && effect_id < std::ssize(m_effect_vec));
     return m_effect_vec[effect_id];
 }
 
 ParticleActions* CParticleManager::GetActionListPtr(int a_list_num)
 {
     std::scoped_lock<std::mutex> m(pm_Locked);
-    R_ASSERT(a_list_num >= 0 && a_list_num < (int)m_alist_vec.size());
+
+    XR_ASSERT(a_list_num >= 0 && a_list_num < std::ssize(m_alist_vec));
     return m_alist_vec[a_list_num];
 }
 
@@ -37,12 +39,15 @@ int CParticleManager::CreateEffect(u32 max_particles)
 {
     std::scoped_lock<std::mutex> m(pm_Locked);
     int eff_id = -1;
+
     for (int i = 0; i < (int)m_effect_vec.size(); i++)
+    {
         if (!m_effect_vec[i])
         {
             eff_id = i;
             break;
         }
+    }
 
     if (eff_id < 0)
     {
@@ -55,12 +60,15 @@ int CParticleManager::CreateEffect(u32 max_particles)
 
     return eff_id;
 }
+
 void CParticleManager::DestroyEffect(int effect_id)
 {
     std::scoped_lock<std::mutex> m(pm_Locked);
-    R_ASSERT(effect_id >= 0 && effect_id < (int)m_effect_vec.size());
+
+    XR_ASSERT(effect_id >= 0 && effect_id < std::ssize(m_effect_vec));
     xr_delete(m_effect_vec[effect_id]);
 }
+
 int CParticleManager::CreateActionList()
 {
     std::scoped_lock<std::mutex> m(pm_Locked);
@@ -87,7 +95,8 @@ int CParticleManager::CreateActionList()
 void CParticleManager::DestroyActionList(int alist_id)
 {
     std::scoped_lock<std::mutex> m(pm_Locked);
-    R_ASSERT(alist_id >= 0 && alist_id < (int)m_alist_vec.size());
+
+    XR_ASSERT(alist_id >= 0 && alist_id < std::ssize(m_alist_vec));
     xr_delete(m_alist_vec[alist_id]);
 }
 
@@ -95,19 +104,13 @@ void CParticleManager::DestroyActionList(int alist_id)
 void CParticleManager::PlayEffect(int alist_id)
 {
     // Execute the specified action list.
-    ParticleActions* pa = GetActionListPtr(alist_id);
-    VERIFY(pa);
-    if (!pa)
-        return; // ERROR
-
+    auto pa = XR_ASSERT_VAL(GetActionListPtr(alist_id) != nullptr);
     pa->lock();
 
     // Step through all the actions in the action list.
     for (auto act : *pa)
     {
-        VERIFY(act);
-        if (!act)
-            continue;
+        XR_ASSERT(act != nullptr);
 
         switch (act->type)
         {
@@ -124,18 +127,13 @@ void CParticleManager::PlayEffect(int alist_id)
 void CParticleManager::StopEffect(int effect_id, int alist_id, BOOL deffered)
 {
     // Execute the specified action list.
-    ParticleActions* pa = GetActionListPtr(alist_id);
-    VERIFY(pa);
-    if (!pa)
-        return; // ERROR
-
+    auto pa = XR_ASSERT_VAL(GetActionListPtr(alist_id) != nullptr);
     pa->lock();
 
     // Step through all the actions in the action list.
     for (auto act : *pa)
     {
-        if (!act)
-            continue;
+        XR_ASSERT(act != nullptr);
 
         switch (act->type)
         {
@@ -157,20 +155,14 @@ void CParticleManager::StopEffect(int effect_id, int alist_id, BOOL deffered)
 // update&render
 void CParticleManager::Update(int effect_id, int alist_id, float dt)
 {
-    ParticleEffect* pe = GetEffectPtr(effect_id);
-    ParticleActions* pa = GetActionListPtr(alist_id);
-    VERIFY(pa);
-    VERIFY(pe);
+    auto pe = XR_ASSERT_VAL(GetEffectPtr(effect_id) != nullptr);
+    auto pa = XR_ASSERT_VAL(GetActionListPtr(alist_id) != nullptr);
 
     pa->lock();
 
     // Step through all the actions in the action list.
-    for (PAVecIt it = pa->begin(); it != pa->end(); it++)
-    {
-        VERIFY((*it));
-        if ((*it))
-            (*it)->Execute(pe, dt);
-    }
+    for (auto act : *pa)
+        XR_ASSERT_VAL(act != nullptr)->Execute(pe, dt);
 
     pa->unlock();
 }
@@ -180,11 +172,7 @@ void CParticleManager::Render(int) {}
 void CParticleManager::Transform(int alist_id, const Fmatrix& full, const Fvector& vel)
 {
     // Execute the specified action list.
-    ParticleActions* pa = GetActionListPtr(alist_id);
-    VERIFY(pa);
-    if (!pa)
-        return; // ERROR
-
+    auto pa = XR_ASSERT_VAL(GetActionListPtr(alist_id) != nullptr);
     pa->lock();
 
     Fmatrix mT;
@@ -193,8 +181,7 @@ void CParticleManager::Transform(int alist_id, const Fmatrix& full, const Fvecto
     // Step through all the actions in the action list.
     for (auto act : *pa)
     {
-        if (!act)
-            continue;
+        XR_ASSERT(act != nullptr);
 
         BOOL r = act->m_Flags.is(ParticleAction::ALLOW_ROTATE);
         const Fmatrix& m = r ? full : mT;
@@ -283,7 +270,7 @@ ParticleAction* CParticleManager::CreateAction(PActionEnum type)
     case PAVortexID: pa = xr_new<PAVortex>(); break;
     case PATurbulenceID: pa = xr_new<PATurbulence>(); break;
     case PAScatterID: pa = xr_new<PAScatter>(); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     pa->type = type;
@@ -294,8 +281,7 @@ ParticleAction* CParticleManager::CreateAction(PActionEnum type)
 u32 CParticleManager::LoadActions(int alist_id, IReader& R, bool copFormat)
 {
     // Execute the specified action list.
-    ParticleActions* pa = GetActionListPtr(alist_id);
-    VERIFY(pa);
+    auto pa = XR_ASSERT_VAL(GetActionListPtr(alist_id) != nullptr);
     pa->clear();
 
     if (R.length())

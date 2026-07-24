@@ -13,7 +13,7 @@
 
 CSoundRender_Emitter* CSoundRender_Core::i_play(ref_sound* S, BOOL _loop, float delay)
 {
-    VERIFY(!S->_p->feedback);
+    XR_ASSERT(S->_p->feedback == nullptr);
 
     CSoundRender_Emitter* E = s_emitters.emplace_back(xr_new<CSoundRender_Emitter>());
     S->_p->feedback = E;

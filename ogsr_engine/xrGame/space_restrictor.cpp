@@ -28,12 +28,7 @@ CSpaceRestrictor::~CSpaceRestrictor() = default;
 
 void CSpaceRestrictor::Center(Fvector& C) const { XFORM().transform_tiny(C, CFORM()->getSphere().P); }
 
-float CSpaceRestrictor::Radius() const
-{
-    auto cf = CFORM();
-    ASSERT_FMT(cf, "!![%s]: [%s] has no CFORM()", std::source_location::current().function_name(), cName().c_str());
-    return cf->getRadius();
-}
+float CSpaceRestrictor::Radius() const { return XR_ASSERT_VAL(CFORM() != nullptr, "restrictor has no cform", cName())->getRadius(); }
 
 tmc::task<bool> CSpaceRestrictor::net_Spawn(CSE_Abstract* data)
 {
@@ -198,7 +193,7 @@ void CSpaceRestrictor::prepare()
 
             break;
         }
-        default: NODEFAULT;
+        default: xr::unreachable();
         }
     }
 

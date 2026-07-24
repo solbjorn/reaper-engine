@@ -4,52 +4,278 @@
 
 #include "stacktrace_collector.h"
 
-#include <sstream>
+#include <cpptrace/from_current.hpp>
+#include <cpptrace/utils.hpp>
 
-#include <signal.h> // for signals
-#include <use_ansi.h> // for _set_new_mode
+#include <csignal>
+
+#ifdef USE_OWN_MINI_DUMP
+#include <DbgHelp.h>
+#endif
 
 #include <VersionHelpers.h>
 #include <shellapi.h>
+#include <use_ansi.h>
 
 xrDebug Debug;
 
 HWND gGameWindow{};
 bool ExitFromWinMain{};
 
+namespace xr
+{
 namespace
 {
-long (*orig)(_EXCEPTION_POINTERS*){};
-bool error_after_dialog{};
-} // namespace
+long (*orig)(_EXCEPTION_POINTERS*){nullptr};
+xr_string maybe_trace;
 
-static void ShowErrorMessage(const char* msg, const bool show_msg = false)
+void log_callback(cpptrace::log_level lvl, gsl::czstring msg)
 {
+    std::string_view pfx;
+
+    switch (lvl)
+    {
+    case cpptrace::log_level::debug: pfx = "- "; break;
+    case cpptrace::log_level::info: pfx = "* "; break;
+    case cpptrace::log_level::warning: pfx = "~ "; break;
+    case cpptrace::log_level::error: pfx = "! "; break;
+    default: break;
+    }
+
+    Msg("{}cpptrace: {}", pfx, msg);
+}
+
+void show(std::string_view msg)
+{
+    static std::atomic<bool> hit{false};
+
+    if (bool exp{false}; !hit.compare_exchange_strong(exp, true))
+        return;
+
+    if (Debug.to_log())
+        Log(msg);
+
     xr::log_flush();
 
     tmc::post(xr::tmc_cpu_st_executor(), [] -> tmc::task<void> {
-        ShowWindow(gGameWindow, SW_HIDE);
+        ::ShowWindow(gGameWindow, SW_HIDE);
         co_return;
     }());
 
-    while (ShowCursor(true) < 0)
-        ;
+    while (::ShowCursor(true) < 0)
+        continue;
 
-    if (IsDebuggerPresent())
+    if (xr::is_debugger_present())
         return;
 
-    if (show_msg)
+    if (!Debug.to_log())
     {
         tmc::post(xr::tmc_cpu_st_executor(), [](gsl::czstring msg) -> tmc::task<void> {
-            MessageBoxA(gGameWindow, msg, "FATAL ERROR", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+            ::MessageBoxA(gGameWindow, msg, "FATAL ERROR", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
             co_return;
-        }(msg));
+        }(msg.data()));
     }
     else
     {
-        ShellExecuteA(nullptr, "open", logFName, nullptr, nullptr, SW_SHOW);
+        ::ShellExecuteA(nullptr, "open", logFName, nullptr, nullptr, SW_SHOW);
     }
 }
+
+[[noreturn]] void failure_handler(const libassert::assertion_info& info)
+{
+    auto msg = xr::format("\n{}\nStack trace:\n{}", info.header(180 - 33), xr::maybe_trace.empty() ? info.print_stacktrace(180 - 33) : xr::maybe_trace);
+
+    if (auto trace = Debug.get_lua_trace(); trace != nullptr)
+        msg += trace();
+
+    while (msg.back() == '\n')
+        msg.pop_back();
+
+    xr::show(std::move(msg));
+
+    if (!xr::is_debugger_present())
+        std::quick_exit(EXIT_SUCCESS);
+    else
+        xr::breakpoint();
+
+    xr::unreachable();
+}
+
+void terminate()
+{
+    xr_string description;
+    xr_string type;
+
+    try
+    {
+        if (auto ep = std::current_exception(); ep)
+            std::rethrow_exception(ep);
+    }
+    catch (const std::exception& ex)
+    {
+        description = ex.what();
+        type = cpptrace::demangle(typeid(ex).name());
+    }
+    catch (const std::string& msg)
+    {
+        description = msg;
+        type = cpptrace::demangle(typeid(msg).name());
+    }
+    catch (gsl::czstring msg)
+    {
+        description = msg;
+        type = cpptrace::demangle(typeid(msg).name());
+    }
+    catch (...)
+    {
+        description = "unknown exception";
+        type = "not available";
+    }
+
+    if (!type.empty())
+        XR_PANIC(description, type);
+    else
+        XR_PANIC("unexpected application termination");
+}
+
+void signal_handler(s32 sig)
+{
+    std::string_view desc;
+
+    switch (sig)
+    {
+    case SIGINT: desc = "execution interrupt"; break;
+    case SIGILL: desc = "illegal instruction"; break;
+    case SIGFPE: desc = "floating point exception"; break;
+    case SIGSEGV: desc = "segment violation"; break;
+    case SIGTERM: desc = "process termination"; break;
+    case SIGBREAK: desc = "break sequence"; break;
+    case SIGABRT:
+    case SIGABRT_COMPAT: desc = "abnormal termination"; break;
+    default: break;
+    }
+
+    XR_ASSERT(sig == 0, desc);
+}
+
+void new_handler()
+{
+    Memory.mem_compact();
+
+    const auto process_heap = mem_usage_impl(nullptr, nullptr) / 1024;
+    const auto str_economy = str_container::stat_economy() / 1024;
+    const auto smem_economy = smem_container::stat_economy() / 1024;
+
+    XR_PANIC("out of memory", process_heap, str_economy, smem_economy);
+}
+
+void invalid_parameter_handler(gsl::cwzstring expr, gsl::cwzstring fn, gsl::cwzstring f, u32 line, uintptr_t reserved)
+{
+    if (expr == nullptr || fn == nullptr || f == nullptr)
+        XR_PANIC("invalid parameter", line, reserved);
+
+    const sf::String expression{expr};
+    const sf::String function{fn};
+    const sf::String file{f};
+
+    XR_PANIC("invalid parameter", expression, function, file, line, reserved);
+}
+
+// LuaJIT always throws a custom structured exception instead of calling to
+// the user-defined panic handler. It is used for unwinding when inside a
+// protected call, otherwise the exception sneaks out and finishes in the
+// unhandled exception handler.
+// If the code matches, redirect it to the Lua panic handler, which will
+// print the error off the Lua stack, then eventually the stack trace and
+// the locals if accessible.
+class lua_panic_handler
+{
+private:
+    static constexpr unsigned long lua_exception_base{0xe24c4a00};
+
+    decltype(std::declval<xrDebug>().get_lua_panic()) handler{};
+    s32 code{};
+
+    [[noreturn]] void execute()
+    {
+        handler(code);
+        xr::unreachable();
+    }
+
+public:
+    constexpr explicit lua_panic_handler(const _EXCEPTION_RECORD& rec)
+    {
+        const auto maybe_code = rec.ExceptionCode ^ lua_exception_base;
+        if (maybe_code > std::numeric_limits<u8>::max())
+            return;
+
+        handler = Debug.get_lua_panic();
+        code = gsl::narrow_cast<s32>(maybe_code);
+    }
+
+    constexpr ~lua_panic_handler()
+    {
+        if (handler != nullptr)
+            execute();
+    }
+
+    [[nodiscard]] constexpr explicit operator bool() const { return handler != nullptr; }
+};
+
+// An uncaught C++ exception finishes as an unhandled structured exception in
+// the handler with the particular codes. If that's the case, the handler
+// shouldn't exit immediately -- pass it to the default handler, which will
+// call std::terminate() where it can be rethrown and logged.
+[[nodiscard]] constexpr bool is_cpp_exception(const _EXCEPTION_RECORD& rec)
+{
+    if (rec.ExceptionCode != 0xe06d7363 || rec.NumberParameters != 4)
+        return false;
+
+    switch (rec.ExceptionInformation[0])
+    {
+    case 0x19930520:
+    case 0x19930521:
+    case 0x19930522:
+    case 0x01994000: return true;
+    default: return false;
+    }
+}
+
+#ifdef USE_OWN_MINI_DUMP
+void save_mini_dump(_EXCEPTION_POINTERS* info);
+#endif
+
+[[nodiscard]] long unhandled_filter(_EXCEPTION_POINTERS* info)
+{
+    static std::atomic<bool> hit{false};
+
+out:
+    if (bool exp{false}; !hit.compare_exchange_strong(exp, true))
+        return xr::orig != nullptr ? xr::orig(info) : EXCEPTION_CONTINUE_SEARCH;
+
+    const auto& rec = *info->ExceptionRecord;
+    const auto cpp = xr::is_cpp_exception(rec);
+    const xr::lua_panic_handler panic{rec};
+
+    cpptrace::detail::maybe_collect_trace(info, EXCEPTION_EXECUTE_HANDLER);
+
+    if (const auto& trace = cpptrace::from_current_exception(); !trace.empty())
+        xr::maybe_trace = libassert::print_stacktrace(trace, 180 - 33);
+
+#ifdef USE_OWN_MINI_DUMP
+    save_mini_dump(info);
+#endif
+
+    if (!cpp && !panic)
+    {
+        const xr::ntstatus code{std::bit_cast<long>(rec.ExceptionCode)};
+        XR_PANIC(code.what(), code, errno, xr::GetLastError());
+    }
+
+    goto out;
+}
+} // namespace
+} // namespace xr
 
 static const char* GetThreadName()
 {
@@ -82,12 +308,10 @@ static const char* GetThreadName()
     return "UNKNOWN";
 }
 
-void LogStackTrace(const char* header, const bool dump_lua_locals)
+void LogStackTrace(const char* header, const bool)
 {
     __try
     {
-        if (auto pCrashHandler = Debug.get_lua_trace())
-            pCrashHandler(dump_lua_locals);
         Log("********************************************************************************");
         Msg("!![{}] Thread: [{}]", std::source_location::current().function_name(), GetThreadName());
         Log(BuildStackTrace(header));
@@ -95,31 +319,6 @@ void LogStackTrace(const char* header, const bool dump_lua_locals)
     }
     __finally
     {}
-}
-
-void LogStackTrace(const char* header, _EXCEPTION_POINTERS* pExceptionInfo, bool dump_lua_locals)
-{
-    __try
-    {
-        if (auto pCrashHandler = Debug.get_lua_trace())
-            pCrashHandler(dump_lua_locals);
-        Log("********************************************************************************");
-        Msg("!![{}] Thread: [{}], ExceptionCode: [{:#x}]", std::source_location::current().function_name(), GetThreadName(),
-            pExceptionInfo->ExceptionRecord->ExceptionCode);
-        auto save = *pExceptionInfo->ContextRecord;
-        Log(BuildStackTrace(header, pExceptionInfo->ContextRecord));
-        *pExceptionInfo->ContextRecord = save;
-        Log("********************************************************************************");
-    }
-    __finally
-    {}
-}
-
-LONG DbgLogExceptionFilter(const char* header, _EXCEPTION_POINTERS* pExceptionInfo)
-{
-    LogStackTrace(header, pExceptionInfo);
-
-    return EXCEPTION_EXECUTE_HANDLER;
 }
 
 namespace
@@ -224,18 +423,6 @@ void gather_info(const char* expression, const char* description, const char* ar
 }
 } // namespace
 
-void xrDebug::do_exit(const std::string& message)
-{
-    ShowErrorMessage(message.c_str(), true);
-
-    if (!IsDebuggerPresent())
-        quick_exit(EXIT_SUCCESS);
-    else
-        DEBUG_INVOKE;
-
-    std::unreachable();
-}
-
 void xrDebug::backend(const char* expression, const char* description, const char* argument0, const char* argument1, const char* file, gsl::index line,
                       const char* function)
 {
@@ -252,7 +439,7 @@ void xrDebug::backend(const char* expression, const char* description, const cha
     // минидампы - придумать другой способ.
     /*
 #ifdef USE_OWN_MINI_DUMP
-    if ( !IsDebuggerPresent() )
+    if (!xr::is_debugger_present())
         save_mini_dump(nullptr);
 #endif
     */
@@ -261,100 +448,50 @@ void xrDebug::backend(const char* expression, const char* description, const cha
     auto buffer = assertion_info + xr_strlen(assertion_info);
     buffer += sprintf(buffer, "%sPress OK to abort execution%s", endline, endline);
 
-    error_after_dialog = true;
+    xr::show({});
 
-    ShowErrorMessage(assertion_info);
-
-    if (!IsDebuggerPresent())
+    if (!xr::is_debugger_present())
         quick_exit(EXIT_SUCCESS);
     else
-        DEBUG_INVOKE;
-}
-
-const char* xrDebug::DXerror2string(const HRESULT code) const { return error2string(gsl::narrow_cast<unsigned long>(code)); }
-
-const char* xrDebug::error2string(const DWORD code) const
-{
-    static string1024 desc_storage;
-    FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, code, 0, desc_storage, sizeof(desc_storage) - 1, nullptr);
-    return desc_storage;
-}
-
-void xrDebug::error(const HRESULT hr, const char* expr, const char* file, gsl::index line, const char* function)
-{
-    backend(DXerror2string(hr), expr, nullptr, nullptr, file, line, function);
-    std::unreachable();
-}
-
-void xrDebug::error(const HRESULT hr, const char* expr, const char* e2, const char* file, gsl::index line, const char* function)
-{
-    backend(DXerror2string(hr), expr, e2, nullptr, file, line, function);
-    std::unreachable();
+        xr::breakpoint();
 }
 
 void xrDebug::fail(const char* e1, const char* file, gsl::index line, const char* function)
 {
     backend("assertion failed", e1, nullptr, nullptr, file, line, function);
-    std::unreachable();
+    xr::unreachable();
 }
 
 void xrDebug::fail(const char* e1, const std::string& e2, const char* file, gsl::index line, const char* function)
 {
     backend(e1, e2.c_str(), nullptr, nullptr, file, line, function);
-    std::unreachable();
+    xr::unreachable();
 }
 
 void xrDebug::fail(const char* e1, const char* e2, const char* file, gsl::index line, const char* function)
 {
     backend(e1, e2, nullptr, nullptr, file, line, function);
-    std::unreachable();
+    xr::unreachable();
 }
 
 void xrDebug::fail(const char* e1, const char* e2, const char* e3, const char* file, gsl::index line, const char* function)
 {
     backend(e1, e2, e3, nullptr, file, line, function);
-    std::unreachable();
+    xr::unreachable();
 }
 
 void xrDebug::fail(const char* e1, const char* e2, const char* e3, const char* e4, const char* file, gsl::index line, const char* function)
 {
     backend(e1, e2, e3, e4, file, line, function);
-    std::unreachable();
-}
-
-void xrDebug::fatal(const char* file, gsl::index line, const char* function, const char* F, ...)
-{
-    string4096 strBuf;
-    va_list args;
-    va_start(args, F);
-    std::vsnprintf(strBuf, sizeof(strBuf), F, args);
-    va_end(args);
-
-    backend("FATAL ERROR", strBuf, nullptr, nullptr, file, line, function);
-    std::unreachable();
-}
-
-static int out_of_memory_handler(size_t size)
-{
-    Memory.mem_compact();
-
-    const auto process_heap = mem_usage_impl(nullptr, nullptr);
-    const auto eco_strings = str_container::stat_economy();
-    const auto eco_smem = smem_container::stat_economy();
-
-    Msg("* [x-ray]: process heap[{} K]", process_heap / 1024);
-    Msg("* [x-ray]: economy: strings[{} K], smem[{} K]", eco_strings / 1024, eco_smem / 1024);
-
-    FATAL("Out of memory. Memory request: [%zu K]", size / 1024);
+    xr::unreachable();
 }
 
 #ifdef USE_OWN_MINI_DUMP
-#include <DbgHelp.h>
-
-#pragma comment(lib, "Version.lib")
-#pragma comment(lib, "dbghelp.lib")
-
-static void save_mini_dump(_EXCEPTION_POINTERS* pExceptionInfo)
+namespace xr
+{
+namespace
+{
+void save_mini_dump(_EXCEPTION_POINTERS* info)
 {
     __try
     {
@@ -395,8 +532,8 @@ static void save_mini_dump(_EXCEPTION_POINTERS* pExceptionInfo)
             _MINIDUMP_EXCEPTION_INFORMATION ExInfo;
 
             ExInfo.ThreadId = ::GetCurrentThreadId();
-            ExInfo.ExceptionPointers = pExceptionInfo;
-            ExInfo.ClientPointers = NULL;
+            ExInfo.ExceptionPointers = info;
+            ExInfo.ClientPointers = false;
 
             // write the dump
             auto dump_flags = MINIDUMP_TYPE(MiniDumpNormal | MiniDumpFilterMemory | MiniDumpScanMemory);
@@ -405,233 +542,82 @@ static void save_mini_dump(_EXCEPTION_POINTERS* pExceptionInfo)
             if (bOK)
                 Msg("--Saved dump file to [{}]", szDumpPath);
             else
-                Msg("!!Failed to save dump file to [{}] (error [{}])", szDumpPath, Debug.error2string(GetLastError()));
+                Msg("!!Failed to save dump file to [{}] (error [{}])", szDumpPath, xr::GetLastError());
 
             ::CloseHandle(hFile);
         }
         else
         {
-            Msg("!!Failed to create dump file [{}] (error [{}])", szDumpPath, Debug.error2string(GetLastError()));
+            Msg("!!Failed to create dump file [{}] (error [{}])", szDumpPath, xr::GetLastError());
         }
     }
     __except (EXCEPTION_EXECUTE_HANDLER)
     {
         Msg("Exception catched in function [{}]", std::source_location::current().function_name());
     }
-
-    xr::log_flush();
 }
-#endif
-
-namespace
-{
-// LuaJIT always throws a custom structured exception instead of calling to
-// the user-defined panic handler. It is used for unwinding when inside a
-// protected call, otherwise the exception sneaks out and finishes in the
-// unhandled exception handler.
-// If the code matches, redirect it to the Lua panic handler, which will
-// print the error off the Lua stack, then eventually the stack trace and
-// the locals if accessible.
-class lua_panic_handler
-{
-private:
-    static constexpr unsigned long lua_exception_base{0xe24c4a00};
-
-    decltype(std::declval<xrDebug>().get_lua_panic()) handler{};
-    s32 code{};
-
-    [[noreturn]] void execute()
-    {
-        handler(code);
-        std::unreachable();
-    }
-
-public:
-    constexpr explicit lua_panic_handler(const _EXCEPTION_RECORD& rec)
-    {
-        const auto maybe_code = rec.ExceptionCode ^ lua_exception_base;
-        if (maybe_code > std::numeric_limits<u8>::max())
-            return;
-
-        handler = Debug.get_lua_panic();
-        code = gsl::narrow_cast<s32>(maybe_code);
-    }
-
-    constexpr ~lua_panic_handler()
-    {
-        if (handler != nullptr)
-            execute();
-    }
-
-    [[nodiscard]] constexpr explicit operator bool() const { return handler != nullptr; }
-};
-
-// An uncaught C++ exception finishes as an unhandled structured exception in
-// the handler with the particular codes. If that's the case, the handler
-// shouldn't exit immediately -- pass it to the default handler, which will
-// call std::terminate() where it can be rethrown and logged.
-[[nodiscard]] constexpr bool is_cpp_exception(const _EXCEPTION_RECORD& rec)
-{
-    if (rec.ExceptionCode != 0xe06d7363 || rec.NumberParameters != 4)
-        return false;
-
-    switch (rec.ExceptionInformation[0])
-    {
-    case 0x19930520:
-    case 0x19930521:
-    case 0x19930522:
-    case 0x01994000: return true;
-    default: return false;
-    }
-}
-
-void format_message(char* buffer)
-{
-    __try
-    {
-        auto error_code = GetLastError();
-        if (error_code == ERROR_SUCCESS)
-        {
-            *buffer = 0;
-            return;
-        }
-
-        void* message{};
-        FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, nullptr, error_code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                       reinterpret_cast<char*>(&message), 0, nullptr);
-
-        sprintf(buffer, "[error][0x%lx] : [%s]", error_code, static_cast<gsl::czstring>(message));
-        LocalFree(message);
-    }
-    __except (EXCEPTION_EXECUTE_HANDLER)
-    {
-        Msg("Exception catched in function [{}]", std::source_location::current().function_name());
-    }
-}
-
-[[nodiscard]] long UnhandledFilter(_EXCEPTION_POINTERS* pExceptionInfo)
-{
-    const auto& rec = *pExceptionInfo->ExceptionRecord;
-    const lua_panic_handler panic{rec};
-
-    if (!panic && !is_cpp_exception(rec) && !error_after_dialog)
-    {
-        string1024 error_message;
-        format_message(error_message);
-        if (*error_message)
-            Msg("\n{}", error_message);
-
-        LogStackTrace("!!Unhandled exception stack trace:\n", pExceptionInfo, true);
-
-        ShowErrorMessage("Fatal error occured\n\nPress OK to abort program execution");
-    }
-
-#ifdef USE_OWN_MINI_DUMP
-    save_mini_dump(pExceptionInfo);
-#endif
-
-    return orig != nullptr ? orig(pExceptionInfo) : EXCEPTION_CONTINUE_SEARCH;
-}
-
-// Вызывается при std::terminate()
-void _terminate() { Debug.backend("<no expression>", "Unexpected application termination", nullptr, nullptr, DEBUG_INFO); }
-
-void handler_base(const char* reason_string) { Debug.backend("error handler is invoked!", reason_string, nullptr, nullptr, DEBUG_INFO); }
-
-void invalid_parameter_handler(const wchar_t* expression, const wchar_t* function, const wchar_t* file, unsigned int line, uintptr_t)
-{
-    string4096 expression_;
-    string4096 function_;
-    string4096 file_;
-    size_t converted_chars = 0;
-
-    if (expression)
-        wcstombs_s(&converted_chars, expression_, sizeof(expression_), expression, (wcslen(expression) + 1) * 2 * sizeof(char));
-    else
-        strcpy_s(expression_, "");
-
-    if (function)
-        wcstombs_s(&converted_chars, function_, sizeof(function_), function, (wcslen(function) + 1) * 2 * sizeof(char));
-    else
-        strcpy_s(function_, std::source_location::current().function_name());
-
-    if (file)
-        wcstombs_s(&converted_chars, file_, sizeof(file_), file, (wcslen(file) + 1) * 2 * sizeof(char));
-    else
-    {
-        line = std::source_location::current().line();
-        strcpy_s(file_, std::source_location::current().function_name());
-    }
-
-    Debug.backend("error handler is invoked!", expression_, nullptr, nullptr, file_, line, function_);
-}
-
-void std_out_of_memory_handler() { handler_base("std: out of memory"); }
-void pure_call_handler() { handler_base("pure virtual function call"); }
-void abort_handler(int) { handler_base("application is aborting"); }
-void floating_point_handler(int) { handler_base("floating point error"); }
-void illegal_instruction_handler(int) { handler_base("illegal instruction"); }
-void termination_handler(int) { handler_base("termination with exit code 3"); }
-
-/*void segment_violation( int signal ) {
-  handler_base( "Segment violation error" );
-}*/
-
-/*
-// http://qaru.site/questions/441696/what-actions-do-i-need-to-take-to-get-a-crash-dump-in-all-error-scenarios
-BOOL PreventSetUnhandledExceptionFilter()
-{
-    HMODULE hKernel32 = GetModuleHandle("kernel32.dll");
-    if (!hKernel32)
-        return FALSE;
-    void* pOrgEntry = GetProcAddress(hKernel32, "SetUnhandledExceptionFilter");
-    if (!pOrgEntry)
-        return FALSE;
-
-#ifdef _M_IX86
-    // Code for x86:
-    // 33 C0                xor         eax,eax
-    // C2 04 00             ret         4
-    constexpr unsigned char szExecute[] = {0x33, 0xC0, 0xC2, 0x04, 0x00};
-#elif _M_X64
-    // 33 C0                xor         eax,eax
-    // C3                   ret
-    constexpr unsigned char szExecute[] = {0x33, 0xC0, 0xC3};
-#else
-#error "The following code only works for x86 and x64!"
-#endif
-
-    SIZE_T bytesWritten = 0;
-    BOOL bRet = WriteProcessMemory(GetCurrentProcess(), pOrgEntry, szExecute, sizeof(szExecute), &bytesWritten);
-    return bRet;
-}
-*/
 } // namespace
+} // namespace xr
+#endif
+
+std::string xrDebug::format_system(unsigned long code, bool module)
+{
+    constexpr auto drop = [] [[nodiscard]] (char ch) { return ch == ' ' || ch == '.' || ch == '\n' || ch == '\r'; };
+    constexpr unsigned long lang{0x409}; // en-US
+
+    unsigned long flags{FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS};
+    ::HINSTANCE__* handle{nullptr};
+    gsl::zstring str{nullptr};
+
+    if (module)
+    {
+        handle = ::LoadLibraryA("ntdll.dll");
+        flags |= FORMAT_MESSAGE_FROM_HMODULE;
+    }
+
+    const auto _ = gsl::finally([str, handle] {
+        ::LocalFree(str);
+
+        if (handle != nullptr)
+            ::FreeLibrary(handle);
+    });
+
+    auto n = ::FormatMessageA(flags, handle, code, lang, reinterpret_cast<gsl::zstring>(&str), 0, nullptr);
+    while (n > 0 && drop(str[n - 1]))
+        --n;
+
+    if (n == 0)
+        return "unknown error";
+
+    std::string ret{str, n};
+    std::ranges::replace(ret, '\n', ' ');
+
+    return ret;
+}
 
 void xrDebug::_initialize()
 {
-    std::atexit([] { R_ASSERT(ExitFromWinMain, "Unexpected application exit!"); });
+    cpptrace::set_log_callback(&xr::log_callback);
 
-    std::set_terminate(_terminate);
+    libassert::set_color_scheme(libassert::color_scheme::blank);
+    libassert::set_failure_handler(&xr::failure_handler);
 
-    _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
-    signal(SIGABRT, abort_handler);
-    signal(SIGABRT_COMPAT, abort_handler);
-    signal(SIGFPE, floating_point_handler);
-    signal(SIGILL, illegal_instruction_handler);
-    // signal(SIGSEGV, segment_violation);
-    signal(SIGINT, nullptr);
-    signal(SIGTERM, termination_handler);
+    std::atexit([] { XR_ASSERT(ExitFromWinMain, "unexpected application exit"); });
+    std::set_terminate(&xr::terminate);
 
-    _set_invalid_parameter_handler(&invalid_parameter_handler);
+    ::_set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
+    std::signal(SIGINT, nullptr);
 
-    _set_new_mode(1);
-    _set_new_handler(&out_of_memory_handler);
-    std::set_new_handler(&std_out_of_memory_handler);
+    for (auto sig : std::array{SIGILL, SIGFPE, SIGTERM, SIGABRT, SIGABRT_COMPAT})
+        std::signal(sig, &xr::signal_handler);
 
-    _set_purecall_handler(&pure_call_handler);
+    ::_set_new_mode(1);
+    std::set_new_handler(&xr::new_handler);
 
-    orig = SetUnhandledExceptionFilter(UnhandledFilter);
+    ::_set_invalid_parameter_handler(&xr::invalid_parameter_handler);
+    ::_set_purecall_handler([] { XR_PANIC("pure virtual function call"); });
+
+    xr::orig = ::SetUnhandledExceptionFilter(&xr::unhandled_filter);
 
     xr::detail::log_init();
 }

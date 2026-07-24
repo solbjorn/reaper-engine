@@ -1,6 +1,3 @@
-//----------------------------------------------------
-// file: TempObject.cpp
-//----------------------------------------------------
 #include "stdafx.h"
 
 #include "PS_instance.h"
@@ -15,14 +12,10 @@ CPS_Instance::CPS_Instance(bool destroy_on_game_load) : ISpatial{g_SpatialSpace}
 
 CPS_Instance::~CPS_Instance()
 {
-    VERIFY(!g_bRendering);
+    XR_ASSERT(!g_bRendering);
+    g_pGamePersistent->ps_active.erase(XR_ASSERT_VAL(g_pGamePersistent->ps_active.find(this) != g_pGamePersistent->ps_active.end()));
 
-    auto it = g_pGamePersistent->ps_active.find(this);
-    R_ASSERT(it != g_pGamePersistent->ps_active.end());
-    g_pGamePersistent->ps_active.erase(it);
-
-    it = std::find(g_pGamePersistent->ps_destroy.begin(), g_pGamePersistent->ps_destroy.end(), this);
-    if (it != g_pGamePersistent->ps_destroy.end())
+    if (const auto it = std::ranges::find(g_pGamePersistent->ps_destroy, this); it != g_pGamePersistent->ps_destroy.end())
         g_pGamePersistent->ps_destroy.erase(it);
 
     spatial_unregister();

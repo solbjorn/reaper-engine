@@ -35,18 +35,11 @@ CPatrolPoint::CPatrolPoint([[maybe_unused]] const CPatrolPath* path)
 #ifdef DEBUG
 void CPatrolPoint::verify_vertex_id(const CLevelGraph* level_graph, const CGameLevelCrossTable* cross, const CGameGraph* game_graph) const
 {
-    if (!level_graph)
+    if (level_graph == nullptr)
         return;
 
-    if (level_graph->valid_vertex_id(m_level_vertex_id))
-    {
-        return;
-    }
-
-    VERIFY(m_path);
-    string1024 temp;
-    sprintf(temp, "\n! Patrol point %s in path %s is not on the level graph vertex!", *m_name, *m_path->m_name);
-    THROW2(level_graph->valid_vertex_id(m_level_vertex_id), temp);
+    XR_ASSERT(m_path != nullptr);
+    XR_ASSERT(level_graph->valid_vertex_id(m_level_vertex_id), "patrol point is not on the level graph vertex", m_name, m_path->m_name, m_level_vertex_id);
 }
 #endif
 
@@ -64,8 +57,7 @@ IC void CPatrolPoint::correct_position(const CLevelGraph* level_graph, const CGa
 CPatrolPoint::CPatrolPoint([[maybe_unused]] const CPatrolPath* path, const Fvector& position, u32 level_vertex_id, u32 flags, shared_str name)
 {
 #ifdef DEBUG
-    VERIFY(path);
-    m_path = path;
+    m_path = XR_ASSERT_VAL(path != nullptr);
 #endif
 
     m_position = position;
@@ -111,19 +103,25 @@ CPatrolPoint& CPatrolPoint::load_ini(CInifile::Sect& section, LPSTR prefix)
     m_name._set(section.r_string(xr::format("{}:name", sv).c_str()));
     m_position = section.r_fvector3(xr::format("{}:position", sv).c_str());
 
-    auto res32 = scn::scan_int<u32>(section.r_string(xr::format("{}:level_vertex_id", sv).c_str()));
-    R_ASSERT(res32, res32.error().msg());
+    std::string_view val{section.r_string(xr::format("{}:level_vertex_id", sv).c_str())};
+    auto res32 = scn::scan_int<u32>(val);
+    XR_ASSERT(res32, res32.error().msg(), m_name, val);
+
     m_level_vertex_id = res32->value();
 
-    const auto res16 = scn::scan_int<GameGraph::_GRAPH_ID>(section.r_string(xr::format("{}:game_vertex_id", sv).c_str()));
-    R_ASSERT(res16, res16.error().msg());
+    val = section.r_string(xr::format("{}:game_vertex_id", sv).c_str());
+    const auto res16 = scn::scan_int<GameGraph::_GRAPH_ID>(val);
+    XR_ASSERT(res16, res16.error().msg(), m_name, val);
+
     m_game_vertex_id = res16->value();
 
     const auto flags = xr::format("{}:flags", sv);
     if (section.line_exist(flags.c_str()))
     {
-        res32 = scn::scan_int<u32>(section.r_string(flags.c_str()), 16);
-        R_ASSERT(res32, res32.error().msg());
+        val = section.r_string(flags.c_str());
+        res32 = scn::scan_int<u32>(val, 16);
+        XR_ASSERT(res32, res32.error().msg(), m_name, val);
+
         m_flags = res32->value();
     }
 

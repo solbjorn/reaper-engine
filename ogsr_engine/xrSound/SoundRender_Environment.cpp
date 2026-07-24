@@ -16,7 +16,7 @@ CSoundRender_Environment::CSoundRender_Environment()
     set_default();
 }
 
-CSoundRender_Environment::~CSoundRender_Environment() {}
+CSoundRender_Environment::~CSoundRender_Environment() = default;
 
 void CSoundRender_Environment::set_default()
 {
@@ -256,7 +256,7 @@ void SoundEnvironment_LIB::Unload()
 
 gsl::index SoundEnvironment_LIB::GetID(LPCSTR name) const
 {
-    for (auto [id, env] : xr::views_enumerate(library))
+    for (auto [id, env] : std::views::enumerate(library))
     {
         if (std::is_eq(xr::strcasecmp(name, env->name)))
             return id;
@@ -266,5 +266,4 @@ gsl::index SoundEnvironment_LIB::GetID(LPCSTR name) const
 }
 
 CSoundRender_Environment* SoundEnvironment_LIB::Get(int id) const { return library[id]; }
-
 SoundEnvironment_LIB::SE_VEC& SoundEnvironment_LIB::Library() { return library; }

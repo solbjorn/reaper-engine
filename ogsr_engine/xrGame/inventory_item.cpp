@@ -52,7 +52,8 @@ CInventoryItem::CInventoryItem()
 
 CInventoryItem::~CInventoryItem()
 {
-    ASSERT_FMT((int)m_slots.size() >= 0, "m_slots.size() returned negative value inside destructor!"); // alpet: для детекта повреждения объекта
+    // alpet: для детекта повреждения объекта
+    XR_ASSERT(std::ssize(m_slots) >= 0);
 
     bool B_GOOD =
         (!m_pCurrentInventory || (std::find(m_pCurrentInventory->m_all.begin(), m_pCurrentInventory->m_all.end(), this) == m_pCurrentInventory->m_all.end()));

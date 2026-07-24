@@ -502,13 +502,11 @@ void CConsole::DrawBackgrounds(bool bGame)
         rb.y2 = pr.y2;
         DrawRect(rb, tips_scroll_back_color);
 
-        VERIFY(rb.y2 - rb.y1 >= 1.0f);
-        float back_height = rb.y2 - rb.y1;
+        const f32 back_height = XR_ASSERT_VAL(rb.y2 - rb.y1 >= 1.0f);
+
         float u_height = (back_height * static_cast<float>(VIEW_TIPS_COUNT)) / float(tips_sz);
         if (u_height < 0.5f * font_h)
-        {
             u_height = 0.5f * font_h;
-        }
 
         // float u_pos = (back_height - u_height) * float(m_start_tip) / float(tips_sz);
         float u_pos = back_height * float(m_start_tip) / float(tips_sz);
@@ -657,10 +655,10 @@ void CConsole::SelectCommand()
     if (m_cmd_history.empty())
         return;
 
-    VERIFY(0 <= m_cmd_history_idx && m_cmd_history_idx < (int)m_cmd_history.size());
-
+    XR_ASSERT(m_cmd_history_idx >= 0 && m_cmd_history_idx < std::ssize(m_cmd_history), "", m_cmd_history_idx, std::ssize(m_cmd_history));
     auto it_rb = m_cmd_history.rbegin() + m_cmd_history_idx;
     ec().set_edit((*it_rb).c_str());
+
     reset_selected_tip();
 }
 

@@ -241,8 +241,8 @@ static void construct_restriction_string(StrType& temp_restrictions, const xr_ve
                 s += ",";
             s += it;
         }
-        ASSERT_FMT(s.length() < std::size(temp_restrictions), "!![%s]: resulted string too long: object[%s] temp_restrictions_size[%zu] s.length[%zu]",
-                   std::source_location::current().function_name(), RObj->object().cName().c_str(), std::size(temp_restrictions), s.length());
+
+        XR_ASSERT(s.length() < std::size(temp_restrictions), "string buffer overflow", RObj->object().cName(), s);
         strcpy_s(temp_restrictions, s.c_str());
     }
 }

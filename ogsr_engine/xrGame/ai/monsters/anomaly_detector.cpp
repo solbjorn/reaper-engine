@@ -101,10 +101,7 @@ void CAnomalyDetector::on_contact(CObject* obj)
     if (obj->getDestroy())
         return;
 
-    auto custom_zone = smart_cast<CCustomZone*>(obj);
-
-    ASSERT_FMT(custom_zone, "[%s]: %s not a CCUstomZone", std::source_location::current().function_name(), obj->cName().c_str());
-
+    auto custom_zone = XR_ASSERT_VAL(smart_cast<CCustomZone*>(obj) != nullptr, "not an anomaly zone", obj->cName());
     if (custom_zone->ZoneState() == CCustomZone::eZoneStateDisabled)
         return;
 

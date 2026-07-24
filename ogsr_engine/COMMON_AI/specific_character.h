@@ -111,17 +111,8 @@ public:
     virtual void Load(shared_str id);
 
 protected:
-    const SSpecificCharacterData* data() const
-    {
-        VERIFY(inherited_shared::get_sd());
-        return inherited_shared::get_sd();
-    }
-
-    SSpecificCharacterData* data()
-    {
-        VERIFY(inherited_shared::get_sd());
-        return inherited_shared::get_sd();
-    }
+    const SSpecificCharacterData* data() const { return XR_ASSERT_VAL(inherited_shared::get_sd() != nullptr); }
+    SSpecificCharacterData* data() { return XR_ASSERT_VAL(inherited_shared::get_sd() != nullptr); }
 
     // загрузка из XML файла
     void load_shared(gsl::czstring) override;

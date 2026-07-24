@@ -33,15 +33,14 @@ IC void CGenericPathManager::setup(const _Graph* _graph, _DataStorage* _data_sto
 TEMPLATE_SPECIALIZATION
 IC _dist_type CGenericPathManager::evaluate(const _index_type& node_index1, const _index_type& node_index2, const const_iterator& i) const
 {
-    VERIFY(graph);
-    return (graph->get_edge_weight(node_index1, node_index2, i));
+    return XR_ASSERT_VAL(graph != nullptr)->get_edge_weight(node_index1, node_index2, i);
 }
 
 TEMPLATE_SPECIALIZATION
 IC _dist_type CGenericPathManager::estimate(const _index_type&) const
 {
-    VERIFY(graph);
-    return (_dist_type(0));
+    XR_ASSERT(graph != nullptr);
+    return _dist_type(0);
 }
 
 TEMPLATE_SPECIALIZATION
@@ -55,7 +54,8 @@ TEMPLATE_SPECIALIZATION
 template <typename T>
 IC void CGenericPathManager::create_path(T& vertex)
 {
-    VERIFY(data_storage);
+    XR_ASSERT(data_storage != nullptr);
+
     if (path)
         data_storage->get_node_path(*path, &vertex);
 }
@@ -72,22 +72,18 @@ IC bool CGenericPathManager::is_goal_reached(const _index_type& vertex_id) const
 TEMPLATE_SPECIALIZATION
 IC bool CGenericPathManager::is_limit_reached(const _iteration_type iteration_count) const
 {
-    VERIFY(data_storage);
+    XR_ASSERT(data_storage != nullptr);
     return ((data_storage->get_best().f() >= max_range) || (iteration_count >= max_iteration_count) ||
             (data_storage->get_visited_node_count() >= max_visited_node_count));
 }
 
 TEMPLATE_SPECIALIZATION
-IC bool CGenericPathManager::is_accessible(const _index_type& vertex_id) const
-{
-    VERIFY(graph);
-    return (graph->is_accessible(vertex_id));
-}
+IC bool CGenericPathManager::is_accessible(const _index_type& vertex_id) const { return XR_ASSERT_VAL(graph != nullptr)->is_accessible(vertex_id); }
 
 TEMPLATE_SPECIALIZATION
 IC bool CGenericPathManager::is_metric_euclidian() const
 {
-    // #pragma todo("Dima to Dima : implement path manager for non-euclidian heuristics")
+    // TODO: Dima to Dima: implement path manager for non-euclidian heuristics
     return (true);
 }
 

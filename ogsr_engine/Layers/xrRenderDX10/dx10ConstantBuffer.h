@@ -14,7 +14,7 @@ public:
     explicit dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable);
     ~dx10ConstantBuffer() override;
 
-    bool Similar(dx10ConstantBuffer& _in);
+    bool Similar(const dx10ConstantBuffer& _in);
     ID3DBuffer* GetBuffer() { return m_pBuffer; }
 
     void Flush(ctx_id_t context_id);
@@ -32,9 +32,9 @@ public:
     void* AccessDirect(R_constant_load& L, size_t DataSize);
 
 private:
-    Fvector4* Access(u16 offset);
+    template <typename T>
+    [[nodiscard]] T& Access(std::size_t offset);
 
-private:
     shared_str m_strBufferName;
     D3D_CBUFFER_TYPE m_eBufferType;
 
@@ -44,11 +44,11 @@ private:
     xr_vector<shared_str> m_MembersNames;
 
     ID3DBuffer* m_pBuffer;
-    u32 m_uiBufferSize; //	Cache buffer size for debug validation
-    void* m_pBufferData;
-    bool m_bChanged;
+    std::byte* m_pBufferData;
+    u32 m_uiBufferSize;
+    bool m_bChanged{true};
 
-    static const u32 lineSize = sizeof(Fvector4);
+    static constexpr auto lineSize = sizeof(Fvector4);
 
     //	Never try to copy objects of this class due to the pointer and autoptr members
     dx10ConstantBuffer(const dx10ConstantBuffer&);

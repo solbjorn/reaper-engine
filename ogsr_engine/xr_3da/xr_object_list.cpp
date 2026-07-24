@@ -12,75 +12,59 @@
 
 #include "CustomHUD.h"
 
-class fClassEQ
-{
-    CLASS_ID cls;
-
-public:
-    fClassEQ(CLASS_ID C) : cls{C} {}
-    IC bool operator()(CObject* O) { return cls == O->CLS_ID; }
-};
-
 CObjectList::CObjectList() { crows = &crows_0; }
 
 CObjectList::~CObjectList()
 {
-    R_ASSERT(objects_active.empty());
-    R_ASSERT(objects_sleeping.empty());
-    R_ASSERT(destroy_queue.empty());
-    R_ASSERT(map_NETID.empty());
+    XR_ASSERT(objects_active.size() == 0, "", objects_active);
+    XR_ASSERT(objects_sleeping.size() == 0, "", objects_sleeping);
+    XR_ASSERT(destroy_queue.size() == 0, "", destroy_queue);
+    XR_ASSERT(map_NETID.size() == 0, "", map_NETID);
 }
 
 CObject* CObjectList::FindObjectByName(shared_str name)
 {
-    for (auto& it : objects_active)
-        if (it->cName().equal(name))
-            return it;
+    if (const auto it = std::ranges::find(objects_active, name, &CObject::cName); it != objects_active.end())
+        return *it;
 
-    for (auto& it : objects_sleeping)
-        if (it->cName().equal(name))
-            return it;
+    if (const auto it = std::ranges::find(objects_sleeping, name, &CObject::cName); it != objects_sleeping.end())
+        return *it;
 
     return nullptr;
 }
 
-CObject* CObjectList::FindObjectByName(LPCSTR name) { return FindObjectByName(shared_str(name)); }
+CObject* CObjectList::FindObjectByName(LPCSTR name) { return FindObjectByName(shared_str{name}); }
 
 CObject* CObjectList::FindObjectByCLS_ID(CLASS_ID cls)
 {
-    {
-        xr_vector<CObject*>::iterator O = std::find_if(objects_active.begin(), objects_active.end(), fClassEQ(cls));
-        if (O != objects_active.end())
-            return *O;
-    }
-    {
-        xr_vector<CObject*>::iterator O = std::find_if(objects_sleeping.begin(), objects_sleeping.end(), fClassEQ(cls));
-        if (O != objects_sleeping.end())
-            return *O;
-    }
+    if (const auto it = std::ranges::find(objects_active, cls, &CObject::CLS_ID); it != objects_active.end())
+        return *it;
+
+    if (const auto it = std::ranges::find(objects_sleeping, cls, &CObject::CLS_ID); it != objects_sleeping.end())
+        return *it;
 
     return nullptr;
 }
 
-void CObjectList::o_remove(xr_vector<CObject*>& v, CObject* O)
-{
-    xr_vector<CObject*>::iterator _i = std::find(v.begin(), v.end(), O);
-    VERIFY(_i != v.end());
-    v.erase(_i);
-}
+void CObjectList::o_remove(xr_vector<CObject*>& v, CObject* O) { v.erase(XR_ASSERT_VAL(std::ranges::find(v, O) != v.end())); }
 
 void CObjectList::o_activate(CObject* O)
 {
-    VERIFY(O && O->processing_enabled());
+    XR_ASSERT(O != nullptr && O->processing_enabled());
+
     o_remove(objects_sleeping, O);
     objects_active.push_back(O);
+
     O->MakeMeCrow();
 }
+
 void CObjectList::o_sleep(CObject* O)
 {
-    VERIFY(O && !O->processing_enabled());
+    XR_ASSERT(O != nullptr && !O->processing_enabled());
+
     o_remove(objects_active, O);
     objects_sleeping.push_back(O);
+
     O->MakeMeCrow();
 }
 
@@ -100,7 +84,7 @@ tmc::task<void> CObjectList::SingleUpdate(CObject* O)
         co_await O->UpdateCL();
 
 #ifdef DEBUG
-        VERIFY3(O->dbg_update_cl == Device.dwFrame, "Broken sequence of calls to 'UpdateCL'", *O->cName());
+        XR_ASSERT(O->dbg_update_cl == Device.dwFrame, "broken sequence of calls to update", O->cName());
 #endif
 
         if (O->H_Parent() && (O->H_Parent()->getDestroy() || O->H_Root()->getDestroy()))
@@ -189,14 +173,14 @@ tmc::task<void> CObjectList::ProcessDestroyQueue()
             Sound->object_relcase(destroy_queue[it]);
 
         CCustomHUD& hud = *g_pGameLevel->pHUD;
-        RELCASE_CALLBACK_VEC::iterator it = m_relcase_callbacks.begin();
-        const RELCASE_CALLBACK_VEC::iterator ite = m_relcase_callbacks.end();
-        for (; it != ite; ++it)
+
+        for (auto [it, cb] : std::views::enumerate(m_relcase_callbacks))
         {
-            VERIFY(*(*it).m_ID == (it - m_relcase_callbacks.begin()));
+            XR_ASSERT(*cb.m_ID == it);
+
             for (auto& dit : destroy_queue)
             {
-                (*it).m_Callback(dit);
+                cb.m_Callback(dit);
                 hud.net_Relcase(dit);
             }
         }
@@ -221,9 +205,8 @@ tmc::task<void> CObjectList::ProcessDestroyQueue()
 
 void CObjectList::net_Register(CObject* O)
 {
-    R_ASSERT(O);
-    ASSERT_FMT(map_NETID.find(O->ID()) == map_NETID.end(), "%s ID[%u] already registered", O->cName().c_str(), O->ID());
-    map_NETID.try_emplace(O->ID(), O);
+    XR_ASSERT(O != nullptr);
+    XR_ASSERT(map_NETID.try_emplace(O->ID(), O).second, "object already registered", O->cName(), O->ID());
 }
 
 void CObjectList::net_Unregister(CObject* O)
@@ -239,7 +222,7 @@ CObject* CObjectList::net_Find(u32 ID)
     return it == map_NETID.end() ? nullptr : it->second;
 }
 
-void CObjectList::Load() { R_ASSERT(map_NETID.empty() && objects_active.empty() && destroy_queue.empty() && objects_sleeping.empty()); }
+void CObjectList::Load() { XR_ASSERT(map_NETID.empty() && objects_active.empty() && destroy_queue.empty() && objects_sleeping.empty()); }
 
 tmc::task<void> CObjectList::Unload()
 {
@@ -285,47 +268,40 @@ CObject* CObjectList::Create(LPCSTR name)
 
 void CObjectList::Destroy(CObject* O)
 {
-    if (!O)
+    if (O == nullptr)
         return;
 
     net_Unregister(O);
 
     // crows
-    xr_vector<CObject*>::iterator _i0 = std::find(crows_0.begin(), crows_0.end(), O);
-    if (_i0 != crows_0.end())
+    if (const auto _i0 = std::ranges::find(crows_0, O); _i0 != crows_0.end())
         crows_0.erase(_i0);
-    xr_vector<CObject*>::iterator _i1 = std::find(crows_1.begin(), crows_1.end(), O);
-    if (_i1 != crows_1.end())
+
+    if (const auto _i1 = std::ranges::find(crows_1, O); _i1 != crows_1.end())
         crows_1.erase(_i1);
 
     // active/inactive
-    xr_vector<CObject*>::iterator _i = std::find(objects_active.begin(), objects_active.end(), O);
-    if (_i != objects_active.end())
+    if (const auto _i = std::ranges::find(objects_active, O); _i != objects_active.end())
         objects_active.erase(_i);
     else
-    {
-        xr_vector<CObject*>::iterator _ii = std::find(objects_sleeping.begin(), objects_sleeping.end(), O);
-        if (_ii != objects_sleeping.end())
-            objects_sleeping.erase(_ii);
-        else
-            FATAL("! Unregistered object being destroyed");
-    }
+        objects_sleeping.erase(
+            XR_ASSERT_VAL(std::ranges::find(objects_sleeping, O) != objects_sleeping.end(), "unregistered object being destroyed", O->cName()));
+
     g_pGamePersistent->ObjectPool.destroy(O);
 }
 
 void CObjectList::relcase_register(const RELCASE_CALLBACK& cb, int* ID)
 {
-#ifdef DEBUG
-    RELCASE_CALLBACK_VEC::iterator It = std::find(m_relcase_callbacks.begin(), m_relcase_callbacks.end(), cb);
-    VERIFY(It == m_relcase_callbacks.end());
-#endif
+    XR_DEBUG_ASSERT(std::ranges::find(m_relcase_callbacks, cb, &SRelcasePair::m_Callback) == m_relcase_callbacks.end());
+
     *ID = m_relcase_callbacks.size();
     m_relcase_callbacks.emplace_back(ID, cb);
 }
 
 void CObjectList::relcase_unregister(int* ID)
 {
-    VERIFY(m_relcase_callbacks[*ID].m_ID == ID);
+    XR_ASSERT(m_relcase_callbacks[*ID].m_ID == ID);
+
     m_relcase_callbacks[*ID] = m_relcase_callbacks.back();
     *m_relcase_callbacks.back().m_ID = *ID;
     m_relcase_callbacks.pop_back();
@@ -358,7 +334,7 @@ bool CObjectList::dump_all_objects()
 
 void CObjectList::register_object_to_destroy(CObject* object_to_destroy)
 {
-    VERIFY(!registered_object_to_destroy(object_to_destroy));
+    XR_DEBUG_ASSERT(!registered_object_to_destroy(object_to_destroy));
     destroy_queue.push_back(object_to_destroy);
 
     for (auto& it : objects_active)
@@ -385,6 +361,6 @@ void CObjectList::register_object_to_destroy(CObject* object_to_destroy)
 #ifdef DEBUG
 bool CObjectList::registered_object_to_destroy(const CObject* object_to_destroy) const
 {
-    return (std::find(destroy_queue.begin(), destroy_queue.end(), object_to_destroy) != destroy_queue.end());
+    return std::ranges::find(destroy_queue, object_to_destroy) != destroy_queue.end();
 }
 #endif // DEBUG

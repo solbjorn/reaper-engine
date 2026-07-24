@@ -48,12 +48,12 @@ struct S2DVert
 #define UI_FRUSTUM_MAXPLANES 12
 #define UI_FRUSTUM_SAFE (UI_FRUSTUM_MAXPLANES * 4)
 
-using sPoly2D = svector<S2DVert, UI_FRUSTUM_SAFE>;
+using sPoly2D = std::inplace_vector<S2DVert, UI_FRUSTUM_SAFE>;
 
 class C2DFrustum
 {
     // only rect form
-    svector<Fplane2, FRUSTUM_MAXPLANES> planes;
+    std::inplace_vector<Fplane2, FRUSTUM_MAXPLANES> planes;
     Frect m_rect{};
 
 public:

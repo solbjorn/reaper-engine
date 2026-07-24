@@ -36,13 +36,14 @@
 
 CALifeMonsterBrain::CALifeMonsterBrain(object_type* object) : m_object{object}
 {
-    VERIFY(object);
+    XR_ASSERT(object != nullptr);
 
 #ifdef XRGAME_EXPORTS
     m_movement_manager = xr_new<CALifeMonsterMovementManager>(object);
 
-    const auto res = scn::scan<u32, u32, u32>(std::string_view{pSettings->r_string(this->object().name(), "smart_terrain_choose_interval")}, "{}:{}:{}");
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{pSettings->r_string(this->object().name(), "smart_terrain_choose_interval")};
+    const auto res = scn::scan<u32, u32, u32>(val, "{}:{}:{}");
+    XR_ASSERT(res, res.error().msg(), this->object().name(), val);
 
     const auto [hours, minutes, seconds] = res->values();
     m_time_interval = (u32)generate_time(1, 1, 1, hours, minutes, seconds);
@@ -70,21 +71,20 @@ void CALifeMonsterBrain::on_location_change() {}
 
 CSE_ALifeSmartZone& CALifeMonsterBrain::smart_terrain()
 {
-    VERIFY(object().m_smart_terrain_id != 0xffff);
-    if (m_smart_terrain && (object().m_smart_terrain_id == m_smart_terrain->ID))
-        return (*m_smart_terrain);
+    const auto id = XR_ASSERT_VAL(object().m_smart_terrain_id != std::numeric_limits<u16>::max());
 
-    m_smart_terrain = ai().alife().smart_terrains().object(object().m_smart_terrain_id);
-    VERIFY(m_smart_terrain);
-    return (*m_smart_terrain);
+    if (m_smart_terrain != nullptr && id == m_smart_terrain->ID)
+        return *m_smart_terrain;
+
+    m_smart_terrain = XR_ASSERT_VAL(ai().alife().smart_terrains().object(id) != nullptr);
+
+    return *m_smart_terrain;
 }
 
 void CALifeMonsterBrain::process_task()
 {
-    CALifeSmartTerrainTask* task = smart_terrain().task(&object());
-    THROW3(task, "smart terrain returned nil task, while npc is registered in it", smart_terrain().name_replace());
     movement().path_type(MovementManager::ePathTypeGamePath);
-    movement().detail().target(*task);
+    movement().detail().target(*XR_ASSERT_VAL(smart_terrain().task(&object()) != nullptr, "smart terrain returned no task", smart_terrain().name_replace()));
 }
 
 void CALifeMonsterBrain::select_task(const bool forced)
@@ -126,18 +126,6 @@ void CALifeMonsterBrain::select_task(const bool forced)
 
 void CALifeMonsterBrain::update(const bool forced)
 {
-#if 0 // def DEBUG
-	if (!Level().MapManager().HasMapLocation("debug_stalker",object().ID)) {
-		CMapLocation				*map_location = 
-			Level().MapManager().AddMapLocation(
-				"debug_stalker",
-				object().ID
-			);
-
-		map_location->SetHint		(object().name_replace());
-	}
-#endif
-
     select_task(forced);
 
     if (object().m_smart_terrain_id != 0xffff)
@@ -151,6 +139,5 @@ void CALifeMonsterBrain::update(const bool forced)
 void CALifeMonsterBrain::default_behaviour() { movement().path_type(MovementManager::ePathTypeNoPath); }
 
 void CALifeMonsterBrain::on_switch_online() { movement().on_switch_online(); }
-
 void CALifeMonsterBrain::on_switch_offline() { movement().on_switch_offline(); }
 #endif // XRGAME_EXPORTS

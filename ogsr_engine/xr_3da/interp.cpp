@@ -317,9 +317,8 @@ float evalEnvelope(CEnvelope* env, float time)
     int k = 0;
     while (time > env->keys[k + 1]->time)
         k++;
-    VERIFY((k + 1) < sz);
 
-    key1 = env->keys[k + 1];
+    key1 = env->keys[XR_ASSERT_VAL(k + 1 < sz)];
     key0 = env->keys[k];
     if (k > 0)
         key0_p = env->keys[k - 1];

@@ -73,7 +73,7 @@ static void r_qt_q8(src& P, Fquaternion& q)
 ///////////////////////////////////////////////////////////////////////////////////
 void SPHNetState::net_Export(NET_Packet& P)
 {
-    R_ASSERT(0);
+    XR_PANIC();
 
     P.w_vec3(linear_vel);
     // P.w_vec3(angular_vel);
@@ -100,13 +100,13 @@ void SPHNetState::read(src& P)
 
 void SPHNetState::net_Import(NET_Packet& P)
 {
-    R_ASSERT(0);
+    XR_PANIC();
     read(P);
 }
 
 void SPHNetState::net_Import(IReader& P)
 {
-    R_ASSERT(0);
+    XR_PANIC();
     read(P);
 }
 
@@ -114,7 +114,7 @@ void SPHNetState::net_Save(NET_Packet& P) { net_Export(P); }
 
 void SPHNetState::net_Load(NET_Packet& P)
 {
-    R_ASSERT(0);
+    XR_PANIC();
 
     net_Import(P);
     previous_position.set(position);
@@ -122,7 +122,7 @@ void SPHNetState::net_Load(NET_Packet& P)
 
 void SPHNetState::net_Load(IReader& P)
 {
-    R_ASSERT(0);
+    XR_PANIC();
 
     net_Import(P);
     previous_position.set(position);
@@ -145,7 +145,8 @@ void SPHNetState::net_Save(NET_Packet& P, const Fvector& min, const Fvector& max
 template <typename src>
 void SPHNetState::read(src& P, const Fvector& min, const Fvector& max)
 {
-    VERIFY(!(fsimilar(min.x, max.x) && fsimilar(min.y, max.y) && fsimilar(min.z, max.z)));
+    XR_ASSERT(!fsimilar(min.x, max.x) || !fsimilar(min.y, max.y) || !fsimilar(min.z, max.z));
+
     linear_vel.set(0.f, 0.f, 0.f);
     angular_vel.set(0.f, 0.f, 0.f);
     force.set(0.f, 0.f, 0.f);
@@ -159,13 +160,13 @@ void SPHNetState::read(src& P, const Fvector& min, const Fvector& max)
 
 void SPHNetState::net_Load(NET_Packet& P, const Fvector& min, const Fvector& max)
 {
-    VERIFY(!(fsimilar(min.x, max.x) && fsimilar(min.y, max.y) && fsimilar(min.z, max.z)));
+    XR_ASSERT(!fsimilar(min.x, max.x) || !fsimilar(min.y, max.y) || !fsimilar(min.z, max.z));
     read(P, min, max);
 }
 
 void SPHNetState::net_Load(IReader& P, const Fvector& min, const Fvector& max)
 {
-    VERIFY(!(fsimilar(min.x, max.x) && fsimilar(min.y, max.y) && fsimilar(min.z, max.z)));
+    XR_ASSERT(!fsimilar(min.x, max.x) || !fsimilar(min.y, max.y) || !fsimilar(min.z, max.z));
     read(P, min, max);
 }
 
@@ -239,7 +240,7 @@ void SPHBonesData::net_Load(NET_Packet& P)
 
 void SPHBonesData::set_min_max(const Fvector& _min, const Fvector& _max)
 {
-    VERIFY(!_min.similar(_max));
+    XR_ASSERT(!_min.similar(_max));
     m_min = _min;
     m_max = _max;
 }

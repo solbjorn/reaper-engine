@@ -1347,10 +1347,9 @@ void CHudItem::CWeaponBobbing::Update(Fmatrix& m, Fmatrix& m2)
 
 void CHudItem::GetBoneOffsetPosDir(const shared_str& bone_name, Fvector& dest_pos, Fvector& dest_dir, const Fvector& offset)
 {
-    const u16 bone_id = HudItemData()->m_model->LL_BoneID(bone_name);
-    ASSERT_FMT(bone_id != BI_NONE, "!![%s] bone [%s] not found in weapon [%s]", std::source_location::current().function_name(), bone_name.c_str(),
-               world_sect.c_str());
+    const auto bone_id = XR_ASSERT_VAL(HudItemData()->m_model->LL_BoneID(bone_name) != BI_NONE, "bone not found for weapon", world_sect, bone_name);
     Fmatrix& fire_mat = HudItemData()->m_model->LL_GetTransform(bone_id);
+
     fire_mat.transform_tiny(dest_pos, offset);
     HudItemData()->m_item_transform.transform_tiny(dest_pos);
     dest_pos.add(Device.vCameraPosition);

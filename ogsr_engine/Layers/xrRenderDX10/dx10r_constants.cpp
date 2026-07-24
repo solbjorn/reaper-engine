@@ -9,23 +9,19 @@
 
 BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination)
 {
-    VERIFY(pTable);
+    XR_ASSERT(pTable != nullptr, "", destination);
+
     D3D_SHADER_BUFFER_DESC TableDesc{};
-    CHK_DX(pTable->GetDesc(&TableDesc));
+    XR_ASSERT(xr::hr(pTable->GetDesc(&TableDesc)));
 
     for (u32 i = 0; i < TableDesc.Variables; ++i)
     {
-        ID3DShaderReflectionVariable* pVar;
+        auto pVar = XR_ASSERT_VAL(pTable->GetVariableByIndex(i) != nullptr);
         D3D_SHADER_VARIABLE_DESC VarDesc{};
-        ID3DShaderReflectionType* pType;
-        D3D_SHADER_TYPE_DESC TypeDesc{};
-
-        pVar = pTable->GetVariableByIndex(i);
-        VERIFY(pVar);
         pVar->GetDesc(&VarDesc);
-        pType = pVar->GetType();
-        VERIFY(pType);
-        pType->GetDesc(&TypeDesc);
+
+        D3D_SHADER_TYPE_DESC TypeDesc{};
+        XR_ASSERT_VAL(pVar->GetType() != nullptr)->GetDesc(&TypeDesc);
 
         // Name
         LPCSTR name = VarDesc.Name;
@@ -37,17 +33,15 @@ BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
         case D3D10_SVT_FLOAT: type = RC_float; break;
         case D3D10_SVT_BOOL: type = RC_bool; break;
         case D3D10_SVT_INT: type = RC_int; break;
-        default: fatal("R_constant_table::parse: unexpected shader variable type.");
+        default: XR_PANIC("unexpected shader constant type", name, TypeDesc.Type);
         }
 
         // Rindex,Rcount
         //	Used as byte offset in constant buffer
-        VERIFY(VarDesc.StartOffset < 0x10000);
-        u16 r_index = u16(VarDesc.StartOffset);
+        u16 r_index = XR_ASSERT_VAL(VarDesc.StartOffset < std::numeric_limits<u16>::max());
         u16 r_type = u16(-1);
 
         // TypeInfo + class
-        BOOL bSkip = FALSE;
         switch (TypeDesc.Class)
         {
         case D3D10_SVC_SCALAR: r_type = RC_1x1; break;
@@ -57,7 +51,7 @@ BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
             case 4: r_type = RC_1x4; break;
             case 3: r_type = RC_1x3; break;
             case 2: r_type = RC_1x2; break;
-            default: fatal("Vector: 1 components is scalar - there is special case for this!!!!!"); break;
+            default: XR_PANIC("unsupported vector constant dimension", name, TypeDesc.Columns);
             }
         }
         break;
@@ -70,25 +64,18 @@ BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
                 case 2: r_type = RC_2x4; break;
                 case 3: r_type = RC_3x4; break;
                 case 4: r_type = RC_4x4; break;
-                default: fatal("MATRIX_ROWS: unsupported number of Rows"); break;
+                default: XR_PANIC("unsupported matrix constant row number", name, TypeDesc.Rows);
                 }
                 break;
-            default: fatal("MATRIX_ROWS: unsupported number of Columns"); break;
+            default: XR_PANIC("unsupported matrix constant column number", name, TypeDesc.Columns);
             }
         }
         break;
-        case D3D10_SVC_MATRIX_COLUMNS: fatal("Pclass MATRIX_COLUMNS unsupported"); break;
-        case D3D10_SVC_STRUCT: fatal("Pclass D3DXPC_STRUCT unsupported"); break;
-        case D3D10_SVC_OBJECT:
-            //	TODO: DX10:
-            VERIFY(!"Implement shader object parsing.");
-
-            bSkip = TRUE;
-            break;
-        default: bSkip = TRUE; break;
+        case D3D10_SVC_MATRIX_COLUMNS:
+        case D3D10_SVC_STRUCT:
+        case D3D10_SVC_OBJECT: XR_PANIC("constant class is not supported", name, TypeDesc.Class);
+        default: continue;
         }
-        if (bSkip)
-            continue;
 
         // We have determined all valuable info, search if constant already created
         ref_constant C = get(name);
@@ -105,12 +92,13 @@ BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
         else
         {
             C->destination |= destination;
-            VERIFY(C->type == type);
+            XR_ASSERT(C->type == type);
             R_constant_load& L = C->get_load(destination);
             L.index = r_index;
             L.cls = r_type;
         }
     }
+
     return TRUE;
 }
 
@@ -120,9 +108,9 @@ BOOL R_constant_table::parseResources(ID3DShaderReflection* pReflection, int Res
     {
         D3D_SHADER_INPUT_BIND_DESC ResDesc{};
         pReflection->GetResourceBindingDesc(i, &ResDesc);
+        XR_ASSERT(ResDesc.BindCount == 1, "", i);
 
-        u16 type = 0;
-
+        u16 type;
         switch (ResDesc.Type)
         {
         case D3D10_SIT_TEXTURE: type = RC_dx10texture; break;
@@ -131,43 +119,26 @@ BOOL R_constant_table::parseResources(ID3DShaderReflection* pReflection, int Res
         default: continue;
         }
 
-        VERIFY(ResDesc.BindCount == 1);
-
-        u16 r_index = u16(-1);
-
+        u16 r_index;
         if (destination & RC_dest_pixel)
-        {
-            r_index = u16(ResDesc.BindPoint + CTexture::rstPixel);
-        }
+            r_index = ResDesc.BindPoint + CTexture::rstPixel;
         else if (destination & RC_dest_vertex)
-        {
-            r_index = u16(ResDesc.BindPoint + CTexture::rstVertex);
-        }
+            r_index = ResDesc.BindPoint + CTexture::rstVertex;
         else if (destination & RC_dest_geometry)
-        {
-            r_index = u16(ResDesc.BindPoint + CTexture::rstGeometry);
-        }
+            r_index = ResDesc.BindPoint + CTexture::rstGeometry;
         else if (destination & RC_dest_hull)
-        {
-            r_index = u16(ResDesc.BindPoint + CTexture::rstHull);
-        }
+            r_index = ResDesc.BindPoint + CTexture::rstHull;
         else if (destination & RC_dest_domain)
-        {
-            r_index = u16(ResDesc.BindPoint + CTexture::rstDomain);
-        }
+            r_index = ResDesc.BindPoint + CTexture::rstDomain;
         else if (destination & RC_dest_compute)
-        {
-            r_index = u16(ResDesc.BindPoint + CTexture::rstCompute);
-        }
+            r_index = ResDesc.BindPoint + CTexture::rstCompute;
         else
-        {
-            VERIFY(0);
-        }
+            XR_PANIC("invalid constant table destination", destination);
 
         ref_constant C = get(ResDesc.Name);
         if (!C)
         {
-            C = table.emplace_back(xr_new<R_constant>()); //.g_constant_allocator.create();
+            C = table.emplace_back(xr_new<R_constant>());
             C->name._set(ResDesc.Name);
             C->destination = RC_dest_sampler;
             C->type = type;
@@ -177,13 +148,12 @@ BOOL R_constant_table::parseResources(ID3DShaderReflection* pReflection, int Res
         }
         else
         {
-            R_ASSERT(C->destination == RC_dest_sampler);
-            R_ASSERT(C->type == type);
-            R_constant_load& L = C->samp;
-            R_ASSERT(L.index == r_index);
-            R_ASSERT(L.cls == type);
+            const auto& L = C->samp;
+            XR_ASSERT(C->destination == RC_dest_sampler && C->type == type, "", ResDesc.Name, C->destination, RC_dest_sampler, C->type, type);
+            XR_ASSERT(L.index == r_index && L.cls == type, "", ResDesc.Name, L.index, r_index, L.cls, type);
         }
     }
+
     return TRUE;
 }
 
@@ -199,7 +169,7 @@ namespace
     case RC_dest_hull: return RC_dest_hull_cb_index_shift;
     case RC_dest_domain: return RC_dest_domain_cb_index_shift;
     case RC_dest_compute: return RC_dest_compute_cb_index_shift;
-    default: FATAL("invalid enumeration for shader");
+    default: XR_PANIC("invalid shader constant destination", destination);
     }
 }
 
@@ -213,7 +183,7 @@ namespace
     case RC_dest_hull: return CB_BufferHullShader;
     case RC_dest_domain: return CB_BufferDomainShader;
     case RC_dest_compute: return CB_BufferComputeShader;
-    default: FATAL("invalid enumeration for shader");
+    default: XR_PANIC("invalid constant buffer destination", destination);
     }
 }
 
@@ -226,8 +196,7 @@ constexpr auto emplace_back(V& v, K&& k, Args&&... args)
 
 BOOL R_constant_table::parse(void* _desc, u32 destination)
 {
-    ID3DShaderReflection* pReflection = (ID3DShaderReflection*)_desc;
-
+    auto pReflection = static_cast<ID3DShaderReflection*>(_desc);
     D3D_SHADER_DESC ShaderDesc{};
     pReflection->GetDesc(&ShaderDesc);
 
@@ -236,30 +205,29 @@ BOOL R_constant_table::parse(void* _desc, u32 destination)
         for (auto& tbl : m_CBTable)
             tbl.reserve(ShaderDesc.ConstantBuffers);
 
-        for (u16 iBuf = 0; iBuf < ShaderDesc.ConstantBuffers; ++iBuf)
+        for (u32 iBuf{0}; iBuf < ShaderDesc.ConstantBuffers; ++iBuf)
         {
             //	Parse single constant table
-            ID3DShaderReflectionConstantBuffer* pTable = pReflection->GetConstantBufferByIndex(iBuf);
-            if (pTable != nullptr)
-            {
-                //	Encode buffer index into destination
-                const u32 updatedDest = destination | (iBuf << dest_to_shift_value(destination));
+            auto pTable = pReflection->GetConstantBufferByIndex(iBuf);
+            if (pTable == nullptr)
+                continue;
 
-                //	Encode bind dest (pixel/vertex buffer) and bind point index
-                const u32 uiBufferIndex = iBuf | dest_to_cbuf_type(destination);
+            //	Encode buffer index into destination
+            const u32 updatedDest = destination | (iBuf << dest_to_shift_value(destination));
+            //	Encode bind dest (pixel/vertex buffer) and bind point index
+            const u32 uiBufferIndex = iBuf | dest_to_cbuf_type(destination);
 
-                std::ignore = parseConstants(pTable, updatedDest);
+            std::ignore = parseConstants(pTable, updatedDest);
 
-                for (auto [id, tbl] : xr::views_enumerate(m_CBTable))
-                    emplace_back(tbl, uiBufferIndex, RImplementation.Resources->_CreateConstantBuffer(id, pTable));
-            }
+            for (auto [id, tbl] : std::views::enumerate(m_CBTable))
+                emplace_back(tbl, uiBufferIndex, RImplementation.Resources->_CreateConstantBuffer(id, pTable));
         }
     }
 
     if (ShaderDesc.BoundResources)
         std::ignore = parseResources(pReflection, ShaderDesc.BoundResources, destination);
 
-    std::ranges::sort(table, [](const ref_constant& C1, const ref_constant& C2) { return xr_strcmp(C1->name, C2->name) < 0; });
+    std::ranges::sort(table, {}, [] [[nodiscard]] (const auto& constant) { return std::string_view{constant->name}; });
 
     return TRUE;
 }

@@ -41,18 +41,10 @@ tmc::task<void> CResourceManager::OnDeviceCreate()
         Msg("Loading shader file: [{}]", fname);
         LoadShaderLtxFile(fname);
     }
-    else
+    else if (FS.exist(fname, _game_data_, "shaders_cop.xr") || FS.exist(fname, _game_data_, "shaders.xr"))
     {
-        if (FS.exist(fname, _game_data_, "shaders_cop.xr"))
-        {
-            Msg("Loading shader file: [{}]", fname);
-            LoadShaderFile(fname);
-        }
-        else if (FS.exist(fname, _game_data_, "shaders.xr"))
-        {
-            Msg("Loading shader file: [{}]", fname);
-            LoadShaderFile(fname);
-        }
+        Msg("Loading shader file: [{}]", fname);
+        LoadShaderFile(fname);
     }
 
     co_await m_textures_description.Load();
@@ -61,13 +53,11 @@ tmc::task<void> CResourceManager::OnDeviceCreate()
 void CResourceManager::LoadShaderFile(LPCSTR fname)
 {
     // Check if file is compressed already
-    string32 id;
-    IReader* F = FS.r_open(fname);
-    R_ASSERT2(F, fname);
-    F->r(&id, 8);
+    const auto F = XR_ASSERT_VAL(absl::WrapUnique(FS.r_open(fname)), "", fname);
 
-    if (std::string_view{id, 8}.starts_with("shENGINE"))
-        FATAL("Unsupported blender library. Compressed?");
+    std::array<std::byte, 8> id;
+    F->r(&id[0], std::ssize(id));
+    XR_ASSERT(std::memcmp(id.data(), "shENGINE", id.size()) != 0, "unsupported blender library, probably compressed", fname);
 
     string_path ini_path;
     strcpy_s(ini_path, fname);
@@ -119,17 +109,15 @@ void CResourceManager::LoadShaderFile(LPCSTR fname)
                     B->SaveIni(&ini, desc.cName);
                 }
 
-                auto I = m_blenders.insert_or_assign(xr_strdup(desc.cName), B);
-                ASSERT_FMT(I.second, "CResourceManager::LoadSharedFile - found shader name [%s]", desc.cName);
+                XR_ASSERT(m_blenders.insert_or_assign(xr_strdup(desc.cName), B).second, "duplicate shader name", desc.cName);
             }
 
             chunk->close();
             chunk_id += 1;
         }
+
         fs->close();
     }
-
-    FS.r_close(F);
 }
 
 void CResourceManager::LoadShaderLtxFile(LPCSTR fname)
@@ -157,9 +145,7 @@ void CResourceManager::LoadShaderLtxFile(LPCSTR fname)
                 Msg("! Version conflict in shader '{}'", name);
 
             B->LoadIni(&ini, name.c_str());
-
-            auto I = m_blenders.insert_or_assign(xr_strdup(name.c_str()), B);
-            ASSERT_FMT(I.second, "CResourceManager::LoadSharedFile - found shader name [%s]", name.c_str());
+            XR_ASSERT(m_blenders.insert_or_assign(xr_strdup(name.c_str()), B).second, "duplicate shader name", name);
         }
     }
 }

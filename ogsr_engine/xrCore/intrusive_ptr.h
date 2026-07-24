@@ -19,11 +19,7 @@ public:
     template <typename T>
     void release(T* object)
     {
-        // try
-        //{
         xr_delete(object);
-        //}
-        // catch (...) { }
     }
 
     void acquire() { ++m_ref_count; }
@@ -103,26 +99,14 @@ public:
         return *this;
     }
 
-    object_type& operator*() const
-    {
-        VERIFY(m_object);
-        return *m_object;
-    }
-
-    object_type* operator->() const
-    {
-        VERIFY(m_object);
-        return m_object;
-    }
+    object_type& operator*() const { return *XR_ASSERT_VAL(m_object != nullptr); }
+    object_type* operator->() const { return XR_ASSERT_VAL(m_object != nullptr); }
 
     explicit operator bool() const { return m_object != nullptr; }
 
     bool operator==(const self_type& rhs) const { return m_object == rhs.m_object; }
-
     bool operator!=(const self_type& rhs) const { return m_object != rhs.m_object; }
-
     bool operator<(const self_type& rhs) const { return m_object < rhs.m_object; }
-
     bool operator>(const self_type& rhs) const { return m_object > rhs.m_object; }
 
     void swap(self_type& rhs)

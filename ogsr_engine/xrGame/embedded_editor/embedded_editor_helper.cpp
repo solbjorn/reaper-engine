@@ -49,7 +49,7 @@ namespace
     ImGui::PushID(label);
     ImGui::PushMultiItemsWidths(gsl::narrow_cast<s32>(std::ssize(v)), ImGui::CalcItemWidth());
 
-    for (auto [i, elem] : xr::views_enumerate(v))
+    for (auto [i, elem] : std::views::enumerate(v))
     {
         ImGui::PushID(gsl::narrow_cast<s32>(i));
 
@@ -329,7 +329,7 @@ bool SelectFile(gsl::czstring label, gsl::czstring initial, shared_str& file_nam
 
             gsl::index curr_name_index{-1};
 
-            for (auto [idx, file] : xr::views_enumerate(std::as_const(current_files)))
+            for (auto [idx, file] : std::views::enumerate(std::as_const(current_files)))
             {
                 if (file == curr_name)
                 {

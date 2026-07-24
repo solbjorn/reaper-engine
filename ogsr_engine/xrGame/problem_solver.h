@@ -48,8 +48,6 @@ public:
 
         IC SOperator(const _operator_id_type& operator_id, _operator_ptr _op) : m_operator_id(operator_id), m_operator(_op) {}
 
-        bool operator<(const _operator_id_type& operator_id) const { return (m_operator_id < operator_id); }
-
         _operator_ptr get_operator() const { return (m_operator); }
     };
     typedef xr_vector<SOperator> OPERATOR_VECTOR;

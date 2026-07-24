@@ -144,29 +144,24 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 //------------------------------------------------------------------------------
 BOOL CPEDef::Load(IReader& F)
 {
-    R_ASSERT(F.find_chunk(PED_CHUNK_VERSION));
-    u16 version = F.r_u16();
-
-    if (version != PED_VERSION)
+    XR_ASSERT(F.find_chunk(PED_CHUNK_VERSION) > 0);
+    if (F.r_u16() != PED_VERSION)
         return FALSE;
 
-    R_ASSERT(F.find_chunk(PED_CHUNK_NAME));
+    XR_ASSERT(F.find_chunk(PED_CHUNK_NAME) > 0);
     F.r_stringZ(m_Name);
 
-    R_ASSERT(F.find_chunk(PED_CHUNK_EFFECTDATA));
+    XR_ASSERT(F.find_chunk(PED_CHUNK_EFFECTDATA) > 0);
     m_MaxParticles = F.r_u32();
 
-    {
-        u32 action_list = F.find_chunk(PED_CHUNK_ACTIONLIST);
-        R_ASSERT(action_list);
-        m_Actions.w(F.pointer(), action_list);
-    }
-
+    const auto action_list = XR_ASSERT_VAL(F.find_chunk(PED_CHUNK_ACTIONLIST) > 0);
+    m_Actions.w(F.pointer(), action_list);
     std::ignore = F.r_chunk(PED_CHUNK_FLAGS, &m_Flags);
 
     if (m_Flags.is(dfSprite))
     {
-        R_ASSERT(F.find_chunk(PED_CHUNK_SPRITE));
+        XR_ASSERT(F.find_chunk(PED_CHUNK_SPRITE) > 0);
+
         F.r_stringZ(m_ShaderName);
         F.r_stringZ(m_TextureName);
     }
@@ -176,19 +171,20 @@ BOOL CPEDef::Load(IReader& F)
         constexpr size_t sz = offsetof(SFrame, m_fSpeed) + sizeof(m_Frame.m_fSpeed);
         static_assert(sz == 28);
 
-        R_ASSERT(F.find_chunk(PED_CHUNK_FRAME));
+        XR_ASSERT(F.find_chunk(PED_CHUNK_FRAME) > 0);
         F.r(&m_Frame, sz);
     }
 
     if (m_Flags.is(dfTimeLimit))
     {
-        R_ASSERT(F.find_chunk(PED_CHUNK_TIMELIMIT));
+        XR_ASSERT(F.find_chunk(PED_CHUNK_TIMELIMIT) > 0);
         m_fTimeLimit = F.r_float();
     }
 
     if (m_Flags.is(dfCollision))
     {
-        R_ASSERT(F.find_chunk(PED_CHUNK_COLLISION));
+        XR_ASSERT(F.find_chunk(PED_CHUNK_COLLISION) > 0);
+
         m_fCollideOneMinusFriction = F.r_float();
         m_fCollideResilience = F.r_float();
         m_fCollideSqrCutoff = F.r_float();
@@ -196,34 +192,23 @@ BOOL CPEDef::Load(IReader& F)
 
     if (m_Flags.is(dfVelocityScale))
     {
-        R_ASSERT(F.find_chunk(PED_CHUNK_VEL_SCALE));
+        XR_ASSERT(F.find_chunk(PED_CHUNK_VEL_SCALE) > 0);
         F.r_fvector3(m_VelocityScale);
     }
 
-    if (m_Flags.is(dfAlignToPath))
-    {
-        if (F.find_chunk(PED_CHUNK_ALIGN_TO_PATH))
-        {
-            F.r_fvector3(m_APDefaultRotation);
-        }
-    }
+    if (m_Flags.is(dfAlignToPath) && F.find_chunk(PED_CHUNK_ALIGN_TO_PATH) > 0)
+        F.r_fvector3(m_APDefaultRotation);
 
     if (F.find_chunk(PED_CHUNK_EDATA))
     {
         m_EActionList.resize(F.r_u32());
-        bool valid = false;
-        for (EPAVecIt it = m_EActionList.begin(); it != m_EActionList.end(); ++it)
+
+        for (auto& act : m_EActionList)
         {
-            PAPI::PActionEnum type = (PAPI::PActionEnum)F.r_u32();
-            (*it) = pCreateEAction(type);
-            valid = (*it)->Load(F);
-            if (!valid)
+            act = pCreateEAction(PAPI::PActionEnum{F.r_u32()});
+            if (!act->Load(F))
                 break;
         }
-        // if (valid) //???
-        //     Compile(m_EActionList);
-        // else
-        //     m_EActionList.clear();
     }
 
     return TRUE;

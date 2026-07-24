@@ -28,7 +28,7 @@ private:
     const std::unique_ptr<CStreamReader> file;
 
 public:
-    explicit istream(gsl::czstring path) : file{absl::WrapUnique(FS.rs_open(path))} { R_ASSERT(file); }
+    explicit istream(gsl::czstring path) : file{absl::WrapUnique(FS.rs_open(path))} { XR_ASSERT(file, "", path); }
     ~istream() override = default;
 
     [[nodiscard]] bool Read(void* data, size_t size) override
@@ -107,7 +107,7 @@ void fix_texture_name(gsl::zstring fn)
 ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 {
     // validation
-    R_ASSERT(fRName && fRName[0]);
+    XR_ASSERT(fRName != nullptr && fRName[0] != '\0');
 
     // make file name
     string_path fname, fn;
@@ -129,15 +129,13 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
             else
                 fmt = xr::find_texture(fn, std::array{xr::fsgame::game_textures}, "ed\\ed_dummy_bump");
 
-            R_ASSERT(fmt != xr::texfmt::none);
+            XR_ASSERT(fmt != xr::texfmt::none, "", fview);
         }
     }
     else if (fmt = xr::find_texture(fn, std::array{xr::fsgame::level, xr::fsgame::game_textures, xr::fsgame::game_saves}, fview); fmt == xr::texfmt::none)
     {
         Msg("! Can't find texture [{}]", fview);
-
-        fmt = xr::find_texture(fn, std::array{xr::fsgame::game_textures}, "ed\\ed_not_existing_texture");
-        R_ASSERT(fmt != xr::texfmt::none);
+        fmt = XR_ASSERT_VAL(xr::find_texture(fn, std::array{xr::fsgame::game_textures}, "ed\\ed_not_existing_texture") != xr::texfmt::none, "", fview);
     }
 
     switch (fmt)
@@ -146,7 +144,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
     case xr::texfmt::exr: return texture_load_exr(fn, ret_msize);
     case xr::texfmt::ktx: return texture_load_ktx(fn, ret_msize);
     case xr::texfmt::sf: return texture_load_sf(fn, ret_msize, bump || Resources->m_textures_description.contains(fview));
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 

@@ -200,7 +200,7 @@ bool CObjectHandler::weapon_strapped() const
 
 void CObjectHandler::actualize_strap_mode(CWeapon* weapon) const
 {
-    VERIFY(weapon);
+    XR_ASSERT(weapon != nullptr);
 
     if (!planner().m_storage.property(ObjectHandlerSpace::eWorldPropertyStrapped))
     {
@@ -208,7 +208,7 @@ void CObjectHandler::actualize_strap_mode(CWeapon* weapon) const
         return;
     }
 
-    THROW3(weapon->can_be_strapped(), "Cannot strap weapon", weapon->cName().c_str());
+    XR_ASSERT(weapon->can_be_strapped(), "not strappable", weapon->cName());
     weapon->strapped_mode(true);
 }
 

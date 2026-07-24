@@ -79,33 +79,26 @@ void CSE_Temporary::UPDATE_Write(NET_Packet&) {}
 ////////////////////////////////////////////////////////////////////////////
 
 CSE_PHSkeleton::CSE_PHSkeleton(LPCSTR) {}
-CSE_PHSkeleton::~CSE_PHSkeleton() {}
+CSE_PHSkeleton::~CSE_PHSkeleton() = default;
 
 void CSE_PHSkeleton::__STATE_Read(NET_Packet& tNetPacket, u16)
 {
-    CSE_Visual* visual = smart_cast<CSE_Visual*>(this);
-    R_ASSERT(visual);
-    tNetPacket.r_stringZ(visual->startup_animation);
+    tNetPacket.r_stringZ(XR_ASSERT_VAL(smart_cast<CSE_Visual*>(this) != nullptr)->startup_animation);
     tNetPacket.r_u8(_flags.flags);
     tNetPacket.r_u16(source_id);
+
     if (_flags.test(flSavedData))
-    {
         data_load(tNetPacket);
-    }
 }
 
 void CSE_PHSkeleton::__STATE_Write(NET_Packet& tNetPacket)
 {
-    CSE_Visual* visual = smart_cast<CSE_Visual*>(this);
-    R_ASSERT(visual);
-    tNetPacket.w_stringZ(visual->startup_animation);
+    tNetPacket.w_stringZ(XR_ASSERT_VAL(smart_cast<CSE_Visual*>(this) != nullptr)->startup_animation);
     tNetPacket.w_u8(_flags.flags);
     tNetPacket.w_u16(source_id);
-    ////////////////////////saving///////////////////////////////////////
+
     if (_flags.test(flSavedData))
-    {
         data_save(tNetPacket);
-    }
 }
 
 void CSE_PHSkeleton::data_load(NET_Packet& tNetPacket)

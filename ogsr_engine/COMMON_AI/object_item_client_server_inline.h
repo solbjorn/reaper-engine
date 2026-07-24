@@ -15,14 +15,12 @@ TEMPLATE_SPECIALIZATION
 IC CSObjectItemClientServer::CObjectItemClientServer(const CLASS_ID& clsid, LPCSTR script_clsid) : inherited(clsid, script_clsid) {}
 
 TEMPLATE_SPECIALIZATION
-ObjectFactory::CLIENT_BASE_CLASS* CSObjectItemClientServer::client_object() const { return (xr_new<CLIENT_TYPE>()->_construct()); }
+ObjectFactory::CLIENT_BASE_CLASS* CSObjectItemClientServer::client_object() const { return XR_ASSERT_VAL(xr_new<CLIENT_TYPE>()->_construct() != nullptr); }
 
 TEMPLATE_SPECIALIZATION
 ObjectFactory::SERVER_BASE_CLASS* CSObjectItemClientServer::server_object(LPCSTR section) const
 {
-    ObjectFactory::SERVER_BASE_CLASS* o = xr_new<SERVER_TYPE>(section)->init();
-    R_ASSERT(o);
-    return (o);
+    return XR_ASSERT_VAL(xr_new<SERVER_TYPE>(section)->init() != nullptr, "", section);
 }
 
 #undef TEMPLATE_SPECIALIZATION
@@ -37,19 +35,13 @@ IC CSObjectItemClientServerSingleMp::CObjectItemClientServerSingleMp(const CLASS
 TEMPLATE_SPECIALIZATION
 ObjectFactory::CLIENT_BASE_CLASS* CSObjectItemClientServerSingleMp::client_object() const
 {
-    ObjectFactory::CLIENT_BASE_CLASS* result = xr_new<_client_type_single>();
-
-    return (result->_construct());
+    return XR_ASSERT_VAL(xr_new<_client_type_single>()->_construct() != nullptr);
 }
 
 TEMPLATE_SPECIALIZATION
 ObjectFactory::SERVER_BASE_CLASS* CSObjectItemClientServerSingleMp::server_object(LPCSTR section) const
 {
-    ObjectFactory::SERVER_BASE_CLASS* result = xr_new<_server_type_single>(section);
-
-    result = result->init();
-    R_ASSERT(result);
-    return (result);
+    return XR_ASSERT_VAL(xr_new<_server_type_single>(section)->init() != nullptr, "", section);
 }
 
 #undef TEMPLATE_SPECIALIZATION

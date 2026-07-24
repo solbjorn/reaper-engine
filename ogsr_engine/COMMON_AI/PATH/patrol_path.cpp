@@ -23,13 +23,15 @@ CPatrolPath::~CPatrolPath() = default;
 
 CPatrolPath& CPatrolPath::load_raw(const CLevelGraph* level_graph, const CGameLevelCrossTable* cross, const CGameGraph* game_graph, IReader& stream)
 {
-    R_ASSERT(stream.find_chunk(WAYOBJECT_CHUNK_POINTS));
+    XR_ASSERT(stream.find_chunk(WAYOBJECT_CHUNK_POINTS) > 0);
     u32 vertex_count = stream.r_u16();
+
     for (u32 i = 0; i < vertex_count; ++i)
         add_vertex(CPatrolPoint{this}.load_raw(level_graph, cross, game_graph, stream), i);
 
-    R_ASSERT(stream.find_chunk(WAYOBJECT_CHUNK_LINKS));
+    XR_ASSERT(stream.find_chunk(WAYOBJECT_CHUNK_LINKS) > 0);
     u32 edge_count = stream.r_u16();
+
     for (u32 i = 0; i < edge_count; ++i)
     {
         u16 vertex0 = stream.r_u16();
@@ -61,8 +63,9 @@ CPatrolPath& CPatrolPath::load_ini(CInifile::Sect& section)
             {
                 string32 link;
 
-                const auto res = scn::scan<u32, f32>(std::string_view{_GetItem(links, k, link)}, "p{}({})");
-                R_ASSERT(res, res.error().msg());
+                const std::string_view val{_GetItem(links, k, link)};
+                const auto res = scn::scan<u32, f32>(val, "p{}({})");
+                XR_ASSERT(res, res.error().msg(), sect, val);
 
                 const auto [vertex_idx, probability] = res->values();
                 add_edge(i, vertex_idx, probability);

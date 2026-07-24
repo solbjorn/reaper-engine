@@ -16,14 +16,16 @@ using namespace collide;
 // RayTest - Occluded/No
 //--------------------------------------------------------------------------------
 
-BOOL CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::ray_cache* cache, const CObject* ignore_object)
+BOOL CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::ray_cache* cache,
+                           const CObject* ignore_object)
 {
     return _RayTest(start, dir, range, tgt, cache, ignore_object);
 }
 
-BOOL CObjectSpace::_RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::ray_cache* cache, const CObject* ignore_object)
+BOOL CObjectSpace::_RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::ray_cache* cache,
+                            const CObject* ignore_object)
 {
-    VERIFY(_abs(dir.magnitude() - 1) < EPS);
+    XR_DEBUG_ASSERT(_abs(dir.magnitude() - 1) < EPS);
 
     const collide::ray_defs Q{start, dir, range, CDB::OPT_ONLYFIRST, tgt};
 
@@ -177,7 +179,8 @@ BOOL CObjectSpace::_RayQuery(collide::rq_results& r_dest, const collide::ray_def
     collide::rq_results r_temp;
 
     rq_target s_mask = rqtStatic;
-    rq_target d_mask = rq_target(((R.tgt & rqtObject) ? rqtObject : rqtNone) | ((R.tgt & rqtObstacle) ? rqtObstacle : rqtNone) | ((R.tgt & rqtShape) ? rqtShape : rqtNone));
+    rq_target d_mask =
+        rq_target(((R.tgt & rqtObject) ? rqtObject : rqtNone) | ((R.tgt & rqtObstacle) ? rqtObstacle : rqtNone) | ((R.tgt & rqtShape) ? rqtShape : rqtNone));
 
     // Test static
     if (R.tgt & s_mask)

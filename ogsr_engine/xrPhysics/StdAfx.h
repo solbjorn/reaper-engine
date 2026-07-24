@@ -3,10 +3,6 @@
 #include "../xr_3da/stdafx.h"
 #include "../xrExternal/sol.h"
 
-#define THROW VERIFY
-#define THROW2 VERIFY2
-#define THROW3 VERIFY3
-
 #include "../xr_3da/GameFont.h"
 #include "../xr_3da/xr_object.h"
 #include "../xr_3da/IGame_Level.h"

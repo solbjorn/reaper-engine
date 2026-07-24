@@ -4,21 +4,31 @@
 
 namespace dx10BufferUtils
 {
-HRESULT IC CreateBuffer(ID3DBuffer** ppBuffer, const void* pData, UINT DataSize, bool bIndexBuffer)
+namespace
+{
+[[nodiscard]] inline HRESULT CreateBuffer(ID3DBuffer** ppBuffer, const void* pData, UINT DataSize, u32 flags)
 {
     D3D_BUFFER_DESC desc{};
     desc.ByteWidth = DataSize;
     desc.Usage = D3D_USAGE_DEFAULT;
-    desc.BindFlags = bIndexBuffer ? D3D_BIND_INDEX_BUFFER : D3D_BIND_VERTEX_BUFFER;
+    desc.BindFlags = flags;
 
     D3D_SUBRESOURCE_DATA subData{};
     subData.pSysMem = pData;
 
     return HW.pDevice->CreateBuffer(&desc, &subData, ppBuffer);
 }
+} // namespace
 
-HRESULT CreateVertexBuffer(ID3DVertexBuffer** ppBuffer, const void* pData, UINT DataSize) { return CreateBuffer(ppBuffer, pData, DataSize, false); }
-HRESULT CreateIndexBuffer(ID3DIndexBuffer** ppBuffer, const void* pData, UINT DataSize) { return CreateBuffer(ppBuffer, pData, DataSize, true); }
+HRESULT CreateVertexBuffer(ID3DVertexBuffer** ppBuffer, const void* pData, UINT DataSize)
+{
+    return CreateBuffer(ppBuffer, pData, DataSize, D3D_BIND_VERTEX_BUFFER);
+}
+
+HRESULT CreateIndexBuffer(ID3DIndexBuffer** ppBuffer, const void* pData, UINT DataSize)
+{
+    return CreateBuffer(ppBuffer, pData, DataSize, D3D_BIND_INDEX_BUFFER);
+}
 
 HRESULT CreateConstantBuffer(ID3DBuffer** ppBuffer, UINT DataSize)
 {
@@ -33,24 +43,22 @@ HRESULT CreateConstantBuffer(ID3DBuffer** ppBuffer, UINT DataSize)
 
 namespace
 {
-struct VertexFormatPairs
-{
-    D3DDECLTYPE m_dx9FMT;
-    DXGI_FORMAT m_dx10FMT;
-};
-
-constexpr VertexFormatPairs VertexFormatList[]{
+constexpr std::array<std::pair<D3DDECLTYPE, DXGI_FORMAT>, 15> VertexFormatList{{
     {D3DDECLTYPE_FLOAT1, DXGI_FORMAT_R32_FLOAT},
     {D3DDECLTYPE_FLOAT2, DXGI_FORMAT_R32G32_FLOAT},
     {D3DDECLTYPE_FLOAT3, DXGI_FORMAT_R32G32B32_FLOAT},
     {D3DDECLTYPE_FLOAT4, DXGI_FORMAT_R32G32B32A32_FLOAT},
-    {D3DDECLTYPE_D3DCOLOR, DXGI_FORMAT_R8G8B8A8_UNORM}, // Warning. Explicit RGB component swizzling is nesessary	//	Not available
-    {D3DDECLTYPE_UBYTE4, DXGI_FORMAT_R8G8B8A8_UINT}, // Note: Shader gets UINT values, but if Direct3D 9 style integral floats are needed (0.0f, 1.0f... 255.f), UINT can just be
-                                                     // converted to float32 in shader.
-    {D3DDECLTYPE_SHORT2,
-     DXGI_FORMAT_R16G16_SINT}, // Note: Shader gets SINT values, but if Direct3D 9 style integral floats are needed, SINT can just be converted to float32 in shader.
-    {D3DDECLTYPE_SHORT4,
-     DXGI_FORMAT_R16G16B16A16_SINT}, // Note: Shader gets SINT values, but if Direct3D 9 style integral floats are needed, SINT can just be converted to float32 in shader.
+    // Warning. Explicit RGB component swizzling is nesessary
+    {D3DDECLTYPE_D3DCOLOR, DXGI_FORMAT_R8G8B8A8_UNORM},
+    // Note: Shader gets UINT values, but if Direct3D 9 style integral floats are needed (0.0f, 1.0f... 255.f),
+    // UINT can just be converted to float32 in shader.
+    {D3DDECLTYPE_UBYTE4, DXGI_FORMAT_R8G8B8A8_UINT},
+    // Note: Shader gets SINT values, but if Direct3D 9 style integral floats are needed,
+    // SINT can just be converted to float32 in shader.
+    {D3DDECLTYPE_SHORT2, DXGI_FORMAT_R16G16_SINT},
+    // Note: Shader gets SINT values, but if Direct3D 9 style integral floats are needed,
+    // SINT can just be converted to float32 in shader.
+    {D3DDECLTYPE_SHORT4, DXGI_FORMAT_R16G16B16A16_SINT},
     {D3DDECLTYPE_UBYTE4N, DXGI_FORMAT_R8G8B8A8_UNORM},
     {D3DDECLTYPE_SHORT2N, DXGI_FORMAT_R16G16_SNORM},
     {D3DDECLTYPE_SHORT4N, DXGI_FORMAT_R16G16B16A16_SNORM},
@@ -59,28 +67,18 @@ constexpr VertexFormatPairs VertexFormatList[]{
     // D3DDECLTYPE_UDEC3 Not available
     // D3DDECLTYPE_DEC3N Not available
     {D3DDECLTYPE_FLOAT16_2, DXGI_FORMAT_R16G16_FLOAT},
-    {D3DDECLTYPE_FLOAT16_4, DXGI_FORMAT_R16G16B16A16_FLOAT}};
+    {D3DDECLTYPE_FLOAT16_4, DXGI_FORMAT_R16G16B16A16_FLOAT},
+}};
 
-DXGI_FORMAT ConvertVertexFormat(D3DDECLTYPE dx9FMT)
+[[nodiscard]] DXGI_FORMAT ConvertVertexFormat(D3DDECLTYPE dx9FMT)
 {
-    constexpr int arrayLength = sizeof(VertexFormatList) / sizeof(VertexFormatList[0]);
-    for (int i = 0; i < arrayLength; ++i)
-    {
-        if (VertexFormatList[i].m_dx9FMT == dx9FMT)
-            return VertexFormatList[i].m_dx10FMT;
-    }
+    if (const auto it = std::ranges::find(VertexFormatList, dx9FMT, &std::pair<D3DDECLTYPE, DXGI_FORMAT>::first); it != VertexFormatList.end())
+        return it->second;
 
-    VERIFY(!"ConvertVertexFormat didn't find appropriate dx10 vertex format!");
-    return DXGI_FORMAT_UNKNOWN;
+    XR_PANIC("no corresponding vertex format", dx9FMT);
 }
 
-struct VertexSemanticPairs
-{
-    D3DDECLUSAGE m_dx9Semantic;
-    LPCSTR m_dx10Semantic;
-};
-
-constexpr VertexSemanticPairs VertexSemanticList[]{
+constexpr std::array<std::pair<D3DDECLUSAGE, gsl::czstring>, 10> VertexSemanticList{{
     {D3DDECLUSAGE_POSITION, "POSITION"}, //	0
     {D3DDECLUSAGE_BLENDWEIGHT, "BLENDWEIGHT"}, // 1
     {D3DDECLUSAGE_BLENDINDICES, "BLENDINDICES"}, // 2
@@ -95,42 +93,35 @@ constexpr VertexSemanticPairs VertexSemanticList[]{
     // D3DDECLUSAGE_FOG,           // 11
     // D3DDECLUSAGE_DEPTH,         // 12
     // D3DDECLUSAGE_SAMPLE,        // 13
-};
+}};
 
-LPCSTR ConvertSemantic(D3DDECLUSAGE Semantic)
+[[nodiscard]] gsl::czstring ConvertSemantic(D3DDECLUSAGE Semantic)
 {
-    constexpr int arrayLength = sizeof(VertexSemanticList) / sizeof(VertexSemanticList[0]);
-    for (int i = 0; i < arrayLength; ++i)
-    {
-        if (VertexSemanticList[i].m_dx9Semantic == Semantic)
-            return VertexSemanticList[i].m_dx10Semantic;
-    }
+    if (const auto it = std::ranges::find(VertexSemanticList, Semantic, &std::pair<D3DDECLUSAGE, gsl::czstring>::first); it != VertexSemanticList.end())
+        return it->second;
 
-    VERIFY(!"ConvertSemantic didn't find appropriate dx10 input semantic!");
-    return nullptr;
+    XR_PANIC("no corresponding input semantic", Semantic);
 }
 } // namespace
 
-void ConvertVertexDeclaration(const xr_vector<D3DVERTEXELEMENT9>& declIn, xr_vector<D3D_INPUT_ELEMENT_DESC>& declOut)
+void ConvertVertexDeclaration(std::span<const D3DVERTEXELEMENT9> declIn, xr_vector<D3D_INPUT_ELEMENT_DESC>& declOut)
 {
-    int iDeclSize = declIn.size() - 1;
-    declOut.resize(iDeclSize + 1);
+    declOut.reserve(XR_ASSERT_VAL(declIn.size() > 0));
 
-    for (int i = 0; i < iDeclSize; ++i)
-    {
-        const D3DVERTEXELEMENT9& descIn = declIn[i];
-        D3D_INPUT_ELEMENT_DESC& descOut = declOut[i];
+    declOut.assign_range(declIn | std::views::take_while([] [[nodiscard]] (auto& desc) { return desc.Stream != std::numeric_limits<u8>::max(); }) |
+                         std::views::transform([] [[nodiscard]] (auto& desc) {
+                             return D3D_INPUT_ELEMENT_DESC{
+                                 .SemanticName = ConvertSemantic((D3DDECLUSAGE)desc.Usage),
+                                 .SemanticIndex = desc.UsageIndex,
+                                 .Format = ConvertVertexFormat((D3DDECLTYPE)desc.Type),
+                                 .InputSlot = desc.Stream,
+                                 .AlignedByteOffset = desc.Offset,
+                                 .InputSlotClass = D3D_INPUT_PER_VERTEX_DATA,
+                                 .InstanceDataStepRate = 0,
+                             };
+                         }));
 
-        descOut.SemanticName = ConvertSemantic((D3DDECLUSAGE)descIn.Usage);
-        descOut.SemanticIndex = descIn.UsageIndex;
-        descOut.Format = ConvertVertexFormat((D3DDECLTYPE)descIn.Type);
-        descOut.InputSlot = descIn.Stream;
-        descOut.AlignedByteOffset = descIn.Offset;
-        descOut.InputSlotClass = D3D_INPUT_PER_VERTEX_DATA;
-        descOut.InstanceDataStepRate = 0;
-    }
-
-    if (iDeclSize >= 0)
-        std::memset(&declOut[iDeclSize], 0, sizeof(declOut[iDeclSize]));
+    declOut.push_back({});
+    XR_ASSERT(declOut.size() == declIn.size());
 }
 } // namespace dx10BufferUtils

@@ -121,6 +121,7 @@
     <ClCompile Include="tracy.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="assert.h" />
     <ClInclude Include="imgui.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="rtti.h" />

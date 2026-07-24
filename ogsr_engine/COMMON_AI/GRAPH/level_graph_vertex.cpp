@@ -36,15 +36,16 @@ float CLevelGraph::distance(const Fvector& position, const CLevelGraph::CVertex*
     return (best);
 }
 
-void CLevelGraph::choose_point(const Fvector& start_point, const Fvector& finish_point, const SContour& _contour, int node_id, Fvector& temp_point, int& saved_index) const
+void CLevelGraph::choose_point(const Fvector& start_point, const Fvector& finish_point, const SContour& _contour, int node_id, Fvector& temp_point,
+                               int& saved_index) const
 {
     SContour tNextContour;
     SSegment tNextSegment;
     Fvector tCheckPoint1 = start_point, tCheckPoint2 = start_point, tIntersectPoint;
     contour(tNextContour, node_id);
     intersect(tNextSegment, tNextContour, _contour);
-    u32 dwIntersect = intersect(start_point.x, start_point.z, finish_point.x, finish_point.z, tNextSegment.v1.x, tNextSegment.v1.z, tNextSegment.v2.x, tNextSegment.v2.z,
-                                &tIntersectPoint.x, &tIntersectPoint.z);
+    u32 dwIntersect = intersect(start_point.x, start_point.z, finish_point.x, finish_point.z, tNextSegment.v1.x, tNextSegment.v1.z, tNextSegment.v2.x,
+                                tNextSegment.v2.z, &tIntersectPoint.x, &tIntersectPoint.z);
     if (!dwIntersect)
         return;
     for (int i = 0; i < 4; ++i)
@@ -71,10 +72,11 @@ void CLevelGraph::choose_point(const Fvector& start_point, const Fvector& finish
             tCheckPoint2 = tNextContour.v1;
             break;
         }
-        default: NODEFAULT;
+        default: xr::unreachable();
         }
-        dwIntersect = intersect(start_point.x, start_point.z, finish_point.x, finish_point.z, tCheckPoint1.x, tCheckPoint1.z, tCheckPoint2.x, tCheckPoint2.z, &tIntersectPoint.x,
-                                &tIntersectPoint.z);
+
+        dwIntersect = intersect(start_point.x, start_point.z, finish_point.x, finish_point.z, tCheckPoint1.x, tCheckPoint1.z, tCheckPoint2.x, tCheckPoint2.z,
+                                &tIntersectPoint.x, &tIntersectPoint.z);
         if (dwIntersect == eLineIntersectionIntersect)
         {
             if (finish_point.distance_to_xz(tIntersectPoint) < finish_point.distance_to_xz(temp_point) + EPS_L)
@@ -105,8 +107,8 @@ void CLevelGraph::choose_point(const Fvector& start_point, const Fvector& finish
     }
 }
 
-f32 CLevelGraph::farthest_vertex_in_direction(u32 start_vertex_id, const Fvector& start_point, const Fvector& finish_point, u32& finish_vertex_id, xr_vector<bool>* tpaMarks,
-                                              bool check_accessability) const
+f32 CLevelGraph::farthest_vertex_in_direction(u32 start_vertex_id, const Fvector& start_point, const Fvector& finish_point, u32& finish_vertex_id,
+                                              xr_vector<bool>* tpaMarks, bool check_accessability) const
 {
     SContour _contour;
     const_iterator I, E;

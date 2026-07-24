@@ -222,13 +222,11 @@ bool CInventory::DropItem(CGameObject* pObj)
     if (!pIItem)
         return false;
 
-    ASSERT_FMT(pIItem->m_pCurrentInventory, "CInventory::DropItem: [%s]: pIItem->m_pCurrentInventory", pObj->cName().c_str());
-    ASSERT_FMT(pIItem->m_pCurrentInventory == this, "CInventory::DropItem: [%s]: this = %s, pIItem->m_pCurrentInventory = %s", pObj->cName().c_str(),
-               smart_cast<const CGameObject*>(this)->cName().c_str(), smart_cast<const CGameObject*>(pIItem->m_pCurrentInventory)->cName().c_str());
-    VERIFY(pIItem->m_eItemPlace != eItemPlaceUndefined);
+    XR_ASSERT(pIItem->m_pCurrentInventory == this, "", smart_cast<const CGameObject*>(pIItem->m_pCurrentInventory)->cName(),
+              smart_cast<const CGameObject*>(this)->cName(), pObj->cName());
+    XR_DEBUG_ASSERT(pIItem->m_eItemPlace != eItemPlaceUndefined, "", pObj->cName());
 
     pIItem->object().processing_activate();
-
     pIItem->OnBeforeDrop();
 
     switch (pIItem->m_eItemPlace)
@@ -279,7 +277,7 @@ bool CInventory::DropItem(CGameObject* pObj)
         pIItem->object().processing_deactivate();
     }
     break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     bool removed = false;
@@ -479,7 +477,7 @@ bool CInventory::Activate(u32 slot, EActivationReason reason, bool bForce, bool 
         goto _finish;
     }
 
-    ASSERT_FMT(slot == NO_ACTIVE_SLOT || slot < m_slots.size(), "wrong slot number: [%u]", slot);
+    XR_ASSERT(slot == NO_ACTIVE_SLOT || slot < m_slots.size(), "invalid slot number", slot, m_slots.size());
 
     if (slot != NO_ACTIVE_SLOT && !m_slots[slot].m_bVisible)
     {

@@ -38,8 +38,7 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
     eOldEnvironment = peInAir;
     eEnvironment = peInAir;
     aabb.set(-def_X_SIZE_2, 0, -def_Z_SIZE_2, def_X_SIZE_2, def_Y_SIZE_2 * 2, def_Z_SIZE_2);
-    /// vFootCenter.set		(0,0,0);
-    // vFootExt.set		(0,0,0);
+
     fMass = 100;
     fMinCrashSpeed = 12.0f;
     fMaxCrashSpeed = 25.0f;
@@ -191,11 +190,7 @@ void CPHMovementControl::UpdateCollisionDamage()
     // calc new
     gcontact_Power = fContactSpeed / fMaxCrashSpeed;
     if (fContactSpeed > fMinCrashSpeed)
-    {
         gcontact_HealthLost = ((fContactSpeed - fMinCrashSpeed)) / (fMaxCrashSpeed - fMinCrashSpeed);
-        // VERIFY(m_character);
-        // m_character->SetHitType(DefineCollisionHitType(m_character->LastMaterialIDX()));
-    }
 }
 
 void CPHMovementControl::Calculate(const xr_vector<DetailPathManager::STravelPathPoint>& path, float speed, u32& travel_point, float& precision)
@@ -216,8 +211,6 @@ void CPHMovementControl::Calculate(const xr_vector<DetailPathManager::STravelPat
     m_character->IPosition(new_position);
 
     int index = 0; // nearest point
-    // float distance;//distance
-
     bool near_line;
     m_path_size = path.size();
     Fvector dir;
@@ -297,16 +290,13 @@ void CPHMovementControl::Calculate(const xr_vector<DetailPathManager::STravelPat
     }
 
     dir.y = 0.f;
-    // VERIFY(!(fis_zero(dir.magnitude())&&!fis_zero(speed)));
     dir.normalize_safe();
 
     /////////////////////////////////////////////////////////////////
     if (bExernalImpulse)
     {
-        // vAccel.add(vExternalImpulse);
         Fvector V;
         V.set(dir);
-        // V.mul(speed*fMass/fixed_step);
         V.mul(speed * 10.f);
         V.add(vExternalImpulse);
         m_character->ApplyForce(vExternalImpulse);
@@ -321,13 +311,7 @@ void CPHMovementControl::Calculate(const xr_vector<DetailPathManager::STravelPat
         vExternalImpulse.set(0.f, 0.f, 0.f);
         bExernalImpulse = false;
     }
-    /////////////////////////
-    // if(!PhyssicsOnlyMode()){
-    //	Fvector	v;//m_character->GetVelocity(v);
-    //	v.mul(dir,speed);
-    //	SetVelocity(v);//hk
-    //
-    // }
+
     /////////////////////////
     m_character->SetMaximumVelocity(speed);
     m_character->SetAcceleration(dir);
@@ -421,7 +405,8 @@ void CPHMovementControl::PathNearestPoint(const xr_vector<DetailPathManager::STr
 
     if (std::isinf(m_path_distance) && m_path_distance > 0.f) // after whall path
     {
-        R_ASSERT2(after_line, "Must be after line");
+        XR_ASSERT(after_line);
+
         vtemp.sub(new_position, path[i].position);
         m_path_distance = vtemp.magnitude();
         SetPathDir(dir);
@@ -515,7 +500,8 @@ void CPHMovementControl::PathNearestPointFindUp(const xr_vector<DetailPathManage
 
     if (std::isinf(m_path_distance) && m_path_distance > 0.f && i == m_path_size - 1)
     {
-        R_ASSERT2(after_line, "Must be after line");
+        XR_ASSERT(after_line);
+
         vtemp.sub(new_position, path[i].position);
         m_path_distance = vtemp.magnitude();
         SetPathDir(dir);
@@ -601,7 +587,8 @@ void CPHMovementControl::PathNearestPointFindDown(const xr_vector<DetailPathMana
 
     if (std::isinf(m_path_distance) && m_path_distance > 0.f && i == 1)
     {
-        R_ASSERT2(after_line, "Must be after line");
+        XR_ASSERT(after_line);
+
         vtemp.sub(new_position, path[i].position);
         m_path_distance = vtemp.magnitude();
         SetPathDir(dir);
@@ -698,8 +685,9 @@ void CPHMovementControl::PathDIrPoint(const xr_vector<DetailPathManager::STravel
     Fvector tangent;
     tangent.crossproduct(Fvector().set(0, 1, 0), to_path_point);
 
-    VERIFY(!fis_zero(tangent.magnitude()));
+    XR_DEBUG_ASSERT(!fis_zero(tangent.magnitude()));
     tangent.normalize();
+
     if (dir.square_magnitude() > EPS)
     {
         if (tangent.dotproduct(dir) < 0.f)
@@ -765,20 +753,12 @@ void CPHMovementControl::Load(LPCSTR section)
 
     if (pSettings->line_exist(section, "actor_restrictor"))
         SetRestrictionType(CPHCharacter::ERestrictionType(pSettings->r_token(section, "actor_restrictor", retrictor_types)));
+
     fCollisionDamageFactor = READ_IF_EXISTS(pSettings, r_float, section, "ph_collision_damage_factor", fCollisionDamageFactor);
-    R_ASSERT3(fCollisionDamageFactor <= 1.f, "ph_collision_damage_factor >1.", section);
+    XR_ASSERT(fCollisionDamageFactor <= 1.0f, "", section);
+
     SetCrashSpeeds(cs_min, cs_max);
     SetMass(mass);
-
-    // m_PhysicMovementControl: Frictions
-    // float af, gf, wf;
-    // af					= pSettings->r_float	(section,"ph_friction_air"	);
-    // gf					= pSettings->r_float	(section,"ph_friction_ground");
-    // wf					= pSettings->r_float	(section,"ph_friction_wall"	);
-    // SetFriction	(af,wf,gf);
-
-    // BOX activate
-    //	ActivateBox	(0);
 }
 
 void CPHMovementControl::CheckEnvironment()
@@ -914,9 +894,7 @@ void CPHMovementControl::PHCaptureObject(CPhysicsShellHolder* object, u16 elemen
 
 Fvector CPHMovementControl::PHCaptureGetNearestElemPos(const CPhysicsShellHolder* object)
 {
-    R_ASSERT3((object->m_pPhysicsShell != NULL), "NO Phisics Shell for object ", object->cName().c_str());
-
-    CPhysicsElement* ph_elem = object->m_pPhysicsShell->NearestToPoint(vPosition);
+    CPhysicsElement* ph_elem = XR_ASSERT_VAL(object->m_pPhysicsShell != nullptr, "no physics shell for object", object->cName())->NearestToPoint(vPosition);
 
     Fvector v;
     ph_elem->GetGlobalPositionDynamic(&v);
@@ -926,7 +904,7 @@ Fvector CPHMovementControl::PHCaptureGetNearestElemPos(const CPhysicsShellHolder
 
 Fmatrix CPHMovementControl::PHCaptureGetNearestElemTransform(CPhysicsShellHolder* object)
 {
-    CPhysicsElement* ph_elem = object->m_pPhysicsShell->NearestToPoint(vPosition);
+    CPhysicsElement* ph_elem = XR_ASSERT_VAL(object->m_pPhysicsShell != nullptr, "no physics shell for object", object->cName())->NearestToPoint(vPosition);
 
     Fmatrix m;
     ph_elem->GetGlobalTransformDynamic(&m);
@@ -1126,32 +1104,25 @@ struct STraceBorderQParams
 {
     CPHMovementControl* m_movement;
     const Fvector& m_dir;
-    STraceBorderQParams(CPHMovementControl* movement, const Fvector& dir) : m_dir(dir) { m_movement = movement; }
-    STraceBorderQParams& operator=(STraceBorderQParams& p)
-    {
-        VERIFY(FALSE);
-        return p;
-    } // Эта функция в дебаге должна вылетать что-ли? //-V790
+
+    constexpr explicit STraceBorderQParams(CPHMovementControl* movement, const Fvector& dir) : m_movement{movement}, m_dir{dir} {}
+
+    STraceBorderQParams& operator=(STraceBorderQParams& p) = delete;
 };
 
 BOOL CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID params)
 {
+    if (result.O)
+        return true;
+
     STraceBorderQParams& p = *(STraceBorderQParams*)params;
     u16 mtl_idx = GAMEMTL_NONE_IDX;
-    CDB::TRI* T{};
+    CDB::TRI* T{nullptr};
 
-    if (result.O)
-    {
-        return true;
-    }
-    else
-    {
-        // получить треугольник и узнать его материал
-        T = Level().ObjectSpace.GetStaticTris() + result.element;
-        mtl_idx = T->material;
-    }
+    // получить треугольник и узнать его материал
+    T = Level().ObjectSpace.GetStaticTris() + result.element;
+    mtl_idx = XR_ASSERT_VAL(T != nullptr)->material;
 
-    VERIFY(T);
     SGameMtl* mtl = GMLib.GetMaterialByIdx(mtl_idx);
     if (mtl->Flags.test(SGameMtl::flInjurious))
     {
@@ -1179,8 +1150,8 @@ void CPHMovementControl::TraceBorder(const Fvector& prev_position)
 
     float mag = _sqrt(sq_mag);
     dir.mul(1.f / mag);
-    collide::ray_defs RD(from_pos, dir, mag, 0, collide::rqtStatic);
-    VERIFY(!fis_zero(RD.dir.square_magnitude()));
+    collide::ray_defs RD{from_pos, dir, mag, 0, collide::rqtStatic};
+    XR_DEBUG_ASSERT(!fis_zero(RD.dir.square_magnitude()));
 
     STraceBorderQParams p(this, dir);
     storage.r_clear();
@@ -1225,20 +1196,22 @@ void CPHMovementControl::SetPathDir(const Fvector& v)
     _vPathDir = v;
 
     if (_abs(_vPathDir.x) > 1000 || _abs(_vPathDir.y) > 1000 || _abs(_vPathDir.z) > 1000)
-    {
-        Log("_vPathDir", _vPathDir);
-    }
-    VERIFY2(_abs(_vPathDir.x) < 1000, " incorrect SetPathDir ");
+        Msg("_vPathDir: {}", _vPathDir);
+
+    XR_DEBUG_ASSERT(_abs(_vPathDir.x) < 1000.0f);
 }
 
-static const u32 move_steps_max_num = 20;
-static const float move_velocity = 1.f;
+namespace
+{
+constexpr u32 move_steps_max_num{20};
+constexpr f32 move_velocity{1.0f};
+constexpr f32 fmove_steps_max_num{20.0f};
+} // namespace
 
-static const float fmove_steps_max_num = move_steps_max_num;
 void CPHMovementControl::VirtualMoveTo(const Fvector& in_pos, Fvector& out_pos)
 {
-    VERIFY(CharacterExist());
-    VERIFY(_valid(in_pos));
+    XR_ASSERT(CharacterExist());
+    XR_DEBUG_ASSERT(_valid(in_pos));
 
     class ph_character_state_save
     {
@@ -1299,7 +1272,7 @@ void CPHMovementControl::VirtualMoveTo(const Fvector& in_pos, Fvector& out_pos)
     }
 
     m_character->GetPosition(out_pos);
-    VERIFY(_valid(out_pos));
+    XR_DEBUG_ASSERT(_valid(out_pos));
 }
 
 bool CPHMovementControl::PhysicsOnlyMode()
@@ -1310,5 +1283,7 @@ bool CPHMovementControl::PhysicsOnlyMode()
 void CPHMovementControl::BlockDamageSet(u64 steps_num)
 {
     block_damage_step_end = ph_world->StepsNum() + steps_num;
-    UpdateCollisionDamage(); // reset all saved values
+
+    // reset all saved values
+    UpdateCollisionDamage();
 }

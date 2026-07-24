@@ -315,12 +315,9 @@ void CUISequenceSimpleItem::OnKeyboardPress(xr::key_id dik)
         if (is_binded(itm.m_action, dik))
         {
             sol::function function_to_call;
-            const bool function_exists = ai().script_engine().function(itm.m_functor.c_str(), function_to_call);
-            ASSERT_FMT_DBG(function_exists, "!![{}] Cannot find script function described in tutorial item [{}]",
-                           std::source_location::current().function_name(), itm.m_functor);
-
-            if (function_exists)
-                function_to_call();
+            XR_ASSERT(ai().script_engine().function(itm.m_functor.c_str(), function_to_call), "can't find script function described in tutorial item",
+                      itm.m_functor);
+            function_to_call();
 
             if (itm.m_bfinalize)
             {

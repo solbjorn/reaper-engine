@@ -127,7 +127,7 @@ void CUIProgressBar::Draw()
         progress_rect.set(0, center - m_CurrentLength, GetWidth(), center + m_CurrentLength);
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     if (m_CurrentLength > 0)
@@ -139,5 +139,6 @@ void CUIProgressBar::Draw()
         m_UIProgressItem.Draw();
         UI()->PopScissor();
     }
+
     m_last_render_frame = Device.dwFrame;
 }

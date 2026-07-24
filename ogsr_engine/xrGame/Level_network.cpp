@@ -290,10 +290,8 @@ tmc::task<bool> CLevel::Connect2Server(gsl::czstring options)
 
     net_Syncronised = TRUE;
 
-    //---------------------------------------------------------------------------
-    P.w_begin(M_CLIENT_REQUEST_CONNECTION_DATA);
+    P.w_begin(gsl::narrow<u16>(xr::msg::M_CLIENT_REQUEST_CONNECTION_DATA));
     Send(P, net_flags(TRUE, TRUE, TRUE, TRUE));
-    //---------------------------------------------------------------------------
 
     co_return true;
 }
@@ -301,9 +299,9 @@ tmc::task<bool> CLevel::Connect2Server(gsl::czstring options)
 void CLevel::OnBuildVersionChallenge()
 {
     NET_Packet P;
-    P.w_begin(M_CL_AUTH);
-    u64 auth = 0;
-    P.w_u64(auth);
+    P.w_begin(gsl::narrow<u16>(xr::msg::M_CL_AUTH));
+    P.w_u64(0);
+
     Send(P, net_flags(TRUE, TRUE, TRUE, TRUE));
 }
 

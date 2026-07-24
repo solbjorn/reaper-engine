@@ -10,11 +10,12 @@
 
 #define TEMPLATE_SPECIALIZATION template <typename _DataStorage, typename _dist_type, typename _index_type, typename _iteration_type>
 
-#define CGameVertexTypePathManager CPathManager<CGameGraph, _DataStorage, SVertexType<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>
+#define CGameVertexTypePathManager \
+    CPathManager<CGameGraph, _DataStorage, SVertexType<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>
 
 TEMPLATE_SPECIALIZATION
-IC void CGameVertexTypePathManager::setup(const CGameGraph* _graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path, const _index_type& _start_node_index,
-                                          const _index_type& _goal_node_index, _Parameters& parameters)
+IC void CGameVertexTypePathManager::setup(const CGameGraph* _graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path,
+                                          const _index_type& _start_node_index, const _index_type& _goal_node_index, _Parameters& parameters)
 {
     inherited::setup(_graph, _data_storage, _path, _start_node_index, _goal_node_index, parameters);
     m_evaluator = &parameters;
@@ -27,13 +28,13 @@ IC _dist_type CGameVertexTypePathManager::estimate(const _index_type& node_index
 TEMPLATE_SPECIALIZATION
 IC bool CGameVertexTypePathManager::is_goal_reached(const _index_type& node_index)
 {
-    VERIFY(m_evaluator);
-    if (graph->mask(m_evaluator->m_vertex_types, graph->vertex(data_storage->get_best().index())->vertex_type()))
+    if (graph->mask(XR_ASSERT_VAL(m_evaluator != nullptr)->m_vertex_types, graph->vertex(data_storage->get_best().index())->vertex_type()))
     {
         m_evaluator->m_vertex_id = data_storage->get_best().index();
-        return (true);
+        return true;
     }
-    return (false);
+
+    return false;
 }
 
 TEMPLATE_SPECIALIZATION

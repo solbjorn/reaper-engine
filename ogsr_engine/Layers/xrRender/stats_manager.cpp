@@ -10,16 +10,18 @@
 
 void stats_manager::increment_stats(u32 size, enum_stats_buffer_type type, _D3DPOOL location)
 {
-    R_ASSERT(type >= 0 && type < enum_stats_buffer_type_COUNT);
-    R_ASSERT(location >= 0 && location <= D3DPOOL_SCRATCH);
+    XR_ASSERT(type >= 0 && type < enum_stats_buffer_type_COUNT, "", type, enum_stats_buffer_type_COUNT, location);
+    XR_ASSERT(location >= 0 && location <= D3DPOOL_SCRATCH, "", type, location, D3DPOOL_SCRATCH);
+
     memory_usage_summary[type][location] += size;
 }
 
 void stats_manager::increment_stats(u32 size, enum_stats_buffer_type type, _D3DPOOL location, void* buff_ptr)
 {
-    R_ASSERT(buff_ptr != NULL);
-    R_ASSERT(type >= 0 && type < enum_stats_buffer_type_COUNT);
-    R_ASSERT(location >= 0 && location <= D3DPOOL_SCRATCH);
+    XR_ASSERT(buff_ptr != nullptr);
+    XR_ASSERT(type >= 0 && type < enum_stats_buffer_type_COUNT, "", type, enum_stats_buffer_type_COUNT, location);
+    XR_ASSERT(location >= 0 && location <= D3DPOOL_SCRATCH, "", type, location, D3DPOOL_SCRATCH);
+
     memory_usage_summary[type][location] += size;
 
 #ifdef DEBUG
@@ -107,14 +109,18 @@ void stats_manager::decrement_stats_ib(ID3DIndexBuffer* buff)
 
 void stats_manager::decrement_stats(u32 size, enum_stats_buffer_type type, _D3DPOOL location)
 {
-    R_ASSERT(type >= 0 && type < enum_stats_buffer_type_COUNT);
-    R_ASSERT(location >= 0 && location <= D3DPOOL_SCRATCH);
+    XR_ASSERT(type >= 0 && type < enum_stats_buffer_type_COUNT, "", type, enum_stats_buffer_type_COUNT, location);
+    XR_ASSERT(location >= 0 && location <= D3DPOOL_SCRATCH, "", type, location, D3DPOOL_SCRATCH);
+
     memory_usage_summary[type][location] -= size;
 }
 
 void stats_manager::decrement_stats(u32 size, enum_stats_buffer_type type, _D3DPOOL location, void* buff_ptr)
 {
-    if (!buff_ptr)
+    XR_ASSERT(type >= 0 && type < enum_stats_buffer_type_COUNT, "", type, enum_stats_buffer_type_COUNT, location);
+    XR_ASSERT(location >= 0 && location <= D3DPOOL_SCRATCH, "", type, location, D3DPOOL_SCRATCH);
+
+    if (buff_ptr == nullptr)
         return;
 
 #ifdef DEBUG
@@ -126,7 +132,6 @@ void stats_manager::decrement_stats(u32 size, enum_stats_buffer_type type, _D3DP
         if (it->buff_ptr == buff_ptr)
         {
             // The pointers may coincide so this assertion may some times fail normally.
-            // R_ASSERT ( it->type == type && it->location == location && it->size == size );
             m_buffers_list.erase(it);
             find = true;
             break;
@@ -135,7 +140,7 @@ void stats_manager::decrement_stats(u32 size, enum_stats_buffer_type type, _D3DP
 
     // "Specified buffer not fount in the buffers list.
     // The buffer may not incremented to stats or it already was removed"
-    R_ASSERT(find);
+    XR_ASSERT(find, "", type, location);
 #endif // DEBUG
 
     memory_usage_summary[type][location] -= size;
@@ -145,15 +150,10 @@ u32 get_format_pixel_size(D3DFORMAT format)
 {
     switch (format)
     {
-    case D3DFMT_A32B32G32R32F: {
-        return 16;
-    }
-
+    case D3DFMT_A32B32G32R32F: return 16;
     case D3DFMT_A16B16G16R16:
     case D3DFMT_A16B16G16R16F:
-    case D3DFMT_G32R32F: {
-        return 8;
-    }
+    case D3DFMT_G32R32F: return 8;
     case D3DFMT_A8R8G8B8:
     case D3DFMT_X8R8G8B8:
     case D3DFMT_A2B10G10R10:
@@ -166,20 +166,14 @@ u32 get_format_pixel_size(D3DFORMAT format)
     case D3DFMT_D24X8:
     case D3DFMT_D24X4S4:
     case D3DFMT_G16R16F:
-    case D3DFMT_R32F: {
-        return 4;
-    }
-
+    case D3DFMT_R32F: return 4;
     case D3DFMT_R5G6B5:
     case D3DFMT_X1R5G5B5:
     case D3DFMT_A1R5G5B5:
     case D3DFMT_D16_LOCKABLE:
     case D3DFMT_D15S1:
     case D3DFMT_D16:
-    case D3DFMT_R16F: {
-        return 2;
-    }
-
+    case D3DFMT_R16F: return 2;
     default: return 0;
     }
 }
@@ -188,17 +182,17 @@ u32 get_format_pixel_size(DXGI_FORMAT format)
 {
     if (format >= DXGI_FORMAT_R32G32B32A32_TYPELESS && format <= DXGI_FORMAT_R32G32B32A32_SINT)
         return 16;
-    else if (format >= DXGI_FORMAT_R32G32B32_TYPELESS && format <= DXGI_FORMAT_R32G32B32_SINT)
+    if (format >= DXGI_FORMAT_R32G32B32_TYPELESS && format <= DXGI_FORMAT_R32G32B32_SINT)
         return 12;
-    else if (format >= DXGI_FORMAT_R16G16B16A16_TYPELESS && format <= DXGI_FORMAT_X32_TYPELESS_G8X24_UINT)
+    if (format >= DXGI_FORMAT_R16G16B16A16_TYPELESS && format <= DXGI_FORMAT_X32_TYPELESS_G8X24_UINT)
         return 8;
-    else if (format >= DXGI_FORMAT_R10G10B10A2_TYPELESS && format <= DXGI_FORMAT_X24_TYPELESS_G8_UINT)
+    if (format >= DXGI_FORMAT_R10G10B10A2_TYPELESS && format <= DXGI_FORMAT_X24_TYPELESS_G8_UINT)
         return 4;
-    else if (format >= DXGI_FORMAT_R8G8_TYPELESS && format <= DXGI_FORMAT_R16_SINT)
+    if (format >= DXGI_FORMAT_R8G8_TYPELESS && format <= DXGI_FORMAT_R16_SINT)
         return 2;
-    else if (format >= DXGI_FORMAT_R8_TYPELESS && format <= DXGI_FORMAT_A8_UNORM)
+    if (format >= DXGI_FORMAT_R8_TYPELESS && format <= DXGI_FORMAT_A8_UNORM)
         return 1;
-    else
-        // Do not consider extraordinary formats.
-        return 0;
+
+    // Do not consider extraordinary formats.
+    return 0;
 }

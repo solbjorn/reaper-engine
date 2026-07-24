@@ -182,7 +182,7 @@ void ALDeviceList::SelectBestDeviceId(const char* system_default_device) const
     {
         if (snd_device_id == u32(-1) || snd_device_id >= GetNumDevices())
         {
-            R_ASSERT(GetNumDevices() != 0);
+            XR_ASSERT(GetNumDevices() != 0);
 
             // select best
             u32 new_device_id = 0; // first

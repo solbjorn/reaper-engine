@@ -68,8 +68,7 @@ bool det_render_debug = false;
 
 void CDetailManager::cache_Decompress(Slot* S)
 {
-    VERIFY(S);
-    Slot& D = *S;
+    auto& D = *XR_ASSERT_VAL(S != nullptr);
     D.type = stReady;
     if (D.empty)
         return;
@@ -104,7 +103,7 @@ void CDetailManager::cache_Decompress(Slot* S)
     float density = ps_current_detail_density;
     float jitter = density / 1.7f;
     u32 d_size = iCeil(dm_slot_size / density);
-    svector<int, dm_obj_in_slot> selected;
+    std::inplace_vector<s32, dm_obj_in_slot> selected;
 
     // Prepare to actual-bounds-calculations
     Fbox Bounds;

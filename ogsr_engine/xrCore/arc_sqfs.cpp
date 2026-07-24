@@ -76,6 +76,10 @@ struct std::default_delete<sqfs::sqfs_inode_generic_t>
     constexpr void operator()(sqfs::sqfs_inode_generic_t* ptr) const noexcept { sqfs::sqfs_free(ptr); }
 };
 
+XR_UNFORMATTABLE(sqfs::sqfs_data_reader_t);
+XR_UNFORMATTABLE(sqfs::sqfs_dir_reader_t);
+XR_UNFORMATTABLE(sqfs::sqfs_id_table_t);
+
 namespace xr
 {
 namespace
@@ -119,29 +123,29 @@ public:
 sqfs_pool::sqfs_pool(gsl::czstring path) : path{path}
 {
     sqfs::sqfs_file_t* f;
-    R_ASSERT(sqfs::sqfs_file_open(&f, path, sqfs::SQFS_FILE_OPEN_READ_ONLY) == 0);
+    XR_ASSERT(sqfs::sqfs_file_open(&f, path, sqfs::SQFS_FILE_OPEN_READ_ONLY) == 0, "", path);
     const auto file = absl::WrapUnique(f);
 
-    R_ASSERT(sqfs::sqfs_super_read(&super, file.get()) == 0);
-    R_ASSERT(sqfs::sqfs_compressor_config_init(&cfg, gsl::narrow<sqfs::SQFS_COMPRESSOR>(super.compression_id), super.block_size,
-                                               sqfs::SQFS_COMP_FLAG_UNCOMPRESS) == 0);
+    XR_ASSERT(sqfs::sqfs_super_read(&super, file.get()) == 0, "", path);
+    XR_ASSERT(sqfs::sqfs_compressor_config_init(&cfg, gsl::narrow<sqfs::SQFS_COMPRESSOR>(super.compression_id), super.block_size,
+                                                sqfs::SQFS_COMP_FLAG_UNCOMPRESS) == 0,
+              "", path);
 }
 
 sqfs_pool::reader::reader(xr::sqfs_pool& sq)
 {
     sqfs::sqfs_file_t* f;
-    R_ASSERT(sqfs::sqfs_file_open(&f, sq.path, sqfs::SQFS_FILE_OPEN_READ_ONLY) == 0);
+    XR_ASSERT(sqfs::sqfs_file_open(&f, sq.path, sqfs::SQFS_FILE_OPEN_READ_ONLY) == 0, "", sq.path);
     file = absl::WrapUnique(f);
 
     sqfs::sqfs_compressor_t* c;
-    R_ASSERT(sqfs::sqfs_compressor_create(&sq.cfg, &c) == 0);
+    XR_ASSERT(sqfs::sqfs_compressor_create(&sq.cfg, &c) == 0, "", sq.path);
     cmp = absl::WrapUnique(c);
 
-    dr = absl::WrapUnique(sqfs::sqfs_dir_reader_create(&sq.super, cmp.get(), file.get(), 0));
-    data = absl::WrapUnique(sqfs::sqfs_data_reader_create(file.get(), sq.super.block_size, cmp.get(), 0));
-    R_ASSERT(dr && data);
+    dr = XR_ASSERT_VAL(absl::WrapUnique(sqfs::sqfs_dir_reader_create(&sq.super, cmp.get(), file.get(), 0)), "", sq.path);
+    data = XR_ASSERT_VAL(absl::WrapUnique(sqfs::sqfs_data_reader_create(file.get(), sq.super.block_size, cmp.get(), 0)), "", sq.path);
 
-    R_ASSERT(sqfs::sqfs_data_reader_load_fragment_table(data.get(), &sq.super) == 0);
+    XR_ASSERT(sqfs::sqfs_data_reader_load_fragment_table(data.get(), &sq.super) == 0, "", sq.path);
 }
 
 // Stream reader for a file inside SquashFS
@@ -193,7 +197,7 @@ sqfs_stream::sqfs_stream(xr::sqfs_pool& sq, sqfs::sqfs_u64 inodein, gsl::index b
     : obj{sq.acquire_scoped()}, fbase{base}, fsize{sz}, sq{sq}, ref{inodein}
 {
     sqfs::sqfs_inode_generic_t* in;
-    R_ASSERT(sqfs::sqfs_dir_reader_get_inode(rd().dr.get(), ref, &in) == 0);
+    XR_ASSERT(sqfs::sqfs_dir_reader_get_inode(rd().dr.get(), ref, &in) == 0, "", sq.path);
     inode = absl::WrapUnique(in);
 
     bsize = std::min(wnd[3], fsize);
@@ -240,8 +244,9 @@ void sqfs_stream::r(void* buffer, gsl::index buffer_size)
             const auto direct = xr::rounddown(std::ssize(out), wnd[3]);
             if (direct > 0)
             {
-                R_ASSERT(sqfs::sqfs_data_reader_read(rd().data.get(), inode.get(), gsl::narrow_cast<sqfs::sqfs_u64>(fbase + foff), &out[0],
-                                                     gsl::narrow_cast<sqfs::sqfs_u32>(direct)) == direct);
+                XR_ASSERT(sqfs::sqfs_data_reader_read(rd().data.get(), inode.get(), gsl::narrow_cast<sqfs::sqfs_u64>(fbase + foff), &out[0],
+                                                      gsl::narrow_cast<sqfs::sqfs_u32>(direct)) == direct,
+                          "", sq.path);
 
                 out = out.subspan(gsl::narrow_cast<size_t>(direct));
                 last = foff;
@@ -268,8 +273,9 @@ void sqfs_stream::r(void* buffer, gsl::index buffer_size)
             buf.resize(gsl::narrow_cast<size_t>(read + precache));
             precache = std::min(precache, fsize - foff - read);
 
-            R_ASSERT(sqfs::sqfs_data_reader_read(rd().data.get(), inode.get(), gsl::narrow_cast<sqfs::sqfs_u64>(fbase + foff + read),
-                                                 &buf[gsl::narrow_cast<size_t>(read)], gsl::narrow_cast<sqfs::sqfs_u32>(precache)) == precache);
+            XR_ASSERT(sqfs::sqfs_data_reader_read(rd().data.get(), inode.get(), gsl::narrow_cast<sqfs::sqfs_u64>(fbase + foff + read),
+                                                  &buf[gsl::narrow_cast<size_t>(read)], gsl::narrow_cast<sqfs::sqfs_u32>(precache)) == precache,
+                      "", sq.path);
             read += precache;
         }
 
@@ -291,7 +297,7 @@ CStreamReader* sqfs_stream::open_chunk(u32 chunk_id)
     if (size == 0)
         return nullptr;
 
-    R_ASSERT(!compressed, "cannot stream compressed chunks");
+    XR_ASSERT(!compressed, "cannot stream compressed chunks", sq.path, chunk_id);
 
     return xr_new<xr::sqfs_stream>(sq, ref, tell(), size);
 }
@@ -319,20 +325,20 @@ void CLocatorAPI::archive::index_sqfs(CLocatorAPI& loc, gsl::czstring fs_entry_p
     auto obj = xr::sqfs_cb(cb)->acquire_scoped();
     const auto& rd = obj.value;
 
-    const auto idt = absl::WrapUnique(sqfs::sqfs_id_table_create(0));
-    R_ASSERT(idt && sqfs::sqfs_id_table_read(idt.get(), rd.file.get(), &xr::sqfs_cb(cb)->super, rd.cmp.get()) == 0);
+    const auto idt = XR_ASSERT_VAL(absl::WrapUnique(sqfs::sqfs_id_table_create(0)), "", path);
+    XR_ASSERT(sqfs::sqfs_id_table_read(idt.get(), rd.file.get(), &xr::sqfs_cb(cb)->super, rd.cmp.get()) == 0, "", path);
 
     const auto it = [&rd, &idt] [[nodiscard]] {
         sqfs::sqfs_inode_generic_t* inp;
-        R_ASSERT(sqfs::sqfs_dir_reader_get_root_inode(rd.dr.get(), &inp) == 0);
+        XR_ASSERT(sqfs::sqfs_dir_reader_get_root_inode(rd.dr.get(), &inp) == 0);
         const auto inode = absl::WrapUnique(inp);
 
         sqfs::sqfs_dir_iterator_t* itp;
-        R_ASSERT(sqfs::sqfs_dir_iterator_create(rd.dr.get(), idt.get(), rd.data.get(), nullptr, inode.get(), &itp) == 0);
+        XR_ASSERT(sqfs::sqfs_dir_iterator_create(rd.dr.get(), idt.get(), rd.data.get(), nullptr, inode.get(), &itp) == 0);
         const auto it = absl::WrapUnique(itp);
 
         sqfs::sqfs_dir_iterator_t* rec;
-        R_ASSERT(sqfs::sqfs_dir_iterator_create_recursive(&rec, it.get()) == 0);
+        XR_ASSERT(sqfs::sqfs_dir_iterator_create_recursive(&rec, it.get()) == 0);
         return absl::WrapUnique(rec);
     }();
 
@@ -342,7 +348,7 @@ void CLocatorAPI::archive::index_sqfs(CLocatorAPI& loc, gsl::czstring fs_entry_p
 
         if (const auto ret = it->next(it.get(), &ep); ret != 0)
         {
-            R_ASSERT(ret == 1);
+            XR_ASSERT(ret == 1, "", path);
             return;
         }
 
@@ -360,11 +366,11 @@ IReader* CLocatorAPI::archive::read_sqfs(const struct file& desc, u32) const
     const auto& rd = obj.value;
 
     sqfs::sqfs_inode_generic_t* inp;
-    R_ASSERT(sqfs::sqfs_dir_reader_get_inode(rd.dr.get(), desc.cb, &inp) == 0);
+    XR_ASSERT(sqfs::sqfs_dir_reader_get_inode(rd.dr.get(), desc.cb, &inp) == 0, "", path);
     const auto inode = absl::WrapUnique(inp);
 
     std::byte* dest = xr_alloc<std::byte>(desc.size_real);
-    R_ASSERT(sqfs::sqfs_data_reader_read(rd.data.get(), inode.get(), 0, dest, gsl::narrow_cast<sqfs::sqfs_u32>(desc.size_real)) == desc.size_real);
+    XR_ASSERT(sqfs::sqfs_data_reader_read(rd.data.get(), inode.get(), 0, dest, gsl::narrow_cast<sqfs::sqfs_u32>(desc.size_real)) == desc.size_real, "", path);
 
     return xr_new<CTempReader>(dest, desc.size_real, 0z);
 }

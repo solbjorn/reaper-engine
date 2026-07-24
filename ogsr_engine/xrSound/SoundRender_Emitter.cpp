@@ -21,7 +21,7 @@ void CSoundRender_Emitter::set_position(const Fvector& pos)
 // Перемотка звука на заданную секунду [rewind snd to target time] --#SM+#--
 void CSoundRender_Emitter::set_time(float t)
 {
-    R_ASSERT2(get_length_sec() >= t, "set_time: time is bigger than length of sound");
+    XR_ASSERT(get_length_sec() >= t, "time is bigger than length of sound");
 
     clamp(t, 0.0f, get_length_sec());
     fTimeToRewind = t;
@@ -92,7 +92,7 @@ void CSoundRender_Emitter::Event_Propagade()
     if (!SoundRender->Handler)
         return;
 
-    VERIFY(_valid(p_source.volume));
+    XR_DEBUG_ASSERT(_valid(p_source.volume));
 
     // Calculate range
     const float clip = p_source.max_ai_distance * p_source.volume;
@@ -142,8 +142,7 @@ u32 CSoundRender_Emitter::get_cursor(bool b_absolute) const
     if (b_absolute)
         return m_stream_cursor;
 
-    VERIFY(m_stream_cursor - m_cur_handle_cursor >= 0);
-    return m_stream_cursor - m_cur_handle_cursor;
+    return XR_ASSERT_VAL(m_stream_cursor - m_cur_handle_cursor >= 0);
 }
 
 void CSoundRender_Emitter::move_cursor(int offset) { set_cursor(get_cursor(true) + offset); }
@@ -178,10 +177,12 @@ void CSoundRender_Emitter::fill_block(void* ptr, u32 size)
                 // Calculate remainder
                 const u32 sz_data = dwBytesTotal - get_cursor(true);
                 const u32 sz_zero = (get_cursor(true) + size) - dwBytesTotal;
-                VERIFY(size == (sz_data + sz_zero));
+                XR_ASSERT(size == sz_data + sz_zero, "", sz_data, sz_zero);
+
                 fill_data(dest, get_cursor(false), sz_data);
                 memset(dest + sz_data, 0, sz_zero);
             }
+
             move_cursor(size);
         }
         break;
@@ -198,7 +199,7 @@ void CSoundRender_Emitter::fill_block(void* ptr, u32 size)
             } while (0 != (size - hw_position));
         }
         break;
-        default: FATAL("SOUND: Invalid emitter state");
+        default: XR_PANIC("invalid emitter state", m_current_state);
         }
     }
     else
@@ -206,7 +207,7 @@ void CSoundRender_Emitter::fill_block(void* ptr, u32 size)
         const u32 bt_handle = ((CSoundRender_Source*)owner_data->handle)->dwBytesTotal;
         if (get_cursor(true) + size > m_cur_handle_cursor + bt_handle)
         {
-            R_ASSERT(owner_data->fn_attached[0].size());
+            XR_ASSERT(!owner_data->fn_attached[0].empty());
 
             u32 rem = 0;
             if ((m_cur_handle_cursor + bt_handle) > get_cursor(true))

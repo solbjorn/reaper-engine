@@ -107,10 +107,10 @@ void str_container_impl::verify()
         for (auto& [_, value] : map)
         {
             const std::string_view sv{value->value};
-            ASSERT_FMT(value->dwLength == std::ssize(sv), "corrupted shared string length: %zd bytes, expected %zd bytes", value->dwLength, std::ssize(sv));
+            XR_ASSERT(value->dwLength == std::ssize(sv), "corrupted shared string length", sv);
 
             const auto xxh = xxh::XXH3_64bits(sv.data(), sv.size());
-            ASSERT_FMT(value->hash == xxh, "corrupted shared string hash: 0x%016llx, expected 0x%016llx", value->hash, xxh);
+            XR_ASSERT(value->hash == xxh, "corrupted shared string hash", sv);
         }
     });
 }
@@ -139,7 +139,7 @@ void str_container::dump()
     std::FILE* f{};
 
     std::ignore = FS.update_path(path, "$logs$", "$str_dump$.txt");
-    R_ASSERT(fopen_s(&f, path, "w") == 0);
+    XR_ASSERT(::fopen_s(&f, path, "w") == 0, "", path);
     const auto _ = gsl::finally([f] { std::fclose(f); });
 
     xr::impl.dump(*f);

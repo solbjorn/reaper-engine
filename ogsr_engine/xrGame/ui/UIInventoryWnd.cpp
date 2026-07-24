@@ -251,10 +251,7 @@ EListType CUIInventoryWnd::GetType(CUIDragDropListEx* l)
         if (m_slots_array[i] == l)
             return iwSlot;
 
-    NODEFAULT;
-#ifdef DEBUG
-    return iwSlot;
-#endif // DEBUG
+    xr::unreachable();
 }
 
 void CUIInventoryWnd::PlaySnd(eInventorySndAction a)

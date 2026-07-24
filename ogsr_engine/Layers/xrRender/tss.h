@@ -1,6 +1,5 @@
 #ifndef TSS_H
 #define TSS_H
-#pragma once
 
 #include "tss_def.h"
 
@@ -66,7 +65,6 @@ public:
     IC void Set(SimulatorStates& container, u32 N, u32 V)
     {
         //	Igor: XBox has render states 400 and hire
-        // R_ASSERT(N<256);
         container.set_RS(N, V);
     }
 };

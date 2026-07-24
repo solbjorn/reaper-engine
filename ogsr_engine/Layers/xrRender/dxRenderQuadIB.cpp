@@ -48,6 +48,6 @@ void dxRenderDeviceRender::CreateQuadIB()
     D3D_SUBRESOURCE_DATA subData{};
     subData.pSysMem = IndexBuffer.data();
 
-    R_CHK(HW.pDevice->CreateBuffer(&desc, &subData, &QuadIB));
+    XR_ASSERT(xr::hr(HW.pDevice->CreateBuffer(&desc, &subData, &QuadIB)));
     HW.stats_manager.increment_stats_ib(QuadIB);
 }

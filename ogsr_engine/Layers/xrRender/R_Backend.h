@@ -49,10 +49,7 @@ struct R_statistics
 class CBackend
 {
 public:
-    enum
-    {
-        MaxCBuffers = 14
-    };
+    static constexpr auto MaxCBuffers = 14uz;
 
     R_xforms xforms;
     R_hemi hemi;
@@ -160,7 +157,7 @@ public:
 
     ICF ID3D11DeviceContext1* context() const;
 
-    IC CTexture* get_ActiveTexture(u32 stage)
+    [[nodiscard]] CTexture* get_ActiveTexture(u32 stage)
     {
         if (stage < CTexture::rstVertex)
             return textures_ps[stage];
@@ -175,8 +172,7 @@ public:
         if (stage < CTexture::rstInvalid)
             return textures_cs[stage - CTexture::rstCompute];
 
-        VERIFY(!"Invalid texture stage");
-        return nullptr;
+        XR_PANIC("invalid texture stage", stage);
     }
 
     CROS_impl::lmaterial o;
@@ -188,7 +184,6 @@ public:
     void Invalidate();
 
     // API
-    IC void set_xform(u32 ID, const Fmatrix& M);
     IC void set_xform_world(const Fmatrix& M);
     IC void set_xform_view(const Fmatrix& M);
     IC void set_xform_project(const Fmatrix& M);
@@ -262,13 +257,10 @@ public:
                         u32 _pass = D3DSTENCILOP_KEEP, u32 _zfail = D3DSTENCILOP_KEEP);
     IC void set_Z(u32 _enable);
     IC void set_ZFunc(u32 _func);
-    IC void set_AlphaRef(u32 _value);
     IC void set_ColorWriteEnable(u32 _mask = D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA);
     IC void set_CullMode(u32 _mode);
     IC u32 get_CullMode() { return cull_mode; }
     IC void set_FillMode(u32 _mode);
-    void set_ClipPlanes(u32 _enable, Fplane* _planes = nullptr, u32 count = 0);
-    void set_ClipPlanes(u32 _enable, Fmatrix* _xform = nullptr, u32 fmask = 0xff);
     IC void set_Scissor(Irect* rect = nullptr);
     IC void SetViewport(const D3D_VIEWPORT& viewport) const;
     IC void set_viewport_size(float w, float h) const;
@@ -343,19 +335,17 @@ public:
 
     ICF void Render(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
     ICF void Render(D3DPRIMITIVETYPE T, u32 startV, u32 PC);
-
     ICF void Compute(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT ThreadGroupCountZ);
 
-    ICF void submit()
+    ICF void submit() const
     {
         XR_TRACY_ZONE_SCOPED();
+        XR_ASSERT(context_id != R__IMM_CTX_ID);
 
-        VERIFY(context_id != R__IMM_CTX_ID);
-        ID3D11CommandList* pCommandList{};
+        ID3D11CommandList* pCommandList;
+        XR_ASSERT(xr::hr(HW.get_context(context_id)->FinishCommandList(false, &pCommandList)));
 
-        CHK_DX(HW.get_context(context_id)->FinishCommandList(false, &pCommandList));
-        HW.get_context(R__IMM_CTX_ID)->ExecuteCommandList(pCommandList, false);
-
+        HW.get_imm_context()->ExecuteCommandList(pCommandList, false);
         _RELEASE(pCommandList);
     }
 
@@ -370,8 +360,8 @@ public:
     void dbg_DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc);
     void dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
 
-    void dbg_SetRS(D3DRENDERSTATETYPE, u32) { VERIFY(!"Not implemented"); }
-    void dbg_SetSS(u32, D3DSAMPLERSTATETYPE, u32) { VERIFY(!"Not implemented"); }
+    void dbg_SetRS(D3DRENDERSTATETYPE, u32) {}
+    void dbg_SetSS(u32, D3DSAMPLERSTATETYPE, u32) {}
 
     void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, const u16* pIdx, int pcnt);
     void dbg_Draw_Near(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, const u16* pIdx, int pcnt);

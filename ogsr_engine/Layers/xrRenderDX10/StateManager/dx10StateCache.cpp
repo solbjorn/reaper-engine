@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "dx10StateCache.h"
 
 dx10StateCache<ID3DRasterizerState, D3D_RASTERIZER_DESC> RSManager;
@@ -54,17 +55,17 @@ void dx10StateCache<ID3DBlendState, D3D_BLEND_DESC>::ClearStateArray()
 template <>
 void dx10StateCache<ID3DRasterizerState, D3D_RASTERIZER_DESC>::CreateState(D3D_RASTERIZER_DESC desc, ID3DRasterizerState** ppIState)
 {
-    CHK_DX(HW.pDevice->CreateRasterizerState(&desc, ppIState));
+    XR_ASSERT(xr::hr(HW.pDevice->CreateRasterizerState(&desc, ppIState)));
 }
 
 template <>
 void dx10StateCache<ID3DDepthStencilState, D3D_DEPTH_STENCIL_DESC>::CreateState(D3D_DEPTH_STENCIL_DESC desc, ID3DDepthStencilState** ppIState)
 {
-    CHK_DX(HW.pDevice->CreateDepthStencilState(&desc, ppIState));
+    XR_ASSERT(xr::hr(HW.pDevice->CreateDepthStencilState(&desc, ppIState)));
 }
 
 template <>
 void dx10StateCache<ID3DBlendState, D3D_BLEND_DESC>::CreateState(D3D_BLEND_DESC desc, ID3DBlendState** ppIState)
 {
-    CHK_DX(HW.pDevice->CreateBlendState(&desc, ppIState));
+    XR_ASSERT(xr::hr(HW.pDevice->CreateBlendState(&desc, ppIState)));
 }

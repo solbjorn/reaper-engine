@@ -155,15 +155,10 @@ IC EHitType g_tfString2HitType(LPCSTR caHitType)
         return (eHitTypeExplosion);
     else if (std::is_eq(xr::strcasecmp(caHitType, "wound_2")))
         return (eHitTypeWound_2);
-    else
-        FATAL("Unsupported hit type!");
 
-    NODEFAULT;
-
-#ifdef DEBUG
-    return (eHitTypeMax);
-#endif
+    XR_PANIC("unsupported hit type", caHitType);
 }
+
 extern xr_token hit_types_token[];
 
 IC LPCSTR g_cafHitType2String(EHitType tHitType) { return get_token_name(hit_types_token, tHitType); }

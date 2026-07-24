@@ -294,17 +294,17 @@ tmc::task<void> CLevel::ProcessGameEvents()
         u16 ID, dest, type;
         game_events->get(ID, dest, type, P);
 
-        switch (ID)
+        switch (xr::msg{ID})
         {
-        case M_SPAWN: {
+        case xr::msg::M_SPAWN: {
             u16 dummy16;
             std::ignore = P.r_begin(dummy16);
 
             co_await cl_Process_Spawn(P);
             break;
         }
-        case M_EVENT: co_await cl_Process_Event(dest, type, P); break;
-        default: VERIFY(0); break;
+        case xr::msg::M_EVENT: co_await cl_Process_Event(dest, type, P); break;
+        default: xr::unreachable();
         }
     }
 

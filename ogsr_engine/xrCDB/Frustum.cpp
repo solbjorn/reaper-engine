@@ -43,9 +43,7 @@ void CFrustum::fplane::cache()
 
 void CFrustum::_add(const Fplane& P)
 {
-    VERIFY(p_count < FRUSTUM_MAXPLANES);
-
-    auto& plane = planes[gsl::narrow_cast<size_t>(p_count)];
+    auto& plane = planes[gsl::narrow_cast<size_t>(XR_ASSERT_VAL(p_count < FRUSTUM_MAXPLANES))];
     plane.set(P);
     plane.cache();
 
@@ -54,9 +52,7 @@ void CFrustum::_add(const Fplane& P)
 
 void CFrustum::_add(const Fvector& P1, const Fvector& P2, const Fvector& P3)
 {
-    VERIFY(p_count < FRUSTUM_MAXPLANES);
-
-    auto& plane = planes[gsl::narrow_cast<size_t>(p_count)];
+    auto& plane = planes[gsl::narrow_cast<size_t>(XR_ASSERT_VAL(p_count < FRUSTUM_MAXPLANES))];
     plane.build_precise(P1, P2, P3);
     plane.cache();
 
@@ -157,7 +153,7 @@ bool CFrustum::testSphere_dirty(const Fvector& c, float r) const
 
         [[fallthrough]];
     case 0: break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     return TRUE;
@@ -241,8 +237,7 @@ EFC_Visible CFrustum::testSAABB(const Fvector& c, float r, const float* mM, u32&
 void CFrustum::CreateFromPoints(std::span<const Fvector> p, const Fvector& COP)
 {
     const auto count = p.size();
-    VERIFY(count < FRUSTUM_MAXPLANES);
-    VERIFY(count >= 3);
+    XR_ASSERT(count >= 3 && count < FRUSTUM_MAXPLANES, "", count);
 
     _clear();
 
@@ -346,14 +341,10 @@ void CFrustum::SimplifyPoly_AABB(sPoly& poly, const Fplane& plane)
     mInv.invert(mView);
     poly.clear();
 
-    mInv.transform_tiny23(poly.last(), min);
-    poly.inc();
-    mInv.transform_tiny23(poly.last(), p1);
-    poly.inc();
-    mInv.transform_tiny23(poly.last(), max);
-    poly.inc();
-    mInv.transform_tiny23(poly.last(), p2);
-    poly.inc();
+    mInv.transform_tiny23(poly.emplace_back(), min);
+    mInv.transform_tiny23(poly.emplace_back(), p1);
+    mInv.transform_tiny23(poly.emplace_back(), max);
+    mInv.transform_tiny23(poly.emplace_back(), p2);
 }
 
 sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
@@ -370,7 +361,7 @@ sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
         // classify all points relative to plane #i
         float cls[FRUSTUM_SAFE];
 
-        for (auto [j, pt] : xr::views_enumerate(std::as_const(*src)))
+        for (auto [j, pt] : std::views::enumerate(std::as_const(*src)))
             cls[j] = P.classify(pt);
 
         // clip everything to this plane
@@ -380,7 +371,7 @@ sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
         Fvector D2;
         float denum, t;
 
-        for (gsl::index j{}; j < src->size() - 1; ++j)
+        for (gsl::index j{}; j < std::ssize(*src) - 1; ++j)
         {
             const auto& sj = (*src)[gsl::narrow_cast<typename sPoly::size_type>(j)];
             const auto& sjn = (*src)[gsl::narrow_cast<typename sPoly::size_type>(j + 1)];
@@ -398,9 +389,8 @@ sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
                     denum = P.n.dotproduct(D2);
                     if (!fis_zero(denum))
                     {
-                        t = -cls[j] / denum; // VERIFY(t<=1.f && t>=0);
-                        dest->last().mad(sj, D2, t);
-                        dest->inc();
+                        t = -cls[j] / denum;
+                        dest->emplace_back().mad(sj, D2, t);
                     }
                 }
             }
@@ -415,9 +405,8 @@ sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
                     denum = P.n.dotproduct(D2);
                     if (!fis_zero(denum))
                     {
-                        t = -cls[j] / denum; // VERIFY(t<=1.f && t>=0);
-                        dest->last().mad(sj, D2, t);
-                        dest->inc();
+                        t = -cls[j] / denum;
+                        dest->emplace_back().mad(sj, D2, t);
                     }
                 }
             }
@@ -433,7 +422,7 @@ sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
 
 void CFrustum::CreateFromMatrix(const Fmatrix& M, u32 mask)
 {
-    VERIFY(_valid(M));
+    XR_DEBUG_ASSERT(_valid(M));
     p_count = 0;
 
     // Left clipping plane

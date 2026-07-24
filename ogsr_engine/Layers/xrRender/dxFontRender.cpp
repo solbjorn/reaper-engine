@@ -34,15 +34,19 @@ struct std::default_delete<hb::hb_face_t>
 };
 
 template <>
-struct std::default_delete<skb::skb_font_collection_t>
-{
-    constexpr void operator()(skb::skb_font_collection_t* ptr) const noexcept { skb::skb_font_collection_destroy(ptr); }
-};
-
-template <>
 struct std::default_delete<hb::hb_font_t>
 {
     constexpr void operator()(hb::hb_font_t* ptr) const noexcept { hb::hb_font_destroy(ptr); }
+};
+
+XR_UNFORMATTABLE(hb::hb_blob_t);
+XR_UNFORMATTABLE(hb::hb_face_t);
+XR_UNFORMATTABLE(hb::hb_font_t);
+
+template <>
+struct std::default_delete<skb::skb_font_collection_t>
+{
+    constexpr void operator()(skb::skb_font_collection_t* ptr) const noexcept { skb::skb_font_collection_destroy(ptr); }
 };
 
 template <>
@@ -68,6 +72,12 @@ struct std::default_delete<skb::skb_temp_alloc_t>
 {
     constexpr void operator()(skb::skb_temp_alloc_t* ptr) const noexcept { skb::skb_temp_alloc_destroy(ptr); }
 };
+
+XR_UNFORMATTABLE(skb::skb_font_collection_t);
+XR_UNFORMATTABLE(skb::skb_image_atlas_t);
+XR_UNFORMATTABLE(skb::skb_layout_t);
+XR_UNFORMATTABLE(skb::skb_rasterizer_t);
+XR_UNFORMATTABLE(skb::skb_temp_alloc_t);
 
 namespace xr
 {
@@ -135,7 +145,7 @@ public:
     [[nodiscard]] constexpr auto atlas_get(std::string_view name) const
     {
         const auto res = scn::scan<gsl::index>(name, "$font${}");
-        R_ASSERT(res, res.error().msg());
+        XR_ASSERT(res, res.error().msg(), name);
 
         return std::pair<skb::skb_image_atlas_t&, gsl::index>{*atlas, res->value()};
     }
@@ -155,25 +165,22 @@ public:
 
 shaper::ft_font::ft_font(gsl::czstring path)
 {
-    const auto file = absl::WrapUnique(FS.rs_open(path));
-    R_ASSERT(file);
-
+    const auto file = XR_ASSERT_VAL(absl::WrapUnique(FS.rs_open(path)), "", path);
     const auto len = file->length();
     void* data = xr_malloc(len);
-    file->r(data, len);
 
+    file->r(data, len);
     blob.reset(hb::hb_blob_create_or_fail(static_cast<const char*>(data), len, hb::HB_MEMORY_MODE_WRITABLE, data, [](void* user_data) { xr_free(user_data); }));
-    R_ASSERT(blob);
+    XR_ASSERT(blob, "", path);
 
     face.reset(hb::hb_face_create_or_fail_using(blob.get(), 0, "ft"));
-    R_ASSERT(face);
+    XR_ASSERT(face, "", path);
 
     font.reset(hb::hb_font_create(face.get()));
-    R_ASSERT(font);
+    XR_ASSERT(font, "", path);
 
     u32 num;
     auto list = hb::hb_ot_name_list_names(face.get(), &num);
-
     if (num == 0)
         return;
 
@@ -195,27 +202,27 @@ shaper::ft_font::ft_font(gsl::czstring path)
 shaper::shaper()
 {
     coll.reset(skb::skb_font_collection_create());
-    R_ASSERT(coll);
+    XR_ASSERT(coll);
 
     temple.reset(skb::skb_temp_alloc_create(0));
-    R_ASSERT(temple);
+    XR_ASSERT(temple);
 
     skb::skb_layout_params_t params{};
     params.font_collection = coll.get();
     params.layout_width = SKB_SIZE_AUTO;
 
     layout.reset(skb::skb_layout_create(&params));
-    R_ASSERT(layout);
+    XR_ASSERT(layout);
 
     atlas.reset(skb::skb_image_atlas_create(nullptr));
-    R_ASSERT(atlas);
+    XR_ASSERT(atlas);
     skb::skb_image_atlas_set_create_texture_callback(atlas.get(), &xr::shaper::texture_create, this);
 
     temper.reset(skb::skb_temp_alloc_create(0));
-    R_ASSERT(temper);
+    XR_ASSERT(temper);
 
     raster.reset(skb::skb_rasterizer_create(nullptr));
-    R_ASSERT(raster);
+    XR_ASSERT(raster);
 }
 
 gsl::index shaper::font_add(gsl::czstring path)
@@ -237,12 +244,13 @@ gsl::index shaper::font_add(gsl::czstring path)
         }
     }
 
-    R_ASSERT(found);
+    XR_ASSERT(found, "", pview);
 
     auto& font = fonts.emplace_back(full);
     auto& family = *families.try_emplace(pview, ++last_family).first;
 
-    R_ASSERT(skb::skb_font_collection_add_hb_font(coll.get(), font.name() ?: path, reinterpret_cast<skb::hb_font_t*>(font.get()), family.second, nullptr) != 0);
+    XR_ASSERT(skb::skb_font_collection_add_hb_font(coll.get(), font.name() ?: path, reinterpret_cast<skb::hb_font_t*>(font.get()), family.second, nullptr) != 0,
+              "", pview);
 
     return family.second;
 }
@@ -425,7 +433,7 @@ public:
         if (++refcnt != 1)
             return;
 
-        R_ASSERT(!this->has_value());
+        XR_ASSERT(!this->has_value());
         this->emplace();
     }
 
@@ -434,7 +442,7 @@ public:
         if (--refcnt != 0)
             return;
 
-        R_ASSERT(this->has_value());
+        XR_ASSERT(this->has_value());
         this->reset();
     }
 };
@@ -467,7 +475,7 @@ gsl::index dxFontRender::Initialize(gsl::czstring shader, gsl::czstring font)
 
 void dxFontRender::OnRender(CGameFont& owner)
 {
-    VERIFY(g_bRendering);
+    XR_ASSERT(g_bRendering);
 
     // early exit if there is no text to render
     if (owner.strings.empty())

@@ -56,7 +56,7 @@ tmc::task<void> CTextureDescrMngr::LoadLTX(gsl::czstring initial)
 
                                              const std::string_view val{item.second};
                                              const auto res = scn::scan<std::string_view, f32, std::string_view>(val, "{:[^,]},{},{}");
-                                             R_ASSERT(res, res.error().msg());
+                                             XR_ASSERT(res, res.error().msg(), item.first, val);
 
                                              const auto [T, s, usage] = res->values();
                                              desc.m_assoc->detail_name._set(T);
@@ -77,7 +77,7 @@ tmc::task<void> CTextureDescrMngr::LoadLTX(gsl::czstring initial)
                                              }
                                              else
                                              {
-                                                 R_ASSERT(usage == "usage[bump]");
+                                                 XR_ASSERT(usage == "usage[bump]", "", item.first, val);
                                                  desc.m_assoc->usage.set(texture_assoc::flBumpDetail);
                                              }
                                          }(m_texture_details, m_detail_scalers, lock, item);
@@ -103,17 +103,17 @@ tmc::task<void> CTextureDescrMngr::LoadLTX(gsl::czstring initial)
                                              {
                                                  const auto res = scn::scan<std::string_view, f32, std::string_view>(
                                                      val, "bump_mode[{:[^]]}], material[{}], parallax[{:[^]]}]");
-                                                 R_ASSERT(res, res.error().msg());
+                                                 XR_ASSERT(res, res.error().msg(), item.first, val);
 
                                                  const auto [bmode, mat, par] = res->values();
                                                  if (bmode.starts_with("use:"))
                                                  {
-                                                     R_ASSERT(bmode.size() > 4);
+                                                     XR_ASSERT(bmode.size() > 4, "", item.first, val);
                                                      desc.m_spec->m_bump_name._set(bmode.substr(4));
                                                  }
                                                  else
                                                  {
-                                                     R_ASSERT(bmode == "none");
+                                                     XR_ASSERT(bmode == "none", "", item.first, val);
                                                  }
 
                                                  desc.m_spec->m_material = mat;
@@ -121,22 +121,22 @@ tmc::task<void> CTextureDescrMngr::LoadLTX(gsl::czstring initial)
                                                  if (par == "yes")
                                                      desc.m_spec->m_use_steep_parallax = true;
                                                  else
-                                                     R_ASSERT(par == "no");
+                                                     XR_ASSERT(par == "no", "", item.first, val);
                                              }
                                              else
                                              {
                                                  const auto res = scn::scan<std::string_view, f32>(val, "bump_mode[{:[^]]}], material[{}]");
-                                                 R_ASSERT(res, res.error().msg());
+                                                 XR_ASSERT(res, res.error().msg(), item.first, val);
 
                                                  const auto [bmode, mat] = res->values();
                                                  if (bmode.starts_with("use:"))
                                                  {
-                                                     R_ASSERT(bmode.size() > 4);
+                                                     XR_ASSERT(bmode.size() > 4, "", item.first, val);
                                                      desc.m_spec->m_bump_name._set(bmode.substr(4));
                                                  }
                                                  else
                                                  {
-                                                     R_ASSERT(bmode == "none");
+                                                     XR_ASSERT(bmode == "none", "", item.first, val);
                                                  }
 
                                                  desc.m_spec->m_material = mat;
@@ -172,7 +172,7 @@ tmc::task<void> CTextureDescrMngr::LoadTHM(gsl::czstring initial)
 
                                      xr_strcpy(fn, it.name.c_str());
                                      fix_texture_name(fn);
-                                     R_ASSERT(F->find_chunk_thm(THM_CHUNK_TYPE, fn));
+                                     XR_ASSERT(F->find_chunk_thm(THM_CHUNK_TYPE, fn) > 0, "", fn);
 
                                      std::ignore = F->r_u32();
                                      STextureParams tp;

@@ -65,19 +65,28 @@ void CBlender_LmEbB::LoadIni(CInifile* ini_file, LPCSTR section)
 //////////////////////////////////////////////////////////////////////////
 // R3
 //////////////////////////////////////////////////////////////////////////
+
 void CBlender_LmEbB::Compile(CBlender_Compile& C)
 {
-    if (oBlend.value)
-        C.r_Pass("lmapE", "lmapE", TRUE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, TRUE, 0);
-    else
-        C.r_Pass("lmapE", "lmapE", TRUE);
+    XR_ASSERT(C.L_textures.size() >= 2, "not enough textures for shader", C.L_textures[0]);
 
-    C.r_dx10Texture("s_base", C.L_textures[0]);
-    C.r_dx10Sampler("smp_base");
-    C.r_dx10Texture("s_lmap", C.L_textures[1]);
-    C.r_dx10Sampler("smp_linear");
-    C.r_dx10Texture("s_hemi", C.L_textures[2]);
-    C.r_dx10Sampler("smp_rtlinear");
-    C.r_dx10Texture("s_env", oT2_Name);
-    C.r_End();
+    switch (C.iElement)
+    {
+    case SE_R2_NORMAL_HQ:
+    case SE_R2_NORMAL_LQ:
+        if (oBlend.value)
+            C.r_Pass("lmapE", "lmapE", true, true, false, true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
+        else
+            C.r_Pass("lmapE", "lmapE", true);
+
+        C.r_dx10Texture("s_base", C.L_textures[0]);
+        C.r_dx10Sampler("smp_base");
+        C.r_dx10Texture("s_lmap", C.L_textures[1]);
+        C.r_dx10Sampler("smp_linear");
+        C.r_dx10Texture("s_hemi", C.L_textures[2]);
+        C.r_dx10Sampler("smp_rtlinear");
+        C.r_dx10Texture("s_env", oT2_Name);
+        C.r_End();
+        break;
+    }
 }

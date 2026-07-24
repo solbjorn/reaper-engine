@@ -179,46 +179,15 @@ public:
     void appendDomain(LPCSTR name, PDomain v);
     void appendBool(LPCSTR name, BOOL v);
 
-    PFloat& _float(LPCSTR name)
-    {
-        PFloatMapIt it = floats.find(name);
-        R_ASSERT(it != floats.end(), name);
-        return it->second;
-    }
+    [[nodiscard]] PFloat& _float(gsl::czstring name) { return XR_ASSERT_VAL(floats.find(name) != floats.end(), "", name)->second; }
 
-    PInt& _int(LPCSTR name)
-    {
-        PIntMapIt it = ints.find(name);
-        R_ASSERT(it != ints.end(), name);
-        return it->second;
-    }
+    [[nodiscard]] PInt& _int(gsl::czstring name) { return XR_ASSERT_VAL(ints.find(name) != ints.end(), "", name)->second; }
 
-    PVector& _vector(LPCSTR name)
-    {
-        PVectorMapIt it = vectors.find(name);
-        R_ASSERT(it != vectors.end(), name);
-        return it->second;
-    }
+    [[nodiscard]] PVector& _vector(gsl::czstring name) { return XR_ASSERT_VAL(vectors.find(name) != vectors.end(), "", name)->second; }
 
-    PDomain& _domain(LPCSTR name)
-    {
-        PDomainMapIt it = domains.find(name);
-        R_ASSERT(it != domains.end(), name);
-        return it->second;
-    }
+    [[nodiscard]] PDomain& _domain(gsl::czstring name) { return XR_ASSERT_VAL(domains.find(name) != domains.end(), "", name)->second; }
 
-    PBool& _bool(LPCSTR name)
-    {
-        PBoolMapIt it = bools.find(name);
-        R_ASSERT(it != bools.end(), name);
-        return it->second;
-    }
-
-    PBool* _bool_safe(LPCSTR name)
-    {
-        PBoolMapIt it = bools.find(name);
-        return (it != bools.end()) ? &it->second : nullptr;
-    }
+    [[nodiscard]] PBool& _bool(gsl::czstring name) { return XR_ASSERT_VAL(bools.find(name) != bools.end(), "", name)->second; }
 
     virtual void Compile(IWriter& F) = 0;
 

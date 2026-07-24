@@ -30,13 +30,14 @@ CScriptSound::CScriptSound(LPCSTR caSoundName, ESoundTypes game_type, esound_typ
 
 CScriptSound::~CScriptSound()
 {
-    THROW3(!m_sound._feedback(), "playing sound is not completed, but is destroying", m_sound._handle() ? m_sound._handle()->file_name() : "unknown");
+    XR_ASSERT(m_sound._feedback() == nullptr, "can't destroy active sound", m_caSoundToPlay);
     m_sound.queue_destroy();
 }
 
 Fvector CScriptSound::GetPosition() const
 {
-    VERIFY(m_sound._handle());
+    XR_ASSERT(m_sound._handle() != nullptr, "", m_caSoundToPlay);
+
     const CSound_params* l_tpSoundParams = m_sound.get_params();
     if (l_tpSoundParams)
         return (l_tpSoundParams->position);
@@ -49,18 +50,18 @@ Fvector CScriptSound::GetPosition() const
 
 void CScriptSound::Play(CScriptGameObject* object, float delay, int flags)
 {
-    THROW3(m_sound._handle(), "There is no sound", m_caSoundToPlay.c_str());
+    XR_ASSERT(m_sound._handle() != nullptr, "", m_caSoundToPlay);
     m_sound.play(&object->object(), flags, delay);
 }
 
 void CScriptSound::PlayAtPos(CScriptGameObject* object, const Fvector& position, float delay, int flags)
 {
-    THROW3(m_sound._handle(), "There is no sound", m_caSoundToPlay.c_str());
+    XR_ASSERT(m_sound._handle() != nullptr, "", m_caSoundToPlay);
     m_sound.play_at_pos(&object->object(), position, flags, delay);
 }
 
-void CScriptSound::PlayNoFeedback(CScriptGameObject* object, u32 flags /*!< Looping */, float delay /*!< Delay */, Fvector pos, float vol)
+void CScriptSound::PlayNoFeedback(CScriptGameObject* object, u32 flags, float delay, Fvector pos, float vol)
 {
-    THROW3(m_sound._handle(), "There is no sound", m_caSoundToPlay.c_str());
+    XR_ASSERT(m_sound._handle() != nullptr, "", m_caSoundToPlay);
     m_sound.play_no_feedback(&object->object(), flags, delay, &pos, &vol);
 }

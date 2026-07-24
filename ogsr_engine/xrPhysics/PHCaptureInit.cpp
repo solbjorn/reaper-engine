@@ -17,6 +17,7 @@ extern class CPHWorld* ph_world;
 
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
+
 CPHCapture::CPHCapture(CPHCharacter* a_character, CPhysicsShellHolder* a_taget_object, LPCSTR capture_bone, bool hard_mode)
 {
     CPHUpdateObject::Activate();
@@ -88,10 +89,8 @@ CPHCapture::CPHCapture(CPHCharacter* a_character, CPhysicsShellHolder* a_taget_o
         return;
     }
 
-    u16 capture_bone_id = p_kinematics->LL_BoneID(capture_bone ? capture_bone : ini->r_string(m_capture_section, "bone"));
-    R_ASSERT2(capture_bone_id != BI_NONE, "wrong capture bone");
-    m_capture_bone = &p_kinematics->LL_GetBoneInstance(capture_bone_id);
-
+    m_capture_bone = &p_kinematics->LL_GetBoneInstance(XR_ASSERT_VAL(
+        p_kinematics->LL_BoneID(capture_bone != nullptr ? capture_bone : ini->r_string(m_capture_section, "bone")) != BI_NONE, "invalid capture bone"));
     m_taget_element = m_taget_object->m_pPhysicsShell->NearestToPoint(GetCapturePosition());
 
     Init(ini);
@@ -176,9 +175,8 @@ CPHCapture::CPHCapture(CPHCharacter* a_character, CPhysicsShellHolder* a_taget_o
         return;
     }
 
-    u16 capture_bone_id = p_kinematics->LL_BoneID(capture_bone ? capture_bone : ini->r_string(m_capture_section, "bone"));
-    R_ASSERT2(capture_bone_id != BI_NONE, "wrong capture bone");
-    m_capture_bone = &p_kinematics->LL_GetBoneInstance(capture_bone_id);
+    m_capture_bone = &p_kinematics->LL_GetBoneInstance(XR_ASSERT_VAL(
+        p_kinematics->LL_BoneID(capture_bone != nullptr ? capture_bone : ini->r_string(m_capture_section, "bone")) != BI_NONE, "invalid capture bone"));
 
     IRenderVisual* V = m_taget_object->Visual();
     if (!V)

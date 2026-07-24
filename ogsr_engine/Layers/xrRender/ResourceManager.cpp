@@ -12,13 +12,8 @@
 
 IBlender* CResourceManager::_GetBlender(LPCSTR Name)
 {
-    R_ASSERT(Name && Name[0]);
-
-    auto I = m_blenders.find(Name);
-    if (I == m_blenders.end())
-        FATAL("!![%s] DX10: Shader [%s] not found in library.", std::source_location::current().function_name(), Name);
-
-    return I->second;
+    XR_ASSERT(Name != nullptr && Name[0] != '\0');
+    return XR_ASSERT_VAL(m_blenders.find(Name) != m_blenders.end(), "shader not found in library", Name)->second;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -32,7 +27,7 @@ void CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
 
     dest.clear();
     const char* P = (const char*)names;
-    svector<char, 128> N;
+    std::inplace_vector<char, 128> N;
 
     while (*P)
     {
@@ -102,11 +97,7 @@ Shader* CResourceManager::Create(const char* s_shader, const char* s_textures)
     if (_lua_HasShader(s_shader))
         return _lua_Create(s_shader, s_textures);
 
-    Shader* pShader = _cpp_Create(s_shader, s_textures);
-    if (pShader != nullptr)
-        return pShader;
-
-    FATAL("Can't find %s", s_shader);
+    return XR_ASSERT_VAL(_cpp_Create(s_shader, s_textures) != nullptr, "can't find shader", s_shader, s_textures);
 }
 
 Shader* CResourceManager::_cpp_Create(const char* s_shader, const char* s_textures)
@@ -292,7 +283,7 @@ void CResourceManager::_DumpMemoryUsage() const
 
 xr_vector<ITexture*> CResourceManager::FindTexture(const char* Name) const
 {
-    R_ASSERT(Name != nullptr && xr_strlen(Name) > 0);
+    XR_ASSERT(Name != nullptr && Name[0] != '\0');
 
     string_path filename;
     strcpy_s(filename, Name);

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "dx103DFluidManager.h"
+
 #include "../../xrRender/dxRenderDeviceRender.h"
 #include "dx103DFluidBlenders.h"
 #include "dx103DFluidData.h"
@@ -144,16 +145,19 @@ void dx103DFluidManager::DestroyShaders()
     }
 }
 
-void dx103DFluidManager::PrepareTexture(int rtIndex) { pRTTextures[rtIndex]._set(RImplementation.Resources->_CreateTexture(dx103DFluidConsts::m_pEngineTextureNames[rtIndex])); }
+void dx103DFluidManager::PrepareTexture(int rtIndex)
+{
+    pRTTextures[rtIndex]._set(RImplementation.Resources->_CreateTexture(dx103DFluidConsts::m_pEngineTextureNames[rtIndex]));
+}
 
 void dx103DFluidManager::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC TexDesc)
 {
     //	Resources must be already released by Destroy().
 
-    ID3DTexture3D* pRT;
-
     // Create the texture
-    CHK_DX(HW.pDevice->CreateTexture3D(&TexDesc, nullptr, &pRT));
+    ID3DTexture3D* pRT;
+    XR_ASSERT(xr::hr(HW.pDevice->CreateTexture3D(&TexDesc, nullptr, &pRT)));
+
     // Create the render target view
     D3D_RENDER_TARGET_VIEW_DESC DescRT{};
     DescRT.Format = TexDesc.Format;
@@ -162,8 +166,7 @@ void dx103DFluidManager::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC
     DescRT.Texture3D.MipSlice = 0;
     DescRT.Texture3D.WSize = TexDesc.Depth;
 
-    CHK_DX(HW.pDevice->CreateRenderTargetView(pRT, &DescRT, &pRenderTargetViews[rtIndex]));
-
+    XR_ASSERT(xr::hr(HW.pDevice->CreateRenderTargetView(pRT, &DescRT, &pRenderTargetViews[rtIndex])));
     pRTTextures[rtIndex]->surface_set(pRT);
 
     //	CTexture owns ID3DxxTexture3D interface
@@ -246,7 +249,7 @@ void dx103DFluidManager::AttachFluidData(dx103DFluidData& FluidData)
         pRTTextures[RENDER_TARGET_VELOCITY0 + i]->surface_set(pT);
         _RELEASE(pT);
 
-        VERIFY(!pRenderTargetViews[RENDER_TARGET_VELOCITY0 + i]);
+        XR_ASSERT(pRenderTargetViews[RENDER_TARGET_VELOCITY0 + i] == nullptr);
         pRenderTargetViews[RENDER_TARGET_VELOCITY0 + i] = FluidData.GetView((dx103DFluidData::eVolumePrivateRT)i);
     }
 }

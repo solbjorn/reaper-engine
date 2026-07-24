@@ -51,7 +51,9 @@ public:
     // Common data for rendering
     ref_shader shader{}; // pipe state, shared
     u32 Type{}; // visual's type
-    bool IsHudVisual{};
+
+    bool IsHudVisual{false};
+    bool simplified_fast_geom{false};
 
     /************************* Add by Zander *******************************/
 private:
@@ -77,5 +79,10 @@ public:
     dxRender_Visual();
     ~dxRender_Visual() override;
 };
+
+namespace xr
+{
+void override_shaders(gsl::czstring fnT, gsl::zstring fnS, std::size_t fnS_size);
+}
 
 #endif // !FBasicVisualH

@@ -7,7 +7,7 @@
 // Включает создание минидампов при вылетах
 #define USE_OWN_MINI_DUMP
 
-// Включает новые отладочные сообщения и ассерты - LogDbg, MsgDbg, FuncDbg, ASSERT_FMT_DBG
+// Включает новые отладочные сообщения и ассерты - LogDbg, MsgDbg
 // #define OGSR_TOTAL_DBG
 
 // Включает вылет, если в vertex() будет передан не валидный вертекс. Совсем строгий режим, более строгий чем OGSR_TOTAL_DBG, поэтому отдельно.
@@ -80,6 +80,8 @@
 // Uncomment to enable ImGui exports to Lua
 #define XR_IMGUI_LUA
 
+// Enable RenderDoc integration (place a prebuilt renderdoc.dll to bin_x64/)
+#define XR_USE_RENDERDOC
 // Uncomment to enable profiling with Tracy
 // #define TRACY_ENABLE
 

@@ -203,39 +203,33 @@ float CEnvironment::NormalizeTime(float tm)
 
 void CEnvironment::SetWeather(shared_str name, bool forced)
 {
-    if (name.size())
+    XR_ASSERT(!name.empty(), "empty weather name");
+
+    auto it = WeatherCycles.find(name);
+    if (it == WeatherCycles.end())
     {
-        auto it = WeatherCycles.find(name);
-        if (it == WeatherCycles.end())
-        {
-            Msg("! Invalid weather name: {}", name);
-            return;
-        }
+        Msg("! Invalid weather name: {}", name);
+        return;
+    }
 
-        R_ASSERT3(it != WeatherCycles.end(), "Invalid weather name.", name.c_str());
-        CurrentCycleName = it->first;
+    CurrentCycleName = it->first;
 
-        if (forced)
-            Invalidate();
+    if (forced)
+        Invalidate();
 
-        if (!bWFX)
-        {
-            PrevWeatherName = (forced || CurrentWeatherName.size() == 0) ? it->first : CurrentWeatherName;
-            CurrentWeather = &it->second;
-            CurrentWeatherName = it->first;
-        }
+    if (!bWFX)
+    {
+        PrevWeatherName = (forced || CurrentWeatherName.size() == 0) ? it->first : CurrentWeatherName;
+        CurrentWeather = &it->second;
+        CurrentWeatherName = it->first;
+    }
 
-        if (forced)
-            SelectEnvs(fGameTime);
+    if (forced)
+        SelectEnvs(fGameTime);
 
 #ifdef WEATHER_LOGGING
-        Msg("Starting Cycle: {} [{}]", name, forced ? "forced" : "deferred");
+    Msg("Starting Cycle: {} [{}]", name, forced ? "forced" : "deferred");
 #endif
-    }
-    else
-    {
-        FATAL("! Empty weather name");
-    }
 }
 
 bool CEnvironment::SetWeatherFX(shared_str name)
@@ -243,69 +237,61 @@ bool CEnvironment::SetWeatherFX(shared_str name)
     if (bWFX)
         return false;
 
-    if (!name.empty())
-    {
-        auto it = WeatherFXs.find(name);
-        R_ASSERT3(it != WeatherFXs.end(), "Invalid weather effect name.", name.c_str());
+    XR_ASSERT(!name.empty(), "empty weather effect name");
+    auto it = XR_ASSERT_VAL(WeatherFXs.find(name) != WeatherFXs.end(), "invalid weather effect name", name);
 
-        EnvVec* PrevWeather = CurrentWeather;
-        VERIFY(PrevWeather);
+    EnvVec* PrevWeather = XR_ASSERT_VAL(CurrentWeather != nullptr, "", name);
+    CurrentWeather = &it->second;
+    CurrentWeatherName = it->first;
 
-        CurrentWeather = &it->second;
-        CurrentWeatherName = it->first;
+    float rewind_tm = WFX_TRANS_TIME * fTimeFactor;
+    float start_tm = fGameTime + rewind_tm;
+    float current_length;
 
-        float rewind_tm = WFX_TRANS_TIME * fTimeFactor;
-        float start_tm = fGameTime + rewind_tm;
-        float current_length;
+    if (Current[0]->exec_time > Current[1]->exec_time)
+        current_length = (DAY_LENGTH - Current[0]->exec_time) + Current[1]->exec_time;
+    else
+        current_length = Current[1]->exec_time - Current[0]->exec_time;
 
-        if (Current[0]->exec_time > Current[1]->exec_time)
-            current_length = (DAY_LENGTH - Current[0]->exec_time) + Current[1]->exec_time;
-        else
-            current_length = Current[1]->exec_time - Current[0]->exec_time;
+    auto& wref = *CurrentWeather;
+    std::ranges::sort(wref, sort_env_etl_pred);
 
-        auto& wref = *CurrentWeather;
-        std::ranges::sort(wref, sort_env_etl_pred);
+    CEnvDescriptor* C0 = CurrentWeather->at(0);
+    CEnvDescriptor* C1 = CurrentWeather->at(1);
+    CEnvDescriptor* CE = CurrentWeather->at(CurrentWeather->size() - 2);
+    CEnvDescriptor* CT = CurrentWeather->at(CurrentWeather->size() - 1);
+    C0->copy(*Current[0]);
+    C0->exec_time = NormalizeTime(fGameTime - ((rewind_tm / (Current[1]->exec_time - fGameTime)) * current_length - rewind_tm));
+    C1->copy(*Current[1]);
+    C1->exec_time = NormalizeTime(start_tm);
 
-        CEnvDescriptor* C0 = CurrentWeather->at(0);
-        CEnvDescriptor* C1 = CurrentWeather->at(1);
-        CEnvDescriptor* CE = CurrentWeather->at(CurrentWeather->size() - 2);
-        CEnvDescriptor* CT = CurrentWeather->at(CurrentWeather->size() - 1);
-        C0->copy(*Current[0]);
-        C0->exec_time = NormalizeTime(fGameTime - ((rewind_tm / (Current[1]->exec_time - fGameTime)) * current_length - rewind_tm));
-        C1->copy(*Current[1]);
-        C1->exec_time = NormalizeTime(start_tm);
+    for (auto t_it = CurrentWeather->begin() + 2; t_it != CurrentWeather->end() - 1; t_it++)
+        (*t_it)->exec_time = NormalizeTime(start_tm + (*t_it)->exec_time_loaded);
 
-        for (auto t_it = CurrentWeather->begin() + 2; t_it != CurrentWeather->end() - 1; t_it++)
-            (*t_it)->exec_time = NormalizeTime(start_tm + (*t_it)->exec_time_loaded);
+    SelectEnvs(PrevWeather, WFX_end_desc[0], WFX_end_desc[1], CE->exec_time);
+    CT->copy(*WFX_end_desc[0]);
+    CT->exec_time = NormalizeTime(CE->exec_time + rewind_tm);
+    wfx_time = TimeDiff(fGameTime, CT->exec_time);
+    bWFX = true;
 
-        SelectEnvs(PrevWeather, WFX_end_desc[0], WFX_end_desc[1], CE->exec_time);
-        CT->copy(*WFX_end_desc[0]);
-        CT->exec_time = NormalizeTime(CE->exec_time + rewind_tm);
-        wfx_time = TimeDiff(fGameTime, CT->exec_time);
-        bWFX = true;
+    // sort wfx envs
+    std::ranges::sort(wref, sort_env_pred);
 
-        // sort wfx envs
-        std::ranges::sort(wref, sort_env_pred);
+    C0->get();
+    C1->get();
+    Current[0]->put();
+    Current[1]->put();
 
-        C0->get();
-        C1->get();
-        Current[0]->put();
-        Current[1]->put();
-
-        Current[0] = C0;
-        Current[1] = C1;
+    Current[0] = C0;
+    Current[1] = C1;
 
 #ifdef WEATHER_LOGGING
-        Msg("Starting WFX: '{}' - {:3.2f} sec. GameTime: {:3.2f}", name, wfx_time, fGameTime);
+    Msg("Starting WFX: '{}' - {:3.2f} sec. GameTime: {:3.2f}", name, wfx_time, fGameTime);
 
-        for (EnvIt l_it = CurrentWeather->begin(); l_it != CurrentWeather->end(); l_it++)
-            Msg(". Env: '{}' Tm: {:3.2f}", (*l_it)->m_identifier, (*l_it)->exec_time);
+    for (EnvIt l_it = CurrentWeather->begin(); l_it != CurrentWeather->end(); l_it++)
+        Msg(". Env: '{}' Tm: {:3.2f}", (*l_it)->m_identifier, (*l_it)->exec_time);
 #endif
-    }
-    else
-    {
-        FATAL("! Empty weather effect name");
-    }
+
     return true;
 }
 
@@ -331,7 +317,8 @@ bool CEnvironment::StartWeatherFXFromTime(shared_str name, float time)
 
 void CEnvironment::StopWFX()
 {
-    VERIFY(CurrentCycleName.size());
+    XR_ASSERT(!CurrentCycleName.empty());
+
     bWFX = false;
     SetWeather(CurrentCycleName, false);
 
@@ -379,10 +366,12 @@ void CEnvironment::SelectEnvs(EnvVec* envs, CEnvDescriptor*& e0, CEnvDescriptor*
 
 void CEnvironment::SelectEnvs(float gt)
 {
-    VERIFY(CurrentWeather);
+    XR_ASSERT(CurrentWeather != nullptr);
+
     if (Current[0] == Current[1] && !Current[0])
     {
-        VERIFY(!bWFX);
+        XR_ASSERT(!bWFX);
+
         // first or forced start
         SelectEnvs(CurrentWeather, Current[0], Current[1], gt);
 
@@ -429,7 +418,7 @@ void CEnvironment::lerp(float& current_weight)
         StopWFX();
 
     SelectEnvs(fGameTime);
-    VERIFY(Current[0] && Current[1]);
+    XR_ASSERT(Current[0] != nullptr && Current[1] != nullptr);
 
     current_weight = TimeWeight(fGameTime, Current[0]->exec_time, Current[1]->exec_time);
     // modifiers
@@ -495,10 +484,6 @@ tmc::task<void> CEnvironment::OnFrame()
         }
     }
 
-#ifndef MASTER_GOLD
-    VERIFY2(CurrentEnv->sun_dir.y < 0, "Invalid sun direction settings in lerp");
-#endif // #ifndef MASTER_GOLD
-
     PerlinNoise1D->SetFrequency(wind_gust_factor * MAX_NOISE_FREQ);
     wind_strength_factor = clampr(PerlinNoise1D->GetContinious(Device.fTimeGlobal) + 0.5f, 0.f, 1.f);
 
@@ -545,13 +530,12 @@ Fvector3 CEnvironment::calculate_config_sun_dir(float ftime)
         real_sun_long = s_long;
     }
 
-    R_ASSERT(_valid(real_sun_alt));
-    R_ASSERT(_valid(real_sun_long));
+    XR_ASSERT(_valid(real_sun_alt) && _valid(real_sun_long), "invalid sun direction", ftime, real_sun_alt, real_sun_long);
 
     Fvector3 ret{};
     ret.setHP(deg2rad(real_sun_alt), deg2rad(real_sun_long));
+    XR_ASSERT(_valid(ret), "invalid sun direction", ftime, ret);
 
-    R_ASSERT(_valid(ret));
     return ret;
 }
 
@@ -615,16 +599,16 @@ void CEnvironment::calculate_dynamic_sun_dir()
     if (SHA < 0)
         AZ = 2 * PI - AZ;
 
-    R_ASSERT(_valid(AZ));
-    R_ASSERT(_valid(SEA));
+    XR_ASSERT(_valid(AZ) && _valid(SEA), "invalid sun direction", AZ, SEA);
     CurrentEnv->sun_dir.setHP(AZ, SEA);
-    R_ASSERT(_valid(CurrentEnv->sun_dir));
+    XR_ASSERT(_valid(CurrentEnv->sun_dir), "invalid sun direction", CurrentEnv->sun_dir);
+
     CurrentEnv->sun_color.mul(fSunBlend);
 }
 
 void CEnvironment::create_mixer()
 {
-    VERIFY(!CurrentEnv);
+    XR_ASSERT(CurrentEnv == nullptr);
     CurrentEnv = xr_new<CEnvDescriptorMixer>(shared_str{"00:00:00"});
 }
 
@@ -667,10 +651,7 @@ SThunderboltCollection* CEnvironment::thunderbolt_collection(xr_vector<SThunderb
         if ((*i)->section == id)
             return (*i);
 
-    NODEFAULT;
-#ifdef DEBUG
-    return (0);
-#endif // #ifdef DEBUG
+    xr::unreachable();
 }
 
 CLensFlareDescriptor* CEnvironment::add_flare(xr_vector<CLensFlareDescriptor*>& collection, shared_str const& id)
@@ -692,7 +673,7 @@ CLensFlareDescriptor* CEnvironment::add_flare(xr_vector<CLensFlareDescriptor*>& 
 
 void CEnvironment::SetWeatherNext(shared_str name)
 {
-    ASSERT_FMT(!name.empty(), "empty weather name");
+    XR_ASSERT(!name.empty(), "empty weather name");
 
     auto it = WeatherCycles.find(name);
     if (it == WeatherCycles.end())

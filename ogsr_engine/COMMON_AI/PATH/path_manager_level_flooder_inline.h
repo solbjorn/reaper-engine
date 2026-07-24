@@ -10,7 +10,8 @@
 
 #define TEMPLATE_SPECIALIZATION template <typename _DataStorage, typename _dist_type, typename _index_type, typename _iteration_type>
 
-#define CLevelFlooderPathManager CPathManager<CLevelGraph, _DataStorage, SFlooder<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>
+#define CLevelFlooderPathManager \
+    CPathManager<CLevelGraph, _DataStorage, SFlooder<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>
 
 TEMPLATE_SPECIALIZATION
 IC void CLevelFlooderPathManager::setup(const _Graph* _graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path, const _index_type& _start_node_index,
@@ -26,25 +27,24 @@ IC void CLevelFlooderPathManager::setup(const _Graph* _graph, _DataStorage* _dat
 TEMPLATE_SPECIALIZATION
 IC bool CLevelFlooderPathManager::is_goal_reached(const _index_type& node_index)
 {
-    VERIFY(this->path);
-    this->path->push_back(node_index);
+    XR_ASSERT_VAL(this->path != nullptr)->push_back(node_index);
     this->best_node = this->graph->vertex(node_index);
-    //		y1						= (float)(best_node->position().y());
-    return (false);
+
+    return false;
 }
 
 TEMPLATE_SPECIALIZATION
 IC _dist_type CLevelFlooderPathManager::evaluate(const _index_type& node_index1, const _index_type& node_index2, const _Graph::const_iterator& /**i**/)
 {
-    VERIFY(this->graph);
-    return (m_cell_dist);
+    XR_ASSERT(this->graph != nullptr);
+    return m_cell_dist;
 }
 
 TEMPLATE_SPECIALIZATION
 IC _dist_type CLevelFlooderPathManager::estimate(const _index_type& node_index) const
 {
-    VERIFY(this->graph);
-    return (_dist_type(0));
+    XR_ASSERT(this->graph != nullptr);
+    return _dist_type(0);
 }
 
 TEMPLATE_SPECIALIZATION
@@ -60,7 +60,7 @@ IC bool CLevelFlooderPathManager::is_accessible(const _index_type& vertex_id) co
 TEMPLATE_SPECIALIZATION
 IC bool CLevelFlooderPathManager::is_limit_reached(const _iteration_type iteration_count) const
 {
-    VERIFY(this->data_storage);
+    XR_ASSERT(this->data_storage != nullptr);
     return ((iteration_count >= this->max_iteration_count) || (this->data_storage->get_visited_node_count() >= this->max_visited_node_count));
 }
 

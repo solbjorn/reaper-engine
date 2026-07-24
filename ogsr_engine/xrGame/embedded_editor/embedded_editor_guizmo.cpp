@@ -120,7 +120,7 @@ void ShowImGuizmo(bool& show)
     {
     case ImGuizmo::TRANSLATE: ImGui::InputFloat3("Snap", mGizmoSnap.data()); break;
     case ImGuizmo::ROTATE: ImGui::InputFloat("Angle Snap", mGizmoSnap.data()); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     ImGui::SetNextWindowSize(ImVec2{800.0f, 400.0f}, ImGuiCond_Appearing);
@@ -132,7 +132,8 @@ void ShowImGuizmo(bool& show)
 
     std::array<f32, 16> deltaMatrix{1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
 
-    if (ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, deltaMatrix.data(), mGizmoUseSnap ? mGizmoSnap.data() : nullptr))
+    if (ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, deltaMatrix.data(),
+                             mGizmoUseSnap ? mGizmoSnap.data() : nullptr))
     {
         std::array<f32, 3> matrixTranslation2, matrixRotation2, matrixScale2;
 

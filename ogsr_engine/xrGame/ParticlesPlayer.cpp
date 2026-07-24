@@ -91,12 +91,12 @@ void CParticlesPlayer::LoadParticles(IKinematics* K)
 
         for (const auto& [key, value] : data.Data)
         {
-            u16 index = K->LL_BoneID(key.c_str());
-            ASSERT_FMT(index != BI_NONE, "Particles bone [%s] not found in model [%s], section: [%s]", key.c_str(), m_self_object->cNameVisual().c_str(),
-                       m_self_object->cNameSect().c_str());
+            const auto index =
+                XR_ASSERT_VAL(K->LL_BoneID(key.c_str()) != BI_NONE, "particle bones not found", m_self_object->cNameSect(), m_self_object->cNameVisual(), key);
+            const std::string_view val{value};
 
-            const auto res = scn::scan<f32, f32, f32>(std::string_view{value}, "{},{},{}");
-            R_ASSERT(res, res.error().msg());
+            const auto res = scn::scan<f32, f32, f32>(val, "{},{},{}");
+            XR_ASSERT(res, res.error().msg(), key, val);
 
             const auto [x, y, z] = res->values();
             m_Bones.emplace_back(index, x, y, z);

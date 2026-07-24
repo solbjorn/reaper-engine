@@ -41,19 +41,18 @@ private:
         IDeviceState* m_pState{};
     };
 
-private:
     void CreateState(StateDecs desc, IDeviceState** ppIState);
     SHandle FindState(const StateDecs& desc, u64 StateXXH);
 
     void PrepareSamplerStates(HArray& samplers, ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT]) const;
 
     //	Private data
-private:
+
     //	This must be cleared on device destroy
     xr_vector<StateRecord> m_StateArray;
 
-    u32 m_uiMaxAnisotropy;
-    float m_uiMipLODBias;
+    u32 m_uiMaxAnisotropy{1};
+    f32 m_uiMipLODBias{0.0f};
 };
 
 extern dx10SamplerStateCache SSManager;

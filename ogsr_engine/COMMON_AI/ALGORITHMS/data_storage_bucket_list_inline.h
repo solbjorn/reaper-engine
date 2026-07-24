@@ -25,7 +25,8 @@ inline CBucketList::CDataStorage(const u32 vertex_count) : TManagerDataStorage(v
 }
 
 TEMPLATE_SPECIALIZATION
-CBucketList::~CDataStorage() {}
+CBucketList::~CDataStorage() = default;
+
 TEMPLATE_SPECIALIZATION
 inline void CBucketList::init()
 {
@@ -45,7 +46,7 @@ inline void CBucketList::init()
 TEMPLATE_SPECIALIZATION
 inline void CBucketList::add_best_closed()
 {
-    VERIFY(!is_opened_empty());
+    XR_DEBUG_ASSERT(!is_opened_empty());
     TManagerDataStorage::add_closed(*m_buckets[m_min_bucket_id]);
 }
 
@@ -92,40 +93,7 @@ inline u32 CBucketList::compute_bucket_id(typename TManagerDataStorage::Vertex& 
 }
 
 TEMPLATE_SPECIALIZATION
-inline void CBucketList::verify_buckets() const
-{
-#if 0
-    for (u32 i = 0; i<BucketCount; i++)
-    {
-        Vertex *j = m_buckets[i], *k;
-        if (!j)
-            continue;
-        auto index = indexes[j->index()];
-        if (index.m_path_id!= this->current_path_id() || index.vertex!=j)
-            continue;
-        u32 count1 = 0, count2 = 0;
-        for (; j; k = j, j = j->next(), count1++)
-        {
-            VERIFY(indexes[j->index()].m_path_id== this->current_path_id());
-            VERIFY(compute_bucket_id(*j)==i);
-            VERIFY(!j->prev() || j==j->prev()->next());
-            VERIFY(!j->next() || j==j->next()->prev());
-            VERIFY(!j->next() || j!=j->next());
-            VERIFY(!j->prev() || j!=j->prev());
-        }
-        for (; k; k = k->prev(), count2++)
-        {
-            VERIFY(indexes[k->index()].m_path_id== this->current_path_id());
-            VERIFY(compute_bucket_id(*k)==i);
-            VERIFY(!k->prev() || k==k->prev()->next());
-            VERIFY(!k->next() || k==k->next()->prev());
-            VERIFY(!k->next() || k!=k->next());
-            VERIFY(!k->prev() || k!=k->prev());
-        }
-        VERIFY(count1==count2);
-    }
-#endif
-}
+inline void CBucketList::verify_buckets() const {}
 
 TEMPLATE_SPECIALIZATION
 inline void CBucketList::add_to_bucket(typename TManagerDataStorage::Vertex& vertex, u32 m_bucket_id)
@@ -197,6 +165,7 @@ TEMPLATE_SPECIALIZATION
 inline void CBucketList::add_opened(typename TManagerDataStorage::Vertex& vertex)
 {
     TManagerDataStorage::add_opened(vertex);
+
     add_to_bucket(vertex, compute_bucket_id(vertex));
     verify_buckets();
 }
@@ -204,17 +173,23 @@ inline void CBucketList::add_opened(typename TManagerDataStorage::Vertex& vertex
 TEMPLATE_SPECIALIZATION
 inline void CBucketList::decrease_opened(typename TManagerDataStorage::Vertex& vertex)
 {
-    VERIFY(!is_opened_empty());
+    XR_DEBUG_ASSERT(!is_opened_empty());
     u32 node_bucket_id = compute_bucket_id(vertex);
-    if (vertex.prev())
+
+    if (vertex.prev() != nullptr)
+    {
         vertex.prev()->next() = vertex.next();
+    }
     else
     {
-        VERIFY(m_buckets[vertex.m_bucket_id] == &vertex);
-        m_buckets[vertex.m_bucket_id] = vertex.next();
+        auto& bucket = m_buckets[vertex.m_bucket_id];
+        XR_ASSERT(bucket == &vertex);
+        bucket = vertex.next();
     }
-    if (vertex.next())
+
+    if (vertex.next() != nullptr)
         vertex.next()->prev() = vertex.prev();
+
     verify_buckets();
     add_to_bucket(vertex, node_bucket_id);
     verify_buckets();
@@ -223,20 +198,25 @@ inline void CBucketList::decrease_opened(typename TManagerDataStorage::Vertex& v
 TEMPLATE_SPECIALIZATION
 inline void CBucketList::remove_best_opened()
 {
-    VERIFY(!is_opened_empty());
+    XR_DEBUG_ASSERT(!is_opened_empty());
     verify_buckets();
-    VERIFY(m_buckets[m_min_bucket_id] && this->is_visited(m_buckets[m_min_bucket_id]->index()));
-    m_buckets[m_min_bucket_id] = m_buckets[m_min_bucket_id]->next();
-    if (m_buckets[m_min_bucket_id])
-        m_buckets[m_min_bucket_id]->prev() = nullptr;
+
+    auto& bucket = m_buckets[m_min_bucket_id];
+    XR_ASSERT(bucket != nullptr);
+    XR_DEBUG_ASSERT(this->is_visited(bucket->index()));
+
+    bucket = bucket->next();
+    if (bucket != nullptr)
+        bucket->prev() = nullptr;
+
     verify_buckets();
 }
 
 TEMPLATE_SPECIALIZATION
 inline typename TManagerDataStorage::Vertex& CBucketList::get_best()
 {
-    VERIFY(!is_opened_empty());
-    return (*m_buckets[m_min_bucket_id]);
+    XR_DEBUG_ASSERT(!is_opened_empty());
+    return *m_buckets[m_min_bucket_id];
 }
 
 TEMPLATE_SPECIALIZATION

@@ -371,7 +371,7 @@ void CALifeUpdateManager::jump_to_level(LPCSTR level_name) const
 #endif // CRASH_ON_INVALID_VERTEX_ID
 
     NET_Packet net_packet;
-    net_packet.w_begin(M_CHANGE_LEVEL);
+    net_packet.w_begin(gsl::narrow<u16>(xr::msg::M_CHANGE_LEVEL));
     net_packet.w(&dest, sizeof(dest));
 
     u32 vertex_id = ai().game_graph().vertex(dest)->level_vertex_id();
@@ -581,6 +581,6 @@ void CALifeUpdateManager::remove_all_restrictions(ALife::_OBJECT_ID id, const Re
         creature->m_dynamic_in_restrictions.clear();
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }

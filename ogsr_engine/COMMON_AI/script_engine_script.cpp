@@ -73,8 +73,6 @@ struct profile_timer_script
     }
 };
 
-void msg_and_fail(LPCSTR msg) { R_ASSERT(false, msg); }
-
 void take_screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name) { ::Render->Screenshot(mode, name); }
 
 [[nodiscard]] bool GetLAlt() { return pInput->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LAlt}); }
@@ -93,7 +91,7 @@ void take_screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name) { ::Re
 
 void CScriptEngine::script_register(sol::state_view& lua)
 {
-    lua.set("log1", sol::resolve<void(std::string_view)>(&Log), "fail", &msg_and_fail, "screenshot", &take_screenshot);
+    lua.set("log1", sol::resolve<void(std::string_view)>(&Log), "screenshot", &take_screenshot);
 
     lua.new_enum("modes", "normal", IRender_interface::ScreenshotMode::SM_NORMAL, "cubemap", IRender_interface::ScreenshotMode::SM_FOR_CUBEMAP, "gamesave",
                  IRender_interface::ScreenshotMode::SM_FOR_GAMESAVE, "levelmap", IRender_interface::ScreenshotMode::SM_FOR_LEVELMAP);
@@ -105,5 +103,5 @@ void CScriptEngine::script_register(sol::state_view& lua)
 
     lua.set(
         "user_name", [] { return Core.UserName; }, "time_global", [] { return Device.dwTimeGlobal; }, "GetShift", &GetShift, "GetLAlt", &GetLAlt, "GetRAlt",
-        &GetRAlt, "GetAlt", &GetAlt, "device", [] { return &Device; }, "__debugbreak", [] { __debugbreak(); });
+        &GetRAlt, "GetAlt", &GetAlt, "device", [] { return &Device; }, "__debugbreak", &xr::breakpoint);
 }

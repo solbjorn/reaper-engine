@@ -26,10 +26,7 @@ u16 storyId2GameId(ALife::_STORY_ID);
 
 ALife::_STORY_ID story_id(LPCSTR story_id)
 {
-    const auto I = story_ids.find(story_id);
-    ASSERT_FMT_DBG(I != story_ids.end(), "story_id not found: {}", story_id);
-
-    return I != story_ids.end() ? ALife::_STORY_ID((*I).second) : INVALID_STORY_ID;
+    return gsl::narrow<ALife::_STORY_ID>(XR_ASSERT_VAL(story_ids.find(story_id) != story_ids.end(), "story_id not found", story_id)->second);
 }
 
 u16 storyId2GameId(ALife::_STORY_ID id)
@@ -68,10 +65,9 @@ void CGameTask::Load(const TASK_ID& id)
         std::ignore = g_gameTaskXml->Init(CONFIG_PATH, "gameplay", "game_tasks.xml");
     }
 
-    const auto task_node = g_gameTaskXml->NavigateToNodeWithAttribute("game_task", "id", id.c_str());
-    THROW3(task_node, "game task id=", id.c_str());
-
+    const auto task_node = XR_ASSERT_VAL(g_gameTaskXml->NavigateToNodeWithAttribute("game_task", "id", id.c_str()), "", id);
     g_gameTaskXml->SetLocalRoot(task_node);
+
     m_Title._set(g_gameTaskXml->Read(g_gameTaskXml->GetLocalRoot(), "title", 0, nullptr));
     m_priority = g_gameTaskXml->ReadAttribInt(g_gameTaskXml->GetLocalRoot(), "prio", -1);
     m_version = g_gameTaskXml->ReadAttribInt(g_gameTaskXml->GetLocalRoot(), "version", 0);
@@ -194,71 +190,55 @@ void CGameTask::Load(const TASK_ID& id)
         //------function_complete
         objective.m_complete_lua_functions.resize(g_gameTaskXml->GetNodesNum(l_root, "function_complete"));
 
-        for (auto [j, fn] : xr::views_enumerate(objective.m_complete_lua_functions))
+        for (auto [j, fn] : std::views::enumerate(objective.m_complete_lua_functions))
         {
-            gsl::czstring str = g_gameTaskXml->Read(l_root, "function_complete", j, nullptr);
-            const bool function_exists = ai().script_engine().function(str, fn);
-
-            ASSERT_FMT_DBG(function_exists, "[{}]: Cannot find script function described in task objective: {}",
-                           std::source_location::current().function_name(), str);
+            const auto str = g_gameTaskXml->Read(l_root, "function_complete", j, nullptr);
+            XR_ASSERT(ai().script_engine().function(str, fn), "can't find complete function described in task objective", str);
         }
 
         //------function_fail
         objective.m_fail_lua_functions.resize(g_gameTaskXml->GetNodesNum(l_root, "function_fail"));
 
-        for (auto [j, fn] : xr::views_enumerate(objective.m_fail_lua_functions))
+        for (auto [j, fn] : std::views::enumerate(objective.m_fail_lua_functions))
         {
-            gsl::czstring str = g_gameTaskXml->Read(l_root, "function_fail", j, nullptr);
-            const bool function_exists = ai().script_engine().function(str, fn);
-
-            ASSERT_FMT_DBG(function_exists, "[{}]: Cannot find script function described in task objective: {}",
-                           std::source_location::current().function_name(), str);
+            const auto str = g_gameTaskXml->Read(l_root, "function_fail", j, nullptr);
+            XR_ASSERT(ai().script_engine().function(str, fn), "can't find fail function described in task objective", str);
         }
 
         //------function_skipped
         objective.m_skipped_lua_functions.resize(g_gameTaskXml->GetNodesNum(l_root, "function_skipped"));
 
-        for (auto [j, fn] : xr::views_enumerate(objective.m_skipped_lua_functions))
+        for (auto [j, fn] : std::views::enumerate(objective.m_skipped_lua_functions))
         {
-            gsl::czstring str = g_gameTaskXml->Read(l_root, "function_skipped", j, nullptr);
-            const bool function_exists = ai().script_engine().function(str, fn);
-
-            THROW3(function_exists, "Cannot find script function described in task objective ", str);
+            const auto str = g_gameTaskXml->Read(l_root, "function_skipped", j, nullptr);
+            XR_ASSERT(ai().script_engine().function(str, fn), "can't find skip function described in task objective", str);
         }
 
         //------function_on_complete
         objective.m_lua_functions_on_complete.resize(g_gameTaskXml->GetNodesNum(l_root, "function_call_complete"));
 
-        for (auto [j, fn] : xr::views_enumerate(objective.m_lua_functions_on_complete))
+        for (auto [j, fn] : std::views::enumerate(objective.m_lua_functions_on_complete))
         {
-            gsl::czstring str = g_gameTaskXml->Read(l_root, "function_call_complete", j, nullptr);
-            const bool function_exists = ai().script_engine().function(str, fn);
-
-            ASSERT_FMT_DBG(function_exists, "[{}]: Cannot find script function described in task objective: {}",
-                           std::source_location::current().function_name(), str);
+            const auto str = g_gameTaskXml->Read(l_root, "function_call_complete", j, nullptr);
+            XR_ASSERT(ai().script_engine().function(str, fn), "can't find on complete function described in task objective", str);
         }
 
         //------function_on_fail
         objective.m_lua_functions_on_fail.resize(g_gameTaskXml->GetNodesNum(l_root, "function_call_fail"));
 
-        for (auto [j, fn] : xr::views_enumerate(objective.m_lua_functions_on_fail))
+        for (auto [j, fn] : std::views::enumerate(objective.m_lua_functions_on_fail))
         {
-            gsl::czstring str = g_gameTaskXml->Read(l_root, "function_call_fail", j, nullptr);
-            const bool function_exists = ai().script_engine().function(str, fn);
-
-            ASSERT_FMT_DBG(function_exists, "[{}]: Cannot find script function described in task objective: {}",
-                           std::source_location::current().function_name(), str);
+            const auto str = g_gameTaskXml->Read(l_root, "function_call_fail", j, nullptr);
+            XR_ASSERT(ai().script_engine().function(str, fn), "can't find on fail function described in task objective", str);
         }
 
         //------function_on_skipped
         objective.m_lua_functions_on_skipped.resize(g_gameTaskXml->GetNodesNum(l_root, "function_call_skipped"));
 
-        for (auto [j, fn] : xr::views_enumerate(objective.m_lua_functions_on_skipped))
+        for (auto [j, fn] : std::views::enumerate(objective.m_lua_functions_on_skipped))
         {
-            gsl::czstring str = g_gameTaskXml->Read(l_root, "function_call_skipped", j, nullptr);
-            const bool function_exists = ai().script_engine().function(str, fn);
-
-            THROW3(function_exists, "Cannot find script function described in task objective ", str);
+            const auto str = g_gameTaskXml->Read(l_root, "function_call_skipped", j, nullptr);
+            XR_ASSERT(ai().script_engine().function(str, fn), "can't find on skip function described in task objective", str);
         }
 
         g_gameTaskXml->SetLocalRoot(task_node);
@@ -532,11 +512,7 @@ void SScriptObjectiveHelper::init_functions(xr_vector<shared_str>& v_src, xr_vec
     v_dest.resize(v_src.size());
 
     for (auto [str, fn] : std::views::zip(v_src, v_dest))
-    {
-        const bool function_exists = ai().script_engine().function(str.c_str(), fn);
-        ASSERT_FMT_DBG(function_exists, "[{}]: Cannot find script function described in task objective: {}", std::source_location::current().function_name(),
-                       str);
-    }
+        XR_ASSERT(ai().script_engine().function(str.c_str(), fn), "can't find script function described in task objective", str);
 }
 
 void SScriptObjectiveHelper::load(IReader& stream)

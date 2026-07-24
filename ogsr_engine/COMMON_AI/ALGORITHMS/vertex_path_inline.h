@@ -15,13 +15,17 @@
 #define CVertexPathBuilder CVertexPath<EuclidianHeuristics>::CDataStorage<TCompoundVertex>
 
 TEMPLATE_SPECIALIZATION
-inline CVertexPathBuilder::CDataStorage(const u32 /*vertex_count*/) {}
+inline CVertexPathBuilder::CDataStorage(const u32) {}
+
 TEMPLATE_SPECIALIZATION
-inline CVertexPathBuilder::~CDataStorage() {}
+inline CVertexPathBuilder::~CDataStorage() = default;
+
 TEMPLATE_SPECIALIZATION
 inline void CVertexPathBuilder::init() {}
+
 TEMPLATE_SPECIALIZATION
 inline void CVertexPathBuilder::assign_parent(Vertex& neighbour, Vertex* parent) { neighbour.back() = parent; }
+
 TEMPLATE_SPECIALIZATION
 template <typename T>
 inline void CVertexPathBuilder::assign_parent(Vertex& neighbour, Vertex* parent, const T&)
@@ -30,7 +34,8 @@ inline void CVertexPathBuilder::assign_parent(Vertex& neighbour, Vertex* parent,
 }
 
 TEMPLATE_SPECIALIZATION
-inline void CVertexPathBuilder::update_successors(Vertex& /*tpNeighbour*/) { NODEFAULT; }
+inline void CVertexPathBuilder::update_successors(Vertex&) { xr::unreachable(); }
+
 TEMPLATE_SPECIALIZATION
 inline void CVertexPathBuilder::get_node_path(xr_vector<Index>& path, Vertex* best)
 {

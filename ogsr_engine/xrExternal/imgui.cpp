@@ -7,6 +7,7 @@
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wcast-qual");
 XR_DIAG_IGNORE("-Wnrvo");
+XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
 
 #include <imgui.cpp>
 
@@ -15,6 +16,7 @@ XR_DIAG_POP();
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wc++98-compat-extra-semi");
 XR_DIAG_IGNORE("-Wextra-semi-stmt");
+XR_DIAG_IGNORE("-Wfloat-conversion");
 
 #include <imgui_demo.cpp>
 #include <imgui_draw.cpp>

@@ -344,7 +344,7 @@ void SHeliEnemy::Update()
             type = eEnemyNone;
     }
     break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 

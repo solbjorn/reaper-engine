@@ -15,8 +15,6 @@ public:
     void DestroyUIGeom() override;
 
     void SetShader(IUIShader& shader) override;
-    void SetAlphaRef(s32 aref) override;
-
     void SetScissor(Irect* rect = nullptr) override;
     void GetActiveTextureResolution(Fvector2& res) override;
 

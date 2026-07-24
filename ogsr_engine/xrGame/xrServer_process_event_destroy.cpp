@@ -52,11 +52,9 @@ void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, u
     R_ASSERT(c_dest == c_from || GetServerClient() == c_from);
 
     u16 parent_id = e_dest->ID_Parent;
-
-    //---------------------------------------------
     NET_Packet P2, *pEventPack = pEPack;
-    P2.w_begin(M_EVENT_PACK);
-    //---------------------------------------------
+    P2.w_begin(gsl::narrow<u16>(xr::msg::M_EVENT_PACK));
+
     // check if we have children
     if (!e_dest->children.empty())
     {

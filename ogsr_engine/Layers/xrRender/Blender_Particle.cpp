@@ -17,7 +17,7 @@ CBlender_Particle::CBlender_Particle()
     oClamp.value = TRUE;
 }
 
-CBlender_Particle::~CBlender_Particle() {}
+CBlender_Particle::~CBlender_Particle() = default;
 
 void CBlender_Particle::Save(IWriter& fs)
 {
@@ -82,6 +82,7 @@ void CBlender_Particle::LoadIni(CInifile* ini_file, LPCSTR section)
 void CBlender_Particle::Compile(CBlender_Compile& C)
 {
     IBlender::Compile(C);
+
     switch (C.iElement)
     {
     case SE_R2_NORMAL_HQ: // deffer
@@ -136,8 +137,6 @@ void CBlender_Particle::Compile(CBlender_Compile& C)
             C.r_dx10Sampler("smp_nofilter");
         }
         C.r_End();
-        break;
-    case 4: // deffer-EMAP
         break;
     }
 }

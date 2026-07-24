@@ -21,26 +21,28 @@ class Sound;
 class CServerInfo
 {
 private:
+    enum
+    {
+        max_item = 15
+    };
+
     struct SItem_ServerInfo
     {
         string128 name;
         u32 color;
     };
-    enum
-    {
-        max_item = 15
-    };
-    svector<SItem_ServerInfo, max_item> data;
+
+    std::inplace_vector<SItem_ServerInfo, max_item> data;
 
 public:
-    [[nodiscard]] auto Size() const { return data.size(); }
-    void ResetData() { data.clear(); }
+    [[nodiscard]] constexpr auto Size() const { return data.size(); }
+    constexpr void ResetData() { data.clear(); }
 
     void AddItem(LPCSTR name_, LPCSTR value_, u32 color_ = RGB(255, 255, 255));
     void AddItem(shared_str& name_, LPCSTR value_, u32 color_ = RGB(255, 255, 255));
 
-    [[nodiscard]] SItem_ServerInfo& operator[](decltype(data)::size_type id) { return data[id]; }
-    [[nodiscard]] const SItem_ServerInfo& operator[](decltype(data)::size_type id) const { return data[id]; }
+    [[nodiscard]] constexpr SItem_ServerInfo& operator[](decltype(data)::size_type id) { return data[id]; }
+    [[nodiscard]] constexpr const SItem_ServerInfo& operator[](decltype(data)::size_type id) const { return data[id]; }
 };
 
 //-----------------------------------------------------------------------------------------------------------

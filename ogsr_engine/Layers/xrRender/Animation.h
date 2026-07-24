@@ -25,14 +25,16 @@ struct channel_def
 class channels
 {
 public:
-    static const u32 max = MAX_CHANNELS;
+    static constexpr u32 max{MAX_CHANNELS};
 
 private:
     static const channal_rule rules[max];
+
     float factors[max];
 
 public:
     channels();
+
     void init();
     void set_factor(u16 channel, float factor);
 
@@ -41,8 +43,7 @@ public:
 
     IC void get_def(u16 channel, channel_def& def)
     {
-        VERIFY(channel < max);
-        def.rule = rules[channel];
+        def.rule = rules[XR_ASSERT_VAL(channel < max)];
         def.factor = factors[channel];
     }
 };

@@ -90,16 +90,12 @@ void CEnvAmbient::SSndChannel::load(CInifile& config, LPCSTR sect)
     m_sound_period.z = config.r_s32(m_load_section, "period2");
     m_sound_period.w = config.r_s32(m_load_section, "period3");
 
-    //	m_sound_period			= config.r_ivector4(sect,"sound_period");
-    R_ASSERT(m_sound_period.x <= m_sound_period.y && m_sound_period.z <= m_sound_period.w);
-    //	m_sound_period.mul		(1000);// now in ms
-    //	m_sound_dist			= config.r_fvector2(sect,"sound_dist");
-    R_ASSERT2(m_sound_dist.y > m_sound_dist.x, sect);
+    XR_ASSERT(m_sound_period.x <= m_sound_period.y && m_sound_period.z <= m_sound_period.w, "", m_load_section, m_sound_period);
+    XR_ASSERT(m_sound_dist.y > m_sound_dist.x, "", m_load_section, m_sound_dist);
 
     LPCSTR snds = config.r_string(sect, "sounds");
-    u32 cnt = _GetItemCount(snds);
+    const auto cnt = XR_ASSERT_VAL(_GetItemCount(snds) > 0, "empty sound list", m_load_section);
     string_path tmp;
-    R_ASSERT3(cnt, "sounds empty", sect);
 
     m_sounds.resize(cnt);
 
@@ -114,8 +110,10 @@ CEnvAmbient::SEffect* CEnvAmbient::create_effect(CInifile& config, LPCSTR id)
 {
     SEffect* result = xr_new<SEffect>();
     result->life_time = iFloor(config.r_float(id, "life_time") * 1000.f);
+
     result->particles._set(config.r_string(id, "particles"));
-    VERIFY(result->particles.size());
+    XR_ASSERT(!result->particles.empty(), "", id);
+
     result->offset = config.r_fvector3(id, "offset");
     result->wind_gust_factor = config.r_float(id, "wind_gust_factor");
 
@@ -163,7 +161,6 @@ void CEnvAmbient::load(CInifile& ambients_config, CInifile& sound_channels_confi
     // sounds
     LPCSTR channels = ambients_config.r_string(sect, "sound_channels");
     u32 cnt = _GetItemCount(channels);
-    //	R_ASSERT3				(cnt,"sound_channels empty", sect.c_str());
     m_sound_channels.resize(cnt);
 
     for (u32 i = 0; i < cnt; ++i)
@@ -174,22 +171,22 @@ void CEnvAmbient::load(CInifile& ambients_config, CInifile& sound_channels_confi
                         iFloor(ambients_config.r_float(sect, "max_effect_period") * 1000.f));
     LPCSTR effs = ambients_config.r_string(sect, "effects");
     cnt = _GetItemCount(effs);
-    //	R_ASSERT3				(cnt,"effects empty", sect.c_str());
 
     m_effects.resize(cnt);
     for (u32 k = 0; k < cnt; ++k)
         m_effects[k] = create_effect(effects_config, _GetItem(effs, k, tmp));
 
-    R_ASSERT(!m_sound_channels.empty() || !m_effects.empty());
+    XR_ASSERT(!m_sound_channels.empty() || !m_effects.empty(), "", m_ambients_config_filename, m_load_section);
 }
 
 void CEnvAmbient::load_shoc(const shared_str& sect)
 {
     section = sect;
     string_path tmp;
+
     // sounds
-    ASSERT_FMT_DBG(pSettings->line_exist(sect, "sounds"), "CEnvAmbient::load: section '{}' not found", section);
-    if (pSettings->line_exist(sect, "sounds"))
+    XR_ASSERT(pSettings->line_exist(sect, "sounds"), "\"sounds\" not found in ambient section", section);
+
     {
         Fvector2 t = pSettings->r_fvector2(sect, "sound_period");
         sound_period.set(iFloor(t.x * 1000.f), iFloor(t.y * 1000.f));
@@ -205,6 +202,7 @@ void CEnvAmbient::load_shoc(const shared_str& sect)
                 sounds[k].create(_GetItem(snds, k, tmp), st_Effect, sg_SourceType);
         }
     }
+
     // effects
     if (pSettings->line_exist(sect, "effects"))
     {
@@ -219,8 +217,10 @@ void CEnvAmbient::load_shoc(const shared_str& sect)
             {
                 std::ignore = _GetItem(effs, k, tmp);
                 effects[k].life_time = iFloor(pSettings->r_float(tmp, "life_time") * 1000.f);
+
                 effects[k].particles._set(pSettings->r_string(tmp, "particles"));
-                VERIFY(effects[k].particles.size());
+                XR_ASSERT(!effects[k].particles.empty(), "", sect);
+
                 effects[k].offset = pSettings->r_fvector3(tmp, "offset");
                 effects[k].wind_gust_factor = pSettings->r_float(tmp, "wind_gust_factor");
                 if (pSettings->line_exist(tmp, "sound"))
@@ -228,7 +228,8 @@ void CEnvAmbient::load_shoc(const shared_str& sect)
             }
         }
     }
-    VERIFY(!sounds.empty() || !effects.empty());
+
+    XR_ASSERT(!sounds.empty() || !effects.empty(), "", section);
 }
 
 //-----------------------------------------------------------------------------
@@ -324,11 +325,12 @@ void CEnvDescriptor::load_common(CInifile* config)
 
 void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
 {
-    const auto res = scn::scan<u32, u32, u32>(std::string_view{m_identifier}, "{}:{}:{}");
-    R_ASSERT(res, res.error().msg());
+    std::string_view val{m_identifier};
+    const auto res = scn::scan<u32, u32, u32>(val, "{}:{}:{}");
+    XR_ASSERT(res, res.error().msg(), m_identifier, val);
 
     const auto [tx, ty, tz] = res->values();
-    R_ASSERT(tx < 24 && ty < 60 && tz < 60, "Incorrect weather time", m_identifier.c_str());
+    XR_ASSERT(tx < 24 && ty < 60 && tz < 60, "invalid weather time", m_identifier, tx, ty, tz);
 
     exec_time = gsl::narrow_cast<f32>(tx * 3600 + ty * 60 + tz);
     exec_time_loaded = exec_time;
@@ -343,7 +345,7 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
     if (const std::string_view cldclr{config.r_string(m_identifier, "clouds_color")}; std::ranges::count(cldclr, ',') == 4)
     {
         const auto resc = scn::scan<f32, f32, f32, f32, f32>(cldclr, "{},{},{},{},{}");
-        R_ASSERT(resc, resc.error().msg());
+        XR_ASSERT(resc, resc.error().msg(), m_identifier, cldclr);
 
         const auto [cx, cy, cz, cw, multiplier] = resc->values();
         clouds_color.set(cx, cy, cz, cw);
@@ -358,7 +360,7 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
     else
     {
         const auto resc = scn::scan<f32, f32, f32, f32>(cldclr, "{},{},{},{}");
-        R_ASSERT(resc, resc.error().msg());
+        XR_ASSERT(resc, resc.error().msg(), m_identifier, cldclr);
 
         const auto [cx, cy, cz, cw] = resc->values();
         clouds_color.set(cx, cy, cz, cw);
@@ -389,8 +391,7 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
     else if (environment.m_sun_hp_loaded)
         this->sun_dir = environment.calculate_config_sun_dir(this->exec_time);
 
-    R_ASSERT(_valid(sun_dir));
-    VERIFY2(sun_dir.y < 0, "Invalid sun direction settings while loading");
+    XR_ASSERT(_valid(sun_dir), "invalid sun direction", m_identifier, sun_dir);
 
     lens_flare_id = environment.eff_LensFlare->AppendDef(environment, config.r_string(m_identifier.c_str(), "sun"));
     tb_id = environment.eff_Thunderbolt->AppendDef(environment, environment.m_thunderbolt_collections_config, environment.m_thunderbolts_config,
@@ -414,11 +415,12 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
 
 void CEnvDescriptor::load_shoc(CEnvironment& environment, LPCSTR exec_tm, LPCSTR S)
 {
-    const auto res = scn::scan<u32, u32, u32>(std::string_view{exec_tm}, "{}:{}:{}");
-    R_ASSERT(res, res.error().msg());
+    const std::string_view val{exec_tm};
+    const auto res = scn::scan<u32, u32, u32>(val, "{}:{}:{}");
+    XR_ASSERT(res, res.error().msg(), S, val);
 
     const auto [tx, ty, tz] = res->values();
-    R_ASSERT(tx < 24 && ty < 60 && tz < 60, "Incorrect weather time", S);
+    XR_ASSERT(tx < 24 && ty < 60 && tz < 60, "invalid weather time", S, tx, ty, tz);
 
     load_shoc(gsl::narrow_cast<f32>(tx * 3600 + ty * 60 + tz), S, environment);
 }
@@ -440,7 +442,7 @@ void CEnvDescriptor::load_shoc(float exec_tm, LPCSTR S, CEnvironment& environmen
     if (const std::string_view cldclr{pSettings->r_string(m_identifier, "clouds_color")}; std::ranges::count(cldclr, ',') == 4)
     {
         const auto resc = scn::scan<f32, f32, f32, f32, f32>(cldclr, "{},{},{},{},{}");
-        R_ASSERT(resc, resc.error().msg());
+        XR_ASSERT(resc, resc.error().msg(), m_identifier, cldclr);
 
         const auto [cx, cy, cz, cw, multiplier] = resc->values();
         clouds_color.set(cx, cy, cz, cw);
@@ -455,7 +457,7 @@ void CEnvDescriptor::load_shoc(float exec_tm, LPCSTR S, CEnvironment& environmen
     else
     {
         const auto resc = scn::scan<f32, f32, f32, f32>(cldclr, "{},{},{},{}");
-        R_ASSERT(resc, resc.error().msg());
+        XR_ASSERT(resc, resc.error().msg(), m_identifier, cldclr);
 
         const auto [cx, cy, cz, cw] = resc->values();
         clouds_color.set(cx, cy, cz, cw);
@@ -481,9 +483,10 @@ void CEnvDescriptor::load_shoc(float exec_tm, LPCSTR S, CEnvironment& environmen
     hemi_color = pSettings->r_fvector4(m_identifier.c_str(), "hemi_color");
     hemi_color.w = 1.f;
     sun_color = pSettings->r_fvector3(m_identifier.c_str(), "sun_color");
+
     Fvector2 sund = pSettings->r_fvector2(m_identifier.c_str(), "sun_dir");
     sun_dir.setHP(deg2rad(sund.y), deg2rad(sund.x));
-    VERIFY2(sun_dir.y < 0, "Invalid sun direction settings while loading");
+    XR_ASSERT(_valid(sun_dir), "invalid sun direction", m_identifier, sun_dir);
 
     lens_flare_id = environment.eff_LensFlare->AppendDef(environment, pSettings->r_string(m_identifier.c_str(), "flares"));
     tb_id = environment.eff_Thunderbolt->AppendDef_shoc(environment, pSettings, pSettings->r_string(m_identifier.c_str(), "thunderbolt"));
@@ -606,12 +609,9 @@ void CEnvDescriptorMixer::lerp(CEnvironment* env, CEnvDescriptor& A, CEnvDescrip
 
     sky_height = fi * A.sky_height + f * B.sky_height;
 
-    R_ASSERT(_valid(A.sun_dir));
-    R_ASSERT(_valid(B.sun_dir));
+    XR_ASSERT(_valid(A.sun_dir) && _valid(B.sun_dir), "invalid sun direction", A.sun_dir, B.sun_dir);
     sun_dir.lerp(A.sun_dir, B.sun_dir, f).normalize();
-    R_ASSERT(_valid(sun_dir));
-
-    VERIFY2(sun_dir.y < 0, "Invalid sun direction settings while lerp");
+    XR_ASSERT(_valid(sun_dir), "invalid sun direction", sun_dir);
 
     string_path temp_name;
 
@@ -740,8 +740,7 @@ void CEnvironment::load_sun()
         float sun_alt = m_sun_pos_config->r_float(sun_identifier, "sun_altitude");
         float sun_long = m_sun_pos_config->r_float(sun_identifier, "sun_longitude");
 
-        R_ASSERT(_valid(sun_alt));
-        R_ASSERT(_valid(sun_long));
+        XR_ASSERT(_valid(sun_alt) && _valid(sun_long), "", sun_alt, sun_long);
         sun_hp[i].set(sun_alt, sun_long);
     }
 
@@ -760,8 +759,9 @@ void CEnvironment::load_weathers()
         for (const char* file : *file_list)
         {
             const auto length = xr_strlen(file);
-            ASSERT_FMT(length >= 4 && std::is_eq(xr_strcmp(".ltx", file + (length - 4))), "Something strange with file [%s]", file);
-            string256 identifier{};
+            XR_ASSERT(length >= 4 && std::is_eq(xr_strcmp(".ltx", &file[length - 4])), "", file);
+
+            string256 identifier;
             strncpy_s(identifier, file, length - 4);
 
             string_path file_name;
@@ -806,12 +806,12 @@ void CEnvironment::load_weathers()
     // sorting weather envs
     for (auto& [k, v] : WeatherCycles)
     {
-        R_ASSERT3(v.size() > 1, "Environment in weather must >=2", k.c_str());
+        XR_ASSERT(v.size() > 1, "cycle must have at least 2 sections", k);
         std::ranges::sort(v, sort_env_etl_pred);
     }
 
-    R_ASSERT2(!WeatherCycles.empty(), "Empty weathers.");
-    SetWeather((*WeatherCycles.begin()).first);
+    XR_ASSERT(!WeatherCycles.empty());
+    SetWeather(WeatherCycles.begin()->first);
 }
 
 void CEnvironment::load_weather_effects()
@@ -826,8 +826,9 @@ void CEnvironment::load_weather_effects()
         for (const char* file : *file_list)
         {
             const auto length = xr_strlen(file);
-            ASSERT_FMT(length >= 4 && std::is_eq(xr_strcmp(".ltx", file + (length - 4))), "Something strange with file [%s]", file);
-            string256 identifier{};
+            XR_ASSERT(length >= 4 && std::is_eq(xr_strcmp(".ltx", &file[length - 4])), "", file);
+
+            string256 identifier;
             strncpy_s(identifier, file, length - 4);
 
             string_path file_name;
@@ -874,7 +875,7 @@ void CEnvironment::load_weather_effects()
     // sorting weather envs
     for (auto& [k, v] : WeatherFXs)
     {
-        R_ASSERT3(v.size() > 1, "Environment in weather must >=2", k.c_str());
+        XR_ASSERT(v.size() > 1, "cycle must have at least 2 sections", k);
         std::ranges::sort(v, sort_env_etl_pred);
     }
 }

@@ -7,8 +7,8 @@
 #include "stdafx.h"
 
 #include "PhraseDialogManager.h"
-#include "PhraseDialog.h"
 
+#include "PhraseDialog.h"
 #include "ai_space.h"
 #include "script_engine.h"
 #include "GameObject.h"
@@ -56,21 +56,18 @@ void CPhraseDialogManager::InitDialog(CPhraseDialogManager* dialog_partner, DIAL
 
 void CPhraseDialogManager::AddDialog(DIALOG_SHARED_PTR& phrase_dialog)
 {
-    THROW(m_ActiveDialogs.end() == std::find(m_ActiveDialogs.begin(), m_ActiveDialogs.end(), phrase_dialog));
-    m_ActiveDialogs.push_back(phrase_dialog);
+    XR_DEBUG_ASSERT(std::ranges::find(m_ActiveDialogs, phrase_dialog) == m_ActiveDialogs.end());
+    m_ActiveDialogs.emplace_back(phrase_dialog);
 }
 
 void CPhraseDialogManager::ReceivePhrase(DIALOG_SHARED_PTR&) {}
 
 void CPhraseDialogManager::SayPhrase(DIALOG_SHARED_PTR& phrase_dialog, const shared_str& phrase_id)
 {
-    DIALOG_VECTOR_IT it = std::find(m_ActiveDialogs.begin(), m_ActiveDialogs.end(), phrase_dialog);
-    THROW(m_ActiveDialogs.end() != it);
+    const auto it = XR_ASSERT_VAL(std::ranges::find(m_ActiveDialogs, phrase_dialog) != m_ActiveDialogs.end());
+    XR_ASSERT(phrase_dialog->IsWeSpeaking(this));
 
-    THROW(phrase_dialog->IsWeSpeaking(this));
-    bool coninue_talking = CPhraseDialog::SayPhrase(phrase_dialog, phrase_id);
-
-    if (!coninue_talking)
+    if (!CPhraseDialog::SayPhrase(phrase_dialog, phrase_id))
         m_ActiveDialogs.erase(it);
 }
 

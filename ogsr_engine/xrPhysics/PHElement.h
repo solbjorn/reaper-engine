@@ -53,19 +53,21 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 private:
-    void FillInterpolation() // interpolation called anywhere visual influent
+    // interpolation called anywhere visual influent
+    void FillInterpolation()
     {
         m_body_interpolation.ResetPositions();
         m_body_interpolation.ResetRotations();
+
         m_flags.set(flUpdate, TRUE);
     }
 
-    IC void UpdateInterpolation() // interpolation called from ph update visual influent
+    // interpolation called from ph update visual influent
+    IC void UpdateInterpolation()
     {
-        /// VERIFY(dBodyStateValide(m_body));
         m_body_interpolation.UpdatePositions();
         m_body_interpolation.UpdateRotations();
-        // bUpdate=true;
+
         m_flags.set(flUpdate, TRUE);
     }
 

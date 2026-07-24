@@ -49,15 +49,15 @@ dx103DFluidData::~dx103DFluidData()
 void dx103DFluidData::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC TexDesc)
 {
     // Create the texture
-    CHK_DX(HW.pDevice->CreateTexture3D(&TexDesc, NULL, &m_pRTTextures[rtIndex]));
-    // Create the render target view
+    XR_ASSERT(xr::hr(HW.pDevice->CreateTexture3D(&TexDesc, nullptr, &m_pRTTextures[rtIndex])));
 
+    // Create the render target view
     D3D_RENDER_TARGET_VIEW_DESC DescRT{};
     DescRT.Format = TexDesc.Format;
     DescRT.ViewDimension = D3D_RTV_DIMENSION_TEXTURE3D;
     DescRT.Texture3D.WSize = TexDesc.Depth;
 
-    CHK_DX(HW.pDevice->CreateRenderTargetView(m_pRTTextures[rtIndex], &DescRT, &m_pRenderTargetViews[rtIndex]));
+    XR_ASSERT(xr::hr(HW.pDevice->CreateRenderTargetView(m_pRTTextures[rtIndex], &DescRT, &m_pRenderTargetViews[rtIndex])));
     RCache.ClearRT(m_pRenderTargetViews[rtIndex], {});
 }
 
@@ -164,10 +164,7 @@ void dx103DFluidData::ParseProfile(const xr_string& Profile)
         }
 
         Emitter.m_fRadius = ini.r_float(EmitterSectionName, "Radius");
-
-        Emitter.m_InvSigma_2 = ini.r_float(EmitterSectionName, "Sigma");
-        VERIFY(Emitter.m_InvSigma_2 > 0);
-        Emitter.m_InvSigma_2 = 1.0f / _sqr(Emitter.m_InvSigma_2);
+        Emitter.m_InvSigma_2 = 1.0f / _sqr(XR_ASSERT_VAL(ini.r_float(EmitterSectionName, "Sigma") > EPS_S));
 
         Emitter.m_vFlowVelocity = ini.r_fvector3(EmitterSectionName, "FlowDirection");
         float fFlowSpeed = ini.r_float(EmitterSectionName, "FlowSpeed");
@@ -181,10 +178,9 @@ void dx103DFluidData::ParseProfile(const xr_string& Profile)
         switch (Emitter.m_eType)
         {
         case dx103DFluidEmitters::ET_SimpleDraught:
-            Emitter.m_DraughtParams.m_fPeriod = ini.r_float(EmitterSectionName, "DraughtPeriod");
+            Emitter.m_DraughtParams.m_fPeriod = XR_ASSERT_VAL(ini.r_float(EmitterSectionName, "DraughtPeriod") > 0.0001f);
             Emitter.m_DraughtParams.m_fPhase = ini.r_float(EmitterSectionName, "DraughtPhase");
             Emitter.m_DraughtParams.m_fAmp = ini.r_float(EmitterSectionName, "DraughtAmp");
-            VERIFY(Emitter.m_DraughtParams.m_fPeriod > 0.0001f);
             break;
         default: break;
         }

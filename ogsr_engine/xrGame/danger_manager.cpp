@@ -110,15 +110,12 @@ void CDangerManager::update()
     float result = flt_max;
     m_selected = nullptr;
 
-    OBJECTS::const_iterator I = m_objects.begin();
-    OBJECTS::const_iterator E = m_objects.end();
-    for (; I != E; ++I)
+    for (auto& obj : m_objects)
     {
-        float value = do_evaluate(*I);
-        if (result > value)
+        if (const auto value = do_evaluate(obj); value < result)
         {
             result = value;
-            m_selected = &*I;
+            m_selected = &obj;
         }
     }
 }
@@ -209,7 +206,7 @@ float CDangerManager::do_evaluate(const CDangerObject& object) const
         result += 1000.f;
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     result *= 10.f;

@@ -364,19 +364,18 @@ EGameActions action_name_to_id(gsl::czstring _name)
 
 _action* action_name_to_ptr(gsl::czstring _name)
 {
-    const auto it = std::ranges::find_if(actions, [_name](const auto& act) { return std::is_eq(xr::strcasecmp(_name, act.action_name)); });
-    if (it != actions.end())
-        return &*it;
+    if (const auto it = std::ranges::find_if(actions, [_name](const auto& act) { return std::is_eq(xr::strcasecmp(_name, act.action_name)); });
+        it != actions.end())
+        return std::to_address(it);
 
-    Msg("! cant find corresponding [id] for action_name [{}]", _name);
+    Msg("! Can't find corresponding [id] for action_name [{}]", _name);
 
     return nullptr;
 }
 
 gsl::czstring dik_to_keyname(xr::key_id _dik)
 {
-    const auto kb = dik_to_ptr(_dik, true);
-    if (kb != nullptr)
+    if (const auto kb = dik_to_ptr(_dik, true); kb != nullptr)
         return kb->key_name;
 
     return nullptr;
@@ -385,10 +384,10 @@ gsl::czstring dik_to_keyname(xr::key_id _dik)
 _keyboard* dik_to_ptr(xr::key_id _dik, bool bSafe)
 {
     if (const auto it = std::ranges::find(keyboards, _dik, &_keyboard::dik); it != keyboards.end())
-        return &*it;
+        return std::to_address(it);
 
     if (!bSafe)
-        Log("! cant find corresponding [_keyboard] for dik");
+        Log("! Can't find corresponding [_keyboard] for dik");
 
     return nullptr;
 }
@@ -397,9 +396,9 @@ namespace
 {
 [[nodiscard]] _keyboard* keyname_to_ptr(gsl::czstring _name)
 {
-    const auto it = std::ranges::find_if(keyboards, [_name](const auto& key) { return std::is_eq(xr::strcasecmp(_name, key.key_name)); });
-    if (it != keyboards.end())
-        return &*it;
+    if (const auto it = std::ranges::find_if(keyboards, [_name](const auto& key) { return std::is_eq(xr::strcasecmp(_name, key.key_name)); });
+        it != keyboards.end())
+        return std::to_address(it);
 
     Msg("! cant find corresponding [_keyboard*] for keyname {}", _name);
 
@@ -409,8 +408,7 @@ namespace
 
 xr::key_id keyname_to_dik(gsl::czstring _name)
 {
-    const auto kb = keyname_to_ptr(_name);
-    if (kb != nullptr)
+    if (const auto kb = keyname_to_ptr(_name); kb != nullptr)
         return kb->dik;
 
     return xr::key_id{sf::Keyboard::Scancode::Unknown};
@@ -447,17 +445,17 @@ xr::key_id get_action_dik(EGameActions _action_id)
 
 EGameActions get_binded_action(xr::key_id _dik)
 {
-    const auto it = std::ranges::find_if(g_key_bindings, [_dik](const auto& binding) {
-        if (binding.m_keyboard[0] != nullptr && binding.m_keyboard[0]->dik == _dik)
-            return true;
+    if (const auto it = std::ranges::find_if(g_key_bindings,
+                                             [_dik](const auto& binding) {
+                                                 if (binding.m_keyboard[0] != nullptr && binding.m_keyboard[0]->dik == _dik)
+                                                     return true;
 
-        if (binding.m_keyboard[1] != nullptr && binding.m_keyboard[1]->dik == _dik)
-            return true;
+                                                 if (binding.m_keyboard[1] != nullptr && binding.m_keyboard[1]->dik == _dik)
+                                                     return true;
 
-        return false;
-    });
-
-    if (it != g_key_bindings.end())
+                                                 return false;
+                                             });
+        it != g_key_bindings.end())
         return xr::action_id(*it->m_action);
 
     return EGameActions::kNOTBINDED;

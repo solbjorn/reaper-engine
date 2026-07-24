@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "PHCharacter.h"
+
 #include "PHDynamicData.h"
 #include "Physics.h"
 #include "ExtendedGeom.h"
@@ -92,7 +93,7 @@ void CPHCharacter::set_State(const SPHNetState& state)
     if (!state.enabled)
         Disable();
 
-    VERIFY2(dBodyStateValide(m_body), "WRONG BODYSTATE WAS SET");
+    XR_DEBUG_ASSERT(dBodyStateValide(m_body));
 }
 
 void CPHCharacter::Disable()
@@ -148,18 +149,16 @@ void virtual_move_collide_callback(bool& do_collide, bool bo1, dContact& c, SGam
     if (oposite_matrial->Flags.test(SGameMtl::flPassable))
         return;
 
-    dxGeomUserData* my_data = retrieveGeomUserData(bo1 ? c.geom.g1 : c.geom.g2);
+    dxGeomUserData* my_data = XR_ASSERT_VAL(retrieveGeomUserData(bo1 ? c.geom.g1 : c.geom.g2) != nullptr);
     dxGeomUserData* oposite_data = retrieveGeomUserData(bo1 ? c.geom.g2 : c.geom.g1);
-    VERIFY(my_data);
     if (oposite_data && oposite_data->ph_ref_object == my_data->ph_ref_object)
         return;
 
     c.surface.mu = 0;
     c.surface.soft_cfm = 0.01f;
-    dJointID contact_joint = dJointCreateContact(nullptr, ContactGroup, &c); // dJointCreateContactSpecial(0, ContactGroup, &c);
-    CPHObject* obj = (CPHObject*)my_data->callback_data;
-    VERIFY(obj);
 
+    dJointID contact_joint = dJointCreateContact(nullptr, ContactGroup, &c);
+    CPHObject* obj = XR_ASSERT_VAL((CPHObject*)my_data->callback_data != nullptr);
     obj->Island().DActiveIsland()->ConnectJoint(contact_joint);
 
     if (bo1)

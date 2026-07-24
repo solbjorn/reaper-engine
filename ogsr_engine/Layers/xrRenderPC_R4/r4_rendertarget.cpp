@@ -19,7 +19,8 @@
 
 void CRenderTarget::u_setrt(CBackend& cmd_list, const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, ID3DDepthStencilView* zb)
 {
-    VERIFY(_1 || zb);
+    XR_ASSERT(_1 || zb != nullptr);
+
     if (_1)
     {
         dwWidth[cmd_list.context_id] = _1->dwWidth;
@@ -30,17 +31,14 @@ void CRenderTarget::u_setrt(CBackend& cmd_list, const ref_rt& _1, const ref_rt& 
         D3D_DEPTH_STENCIL_VIEW_DESC desc{};
         zb->GetDesc(&desc);
 
-        if (!RImplementation.o.dx10_msaa)
-            VERIFY(desc.ViewDimension == D3D_DSV_DIMENSION_TEXTURE2D);
+        XR_ASSERT(+RImplementation.o.dx10_msaa || desc.ViewDimension == D3D_DSV_DIMENSION_TEXTURE2D || desc.ViewDimension == D3D_DSV_DIMENSION_TEXTURE2DARRAY,
+                  "", desc.ViewDimension);
 
         ID3DResource* pRes;
-
         zb->GetResource(&pRes);
-
         ID3DTexture2D* pTex = (ID3DTexture2D*)pRes;
 
         D3D_TEXTURE2D_DESC TexDesc{};
-
         pTex->GetDesc(&TexDesc);
 
         dwWidth[cmd_list.context_id] = TexDesc.Width;
@@ -66,7 +64,8 @@ void CRenderTarget::u_setrt(CBackend& cmd_list, const ref_rt& _1, const ref_rt& 
 
 void CRenderTarget::u_setrt(CBackend& cmd_list, const ref_rt& _1, const ref_rt& _2, ID3DDepthStencilView* zb)
 {
-    VERIFY(_1 || zb);
+    XR_ASSERT(_1 || zb != nullptr);
+
     if (_1)
     {
         dwWidth[cmd_list.context_id] = _1->dwWidth;
@@ -76,17 +75,15 @@ void CRenderTarget::u_setrt(CBackend& cmd_list, const ref_rt& _1, const ref_rt& 
     {
         D3D_DEPTH_STENCIL_VIEW_DESC desc{};
         zb->GetDesc(&desc);
-        if (!RImplementation.o.dx10_msaa)
-            VERIFY(desc.ViewDimension == D3D_DSV_DIMENSION_TEXTURE2D);
+
+        XR_ASSERT(+RImplementation.o.dx10_msaa || desc.ViewDimension == D3D_DSV_DIMENSION_TEXTURE2D || desc.ViewDimension == D3D_DSV_DIMENSION_TEXTURE2DARRAY,
+                  "", desc.ViewDimension);
 
         ID3DResource* pRes;
-
         zb->GetResource(&pRes);
-
         ID3DTexture2D* pTex = (ID3DTexture2D*)pRes;
 
         D3D_TEXTURE2D_DESC TexDesc{};
-
         pTex->GetDesc(&TexDesc);
 
         dwWidth[cmd_list.context_id] = TexDesc.Width;
@@ -143,7 +140,8 @@ void CRenderTarget::u_compute_texgen_jitter(CBackend& cmd_list, Fmatrix& m_Texge
 static void generate_jitter(u32* dest, u32 elem_count)
 {
     constexpr int cmax = 8;
-    svector<Ivector2, cmax> samples;
+    std::inplace_vector<Ivector2, cmax> samples;
+
     while (samples.size() < elem_count * 2)
     {
         Ivector2 test;
@@ -161,6 +159,7 @@ static void generate_jitter(u32* dest, u32 elem_count)
         if (valid)
             samples.push_back(test);
     }
+
     for (u32 it = 0; it < elem_count; it++, dest++)
         *dest = color_rgba(samples[2 * it].x, samples[2 * it].y, samples[2 * it + 1].y, samples[2 * it + 1].x);
 }
@@ -534,10 +533,10 @@ CRenderTarget::CRenderTarget()
 
         D3D_SUBRESOURCE_DATA subData[TEX_jitter_count]{};
 
-        for (auto [it, tex] : xr::views_enumerate(tempData))
+        for (auto [sub, tex] : std::views::zip(subData, tempData))
         {
-            subData[it].pSysMem = tex.data();
-            subData[it].SysMemPitch = desc.Width * sampleSize;
+            sub.pSysMem = tex.data();
+            sub.SysMemPitch = desc.Width * sampleSize;
         }
 
         // Fill it,
@@ -547,28 +546,22 @@ CRenderTarget::CRenderTarget()
             {
                 u32 data[TEX_jitter_count];
                 generate_jitter(data, TEX_jitter_count);
-                for (u32 it = 0; it < TEX_jitter_count; it++)
-                {
-                    u32* p = (u32*)((u8*)(const_cast<void*>(subData[it].pSysMem)) + y * subData[it].SysMemPitch + x * 4);
-                    *p = data[it];
-                }
+
+                for (auto [sub, pix] : std::views::zip(subData, data))
+                    *(u32*)((u8*)(const_cast<void*>(sub.pSysMem)) + y * sub.SysMemPitch + x * sizeof(u32)) = pix;
             }
         }
 
-        ID3DTexture2D* t_noise_surf[TEX_jitter_count]{};
-
-        for (size_t it = 0; it < TEX_jitter_count; it++)
+        for (auto [sub, it, noise] : std::views::zip(subData, std::views::iota(0u, TEX_jitter_count), t_noise))
         {
-            string_path name;
-            xr_sprintf(name, "%s%d", r2_jitter, it);
+            ID3DTexture2D* surf{nullptr};
+            XR_ASSERT(xr::hr(HW.pDevice->CreateTexture2D(&desc, &sub, &surf)));
 
-            R_CHK(HW.pDevice->CreateTexture2D(&desc, &subData[it], &t_noise_surf[it]));
-            t_noise[it]._set(RImplementation.Resources->_CreateTexture(name));
-            t_noise[it]->surface_set(t_noise_surf[it]);
+            noise._set(RImplementation.Resources->_CreateTexture(xr::format(r2_jitter "{}", it).c_str()));
+            noise->surface_set(surf);
+
+            _RELEASE(surf);
         }
-
-        for (size_t it = 0; it < TEX_jitter_count; it++)
-            _RELEASE(t_noise_surf[it]);
     }
 
     // PP

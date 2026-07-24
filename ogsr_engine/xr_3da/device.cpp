@@ -39,7 +39,7 @@ tmc::task<bool> CRenderDevice::RenderBegin()
         // Check if the device is ready to be reset
         co_await Reset();
         co_return false;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     m_pRender->Begin();
@@ -547,7 +547,7 @@ tmc::task<void> CRenderDevice::execute_async(gsl::czstring cmd)
     const auto expected = std::ssize(seq_frame_async) + 1;
 
     Console->Execute(cmd);
-    R_ASSERT(std::ssize(seq_frame_async) == expected);
+    XR_ASSERT(std::ssize(seq_frame_async) == expected, "", cmd);
 
     auto& back = seq_frame_async.back();
     co_await back.first(back.second);

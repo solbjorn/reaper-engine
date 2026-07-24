@@ -31,8 +31,7 @@ bool CRender::rain_prepare()
     if (fRainFactor < EPS_L)
         return false;
 
-    rain_context_id = alloc_context();
-    VERIFY(rain_context_id != R__INVALID_CTX_ID);
+    rain_context_id = XR_ASSERT_VAL(alloc_context() != R__INVALID_CTX_ID);
 
     return true;
 }
@@ -190,6 +189,9 @@ tmc::task<void> CRender::rain_run()
     dsgraph.r_pmask(true, false);
     dsgraph.build_subspace(largest_sector_id, cull_frustum, cull_xform, cull_COP, false);
 
+    XR_ASSERT(dsgraph.mapNormalPasses[1][0].empty() && dsgraph.mapMatrixPasses[1][0].empty() && dsgraph.mapSorted.empty(), "", dsgraph.mapNormalPasses[1][0],
+              dsgraph.mapMatrixPasses[1][0], dsgraph.mapSorted);
+
     // Finalize & Cleanup
     RainLight.X.D.combine[0] = cull_xform;
 
@@ -201,8 +203,6 @@ tmc::task<void> CRender::rain_run()
     //. !!! We should clip based on shrinked frustum (again)
     if (dsgraph.mapNormalPasses[0][0].empty() && dsgraph.mapMatrixPasses[0][0].empty())
         co_return;
-
-    VERIFY(dsgraph.mapNormalPasses[1][0].empty() && dsgraph.mapMatrixPasses[1][0].empty() && dsgraph.mapSorted.empty());
 
     Target->phase_smap_direct(dsgraph.cmd_list, &RainLight, SE_SUN_RAIN_SMAP);
     dsgraph.cmd_list.set_xform_world(Fidentity);

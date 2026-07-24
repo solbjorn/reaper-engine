@@ -7,6 +7,7 @@
 #define TMC_IMPL
 #define XR_TRACY_BUILDING
 
+#include "assert.h"
 #include "imgui.h"
 #include "rtti.h"
 #include "sol.h"

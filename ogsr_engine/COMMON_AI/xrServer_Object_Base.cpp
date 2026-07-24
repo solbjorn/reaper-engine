@@ -50,6 +50,7 @@ void CPureServerObject::save(NET_Packet&) {}
 ////////////////////////////////////////////////////////////////////////////
 // CSE_Abstract
 ////////////////////////////////////////////////////////////////////////////
+
 CSE_Abstract::CSE_Abstract(LPCSTR caSection)
 {
     m_editor_flags.zero();
@@ -69,20 +70,12 @@ CSE_Abstract::CSE_Abstract(LPCSTR caSection)
     m_script_version = 0;
     m_tClassID = TEXT2CLSID(pSettings->r_string(caSection, "class"));
 
-    //	m_spawn_probability			= 1.f;
     m_spawn_flags.zero();
     m_spawn_flags.set(flSpawnEnabled, TRUE);
     m_spawn_flags.set(flSpawnOnSurgeOnly, TRUE);
     m_spawn_flags.set(flSpawnSingleItemOnly, TRUE);
     m_spawn_flags.set(flSpawnIfDestroyedOnly, TRUE);
     m_spawn_flags.set(flSpawnInfiniteCount, TRUE);
-    //	m_max_spawn_count			= 1;
-    //	m_spawn_control				= "";
-    //	m_spawn_count				= 0;
-    //	m_last_spawn_time			= 0;
-    //	m_next_spawn_time			= 0;
-    //	m_min_spawn_interval		= 0;
-    //	m_max_spawn_interval		= 0;
 
     if (pSettings->line_exist(caSection, "custom_data"))
     {
@@ -141,7 +134,7 @@ void CSE_Abstract::STATE_Write(NET_Packet& tNetPacket)
 void CSE_Abstract::Spawn_Write(NET_Packet& tNetPacket, BOOL bLocal)
 {
     // generic
-    tNetPacket.w_begin(M_SPAWN);
+    tNetPacket.w_begin(gsl::narrow<u16>(xr::msg::M_SPAWN));
     tNetPacket.w_stringZ(s_name);
     tNetPacket.w_stringZ(s_name_replace ? s_name_replace : "");
     tNetPacket.w_u8(s_gameid);
@@ -168,7 +161,7 @@ void CSE_Abstract::Spawn_Write(NET_Packet& tNetPacket, BOOL bLocal)
     tNetPacket.w_u16(client_data_size);
 
     if (client_data_size > 0)
-        tNetPacket.w(&*client_data.begin(), client_data_size);
+        tNetPacket.w(client_data.data(), client_data_size);
 
     tNetPacket.w(&m_tSpawnID, sizeof(m_tSpawnID));
 
@@ -176,8 +169,10 @@ void CSE_Abstract::Spawn_Write(NET_Packet& tNetPacket, BOOL bLocal)
     u32 position = tNetPacket.w_tell();
     tNetPacket.w_u16(0);
     STATE_Write(tNetPacket);
-    u16 size = u16(tNetPacket.w_tell() - position);
-    R_ASSERT3((m_tClassID == CLSID_SPECTATOR) || (size > sizeof(size)), "object isn't successfully saved, get your backup :(", name_replace());
+
+    const auto size = tNetPacket.w_tell() - position;
+    XR_ASSERT(m_tClassID == CLSID_SPECTATOR || size > sizeof(u16), "failed to save object", name_replace(), m_tClassID, size);
+
     tNetPacket.w_seek(position, &size, sizeof(u16));
 }
 
@@ -195,9 +190,10 @@ void CSE_Abstract::STATE_Read(NET_Packet& tNetPacket, u16 size)
 BOOL CSE_Abstract::Spawn_Read(NET_Packet& tNetPacket)
 {
     u16 dummy16;
-    // generic
     std::ignore = tNetPacket.r_begin(dummy16);
-    R_ASSERT(M_SPAWN == dummy16);
+    XR_ASSERT(xr::msg{dummy16} == xr::msg::M_SPAWN);
+
+    // generic
     tNetPacket.r_stringZ(s_name);
 
     string256 temp;
@@ -237,7 +233,7 @@ BOOL CSE_Abstract::Spawn_Read(NET_Packet& tNetPacket)
         if (client_data_size > 0)
         {
             client_data.resize(client_data_size);
-            tNetPacket.r(&*client_data.begin(), client_data_size);
+            tNetPacket.r(client_data.data(), client_data_size);
         }
         else
         {
@@ -278,8 +274,8 @@ BOOL CSE_Abstract::Spawn_Read(NET_Packet& tNetPacket)
     }
 
     u16 size;
-    tNetPacket.r_u16(size); // size
-    R_ASSERT3((m_tClassID == CLSID_SPECTATOR) || (size > sizeof(size)), "cannot read object, which is not successfully saved :(", name_replace());
+    tNetPacket.r_u16(size);
+    XR_ASSERT(m_tClassID == CLSID_SPECTATOR || size > sizeof(u16), "failed to read object", name_replace(), m_tClassID, size);
 
     STATE_Read(tNetPacket, size);
 
@@ -289,11 +285,12 @@ BOOL CSE_Abstract::Spawn_Read(NET_Packet& tNetPacket)
 void CSE_Abstract::load(NET_Packet& tNetPacket)
 {
     CPureServerObject::load(tNetPacket);
+
     u16 client_data_size = (m_wVersion > 93) ? tNetPacket.r_u16() : tNetPacket.r_u8();
     if (client_data_size > 0)
     {
         client_data.resize(client_data_size);
-        tNetPacket.r(&*client_data.begin(), client_data_size);
+        tNetPacket.r(client_data.data(), client_data_size);
     }
     else
     {

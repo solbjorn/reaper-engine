@@ -23,20 +23,21 @@ CPatrolPathStorage::~CPatrolPathStorage() { delete_data(m_registry); }
 void CPatrolPathStorage::load_raw(const CLevelGraph* level_graph, const CGameLevelCrossTable* cross, const CGameGraph* game_graph, IReader& stream)
 {
     IReader* chunk = stream.open_chunk(WAY_PATROLPATH_CHUNK);
-
-    if (!chunk)
+    if (chunk == nullptr)
         return;
 
     u32 chunk_iterator;
+
     for (IReader* sub_chunk = chunk->open_chunk_iterator(chunk_iterator); sub_chunk; sub_chunk = chunk->open_chunk_iterator(chunk_iterator, sub_chunk))
     {
-        R_ASSERT(sub_chunk->find_chunk(WAYOBJECT_CHUNK_VERSION));
-        R_ASSERT(sub_chunk->r_u16() == WAYOBJECT_VERSION);
-        R_ASSERT(sub_chunk->find_chunk(WAYOBJECT_CHUNK_NAME));
+        XR_ASSERT(sub_chunk->find_chunk(WAYOBJECT_CHUNK_VERSION) > 0);
+        XR_ASSERT(sub_chunk->r_u16() == WAYOBJECT_VERSION);
+        XR_ASSERT(sub_chunk->find_chunk(WAYOBJECT_CHUNK_NAME) > 0);
 
         shared_str patrol_name;
         sub_chunk->r_stringZ(patrol_name);
-        VERIFY3(m_registry.find(patrol_name) == m_registry.end(), "Duplicated patrol path found", patrol_name.c_str());
+
+        XR_DEBUG_ASSERT(m_registry.find(patrol_name) == m_registry.end(), "duplicated patrol path", patrol_name);
         m_registry.emplace(patrol_name, &(xr_new<CPatrolPath>(patrol_name))->load_raw(level_graph, cross, game_graph, *sub_chunk));
     }
 
@@ -93,8 +94,7 @@ void CPatrolPathStorage::load(IReader& stream)
         chunk2->close();
 
         chunk1->close();
-
-        VERIFY3(m_registry.find(pair.first) == m_registry.end(), "Duplicated patrol path found ", pair.first.c_str());
+        XR_DEBUG_ASSERT(m_registry.find(pair.first) == m_registry.end(), "duplicated patrol path", pair.first);
 
 #ifdef DEBUG
         pair.second->name(pair.first);

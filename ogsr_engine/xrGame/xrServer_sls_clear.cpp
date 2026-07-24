@@ -20,15 +20,16 @@ void xrServer::Perform_destroy(CSE_Abstract* object, u32 mode)
 
     while (!object->children.empty())
     {
-        CSE_Abstract* child = game->get_entity_from_eid(object->children.back());
-        ASSERT_FMT(child, "child registered but not found [%d] for parent id=%d", object->children.back(), object->ID);
-
+        auto child = XR_ASSERT_VAL(game->get_entity_from_eid(object->children.back()) != nullptr, "child is registered but not found", object->ID,
+                                   object->children.back());
         Perform_reject(child, object, 2 * NET_Latency);
+
 #ifdef DEBUG
 #ifdef SLOW_VERIFY_ENTITIES
         verify_entities();
 #endif
 #endif
+
         Perform_destroy(child, mode);
     }
 
@@ -42,10 +43,11 @@ void xrServer::Perform_destroy(CSE_Abstract* object, u32 mode)
 #endif
 
     NET_Packet P;
-    P.w_begin(M_EVENT);
+    P.w_begin(gsl::narrow<u16>(xr::msg::M_EVENT));
     P.w_u32(Device.dwTimeGlobal - 2 * NET_Latency);
     P.w_u16(GE_DESTROY);
     P.w_u16(object_id);
+
     SendBroadcast(BroadcastCID, P, mode);
 }
 

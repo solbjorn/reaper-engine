@@ -43,11 +43,8 @@ IC ObjectHandlerSpace::EWorldProperties CObjectHandlerPlanner::object_property(M
     case MonsterSpace::eObjectActionAimForceFull1: return (ObjectHandlerSpace::eWorldPropertyAimForceFull1);
     case MonsterSpace::eObjectActionAimForceFull2: return (ObjectHandlerSpace::eWorldPropertyAimForceFull2);
     case MonsterSpace::eObjectActionUse: return (ObjectHandlerSpace::eWorldPropertyUsed);
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
-#ifdef DEBUG
-    return (ObjectHandlerSpace::eWorldPropertyDummy);
-#endif
 }
 
 void CObjectHandlerPlanner::set_goal(MonsterSpace::EObjectAction object_action, CGameObject* game_object, u32 min_queue_size, u32 max_queue_size,
@@ -258,8 +255,9 @@ LPCSTR CObjectHandlerPlanner::action2string(const _action_id_type& id)
         strcat(S, "AimForceFull2");
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
+
     return (S);
 }
 
@@ -420,8 +418,9 @@ LPCSTR CObjectHandlerPlanner::property2string(const _condition_type& id)
         S[xr_strlen(S) - 1] = 0;
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
+
     return (S);
 }
 #endif
@@ -444,7 +443,7 @@ void CObjectHandlerPlanner::remove_operators(CObject* object)
     // TODO: Dima to Dima : safe, but not optimal!
     for (;;)
     {
-        OPERATOR_VECTOR::iterator I = std::lower_bound(m_operators.begin(), m_operators.end(), uid(object->ID(), 0));
+        const auto I = std::ranges::lower_bound(m_operators, uid(object->ID(), 0), {}, &SOperator::m_operator_id);
         if (I == m_operators.end() || !object_action((*I).m_operator_id, object))
             break;
 

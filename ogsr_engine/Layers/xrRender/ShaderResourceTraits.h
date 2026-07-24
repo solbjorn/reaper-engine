@@ -17,7 +17,7 @@ struct ShaderTypeTraits<SHS>
     [[nodiscard]] static DXIface* CreateHWShader(const DWORD* buffer, size_t size)
     {
         DXIface* hs{};
-        R_CHK(HW.pDevice->CreateHullShader(buffer, size, nullptr, &hs));
+        XR_ASSERT(xr::hr(HW.pDevice->CreateHullShader(buffer, size, nullptr, &hs)));
         return hs;
     }
 
@@ -36,7 +36,7 @@ struct ShaderTypeTraits<SDS>
     [[nodiscard]] static DXIface* CreateHWShader(const DWORD* buffer, size_t size)
     {
         DXIface* hs{};
-        R_CHK(HW.pDevice->CreateDomainShader(buffer, size, nullptr, &hs));
+        XR_ASSERT(xr::hr(HW.pDevice->CreateDomainShader(buffer, size, nullptr, &hs)));
         return hs;
     }
 
@@ -55,7 +55,7 @@ struct ShaderTypeTraits<SCS>
     [[nodiscard]] static DXIface* CreateHWShader(const DWORD* buffer, size_t size)
     {
         DXIface* cs{};
-        R_CHK(HW.pDevice->CreateComputeShader(buffer, size, nullptr, &cs));
+        XR_ASSERT(xr::hr(HW.pDevice->CreateComputeShader(buffer, size, nullptr, &cs)));
         return cs;
     }
 
@@ -87,56 +87,47 @@ template <typename T>
 inline T* CResourceManager::CreateShader(const char* name)
 {
     auto& sh_map = GetShaderMap<typename ShaderTypeTraits<T>::MapType>();
-    auto I = sh_map.find(name);
-    if (I != sh_map.end())
-    {
+    if (const auto I = sh_map.find(name); I != sh_map.end())
         return I->second;
-    }
-    else
+
+    T* sh = xr_new<T>();
+    sh->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+    sh_map.emplace(sh->set_name(name), sh);
+
+    if (std::is_eq(xr::strcasecmp(name, "null")))
     {
-        T* sh = xr_new<T>();
-
-        sh->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-        sh_map.emplace(sh->set_name(name), sh);
-        if (std::is_eq(xr::strcasecmp(name, "null")))
-        {
-            sh->sh = nullptr;
-            return sh;
-        }
-
-        string_path shName;
-        const char* pchr = strchr(name, '(');
-        ptrdiff_t strSize = pchr ? pchr - name : xr_strlen(name);
-        strncpy_s(shName, name, strSize);
-        shName[strSize] = 0;
-
-        // Open file
-        string_path cname;
-        strconcat(sizeof(cname), cname, RImplementation.getShaderPath(), /*name*/ shName, ShaderTypeTraits<T>::GetShaderExt());
-        std::ignore = FS.update_path(cname, "$game_shaders$", cname);
-
-        // duplicate and zero-terminate
-        IReader* file = FS.r_open(cname);
-        R_ASSERT2(file, cname);
-
-        file->skip_bom(cname);
-
-        // Select target
-        LPCSTR c_target = ShaderTypeTraits<T>::GetCompilationTarget();
-        LPCSTR c_entry = "main";
-
-        DWORD Flags{D3DCOMPILE_FLAGS_DEFAULT};
-        if (strstr(Core.Params, "-shadersdbg"))
-            Flags |= D3DCOMPILE_FLAGS_DEBUG;
-
-        // Compile
-        const HRESULT _hr = RImplementation.shader_compile(name, (const DWORD*)file->pointer(), file->elapsed(), c_entry, c_target, Flags, (void*&)sh);
-        FS.r_close(file);
-
-        ASSERT_FMT(!FAILED(_hr), "Can't compile shader [%s]", name);
-
+        sh->sh = nullptr;
         return sh;
     }
+
+    string_path shName;
+    const char* pchr = strchr(name, '(');
+    ptrdiff_t strSize = pchr ? pchr - name : xr_strlen(name);
+    strncpy_s(shName, name, strSize);
+    shName[strSize] = 0;
+
+    // Open file
+    string_path cname;
+    strconcat(sizeof(cname), cname, RImplementation.getShaderPath(), shName, ShaderTypeTraits<T>::GetShaderExt());
+    std::ignore = FS.update_path(cname, "$game_shaders$", cname);
+
+    // duplicate and zero-terminate
+    const auto file = XR_ASSERT_VAL(absl::WrapUnique(FS.r_open(cname)), "", cname);
+    file->skip_bom(cname);
+
+    // Select target
+    LPCSTR c_target = ShaderTypeTraits<T>::GetCompilationTarget();
+    LPCSTR c_entry = "main";
+
+    DWORD Flags{D3DCOMPILE_FLAGS_DEFAULT};
+    if (strstr(Core.Params, "-shadersdbg"))
+        Flags |= D3DCOMPILE_FLAGS_DEBUG;
+
+    // Compile
+    XR_ASSERT(xr::hr(RImplementation.shader_compile(name, (const DWORD*)file->pointer(), file->elapsed(), c_entry, c_target, Flags, (void*&)sh)),
+              "failed to compile shader", cname, c_target);
+
+    return sh;
 }
 
 template <typename T>
@@ -146,12 +137,8 @@ inline void CResourceManager::DestroyShader(const T* sh)
         return;
 
     auto& sh_map = GetShaderMap<typename ShaderTypeTraits<T>::MapType>();
-    auto I = sh_map.find(sh->cName);
-    if (I != sh_map.end())
-    {
+    if (const auto I = sh_map.find(sh->cName); I == sh_map.end())
+        Msg("! ERROR: Failed to find compiled shader '{}'", sh->cName);
+    else
         sh_map.erase(I);
-        return;
-    }
-
-    Msg("! ERROR: Failed to find compiled shader '{}'", sh->cName);
 }

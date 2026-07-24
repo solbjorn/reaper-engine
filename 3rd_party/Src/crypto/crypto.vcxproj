@@ -42,7 +42,7 @@
     <NMakeBuildCommandLine>
       set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;$(SolutionDir)\3rd_party\Src\crypto\bin;%PATH%"
       set "LIBC_OPTIONS=$(libcOptions)"
-      set "LIBCXX_OPTIONS=$(libcxxOptions) /FIuse_ansi.h"
+      set "LIBCXX_OPTIONS=$(libcxxOptions)"
       set "LIBCXX_PATH=$(libcxxPath)"
       md _Build
       cd _Build

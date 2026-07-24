@@ -26,17 +26,15 @@ template <typename T>
 IC u32 CSpaceRestrictionBridge::accessible_nearest(T restriction, const Fvector& position, Fvector& result, bool out_restriction)
 {
     // TODO: Dima to Dima : _Warning : this place can be optimized in case of a slowdown
-    VERIFY(initialized());
+    XR_DEBUG_ASSERT(initialized(), name());
+    XR_ASSERT(restriction != nullptr, "", name());
 
-    ASSERT_FMT(restriction, "[%s]:[%s] restriction is nullptr! Something strange! Most likely a problem due to crooked scripts!",
-               std::source_location::current().function_name(), name().c_str());
 #ifdef CRASH_ON_INVALID_VERTEX_ID
-    ASSERT_FMT(!restriction->border().empty(), "[%s]: %s has border().empty()", std::source_location::current().function_name(), name().c_str());
-    ASSERT_FMT(!restriction->accessible_neighbour_border(restriction, out_restriction).empty(), "[%s]: %s has accessible_neighbour_border().empty()",
-               std::source_location::current().function_name(), name().c_str());
+    XR_ASSERT(!restriction->border().empty(), "", name());
+    XR_ASSERT(!restriction->accessible_neighbour_border(restriction, out_restriction).empty(), "", name());
 #else
-    VERIFY(!restriction->border().empty());
-    VERIFY(!restriction->accessible_neighbour_border(restriction, out_restriction).empty());
+    XR_DEBUG_ASSERT(!restriction->border().empty(), "", name());
+    XR_DEBUG_ASSERT(!restriction->accessible_neighbour_border(restriction, out_restriction).empty(), "", name());
 #endif
 
     float min_dist_sqr = flt_max;
@@ -101,6 +99,7 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T restriction, const Fvector&
 #ifdef DEBUG
             current.P = Fvector().set(flt_max, flt_max, flt_max);
 #endif
+
             switch (i)
             {
             case 0: current.P.set(center.x + offset, center.y, center.z + offset); break;
@@ -108,8 +107,9 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T restriction, const Fvector&
             case 2: current.P.set(center.x - offset, center.y, center.z + offset); break;
             case 3: current.P.set(center.x - offset, center.y, center.z - offset); break;
             case 4: current.P.set(center.x, center.y, center.z); break;
-            default: NODEFAULT;
+            default: xr::unreachable();
             }
+
             if (i < 4)
                 current.P.y = ai().level_graph().vertex_plane_y(selected, current.P.x, current.P.z);
 
@@ -124,8 +124,10 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T restriction, const Fvector&
                 found = true;
             }
         }
+
         VERIFY(found);
     }
+
     VERIFY(ai().level_graph().valid_vertex_id(selected));
 
     return (selected);

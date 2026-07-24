@@ -11,7 +11,8 @@ void CBlender_combine::Compile(CBlender_Compile& C)
 
     switch (C.iElement)
     {
-    case 0: // combine
+    case 0:
+        // combine
         C.r_Pass("combine_1", "combine_1_nomsaa", FALSE, FALSE, FALSE, TRUE, D3DBLEND_INVSRCALPHA, D3DBLEND_SRCALPHA); //. MRT-blend?
         C.r_Stencil(TRUE, D3DCMP_LESSEQUAL, 0xff, 0x00); // stencil should be >= 1
         C.r_StencilRef(0x01);
@@ -39,13 +40,10 @@ void CBlender_combine::Compile(CBlender_Compile& C)
         C.r_End();
         break;
     case 1: break;
-    case 2: // non-AA
+    case 2:
+        // non-AA
         //	Can use simpler VS (need only Tex0)
         C.r_Pass("stub_notransform_aa_AA", "combine_2_NAA", FALSE, FALSE, FALSE);
-        // C.r_Sampler_rtf		("s_position",		r2_RT_P);
-        // C.r_Sampler_clf		("s_image",			r2_RT_generic0);
-        // C.r_Sampler_clf		("s_bloom",			r2_RT_bloom1);
-        // C.r_Sampler_clf		("s_distort",		r2_RT_generic1);
 
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_image", r2_RT_generic0);
@@ -64,13 +62,10 @@ void CBlender_combine::Compile(CBlender_Compile& C)
         C.r_End();
         break;
     case 3: break;
-    case 4: // non-AA + DISTORTION
+    case 4:
+        // non-AA + DISTORTION
         //	Can use simpler VS (need only Tex0)
         C.r_Pass("stub_notransform_aa_AA", "combine_2_NAA_D", FALSE, FALSE, FALSE);
-        // C.r_Sampler_rtf		("s_position",		r2_RT_P);
-        // C.r_Sampler_clf		("s_image",			r2_RT_generic0);
-        // C.r_Sampler_clf		("s_bloom",			r2_RT_bloom1);
-        // C.r_Sampler_clf		("s_distort",		r2_RT_generic1);
 
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_image", r2_RT_generic0);
@@ -88,13 +83,14 @@ void CBlender_combine::Compile(CBlender_Compile& C)
         C.r_dx10Sampler("smp_rtlinear");
         C.r_End();
         break;
-    case 5: // post-processing
+    case 5:
+        // post-processing
         break;
     }
 }
 
 CBlender_combine_msaa::CBlender_combine_msaa() { description.CLS = 0; }
-CBlender_combine_msaa::~CBlender_combine_msaa() {}
+CBlender_combine_msaa::~CBlender_combine_msaa() = default;
 
 //	TODO: DX10: Implement CBlender_combine::Compile
 void CBlender_combine_msaa::Compile(CBlender_Compile& C)
@@ -103,8 +99,10 @@ void CBlender_combine_msaa::Compile(CBlender_Compile& C)
 
     if (Name != nullptr)
     {
-        const auto res = scn::scan_int<s32>(Definition);
-        R_ASSERT(res, res.error().msg());
+        const std::string_view val{Definition};
+        const auto res = scn::scan_int<s32>(val);
+        XR_ASSERT(res, res.error().msg(), Name, val);
+
         RImplementation.m_MSAASample = res->value();
     }
     else
@@ -114,7 +112,8 @@ void CBlender_combine_msaa::Compile(CBlender_Compile& C)
 
     switch (C.iElement)
     {
-    case 0: // combine
+    case 0:
+        // combine
         C.r_Pass("combine_1", "combine_1_msaa", FALSE, FALSE, FALSE, TRUE, D3DBLEND_INVSRCALPHA, D3DBLEND_SRCALPHA); //. MRT-blend?
         C.r_Stencil(TRUE, D3DCMP_LESSEQUAL, 0xff, 0x00); // stencil should be >= 1
         C.r_StencilRef(0x01);
@@ -142,13 +141,10 @@ void CBlender_combine_msaa::Compile(CBlender_Compile& C)
         C.r_End();
         break;
     case 1: break;
-    case 2: // non-AA
+    case 2:
+        // non-AA
         //	Can use simpler VS (need only Tex0)
         C.r_Pass("stub_notransform_aa_AA", "combine_2_NAA", FALSE, FALSE, TRUE);
-        // C.r_Sampler_rtf		("s_position",		r2_RT_P);
-        // C.r_Sampler_clf		("s_image",			r2_RT_generic0);
-        // C.r_Sampler_clf		("s_bloom",			r2_RT_bloom1);
-        // C.r_Sampler_clf		("s_distort",		r2_RT_generic1);
 
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_image", r2_RT_generic0);
@@ -167,13 +163,10 @@ void CBlender_combine_msaa::Compile(CBlender_Compile& C)
         C.r_End();
         break;
     case 3: break;
-    case 4: // non-AA + DISTORTION
+    case 4:
+        // non-AA + DISTORTION
         //	Can use simpler VS (need only Tex0)
         C.r_Pass("stub_notransform_aa_AA", "combine_2_NAA_D", FALSE, FALSE, TRUE);
-        // C.r_Sampler_rtf		("s_position",		r2_RT_P);
-        // C.r_Sampler_clf		("s_image",			r2_RT_generic0);
-        // C.r_Sampler_clf		("s_bloom",			r2_RT_bloom1);
-        // C.r_Sampler_clf		("s_distort",		r2_RT_generic1);
 
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_image", r2_RT_generic0);
@@ -191,7 +184,8 @@ void CBlender_combine_msaa::Compile(CBlender_Compile& C)
         C.r_dx10Sampler("smp_rtlinear");
         C.r_End();
         break;
-    case 5: // post-processing
+    case 5:
+        // post-processing
         break;
     }
 

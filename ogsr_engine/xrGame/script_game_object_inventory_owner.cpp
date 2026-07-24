@@ -407,10 +407,7 @@ void CScriptGameObject::GiveMoney(int money)
 
 void CScriptGameObject::SetMoney(u32 money)
 {
-    CInventoryOwner* pOurOwner = smart_cast<CInventoryOwner*>(&object());
-    ASSERT_FMT(pOurOwner, "[%s]: %s not an CInventoryOwner", std::source_location::current().function_name(), object().Name());
-
-    pOurOwner->set_money(money, true);
+    XR_ASSERT_VAL(smart_cast<CInventoryOwner*>(&object()) != nullptr, "not an inventory owner", object().cName())->set_money(money, true);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -780,8 +777,14 @@ bool CScriptGameObject::accessible_vertex_id(u32 level_vertex_id)
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CRestrictedObject : cannot access class member accessible!");
         return (false);
     }
-    THROW2(ai().level_graph().valid_vertex_id(level_vertex_id), "Cannot check if level vertex id is accessible, because it is invalid");
-    return (monster->movement().restrictions().accessible(level_vertex_id));
+
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+    XR_ASSERT(ai().level_graph().valid_vertex_id(level_vertex_id), "invalid level vertex ID", level_vertex_id);
+#else
+    XR_DEBUG_ASSERT(ai().level_graph().valid_vertex_id(level_vertex_id), "invalid level vertex ID", level_vertex_id);
+#endif
+
+    return monster->movement().restrictions().accessible(level_vertex_id);
 }
 
 std::tuple<u32, Fvector> CScriptGameObject::accessible_nearest(const Fvector& position)
@@ -1134,10 +1137,7 @@ bool CScriptGameObject::IsInSlot(CScriptGameObject* obj) const
 
 u8 CScriptGameObject::GetSlot() const
 {
-    CInventoryItem* inventory_item = smart_cast<CInventoryItem*>(&object());
-    ASSERT_FMT(inventory_item, "[%s]: %s not an CInventoryItem", std::source_location::current().function_name(), object().Name());
-
-    return inventory_item->GetSlot();
+    return XR_ASSERT_VAL(smart_cast<CInventoryItem*>(&object()) != nullptr, "not an inventory item", object().cName())->GetSlot();
 }
 
 bool CScriptGameObject::MoveToRuck(CScriptGameObject* obj)
@@ -1232,6 +1232,7 @@ void CScriptGameObject::InvalidateInventory()
 
     inventory_owner->inventory().InvalidateState();
 }
+
 // functions for CInventoryItem class
 Flags16 CScriptGameObject::GetIIFlags()
 {
@@ -1259,10 +1260,8 @@ void CScriptGameObject::SetIIFlags(Flags16 flags)
 
 void CScriptGameObject::IterateBelt(sol::function function, sol::object object)
 {
-    auto inventory_owner = smart_cast<CInventoryOwner*>(&this->object());
-    ASSERT_FMT(inventory_owner, "[%s]: %s not an CInventoryOwner", std::source_location::current().function_name(), this->object().Name());
-
-    for (const auto it : inventory_owner->inventory().m_belt)
+    for (const auto it :
+         XR_ASSERT_VAL(smart_cast<CInventoryOwner*>(&this->object()) != nullptr, "not an inventory owner", this->object().cName())->inventory().m_belt)
     {
         if (!it->object().getDestroy())
             function(object, it->object().lua_game_object());
@@ -1271,10 +1270,8 @@ void CScriptGameObject::IterateBelt(sol::function function, sol::object object)
 
 void CScriptGameObject::IterateRuck(sol::function function, sol::object object)
 {
-    auto inventory_owner = smart_cast<CInventoryOwner*>(&this->object());
-    ASSERT_FMT(inventory_owner, "[%s]: %s not an CInventoryOwner", std::source_location::current().function_name(), this->object().Name());
-
-    for (const auto it : inventory_owner->inventory().m_ruck)
+    for (const auto it :
+         XR_ASSERT_VAL(smart_cast<CInventoryOwner*>(&this->object()) != nullptr, "not an inventory owner", this->object().cName())->inventory().m_ruck)
     {
         if (!it->object().getDestroy())
             function(object, it->object().lua_game_object());

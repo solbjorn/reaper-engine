@@ -606,7 +606,8 @@ IC float _y2real(float y) { return (y + 1) * Device.dwHeight * 0.5f; }
 
 void CDrawUtilities::dbgDrawPlacement(const Fvector& p, int sz, u32 clr, LPCSTR caption, u32 clr_font)
 {
-    VERIFY(Device.b_is_Ready);
+    XR_ASSERT(Device.b_is_Ready);
+
     Fvector c;
     float w = p.x * Device.mFullTransform._14 + p.y * Device.mFullTransform._24 + p.z * Device.mFullTransform._34 + Device.mFullTransform._44;
     if (w < 0)
@@ -830,7 +831,7 @@ constexpr u32 MAX_VERT_COUNT{std::numeric_limits<u16>::max()};
 
 void CDrawUtilities::DD_DrawFace_begin(BOOL bWire)
 {
-    VERIFY(m_DD_pv_start == nullptr);
+    XR_ASSERT(m_DD_pv_start == nullptr);
 
     m_DD_wire = bWire;
     m_DD_pv_start = (FVF::L*)RImplementation.Vertex.Lock(MAX_VERT_COUNT, vs_L->vb_stride, m_DD_base);
@@ -1215,7 +1216,8 @@ void CDrawUtilities::DrawAxis(const Fmatrix& T)
 
 void CDrawUtilities::DrawObjectAxis(const Fmatrix& T, float sz, BOOL sel)
 {
-    VERIFY(Device.b_is_Ready);
+    XR_ASSERT(Device.b_is_Ready);
+
     _VertexStream* Stream = &RImplementation.Vertex;
     Fvector c, r, n, d;
     float w = T.c.x * Device.mFullTransform._14 + T.c.y * Device.mFullTransform._24 + T.c.z * Device.mFullTransform._34 + Device.mFullTransform._44;
@@ -1275,7 +1277,8 @@ void CDrawUtilities::DrawObjectAxis(const Fmatrix& T, float sz, BOOL sel)
 
 void CDrawUtilities::DrawGrid()
 {
-    VERIFY(Device.b_is_Ready);
+    XR_ASSERT(Device.b_is_Ready);
+
     _VertexStream* Stream = &RImplementation.Vertex;
     u32 vBase;
     // fill VB
@@ -1293,7 +1296,8 @@ void CDrawUtilities::DrawGrid()
 
 void CDrawUtilities::DrawSelectionRect(const Ivector2& m_SelStart, const Ivector2& m_SelEnd)
 {
-    VERIFY(Device.b_is_Ready);
+    XR_ASSERT(Device.b_is_Ready);
+
     // fill VB
     _VertexStream* Stream = &RImplementation.Vertex;
     u32 vBase;

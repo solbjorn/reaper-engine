@@ -39,7 +39,7 @@ void dxLensFlareRender::Render(CLensFlare& owner, BOOL bSun, BOOL bFlares, BOOL 
     Fvector vecDx, vecDy;
 
     dwLight.set(owner.LightColor);
-    svector<ref_shader, MAX_Flares> _2render;
+    std::inplace_vector<ref_shader, MAX_Flares> _2render;
 
     u32 VS_Offset;
     FVF::LIT* pv = (FVF::LIT*)RImplementation.Vertex.Lock(MAX_Flares * 4, hGeom.stride(), VS_Offset);

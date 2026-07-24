@@ -29,30 +29,20 @@ void xrStripify(xr_vector<u16>& indices, xr_vector<u16>& perturb, int iCacheSize
     // Generate strips
     xr_vector<PrimitiveGroup> PGROUP;
     GenerateStrips(indices.data(), indices.size(), PGROUP);
-    VERIFY(PGROUP.size() == 1);
-    VERIFY(PGROUP[0].type == PT_LIST);
-    VERIFY(indices.size() == PGROUP[0].numIndices);
+    XR_ASSERT(PGROUP.size() == 1 && PGROUP[0].type == PT_LIST, "", PGROUP.size());
 
     // Remap indices
     xr_vector<PrimitiveGroup> xPGROUP;
-    RemapIndices(PGROUP, u16(perturb.size()), xPGROUP);
-    VERIFY(xPGROUP.size() == 1);
-    VERIFY(xPGROUP[0].type == PT_LIST);
+    RemapIndices(PGROUP, perturb.size(), xPGROUP);
+    XR_ASSERT(xPGROUP.size() == 1 && xPGROUP[0].type == PT_LIST, "", xPGROUP.size());
 
     // Build perturberation table
-    for (u32 index = 0; index < PGROUP[0].numIndices; index++)
-    {
-        u16 oldIndex = PGROUP[0].indices[index];
-        int newIndex = xPGROUP[0].indices[index];
-        VERIFY(oldIndex < (int)perturb.size());
-        VERIFY(newIndex < (int)perturb.size());
-        perturb[newIndex] = oldIndex;
-    }
+    XR_ASSERT(PGROUP[0].numIndices == indices.size() && xPGROUP[0].numIndices == PGROUP[0].numIndices, "", indices.size(), PGROUP[0].numIndices,
+              xPGROUP[0].numIndices);
+
+    for (auto [xpg, pg] : std::views::zip(std::span{xPGROUP[0].indices, xPGROUP[0].numIndices}, std::span{PGROUP[0].indices, PGROUP[0].numIndices}))
+        perturb[xpg] = XR_ASSERT_VAL(pg < perturb.size());
 
     // Copy indices
     std::memcpy(indices.data(), xPGROUP[0].indices, indices.size() * sizeof(u16));
-
-    // Release memory
-    xPGROUP.clear();
-    PGROUP.clear();
 }

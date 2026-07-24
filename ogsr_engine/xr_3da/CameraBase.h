@@ -56,11 +56,7 @@ public:
 
     virtual void Load(gsl::czstring section);
 
-    void SetParent(CObject* p)
-    {
-        VERIFY(p);
-        parent = p;
-    }
+    void SetParent(CObject* p) { parent = XR_ASSERT_VAL(p != nullptr); }
 
     virtual void OnActivate(CCameraBase*) {}
     virtual void OnDeactivate() {}

@@ -21,7 +21,7 @@ void R_xforms::set_W(const Fmatrix& m)
     if (c_invw)
         apply_invw();
 
-    cl.set_xform(D3DTS_WORLD, m);
+    cl.stat.xforms++;
 }
 
 void R_xforms::set_V(const Fmatrix& m)
@@ -43,7 +43,7 @@ void R_xforms::set_V(const Fmatrix& m)
     if (c_wvp)
         cl.set_c(c_wvp, m_wvp);
 
-    cl.set_xform(D3DTS_VIEW, m);
+    cl.stat.xforms++;
 }
 
 void R_xforms::set_P(const Fmatrix& m)
@@ -61,21 +61,18 @@ void R_xforms::set_P(const Fmatrix& m)
     if (c_wvp)
         cl.set_c(c_wvp, m_wvp);
 
-    // always setup projection - D3D relies on it to work correctly :(
-    cl.set_xform(D3DTS_PROJECTION, m);
+    cl.stat.xforms++;
 }
 
 void R_xforms::apply_invw()
 {
-    VERIFY(c_invw);
-
     if (!m_bInvWValid)
     {
         std::ignore = m_invw.invert_b(m_w);
         m_bInvWValid = true;
     }
 
-    cmd_list().set_c(c_invw, m_invw);
+    cmd_list().set_c(XR_ASSERT_VAL(c_invw != nullptr), m_invw);
 }
 
 void R_xforms::unmap()
@@ -92,6 +89,7 @@ void R_xforms::unmap()
 R_xforms::R_xforms()
 {
     unmap();
+
     m_w.identity();
     m_invw.identity();
     m_v.identity();
@@ -99,5 +97,6 @@ R_xforms::R_xforms()
     m_wv.identity();
     m_vp.identity();
     m_wvp.identity();
+
     m_bInvWValid = true;
 }

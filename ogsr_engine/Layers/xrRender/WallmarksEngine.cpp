@@ -152,7 +152,7 @@ void CWallmarksEngine::RecurseTri(u32 t, Fmatrix& mView, CWallmarksEngine::stati
         mView.transform_tiny(UV, (*P)[1]);
         V1.set((*P)[1], 0, (1 + UV.x) * .5f, (1 - UV.y) * .5f);
 
-        for (gsl::index i{2}; i < P->size(); ++i)
+        for (gsl::index i{2}; i < std::ssize(*P); ++i)
         {
             mView.transform_tiny(UV, (*P)[i]);
             V2.set((*P)[i], 0, (1 + UV.x) * .5f, (1 - UV.y) * .5f);
@@ -299,11 +299,12 @@ void CWallmarksEngine::AddStaticWallmark(CDB::TRI* pTri, const Fvector* pVerts, 
 
 void CWallmarksEngine::AddSkeletonWallmark(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size)
 {
+    XR_ASSERT(xf != nullptr && obj != nullptr && size > EPS_L, "", size);
+
     // optimization cheat: don't allow wallmarks more than 50 m from viewer/actor
     if (xf->c.distance_to_sqr(Device.vCameraPosition) > _sqr(50.f))
         return;
 
-    VERIFY(obj && xf && (size > EPS_L));
     lock.Enter();
     obj->AddWallmark(xf, start, dir, sh, size);
     lock.Leave();
@@ -438,12 +439,7 @@ void CWallmarksEngine::Render()
             }
 
 #ifdef DEBUG
-            if (W->used_in_render != Device.dwFrame)
-            {
-                Log("W->used_in_render", W->used_in_render);
-                Log("Device.dwFrame", Device.dwFrame);
-                VERIFY(W->used_in_render == Device.dwFrame);
-            }
+            XR_ASSERT(W->used_in_render == Device.dwFrame);
 #endif
 
             float dst = Device.vCameraPosition.distance_to_sqr(W->m_Bounds.P);

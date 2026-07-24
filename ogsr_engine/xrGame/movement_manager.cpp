@@ -194,7 +194,7 @@ void CMovementManager::update_path()
             m_path_state = ePathStateDummy;
             break;
         }
-        default: NODEFAULT;
+        default: xr::unreachable();
         }
         m_path_actuality = true;
     }
@@ -216,7 +216,7 @@ void CMovementManager::update_path()
     case ePathTypeNoPath: {
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
 #ifdef USE_FREE_IN_RESTRICTIONS
@@ -231,17 +231,15 @@ bool CMovementManager::actual_all() const
 {
     if (!m_path_actuality)
         return (false);
+
     switch (m_path_type)
     {
     case ePathTypeGamePath: return (game_path().actual() && level_path().actual() && detail().actual());
     case ePathTypeLevelPath: return (level_path().actual() && detail().actual());
     case ePathTypePatrolPath: return (patrol().actual() && level_path().actual() && detail().actual());
     case ePathTypeNoPath: return (detail().actual());
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
-#ifdef DEBUG
-    return (true);
-#endif
 }
 
 void CMovementManager::teleport(u32 game_vertex_id)

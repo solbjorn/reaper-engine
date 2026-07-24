@@ -31,7 +31,8 @@ void CSpecificCharacter::InitXmlIdToIndex()
 
 void CSpecificCharacter::Load(shared_str id)
 {
-    R_ASSERT(id.size());
+    XR_ASSERT(!id.empty());
+
     m_OwnId = id;
     inherited_shared::load_shared(m_OwnId, nullptr);
 }
@@ -42,9 +43,7 @@ void CSpecificCharacter::load_shared(LPCSTR)
     CUIXml* pXML = item_data._xml;
     pXML->SetLocalRoot(pXML->GetRoot());
 
-    const auto item_node = pXML->NavigateToNode(id_to_index::tag_name, item_data.pos_in_file);
-    R_ASSERT3(item_node, "specific_character id=", item_data.id.c_str());
-
+    const auto item_node = XR_ASSERT_VAL(pXML->NavigateToNode(id_to_index::tag_name, item_data.pos_in_file), "node not found", m_OwnId, item_data.id);
     pXML->SetLocalRoot(item_node);
 
     int norandom = pXML->ReadAttribInt(item_node, "no_random", 0);
@@ -59,8 +58,8 @@ void CSpecificCharacter::load_shared(LPCSTR)
     else
         data()->m_bDefaultForCommunity = false;
 
-    R_ASSERT3(!(data()->m_bNoRandom && data()->m_bDefaultForCommunity), "cannot set 'no_random' and 'team_default' flags simultaneously, profile id",
-              item_data.id.c_str());
+    XR_ASSERT(!data()->m_bNoRandom || !data()->m_bDefaultForCommunity, "can't set both \"no_random\" and \"team_default\"", m_OwnId, item_data.id,
+              data()->m_bNoRandom, data()->m_bDefaultForCommunity);
 
 #ifdef XRGAME_EXPORTS
     LPCSTR start_dialog = pXML->Read("start_dialog", 0, nullptr);
@@ -129,22 +128,17 @@ void CSpecificCharacter::load_shared(LPCSTR)
     }
 
 #ifdef XRGAME_EXPORTS
-    LPCSTR team = pXML->Read("community", 0, nullptr);
-    R_ASSERT3(team != nullptr, "'community' field not fulfiled for specific character", m_OwnId.c_str());
+    const auto team = XR_ASSERT_VAL(pXML->Read("community", 0, nullptr) != nullptr, "\"community\" field not found for character", m_OwnId, item_data.id);
 
     char* buf_str = xr_strdup(team);
     xr_strlwr(buf_str);
     data()->m_Community.set(shared_str{buf_str});
     xr_free(buf_str);
 
-    if (data()->m_Community.index() == NO_COMMUNITY_INDEX)
-        Debug.fatal(DEBUG_INFO, "wrong 'community' '%s' in specific character %s ", team, m_OwnId.c_str());
-
-    data()->m_Rank = pXML->ReadInt("rank", 0, NO_RANK);
-    R_ASSERT3(data()->m_Rank != NO_RANK, "'rank' field not fulfiled for specific character", m_OwnId.c_str());
-
-    data()->m_Reputation = pXML->ReadInt("reputation", 0, NO_REPUTATION);
-    R_ASSERT3(data()->m_Reputation != NO_REPUTATION, "'reputation' field not fulfiled for specific character", m_OwnId.c_str());
+    XR_ASSERT(data()->m_Community.index() != NO_COMMUNITY_INDEX, "invalid specific character community", m_OwnId, item_data.id, team);
+    data()->m_Rank = XR_ASSERT_VAL(pXML->ReadInt("rank", 0, NO_RANK) != NO_RANK, "\"rank\" field not found for character", m_OwnId, item_data.id, team);
+    data()->m_Reputation = XR_ASSERT_VAL(pXML->ReadInt("reputation", 0, NO_REPUTATION) != NO_REPUTATION, "\"reputation\" field not found for character",
+                                         m_OwnId, item_data.id, team);
 
     if (pXML->NavigateToNode(pXML->GetLocalRoot(), "money", 0))
     {

@@ -109,7 +109,7 @@ public:
 
     void OnFrame(u32 dt) override;
 
-    void Copy(dxRender_Visual*) override { FATAL("Can't duplicate particle system - NOT IMPLEMENTED"); }
+    void Copy(dxRender_Visual*) override { XR_PANIC("can't duplicate particle system - NOT IMPLEMENTED"); }
 
     void OnDeviceCreate() override;
     void OnDeviceDestroy() override;
@@ -127,17 +127,8 @@ public:
     void SetHudMode(BOOL b) override;
     [[nodiscard]] BOOL GetHudMode() override;
 
-    [[nodiscard]] f32 GetTimeLimit() override
-    {
-        VERIFY(m_Def);
-        return m_Def->m_fTimeLimit;
-    }
-
-    [[nodiscard]] const shared_str Name() override
-    {
-        VERIFY(m_Def);
-        return m_Def->m_Name;
-    }
+    [[nodiscard]] f32 GetTimeLimit() override { return XR_ASSERT_VAL(m_Def != nullptr)->m_fTimeLimit; }
+    [[nodiscard]] const shared_str Name() override { return XR_ASSERT_VAL(m_Def != nullptr)->m_Name; }
 
     [[nodiscard]] u32 ParticlesCount() override;
 };

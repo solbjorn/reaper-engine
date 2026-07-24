@@ -66,104 +66,99 @@ CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, BONE_P_MAP
 
 void fix_bones(LPCSTR fixed_bones, CPhysicsShell* shell)
 {
-    VERIFY(fixed_bones);
-    VERIFY(shell);
-    IKinematics* pKinematics = shell->PKinematics();
-    VERIFY(pKinematics);
-    int count = _GetItemCount(fixed_bones);
-    for (int i = 0; i < count; ++i)
+    XR_ASSERT(fixed_bones != nullptr && shell != nullptr);
+    IKinematics* pKinematics = XR_ASSERT_VAL(shell->PKinematics() != nullptr);
+
+    for (int i = 0, count = _GetItemCount(fixed_bones); i < count; ++i)
     {
         string64 fixed_bone;
         std::ignore = _GetItem(fixed_bones, i, fixed_bone);
-        u16 fixed_bone_id = pKinematics->LL_BoneID(fixed_bone);
+
 #ifdef DEBUG
-        R_ASSERT2(BI_NONE != fixed_bone_id, xr::format("wrong fixed bone [{}] for object with visual [{}]", fixed_bone, pKinematics->getDebugName()));
+        if (CPhysicsElement* E =
+                shell->get_Element(XR_ASSERT_VAL(pKinematics->LL_BoneID(fixed_bone) != BI_NONE, "invalid fixed bone", pKinematics->getDebugName()));
+            E != nullptr)
 #else
-        R_ASSERT(fixed_bone_id != BI_NONE);
+        if (CPhysicsElement* E = shell->get_Element(XR_ASSERT_VAL(pKinematics->LL_BoneID(fixed_bone) != BI_NONE, "invalid fixed bone")); E != nullptr)
 #endif
-        CPhysicsElement* E = shell->get_Element(fixed_bone_id);
-        if (E)
             E->Fix();
     }
 }
+
 CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, BONE_P_MAP* p_bone_map, LPCSTR fixed_bones)
 {
+    auto pKinematics = smart_cast<IKinematics*>(obj->Visual());
     CPhysicsShell* pPhysicsShell;
-    IKinematics* pKinematics = smart_cast<IKinematics*>(obj->Visual());
-    if (fixed_bones)
+
+    if (fixed_bones != nullptr)
     {
-        int count = _GetItemCount(fixed_bones);
-        for (int i = 0; i < count; ++i)
+        for (int i = 0, count = _GetItemCount(fixed_bones); i < count; ++i)
         {
             string64 fixed_bone;
             std::ignore = _GetItem(fixed_bones, i, fixed_bone);
-            u16 fixed_bone_id = pKinematics->LL_BoneID(fixed_bone);
-            R_ASSERT2(BI_NONE != fixed_bone_id,
-                      xr::format("wrong fixed bone [{}] for object [{}] with visual [{}]", fixed_bone, obj->cName(), obj->cNameVisual()));
-            p_bone_map->try_emplace(fixed_bone_id);
+
+            p_bone_map->try_emplace(XR_ASSERT_VAL(pKinematics->LL_BoneID(fixed_bone) != BI_NONE, "invalid fixed bone", obj->cName(), obj->cNameVisual()));
         }
 
         pPhysicsShell = P_build_Shell(obj, not_active_state, p_bone_map);
-
-        // m_pPhysicsShell->add_Joint(P_create_Joint(CPhysicsJoint::enumType::full_control,0,fixed_element));
     }
     else
-        pPhysicsShell = P_build_Shell(obj, not_active_state);
-
-    BONE_P_PAIR_IT i = p_bone_map->begin(), e = p_bone_map->end();
-    if (i != e)
-        pPhysicsShell->SetPrefereExactIntegration();
-    for (; i != e; i++)
     {
-        CPhysicsElement* fixed_element = i->second.element;
-        R_ASSERT2(fixed_element, "fixed bone has no physics");
-        // if(!fixed_element) continue;
-        fixed_element->Fix();
+        pPhysicsShell = P_build_Shell(obj, not_active_state);
     }
+
+    if (p_bone_map->empty())
+        return pPhysicsShell;
+
+    pPhysicsShell->SetPrefereExactIntegration();
+
+    for (auto& bone : *p_bone_map)
+        XR_ASSERT_VAL(bone.second.element != nullptr, "fixed bone has no physics")->Fix();
+
     return pPhysicsShell;
 }
 
 CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, LPCSTR fixed_bones)
 {
-    U16Vec f_bones;
-    if (fixed_bones)
+    xr_vector<u16> f_bones;
+
+    if (fixed_bones != nullptr)
     {
-        IKinematics* K = smart_cast<IKinematics*>(obj->Visual());
-        int count = _GetItemCount(fixed_bones);
-        for (int i = 0; i < count; ++i)
+        auto K = smart_cast<IKinematics*>(obj->Visual());
+
+        for (int i = 0, count = _GetItemCount(fixed_bones); i < count; ++i)
         {
             string64 fixed_bone;
             std::ignore = _GetItem(fixed_bones, i, fixed_bone);
-            f_bones.push_back(K->LL_BoneID(fixed_bone));
-            R_ASSERT2(BI_NONE != f_bones.back(),
-                      xr::format("wrong fixed bone [{}] for object [{}] with visual [{}]", fixed_bone, obj->cName(), obj->cNameVisual()));
+
+            f_bones.emplace_back(XR_ASSERT_VAL(K->LL_BoneID(fixed_bone) != BI_NONE, "invalid fixed bone", obj->cName(), obj->cNameVisual()));
         }
     }
+
     return P_build_Shell(obj, not_active_state, f_bones);
 }
 
-static BONE_P_MAP bone_map = BONE_P_MAP();
 CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, U16Vec& fixed_bones)
 {
-    bone_map.clear();
-    CPhysicsShell* pPhysicsShell;
-    if (!fixed_bones.empty())
-        for (U16It it = fixed_bones.begin(); it != fixed_bones.end(); it++)
-            bone_map.try_emplace(*it);
-    pPhysicsShell = P_build_Shell(obj, not_active_state, &bone_map);
+    BONE_P_MAP bone_map;
+
+    for (const auto id : fixed_bones)
+        bone_map.try_emplace(id);
+
+    CPhysicsShell* pPhysicsShell = P_build_Shell(obj, not_active_state, &bone_map);
+
+    if (bone_map.empty())
+        return pPhysicsShell;
 
     // fix bones
-    BONE_P_PAIR_IT i = bone_map.begin(), e = bone_map.end();
-    if (i != e)
-        pPhysicsShell->SetPrefereExactIntegration();
-    for (; i != e; i++)
+    pPhysicsShell->SetPrefereExactIntegration();
+
+    for (auto& bone : bone_map)
     {
-        CPhysicsElement* fixed_element = i->second.element;
-        // R_ASSERT2(fixed_element,"fixed bone has no physics");
-        if (!fixed_element)
-            continue;
-        fixed_element->Fix();
+        if (CPhysicsElement* fixed_element = bone.second.element; fixed_element != nullptr)
+            fixed_element->Fix();
     }
+
     return pPhysicsShell;
 }
 
@@ -173,17 +168,21 @@ CPhysicsShell* P_build_SimpleShell(CGameObject* obj, float mass, bool not_active
 #ifdef DEBUG
     pPhysicsShell->dbg_obj = smart_cast<CPhysicsShellHolder*>(obj);
 #endif
+
     Fobb obb;
     obj->Visual()->getVisData().box.get_CD(obb.m_translate, obb.m_halfsize);
     obb.m_rotate.identity();
-    CPhysicsElement* E = P_create_Element();
-    R_ASSERT(E);
+
+    CPhysicsElement* E = XR_ASSERT_VAL(P_create_Element() != nullptr);
     E->add_Box(obb);
+
     pPhysicsShell->add_Element(E);
     pPhysicsShell->setMass(mass);
     pPhysicsShell->set_PhysicsRefObject(smart_cast<CPhysicsShellHolder*>(obj));
-    if (!obj->H_Parent())
+
+    if (obj->H_Parent() == nullptr)
         pPhysicsShell->Activate(obj->XFORM(), 0, obj->XFORM(), not_active_state);
+
     return pPhysicsShell;
 }
 

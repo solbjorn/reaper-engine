@@ -91,9 +91,8 @@ void RELATION_REGISTRY::build_reverse_personal()
                 if (it2.first)
                 {
                     auto& relation_data2 = relation_registry().registry().objects(it2.first);
-                    const auto it3 = std::find(relation_data2.reverse_personal.begin(), relation_data2.reverse_personal.end(), it.first);
-                    ASSERT_FMT(it3 == relation_data2.reverse_personal.end(), "[%s]: %u already exists in revers_personal of %u",
-                               std::source_location::current().function_name(), it.first, it2.first);
+                    XR_ASSERT(std::ranges::find(relation_data2.reverse_personal, it.first) == relation_data2.reverse_personal.end(),
+                              "duplicate reverse personal relation", it.first, it2.first);
                     relation_data2.reverse_personal.push_back(it.first);
                 }
             }
@@ -137,32 +136,28 @@ void RELATION_REGISTRY::ClearRelations(u16 person_id)
                 clear_reverse_personal(person_id, it.first);
             }
         }
+
         for (const auto to : relation_data.reverse_personal)
         {
-            ASSERT_FMT(relation_registry().registry().objects_ptr(to), "[%s]: %u not found clearing %u", std::source_location::current().function_name(), to,
-                       person_id);
+            XR_ASSERT(relation_registry().registry().objects_ptr(to) != nullptr, "object not found in the registry", person_id, to);
             auto& relation_data2 = relation_registry().registry().objects(to);
-            const auto it = relation_data2.personal.find(person_id);
-            ASSERT_FMT(it != relation_data2.personal.end(), "[%s]: %u not found in personal of %u", std::source_location::current().function_name(), person_id,
-                       to);
-            relation_data2.personal.erase(it);
+            relation_data2.personal.erase(XR_ASSERT_VAL(relation_data2.personal.find(person_id) != relation_data2.personal.end(),
+                                                        "person not found in personal relation", person_id, to));
         }
+
         auto& objects = relation_registry().registry().get_registry_objects();
-        auto it = objects.find(person_id);
-        ASSERT_FMT(it != objects.end(), "[%s]: %u not found", std::source_location::current().function_name(), person_id);
-        objects.erase(it);
+        objects.erase(XR_ASSERT_VAL(objects.find(person_id) != objects.end(), "person not found in object registry", person_id));
     }
 }
 
 void RELATION_REGISTRY::clear_reverse_personal(u16 from, u16 to)
 {
-    ASSERT_FMT(to, "[%s]: actor detected clearing %u", std::source_location::current().function_name(), from);
-    ASSERT_FMT(relation_registry().registry().objects_ptr(to), "[%s]: %u not found clearing %u", std::source_location::current().function_name(), to, from);
+    XR_ASSERT(to != 0, "actor is not allowed when clearing reverse personal", from);
+    XR_ASSERT(relation_registry().registry().objects_ptr(to) != nullptr, "object not found when clearing reverse personal", from, to);
+
     auto& relation_data = relation_registry().registry().objects(to);
-    const auto it = std::find(relation_data.reverse_personal.begin(), relation_data.reverse_personal.end(), from);
-    ASSERT_FMT(it != relation_data.reverse_personal.end(), "[%s]: %u not found in reverse_personal of %u", std::source_location::current().function_name(),
-               from, to);
-    relation_data.reverse_personal.erase(it);
+    relation_data.reverse_personal.erase(XR_ASSERT_VAL(std::ranges::find(relation_data.reverse_personal, from) != relation_data.reverse_personal.end(),
+                                                       "object not found when clearing reverse personal", from, to));
 }
 
 //////////////////////////////////////////////////////////////////////////

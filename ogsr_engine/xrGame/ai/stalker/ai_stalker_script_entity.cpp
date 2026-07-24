@@ -110,7 +110,7 @@ bool CAI_Stalker::bfAssignWatch(CScriptEntityAction* tpEntityAction)
         l_tWatchAction.m_bCompleted = true;
         return (false);
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     if ((CScriptWatchAction::eGoalTypeWatchType != l_tWatchAction.m_tGoalType) &&
@@ -285,7 +285,7 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
         DropItemSendMessage(l_tObjectAction.m_tpObject);
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     return (true);

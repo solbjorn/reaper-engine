@@ -85,6 +85,12 @@ char* timestamp(string64& dest);
 
 namespace xr
 {
+template <typename T>
+[[nodiscard]] constexpr bool is_aligned(T val, T align)
+{
+    return val % align == 0;
+}
+
 // Round @x to next or prev @a boundary, where @a is a power of two
 
 template <std::unsigned_integral T>

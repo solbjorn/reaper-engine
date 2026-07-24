@@ -1,6 +1,8 @@
 #ifndef __XREXTERNAL_TRACY_H
 #define __XREXTERNAL_TRACY_H
 
+#include "../xrCore/defines.h"
+
 #define TRACY_ON_DEMAND
 #define TRACY_NO_FRAME_IMAGE
 

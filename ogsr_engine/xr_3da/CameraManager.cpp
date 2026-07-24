@@ -82,30 +82,33 @@ SPPInfo::SPPInfo()
     cm_influence = 0.0f;
     cm_interpolate = 0.0f;
 }
+
 void SPPInfo::normalize() {}
+
 void SPPInfo::validate(LPCSTR str)
 {
-    VERIFY2(_valid(duality.h), str);
-    VERIFY2(_valid(duality.v), str);
-    VERIFY2(_valid(blur), str);
-    VERIFY2(_valid(gray), str);
-    VERIFY2(_valid(noise.intensity), str);
-    VERIFY2(_valid(noise.grain), str);
-    VERIFY2(_valid(noise.fps), str);
-    VERIFY2(_valid(color_base.r), str);
-    VERIFY2(_valid(color_base.g), str);
-    VERIFY2(_valid(color_base.b), str);
-    VERIFY2(_valid(color_gray.r), str);
-    VERIFY2(_valid(color_gray.g), str);
-    VERIFY2(_valid(color_gray.b), str);
-    VERIFY2(_valid(color_add.r), str);
-    VERIFY2(_valid(color_add.g), str);
-    VERIFY2(_valid(color_add.b), str);
+    XR_DEBUG_ASSERT(_valid(duality.h), "", str, duality.h);
+    XR_DEBUG_ASSERT(_valid(duality.v), "", str, duality.v);
+    XR_DEBUG_ASSERT(_valid(blur), "", str, blur);
+    XR_DEBUG_ASSERT(_valid(gray), "", str, gray);
+    XR_DEBUG_ASSERT(_valid(noise.intensity), "", str, noise.intensity);
+    XR_DEBUG_ASSERT(_valid(noise.grain), "", str, noise.grain);
+    XR_DEBUG_ASSERT(_valid(noise.fps), "", str, noise.fps);
+    XR_DEBUG_ASSERT(_valid(color_base.r), "", str, color_base.r);
+    XR_DEBUG_ASSERT(_valid(color_base.g), "", str, color_base.g);
+    XR_DEBUG_ASSERT(_valid(color_base.b), "", str, color_base.b);
+    XR_DEBUG_ASSERT(_valid(color_gray.r), "", str, color_gray.r);
+    XR_DEBUG_ASSERT(_valid(color_gray.g), "", str, color_gray.g);
+    XR_DEBUG_ASSERT(_valid(color_gray.b), "", str, color_gray.b);
+    XR_DEBUG_ASSERT(_valid(color_add.r), "", str, color_add.r);
+    XR_DEBUG_ASSERT(_valid(color_add.g), "", str, color_add.g);
+    XR_DEBUG_ASSERT(_valid(color_add.b), "", str, color_add.b);
 }
 
 SPPInfo& SPPInfo::lerp(const SPPInfo& def, const SPPInfo& to, float factor)
 {
-    VERIFY(_valid(factor));
+    XR_DEBUG_ASSERT(_valid(factor));
+
     SPPInfo& pp = *this;
     clamp(factor, 0.0f, 1.0f);
 
@@ -288,7 +291,7 @@ tmc::task<void> CCameraManager::UpdateFromCamera(const CCameraBase* C)
 tmc::task<void> CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N, f32 fFOV_Dest, f32 fASPECT_Dest, f32 fFAR_Dest, u32 flags)
 {
 #ifdef DEBUG
-    VERIFY(dbg_upd_frame != Device.dwFrame); // already updated !!!
+    XR_ASSERT(dbg_upd_frame != Device.dwFrame);
     dbg_upd_frame = Device.dwFrame;
 #endif
 

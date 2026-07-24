@@ -32,9 +32,6 @@ void os_clipboard::copy_to_clipboard(LPCSTR buf)
 
 void os_clipboard::paste_from_clipboard(LPSTR buffer, u32 const& buffer_size)
 {
-    VERIFY(buffer);
-    VERIFY(buffer_size > 0);
-
     if (!OpenClipboard(nullptr))
         return;
 
@@ -44,6 +41,8 @@ void os_clipboard::paste_from_clipboard(LPSTR buffer, u32 const& buffer_size)
         CloseClipboard();
         return;
     }
+
+    XR_ASSERT(buffer != nullptr && buffer_size > 0);
 
     LPCSTR clipdata = (LPCSTR)GlobalLock(hmem);
     strncpy_s(buffer, buffer_size, clipdata, buffer_size - 1);

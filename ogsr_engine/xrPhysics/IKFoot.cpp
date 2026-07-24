@@ -17,40 +17,28 @@ CIKFoot::CIKFoot() : m_K(nullptr), m_bind_b2_to_b3(Fidentity), m_foot_width(0), 
 
 void CIKFoot::Create(IKinematics* K, LPCSTR section, u16 bones[4])
 {
-    VERIFY(K);
-    m_K = K;
+    m_K = XR_ASSERT_VAL(K != nullptr);
 
     /// defaults
     m_ref_bone = 2;
-    // if (m_ref_bone == 2) //Эти условия бессмысленны из-за строки выше.
-    //{
     m_foot_normal.v.set(1, 0, 0); // 2
     m_foot_normal.bone = 2;
     m_foot_direction.v.set(0, 0, 1); // 2
     m_foot_direction.bone = 2;
-    /*}
-    else
-    {
-        m_foot_normal.v.set(0, 0, -1); // 3
-        m_foot_normal.bone = 3;
-        m_foot_direction.v.set(1, 0, 0); // 3
-        m_foot_direction.bone = 3;
-    }*/
-
-    //	m_foot_normal.v			.set( 1, 0, 0 );//2
-    //	m_foot_normal.bone		= 2;
 
     // load settings
     if (section)
     {
         if (!!K->LL_UserData()->r_bool(section, "align_toe"))
             m_ref_bone = 3;
+
         m_foot_normal.bone = m_ref_bone;
         m_foot_direction.bone = m_ref_bone;
 
         m_foot_normal.v = Kinematics()->LL_UserData()->r_fvector3(section, "foot_normal");
         m_foot_direction.v = Kinematics()->LL_UserData()->r_fvector3(section, "foot_direction");
     }
+
     set_toe(bones);
 }
 
@@ -80,13 +68,11 @@ struct envc : public SEnumVerticesCallback
 
 void CIKFoot::set_toe(u16 bones[4])
 {
-    VERIFY(Kinematics());
-
     m_foot_bone_id = bones[2];
     m_toe_bone_id = bones[3];
 
     xr_vector<Fmatrix> binds;
-    Kinematics()->LL_GetBindTransform(binds);
+    XR_ASSERT_VAL(Kinematics() != nullptr)->LL_GetBindTransform(binds);
 
     const Fmatrix bind_ref = binds[bones[m_ref_bone]];
     const Fmatrix ibind_ref = Fmatrix().invert(bind_ref);
@@ -105,9 +91,6 @@ void CIKFoot::set_toe(u16 bones[4])
     Fvector ax, foot_normal, foot_dir;
     get_local_vector(2, foot_normal, m_foot_normal);
     get_local_vector(2, foot_dir, m_foot_direction);
-
-    // ref_to_b2.transform_tiny( foot_normal, m_foot_normal.v );
-    // ref_to_b2.transform_tiny( foot_dir, m_foot_direction.v );
 
     ax.add(foot_normal, foot_dir);
     ax.normalize();
@@ -173,6 +156,7 @@ Fmatrix& CIKFoot::foot_to_ref_bone(Fmatrix& ref_bone, const Fmatrix& foot) const
 }
 
 Fmatrix& CIKFoot::foot_to_ref_bone(Fmatrix& m) const { return foot_to_ref_bone(m, Fmatrix().set(m)); }
+
 Fmatrix& CIKFoot::ref_bone_to_foot(Fmatrix& foot, const Fmatrix& ref_bone) const
 {
     if (m_ref_bone == 2)
@@ -180,21 +164,11 @@ Fmatrix& CIKFoot::ref_bone_to_foot(Fmatrix& foot, const Fmatrix& ref_bone) const
         foot = ref_bone;
         return foot;
     }
+
     Fmatrix m;
     ref_bone_to_foot_transform(m);
-    /*
-        Fmatrix b2 = Kinematics()->LL_GetTransform( m_bones[2] );
-        Fmatrix b3 = Kinematics()->LL_GetTransform( m_bones[3] );
-        //m.mul_43( Fmatrix().invert( Kinematics()->LL_GetTransform(m_bones[2] ) ),Kinematics()->LL_GetTransform(
-       m_bones[3] ) );
-
-        Fmatrix ib3; ib3.invert( b3 );
-        Fmatrix ib2; ib2.invert( b2 );
-        m.mul_43( ib3, b2  );
-        m.mul_43( ib2, b3  );
-        m.invert();
-    */
     foot.mul_43(ref_bone, m);
+
     return foot;
 }
 
@@ -233,31 +207,25 @@ static const float min_dot = 0.9f; // M_SQRT1_2;//M_SQRT1_2;
 bool CIKFoot::make_shift(Fmatrix& xm, const Fvector& cl_point, bool collide, const Fplane& p, const Fvector& pick_dir) const
 {
     Fvector shift = pick_dir;
-
-    // Fvector toe; ToePosition( toe ); xm.transform_tiny( toe );
     Fvector point;
     xm.transform_tiny(point, cl_point);
+
     float dot = p.n.dotproduct(shift);
     if (_abs(dot) < min_dot)
     {
         shift.add(Fvector().mul(p.n, min_dot - _abs(dot)));
         dot = p.n.dotproduct(shift);
     }
-    VERIFY(!fis_zero(dot));
+    XR_ASSERT(!fis_zero(dot));
+
     float shift_m = (-p.d - p.n.dotproduct(point)) / dot;
     if (collide && shift_m > 0.f)
         return false;
+
     clamp(shift_m, -collide_dist, collide_dist);
     shift.mul(shift_m);
     xm.c.add(shift);
-#if 0
-    if(shift_m > 0.f)
-    {
-        DBG_OpenCashedDraw();
-        DBG_DrawLine( toe, Fvector().add( toe, shift ), color_xrgb( 255, 255, 255 )  );
-        DBG_ClosedCashedDraw( 1000 );
-    }
-#endif
+
     return true;
 }
 
@@ -272,23 +240,28 @@ ik_goal_matrix::e_collide_state CIKFoot::rotate(Fmatrix& xm, const Fplane& p, co
     ax.crossproduct(p.n, foot_normal);
     float s = ax.magnitude();
     clamp(s, 0.f, 1.f);
+
     float angle = asinf(-s);
-    VERIFY(_valid(angle));
-    clamp<float>(angle, -M_PI / 6, M_PI / 6);
+    XR_DEBUG_ASSERT(_valid(angle));
+    clamp(angle, -M_PI / 6, M_PI / 6);
+
     ik_goal_matrix::e_collide_state cl_state = ik_goal_matrix::cl_undefined;
+
     if (!fis_zero(s))
     {
         cl_state = ik_goal_matrix::cl_aligned;
         ax.mul(1.f / s);
         ref_bone_to_foot(xm);
+
         if (collide)
             cl_state = CollideFoot(angle, angle, global_point, foot_normal, xm.c, p, ax);
-        // if( cld.m_pick_dir )
+
         Fvector c = xm.c;
         xm.mulA_43(Fmatrix().rotation(ax, angle));
         xm.c = c;
         foot_to_ref_bone(xm);
     }
+
     return cl_state;
 }
 
@@ -303,12 +276,7 @@ bool CIKFoot::GetFootStepMatrix(ik_goal_matrix& m, const Fmatrix& g_anim, const 
     Fvector foot_normal;
     FootNormal(foot_normal);
     global_anim.transform_dir(foot_normal);
-#ifdef DEBUG
-// if( ph_dbg_draw_mask.test( phDbgDrawIKGoal ) )
-//{
-//	DBG_DrawLine( global_point, Fvector().add( global_point, foot_normal ), color_xrgb( 0, 255, 255) );
-//}
-#endif
+
     if (cld.m_collide_point == ik_foot_geom::heel || cld.m_collide_point == ik_foot_geom::side)
     {
         Fmatrix foot;
@@ -339,18 +307,22 @@ bool CIKFoot::GetFootStepMatrix(ik_goal_matrix& m, const Fmatrix& g_anim, const 
         cl_state = rotate(xm, p, foot_normal, global_point, collide);
 
     if (b_make_shift && make_shift(xm, local_point, collide, p, cld.m_pick_dir))
+    {
         switch (cl_state)
         {
         case ik_goal_matrix::cl_aligned: break;
         case ik_goal_matrix::cl_undefined:
         case ik_goal_matrix::cl_free: cl_state = ik_goal_matrix::cl_translational; break;
         case ik_goal_matrix::cl_rotational: cl_state = ik_goal_matrix::cl_mixed; break;
-        default: NODEFAULT;
+        default: xr::unreachable();
         }
+    }
     else if (cl_state == ik_goal_matrix::cl_undefined)
+    {
         cl_state = ik_goal_matrix::cl_free;
+    }
 
-    VERIFY(_valid(xm));
+    XR_DEBUG_ASSERT(_valid(xm));
     m.set(xm, cl_state);
 
 #ifdef DEBUG
@@ -407,16 +379,14 @@ void CIKFoot::SetFootGeom(ik_foot_geom& fg, const Fmatrix& ref_bone, const Fmatr
 
     Fvector v_side = Fvector().crossproduct(normal, direction);
     gl_bone.transform_dir(v_side);
-    float vsm = v_side.magnitude();
-    VERIFY(vsm > EPS_L);
-    v_side.mul(Fvector().sub(pos_toe, pos_hill).magnitude() / vsm);
 
+    v_side.mul(Fvector().sub(pos_toe, pos_hill).magnitude() / XR_ASSERT_VAL(v_side.magnitude() > EPS_L));
     fg.set(pos_toe, pos_hill, Fvector().add(v_m, v_side));
 }
 
 void CIKFoot::Collide(SIKCollideData& cld, ik_foot_collider& collider, const Fmatrix& ref_bone, const Fmatrix& object_matrix, CGameObject* O) const
 {
-    VERIFY(O->Visual()->dcast_PKinematics() == Kinematics());
+    XR_DEBUG_ASSERT(O->Visual()->dcast_PKinematics() == Kinematics());
 
     ik_foot_geom fg;
     SetFootGeom(fg, ref_bone, object_matrix);

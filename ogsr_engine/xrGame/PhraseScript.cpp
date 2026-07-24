@@ -44,7 +44,7 @@ void CPhraseScript::LoadSequence(CUIXml* uiXml, pugi::xml_node phrase_node, LPCS
 
 bool CPhraseScript::CheckInfo(const CInventoryOwner* pOwner) const
 {
-    THROW(pOwner);
+    XR_ASSERT(pOwner != nullptr);
 
     for (auto& info : m_HasInfo)
     {
@@ -77,7 +77,7 @@ bool CPhraseScript::CheckInfo(const CInventoryOwner* pOwner) const
 
 void CPhraseScript::TransferInfo(const CInventoryOwner* pOwner) const
 {
-    THROW(pOwner);
+    XR_ASSERT(pOwner != nullptr);
 
     for (auto& info : m_GiveInfo)
         Actor()->TransferInfo(info, true);
@@ -119,13 +119,12 @@ bool CPhraseScript::Precondition(const CGameObject* pSpeakerGO, [[maybe_unused]]
             // Создаём функцию из строки через loadstring
             sol::function ret_func = loadstring_function(ConditionString.c_str());
             // Если это не функция, значит loadstring вернул nil и что-то пошло не так
-            ASSERT_FMT_DBG(ret_func, "Loadstring returns nil for code: {}", ConditionString);
+            XR_ASSERT(ret_func, "failed to compile code", ConditionString);
 
             // Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
             // <precondition>my_script.test_func(123, true, nil, ...)</precondition>
             // А если не указать '...' - дефолтные аргументы не будут переданы в функцию.
-            if (ret_func)
-                predicate_result = ret_func(pSpeakerGO->lua_game_object());
+            predicate_result = ret_func(pSpeakerGO->lua_game_object());
         }
 
         if (!predicate_result)
@@ -163,13 +162,12 @@ void CPhraseScript::Action(const CGameObject* pSpeakerGO, LPCSTR dialog_id, LPCS
             // Создаём функцию из строки через loadstring
             sol::function ret_func = loadstring_function(ActionString.c_str());
             // Если это не функция, значит loadstring вернул nil и что-то пошло не так
-            ASSERT_FMT_DBG(ret_func, "Loadstring returns nil for code: {}", ActionString);
+            XR_ASSERT(ret_func, "failed to compile code", ActionString);
 
             // Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
             // <action>my_script.test_func(123, true, nil, ...)</action>
             // А если не указать '...' - дефолтные аргументы не будут переданы в функцию.
-            if (ret_func)
-                ret_func(pSpeakerGO->lua_game_object(), dialog_id);
+            ret_func(pSpeakerGO->lua_game_object(), dialog_id);
         }
     }
 
@@ -210,13 +208,12 @@ bool CPhraseScript::Precondition(const CGameObject* pSpeakerGO1, const CGameObje
             // Создаём функцию из строки через loadstring
             sol::function ret_func = loadstring_function(ConditionString.c_str());
             // Если это не функция, значит loadstring вернул nil и что-то пошло не так
-            ASSERT_FMT_DBG(ret_func, "Loadstring returns nil for code: {}", ConditionString);
+            XR_ASSERT(ret_func, "failed to compile code", ConditionString);
 
             // Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
             // <precondition>my_script.test_func(123, true, nil, ...)</precondition>
             // А если не указать '...' - дефолтные аргументы не будут переданы в функцию.
-            if (ret_func)
-                predicate_result = ret_func(pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id, next_phrase_id);
+            predicate_result = ret_func(pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id, next_phrase_id);
         }
 
         if (!predicate_result)
@@ -256,13 +253,12 @@ void CPhraseScript::Action(const CGameObject* pSpeakerGO1, const CGameObject* pS
             // Создаём функцию из строки через loadstring
             sol::function ret_func = loadstring_function(ActionString.c_str());
             // Если это не функция, значит loadstring вернул nil и что-то пошло не так
-            ASSERT_FMT_DBG(ret_func, "Loadstring returns nil for code: {}", ActionString);
+            XR_ASSERT(ret_func, "failed to compile code", ActionString);
 
             // Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
             // <action>my_script.test_func(123, true, nil, ...)</action>
             // А если не указать '...' - дефолтные аргументы не будут переданы в функцию.
-            if (ret_func)
-                ret_func(pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id);
+            ret_func(pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id);
         }
     }
 }
@@ -276,7 +272,7 @@ LPCSTR CPhraseScript::GetScriptText(LPCSTR str_to_translate, const CGameObject* 
     {
         // Обычный функтор
         xr_string ret = lua_function(pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id);
-        return shared_str{ret.c_str()}.c_str();
+        return shared_str{std::move(ret)}.c_str();
     }
     else
     {
@@ -290,17 +286,12 @@ LPCSTR CPhraseScript::GetScriptText(LPCSTR str_to_translate, const CGameObject* 
         // Создаём функцию из строки через loadstring
         sol::function ret_func = loadstring_function(ScriptTextString.c_str());
         // Если это не функция, значит loadstring вернул nil и что-то пошло не так
-        ASSERT_FMT_DBG(ret_func, "Loadstring returns nil for code: {}", ScriptTextString);
+        XR_ASSERT(ret_func, "failed to compile code", ScriptTextString);
 
         // Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
         // <script_text>my_script.test_func(123, true, nil, ...)</script_text>
         // А если не указать '...' - дефолтные аргументы не будут переданы в функцию.
-        if (ret_func)
-        {
-            xr_string ret = ret_func(pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id);
-            return shared_str{ret.c_str()}.c_str();
-        }
+        xr_string ret = ret_func(pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id);
+        return shared_str{std::move(ret)}.c_str();
     }
-
-    return "";
 }

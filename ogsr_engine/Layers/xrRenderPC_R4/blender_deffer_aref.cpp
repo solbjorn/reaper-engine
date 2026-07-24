@@ -5,7 +5,7 @@
 
 CBlender_deffer_aref::CBlender_deffer_aref(bool _lmapped) : lmapped(_lmapped)
 {
-    description.CLS = B_DEFAULT_AREF;
+    description.CLS = _lmapped ? B_DEFAULT_AREF : B_VERT_AREF;
     oAREF.value = 200;
     oAREF.min = 0;
     oAREF.max = 255;
@@ -104,22 +104,24 @@ void CBlender_deffer_aref::Compile(CBlender_Compile& C)
             C.r_StencilRef(0x01);
             C.r_End();
             break;
-
         case SE_R2_NORMAL_LQ: // deffer
             uber_deffer(C, false, "base", "base", true, nullptr, true);
             C.r_Stencil(TRUE, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
             C.r_StencilRef(0x01);
             C.r_End();
             break;
-
+        case 3: C.SH->flags.aref = true; [[fallthrough]];
         case SE_R2_SHADOW: // smap
-            C.r_Pass("shadow_direct_base_aref", "shadow_direct_base_aref", FALSE, TRUE, TRUE, FALSE);
+            if (!C.SH->flags.aref)
+                C.r_Pass("shadow_direct_base_aref", "shadow_direct_base_aref", false);
+            else
+                C.r_Pass("shadow_direct_base", "shadow_direct_base", false);
+
             C.r_dx10Texture("s_base", C.L_textures[0]);
             C.r_dx10Sampler("smp_base");
             C.r_dx10Sampler("smp_linear");
             C.r_ColorWriteEnable(false, false, false, false);
             C.r_End();
-            break;
         }
     }
 }

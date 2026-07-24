@@ -489,9 +489,6 @@
     <ClCompile Include="Device_Initialize.cpp">
       <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
     </ClCompile>
-    <ClCompile Include="Device_overdraw.cpp">
-      <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
-    </ClCompile>
     <ClCompile Include="Device_wndproc.cpp">
       <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
     </ClCompile>

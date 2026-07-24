@@ -405,8 +405,9 @@ public:
                     {
                     case Fsphere::rpOriginInside: range = dist < range ? dist : range; break;
                     case Fsphere::rpOriginOutside: range = dist; break;
-                    default: NODEFAULT;
+                    default: xr::unreachable();
                     }
+
                     range2 = range * range;
                 }
 

@@ -41,10 +41,6 @@ public:
     virtual tmc::task<void> Create(HWND hWnd, u32& dwWidth, u32& dwHeight, f32& fWidth_2, f32& fHeight_2) = 0;
     virtual void SetupGPU(BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF) = 0;
 
-    //	Overdraw
-    virtual void overdrawBegin() = 0;
-    virtual void overdrawEnd() = 0;
-
     //	Resources control
     virtual void DeferredLoad(BOOL E) = 0;
     virtual tmc::task<void> ResourcesDeferredUpload() = 0;

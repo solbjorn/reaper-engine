@@ -124,29 +124,10 @@ public:
     IC CSound_source* _handle() const { return _p ? _p->handle : nullptr; }
     IC CSound_emitter* _feedback() { return _p ? _p->feedback : nullptr; }
 
-    IC CObject* _g_object()
-    {
-        VERIFY(_p);
-        return _p->g_object;
-    }
-
-    IC int _g_type()
-    {
-        VERIFY(_p);
-        return _p->g_type;
-    }
-
-    IC esound_type _sound_type()
-    {
-        VERIFY(_p);
-        return _p->s_type;
-    }
-
-    IC CSound_UserDataPtr _g_userdata()
-    {
-        VERIFY(_p);
-        return _p->g_userdata;
-    }
+    IC CObject* _g_object() { return XR_ASSERT_VAL(_p)->g_object; }
+    IC int _g_type() { return XR_ASSERT_VAL(_p)->g_type; }
+    IC esound_type _sound_type() { return XR_ASSERT_VAL(_p)->s_type; }
+    IC CSound_UserDataPtr _g_userdata() { return XR_ASSERT_VAL(_p)->g_userdata; }
 
     IC void create(LPCSTR name, esound_type sound_type, u32 game_type);
     IC void attach_tail(LPCSTR name);
@@ -415,108 +396,113 @@ extern CSound_manager_interface* Sound;
 /// ********* Sound ********* (utils, accessors, helpers)
 
 IC ref_sound_data::ref_sound_data(LPCSTR fName, esound_type sound_type, u32 game_type) { ::Sound->_create_data(*this, fName, sound_type, game_type); }
-IC ref_sound_data::~ref_sound_data() { R_ASSERT(feedback == nullptr); }
+IC ref_sound_data::~ref_sound_data() { XR_ASSERT(feedback == nullptr); }
 
 IC void ref_sound::create(LPCSTR name, esound_type sound_type, u32 game_type)
 {
-    VERIFY(!::Sound->i_locked());
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
     ::Sound->create(*this, name, sound_type, game_type);
 }
 
 IC void ref_sound::attach_tail(LPCSTR name)
 {
-    VERIFY(!::Sound->i_locked());
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
     ::Sound->attach_tail(*this, name);
 }
 
 IC void ref_sound::clone(const ref_sound& from, esound_type sound_type, u32 game_type)
 {
-    VERIFY(!::Sound->i_locked());
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
     ::Sound->clone(*this, from, sound_type, game_type);
 }
 
 inline tmc::task<void> ref_sound::destroy()
 {
-    VERIFY(!::Sound->i_locked());
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
     co_await ::Sound->destroy(*reinterpret_cast<std::array<std::byte, 16>*>(this));
 }
 
 inline void ref_sound::queue_destroy()
 {
-    VERIFY(!::Sound->i_locked());
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
     ::Sound->queue_destroy(*this);
 }
 
 IC void ref_sound::play(CObject* O, u32 flags, float d)
 {
-    VERIFY(!::Sound->i_locked());
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
     ::Sound->play(*this, O, flags, d);
 }
 
 IC void ref_sound::play_at_pos(CObject* O, const Fvector& pos, u32 flags, float d)
 {
-    VERIFY(!::Sound->i_locked());
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
     ::Sound->play_at_pos(*this, O, pos, flags, d);
 }
 
 IC void ref_sound::play_no_feedback(CObject* O, u32 flags, float d, Fvector* pos, float* vol, float* freq, Fvector2* range)
 {
-    VERIFY(!::Sound->i_locked());
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
     ::Sound->play_no_feedback(*this, O, flags, d, pos, vol, freq, range);
 }
 
 IC void ref_sound::set_position(const Fvector& pos)
 {
-    VERIFY(!::Sound->i_locked());
-    VERIFY(_feedback());
-    _feedback()->set_position(pos);
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
+    XR_ASSERT_VAL(_feedback() != nullptr)->set_position(pos);
 }
 
 IC void ref_sound::set_frequency(float freq)
 {
-    VERIFY(!::Sound->i_locked());
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
+
     if (_feedback())
         _feedback()->set_frequency(freq);
 }
 
 IC void ref_sound::set_range(float min, float max)
 {
-    VERIFY(!::Sound->i_locked());
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
+
     if (_feedback())
         _feedback()->set_range(min, max);
 }
 
 IC void ref_sound::set_volume(float vol)
 {
-    VERIFY(!::Sound->i_locked());
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
+
     if (_feedback())
         _feedback()->set_volume(vol);
 }
 
 IC void ref_sound::set_priority(float p)
 {
-    VERIFY(!::Sound->i_locked());
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
+
     if (_feedback())
         _feedback()->set_priority(p);
 }
 
 IC void ref_sound::set_time(float t)
 {
-    VERIFY(!::Sound->i_locked());
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
+
     if (_feedback())
         _feedback()->set_time(t);
 }
 
 inline void ref_sound::set_gain(float low_gain, float high_gain)
 {
-    VERIFY(!::Sound->i_locked());
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
+
     if (_feedback())
         _feedback()->set_gain(low_gain, high_gain);
 }
 
 inline tmc::task<void> ref_sound::stop()
 {
-    VERIFY(!::Sound->i_locked());
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
 
     if (_feedback() != nullptr)
         co_await _feedback()->stop(false);
@@ -524,7 +510,7 @@ inline tmc::task<void> ref_sound::stop()
 
 inline void ref_sound::queue_stop()
 {
-    VERIFY(!::Sound->i_locked());
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
 
     if (_feedback() != nullptr)
         ::Sound->queue_stop(*this, false);
@@ -532,7 +518,7 @@ inline void ref_sound::queue_stop()
 
 inline tmc::task<void> ref_sound::stop_deffered(f32 speed_k)
 {
-    VERIFY(!::Sound->i_locked());
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
 
     if (_feedback() != nullptr)
         co_await _feedback()->stop(true, speed_k);
@@ -540,7 +526,7 @@ inline tmc::task<void> ref_sound::stop_deffered(f32 speed_k)
 
 inline void ref_sound::queue_stop_deferred(f32 speed_k)
 {
-    VERIFY(!::Sound->i_locked());
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
 
     if (_feedback() != nullptr)
         ::Sound->queue_stop(*this, true, speed_k);
@@ -548,23 +534,21 @@ inline void ref_sound::queue_stop_deferred(f32 speed_k)
 
 IC const CSound_params* ref_sound::get_params()
 {
-    VERIFY(!::Sound->i_locked());
-    if (_feedback())
-        return _feedback()->get_params();
-
-    return nullptr;
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
+    return _feedback() != nullptr ? _feedback()->get_params() : nullptr;
 }
 
 IC void ref_sound::set_params(CSound_params* p)
 {
-    VERIFY(!::Sound->i_locked());
-    if (_feedback())
-    {
-        _feedback()->set_position(p->position);
-        _feedback()->set_frequency(p->freq);
-        _feedback()->set_range(p->min_distance, p->max_distance);
-        _feedback()->set_volume(p->volume);
-    }
+    XR_DEBUG_ASSERT(!::Sound->i_locked());
+
+    if (_feedback() == nullptr)
+        return;
+
+    _feedback()->set_position(p->position);
+    _feedback()->set_frequency(p->freq);
+    _feedback()->set_range(p->min_distance, p->max_distance);
+    _feedback()->set_volume(p->volume);
 }
 
 // SoundRender_Source.cpp

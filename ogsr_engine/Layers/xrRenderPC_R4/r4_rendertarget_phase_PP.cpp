@@ -2,16 +2,13 @@
 
 void CRenderTarget::u_calc_tc_noise(Fvector2& p0, Fvector2& p1)
 {
-    R_constant* C = RCache.get_c("s_noise")._get(); // get texture
-    VERIFY2(C, "s_noise texture in noise shader should be set");
-    VERIFY(RC_dest_sampler == C->destination);
-    VERIFY(RC_dx10texture == C->type);
+    auto C = XR_ASSERT_VAL(RCache.get_c("s_noise")._get() != nullptr);
+    XR_ASSERT(C->destination == RC_dest_sampler && C->type == RC_dx10texture, "", C->destination, C->type);
 
-    CTexture* T = RCache.get_ActiveTexture(u32(C->samp.index));
-    VERIFY2(T, "s_noise texture in noise shader should be set");
+    auto T = XR_ASSERT_VAL(RCache.get_ActiveTexture(C->samp.index) != nullptr);
     u32 tw = iCeil(float(T->get_Width()) * param_noise_scale + EPS_S);
     u32 th = iCeil(float(T->get_Height()) * param_noise_scale + EPS_S);
-    VERIFY2(tw && th, "Noise scale can't be zero in any way");
+    XR_ASSERT(tw != 0 && th != 0, "", tw, th);
 
     // calculate shift from FPSes
     im_noise_time -= Device.fTimeDelta;

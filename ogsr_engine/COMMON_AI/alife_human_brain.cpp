@@ -34,24 +34,26 @@
 #endif // DEBUG
 #endif // XRGAME_EXPORTS
 
-CALifeHumanBrain::CALifeHumanBrain(object_type* object) : inherited(object)
+CALifeHumanBrain::CALifeHumanBrain(object_type* object) : inherited{object}, m_object{object}
 {
-    VERIFY(object);
-    m_object = object;
+    XR_ASSERT(object != nullptr);
 
 #ifdef XRGAME_EXPORTS
     m_object_handler = xr_new<CALifeHumanObjectHandler>(object);
 #endif
 
     m_dwTotalMoney = 0;
-    m_cpEquipmentPreferences.resize(5);
-    m_cpMainWeaponPreferences.resize(4);
 
 #ifdef XRGAME_EXPORTS
-    m_cpEquipmentPreferences.resize(iFloor(ai().ef_storage().m_pfEquipmentType->ffGetMaxResultValue() + .5f));
-    m_cpMainWeaponPreferences.resize(iFloor(ai().ef_storage().m_pfMainWeaponType->ffGetMaxResultValue() + .5f));
-    R_ASSERT2((iFloor(ai().ef_storage().m_pfEquipmentType->ffGetMaxResultValue() + .5f) == 5) && (iFloor(ai().ef_storage().m_pfMainWeaponType->ffGetMaxResultValue() + .5f) == 4),
-              "Recompile Level Editor and xrAI and rebuild file \"game.spawn\"!");
+    m_cpEquipmentPreferences.resize(iFloor(ai().ef_storage().m_pfEquipmentType->ffGetMaxResultValue() + 0.5f));
+    m_cpMainWeaponPreferences.resize(iFloor(ai().ef_storage().m_pfMainWeaponType->ffGetMaxResultValue() + 0.5f));
+
+    XR_ASSERT(m_cpEquipmentPreferences.size() == 5 && m_cpMainWeaponPreferences.size() == 4, "broken spawn file", this->object().name(),
+              ai().ef_storage().m_pfEquipmentType->ffGetMaxResultValue(), ai().ef_storage().m_pfMainWeaponType->ffGetMaxResultValue(),
+              m_cpEquipmentPreferences.size(), m_cpMainWeaponPreferences.size());
+#else
+    m_cpEquipmentPreferences.resize(5);
+    m_cpMainWeaponPreferences.resize(4);
 #endif
 
     for (int i = 0, n = m_cpEquipmentPreferences.size(); i < n; ++i)

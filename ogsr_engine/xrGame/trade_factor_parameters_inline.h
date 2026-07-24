@@ -68,9 +68,7 @@ IC const CTradeFactors& CTradeFactorParameters::factors(const shared_str& sectio
         }
     }
 
-    ASSERT_FMT(false, "[%s]: %s not found", std::source_location::current().function_name(), section.c_str());
-
-    return I->second;
+    XR_PANIC("section not found in trade factor parameters", section);
 }
 
 IC bool CTradeFactorParameters::disabled(const shared_str& section) const { return enabled(section) ? factors(section).disabled() : false; }

@@ -1,8 +1,5 @@
 #include "stdafx.h"
 
-#include <codecvt>
-#include <locale>
-
 char* timestamp(string64& dest)
 {
     string64 temp;
@@ -32,7 +29,7 @@ char* timestamp(string64& dest)
 
 char* xr_strdup(const char* string)
 {
-    VERIFY(string);
+    XR_ASSERT(string != nullptr);
 
     const auto len = xr_strlen(string) + 1;
     char* memory = static_cast<char*>(xr_malloc(len));

@@ -4,14 +4,11 @@
 #include "dTriBox.h"
 #include "dcTriListCollider.h"
 
-int dcTriListCollider::dSortedTriBox(const dReal*, const dReal*, const dReal* triAx,
-                                     // const dReal* v0,
-                                     // const dReal* v1,
-                                     // const dReal* v2,
-                                     CDB::TRI* T, dReal dist, dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip)
+int dcTriListCollider::dSortedTriBox(const dReal*, const dReal*, const dReal* triAx, CDB::TRI* T, dReal dist, dxGeom* o1, dxGeom* o2, int flags,
+                                     dContactGeom* contact, int skip)
 {
-    VERIFY(skip >= (int)sizeof(dContactGeom));
-    VERIFY(dGeomGetClass(o1) == dBoxClass);
+    XR_ASSERT(skip >= sizeof(dContactGeom));
+    XR_DEBUG_ASSERT(dGeomGetClass(o1) == dBoxClass);
 
     const dReal* R = dGeomGetRotation(o1);
     const dReal* p = dGeomGetPosition(o1);
@@ -207,10 +204,11 @@ int dcTriListCollider::dSortedTriBox(const dReal*, const dReal*, const dReal* tr
     return ret;
 }
 
-int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2, Triangle* T, dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip)
+int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2, Triangle* T, dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact,
+                               int skip)
 {
-    VERIFY(skip >= (int)sizeof(dContactGeom));
-    VERIFY(dGeomGetClass(o1) == dBoxClass);
+    XR_ASSERT(skip >= sizeof(dContactGeom));
+    XR_DEBUG_ASSERT(dGeomGetClass(o1) == dBoxClass);
 
     const dReal* R = dGeomGetRotation(o1);
     const dReal* p = dGeomGetPosition(o1);

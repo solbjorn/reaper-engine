@@ -10,11 +10,7 @@
 
 #include "patrol_path_params.h"
 
-static Fvector CPatrolPathParams__point(const CPatrolPathParams* self, u32 index)
-{
-    THROW(self);
-    return (self->point(index));
-}
+static Fvector CPatrolPathParams__point(const CPatrolPathParams* self, u32 index) { return XR_ASSERT_VAL(self != nullptr)->point(index); }
 
 void CPatrolPathParams::script_register(sol::state_view& lua)
 {
@@ -32,8 +28,8 @@ void CPatrolPathParams::script_register(sol::state_view& lua)
         "stop", sol::var(PatrolPathManager::ePatrolRouteTypeStop), "continue", sol::var(PatrolPathManager::ePatrolRouteTypeContinue), "dummy",
         sol::var(PatrolPathManager::ePatrolRouteTypeDummy),
 
-        "count", &CPatrolPathParams::count, "level_vertex_id", &CPatrolPathParams::level_vertex_id, "game_vertex_id", &CPatrolPathParams::game_vertex_id, "point",
-        &CPatrolPathParams__point, "name", &CPatrolPathParams::name, "index", sol::resolve<u32(LPCSTR) const>(&CPatrolPathParams::point), "get_nearest",
-        sol::resolve<u32(const Fvector&) const>(&CPatrolPathParams::point), "flag", &CPatrolPathParams::flag, "flags", &CPatrolPathParams::flags, "terminal",
-        &CPatrolPathParams::terminal);
+        "count", &CPatrolPathParams::count, "level_vertex_id", &CPatrolPathParams::level_vertex_id, "game_vertex_id", &CPatrolPathParams::game_vertex_id,
+        "point", &CPatrolPathParams__point, "name", &CPatrolPathParams::name, "index", sol::resolve<u32(LPCSTR) const>(&CPatrolPathParams::point),
+        "get_nearest", sol::resolve<u32(const Fvector&) const>(&CPatrolPathParams::point), "flag", &CPatrolPathParams::flag, "flags", &CPatrolPathParams::flags,
+        "terminal", &CPatrolPathParams::terminal);
 }

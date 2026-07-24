@@ -1,6 +1,14 @@
 #ifndef __XREXTERNAL_IMGUI_H
 #define __XREXTERNAL_IMGUI_H
 
+#include "../xrCore/defines.h"
+
+#include "assert.h"
+
+// !!(expr) because of messed-up comparisons >_<
+#define IM_ASSERT(...) LIBASSERT_ASSERT(!!(__VA_ARGS__))
+#define IM_DEBUG_BREAK(...) LIBASSERT_BREAKPOINT(__VA_ARGS__)
+
 #define IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 

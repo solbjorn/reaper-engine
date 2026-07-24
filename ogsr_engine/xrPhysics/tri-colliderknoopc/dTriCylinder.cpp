@@ -65,13 +65,10 @@ bool dcTriListCollider::circleLineIntersection(const dReal* cn, const dReal* cp,
     }
 }
 
-int dcTriListCollider::dSortedTriCyl(const dReal*, const dReal*, const dReal* triAx,
-                                     // const dReal* v0,
-                                     // const dReal* v1,
-                                     // const dReal* v2,
-                                     CDB::TRI* T, dReal dist, dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip)
+int dcTriListCollider::dSortedTriCyl(const dReal*, const dReal*, const dReal* triAx, CDB::TRI* T, dReal dist, dxGeom* o1, dxGeom* o2, int flags,
+                                     dContactGeom* contact, int skip)
 {
-    VERIFY(dGeomGetClass(o1) == dCylinderClassUser);
+    XR_DEBUG_ASSERT(dGeomGetClass(o1) == dCylinderClassUser);
 
     const dReal* R = dGeomGetRotation(o1);
     const dReal* p = dGeomGetPosition(o1);
@@ -269,8 +266,7 @@ int Check(int check) { return check; }
 int dcTriListCollider::dTriCyl(const dReal* v0, const dReal* v1, const dReal* v2, Triangle* T, dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact,
                                int skip)
 {
-    // VERIFY (skip >= (int)sizeof(dContactGeom));
-    VERIFY(dGeomGetClass(o1) == dCylinderClassUser);
+    XR_DEBUG_ASSERT(dGeomGetClass(o1) == dCylinderClassUser);
 
     const dReal* R = dGeomGetRotation(o1);
     const dReal* p = dGeomGetPosition(o1);

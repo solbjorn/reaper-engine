@@ -4,7 +4,7 @@ struct SMAP_Rect
 {
     Ivector2 min, max;
 
-    bool intersect(SMAP_Rect& R)
+    [[nodiscard]] constexpr bool intersect(const SMAP_Rect& R) const
     {
         if (max.x < R.min.x)
             return false;
@@ -17,7 +17,7 @@ struct SMAP_Rect
         return true;
     }
 
-    bool valid()
+    [[nodiscard]] constexpr bool valid() const
     {
         if (min.x == max.x)
             return false;
@@ -26,13 +26,14 @@ struct SMAP_Rect
         return true;
     }
 
-    void setup(Ivector2& p, u32 size)
+    constexpr void setup(Ivector2 p, u32 size)
     {
-        min = max = p;
+        min = p;
+        max = p;
         max.add(size - 1);
     }
 
-    void get_cp(Ivector2& p0, Ivector2& p1)
+    constexpr void get_cp(Ivector2& p0, Ivector2& p1)
     {
         p0.set(max.x + 1, min.y); // right
         p1.set(min.x, max.y + 1); // down
@@ -68,7 +69,7 @@ public:
 
     BOOL push(SMAP_Rect& R, u32 _size)
     {
-        VERIFY(_size <= psize && _size > 4);
+        XR_ASSERT(_size > 4 && _size <= psize, "", _size, psize);
 
         // setup first in the soup, if empty state
         if (stack.empty())

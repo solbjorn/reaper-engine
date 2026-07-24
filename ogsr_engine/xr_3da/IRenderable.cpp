@@ -6,7 +6,7 @@ IRenderable::IRenderable() { renderable.xform.identity(); }
 
 IRenderable::~IRenderable()
 {
-    VERIFY(!g_bRendering);
+    XR_ASSERT(!g_bRendering);
 
     Render->model_Delete(renderable.visual);
     if (renderable.pROS)

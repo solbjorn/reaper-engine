@@ -55,7 +55,7 @@ public:
 
     IC const CHeader& header() const;
     IC const CGameLevelCrossTable& cross_table() const;
-    IC bool mask(const svector<_LOCATION_ID, GameGraph::LOCATION_TYPE_COUNT>& M, const _LOCATION_ID E[GameGraph::LOCATION_TYPE_COUNT]) const;
+    IC bool mask(const std::inplace_vector<_LOCATION_ID, GameGraph::LOCATION_TYPE_COUNT>& M, const _LOCATION_ID E[GameGraph::LOCATION_TYPE_COUNT]) const;
     IC float distance(const _GRAPH_ID tGraphID0, const _GRAPH_ID tGraphID1) const;
     IC bool accessible(const u32& vertex_id) const;
     IC void accessible(const u32& vertex_id, bool value) const;

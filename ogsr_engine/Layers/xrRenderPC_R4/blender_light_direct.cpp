@@ -14,9 +14,10 @@ void CBlender_accum_direct::Compile(CBlender_Compile& C)
 
     switch (C.iElement)
     {
-    case SE_SUN_NEAR: // near pass - enable Z-test to perform depth-clipping
-    case SE_SUN_MIDDLE: // middle pass - enable Z-test to perform depth-clipping
-        //	FVF::TL2uv
+    case SE_SUN_NEAR:
+        // near pass - enable Z-test to perform depth-clipping
+    case SE_SUN_MIDDLE:
+        // middle pass - enable Z-test to perform depth-clipping
         C.r_Pass("accum_sun", "accum_sun_near_nomsaa", false, TRUE, FALSE, blend, D3DBLEND_ONE, dest);
 
         C.r_CullMode(D3DCULL_NONE);
@@ -40,9 +41,8 @@ void CBlender_accum_direct::Compile(CBlender_Compile& C)
 
         C.r_End();
         break;
-    case SE_SUN_FAR: // far pass, only stencil clipping performed
-        //	FVF::TL2uv
-        // C.r_Pass			("null",			"accum_sun_far",	false,	TRUE,	FALSE,blend,D3DBLEND_ONE,dest);
+    case SE_SUN_FAR:
+        // far pass, only stencil clipping performed
         C.r_Pass("accum_sun", "accum_sun_far_nomsaa", false, TRUE, FALSE, blend, D3DBLEND_ONE, dest);
         C.r_CullMode(D3DCULL_NONE);
 
@@ -71,8 +71,8 @@ void CBlender_accum_direct::Compile(CBlender_Compile& C)
 
         C.r_End();
         break;
-    case SE_SUN_LUMINANCE: // luminance pass
-        // C.r_Pass			("null",			"accum_sun",		false,	FALSE,	FALSE);
+    case SE_SUN_LUMINANCE:
+        // luminance pass
         C.r_Pass("stub_notransform_aa_AA", "accum_sun_nomsaa", false, FALSE, FALSE);
         C.r_CullMode(D3DCULL_NONE);
 
@@ -90,7 +90,7 @@ void CBlender_accum_direct::Compile(CBlender_Compile& C)
 }
 
 CBlender_accum_direct_msaa::CBlender_accum_direct_msaa() { description.CLS = 0; }
-CBlender_accum_direct_msaa::~CBlender_accum_direct_msaa() {}
+CBlender_accum_direct_msaa::~CBlender_accum_direct_msaa() = default;
 
 //	TODO: DX10:	implement CBlender_accum_direct::Compile
 void CBlender_accum_direct_msaa::Compile(CBlender_Compile& C)
@@ -99,8 +99,10 @@ void CBlender_accum_direct_msaa::Compile(CBlender_Compile& C)
 
     if (Name != nullptr)
     {
-        const auto res = scn::scan_int<s32>(Definition);
-        R_ASSERT(res, res.error().msg());
+        const std::string_view val{Definition};
+        const auto res = scn::scan_int<s32>(val);
+        XR_ASSERT(res, res.error().msg(), Name, val);
+
         RImplementation.m_MSAASample = res->value();
     }
     else
@@ -113,10 +115,10 @@ void CBlender_accum_direct_msaa::Compile(CBlender_Compile& C)
 
     switch (C.iElement)
     {
-    case SE_SUN_NEAR: // near pass - enable Z-test to perform depth-clipping
-    case SE_SUN_MIDDLE: // middle pass - enable Z-test to perform depth-clipping
-        //	FVF::TL2uv
-        // C.r_Pass			("null",			"accum_sun_near",	false,	TRUE,	FALSE,blend,D3DBLEND_ONE,dest);
+    case SE_SUN_NEAR:
+        // near pass - enable Z-test to perform depth-clipping
+    case SE_SUN_MIDDLE:
+        // middle pass - enable Z-test to perform depth-clipping
         C.r_Pass("accum_sun", "accum_sun_near_msaa", false, TRUE, FALSE, blend, D3DBLEND_ONE, dest);
         C.r_CullMode(D3DCULL_NONE);
         C.PassSET_ZB(TRUE, FALSE, TRUE); // force inverted Z-Buffer
@@ -139,9 +141,8 @@ void CBlender_accum_direct_msaa::Compile(CBlender_Compile& C)
 
         C.r_End();
         break;
-    case SE_SUN_FAR: // far pass, only stencil clipping performed
-        //	FVF::TL2uv
-        // C.r_Pass			("null",			"accum_sun_far",	false,	TRUE,	FALSE,blend,D3DBLEND_ONE,dest);
+    case SE_SUN_FAR:
+        // far pass, only stencil clipping performed
         C.r_Pass("accum_sun", "accum_sun_far_msaa", false, TRUE, FALSE, blend, D3DBLEND_ONE, dest);
         C.r_CullMode(D3DCULL_NONE);
 
@@ -170,8 +171,8 @@ void CBlender_accum_direct_msaa::Compile(CBlender_Compile& C)
 
         C.r_End();
         break;
-    case SE_SUN_LUMINANCE: // luminance pass
-        // C.r_Pass			("null",			"accum_sun",		false,	FALSE,	FALSE);
+    case SE_SUN_LUMINANCE:
+        // luminance pass
         C.r_Pass("stub_notransform_aa_AA", "accum_sun_msaa", false, FALSE, FALSE);
         C.r_CullMode(D3DCULL_NONE);
 
@@ -191,7 +192,7 @@ void CBlender_accum_direct_msaa::Compile(CBlender_Compile& C)
 }
 
 CBlender_accum_direct_volumetric_msaa::CBlender_accum_direct_volumetric_msaa() { description.CLS = 0; }
-CBlender_accum_direct_volumetric_msaa::~CBlender_accum_direct_volumetric_msaa() {}
+CBlender_accum_direct_volumetric_msaa::~CBlender_accum_direct_volumetric_msaa() = default;
 
 //	TODO: DX10:	implement CBlender_accum_direct::Compile
 void CBlender_accum_direct_volumetric_msaa::Compile(CBlender_Compile& C)
@@ -200,8 +201,10 @@ void CBlender_accum_direct_volumetric_msaa::Compile(CBlender_Compile& C)
 
     if (Name != nullptr)
     {
-        const auto res = scn::scan_int<s32>(Definition);
-        R_ASSERT(res, res.error().msg());
+        const std::string_view val{Definition};
+        const auto res = scn::scan_int<s32>(val);
+        XR_ASSERT(res, res.error().msg(), Name, val);
+
         RImplementation.m_MSAASample = res->value();
     }
     else
@@ -214,7 +217,8 @@ void CBlender_accum_direct_volumetric_msaa::Compile(CBlender_Compile& C)
 
     switch (C.iElement)
     {
-    case 0: // near pass - enable Z-test to perform depth-clipping
+    case 0:
+        // near pass - enable Z-test to perform depth-clipping
         C.r_Pass("accum_sun", "accum_volumetric_sun_msaa", false, TRUE, FALSE, blend, D3DBLEND_ONE, dest);
         C.r_dx10Texture("s_lmap", C.L_textures[0]);
         C.r_dx10Texture("s_smap", r2_RT_smap_depth);
@@ -231,7 +235,7 @@ void CBlender_accum_direct_volumetric_msaa::Compile(CBlender_Compile& C)
 }
 
 CBlender_accum_direct_volumetric_sun_msaa::CBlender_accum_direct_volumetric_sun_msaa() { description.CLS = 0; }
-CBlender_accum_direct_volumetric_sun_msaa::~CBlender_accum_direct_volumetric_sun_msaa() {}
+CBlender_accum_direct_volumetric_sun_msaa::~CBlender_accum_direct_volumetric_sun_msaa() = default;
 
 //	TODO: DX10:	implement CBlender_accum_direct::Compile
 void CBlender_accum_direct_volumetric_sun_msaa::Compile(CBlender_Compile& C)
@@ -240,8 +244,10 @@ void CBlender_accum_direct_volumetric_sun_msaa::Compile(CBlender_Compile& C)
 
     if (Name != nullptr)
     {
-        const auto res = scn::scan_int<s32>(Definition);
-        R_ASSERT(res, res.error().msg());
+        const std::string_view val{Definition};
+        const auto res = scn::scan_int<s32>(val);
+        XR_ASSERT(res, res.error().msg(), Name, val);
+
         RImplementation.m_MSAASample = res->value();
     }
     else
@@ -251,7 +257,8 @@ void CBlender_accum_direct_volumetric_sun_msaa::Compile(CBlender_Compile& C)
 
     switch (C.iElement)
     {
-    case 0: // near pass - enable Z-test to perform depth-clipping
+    case 0:
+        // near pass - enable Z-test to perform depth-clipping
         C.r_Pass("accum_sun", "accum_volumetric_sun_msaa", false, false, false, true, D3DBLEND_ONE, D3DBLEND_ONE, false, 0);
         C.r_dx10Texture("s_smap", r2_RT_smap_depth);
         C.r_dx10Texture("s_position", r2_RT_P);

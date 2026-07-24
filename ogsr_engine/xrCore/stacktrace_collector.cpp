@@ -65,9 +65,8 @@ std::string BuildStackTrace(const char* header, PCONTEXT threadCtx)
 
     if (!InitializeSymbolEngine())
     {
-        const auto LastErr = GetLastError();
-        traceResult << "[" << std::source_location::current().function_name() << "] InitializeSymbolEngine failed with error: [" << LastErr << "], descr: ["
-                    << Debug.error2string(LastErr) << "]";
+        traceResult << "[" << std::source_location::current().function_name()
+                    << "] InitializeSymbolEngine failed with error: " << xr::format("{}", xr::GetLastError());
         return traceResult.str();
     }
 

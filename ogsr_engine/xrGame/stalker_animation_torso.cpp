@@ -149,12 +149,8 @@ MotionID CStalkerAnimationManager::weapon_animation(u32 slot, const EBodyState& 
         case CWeapon::eSubstateReloadBegin: return (animation[4].A[0]);
         case CWeapon::eSubstateReloadInProcess: return (animation[4].A[1]);
         case CWeapon::eSubstateReloadEnd: return (animation[4].A[2]);
-
-        default: NODEFAULT;
+        default: xr::unreachable();
         }
-#ifdef DEBUG
-        return (animation[4].A[0]);
-#endif
     }
     case CWeapon::eShowing: return (torso().select(animation[0].A));
     case CWeapon::eHiding: return (torso().select(animation[3].A));

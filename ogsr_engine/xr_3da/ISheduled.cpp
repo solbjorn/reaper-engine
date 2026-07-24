@@ -17,7 +17,7 @@ ISheduled::ISheduled()
 
 ISheduled::~ISheduled()
 {
-    VERIFY2(!Engine.Sheduler.Registered(this), shedule_Name().c_str());
+    XR_DEBUG_ASSERT(!Engine.Sheduler.Registered(this), "", shedule_Name());
 
 #ifndef DEBUG
     // sad, but true
@@ -34,11 +34,12 @@ tmc::task<void> ISheduled::shedule_Update(u32)
 {
     if (dbg_startframe == dbg_update_shedule)
     {
-        LPCSTR name = "unknown";
-        CObject* O = smart_cast<CObject*>(this);
-        if (O)
-            name = *O->cName();
-        Debug.fatal(DEBUG_INFO, "'shedule_Update' called twice per frame for %s", name);
+        std::string_view name{"unknown"};
+
+        if (auto O = smart_cast<CObject*>(this); O != nullptr)
+            name = O->cName();
+
+        XR_PANIC("object update called twice per frame", name, dbg_startframe);
     }
 
     dbg_update_shedule = dbg_startframe;

@@ -91,10 +91,10 @@ void SHit::Read_Packet_Cont(NET_Packet Packet)
     Packet.r_float(impulse);
     aim_bullet = Packet.r_u16() != 0;
     hit_type = (ALife::EHitType)Packet.r_u16(); // hit type
+
     if (hit_type == ALife::eHitTypeFireWound)
-    {
         Packet.r_float(ap);
-    }
+
     full_power = power;
 }
 
@@ -109,14 +109,14 @@ void SHit::Write_Packet_Cont(NET_Packet& Packet)
     Packet.w_float(impulse);
     Packet.w_u16(aim_bullet != 0);
     Packet.w_u16(u16(hit_type & 0xffff));
+
     if (hit_type == ALife::eHitTypeFireWound)
-    {
         Packet.w_float(ap);
-    }
 }
+
 void SHit::Write_Packet(NET_Packet& Packet)
 {
-    Packet.w_begin(M_EVENT);
+    Packet.w_begin(gsl::narrow<u16>(xr::msg::M_EVENT));
     Packet.w_u32(Time);
     Packet.w_u16(u16(PACKET_TYPE & 0xffff));
     Packet.w_u16(u16(DestID & 0xffff));

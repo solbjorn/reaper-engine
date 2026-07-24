@@ -68,9 +68,7 @@ tmc::task<void> CStringTable::Load(gsl::czstring xml_file)
         nf = false;
     }
 
-    bool xml_result = uiXml.Init(CONFIG_PATH, _s, xml_file_full);
-    if (!xml_result)
-        Debug.fatal(DEBUG_INFO, "string table xml file not found %s, for language %s", xml_file_full, lang);
+    XR_ASSERT(uiXml.Init(CONFIG_PATH, _s, xml_file_full), "string table not found for language", xml_file_full, lang);
 
     // общий список всех записей таблицы в файле
     const size_t string_num = uiXml.GetNodesNum(uiXml.GetRoot(), "string");
@@ -82,10 +80,9 @@ tmc::task<void> CStringTable::Load(gsl::czstring xml_file)
         string32 node;
         strconcat(sizeof(node), node, "string:", nf ? lang : "text");
 
-        LPCSTR string_text = uiXml.Read(uiXml.GetRoot(), node, i, nullptr);
-        ASSERT_FMT(string_text, "no attribute '%s' in node %s", node, string_name);
-
+        const auto string_text = XR_ASSERT_VAL(uiXml.Read(uiXml.GetRoot(), node, i, nullptr) != nullptr, "no attribute in node", string_name, node);
         auto ret = ParseLine(string_text, true);
+
         co_await pDataMutex;
 
         if (WriteErrorsToLog && pData->m_StringTable.contains(string_name))

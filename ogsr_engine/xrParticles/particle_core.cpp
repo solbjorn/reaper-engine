@@ -414,7 +414,7 @@ void pDomain::transform(const pDomain& domain, const Fmatrix& m)
         m.transform_dir(u, domain.u);
         m.transform_dir(v, domain.v);
         break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 

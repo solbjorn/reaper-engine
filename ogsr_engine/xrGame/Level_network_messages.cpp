@@ -32,9 +32,10 @@ tmc::task<void> CLevel::ClientReceive()
 
         u16 m_type;
         std::ignore = P->r_begin(m_type);
-        switch (m_type)
+
+        switch (xr::msg{m_type})
         {
-        case M_SPAWN: {
+        case xr::msg::M_SPAWN:
             if (!m_bGameConfigStarted || !bReady)
             {
                 Msg("Unconventional M_SPAWN received : cgf[{}] | bReady[{}]", (m_bGameConfigStarted) ? "true" : "false", (bReady) ? "true" : "false");
@@ -45,17 +46,18 @@ tmc::task<void> CLevel::ClientReceive()
 
             if (g_bDebugEvents)
                 co_await ProcessGameEvents();
-        }
-        break;
-        case M_EVENT:
+
+            break;
+        case xr::msg::M_EVENT:
             game_events->insert(*P);
 
             if (g_bDebugEvents)
                 co_await ProcessGameEvents();
 
             break;
-        case M_EVENT_PACK: {
+        case xr::msg::M_EVENT_PACK: {
             NET_Packet tmpP;
+
             while (!P->r_eof())
             {
                 tmpP.B.count = P->r_u8();
@@ -67,28 +69,24 @@ tmc::task<void> CLevel::ClientReceive()
                 if (g_bDebugEvents)
                     co_await ProcessGameEvents();
             }
+
+            break;
         }
-        break;
-        case M_UPDATE: {
-            game->net_import_update(*P);
-        }
-        break;
-        case M_SV_CONFIG_NEW_CLIENT: co_await InitializeClientGame(*P); break;
-        case M_SV_CONFIG_GAME: game->net_import_state(*P); break;
-        case M_SV_CONFIG_FINISHED:
+        case xr::msg::M_UPDATE: game->net_import_update(*P); break;
+        case xr::msg::M_SV_CONFIG_NEW_CLIENT: co_await InitializeClientGame(*P); break;
+        case xr::msg::M_SV_CONFIG_GAME: game->net_import_state(*P); break;
+        case xr::msg::M_SV_CONFIG_FINISHED:
             game_configured = TRUE;
             Log("- Game configuring : Finished ");
             break;
-        case M_RELOAD_GAME:
-        case M_LOAD_GAME:
-        case M_CHANGE_LEVEL: {
+        case xr::msg::M_RELOAD_GAME:
+        case xr::msg::M_LOAD_GAME:
+        case xr::msg::M_CHANGE_LEVEL:
             // костыль для автозакрытия любого диалога в случае смены уровня
             if (HUD().GetUI()->MainInputReceiver())
-            {
                 HUD().GetUI()->StartStopMenu(HUD().GetUI()->MainInputReceiver(), true);
-            }
 
-            if (m_type == M_LOAD_GAME)
+            if (xr::msg{m_type} == xr::msg::M_LOAD_GAME)
             {
                 string256 saved_name;
                 P->r_stringZ(saved_name);
@@ -106,21 +104,11 @@ tmc::task<void> CLevel::ClientReceive()
             co_await Engine.Event.Defer("KERNEL:disconnect");
             co_await Engine.Event.Defer("KERNEL:start", reinterpret_cast<uintptr_t>(xr_strdup(m_caServerOptions.c_str())),
                                         reinterpret_cast<uintptr_t>(xr_strdup(m_caClientOptions.c_str())));
-        }
-        break;
-        case M_SAVE_GAME: {
-            // ClientSave();
-        }
-        break;
-        case M_AUTH_CHALLENGE: {
-            OnBuildVersionChallenge();
-        }
-        break;
-        case M_CLIENT_CONNECT_RESULT: {
-            OnConnectResult(P);
-        }
-        break;
-        case M_CHANGE_LEVEL_GAME: {
+
+            break;
+        case xr::msg::M_AUTH_CHALLENGE: OnBuildVersionChallenge(); break;
+        case xr::msg::M_CLIENT_CONNECT_RESULT: OnConnectResult(P); break;
+        case xr::msg::M_CHANGE_LEVEL_GAME:
             Log("- M_CHANGE_LEVEL_GAME Received");
 
             {
@@ -149,12 +137,9 @@ tmc::task<void> CLevel::ClientReceive()
                 co_await Engine.Event.Defer("KERNEL:start", reinterpret_cast<uintptr_t>(xr_strdup(m_caServerOptions.c_str())),
                                             reinterpret_cast<uintptr_t>(xr_strdup(m_caClientOptions.c_str())));
             }
-        }
-        break;
-        case M_CHANGE_SELF_NAME: {
-            net_OnChangeSelfName(P);
-        }
-        break;
+
+            break;
+        case xr::msg::M_CHANGE_SELF_NAME: net_OnChangeSelfName(P); break;
         default: break;
         }
 

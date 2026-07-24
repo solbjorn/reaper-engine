@@ -162,16 +162,10 @@ void player_hud_motion_container::load(bool has_separated_hands, IKinematicsAnim
 
             if (pm.m_animations.empty())
             {
-                if (has_separated_hands)
-                {
-                    FATAL("[%s] motion [%s](%s) not found in section [%s]", std::source_location::current().function_name(), pm.m_base_name.c_str(),
-                          name.c_str(), sect.c_str());
-                }
-                else
-                {
-                    Msg("! [{}] motion [{}]({}) not found in section [{}]", std::source_location::current().function_name(), pm.m_base_name, name, sect);
-                    continue;
-                }
+                XR_ASSERT(!has_separated_hands, "motion not found in section", sect, pm.m_base_name, name);
+
+                Msg("! [{}] motion [{}]({}) not found in section [{}]", std::source_location::current().function_name(), pm.m_base_name, name, sect);
+                continue;
             }
 
             m_anims.emplace(name, std::move(pm));
@@ -194,18 +188,17 @@ Fvector& attachable_hud_item::hands_offset_rot()
 
 void attachable_hud_item::set_bone_visible(const shared_str& bone_name, BOOL bVisibility, BOOL bSilent)
 {
-    u16 bone_id;
-    BOOL bVisibleNow;
-    bone_id = m_model->LL_BoneID(bone_name);
+    const auto bone_id = m_model->LL_BoneID(bone_name);
     if (bone_id == BI_NONE)
     {
         if (bSilent)
             return;
-        FATAL("model [%s] has no bone [%s]", m_visual_name.c_str(), bone_name.c_str());
+
+        XR_PANIC("model has no bone", m_visual_name, bone_name);
     }
-    bVisibleNow = m_model->LL_GetBoneVisible(bone_id);
-    if (bVisibleNow != bVisibility)
-        m_model->LL_SetBoneVisible(bone_id, bVisibility, TRUE);
+
+    if (m_model->LL_GetBoneVisible(bone_id) != bVisibility)
+        m_model->LL_SetBoneVisible(bone_id, bVisibility, true);
 }
 
 void attachable_hud_item::set_bone_visible(const xr_vector<shared_str>& bone_names, BOOL bVisibility, BOOL bSilent)
@@ -359,33 +352,31 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
     if (!useCopFirePoint) // shoc configs
     {
         m_prop_flags.set(e_fire_point, pSettings->line_exist(sect_name, "fire_bone") && pSettings->line_exist(sect_name, "fire_point"));
+
         if (m_prop_flags.test(e_fire_point))
         {
             bone_name._set(pSettings->r_string(sect_name, "fire_bone"));
-            m_fire_bone = K->LL_BoneID(bone_name);
-            ASSERT_FMT(m_fire_bone != BI_NONE, "!![%s] bone [%s] not found in weapon [%s]", std::source_location::current().function_name(), bone_name.c_str(),
-                       sect_name.c_str());
+            m_fire_bone = XR_ASSERT_VAL(K->LL_BoneID(bone_name) != BI_NONE, "fire bone not found for weapon", sect_name, bone_name);
             m_fire_point_offset = pSettings->r_fvector3(sect_name, "fire_point");
         }
         else
+        {
             m_fire_point_offset.set(0.f, 0.f, 0.f);
+        }
 
         m_prop_flags.set(e_fire_point2, pSettings->line_exist(sect_name, "fire_bone") && pSettings->line_exist(sect_name, "fire_point2"));
+
         if (m_prop_flags.test(e_fire_point2))
         {
             bone_name._set(pSettings->r_string(sect_name, "fire_bone"));
-            m_fire_bone2 = K->LL_BoneID(bone_name);
-            ASSERT_FMT(m_fire_bone2 != BI_NONE, "!![%s] bone [%s] not found in weapon [%s]", std::source_location::current().function_name(), bone_name.c_str(),
-                       sect_name.c_str());
+            m_fire_bone2 = XR_ASSERT_VAL(K->LL_BoneID(bone_name) != BI_NONE, "fire bone not found for weapon", sect_name, bone_name);
             m_fire_point2_offset = pSettings->r_fvector3(sect_name, "fire_point2");
         }
         else if (m_prop_flags.test(e_fire_point))
         {
             m_prop_flags.set(e_fire_point2, true);
             bone_name._set(pSettings->r_string(sect_name, "fire_bone"));
-            m_fire_bone2 = K->LL_BoneID(bone_name);
-            ASSERT_FMT(m_fire_bone2 != BI_NONE, "!![%s] bone [%s] not found in weapon [%s]", std::source_location::current().function_name(), bone_name.c_str(),
-                       sect_name.c_str());
+            m_fire_bone2 = XR_ASSERT_VAL(K->LL_BoneID(bone_name) != BI_NONE, "fire bone not found for weapon", sect_name, bone_name);
             m_fire_point2_offset.set(m_fire_point_offset);
         }
         else
@@ -394,12 +385,11 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
         }
 
         m_prop_flags.set(e_shell_point, pSettings->line_exist(sect_name, "fire_bone") && pSettings->line_exist(sect_name, "shell_point"));
+
         if (m_prop_flags.test(e_shell_point))
         {
             bone_name._set(pSettings->r_string(sect_name, "fire_bone"));
-            m_shell_bone = K->LL_BoneID(bone_name);
-            ASSERT_FMT(m_shell_bone != BI_NONE, "!![%s] bone [%s] not found in weapon [%s]", std::source_location::current().function_name(), bone_name.c_str(),
-                       sect_name.c_str());
+            m_shell_bone = XR_ASSERT_VAL(K->LL_BoneID(bone_name) != BI_NONE, "shell bone not found for weapon", sect_name, bone_name);
             m_shell_point_offset = pSettings->r_fvector3(sect_name, "shell_point");
         }
         else
@@ -410,12 +400,11 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
     else // cop configs
     {
         m_prop_flags.set(e_fire_point, pSettings->line_exist(sect_name, "fire_bone"));
+
         if (m_prop_flags.test(e_fire_point))
         {
             bone_name._set(pSettings->r_string(sect_name, "fire_bone"));
-            m_fire_bone = K->LL_BoneID(bone_name);
-            ASSERT_FMT(m_fire_bone != BI_NONE, "!![%s] bone [%s] not found in weapon [%s]", std::source_location::current().function_name(), bone_name.c_str(),
-                       sect_name.c_str());
+            m_fire_bone = XR_ASSERT_VAL(K->LL_BoneID(bone_name) != BI_NONE, "fire bone not found for weapon", sect_name, bone_name);
             m_fire_point_offset = pSettings->r_fvector3(sect_name, "fire_point");
             m_shoot_point_offset =
                 READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "shoot_point", (Fvector{m_fire_point_offset.x, m_fire_point_offset.y, -0.5f}));
@@ -426,12 +415,11 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
         }
 
         m_prop_flags.set(e_fire_point2, pSettings->line_exist(sect_name, "fire_bone2"));
+
         if (m_prop_flags.test(e_fire_point2))
         {
             bone_name._set(pSettings->r_string(sect_name, "fire_bone2"));
-            m_fire_bone2 = K->LL_BoneID(bone_name);
-            ASSERT_FMT(m_fire_bone2 != BI_NONE, "!![%s] bone [%s] not found in weapon [%s]", std::source_location::current().function_name(), bone_name.c_str(),
-                       sect_name.c_str());
+            m_fire_bone2 = XR_ASSERT_VAL(K->LL_BoneID(bone_name) != BI_NONE, "fire bone not found for weapon", sect_name, bone_name);
             m_fire_point2_offset = pSettings->r_fvector3(sect_name, "fire_point2");
         }
         else
@@ -440,12 +428,11 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
         }
 
         m_prop_flags.set(e_shell_point, pSettings->line_exist(sect_name, "shell_bone"));
+
         if (m_prop_flags.test(e_shell_point))
         {
             bone_name._set(pSettings->r_string(sect_name, "shell_bone"));
-            m_shell_bone = K->LL_BoneID(bone_name);
-            ASSERT_FMT(m_shell_bone != BI_NONE, "!![%s] bone [%s] not found in weapon [%s]", std::source_location::current().function_name(), bone_name.c_str(),
-                       sect_name.c_str());
+            m_shell_bone = XR_ASSERT_VAL(K->LL_BoneID(bone_name) != BI_NONE, "shell bone not found for weapon", sect_name, bone_name);
             m_shell_point_offset = pSettings->r_fvector3(sect_name, "shell_point");
         }
         else
@@ -614,9 +601,8 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
     bool is_16x9 = UI()->is_widescreen();
     xr_sprintf(anim_name_r, "%s%s", anm_name_b.c_str(), ((m_attach_place_idx == 1) && is_16x9) ? "_16x9" : "");
 
-    player_hud_motion* anm = m_hand_motions.find_motion(shared_str{anim_name_r});
-    ASSERT_FMT(anm, "model [%s] has no motion alias defined [%s]", m_visual_name.c_str(), anim_name_r);
-    ASSERT_FMT(anm->m_animations.size(), "model [%s] has no motion defined in motion_alias [%s]", m_visual_name.c_str(), anim_name_r);
+    auto anm = XR_ASSERT_VAL(m_hand_motions.find_motion(shared_str{anim_name_r}) != nullptr, "model has no motion alias defined", m_visual_name, anim_name_r);
+    XR_ASSERT(!anm->m_animations.empty(), "model has no motions defined in alias", m_visual_name, anim_name_r);
 
     u8 rnd_idx = 0;
 
@@ -832,22 +818,12 @@ void player_hud::load(const shared_str& player_hud_sect, bool force)
     m_model_2 = smart_cast<IKinematicsAnimated*>(::Render->model_Create(model_name_2));
     ::Render->hud_loading = false;
 
-    u16 l_arm = m_model->dcast_PKinematics()->LL_BoneID("l_clavicle");
-    ASSERT_FMT(l_arm != BI_NONE, "[%s]: bone [%s] not found in sect [%s] visual [%s]", std::source_location::current().function_name(), "l_clavicle",
-               m_sect_name.c_str(), model_name);
-    u16 r_arm = m_model_2->dcast_PKinematics()->LL_BoneID("r_clavicle");
-    ASSERT_FMT(r_arm != BI_NONE, "[%s]: bone [%s] not found in sect [%s] visual [%s]", std::source_location::current().function_name(), "r_clavicle",
-               m_sect_name.c_str(), model_name_2);
+    const auto l_arm = XR_ASSERT_VAL(m_model->dcast_PKinematics()->LL_BoneID("l_clavicle") != BI_NONE, "bone not found", m_sect_name, model_name);
+    const auto r_arm = XR_ASSERT_VAL(m_model_2->dcast_PKinematics()->LL_BoneID("r_clavicle") != BI_NONE, "bone not found", m_sect_name, model_name_2);
 
-    u16 r_finger0 = m_model->dcast_PKinematics()->LL_BoneID("r_finger0");
-    ASSERT_FMT(r_finger0 != BI_NONE, "[%s]: bone [%s] not found in sect [%s] visual [%s]", std::source_location::current().function_name(), "r_finger0",
-               m_sect_name.c_str(), model_name);
-    u16 r_finger01 = m_model->dcast_PKinematics()->LL_BoneID("r_finger01");
-    ASSERT_FMT(r_finger01 != BI_NONE, "[%s]: bone [%s] not found in sect [%s] visual [%s]", std::source_location::current().function_name(), "r_finger01",
-               m_sect_name.c_str(), model_name);
-    u16 r_finger02 = m_model->dcast_PKinematics()->LL_BoneID("r_finger02");
-    ASSERT_FMT(r_finger02 != BI_NONE, "[%s]: bone [%s] not found in sect [%s] visual [%s]", std::source_location::current().function_name(), "r_finger02",
-               m_sect_name.c_str(), model_name);
+    const auto r_finger0 = XR_ASSERT_VAL(m_model->dcast_PKinematics()->LL_BoneID("r_finger0") != BI_NONE, "bone not found", m_sect_name, model_name);
+    const auto r_finger01 = XR_ASSERT_VAL(m_model->dcast_PKinematics()->LL_BoneID("r_finger01") != BI_NONE, "bone not found", m_sect_name, model_name);
+    const auto r_finger02 = XR_ASSERT_VAL(m_model->dcast_PKinematics()->LL_BoneID("r_finger02") != BI_NONE, "bone not found", m_sect_name, model_name);
 
     m_model->dcast_PKinematics()->LL_GetBoneInstance(r_finger0).set_callback(bctCustom, Thumb0Callback, this);
     m_model->dcast_PKinematics()->LL_GetBoneInstance(r_finger01).set_callback(bctCustom, Thumb01Callback, this);
@@ -957,7 +933,7 @@ u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud
     player_hud_motion* pm = pi->find_motion(anim_name);
     if (!pm)
         return 100; // ms TEMPORARY
-    ASSERT_FMT(pm, "hudItem model [%s] has no motion with alias [%s]", hud_name.c_str(), anim_name.c_str());
+
     return motion_length(pm->params, pm->m_animations[0], md, pi->m_has_separated_hands ? m_model : smart_cast<IKinematicsAnimated*>(pi->m_model),
                          speed == 1.f ? pm->params.speed_k : speed);
 }
@@ -1494,11 +1470,9 @@ void player_hud::re_sync_anim(u8 part)
 
 void player_hud::GetLHandBoneOffsetPosDir(const shared_str& bone_name, Fvector& dest_pos, Fvector& dest_dir, const Fvector& offset)
 {
-    const u16 bone_id = m_model_2->dcast_PKinematics()->LL_BoneID(bone_name);
-    ASSERT_FMT(bone_id != BI_NONE, "!![%s] bone [%s] not found in weapon [%s]", std::source_location::current().function_name(), bone_name.c_str(),
-               m_sect_name.c_str());
-
+    const auto bone_id = XR_ASSERT_VAL(m_model_2->dcast_PKinematics()->LL_BoneID(bone_name) != BI_NONE, "bone not found for weapon", m_sect_name, bone_name);
     Fmatrix& fire_mat = m_model_2->dcast_PKinematics()->LL_GetTransform(bone_id);
+
     fire_mat.transform_tiny(dest_pos, offset);
     m_transform_2.transform_tiny(dest_pos);
     dest_pos.add(Device.vCameraPosition);

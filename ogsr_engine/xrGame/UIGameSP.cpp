@@ -252,23 +252,22 @@ void CChangeLevelWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
     if (pWnd == m_messageBox)
     {
         if (msg == MESSAGE_BOX_YES_CLICKED)
-        {
             OnOk();
-        }
         else if (msg == MESSAGE_BOX_NO_CLICKED)
-        {
             OnCancel();
-        }
     }
     else
+    {
         inherited::SendMessage(pWnd, msg, pData);
+    }
 }
 
 void CChangeLevelWnd::OnOk()
 {
     Game().StartStopMenu(this, true);
+
     NET_Packet p;
-    p.w_begin(M_CHANGE_LEVEL);
+    p.w_begin(gsl::narrow<u16>(xr::msg::M_CHANGE_LEVEL));
     p.w(&m_game_vertex_id, sizeof(m_game_vertex_id));
     p.w(&m_level_vertex_id, sizeof(m_level_vertex_id));
     p.w_vec3(m_position);
@@ -280,10 +279,9 @@ void CChangeLevelWnd::OnOk()
 void CChangeLevelWnd::OnCancel()
 {
     Game().StartStopMenu(this, true);
+
     if (m_b_position_cancel)
-    {
         Actor()->MoveActor(m_position_cancel, m_angles_cancel);
-    }
 }
 
 bool CChangeLevelWnd::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)

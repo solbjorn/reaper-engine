@@ -187,8 +187,8 @@ tmc::task<void> CPHWorld::OnFrame()
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// static dReal frame_time=0.f;
 static u32 start_time = 0;
+
 void CPHWorld::Step()
 {
 #ifdef DEBUG
@@ -196,7 +196,7 @@ void CPHWorld::Step()
     dbg_new_queries_per_step = 0;
 #endif
 
-    VERIFY(b_processing || IsFreezed());
+    XR_ASSERT(b_processing || IsFreezed());
 
     PH_OBJECT_I i_object;
     PH_UPDATE_OBJECT_I i_update_object;
@@ -340,10 +340,8 @@ u32 CPHWorld::CalcNumSteps(u32 dTime)
 {
     if (dTime < m_frame_time * 1000)
         return 0;
-    u32 res = iCeil((float(dTime) - m_frame_time * 1000) / (fixed_step * 1000));
-    //	if (dTime < fixed_step*1000) return 0;
-    //	u32 res = iFloor((float(dTime) / 1000 / fixed_step)+0.5f);
-    return res;
+
+    return iCeil((float(dTime) - m_frame_time * 1000) / (fixed_step * 1000));
 }
 
 void CPHWorld::FrameStep(dReal step)
@@ -351,7 +349,7 @@ void CPHWorld::FrameStep(dReal step)
     if (IsFreezed())
         return;
 
-    VERIFY(_valid(step));
+    XR_DEBUG_ASSERT(_valid(step));
     step *= phTimefactor;
 
     // compute contact joints and forces
@@ -414,15 +412,15 @@ void CPHWorld::AddUpdateObject(CPHUpdateObject* object)
 }
 
 void CPHWorld::RemoveUpdateObject(PH_UPDATE_OBJECT_I i) { m_update_objects.erase(i); }
-
 void CPHWorld::RemoveObject(PH_OBJECT_I i) { m_objects.erase((i)); }
 
 void CPHWorld::AddFreezedObject(CPHObject* obj) { m_freezed_objects.push_back(obj); }
-
 void CPHWorld::RemoveFreezedObject(PH_OBJECT_I i) { m_freezed_objects.erase(i); }
+
 void CPHWorld::Freeze()
 {
-    R_ASSERT2(!b_world_freezed, "already freezed!!!");
+    XR_ASSERT(!b_world_freezed);
+
     m_freezed_objects.move_items(m_objects);
     PH_OBJECT_I iter = m_freezed_objects.begin(), e = m_freezed_objects.end();
 
@@ -431,9 +429,11 @@ void CPHWorld::Freeze()
     m_freezed_update_objects.move_items(m_update_objects);
     b_world_freezed = true;
 }
+
 void CPHWorld::UnFreeze()
 {
-    R_ASSERT2(b_world_freezed, "is not freezed!!!");
+    XR_ASSERT(b_world_freezed);
+
     PH_OBJECT_I iter = m_freezed_objects.begin(), e = m_freezed_objects.end();
     for (; e != iter; ++iter)
         (*iter)->UnFreezeContent();
@@ -441,6 +441,7 @@ void CPHWorld::UnFreeze()
     m_update_objects.move_items(m_freezed_update_objects);
     b_world_freezed = false;
 }
+
 bool CPHWorld::IsFreezed() { return b_world_freezed; }
 
 void CPHWorld::CutVelocity(float l_limit, float a_limit)
@@ -453,6 +454,7 @@ void CPHWorld::CutVelocity(float l_limit, float a_limit)
         ++i_object;
     }
 }
+
 void CPHWorld::NetRelcase(CPhysicsShell* s)
 {
     CPHReqComparerHasShell c(s);

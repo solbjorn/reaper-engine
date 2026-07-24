@@ -457,12 +457,7 @@ bool CScriptEntity::bfAssignMovement(CScriptEntityAction* tpEntityAction)
     switch (l_tMovementAction.m_tGoalType)
     {
     case CScriptMovementAction::eGoalTypeObject: {
-        CGameObject* l_tpGameObject = smart_cast<CGameObject*>(l_tMovementAction.m_tpObjectToGo);
-#ifdef DEBUG
-        THROW2(l_tpGameObject, "eGoalTypeObject specified, but no object passed!");
-#else
-        R_ASSERT(l_tpGameObject);
-#endif
+        auto l_tpGameObject = XR_ASSERT_VAL(smart_cast<CGameObject*>(l_tMovementAction.m_tpObjectToGo) != nullptr);
         m_monster->movement().set_path_type(MovementManager::ePathTypeLevelPath);
         m_monster->movement().detail().set_dest_position(l_tpGameObject->Position());
         m_monster->movement().set_level_dest_vertex(l_tpGameObject->ai_location().level_vertex_id());
@@ -489,25 +484,30 @@ bool CScriptEntity::bfAssignMovement(CScriptEntityAction* tpEntityAction)
             vertex_id = ai().level_graph().check_position_in_direction(object().ai_location().level_vertex_id(), object().Position(),
                                                                        l_tMovementAction.m_tDestinationPosition);
 
-#ifdef DEBUG
-        if (!ai().level_graph().valid_vertex_id(vertex_id))
-        {
-            string256 S;
-            sprintf_s(S, "Cannot find corresponding level vertex for the specified position [%f][%f][%f] for monster %s",
-                      VPUSH(l_tMovementAction.m_tDestinationPosition), *m_monster->cName());
-            THROW2(ai().level_graph().valid_vertex_id(vertex_id), S);
-        }
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+        XR_ASSERT(ai().level_graph().valid_vertex_id(vertex_id), "invalid vertex for entity", m_monster->cName(), l_tMovementAction.m_tDestinationPosition,
+                  vertex_id);
+#else
+        XR_DEBUG_ASSERT(ai().level_graph().valid_vertex_id(vertex_id), "invalid vertex for entity", m_monster->cName(),
+                        l_tMovementAction.m_tDestinationPosition, vertex_id);
 #endif
+
         m_monster->movement().level_path().set_dest_vertex(vertex_id);
         break;
     }
-    case CScriptMovementAction::eGoalTypePathNodePosition: {
-        VERIFY(ai().level_graph().valid_vertex_id(l_tMovementAction.m_tNodeID));
+    case CScriptMovementAction::eGoalTypePathNodePosition:
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+        XR_ASSERT(ai().level_graph().valid_vertex_id(l_tMovementAction.m_tNodeID), "invalid vertex for entity", m_monster->cName(),
+                  l_tMovementAction.m_tNodeID);
+#else
+        XR_DEBUG_ASSERT(ai().level_graph().valid_vertex_id(l_tMovementAction.m_tNodeID), "invalid vertex for entity", m_monster->cName(),
+                        l_tMovementAction.m_tNodeID);
+#endif
+
         m_monster->movement().set_path_type(MovementManager::ePathTypeLevelPath);
         m_monster->movement().detail().set_dest_position(l_tMovementAction.m_tDestinationPosition);
         m_monster->movement().level_path().set_dest_vertex(l_tMovementAction.m_tNodeID);
         break;
-    }
     case CScriptMovementAction::eGoalTypeNoPathPosition: {
         m_monster->movement().set_path_type(MovementManager::ePathTypeLevelPath);
         if (m_monster->movement().detail().path().empty() ||

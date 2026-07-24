@@ -19,7 +19,7 @@ public:
     enum MaxTextures
     {
         // Actually these values are 128
-        mtMaxPixelShaderTextures = 16,
+        mtMaxPixelShaderTextures = 32,
         mtMaxVertexShaderTextures = 4,
         mtMaxGeometryShaderTextures = 16,
         mtMaxHullShaderTextures = 16,
@@ -28,11 +28,13 @@ public:
     };
 
     //	Since DX10 allows up to 128 unique textures,
-    //	distance between enum values should be at leas 128
-    enum ResourceShaderType //	Don't change this since it's hardware-dependent
+    //	distance between enum values should be at least 128
+    //	Don't change this since it's hardware-dependent
+    enum ResourceShaderType
     {
-        rstPixel = 0, //	Default texture offset
-        rstVertex = D3DVERTEXTEXTURESAMPLER0,
+        // Default texture offset
+        rstPixel = 0,
+        rstVertex = rstPixel + 256,
         rstGeometry = rstVertex + 256,
         rstHull = rstGeometry + 256,
         rstDomain = rstHull + 256,
@@ -58,8 +60,6 @@ public:
     void Load(const char* Name) override;
     void PostLoad();
     void Unload() override;
-
-    //	void								Apply			(u32 dwStage);
 
     void surface_set(ID3DBaseTexture* surf);
     ID3DBaseTexture* surface_get() const;

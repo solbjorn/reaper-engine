@@ -228,7 +228,6 @@ public:
     void reinit() override;
     void reload(gsl::czstring) override;
 
-public:
     virtual void dbg_DrawSkeleton();
 
     [[nodiscard]] virtual const SRotation Orientation() const
@@ -243,19 +242,15 @@ public:
 
     [[nodiscard]] virtual bool use_parent_ai_locations() const { return (true); }
 
-public:
     typedef void visual_callback(IKinematics*);
-    typedef svector<visual_callback*, 6> CALLBACK_VECTOR;
-    typedef CALLBACK_VECTOR::iterator CALLBACK_VECTOR_IT;
+    std::inplace_vector<visual_callback*, 6> m_visual_callback;
 
-    CALLBACK_VECTOR m_visual_callback;
-
-public:
     void add_visual_callback(visual_callback* callback);
     void remove_visual_callback(visual_callback* callback);
     void SetKinematicsCallback(bool set);
 
-    IC CALLBACK_VECTOR& visual_callbacks() { return (m_visual_callback); }
+    [[nodiscard]] const auto& visual_callbacks() const { return m_visual_callback; }
+    [[nodiscard]] auto& visual_callbacks() { return m_visual_callback; }
 
 private:
     mutable CScriptGameObject* m_lua_game_object;
@@ -263,11 +258,8 @@ private:
 
 public:
     CScriptGameObject* lua_game_object() const;
-    int clsid() const
-    {
-        THROW(m_script_clsid >= 0);
-        return (m_script_clsid);
-    }
+
+    [[nodiscard]] auto clsid() const { return XR_ASSERT_VAL(m_script_clsid >= 0); }
 
 public:
     IC CInifile* spawn_ini() { return (m_ini_file); }

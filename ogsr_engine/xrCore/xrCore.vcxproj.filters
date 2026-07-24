@@ -243,9 +243,6 @@
     <ClInclude Include="xrcpuid.h">
       <Filter>Math\CPU</Filter>
     </ClInclude>
-    <ClInclude Include="FixedVector.h">
-      <Filter>Math\STLext</Filter>
-    </ClInclude>
     <ClInclude Include="xrPool.h">
       <Filter>Math\STLext</Filter>
     </ClInclude>

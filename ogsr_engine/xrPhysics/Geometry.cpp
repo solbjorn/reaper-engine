@@ -1,16 +1,35 @@
 #include "stdafx.h"
 
 #include "Geometry.h"
+
 #include "PHDynamicData.h"
 #include "ExtendedGeom.h"
-#include "dcylinder//dCylinder.h"
+
+#include "dcylinder/dCylinder.h"
 // global
 
 namespace
 {
+enum class geom : s32
+{
+    sphere = dSphereClass,
+    box = dBoxClass,
+    ccylinder = dCCylinderClass,
+    cylinder = dCylinderClass,
+    plane = dPlaneClass,
+    ray = dRayClass,
+    transform = dGeomTransformClass,
+    trimesh = dTriMeshClass,
+
+    simple_space = dSimpleSpaceClass,
+    hash_space = dHashSpaceClass,
+    quadtree_space = dQuadTreeSpaceClass,
+};
+
 void computeFinalTx(dGeomID geom_transform, dReal* final_pos, dReal* final_R)
 {
-    R_ASSERT2(dGeomGetClass(geom_transform) == dGeomTransformClass, "is not a geom transform");
+    XR_ASSERT(geom{dGeomGetClass(geom_transform)} == geom::transform, "not a geom transform");
+
     dGeomID obj = dGeomTransformGetGeom(geom_transform);
     const dReal* R = dGeomGetRotation(geom_transform);
     const dReal* pos = dGeomGetPosition(geom_transform);
@@ -23,7 +42,8 @@ void computeFinalTx(dGeomID geom_transform, dReal* final_pos, dReal* final_R)
 
 void GetBoxExtensions(dGeomID box, const dReal* axis, const dReal* pos, const dReal* rot, float center_prg, dReal* lo_ext, dReal* hi_ext)
 {
-    R_ASSERT2(dGeomGetClass(box) == dBoxClass, "is not a box");
+    XR_ASSERT(geom{dGeomGetClass(box)} == geom::box, "not a box");
+
     dVector3 length;
     dGeomBoxGetLengths(box, length);
     dReal dif = dDOT(pos, axis) - center_prg;
@@ -35,7 +55,8 @@ void GetBoxExtensions(dGeomID box, const dReal* axis, const dReal* pos, const dR
 
 void GetCylinderExtensions(dGeomID cyl, const dReal* axis, const dReal* pos, const dReal* rot, float center_prg, dReal* lo_ext, dReal* hi_ext)
 {
-    R_ASSERT2(dGeomGetClass(cyl) == dCylinderClassUser, "is not a cylinder");
+    XR_ASSERT(dGeomGetClass(cyl) == dCylinderClassUser, "not a cylinder");
+
     dReal radius, length;
     dGeomCylinderGetParams(cyl, &radius, &length);
     dReal dif = dDOT(pos, axis) - center_prg;
@@ -51,7 +72,8 @@ void GetCylinderExtensions(dGeomID cyl, const dReal* axis, const dReal* pos, con
 
 void GetSphereExtensions(dGeomID sphere, const dReal* axis, const dReal* pos, float center_prg, dReal* lo_ext, dReal* hi_ext)
 {
-    R_ASSERT2(dGeomGetClass(sphere) == dSphereClass, "is not a sphere");
+    XR_ASSERT(geom{dGeomGetClass(sphere)} == geom::sphere, "not a sphere");
+
     dReal radius = dGeomSphereGetRadius(sphere);
     dReal dif = dDOT(pos, axis) - center_prg;
     *lo_ext = -radius + dif;
@@ -126,7 +148,8 @@ void CODEGeom::get_global_form_bt(Fmatrix& form)
 
 void CODEGeom::get_xform(Fmatrix& form)
 {
-    VERIFY(m_geom_transform);
+    XR_ASSERT(m_geom_transform != nullptr);
+
     const dReal* rot = nullptr;
     const dReal* pos = nullptr;
     dVector3 p;
@@ -139,9 +162,9 @@ void CODEGeom::get_xform(Fmatrix& form)
 template <typename geom_type>
 void t_get_box(geom_type* shell, const Fmatrix& form, Fvector& sz, Fvector& c)
 {
-    c.set(0, 0, 0);
+    static_assert(sizeof(form.vm[0]) == 4 * sizeof(f32));
 
-    VERIFY(sizeof(form.vm[0]) == 4 * sizeof(float));
+    c.set(0, 0, 0);
 
     for (int i = 0; 3 > i; ++i)
     {
@@ -173,7 +196,7 @@ void CODEGeom::set_static_ref_form(const Fmatrix& form)
     dGeomSetRotation(geometry_transform(), R);
 }
 
-void CODEGeom::set_position(const Fvector& /*ref_point*/) { dGeomUserDataResetLastPos(geom()); }
+void CODEGeom::set_position(const Fvector3&) { dGeomUserDataResetLastPos(geom()); }
 
 void CODEGeom::set_body(dBodyID body)
 {
@@ -186,172 +209,116 @@ void CODEGeom::add_to_space(dSpaceID space)
     if (m_geom_transform)
         dSpaceAdd(space, m_geom_transform);
 }
+
 void CODEGeom::remove_from_space(dSpaceID space)
 {
     if (m_geom_transform)
         dSpaceRemove(space, m_geom_transform);
 }
+
 void CODEGeom::clear_cashed_tries()
 {
-    if (!m_geom_transform)
+    if (m_geom_transform == nullptr)
         return;
-    dGeomID g = geom();
-    if (g)
-    {
-        VERIFY(dGeomGetUserData(g));
-        dGeomUserDataClearCashedTries(g);
-    }
-    else
-    {
-        VERIFY(dGeomGetUserData(m_geom_transform));
-        dGeomUserDataClearCashedTries(m_geom_transform);
-    }
+
+    auto g = geom() ?: m_geom_transform;
+    XR_ASSERT(dGeomGetUserData(g) != nullptr);
+
+    dGeomUserDataClearCashedTries(g);
 }
+
 void CODEGeom::set_material(u16 ul_material)
 {
-    if (!m_geom_transform)
+    if (m_geom_transform == nullptr)
         return;
-    if (geom())
-    {
-        VERIFY(dGeomGetUserData(geom()));
-        dGeomGetUserData(geom())->material = ul_material;
-    }
-    else
-    {
-        VERIFY(dGeomGetUserData(m_geom_transform));
-        dGeomGetUserData(m_geom_transform)->material = ul_material;
-    }
+
+    auto g = geom() ?: m_geom_transform;
+    XR_ASSERT_VAL(dGeomGetUserData(g) != nullptr)->material = ul_material;
 }
 
 void CODEGeom::set_contact_cb(ContactCallbackFun* ccb)
 {
-    if (!m_geom_transform)
+    if (m_geom_transform == nullptr)
         return;
-    if (geom())
-    {
-        VERIFY(dGeomGetUserData(geom()));
-        dGeomUserDataSetContactCallback(geom(), ccb);
-    }
-    else
-    {
-        VERIFY(dGeomGetUserData(m_geom_transform));
-        dGeomUserDataSetContactCallback(m_geom_transform, ccb);
-    }
+
+    auto g = geom() ?: m_geom_transform;
+    XR_ASSERT(dGeomGetUserData(g) != nullptr);
+
+    dGeomUserDataSetContactCallback(g, ccb);
 }
 
 void CODEGeom::set_obj_contact_cb(ObjectContactCallbackFun* occb)
 {
-    if (!m_geom_transform)
+    if (m_geom_transform == nullptr)
         return;
-    if (geom())
-    {
-        VERIFY(dGeomGetUserData(geom()));
-        dGeomUserDataSetObjectContactCallback(geom(), occb);
-    }
-    else
-    {
-        VERIFY(dGeomGetUserData(m_geom_transform));
-        dGeomUserDataSetObjectContactCallback(m_geom_transform, occb);
-    }
+
+    auto g = geom() ?: m_geom_transform;
+    XR_ASSERT(dGeomGetUserData(g) != nullptr);
+
+    dGeomUserDataSetObjectContactCallback(g, occb);
 }
 
 void CODEGeom::add_obj_contact_cb(ObjectContactCallbackFun* occb)
 {
-    if (!m_geom_transform)
+    if (m_geom_transform == nullptr)
         return;
-    if (geom())
-    {
-        VERIFY(dGeomGetUserData(geom()));
-        dGeomUserDataAddObjectContactCallback(geom(), occb);
-    }
-    else
-    {
-        VERIFY(dGeomGetUserData(m_geom_transform));
-        dGeomUserDataAddObjectContactCallback(m_geom_transform, occb);
-    }
+
+    auto g = geom() ?: m_geom_transform;
+    XR_ASSERT(dGeomGetUserData(g) != nullptr);
+
+    dGeomUserDataAddObjectContactCallback(g, occb);
 }
 
 void CODEGeom::remove_obj_contact_cb(ObjectContactCallbackFun* occb)
 {
-    if (!m_geom_transform)
+    if (m_geom_transform == nullptr)
         return;
-    if (geom())
-    {
-        VERIFY(dGeomGetUserData(geom()));
-        dGeomUserDataRemoveObjectContactCallback(geom(), occb);
-    }
-    else
-    {
-        VERIFY(dGeomGetUserData(m_geom_transform));
-        dGeomUserDataRemoveObjectContactCallback(m_geom_transform, occb);
-    }
+
+    auto g = geom() ?: m_geom_transform;
+    XR_ASSERT(dGeomGetUserData(g) != nullptr);
+
+    dGeomUserDataRemoveObjectContactCallback(g, occb);
 }
 
 void CODEGeom::set_callback_data(void* cd)
 {
-    if (!m_geom_transform)
+    if (m_geom_transform == nullptr)
         return;
 
-    if (geom())
-    {
-        VERIFY(dGeomGetUserData(geom()));
-        dGeomUserDataSetCallbackData(geom(), cd);
-    }
-    else
-    {
-        VERIFY(dGeomGetUserData(m_geom_transform));
-        dGeomUserDataSetCallbackData(m_geom_transform, cd);
-    }
+    auto g = geom() ?: m_geom_transform;
+    XR_ASSERT(dGeomGetUserData(g) != nullptr);
+
+    dGeomUserDataSetCallbackData(g, cd);
 }
 
 void* CODEGeom::get_callback_data()
 {
-    if (!m_geom_transform)
+    if (m_geom_transform == nullptr)
         return nullptr;
 
-    if (geom())
-    {
-        VERIFY(dGeomGetUserData(geom()));
-        return dGeomGetUserData(geom())->callback_data;
-    }
-    else
-    {
-        VERIFY(dGeomGetUserData(m_geom_transform));
-        return dGeomGetUserData(m_geom_transform)->callback_data;
-    }
+    auto g = geom() ?: m_geom_transform;
+
+    return XR_ASSERT_VAL(dGeomGetUserData(g) != nullptr)->callback_data;
 }
 
 void CODEGeom::set_ref_object(CPhysicsShellHolder* ro)
 {
-    if (!m_geom_transform)
+    if (m_geom_transform == nullptr)
         return;
 
-    if (geom())
-    {
-        VERIFY(dGeomGetUserData(geom()));
-        dGeomUserDataSetPhysicsRefObject(geom(), ro);
-    }
-    else
-    {
-        VERIFY(dGeomGetUserData(m_geom_transform));
-        dGeomUserDataSetPhysicsRefObject(m_geom_transform, ro);
-    }
+    auto g = geom() ?: m_geom_transform;
+    XR_ASSERT(dGeomGetUserData(g) != nullptr);
+
+    dGeomUserDataSetPhysicsRefObject(g, ro);
 }
 
 void CODEGeom::set_ph_object(CPHObject* o)
 {
-    if (!m_geom_transform)
+    if (m_geom_transform == nullptr)
         return;
-    if (geom())
-    {
-        VERIFY(dGeomGetUserData(geom()));
-        dGeomGetUserData(geom())->ph_object = o;
-    }
-    else
-    {
-        VERIFY(dGeomGetUserData(m_geom_transform));
-        dGeomGetUserData(m_geom_transform)->ph_object = o;
-    }
+
+    auto g = geom() ?: m_geom_transform;
+    XR_ASSERT_VAL(dGeomGetUserData(g) != nullptr)->ph_object = o;
 }
 
 void CODEGeom::move_local_basis(const Fmatrix& inv_new_mul_old)
@@ -413,9 +380,7 @@ float CBoxGeom::radius() { return m_box.m_halfsize.x; }
 
 void CODEGeom::get_final_tx_bt(const dReal*& p, const dReal*& R, dReal* bufV, dReal* bufM)
 {
-    VERIFY(m_geom_transform);
-    // dGeomID		g		=	geometry_bt()						;
-    get_final_tx(m_geom_transform, p, R, bufV, bufM);
+    get_final_tx(XR_ASSERT_VAL(m_geom_transform != nullptr), p, R, bufV, bufM);
 }
 
 void CODEGeom::get_final_tx(dGeomID g, const dReal*& p, const dReal*& R, dReal* bufV, dReal* bufM)
@@ -435,12 +400,14 @@ void CODEGeom::get_final_tx(dGeomID g, const dReal*& p, const dReal*& R, dReal* 
 
 void CBoxGeom::get_extensions_bt(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext)
 {
-    VERIFY(m_geom_transform);
-    const dReal* rot{};
-    const dReal* pos{};
+    XR_ASSERT(m_geom_transform != nullptr);
+
+    const dReal* rot{nullptr};
+    const dReal* pos{nullptr};
     dVector3 p;
     dMatrix3 r;
     dGeomID g = geometry_bt();
+
     get_final_tx_bt(pos, rot, p, r);
     GetBoxExtensions(g, cast_fp(axis), pos, rot, center_prg, &lo_ext, &hi_ext);
 }
@@ -540,12 +507,14 @@ float CSphereGeom::radius() { return m_sphere.R; }
 
 void CSphereGeom::get_extensions_bt(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext)
 {
-    VERIFY(m_geom_transform);
-    const dReal* rot{};
-    const dReal* pos{};
+    XR_ASSERT(m_geom_transform != nullptr);
+
+    const dReal* rot{nullptr};
+    const dReal* pos{nullptr};
     dVector3 p;
     dMatrix3 r;
     dGeomID g = geometry_bt();
+
     get_final_tx_bt(pos, rot, p, r);
     GetSphereExtensions(g, cast_fp(axis), pos, center_prg, &lo_ext, &hi_ext);
 }
@@ -587,12 +556,14 @@ float CCylinderGeom::radius() { return m_cylinder.m_radius; }
 
 void CCylinderGeom::get_extensions_bt(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext)
 {
-    VERIFY(m_geom_transform);
-    const dReal* rot{};
-    const dReal* pos{};
+    XR_ASSERT(m_geom_transform != nullptr);
+
+    const dReal* rot{nullptr};
+    const dReal* pos{nullptr};
     dVector3 p;
     dMatrix3 r;
     dGeomID g = geometry_bt();
+
     get_final_tx_bt(pos, rot, p, r);
     GetCylinderExtensions(g, cast_fp(axis), pos, rot, center_prg, &lo_ext, &hi_ext);
 }

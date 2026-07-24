@@ -21,10 +21,8 @@ void _VertexStream::Create()
     bufferDesc.BindFlags = D3D_BIND_VERTEX_BUFFER;
     bufferDesc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
 
-    R_CHK(HW.pDevice->CreateBuffer(&bufferDesc, nullptr, &pVB));
+    XR_ASSERT(xr::hr(HW.pDevice->CreateBuffer(&bufferDesc, nullptr, &pVB)));
     HW.stats_manager.increment_stats_vb(pVB);
-
-    R_ASSERT(pVB);
 
     mPosition = 0;
     mDiscardID = 0;
@@ -35,6 +33,7 @@ void _VertexStream::Create()
 void _VertexStream::Destroy()
 {
     HW.stats_manager.decrement_stats_vb(pVB);
+
     _RELEASE(pVB);
     _clear();
 }
@@ -44,15 +43,11 @@ void* _VertexStream::Lock(u32 vl_Count, u32 Stride, u32& vOffset)
     D3D11_MAPPED_SUBRESOURCE MappedSubRes;
 
 #ifdef DEBUG
-    VERIFY(0 == dbg_lock);
-    dbg_lock++;
+    dbg_lock = XR_ASSERT_VAL(dbg_lock == 0) + 1;
 #endif
 
-    R_ASSERT(vl_Count, "Missing or invalid texture! vl_Count=0.");
-
     // Ensure there is enough space in the VB for this data
-    const u32 bytes_need = vl_Count * Stride;
-    ASSERT_FMT(bytes_need <= mSize, "bytes_need = [%u], mSize = [%u]", bytes_need, mSize);
+    XR_ASSERT(vl_Count > 0 && vl_Count * Stride <= mSize, "vertex buffer overflow", vl_Count, Stride, mSize);
 
     // Vertex-local info
     const u32 vl_mSize = mSize / Stride;
@@ -83,23 +78,18 @@ void* _VertexStream::Lock(u32 vl_Count, u32 Stride, u32& vOffset)
         pData = (BYTE*)MappedSubRes.pData;
         pData += vOffset * Stride;
     }
-    VERIFY(pData);
 
-    return LPVOID(pData);
+    return XR_ASSERT_VAL(pData != nullptr);
 }
 
 void _VertexStream::Unlock(u32 Count, u32 Stride)
 {
 #ifdef DEBUG
-    VERIFY(1 == dbg_lock);
-    dbg_lock--;
+    dbg_lock = XR_ASSERT_VAL(dbg_lock == 1) - 1;
 #endif
 
     mPosition += Count * Stride;
-
-    VERIFY(pVB);
-
-    HW.get_imm_context()->Unmap(pVB, 0);
+    HW.get_imm_context()->Unmap(XR_ASSERT_VAL(pVB != nullptr), 0);
 }
 
 void _VertexStream::reset_begin()
@@ -107,13 +97,11 @@ void _VertexStream::reset_begin()
     old_pVB = pVB;
     Destroy();
 }
-void _VertexStream::reset_end()
-{
-    Create();
-    // old_pVB				= NULL;
-}
+
+void _VertexStream::reset_end() { Create(); }
 
 //////////////////////////////////////////////////////////////////////////
+
 void _IndexStream::Create()
 {
     mSize = rsDIB_Size * 1024;
@@ -124,10 +112,8 @@ void _IndexStream::Create()
     bufferDesc.BindFlags = D3D_BIND_INDEX_BUFFER;
     bufferDesc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
 
-    R_CHK(HW.pDevice->CreateBuffer(&bufferDesc, nullptr, &pIB));
+    XR_ASSERT(xr::hr(HW.pDevice->CreateBuffer(&bufferDesc, nullptr, &pIB)));
     HW.stats_manager.increment_stats_ib(pIB);
-
-    R_ASSERT(pIB);
 
     mPosition = 0;
     mDiscardID = 0;
@@ -138,6 +124,7 @@ void _IndexStream::Create()
 void _IndexStream::Destroy()
 {
     HW.stats_manager.decrement_stats_ib(pIB);
+
     _RELEASE(pIB);
     _clear();
 }
@@ -150,7 +137,7 @@ u16* _IndexStream::Lock(u32 Count, u32& vOffset)
     BYTE* pLockedData{};
 
     // Ensure there is enough space in the VB for this data
-    R_ASSERT((2 * Count <= mSize) && Count);
+    XR_ASSERT(Count > 0 && Count * 2 <= mSize, "index buffer overflow", Count, mSize);
 
     // If either user forced us to flush,
     // or there is not enough space for the index data,
@@ -167,19 +154,15 @@ u16* _IndexStream::Lock(u32 Count, u32& vOffset)
     pLockedData = (BYTE*)MappedSubRes.pData;
     pLockedData += mPosition * 2;
 
-    VERIFY(pLockedData);
-
     vOffset = mPosition;
 
-    return LPWORD(pLockedData);
+    return reinterpret_cast<u16*>(XR_ASSERT_VAL(pLockedData != nullptr));
 }
 
 void _IndexStream::Unlock(u32 RealCount)
 {
     mPosition += RealCount;
-    VERIFY(pIB);
-
-    HW.get_imm_context()->Unmap(pIB, 0);
+    HW.get_imm_context()->Unmap(XR_ASSERT_VAL(pIB != nullptr), 0);
 }
 
 void _IndexStream::reset_begin()

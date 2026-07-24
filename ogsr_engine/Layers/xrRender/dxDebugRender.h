@@ -17,7 +17,6 @@ public:
     void ZEnable(bool bEnable) override;
     void OnFrameEnd() override;
     void SetShader(const debug_shader& shader) override;
-    void SetAmbient(u32 colour) override;
 
     // Shaders
     void SetDebugShader(dbgShaderHandle shdHandle) override;

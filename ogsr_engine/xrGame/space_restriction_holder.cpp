@@ -120,7 +120,8 @@ void CSpaceRestrictionHolder::register_restrictor(CSpaceRestrictor* space_restri
         else if (restrictor_type == RestrictionSpace::eDefaultRestrictorTypeIn)
             temp = &m_default_in_restrictions;
         else
-            NODEFAULT;
+            xr::unreachable();
+
         temp1 = *temp;
 
         xr_string m_temp_string;
@@ -194,20 +195,13 @@ bool try_remove_string(shared_str& search_string, const shared_str& string_to_se
 void CSpaceRestrictionHolder::unregister_restrictor(CSpaceRestrictor* space_restrictor)
 {
     shared_str restrictor_id = space_restrictor->cName();
-
-    auto I = m_restrictions.find(restrictor_id);
-    ASSERT_FMT(I != m_restrictions.end(), "!![%s] restrictor [%s] not found!", std::source_location::current().function_name(), restrictor_id.c_str());
+    auto I = XR_ASSERT_VAL(m_restrictions.find(restrictor_id) != m_restrictions.end(), "restrictor not found", restrictor_id);
 
     CSpaceRestrictionBridge* bridge = (*I).second;
     m_restrictions.erase(I);
 
-    if (try_remove_string(m_default_out_restrictions, restrictor_id))
+    if (try_remove_string(m_default_out_restrictions, restrictor_id) || try_remove_string(m_default_in_restrictions, restrictor_id))
         on_default_restrictions_changed();
-    else
-    {
-        if (try_remove_string(m_default_in_restrictions, restrictor_id))
-            on_default_restrictions_changed();
-    }
 
     CSpaceRestrictionBase* composition = xr_new<CSpaceRestrictionComposition>(this, restrictor_id);
     bridge->change_implementation(composition);

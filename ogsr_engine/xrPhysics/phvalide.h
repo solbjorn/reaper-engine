@@ -26,7 +26,7 @@ IC BOOL dBodyStateValide(const dBodyID body)
             Msg("Level box: {},{},{}-{},{},{},", bounds.x1, bounds.y1, bounds.z1, bounds.x2, bounds.y2, bounds.z2); \
             Msg("Object: {}", obj->Name()); \
             Msg("Visual: {}", obj->cNameVisual()); \
-            VERIFY(0); \
+            XR_PANIC(); \
         } \
     }
 #define VERIFY_BOUNDARIES(pos, bounds, obj) VERIFY_BOUNDARIES2(pos, bounds, obj, "\t")

@@ -34,7 +34,7 @@ void CServerEntityWrapper::save(IWriter& stream)
     // Update
     stream.open_chunk(1);
 
-    net_packet.w_begin(M_UPDATE);
+    net_packet.w_begin(gsl::narrow<u16>(xr::msg::M_UPDATE));
     m_object->UPDATE_Write(net_packet);
     stream.w_u16(u16(net_packet.B.count));
     stream.w(net_packet.B.data, net_packet.B.count);
@@ -56,14 +56,12 @@ void CServerEntityWrapper::load(IReader& stream)
     chunk->close();
 
     std::ignore = net_packet.r_begin(ID);
-    R_ASSERT2(M_SPAWN == ID, "Invalid packet ID (!= M_SPAWN)!");
+    XR_ASSERT(xr::msg{ID} == xr::msg::M_SPAWN, "invalid packet ID");
 
     string64 s_name;
     net_packet.r_stringZ(s_name);
 
-    m_object = F_entity_Create(s_name);
-
-    R_ASSERT3(m_object, "Can't create entity.", s_name);
+    m_object = XR_ASSERT_VAL(F_entity_Create(s_name) != nullptr, "failed to create entity", s_name);
     std::ignore = m_object->Spawn_Read(net_packet);
 
 #ifdef DEBUG
@@ -78,7 +76,7 @@ void CServerEntityWrapper::load(IReader& stream)
     chunk->close();
 
     std::ignore = net_packet.r_begin(ID);
-    R_ASSERT2(M_UPDATE == ID, "Invalid packet ID (!= M_UPDATE)!");
+    XR_ASSERT(xr::msg{ID} == xr::msg::M_UPDATE, "invalid packet ID", s_name, m_object->ID);
 
     m_object->UPDATE_Read(net_packet);
 }

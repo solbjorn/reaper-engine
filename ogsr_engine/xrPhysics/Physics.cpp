@@ -24,7 +24,6 @@ extern CPHWorld* ph_world;
 
 #include "ExtendedGeom.h"
 
-// union dInfBytes dInfinityValue = {{0,0,0x80,0x7f}};
 PhysicsStepTimeCallback* physics_step_time_callback{};
 
 const dReal default_w_limit = 9.8174770f; //(M_PI/16.f/(fixed_step=0.02f));
@@ -37,11 +36,10 @@ const dReal default_k_w = 0.05f;
 const dReal mass_limit = 10000.f; // some conventional value used as evaluative param (there is no code restriction on mass)
 extern const u16 max_joint_allowed_for_exeact_integration = 30;
 
-// base	params
 const dReal base_fixed_step = 0.02f;
 const dReal base_erp = 0.54545456f;
 const dReal base_cfm = 1.1363636e-006f;
-// base params
+
 dReal fixed_step = 0.01f;
 dReal world_cfm = CFM(SPRING_S(base_cfm, base_erp, base_fixed_step), DAMPING(base_cfm, base_erp));
 dReal world_erp = ERP(SPRING_S(base_cfm, base_erp, base_fixed_step), DAMPING(base_cfm, base_erp));
@@ -93,24 +91,20 @@ IC void add_contact_body_effector(dBodyID body, const dContact& c, SGameMtl* mat
 
 IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup, CPHIsland* world, const int& MAX_CONTACTS)
 {
-    const int RS = 800 + 10;
-    const int N = RS;
+    XR_ASSERT(o1 != nullptr && o2 != nullptr);
+
+    static constexpr int RS = 800 + 10;
+    static constexpr int N = RS;
 
     static dContact contacts[RS];
     int collided_contacts = 0;
+
     // get the contacts up to a maximum of N contacts
-    int n;
-
-    VERIFY(o1);
-    VERIFY(o2);
-    VERIFY(&contacts[0].geom);
-    n = dCollide(o1, o2, N, &contacts[0].geom, sizeof(dContact));
-
+    int n = dCollide(o1, o2, N, &contacts[0].geom, sizeof(dContact));
     if (n > N - 1)
         n = N - 1;
 
     int i;
-
     for (i = 0; i < n; ++i)
     {
         dContact& c = contacts[i];
@@ -172,8 +166,8 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup,
         {
             if (material_1->Flags.test(SGameMtl::flSlowDown) && !(usr_data_2->pushing_neg || usr_data_2->pushing_b_neg))
             {
-                dBodyID body = dGeomGetBody(g2);
-                R_ASSERT2(body, "static - static collision !!!");
+                dBodyID body = XR_ASSERT_VAL(dGeomGetBody(g2) != nullptr);
+
                 if (material_1->Flags.test(SGameMtl::flLiquid))
                 {
                     add_contact_body_effector(body, c, material_1);
@@ -181,20 +175,20 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup,
                 else
                 {
                     if (!usr_data_2 || !usr_data_2->ph_object || !usr_data_2->ph_object->IsRayMotion())
-                    {
                         add_contact_body_effector(body, c, material_1);
-                    }
                 }
             }
+
             if (material_1->Flags.test(SGameMtl::flPassable))
                 do_collide = false;
         }
+
         if (is_tri_2)
         {
             if (material_2->Flags.test(SGameMtl::flSlowDown) && !(usr_data_1->pushing_neg || usr_data_1->pushing_b_neg))
             {
-                dBodyID body = dGeomGetBody(g1);
-                R_ASSERT2(body, "static - static collision !!!");
+                dBodyID body = XR_ASSERT_VAL(dGeomGetBody(g1) != nullptr);
+
                 if (material_2->Flags.test(SGameMtl::flLiquid))
                 {
                     add_contact_body_effector(body, c, material_2);
@@ -202,11 +196,10 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup,
                 else
                 {
                     if (!usr_data_1 || !usr_data_1->ph_object || !usr_data_1->ph_object->IsRayMotion())
-                    {
                         add_contact_body_effector(body, c, material_2);
-                    }
                 }
             }
+
             if (material_2->Flags.test(SGameMtl::flPassable))
                 do_collide = false;
         }
@@ -384,9 +377,10 @@ void BodyCutForce(dBodyID body, float l_limit, float w_limit)
 
 void dMassSub(dMass* a, const dMass* b)
 {
-    int i;
-    VERIFY(a && b);
+    XR_ASSERT(a != nullptr && b != nullptr);
     dReal denom = dRecip(a->mass - b->mass);
+
+    int i;
     for (i = 0; i < 3; ++i)
         a->c[i] = (a->c[i] * a->mass - b->c[i] * b->mass) * denom;
 
@@ -399,7 +393,8 @@ void dMassSub(dMass* a, const dMass* b)
 ////Energy of non Elastic collision;
 // body - static case
 float E_NlS(dBodyID body, const dReal* norm, float norm_sign) // if body c.geom.g1 norm_sign + else -
-{ // norm*norm_sign - to body
+{
+    // norm*norm_sign - to body
     const dReal* vel = dBodyGetLinearVel(body);
     dReal prg = -dDOT(vel, norm) * norm_sign;
     prg = prg < 0.f ? prg = 0.f : prg;
@@ -438,9 +433,10 @@ float E_NLD(dBodyID b1, dBodyID b2, const dReal* norm) // norm - from 2 to 1
 
     return (kin_energy_start - kin_energy_end);
 }
+
 float E_NL(dBodyID b1, dBodyID b2, const dReal* norm)
 {
-    VERIFY(b1 || b2);
+    XR_ASSERT(b1 != nullptr || b2 != nullptr);
 
     if (b1)
         if (b2)
@@ -450,6 +446,7 @@ float E_NL(dBodyID b1, dBodyID b2, const dReal* norm)
     else
         return E_NlS(b2, norm, -1);
 }
+
 void ApplyGravityAccel(dBodyID body, const dReal* accel)
 {
     dMass m;
@@ -459,7 +456,8 @@ void ApplyGravityAccel(dBodyID body, const dReal* accel)
 
 const dReal* dJointGetPositionContact(dJointID joint)
 {
-    VERIFY2(dJointGetType(joint) == dJointTypeContact, "not a contact!");
+    XR_DEBUG_ASSERT(dJointGetType(joint) == dJointTypeContact, "not a contact");
+
     dxJointContact* c_joint = (dxJointContact*)joint;
     return c_joint->contact.geom.pos;
 }

@@ -101,21 +101,19 @@ inline void CROS_impl::accum_hemi(float* hemi_cube, Fvector3& dir, float scale)
 }
 
 //////////////////////////////////////////////////////////////////////////
+
 void CROS_impl::update(IRenderable* O)
 {
     // clip & verify
     if (dwFrame == Device.dwFrame)
         return;
+
     dwFrame = Device.dwFrame;
 
-    if (!O)
-        return;
-    if (!O->renderable.visual)
+    if (O == nullptr || O->renderable.visual == nullptr)
         return;
 
-    VERIFY(smart_cast<CROS_impl*>(O->renderable_ROS()));
-    // float	dt			=	Device.fTimeDelta;
-
+    XR_DEBUG_ASSERT(smart_cast<CROS_impl*>(O->renderable_ROS()) != nullptr);
     CObject* _object = smart_cast<CObject*>(O);
 
     if (skip) [[unlikely]]
@@ -236,17 +234,15 @@ constexpr s32 s_iUTIdleMax{2000};
 
 void CROS_impl::smart_update(IRenderable* O)
 {
-    if (!O)
-        return;
-    if (!O->renderable.visual)
+    if (O == nullptr || O->renderable.visual == nullptr)
         return;
 
     --ticks_to_update;
 
     //	Acquire current position
-    Fvector position;
-    VERIFY(smart_cast<CROS_impl*>(O->renderable_ROS()));
+    XR_DEBUG_ASSERT(smart_cast<CROS_impl*>(O->renderable_ROS()) != nullptr);
     vis_data& vis = O->renderable.visual->getVisData();
+    Fvector position;
     O->renderable.xform.transform_tiny(position, vis.sphere.P);
 
     if (ticks_to_update <= 0)
@@ -380,12 +376,13 @@ void CROS_impl::prepare_lights(Fvector& position, IRenderable* O)
         static xr_vector<ISpatial*> lstSpatial;
         g_SpatialSpace->q_box(lstSpatial, 0, STYPE_LIGHTSOURCEHEMI, position, bb_size);
 
-        for (auto* spatial : lstSpatial)
+        for (auto spatial : lstSpatial)
         {
-            light* source = (light*)spatial->dcast_Light();
-            VERIFY(source); // sanity check
-            float R = radius + source->range;
-            if (position.distance_to(source->position) < R && source->flags.bStatic)
+            auto source = XR_ASSERT_VAL(smart_cast<light*>(spatial->dcast_Light()) != nullptr);
+            if (!source->flags.bStatic)
+                continue;
+
+            if (const f32 R = radius + source->range; position.distance_to(source->position) < R)
                 add(source);
         }
 

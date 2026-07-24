@@ -25,15 +25,14 @@ void HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line, HUD_SOUND& hud_snd, int t
         sprintf_s(sound_line, "%s%d", line, ++k);
     } // while
 
-    ASSERT_FMT(!hud_snd.sounds.empty(), "there is no sounds [%s] for [%s]", line, section);
+    XR_ASSERT(!hud_snd.sounds.empty(), "HUD sounds not found", section, line, type);
 }
 
 void HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line, ref_sound& snd, int type, float* volume, float* delay, float* freq)
 {
     const auto str = pSettings->r_string(section, line);
-    const auto count = _GetItemCount(str);
+    const auto count = XR_ASSERT_VAL(_GetItemCount(str) > 0, "", section, line, str, type);
 
-    R_ASSERT(count > 0);
     string256 buf_str;
     snd.create(_GetItem(str, 0, buf_str), st_Effect, type);
 

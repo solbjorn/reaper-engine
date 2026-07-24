@@ -150,9 +150,8 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 
         if (!e_src)
             e_src = e_dest;
-        VERIFY(e_src);
-        //			R_ASSERT2			(e_dest && e_src, "Killer or/and being killed are offline or not exist at all :(");
 
+        VERIFY(e_src);
         game->on_death(e_dest, e_src);
 
         xrClientData* c_src = e_src->owner; // клиент, чей юнит убил
@@ -160,7 +159,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
         if (c_src->owner->ID == id_src)
         {
             // Main unit
-            P.w_begin(M_EVENT);
+            P.w_begin(gsl::narrow<u16>(xr::msg::M_EVENT));
             P.w_u32(timestamp);
             P.w_u16(type);
             P.w_u16(destination);
@@ -170,14 +169,12 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 
         SendBroadcast(BroadcastCID, P, MODE);
 
-        //////////////////////////////////////////////////////////////////////////
-        P.w_begin(M_EVENT);
+        P.w_begin(gsl::narrow<u16>(xr::msg::M_EVENT));
         P.w_u32(timestamp);
         P.w_u16(GE_KILL_SOMEONE);
         P.w_u16(id_src);
         P.w_u16(destination);
         SendTo(c_src->ID, P, net_flags(TRUE, TRUE));
-        //////////////////////////////////////////////////////////////////////////
 
         VERIFY(verify_entities());
     }

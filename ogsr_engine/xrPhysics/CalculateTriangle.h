@@ -37,13 +37,16 @@ ICF void CalculateTriangle(CDB::TRI* XTri, const float* pos, Triangle& triangle)
 
 ICF void CalculateTriangle(CDB::TRI* XTri, dGeomID g, Triangle& triangle)
 {
+    XR_ASSERT(g != nullptr);
+
+    const f32* p{nullptr};
+    const f32* r{nullptr};
     dVector3 v;
     dMatrix3 m;
-    const float* p{};
-    const float* r{};
-    VERIFY(g);
+
     CODEGeom::get_final_tx(g, p, r, v, m);
-    VERIFY(p);
+    XR_ASSERT(p != nullptr);
+
     CalculateTriangle(XTri, p, triangle);
 }
 
@@ -158,7 +161,7 @@ ICF float DistToTri(Triangle* T, const float* pos, float* dir, float* p, ETriDis
     case 1: tdist = DistToFragmenton(pos, VRT[0], VRT[1], p, dir, cd); break;
     case 2: tdist = DistToFragmenton(pos, VRT[1], VRT[2], p, dir, cd); break;
     case 3: tdist = DistToFragmenton(pos, VRT[2], VRT[0], p, dir, cd); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     switch (cd)
@@ -171,7 +174,7 @@ ICF float DistToTri(Triangle* T, const float* pos, float* dir, float* p, ETriDis
         return tdist;
     case 1: dVectorSet(p, VRT[code - 1]); break;
     case 2: dVectorSet(p, VRT[code % 3]); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     dVectorSub(dir, p, pos);
@@ -187,12 +190,4 @@ ICF float DistToTri(Triangle* T, const float* pos, float* dir, float* p, ETriDis
     }
 
     return tdist;
-    // u16 c2;
-    // float tdist2=DistToFragmenton(pos,VRT[0],VRT[1],p,dir,c);
-    // u16 c3;
-    // float tdist3=DistToFragmenton(pos,VRT[0],VRT[1],p,dir,c);
-    // u16 cc;float tdist;
-    // MIN_OF(tdist1,cc=c1;tdist=tdist1,tdist2,cc=c2;tdist=tdist2,tdist3,cc=c3;tdist=tdist3);
-
-    // return _min(_min(DistToFragmenton(pos)))
 }

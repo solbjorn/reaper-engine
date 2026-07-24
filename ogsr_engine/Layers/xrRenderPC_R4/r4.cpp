@@ -53,6 +53,7 @@ bool CRender::is_sun() const
 float r_dtex_range = 50.f;
 
 //////////////////////////////////////////////////////////////////////////
+
 ShaderElement* CRender::rimp_select_sh_dynamic(IRenderable* root, dxRender_Visual* pVisual, float cdist_sq, u32 phase)
 {
     int id = SE_R2_SHADOW;
@@ -63,9 +64,11 @@ ShaderElement* CRender::rimp_select_sh_dynamic(IRenderable* root, dxRender_Visua
 }
 
 //////////////////////////////////////////////////////////////////////////
+
 ShaderElement* CRender::rimp_select_sh_static(dxRender_Visual* pVisual, float cdist_sq, u32 phase)
 {
     int id = SE_R2_SHADOW;
+
     if (phase == PHASE_NORMAL)
     {
         if (pVisual->shader->E[0]->flags.isLandscape)
@@ -82,6 +85,11 @@ ShaderElement* CRender::rimp_select_sh_static(dxRender_Visual* pVisual, float cd
             id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range) ? SE_R2_NORMAL_HQ : SE_R2_NORMAL_LQ;
         }
     }
+    else if (pVisual->simplified_fast_geom)
+    {
+        id = 3;
+    }
+
     return pVisual->shader->E[id]._get();
 }
 
@@ -170,14 +178,15 @@ void CRender::create()
     m_MSAASample = -1;
 
     // hardware
-    static constexpr const char* hwerr = "Hardware doesn't meet minimum feature-level";
-    R_ASSERT(HW.Caps.raster.dwMRT_count >= 3, hwerr);
-    R_ASSERT(HW.Caps.raster.b_MRT_mixdepth, hwerr);
-    R_ASSERT(HW.Caps.raster.dwInstructions >= 256, hwerr);
-    R_ASSERT(HW.Caps.raster_major >= 3, hwerr);
-    R_ASSERT(HW.Caps.geometry_major >= 1, hwerr);
-    R_ASSERT(HW.Caps.geometry.bVTF, hwerr);
-    R_ASSERT(HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0, hwerr);
+    static constexpr std::string_view hwerr{"hardware doesn't meet minimum requirements"};
+
+    XR_ASSERT(+HW.Caps.raster.dwMRT_count >= 3, hwerr);
+    XR_ASSERT(+HW.Caps.raster.b_MRT_mixdepth, hwerr);
+    XR_ASSERT(+HW.Caps.raster.dwInstructions >= 256, hwerr);
+    XR_ASSERT(HW.Caps.raster_major >= 3, hwerr);
+    XR_ASSERT(HW.Caps.geometry_major >= 1, hwerr);
+    XR_ASSERT(+HW.Caps.geometry.bVTF, hwerr);
+    XR_ASSERT(HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0, hwerr);
 
     // For ATI it's much faster on DX10 to use D32F format
     if (HW.Caps.id_vendor == 0x1002)
@@ -372,22 +381,15 @@ void CRender::model_Delete(IRender_DetailModel*& F)
 
 IRenderVisual* CRender::model_CreatePE(LPCSTR name)
 {
-    PS::CPEDef* SE = PSLibrary.FindPED(name);
-    R_ASSERT3(SE, "Particle effect doesn't exist", name);
-
-    return Models->CreatePE(SE);
+    return Models->CreatePE(XR_ASSERT_VAL(PSLibrary.FindPED(name) != nullptr, "particle effect not found", name));
 }
 
 IRenderVisual* CRender::model_CreateParticles(LPCSTR name)
 {
-    PS::CPEDef* SE = PSLibrary.FindPED(name);
-    if (SE)
+    if (PS::CPEDef* SE = PSLibrary.FindPED(name); SE != nullptr)
         return Models->CreatePE(SE);
 
-    PS::CPGDef* SG = PSLibrary.FindPGD(name);
-    R_ASSERT3(SG, "Particle effect or group doesn't exist", name);
-
-    return Models->CreatePG(SG);
+    return Models->CreatePG(XR_ASSERT_VAL(PSLibrary.FindPGD(name) != nullptr, "particle effect or group not found", name));
 }
 
 void CRender::models_Prefetch() { Models->Prefetch(); }
@@ -395,65 +397,14 @@ void CRender::models_Clear(BOOL b_complete) { Models->ClearPool(b_complete); }
 void CRender::models_savePrefetch() { Models->save_vis_prefetch(); }
 void CRender::models_begin_prefetch1(bool val) { Models->begin_prefetch1(val); }
 
-ref_shader CRender::getShader(int id)
-{
-    VERIFY(id < int(Shaders.size()));
-    return Shaders[id];
-}
+ref_shader CRender::getShader(int id) { return Shaders[id]; }
+IRenderVisual* CRender::getVisual(int id) { return Visuals[id]; }
 
-IRenderVisual* CRender::getVisual(int id)
-{
-    VERIFY(id < int(Visuals.size()));
-    return Visuals[id];
-}
+D3DVERTEXELEMENT9* CRender::getVB_Format(int id, BOOL _alt) { return _alt ? xDC[id].data() : nDC[id].data(); }
+ID3DVertexBuffer* CRender::getVB(int id, BOOL _alt) { return _alt ? xVB[id] : nVB[id]; }
+ID3DIndexBuffer* CRender::getIB(int id, BOOL _alt) { return _alt ? xIB[id] : nIB[id]; }
 
-D3DVERTEXELEMENT9* CRender::getVB_Format(int id, BOOL _alt)
-{
-    if (_alt)
-    {
-        VERIFY(id < int(xDC.size()));
-        return xDC[id].data();
-    }
-    else
-    {
-        VERIFY(id < int(nDC.size()));
-        return nDC[id].data();
-    }
-}
-
-ID3DVertexBuffer* CRender::getVB(int id, BOOL _alt)
-{
-    if (_alt)
-    {
-        VERIFY(id < int(xVB.size()));
-        return xVB[id];
-    }
-    else
-    {
-        VERIFY(id < int(nVB.size()));
-        return nVB[id];
-    }
-}
-
-ID3DIndexBuffer* CRender::getIB(int id, BOOL _alt)
-{
-    if (_alt)
-    {
-        VERIFY(id < int(xIB.size()));
-        return xIB[id];
-    }
-    else
-    {
-        VERIFY(id < int(nIB.size()));
-        return nIB[id];
-    }
-}
-
-FSlideWindowItem* CRender::getSWI(int id)
-{
-    VERIFY(id < int(SWIs.size()));
-    return &SWIs[id];
-}
+FSlideWindowItem* CRender::getSWI(int id) { return &SWIs[id]; }
 
 IRender_Light* CRender::light_create() { return Lights.Create(); }
 IRender_Glow* CRender::glow_create() { return xr_new<CGlow>(); }
@@ -464,30 +415,29 @@ BOOL CRender::occ_visible(Fbox& P) { return HOM.visible(P); }
 
 void CRender::add_Visual(u32 context_id, IRenderable* root, IRenderVisual* V, Fmatrix& m)
 {
-    get_context(context_id).add_leafs_dynamic(root, (dxRender_Visual*)V, m, V->_ignore_optimization);
+    get_context(context_id).add_leafs_dynamic(root, smart_cast<dxRender_Visual*>(V), m, V->_ignore_optimization);
 }
 
 void CRender::add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts)
 {
+    XR_ASSERT(T != nullptr && verts != nullptr && s > EPS_L, "", s);
+
     if (T->suppress_wm)
         return;
 
-    VERIFY2(_valid(P) && _valid(s) && T && verts && (s > EPS_L), "Invalid static wallmark params");
+    XR_DEBUG_ASSERT(_valid(P) && _valid(s), "invalid static wallmark params", P, s);
     Wallmarks->AddStaticWallmark(T, verts, P, S, s);
 }
 
 void CRender::add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V)
 {
-    dxWallMarkArray* pWMA = (dxWallMarkArray*)pArray;
-    ref_shader* pShader = pWMA->dxGenerateWallmark();
-    if (pShader)
+    if (auto pShader = smart_cast<dxWallMarkArray*>(pArray)->dxGenerateWallmark(); pShader != nullptr)
         add_StaticWallmark(*pShader, P, s, T, V);
 }
 
 void CRender::add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V)
 {
-    dxUIShader* pShader = (dxUIShader*)&*S;
-    add_StaticWallmark(pShader->hShader, P, s, T, V);
+    add_StaticWallmark(smart_cast<dxUIShader*>(&*S)->hShader, P, s, T, V);
 }
 
 void CRender::clear_static_wallmarks() { Wallmarks->clear(); }
@@ -500,10 +450,8 @@ void CRender::add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, ref_shad
 
 void CRender::add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size)
 {
-    dxWallMarkArray* pWMA = (dxWallMarkArray*)pArray;
-    ref_shader* pShader = pWMA->dxGenerateWallmark();
-    if (pShader)
-        add_SkeletonWallmark(xf, (CKinematics*)obj, *pShader, start, dir, size);
+    if (auto pShader = smart_cast<dxWallMarkArray*>(pArray)->dxGenerateWallmark(); pShader != nullptr)
+        add_SkeletonWallmark(xf, smart_cast<CKinematics*>(obj), *pShader, start, dir, size);
 }
 
 void CRender::rmNear(const CBackend& cmd_list) const
@@ -657,10 +605,8 @@ HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffe
             //	TODO: DX10: share the same input signatures
 
             //	Store input signature (need only for VS)
-            // CHK_DX( D3DxxGetInputSignatureBlob(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize(), &_vs->signature) );
             ID3DBlob* pSignatureBlob;
-            CHK_DX(D3DGetInputSignatureBlob(buffer, buffer_size, &pSignatureBlob));
-            VERIFY(pSignatureBlob);
+            XR_ASSERT(xr::hr(D3DGetInputSignatureBlob(buffer, buffer_size, &pSignatureBlob)));
 
             svs_result->signature._set(RImplementation.Resources->_CreateInputSignature(pSignatureBlob));
             _RELEASE(pSignatureBlob);
@@ -722,7 +668,7 @@ HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffe
     }
     else
     {
-        NODEFAULT;
+        xr::unreachable();
     }
 
     if (disasm)

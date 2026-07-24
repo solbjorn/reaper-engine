@@ -1,12 +1,11 @@
 #ifndef _INCDEF_XRMESSAGES_H_
 #define _INCDEF_XRMESSAGES_H_
 
-#pragma once
-
+namespace xr
+{
 // CL	== client 2 server message
 // SV	== server 2 client message
-
-enum
+enum class msg : s32
 {
     M_UPDATE = 0, // DUAL: Update state
     M_SPAWN, // DUAL: Spawning, full state
@@ -42,6 +41,7 @@ enum
 
     M_CHANGE_SELF_NAME,
 };
+} // namespace xr
 
 enum : u32
 {
@@ -116,4 +116,4 @@ enum : u32
     M_SPAWN_DENIED = (1 << 8), // don't spawn entity with this flag
 };
 
-#endif /*_INCDEF_XRMESSAGES_H_*/
+#endif // !_INCDEF_XRMESSAGES_H_

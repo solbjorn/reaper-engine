@@ -31,6 +31,7 @@
  */
 
 #include "StdAfx.h"
+
 #include "limb.h"
 
 namespace
@@ -436,20 +437,12 @@ int Limb::SetGoal(const Matrix G, int limits)
     return success;
 }
 
-static void init_error(pcstr msg)
-{
-    fprintf(stderr, "You forgot to call SetGoal or SetGoalPos in %s\n", msg);
-    exit(0);
-}
-
 //
 // Calculates the swivel angle based on the elbow position.
 //
 float Limb::PosToAngle(const float elbow[3])
 {
-    if (!solve)
-        init_error("Limb::PosToAngle");
-
+    XR_ASSERT(solve);
     return solver.PosToAngle(elbow);
 }
 
@@ -493,7 +486,8 @@ inline int find_min(int n, float d[])
 //
 // 0 means that all intervals are empty.
 //
-int choose_largest_range(float& swivel_angle, const AngleIntList* f11, const AngleIntList* f12, const AngleIntList* f21 = nullptr, const AngleIntList* f22 = nullptr)
+int choose_largest_range(float& swivel_angle, const AngleIntList* f11, const AngleIntList* f12, const AngleIntList* f21 = nullptr,
+                         const AngleIntList* f22 = nullptr)
 {
     const float unioneps = .05f;
     AngleIntList temp, all;
@@ -615,7 +609,8 @@ int inspect_range(const AngleIntList& f, float swivel_angle, int index, float& n
 // 0 means that all intervals are empty.
 //
 
-int choose_closest_range(float& swivel_angle, const AngleIntList* f11, const AngleIntList* f12, const AngleIntList* f21 = nullptr, const AngleIntList* f22 = nullptr)
+int choose_closest_range(float& swivel_angle, const AngleIntList* f11, const AngleIntList* f12, const AngleIntList* f21 = nullptr,
+                         const AngleIntList* f22 = nullptr)
 {
     int i = 0;
     float d = 2 * M_PI;
@@ -720,8 +715,8 @@ int Limb::try_swivel_angle(int solvea, float swivel_angle, float x[])
     else
     {
         solve_aux(swivel_angle, x);
-        if (jt_limits[0].InRange(x[0]) && jt_limits[1].InRange(x[1]) && jt_limits[2].InRange(x[2]) && jt_limits[4].InRange(x[4]) && jt_limits[5].InRange(x[5]) &&
-            jt_limits[6].InRange(x[6]))
+        if (jt_limits[0].InRange(x[0]) && jt_limits[1].InRange(x[1]) && jt_limits[2].InRange(x[2]) && jt_limits[4].InRange(x[4]) &&
+            jt_limits[5].InRange(x[5]) && jt_limits[6].InRange(x[6]))
             return 1;
     }
 
@@ -771,20 +766,17 @@ int Limb::Solve(float x[7], float* new_swivel, float* new_pos)
                 solve_pos_aux_family(f_set, swivel_angle, x);
             else
                 f_set = try_singularities(solve, swivel_angle, x);
-            break;
 
+            break;
         case SolvePosAndOrientation:
             f_set = choose_largest_range(swivel_angle, PSI, PSI + 1, PSI + 2, PSI + 3);
             if (f_set)
                 solve_aux_family(f_set, swivel_angle, x);
             else
                 f_set = try_singularities(solve, swivel_angle, x);
-            break;
 
-        default:
-            f_set = 0;
-            init_error("Limb::Solve");
             break;
+        default: xr::unreachable();
         }
 
         success = f_set != 0;
@@ -797,7 +789,7 @@ int Limb::Solve(float x[7], float* new_swivel, float* new_pos)
         success = SolveByAngle(swivel_angle, x);
     }
 
-    VERIFY(std::isfinite(swivel_angle));
+    XR_DEBUG_ASSERT(std::isfinite(swivel_angle));
 
     if (new_swivel)
         *new_swivel = swivel_angle;
@@ -862,8 +854,8 @@ int Limb::SolveByAngle(float swivel_angle, float x[7], float* new_swivel, float*
                 if (f_set)
                     solve_pos_aux_family(f_set, swivel_angle, x);
             }
-            break;
 
+            break;
         case SolvePosAndOrientation:
             f_set = try_closeby_singularity(solve, swivel_angle, x);
             if (!f_set)
@@ -872,13 +864,11 @@ int Limb::SolveByAngle(float swivel_angle, float x[7], float* new_swivel, float*
                 if (f_set)
                     solve_aux_family(f_set, swivel_angle, x);
             }
-            break;
 
-        default:
-            f_set = 0;
-            init_error("Limb::Solve");
             break;
+        default: xr::unreachable();
         }
+
         success = f_set != 0;
     }
     else
@@ -888,15 +878,14 @@ int Limb::SolveByAngle(float swivel_angle, float x[7], float* new_swivel, float*
         switch (solve)
         {
         case SolvePosOnly: solve_pos_aux(swivel_angle, x); break;
-
         case SolvePosAndOrientation: solve_aux(swivel_angle, x); break;
-
-        default: init_error("Limb::Solve"); break;
+        default: xr::unreachable();
         }
     }
 
     if (new_swivel)
         *new_swivel = swivel_angle;
+
     if (new_pos)
         solver.AngleToPos(swivel_angle, new_pos);
 

@@ -52,7 +52,7 @@ CHW::~CHW()
 
 void CHW::CreateD3D()
 {
-    R_CHK(CreateDXGIFactory2(0, IID_PPV_ARGS(&m_pFactory)));
+    XR_ASSERT(xr::hr(CreateDXGIFactory2(0, IID_PPV_ARGS(&m_pFactory))));
 
     UINT i = 0;
     while (m_pFactory->EnumAdapters1(i, &m_pAdapter) != DXGI_ERROR_NOT_FOUND)
@@ -138,7 +138,7 @@ tmc::task<void> CHW::CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight)
 
     // Display the name of video board
     DXGI_ADAPTER_DESC1 Desc{};
-    R_CHK(m_pAdapter->GetDesc1(&Desc));
+    XR_ASSERT(xr::hr(m_pAdapter->GetDesc1(&Desc)));
 
     DumpVideoMemoryUsage();
 
@@ -200,7 +200,7 @@ tmc::task<void> CHW::CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight)
 
     UINT create_device_flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 #ifdef DEBUG
-    if (IsDebuggerPresent())
+    if (xr::is_debugger_present())
         // enables d3d11 debug layer validation and output
         // viewable in VS debugger `Output > Debug` view or using a tool like Sysinternals DebugView
         create_device_flags |= D3D11_CREATE_DEVICE_DEBUG;
@@ -210,12 +210,14 @@ tmc::task<void> CHW::CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight)
     ID3D11Device* device;
     ID3D11DeviceContext* context;
 
-    R_CHK(D3D11CreateDevice(m_pAdapter, D3D_DRIVER_TYPE_UNKNOWN, // Если мы выбираем конкретный адаптер, то мы обязаны использовать D3D_DRIVER_TYPE_UNKNOWN.
-                            nullptr, create_device_flags, nullptr, 0, D3D11_SDK_VERSION, &device, &FeatureLevel, &context));
-    R_ASSERT(FeatureLevel >= D3D_FEATURE_LEVEL_11_0); // На всякий случай
+    // Если мы выбираем конкретный адаптер, то мы обязаны использовать D3D_DRIVER_TYPE_UNKNOWN.
+    XR_ASSERT(xr::hr(
+        D3D11CreateDevice(m_pAdapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, create_device_flags, nullptr, 0, D3D11_SDK_VERSION, &device, &FeatureLevel, &context)));
+    // На всякий случай
+    XR_ASSERT(FeatureLevel >= D3D_FEATURE_LEVEL_11_0);
 
-    R_CHK(device->QueryInterface(IID_PPV_ARGS(&pDevice)));
-    R_CHK(context->QueryInterface(IID_PPV_ARGS(&contexts_pool[R__IMM_CTX_ID])));
+    XR_ASSERT(xr::hr(device->QueryInterface(IID_PPV_ARGS(&pDevice))));
+    XR_ASSERT(xr::hr(context->QueryInterface(IID_PPV_ARGS(&contexts_pool[R__IMM_CTX_ID]))));
 
     D3D11_FEATURE_DATA_D3D11_OPTIONS options;
     pDevice->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS, &options, sizeof(options));
@@ -230,31 +232,31 @@ tmc::task<void> CHW::CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight)
     _RELEASE(device);
     _RELEASE(context);
 
-    for (ctx_id_t id = R__PARALLEL_CTX_ID; id < R__NUM_CONTEXTS; id++)
-        R_CHK(pDevice->CreateDeferredContext1(0, &contexts_pool[id]));
+    for (auto& ctx : contexts_pool | std::views::drop(R__PARALLEL_CTX_ID))
+        XR_ASSERT(xr::hr(pDevice->CreateDeferredContext1(0, &ctx)));
 
     // create swapchain
     auto scope = co_await tmc::enter(xr::tmc_cpu_st_executor());
-    R_CHK(m_pFactory->CreateSwapChainForHwnd(pDevice, m_hWnd, &sd, &sd_fullscreen, nullptr, &m_pSwapChain));
+    XR_ASSERT(xr::hr(m_pFactory->CreateSwapChainForHwnd(pDevice, m_hWnd, &sd, &sd_fullscreen, nullptr, &m_pSwapChain)));
     co_await scope.exit();
 
     IDXGISwapChain3* swapchain3;
-    R_CHK(m_pSwapChain->QueryInterface(IID_PPV_ARGS(&swapchain3)));
+    XR_ASSERT(xr::hr(m_pSwapChain->QueryInterface(IID_PPV_ARGS(&swapchain3))));
 
     // setup colorspace
-    R_CHK(swapchain3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709));
+    XR_ASSERT(xr::hr(swapchain3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709)));
 
     if (bWindowed)
     {
-        R_CHK(swapchain3->SetMaximumFrameLatency(sd.BufferCount - 1));
+        XR_ASSERT(xr::hr(swapchain3->SetMaximumFrameLatency(sd.BufferCount - 1)));
         waitable = swapchain3->GetFrameLatencyWaitableObject();
     }
     else
     {
         IDXGIDevice1* dxgi;
-        R_CHK(pDevice->QueryInterface(IID_PPV_ARGS(&dxgi)));
+        XR_ASSERT(xr::hr(pDevice->QueryInterface(IID_PPV_ARGS(&dxgi))));
 
-        R_CHK(dxgi->SetMaximumFrameLatency(sd.BufferCount - 1));
+        XR_ASSERT(xr::hr(dxgi->SetMaximumFrameLatency(sd.BufferCount - 1)));
         _RELEASE(dxgi);
     }
 
@@ -349,11 +351,11 @@ tmc::task<void> CHW::Reset(HWND wnd, u32& dwWidth, u32& dwHeight)
     mode.Height = cd.Height;
     mode.Format = cd.Format;
     mode.RefreshRate = cd_fs.RefreshRate;
-    CHK_DX(m_pSwapChain->ResizeTarget(&mode));
 
-    CHK_DX(m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, get_swapchain_flags(cd_fs.Windowed, m_SupportsVRR)));
+    XR_ASSERT(xr::hr(m_pSwapChain->ResizeTarget(&mode)));
+    XR_ASSERT(xr::hr(m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, get_swapchain_flags(cd_fs.Windowed, m_SupportsVRR))));
+
     updateWindowProps(wnd);
-
     dwWidth = cd.Width;
     dwHeight = cd.Height;
 }
@@ -388,49 +390,32 @@ void CHW::selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed)
 
 DXGI_RATIONAL CHW::selectRefresh(u32 dwWidth, u32 dwHeight, DXGI_FORMAT fmt)
 {
-    DXGI_RATIONAL res;
-
-    res.Numerator = 60;
-    res.Denominator = 1;
-
-    float CurrentFreq = 60.0f;
-
-    xr_vector<DXGI_MODE_DESC> modes;
-
-    IDXGIOutput* pOutput;
-    m_pAdapter->EnumOutputs(0, &pOutput);
-    VERIFY(pOutput);
-
-    UINT num = 0;
-    DXGI_FORMAT format = fmt;
-    UINT flags = 0;
+    Microsoft::WRL::ComPtr<IDXGIOutput> pOutput;
+    XR_ASSERT(xr::hr(m_pAdapter->EnumOutputs(0, &pOutput)));
 
     // Get the number of display modes available
-    pOutput->GetDisplayModeList(format, flags, &num, nullptr);
+    u32 num;
+    pOutput->GetDisplayModeList(fmt, 0, &num, nullptr);
 
     // Get the list of display modes
-    modes.resize(num);
-    pOutput->GetDisplayModeList(format, flags, &num, &modes.front());
+    xr_vector<DXGI_MODE_DESC> modes(num);
+    pOutput->GetDisplayModeList(fmt, 0, &num, modes.data());
 
-    _RELEASE(pOutput);
+    DXGI_RATIONAL res{.Numerator = 60, .Denominator = 1};
+    refresh_rate = 60.0f;
 
-    for (u32 i = 0; i < num; ++i)
+    for (const auto& desc : modes)
     {
-        DXGI_MODE_DESC& desc = modes[i];
+        if (desc.Width != dwWidth || desc.Height != dwHeight)
+            continue;
 
-        if ((desc.Width == dwWidth) && (desc.Height == dwHeight))
+        if (const auto freq = gsl::narrow_cast<f32>(desc.RefreshRate.Numerator) / gsl::narrow_cast<f32>(XR_ASSERT_VAL(desc.RefreshRate.Denominator > 0));
+            freq > refresh_rate)
         {
-            VERIFY(desc.RefreshRate.Denominator);
-            float TempFreq = float(desc.RefreshRate.Numerator) / float(desc.RefreshRate.Denominator);
-            if (TempFreq > CurrentFreq)
-            {
-                CurrentFreq = TempFreq;
-                res = desc.RefreshRate;
-            }
+            res = desc.RefreshRate;
+            refresh_rate = freq;
         }
     }
-
-    refresh_rate = CurrentFreq;
 
     return res;
 }
@@ -467,7 +452,7 @@ tmc::task<void> CHW::OnAppDeactivate()
 void CHW::DumpVideoMemoryUsage() const
 {
     DXGI_ADAPTER_DESC1 Desc{};
-    R_CHK(m_pAdapter->GetDesc1(&Desc));
+    XR_ASSERT(xr::hr(m_pAdapter->GetDesc1(&Desc)));
 
     DXGI_QUERY_VIDEO_MEMORY_INFO videoMemoryInfo{};
 
@@ -573,8 +558,7 @@ void fill_vid_mode_list(CHW* _hw)
     xr_vector<DXGI_MODE_DESC> modes;
 
     IDXGIOutput* pOutput;
-    _hw->m_pAdapter->EnumOutputs(0, &pOutput);
-    VERIFY(pOutput);
+    XR_ASSERT(xr::hr(_hw->m_pAdapter->EnumOutputs(0, &pOutput)));
 
     UINT num = 0;
     DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -695,7 +679,7 @@ out:
         // Do not render until we become visible again
         co_return DeviceState::Lost;
     case DXGI_ERROR_DEVICE_RESET: co_return DeviceState::NeedReset;
-    case DXGI_ERROR_DEVICE_REMOVED: FATAL("Graphics driver was updated or GPU was physically removed from computer.\nPlease, restart the game.");
+    case DXGI_ERROR_DEVICE_REMOVED: XR_PANIC("graphics driver was updated or GPU was physically removed");
     }
 
     co_return DeviceState::Normal;

@@ -32,12 +32,13 @@ void CPHCollideValidator::InitObject(CPHObject& obj)
     obj.collide_class_bits().set(cbClassDynamic, TRUE);
     obj.collide_bits() = 0;
 }
+
 void CPHCollideValidator::RegisterObjToGroup(CGID group, CPHObject& obj)
 {
-    R_ASSERT(group < freeGroupID);
-    obj.collide_bits() = group;
+    obj.collide_bits() = XR_ASSERT_VAL(group < freeGroupID);
     obj.collide_class_bits().set(cbNCGroupObject, TRUE);
 }
+
 bool CPHCollideValidator::IsGroupObject(const CPHObject& obj) { return !!obj.collide_class_bits().test(cbNCGroupObject); }
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT

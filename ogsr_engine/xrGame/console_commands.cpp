@@ -682,7 +682,7 @@ private:
             xr_strconcat(S, Core.UserName, "_", "quicksave");
 
             NET_Packet net_packet;
-            net_packet.w_begin(M_SAVE_GAME);
+            net_packet.w_begin(gsl::narrow<u16>(xr::msg::M_SAVE_GAME));
             net_packet.w_stringZ(S);
             net_packet.w_u8(0);
 
@@ -693,7 +693,7 @@ private:
             xr_strcpy(S, args);
 
             NET_Packet net_packet;
-            net_packet.w_begin(M_SAVE_GAME);
+            net_packet.w_begin(gsl::narrow<u16>(xr::msg::M_SAVE_GAME));
             net_packet.w_stringZ(S);
             net_packet.w_u8(1);
 
@@ -767,7 +767,7 @@ private:
         auto args = *reinterpret_cast<gsl::zstring*>(&arg);
 
         NET_Packet net_packet;
-        net_packet.w_begin(M_LOAD_GAME);
+        net_packet.w_begin(gsl::narrow<u16>(xr::msg::M_LOAD_GAME));
         net_packet.w_stringZ(args);
 
         xr_free(args);
@@ -1238,7 +1238,7 @@ public:
         if (auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game))
         {
             NET_Packet packet;
-            packet.w_begin(M_SPAWN);
+            packet.w_begin(gsl::narrow<u16>(xr::msg::M_SPAWN));
             packet.w_stringZ(args.data());
 
             CSE_Abstract* item = tpGame->alife().spawn_item(args.data(), Actor()->Position(), Actor()->ai_location().level_vertex_id(),
@@ -1252,7 +1252,7 @@ public:
 
             u16 dummy;
             std::ignore = packet.r_begin(dummy);
-            VERIFY(dummy == M_SPAWN);
+            XR_ASSERT(xr::msg{dummy} == xr::msg::M_SPAWN);
 
             tpGame->alife().server().Process_spawn(packet, clientID);
         }

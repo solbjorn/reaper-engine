@@ -144,8 +144,7 @@ bool discord::meta::load()
     if (FS.exist(path, xr::fsgame::app_data_root.data(), token.data()) == nullptr)
         return false;
 
-    const auto rd = absl::WrapUnique(FS.r_open(path));
-    R_ASSERT(rd);
+    const auto rd = XR_ASSERT_VAL(absl::WrapUnique(FS.r_open(path)), "", path);
 
     if (const auto xxh = rd->r_u64(); xxh::XXH3_64bits(rd->pointer(), gsl::narrow_cast<size_t>(rd->elapsed())) != xxh)
         return false;
@@ -178,8 +177,7 @@ bool discord::meta::load()
 
 void discord::meta::save() const
 {
-    auto wr = FS.w_open(xr::fsgame::app_data_root.data(), token.data());
-    R_ASSERT(wr != nullptr);
+    auto wr = XR_ASSERT_VAL(FS.w_open(xr::fsgame::app_data_root.data(), token.data()) != nullptr);
     const auto _ = gsl::finally([wr] {
         auto ptr = wr;
         FS.w_close(ptr);

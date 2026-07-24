@@ -11,43 +11,41 @@ CGameMtlLibrary GMLib;
 
 void SGameMtl::Load(IReader& fs)
 {
-    R_ASSERT(fs.find_chunk(GAMEMTL_CHUNK_MAIN));
+    XR_ASSERT(fs.find_chunk(GAMEMTL_CHUNK_MAIN) > 0);
     ID = fs.r_u32();
     fs.r_stringZ(m_Name);
 
-    if (fs.find_chunk(GAMEMTL_CHUNK_DESC))
-    {
+    if (fs.find_chunk(GAMEMTL_CHUNK_DESC) > 0)
         fs.r_stringZ(m_Desc);
-    }
 
-    R_ASSERT(fs.find_chunk(GAMEMTL_CHUNK_FLAGS));
+    XR_ASSERT(fs.find_chunk(GAMEMTL_CHUNK_FLAGS) > 0);
     Flags.assign(fs.r_u32());
 
-    R_ASSERT(fs.find_chunk(GAMEMTL_CHUNK_PHYSICS));
+    XR_ASSERT(fs.find_chunk(GAMEMTL_CHUNK_PHYSICS) > 0);
     fPHFriction = fs.r_float();
     fPHDamping = fs.r_float();
     fPHSpring = fs.r_float();
     fPHBounceStartVelocity = fs.r_float();
     fPHBouncing = fs.r_float();
 
-    R_ASSERT(fs.find_chunk(GAMEMTL_CHUNK_FACTORS));
+    XR_ASSERT(fs.find_chunk(GAMEMTL_CHUNK_FACTORS) > 0);
     fShootFactor = fs.r_float();
     fBounceDamageFactor = fs.r_float();
     fVisTransparencyFactor = fs.r_float();
     fSndOcclusionFactor = fs.r_float();
 
-    if (fs.find_chunk(GAMEMTL_CHUNK_FACTORS_MP))
+    if (fs.find_chunk(GAMEMTL_CHUNK_FACTORS_MP) > 0)
         fShootFactorMP = fs.r_float();
     else
         fShootFactorMP = fShootFactor;
 
-    if (fs.find_chunk(GAMEMTL_CHUNK_FLOTATION))
+    if (fs.find_chunk(GAMEMTL_CHUNK_FLOTATION) > 0)
         fFlotationFactor = fs.r_float();
 
-    if (fs.find_chunk(GAMEMTL_CHUNK_INJURIOUS))
+    if (fs.find_chunk(GAMEMTL_CHUNK_INJURIOUS) > 0)
         fInjuriousSpeed = fs.r_float();
 
-    if (fs.find_chunk(GAMEMTL_CHUNK_DENSITY))
+    if (fs.find_chunk(GAMEMTL_CHUNK_DENSITY) > 0)
         fDensityFactor = fs.r_float();
 }
 
@@ -66,12 +64,12 @@ void CGameMtlLibrary::Load()
         return;
     }
 
-    R_ASSERT(material_pairs.empty());
-    R_ASSERT(materials.empty());
+    XR_ASSERT(material_pairs.size() == 0, "", material_pairs);
+    XR_ASSERT(materials.size() == 0, "", materials);
 
     IReader* F = FS.r_open(name);
+    XR_ASSERT(F->find_chunk(GAMEMTLS_CHUNK_VERSION) > 0);
 
-    R_ASSERT(F->find_chunk(GAMEMTLS_CHUNK_VERSION));
     if (F->r_u16() != GAMEMTL_CURRENT_VERSION)
     {
         Log("CGameMtlLibrary: invalid version. Library can't load.");
@@ -79,7 +77,7 @@ void CGameMtlLibrary::Load()
         return;
     }
 
-    R_ASSERT(F->find_chunk(GAMEMTLS_CHUNK_AUTOINC));
+    XR_ASSERT(F->find_chunk(GAMEMTLS_CHUNK_AUTOINC) > 0);
     material_index = F->r_u32();
     material_pair_index = F->r_u32();
 

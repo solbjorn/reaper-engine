@@ -72,76 +72,70 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
     bool bRes = true;
     // Load definitions
     U16Vec rm_bones(bones->size(), BI_NONE);
-    IReader* MP = data->open_chunk(OGF_S_SMPARAMS);
 
-    if (MP)
+    auto MP = XR_ASSERT_VAL(data->open_chunk(OGF_S_SMPARAMS) != nullptr, "old skinned model version is not supported", m_id);
+    u16 vers = XR_ASSERT_VAL(MP->r_u16() <= xrOGF_SMParamsVersion, "invalid OGF/OMF version", m_id);
+    u16 part_bone_cnt = 0;
+    string128 buf;
+
+    // partitions
+    u16 part_count;
+    part_count = MP->r_u16();
+
+    for (u16 part_i = 0; part_i < part_count; part_i++)
     {
-        u16 vers = MP->r_u16();
-        u16 part_bone_cnt = 0;
-        string128 buf;
-        R_ASSERT3(vers <= xrOGF_SMParamsVersion, "Invalid OGF/OMF version:", N);
+        CPartDef& PART = m_partition[part_i];
+        MP->r_stringZ(buf, sizeof(buf));
+        PART.Name._set(_strlwr(buf));
+        PART.bones.resize(MP->r_u16());
 
-        // partitions
-        u16 part_count;
-        part_count = MP->r_u16();
-
-        for (u16 part_i = 0; part_i < part_count; part_i++)
+        for (xr_vector<u32>::iterator b_it = PART.bones.begin(); b_it < PART.bones.end(); b_it++)
         {
-            CPartDef& PART = m_partition[part_i];
             MP->r_stringZ(buf, sizeof(buf));
-            PART.Name._set(_strlwr(buf));
-            PART.bones.resize(MP->r_u16());
+            u16 m_idx = u16(MP->r_u32());
 
-            for (xr_vector<u32>::iterator b_it = PART.bones.begin(); b_it < PART.bones.end(); b_it++)
-            {
-                MP->r_stringZ(buf, sizeof(buf));
-                u16 m_idx = u16(MP->r_u32());
-                *b_it = find_bone_id(bones, shared_str{buf});
-                ASSERT_FMT_DBG(*b_it != BI_NONE, "!![{}][{}] Can't find bone: [{}]", std::source_location::current().function_name(), N, buf);
-                if (bRes)
-                    rm_bones[m_idx] = u16(*b_it);
-            }
-            part_bone_cnt = u16(part_bone_cnt + (u16)PART.bones.size());
+            *b_it = XR_ASSERT_VAL(find_bone_id(bones, shared_str{buf}) != BI_NONE, "can't find bone", m_id, buf);
+            if (bRes)
+                rm_bones[m_idx] = u16(*b_it);
         }
 
-        ASSERT_FMT_DBG(part_bone_cnt == (u16)bones->size(), "!![{}] Different bone count for [{}]! part_bone_cnt: [{}], bones->size(): [{}]",
-                       std::source_location::current().function_name(), N, part_bone_cnt, bones->size());
-
-        if (bRes)
-        {
-            // motion defs (cycle&fx)
-            u16 mot_count = MP->r_u16();
-            m_mdefs.resize(mot_count);
-
-            m_motion_map.reserve(mot_count);
-            m_cycle.reserve(mot_count);
-            m_fx.reserve(mot_count);
-
-            for (u16 mot_i = 0; mot_i < mot_count; mot_i++)
-            {
-                MP->r_stringZ(buf, sizeof(buf));
-                _strlwr(buf);
-                R_ASSERT(MP->elapsed() >=
-                             static_cast<int>(sizeof(u32) + sizeof(u16) + sizeof(u16) + sizeof(float) + sizeof(float) + sizeof(float) + sizeof(float)),
-                         "[%s] Something strange with file [%s]. This file broken!", std::source_location::current().function_name(), N);
-                u32 dwFlags = MP->r_u32();
-                CMotionDef& D = m_mdefs[mot_i];
-                D.Load(MP, dwFlags, vers);
-
-                if (dwFlags & esmFX)
-                    m_fx.emplace(buf, mot_i);
-                else
-                    m_cycle.emplace(buf, mot_i);
-
-                m_motion_map.emplace(buf, mot_i);
-            }
-        }
-        MP->close();
+        part_bone_cnt = u16(part_bone_cnt + (u16)PART.bones.size());
     }
-    else
+
+    XR_ASSERT(bones->size() == part_bone_cnt, "bone count mismatch", m_id);
+
+    if (bRes)
     {
-        Debug.fatal(DEBUG_INFO, "Old skinned model version unsupported! (%s)", N);
+        // motion defs (cycle&fx)
+        u16 mot_count = MP->r_u16();
+        m_mdefs.resize(mot_count);
+
+        m_motion_map.reserve(mot_count);
+        m_cycle.reserve(mot_count);
+        m_fx.reserve(mot_count);
+
+        for (u16 mot_i = 0; mot_i < mot_count; ++mot_i)
+        {
+            MP->r_stringZ(buf, sizeof(buf));
+            XR_ASSERT(MP->elapsed() >= sizeof(u32) + sizeof(u16) + sizeof(u16) + sizeof(f32) + sizeof(f32) + sizeof(f32) + sizeof(f32), "broken motions file",
+                      m_id, mot_i, mot_count);
+
+            _strlwr(buf);
+            u32 dwFlags = MP->r_u32();
+            CMotionDef& D = m_mdefs[mot_i];
+            D.Load(MP, dwFlags, vers);
+
+            if (dwFlags & esmFX)
+                m_fx.emplace(buf, mot_i);
+            else
+                m_cycle.emplace(buf, mot_i);
+
+            m_motion_map.emplace(buf, mot_i);
+        }
     }
+
+    MP->close();
+
     if (!bRes)
         return false;
 
@@ -150,10 +144,10 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
     if (!MS)
         return false;
 
-    u32 dwCNT = 0;
+    // MotionID 2 bit - slot, 14 bit - motion index
+    u32 dwCNT{std::numeric_limits<u32>::max()};
     std::ignore = MS->r_chunk_safe(0, &dwCNT, sizeof(dwCNT));
-    ASSERT_FMT_DBG(dwCNT < 0x3FFF, "!![{}][{}] dwCNT is [{}]", std::source_location::current().function_name(), N,
-                   dwCNT); // MotionID 2 bit - slot, 14 bit - motion index
+    XR_ASSERT(dwCNT < 0x3fff, "", m_id);
 
     m_motions.reserve(bones->size());
 
@@ -165,24 +159,23 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
     for (u16 m_idx = 0; m_idx < (u16)dwCNT; m_idx++)
     {
         string128 mname;
-        R_ASSERT(MS->find_chunk(m_idx + 1));
+        XR_ASSERT(MS->find_chunk(m_idx + 1) > 0);
         MS->r_stringZ(mname, sizeof(mname));
 
         if constexpr (false) // В ганслингере полно таких ошибок в анимациях, не вижу смысла спамить ими в лог
         {
             // sanity check
             xr_strlwr(mname);
-            auto I = m_motion_map.find(mname);
-            ASSERT_FMT_DBG(I != m_motion_map.end(), "!![{}][{}] Can't find motion: [{}]", std::source_location::current().function_name(), N, mname);
-            ASSERT_FMT_DBG(I->second == m_idx, "!![{}][{}] Invalid motion index: [{}]", std::source_location::current().function_name(), N, mname);
+            const auto I = XR_ASSERT_VAL(m_motion_map.find(mname) != m_motion_map.end(), "can't find motion", m_id, mname);
+            XR_ASSERT(I->second == m_idx, "invalid motion index", m_id, mname);
         }
 
         u32 dwLen = MS->r_u32();
         for (u32 i = 0; i < bones->size(); i++)
         {
-            u16 bone_id = rm_bones[i];
-            ASSERT_FMT(bone_id != BI_NONE, "!![%s][%s] Invalid remap index!", std::source_location::current().function_name(), N);
+            const auto bone_id = XR_ASSERT_VAL(rm_bones[i] != BI_NONE, "invalid remap index", m_id, i);
             CMotion& M = m_motions[bones->at(bone_id)->name][m_idx];
+
             M.set_count(dwLen);
             M.set_flags(MS->r_u8());
 
@@ -236,37 +229,27 @@ MotionVec* motions_value::bone_motions(const shared_str& bone_name)
 
     return &(*I).second;
 }
-//-----------------------------------
-motions_container::motions_container() {}
 
-motions_container::~motions_container()
-{
-    //	clean	(false);
-    //	clean	(true);
-    //	dump	();
-    VERIFY(container.empty());
-}
+//-----------------------------------
+
+motions_container::motions_container() = default;
+motions_container::~motions_container() { XR_ASSERT(container.size() == 0, "", container); }
 
 bool motions_container::has(shared_str key) const { return container.contains(key); }
 
 motions_value* motions_container::dock(shared_str key, IReader* data, vecBones* bones)
 {
-    motions_value* result{};
-    auto I = container.find(key);
-    if (I != container.end())
-        result = I->second;
-    if (!result)
-    {
-        // loading motions
-        VERIFY(data);
-        result = xr_new<motions_value>();
-        result->m_dwReference = 0;
-        BOOL bres = result->load(key.c_str(), data, bones);
-        if (bres)
-            container.emplace(key, result);
-        else
-            xr_delete(result);
-    }
+    if (const auto I = container.find(key); I != container.end())
+        return I->second;
+
+    // loading motions
+    auto result = xr_new<motions_value>();
+    result->m_dwReference = 0;
+
+    if (result->load(key.c_str(), XR_ASSERT_VAL(data != nullptr), bones))
+        container.emplace(key, result);
+    else
+        xr_delete(result);
 
     return result;
 }
@@ -310,7 +293,7 @@ void motions_container::dump() const
     Log("--- motion container --- begin:");
     gsl::index sz{sizeof(*this)};
 
-    for (auto [k, kv] : xr::views_enumerate(container))
+    for (auto [k, kv] : std::views::enumerate(container))
     {
         sz += kv.second->mem_usage();
         Msg("#{:3}: [{:3}/{:5} Kb] - {}", k, kv.second->m_dwReference, kv.second->mem_usage() / 1024, kv.first);
@@ -407,13 +390,13 @@ const motion_marks::interval* motion_marks::pick_mark(const float& t) const
 
 bool motion_marks::is_mark_between(float const& t0, float const& t1) const
 {
-    VERIFY(t0 <= t1);
+    XR_ASSERT(t0 <= t1);
 
     C_ITERATOR i = intervals.begin();
     C_ITERATOR e = intervals.end();
     for (; i != e; ++i)
     {
-        VERIFY((*i).first <= (*i).second);
+        XR_ASSERT(i->first <= i->second);
 
         if (fsimilar((*i).first, t0))
             return true;

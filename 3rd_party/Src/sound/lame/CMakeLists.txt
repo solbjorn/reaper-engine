@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 
 project(lame
-	VERSION 3.101
+	VERSION 4.1
 	DESCRIPTION "A high quality MPEG Audio Layer III (MP3) encoder"
 	HOMEPAGE_URL "https://lame.sourceforge.io"
 	LANGUAGES C
@@ -30,14 +30,6 @@ set(LAME_CONFIG_H_CONTENTS "${LAME_CONFIG_H}")
 string(REPLACE
 	"#if defined(_MSC_VER) || defined(__BORLANDC__)"
 	"#ifdef __BORLANDC__"
-	LAME_CONFIG_H
-	"${LAME_CONFIG_H_CONTENTS}"
-)
-set(LAME_CONFIG_H_CONTENTS "${LAME_CONFIG_H}")
-
-string(REPLACE
-	"#ifdef HAVE_MPGLIB"
-	"#ifdef HAVE_MPG123"
 	LAME_CONFIG_H
 	"${LAME_CONFIG_H_CONTENTS}"
 )
@@ -79,7 +71,6 @@ target_sources(mp3lame PRIVATE
 	${SRC}/lame-analysis.h
 	${SRC}/lame.c
 	${SRC}/lame_global_flags.h
-	${SRC}/lameerror.h
 	${SRC}/machine.h
 	${SRC}/mpglib_interface.c
 	${SRC}/newmdct.c
@@ -116,18 +107,16 @@ target_include_directories(mp3lame PUBLIC
 )
 
 target_compile_definitions(mp3lame PRIVATE
-	DECODE_ON_THE_FLY
 	HAVE_CONFIG_H
 	HAVE_MPG123
 	HAVE_STDINT_H
-	HAVE_XMMINTRIN_H
 	MIN_ARCH_SSE
 )
 
 if(MSVC)
-	target_compile_options(mp3lame PRIVATE /arch:AVX2 /O2 /Ob2)
+	target_compile_options(mp3lame PRIVATE /arch:AVX2 /O2 /Ob2 /fp:fast)
 else()
-	target_compile_options(mp3lame PRIVATE -mavx2 -O3)
+	target_compile_options(mp3lame PRIVATE -mavx2 -O3 -ffast-math)
 endif()
 
 set_target_properties(mp3lame PROPERTIES

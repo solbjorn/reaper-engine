@@ -30,8 +30,8 @@ private:
 
     // old not yet obsolete stuff
 public:
-    svector<char, 5> m_cpEquipmentPreferences;
-    svector<char, 4> m_cpMainWeaponPreferences;
+    std::inplace_vector<char, 5> m_cpEquipmentPreferences;
+    std::inplace_vector<char, 4> m_cpMainWeaponPreferences;
 
     // old, to be obsolete
 public:

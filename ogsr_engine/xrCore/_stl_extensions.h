@@ -20,34 +20,24 @@ XR_DIAG_IGNORE("-Wsign-conversion");
 
 XR_DIAG_POP();
 
+#define _LIBCPP_ABI_BOUNDED_ITERATORS_IN_INPLACE_VECTOR
+
+#include <inplace_vector>
 #include <stack>
 
 #include "xalloc.h"
 
-template <typename T, typename allocator = xr_allocator<T>>
-using xr_vector = std::vector<T, allocator>;
-
-template <typename T>
-void clear_and_reserve(xr_vector<T>& vec)
-{
-    if (vec.capacity() <= (vec.size() + vec.size() / 4))
-        vec.clear();
-    else
-    {
-        const size_t old = vec.size();
-        vec.clear();
-        vec.reserve(old);
-    }
-}
-
 namespace xr
 {
-template <typename T, size_t N, typename allocator = xr_allocator<T>>
-using inlined_vector = absl::InlinedVector<T, N, allocator>;
-
-template <size_t total_size, typename storage_type = size_t>
+template <std::size_t total_size, typename storage_type = std::size_t>
 using bitset = plf::bitset<total_size, storage_type, true>;
+
+template <typename T, std::size_t N, typename allocator = xr_allocator<T>>
+using inlined_vector = absl::InlinedVector<T, N, allocator>;
 } // namespace xr
+
+template <typename T, typename allocator = xr_allocator<T>>
+using xr_vector = std::vector<T, allocator>;
 
 template <typename T, typename allocator = xr_allocator<T>>
 using xr_deque = std::deque<T, allocator>;
@@ -88,11 +78,65 @@ using string_map = absl::btree_map<Key, Value, Compare, Alloc>;
 template <typename Key, typename Value, typename Compare = absl::container_internal::StringBtreeDefaultLess,
           typename Alloc = xr_allocator<std::pair<const Key, Value>>>
 using string_multimap = absl::btree_multimap<Key, Value, Compare, Alloc>;
+} // namespace xr
 
-// Until libc++ implements std::views::enumerate()
-[[nodiscard]] constexpr inline auto views_enumerate(std::ranges::viewable_range auto&& rng)
+namespace std
 {
-    return std::views::zip(std::views::iota(0z, std::ssize(std::forward<decltype(rng)>(rng))), std::forward<decltype(rng)>(rng));
+// Same as for std::vector<> and absl::InlinedVector<>
+template <typename H, typename T, std::size_t C>
+[[nodiscard]] constexpr H AbslHashValue(H hash_state, const std::inplace_vector<T, C>& vector)
+{
+    return H::combine_contiguous(std::move(hash_state), vector.data(), vector.size());
+}
+} // namespace std
+
+namespace plf
+{
+// Same as for std::bitset<>
+template <typename H, std::size_t total_size, typename storage_type, bool hardened>
+[[nodiscard]] constexpr H AbslHashValue(H hash_state, const plf::bitset<total_size, storage_type, hardened>& set)
+{
+    typename H::AbslInternalPiecewiseCombiner combiner;
+    std::size_t i{0};
+
+    while (i + 64 <= total_size)
+    {
+        u64 word{0};
+
+        for (std::size_t j = 0; j < 64; ++j)
+            word |= u64{set[i + j]} << j;
+
+        hash_state = combiner.add_buffer(std::move(hash_state), reinterpret_cast<const std::byte*>(&word), sizeof(word));
+        i += 64;
+    }
+
+    if (i < total_size)
+    {
+        const std::size_t rem = total_size - i;
+        u64 word{0};
+
+        for (std::size_t j = 0; j < rem; ++j)
+            word |= u64{set[i + j]} << j;
+
+        hash_state = combiner.add_buffer(std::move(hash_state), reinterpret_cast<const std::byte*>(&word), (rem + 7) / 8);
+    }
+
+    return H::combine(combiner.finalize(std::move(hash_state)), total_size);
+}
+} // namespace plf
+
+namespace xr
+{
+template <typename T>
+[[nodiscard]] constexpr auto size_bytes(const T& cont)
+{
+    return cont.size() * sizeof(typename T::value_type);
+}
+
+template <typename T>
+[[nodiscard]] constexpr auto ssize_bytes(const T& cont)
+{
+    return std::ssize(cont) * gsl::index{sizeof(typename T::value_type)};
 }
 } // namespace xr
 
@@ -125,17 +169,12 @@ using string_multimap = absl::btree_multimap<Key, Value, Compare, Alloc>;
 #define DEFINE_MMAP(K, T, N, I) \
     using N = xr_multimap<K, T>; \
     using I = N::iterator
-#define DEFINE_SVECTOR(T, C, N, I) \
-    typedef svector<T, C>; \
-    using I = N::iterator
 #define DEFINE_SET(T, N, I) \
     using N = xr_set<T>; \
     using I = N::iterator
 #define DEFINE_SET_PRED(T, N, I, P) \
     using N = xr_set<T, P>; \
     using I = N::iterator
-
-#include "FixedVector.h"
 
 // auxilary definition
 DEFINE_VECTOR(bool, boolVec, boolIt);

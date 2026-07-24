@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "dx103DFluidObstacles.h"
+
 #include "../../xrRender/dxRenderDeviceRender.h"
 #include "../../../xr_3da/xr_object.h"
 #include "../xr_3da/IPhysicsDefinitions.h"
@@ -30,9 +31,9 @@ constexpr Fvector4 UnitClipPlanes[]{
 };
 } // namespace
 
-dx103DFluidObstacles::dx103DFluidObstacles(int gridWidth, int gridHeight, int gridDepth, dx103DFluidGrid* pGrid) : m_pGrid(pGrid)
+dx103DFluidObstacles::dx103DFluidObstacles(int gridWidth, int gridHeight, int gridDepth, dx103DFluidGrid* pGrid) : m_pGrid{pGrid}
 {
-    VERIFY(m_pGrid);
+    XR_ASSERT(m_pGrid != nullptr);
 
     m_vGridDim[0] = gsl::narrow_cast<f32>(gridWidth);
     m_vGridDim[1] = gsl::narrow_cast<f32>(gridHeight);
@@ -220,15 +221,11 @@ void dx103DFluidObstacles::RenderPhysicsElement(IPhysicsElement& Element, const 
     AngularVelocity.set(AngularVelocity3.x, AngularVelocity3.y, AngularVelocity3.z, 0.0f);
     TranslationVelocity.set(TranslationVelocity3.x, TranslationVelocity3.y, TranslationVelocity3.z, 0.0f);
 
-    float fVelocityScale;
-
-    VERIFY(!fis_zero(timestep));
-
-    fVelocityScale = 1 / timestep;
+    XR_ASSERT(!fis_zero(timestep));
+    f32 fVelocityScale = 1.0f / timestep;
 
     //	Convert speed
     fVelocityScale /= 30.0f * 2.0f;
-
     fVelocityScale *= 6;
 
     AngularVelocity.mul(fVelocityScale);

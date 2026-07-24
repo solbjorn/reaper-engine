@@ -86,15 +86,17 @@ u32 R_occlusion::occq_begin(u32& ID, ctx_id_t context_id)
     }
     else
     {
-        VERIFY(pool.size() == fids.size());
+        XR_ASSERT(pool.size() == fids.size());
+
         ID = fids.back();
         fids.pop_back();
+
         used[ID].Q = pool.back().Q;
         pool.pop_back();
     }
 
     used[ID].ttl = Device.dwFrame + 1;
-    CHK_DX(BeginQuery(used[ID].Q.Get(), context_id));
+    XR_ASSERT(xr::hr(BeginQuery(used[ID].Q.Get(), context_id)));
 
     return used[ID].order;
 }
@@ -109,7 +111,7 @@ void R_occlusion::occq_end(u32& ID, ctx_id_t context_id)
     if (!used[ID].Q)
         return;
 
-    CHK_DX(EndQuery(used[ID].Q.Get(), context_id));
+    XR_ASSERT(xr::hr(EndQuery(used[ID].Q.Get(), context_id)));
     used[ID].ttl = Device.dwFrame + 1;
 }
 
@@ -119,8 +121,6 @@ R_occlusion::occq_result R_occlusion::occq_get(u32& ID)
         return std::numeric_limits<occq_result>::max();
 
     std::scoped_lock slock{lock};
-
-    VERIFY2(ID < used.size(), xr::format("_Pos = {}, size() = {}", ID, used.size()));
 
     if (!used[ID].Q)
         return std::numeric_limits<occq_result>::max();

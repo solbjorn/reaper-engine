@@ -77,17 +77,15 @@ NET_Packet* INetQueue::Retreive()
 void INetQueue::Release()
 {
     cs.Enter();
-    VERIFY(!ready.empty());
-    //---------------------------------------------
+    XR_ASSERT(!ready.empty());
+
     u32 tmp_time = GetTickCount() - 60000;
     u32 size = unused.size();
     if ((LastTimeCreate < tmp_time) && (size > 32))
-    {
         xr_delete(ready.front());
-    }
     else
         unused.push_back(ready.front());
-    //---------------------------------------------
+
     ready.pop_front();
     cs.Leave();
 }
@@ -103,7 +101,8 @@ void IPureClient::Disconnect() // Вызывается при выходе из 
     net_Syncronised = FALSE;
 }
 
-void IPureClient::OnMessage(void* data, u32 size) // Сюда приходят сообщения из IPureServer::SendTo и IPureServer::SendBroadcast_LL
+// Сюда приходят сообщения из IPureServer::SendTo и IPureServer::SendBroadcast_LL
+void IPureClient::OnMessage(void* data, u32 size)
 {
     // One of the messages - decompress it
     NET_Packet* P = net_Queue.CreateGet();

@@ -5,20 +5,14 @@
 
 void CRenderTarget::accum_omnip_geom_create()
 {
-    //	u32	dwUsage				= D3DUSAGE_WRITEONLY;
-
     // vertices
-    {
-        u32 vCount = DU_SPHERE_PART_NUMVERTEX;
-        u32 vSize = 3 * 4;
-        R_CHK(dx10BufferUtils::CreateVertexBuffer(&g_accum_omnip_vb, du_sphere_part_vertices.data(), vCount * vSize));
-    }
+    u32 vCount = DU_SPHERE_PART_NUMVERTEX;
+    u32 vSize = 3 * 4;
+    XR_ASSERT(xr::hr(dx10BufferUtils::CreateVertexBuffer(&g_accum_omnip_vb, du_sphere_part_vertices.data(), vCount * vSize)));
 
     // Indices
-    {
-        u32 iCount = DU_SPHERE_PART_NUMFACES * 3;
-        R_CHK(dx10BufferUtils::CreateIndexBuffer(&g_accum_omnip_ib, du_sphere_part_faces.data(), iCount * 2));
-    }
+    u32 iCount = DU_SPHERE_PART_NUMFACES * 3;
+    XR_ASSERT(xr::hr(dx10BufferUtils::CreateIndexBuffer(&g_accum_omnip_ib, du_sphere_part_faces.data(), iCount * 2)));
 }
 
 void CRenderTarget::accum_omnip_geom_destroy()

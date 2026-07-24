@@ -37,7 +37,7 @@ void CPHCapture::PhDataUpdate(dReal)
     case cstPulling: PullingUpdate(); break;
     case cstCaptured: CapturedUpdate(); break;
     case cstReleased: ReleasedUpdate(); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 
@@ -70,7 +70,7 @@ void CPHCapture::PhTune(dReal)
     }
     break;
     case cstReleased:; break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 

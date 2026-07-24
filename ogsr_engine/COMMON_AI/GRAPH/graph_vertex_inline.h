@@ -17,8 +17,7 @@ IC CSGraphVertex::CVertex(const _data_type& data, const _vertex_id_type& vertex_
 {
     m_data = data;
     m_vertex_id = vertex_id;
-    VERIFY(edge_count);
-    m_edge_count = edge_count;
+    m_edge_count = XR_ASSERT_VAL(edge_count != nullptr);
 }
 
 TEMPLATE_SPECIALIZATION
@@ -30,65 +29,58 @@ IC CSGraphVertex::~CVertex()
     while (!m_vertices.empty())
         m_vertices.back()->remove_edge(vertex_id());
 
-    // try {
     delete_data(m_data);
-    //}
-    // catch(...) {
-    //}
 }
 
 TEMPLATE_SPECIALIZATION
 IC const typename _graph_type::CEdge* CSGraphVertex::edge(const _vertex_id_type& vertex_id) const
 {
-    auto I = std::find(edges().begin(), edges().end(), vertex_id);
-    if (m_edges.end() == I)
-        return (0);
-    return (&*I);
+    if (const auto I = std::ranges::find(edges(), vertex_id); I != m_edges.end())
+        return std::to_address(I);
+
+    return 0;
 }
 
 TEMPLATE_SPECIALIZATION
 IC typename _graph_type::CEdge* CSGraphVertex::edge(const _vertex_id_type& vertex_id)
 {
-    auto I = std::find(m_edges.begin(), m_edges.end(), vertex_id);
-    if (m_edges.end() == I)
-        return (0);
-    return (&*I);
+    if (const auto I = std::ranges::find(m_edges, vertex_id); I != m_edges.end())
+        return std::to_address(I);
+
+    return 0;
 }
 
 TEMPLATE_SPECIALIZATION
 IC void CSGraphVertex::add_edge(CVertex* vertex, const typename _graph_type::CEdge::edge_weight_type& edge_weight)
 {
-    VERIFY(m_edges.end() == std::find(m_edges.begin(), m_edges.end(), vertex->vertex_id()));
+    XR_DEBUG_ASSERT(std::ranges::find(m_edges, vertex->vertex_id()) == m_edges.end());
+
     vertex->on_edge_addition(this);
     m_edges.emplace_back(edge_weight, vertex);
+
     ++*m_edge_count;
 }
 
 TEMPLATE_SPECIALIZATION
 IC void CSGraphVertex::remove_edge(const _vertex_id_type& vertex_id)
 {
-    auto I = std::find(m_edges.begin(), m_edges.end(), vertex_id);
-    VERIFY(m_edges.end() != I);
-    CVertex* vertex = (*I).vertex();
-    vertex->on_edge_removal(this);
+    const auto I = XR_ASSERT_VAL(std::ranges::find(m_edges, vertex_id, &_graph_type::CEdge::vertex_id) != m_edges.end());
+
+    I->vertex()->on_edge_removal(this);
     m_edges.erase(I);
+
     --*m_edge_count;
 }
 
 TEMPLATE_SPECIALIZATION
 IC void CSGraphVertex::on_edge_addition(CVertex* vertex)
 {
-    VERIFY(std::find(m_vertices.begin(), m_vertices.end(), vertex) == m_vertices.end());
+    XR_DEBUG_ASSERT(std::ranges::find(m_vertices, vertex) == m_vertices.end());
     m_vertices.push_back(vertex);
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CSGraphVertex::on_edge_removal(const CVertex* vertex)
-{
-    auto I = std::find(m_vertices.begin(), m_vertices.end(), vertex);
-    VERIFY(I != m_vertices.end());
-    m_vertices.erase(I);
-}
+IC void CSGraphVertex::on_edge_removal(const CVertex* vertex) { m_vertices.erase(XR_ASSERT_VAL(std::ranges::find(m_vertices, vertex) != m_vertices.end())); }
 
 TEMPLATE_SPECIALIZATION
 IC const _vertex_id_type& CSGraphVertex::vertex_id() const { return (m_vertex_id); }

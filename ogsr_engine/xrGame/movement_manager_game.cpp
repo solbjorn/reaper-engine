@@ -191,6 +191,6 @@ void CMovementManager::process_game_path()
     case ePathStateTeleport: {
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }

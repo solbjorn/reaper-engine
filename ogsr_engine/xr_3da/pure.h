@@ -50,12 +50,12 @@ public:
 
     constexpr void Add(T* object, gsl::index priority = REG_PRIORITY_NORMAL)
     {
-#ifdef DEBUG
-        VERIFY(object != nullptr && priority != REG_PRIORITY_INVALID);
+        XR_ASSERT(object != nullptr && priority != REG_PRIORITY_INVALID, "", priority);
 
+#ifdef DEBUG
         // Verify that we don't already have the same object with valid priority
         for (const auto& msg : messages)
-            VERIFY(msg.first != object || msg.second == REG_PRIORITY_INVALID);
+            XR_ASSERT(msg.first != object || msg.second == REG_PRIORITY_INVALID);
 #endif
 
         messages.emplace_back(object, priority);
@@ -68,7 +68,7 @@ public:
 
     constexpr void Remove(const T* object)
     {
-        gsl::index hit{};
+        gsl::index hit{0};
 
         for (auto& msg : messages)
         {
@@ -83,9 +83,7 @@ public:
 #endif
         }
 
-#ifdef DEBUG
-        VERIFY(hit == 0 || hit == 1);
-#endif
+        XR_DEBUG_ASSERT(hit == 0 || hit == 1, "", hit);
 
         if (hit == 0)
             return;

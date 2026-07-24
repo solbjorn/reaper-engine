@@ -221,7 +221,7 @@ void CPHShell::PureActivate()
 
 void CPHShell::PresetActive()
 {
-    VERIFY(!isActive());
+    XR_ASSERT(!isActive());
 
     if (!m_space)
     {
@@ -233,19 +233,19 @@ void CPHShell::PresetActive()
 void CPHShell::Deactivate()
 {
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
-    if (m_pPhysicsShellAnimatorC)
-    {
-        xr_delete(m_pPhysicsShellAnimatorC);
-    }
+    xr_delete(m_pPhysicsShellAnimatorC);
 #endif
 
     if (!isActive())
         return;
-    R_ASSERT2(!ph_world->Processing(), "can not deactivate physics shell during physics processing!!!");
-    R_ASSERT2(!ph_world->IsFreezed(), "can not deactivate physics shell when ph world is freezed!!!");
-    R_ASSERT2(!CPHObject::IsFreezed(), "can not deactivate freezed !!!");
+
+    XR_ASSERT(ph_world != nullptr && ph_world->Exist());
+    XR_ASSERT(!ph_world->Processing() && !ph_world->IsFreezed(), "can't deactivate physics shell when processing or frozen", ph_world->Processing(),
+              ph_world->IsFreezed());
+    XR_ASSERT(!CPHObject::IsFreezed(), "can't deactivate frozen physics shell");
+
     ZeroCallbacks();
-    VERIFY(ph_world && ph_world->Exist());
+
     if (isFullActive())
     {
         vis_update_deactivate();
@@ -254,16 +254,11 @@ void CPHShell::Deactivate()
         CPHObject::UnFreeze();
         ph_world->StepTouch();
         ph_world->UnFreeze();
-        // Fmatrix m;
-        // InterpolateGlobalTransform(&m);
     }
+
     spatial_unregister();
 
     vis_update_activate();
-    // if(ref_object && !CPHObject::is_active() && m_active_count == 0)
-    //{
-    //	ref_object->processing_activate();
-    // }
     DisableObject();
     CPHObject::remove_from_recently_deactivated();
 
@@ -283,6 +278,7 @@ void CPHShell::Deactivate()
 
     m_flags.set(flActivating, FALSE);
     m_flags.set(flActive, FALSE);
+
     m_traced_geoms.clear();
     CPHObject::UnsetRayMotions();
 }

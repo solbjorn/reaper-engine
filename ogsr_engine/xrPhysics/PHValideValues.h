@@ -3,16 +3,18 @@
 
 class CSafeValue
 {
-    float m_safe_value;
+    f32 m_safe_value;
 
 public:
-    CSafeValue(float val)
+    constexpr CSafeValue() : m_safe_value{0.0f} {}
+
+    constexpr explicit CSafeValue(f32 val)
     {
-        R_ASSERT(_valid(val));
+        XR_ASSERT(_valid(val), "", val);
         m_safe_value = val;
     }
-    CSafeValue() { m_safe_value = 0.f; }
-    IC void new_val(float& val)
+
+    constexpr void new_val(f32& val)
     {
         if (_valid(val))
             m_safe_value = val;
@@ -56,9 +58,10 @@ class CSafeBodyLinearState
 public:
     IC void create(dBodyID b)
     {
-        R_ASSERT(dBodyStateValide(b));
+        XR_ASSERT(dBodyStateValide(b));
         new_state(b);
     }
+
     IC void new_state(dBodyID b)
     {
         dVector3 v;
@@ -79,9 +82,10 @@ class CSafeFixedRotationState
 public:
     IC void create(dBodyID b)
     {
-        R_ASSERT(dBodyStateValide(b));
+        XR_ASSERT(dBodyStateValide(b));
         new_state(b);
     }
+
     IC void new_state(dBodyID b)
     {
         dMatrix3 m;
@@ -91,6 +95,7 @@ public:
         m_safe_linear_state.new_state(b);
     }
 };
+
 class CSafeBodyAngularState
 {
     CSafeVector3 m_safe_angular_vel;
@@ -99,9 +104,10 @@ class CSafeBodyAngularState
 public:
     IC void create(dBodyID b)
     {
-        R_ASSERT(dBodyStateValide(b));
+        XR_ASSERT(dBodyStateValide(b));
         new_state(b);
     }
+
     IC void new_state(dBodyID b)
     {
         dVector3 v;
@@ -125,13 +131,15 @@ class CSafeBodyState
 public:
     IC void create(dBodyID b)
     {
-        R_ASSERT(dBodyStateValide(b));
+        XR_ASSERT(dBodyStateValide(b));
         new_state(b);
     }
+
     IC void new_state(dBodyID b)
     {
         m_safe_linear_state.new_state(b);
         m_safe_angular_state.new_state(b);
     }
 };
-#endif
+
+#endif // !PH_VALIDE_VALUES

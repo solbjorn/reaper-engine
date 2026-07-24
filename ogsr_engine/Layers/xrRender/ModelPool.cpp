@@ -18,7 +18,7 @@
 
 dxRender_Visual* CModelPool::Instance_Create(u32 type)
 {
-    dxRender_Visual* V{};
+    dxRender_Visual* V;
 
     // Check types
     switch (type)
@@ -39,10 +39,8 @@ dxRender_Visual* CModelPool::Instance_Create(u32 type)
     case MT_LOD: V = xr_new<FLOD>(); break;
     case MT_TREE_ST: V = xr_new<FTreeVisual_ST>(); break;
     case MT_TREE_PM: V = xr_new<FTreeVisual_PM>(); break;
-    default: FATAL("Unknown visual type");
+    default: XR_PANIC("unknown visual type", type);
     }
-
-    R_ASSERT(V);
 
     V->Type = type;
 
@@ -51,17 +49,14 @@ dxRender_Visual* CModelPool::Instance_Create(u32 type)
 
 dxRender_Visual* CModelPool::Instance_Duplicate(dxRender_Visual* V)
 {
-    R_ASSERT(V);
-    dxRender_Visual* N = Instance_Create(V->Type);
+    dxRender_Visual* N = Instance_Create(XR_ASSERT_VAL(V != nullptr)->Type);
     N->Copy(V);
     N->Spawn();
+
     // inc ref counter
-    for (xr_vector<ModelDef>::iterator I = Models.begin(); I != Models.end(); I++)
-        if (I->model == V)
-        {
-            I->refs++;
-            break;
-        }
+    if (const auto it = std::ranges::find(Models, V, &ModelDef::model); it != Models.end())
+        ++it->refs;
+
     return N;
 }
 
@@ -78,18 +73,10 @@ dxRender_Visual* CModelPool::Instance_Load(const char* N, BOOL allow_register)
         xr_strcpy(name, sizeof(name), N);
 
     // Load data from MESHES or LEVEL
-    if (!FS.exist(N))
-    {
-        if (!FS.exist(fn, "$level$", name))
-            if (!FS.exist(fn, "$game_meshes$", name))
-            {
-                FATAL("Can't find model file [%s]", name);
-            }
-    }
+    if (FS.exist(N) == nullptr)
+        XR_ASSERT(FS.exist(fn, "$level$", name) != nullptr || FS.exist(fn, "$game_meshes$", name) != nullptr, "can't find model file", name);
     else
-    {
         xr_strcpy(fn, N);
-    }
 
     // Actual loading
 #ifdef DEBUG
@@ -221,7 +208,7 @@ dxRender_Visual* CModelPool::Instance_Find(LPCSTR N)
 dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
 {
     string_path low_name;
-    VERIFY(xr_strlen(name) < gsl::index{sizeof(low_name)});
+    XR_ASSERT(name != nullptr && xr_strlen(name) < gsl::index{sizeof(low_name)});
 
     xr_strcpy(low_name, name);
     _strlwr(low_name);
@@ -290,7 +277,8 @@ void CModelPool::refresh_prefetch(const char* low_name, const bool is_hud_visual
 dxRender_Visual* CModelPool::CreateChild(LPCSTR name, IReader* data)
 {
     string256 low_name;
-    VERIFY(xr_strlen(name) < 256);
+    XR_ASSERT(name != nullptr && xr_strlen(name) < 256);
+
     xr_strcpy(low_name, name);
     _strlwr(low_name);
     if (strext(low_name))
@@ -298,7 +286,6 @@ dxRender_Visual* CModelPool::CreateChild(LPCSTR name, IReader* data)
 
     // 1. Search for already loaded model
     dxRender_Visual* Base = Instance_Find(low_name);
-    //.	if (0==Base) Base	 	= Instance_Load(name,data,FALSE);
     if (!Base)
     {
         if (data)
@@ -313,7 +300,8 @@ dxRender_Visual* CModelPool::CreateChild(LPCSTR name, IReader* data)
 
 void CModelPool::DeleteInternal(dxRender_Visual*& V, BOOL bDiscard)
 {
-    VERIFY(!g_bRendering);
+    XR_ASSERT(!g_bRendering);
+
     if (!V)
         return;
 
@@ -349,7 +337,7 @@ void CModelPool::Delete(dxRender_Visual*& V, BOOL bDiscard)
 
     if (g_bRendering)
     {
-        VERIFY(!bDiscard);
+        XR_ASSERT(!bDiscard);
         ModelsToDelete.push_back(V);
     }
     else
@@ -387,7 +375,7 @@ void CModelPool::Discard(dxRender_Visual*& V, BOOL b_complete)
             {
                 if (b_complete || std::string_view{name}.contains('#'))
                 {
-                    VERIFY(I->refs > 0);
+                    XR_ASSERT(I->refs > 0);
 
                     if (--I->refs == 0)
                     {
@@ -466,10 +454,12 @@ void CModelPool::Prefetch()
     now_prefetch2 = true;
     const auto& sect = vis_prefetch_ini->r_section("prefetch");
 
-    for (const auto& [low_name, val] : sect.Data)
+    for (const auto& [low_name, val0] : sect.Data)
     {
-        const auto res = scn::scan<f32, f32>(std::string_view{val}, "{},{}");
-        R_ASSERT(res, res.error().msg());
+        const std::string_view val{val0};
+        const auto res = scn::scan<f32, f32>(val, "{},{}");
+        XR_ASSERT(res, res.error().msg(), low_name, val);
+
         const auto [val1, val2] = res->values();
 
         if (!Instance_Find(low_name.c_str()))
@@ -550,19 +540,15 @@ void CModelPool::dump()
 
     for (auto it = Registry.begin(); it != Registry.end(); it++)
     {
-        CKinematics* K = PCKinematics((dxRender_Visual*)it->first);
-        VERIFY(K);
-        if (K)
-        {
-            const auto cur = K->mem_usage(true);
-            sz += cur;
+        auto K = XR_ASSERT_VAL(PCKinematics(smart_cast<dxRender_Visual*>(it->first)) != nullptr);
+        const auto cur = K->mem_usage(true);
+        sz += cur;
 
-            const bool b_free = Pool.find(it->second) != Pool.end();
-            if (b_free)
-                ++free_cnt;
+        const bool b_free = Pool.find(it->second) != Pool.end();
+        if (b_free)
+            ++free_cnt;
 
-            Msg("#{:3}: [{}] [{:5} Kb] - {}", k++, b_free ? "free" : "used", cur / 1024, it->second);
-        }
+        Msg("#{:3}: [{}] [{:5} Kb] - {}", k++, b_free ? "free" : "used", cur / 1024, it->second);
     }
 
     Msg("--- instances: {}, free {}, mem usage: {} Kb ", k, free_cnt, sz / 1024);
@@ -576,28 +562,32 @@ void CModelPool::memory_stats(u32& vb_mem_video, u32& vb_mem_system, u32& ib_mem
     ib_mem_video = 0;
     ib_mem_system = 0;
 
-    xr_vector<ModelDef>::iterator it = Models.begin();
-    xr_vector<ModelDef>::const_iterator en = Models.end();
-
-    for (; it != en; ++it)
+    for (const auto& item : Models)
     {
-        dxRender_Visual* ptr = it->model;
-        Fvisual* vis_ptr = smart_cast<Fvisual*>(ptr);
-        if (!vis_ptr)
+        const auto vis = smart_cast<const Fvisual*>(item.model);
+        if (vis == nullptr)
             continue;
 
-        D3D_BUFFER_DESC IB_desc{};
-        D3D_BUFFER_DESC VB_desc{};
-
-        vis_ptr->m_fast->p_rm_Indices->GetDesc(&IB_desc);
-
+        D3D_BUFFER_DESC IB_desc;
+        vis->p_rm_Indices->GetDesc(&IB_desc);
         ib_mem_video += IB_desc.ByteWidth;
         ib_mem_system += IB_desc.ByteWidth;
 
-        vis_ptr->m_fast->p_rm_Vertices->GetDesc(&VB_desc);
-
+        D3D_BUFFER_DESC VB_desc;
+        vis->p_rm_Vertices->GetDesc(&VB_desc);
         vb_mem_video += IB_desc.ByteWidth;
         vb_mem_system += IB_desc.ByteWidth;
+
+        if (vis->m_fast != nullptr)
+        {
+            vis->m_fast->p_rm_Indices->GetDesc(&IB_desc);
+            ib_mem_video += IB_desc.ByteWidth;
+            ib_mem_system += IB_desc.ByteWidth;
+
+            vis->m_fast->p_rm_Vertices->GetDesc(&VB_desc);
+            vb_mem_video += IB_desc.ByteWidth;
+            vb_mem_system += IB_desc.ByteWidth;
+        }
     }
 }
 
@@ -618,17 +608,20 @@ void CModelPool::process_vis_prefetch()
     xr_vector<const char*> expired;
     const auto& sect = vis_prefetch_ini->r_section("prefetch");
 
-    for (const auto& [key, val] : sect.Data)
+    for (const auto& [key, val0] : sect.Data)
     {
-        const auto res = scn::scan<f32, f32>(std::string_view{val}, "{},{}");
-        R_ASSERT(res, res.error().msg());
-        auto [val1, val2] = res->values();
+        const std::string_view val{val0};
+        const auto res = scn::scan<f32, f32>(val, "{},{}");
+        XR_ASSERT(res, res.error().msg(), key, val);
 
-        const float need = val1 * 0.8f; // скорость уменьшение популярности визуала
+        auto [val1, val2] = res->values();
+        // скорость уменьшения популярности визуала
+        const float need = val1 * 0.8f;
         // -0.5..+0.5 - добавить случайность, чтобы не было общего выключения
         const float rnd = Random.randF() - 0.5f;
+
         val1 = need + rnd * 0.1f;
-        if (val1 > 0.1f && val2 > 0.f)
+        if (val1 > 0.1f && val2 > 0.0f)
             vis_prefetch_ini->w_fvector2("prefetch", key.c_str(), Fvector2{val1, val2});
         else
             expired.emplace_back(key.c_str());

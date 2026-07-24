@@ -74,7 +74,7 @@ void SHeliMovementState::Update()
     case eMovRoundPath: UpdatePatrolPath(); break;
     case eMovLanding:
     case eMovTakeOff: break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 

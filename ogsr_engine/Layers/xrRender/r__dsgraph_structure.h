@@ -53,8 +53,8 @@ public:
     R_dsgraph::map_item mapEmissive;
     R_dsgraph::map_item mapHUDEmissive;
 
-    xr_vector<CSector*> Sectors;
-    xr_vector<CPortal*> Portals;
+    xr_vector<std::unique_ptr<CSector>> Sectors;
+    xr_vector<std::unique_ptr<CPortal>> Portals;
 
 private:
     CPortalTraverser PortalTraverser;
@@ -72,75 +72,41 @@ private:
 public:
     CBackend cmd_list{};
 
-    void set_Feedback(R_feedback* V, u32 id)
-    {
-        val_feedback_breakp = id;
-        val_feedback = V;
-    }
-    void get_Counters(u32& s, u32& d)
-    {
-        s = counter_S;
-        d = counter_D;
-    }
-    void clear_Counters() { counter_S = counter_D = 0; }
+    constexpr R_dsgraph_structure() { r_pmask(true, true); }
 
-    R_dsgraph_structure() { r_pmask(true, true); }
-
-    void reset()
-    {
-        XR_TRACY_ZONE_SCOPED();
-
-        context_id = R__INVALID_CTX_ID;
-        val_feedback = nullptr;
-
-        nrmPasses.clear();
-        matPasses.clear();
-
-        lstLODgroups.clear();
-        lstRenderables.clear();
-
-        for (int i = 0; i < SHADER_PASSES_MAX; ++i)
-        {
-            mapNormalPasses[0][i].clear();
-            mapNormalPasses[1][i].clear();
-            mapMatrixPasses[0][i].clear();
-            mapMatrixPasses[1][i].clear();
-        }
-
-        mapSorted.clear();
-        mapHUD.clear();
-        mapLOD.clear();
-        mapDistort.clear();
-        mapHUDDistort.clear();
-        mapHUDSorted.clear();
-        mapLandscape.clear();
-        HUDMask.clear();
-        mapWater.clear();
-
-        mapWmark.clear();
-        mapEmissive.clear();
-        mapHUDEmissive.clear();
-
-        cmd_list.Invalidate();
-    }
-
-    void r_pmask(bool _1, bool _2, bool _wm = false)
+    constexpr void r_pmask(bool _1, bool _2, bool _wm = false)
     {
         pmask[0] = _1;
         pmask[1] = _2;
         pmask_wmark = _wm;
     }
 
-    void load(const xr_vector<CSector::level_sector_data_t>& sectors, const xr_vector<CPortal::level_portal_data_t>& portals);
+    constexpr void set_Feedback(R_feedback* V, u32 id)
+    {
+        val_feedback = V;
+        val_feedback_breakp = id;
+    }
+
+    constexpr void get_Counters(u32& s, u32& d) const
+    {
+        s = counter_S;
+        d = counter_D;
+    }
+
+    constexpr void clear_Counters()
+    {
+        counter_S = 0;
+        counter_D = 0;
+    }
+
+    void reset();
+    void load(std::span<const CSector::level_sector_data_t> sectors_data, std::span<const CPortal::level_portal_data_t> portals_data);
     void unload();
 
-    ICF CSector* get_sector(sector_id_t sector_id) const
-    {
-        VERIFY(sector_id < Sectors.size());
-        return Sectors[sector_id];
-    }
-    sector_id_t detect_sector(const Fvector& P);
-    sector_id_t detect_sector(const Fvector& P, Fvector& D);
+    [[nodiscard]] ICF auto get_sector(sector_id_t sector_id) const { return Sectors[sector_id].get(); }
+
+    [[nodiscard]] sector_id_t detect_sector(const Fvector& P);
+    [[nodiscard]] sector_id_t detect_sector(const Fvector& P, Fvector& D);
 
     void add_static(dxRender_Visual* pVisual, const CFrustum& view, u32 planes);
     void add_leafs_dynamic(IRenderable* root, dxRender_Visual* pVisual, Fmatrix& xform, bool ignore = false); // if detected node's full visibility

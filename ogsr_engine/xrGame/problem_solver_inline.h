@@ -78,12 +78,14 @@ IC bool CProblemSolverAbstract::actual() const
 TEMPLATE_SPECIALIZATION
 IC void CProblemSolverAbstract::add_operator(const _operator_id_type& operator_id, _operator_ptr _op)
 {
-    auto I = std::lower_bound(m_operators.begin(), m_operators.end(), operator_id);
-    THROW((I == m_operators.end()) || ((*I).m_operator_id != operator_id));
+    const auto I = std::ranges::lower_bound(m_operators, operator_id, {}, &SOperator::m_operator_id);
+    XR_ASSERT(I == m_operators.end() || I->m_operator_id != operator_id);
+
 #ifdef DEBUG
     validate_properties(_op->conditions());
     validate_properties(_op->effects());
 #endif
+
     m_actuality = false;
     m_operators.emplace(I, operator_id, _op);
 }
@@ -93,25 +95,19 @@ TEMPLATE_SPECIALIZATION
 IC void CProblemSolverAbstract::validate_properties(const CState& conditions) const
 {
     for (const auto& cond : conditions.conditions())
-    {
-        if (evaluators().find(cond.condition()) == evaluators().end())
-        {
-            Msg("! cannot find corresponding evaluator to the property with id {}", cond.condition());
-            THROW(evaluators().find(cond.condition()) != evaluators().end());
-        }
-    }
+        XR_ASSERT(evaluators().find(cond.condition()) != evaluators().end(), "", cond.condition());
 }
 #endif
 
 TEMPLATE_SPECIALIZATION
 IC void CProblemSolverAbstract::remove_operator(const _operator_id_type& operator_id)
 {
-    auto I = std::lower_bound(m_operators.begin(), m_operators.end(), operator_id);
-    if (m_operators.end() != I)
+    if (const auto it = std::ranges::lower_bound(m_operators, operator_id, {}, &SOperator::m_operator_id); it != m_operators.end())
     {
-        delete_data((*I).m_operator);
-        m_operators.erase(I);
+        delete_data(it->m_operator);
+        m_operators.erase(it);
     }
+
     m_actuality = false;
 }
 
@@ -135,7 +131,7 @@ IC const typename CProblemSolverAbstract::CState& CProblemSolverAbstract::target
 TEMPLATE_SPECIALIZATION
 IC void CProblemSolverAbstract::add_evaluator(const condition_type& condition_id, _condition_evaluator_ptr evaluator)
 {
-    THROW(evaluators().end() == evaluators().find(condition_id));
+    XR_DEBUG_ASSERT(evaluators().find(condition_id) == evaluators().end());
     m_evaluators.emplace(condition_id, evaluator);
 }
 
@@ -174,11 +170,7 @@ TEMPLATE_SPECIALIZATION
 IC typename CProblemSolverAbstract::edge_value_type CProblemSolverAbstract::get_edge_weight(const _index_type& vertex_index0, const _index_type& vertex_index1,
                                                                                             const const_iterator& i) const
 {
-    edge_value_type current, min;
-    current = (*i).m_operator->weight(vertex_index1, vertex_index0);
-    min = (*i).m_operator->min_weight();
-    THROW(current >= min);
-    return (current);
+    return XR_ASSERT_VAL(i->m_operator->weight(vertex_index1, vertex_index0) >= i->m_operator->min_weight());
 }
 
 TEMPLATE_SPECIALIZATION
@@ -316,9 +308,7 @@ IC const xr_vector<_operator_id_type>& CProblemSolverAbstract::solution() const 
 TEMPLATE_SPECIALIZATION
 IC _operator_ptr CProblemSolverAbstract::get_operator(const _operator_id_type& operator_id)
 {
-    auto I = std::lower_bound(m_operators.begin(), m_operators.end(), operator_id);
-    THROW(m_operators.end() != I);
-    return ((*I).get_operator());
+    return XR_ASSERT_VAL(std::ranges::lower_bound(m_operators, operator_id, {}, &SOperator::m_operator_id) != m_operators.end())->get_operator();
 }
 
 TEMPLATE_SPECIALIZATION

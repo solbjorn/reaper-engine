@@ -196,7 +196,7 @@ void xrServer::Update()
 
         u16 ID;
         std::ignore = Packet.r_begin(ID);
-        R_ASSERT(M_SPAWN == ID);
+        XR_ASSERT(xr::msg{ID} == xr::msg::M_SPAWN);
 
         ClientID clientID;
         clientID.set(0xffff);
@@ -241,8 +241,8 @@ void xrServer::SendUpdatesToAll()
 
         // Send relevant entities to client
         NET_Packet Packet;
-        u16 PacketType = M_UPDATE;
-        Packet.w_begin(PacketType);
+        Packet.w_begin(gsl::narrow<u16>(xr::msg::M_UPDATE));
+
         // GameUpdate
         game->net_Export_Update(Packet, Client->ID, Client->ID);
         game->net_Export_GameTime(Packet);
@@ -348,16 +348,15 @@ u32 xrServer::OnDelayedMessage(NET_Packet& P, ClientID sender) // Non-Zero means
     xrClientData* CL = ID_to_client(sender);
     R_ASSERT2(CL, xr::format("packet type [{}]", type));
 
-    switch (type)
+    switch (xr::msg{type})
     {
-    case M_CLIENT_REQUEST_CONNECTION_DATA: {
-        OnCL_Connected(CL);
+    case xr::msg::M_CLIENT_REQUEST_CONNECTION_DATA: OnCL_Connected(CL); break;
+    default: break;
     }
-    break;
-    }
-    VERIFY(verify_entities());
 
+    VERIFY(verify_entities());
     csPlayers.Leave();
+
     return 0;
 }
 
@@ -373,26 +372,23 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
     VERIFY(verify_entities());
     xrClientData* CL = ID_to_client(sender);
 
-    switch (type)
+    switch (xr::msg{type})
     {
-    case M_UPDATE: {
+    case xr::msg::M_UPDATE:
         Process_update(P, sender); // No broadcast
         VERIFY(verify_entities());
-    }
-    break;
-    case M_SPAWN: {
+        break;
+    case xr::msg::M_SPAWN:
         if (CL->flags.bLocal)
             Process_spawn(P, sender);
 
         VERIFY(verify_entities());
-    }
-    break;
-    case M_EVENT: {
+        break;
+    case xr::msg::M_EVENT:
         Process_event(P, sender);
         VERIFY(verify_entities());
-    }
-    break;
-    case M_EVENT_PACK: {
+        break;
+    case xr::msg::M_EVENT_PACK: {
         NET_Packet tmpP;
         while (!P.r_eof())
         {
@@ -401,9 +397,10 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
 
             std::ignore = OnMessage(tmpP, sender);
         }
+
+        break;
     }
-    break;
-    case M_CLIENTREADY: {
+    case xr::msg::M_CLIENTREADY: {
         xrClientData* CL = ID_to_client(sender);
         if (CL)
         {
@@ -414,72 +411,61 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
 
         game->signal_Syncronize();
         VERIFY(verify_entities());
+        break;
     }
-    break;
-    case M_SWITCH_DISTANCE: {
+    case xr::msg::M_SWITCH_DISTANCE:
         game->switch_distance(P, sender);
         VERIFY(verify_entities());
-    }
-    break;
-    case M_CHANGE_LEVEL: {
+        break;
+    case xr::msg::M_CHANGE_LEVEL:
         if (game->change_level(P, sender))
-        {
             SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
-        }
+
         VERIFY(verify_entities());
-    }
-    break;
-    case M_SAVE_GAME: {
+        break;
+    case xr::msg::M_SAVE_GAME:
         game->save_game(P, sender);
         VERIFY(verify_entities());
-    }
-    break;
-    case M_LOAD_GAME: {
+        break;
+    case xr::msg::M_LOAD_GAME:
         std::ignore = game->load_game(P, sender);
         SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
+
         VERIFY(verify_entities());
-    }
-    break;
-    case M_RELOAD_GAME: {
+        break;
+    case xr::msg::M_RELOAD_GAME:
         SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
         VERIFY(verify_entities());
-    }
-    break;
-    case M_SAVE_PACKET: {
+        break;
+    case xr::msg::M_SAVE_PACKET:
         Process_save(P, sender);
         VERIFY(verify_entities());
-    }
-    break;
-    case M_CLIENT_REQUEST_CONNECTION_DATA: {
-        AddDelayedPacket(P, sender);
-    }
-    break;
-    case M_CHANGE_LEVEL_GAME: {
+        break;
+    case xr::msg::M_CLIENT_REQUEST_CONNECTION_DATA: AddDelayedPacket(P, sender); break;
+    case xr::msg::M_CHANGE_LEVEL_GAME: {
         ClientID CID;
         CID.set(0xffffffff);
+
         SendBroadcast(CID, P, net_flags(TRUE, TRUE));
+        break;
     }
-    break;
-    case M_CL_AUTH: {
-        game->AddDelayedEvent(P, GAME_EVENT_PLAYER_AUTH, 0, sender);
-    }
-    break;
-    case M_STATISTIC_UPDATE: {
+    case xr::msg::M_CL_AUTH: game->AddDelayedEvent(P, GAME_EVENT_PLAYER_AUTH, 0, sender); break;
+    case xr::msg::M_STATISTIC_UPDATE:
         if (SV_Client)
             SendBroadcast(SV_Client->ID, P, net_flags(TRUE, TRUE));
         else
             SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
-    }
-    break;
-    case M_STATISTIC_UPDATE_RESPOND: {
+
+        break;
+    case xr::msg::M_STATISTIC_UPDATE_RESPOND:
         if (SV_Client)
             SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
-    }
-    break;
+
+        break;
+    default: break;
     }
 
     VERIFY(verify_entities());
-
     csPlayers.Leave();
 
     return IPureServer::OnMessage(P, sender);
@@ -494,11 +480,7 @@ void xrServer::SendTo_LL(ClientID ID, void* data, u32 size, u32, u32)
     }
     else
     {
-        IClient* pClient = ID_to_client(ID);
-        if (!pClient)
-            return;
-
-        FATAL(""); // Это не должно быть вызвано
+        XR_ASSERT(ID_to_client(ID) == nullptr, "", ID);
     }
 }
 

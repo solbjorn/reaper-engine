@@ -47,7 +47,8 @@ tmc::task<void> CRender::render_lights_shadowed_one(light_ctx& task)
         dsgraph.r_pmask(true, false);
         dsgraph.build_subspace(L->spatial.sector_id, temp, L->X.S.combine, L->position, true);
 
-        VERIFY(dsgraph.mapNormalPasses[1][0].empty() && dsgraph.mapMatrixPasses[1][0].empty() && dsgraph.mapSorted.empty());
+        XR_ASSERT(dsgraph.mapNormalPasses[1][0].empty() && dsgraph.mapMatrixPasses[1][0].empty() && dsgraph.mapSorted.empty(), "",
+                  dsgraph.mapNormalPasses[1][0], dsgraph.mapMatrixPasses[1][0], dsgraph.mapSorted);
 
         if (!dsgraph.mapNormalPasses[0][0].empty() || !dsgraph.mapMatrixPasses[0][0].empty())
         {

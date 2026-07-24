@@ -51,33 +51,31 @@ void FHierrarhyVisual::Load(const char* N, IReader* data, u32 dwFlags)
     }
     else
     {
-        if (data->find_chunk(OGF_CHILDREN))
+        XR_ASSERT(data->find_chunk(OGF_CHILDREN) > 0, "invalid visual", N);
+
+        // From stream
+        IReader* OBJ = data->open_chunk(OGF_CHILDREN);
+        if (OBJ)
         {
-            // From stream
-            IReader* OBJ = data->open_chunk(OGF_CHILDREN);
-            if (OBJ)
+            IReader* O = OBJ->open_chunk(0);
+
+            for (int count = 1; O; count++)
             {
-                IReader* O = OBJ->open_chunk(0);
-                for (int count = 1; O; count++)
-                {
-                    std::string_view short_name{N};
+                std::string_view short_name{N};
 
-                    if (const auto pos = short_name.rfind('.'); pos != std::string_view::npos)
-                        short_name = short_name.substr(0, pos);
+                if (const auto pos = short_name.rfind('.'); pos != std::string_view::npos)
+                    short_name = short_name.substr(0, pos);
 
-                    children.push_back((dxRender_Visual*)RImplementation.model_CreateChild(xr::format("{}:{}", short_name, count).c_str(), O));
+                children.push_back((dxRender_Visual*)RImplementation.model_CreateChild(xr::format("{}:{}", short_name, count).c_str(), O));
 
-                    O->close();
-                    O = OBJ->open_chunk(count);
-                }
-                OBJ->close();
+                O->close();
+                O = OBJ->open_chunk(count);
             }
-            bDontDelete = FALSE;
+
+            OBJ->close();
         }
-        else
-        {
-            FATAL("Invalid visual");
-        }
+
+        bDontDelete = FALSE;
     }
 }
 

@@ -45,15 +45,11 @@ tmc::task<void> IGame_Level::net_Stop()
     bReady = false;
 }
 
-//-------------------------------------------------------------------------------------------
-// extern CStatTimer				tscreate;
-
 tmc::task<bool> IGame_Level::Load(u32)
 {
     // Initialize level data
     string_path temp;
-    if (!FS.exist(temp, "$level$", "level.ltx"))
-        Debug.fatal(DEBUG_INFO, "Can't find level configuration file '%s'.", temp);
+    XR_ASSERT(FS.exist(temp, "$level$", "level.ltx") != nullptr, "can't find level configuration file", temp);
     pLevel = xr_new<CInifile>(temp);
 
     // Open
@@ -64,14 +60,13 @@ tmc::task<bool> IGame_Level::Load(u32)
     // Header
     hdrLEVEL H;
     std::ignore = fs.r_chunk_safe(fsL_HEADER, &H, sizeof(H));
-    R_ASSERT2(XRCL_PRODUCTION_VERSION == H.XRLC_version, "Incompatible level version.");
+    XR_ASSERT(H.XRLC_version == XRCL_PRODUCTION_VERSION, "incompatible level version");
 
     // CForms
     co_await g_pGamePersistent->LoadTitle("st_loading_cform");
     ObjectSpace.Load();
 
     // HUD + Environment
-    //.	pHUD						= (CCustomHUD*)NEW_INSTANCE	(CLSID_HUDMANAGER);
     if (g_hud)
         pHUD = g_hud;
     else
@@ -82,7 +77,7 @@ tmc::task<bool> IGame_Level::Load(u32)
 
     // Objects
     g_pGamePersistent->Environment().mods_load();
-    R_ASSERT(co_await Load_GameSpecific_Before());
+    XR_ASSERT(co_await Load_GameSpecific_Before());
     Objects.Load();
 
     // Done
@@ -100,7 +95,7 @@ tmc::task<void> IGame_Level::OnRender() { co_await Render->Render(); }
 tmc::task<void> IGame_Level::OnFrame()
 {
     // Update all objects
-    VERIFY(bReady);
+    XR_ASSERT(bReady);
 
     co_await Objects.Update(false);
     pHUD->OnFrame();
@@ -132,9 +127,7 @@ void CServerInfo::AddItem(LPCSTR name_, LPCSTR value_, u32 color_)
 void CServerInfo::AddItem(shared_str& name_, LPCSTR value_, u32 color_)
 {
     SItem_ServerInfo it;
-    //	shared_str s_name = CStringTable().translate( name_ );
 
-    //	strcpy_s( it.name, s_name.c_str() );
     strcpy_s(it.name, name_.c_str());
     strcat_s(it.name, " = ");
     strcat_s(it.name, value_);

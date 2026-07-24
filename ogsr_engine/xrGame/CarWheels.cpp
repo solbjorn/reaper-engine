@@ -180,7 +180,7 @@ void CCar::SWheel::ApplyDamage(u16 level)
         joint->SetJointSDfactors(sf, df);
         car->m_damage_particles.PlayWheel2(car, bone_id);
         break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 
@@ -198,26 +198,30 @@ void CCar::SWheel::RestoreNetState(const CSE_ALifeCar::SWheelState& a_state)
     SetHealth(a_state.health);
     RestoreEffect();
 }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void CCar::SWheelDrive::Init()
 {
     pwheel->Init();
     gear_factor = pwheel->radius / pwheel->car->m_ref_radius;
+
     CBoneData& bone_data = smart_cast<IKinematics*>(pwheel->car->Visual())->LL_GetData(u16(pwheel->bone_id));
     switch (bone_data.IK_data.type)
     {
     case jtWheel: pos_fvd = bone_map.find(pwheel->bone_id)->second.element->mXFORM.k.x; break;
-
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     pos_fvd = pos_fvd > 0.f ? -1.f : 1.f;
 }
+
 void CCar::SWheelDrive::Drive()
 {
     float cur_speed = pwheel->car->RefWheelMaxSpeed() / gear_factor;
     pwheel->ApplyDriveAxisVel(pos_fvd * cur_speed);
 }
+
 void CCar::SWheelDrive::UpdatePower() { pwheel->ApplyDriveAxisTorque(pwheel->car->RefWheelCurTorque() / gear_factor); }
 void CCar::SWheelDrive::Neutral() { pwheel->ApplyDriveAxisVelTorque(0.f, pwheel->car->m_axle_friction); }
 
@@ -234,14 +238,14 @@ void CCar::SWheelSteer::Init()
     IKinematics* pKinematics = smart_cast<IKinematics*>(pwheel->car->Visual());
     pwheel->Init();
     (bone_map.find(pwheel->bone_id))->second.joint->GetLimits(lo_limit, hi_limit, 0);
+
     CBoneData& bone_data = pKinematics->LL_GetData(u16(pwheel->bone_id));
     switch (bone_data.IK_data.type)
     {
     case jtWheel:
         pos_right = bone_map.find(pwheel->bone_id)->second.element->mXFORM.i.y; //.dotproduct(pwheel->car->m_root_transform.j);
         break;
-
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     pos_right = pos_right > 0.f ? -1.f : 1.f;

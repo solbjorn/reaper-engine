@@ -137,26 +137,20 @@ public:
         m_Markers.push_back(NewMarker);
     }
 
-    IC const SMarker& Marker(u32 ID)
-    {
-        VERIFY(ID < m_Markers.size());
-        return m_Markers[ID];
-    }
+    IC const SMarker& Marker(u32 ID) { return m_Markers[XR_ASSERT_VAL(ID < m_Markers.size())]; }
 
     IC void UpdateMarkerPos(u32 ID, float NewPos)
     {
-        if (ID >= m_Markers.size())
-            return;
-        SMarker& pMarker = m_Markers[ID];
-        pMarker.m_fPos = NewPos;
+        if (ID < m_Markers.size())
+            m_Markers[ID].m_fPos = NewPos;
     }
+
     IC void ClearMarkers() { m_Markers.clear(); }
 
     IC void RemoveMarker(u32 ID)
     {
-        if (ID >= m_Markers.size())
-            return;
-        m_Markers.erase(m_Markers.begin() + ID);
+        if (ID < m_Markers.size())
+            m_Markers.erase(m_Markers.begin() + ID);
     }
 };
 

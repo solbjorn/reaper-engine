@@ -12,7 +12,8 @@ void CLSID2TEXT(CLASS_ID id, LPSTR text)
 
 CLASS_ID TEXT2CLSID(LPCSTR text)
 {
-    VERIFY3(xr_strlen(text) <= 8, "Beer from creator CLASS_ID:", text);
+    XR_DEBUG_ASSERT(xr_strlen(text) <= 8, "beer from the creator of clsid", text);
+
     char buf[9];
     buf[8] = '\0';
     strncpy(buf, text, 8);

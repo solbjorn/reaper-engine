@@ -287,18 +287,6 @@ void CStateGroupEatAbstract::setup_substates()
         Fvector nearest_bone_pos;
         const CEntityAlive* corpse = object->EatedCorpse;
 
-        /*
-                #ifdef DEBUG
-                    if ( !corpse )
-                    {
-                        debug::text_tree tree;
-                        object->add_debug_info(tree);
-                        debug::log_text_tree(tree);
-                        FATAL("Debug info has been added, plz save log");
-                    }
-                #endif //#ifdef DEBUG
-        */
-
         if (!corpse->m_pPhysicsShell || !corpse->m_pPhysicsShell->isActive())
             nearest_bone_pos = corpse->Position();
         else

@@ -846,11 +846,13 @@ void update_inventory_window() { HUD().GetUI()->UIGame()->ReInitShownUI(); }
 static void change_level(GameGraph::_GRAPH_ID game_vertex_id, u32 level_vertex_id, Fvector pos, Fvector dir)
 {
     NET_Packet p;
-    p.w_begin(M_CHANGE_LEVEL);
+    p.w_begin(gsl::narrow<u16>(xr::msg::M_CHANGE_LEVEL));
+
     p.w(&game_vertex_id, sizeof(game_vertex_id));
     p.w(&level_vertex_id, sizeof(level_vertex_id));
     p.w_vec3(pos);
     p.w_vec3(dir);
+
     Level().Send(p, net_flags(TRUE));
 }
 

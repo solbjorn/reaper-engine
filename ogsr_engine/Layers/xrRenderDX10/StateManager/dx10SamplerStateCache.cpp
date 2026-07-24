@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "dx10SamplerStateCache.h"
 
 #include "../dx10StateUtils.h"
@@ -7,9 +8,9 @@ using dx10StateUtils::operator==;
 
 dx10SamplerStateCache SSManager;
 
-dx10SamplerStateCache::dx10SamplerStateCache() : m_uiMaxAnisotropy(1), m_uiMipLODBias(0.0f)
+dx10SamplerStateCache::dx10SamplerStateCache()
 {
-    constexpr int iMaxRSStates = 10;
+    static constexpr std::size_t iMaxRSStates{10};
     m_StateArray.reserve(iMaxRSStates);
 }
 
@@ -43,50 +44,41 @@ dx10SamplerStateCache::SHandle dx10SamplerStateCache::GetState(D3D_SAMPLER_DESC&
     return hResult;
 }
 
-void dx10SamplerStateCache::CreateState(StateDecs desc, IDeviceState** ppIState) { R_CHK(HW.pDevice->CreateSamplerState(&desc, ppIState)); }
+void dx10SamplerStateCache::CreateState(StateDecs desc, IDeviceState** ppIState) { XR_ASSERT(xr::hr(HW.pDevice->CreateSamplerState(&desc, ppIState))); }
 
 dx10SamplerStateCache::SHandle dx10SamplerStateCache::FindState(const StateDecs& desc, u64 StateXXH)
 {
-    u32 res = 0xffffffff;
-    u32 i = 0;
-
-    for (; i < m_StateArray.size(); ++i)
+    for (auto [i, rec] : std::views::enumerate(m_StateArray))
     {
-        if (m_StateArray[i].m_xxh == StateXXH)
-        {
-            StateDecs descCandidate;
-            m_StateArray[i].m_pState->GetDesc(&descCandidate);
-            if (descCandidate == desc)
-            {
-                res = i;
-                break;
-            }
-        }
+        if (rec.m_xxh != StateXXH)
+            continue;
+
+        StateDecs descCandidate;
+        rec.m_pState->GetDesc(&descCandidate);
+
+        if (descCandidate == desc)
+            return i;
     }
 
-    return res != 0xffffffff ? i : (u32)hInvalidHandle;
+    return hInvalidHandle;
 }
 
 void dx10SamplerStateCache::ClearStateArray()
 {
-    for (u32 i = 0; i < m_StateArray.size(); ++i)
-    {
-        _RELEASE(m_StateArray[i].m_pState);
-    }
+    for (auto& rec : m_StateArray)
+        _RELEASE(rec.m_pState);
 
     m_StateArray.clear();
 }
 
 void dx10SamplerStateCache::PrepareSamplerStates(HArray& samplers, ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT]) const
 {
-    VERIFY(samplers.size() <= D3D_COMMONSHADER_SAMPLER_SLOT_COUNT);
-    for (u32 i = 0; i < samplers.size(); ++i)
+    XR_ASSERT(samplers.size() <= D3D_COMMONSHADER_SAMPLER_SLOT_COUNT);
+
+    for (auto [samp, state] : std::views::zip(samplers, std::span{pSS, D3D_COMMONSHADER_SAMPLER_SLOT_COUNT}))
     {
-        if (samplers[i] != hInvalidHandle)
-        {
-            VERIFY(samplers[i] < m_StateArray.size());
-            pSS[i] = m_StateArray[samplers[i]].m_pState;
-        }
+        if (samp != hInvalidHandle)
+            state = m_StateArray[samp].m_pState;
     }
 }
 
@@ -134,18 +126,16 @@ void dx10SamplerStateCache::CSApplySamplers(u32 context_id, HArray& samplers)
 
 void dx10SamplerStateCache::SetMaxAnisotropy(u32 uiMaxAniso)
 {
-    clamp(uiMaxAniso, (u32)1, (u32)16);
+    clamp(uiMaxAniso, 1u, 16u);
 
     if (m_uiMaxAnisotropy == uiMaxAniso)
         return;
 
     m_uiMaxAnisotropy = uiMaxAniso;
 
-    for (u32 i = 0; i < m_StateArray.size(); ++i)
+    for (auto& rec : m_StateArray)
     {
-        StateRecord& rec = m_StateArray[i];
         StateDecs desc{};
-
         rec.m_pState->GetDesc(&desc);
 
         //	MaxAnisitropy is reset by ValidateState if not aplicable
@@ -168,11 +158,9 @@ void dx10SamplerStateCache::SetMipLODBias(float uiMipLODBias)
 
     m_uiMipLODBias = uiMipLODBias;
 
-    for (u32 i = 0; i < m_StateArray.size(); ++i)
+    for (auto& rec : m_StateArray)
     {
-        StateRecord& rec = m_StateArray[i];
         StateDecs desc{};
-
         rec.m_pState->GetDesc(&desc);
 
         desc.MipLODBias = m_uiMipLODBias;

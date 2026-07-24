@@ -18,6 +18,9 @@ public:
 protected:
     typedef COperatorConditionAbstract<_condition_type, _value_type> COperatorCondition;
 
+    using ret_t = std::compare_three_way_result_t<_condition_type>;
+    static_assert(std::is_same_v<ret_t, std::compare_three_way_result_t<_value_type>>);
+
     _condition_type m_condition;
     _value_type m_value;
     u64 m_hash;
@@ -27,8 +30,8 @@ public:
     IC _condition_type condition() const;
     IC _value_type value() const;
     IC u64 hash_value() const;
-    IC bool operator<(const COperatorCondition& condition) const;
-    IC bool operator==(const COperatorCondition& condition) const;
+    [[nodiscard]] constexpr ret_t operator<=>(const COperatorCondition& _condition) const;
+    [[nodiscard]] constexpr bool operator==(const COperatorCondition& _condition) const;
 };
 
 #include "operator_condition_inline.h"

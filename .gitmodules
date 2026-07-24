@@ -45,7 +45,7 @@
 	url = https://github.com/solbjorn/SFML.git
 [submodule "3rd_party/Src/Xiph/flac/flac"]
 	path = 3rd_party/Src/Xiph/flac/flac
-	url = https://github.com/solbjorn/flac.git
+	url = https://github.com/xiph/flac.git
 [submodule "3rd_party/Src/Xiph/ogg/ogg"]
 	path = 3rd_party/Src/Xiph/ogg/ogg
 	url = https://github.com/xiph/ogg.git
@@ -183,7 +183,6 @@
 [submodule "3rd_party/Src/system/llvm/llvm-project"]
 	path = 3rd_party/Src/system/llvm/llvm-project
 	url = https://github.com/llvm/llvm-project.git
-	branch = release/22.x
 [submodule "3rd_party/Src/system/mimalloc/mimalloc"]
 	path = 3rd_party/Src/system/mimalloc/mimalloc
 	url = https://github.com/microsoft/mimalloc.git

@@ -58,7 +58,7 @@ void CSheduler::internal_Registration()
 
 void CSheduler::internal_Register(ISheduled* object, bool RT)
 {
-    VERIFY(!object->shedule.b_locked);
+    XR_ASSERT(!object->shedule.b_locked);
 
     if (RT)
     {
@@ -124,7 +124,7 @@ bool CSheduler::Registered(const ISheduled* object) const
     {
         if (it.Object == object)
         {
-            VERIFY(!count);
+            XR_ASSERT(count == 0);
             count = 1;
             break;
         }
@@ -134,7 +134,7 @@ bool CSheduler::Registered(const ISheduled* object) const
     {
         if (it.Object == object)
         {
-            VERIFY(!count);
+            XR_ASSERT(count == 0);
             count = 1;
             break;
         }
@@ -146,18 +146,18 @@ bool CSheduler::Registered(const ISheduled* object) const
         {
             if (it.OP)
             {
-                VERIFY(!count);
+                XR_ASSERT(count == 0);
                 ++count;
             }
             else
             {
-                VERIFY(count == 1);
+                XR_ASSERT(count == 1);
                 --count;
             }
         }
     }
 
-    VERIFY(count == 0 || count == 1);
+    XR_ASSERT(count == 0 || count == 1, "", count);
 
     return count == 1;
 }
@@ -165,7 +165,7 @@ bool CSheduler::Registered(const ISheduled* object) const
 
 void CSheduler::Register(ISheduled* A, bool RT)
 {
-    VERIFY(!Registered(A));
+    XR_DEBUG_ASSERT(!Registered(A));
 
     Registration.emplace_back(true, RT, A);
     A->shedule.b_RT = RT;
@@ -173,7 +173,7 @@ void CSheduler::Register(ISheduled* A, bool RT)
 
 void CSheduler::Unregister(ISheduled* A, bool force)
 {
-    VERIFY(Registered(A));
+    XR_DEBUG_ASSERT(Registered(A));
 
     if (m_processing_now || force)
     {
@@ -255,9 +255,7 @@ tmc::task<void> CSheduler::Update()
 
     for (auto& curr : ItemsRT)
     {
-        R_ASSERT(curr.Object != nullptr);
-
-        if (!curr.Object->shedule_Needed())
+        if (!XR_ASSERT_VAL(curr.Object != nullptr)->shedule_Needed())
         {
             curr.dwTimeOfLastExecute = dwTime;
             continue;

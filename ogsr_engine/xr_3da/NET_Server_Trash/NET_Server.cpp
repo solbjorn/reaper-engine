@@ -76,13 +76,10 @@ tmc::task<IPureServer::EConnect> IPureServer::Connect(shared_str& options) // о
 }
 
 void IPureServer::Disconnect() {}
+void IPureServer::SendTo_LL(ClientID, void*, u32, u32, u32) { XR_PANIC(); }
 
-void IPureServer::SendTo_LL(ClientID, void*, u32, u32, u32) { FATAL(""); }
-
-void IPureServer::SendTo(ClientID ID /*DPNID ID*/, NET_Packet& P, u32 dwFlags, u32 dwTimeout) // Отсюда отправляются данные в IPureClient::OnMessage
-{
-    SendTo_LL(ID, P.B.data, P.B.count, dwFlags, dwTimeout);
-}
+// Отсюда отправляются данные в IPureClient::OnMessage
+void IPureServer::SendTo(ClientID ID, NET_Packet& P, u32 dwFlags, u32 dwTimeout) { SendTo_LL(ID, P.B.data, P.B.count, dwFlags, dwTimeout); }
 
 void IPureServer::SendBroadcast_LL(ClientID exclude, void* data, u32 size, u32 dwFlags) // Отсюда отправляются данные в IPureClient::OnMessage
 {

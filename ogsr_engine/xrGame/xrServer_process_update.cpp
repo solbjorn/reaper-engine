@@ -39,13 +39,12 @@ void xrServer::Process_update(NET_Packet& P, ClientID sender)
             if (g_Dump_Update_Read)
                 Msg("* {} : {} - {}", E->name(), size, P.r_tell() - _pos);
 
-            if ((P.r_tell() - _pos) != size)
-            {
+            constexpr auto str = [] [[nodiscard]] (auto clsid) -> xr_string {
                 string16 tmp;
-                CLSID2TEXT(E->m_tClassID, tmp);
-
-                Debug.fatal(DEBUG_INFO, "Beer from the creator of '%s'", tmp);
-            }
+                CLSID2TEXT(clsid, tmp);
+                return xr_string{tmp};
+            };
+            XR_ASSERT(P.r_tell() - _pos == size, "beer from the creator of clsid", E->name(), E->m_tClassID, str(E->m_tClassID));
         }
         else
         {

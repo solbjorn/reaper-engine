@@ -39,7 +39,8 @@ void CDetail::transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, 
     }
 
     // Transfer indices (in 32bit lines)
-    VERIFY(iOffset < 65535);
+    XR_ASSERT(iOffset < std::numeric_limits<u16>::max());
+
     {
         u32 item = (iOffset << 16) | iOffset;
         u32 count = number_indices / 2;
@@ -69,7 +70,8 @@ void CDetail::transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, 
     }
 
     // Transfer indices (in 32bit lines)
-    VERIFY(iOffset < 65535);
+    XR_ASSERT(iOffset < std::numeric_limits<u16>::max());
+
     {
         u32 item = (iOffset << 16) | iOffset;
         u32 count = number_indices / 2;
@@ -96,8 +98,9 @@ void CDetail::Load(IReader* S)
     m_fMinScale = S->r_float();
     m_fMaxScale = S->r_float();
     number_vertices = S->r_u32();
+
     number_indices = S->r_u32();
-    R_ASSERT(0 == (number_indices % 3));
+    XR_ASSERT(xr::is_aligned(number_indices, 3u), "", fnS, fnT);
 
     // Vertices
     u32 size_vertices = number_vertices * sizeof(fvfVertexIn);
@@ -110,15 +113,15 @@ void CDetail::Load(IReader* S)
     S->r(indices, size_indices);
 
     // Validate indices
-#ifdef DEBUG
-    for (u32 idx = 0; idx < number_indices; idx++)
-        R_ASSERT(indices[idx] < (u16)number_vertices);
-#endif
+    for (u32 idx = 0; idx < number_indices; ++idx)
+        XR_ASSERT(indices[idx] < number_vertices, "", fnS, fnT, idx);
 
     // Calc BB & SphereRadius
     bv_bb.invalidate();
-    for (u32 i = 0; i < number_vertices; i++)
+
+    for (u32 i = 0; i < number_vertices; ++i)
         bv_bb.modify(vertices[i].P);
+
     bv_bb.getsphere(bv_sphere.P, bv_sphere.R);
 
     Optimize();

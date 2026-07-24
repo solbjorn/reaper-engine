@@ -183,13 +183,7 @@ void CSpaceRestrictionComposition::test_correctness()
 }
 #endif
 
-Fsphere CSpaceRestrictionComposition::sphere() const
-{
-    NODEFAULT;
-#ifdef DEBUG
-    return (m_sphere);
-#endif
-}
+Fsphere CSpaceRestrictionComposition::sphere() const { xr::unreachable(); }
 
 #ifdef DEBUG
 void CSpaceRestrictionComposition::check_restrictor_type()

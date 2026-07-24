@@ -12,9 +12,8 @@
 
 u64 generate_time(u32 years, u32 months, u32 days, u32 hours, u32 minutes, u32 seconds, u32 milliseconds)
 {
-    THROW(years > 0);
-    THROW(months > 0);
-    THROW(days > 0);
+    XR_ASSERT(years > 0 && months > 0 && days > 0, "", years, months, days);
+
     u64 t1, t2, t3, t4;
     t1 = years / 400;
     t2 = years / 100;
@@ -53,18 +52,6 @@ u64 generate_time(u32 years, u32 months, u32 days, u32 hours, u32 minutes, u32 s
     result = result * u64(60) + u64(minutes);
     result = result * u64(60) + u64(seconds);
     result = result * u64(1000) + u64(milliseconds);
-
-#if 0
-	u32 _years; u32 _months; u32 _days; u32 _hours; u32 _minutes; u32 _seconds; u32 _milliseconds;
-	split_time				(result,_years,_months,_days,_hours,_minutes,_seconds,_milliseconds);
-	VERIFY					(years == _years);
-	VERIFY					(months == _months);
-	VERIFY					(days == _days);
-	VERIFY					(hours == _hours);
-	VERIFY					(minutes == _minutes);
-	VERIFY					(seconds == _seconds);
-	VERIFY					(milliseconds == _milliseconds);
-#endif
 
     return (result);
 }

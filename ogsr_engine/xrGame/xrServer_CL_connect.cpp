@@ -76,7 +76,7 @@ void xrServer::SendConnectionData(IClient* _CL)
         Perform_connect_spawn(I->second, CL, P);
 
     // Send "finished" signal
-    P.w_begin(M_SV_CONFIG_FINISHED);
+    P.w_begin(gsl::narrow<u16>(xr::msg::M_SV_CONFIG_FINISHED));
     SendTo(CL->ID, P, mode);
 }
 
@@ -106,7 +106,7 @@ void xrServer::OnCL_Connected(IClient* _CL)
 void xrServer::SendConnectResult(IClient* CL, u8 res, u8 res1, const char* ResultStr)
 {
     NET_Packet P;
-    P.w_begin(M_CLIENT_CONNECT_RESULT);
+    P.w_begin(gsl::narrow<u16>(xr::msg::M_CLIENT_CONNECT_RESULT));
     P.w_u8(res);
     P.w_u8(res1);
     P.w_stringZ(ResultStr);

@@ -145,25 +145,26 @@ void CScriptGameObject::play_cycle(LPCSTR anim) { play_cycle(anim, true); }
 
 void CScriptGameObject::Hit(CScriptHit* tpLuaHit)
 {
-    CScriptHit& tLuaHit = *tpLuaHit;
-    NET_Packet P;
-    SHit HS;
-    HS.GenHeader(GE_HIT, object().ID()); //	object().u_EventGen(P,GE_HIT,object().ID());
-    THROW2(tLuaHit.m_tpDraftsman, "Where is hit initiator?!"); //	THROW2			(tLuaHit.m_tpDraftsman,"Where is hit initiator??!");
-    HS.whoID = u16(tLuaHit.m_tpDraftsman->ID()); //	P.w_u16			(u16(tLuaHit.m_tpDraftsman->ID()));
-    HS.weaponID = 0; //	P.w_u16			(0);
-    HS.dir = tLuaHit.m_tDirection; //	P.w_dir			(tLuaHit.m_tDirection);
-    HS.power = tLuaHit.m_fPower; //	P.w_float		(tLuaHit.m_fPower);
-    IKinematics* V = smart_cast<IKinematics*>(object().Visual()); //	IKinematics		*V = smart_cast<IKinematics*>(object().Visual());
-    if (V && xr_strlen(tLuaHit.m_caBoneName)) //	if (xr_strlen	(tLuaHit.m_caBoneName))
-        HS.boneID = (V->LL_BoneID(tLuaHit.m_caBoneName)); //		P.w_s16		(V->LL_BoneID(tLuaHit.m_caBoneName));
-    else //	else
-        HS.boneID = (s16(0)); //		P.w_s16		(s16(0));
-    HS.p_in_bone_space = Fvector().set(0, 0, 0); //	P.w_vec3		(Fvector().set(0,0,0));
-    HS.impulse = tLuaHit.m_fImpulse; //	P.w_float		(tLuaHit.m_fImpulse);
-    HS.hit_type = (ALife::EHitType)(tLuaHit.m_tHitType); //	P.w_u16			(u16(tLuaHit.m_tHitType));
-    HS.Write_Packet(P);
+    const auto& tLuaHit = *XR_ASSERT_VAL(tpLuaHit != nullptr);
 
+    SHit HS;
+    HS.GenHeader(GE_HIT, object().ID());
+    HS.whoID = XR_ASSERT_VAL(tLuaHit.m_tpDraftsman != nullptr)->ID();
+    HS.weaponID = 0;
+    HS.dir = tLuaHit.m_tDirection;
+    HS.power = tLuaHit.m_fPower;
+
+    if (auto V = smart_cast<IKinematics*>(object().Visual()); V != nullptr && xr_strlen(tLuaHit.m_caBoneName) > 0)
+        HS.boneID = V->LL_BoneID(tLuaHit.m_caBoneName);
+    else
+        HS.boneID = 0;
+
+    HS.p_in_bone_space = Fvector3{};
+    HS.impulse = tLuaHit.m_fImpulse;
+    HS.hit_type = (ALife::EHitType)(tLuaHit.m_tHitType);
+
+    NET_Packet P;
+    HS.Write_Packet(P);
     object().u_EventSend(P);
 }
 
@@ -245,8 +246,9 @@ const xr_vector<MemorySpace::CNotYetVisibleObject>& CScriptGameObject::not_yet_v
     if (!monster)
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CGameObject : cannot access class member not_yet_visible_objects!");
-        NODEFAULT;
+        xr::unreachable();
     }
+
     return (monster->memory().visual().not_yet_visible_objects());
 }
 
@@ -256,8 +258,9 @@ float CScriptGameObject::visibility_threshold() const
     if (!monster)
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CGameObject : cannot access class member visibility_threshold!");
-        NODEFAULT;
+        xr::unreachable();
     }
+
     return (monster->memory().visual().visibility_threshold());
 }
 
@@ -522,32 +525,23 @@ u32 CScriptGameObject::location_on_path(float distance, Fvector* location)
 
 void CScriptGameObject::explode_initiator(u16 who_id)
 {
-    ASSERT_FMT(!object().H_Parent(), "[%s]: cannot explode %s with parent", std::source_location::current().function_name(), cName().c_str());
-    CExplosive* explosive = smart_cast<CExplosive*>(&object());
-    ASSERT_FMT(explosive, "[%s]: %s not a CExplosive", std::source_location::current().function_name(), cName().c_str());
+    XR_ASSERT(object().H_Parent() == nullptr, "can't explode object with a parent", cName(), who_id);
+    auto explosive = XR_ASSERT_VAL(smart_cast<CExplosive*>(&object()) != nullptr, "not an explosive", cName(), who_id);
+
     Fvector normal;
     explosive->FindNormal(normal);
     explosive->SetInitiator(who_id);
     explosive->GenExplodeEvent(object().Position(), normal);
 }
 
-bool CScriptGameObject::is_exploded()
-{
-    CExplosive* explosive = smart_cast<CExplosive*>(&object());
-    ASSERT_FMT(explosive, "[%s]: %s not a CExplosive", std::source_location::current().function_name(), cName().c_str());
-    return explosive->IsExploded();
-}
+bool CScriptGameObject::is_exploded() { return XR_ASSERT_VAL(smart_cast<CExplosive*>(&object()) != nullptr, "not an explosive", cName())->IsExploded(); }
 
 bool CScriptGameObject::is_ready_to_explode()
 {
-    CExplosive* explosive = smart_cast<CExplosive*>(&object());
-    ASSERT_FMT(explosive, "[%s]: %s not a CExplosive", std::source_location::current().function_name(), cName().c_str());
-    return explosive->IsReadyToExplode();
+    return XR_ASSERT_VAL(smart_cast<CExplosive*>(&object()) != nullptr, "not an explosive", cName())->IsReadyToExplode();
 }
 
 void CScriptGameObject::remove_memory_object(CScriptGameObject* game_object)
 {
-    CCustomMonster* monster = smart_cast<CCustomMonster*>(&object());
-    ASSERT_FMT(monster, "[%s]: %s not a CCustomMonster", std::source_location::current().function_name(), cName().c_str());
-    monster->memory().remove_links(&game_object->object());
+    XR_ASSERT_VAL(smart_cast<CCustomMonster*>(&object()) != nullptr, "not a monster", cName())->memory().remove_links(&game_object->object());
 }

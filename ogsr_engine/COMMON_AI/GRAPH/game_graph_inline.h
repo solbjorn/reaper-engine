@@ -10,11 +10,12 @@
 
 IC CGameGraph::CGameGraph(IReader* stream, bool separatedGraphs)
 {
-    m_reader = stream;
+    m_reader = XR_ASSERT_VAL(stream != nullptr);
     m_separated_graphs = separatedGraphs;
-    VERIFY(m_reader);
+
     m_header.load(m_reader);
-    R_ASSERT2(header().version() == XRAI_CURRENT_VERSION, "Graph version mismatch!");
+    XR_ASSERT(header().version() == XRAI_CURRENT_VERSION, "graph version mismatch");
+
     m_nodes = (const CVertex*)m_reader->pointer();
     m_current_level_some_vertex_id = _GRAPH_ID(-1);
     m_enabled.assign(header().vertex_count(), true);
@@ -42,7 +43,7 @@ IC CGameGraph::~CGameGraph()
 
 IC const CGameGraph::CHeader& CGameGraph::header() const { return (m_header); }
 
-IC bool CGameGraph::mask(const svector<_LOCATION_ID, GameGraph::LOCATION_TYPE_COUNT>& M, const _LOCATION_ID E[GameGraph::LOCATION_TYPE_COUNT]) const
+IC bool CGameGraph::mask(const std::inplace_vector<_LOCATION_ID, GameGraph::LOCATION_TYPE_COUNT>& M, const _LOCATION_ID E[GameGraph::LOCATION_TYPE_COUNT]) const
 {
     for (int i = 0; i < GameGraph::LOCATION_TYPE_COUNT; ++i)
         if ((M[i] != E[i]) && (255 != M[i]))
@@ -66,17 +67,21 @@ IC float CGameGraph::distance(const _GRAPH_ID tGraphID0, const _GRAPH_ID tGraphI
 
 IC bool CGameGraph::accessible(const u32& vertex_id) const
 {
-    VERIFY(valid_vertex_id(vertex_id));
-    return valid_vertex_id(vertex_id) && m_enabled[vertex_id];
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+    return XR_ASSERT_VAL(valid_vertex_id(vertex_id)) && m_enabled[vertex_id];
+#else
+    return XR_DEBUG_ASSERT_VAL(valid_vertex_id(vertex_id)) && m_enabled[vertex_id];
+#endif
 }
 
 IC void CGameGraph::accessible(const u32& vertex_id, bool value) const
 {
 #ifdef CRASH_ON_INVALID_VERTEX_ID
-    ASSERT_FMT(valid_vertex_id(vertex_id), "invalid vertex_id %u", vertex_id);
+    XR_ASSERT(valid_vertex_id(vertex_id), "invalid vertex ID", vertex_id, value);
 #else
-    VERIFY(valid_vertex_id(vertex_id));
+    XR_DEBUG_ASSERT(valid_vertex_id(vertex_id), "invalid vertex ID", vertex_id, value);
 #endif
+
     m_enabled[vertex_id] = value;
 }
 
@@ -93,14 +98,9 @@ inline const float& CGameGraph::edge_weight(const_iterator i) const { return i->
 IC const CGameGraph::CVertex* CGameGraph::vertex(const u32& vertex_id) const
 {
 #ifdef CRASH_ON_INVALID_VERTEX_ID
-    ASSERT_FMT(valid_vertex_id(vertex_id), "invalid vertex_id %u", vertex_id);
-    return (m_nodes + vertex_id);
+    return XR_ASSERT_VAL(valid_vertex_id(vertex_id), "invalid vertex ID", vertex_id) ? (m_nodes + vertex_id) : (m_nodes + header().vertex_count() - 1);
 #else
-#if _M_X64
-    return (valid_vertex_id(vertex_id)) ? (m_nodes + vertex_id) : (m_nodes + header().vertex_count() - 1);
-#else
-    return (m_nodes + vertex_id);
-#endif
+    return XR_DEBUG_ASSERT_VAL(valid_vertex_id(vertex_id), "invalid vertex ID", vertex_id) ? (m_nodes + vertex_id) : (m_nodes + header().vertex_count() - 1);
 #endif
 }
 
@@ -108,8 +108,8 @@ IC const u8& CGameGraph::CHeader::version() const { return (m_version); }
 
 IC GameGraph::_LEVEL_ID GameGraph::CHeader::level_count() const
 {
-    VERIFY(m_levels.size() < (u32(1) << (8 * sizeof(GameGraph::_LEVEL_ID))));
-    return ((GameGraph::_LEVEL_ID)m_levels.size());
+    XR_ASSERT(m_levels.size() < (1uz << (8 * sizeof(GameGraph::_LEVEL_ID))));
+    return (GameGraph::_LEVEL_ID)m_levels.size();
 }
 
 IC const GameGraph::_GRAPH_ID& GameGraph::CHeader::vertex_count() const { return (m_vertex_count); }
@@ -132,9 +132,7 @@ IC bool GameGraph::CHeader::level_exist(pcstr level_name) const
 
 IC const GameGraph::SLevel& GameGraph::CHeader::level(const _LEVEL_ID& id) const
 {
-    LEVEL_MAP::const_iterator I = levels().find(id);
-    R_ASSERT2(I != levels().end(), xr::format("there is no specified level in the game graph : {}", id));
-    return ((*I).second);
+    return XR_ASSERT_VAL(levels().find(id) != levels().end(), "no such level in the game graph", id)->second;
 }
 
 IC const GameGraph::SLevel& GameGraph::CHeader::level(LPCSTR level_name) const
@@ -146,11 +144,10 @@ IC const GameGraph::SLevel& GameGraph::CHeader::level(LPCSTR level_name) const
     }
 
 #ifdef DEBUG
-    Msg("! There is no specified level {} in the game graph!", level_name);
-    return (levels().begin()->second);
+    Msg("! No such level (\"{}\") in the game graph", level_name);
+    return levels().begin()->second;
 #else
-    R_ASSERT3(false, "There is no specified level in the game graph!", level_name);
-    NODEFAULT;
+    XR_PANIC("no such level in the game graph", level_name);
 #endif
 }
 
@@ -183,19 +180,31 @@ IC const float& GameGraph::CEdge::distance() const { return (m_path_distance); }
 IC void CGameGraph::set_invalid_vertex(_GRAPH_ID& vertex_id) const
 {
     vertex_id = _GRAPH_ID(-1);
-    VERIFY(!valid_vertex_id(vertex_id));
+    XR_DEBUG_ASSERT(!valid_vertex_id(vertex_id));
 }
 
 IC GameGraph::_GRAPH_ID CGameGraph::vertex_id(const CGameGraph::CVertex* vertex) const
 {
-    VERIFY(valid_vertex_id(_GRAPH_ID(vertex - m_nodes)));
-    return (_GRAPH_ID(vertex - m_nodes));
+    const auto id = _GRAPH_ID(XR_ASSERT_VAL(vertex >= m_nodes) - m_nodes);
+
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+    XR_ASSERT(valid_vertex_id(id));
+#else
+    XR_DEBUG_ASSERT(valid_vertex_id(id));
+#endif
+
+    return id;
 }
 
 IC const GameGraph::_GRAPH_ID& CGameGraph::current_level_vertex() const
 {
-    VERIFY(valid_vertex_id(m_current_level_some_vertex_id));
-    return (m_current_level_some_vertex_id);
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+    XR_ASSERT(valid_vertex_id(m_current_level_some_vertex_id));
+#else
+    XR_DEBUG_ASSERT(valid_vertex_id(m_current_level_some_vertex_id));
+#endif
+
+    return m_current_level_some_vertex_id;
 }
 
 IC void GameGraph::SLevel::load(IReader* reader)
@@ -225,13 +234,13 @@ IC void GameGraph::CHeader::load(IReader* reader)
     reader->r(&m_guid, sizeof(m_guid));
 
     u32 level_count = reader->r_u8();
-
     m_levels.clear();
+
     for (u32 i = 0; i < level_count; ++i)
     {
         SLevel l_tLevel;
         l_tLevel.load(reader);
-        m_levels.emplace(l_tLevel.id(), l_tLevel);
+        m_levels.emplace(l_tLevel.id(), std::move(l_tLevel));
     }
 }
 
@@ -242,14 +251,10 @@ IC void GameGraph::CHeader::save(IWriter* writer)
     writer->w(&m_edge_count, sizeof(m_edge_count));
     writer->w(&m_death_point_count, sizeof(m_death_point_count));
     writer->w(&m_guid, sizeof(m_guid));
+    writer->w_u8(XR_ASSERT_VAL(m_levels.size() < (1uz << (8 * sizeof(u8)))));
 
-    VERIFY(m_levels.size() < u32((1) << (8 * sizeof(u8))));
-    writer->w_u8((u8)m_levels.size());
-
-    LEVEL_MAP::iterator I = m_levels.begin();
-    LEVEL_MAP::iterator E = m_levels.end();
-    for (; I != E; ++I)
-        (*I).second.save(writer);
+    for (auto& level : m_levels)
+        level.second.save(writer);
 }
 
 inline CGameLevelCrossTable* CGameGraph::find_cross_table_for_level(u32 level_id) const
@@ -289,7 +294,7 @@ inline void CGameGraph::set_current_level(u32 level_id)
         m_current_level_cross_table = xr_new<CGameLevelCrossTable>(fName);
     }
 
-    VERIFY(m_current_level_cross_table);
+    XR_ASSERT(m_current_level_cross_table != nullptr);
     m_current_level_some_vertex_id = _GRAPH_ID(-1);
 
     for (_GRAPH_ID i = 0, n = header().vertex_count(); i < n; ++i)
@@ -301,11 +306,11 @@ inline void CGameGraph::set_current_level(u32 level_id)
         break;
     }
 
-    VERIFY(valid_vertex_id(m_current_level_some_vertex_id));
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+    XR_ASSERT(valid_vertex_id(m_current_level_some_vertex_id));
+#else
+    XR_DEBUG_ASSERT(valid_vertex_id(m_current_level_some_vertex_id));
+#endif
 }
 
-IC const CGameLevelCrossTable& CGameGraph::cross_table() const
-{
-    VERIFY(m_current_level_cross_table);
-    return (*m_current_level_cross_table);
-}
+IC const CGameLevelCrossTable& CGameGraph::cross_table() const { return *XR_ASSERT_VAL(m_current_level_cross_table != nullptr); }

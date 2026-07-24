@@ -87,18 +87,23 @@ void CLensFlareDescriptor::load(CInifile* pIni, LPCSTR sect)
 
         for (u32 i = 0; i < tcnt; i++)
         {
-            auto res = scn::scan_value<f32>(std::string_view{_GetItem(R, i, name)});
-            R_ASSERT(res, res.error().msg());
+            std::string_view val{_GetItem(R, i, name)};
+            auto res = scn::scan_value<f32>(val);
+            XR_ASSERT(res, res.error().msg(), section, val);
+
             const auto r = res->value();
 
-            res = scn::scan_value<f32>(std::string_view{_GetItem(O, i, name)});
-            R_ASSERT(res, res.error().msg());
+            val = _GetItem(O, i, name);
+            res = scn::scan_value<f32>(val);
+            XR_ASSERT(res, res.error().msg(), section, val);
+
             const auto o = res->value();
 
-            res = scn::scan_value<f32>(std::string_view{_GetItem(P, i, name)});
-            R_ASSERT(res, res.error().msg());
-            const auto p = res->value();
+            val = _GetItem(P, i, name);
+            res = scn::scan_value<f32>(val);
+            XR_ASSERT(res, res.error().msg(), section, val);
 
+            const auto p = res->value();
             AddFlare(r, o, p, _GetItem(T, i, name), S);
         }
     }
@@ -222,9 +227,9 @@ void CLensFlare::OnFrame(shared_str id)
         return;
     dwFrame = Device.dwFrame;
 
-    R_ASSERT(_valid(g_pGamePersistent->Environment().CurrentEnv->sun_dir));
+    XR_ASSERT(_valid(g_pGamePersistent->Environment().CurrentEnv->sun_dir), "invalid sun direction", id, g_pGamePersistent->Environment().CurrentEnv->sun_dir);
     vSunDir.mul(g_pGamePersistent->Environment().CurrentEnv->sun_dir, -1);
-    R_ASSERT(_valid(vSunDir));
+    XR_ASSERT(_valid(vSunDir), "", id, vSunDir);
 
     // color
     float tf = g_pGamePersistent->Environment().fTimeFactor;
@@ -233,7 +238,6 @@ void CLensFlare::OnFrame(shared_str id)
 
     CLensFlareDescriptor* desc = id.size() ? g_pGamePersistent->Environment().add_flare(m_Palette, id) : nullptr;
 
-    //	LFState			previous_state = m_State;
     switch (m_State)
     {
     case lfsNone:
@@ -302,8 +306,8 @@ void CLensFlare::OnFrame(shared_str id)
         bRender = false;
         return;
     }
-    else
-        bRender = true;
+
+    bRender = true;
 
     // Calculate the point directly in front of us, on the far clip plane
     float fDistance = g_pGamePersistent->Environment().CurrentEnv->far_plane * 0.75f;
@@ -320,17 +324,15 @@ void CLensFlare::OnFrame(shared_str id)
     vecX.set(1.0f, 0.0f, 0.0f);
     matEffCamPos.transform_dir(vecX);
     vecX.normalize();
-    R_ASSERT(_valid(vecX));
+    XR_ASSERT(_valid(vecX), "", id, vecX);
 
     vecY.crossproduct(vecX, vecDir);
-    R_ASSERT(_valid(vecY));
+    XR_ASSERT(_valid(vecY), "", id, vecY);
 
     //	Side vectors to bend normal.
     Fvector vecSx;
     Fvector vecSy;
 
-    // float fScale = m_Current->m_Source.fRadius * vSunDir.magnitude();
-    // float fScale = m_Current->m_Source.fRadius;
     //	HACK: it must be read from the weather!
     float fScale = 0.02f;
 
@@ -338,11 +340,11 @@ void CLensFlare::OnFrame(shared_str id)
     vecSy.mul(vecY, fScale);
 
     CObject* o_main = g_pGameLevel->CurrentViewEntity();
-    R_ASSERT(_valid(vSunDir));
-    STranspParam TP(&m_ray_cache[0], Device.vCameraPosition, vSunDir, 1000.f, EPS_L);
+    XR_ASSERT(_valid(vSunDir), "", id, vSunDir);
 
-    R_ASSERT(_valid(TP.P));
-    R_ASSERT(_valid(TP.D));
+    STranspParam TP{&m_ray_cache[0], Device.vCameraPosition, vSunDir, 1000.0f, EPS_L};
+    XR_ASSERT(_valid(TP.P) && _valid(TP.D), "", id, TP.P, TP.D);
+
     collide::ray_defs RD(TP.P, TP.D, TP.f, CDB::OPT_CULL, collide::rqtBoth);
     float fVisResult = 0.0f;
 
@@ -351,7 +353,8 @@ void CLensFlare::OnFrame(shared_str id)
         TP.D = vSunDir;
         TP.D.add(Fvector().mul(vecSx, RayDeltas[i].x));
         TP.D.add(Fvector().mul(vecSy, RayDeltas[i].y));
-        R_ASSERT(_valid(TP.D));
+        XR_ASSERT(_valid(TP.D), "", id, i, TP.D);
+
         TP.pray_cache = &(m_ray_cache[i]);
         TP.vis = 1.0f;
         RD.dir = TP.D;
@@ -423,7 +426,6 @@ void CLensFlare::Render(BOOL bSun, BOOL bFlares, BOOL bGradient)
     if (!m_Current)
         return;
 
-    VERIFY(m_Current);
     m_pRender->Render(*this, bSun, bFlares, bGradient);
 }
 

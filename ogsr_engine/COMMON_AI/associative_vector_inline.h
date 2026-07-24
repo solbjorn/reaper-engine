@@ -17,7 +17,8 @@ inline _associative_vector::associative_vector(const key_compare& predicate) : v
 
 TEMPLATE_SPECIALIZATION
 template <typename _iterator_type>
-inline _associative_vector::associative_vector(_iterator_type first, _iterator_type last, const key_compare& predicate) : inherited{first, last}, value_compare{predicate}
+inline _associative_vector::associative_vector(_iterator_type first, _iterator_type last, const key_compare& predicate)
+    : inherited{first, last}, value_compare{predicate}
 {
     std::sort(begin(), end(), (value_compare&)(*this));
 }
@@ -275,7 +276,6 @@ IC typename _associative_vector::equal_range_result _associative_vector::equal_r
     if ((*this)(key, (*I).first))
         return (equal_range_result(I, I));
 
-    VERIFY(!(*this)(key, (*I).first));
     return (equal_range_result(I, I + 1));
 }
 
@@ -290,7 +290,6 @@ IC typename _associative_vector::const_equal_range_result _associative_vector::e
     if ((*this)(key, (*I).first))
         return (const_equal_range_result(I, I));
 
-    VERIFY(!(*this)(key, (*I).first));
     return (const_equal_range_result(I, I + 1));
 }
 

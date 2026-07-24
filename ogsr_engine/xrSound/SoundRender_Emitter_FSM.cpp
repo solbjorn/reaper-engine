@@ -15,11 +15,14 @@ constexpr u32 calc_cursor(f32 fTimeStarted, f32& fTime, f32 fTimeTotal, f32 fFre
 {
     if (fTime < fTimeStarted)
         fTime = fTimeStarted; // Андрюха посоветовал, ассерт что ниже вылетел из за паузы как то хитро
-    R_ASSERT((fTime - fTimeStarted) >= 0.0f);
+
+    XR_ASSERT(fTime - fTimeStarted >= 0.0f);
+
     while ((fTime - fTimeStarted) > fTimeTotal / fFreq) // looped
     {
         fTime -= fTimeTotal / fFreq;
     }
+
     const u32 curr_sample_num = iFloor((fTime - fTimeStarted) * fFreq * wfx.samplerate);
 
     return curr_sample_num * wfx.item_size;
@@ -28,8 +31,10 @@ constexpr u32 calc_cursor(f32 fTimeStarted, f32& fTime, f32 fTimeTotal, f32 fFre
 
 tmc::task<void> CSoundRender_Emitter::update(f32 fTime, f32 dt)
 {
-    VERIFY2(!!(owner_data) || (!(owner_data) && (m_current_state == stStopped)), "owner");
-    VERIFY2(owner_data ? *(int*)(&owner_data->feedback) : 1, "owner");
+    if (owner_data)
+        XR_ASSERT(owner_data->feedback != nullptr);
+    else
+        XR_ASSERT(m_current_state == stStopped);
 
     if (bRewind)
     {
@@ -219,24 +224,14 @@ tmc::task<void> CSoundRender_Emitter::update(f32 fTime, f32 dt)
     case stSimulatingLooped:
         if (fTimeToRewind > 0.0f)
         {
-            const float fLength = get_length_sec();
+            const auto fLength = XR_ASSERT_VAL(get_length_sec() >= fTimeToRewind, "target time is bigger than length of sound");
             const bool bLooped = fsimilar(fTimeToStop, TIME_TO_STOP_INFINITE);
-
-            R_ASSERT2(fLength >= fTimeToRewind, "set_time: target time is bigger than length of sound");
 
             const float fRemainingTime = (fLength - fTimeToRewind) / p_source.freq;
             const float fPastTime = fTimeToRewind / p_source.freq;
 
-            fTimeStarted = fTime - fPastTime;
+            fTimeStarted = XR_ASSERT_VAL(fTime - fPastTime >= 0.0f);
             fTimeToPropagade = fTimeStarted; //--> For AI events
-
-            if (fTimeStarted < 0.0f)
-            {
-                R_ASSERT2(fTimeStarted >= 0.0f, "Possible error in sound rewind logic! See log.");
-
-                fTimeStarted = fTime;
-                fTimeToPropagade = fTimeStarted;
-            }
 
             if (!bLooped)
             {
@@ -259,8 +254,10 @@ tmc::task<void> CSoundRender_Emitter::update(f32 fTime, f32 dt)
     if (bStopping && fis_zero(fade_volume))
         co_await i_stop();
 
-    VERIFY2(!!(owner_data) || (!(owner_data) && (m_current_state == stStopped)), "owner");
-    VERIFY2(owner_data ? *(int*)(owner_data->feedback) : 1, "owner");
+    if (owner_data)
+        XR_ASSERT(owner_data->feedback != nullptr);
+    else
+        XR_ASSERT(m_current_state == stStopped);
 
     bMoved = FALSE;
 
@@ -272,7 +269,7 @@ tmc::task<void> CSoundRender_Emitter::update(f32 fTime, f32 dt)
     }
     else if (owner_data)
     {
-        VERIFY(this == owner_data->feedback);
+        XR_ASSERT(owner_data->feedback == this);
 
         owner_data->feedback = nullptr;
         owner_data._set(nullptr);
@@ -381,7 +378,8 @@ float CSoundRender_Emitter::att() const
 
 float CSoundRender_Emitter::applyOccVolume() const
 {
-    float vol = p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic * psSoundVMusicFactor);
+    float vol =
+        p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic * psSoundVMusicFactor);
 
     if (!b2D)
     {

@@ -18,7 +18,6 @@ private:
     int iTileY;
     float iRemX;
     float iRemY;
-    int alpha_ref;
 
 protected:
     typedef CUICustomItem inherited;
@@ -32,8 +31,6 @@ public:
 
     CUIStaticItem();
     ~CUIStaticItem() override;
-
-    void SetAlphaRef(int val) { alpha_ref = val; }
 
     void CreateShader(gsl::czstring tex, gsl::czstring sh = "hud\\default") override;
 

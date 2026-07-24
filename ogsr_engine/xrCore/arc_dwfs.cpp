@@ -55,26 +55,24 @@ void dwfs_logger::write(dwarfs::logger::level_type level, std::string_view outpu
     if (level > thresh)
         return;
 
-    gsl::czstring pfx;
+    std::string_view pfx;
 
     switch (level)
     {
     case dwarfs::logger::level_type::FATAL:
-    case dwarfs::logger::level_type::ERROR: pfx = "! DwarFS: "; break;
-    case dwarfs::logger::level_type::WARN: pfx = "~ DwarFS: "; break;
-    case dwarfs::logger::level_type::INFO: pfx = "* DwarFS: "; break;
+    case dwarfs::logger::level_type::ERROR: pfx = "! "; break;
+    case dwarfs::logger::level_type::WARN: pfx = "~ "; break;
+    case dwarfs::logger::level_type::INFO: pfx = "* "; break;
     case dwarfs::logger::level_type::VERBOSE:
-    default: pfx = "DwarFS: "; break;
-    case dwarfs::logger::level_type::DEBUG: pfx = "- DwarFS: "; break;
-    case dwarfs::logger::level_type::TRACE: pfx = "# DwarFS: "; break;
+    default: break;
+    case dwarfs::logger::level_type::DEBUG: pfx = "- "; break;
+    case dwarfs::logger::level_type::TRACE: pfx = "# "; break;
     }
 
     const auto ctx = dwarfs::get_logger_context(loc);
 
-    Msg("{}{}{}", pfx, ctx, output);
-
-    if (level == dwarfs::logger::level_type::FATAL)
-        FATAL("DwarFS: %s%s", ctx.c_str(), output.data());
+    Msg("{}DwarFS: {}{}", pfx, ctx, output);
+    XR_ASSERT(level != dwarfs::logger::level_type::FATAL, "DwarFS fatal error", ctx, output);
 }
 
 static_assert(sizeof(dwarfs::reader::filesystem_v2) == sizeof(uintptr_t));
@@ -171,7 +169,8 @@ void dwfs_stream::r(void* buffer, gsl::index buffer_size)
                 const auto sz = gsl::narrow_cast<size_t>(direct);
                 std::error_code ec;
 
-                R_ASSERT(xr::dwfs_cb(cb).read(gsl::narrow_cast<u32>(inode), reinterpret_cast<char*>(&out[0]), sz, fbase + foff, ec) == sz && !ec);
+                const auto ret = xr::dwfs_cb(cb).read(gsl::narrow_cast<u32>(inode), reinterpret_cast<char*>(&out[0]), sz, fbase + foff, ec);
+                XR_ASSERT(ret == sz && !ec, "", ret, sz, ec);
 
                 out = out.subspan(sz);
                 last = foff;
@@ -201,9 +200,10 @@ void dwfs_stream::r(void* buffer, gsl::index buffer_size)
             const auto sz = gsl::narrow_cast<size_t>(precache);
             std::error_code ec;
 
-            R_ASSERT(xr::dwfs_cb(cb).read(gsl::narrow_cast<u32>(inode), reinterpret_cast<char*>(&buf[gsl::narrow_cast<size_t>(read)]), sz, fbase + foff + read,
-                                          ec) == sz &&
-                     !ec);
+            const auto ret =
+                xr::dwfs_cb(cb).read(gsl::narrow_cast<u32>(inode), reinterpret_cast<char*>(&buf[gsl::narrow_cast<size_t>(read)]), sz, fbase + foff + read, ec);
+            XR_ASSERT(ret == sz && !ec, "", ret, sz, ec);
+
             read += precache;
         }
 
@@ -225,7 +225,7 @@ CStreamReader* dwfs_stream::open_chunk(u32 chunk_id)
     if (size == 0)
         return nullptr;
 
-    R_ASSERT(!compressed, "cannot stream compressed chunks");
+    XR_ASSERT(!compressed, "cannot stream compressed chunks", chunk_id);
 
     return xr_new<xr::dwfs_stream>(cb, inode, tell(), size);
 }
@@ -233,23 +233,25 @@ CStreamReader* dwfs_stream::open_chunk(u32 chunk_id)
 xr::dwfs_logger lg;
 const dwarfs::os_access_generic os;
 
-constexpr dwarfs::reader::filesystem_options opts{
-    .image_offset = dwarfs::reader::filesystem_options::IMAGE_OFFSET_AUTO,
-    .block_cache{
-        .decompress_ratio = 0.8,
-        .sequential_access_detector_threshold = 4,
-        .allocation_mode = dwarfs::reader::block_cache_allocation_mode::MMAP,
-    },
-    .metadata{
-        .block_size = 512 * 1024,
-    },
-};
+constexpr dwarfs::reader::filesystem_options opts{.image_offset = dwarfs::reader::filesystem_options::IMAGE_OFFSET_AUTO,
+                                                  .block_cache{
+                                                      .decompress_ratio = 0.8,
+                                                      .sequential_access_detector_threshold = 4,
+                                                      .allocation_mode = dwarfs::reader::block_cache_allocation_mode::MMAP,
+                                                  },
+                                                  .metadata{
+                                                      .block_size = 512 * 1024,
+                                                  }};
 } // namespace
 } // namespace xr
 
 // DwarFS
 
-void CLocatorAPI::archive::open_dwfs() { xr::dwfs_cb(cb) = dwarfs::reader::filesystem_v2{xr::lg, xr::os, path.c_str(), xr::opts}; }
+void CLocatorAPI::archive::open_dwfs()
+{
+    xr::dwfs_cb(cb) = dwarfs::reader::filesystem_v2{
+        xr::lg, xr::os, std::u8string_view{reinterpret_cast<const char8_t*>(path.c_str()), gsl::narrow_cast<std::size_t>(path.size())}, xr::opts};
+}
 
 void CLocatorAPI::archive::autoload_dwfs()
 {
@@ -282,7 +284,8 @@ IReader* CLocatorAPI::archive::read_dwfs(const struct file& desc, u32) const
     std::error_code ec;
 
     auto dest = xr_alloc<std::byte>(desc.size_real);
-    R_ASSERT(xr::dwfs_cb(cb).read(gsl::narrow_cast<u32>(desc.cb), reinterpret_cast<char*>(dest), sz, ec) == sz && !ec);
+    const auto ret = xr::dwfs_cb(cb).read(gsl::narrow_cast<u32>(desc.cb), reinterpret_cast<char*>(dest), sz, ec);
+    XR_ASSERT(ret == sz && !ec, "", ret, sz, ec);
 
     return xr_new<CTempReader>(dest, desc.size_real, 0z);
 }

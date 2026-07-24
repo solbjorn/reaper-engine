@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "ik_object_shift.h"
 
 #ifdef DEBUG
@@ -132,9 +133,6 @@ void object_shift::set_taget(float taget_, float time)
     accel = 2.f * (3.f * x / sq_time - 2.f * speed / time);
     aaccel = 6.f * (speed / sq_time - 2.f * x / sq_time / time);
 
-    // aaccel = 3.f*( speed/sq_time - x/sq_time/time );
-    // accel = - aaccel * time;
-
     float x0, x1;
     if ((x > half_shift_restrict_up || x < -half_shift_restrict_down) && square_equation(aaccel / 2.f, accel, speed, x0, x1))
     {
@@ -151,9 +149,8 @@ void object_shift::set_taget(float taget_, float time)
         }
     }
 
-    VERIFY(_valid(accel));
+    XR_DEBUG_ASSERT(_valid(accel));
 
     current_time = time_global;
-
     taget_time = time_global + time;
 }

@@ -134,7 +134,7 @@ struct CLoader
         }
     };
 
-    IC static void load_data(LPCSTR&, M&, const P&) { NODEFAULT; }
+    static void load_data(gsl::czstring&, M&, const P&) { xr::unreachable(); }
 
     IC static void load_data(LPSTR& data, M& stream, const P&)
     {
@@ -157,11 +157,13 @@ struct CLoader
     {
         if (p(data, const_cast<typename object_type_traits::remove_const<T1>::type&>(data.first), true))
         {
-            VERIFY(!(object_type_traits::is_same<T1, LPCSTR>::value));
+            static_assert(!object_type_traits::is_same<T1, gsl::czstring>::value);
             load_data(const_cast<typename object_type_traits::remove_const<T1>::type&>(data.first), stream, p);
         }
+
         if (p(data, data.second, false))
             load_data(data.second, stream, p);
+
         p.after_load(data, stream);
     }
 
@@ -186,15 +188,17 @@ struct CLoader
     }
 
     template <typename T, int size>
-    IC static void load_data(svector<T, size>& data, M& stream, const P& p)
+    IC static void load_data(std::inplace_vector<T, size>& data, M& stream, const P& p)
     {
         if (p.can_clear())
             data.clear();
+
         const u32 count = stream.r_u32();
         for (u32 i = 0; i < count; ++i)
         {
-            typename svector<T, size>::value_type temp;
+            typename std::inplace_vector<T, size>::value_type temp;
             CLoader<M, P>::load_data(temp, stream, p);
+
             if (p(data, temp))
                 data.push_back(std::move(temp));
         }

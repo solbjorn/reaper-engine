@@ -10,8 +10,4 @@
 
 IC CServerEntityWrapper::CServerEntityWrapper(CSE_Abstract* object) : m_object{object} {}
 
-IC CSE_Abstract& CServerEntityWrapper::object() const
-{
-    VERIFY(m_object);
-    return (*m_object);
-}
+IC CSE_Abstract& CServerEntityWrapper::object() const { return *XR_ASSERT_VAL(m_object != nullptr); }

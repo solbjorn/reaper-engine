@@ -20,31 +20,30 @@ enum
     flRKeyAbsent = (1 << 1),
     flTKey16IsBit = (1 << 2),
 };
+
 #pragma pack(push, 2)
+
 struct CKey
 {
     Fquaternion Q; // rotation
     Fvector T; // translation
 };
+
 struct CKeyQR
 {
     s16 x, y, z, w; // rotation
 };
+
 struct CKeyQT8
 {
     s8 x1, y1, z1;
 };
+
 struct CKeyQT16
 {
     s16 x1, y1, z1;
 };
-/*
-struct  CKeyQT
-{
-//	s8			x,y,z;
-    s16			x1,y1,z1;
-};
-*/
+
 #pragma pack(pop)
 
 //*** Motion Data *********************************************************************************
@@ -76,11 +75,7 @@ public:
 
     [[nodiscard]] constexpr BOOL test_flag(u8 mask) const { return BOOL(_flags & mask); }
 
-    constexpr void set_count(u32 cnt)
-    {
-        VERIFY(cnt);
-        _count = cnt;
-    }
+    constexpr void set_count(u32 cnt) { _count = XR_ASSERT_VAL(cnt > 0); }
 
     [[nodiscard]] constexpr u32 get_count() const { return (u32(_count) & 0x00FFFFFF); }
     [[nodiscard]] constexpr float GetLength() const { return float(_count) * SAMPLE_SPF; }
@@ -289,47 +284,17 @@ public:
     [[nodiscard]] constexpr explicit operator bool() const { return p_ != nullptr; }
 
     // misc func
-    [[nodiscard]] MotionVec* bone_motions(const shared_str& bone_name)
-    {
-        VERIFY(p_);
-        return p_->bone_motions(bone_name);
-    }
+    [[nodiscard]] MotionVec* bone_motions(const shared_str& bone_name) { return XR_ASSERT_VAL(p_ != nullptr)->bone_motions(bone_name); }
+    [[nodiscard]] accel_map* motion_map() { return &XR_ASSERT_VAL(p_ != nullptr)->m_motion_map; }
 
-    [[nodiscard]] accel_map* motion_map()
-    {
-        VERIFY(p_);
-        return &p_->m_motion_map;
-    }
+    [[nodiscard]] accel_map* cycle() { return &XR_ASSERT_VAL(p_ != nullptr)->m_cycle; }
+    [[nodiscard]] accel_map* fx() { return &XR_ASSERT_VAL(p_ != nullptr)->m_fx; }
 
-    [[nodiscard]] accel_map* cycle()
-    {
-        VERIFY(p_);
-        return &p_->m_cycle;
-    }
+    [[nodiscard]] CPartition* partition() { return &XR_ASSERT_VAL(p_ != nullptr)->m_partition; }
+    [[nodiscard]] CMotionDef* motion_def(u16 idx) { return &XR_ASSERT_VAL(p_ != nullptr)->m_mdefs[idx]; }
 
-    [[nodiscard]] accel_map* fx()
-    {
-        VERIFY(p_);
-        return &p_->m_fx;
-    }
-
-    [[nodiscard]] CPartition* partition()
-    {
-        VERIFY(p_);
-        return &p_->m_partition;
-    }
-
-    [[nodiscard]] CMotionDef* motion_def(u16 idx)
-    {
-        VERIFY(p_);
-        return &p_->m_mdefs[idx];
-    }
-
-    [[nodiscard]] const shared_str& id() const
-    {
-        VERIFY(p_);
-        return p_->m_id;
-    }
+    [[nodiscard]] const shared_str& id() const { return XR_ASSERT_VAL(p_ != nullptr)->m_id; }
 };
+
 //---------------------------------------------------------------------------
 #endif

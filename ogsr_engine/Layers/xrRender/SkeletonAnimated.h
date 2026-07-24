@@ -12,17 +12,14 @@
 
 class CBlendInstance // Bone Instance Blend List (per-bone data)
 {
-public:
-    typedef svector<CBlend*, MAX_BLENDED> BlendSVec;
-    typedef BlendSVec::iterator BlendSVecIt;
-    typedef BlendSVec::const_iterator BlendSVecCIt;
-
 private:
-    BlendSVec Blend;
+    std::inplace_vector<CBlend*, MAX_BLENDED> Blend;
 
 public:
     // methods
-    IC BlendSVec& blend_vector() { return Blend; }
+    [[nodiscard]] constexpr const auto& blend_vector() const { return Blend; }
+    [[nodiscard]] constexpr auto& blend_vector() { return Blend; }
+
     void construct();
     void blend_add(CBlend* H);
     void blend_remove(CBlend* H);
@@ -87,10 +84,11 @@ private:
 
     IBlendDestroyCallback* m_blend_destroy_callback{};
     IUpdateTracksCallback* m_update_tracks_callback{};
+
     // Blending
-    svector<CBlend, MAX_BLENDED_POOL> blend_pool;
-    BlendSVec blend_cycles[MAX_PARTS];
-    BlendSVec blend_fx;
+    std::inplace_vector<CBlend, MAX_BLENDED_POOL> blend_pool;
+    std::inplace_vector<CBlend*, MAX_BLENDED * MAX_CHANNELS> blend_cycles[MAX_PARTS];
+    std::inplace_vector<CBlend*, MAX_BLENDED * MAX_CHANNELS> blend_fx;
     animation::channels channels;
 
 protected:
@@ -139,11 +137,9 @@ public:
     void LL_CloseCycle(u16 partition, u8 mask_channel = (1 << 0)) override;
     void LL_SetChannelFactor(u16 channel, f32 factor) override;
 
-    CBlendInstance& LL_GetBlendInstance(u16 bone_id)
+    [[nodiscard]] CBlendInstance& LL_GetBlendInstance(u16 bone_id)
     {
-        ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", std::source_location::current().function_name(),
-                   dbg_name.c_str(), bone_id);
-        return blend_instances[bone_id];
+        return blend_instances[XR_ASSERT_VAL(bone_id < LL_BoneCount(), "invalid bone ID", dbg_name)];
     }
 
     // Main functionality
@@ -185,11 +181,7 @@ public:
         return CKinematics::mem_usage(bInstance) + gsl::index{sizeof(*this)} + (bInstance && blend_instances ? blend_instances->mem_usage() : 0);
     }
 
-    IC const BlendSVec& blend_cycle(const u32& bone_part_id) const
-    {
-        VERIFY(bone_part_id < MAX_PARTS);
-        return (blend_cycles[bone_part_id]);
-    }
+    [[nodiscard]] const auto& blend_cycle(u32 bone_part_id) const { return blend_cycles[XR_ASSERT_VAL(bone_part_id < MAX_PARTS)]; }
 
     [[nodiscard]] f32 get_animation_length(MotionID motion_ID) override;
 };

@@ -10,6 +10,8 @@
 
 namespace Feel
 {
+namespace
+{
 struct SFeelParam
 {
     Vision* parent;
@@ -35,6 +37,7 @@ IC BOOL feel_vision_callback(collide::rq_result& result, LPVOID params)
     }
     return (fp->vis > fp->vis_threshold);
 }
+} // namespace
 
 Vision::Vision() : pure_relcase{CallMe::fromMethod<&Vision::feel_vision_relcase>(this)} {}
 Vision::~Vision() { feel_vision_clear(); }
@@ -98,7 +101,8 @@ void Vision::feel_vision_query(Fmatrix& mFull)
     g_SpatialSpace->q_frustum(r_spatial, STYPE_VISIBLEFORAI, Frustum);
 
     // Determine visibility for dynamic part of scene
-    clear_and_reserve(seen);
+    seen.clear();
+
     for (u32 o_it = 0; o_it < r_spatial.size(); o_it++)
     {
         ISpatial* spatial = r_spatial[o_it];
@@ -191,13 +195,15 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold)
         //
         Fvector D;
         D.sub(OP, P);
-        float f = D.magnitude();
-        if (f > fuzzy_guaranteed)
+
+        if (const f32 f = D.magnitude(); f > fuzzy_guaranteed)
         {
             D.div(f);
+
             // setup ray defs & feel params
-            collide::ray_defs RD(P, D, f, CDB::OPT_CULL, collide::rq_target(collide::rqtStatic | collide::rqtObstacle));
-            SFeelParam feel_params(this, &*I, vis_threshold);
+            collide::ray_defs RD{P, D, f, CDB::OPT_CULL, collide::rq_target(collide::rqtStatic | collide::rqtObstacle)};
+            SFeelParam feel_params{this, std::to_address(I), vis_threshold};
+
             // check cache
             if (I->Cache.result && I->Cache.similar(P, D, f))
             {
@@ -214,7 +220,8 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold)
                 else
                 {
                     // cache outdated. real query.
-                    VERIFY(!fis_zero(RD.dir.square_magnitude()));
+                    XR_DEBUG_ASSERT(!fis_zero(RD.dir.square_magnitude()));
+
                     if (g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, feel_vision_callback, &feel_params, nullptr, nullptr))
                     {
                         I->Cache_vis = feel_params.vis;
@@ -254,9 +261,9 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold)
 
 float Vision::feel_vision_get_transparency(const CObject* _O) const
 {
-    for (const auto& it : feel_visible)
-        if (it.O == _O)
-            return it.trans;
-    return -1.f;
+    if (const auto it = std::ranges::find(feel_visible, _O, &feel_visible_Item::O); it != feel_visible.end())
+        return it->trans;
+
+    return -1.0f;
 }
 } // namespace Feel

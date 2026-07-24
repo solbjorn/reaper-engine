@@ -10,16 +10,15 @@
 
 IC void CALifeObjectRegistry::add(CSE_ALifeDynamicObject* object)
 {
-    if (objects().contains(object->ID))
+    if (const auto it = objects().find(object->ID); it != objects().end())
     {
-        THROW2((*(objects().find(object->ID))).second == object, "The specified object is already presented in the Object Registry!");
-        THROW2((*(objects().find(object->ID))).second != object, "Object with the specified ID is already presented in the Object Registry!");
+        XR_ASSERT(it->second == object, "object already registered", object->ID);
+        XR_ASSERT(it->second != object, "object with this ID already registered", object->ID);
     }
 
-    const char* name = object->name_replace();
-    if (name && name[0])
+    if (const auto name = object->name_replace(); name != nullptr && name[0] != '\0')
     {
-        ASSERT_FMT(!m_object_ids.contains(name), "%s: duplicate object name '%s'", std::source_location::current().function_name(), name);
+        XR_ASSERT(!m_object_ids.contains(name), "duplicate object name", name, object->ID);
         m_object_ids.emplace(name, object);
     }
 
@@ -28,40 +27,29 @@ IC void CALifeObjectRegistry::add(CSE_ALifeDynamicObject* object)
 
 IC void CALifeObjectRegistry::remove(const ALife::_OBJECT_ID& id, bool no_assert)
 {
-    OBJECT_REGISTRY::iterator I = m_objects.find(id);
+    const auto I = m_objects.find(id);
     if (I == m_objects.end())
     {
-        THROW2(no_assert, "The specified object hasn't been found in the Object Registry!");
+        XR_ASSERT(no_assert, "object not found in the registry", id);
         return;
     }
 
-    const char* name = I->second->name_replace();
-    if (name && name[0])
-    {
-        auto iter = m_object_ids.find(name);
-
-        ASSERT_FMT(iter != m_object_ids.end(), "%s: no object with name '%s'", std::source_location::current().function_name(), name);
-        m_object_ids.erase(iter);
-    }
+    if (const auto name = I->second->name_replace(); name != nullptr && name[0] != '\0')
+        m_object_ids.erase(XR_ASSERT_VAL(m_object_ids.find(name) != m_object_ids.end(), "no object with such name", name, id));
 
     m_objects.erase(I);
 }
 
 IC CSE_ALifeDynamicObject* CALifeObjectRegistry::object(const ALife::_OBJECT_ID& id, bool no_assert) const
 {
-    OBJECT_REGISTRY::const_iterator I = objects().find(id);
-    if (objects().end() == I)
+    const auto I = objects().find(id);
+    if (I == objects().end())
     {
-#ifdef DEBUG
-        if (!no_assert)
-            Msg("There is no object with id {}!", id);
-#endif
-
-        THROW2(no_assert, "Specified object hasn't been found in the object registry!");
+        XR_ASSERT(no_assert, "object not found in the registry", id);
         return nullptr;
     }
 
-    return ((*I).second);
+    return I->second;
 }
 
 inline CSE_ALifeDynamicObject* CALifeObjectRegistry::object_by_name(std::string_view name, bool no_assert) const
@@ -69,12 +57,7 @@ inline CSE_ALifeDynamicObject* CALifeObjectRegistry::object_by_name(std::string_
     const auto it = m_object_ids.find(name);
     if (it == m_object_ids.end())
     {
-#ifdef DEBUG
-        if (!no_assert)
-            Msg("There is no object with name {}!", name);
-#endif
-
-        THROW2(no_assert, "Specified object hasn't been found in the object registry!");
+        XR_ASSERT(no_assert, "object not found in the registry", name);
         return nullptr;
     }
 
@@ -82,5 +65,4 @@ inline CSE_ALifeDynamicObject* CALifeObjectRegistry::object_by_name(std::string_
 }
 
 IC const CALifeObjectRegistry::OBJECT_REGISTRY& CALifeObjectRegistry::objects() const { return (m_objects); }
-
 IC CALifeObjectRegistry::OBJECT_REGISTRY& CALifeObjectRegistry::objects() { return (m_objects); }

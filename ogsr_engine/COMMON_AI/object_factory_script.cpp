@@ -57,8 +57,8 @@ void CObjectFactory::register_script() const
     auto& lua = ai().script_engine().lua();
     sol::table target = lua.create_table(clsids().size(), 0);
 
-    for (auto [id, item] : xr::views_enumerate(clsids()))
-        target.set(item->script_clsid().c_str(), id);
+    for (auto [id, item] : std::views::enumerate(clsids()))
+        target.set(std::string_view{item->script_clsid()}, id);
 
     xr::sol_new_enum(lua, "clsid", target);
 }

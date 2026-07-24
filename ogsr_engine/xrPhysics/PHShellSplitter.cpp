@@ -72,16 +72,16 @@ void CPHShellSplitterHolder::PassEndSplitters(const CShellSplitInfo& spl_inf, CP
         dest_holder = xr_new<CPHShellSplitterHolder>(dest);
 
     ELEMENT_STORAGE& source_elements = m_pShell->elements;
+    XR_ASSERT(spl_inf.m_start_el_num <= source_elements.size() && spl_inf.m_end_el_num <= source_elements.size(), "", spl_inf.m_start_el_num,
+              spl_inf.m_end_el_num, source_elements.size());
+
     ELEMENT_STORAGE& dest_elements = dest->elements;
     ELEMENT_I i_elem = source_elements.begin(), e_elem = source_elements.begin() + spl_inf.m_start_el_num;
     u16 shift_e = spl_inf.m_end_el_num - spl_inf.m_start_el_num;
     u16 shift_j = spl_inf.m_end_jt_num - spl_inf.m_start_jt_num;
 
-    R_ASSERT2(source_elements.size() >= spl_inf.m_start_el_num && source_elements.size() >= spl_inf.m_end_el_num, "wrong spl_inf");
-
-    for (; i_elem != e_elem; ++i_elem) // until start elem in both joint or elem split fractures
-                                       // end elems have to be corrected
-                                       // if grater then end elem in moving diapason
+    // until start elem in both joint or elem split fractures end elems have to be corrected if grater then end elem in moving diapason
+    for (; i_elem != e_elem; ++i_elem)
     {
         CPHFracturesHolder* fracturesHolder = (*i_elem)->FracturesHolder();
         if (!fracturesHolder)
@@ -108,11 +108,13 @@ void CPHShellSplitterHolder::PassEndSplitters(const CShellSplitInfo& spl_inf, CP
     // same for joints
     JOINT_STORAGE& source_joints = m_pShell->joints;
     JOINT_I i_joint = source_joints.begin(), e_joint;
-    if (u16(-1) != spl_inf.m_start_jt_num)
+
+    if (spl_inf.m_start_jt_num != std::numeric_limits<u16>::max())
     {
-        R_ASSERT2(source_joints.size() >= spl_inf.m_start_jt_num && source_joints.size() >= spl_inf.m_end_jt_num, "wrong spl_inf");
-        e_joint = source_joints.begin() + spl_inf.m_start_jt_num;
-        for (; i_joint != e_joint; i_joint++)
+        XR_ASSERT(spl_inf.m_start_jt_num <= source_joints.size() && spl_inf.m_end_jt_num <= source_joints.size(), "", spl_inf.m_start_jt_num,
+                  spl_inf.m_end_jt_num, source_joints.size());
+
+        for (auto e_joint = source_joints.begin() + spl_inf.m_start_jt_num; i_joint != e_joint; i_joint++)
         {
             CPHJointDestroyInfo* jointDestroyInfo = (*i_joint)->JointDestroyInfo();
             if (!jointDestroyInfo)
@@ -287,17 +289,18 @@ void CPHShellSplitterHolder::PassEndSplitters(const CShellSplitInfo& spl_inf, CP
 }
 
 static ELEMENT_PAIR_VECTOR new_elements;
+
 DEFINE_VECTOR(Fmatrix, TRANSFORM_VECTOR, TRANSFORM_I);
 static TRANSFORM_VECTOR bones_bind_forms;
+
 shell_root CPHShellSplitterHolder::ElementSingleSplit(const element_fracture& split_elem, const CPHElement* source_element)
 {
-    // const CPHShellSplitter& splitter=m_splitters[aspl];
-    // CPHElement* element=m_pShell->elements[splitter.m_element];
     CPhysicsShell* new_shell_last = P_create_Shell();
     CPHShell* new_shell_last_desc = smart_cast<CPHShell*>(new_shell_last);
     new_shell_last->mXFORM.set(m_pShell->mXFORM);
+    XR_DEBUG_ASSERT(_valid(new_shell_last->mXFORM));
+
     const u16 start_joint = split_elem.second.m_start_jt_num;
-    R_ASSERT(_valid(new_shell_last->mXFORM));
     const u16 end_joint = split_elem.second.m_end_jt_num;
     // it is not right for multiple joints attached to the unsplited part becource all these need to be reattached
     if (start_joint != end_joint)
@@ -361,10 +364,12 @@ shell_root CPHShellSplitterHolder::ElementSingleSplit(const element_fracture& sp
     new_shell_last->set_Kinematics(m_pShell->PKinematics());
     new_shell_last_desc->AfterSetActive();
     new_shell_last->set_Kinematics(nullptr);
-    VERIFY2(split_elem.second.m_bone_id < 64, "strange root");
-    VERIFY(_valid(new_shell_last->mXFORM));
-    VERIFY(dBodyStateValide(source_element->get_bodyConst()));
-    VERIFY(dBodyStateValide(split_elem.first->get_body()));
+
+    XR_ASSERT(split_elem.second.m_bone_id < 64);
+    XR_DEBUG_ASSERT(_valid(new_shell_last->mXFORM));
+    XR_DEBUG_ASSERT(dBodyStateValide(source_element->get_bodyConst()));
+    XR_DEBUG_ASSERT(dBodyStateValide(split_elem.first->get_body()));
+
     new_shell_last->set_ObjectContactCallback(nullptr);
     new_shell_last->set_PhysicsRefObject(nullptr);
 
@@ -399,7 +404,7 @@ void CPHShellSplitterHolder::SplitElement(u16 aspl, PHSHELL_PAIR_VECTOR& out_she
     for (; i != e; ++i)
     {
         out_shels.push_back(ElementSingleSplit(*i, E));
-        VERIFY(dBodyStateValide(out_shels.back().first->get_ElementByStoreOrder(0)->get_body()));
+        XR_DEBUG_ASSERT(dBodyStateValide(out_shels.back().first->get_ElementByStoreOrder(0)->get_body()));
     }
 
     if (!E->FracturesHolder())
@@ -417,14 +422,16 @@ void CPHShellSplitterHolder::SplitProcess(PHSHELL_PAIR_VECTOR& out_shels)
     for (; u16(-1) != i; --i)
     {
         if (m_splitters[i].m_breaked)
+        {
             switch (m_splitters[i].m_type)
             {
             case CPHShellSplitter::splJoint: out_shels.push_back(SplitJoint(i)); break;
             case CPHShellSplitter::splElement: SplitElement(i, out_shels); break;
-            default: NODEFAULT;
+            default: xr::unreachable();
             }
+        }
     }
-    // VERIFY(dBodyStateValide(out_shels.back().first->get_ElementByStoreOrder(0)->get_body()));
+
     m_has_breaks = false;
 }
 
@@ -450,7 +457,7 @@ void CPHShellSplitterHolder::PhTune(dReal)
         case CPHShellSplitter::splJoint: {
             break;
         }
-        default: NODEFAULT;
+        default: xr::unreachable();
         }
     }
 }
@@ -476,7 +483,7 @@ void CPHShellSplitterHolder::PhDataUpdate(dReal)
             i->m_breaked = j->JointDestroyInfo()->Update() || i->m_breaked;
             break;
         }
-        default: NODEFAULT;
+        default: xr::unreachable();
         }
         m_has_breaks = m_has_breaks || i->m_breaked;
     }
@@ -492,10 +499,12 @@ void CPHShellSplitterHolder::Activate()
 
 void CPHShellSplitterHolder::Deactivate() { CPHUpdateObject::Deactivate(); }
 void CPHShellSplitterHolder::AddSplitter(CPHShellSplitter::EType type, u16 element, u16 joint) { m_splitters.emplace_back(type, element, joint); }
+
 void CPHShellSplitterHolder::AddSplitter(CPHShellSplitter::EType type, u16 element, u16 joint, u16 position)
 {
     m_splitters.emplace(m_splitters.begin() + position, type, element, joint);
 }
+
 CPHShellSplitter::CPHShellSplitter(CPHShellSplitter::EType type, u16 element, u16 joint)
 {
     m_breaked = false;
@@ -514,15 +523,18 @@ u16 CPHShellSplitterHolder::FindRootGeom(u16 bone_id)
 
     return iter->second->element_position();
 }
+
 void CPHShellSplitterHolder::SetUnbreakable()
 {
     Deactivate();
     m_unbreakable = true;
 }
+
 void CPHShellSplitterHolder::SetBreakable()
 {
     m_unbreakable = false;
     if (m_pShell->isEnabled())
         Activate();
 }
+
 CPHShellSplitter::CPHShellSplitter() { m_breaked = false; }

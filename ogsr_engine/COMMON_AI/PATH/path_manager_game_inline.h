@@ -23,30 +23,25 @@ IC void CGamePathManager::setup(const CGameGraph* _graph, _DataStorage* _data_st
 TEMPLATE_SPECIALIZATION
 IC _dist_type CGamePathManager::evaluate(const _index_type& /*node_index1*/, const _index_type& /*node_index2*/, const CGameGraph::const_iterator& i) const
 {
-    VERIFY(this->graph);
-    return (*i).distance();
+    XR_ASSERT(this->graph != nullptr);
+    return i->distance();
 }
 
 TEMPLATE_SPECIALIZATION
 IC _dist_type CGamePathManager::estimate(const _index_type& node_index) const
 {
-    VERIFY(this->graph);
-    return goal_vertex->game_point().distance_to(this->graph->vertex(node_index)->game_point());
+    return goal_vertex->game_point().distance_to(XR_ASSERT_VAL(this->graph != nullptr)->vertex(node_index)->game_point());
 }
 
 TEMPLATE_SPECIALIZATION
 IC bool CGamePathManager::is_limit_reached(const _iteration_type /*iteration_count*/) const
 {
-    VERIFY(this->data_storage);
+    XR_ASSERT(this->data_storage != nullptr);
     return false;
 }
 
 TEMPLATE_SPECIALIZATION
-IC bool CGamePathManager::is_accessible(const _index_type& vertex_id) const
-{
-    VERIFY(this->graph);
-    return this->graph->accessible(vertex_id);
-}
+IC bool CGamePathManager::is_accessible(const _index_type& vertex_id) const { return XR_ASSERT_VAL(this->graph != nullptr)->accessible(vertex_id); }
 
 #undef TEMPLATE_SPECIALIZATION
 #undef CGamePathManager

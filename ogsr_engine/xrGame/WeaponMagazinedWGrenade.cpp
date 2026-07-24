@@ -137,7 +137,7 @@ tmc::task<bool> CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
     }
     else
     {
-        ASSERT_FMT(m_ammoType2 < m_ammoTypes2.size(), "Ammo type [%u] not found in weapon [%s]. Something strange...", m_ammoType2, this->cName().c_str());
+        XR_ASSERT(m_ammoType2 < m_ammoTypes2.size(), "invalid ammo type for weapon", this->cName());
 
         m_DefaultCartridge2.Load(m_ammoTypes2.at(m_ammoType2).c_str(), u8(m_ammoType2));
         while ((u32)iAmmoElapsed2 > m_magazine2.size())

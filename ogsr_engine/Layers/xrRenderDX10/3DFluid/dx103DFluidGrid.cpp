@@ -22,7 +22,6 @@ inline void ComputeRowColsForFlat3DTexture(int depth, int* outCols, int* outRows
     {
         m_iCols++;
     }
-    VERIFY(m_iRows * m_iCols >= depth);
 
     *outCols = m_iCols;
     *outRows = m_iRows;
@@ -53,8 +52,7 @@ void dx103DFluidGrid::CreateVertexBuffers()
     static constexpr D3DVERTEXELEMENT9 layoutDesc[] = {{0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
                                                        {0, 12, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
                                                        D3DDECL_END()};
-
-    u32 vSize = FVF::ComputeVertexSize(layoutDesc, 0);
+    constexpr auto vSize = FVF::ComputeVertexSize(layoutDesc, 0);
 
     m_iNumVerticesRenderQuad = VERTICES_PER_SLICE * m_vDim[2];
     auto* renderQuad = xr_alloc<VS_INPUT_FLUIDSIM_STRUCT>(m_iNumVerticesRenderQuad);
@@ -68,15 +66,14 @@ void dx103DFluidGrid::CreateVertexBuffers()
     m_iNumVerticesBoundaryLines = VERTICES_PER_LINE * LINES_PER_SLICE * (m_vDim[2]);
     auto* boundaryLines = xr_alloc<VS_INPUT_FLUIDSIM_STRUCT>(m_iNumVerticesBoundaryLines);
 
-    VERIFY(renderQuad && m_iNumVerticesSlices && m_iNumVerticesBoundarySlices && m_iNumVerticesBoundaryLines);
-
     // Vertex buffer for "m_vDim[2]" quads to draw all the slices of the 3D-texture as a flat 3D-texture
     // (used to draw all the individual slices at once to the screen buffer)
-    int index{};
+    int index{0};
     for (int z = 0; z < m_vDim[2]; z++)
         InitScreenSlice(&renderQuad, z, index);
+    XR_ASSERT(index == m_iNumVerticesRenderQuad);
 
-    CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pRenderQuadBuffer, renderQuad, vSize * m_iNumVerticesRenderQuad));
+    XR_ASSERT(xr::hr(dx10BufferUtils::CreateVertexBuffer(&m_pRenderQuadBuffer, renderQuad, vSize * m_iNumVerticesRenderQuad)));
     m_GeomRenderQuad.create(layoutDesc, m_pRenderQuadBuffer, nullptr);
 
     // Vertex buffer for "m_vDim[2]" quads to draw all the slices to a 3D texture
@@ -84,26 +81,26 @@ void dx103DFluidGrid::CreateVertexBuffers()
     index = 0;
     for (int z = 1; z < m_vDim[2] - 1; z++)
         InitSlice(z, &slices, index);
-    VERIFY(index == m_iNumVerticesSlices);
+    XR_ASSERT(index == m_iNumVerticesSlices);
 
-    CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pSlicesBuffer, slices, vSize * m_iNumVerticesSlices));
+    XR_ASSERT(xr::hr(dx10BufferUtils::CreateVertexBuffer(&m_pSlicesBuffer, slices, vSize * m_iNumVerticesSlices)));
     m_GeomSlices.create(layoutDesc, m_pSlicesBuffer, nullptr);
 
     // Vertex buffers for boundary geometry
     //   2 boundary slices
     index = 0;
     InitBoundaryQuads(&boundarySlices, index);
-    VERIFY(index == m_iNumVerticesBoundarySlices);
+    XR_ASSERT(index == m_iNumVerticesBoundarySlices);
 
-    CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pBoundarySlicesBuffer, boundarySlices, vSize * m_iNumVerticesBoundarySlices));
+    XR_ASSERT(xr::hr(dx10BufferUtils::CreateVertexBuffer(&m_pBoundarySlicesBuffer, boundarySlices, vSize * m_iNumVerticesBoundarySlices)));
     m_GeomBoundarySlices.create(layoutDesc, m_pBoundarySlicesBuffer, nullptr);
 
     //   ( 4 * "m_vDim[2]" ) boundary lines
     index = 0;
     InitBoundaryLines(&boundaryLines, index);
-    VERIFY(index == m_iNumVerticesBoundaryLines);
+    XR_ASSERT(index == m_iNumVerticesBoundaryLines);
 
-    CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pBoundaryLinesBuffer, boundaryLines, vSize * m_iNumVerticesBoundaryLines));
+    XR_ASSERT(xr::hr(dx10BufferUtils::CreateVertexBuffer(&m_pBoundaryLinesBuffer, boundaryLines, vSize * m_iNumVerticesBoundaryLines)));
     m_GeomBoundaryLines.create(layoutDesc, m_pBoundaryLinesBuffer, nullptr);
 
     // cleanup:

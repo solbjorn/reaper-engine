@@ -60,7 +60,6 @@ BOOL ISpatial_DB::verify()
 {
     walker W;
     W.walk(m_root, m_center, m_bounds);
-    BOOL bResult = (W.o_count == stat_objects) && (W.n_count == stat_nodes);
-    VERIFY(bResult);
-    return bResult;
+
+    return XR_DEBUG_ASSERT_VAL(W.o_count == stat_objects && W.n_count == stat_nodes);
 }

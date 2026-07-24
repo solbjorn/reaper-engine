@@ -6,7 +6,7 @@ namespace CDB
 {
 gsl::index Collector::VPack(const Fvector& V, float eps)
 {
-    for (auto [id, vert] : xr::views_enumerate(std::as_const(verts)))
+    for (auto [id, vert] : std::views::enumerate(std::as_const(verts)))
     {
         if (vert.similar(V, eps))
             return id;
@@ -99,7 +99,7 @@ void Collector::calc_adjacency(xr_vector<u32>& dest) const
     xr::inlined_vector<edge, 24> edges;
     edges.reserve(edge_count);
 
-    for (auto [id, face] : xr::views_enumerate(faces))
+    for (auto [id, face] : std::views::enumerate(faces))
     {
         const auto face_id = gsl::narrow<u32>(id);
 

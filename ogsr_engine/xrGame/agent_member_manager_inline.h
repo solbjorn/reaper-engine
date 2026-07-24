@@ -56,14 +56,13 @@ IC CAgentMemberManager::iterator CAgentMemberManager::member(MemorySpace::squad_
     iterator I = m_members.begin();
     iterator E = m_members.end();
     for (; I != E; ++I, mask >>= 1)
+    {
         if (mask == 1)
-            return (I);
-    NODEFAULT;
-#ifdef DEBUG
-    return (E);
-#endif
+            return I;
+    }
+
+    xr::unreachable();
 }
 
 IC bool CAgentMemberManager::group_behaviour() const { return (members().size() > 1); }
-
 IC const CAgentMemberManager::squad_mask_type& CAgentMemberManager::combat_mask() const { return (m_combat_mask); }

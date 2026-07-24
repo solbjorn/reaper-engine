@@ -26,16 +26,15 @@ public:
         for (u32 it = 0; it < LIGHT_CUBOIDSIDEPOLYS_COUNT; it++)
         {
             _poly& P = light_cuboid_polys[it];
-
             P.plane.build(light_cuboid_points[P.points[0]], light_cuboid_points[P.points[2]], light_cuboid_points[P.points[1]]);
 
-            // verify
             if constexpr (_debug)
             {
                 Fvector& p0 = light_cuboid_points[P.points[0]];
                 Fvector& p1 = light_cuboid_points[P.points[1]];
                 Fvector& p2 = light_cuboid_points[P.points[2]];
                 Fvector& p3 = light_cuboid_points[P.points[3]];
+
                 Fplane p012;
                 p012.build(p0, p1, p2);
                 Fplane p123;
@@ -44,7 +43,8 @@ public:
                 p230.build(p2, p3, p0);
                 Fplane p301;
                 p301.build(p3, p0, p1);
-                VERIFY(p012.n.similar(p123.n) && p012.n.similar(p230.n) && p012.n.similar(p301.n));
+
+                XR_DEBUG_ASSERT(p012.n.similar(p123.n) && p012.n.similar(p230.n) && p012.n.similar(p301.n));
             }
         }
     }
@@ -60,7 +60,7 @@ public:
         compute_planes();
 
         for (u32 i = 0; i < LIGHT_CUBOIDSIDEPOLYS_COUNT; i++)
-            VERIFY(light_cuboid_polys[i].plane.classify(light_ray.P) > 0);
+            XR_DEBUG_ASSERT(light_cuboid_polys[i].plane.classify(light_ray.P) > 0);
 
         int align_planes[2];
         int align_planes_count = 0;
@@ -135,10 +135,8 @@ public:
             if (fis_zero(max_mag))
                 continue;
 
-            VERIFY(max_mag <= 1.f);
-
             float dist = -light_cuboid_polys[align_planes[p]].plane.n.dotproduct(translation);
-            align_vector.mad(light_cuboid_polys[align_planes[p]].plane.n, dist * max_mag);
+            align_vector.mad(light_cuboid_polys[align_planes[p]].plane.n, dist * XR_ASSERT_VAL(max_mag <= 1.0f));
         }
 
         translation.add(align_vector);
@@ -205,7 +203,8 @@ public:
             Fplane& plane = dest.emplace_back(light_cuboid_polys[i].plane);
             plane.n.mul(-1);
             plane.d *= -1;
-            VERIFY(light_cuboid_polys[i].plane.classify(light_ray.P) > 0);
+
+            XR_DEBUG_ASSERT(light_cuboid_polys[i].plane.classify(light_ray.P) > 0);
         }
 
         // Compute ray intersection with light model, this is needed to next cascade to start it's placement.
@@ -331,7 +330,6 @@ public:
                 else
                 {
                     //	HACK:	Remove plane.
-                    // VERIFY(!"Can't build normal to plane!");
                     polys.erase(polys.begin() + it);
                     --it;
                     continue;
@@ -340,13 +338,13 @@ public:
 
             P.planeD = -P.planeN.dotproduct(points[P.points[0]]);
 
-            // verify
             if constexpr (_debug)
             {
                 Fvector& p0 = points[P.points[0]];
                 Fvector& p1 = points[P.points[1]];
                 Fvector& p2 = points[P.points[2]];
                 Fvector& p3 = points[P.points[3]];
+
                 Fplane p012;
                 p012.build(p0, p1, p2);
                 Fplane p123;
@@ -355,7 +353,8 @@ public:
                 p230.build(p2, p3, p0);
                 Fplane p301;
                 p301.build(p3, p0, p1);
-                VERIFY(p012.n.similar(p123.n) && p012.n.similar(p230.n) && p012.n.similar(p301.n));
+
+                XR_DEBUG_ASSERT(p012.n.similar(p123.n) && p012.n.similar(p230.n) && p012.n.similar(p301.n));
             }
         }
     }
@@ -381,10 +380,11 @@ public:
 
         // remove faceforward polys, build list of edges -> find open ones
         compute_planes();
+
         for (int it = 0; it < int(polys.size()); it++)
         {
             _poly& base = polys[it];
-            VERIFY(base.classify(cog) < 0); // debug
+            XR_DEBUG_ASSERT(base.classify(cog) < 0);
 
             int marker = (base.planeN.dotproduct(direction) <= 0) ? -1 : 1;
 

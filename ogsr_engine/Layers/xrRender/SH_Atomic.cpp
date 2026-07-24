@@ -6,6 +6,7 @@
 
 ///////////////////////////////////////////////////////////////////////
 //	SVS
+
 SVS::~SVS()
 {
     RImplementation.Resources->_DeleteVS(this);
@@ -14,6 +15,7 @@ SVS::~SVS()
 
 ///////////////////////////////////////////////////////////////////////
 //	SPS
+
 SPS::~SPS()
 {
     _RELEASE(ps);
@@ -22,6 +24,7 @@ SPS::~SPS()
 
 ///////////////////////////////////////////////////////////////////////
 //	SGS
+
 SGS::~SGS()
 {
     _RELEASE(gs);
@@ -48,10 +51,10 @@ SCS::~SCS()
 
 ///////////////////////////////////////////////////////////////////////
 //	SInputSignature
+
 SInputSignature::SInputSignature(ID3DBlob* pBlob)
 {
-    VERIFY(pBlob);
-    signature = pBlob;
+    signature = XR_ASSERT_VAL(pBlob != nullptr);
     signature->AddRef();
 }
 
@@ -63,6 +66,7 @@ SInputSignature::~SInputSignature()
 
 ///////////////////////////////////////////////////////////////////////
 //	SState
+
 SState::~SState()
 {
     _RELEASE(state);
@@ -71,14 +75,12 @@ SState::~SState()
 
 ///////////////////////////////////////////////////////////////////////
 //	SDeclaration
+
 SDeclaration::~SDeclaration()
 {
     RImplementation.Resources->_DeleteDecl(this);
-    xr_map<ID3DBlob*, ID3DInputLayout*>::iterator iLayout;
-    iLayout = vs_to_layout.begin();
-    for (; iLayout != vs_to_layout.end(); ++iLayout)
-    {
+
+    for (auto& layout : vs_to_layout)
         //	Release vertex layout
-        _RELEASE(iLayout->second);
-    }
+        _RELEASE(layout.second);
 }

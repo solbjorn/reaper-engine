@@ -36,12 +36,13 @@ struct CCloner
     template <typename T1, typename T2>
     IC static void clone(const std::pair<T1, T2>& _1, std::pair<T1, T2>& _2)
     {
-        clone(const_cast<typename object_type_traits::remove_const<T1>::type&>(_1.first), const_cast<typename object_type_traits::remove_const<T1>::type&>(_2.first));
+        clone(const_cast<typename object_type_traits::remove_const<T1>::type&>(_1.first),
+              const_cast<typename object_type_traits::remove_const<T1>::type&>(_2.first));
         clone(_1.second, _2.second);
     }
 
     template <typename T, int size>
-    IC static void clone(const svector<T, size>& _1, svector<T, size>& _2)
+    IC static void clone(const std::inplace_vector<T, size>& _1, std::inplace_vector<T, size>& _2)
     {
         _2.resize(_1.size());
         auto J = _2.begin();

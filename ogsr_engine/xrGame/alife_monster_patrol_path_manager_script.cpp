@@ -9,27 +9,27 @@
 #include "stdafx.h"
 
 #include "alife_monster_patrol_path_manager.h"
+
 #include "patrol_path_manager_space.h"
 
 static Fvector CALifeMonsterPatrolPathManager__target_position(CALifeMonsterPatrolPathManager* self)
 {
-    THROW(self);
-    return (self->target_position());
+    return XR_ASSERT_VAL(self != nullptr)->target_position();
 }
 
 void CALifeMonsterPatrolPathManager::script_register(sol::state_view& lua)
 {
-    lua.new_usertype<CALifeMonsterPatrolPathManager>("CALifeMonsterPatrolPathManager", sol::no_constructor, "path",
-                                                     sol::resolve<void(LPCSTR)>(&CALifeMonsterPatrolPathManager::path), "start_type",
-                                                     sol::overload(sol::resolve<void(const EPatrolStartType&)>(&CALifeMonsterPatrolPathManager::start_type),
-                                                                   sol::resolve<const EPatrolStartType&() const>(&CALifeMonsterPatrolPathManager::start_type)),
-                                                     "route_type",
-                                                     sol::overload(sol::resolve<void(const EPatrolRouteType&)>(&CALifeMonsterPatrolPathManager::route_type),
-                                                                   sol::resolve<const EPatrolRouteType&() const>(&CALifeMonsterPatrolPathManager::route_type)),
-                                                     "actual", &CALifeMonsterPatrolPathManager::actual, "completed", &CALifeMonsterPatrolPathManager::completed,
-                                                     "start_vertex_index", &CALifeMonsterPatrolPathManager::start_vertex_index, "use_randomness",
-                                                     sol::overload(sol::resolve<void(const bool&)>(&CALifeMonsterPatrolPathManager::use_randomness),
-                                                                   sol::resolve<bool() const>(&CALifeMonsterPatrolPathManager::use_randomness)),
-                                                     "target_game_vertex_id", &CALifeMonsterPatrolPathManager::target_game_vertex_id, "target_level_vertex_id",
-                                                     &CALifeMonsterPatrolPathManager::target_level_vertex_id, "target_position", &CALifeMonsterPatrolPathManager__target_position);
+    lua.new_usertype<CALifeMonsterPatrolPathManager>(
+        "CALifeMonsterPatrolPathManager", sol::no_constructor, "path", sol::resolve<void(LPCSTR)>(&CALifeMonsterPatrolPathManager::path), "start_type",
+        sol::overload(sol::resolve<void(const EPatrolStartType&)>(&CALifeMonsterPatrolPathManager::start_type),
+                      sol::resolve<const EPatrolStartType&() const>(&CALifeMonsterPatrolPathManager::start_type)),
+        "route_type",
+        sol::overload(sol::resolve<void(const EPatrolRouteType&)>(&CALifeMonsterPatrolPathManager::route_type),
+                      sol::resolve<const EPatrolRouteType&() const>(&CALifeMonsterPatrolPathManager::route_type)),
+        "actual", &CALifeMonsterPatrolPathManager::actual, "completed", &CALifeMonsterPatrolPathManager::completed, "start_vertex_index",
+        &CALifeMonsterPatrolPathManager::start_vertex_index, "use_randomness",
+        sol::overload(sol::resolve<void(const bool&)>(&CALifeMonsterPatrolPathManager::use_randomness),
+                      sol::resolve<bool() const>(&CALifeMonsterPatrolPathManager::use_randomness)),
+        "target_game_vertex_id", &CALifeMonsterPatrolPathManager::target_game_vertex_id, "target_level_vertex_id",
+        &CALifeMonsterPatrolPathManager::target_level_vertex_id, "target_position", &CALifeMonsterPatrolPathManager__target_position);
 }

@@ -113,6 +113,23 @@ namespace
 inline void PopTabStop() { PopItemFlag(); }
 inline void PushButtonRepeat(bool repeat) { PushItemFlag(ImGuiItemFlags_ButtonRepeat, repeat); }
 inline void PushTabStop(bool tab_stop) { PushItemFlag(ImGuiItemFlags_NoTabStop, !tab_stop); }
+
+inline void SetColorEditOptions(ImGuiColorEditFlags flags)
+{
+    if (!(flags & ImGuiColorEditFlags_DisplayMask_))
+        flags |= ImGuiColorEditFlags_DefaultOptions_ & ImGuiColorEditFlags_DisplayMask_;
+
+    if (!(flags & ImGuiColorEditFlags_DataTypeMask_))
+        flags |= ImGuiColorEditFlags_DefaultOptions_ & ImGuiColorEditFlags_DataTypeMask_;
+
+    if (!(flags & ImGuiColorEditFlags_PickerMask_))
+        flags |= ImGuiColorEditFlags_DefaultOptions_ & ImGuiColorEditFlags_PickerMask_;
+
+    if (!(flags & ImGuiColorEditFlags_InputMask_))
+        flags |= ImGuiColorEditFlags_DefaultOptions_ & ImGuiColorEditFlags_InputMask_;
+
+    GImGui->IO.ConfigColorEditFlags = flags;
+}
 } // namespace
 } // namespace ImGui
 #endif // IMGUI_DISABLE_OBSOLETE_FUNCTIONS

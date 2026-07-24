@@ -88,16 +88,13 @@ typename CSIni_Table::ITEM_TABLE& CSIni_Table::table()
 
     for (const auto& i : table_ini.Data)
     {
-        auto cur_index = T_INI_LOADER::IdToIndex(i.first, type_max<typename T_INI_LOADER::index_type>);
-
-        if (type_max<typename T_INI_LOADER::index_type> == cur_index)
-            Debug.fatal(DEBUG_INFO, "wrong community %s in section [%s]", i.first.c_str(), table_sect);
-
+        const auto cur_index =
+            XR_ASSERT_VAL(T_INI_LOADER::IdToIndex(i.first, type_max<typename T_INI_LOADER::index_type>) != type_max<typename T_INI_LOADER::index_type>,
+                          "wrong community in section", table_sect, i.first);
         (*m_pTable)[cur_index].resize(cur_table_width);
+
         for (size_t j = 0; j < cur_table_width; j++)
-        {
             (*m_pTable)[cur_index][j] = convert(_GetItem(i.second.c_str(), (int)j, buffer));
-        }
     }
 
     return *m_pTable;

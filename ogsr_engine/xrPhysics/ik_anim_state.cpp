@@ -9,22 +9,20 @@ namespace
 {
 float blend_time(const CBlend& b)
 {
-    VERIFY(b.timeTotal > 0.f);
-    VERIFY(b.timeCurrent >= 0.f);
-    VERIFY(!fis_zero(b.timeTotal));
+    XR_ASSERT(b.timeTotal > 0.0f && b.timeCurrent >= 0.0f && !fis_zero(b.timeTotal), "", b.timeTotal, b.timeCurrent);
 
     float t = (b.timeCurrent / b.timeTotal);
     t -= floor(t);
 
-    VERIFY(t <= 1.f);
-    VERIFY(t >= 0.f);
+    XR_ASSERT(t >= 0.0f && t <= 1.0f, "", t);
 
     return t * b.timeTotal;
 }
 
 float time_to_next_mark(const CBlend& b, const motion_marks& marks)
 {
-    VERIFY(!marks.is_empty());
+    XR_ASSERT(!marks.is_empty());
+
     const float l_blend_time = blend_time(b);
     float time = marks.time_to_next_mark(l_blend_time);
     if (time < FLT_MAX)
@@ -45,9 +43,6 @@ IC bool b_is_blending(const CBlend* current_blend, const CBlend* b)
 
 void ik_anim_state::update(IKinematicsAnimated* K, const CBlend* b, u16 i)
 {
-    // Andy	is_step = m && b && blend_in( *b, m->get_interval( i ) );
-    VERIFY(K);
-
     is_step = false;
     is_idle = false;
     do_glue = false;
@@ -59,7 +54,7 @@ void ik_anim_state::update(IKinematicsAnimated* K, const CBlend* b, u16 i)
         return;
     }
 
-    CMotionDef& m_def_new = *K->LL_GetMotionDef(b->motionID);
+    CMotionDef& m_def_new = *XR_ASSERT_VAL(K != nullptr)->LL_GetMotionDef(b->motionID);
 
     if (m_def_new.marks.size() <= i)
         return;
@@ -75,11 +70,8 @@ void ik_anim_state::update(IKinematicsAnimated* K, const CBlend* b, u16 i)
         bool any_step = is_cur_step || is_new_step;
         bool step_all = is_cur_step && is_new_step;
 
-        // is_step = step_all || any_idle && is_cur_step || is_new_step;
-
         do_glue = step_all || (any_idle && is_new_step);
         is_step = (!any_idle && any_step) || (any_idle && do_glue);
-        // do_glue =true;
     }
     else
     {
@@ -99,9 +91,8 @@ bool ik_anim_state::time_step_begin(IKinematicsAnimated* K, const CBlend& B, u16
     motion_marks& marks = m_def_cur.marks[limb_id];
     if (marks.is_empty())
         return false;
-    // if( blend_in( *current_blend, marks ) )
-    //	time = 0;
-    time = time_to_next_mark(B, marks);
-    VERIFY(time < FLT_MAX);
+
+    time = XR_ASSERT_VAL(time_to_next_mark(B, marks) < std::numeric_limits<f32>::max());
+
     return true;
 }

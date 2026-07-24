@@ -18,8 +18,8 @@ ICF float calcLOD(float ssa, float) { return _sqrt(clampr((ssa - r_ssaGLOD_end) 
 // ALPHA
 void R_dsgraph_structure::sorted_L1(float key, _MatrixItemS& val)
 {
-    dxRender_Visual* V = val.pVisual;
-    VERIFY(V && V->shader._get());
+    auto V = val.pVisual;
+    XR_ASSERT(V != nullptr && V->shader);
 
     cmd_list.set_Element(val.se);
     cmd_list.set_xform_world(val.Matrix);
@@ -32,8 +32,7 @@ void R_dsgraph_structure::sorted_L1(float key, _MatrixItemS& val)
 
 void R_dsgraph_structure::water_node_ssr(float key, _MatrixItemS& val)
 {
-    dxRender_Visual* V = val.pVisual;
-    VERIFY(V);
+    auto V = XR_ASSERT_VAL(val.pVisual != nullptr);
 
     cmd_list.set_Shader(RImplementation.Target->s_ssfx_water_ssr);
     cmd_list.set_xform_world(val.Matrix);
@@ -51,8 +50,7 @@ void R_dsgraph_structure::water_node_ssr(float key, _MatrixItemS& val)
 
 void R_dsgraph_structure::water_node(float key, _MatrixItemS& val)
 {
-    dxRender_Visual* V = val.pVisual;
-    VERIFY(V);
+    auto V = XR_ASSERT_VAL(val.pVisual != nullptr);
 
     if (RImplementation.o.ssfx_water)
         cmd_list.set_Shader(RImplementation.Target->s_ssfx_water);
@@ -70,8 +68,9 @@ void R_dsgraph_structure::water_node(float key, _MatrixItemS& val)
 
 void R_dsgraph_structure::hud_node(float key, _MatrixItemS& val)
 {
-    dxRender_Visual* V = val.pVisual;
-    VERIFY(V && V->shader._get());
+    auto V = val.pVisual;
+    XR_ASSERT(V != nullptr && V->shader);
+
     cmd_list.set_xform_world(val.Matrix);
 
     if (val.se->passes[0]->ps->dwFlags & xr_resource_flagged::RF_HUD_DISABLED)
@@ -374,8 +373,8 @@ void R_dsgraph_structure::render_distort()
 
 void R_dsgraph_structure::pLandscape_0(_MatrixItemS& val)
 {
-    dxRender_Visual* V = val.pVisual;
-    VERIFY(V && V->shader._get());
+    auto V = val.pVisual;
+    XR_ASSERT(V != nullptr && V->shader);
 
     cmd_list.set_Element(val.se, 0);
 
@@ -386,8 +385,8 @@ void R_dsgraph_structure::pLandscape_0(_MatrixItemS& val)
 
 void R_dsgraph_structure::pLandscape_1(_MatrixItemS& val)
 {
-    dxRender_Visual* V = val.pVisual;
-    VERIFY(V && V->shader._get());
+    auto V = val.pVisual;
+    XR_ASSERT(V != nullptr && V->shader);
 
     cmd_list.set_Element(val.se, 1);
     cmd_list.apply_lmaterial();
@@ -423,8 +422,7 @@ void R_dsgraph_structure::render_forward()
     XR_TRACY_ZONE_SCOPED();
 
     //******* Main render - second order geometry (the one, that doesn't support deffering)
-    //.todo: should be done inside "combine" with estimation of of luminance, tone-mapping, etc.
-    // level
+    // TODO: should be done inside "combine" with estimation of of luminance, tone-mapping, etc. level
 
     //	Igor: we don't want to render old lods on next frame.
     mapLOD.clear();
@@ -432,7 +430,10 @@ void R_dsgraph_structure::render_forward()
     if (g_hud->RenderActiveItemUIQuery())
         render_hud_ui();
 
-    render_graph(1); // normal level, secondary priority
-    PortalTraverser.fade_render(); // faded-portals
-    render_sorted(); // strict-sorted geoms
+    // normal level, secondary priority
+    render_graph(1);
+    // faded-portals
+    PortalTraverser.fade_render();
+    // strict-sorted geoms
+    render_sorted();
 }

@@ -61,26 +61,22 @@ public:
     void feel_vision_update(CObject* parent, Fvector& P, float dt, float vis_threshold);
     void feel_vision_relcase(CObject* object);
 
-    void feel_vision_get(xr_vector<CObject*>& R)
+    void feel_vision_get(xr_vector<CObject*>& R) const
     {
         R.clear();
-        xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), E = feel_visible.end();
-        for (; I != E; I++)
-            if (positive(I->fuzzy))
-                R.push_back(I->O);
+
+        for (auto& item : feel_visible)
+        {
+            if (positive(item.fuzzy))
+                R.emplace_back(item.O);
+        }
     }
 
-    Fvector feel_vision_get_vispoint(CObject* _O)
+    [[nodiscard]] Fvector feel_vision_get_vispoint(const CObject* _O) const
     {
-        xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), E = feel_visible.end();
-        for (; I != E; I++)
-            if (_O == I->O)
-            {
-                VERIFY(positive(I->fuzzy));
-                return I->cp_LAST;
-            }
-        VERIFY2(0, "There is no such object in the potentially visible list");
-        return Fvector().set(flt_max, flt_max, flt_max);
+        const auto it = std::ranges::find(feel_visible, _O, &feel_visible_Item::O);
+        XR_ASSERT(it != feel_visible.end() && positive(it->fuzzy));
+        return it->cp_LAST;
     }
 
     [[nodiscard]] virtual BOOL feel_vision_isRelevant(CObject* O) = 0;

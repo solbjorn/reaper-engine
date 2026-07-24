@@ -722,150 +722,146 @@ void CRenderTarget::phase_ssfx_sss_ext(light_Package& LP)
     RCache.set_c("ssfx_sss", ps_ssfx_sss);
     RCache.set_c("id_offset", 0);
 
-    Fvector4* Lights_Array{};
+    Fvector4* Lights_Array{nullptr};
     RCache.get_ConstantDirect(strLights, 4 * sizeof(Fvector4) * 2, nullptr, nullptr, reinterpret_cast<void**>(&Lights_Array));
-    VERIFY(Lights_Array);
 
-    if (Lights_Array)
+    memset128(XR_ASSERT_VAL(Lights_Array != nullptr), zeros, 8 * sizeof(*Lights_Array));
+
+    xr_vector<light*> LightsSort;
+    bool CheckPackage = true;
+
+    if (Device.dwFrame > sss_currentframe)
     {
-        memset128(Lights_Array, zeros, 8 * sizeof(*Lights_Array));
+        sss_currentframe = Device.dwFrame + 2;
 
-        xr_vector<light*> LightsSort;
-        bool CheckPackage = true;
-
-        if (Device.dwFrame > sss_currentframe)
+        xr_vector<light*>& source = LP.v_shadowed;
+        for (u32 it = 0; it < source.size(); it++)
         {
-            sss_currentframe = Device.dwFrame + 2;
+            light* L = source[it];
 
-            xr_vector<light*>& source = LP.v_shadowed;
-            for (u32 it = 0; it < source.size(); it++)
+            if (L->omnipart_num == 0 && L->range > 1.5f)
             {
-                light* L = source[it];
-
-                if (L->omnipart_num == 0 && L->range > 1.5f)
+                if (L->distance < 800 && L->flags.bActive)
                 {
-                    if (L->distance < 800 && L->flags.bActive)
-                    {
-                        L->distance_lpos = Device.vCameraPosition.distance_to(L->position);
+                    L->distance_lpos = Device.vCameraPosition.distance_to(L->position);
 
-                        if (L->distance_lpos <= L->range)
-                            L->sss_priority = 0;
-                        else
-                            L->sss_priority = 1;
-
-                        LightsSort.push_back(L);
-                    }
-                }
-
-                // Refresh hierarchy ( Look for a better way? )
-                if (L->sss_refresh)
-                {
-                    L->sss_refresh = false;
-                    int done = 0;
-
-                    for (u32 lit = 0; lit < source.size(); lit++)
-                    {
-                        light* L2 = source[lit];
-                        if (L2->omipart_parent == L->omipart_parent)
-                        {
-                            L2->sss_id = L->sss_id;
-                            done++;
-                            if (done >= 6)
-                                break; // Update done.
-                        }
-                    }
-                }
-            }
-
-            // Sort Distance
-            std::ranges::sort(LightsSort, [](const light* i, const light* j) { return (i->distance < j->distance && i->sss_priority < j->sss_priority); });
-
-            for (auto L : LightsSort)
-            {
-                bool Add = true;
-                int FreeSlot = -1;
-
-                for (int slot = 0; slot < 8; slot++)
-                {
-                    if (LightSlot[slot])
-                    {
-                        if (LightSlot[slot] == L)
-                        {
-                            Add = false;
-                            break;
-                        }
-                    }
+                    if (L->distance_lpos <= L->range)
+                        L->sss_priority = 0;
                     else
-                        FreeSlot = slot;
+                        L->sss_priority = 1;
+
+                    LightsSort.push_back(L);
                 }
+            }
 
-                if (Add && FreeSlot > -1)
+            // Refresh hierarchy ( Look for a better way? )
+            if (L->sss_refresh)
+            {
+                L->sss_refresh = false;
+                int done = 0;
+
+                for (u32 lit = 0; lit < source.size(); lit++)
                 {
-                    LightSlot[FreeSlot] = L;
-
-                    L->sss_id = FreeSlot;
-
-                    if (L->flags.type == IRender_Light::OMNIPART)
-                        L->sss_refresh = true;
+                    light* L2 = source[lit];
+                    if (L2->omipart_parent == L->omipart_parent)
+                    {
+                        L2->sss_id = L->sss_id;
+                        done++;
+                        if (done >= 6)
+                            break; // Update done.
+                    }
                 }
             }
         }
-        else
-        {
-            // Don't check the sorted package when the frame is skipped
-            CheckPackage = false;
-        }
 
-        for (int slot = 0; slot < 8; slot++)
+        // Sort Distance
+        std::ranges::sort(LightsSort, [](const light* i, const light* j) { return (i->distance < j->distance && i->sss_priority < j->sss_priority); });
+
+        for (auto L : LightsSort)
         {
-            if (LightSlot[slot])
+            bool Add = true;
+            int FreeSlot = -1;
+
+            for (int slot = 0; slot < 8; slot++)
             {
-                // Check if the light still exist on the sorted Light Package
-                bool Remove = true;
-
-                if (CheckPackage)
+                if (LightSlot[slot])
                 {
-                    for (auto L : LightsSort)
+                    if (LightSlot[slot] == L)
                     {
-                        if (L == LightSlot[slot])
-                            Remove = false;
+                        Add = false;
+                        break;
                     }
                 }
                 else
+                    FreeSlot = slot;
+            }
+
+            if (Add && FreeSlot > -1)
+            {
+                LightSlot[FreeSlot] = L;
+
+                L->sss_id = FreeSlot;
+
+                if (L->flags.type == IRender_Light::OMNIPART)
+                    L->sss_refresh = true;
+            }
+        }
+    }
+    else
+    {
+        // Don't check the sorted package when the frame is skipped
+        CheckPackage = false;
+    }
+
+    for (int slot = 0; slot < 8; slot++)
+    {
+        if (LightSlot[slot])
+        {
+            // Check if the light still exist on the sorted Light Package
+            bool Remove = true;
+
+            if (CheckPackage)
+            {
+                for (auto L : LightsSort)
                 {
-                    // The distance calc was skipped, check here instead
-                    LightSlot[slot]->distance_lpos = Device.vCameraPosition.distance_to(LightSlot[slot]->position);
-                    Remove = false;
+                    if (L == LightSlot[slot])
+                        Remove = false;
                 }
+            }
+            else
+            {
+                // The distance calc was skipped, check here instead
+                LightSlot[slot]->distance_lpos = Device.vCameraPosition.distance_to(LightSlot[slot]->position);
+                Remove = false;
+            }
 
-                float Dist = LightSlot[slot]->distance_lpos;
+            float Dist = LightSlot[slot]->distance_lpos;
 
-                if (Dist > (LightSlot[slot]->range * 2.0f))
-                    Remove = true;
+            if (Dist > (LightSlot[slot]->range * 2.0f))
+                Remove = true;
 
-                // Remove Light
-                if (!LightSlot[slot]->flags.bActive || Remove)
-                {
-                    if (LightSlot[slot]->flags.type == IRender_Light::OMNIPART)
-                        LightSlot[slot]->sss_refresh = true;
+            // Remove Light
+            if (!LightSlot[slot]->flags.bActive || Remove)
+            {
+                if (LightSlot[slot]->flags.type == IRender_Light::OMNIPART)
+                    LightSlot[slot]->sss_refresh = true;
 
-                    LightSlot[slot]->sss_id = -1;
-                    LightSlot[slot] = nullptr;
-                }
-                else
-                {
-                    // Update Light
-                    Fvector L_pos;
+                LightSlot[slot]->sss_id = -1;
+                LightSlot[slot] = nullptr;
+            }
+            else
+            {
+                // Update Light
+                Fvector L_pos;
 
-                    Device.mView.transform_tiny(L_pos, LightSlot[slot]->position);
+                Device.mView.transform_tiny(L_pos, LightSlot[slot]->position);
 
-                    // Distance Atte ( Use MaxAtte if the light range is bigger than the max sort range )
-                    float MaxAtte = 1.0f - (clampr((LightSlot[slot]->distance - 780) / -100, 0.f, 1.f));
-                    float Atte = 1.0f - (clampr((Dist - LightSlot[slot]->range * 1.9f) / -(LightSlot[slot]->range / 2.0f), 0.f, 1.f));
+                // Distance Atte ( Use MaxAtte if the light range is bigger than the max sort range )
+                float MaxAtte = 1.0f - (clampr((LightSlot[slot]->distance - 780) / -100, 0.f, 1.f));
+                float Atte = 1.0f - (clampr((Dist - LightSlot[slot]->range * 1.9f) / -(LightSlot[slot]->range / 2.0f), 0.f, 1.f));
 
-                    // ( Reminder ) The value is inverted ( 1.0 = Fadeout ~ 0.0 = Full Visible )
-                    Lights_Array[slot].set(L_pos, std::max(MaxAtte, Atte));
-                }
+                // ( Reminder ) The value is inverted ( 1.0 = Fadeout ~ 0.0 = Full Visible )
+                Lights_Array[slot].set(L_pos, std::max(MaxAtte, Atte));
             }
         }
     }

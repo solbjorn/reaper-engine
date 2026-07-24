@@ -88,7 +88,7 @@ void CUICaption::addCustomMessage(const shared_str& msg_name, float x, float y, 
 
 u32 CUICaption::findIndexOf_(const shared_str& key_) const
 {
-    for (auto [idx, ptr] : xr::views_enumerate(m_vPhrases))
+    for (auto [idx, ptr] : std::views::enumerate(m_vPhrases))
     {
         if (ptr->key == key_)
             return gsl::narrow_cast<u32>(idx);

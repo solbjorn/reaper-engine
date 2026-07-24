@@ -73,7 +73,6 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
     Fbox box;
     box.setb(cast_fv(p), AABB);
 
-    // VERIFY( g_pGameLevel );
     CDB::TRI* T_array = Level().ObjectSpace.GetStaticTris();
     const Fvector* V_array = Level().ObjectSpace.GetStaticVerts();
     if (no_last_pos || !last_box.contains(box))
@@ -82,7 +81,6 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
         aabb.set(AABB);
         aabb.mul(ph_tri_query_ex_aabb_rate);
         ///////////////////////////////////////////////////////////////////////////////////////////////
-        // VERIFY( g_pGameLevel );
         XRC.box_query(0, Level().ObjectSpace.GetStaticModel(), cast_fv(p), aabb);
 
 #ifdef DEBUG
@@ -207,11 +205,12 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
                     if (debug_output().ph_dbg_draw_mask().test(phDBgDrawTriesChangesSign))
                         debug_output().DBG_DrawTri(Tr, V_array, D3DCOLOR_XRGB(0, 255, 0));
 #endif
-                    SGameMtl* material = GMLib.GetMaterialByIdx(Tr->material);
-                    VERIFY(material);
+
+                    SGameMtl* material = XR_ASSERT_VAL(GMLib.GetMaterialByIdx(Tr->material) != nullptr);
                     bool b_passable = !!material->Flags.test(SGameMtl::flPassable);
                     bool contain_pos = TriContainPoint(vertices[0], vertices[1], vertices[2], tri.norm, tri.side0, tri.side1, p);
                     bool b_pased = false;
+
                     if (!b_pushing && !gb_pased)
                     {
                         if (!no_last_pos && !b_passable)
@@ -291,17 +290,17 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
             if (debug_output().ph_dbg_draw_mask().test(phDBgDrawPositiveTries))
                 debug_output().DBG_DrawTri(Tr, V_array, D3DCOLOR_XRGB(255, 0, 0));
 #endif
+
             if (ret > flags - 10)
                 continue;
+
             if (!b_pushing && (!intersect || no_last_pos))
                 ret += primitive.Collide(vertices[0], vertices[1], vertices[2], &tri, o1, o2, 3, CONTACT(contact, ret * skip), skip);
+
             if (no_last_pos)
                 pos_tries.push_back(tri);
         }
     }
-
-    // if(intersect) ret=0;
-    // xr_vector<Triangle>::iterator i;
 
     if (intersect)
     {
@@ -312,20 +311,25 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
             {
                 for (auto& it : pos_tries)
                 {
-                    VERIFY(neg_tri.T);
+                    XR_ASSERT(neg_tri.T != nullptr);
+
                     if (TriContainPoint((const dReal*)&V_array[it.T->verts[0]], (const dReal*)&V_array[it.T->verts[1]], (const dReal*)&V_array[it.T->verts[2]],
                                         it.norm, it.side0, it.side1, p))
+                    {
                         if (negative_tri_set_ignored_by_positive_tri(neg_tri, it, V_array))
                         {
                             include = false;
                             break;
                         }
+                    }
                 }
             }
 
             if (include)
             {
-                VERIFY(neg_tri.T && std::isfinite(neg_tri.dist));
+                XR_ASSERT(neg_tri.T != nullptr);
+                XR_DEBUG_ASSERT(std::isfinite(neg_tri.dist));
+
                 if (neg_tri_contains_point)
                 {
                     int bret =
@@ -335,7 +339,9 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
                         ret = bret;
                 }
                 else
+                {
                     ret = SetBackTrajectoryCnt(p, last_pos, neg_tri, o1, o2, CONTACT(contact, 0));
+                }
             }
         }
     }
@@ -347,7 +353,9 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
         {
             for (auto& it : pos_tries)
             {
-                VERIFY(b_neg_tri.T && std::isfinite(b_neg_tri.dist));
+                XR_ASSERT(b_neg_tri.T != nullptr);
+                XR_DEBUG_ASSERT(std::isfinite(b_neg_tri.dist));
+
                 if (negative_tri_set_ignored_by_positive_tri(b_neg_tri, it, V_array))
                 {
                     include = false;
@@ -358,11 +366,13 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
 
         if (include)
         {
-            VERIFY(b_neg_tri.T);
+            XR_ASSERT(b_neg_tri.T != nullptr);
+
             int bret = 0;
             if (ret < flags - 10)
                 bret = primitive.CollidePlain(b_neg_tri.side0, b_neg_tri.side1, b_neg_tri.norm, b_neg_tri.T, b_neg_tri.dist, o1, o2, flags,
                                               CONTACT(contact, *pushing_neg ? ret * skip : 0), skip);
+
             *pushing_b_neg = !!bret;
             if (*pushing_neg)
                 ret += bret;
@@ -370,7 +380,8 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
                 ret = bret;
         }
     }
-    if (!*pushing_neg) // no_last_pos|| && !*pushing_b_neg
+
+    if (!*pushing_neg)
         dVectorSet(last_pos, p);
 
     return ret;

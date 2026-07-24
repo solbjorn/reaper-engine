@@ -166,7 +166,7 @@ void CHUDTarget::Render()
             PIItem l_pI = smart_cast<PIItem>(RQ.O);
 
             CInventoryOwner* our_inv_owner = smart_cast<CInventoryOwner*>(pCurEnt);
-            if (/*psHUD_Flags.test(HUD_INFO_MONSTER) &&*/ E && E->g_Alive() && E->cast_base_monster())
+            if (E != nullptr && E->g_Alive() && E->cast_base_monster() != nullptr)
             {
                 int relation = MONSTER_COMMUNITY::relation(pCurEnt->monster_community->index(), E->monster_community->index());
 

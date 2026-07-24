@@ -166,7 +166,7 @@ void ShowWeatherEditor(bool& show)
 
     s32 sel{-1};
 
-    for (auto [i, weather] : xr::views_enumerate(std::as_const(*env.CurrentWeather)))
+    for (auto [i, weather] : std::views::enumerate(std::as_const(*env.CurrentWeather)))
     {
         if (weather->m_identifier == cur->m_identifier)
         {
@@ -191,7 +191,7 @@ void ShowWeatherEditor(bool& show)
 
     ImGui::Text("Ambient light parameters");
 
-    for (auto [i, ambient] : xr::views_enumerate(std::as_const(env.m_ambients_config->sections_ordered())))
+    for (auto [i, ambient] : std::views::enumerate(std::as_const(env.m_ambients_config->sections_ordered())))
     {
         if (ambient.second->Name == cur->env_ambient->name())
         {
@@ -275,7 +275,7 @@ void ShowWeatherEditor(bool& show)
 
     sel = -1;
 
-    for (auto [i, flare] : xr::views_enumerate(std::as_const(env.m_suns_config->sections_ordered())))
+    for (auto [i, flare] : std::views::enumerate(std::as_const(env.m_suns_config->sections_ordered())))
     {
         if (flare.second->Name == cur->lens_flare_id)
         {
@@ -312,7 +312,7 @@ void ShowWeatherEditor(bool& show)
 
     sel = 0;
 
-    for (auto [i, bolt] : xr::views_enumerate(std::as_const(env.m_thunderbolt_collections_config->sections_ordered())))
+    for (auto [i, bolt] : std::views::enumerate(std::as_const(env.m_thunderbolt_collections_config->sections_ordered())))
     {
         if (bolt.second->Name == cur->tb_id)
         {

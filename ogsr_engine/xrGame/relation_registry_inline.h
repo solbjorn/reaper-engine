@@ -32,7 +32,7 @@ void RELATION_REGISTRY::SetRelationType(T from, T to, ALife::ERelationType new_r
     case ALife::eRelationTypeEnemy: SetGoodwill(from->object_id(), to->object_id(), goodwill_enemy); break;
     case ALife::eRelationTypeNeutral: SetGoodwill(from->object_id(), to->object_id(), goodwill_neutral); break;
     case ALife::eRelationTypeFriend: SetGoodwill(from->object_id(), to->object_id(), goodwill_friend); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 }
 

@@ -12,14 +12,14 @@
 
 CLevelGraph::CLevelGraph(gsl::czstring fName)
 {
-    sh_debug->create("editor\\wire"); // sh_debug->create("debug\\ai_nodes", "$null");
-
-    m_reader = absl::WrapUnique(FS.r_open(fName));
+    sh_debug->create("editor\\wire");
+    m_reader = XR_ASSERT_VAL(absl::WrapUnique(FS.r_open(fName)), "", fName);
 
     // m_header & data
     m_header = (const CHeader*)m_reader->pointer();
-    R_ASSERT(header().version() == XRAI_CURRENT_VERSION);
+    XR_ASSERT(header().version() == XRAI_CURRENT_VERSION, "", fName);
     m_reader->advance(sizeof(CHeader));
+
     m_nodes = (const CVertex*)m_reader->pointer();
     m_row_length = iFloor((header().box().max.z - header().box().min.z) / header().cell_size() + EPS_L + 1.5f);
     m_column_length = iFloor((header().box().max.x - header().box().min.x) / header().cell_size() + EPS_L + 1.5f);
@@ -53,8 +53,13 @@ u32 CLevelGraph::nearest_vertex_id(const Fvector& position) const
         }
     }
 
-    VERIFY(valid_vertex_id(selected));
-    return (selected);
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+    XR_ASSERT(valid_vertex_id(selected));
+#else
+    XR_DEBUG_ASSERT(valid_vertex_id(selected));
+#endif
+
+    return selected;
 }
 
 u32 CLevelGraph::vertex_id(u32 current_node_id, const Fvector& position) const
@@ -124,10 +129,16 @@ u32 CLevelGraph::vertex_id(u32 current_node_id, const Fvector& position) const
     {
         // so, we do not have a correct current node
         // performing very slow full search
-        const u32 id = nearest_vertex_id(position);
-        VERIFY(valid_vertex_id(id));
+        const auto id = nearest_vertex_id(position);
+
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+        XR_ASSERT(valid_vertex_id(id));
+#else
+        XR_DEBUG_ASSERT(valid_vertex_id(id));
+#endif
 
         Device.Statistic->AI_Node.End();
+
         return id;
     }
 

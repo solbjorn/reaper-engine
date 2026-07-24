@@ -46,10 +46,7 @@ bool CRender::sun_prepare()
         return false;
 
     for (auto& cascade : m_sun_cascades)
-    {
-        cascade.context_id = alloc_context();
-        VERIFY(cascade.context_id != R__INVALID_CTX_ID);
-    }
+        cascade.context_id = XR_ASSERT_VAL(alloc_context() != R__INVALID_CTX_ID);
 
     return true;
 }
@@ -287,6 +284,9 @@ tmc::task<void> CRender::render_cascade(sun::cascade& cascade)
     dsgraph.r_pmask(true, false);
     dsgraph.build_subspace(largest_sector_id, cascade.cull_frustum, cascade.cull_xform, cascade.cull_COP, true);
 
+    XR_ASSERT(dsgraph.mapNormalPasses[1][0].empty() && dsgraph.mapMatrixPasses[1][0].empty() && dsgraph.mapSorted.empty(), "", dsgraph.mapNormalPasses[1][0],
+              dsgraph.mapMatrixPasses[1][0], dsgraph.mapSorted);
+
     // Finalize & Cleanup
     const auto cascade_ind = cascade.cascade_ind;
     auto& sun = *smart_cast<light*>(Lights.sun._get());
@@ -299,8 +299,6 @@ tmc::task<void> CRender::render_cascade(sun::cascade& cascade)
     //. !!! We should clip based on shrinked frustum (again)
     if (dsgraph.mapNormalPasses[0][0].empty() && dsgraph.mapMatrixPasses[0][0].empty())
         co_return;
-
-    VERIFY(dsgraph.mapNormalPasses[1][0].empty() && dsgraph.mapMatrixPasses[1][0].empty() && dsgraph.mapSorted.empty());
 
     Target->phase_smap_direct(dsgraph.cmd_list, &sun, cascade_ind);
     dsgraph.cmd_list.set_xform_world(Fidentity);

@@ -22,7 +22,7 @@ namespace ar
 template <>
 struct std::default_delete<ar::archive>
 {
-    constexpr void operator()(ar::archive* ptr) const noexcept { R_ASSERT(ar::archive_read_free(ptr) == ARCHIVE_OK); }
+    constexpr void operator()(ar::archive* ptr) const noexcept { XR_ASSERT(ar::archive_read_free(ptr) == ARCHIVE_OK); }
 };
 
 namespace xr
@@ -51,7 +51,7 @@ public:
 
         explicit reader(gsl::czstring path)
         {
-            R_ASSERT(::_sopen_s(&fd, path, _O_RDONLY | _O_BINARY, _SH_DENYNO, _S_IREAD) == 0);
+            XR_ASSERT(::_sopen_s(&fd, path, _O_RDONLY | _O_BINARY, _SH_DENYNO, _S_IREAD) == 0, "", path);
             reopen();
         }
 
@@ -87,13 +87,13 @@ public:
 void ar_pool::reader::reopen()
 {
     arc.reset(ar::archive_read_new());
-    R_ASSERT(ar::archive_read_set_passphrase_callback(get(), this, &xr::ar_pool::reader::passphrase) == ARCHIVE_OK);
+    XR_ASSERT(ar::archive_read_set_passphrase_callback(get(), this, &xr::ar_pool::reader::passphrase) == ARCHIVE_OK);
 
-    R_ASSERT(ar::archive_read_support_filter_all(get()) == ARCHIVE_OK);
-    R_ASSERT(ar::archive_read_support_format_all(get()) == ARCHIVE_OK);
+    XR_ASSERT(ar::archive_read_support_filter_all(get()) == ARCHIVE_OK);
+    XR_ASSERT(ar::archive_read_support_format_all(get()) == ARCHIVE_OK);
 
-    R_ASSERT(::_lseeki64(fd, 0, SEEK_SET) == 0);
-    R_ASSERT(ar::archive_read_open_fd(get(), fd, wnd) == ARCHIVE_OK);
+    XR_ASSERT(::_lseeki64(fd, 0, SEEK_SET) == 0);
+    XR_ASSERT(ar::archive_read_open_fd(get(), fd, wnd) == ARCHIVE_OK);
 
     pos = -1;
 }
@@ -106,13 +106,11 @@ void ar_pool::reader::goto_entry(s32 cd_pos)
     for (++pos;; ++pos)
     {
         ar::archive_entry* entry;
-        R_ASSERT(ar::archive_read_next_header(get(), &entry) == ARCHIVE_OK);
+        XR_ASSERT(ar::archive_read_next_header(get(), &entry) == ARCHIVE_OK);
 
         if (pos == cd_pos)
             return;
     }
-
-    NODEFAULT;
 }
 
 // Stream reader for a file inside [lib]archive
@@ -235,7 +233,7 @@ void ar_stream::skip(gsl::index len)
     {
         const auto skip = std::min(bsize, left);
 
-        R_ASSERT(ar::archive_read_data(rd().get(), &buf[0], gsl::narrow_cast<size_t>(skip)) == skip);
+        XR_ASSERT(ar::archive_read_data(rd().get(), &buf[0], gsl::narrow_cast<size_t>(skip)) == skip);
         left -= skip;
     }
 
@@ -254,7 +252,7 @@ void ar_stream::next()
     {
         buf->resize(gsl::narrow_cast<size_t>(buf->bsize));
 
-        R_ASSERT(ar::archive_read_data(rd().get(), &(*buf)[gsl::narrow_cast<size_t>(read)], gsl::narrow_cast<size_t>(left)) == left);
+        XR_ASSERT(ar::archive_read_data(rd().get(), &(*buf)[gsl::narrow_cast<size_t>(read)], gsl::narrow_cast<size_t>(left)) == left);
         pos += left;
     }
 
@@ -289,7 +287,7 @@ pick:
     if (read == buf->bsize)
         return;
 
-    R_ASSERT(read == wnd[0]);
+    XR_ASSERT(read == wnd[0]);
 
     if (pos > foff)
         reopen();
@@ -321,7 +319,7 @@ void ar_stream::r(void* buffer, gsl::index buffer_size)
             const auto direct = xr::rounddown(std::ssize(out), wnd[5]);
             if (direct > 0)
             {
-                R_ASSERT(ar::archive_read_data(rd().get(), &out[0], gsl::narrow_cast<size_t>(direct)) == direct);
+                XR_ASSERT(ar::archive_read_data(rd().get(), &out[0], gsl::narrow_cast<size_t>(direct)) == direct);
                 pos += direct;
 
                 out = out.subspan(gsl::narrow_cast<size_t>(direct));
@@ -356,7 +354,7 @@ void ar_stream::r(void* buffer, gsl::index buffer_size)
             buf.resize(gsl::narrow_cast<size_t>(read + precache));
             precache = std::min(precache, fsize - foff - read);
 
-            R_ASSERT(ar::archive_read_data(rd().get(), &buf[gsl::narrow_cast<size_t>(read)], gsl::narrow_cast<size_t>(precache)) == precache);
+            XR_ASSERT(ar::archive_read_data(rd().get(), &buf[gsl::narrow_cast<size_t>(read)], gsl::narrow_cast<size_t>(precache)) == precache);
             pos += precache;
             read += precache;
         }
@@ -379,7 +377,7 @@ CStreamReader* ar_stream::open_chunk(u32 chunk_id)
     if (size == 0)
         return nullptr;
 
-    R_ASSERT(!compressed, "cannot stream compressed chunks");
+    XR_ASSERT(!compressed, "cannot stream compressed chunks", chunk_id);
 
     return xr_new<xr::ar_stream>(ar, cd_pos, tell(), size);
 }
@@ -412,7 +410,7 @@ void CLocatorAPI::archive::index_ar(CLocatorAPI& loc, gsl::czstring fs_entry_poi
     auto obj = xr::ar_cb(cb)->acquire_scoped();
     auto& rd = obj.value;
 
-    R_ASSERT(rd.pos == -1);
+    XR_ASSERT(rd.pos == -1);
 
     for (++rd.pos;; ++rd.pos)
     {
@@ -420,7 +418,7 @@ void CLocatorAPI::archive::index_ar(CLocatorAPI& loc, gsl::czstring fs_entry_poi
 
         if (const auto ret = ar::archive_read_next_header(rd.get(), &entry); ret != ARCHIVE_OK)
         {
-            R_ASSERT(ret == ARCHIVE_EOF);
+            XR_ASSERT(ret == ARCHIVE_EOF);
             return;
         }
 
@@ -440,7 +438,7 @@ IReader* CLocatorAPI::archive::read_ar(const struct file& desc, u32) const
     rd.goto_entry(gsl::narrow_cast<s32>(desc.cb));
 
     auto dest = xr_alloc<std::byte>(desc.size_real);
-    R_ASSERT(ar::archive_read_data(rd.get(), dest, gsl::narrow_cast<size_t>(desc.size_real)) == desc.size_real);
+    XR_ASSERT(ar::archive_read_data(rd.get(), dest, gsl::narrow_cast<size_t>(desc.size_real)) == desc.size_real);
 
     return xr_new<CTempReader>(dest, desc.size_real, 0z);
 }

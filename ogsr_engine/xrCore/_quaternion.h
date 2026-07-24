@@ -196,16 +196,13 @@ public:
 
     constexpr SelfRef mul(SelfCRef q1l, SelfCRef q2l)
     {
-        VERIFY(q1l.isValid());
-        VERIFY(q2l.isValid());
+        XR_DEBUG_ASSERT(q1l.isValid() && q2l.isValid());
 
         w = ((q1l.w * q2l.w) - (q1l.x * q2l.x) - (q1l.y * q2l.y) - (q1l.z * q2l.z));
-
         x = ((q1l.w * q2l.x) + (q1l.x * q2l.w) + (q1l.y * q2l.z) - (q1l.z * q2l.y));
-
         y = ((q1l.w * q2l.y) - (q1l.x * q2l.z) + (q1l.y * q2l.w) + (q1l.z * q2l.x));
-
         z = ((q1l.w * q2l.z) + (q1l.x * q2l.y) - (q1l.y * q2l.x) + (q1l.z * q2l.w));
+
         return *this;
     }
 
@@ -364,13 +361,9 @@ public:
     // through the positive W domain.
     constexpr SelfRef slerp(SelfCRef Q0, SelfCRef Q1, T tm)
     {
+        XR_ASSERT(tm >= T{0} && tm <= T{1}, "", tm);
+
         T Scale0, Scale1, sign;
-
-#ifdef DEBUG
-        if (!((T(0) <= tm) && (tm <= T(1))))
-            Debug.fatal(DEBUG_INFO, "Quaternion::slerp - invalid 'tm' arrived: %f", tm);
-#endif
-
         T cosom = (Q0.w * Q1.w) + (Q0.x * Q1.x) + (Q0.y * Q1.y) + (Q0.z * Q1.z);
 
         if (cosom < 0)
@@ -411,7 +404,8 @@ public:
     constexpr BOOL cmp(SelfCRef Q, T Tolerance = 0.0001f)
     {
         if ( // they are the same but with opposite signs
-            ((_abs(x + Q.x) <= Tolerance) && (_abs(y + Q.y) <= Tolerance) && (_abs(z + Q.z) <= Tolerance) && (_abs(w + Q.w) <= Tolerance)) || // they are the same with same signs
+            ((_abs(x + Q.x) <= Tolerance) && (_abs(y + Q.y) <= Tolerance) && (_abs(z + Q.z) <= Tolerance) &&
+             (_abs(w + Q.w) <= Tolerance)) || // they are the same with same signs
             ((_abs(x - Q.x) <= Tolerance) && (_abs(y - Q.y) <= Tolerance) && (_abs(z - Q.z) <= Tolerance) && (_abs(w - Q.w) <= Tolerance)))
             return true;
         else

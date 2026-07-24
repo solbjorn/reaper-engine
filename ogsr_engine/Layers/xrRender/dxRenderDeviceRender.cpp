@@ -6,16 +6,14 @@
 #include "dxUIRender.h"
 #include "ResourceManager.h"
 
-#define USE_RENDERDOC
-
-#ifdef USE_RENDERDOC
+#ifdef XR_USE_RENDERDOC
 #include <app/renderdoc_app.h>
 
 namespace
 {
-RENDERDOC_API_1_0_0* g_renderdoc_api{};
+RENDERDOC_API_1_0_0* g_renderdoc_api{nullptr};
 }
-#endif
+#endif // XR_USE_RENDERDOC
 
 dxRenderDeviceRender::dxRenderDeviceRender() = default;
 dxRenderDeviceRender::~dxRenderDeviceRender() = default;
@@ -38,7 +36,7 @@ void dxRenderDeviceRender::Copy(IRenderDeviceRender& _in)
     old_QuadIB = in.old_QuadIB;
 
     contexts_used = in.contexts_used;
-    std::ranges::copy(in.contexts_pool, contexts_pool);
+    std::memcpy(static_cast<void*>(&contexts_pool), static_cast<const void*>(&in.contexts_pool), xr::size_bytes(contexts_pool));
 
     m_Gamma = in.m_Gamma;
     b_loaded = in.b_loaded;
@@ -138,7 +136,7 @@ tmc::task<void> dxRenderDeviceRender::OnDeviceCreate()
 
 tmc::task<void> dxRenderDeviceRender::Create(HWND hWnd, u32& dwWidth, u32& dwHeight, f32& fWidth_2, f32& fHeight_2)
 {
-#ifdef USE_RENDERDOC
+#ifdef XR_USE_RENDERDOC
     if (!g_renderdoc_api)
     {
         static HMODULE hModule = GetModuleHandleA("renderdoc.dll");
@@ -173,7 +171,7 @@ tmc::task<void> dxRenderDeviceRender::Create(HWND hWnd, u32& dwWidth, u32& dwHei
             }
         }
     }
-#endif
+#endif // XR_USE_RENDERDOC
 
     co_await HW.CreateDevice(hWnd, dwWidth, dwHeight);
 
@@ -188,18 +186,6 @@ void dxRenderDeviceRender::SetupGPU(BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, B
     HW.Caps.bForceGPU_SW = bForceGPU_SW;
     HW.Caps.bForceGPU_NonPure = bForceGPU_NonPure;
     HW.Caps.bForceGPU_REF = bForceGPU_REF;
-}
-
-void dxRenderDeviceRender::overdrawBegin()
-{
-    //	TODO: DX10: Implement overdrawBegin
-    VERIFY(!"dxRenderDeviceRender::overdrawBegin not implemented.");
-}
-
-void dxRenderDeviceRender::overdrawEnd()
-{
-    //	TODO: DX10: Implement overdrawEnd
-    VERIFY(!"dxRenderDeviceRender::overdrawBegin not implemented.");
 }
 
 void dxRenderDeviceRender::DeferredLoad(BOOL E) { Resources->DeferredLoad(E); }
@@ -236,9 +222,6 @@ void dxRenderDeviceRender::Begin()
 
     Vertex.Flush();
     Index.Flush();
-
-    if (HW.Caps.SceneMode)
-        overdrawBegin();
 }
 
 void dxRenderDeviceRender::Clear()
@@ -253,10 +236,7 @@ tmc::task<void> dxRenderDeviceRender::End()
 {
     XR_TRACY_ZONE_SCOPED();
 
-    VERIFY(HW.pDevice);
-
-    if (HW.Caps.SceneMode)
-        overdrawEnd();
+    XR_ASSERT(HW.pDevice != nullptr);
 
     for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
         contexts_pool[id].cmd_list.OnFrameEnd();

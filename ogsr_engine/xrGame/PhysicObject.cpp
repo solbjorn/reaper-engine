@@ -36,7 +36,7 @@ tmc::task<bool> CPhysicObject::net_Spawn(CSE_Abstract* DC)
     case epotFixedChain:
     case epotFreeChain:
     case epotSkeleton: collidable.model = xr_new<CCF_Skeleton>(this); break;
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     std::ignore = CPHSkeleton::Spawn(e);

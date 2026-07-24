@@ -8,7 +8,7 @@ endif()
 
 set(conformance_options "/Brepro /bigobj /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__STDC__ /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /Zc:checkGwOdr /Zc:forScope /Zc:templateScope /Zc:u8EscapeEncoding /Zc:wchar_t /JMC- /EHsc- /DNOMINMAX /DSTRICT -fstrict-aliasing -fno-delayed-template-parsing -fno-wrapv /D_CRT_STDIO_ISO_WIDE_SPECIFIERS -fno-ms-compatibility -fgnuc-version=0 /utf-8")
 
-set(llvm_options "-fuse-ld=lld-link -gcodeview-ghash -march=skylake -mavx2 -mbmi -mbmi2 -mvpclmulqdq -flto -fmerge-all-constants -fforce-emit-vtables -fwhole-program-vtables /clang:-fcoro-aligned-allocation")
+set(llvm_options "-fuse-ld=lld-link -gcodeview-ghash -march=skylake -mavx2 -mbmi -mbmi2 -mfma -mlzcnt -mvpclmulqdq -flto -fmerge-all-constants -fforce-emit-vtables -fwhole-program-vtables /clang:-fcoro-aligned-allocation")
 
 set(warning_options "-Wextra -Wmost -Wno-error=unused-command-line-argument -Werror=format -Wformat-nonliteral -Werror=format-pedantic -Werror=format-signedness -Werror=format-type-confusion -Werror=inconsistent-missing-override -Werror=microsoft -Werror=move -Werror=nan-infinity-disabled -Werror=parentheses -Werror=strict-aliasing -Werror=tautological-compare -Werror=typename-missing -Werror=weak-vtables")
 
@@ -134,7 +134,7 @@ endif()
 
 # llvm-libc, libc++
 if(LLVM_ENABLE_RUNTIMES)
-  set(conformance_options "${conformance_options} -DO_BINARY=_O_BINARY -DO_CREAT=_O_CREAT -DO_RDONLY=_O_RDONLY -DO_WRONLY=_O_WRONLY -Dfdopen=_fdopen -Dfileno=_fileno -Doff_t=_off_t")
+  set(conformance_options "${conformance_options} -DO_BINARY=_O_BINARY -DO_CREAT=_O_CREAT -DO_RDONLY=_O_RDONLY -DO_WRONLY=_O_WRONLY -Dalloca=_alloca -Dfdopen=_fdopen -Dfileno=_fileno -Doff_t=_off_t")
   set(warning_options "${warning_options} -Wno-error=microsoft-enum-value")
 else()
   set(llvm_options "${llvm_options} /clang:-fopenmp /clang:-fopenmp-extensions")

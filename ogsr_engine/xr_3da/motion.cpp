@@ -83,7 +83,8 @@ void COMotion::SaveMotion(const char* buf)
 bool COMotion::LoadMotion(const char* buf)
 {
     const auto F = absl::WrapUnique(FS.r_open(buf));
-    R_ASSERT(F->find_chunk(EOBJ_OMOTION));
+    XR_ASSERT(F->find_chunk(EOBJ_OMOTION) > 0, "", buf);
+
     return Load(*F);
 }
 
@@ -201,21 +202,24 @@ void CClip::Save(IWriter& F)
 
 bool CClip::Load(IReader& F)
 {
-    R_ASSERT(F.find_chunk(EOBJ_CLIP_VERSION_CHUNK));
-    u16 ver = F.r_u16();
-    if (ver != EOBJ_CLIP_VERSION)
+    XR_ASSERT(F.find_chunk(EOBJ_CLIP_VERSION_CHUNK) > 0);
+    if (F.r_u16() != EOBJ_CLIP_VERSION)
         return false;
-    R_ASSERT(F.find_chunk(EOBJ_CLIP_DATA_CHUNK));
+
+    XR_ASSERT(F.find_chunk(EOBJ_CLIP_DATA_CHUNK) > 0);
     F.r_stringZ(name);
+
     for (int k = 0; k < 4; k++)
     {
         F.r_stringZ(cycles[k].name);
         cycles[k].slot = F.r_u16();
     }
+
     F.r_stringZ(fx.name);
     fx.slot = F.r_u16();
     fx_power = F.r_float();
     length = F.r_float();
+
     return true;
 }
 //------------------------------------------------------------------------------

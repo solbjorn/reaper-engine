@@ -28,7 +28,7 @@ constexpr sf::SF_VIRTUAL_IO vio{
         case sf::SF_SEEK_SET: real = offset; break;
         case sf::SF_SEEK_CUR: real = file.tell() + offset; break;
         case sf::SF_SEEK_END: real = file.length() + offset; break;
-        default: NODEFAULT;
+        default: xr::unreachable();
         }
 
         real = std::min(real, file.length());
@@ -48,7 +48,7 @@ constexpr sf::SF_VIRTUAL_IO vio{
     },
 
     // write
-    [] [[nodiscard]] (const void*, sf::sf_count_t, void*) -> sf::sf_count_t { FATAL("Can't write to a read-only stream"); },
+    [] [[nodiscard]] (const void*, sf::sf_count_t, void*) -> sf::sf_count_t { XR_PANIC("can't write to a read-only stream"); },
     // tell
     [] [[nodiscard]] (void* user_data) { return sf::sf_count_t{static_cast<CStreamReader*>(user_data)->tell()}; },
 };
@@ -93,7 +93,7 @@ void CSoundRender_Source::decompress(void* dest, s64 byte_offset, s64 size, sf::
 sf::SNDFILE* CSoundRender_Source::open() const
 {
     auto file = FS.rs_open(pname.c_str());
-    ASSERT_FMT(file != nullptr && file->length() > 0, "Can't open sound file: [%s]", pname.c_str());
+    XR_ASSERT(file != nullptr && file->length() > 0, "can't open or invalid sound file", pname);
 
     sf::SF_INFO info{};
     auto snd = sf::sf_open_virtual(const_cast<sf::SF_VIRTUAL_IO*>(&xr::vio), sf::SFM_READ, &info, file);
@@ -125,13 +125,12 @@ void CSoundRender_Source::LoadWave(LPCSTR pName)
     pname._set(pName);
 
     auto file = FS.rs_open(pName);
-    ASSERT_FMT(file != nullptr && file->length() > 0, "Can't open sound file: [%s]", pName);
+    XR_ASSERT(file != nullptr && file->length() > 0, "can't open or invalid sound file", pname);
 
     sf::SF_INFO info{};
     auto snd = sf::sf_open_virtual(const_cast<sf::SF_VIRTUAL_IO*>(&xr::vio), sf::SFM_READ, &info, file);
-
-    ASSERT_FMT(snd != nullptr, "%s File: [%s]", sf::sf_strerror(snd), pName);
-    R_ASSERT(xr::sf_stream(snd) == file);
+    XR_ASSERT(snd != nullptr, sf::sf_strerror(snd), pname);
+    XR_ASSERT(xr::sf_stream(snd) == file);
 
     m_wformat.samplerate = info.samplerate;
     m_wformat.channels = info.channels;
@@ -147,8 +146,7 @@ void CSoundRender_Source::LoadWave(LPCSTR pName)
     if (!parse_comment(snd, fallback) && fallback)
         parse_legacy_comment(*file);
 
-    R_ASSERT3(m_fMaxAIDist >= 0.1f && m_fMaxDist >= 0.1f, "Invalid max distance.", pName);
-
+    XR_ASSERT(m_fMaxDist >= 0.1f && m_fMaxAIDist >= 0.1f, "invalid max distance", pname, m_fMaxDist, m_fMaxAIDist);
     close(snd);
 }
 
@@ -282,7 +280,7 @@ void CSoundRender_Source::load(LPCSTR name)
     if (!xr::find_sound(fn, std::array{xr::fsgame::level, xr::fsgame::game_sounds}, fname))
     {
         Msg("! Can't find sound [{}]", fname);
-        R_ASSERT(xr::find_sound(fn, std::array{xr::fsgame::game_sounds}, "$no_sound"));
+        XR_ASSERT(xr::find_sound(fn, std::array{xr::fsgame::game_sounds}, "$no_sound"));
     }
 
     LoadWave(fn);

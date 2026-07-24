@@ -58,14 +58,9 @@ sector_id_t R_dsgraph_structure::detect_sector(const Fvector& P, Fvector& dir)
         return INVALID_SECTOR_ID;
 
     if (ID == id1)
-    {
         // Take sector, facing to our point from portal
-        CDB::TRI* pTri = RImplementation.rmPortals->get_tris() + ID;
-        CPortal* pPortal = Portals[pTri->dummy];
-        return pPortal->getSectorFacing(P)->unique_id;
-    }
+        return Portals[RImplementation.rmPortals->get_tris()[ID].dummy]->getSectorFacing(P)->unique_id;
 
     // Take triangle at ID and use it's Sector
-    CDB::TRI* pTri = g_pGameLevel->ObjectSpace.GetStaticTris() + ID;
-    return (sector_id_t)pTri->sector;
+    return g_pGameLevel->ObjectSpace.GetStaticTris()[ID].sector;
 }

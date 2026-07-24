@@ -8,7 +8,8 @@
 
 #pragma once
 
-#define TEMPLATE_SPEZIALIZATION template <typename _key_type, typename _data_type, typename _predicate, bool use_time_limit, typename _cycle_type, bool use_first_update>
+#define TEMPLATE_SPEZIALIZATION \
+    template <typename _key_type, typename _data_type, typename _predicate, bool use_time_limit, typename _cycle_type, bool use_first_update>
 
 #define CSSafeMapIterator CSafeMapIterator<_key_type, _data_type, _predicate, use_time_limit, _cycle_type, use_first_update>
 
@@ -24,10 +25,10 @@ IC CSSafeMapIterator::CSafeMapIterator()
 TEMPLATE_SPEZIALIZATION
 IC void CSSafeMapIterator::add(const _key_type& id, _data_type* value, bool no_assert)
 {
-    _const_iterator I = m_objects.find(id);
+    const auto I = m_objects.find(id);
     if (I != m_objects.end())
     {
-        THROW2(no_assert, "Specified object has been already found in the registry!");
+        XR_ASSERT(no_assert, "object with this ID already in the registry", id);
         return;
     }
 
@@ -41,10 +42,10 @@ IC void CSSafeMapIterator::add(const _key_type& id, _data_type* value, bool no_a
 TEMPLATE_SPEZIALIZATION
 IC void CSSafeMapIterator::remove(const _key_type& id, bool no_assert)
 {
-    _iterator I = m_objects.find(id);
+    const auto I = m_objects.find(id);
     if (I == m_objects.end())
     {
-        THROW2(no_assert, "Specified object hasn't been found in the registry!");
+        XR_ASSERT(no_assert, "object not found in the registry", id);
         return;
     }
 

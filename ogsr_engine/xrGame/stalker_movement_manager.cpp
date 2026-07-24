@@ -313,7 +313,7 @@ void CStalkerMovementManager::setup_velocities()
         velocity_mask |= eVelocityStand;
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     // setup mental state
@@ -458,7 +458,7 @@ void CStalkerMovementManager::parse_velocity_mask()
         m_current.m_body_state = MonsterSpace::eBodyStateCrouch;
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     switch (point.velocity & eVelocityMentalState)
@@ -484,7 +484,7 @@ void CStalkerMovementManager::parse_velocity_mask()
         m_current.m_mental_state = MonsterSpace::eMentalStatePanic;
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     VERIFY2(m_current.m_mental_state != MonsterSpace::eMentalStateFree || m_current.m_body_state != MonsterSpace::eBodyStateCrouch, object().cName().c_str());
@@ -503,7 +503,7 @@ void CStalkerMovementManager::parse_velocity_mask()
         m_current.m_movement_type = MonsterSpace::eMovementTypeRun;
         break;
     }
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
 
     setup_head_speed();

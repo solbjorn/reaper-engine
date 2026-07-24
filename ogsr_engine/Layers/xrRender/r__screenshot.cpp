@@ -74,7 +74,7 @@ private:
     IWriter* file;
 
 public:
-    explicit ostream(gsl::czstring path) : Imf::OStream{path}, file{FS.w_open(path)} { R_ASSERT(file != nullptr); }
+    explicit ostream(gsl::czstring path) : Imf::OStream{path}, file{FS.w_open(path)} { XR_ASSERT(file != nullptr, "", path); }
     ~ostream() override { FS.w_close(file); }
 
     void write(const char c[], s32 n) override { file->w(c, n); }
@@ -90,7 +90,7 @@ private:
 
     [[nodiscard]] static IWriter* writer(const png::png_structp st) { return static_cast<IWriter*>(png::png_get_io_ptr(st)); }
 
-    static void write_error(png::png_structp, png::png_const_charp msg) { FATAL("PNG write error: %s", msg); }
+    static void write_error(png::png_structp, png::png_const_charp msg) { XR_PANIC("PNG write error", msg); }
     static void write_warning(png::png_structp, png::png_const_charp) {}
 
     static void write(png::png_structp st, png::png_bytep data, png::png_size_t len) { writer(st)->w(data, gsl::narrow_cast<gsl::index>(len)); }
@@ -99,11 +99,8 @@ private:
 public:
     png_writer()
     {
-        st = png::png_create_write_struct(PNG_LIBPNG_VER_STRING, this, &png_writer::write_error, &png_writer::write_warning);
-        R_ASSERT(st != nullptr);
-
-        info = png::png_create_info_struct(st);
-        R_ASSERT(info != nullptr);
+        st = XR_ASSERT_VAL(png::png_create_write_struct(PNG_LIBPNG_VER_STRING, this, &png_writer::write_error, &png_writer::write_warning) != nullptr);
+        info = XR_ASSERT_VAL(png::png_create_info_struct(st) != nullptr);
     }
 
     ~png_writer() { png::png_destroy_write_struct(&st, &info); }
@@ -113,7 +110,7 @@ public:
 
 void png_writer::write(IWriter* file, const DirectX::ScratchImage& cap)
 {
-    R_ASSERT(file != nullptr);
+    XR_ASSERT(file != nullptr);
 
     png::png_set_write_fn(st, file, &png_writer::write, &png_writer::flush);
     png::png_set_compression_level(st, 6);
@@ -126,7 +123,7 @@ void png_writer::write(IWriter* file, const DirectX::ScratchImage& cap)
 
     xr_vector<png::png_bytep> rows(image.height);
 
-    for (auto [i, row] : xr::views_enumerate(rows))
+    for (auto [i, row] : std::views::enumerate(rows))
         row = &image.pixels[image.rowPitch * i];
 
     png::png_write_image(st, rows.data());
@@ -156,14 +153,14 @@ void grant_ownership(basisu::imagef& image, basisu::vec4F* pixels, u32 w, u32 h)
 
 void save_dds(IWriter* file, DirectX::ScratchImage& cap, bool resample)
 {
-    R_ASSERT(file != nullptr);
+    XR_ASSERT(file != nullptr);
 
     DirectX::ScratchImage* tgt = &cap;
     DirectX::ScratchImage res;
 
     if (resample)
     {
-        R_CHK(res.Initialize2D(DXGI_FORMAT_R8G8B8A8_UNORM, xr::GAMESAVE_SIZE, xr::GAMESAVE_SIZE, 1, 1));
+        XR_ASSERT(xr::hr(res.Initialize2D(DXGI_FORMAT_R8G8B8A8_UNORM, xr::GAMESAVE_SIZE, xr::GAMESAVE_SIZE, 1, 1)));
 
         auto& image = cap.GetImages()[0];
         auto& thumb = res.GetImages()[0];
@@ -172,7 +169,7 @@ void save_dds(IWriter* file, DirectX::ScratchImage& cap, bool resample)
         src.grant_ownership(reinterpret_cast<basisu::color_rgba*>(image.pixels), image.width, image.height);
         dst.grant_ownership(reinterpret_cast<basisu::color_rgba*>(thumb.pixels), thumb.width, thumb.height);
 
-        R_ASSERT(basisu::image_resample(src, dst, false, "kaiser"));
+        XR_ASSERT(basisu::image_resample(src, dst, false, "kaiser"));
 
         dst.get_pixels().assume_ownership();
         src.get_pixels().assume_ownership();
@@ -182,11 +179,12 @@ void save_dds(IWriter* file, DirectX::ScratchImage& cap, bool resample)
     }
 
     DirectX::ScratchImage comp;
-    R_CHK(DirectX::Compress(HW.pDevice, tgt->GetImages()[0], DXGI_FORMAT_BC7_UNORM, DirectX::TEX_COMPRESS_PARALLEL, DirectX::TEX_ALPHA_WEIGHT_DEFAULT, comp));
+    XR_ASSERT(xr::hr(
+        DirectX::Compress(HW.pDevice, tgt->GetImages()[0], DXGI_FORMAT_BC7_UNORM, DirectX::TEX_COMPRESS_PARALLEL, DirectX::TEX_ALPHA_WEIGHT_DEFAULT, comp)));
     tgt->Release();
 
     DirectX::Blob blob;
-    R_CHK(DirectX::SaveToDDSMemory(comp.GetImages()[0], DirectX::DDS_FLAGS_NONE, blob));
+    XR_ASSERT(xr::hr(DirectX::SaveToDDSMemory(comp.GetImages()[0], DirectX::DDS_FLAGS_NONE, blob)));
 
     file->w(blob.GetBufferPointer(), blob.GetBufferSize());
     FS.w_close(file);
@@ -200,11 +198,12 @@ void save_exr(gsl::czstring path, DirectX::ScratchImage& cap, bool resample)
     if (resample)
     {
         DirectX::ScratchImage full;
-        R_CHK(DirectX::Convert(cap.GetImages()[0], DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::TEX_FILTER_DEFAULT, DirectX::TEX_THRESHOLD_DEFAULT, full));
+        XR_ASSERT(
+            xr::hr(DirectX::Convert(cap.GetImages()[0], DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::TEX_FILTER_DEFAULT, DirectX::TEX_THRESHOLD_DEFAULT, full)));
         cap.Release();
 
         DirectX::ScratchImage crop;
-        R_CHK(crop.Initialize2D(DXGI_FORMAT_R32G32B32A32_FLOAT, xr::GAMESAVE_SIZE, xr::GAMESAVE_SIZE, 1, 1));
+        XR_ASSERT(xr::hr(crop.Initialize2D(DXGI_FORMAT_R32G32B32A32_FLOAT, xr::GAMESAVE_SIZE, xr::GAMESAVE_SIZE, 1, 1)));
 
         auto& image = full.GetImages()[0];
         auto& thumb = crop.GetImages()[0];
@@ -213,20 +212,21 @@ void save_exr(gsl::czstring path, DirectX::ScratchImage& cap, bool resample)
         xr::grant_ownership(src, reinterpret_cast<basisu::vec4F*>(image.pixels), image.width, image.height);
         xr::grant_ownership(dst, reinterpret_cast<basisu::vec4F*>(thumb.pixels), thumb.width, thumb.height);
 
-        R_ASSERT(basisu::image_resample(src, dst, "kaiser"));
+        XR_ASSERT(basisu::image_resample(src, dst, "kaiser"));
 
         dst.get_pixels().assume_ownership();
         src.get_pixels().assume_ownership();
 
         full.Release();
-        R_CHK(DirectX::Convert(thumb, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::TEX_FILTER_DEFAULT, DirectX::TEX_THRESHOLD_DEFAULT, res));
+        XR_ASSERT(xr::hr(DirectX::Convert(thumb, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::TEX_FILTER_DEFAULT, DirectX::TEX_THRESHOLD_DEFAULT, res)));
 
         crop.Release();
         tgt = &res;
     }
     else if (cap.GetMetadata().format == DXGI_FORMAT_R8G8B8A8_UNORM)
     {
-        R_CHK(DirectX::Convert(cap.GetImages()[0], DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::TEX_FILTER_DEFAULT, DirectX::TEX_THRESHOLD_DEFAULT, res));
+        XR_ASSERT(
+            xr::hr(DirectX::Convert(cap.GetImages()[0], DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::TEX_FILTER_DEFAULT, DirectX::TEX_THRESHOLD_DEFAULT, res)));
 
         cap.Release();
         tgt = &res;
@@ -242,16 +242,15 @@ void save_exr(gsl::czstring path, DirectX::ScratchImage& cap, bool resample)
 
 void save_sf(IWriter* file, DirectX::ScratchImage& cap, std::string_view ext)
 {
-    R_ASSERT(file != nullptr);
+    XR_ASSERT(file != nullptr);
 
     auto& image = cap.GetImages()[0];
     const sf::Image out{{gsl::narrow_cast<u32>(image.width), gsl::narrow_cast<u32>(image.height)}, image.pixels};
     cap.Release();
 
-    const auto blob = out.saveToMemory(ext);
-    R_ASSERT(blob);
-
+    const auto blob = XR_ASSERT_VAL(out.saveToMemory(ext));
     file->w(blob->data(), blob->size());
+
     FS.w_close(file);
 }
 } // namespace
@@ -263,7 +262,7 @@ void CRender::Screenshot(ScreenshotMode mode, LPCSTR name)
     Target->get_base_rt()->GetResource(&pSrcTexture);
 
     DirectX::ScratchImage SImage;
-    R_CHK(DirectX::CaptureTexture(HW.pDevice, HW.get_imm_context(), pSrcTexture, SImage));
+    XR_ASSERT(xr::hr(DirectX::CaptureTexture(HW.pDevice, HW.get_imm_context(), pSrcTexture, SImage)));
     _RELEASE(pSrcTexture);
 
     xr::scrfmt fmt;
@@ -272,7 +271,7 @@ void CRender::Screenshot(ScreenshotMode mode, LPCSTR name)
     {
     case DXGI_FORMAT_R8G8B8A8_UNORM: fmt = xr::scrfmt::none; break;
     case DXGI_FORMAT_R16G16B16A16_FLOAT: fmt = xr::scrfmt::exr; break;
-    default: FATAL("Unsupported render target format for screenshot: [0x%x]", gsl::narrow_cast<u32>(SImage.GetMetadata().format));
+    default: XR_PANIC("unsupported render target format for screenshot", SImage.GetMetadata().format);
     }
 
     std::string_view ext;
@@ -307,7 +306,7 @@ void CRender::Screenshot(ScreenshotMode mode, LPCSTR name)
 
         switch (fmt)
         {
-        case xr::scrfmt::none: NODEFAULT;
+        case xr::scrfmt::none: xr::unreachable();
         case xr::scrfmt::dds: xr::save_dds(FS.w_open("$screenshots$", buf), SImage, false); break;
         case xr::scrfmt::exr: {
             string_path path;
@@ -337,7 +336,7 @@ void CRender::Screenshot(ScreenshotMode mode, LPCSTR name)
         {
         case xr::scrfmt::dds: xr::save_dds(FS.w_open(buf), SImage, true); break;
         case xr::scrfmt::exr: xr::save_exr(buf, SImage, true); break;
-        default: NODEFAULT;
+        default: xr::unreachable();
         }
 
         break;
@@ -347,9 +346,7 @@ void CRender::Screenshot(ScreenshotMode mode, LPCSTR name)
             fmt = xr::scrfmt::tga;
 
         ext = std::get<1>(*std::ranges::find_if(xr::ssfmt, [fmt](const auto& entry) { return std::get<0>(entry) == fmt; }));
-
-        VERIFY(name != nullptr);
-        xr_strconcat(buf, name, ".", ext.data());
+        xr_strconcat(buf, XR_ASSERT_VAL(name != nullptr), ".", ext.data());
 
         switch (fmt)
         {
@@ -361,7 +358,7 @@ void CRender::Screenshot(ScreenshotMode mode, LPCSTR name)
             break;
         }
         case xr::scrfmt::tga: xr::save_sf(FS.w_open("$screenshots$", buf), SImage, ext); break;
-        default: NODEFAULT;
+        default: xr::unreachable();
         }
 
         break;

@@ -205,9 +205,6 @@ public:
     void Clear();
     tmc::task<void> RenderEnd();
 
-    void overdrawBegin();
-    void overdrawEnd();
-
     IC CTimer_paused* GetTimerGlobal() { return &TimerGlobal; }
 
     [[nodiscard]] auto TimerAsync() const { return TimerGlobal.GetElapsed_ms(); }
@@ -224,10 +221,10 @@ public:
 
     void time_factor(const float& time_factor); //--#SM+#--
 
-    inline float time_factor() const
+    [[nodiscard]] f32 time_factor() const
     {
-        VERIFY(fsimilar(Timer.time_factor(), TimerGlobal.time_factor()));
-        return (Timer.time_factor());
+        XR_DEBUG_ASSERT(fsimilar(Timer.time_factor(), TimerGlobal.time_factor()));
+        return Timer.time_factor();
     }
 
 public:

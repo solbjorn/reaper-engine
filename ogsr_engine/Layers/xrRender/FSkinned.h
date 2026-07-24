@@ -22,24 +22,7 @@ protected:
     void _Load_hw(Fvisual& V, const void* data) override;
     void _CollectBoneFaces(Fvisual* V, u32 iBase, u32 iCount) override;
     void _EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id, u32 iBase) const;
-    void _FillVerticesHW1W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector3& normal, f32 size, Fvisual* V, u16* indices,
-                           CBoneData::FacesVec& faces) override;
-    void _FillVerticesHW2W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector3& normal, f32 size, Fvisual* V, u16* indices,
-                           CBoneData::FacesVec& faces) override;
-    void _FillVerticesHW3W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector3& normal, f32 size, Fvisual* V, u16* indices,
-                           CBoneData::FacesVec& faces) override;
-    void _FillVerticesHW4W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector3& normal, f32 size, Fvisual* V, u16* indices,
-                           CBoneData::FacesVec& faces) override;
     void _FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector3& normal, f32 size, u16 bone_id, u32 iBase) override;
-
-    [[nodiscard]] BOOL _PickBoneHW1W(IKinematics::pick_result& r, f32 range, const Fvector3& S, const Fvector3& D, Fvisual* V, u16* indices,
-                                     CBoneData::FacesVec& faces) override;
-    [[nodiscard]] BOOL _PickBoneHW2W(IKinematics::pick_result& r, f32 range, const Fvector3& S, const Fvector3& D, Fvisual* V, u16* indices,
-                                     CBoneData::FacesVec& faces) override;
-    [[nodiscard]] BOOL _PickBoneHW3W(IKinematics::pick_result& r, f32 range, const Fvector3& S, const Fvector3& D, Fvisual* V, u16* indices,
-                                     CBoneData::FacesVec& faces) override;
-    [[nodiscard]] BOOL _PickBoneHW4W(IKinematics::pick_result& r, f32 range, const Fvector3& S, const Fvector3& D, Fvisual* V, u16* indices,
-                                     CBoneData::FacesVec& faces) override;
 
     [[nodiscard]] BOOL _PickBone(IKinematics::pick_result& r, f32 range, const Fvector3& S, const Fvector3& D, u16 bone_id, u32 iBase) override;
 };

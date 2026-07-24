@@ -86,11 +86,10 @@ void CDamageManager::load_section(LPCSTR section, CInifile* ini)
         // read all except default line
         if (std::is_neq(xr_strcmp(i.first, "default")))
         {
-            VERIFY(m_object);
-            int bone = kinematics->LL_BoneID(i.first);
-            ASSERT_FMT(bone != BI_NONE, "[%s]: bone '%s' not found in %s[%s] visual[%s]", std::source_location::current().function_name(), i.first.c_str(),
-                       m_object->cName().c_str(), section, m_object->cNameVisual().c_str());
+            XR_DEBUG_ASSERT(m_object != nullptr);
 
+            const auto bone =
+                XR_ASSERT_VAL(kinematics->LL_BoneID(i.first) != BI_NONE, "damage bone not found", m_object->cName(), m_object->cNameVisual(), section, i.first);
             CBoneInstance& bone_instance = kinematics->LL_GetBoneInstance(u16(bone));
 
             auto res = scn::scan_value<f32>(std::string_view{_GetItem(i.second.c_str(), 0, buffer)});

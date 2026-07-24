@@ -19,8 +19,7 @@ IC const xr_vector<u32>& CSpaceRestrictionAbstract::border()
     if (!initialized())
         initialize();
 
-    THROW(initialized());
-    THROW3(!m_border.empty(), "Space restrictor has no border!", name().c_str());
+    XR_DEBUG_ASSERT(!m_border.empty(), "space restrictor has no border", name());
 
     return m_border;
 }
@@ -33,7 +32,7 @@ IC const xr_vector<u32>& CSpaceRestrictionAbstract::accessible_neighbour_border(
     if (!m_accessible_neighbour_border_actual)
         prepare_accessible_neighbour_border(restriction, out_restriction);
 
-    THROW3(!m_accessible_neighbour_border.empty(), "Space restrictor has no accessible neighbours", name().c_str());
+    XR_DEBUG_ASSERT(!m_accessible_neighbour_border.empty(), "space restrictor has no accessible neighbours", name());
 
     return m_accessible_neighbour_border;
 }

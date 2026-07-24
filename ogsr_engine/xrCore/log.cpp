@@ -145,7 +145,7 @@ void log_pool::flush()
     for (auto&& msg : msgs)
     {
         // Visual Studio
-        if (IsDebuggerPresent())
+        if (xr::is_debugger_present())
             OutputDebugStringA(msg.second.c_str() + msg.first);
 
         // Log file
@@ -308,4 +308,5 @@ void CreateLog(BOOL nl)
     VerifyPath(logFName);
 
     xr::log->open(logFName);
+    Debug.to_log(true);
 }

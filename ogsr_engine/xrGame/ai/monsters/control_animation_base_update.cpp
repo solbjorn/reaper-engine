@@ -85,7 +85,7 @@ void CControlAnimationBase::set_override_animation(pcstr name)
         }
     }
 
-    NODEFAULT;
+    xr::unreachable();
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -143,44 +143,6 @@ void CAI_Stalker::g_fireParams(CHudItem*, Fvector& P, Fvector& D, const bool)
         return;
     }
 
-    /* dsh:
-    switch (movement().body_state())
-    {
-    case eBodyStateStand: {
-        if (movement().movement_type() == eMovementTypeStand)
-        {
-            P = eye_matrix.c;
-            D = eye_matrix.k;
-            if (weapon_shot_effector().IsActive())
-                D = weapon_shot_effector_direction(D);
-            VERIFY(!fis_zero(D.square_magnitude()));
-        }
-        else
-        {
-            D.setHP(-movement().m_head.current.yaw, -movement().m_head.current.pitch);
-            if (weapon_shot_effector().IsActive())
-                D = weapon_shot_effector_direction(D);
-            Center(P);
-            P.mad(D, .5f);
-            P.y += .50f;
-            //				P		= weapon->get_LastFP();
-            //				D		= weapon->get_LastFD();
-            VERIFY(!fis_zero(D.square_magnitude()));
-        }
-        return;
-    }
-    case eBodyStateCrouch: {
-        P = eye_matrix.c;
-        D = eye_matrix.k;
-        if (weapon_shot_effector().IsActive())
-            D = weapon_shot_effector_direction(D);
-        VERIFY(!fis_zero(D.square_magnitude()));
-        return;
-    }
-    default: NODEFAULT;
-    }
-    */
-
 #ifdef DEBUG
     P = weapon->get_LastFP();
     D = weapon->get_LastFD();
@@ -212,8 +174,6 @@ void CAI_Stalker::Hit(SHit* pHDS)
 {
     if (invulnerable())
         return;
-
-    //	pHDS->power						*= .1f;
 
     SHit HDS = *pHDS;
     callback(GameObject::entity_alive_before_hit)(&HDS);
@@ -1206,11 +1166,8 @@ bool CAI_Stalker::can_cry_enemy_is_wounded() const
     case StalkerDecisionSpace::eWorldOperatorKillEnemyIfPlayerOnThePath:
     case StalkerDecisionSpace::eWorldOperatorKillWoundedEnemy:
     case StalkerDecisionSpace::eWorldOperatorCriticallyWounded: return (false);
-    default: NODEFAULT;
+    default: xr::unreachable();
     }
-#ifdef DEBUG
-    return (false);
-#endif // DEBUG
 }
 
 void CAI_Stalker::on_critical_wound_initiator()

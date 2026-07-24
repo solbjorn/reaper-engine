@@ -122,7 +122,7 @@ tmc::task<void> IGame_Persistent::Start(gsl::czstring op)
         UpdateGameType();
     }
 
-    VERIFY(ps_destroy.empty());
+    XR_ASSERT(ps_destroy.size() == 0, "", ps_destroy);
 }
 
 tmc::task<void> IGame_Persistent::Disconnect()
@@ -180,7 +180,7 @@ tmc::task<void> IGame_Persistent::OnFrame()
     // Play req particle systems
     while (!ps_needtoplay.empty())
     {
-        auto& psi = ps_needtoplay.back();
+        auto psi = ps_needtoplay.back();
         ps_needtoplay.pop_back();
         psi->Play();
     }
@@ -188,13 +188,8 @@ tmc::task<void> IGame_Persistent::OnFrame()
     // Destroy inactive particle systems
     while (!ps_destroy.empty())
     {
-        auto& psi = *ps_destroy.begin();
-        R_ASSERT(psi);
-        if (psi->Locked())
-        {
-            Log("--locked");
-            break;
-        }
+        auto psi = *ps_destroy.begin();
+        XR_ASSERT(psi != nullptr && !psi->Locked());
         psi->PSI_internal_delete();
     }
 }
@@ -205,9 +200,8 @@ void IGame_Persistent::destroy_particles(const bool& all_particles)
 
     while (!ps_destroy.empty())
     {
-        auto& psi = *ps_destroy.begin();
-        R_ASSERT(psi);
-        VERIFY(!psi->Locked());
+        auto psi = *ps_destroy.begin();
+        XR_ASSERT(psi != nullptr && !psi->Locked());
         psi->PSI_internal_delete();
     }
 
@@ -216,29 +210,28 @@ void IGame_Persistent::destroy_particles(const bool& all_particles)
     {
         while (!ps_active.empty())
             (*ps_active.begin())->PSI_internal_delete();
+
+        return;
     }
-    else
+
+    size_t processed = 0;
+    auto iter = ps_active.rbegin();
+    while (iter != ps_active.rend())
     {
-        size_t processed = 0;
-        auto iter = ps_active.rbegin();
-        while (iter != ps_active.rend())
+        const auto size = ps_active.size();
+        auto& object = *(iter++);
+
+        if (object->destroy_on_game_load())
+            object->PSI_internal_delete();
+
+        if (size != ps_active.size())
         {
-            const auto size = ps_active.size();
-
-            auto& object = *(iter++);
-
-            if (object->destroy_on_game_load())
-                object->PSI_internal_delete();
-
-            if (size != ps_active.size())
-            {
-                iter = ps_active.rbegin();
-                std::advance(iter, processed);
-            }
-            else
-            {
-                processed++;
-            }
+            iter = ps_active.rbegin();
+            std::advance(iter, processed);
+        }
+        else
+        {
+            processed++;
         }
     }
 }
