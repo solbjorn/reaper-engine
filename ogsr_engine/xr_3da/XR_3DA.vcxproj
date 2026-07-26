@@ -53,11 +53,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>xrEngine</TargetName>
-    <EmbedManifest>false</EmbedManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>xrEngine</TargetName>
-    <EmbedManifest>false</EmbedManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -98,7 +96,6 @@
         copy /Y "$(SolutionDir)\Game\dlls\dbghelp.dll" "$(OutDir)dbghelp.dll"
         copy /Y "$(SolutionDir)\3rd_party\Src\discord_social_sdk\bin\release\discord_partner_sdk.dll" "$(OutDir)\discord_partner_sdk.dll"
         "$(SolutionDir)\3rd_party\Src\system\mimalloc\mimalloc\bin\minject.exe" -i -f "$(OutDir)\xrEngine.exe"
-        copy /Y ".\manifest.xml" "$(OutDir)\xrEngine.exe.manifest"
       </Command>
     </PostBuildEvent>
     <Manifest>
@@ -143,7 +140,6 @@
         copy /Y "$(SolutionDir)\Game\dlls\dbghelp.dll" "$(OutDir)dbghelp.dll"
         copy /Y "$(SolutionDir)\3rd_party\Src\discord_social_sdk\bin\debug\discord_partner_sdk.dll" "$(OutDir)\discord_partner_sdk.dll"
         "$(SolutionDir)\3rd_party\Src\system\mimalloc\mimalloc\bin\minject.exe" -i -f "$(OutDir)\xrEngine.exe"
-        copy /Y ".\manifest.xml" "$(OutDir)\xrEngine.exe.manifest"
       </Command>
     </PostBuildEvent>
     <Manifest>
@@ -358,4 +354,9 @@
       <UserProperties DevPartner_IsInstrumented="1" />
     </VisualStudio>
   </ProjectExtensions>
+  <Target Name="OverrideManifestToolPath" BeforeTargets="Link">
+    <PropertyGroup>
+      <MtExecutable Condition="Exists('$(LLVMInstallDir)\bin\llvm-mt.exe')">$(LLVMInstallDir)\bin\llvm-mt.exe</MtExecutable>
+    </PropertyGroup>
+  </Target>
 </Project>
