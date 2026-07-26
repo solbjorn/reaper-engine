@@ -14,7 +14,7 @@
 
 class CAI_Stalker;
 
-class CEnemyManager : public CObjectManager<const CEntityAlive>
+class CEnemyManager final : public CObjectManager<const CEntityAlive>
 {
     RTTI_DECLARE_TYPEINFO(CEnemyManager, CObjectManager<const CEntityAlive>);
 
@@ -55,9 +55,9 @@ public:
     ~CEnemyManager() override = default;
 
     void reload(gsl::czstring section) override;
-    [[nodiscard]] virtual bool useful(const CEntityAlive* object) const;
+    [[nodiscard]] bool useful(const CEntityAlive* object) const;
     [[nodiscard]] bool is_useful(const CEntityAlive* object) const override;
-    [[nodiscard]] virtual f32 evaluate(const CEntityAlive* object) const;
+    [[nodiscard]] f32 evaluate(const CEntityAlive* object) const;
     [[nodiscard]] f32 do_evaluate(const CEntityAlive* object) const override;
     void update() override;
     [[nodiscard]] u32 last_enemy_time() const;

@@ -2,12 +2,12 @@
 
 #include "control_combase.h"
 
-struct SControlCriticalWoundData : public ControlCom::IComData
+struct SControlCriticalWoundData final : public ControlCom::IComData
 {
     LPCSTR animation;
 };
 
-class CControlCriticalWound : public CControl_ComCustom<SControlCriticalWoundData>
+class CControlCriticalWound final : public CControl_ComCustom<SControlCriticalWoundData>
 {
     RTTI_DECLARE_TYPEINFO(CControlCriticalWound, CControl_ComCustom<SControlCriticalWoundData>);
 

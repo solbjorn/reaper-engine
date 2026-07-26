@@ -11,7 +11,7 @@ class CZoneEffector;
 #define SMALL_OBJECT_RADIUS 0.6f
 
 // информация о объекте, находящемся в зоне
-struct SZoneObjectInfo
+struct SZoneObjectInfo final
 {
     CGameObject* object{};
     // присоединенные партиклы
@@ -372,7 +372,7 @@ protected:
     // звук рождения артефакта
     ref_sound m_ArtefactBornSound;
 
-    struct ARTEFACT_SPAWN
+    struct ARTEFACT_SPAWN final
     {
         shared_str section;
         float probability;

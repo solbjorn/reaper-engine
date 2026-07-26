@@ -4,7 +4,7 @@
 
 struct ip_address;
 
-class INetQueue
+class INetQueue final
 {
     xrCriticalSection cs;
     xr_deque<NET_Packet*> ready;

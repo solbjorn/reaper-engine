@@ -31,7 +31,7 @@ public:
     virtual void Render() {}
 };
 
-class DBG_ScriptSphere : public DBG_ScriptObject
+class DBG_ScriptSphere final : public DBG_ScriptObject
 {
     RTTI_DECLARE_TYPEINFO(DBG_ScriptSphere, DBG_ScriptObject);
 
@@ -47,7 +47,7 @@ public:
 };
 XR_SOL_BASE_CLASSES(DBG_ScriptSphere);
 
-class DBG_ScriptBox : public DBG_ScriptObject
+class DBG_ScriptBox final : public DBG_ScriptObject
 {
     RTTI_DECLARE_TYPEINFO(DBG_ScriptBox, DBG_ScriptObject);
 
@@ -64,7 +64,7 @@ public:
 };
 XR_SOL_BASE_CLASSES(DBG_ScriptBox);
 
-class DBG_ScriptLine : public DBG_ScriptObject
+class DBG_ScriptLine final : public DBG_ScriptObject
 {
     RTTI_DECLARE_TYPEINFO(DBG_ScriptLine, DBG_ScriptObject);
 

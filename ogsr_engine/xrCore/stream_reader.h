@@ -22,7 +22,7 @@ public:
 inline CStreamReader::~CStreamReader() = default;
 
 template <>
-struct std::default_delete<CStreamReader>
+struct std::default_delete<CStreamReader> final
 {
     constexpr void operator()(CStreamReader* ptr) const noexcept { ptr->close(); }
 };

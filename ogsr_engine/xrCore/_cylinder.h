@@ -2,7 +2,7 @@
 #define _CYLINDER_H
 
 template <class T>
-class _cylinder
+class _cylinder final
 {
 public:
     typedef T TYPE;

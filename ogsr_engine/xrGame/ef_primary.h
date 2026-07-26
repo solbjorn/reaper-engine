@@ -10,7 +10,7 @@
 
 #include "ef_base.h"
 
-class CDistanceFunction : public CBaseFunction
+class CDistanceFunction final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CDistanceFunction, CBaseFunction);
 
@@ -61,7 +61,7 @@ public:
     [[nodiscard]] f32 ffGetValue() override;
 };
 
-class CPersonalMoraleFunction : public CBaseFunction
+class CPersonalMoraleFunction final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CPersonalMoraleFunction, CBaseFunction);
 
@@ -123,7 +123,7 @@ public:
     [[nodiscard]] f32 ffGetValue() override;
 };
 
-class CPersonalAccuracyFunction : public CBaseFunction
+class CPersonalAccuracyFunction final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CPersonalAccuracyFunction, CBaseFunction);
 
@@ -143,7 +143,7 @@ public:
     [[nodiscard]] f32 ffGetValue() override;
 };
 
-class CPersonalIntelligenceFunction : public CBaseFunction
+class CPersonalIntelligenceFunction final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CPersonalIntelligenceFunction, CBaseFunction);
 
@@ -163,7 +163,7 @@ public:
     [[nodiscard]] f32 ffGetValue() override;
 };
 
-class CPersonalRelationFunction : public CBaseFunction
+class CPersonalRelationFunction final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CPersonalRelationFunction, CBaseFunction);
 
@@ -183,7 +183,7 @@ public:
     [[nodiscard]] f32 ffGetValue() override;
 };
 
-class CPersonalGreedFunction : public CBaseFunction
+class CPersonalGreedFunction final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CPersonalGreedFunction, CBaseFunction);
 
@@ -203,7 +203,7 @@ public:
     [[nodiscard]] f32 ffGetValue() override;
 };
 
-class CPersonalAggressivenessFunction : public CBaseFunction
+class CPersonalAggressivenessFunction final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CPersonalAggressivenessFunction, CBaseFunction);
 
@@ -223,7 +223,7 @@ public:
     [[nodiscard]] f32 ffGetValue() override;
 };
 
-class CEnemyMoraleFunction : public CBaseFunction
+class CEnemyMoraleFunction final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CEnemyMoraleFunction, CBaseFunction);
 
@@ -243,7 +243,7 @@ public:
     [[nodiscard]] f32 ffGetValue() override;
 };
 
-class CEnemyEquipmentCostFunction : public CBaseFunction
+class CEnemyEquipmentCostFunction final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CEnemyEquipmentCostFunction, CBaseFunction);
 
@@ -263,7 +263,7 @@ public:
     [[nodiscard]] f32 ffGetValue() override;
 };
 
-class CEnemyRukzakWeightFunction : public CBaseFunction
+class CEnemyRukzakWeightFunction final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CEnemyRukzakWeightFunction, CBaseFunction);
 
@@ -283,7 +283,7 @@ public:
     [[nodiscard]] f32 ffGetValue() override;
 };
 
-class CEnemyAnomalityFunction : public CBaseFunction
+class CEnemyAnomalityFunction final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CEnemyAnomalityFunction, CBaseFunction);
 
@@ -303,7 +303,7 @@ public:
     [[nodiscard]] f32 ffGetValue() override;
 };
 
-class CGraphPointType0 : public CBaseFunction
+class CGraphPointType0 final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CGraphPointType0, CBaseFunction);
 
@@ -364,7 +364,7 @@ public:
     [[nodiscard]] u32 dwfGetDiscreteValue(u32 dwDiscretizationValue = 1) override;
 };
 
-class CEquipmentType : public CBaseFunction
+class CEquipmentType final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CEquipmentType, CBaseFunction);
 
@@ -384,7 +384,7 @@ public:
     [[nodiscard]] f32 ffGetValue() override;
 };
 
-class CItemDeterioration : public CBaseFunction
+class CItemDeterioration final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CItemDeterioration, CBaseFunction);
 
@@ -404,7 +404,7 @@ public:
     [[nodiscard]] f32 ffGetValue() override;
 };
 
-class CEquipmentPreference : public CBaseFunction
+class CEquipmentPreference final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CEquipmentPreference, CBaseFunction);
 
@@ -424,7 +424,7 @@ public:
     [[nodiscard]] f32 ffGetValue() override;
 };
 
-class CMainWeaponType : public CBaseFunction
+class CMainWeaponType final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CMainWeaponType, CBaseFunction);
 
@@ -444,7 +444,7 @@ public:
     [[nodiscard]] f32 ffGetValue() override;
 };
 
-class CMainWeaponPreference : public CBaseFunction
+class CMainWeaponPreference final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CMainWeaponPreference, CBaseFunction);
 
@@ -464,7 +464,7 @@ public:
     [[nodiscard]] f32 ffGetValue() override;
 };
 
-class CItemValue : public CBaseFunction
+class CItemValue final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CItemValue, CBaseFunction);
 
@@ -484,7 +484,7 @@ public:
     [[nodiscard]] f32 ffGetValue() override;
 };
 
-class CWeaponAmmoCount : public CBaseFunction
+class CWeaponAmmoCount final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CWeaponAmmoCount, CBaseFunction);
 
@@ -505,7 +505,7 @@ public:
     [[nodiscard]] u32 dwfGetDiscreteValue(u32 dwDiscretizationValue = 1) override;
 };
 
-class CEnemyAnomalyType : public CBaseFunction
+class CEnemyAnomalyType final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CEnemyAnomalyType, CBaseFunction);
 
@@ -525,7 +525,7 @@ public:
     [[nodiscard]] f32 ffGetValue() override;
 };
 
-class CDetectorType : public CBaseFunction
+class CDetectorType final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CDetectorType, CBaseFunction);
 
@@ -545,7 +545,7 @@ public:
     [[nodiscard]] f32 ffGetValue() override;
 };
 
-class CEnemyDistanceToGraphPoint : public CBaseFunction
+class CEnemyDistanceToGraphPoint final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CEnemyDistanceToGraphPoint, CBaseFunction);
 

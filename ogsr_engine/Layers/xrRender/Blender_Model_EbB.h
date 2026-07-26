@@ -5,7 +5,7 @@
 #ifndef AFX_BLENDERDEFAULT_H__C12F64EE_43E7_4483_9AC3_29272E0401E7__INCLUDED_21
 #define AFX_BLENDERDEFAULT_H__C12F64EE_43E7_4483_9AC3_29272E0401E7__INCLUDED_21
 
-class CBlender_Model_EbB : public IBlenderXr
+class CBlender_Model_EbB final : public IBlenderXr
 {
     RTTI_DECLARE_TYPEINFO(CBlender_Model_EbB, IBlenderXr);
 

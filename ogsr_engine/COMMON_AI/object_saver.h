@@ -14,17 +14,17 @@
 namespace object_saver
 {
 template <typename T, typename M>
-struct default_save
+struct default_save final
 {
     void operator()(const T& data, M& stream) const { stream.w(&data, sizeof(T)); }
 };
 } // namespace object_saver
 
 template <class M, typename P>
-struct CSaver
+struct CSaver final
 {
     template <typename T>
-    struct CHelper1
+    struct CHelper1 final
     {
         template <bool a>
         IC static void save_data(std::enable_if_t<!a, const T&> data, M& stream, const P& /*p*/)
@@ -42,7 +42,7 @@ struct CSaver
     };
 
     template <typename T>
-    struct CHelper
+    struct CHelper final
     {
         template <bool pointer>
         IC static void save_data(std::enable_if_t<!pointer, const T&> data, M& stream, const P& p)
@@ -57,7 +57,7 @@ struct CSaver
         }
     };
 
-    struct CHelper3
+    struct CHelper3 final
     {
         template <typename T>
         IC static void save_data(const T& data, M& stream, const P& p)
@@ -72,7 +72,7 @@ struct CSaver
     };
 
     template <typename T>
-    struct CHelper4
+    struct CHelper4 final
     {
         template <bool a>
         IC static void save_data(std::enable_if_t<!a, const T&> data, M& stream, const P& p)
@@ -175,7 +175,7 @@ namespace object_saver
 {
 namespace detail
 {
-struct CEmptyPredicate
+struct CEmptyPredicate final
 {
     template <typename T1, typename T2>
     constexpr bool operator()(const T1&, const T2&) const

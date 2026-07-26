@@ -27,7 +27,7 @@
 [[nodiscard]] constexpr u32 bgr2rgb(u32 bgr) noexcept { return color_rgba(color_get_B(bgr), color_get_G(bgr), color_get_R(bgr), 0); }
 [[nodiscard]] constexpr u32 rgb2bgr(u32 rgb) noexcept { return bgr2rgb(rgb); }
 
-struct XR_TRIVIAL Fcolor
+struct XR_TRIVIAL Fcolor final
 {
     union
     {

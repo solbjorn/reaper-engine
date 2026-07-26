@@ -5,7 +5,7 @@
 
 class CCustomMonster;
 
-class CAnomalyDetector : public Feel::Touch
+class CAnomalyDetector final : public Feel::Touch
 {
     RTTI_DECLARE_TYPEINFO(CAnomalyDetector, Feel::Touch);
 
@@ -21,14 +21,15 @@ public:
 
 private:
     xr_vector<CLASS_ID> m_ignore_clsids;
-    struct SAnomalyInfo
+
+    struct SAnomalyInfo final
     {
         u16 id;
         bool ignored;
         u32 time_registered;
     };
 
-    struct remove_predicate
+    struct remove_predicate final
     {
         u32 time_remember;
         remove_predicate(u32 time) : time_remember(time) {}

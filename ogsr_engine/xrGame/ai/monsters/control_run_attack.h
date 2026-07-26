@@ -2,7 +2,7 @@
 
 #include "control_combase.h"
 
-class CControlRunAttack : public CControl_ComCustom<>
+class CControlRunAttack final : public CControl_ComCustom<>
 {
     RTTI_DECLARE_TYPEINFO(CControlRunAttack, CControl_ComCustom<>);
 

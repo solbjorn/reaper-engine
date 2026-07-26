@@ -13,7 +13,7 @@
 
 class CScriptGameObject;
 
-class CScriptSound : public virtual RTTI::Enable
+class CScriptSound final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CScriptSound);
 

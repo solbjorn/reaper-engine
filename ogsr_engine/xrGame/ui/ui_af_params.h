@@ -5,7 +5,7 @@
 class CUIXml;
 class CUIStatic;
 
-class CUIArtefactParams : public CUIWindow
+class CUIArtefactParams final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIArtefactParams, CUIWindow);
 

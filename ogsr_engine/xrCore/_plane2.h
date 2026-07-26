@@ -1,7 +1,7 @@
 #pragma once
 
 template <class T>
-class _plane2
+class _plane2 final
 {
 public:
     typedef T TYPE;

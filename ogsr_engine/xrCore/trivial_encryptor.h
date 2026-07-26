@@ -1,6 +1,6 @@
 #pragma once
 
-class trivial_encryptor
+class trivial_encryptor final
 {
     using type = u8;
 
@@ -14,7 +14,7 @@ public:
     };
 
 private:
-    struct key
+    struct key final
     {
         u32 m_table_iterations;
         u32 m_table_seed;

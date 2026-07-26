@@ -7,7 +7,7 @@ class IPhysicsShell;
 class IPhysicsElement;
 class IPhysicsGeometry;
 
-class dx103DFluidObstacles
+class dx103DFluidObstacles final
 {
 public:
     dx103DFluidObstacles(int gridWidth, int gridHeight, int gridDepth, dx103DFluidGrid* pGrid);

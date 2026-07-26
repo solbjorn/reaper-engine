@@ -13,7 +13,7 @@
 
 class CSpaceRestrictor;
 
-class CSpaceRestrictionShape : public CSpaceRestrictionBase
+class CSpaceRestrictionShape final : public CSpaceRestrictionBase
 {
     RTTI_DECLARE_TYPEINFO(CSpaceRestrictionShape, CSpaceRestrictionBase);
 

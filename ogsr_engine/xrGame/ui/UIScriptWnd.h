@@ -3,12 +3,12 @@
 #include "../script_export_space.h"
 #include "UIDialogWnd.h"
 
-class CUIDialogWndEx : public CUIDialogWnd, public DLL_Pure
+class CUIDialogWndEx final : public CUIDialogWnd, public DLL_Pure
 {
     RTTI_DECLARE_TYPEINFO(CUIDialogWndEx, CUIDialogWnd, DLL_Pure);
 
 public:
-    struct callback
+    struct callback final
     {
         sol::function fn;
         shared_str m_controlName;

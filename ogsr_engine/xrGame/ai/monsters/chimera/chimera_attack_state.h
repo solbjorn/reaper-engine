@@ -2,7 +2,7 @@
 #define CHIMERA_ATTACK_STATE_H_INCLUDED
 
 template <typename Object>
-class ChimeraAttackState : public CState<Object>
+class ChimeraAttackState final : public CState<Object>
 {
     RTTI_DECLARE_TYPEINFO(ChimeraAttackState<Object>, CState<Object>);
 

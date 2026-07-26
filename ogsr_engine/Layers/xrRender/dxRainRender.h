@@ -2,7 +2,7 @@
 
 #include "../../Include/xrRender/RainRender.h"
 
-class dxRainRender : public IRainRender
+class dxRainRender final : public IRainRender
 {
     RTTI_DECLARE_TYPEINFO(dxRainRender, IRainRender);
 

@@ -2,7 +2,7 @@
 
 #include "control_combase.h"
 
-struct SControlDirectionData : public ControlCom::IComData
+struct SControlDirectionData final : public ControlCom::IComData
 {
     struct
     {
@@ -13,7 +13,7 @@ struct SControlDirectionData : public ControlCom::IComData
     bool linear_dependency;
 };
 
-struct SRotationEventData : public ControlCom::IEventData
+struct SRotationEventData final : public ControlCom::IEventData
 {
     enum RotType
     {
@@ -23,7 +23,7 @@ struct SRotationEventData : public ControlCom::IEventData
     u8 angle;
 };
 
-class CControlDirection : public CControl_ComPure<SControlDirectionData>
+class CControlDirection final : public CControl_ComPure<SControlDirectionData>
 {
     RTTI_DECLARE_TYPEINFO(CControlDirection, CControl_ComPure<SControlDirectionData>);
 

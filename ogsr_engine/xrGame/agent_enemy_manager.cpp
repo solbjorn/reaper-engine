@@ -32,7 +32,7 @@ constexpr f32 wounded_enemy_reached_distance{3.0f};
 
 XR_FUNCTION_ALIAS(population, std::popcount);
 
-struct CEnemyFiller
+struct CEnemyFiller final
 {
     typedef CAgentEnemyManager::ENEMIES ENEMIES;
     ENEMIES* m_enemies;
@@ -57,7 +57,7 @@ struct CEnemyFiller
     }
 };
 
-struct remove_wounded_predicate
+struct remove_wounded_predicate final
 {
     IC bool operator()(const CMemberEnemy& enemy) const
     {
@@ -578,7 +578,7 @@ void CAgentEnemyManager::distribute_enemies()
     assign_enemy_masks();
 }
 
-struct wounded_predicate
+struct wounded_predicate final
 {
     CObject* m_object;
 
@@ -620,7 +620,7 @@ ALife::_OBJECT_ID CAgentEnemyManager::wounded_processor(const CEntityAlive* obje
     return (ALife::_OBJECT_ID(-1));
 }
 
-class find_wounded_predicate
+class find_wounded_predicate final
 {
 private:
     const CEntityAlive* m_object;

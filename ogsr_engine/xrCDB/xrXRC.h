@@ -12,7 +12,7 @@ extern CStatTimer* cdb_clBOX; // total: box query
 extern CStatTimer* cdb_clFRUSTUM; // total: frustum query
 #endif
 
-class xrXRC
+class xrXRC final
 {
     CDB::COLLIDER CL;
 

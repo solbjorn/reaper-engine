@@ -3,7 +3,7 @@
 #include "WeaponMagazinedWGrenade.h"
 #include "script_export_space.h"
 
-class CWeaponGroza : public CWeaponMagazinedWGrenade
+class CWeaponGroza final : public CWeaponMagazinedWGrenade
 {
     RTTI_DECLARE_TYPEINFO(CWeaponGroza, CWeaponMagazinedWGrenade);
 

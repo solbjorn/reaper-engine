@@ -3,7 +3,7 @@
 
 class CBackend;
 
-class dx10StateManager
+class dx10StateManager final
 {
 public:
     dx10StateManager()

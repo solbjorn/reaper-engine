@@ -12,7 +12,7 @@
 #include "script_export_space.h"
 #include "ai_monster_space.h"
 
-class CScriptAnimationAction : public CScriptAbstractAction
+class CScriptAnimationAction final : public CScriptAbstractAction
 {
     RTTI_DECLARE_TYPEINFO(CScriptAnimationAction, CScriptAbstractAction);
 

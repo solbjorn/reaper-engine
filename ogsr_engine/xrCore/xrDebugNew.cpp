@@ -188,7 +188,7 @@ void invalid_parameter_handler(gsl::cwzstring expr, gsl::cwzstring fn, gsl::cwzs
 // If the code matches, redirect it to the Lua panic handler, which will
 // print the error off the Lua stack, then eventually the stack trace and
 // the locals if accessible.
-class lua_panic_handler
+class lua_panic_handler final
 {
 private:
     static constexpr unsigned long lua_exception_base{0xe24c4a00};

@@ -2,7 +2,7 @@
 
 #include "UIDragDropListEx.h"
 
-class CUIOutfitDragDropList : public CUIDragDropListEx
+class CUIOutfitDragDropList final : public CUIDragDropListEx
 {
     RTTI_DECLARE_TYPEINFO(CUIOutfitDragDropList, CUIDragDropListEx);
 

@@ -2,7 +2,7 @@
 
 #include "alife_space.h"
 
-class xrTime
+class xrTime final
 {
     ALife::_TIME_ID m_time{};
 

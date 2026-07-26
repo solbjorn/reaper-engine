@@ -8,7 +8,7 @@ constexpr inline s32 P_MAXINT{std::numeric_limits<s32>::max()};
 
 namespace PAPI
 {
-class pVector : public Fvector
+class pVector final : public Fvector
 {
 public:
     constexpr pVector() = default;
@@ -84,12 +84,12 @@ public:
 };
 
 // A single particle
-struct Rotation
+struct Rotation final
 {
     f32 x;
 };
 
-struct Particle
+struct Particle final
 {
     enum
     {

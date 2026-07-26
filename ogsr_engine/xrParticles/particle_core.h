@@ -7,7 +7,7 @@
 
 namespace PAPI
 {
-struct pDomain
+struct pDomain final
 {
     PDomainEnum type{}; // PABoxDomain, PASphereDomain, PAConeDomain...
     pVector p1, p2; // Box vertices, Sphere center, Cylinder/Cone ends
@@ -28,8 +28,8 @@ struct pDomain
     constexpr pDomain() = default;
 
     // Construct a domain in the standard way.
-    explicit pDomain(PDomainEnum dtype, float a0 = 0.0f, float a1 = 0.0f, float a2 = 0.0f, float a3 = 0.0f, float a4 = 0.0f, float a5 = 0.0f, float a6 = 0.0f, float a7 = 0.0f,
-                     float a8 = 0.0f);
+    explicit pDomain(PDomainEnum dtype, float a0 = 0.0f, float a1 = 0.0f, float a2 = 0.0f, float a3 = 0.0f, float a4 = 0.0f, float a5 = 0.0f, float a6 = 0.0f,
+                     float a7 = 0.0f, float a8 = 0.0f);
 };
 
 // misc

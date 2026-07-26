@@ -19,7 +19,7 @@ public:
 
 inline R_feedback::~R_feedback() = default;
 
-struct R_dsgraph_structure
+struct R_dsgraph_structure final
 {
     R_feedback* val_feedback{}; // feedback for geometry being rendered
     u32 val_feedback_breakp{}; // breakpoint

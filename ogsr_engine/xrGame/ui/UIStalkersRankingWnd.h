@@ -11,7 +11,7 @@ class CUIScrollView;
 class CUIXml;
 class CSE_ALifeTraderAbstract;
 
-class CUIStalkersRankingWnd : public CUIWindow
+class CUIStalkersRankingWnd final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIStalkersRankingWnd, CUIWindow);
 
@@ -66,7 +66,7 @@ public:
     [[nodiscard]] bool OnMouseDown(sf::Mouse::Button mouse_btn) override;
 };
 
-class CUIStalkerRankingElipsisItem : public CUIStalkerRankingInfoItem
+class CUIStalkerRankingElipsisItem final : public CUIStalkerRankingInfoItem
 {
     RTTI_DECLARE_TYPEINFO(CUIStalkerRankingElipsisItem, CUIStalkerRankingInfoItem);
 

@@ -4,7 +4,7 @@
 
 class CScriptGameObject;
 
-class CScriptMonsterHitInfo
+class CScriptMonsterHitInfo final
 {
 public:
     CScriptGameObject* who{};

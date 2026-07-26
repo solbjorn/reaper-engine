@@ -3,7 +3,7 @@
 #include "WeaponCustomPistol.h"
 #include "script_export_space.h"
 
-class CWeaponKnife : public CWeapon
+class CWeaponKnife final : public CWeapon
 {
     RTTI_DECLARE_TYPEINFO(CWeaponKnife, CWeapon);
 
@@ -20,10 +20,10 @@ protected:
     bool HeadLampSwitch{}, NightVisionSwitch{};
 
 protected:
-    virtual void switch2_Idle();
-    virtual void switch2_Hiding();
-    virtual void switch2_Hidden();
-    virtual void switch2_Showing();
+    void switch2_Idle();
+    void switch2_Hiding();
+    void switch2_Hidden();
+    void switch2_Showing();
     void switch2_Attacking(u32 state);
 
     void OnMotionMark(u32 state, const motion_marks& M) override;
@@ -35,8 +35,7 @@ protected:
     void PlayAnimDeviceSwitch() override;
 
     void state_Attacking(float dt);
-
-    virtual void KnifeStrike(u32 state, const Fvector& pos, const Fvector& dir);
+    void KnifeStrike(u32 state, const Fvector& pos, const Fvector& dir);
 
     float fWallmarkSize;
     u16 knife_material_idx;

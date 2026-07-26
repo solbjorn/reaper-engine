@@ -23,7 +23,7 @@ constexpr inline gsl::index SHADER_ELEMENTS_MAX{6};
 
 //////////////////////////////////////////////////////////////////////////
 
-struct STextureList : public xr_resource_flagged, public xr_vector<std::pair<u32, ref_texture>>
+struct STextureList final : public xr_resource_flagged, public xr_vector<std::pair<u32, ref_texture>>
 {
     RTTI_DECLARE_TYPEINFO(STextureList, xr_resource_flagged);
 
@@ -63,7 +63,7 @@ typedef resptr_core<STextureList, resptr_base<STextureList>> ref_texture_list;
 
 //////////////////////////////////////////////////////////////////////////
 
-struct SGeometry : public xr_resource_flagged
+struct SGeometry final : public xr_resource_flagged
 {
     RTTI_DECLARE_TYPEINFO(SGeometry, xr_resource_flagged);
 
@@ -119,7 +119,7 @@ struct ShaderElement : public xr_resource_flagged
     RTTI_DECLARE_TYPEINFO(ShaderElement, xr_resource_flagged);
 
 public:
-    struct Sflags
+    struct Sflags final
     {
         u32 iPriority : 2;
         u32 bStrictB2F : 1;
@@ -153,7 +153,7 @@ using ref_selement = resptr_core<ShaderElement, resptr_base<ShaderElement>>;
 
 //////////////////////////////////////////////////////////////////////////
 
-struct Shader : public xr_resource_flagged
+struct Shader final : public xr_resource_flagged
 {
     RTTI_DECLARE_TYPEINFO(Shader, xr_resource_flagged);
 

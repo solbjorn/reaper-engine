@@ -34,7 +34,8 @@ envelope.h
 #define BEH_LINEAR 5
 
 #pragma pack(push, 1)
-struct st_Key
+
+struct st_Key final
 {
     enum
     {
@@ -115,6 +116,7 @@ struct st_Key
         }
     }
 };
+
 #pragma pack(pop)
 
 DEFINE_VECTOR(st_Key*, KeyVec, KeyIt);
@@ -122,7 +124,7 @@ DEFINE_VECTOR(st_Key*, KeyVec, KeyIt);
 // refs
 class CExporter;
 
-class CEnvelope
+class CEnvelope final
 {
 public:
     KeyVec keys;

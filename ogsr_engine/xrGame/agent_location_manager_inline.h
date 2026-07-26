@@ -8,7 +8,7 @@
 
 #pragma once
 
-struct CRemoveDangerObject
+struct CRemoveDangerObject final
 {
     const CObject* m_object;
 

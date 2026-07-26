@@ -7,7 +7,7 @@
 
 class CPHJointDestroyInfo;
 
-class CPHJoint : public CPhysicsJoint
+class CPHJoint final : public CPhysicsJoint
 {
     RTTI_DECLARE_TYPEINFO(CPHJoint, CPhysicsJoint);
 
@@ -26,7 +26,7 @@ public:
     float m_erp; // joint erp
     float m_cfm; // joint cfm
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    struct SPHAxis
+    struct SPHAxis final
     {
         float high; // high limit
         float low; // law limit
@@ -71,19 +71,21 @@ public:
     [[nodiscard]] u16 GetAxesNumber() override;
     void SetAxisSDfactors(f32 spring_factor, f32 damping_factor, s32 axis_num) override;
     void SetJointSDfactors(f32 spring_factor, f32 damping_factor) override;
-    virtual void SetJointSDfactorsActive();
-    virtual void SetLimitsSDfactorsActive();
-    virtual void SetAxisSDfactorsActive(int axis_num);
-    virtual void SetAxis(const SPHAxis& axis, const int axis_num);
+    void SetJointSDfactorsActive();
+    void SetLimitsSDfactorsActive();
+    void SetAxisSDfactorsActive(int axis_num);
+    void SetAxis(const SPHAxis& axis, const int axis_num);
     void SetAnchor(const Fvector& position) override { SetAnchor(position.x, position.y, position.z); }
     void SetAnchorVsFirstElement(const Fvector& position) override { SetAnchorVsFirstElement(position.x, position.y, position.z); }
     void SetAnchorVsSecondElement(const Fvector& position) override { SetAnchorVsSecondElement(position.x, position.y, position.z); }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void SetAxisDir(const Fvector& orientation, const s32 axis_num) override { SetAxisDir(orientation.x, orientation.y, orientation.z, axis_num); }
+
     void SetAxisDirVsFirstElement(const Fvector& orientation, const s32 axis_num) override
     {
         SetAxisDirVsFirstElement(orientation.x, orientation.y, orientation.z, axis_num);
     }
+
     void SetAxisDirVsSecondElement(const Fvector& orientation, const s32 axis_num) override
     {
         SetAxisDirVsSecondElement(orientation.x, orientation.y, orientation.z, axis_num);
@@ -111,12 +113,12 @@ public:
     void RunSimulation() override;
     void SetBackRef(CPhysicsJoint** j) override;
     void SetForceAndVelocity(const f32 force, const f32 velocity = 0.0f, const s32 axis_num = -1) override;
-    virtual void SetForce(const float force, const int axis_num = -1);
-    virtual void SetVelocity(const float velocity = 0.f, const int axis_num = -1);
+    void SetForce(const float force, const int axis_num = -1);
+    void SetVelocity(const float velocity = 0.f, const int axis_num = -1);
     void SetBreakable(f32 force, f32 torque) override;
     [[nodiscard]] bool isBreakable() override { return !!m_destroy_info; }
     [[nodiscard]] dJointID GetDJoint() override { return m_joint; }
-    virtual dJointID GetDJoint1() { return m_joint1; }
+    [[nodiscard]] dJointID GetDJoint1() { return m_joint1; }
     void GetLimits(f32& lo_limit, f32& hi_limit, s32 axis_num) override;
     void GetAxisDir(s32 num, Fvector& axis, eVs& vs) override;
     void GetAxisDirDynamic(s32 num, Fvector& axis) override;

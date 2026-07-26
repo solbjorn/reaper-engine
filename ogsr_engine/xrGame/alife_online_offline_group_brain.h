@@ -10,7 +10,7 @@
 
 class CSE_ALifeOnlineOfflineGroup;
 
-class CALifeOnlineOfflineGroupBrain
+class CALifeOnlineOfflineGroupBrain final
 {
 private:
     CSE_ALifeOnlineOfflineGroup* m_object;

@@ -7,7 +7,7 @@
 
 #define DO_NO_WAVING 0x0001
 
-struct DetailHeader
+struct DetailHeader final
 {
     u32 version;
     u32 object_count;
@@ -16,7 +16,7 @@ struct DetailHeader
 };
 static_assert(sizeof(DetailHeader) == 24);
 
-struct DetailPalette
+struct DetailPalette final
 {
     u16 a0 : 4;
     u16 a1 : 4;

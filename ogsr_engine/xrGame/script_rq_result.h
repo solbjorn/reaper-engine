@@ -2,7 +2,7 @@
 
 #include "script_export_space.h"
 
-class script_rq_result
+class script_rq_result final
 {
     CScriptGameObject* object{};
     SGameMtl* mtl{};

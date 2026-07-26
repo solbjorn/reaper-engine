@@ -3,7 +3,7 @@
 #include "../state.h"
 
 template <typename _Object>
-class CStateControllerTube : public CState<_Object>
+class CStateControllerTube final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateControllerTube<_Object>, CState<_Object>);
 

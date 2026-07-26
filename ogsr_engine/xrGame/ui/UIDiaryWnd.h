@@ -16,7 +16,7 @@ class CUIListWnd;
 class CEncyclopediaArticle;
 // class CUIVideoPlayerWnd;
 
-class CUIDiaryWnd : public CUIWindow, public CUIWndCallback
+class CUIDiaryWnd final : public CUIWindow, public CUIWndCallback
 {
     RTTI_DECLARE_TYPEINFO(CUIDiaryWnd, CUIWindow, CUIWndCallback);
 

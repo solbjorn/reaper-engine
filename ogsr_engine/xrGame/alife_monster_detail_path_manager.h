@@ -15,7 +15,7 @@
 class CSE_ALifeMonsterAbstract;
 class CALifeSmartTerrainTask;
 
-class CALifeMonsterDetailPathManager
+class CALifeMonsterDetailPathManager final
 {
 public:
     typedef CSE_ALifeMonsterAbstract object_type;

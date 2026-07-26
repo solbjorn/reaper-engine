@@ -3,7 +3,7 @@
 
 #include "../../Include/xrRender/RenderFactory.h"
 
-class dxRenderFactory : public IRenderFactory
+class dxRenderFactory final : public IRenderFactory
 {
     RTTI_DECLARE_TYPEINFO(dxRenderFactory, IRenderFactory);
 

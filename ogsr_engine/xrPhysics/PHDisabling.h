@@ -4,7 +4,7 @@
 #include "DisablingParams.h"
 #include "ode_include.h"
 
-struct SDisableVector
+struct SDisableVector final
 {
     Fvector sum;
     Fvector previous;
@@ -17,7 +17,7 @@ struct SDisableVector
     SDisableVector();
 };
 
-struct SDisableUpdateState
+struct SDisableUpdateState final
 {
     bool disable;
     bool enable;
@@ -61,12 +61,12 @@ protected:
 
 inline CBaseDisableData::~CBaseDisableData() = default;
 
-class CPHDisablingBase : public virtual CBaseDisableData
+class XR_NOVTABLE CPHDisablingBase : public virtual CBaseDisableData
 {
     RTTI_DECLARE_TYPEINFO(CPHDisablingBase, CBaseDisableData);
 
 public:
-    ~CPHDisablingBase() override = default;
+    ~CPHDisablingBase() override = 0;
 
     void UpdateValues(const Fvector& new_pos, const Fvector& new_vel);
     void UpdateL2() override;
@@ -88,43 +88,51 @@ protected:
     SOneDDOParams m_params;
 };
 
-class CPHDisablingRotational : public CPHDisablingBase
+inline CPHDisablingBase::~CPHDisablingBase() = default;
+
+class XR_NOVTABLE CPHDisablingRotational : public CPHDisablingBase
 {
     RTTI_DECLARE_TYPEINFO(CPHDisablingRotational, CPHDisablingBase);
 
 public:
     CPHDisablingRotational();
-    ~CPHDisablingRotational() override = default;
+    ~CPHDisablingRotational() override = 0;
 
     void Reinit();
     void UpdateL1() override;
     virtual void set_DisableParams(const SAllDDOParams& params);
 };
 
-class CPHDisablingTranslational : public CPHDisablingBase
+inline CPHDisablingRotational::~CPHDisablingRotational() = default;
+
+class XR_NOVTABLE CPHDisablingTranslational : public CPHDisablingBase
 {
     RTTI_DECLARE_TYPEINFO(CPHDisablingTranslational, CPHDisablingBase);
 
 public:
     CPHDisablingTranslational();
-    ~CPHDisablingTranslational() override = default;
+    ~CPHDisablingTranslational() override = 0;
 
     void Reinit();
     void UpdateL1() override;
     virtual void set_DisableParams(const SAllDDOParams& params);
 };
 
-class CPHDisablingFull : public CPHDisablingTranslational, public CPHDisablingRotational
+inline CPHDisablingTranslational::~CPHDisablingTranslational() = default;
+
+class XR_NOVTABLE CPHDisablingFull : public CPHDisablingTranslational, public CPHDisablingRotational
 {
     RTTI_DECLARE_TYPEINFO(CPHDisablingFull, CPHDisablingTranslational, CPHDisablingRotational);
 
 public:
-    ~CPHDisablingFull() override = default;
+    ~CPHDisablingFull() override = 0;
 
     void Reinit();
     void UpdateL1() override;
     void UpdateL2() override;
     void set_DisableParams(const SAllDDOParams& params) override;
 };
+
+inline CPHDisablingFull::~CPHDisablingFull() = default;
 
 #endif

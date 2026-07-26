@@ -12,7 +12,7 @@ class CUIStatic;
 class CUIWindow;
 class CUIXml;
 
-struct SDrawStaticStruct
+struct SDrawStaticStruct final
 {
     SDrawStaticStruct();
     void destroy();
@@ -29,7 +29,7 @@ struct SDrawStaticStruct
 };
 
 template <>
-struct object_destroyer::default_destroy<SDrawStaticStruct>
+struct object_destroyer::default_destroy<SDrawStaticStruct> final
 {
     void operator()(SDrawStaticStruct& data) const { data.destroy(); }
 };

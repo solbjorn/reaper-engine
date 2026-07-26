@@ -3,7 +3,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-struct CEventTAPrepareAnimation : public IEventData
+struct CEventTAPrepareAnimation final : public IEventData
 {
     u32 m_current_state;
 
@@ -12,7 +12,7 @@ struct CEventTAPrepareAnimation : public IEventData
 
 //////////////////////////////////////////////////////////////////////////
 
-struct CEventVelocityBounce : public IEventData
+struct CEventVelocityBounce final : public IEventData
 {
     float m_ratio;
 

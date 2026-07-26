@@ -10,7 +10,7 @@ namespace xxh
 }
 
 template <>
-struct std::default_delete<str_value>
+struct std::default_delete<str_value> final
 {
     constexpr void operator()(str_value* ptr) const noexcept { xr_free(ptr); }
 };
@@ -19,7 +19,7 @@ namespace xr
 {
 namespace
 {
-class str_container_impl
+class str_container_impl final
 {
 private:
     using val_t = std::unique_ptr<str_value>;

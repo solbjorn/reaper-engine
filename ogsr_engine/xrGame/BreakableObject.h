@@ -11,7 +11,7 @@ class CPHStaticGeomShell;
 struct dContact;
 struct SGameMtl;
 
-class CBreakableObject : public CPhysicsShellHolder
+class CBreakableObject final : public CPhysicsShellHolder
 {
     RTTI_DECLARE_TYPEINFO(CBreakableObject, CPhysicsShellHolder);
 

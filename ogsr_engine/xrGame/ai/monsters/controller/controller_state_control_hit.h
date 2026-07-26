@@ -1,7 +1,7 @@
 #pragma once
 
 template <typename _Object>
-class CStateControlAttack : public CState<_Object>
+class CStateControlAttack final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateControlAttack<_Object>, CState<_Object>);
 

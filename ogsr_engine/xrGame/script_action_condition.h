@@ -11,7 +11,7 @@
 #include "script_export_space.h"
 #include "alife_space.h"
 
-class CScriptActionCondition : public virtual RTTI::Enable
+class CScriptActionCondition final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CScriptActionCondition);
 

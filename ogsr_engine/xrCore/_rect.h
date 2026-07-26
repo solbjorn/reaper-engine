@@ -1,7 +1,7 @@
 #pragma once
 
 template <typename T>
-struct XR_TRIVIAL _rect
+struct XR_TRIVIAL _rect final
 {
 public:
     typedef T TYPE;

@@ -10,7 +10,7 @@
 class CPhraseDialog;
 class CGameObject;
 
-class CPhrase : public virtual RTTI::Enable
+class CPhrase final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CPhrase);
 

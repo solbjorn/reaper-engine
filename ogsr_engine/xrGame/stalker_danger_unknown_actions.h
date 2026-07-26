@@ -14,7 +14,7 @@
 // CStalkerActionDangerUnknownTakeCover
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDangerUnknownTakeCover : public CStalkerActionCombatBase
+class CStalkerActionDangerUnknownTakeCover final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDangerUnknownTakeCover, CStalkerActionCombatBase);
 
@@ -37,7 +37,7 @@ public:
 // CStalkerActionDangerUnknownLookAround
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDangerUnknownLookAround : public CStalkerActionCombatBase
+class CStalkerActionDangerUnknownLookAround final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDangerUnknownLookAround, CStalkerActionCombatBase);
 
@@ -57,7 +57,7 @@ public:
 // CStalkerActionDangerUnknownSearch
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDangerUnknownSearch : public CStalkerActionCombatBase
+class CStalkerActionDangerUnknownSearch final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDangerUnknownSearch, CStalkerActionCombatBase);
 

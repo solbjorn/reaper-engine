@@ -65,7 +65,7 @@ template <class T>
 bool CSingleton<T>::_on_self_delete{true};
 
 template <class SHARED_TYPE, class KEY_TYPE>
-class CSharedObj : public CSingleton<CSharedObj<SHARED_TYPE, KEY_TYPE>>
+class CSharedObj final : public CSingleton<CSharedObj<SHARED_TYPE, KEY_TYPE>>
 {
     RTTI_DECLARE_TYPEINFO(CSharedObj<SHARED_TYPE, KEY_TYPE>, CSingleton<CSharedObj<SHARED_TYPE, KEY_TYPE>>);
 

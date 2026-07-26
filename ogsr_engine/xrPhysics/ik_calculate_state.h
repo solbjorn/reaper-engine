@@ -1,6 +1,6 @@
 #pragma once
 
-class ik_goal_matrix
+class ik_goal_matrix final
 {
 public:
     enum e_collide_state
@@ -31,7 +31,7 @@ public:
     IC e_collide_state collide_state() const { return cl_state; }
 };
 
-struct calculate_state
+struct calculate_state final
 {
     u32 calc_time{};
     u32 unstuck_time{std::numeric_limits<u32>::max()};

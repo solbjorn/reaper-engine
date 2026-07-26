@@ -7,7 +7,7 @@
 
 struct MotionID;
 
-struct SStepParam
+struct SStepParam final
 {
     struct
     {

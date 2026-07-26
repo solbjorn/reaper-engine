@@ -4,7 +4,7 @@
 
 class CTushkano;
 
-class CStateManagerTushkano : public CMonsterStateManager<CTushkano>
+class CStateManagerTushkano final : public CMonsterStateManager<CTushkano>
 {
     RTTI_DECLARE_TYPEINFO(CStateManagerTushkano, CMonsterStateManager<CTushkano>);
 

@@ -20,7 +20,7 @@ enum EPatrolStartType : u32;
 enum EPatrolRouteType : u32;
 } // namespace PatrolPathManager
 
-class CALifeMonsterPatrolPathManager
+class CALifeMonsterPatrolPathManager final
 {
 public:
     typedef CSE_ALifeMonsterAbstract object_type;

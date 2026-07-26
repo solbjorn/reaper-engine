@@ -11,7 +11,7 @@
 #include "object_interfaces.h"
 #include "alife_space.h"
 
-class CALifeTimeManager : public virtual RTTI::Enable
+class CALifeTimeManager final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CALifeTimeManager);
 
@@ -28,8 +28,8 @@ public:
     explicit CALifeTimeManager(LPCSTR section);
     ~CALifeTimeManager() override;
 
-    virtual void save(IWriter& memory_stream);
-    virtual void load(IReader& file_stream);
+    void save(IWriter& memory_stream);
+    void load(IReader& file_stream);
     void init(LPCSTR section);
     IC void set_time_factor(float time_factor);
     IC ALife::_TIME_ID game_time() const;

@@ -40,7 +40,7 @@ public:
 };
 
 // main
-struct svs_respawn
+struct svs_respawn final
 {
     u32 timestamp;
     u16 phantom;
@@ -48,7 +48,7 @@ struct svs_respawn
 
 IC bool operator<(const svs_respawn& A, const svs_respawn& B) { return A.timestamp < B.timestamp; }
 
-class xrServer : public IPureServer
+class xrServer final : public IPureServer
 {
     RTTI_DECLARE_TYPEINFO(xrServer, IPureServer);
 
@@ -59,7 +59,7 @@ private:
     u16 m_iCurUpdatePacket;
     xr_vector<NET_Packet> m_aUpdatePackets;
 
-    struct DelayedPacket
+    struct DelayedPacket final
     {
         ClientID SenderID;
         NET_Packet Packet;
@@ -121,13 +121,12 @@ public:
     void SendConnectResult(IClient* CL, u8 res, u8 res1, const char* ResultStr);
 
     void AttachNewClient(IClient* CL);
-    virtual void OnBuildVersionRespond(IClient* CL, NET_Packet& P);
+    void OnBuildVersionRespond(IClient* CL, NET_Packet& P);
 
 protected:
     [[nodiscard]] IClient* new_client(SClientConnectData* cl_data) override;
 
-    virtual void Check_BuildVersion_Success(IClient* CL);
-
+    void Check_BuildVersion_Success(IClient* CL);
     void SendConnectionData(IClient* CL);
 
 public:
@@ -137,7 +136,7 @@ public:
 
     // extended functionality
     [[nodiscard]] u32 OnMessage(NET_Packet& P, ClientID sender) override; // Non-Zero means broadcasting with "flags" as returned
-    virtual void OnCL_Connected(IClient* CL);
+    void OnCL_Connected(IClient* CL);
     void SendTo_LL(ClientID ID, void* data, u32 size, u32 = DPNSEND_GUARANTEED, u32 = 0) override;
 
     [[nodiscard]] IClient* client_Create() override; // create client info
@@ -157,7 +156,7 @@ public:
     // main
     tmc::task<EConnect> Connect(shared_str& session_name) override;
     void Disconnect() override;
-    virtual void Update();
+    void Update();
 
     void SLS_Default();
     void SLS_Clear();

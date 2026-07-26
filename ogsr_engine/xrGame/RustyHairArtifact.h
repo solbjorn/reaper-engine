@@ -7,7 +7,7 @@
 
 #include "Artifact.h"
 
-class CRustyHairArtefact : public CArtefact
+class CRustyHairArtefact final : public CArtefact
 {
     RTTI_DECLARE_TYPEINFO(CRustyHairArtefact, CArtefact);
 

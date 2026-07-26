@@ -2,13 +2,13 @@
 
 #include "control_combase.h"
 
-struct SControlThreatenData : public ControlCom::IComData
+struct SControlThreatenData final : public ControlCom::IComData
 {
     LPCSTR animation;
     float time;
 };
 
-class CControlThreaten : public CControl_ComCustom<SControlThreatenData>
+class CControlThreaten final : public CControl_ComCustom<SControlThreatenData>
 {
     RTTI_DECLARE_TYPEINFO(CControlThreaten, CControl_ComCustom<SControlThreatenData>);
 

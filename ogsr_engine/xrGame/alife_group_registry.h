@@ -13,7 +13,7 @@
 class CSE_ALifeOnlineOfflineGroup;
 class CSE_ALifeDynamicObject;
 
-class CALifeGroupRegistry : public virtual RTTI::Enable
+class CALifeGroupRegistry final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CALifeGroupRegistry);
 

@@ -4,7 +4,7 @@
 
 class CAI_Flesh;
 
-class CStateManagerFlesh : public CMonsterStateManager<CAI_Flesh>
+class CStateManagerFlesh final : public CMonsterStateManager<CAI_Flesh>
 {
     RTTI_DECLARE_TYPEINFO(CStateManagerFlesh, CMonsterStateManager<CAI_Flesh>);
 

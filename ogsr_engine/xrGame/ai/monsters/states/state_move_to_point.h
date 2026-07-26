@@ -4,7 +4,7 @@
 #include "state_data.h"
 
 template <typename _Object>
-class CStateMonsterMoveToPoint : public CState<_Object>
+class CStateMonsterMoveToPoint final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterMoveToPoint<_Object>, CState<_Object>);
 
@@ -27,7 +27,7 @@ public:
 };
 
 template <typename _Object>
-class CStateMonsterMoveToPointEx : public CState<_Object>
+class CStateMonsterMoveToPointEx final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterMoveToPointEx<_Object>, CState<_Object>);
 

@@ -21,7 +21,7 @@
 #define _detail detail<yaw_factor_non_fire, pitch_factor_non_fire, yaw_factor_fire, pitch_factor_fire>
 
 TEMPLATE_SPECIALIZATION
-struct detail
+struct detail final
 {
     static void callback(CBoneInstance* B);
 };

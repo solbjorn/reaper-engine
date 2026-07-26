@@ -16,7 +16,7 @@ class CAI_Stalker;
 class CStalkerVelocityCollection;
 class CGameObject;
 
-class CStalkerMovementManager : public CMovementManager
+class CStalkerMovementManager final : public CMovementManager
 {
     RTTI_DECLARE_TYPEINFO(CStalkerMovementManager, CMovementManager);
 
@@ -61,7 +61,7 @@ public:
     void Load(gsl::czstring section) override;
     void reinit() override;
     void reload(gsl::czstring section) override;
-    virtual void update(u32);
+    void update(u32);
     void on_travel_point_change(const u32& previous_travel_point_index) override;
     void on_restrictions_change() override;
     void initialize();

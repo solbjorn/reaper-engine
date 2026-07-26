@@ -9,7 +9,7 @@
 #pragma once
 
 template <u32 ReserveSize>
-struct CVertexAllocatorFixed
+struct CVertexAllocatorFixed final
 {
     template <typename TCompoundVertex>
     struct VertexData

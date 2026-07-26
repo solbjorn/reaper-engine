@@ -11,7 +11,7 @@
 #include "ai/ai_monsters_anims.h"
 #include "stalker_animation_names.h"
 
-class CStalkerAnimationState : public virtual RTTI::Enable
+class CStalkerAnimationState final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CStalkerAnimationState);
 

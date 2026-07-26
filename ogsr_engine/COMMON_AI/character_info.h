@@ -25,7 +25,8 @@ class CSE_ALifeTraderAbstract;
 //////////////////////////////////////////////////////////////////////////
 // SCharacterProfile: данные профиля персонажа
 //////////////////////////////////////////////////////////////////////////
-struct SCharacterProfile : CSharedResource
+
+struct SCharacterProfile final : CSharedResource
 {
     RTTI_DECLARE_TYPEINFO(SCharacterProfile, CSharedResource);
 
@@ -46,7 +47,7 @@ public:
 class CInventoryOwner;
 class CSE_ALifeTraderAbstract;
 
-class CCharacterInfo : public CSharedClass<SCharacterProfile, shared_str, false>, public CXML_IdToIndex<CCharacterInfo>
+class CCharacterInfo final : public CSharedClass<SCharacterProfile, shared_str, false>, public CXML_IdToIndex<CCharacterInfo>
 {
     RTTI_DECLARE_TYPEINFO(CCharacterInfo, CSharedClass<SCharacterProfile, shared_str, false>, CXML_IdToIndex<CCharacterInfo>);
 
@@ -62,7 +63,7 @@ public:
     CCharacterInfo();
     ~CCharacterInfo() override;
 
-    virtual void Load(shared_str id);
+    void Load(shared_str id);
 
 #ifdef XRGAME_EXPORTS
     void load(IReader&);

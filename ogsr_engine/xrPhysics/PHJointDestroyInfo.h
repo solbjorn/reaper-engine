@@ -3,7 +3,7 @@
 
 #include "ode_include.h"
 
-class CPHJointDestroyInfo
+class CPHJointDestroyInfo final
 {
     friend class CPHShellSplitterHolder;
     friend class CPHShell;

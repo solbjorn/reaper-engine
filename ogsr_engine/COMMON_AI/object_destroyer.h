@@ -14,13 +14,13 @@
 namespace object_destroyer
 {
 template <typename T>
-struct default_destroy
+struct default_destroy final
 {
     void operator()(T&) const {}
 };
 } // namespace object_destroyer
 
-struct CDestroyer
+struct CDestroyer final
 {
     IC static void delete_data(LPCSTR) {}
 
@@ -70,7 +70,7 @@ struct CDestroyer
     }
 
     template <typename T>
-    struct CHelper1
+    struct CHelper1 final
     {
         template <bool a>
         static void delete_data(std::enable_if_t<!a, T&> data)
@@ -86,7 +86,7 @@ struct CDestroyer
     };
 
     template <typename T>
-    struct CHelper2
+    struct CHelper2 final
     {
         template <bool a>
         static void delete_data(std::enable_if_t<!a, T&> data)
@@ -103,7 +103,7 @@ struct CDestroyer
         }
     };
 
-    struct CHelper3
+    struct CHelper3 final
     {
         template <typename T>
         IC static void delete_data(T& data)
@@ -115,7 +115,7 @@ struct CDestroyer
     };
 
     template <typename T>
-    struct CHelper4
+    struct CHelper4 final
     {
         template <bool a>
         static void delete_data(std::enable_if_t<!a, T&> data)

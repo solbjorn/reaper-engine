@@ -7,7 +7,7 @@
 #include "script_export_space.h"
 #include "bloodsucker_alien.h"
 
-class CAI_Bloodsucker : public CBaseMonster, public CControlledActor
+class CAI_Bloodsucker final : public CBaseMonster, public CControlledActor
 {
     RTTI_DECLARE_TYPEINFO(CAI_Bloodsucker, CBaseMonster, CControlledActor);
 
@@ -67,7 +67,7 @@ public:
     void start_invisible_predator();
     void stop_invisible_predator();
 
-    virtual bool in_solid_state();
+    [[nodiscard]] bool in_solid_state();
 
     //--------------------------------------------------------------------
     // Vampire
@@ -190,7 +190,7 @@ public:
     void start_runaway_invisible() { m_runaway_invisible_time = Device.dwTimeGlobal; }
     void clear_runaway_invisible() { m_runaway_invisible_time = 0; }
 
-    virtual bool can_be_seen() const { return get_visibility_state() == full_visibility; }
+    [[nodiscard]] bool can_be_seen() const { return get_visibility_state() == full_visibility; }
     visibility_t get_visibility_state() const;
     void set_visibility_state(visibility_t new_state);
     void force_visibility_state(int state);

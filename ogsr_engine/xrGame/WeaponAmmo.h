@@ -2,7 +2,7 @@
 
 #include "inventory_item_object.h"
 
-class CCartridge
+class CCartridge final
 {
 public:
     CCartridge();
@@ -33,7 +33,7 @@ public:
     RStringVec m_ExplodeParticles;
 };
 
-class CWeaponAmmo : public CInventoryItemObject
+class CWeaponAmmo final : public CInventoryItemObject
 {
     RTTI_DECLARE_TYPEINFO(CWeaponAmmo, CInventoryItemObject);
 

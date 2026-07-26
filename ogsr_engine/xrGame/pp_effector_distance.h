@@ -6,7 +6,7 @@
 // CPPEffectorDistance
 //////////////////////////////////////////////////////////////////////////
 
-class CPPEffectorDistance : public CPPEffectorController
+class CPPEffectorDistance final : public CPPEffectorController
 {
     RTTI_DECLARE_TYPEINFO(CPPEffectorDistance, CPPEffectorController);
 

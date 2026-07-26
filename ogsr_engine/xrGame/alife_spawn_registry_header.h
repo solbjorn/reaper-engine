@@ -10,7 +10,7 @@
 
 #include "../xr_3da/xrLevel.h"
 
-class CALifeSpawnHeader : public virtual RTTI::Enable
+class CALifeSpawnHeader final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CALifeSpawnHeader);
 
@@ -24,7 +24,7 @@ protected:
 public:
     ~CALifeSpawnHeader() override;
 
-    virtual void load(IReader& file_stream);
+    void load(IReader& file_stream);
     IC u32 version() const;
     IC const xrGUID& guid() const;
     IC const xrGUID& graph_guid() const;

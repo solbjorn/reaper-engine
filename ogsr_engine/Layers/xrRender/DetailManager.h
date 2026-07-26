@@ -28,19 +28,21 @@ extern u32 dm_current_cache_size; //		= dm_current_cache_line*dm_current_cache_l
 extern float dm_current_fade; //				= float(2*dm_current_size)-.5f;
 extern float ps_current_detail_density;
 
-class CDetailManager : public virtual RTTI::Enable
+class CDetailManager final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CDetailManager);
 
 public:
     void details_clear();
 
-    struct SlotItem
-    { // один кустик
+    // один кустик
+    struct SlotItem final
+    {
         Fmatrix mRotY;
         float scale;
         float scale_calculated;
-        u32 vis_ID; // индекс в visibility списке он же тип [не качается, качается1, качается2]
+        // индекс в visibility списке он же тип [не качается, качается1, качается2]
+        u32 vis_ID;
         float c_hemi;
         float c_sun;
         float distance;
@@ -52,8 +54,8 @@ public:
 
     DEFINE_VECTOR(SlotItem*, SlotItemVec, SlotItemVecIt);
 
-    struct SlotPart
-    { //
+    struct SlotPart final
+    {
         u32 id; // ID модельки
         SlotItemVec items; // список кустиков
         SlotItemVec r_items[3]; // список кустиков for render
@@ -65,8 +67,9 @@ public:
         stPending, // Pending for decompression
     };
 
-    struct Slot
-    { // распакованый слот размером DETAIL_SLOT_SIZE
+    // распакованый слот размером DETAIL_SLOT_SIZE
+    struct Slot final
+    {
         struct
         {
             u32 empty : 1;
@@ -88,7 +91,7 @@ public:
         }
     };
 
-    struct CacheSlot1
+    struct CacheSlot1 final
     {
         u32 empty;
         vis_data vis;

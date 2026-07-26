@@ -335,7 +335,7 @@ void wrong_CALifeSimulator__teleport_object(CALifeSimulator*, gsl::czstring name
     return XR_ASSERT_VAL(self != nullptr)->registry(info_portions).object(id, true);
 }
 
-class CFindByIDPred
+class CFindByIDPred final
 {
 public:
     constexpr explicit CFindByIDPred(gsl::czstring element_to_find) { element._set(element_to_find); }

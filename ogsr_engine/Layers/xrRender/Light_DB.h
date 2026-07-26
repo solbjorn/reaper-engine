@@ -3,7 +3,7 @@
 #include "light.h"
 #include "Light_Package.h"
 
-class CLight_DB
+class CLight_DB final
 {
 private:
     xr_vector<ref_light> v_static;

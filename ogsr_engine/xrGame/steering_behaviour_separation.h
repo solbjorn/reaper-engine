@@ -17,7 +17,7 @@ class CAI_Rat;
 namespace steering_behaviour
 {
 
-class separation : public base, private debug::make_final<separation>
+class separation final : public base, private debug::make_final<separation>
 {
 public:
     separation(CAI_Rat const* object);

@@ -8,13 +8,13 @@
 
 class CController;
 
-struct SAuraSound
+struct SAuraSound final
 {
     ref_sound left;
     ref_sound right;
 };
 
-class CPPEffectorControllerAura : public CPPEffectorCustom
+class CPPEffectorControllerAura final : public CPPEffectorCustom
 {
     RTTI_DECLARE_TYPEINFO(CPPEffectorControllerAura, CPPEffectorCustom);
 
@@ -42,7 +42,7 @@ public:
     void switch_off();
 };
 
-class CControllerAura : public CPPEffectorCustomController<CPPEffectorControllerAura>
+class CControllerAura final : public CPPEffectorCustomController<CPPEffectorControllerAura>
 {
     RTTI_DECLARE_TYPEINFO(CControllerAura, CPPEffectorCustomController<CPPEffectorControllerAura>);
 

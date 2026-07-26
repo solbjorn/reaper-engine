@@ -10,7 +10,7 @@ XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
 
 XR_DIAG_POP();
 
-struct dxRayMotions
+struct dxRayMotions final
 {
     dGeomID ray{};
     dGeomID ray_ownwer{};

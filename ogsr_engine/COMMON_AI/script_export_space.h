@@ -29,13 +29,13 @@ public: \
     static void script_register(sol::state_view& lua)
 
 template <typename T>
-struct enum_exporter
+struct enum_exporter final
 {
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
 
 template <typename T>
-struct class_exporter
+struct class_exporter final
 {
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

@@ -7,7 +7,7 @@ class dx103DFluidEmitters;
 
 #include "dx103DFluidRenderer.h"
 
-class dx103DFluidManager
+class dx103DFluidManager final
 {
 public:
     enum RENDER_TARGET

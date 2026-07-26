@@ -7,7 +7,7 @@
 #include "PdaMsg.h"
 #include "HudSound.h"
 
-class CPda : public CHudItemObject, public Feel::Touch
+class CPda final : public CHudItemObject, public Feel::Touch
 {
     RTTI_DECLARE_TYPEINFO(CPda, CHudItemObject, Feel::Touch);
 

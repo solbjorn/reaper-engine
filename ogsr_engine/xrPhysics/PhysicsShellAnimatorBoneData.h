@@ -2,7 +2,8 @@
 
 #include "PHShell.h"
 
-class CPhysicsShellAnimatorBoneData // Содержит информацию об целевой матрице анимации
+// Содержит информацию об целевой матрице анимации
+class CPhysicsShellAnimatorBoneData final
 {
     friend class CPhysicsShellAnimator;
     dJointID m_anim_fixed_dJointID;

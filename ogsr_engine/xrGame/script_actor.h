@@ -12,13 +12,13 @@
 #include "ActorCondition.h"
 #include "script_export_space.h"
 
-class CActorObject : public CActor
+class CActorObject final : public CActor
 {
     RTTI_DECLARE_TYPEINFO(CActorObject, CActor);
 };
 XR_SOL_BASE_CLASSES(CActorObject);
 
-class CActorConditionObject : public CActorCondition
+class CActorConditionObject final : public CActorCondition
 {
     RTTI_DECLARE_TYPEINFO(CActorConditionObject, CActorCondition);
 
@@ -27,7 +27,7 @@ public:
 };
 XR_SOL_BASE_CLASSES(CActorConditionObject);
 
-class CScriptActor
+class CScriptActor final
 {
 public:
     typedef CEntityCondition::SConditionChangeV SConditionChangeV;

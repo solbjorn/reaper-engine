@@ -31,7 +31,7 @@ typedef struct tagSPdaMessage
 } SPdaMessage;
 
 // информация о контактах персонажей по PDA и во время диалога
-struct TALK_CONTACT_DATA
+struct TALK_CONTACT_DATA final
 {
     // время контакта
     ALife::_TIME_ID time{};

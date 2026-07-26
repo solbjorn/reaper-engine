@@ -47,7 +47,7 @@ XR_DIAG_POP();
 
 #endif
 
-class CSoundRender_CoreA : public CSoundRender_Core
+class CSoundRender_CoreA final : public CSoundRender_Core
 {
     RTTI_DECLARE_TYPEINFO(CSoundRender_CoreA, CSoundRender_Core);
 
@@ -62,7 +62,7 @@ public:
 
     ALDeviceList* pDeviceList;
 
-    struct SListenerSmooth
+    struct SListenerSmooth final
     {
         Fvector prevVelocity;
         Fvector curVelocity;

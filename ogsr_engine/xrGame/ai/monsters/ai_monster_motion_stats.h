@@ -3,11 +3,11 @@
 
 class CBaseMonster;
 
-class CMotionStats
+class CMotionStats final
 {
     CBaseMonster* pMonster{};
 
-    struct elem
+    struct elem final
     {
         float speed;
         Fvector position;

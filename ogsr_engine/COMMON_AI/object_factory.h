@@ -13,7 +13,7 @@
 #include "object_item_abstract.h"
 #include "xrServer_Objects.h"
 
-class CObjectFactory : public virtual RTTI::Enable
+class CObjectFactory final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CObjectFactory);
 

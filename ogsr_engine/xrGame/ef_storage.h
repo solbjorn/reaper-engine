@@ -52,7 +52,7 @@ class CEnemyAnomalyType;
 class CEnemyDistanceToGraphPoint;
 
 template <typename T1, typename T2>
-class CEF_Params
+class CEF_Params final
 {
 private:
     T1* m_member;
@@ -112,7 +112,7 @@ public:
     }
 };
 
-class CEF_Storage : public virtual RTTI::Enable
+class CEF_Storage final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CEF_Storage);
 

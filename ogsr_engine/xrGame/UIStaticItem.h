@@ -5,7 +5,7 @@
 
 class IUIShader;
 
-class CUIStaticItem : public IUISimpleTextureControl, public CUICustomItem
+class CUIStaticItem final : public IUISimpleTextureControl, public CUICustomItem
 {
     RTTI_DECLARE_TYPEINFO(CUIStaticItem, IUISimpleTextureControl, CUICustomItem);
 

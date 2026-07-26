@@ -4,7 +4,7 @@
 #include "object_loader.h"
 #include "object_saver.h"
 
-struct ARTICLE_DATA
+struct ARTICLE_DATA final
 {
     enum EArticleType
     {
@@ -27,13 +27,13 @@ struct ARTICLE_DATA
 };
 
 template <typename M>
-struct object_loader::default_load<ARTICLE_DATA, M>
+struct object_loader::default_load<ARTICLE_DATA, M> final
 {
     void operator()(ARTICLE_DATA& data, M& stream) const { data.load(stream); }
 };
 
 template <typename M>
-struct object_saver::default_save<ARTICLE_DATA, M>
+struct object_saver::default_save<ARTICLE_DATA, M> final
 {
     void operator()(const ARTICLE_DATA& data, M& stream) const { data.save(stream); }
 };
@@ -41,7 +41,7 @@ struct object_saver::default_save<ARTICLE_DATA, M>
 DEFINE_VECTOR(shared_str, ARTICLE_ID_VECTOR, ARTICLE_ID_IT);
 DEFINE_VECTOR(ARTICLE_DATA, ARTICLE_VECTOR, ARTICLE_IT);
 
-class FindArticleByIDPred
+class FindArticleByIDPred final
 {
 public:
     FindArticleByIDPred(shared_str id) { object_id = id; }

@@ -1,7 +1,7 @@
 #pragma once
 
 template <class T, u32 block_size>
-class CBlockAllocator
+class CBlockAllocator final
 {
     u32 block_count;
     u32 block_position;

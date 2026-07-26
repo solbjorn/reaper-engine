@@ -5,7 +5,7 @@
 class CUIStatic;
 class CEncyclopediaArticle;
 
-class CUIEncyclopediaArticleWnd : public CUIWindow
+class CUIEncyclopediaArticleWnd final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIEncyclopediaArticleWnd, CUIWindow);
 

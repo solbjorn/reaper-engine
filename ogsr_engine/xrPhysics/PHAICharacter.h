@@ -2,7 +2,7 @@
 
 #include "PHSimpleCharacter.h"
 
-class CPHAICharacter : public CPHSimpleCharacter
+class CPHAICharacter final : public CPHSimpleCharacter
 {
     RTTI_DECLARE_TYPEINFO(CPHAICharacter, CPHSimpleCharacter);
 

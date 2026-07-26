@@ -7,7 +7,7 @@
 #include "../../../Include/xrRender/animation_motion.h"
 #include "../../../Include/xrRender/animation_blend.h"
 
-struct SAnimationPart
+struct SAnimationPart final
 {
     CBlend* blend;
     u32 time_started;
@@ -29,7 +29,7 @@ private:
     MotionID motion;
 };
 
-struct SControlAnimationData : public ControlCom::IComData
+struct SControlAnimationData final : public ControlCom::IComData
 {
     float _speed;
     IC void set_speed(float v)
@@ -43,7 +43,7 @@ struct SControlAnimationData : public ControlCom::IComData
     SAnimationPart torso;
 };
 
-struct SAnimationSignalEventData : public ControlCom::IEventData
+struct SAnimationSignalEventData final : public ControlCom::IEventData
 {
     MotionID motion;
     float time_perc;
@@ -52,7 +52,7 @@ struct SAnimationSignalEventData : public ControlCom::IEventData
     IC SAnimationSignalEventData(MotionID m, float perc, u32 id) : motion{m}, time_perc{perc}, event_id{id} {}
 };
 
-class CControlAnimation : public CControl_ComPure<SControlAnimationData>
+class CControlAnimation final : public CControl_ComPure<SControlAnimationData>
 {
     RTTI_DECLARE_TYPEINFO(CControlAnimation, CControl_ComPure<SControlAnimationData>);
 

@@ -37,7 +37,7 @@ public:
     Vision();
     ~Vision() override;
 
-    struct feel_visible_Item
+    struct feel_visible_Item final
     {
         CObject* O{};
         f32 fuzzy{}; // note range: (-1[no]..1[yes])

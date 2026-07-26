@@ -4,7 +4,7 @@
 #include "PHDefs.h"
 #include "PHObject.h"
 
-class CPHShellSplitter
+class CPHShellSplitter final
 {
     friend class CPHShellSplitterHolder;
     friend class CPHShell;

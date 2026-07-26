@@ -3,7 +3,7 @@
 
 #include "../../Include/xrRender/ThunderboltRender.h"
 
-class dxThunderboltRender : public IThunderboltRender
+class dxThunderboltRender final : public IThunderboltRender
 {
     RTTI_DECLARE_TYPEINFO(dxThunderboltRender, IThunderboltRender);
 

@@ -4,7 +4,7 @@
 #include "Effector.h"
 #include "GameFont.h"
 
-class CDemoRecord : public CEffectorCam, public IInputReceiver, public pureRender
+class CDemoRecord final : public CEffectorCam, public IInputReceiver, public pureRender
 {
     RTTI_DECLARE_TYPEINFO(CDemoRecord, CEffectorCam, IInputReceiver, pureRender);
 

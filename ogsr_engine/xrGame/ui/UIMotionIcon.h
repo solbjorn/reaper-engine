@@ -1,6 +1,6 @@
 #pragma once
 
-class CUIMotionIcon : public CUIStatic
+class CUIMotionIcon final : public CUIStatic
 {
     RTTI_DECLARE_TYPEINFO(CUIMotionIcon, CUIStatic);
 
@@ -26,7 +26,7 @@ private:
     CUIProgressBar m_luminosity_progress;
     CUIProgressBar m_noise_progress;
 
-    struct _npc_visibility
+    struct _npc_visibility final
     {
         u16 id;
         float value;

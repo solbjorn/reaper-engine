@@ -6,7 +6,7 @@
 
 class CHUDTarget;
 
-struct CFontManager : public pureDeviceReset
+struct CFontManager final : public pureDeviceReset
 {
     RTTI_DECLARE_TYPEINFO(CFontManager, pureDeviceReset);
 
@@ -43,7 +43,7 @@ public:
     tmc::task<void> OnDeviceReset() override;
 };
 
-class CHUDManager : public CCustomHUD
+class CHUDManager final : public CCustomHUD
 {
     RTTI_DECLARE_TYPEINFO(CHUDManager, CCustomHUD);
 
@@ -70,7 +70,7 @@ public:
     void Render_Last(ctx_id_t context_id) override;
     void OnFrame() override;
 
-    virtual void RenderUI();
+    void RenderUI();
 
     [[nodiscard]] CUI* GetUI() override { return pUI; }
 

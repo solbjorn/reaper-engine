@@ -43,7 +43,7 @@ protected:
     u16 m_bone_id;
 };
 
-class CPHFracture : public CShellSplitInfo
+class CPHFracture final : public CShellSplitInfo
 {
     friend class CPHFracturesHolder;
     friend class CPHElement;

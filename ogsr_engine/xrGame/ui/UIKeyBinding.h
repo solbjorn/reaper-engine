@@ -9,7 +9,7 @@
 class CUIXml;
 class CUIScrollView;
 
-class CUIKeyBinding : public CUIWindow
+class CUIKeyBinding final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIKeyBinding, CUIWindow);
 

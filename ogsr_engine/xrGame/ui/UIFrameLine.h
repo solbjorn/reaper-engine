@@ -14,7 +14,7 @@
 
 #include "../UIStaticItem.h"
 
-class CUIFrameLine : public CUICustomItem
+class CUIFrameLine final : public CUICustomItem
 {
     RTTI_DECLARE_TYPEINFO(CUIFrameLine, CUICustomItem);
 

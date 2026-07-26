@@ -9,7 +9,7 @@ class CLAItem;
 class CUIXml;
 class CUILines;
 
-struct lanim_cont
+struct lanim_cont final
 {
     CLAItem* m_lanim;
     float m_lanim_start_time;

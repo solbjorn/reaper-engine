@@ -6,7 +6,7 @@
 class CCustomMonster;
 class CControl_Manager;
 
-struct SControlPathBuilderData : public ControlCom::IComData
+struct SControlPathBuilderData final : public ControlCom::IComData
 {
     bool use_dest_orientation;
     Fvector dest_orientation;

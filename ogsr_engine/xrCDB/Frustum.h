@@ -41,10 +41,10 @@ constexpr inline u32 frustum_aabb_remap[8][6]{{Mx, My, Mz, mx, my, mz}, {Mx, My,
 #undef My
 #undef Mz
 
-class CFrustum
+class CFrustum final
 {
 public:
-    struct fplane : public Fplane
+    struct fplane final : public Fplane
     {
         u32 aabb_overlap_id; // [0..7]
 

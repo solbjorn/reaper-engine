@@ -4,7 +4,7 @@
 #include "../controlled_entity.h"
 #include "script_export_space.h"
 
-class CTushkano : public CBaseMonster, public CControlledEntity<CTushkano>
+class CTushkano final : public CBaseMonster, public CControlledEntity<CTushkano>
 {
     RTTI_DECLARE_TYPEINFO(CTushkano, CBaseMonster, CControlledEntity<CTushkano>);
 

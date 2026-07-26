@@ -12,7 +12,7 @@ DEF_LIST(LIST_ITEM_LIST, CUIListItem*);
 class CUIScrollBar;
 class CUIFrameLineWnd;
 
-class CUIListWnd : public CUIWindow
+class CUIListWnd final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIListWnd, CUIWindow);
 
@@ -28,7 +28,7 @@ public:
     ~CUIListWnd() override;
 
     void Init(f32 x, f32 y, f32 width, f32 height) override;
-    virtual void Init(f32 x, f32 y, f32 width, f32 height, f32 item_height);
+    void Init(f32 x, f32 y, f32 width, f32 height, f32 item_height);
 
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
     [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;

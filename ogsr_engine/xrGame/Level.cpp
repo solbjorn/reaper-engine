@@ -688,7 +688,7 @@ u32 GameID() { return Game().Type(); }
 GlobalFeelTouch::GlobalFeelTouch() = default;
 GlobalFeelTouch::~GlobalFeelTouch() = default;
 
-struct delete_predicate_by_time
+struct delete_predicate_by_time final
 {
     bool operator()(Feel::Touch::DenyTouch const& left, DWORD const expire_time) const
     {
@@ -698,7 +698,7 @@ struct delete_predicate_by_time
     }
 };
 
-struct objects_ptrs_equal
+struct objects_ptrs_equal final
 {
     bool operator()(Feel::Touch::DenyTouch const& left, CObject const* const right) const
     {

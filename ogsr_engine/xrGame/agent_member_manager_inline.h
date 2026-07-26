@@ -8,7 +8,7 @@
 
 #pragma once
 
-class CMemberPredicate
+class CMemberPredicate final
 {
 protected:
     const CAI_Stalker* m_object;

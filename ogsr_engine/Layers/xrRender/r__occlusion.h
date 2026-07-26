@@ -12,10 +12,10 @@
 //	assumption:
 //		used queries number is much smaller than total count
 
-class R_occlusion
+class R_occlusion final
 {
 private:
-    struct _Q
+    struct _Q final
     {
         Microsoft::WRL::ComPtr<ID3DQuery> Q;
         u32 order;

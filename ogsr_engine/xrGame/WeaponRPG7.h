@@ -4,7 +4,7 @@
 #include "RocketLauncher.h"
 #include "script_export_space.h"
 
-class CWeaponRPG7 : public CWeaponCustomPistol, public CRocketLauncher
+class CWeaponRPG7 final : public CWeaponCustomPistol, public CRocketLauncher
 {
     RTTI_DECLARE_TYPEINFO(CWeaponRPG7, CWeaponCustomPistol, CRocketLauncher);
 

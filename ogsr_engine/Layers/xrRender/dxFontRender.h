@@ -3,7 +3,7 @@
 
 #include "../../Include/xrRender/FontRender.h"
 
-class dxFontRender : public IFontRender
+class dxFontRender final : public IFontRender
 {
     RTTI_DECLARE_TYPEINFO(dxFontRender, IFontRender);
 

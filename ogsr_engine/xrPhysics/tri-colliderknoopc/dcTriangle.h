@@ -1,6 +1,6 @@
 #pragma once
 
-struct Triangle
+struct Triangle final
 {
     // dReal* v0;
     // dReal* v1;

@@ -1,7 +1,7 @@
 #pragma once
 #include "script_export_space.h"
 
-struct CPhraseDialogExporter
+struct CPhraseDialogExporter final
 {
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

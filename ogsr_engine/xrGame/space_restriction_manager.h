@@ -21,7 +21,7 @@ struct CTimeIntrusiveBase;
 template <typename _1, typename _2>
 class intrusive_ptr;
 
-class CSpaceRestrictionManager : public CSpaceRestrictionHolder
+class CSpaceRestrictionManager final : public CSpaceRestrictionHolder
 {
     RTTI_DECLARE_TYPEINFO(CSpaceRestrictionManager, CSpaceRestrictionHolder);
 

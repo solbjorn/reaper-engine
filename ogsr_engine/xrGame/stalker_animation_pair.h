@@ -16,7 +16,7 @@ class CAI_Stalker;
 
 #define USE_HEAD_BONE_PART_FAKE
 
-class CStalkerAnimationPair
+class CStalkerAnimationPair final
 {
 #ifdef USE_HEAD_BONE_PART_FAKE
 public:

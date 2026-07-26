@@ -22,7 +22,7 @@ class XR_NOVTABLE IKinematics : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IKinematics);
 
 public:
-    struct pick_result
+    struct pick_result final
     {
         Fvector normal;
         float dist;

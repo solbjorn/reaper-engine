@@ -5,7 +5,7 @@
 #include "../../Include/xrRender/ObjectSpaceRender.h"
 #include "../../xr_3da/xr_collide_form.h"
 
-class dxObjectSpaceRender : public IObjectSpaceRender
+class dxObjectSpaceRender final : public IObjectSpaceRender
 {
     RTTI_DECLARE_TYPEINFO(dxObjectSpaceRender, IObjectSpaceRender);
 

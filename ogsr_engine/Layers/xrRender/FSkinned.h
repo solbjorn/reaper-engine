@@ -29,7 +29,7 @@ protected:
 
 inline CSkeletonX_ext::~CSkeletonX_ext() = default;
 
-class CSkeletonX_ST : public Fvisual, public CSkeletonX_ext
+class CSkeletonX_ST final : public Fvisual, public CSkeletonX_ext
 {
     RTTI_DECLARE_TYPEINFO(CSkeletonX_ST, Fvisual, CSkeletonX_ext);
 
@@ -51,7 +51,7 @@ public:
     void FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector3& normal, f32 size, u16 bone_id) override;
 };
 
-class CSkeletonX_PM : public FProgressive, public CSkeletonX_ext
+class CSkeletonX_PM final : public FProgressive, public CSkeletonX_ext
 {
     RTTI_DECLARE_TYPEINFO(CSkeletonX_PM, FProgressive, CSkeletonX_ext);
 

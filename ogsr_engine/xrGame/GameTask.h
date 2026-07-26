@@ -9,7 +9,7 @@ class CGameTaskManager;
 class CMapLocation;
 class CUIXml;
 
-class SScriptObjectiveHelper
+class SScriptObjectiveHelper final
 {
 public:
     xr_vector<shared_str> m_s_complete_lua_functions;
@@ -34,18 +34,18 @@ public:
 };
 
 template <typename M>
-struct object_loader::default_load<SScriptObjectiveHelper, M>
+struct object_loader::default_load<SScriptObjectiveHelper, M> final
 {
     void operator()(SScriptObjectiveHelper& data, M& stream) const { data.load(stream); }
 };
 
 template <typename M>
-struct object_saver::default_save<SScriptObjectiveHelper, M>
+struct object_saver::default_save<SScriptObjectiveHelper, M> final
 {
     void operator()(const SScriptObjectiveHelper& data, M& stream) const { data.save(stream); }
 };
 
-class SGameTaskObjective
+class SGameTaskObjective final
 {
     friend struct SGameTaskKey;
     friend class CGameTaskManager;
@@ -131,20 +131,20 @@ public:
 };
 
 template <typename M>
-struct object_loader::default_load<SGameTaskObjective, M>
+struct object_loader::default_load<SGameTaskObjective, M> final
 {
     void operator()(SGameTaskObjective& data, M& stream) const { data.load(stream); }
 };
 
 template <typename M>
-struct object_saver::default_save<SGameTaskObjective, M>
+struct object_saver::default_save<SGameTaskObjective, M> final
 {
     void operator()(const SGameTaskObjective& data, M& stream) const { data.save(stream); }
 };
 
 DEFINE_VECTOR(SGameTaskObjective, OBJECTIVE_VECTOR, OBJECTIVE_VECTOR_IT);
 
-class CGameTask
+class CGameTask final
 {
 private:
     CGameTask(const CGameTask&) = delete; // disable copy ctor

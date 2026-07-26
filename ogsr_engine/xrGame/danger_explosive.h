@@ -15,7 +15,7 @@ class CExplosive;
 class CGameObject;
 class CAI_Stalker;
 
-class CDangerExplosive
+class CDangerExplosive final
 {
 public:
     const CExplosive* m_grenade;

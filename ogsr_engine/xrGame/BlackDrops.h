@@ -7,7 +7,7 @@
 
 #include "Artifact.h"
 
-class CBlackDrops : public CArtefact
+class CBlackDrops final : public CArtefact
 {
     RTTI_DECLARE_TYPEINFO(CBlackDrops, CArtefact);
 

@@ -12,7 +12,7 @@ class CBoneData;
 class CSkeletonX;
 struct SEnumVerticesCallback;
 
-class CSkeletonWallmark : public intrusive_base // 4+4+4+12+4+16+16 = 60 + 4 = 64
+class CSkeletonWallmark final : public intrusive_base // 4+4+4+12+4+16+16 = 60 + 4 = 64
 {
     RTTI_DECLARE_TYPEINFO(CSkeletonWallmark, intrusive_base);
 
@@ -30,7 +30,7 @@ public:
 
     Fsphere m_LocalBounds{}; // 16		model space
 
-    struct WMFace
+    struct WMFace final
     {
         Fvector3 vert[3];
         Fvector2 uv[3];
@@ -70,7 +70,7 @@ DEFINE_VECTOR(intrusive_ptr<CSkeletonWallmark>, SkeletonWMVec, SkeletonWMVecIt);
 
 // sanity check
 #ifdef DEBUG
-struct dbg_marker
+struct dbg_marker final
 {
     BOOL* lock;
 

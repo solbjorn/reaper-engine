@@ -64,7 +64,8 @@ CBlockAllocator<dJointFeedback, 128> ContactFeedBacks;
 CBlockAllocator<CPHContactBodyEffector, 128> ContactEffectors;
 
 ///////////////////////////////////////////////////////////
-class SApplyBodyEffectorPred
+
+class SApplyBodyEffectorPred final
 {
 public:
     SApplyBodyEffectorPred() {}

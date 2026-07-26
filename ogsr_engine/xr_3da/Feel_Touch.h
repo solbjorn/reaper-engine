@@ -13,7 +13,7 @@ class Touch : public virtual RTTI::Enable, private pure_relcase
 public:
     friend class pure_relcase;
 
-    struct DenyTouch
+    struct DenyTouch final
     {
         CObject* O;
         DWORD Expire;

@@ -11,7 +11,7 @@
 #include "abstract_path_manager.h"
 
 template <typename _VertexEvaluator, typename _vertex_id_type, typename _index_type>
-class CBasePathManager<CLevelGraph, _VertexEvaluator, _vertex_id_type, _index_type>
+class CBasePathManager<CLevelGraph, _VertexEvaluator, _vertex_id_type, _index_type> final
     : public CAbstractPathManager<CLevelGraph, _VertexEvaluator, _vertex_id_type, _index_type>
 {
     RTTI_DECLARE_TYPEINFO(CBasePathManager<CLevelGraph, _VertexEvaluator, _vertex_id_type, _index_type>,

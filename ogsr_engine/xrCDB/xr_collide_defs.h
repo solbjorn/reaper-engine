@@ -6,7 +6,7 @@ class CObject;
 
 namespace collide
 {
-struct tri
+struct tri final
 {
     Fvector e10;
     float e10s;
@@ -19,13 +19,13 @@ struct tri
     float d;
 };
 
-struct elipsoid
+struct elipsoid final
 {
     Fmatrix mL2W; // convertion from sphere(000,1) to real space
     Fmatrix mW2L; // convertion from real space to sphere(000,1)
 };
 
-struct ray_cache
+struct ray_cache final
 {
     // previous state
     Fvector start{};
@@ -72,7 +72,7 @@ enum rq_target
     rqtDyn = (rqtObject | rqtShape | rqtObstacle)
 };
 
-struct ray_defs
+struct ray_defs final
 {
     Fvector start;
     Fvector dir;

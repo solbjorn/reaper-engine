@@ -5,7 +5,7 @@
 
 class dxEnvironmentRender;
 
-class dxEnvDescriptorRender : public IEnvDescriptorRender
+class dxEnvDescriptorRender final : public IEnvDescriptorRender
 {
     RTTI_DECLARE_TYPEINFO(dxEnvDescriptorRender, IEnvDescriptorRender);
 
@@ -26,7 +26,7 @@ private:
     ref_texture clouds_texture;
 };
 
-class dxEnvironmentRender : public IEnvironmentRender
+class dxEnvironmentRender final : public IEnvironmentRender
 {
     RTTI_DECLARE_TYPEINFO(dxEnvironmentRender, IEnvironmentRender);
 

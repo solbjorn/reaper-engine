@@ -11,7 +11,7 @@
 #include "alife_space.h"
 #include "script_export_space.h"
 
-class CClientSpawnManager : public virtual RTTI::Enable
+class CClientSpawnManager final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CClientSpawnManager);
 

@@ -4,7 +4,7 @@
 
 namespace
 {
-class IndexBufferGen
+class IndexBufferGen final
 {
     static constexpr gsl::index dwTriCount{4 * 1024};
     static constexpr gsl::index dwIdxCount{dwTriCount * 2 * 3};

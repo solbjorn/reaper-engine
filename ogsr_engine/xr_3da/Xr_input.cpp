@@ -156,7 +156,7 @@ namespace xr
 {
 namespace
 {
-class keyconv
+class keyconv final
 {
 private:
     std::array<s32, sf::Keyboard::ScancodeCount> to_dik{};

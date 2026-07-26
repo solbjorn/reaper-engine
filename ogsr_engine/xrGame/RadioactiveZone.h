@@ -2,7 +2,7 @@
 
 #include "CustomZone.h"
 
-class CRadioactiveZone : public CCustomZone
+class CRadioactiveZone final : public CCustomZone
 {
     RTTI_DECLARE_TYPEINFO(CRadioactiveZone, CCustomZone);
 

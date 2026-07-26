@@ -14,7 +14,7 @@
 // CStalkerActionDead
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDead : public CStalkerActionBase
+class CStalkerActionDead final : public CStalkerActionBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDead, CStalkerActionBase);
 

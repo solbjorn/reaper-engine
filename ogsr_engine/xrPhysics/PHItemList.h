@@ -7,7 +7,7 @@
     class_name** tome
 
 template <class T>
-class CPHItemList
+class CPHItemList final
 {
     T* first_next;
     T** last_tome;
@@ -17,7 +17,7 @@ protected:
 
 public:
     class iterator;
-    class iterator
+    class iterator final
     {
         T* my_ptr{};
 

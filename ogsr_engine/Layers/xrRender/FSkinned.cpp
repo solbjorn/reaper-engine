@@ -33,7 +33,7 @@ constexpr D3DVERTEXELEMENT9 dwDecl_01W[] // 36bytes
      {0, 28, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0}, // : tc						: 1	: -16..+16
      D3DDECL_END()};
 
-struct vertHW_1W
+struct vertHW_1W final
 {
     float _P[4];
     u32 _N_I;
@@ -66,7 +66,7 @@ constexpr D3DVERTEXELEMENT9 dwDecl_2W[] // 44bytes
      {0, 28, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0}, // : xy(tc), zw(indices): 2	: -16..+16, zw[0..32767]
      D3DDECL_END()};
 
-struct vertHW_2W
+struct vertHW_2W final
 {
     float _P[4];
     u32 _N_w;
@@ -101,7 +101,7 @@ constexpr D3DVERTEXELEMENT9 dwDecl_3W[] // 44bytes
      {0, 28, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0}, // : xy(tc), zw(indices): 2	: -16..+16, zw[0..32767]
      D3DDECL_END()};
 
-struct vertHW_3W
+struct vertHW_3W final
 {
     float _P[4];
     u32 _N_w;
@@ -137,7 +137,7 @@ constexpr D3DVERTEXELEMENT9 dwDecl_4W[] // 40bytes
      {0, 36, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 1}, // : indices			: 1	:  0..255
      D3DDECL_END()};
 
-struct vertHW_4W
+struct vertHW_4W final
 {
     float _P[4];
     u32 _N_w;

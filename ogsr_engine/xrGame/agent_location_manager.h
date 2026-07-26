@@ -16,7 +16,7 @@ class CAgentManager;
 class CDangerLocation;
 class CObject;
 
-class CAgentLocationManager
+class CAgentLocationManager final
 {
 public:
     typedef intrusive_ptr<CDangerLocation> CDangerLocationPtr;

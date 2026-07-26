@@ -4,7 +4,7 @@
 #include "UIButton.h"
 #include "../script_export_space.h"
 
-class CUIProgressBar : public CUIWindow
+class CUIProgressBar final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIProgressBar, CUIWindow);
 

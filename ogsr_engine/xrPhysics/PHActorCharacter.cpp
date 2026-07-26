@@ -214,7 +214,7 @@ void CPHActorCharacter::Jump(const Fvector&)
 void CPHActorCharacter::SetObjectContactCallback(ObjectContactCallbackFun* callback) { inherited::SetObjectContactCallback(callback); }
 void CPHActorCharacter::Disable() { inherited::Disable(); }
 
-struct SFindPredicate
+struct SFindPredicate final
 {
     SFindPredicate(const dContact* ac, bool* b)
     {

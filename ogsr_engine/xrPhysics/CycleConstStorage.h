@@ -1,7 +1,7 @@
 #pragma once
 
 template <class T, int size>
-class CCycleConstStorage
+class CCycleConstStorage final
 {
     T array[size];
     int first{};

@@ -5,7 +5,7 @@
 #include "../../Include/xrAPI/xrAPI.h"
 
 template <class T>
-class FactoryPtr
+class FactoryPtr final
 {
 public:
     FactoryPtr() { CreateObject(); }

@@ -15,7 +15,7 @@
 // SInfoPortionData: данные для InfoProtion
 //////////////////////////////////////////////////////////////////////////
 
-struct SArticleData : CSharedResource
+struct SArticleData final : CSharedResource
 {
     RTTI_DECLARE_TYPEINFO(SArticleData, CSharedResource);
 
@@ -43,7 +43,7 @@ public:
 
 class CEncyclopediaArticle;
 
-class CEncyclopediaArticle : public CSharedClass<SArticleData, shared_str, false>, public CXML_IdToIndex<CEncyclopediaArticle>
+class CEncyclopediaArticle final : public CSharedClass<SArticleData, shared_str, false>, public CXML_IdToIndex<CEncyclopediaArticle>
 {
     RTTI_DECLARE_TYPEINFO(CEncyclopediaArticle, CSharedClass<SArticleData, shared_str, false>, CXML_IdToIndex<CEncyclopediaArticle>);
 
@@ -57,7 +57,7 @@ public:
     CEncyclopediaArticle();
     ~CEncyclopediaArticle() override;
 
-    virtual void Load(shared_str str_id);
+    void Load(shared_str str_id);
 
 protected:
     shared_str m_ArticleId;

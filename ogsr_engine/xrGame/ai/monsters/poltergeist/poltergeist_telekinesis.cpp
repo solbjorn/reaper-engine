@@ -115,7 +115,8 @@ void CPolterTele::update_schedule()
 //////////////////////////////////////////////////////////////////////////
 // Выбор подходящих объектов для телекинеза
 //////////////////////////////////////////////////////////////////////////
-class best_object_predicate
+
+class best_object_predicate final
 {
     Fvector enemy_pos;
     Fvector monster_pos;
@@ -137,7 +138,7 @@ public:
     }
 };
 
-class best_object_predicate2
+class best_object_predicate2 final
 {
     Fvector enemy_pos;
     Fvector monster_pos;
@@ -269,7 +270,7 @@ bool CPolterTele::tele_raise_objects()
     return false;
 }
 
-struct SCollisionHitCallback : public ICollisionHitCallback
+struct SCollisionHitCallback final : public ICollisionHitCallback
 {
     RTTI_DECLARE_TYPEINFO(SCollisionHitCallback, ICollisionHitCallback);
 

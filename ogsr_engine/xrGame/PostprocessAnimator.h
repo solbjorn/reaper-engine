@@ -46,7 +46,7 @@ public:
 
 inline CPostProcessParam::~CPostProcessParam() = default;
 
-class CPostProcessValue : public CPostProcessParam
+class CPostProcessValue final : public CPostProcessParam
 {
     RTTI_DECLARE_TYPEINFO(CPostProcessValue, CPostProcessParam);
 
@@ -71,7 +71,7 @@ public:
     [[nodiscard]] size_t get_keys_count() override { return m_Value.keys.size(); }
 };
 
-class CPostProcessColor : public CPostProcessParam
+class CPostProcessColor final : public CPostProcessParam
 {
     RTTI_DECLARE_TYPEINFO(CPostProcessColor, CPostProcessParam);
 
@@ -156,7 +156,7 @@ public:
     [[nodiscard]] BOOL Process(SPPInfo& PPInfo) override;
 };
 
-class CPostprocessAnimatorLerpConst : public CPostprocessAnimator
+class CPostprocessAnimatorLerpConst final : public CPostprocessAnimator
 {
     RTTI_DECLARE_TYPEINFO(CPostprocessAnimatorLerpConst, CPostprocessAnimator);
 
@@ -171,7 +171,7 @@ public:
     [[nodiscard]] BOOL Process(SPPInfo& PPInfo) override;
 };
 
-class CPostprocessAnimatorControlled : public CPostprocessAnimatorLerp
+class CPostprocessAnimatorControlled final : public CPostprocessAnimatorLerp
 {
     RTTI_DECLARE_TYPEINFO(CPostprocessAnimatorControlled, CPostprocessAnimatorLerp);
 

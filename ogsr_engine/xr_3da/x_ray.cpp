@@ -227,7 +227,7 @@ constexpr auto dwStickyKeysStructSize = sizeof(STICKYKEYS);
 constexpr auto dwFilterKeysStructSize = sizeof(FILTERKEYS);
 constexpr auto dwToggleKeysStructSize = sizeof(TOGGLEKEYS);
 
-struct damn_keys_filter
+struct damn_keys_filter final
 {
     BOOL bScreenSaverState;
 

@@ -16,7 +16,7 @@
 
 namespace
 {
-class CBlender_Editor_Selection : public IBlenderXr
+class CBlender_Editor_Selection final : public IBlenderXr
 {
     RTTI_DECLARE_TYPEINFO(CBlender_Editor_Selection, IBlenderXr);
 
@@ -49,7 +49,7 @@ public:
     ~CBlender_Editor_Selection() override = default;
 };
 
-class CBlender_Editor_Wire : public IBlenderXr
+class CBlender_Editor_Wire final : public IBlenderXr
 {
     RTTI_DECLARE_TYPEINFO(CBlender_Editor_Wire, IBlenderXr);
 

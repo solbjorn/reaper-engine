@@ -8,7 +8,7 @@
 
 #define HUD_CURSOR_SECTION "hud_cursor"
 
-class CHUDCrosshair
+class CHUDCrosshair final
 {
 private:
     float cross_length_perc;

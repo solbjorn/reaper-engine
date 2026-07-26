@@ -17,7 +17,7 @@ class CUIStalkersRankingWnd;
 class CUIEventsWnd;
 class CUIPdaContactsWnd;
 
-class CUIPdaWnd : public CUIDialogWnd
+class CUIPdaWnd final : public CUIDialogWnd
 {
     RTTI_DECLARE_TYPEINFO(CUIPdaWnd, CUIDialogWnd);
 
@@ -62,8 +62,7 @@ public:
     CUIPdaWnd();
     ~CUIPdaWnd() override;
 
-    virtual void Init();
-
+    void Init();
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 
     void Draw() override;

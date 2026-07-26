@@ -13,7 +13,7 @@
 class CAgentManager;
 class CMemberOrder;
 
-class CAgentCorpseManager
+class CAgentCorpseManager final
 {
 public:
     typedef xr_vector<CMemberCorpse> MEMBER_CORPSES;

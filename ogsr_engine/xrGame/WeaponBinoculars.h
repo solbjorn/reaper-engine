@@ -7,7 +7,7 @@ class CUIFrameWindow;
 class CUIStatic;
 class CBinocularsVision;
 
-class CWeaponBinoculars : public CWeaponCustomPistol
+class CWeaponBinoculars final : public CWeaponCustomPistol
 {
     RTTI_DECLARE_TYPEINFO(CWeaponBinoculars, CWeaponCustomPistol);
 

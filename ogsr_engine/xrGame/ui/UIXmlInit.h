@@ -34,7 +34,7 @@ class CUIDragDropListEx;
 class CUIComboBox;
 class CUITrackBar;
 
-class CUIXmlInit : public virtual RTTI::Enable
+class CUIXmlInit final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CUIXmlInit);
 

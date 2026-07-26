@@ -649,7 +649,7 @@ public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_ssr_2); }
 } ssfx_ssr_2;
 
-class ssfx_volumetric : public R_constant_setup
+class ssfx_volumetric final : public R_constant_setup
 {
     RTTI_DECLARE_TYPEINFO(ssfx_volumetric, R_constant_setup);
 

@@ -11,7 +11,7 @@
 #include "object_interfaces.h"
 #include "alife_space.h"
 
-class CALifeSimulatorHeader : public virtual RTTI::Enable
+class CALifeSimulatorHeader final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CALifeSimulatorHeader);
 
@@ -22,8 +22,8 @@ public:
     CALifeSimulatorHeader() = default;
     ~CALifeSimulatorHeader() override;
 
-    virtual void save(IWriter& tMemoryStream);
-    virtual void load(IReader& tFileStream);
+    void save(IWriter& tMemoryStream);
+    void load(IReader& tFileStream);
 
     [[nodiscard]] inline u32 version() const { return m_version; }
     bool valid(IReader& file_stream) const;

@@ -7,7 +7,7 @@ enum
     LOCKFLAGS_APPEND = D3DLOCK_NOOVERWRITE
 };
 
-class _VertexStream
+class _VertexStream final
 {
 private:
     ID3DVertexBuffer* pVB;
@@ -58,7 +58,7 @@ public:
     _VertexStream& operator=(_VertexStream&&) = default;
 };
 
-class _IndexStream
+class _IndexStream final
 {
 private:
     ID3DIndexBuffer* pIB;

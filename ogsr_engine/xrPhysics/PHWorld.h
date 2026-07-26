@@ -27,10 +27,10 @@ public:
 ////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
-class CPHWorld : public pureFrame
+class CPHWorld final : public pureFrame
 #ifdef DEBUG
     ,
-                 public pureRender
+                       public pureRender
 #endif
 {
     RTTI_DECLARE_TYPEINFO(CPHWorld, pureFrame

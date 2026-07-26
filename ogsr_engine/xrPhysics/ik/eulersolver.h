@@ -62,7 +62,7 @@ void EulerSolve2(int euler_type, const Matrix R, float f1[3], float f2[3]);
 
 void EulerEval(int euler_type, const float t[3], Matrix R);
 
-class EulerPsiSolver
+class EulerPsiSolver final
 {
 private:
     int euler_type; // ZXY, YXZ, etc

@@ -4,7 +4,7 @@ class CUIDialogWnd;
 class CUIDialogWndEx;
 class CUIWindow;
 
-class dlgItem
+class dlgItem final
 {
 public:
     CUIWindow* wnd;

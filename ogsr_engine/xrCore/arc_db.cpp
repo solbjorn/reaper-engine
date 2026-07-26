@@ -39,7 +39,7 @@ constexpr struct
 } // namespace xr
 
 template <>
-struct std::default_delete<xr::detail::opaque_mapping>
+struct std::default_delete<xr::detail::opaque_mapping> final
 {
     constexpr void operator()(xr::detail::opaque_mapping* ptr) const noexcept { ::CloseHandle(ptr); }
 };

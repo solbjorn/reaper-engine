@@ -6,7 +6,7 @@ struct dContact;
 struct SGameMtl;
 class CClimableObject;
 
-class CElevatorState
+class CElevatorState final
 {
 public:
     enum Estate
@@ -24,7 +24,7 @@ public:
 private:
     Estate m_state{clbNoLadder};
 
-    struct SEnertionState
+    struct SEnertionState final
     {
         float dist;
         u32 time;

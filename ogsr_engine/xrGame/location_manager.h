@@ -12,7 +12,7 @@
 
 class CGameObject;
 
-class CLocationManager : public virtual RTTI::Enable
+class CLocationManager final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CLocationManager);
 
@@ -24,8 +24,8 @@ public:
     inline explicit CLocationManager(CGameObject* object);
     ~CLocationManager() override;
 
-    virtual void Load(LPCSTR section);
-    virtual void reload(LPCSTR);
+    void Load(LPCSTR section);
+    void reload(LPCSTR);
 
     IC const GameGraph::TERRAIN_VECTOR& vertex_types() const;
 };

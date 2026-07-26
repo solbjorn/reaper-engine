@@ -4,7 +4,7 @@
 #include "UIStaticItem.h"
 #include "ui/uiabstract.h"
 
-class CUIFrameRect : public CUISimpleWindow, CUIMultiTextureOwner // public CUICustomItem
+class CUIFrameRect final : public CUISimpleWindow, CUIMultiTextureOwner
 {
     RTTI_DECLARE_TYPEINFO(CUIFrameRect, CUISimpleWindow, CUIMultiTextureOwner);
 
@@ -35,7 +35,7 @@ public:
     CUIFrameRect();
     ~CUIFrameRect() override;
 
-    virtual void Init(gsl::czstring base_name, f32 x, f32 y, f32 w, f32 h);
+    void Init(gsl::czstring base_name, f32 x, f32 y, f32 w, f32 h);
     void InitTexture(gsl::czstring texture) override;
     void Draw() override;
     void Draw(f32 x, f32 y) override;

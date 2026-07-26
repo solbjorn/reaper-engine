@@ -8,7 +8,7 @@
 
 #pragma once
 
-struct EmptyVertexData
+struct EmptyVertexData final
 {
     template <typename TCompoundVertex> // result mixin type
     struct VertexData
@@ -16,19 +16,21 @@ struct EmptyVertexData
 };
 
 template <typename... Components>
-struct CompoundVertex : Components::template VertexData<CompoundVertex<Components...>>...
+struct CompoundVertex final : Components::template VertexData<CompoundVertex<Components...>>...
 {};
 
 template <typename TPriorityQueuee, // CDataStorageBucketList|CDataStorageBinaryHeap
           typename TVertexManager, // CVertexManagerFixed|CVertexManagerHashFixed
           typename TPathBuilder, // CEdgePath|CVertexPath
           typename TVertexAllocator, // CVertexAllocatorFixed
-          typename TCompoundVertex, typename TManagerDataStorage = typename TVertexManager::template CDataStorage<TPathBuilder, TVertexAllocator, TCompoundVertex>,
+          typename TCompoundVertex,
+          typename TManagerDataStorage = typename TVertexManager::template CDataStorage<TPathBuilder, TVertexAllocator, TCompoundVertex>,
           typename TDataStorageBase = typename TPriorityQueuee::template CDataStorage<TManagerDataStorage>>
-struct PriorityQueueConstructor : public TDataStorageBase
+struct PriorityQueueConstructor final : public TDataStorageBase
 {
-    RTTI_DECLARE_TYPEINFO(PriorityQueueConstructor<TPriorityQueuee, TVertexManager, TPathBuilder, TVertexAllocator, TCompoundVertex, TManagerDataStorage, TDataStorageBase>,
-                          TDataStorageBase);
+    RTTI_DECLARE_TYPEINFO(
+        PriorityQueueConstructor<TPriorityQueuee, TVertexManager, TPathBuilder, TVertexAllocator, TCompoundVertex, TManagerDataStorage, TDataStorageBase>,
+        TDataStorageBase);
 
 public:
     using Inherited = TDataStorageBase;

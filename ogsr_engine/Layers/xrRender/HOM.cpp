@@ -31,7 +31,7 @@ CHOM::~CHOM()
 
 namespace
 {
-struct HOM_poly
+struct HOM_poly final
 {
     Fvector v1, v2, v3;
     u32 flags;

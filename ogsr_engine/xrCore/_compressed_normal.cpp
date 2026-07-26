@@ -17,7 +17,7 @@
 namespace
 {
 // static lookup table for unit vector3 decompression
-class pvUVAdjustment_init
+class pvUVAdjustment_init final
 {
 private:
     std::array<f32, 0x2000> tbl;

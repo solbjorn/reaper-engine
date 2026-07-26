@@ -1,6 +1,6 @@
 #pragma once
 
-struct dbg_matrix
+struct dbg_matrix final
 {
     Fmatrix b2goal_gl;
     Fmatrix b3goal_gl;
@@ -21,6 +21,7 @@ struct dbg_matrix
     Fmatrix GOAL;
     Fmatrix dbg_goal;
     u16 ref_bone;
+
     dbg_matrix()
     {
         b2goal_gl = Fidentity;
@@ -43,11 +44,14 @@ struct dbg_matrix
         ref_bone = u16(-1);
     }
 };
+
 struct SCalculateData;
-struct dbg_matrises
+
+struct dbg_matrises final
 {
     dbg_matrix dbg_m;
     xr_vector<dbg_matrix> old_dbg_m;
+
     void next_state(SCalculateData& cd);
     void next_goal(const SCalculateData& cd);
 };

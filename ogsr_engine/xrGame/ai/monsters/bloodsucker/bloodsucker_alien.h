@@ -4,7 +4,7 @@ class CAI_Bloodsucker;
 class CAlienEffector;
 class CAlienEffectorPP;
 
-class CBloodsuckerAlien
+class CBloodsuckerAlien final
 {
     CAI_Bloodsucker* m_object{};
 

@@ -4,7 +4,7 @@ constexpr u16 LT_DIRECT = 0;
 constexpr u16 LT_POINT = 1;
 constexpr u16 LT_SECONDARY = 2;
 
-struct R_Light
+struct R_Light final
 {
     u16 type; // Type of light source
     u16 level; // GI level

@@ -13,7 +13,7 @@ struct CUITradeInternal;
 class CUIDragDropListEx;
 class CUICellItem;
 
-class CUITradeWnd : public CUIWindow
+class CUITradeWnd final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUITradeWnd, CUIWindow);
 
@@ -24,16 +24,14 @@ public:
     CUITradeWnd();
     ~CUITradeWnd() override;
 
-    virtual void Init();
-
+    void Init();
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
-
     void InitTrade(CInventoryOwner* pOur, CInventoryOwner* pOthers);
 
     void Draw() override;
     void Update() override;
-    virtual void Show();
-    virtual void Hide();
+    void Show();
+    void Hide();
 
     void DisableAll();
     void EnableAll();

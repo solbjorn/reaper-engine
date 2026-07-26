@@ -12,7 +12,7 @@ namespace xr
 {
 namespace detail
 {
-class ImGuiGameConsole
+class ImGuiGameConsole final
 {
 public:
     ImGuiGameConsole();
@@ -111,7 +111,7 @@ private:
 
 namespace
 {
-class embedded_editor_font
+class embedded_editor_font final
 {
 private:
     ImFont* large;

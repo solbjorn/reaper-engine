@@ -2,9 +2,9 @@
 
 #include "CameraDefs.h"
 
-struct SPPInfo
+struct SPPInfo final
 {
-    struct SColor
+    struct SColor final
     {
         float r{}, g{}, b{};
 
@@ -45,7 +45,7 @@ struct SPPInfo
 
     float blur{}, gray{};
 
-    struct SDuality
+    struct SDuality final
     {
         float h{}, v{};
 
@@ -60,7 +60,7 @@ struct SPPInfo
         }
     } duality;
 
-    struct SNoise
+    struct SNoise final
     {
         float intensity{}, grain{};
         float fps{};

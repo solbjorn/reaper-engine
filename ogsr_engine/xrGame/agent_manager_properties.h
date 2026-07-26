@@ -21,7 +21,7 @@ typedef CPropertyEvaluatorMember<CAgentManager> CAgentManagerPropertyEvaluatorMe
 // CAgentManagerPropertyEvaluatorItem
 //////////////////////////////////////////////////////////////////////////
 
-class CAgentManagerPropertyEvaluatorItem : public CAgentManagerPropertyEvaluator
+class CAgentManagerPropertyEvaluatorItem final : public CAgentManagerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CAgentManagerPropertyEvaluatorItem, CAgentManagerPropertyEvaluator);
 
@@ -39,7 +39,7 @@ public:
 // CAgentManagerPropertyEvaluatorEnemy
 //////////////////////////////////////////////////////////////////////////
 
-class CAgentManagerPropertyEvaluatorEnemy : public CAgentManagerPropertyEvaluator
+class CAgentManagerPropertyEvaluatorEnemy final : public CAgentManagerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CAgentManagerPropertyEvaluatorEnemy, CAgentManagerPropertyEvaluator);
 
@@ -57,7 +57,7 @@ public:
 // CAgentManagerPropertyEvaluatorDanger
 //////////////////////////////////////////////////////////////////////////
 
-class CAgentManagerPropertyEvaluatorDanger : public CAgentManagerPropertyEvaluator
+class CAgentManagerPropertyEvaluatorDanger final : public CAgentManagerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CAgentManagerPropertyEvaluatorDanger, CAgentManagerPropertyEvaluator);
 

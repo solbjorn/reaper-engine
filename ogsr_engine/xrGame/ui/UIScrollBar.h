@@ -6,7 +6,7 @@ class CUI3tButton;
 class CUIScrollBox;
 class CUIStaticItem;
 
-class CUIScrollBar : public CUIWindow
+class CUIScrollBar final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIScrollBar, CUIWindow);
 
@@ -63,7 +63,7 @@ public:
 
     void Show(bool b) override;
     void Enable(bool b) override;
-    virtual void Init(f32 x, f32 y, f32 length, bool bIsHorizontal, gsl::czstring profile = "default");
+    void Init(f32 x, f32 y, f32 length, bool bIsHorizontal, gsl::czstring profile = "default");
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;

@@ -11,7 +11,8 @@ class CPHElement;
 
 DEFINE_VECTOR(dJointFeedback, CFEEDBACK_STORAGE, CFEEDBACK_I);
 
-class CPHFracturesHolder // stored in CPHElement
+// stored in CPHElement
+class CPHFracturesHolder final
 {
     friend class CPHElement;
     friend class CPHShellSplitterHolder;
@@ -44,8 +45,8 @@ public:
     u16 AddFracture(const CPHFracture& fracture);
     CPHFracture& Fracture(u16 num);
     void PhTune(dBodyID body); // set feedback for joints called from PhTune of ShellSplitterHolder
-    bool PhDataUpdate(CPHElement* element); // collect joints and external impacts in fractures Update which set m_fractured; called from PhDataUpdate of ShellSplitterHolder
-                                            // returns true if has breaks
+    bool PhDataUpdate(CPHElement* element); // collect joints and external impacts in fractures Update which set m_fractured; called from PhDataUpdate of
+                                            // ShellSplitterHolder returns true if has breaks
     void ApplyImpactsToElement(CPHElement* element);
 };
 

@@ -47,7 +47,7 @@ typedef CPropertyEvaluatorConst<CAI_Stalker> CObjectPropertyEvaluatorConst;
 // CObjectPropertyEvaluatorState
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectPropertyEvaluatorState : public CObjectPropertyEvaluatorBase<CWeapon>
+class CObjectPropertyEvaluatorState final : public CObjectPropertyEvaluatorBase<CWeapon>
 {
     RTTI_DECLARE_TYPEINFO(CObjectPropertyEvaluatorState, CObjectPropertyEvaluatorBase<CWeapon>);
 
@@ -63,7 +63,7 @@ public:
     [[nodiscard]] _value_type evaluate() override;
 };
 
-class CObjectPropertyEvaluatorWeaponHidden : public CObjectPropertyEvaluatorBase<CWeapon>
+class CObjectPropertyEvaluatorWeaponHidden final : public CObjectPropertyEvaluatorBase<CWeapon>
 {
     RTTI_DECLARE_TYPEINFO(CObjectPropertyEvaluatorWeaponHidden, CObjectPropertyEvaluatorBase<CWeapon>);
 
@@ -81,7 +81,7 @@ public:
 // CObjectPropertyEvaluatorAmmo
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectPropertyEvaluatorAmmo : public CObjectPropertyEvaluatorBase<CWeapon>
+class CObjectPropertyEvaluatorAmmo final : public CObjectPropertyEvaluatorBase<CWeapon>
 {
     RTTI_DECLARE_TYPEINFO(CObjectPropertyEvaluatorAmmo, CObjectPropertyEvaluatorBase<CWeapon>);
 
@@ -100,7 +100,7 @@ public:
 // CObjectPropertyEvaluatorEmpty
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectPropertyEvaluatorEmpty : public CObjectPropertyEvaluatorBase<CWeapon>
+class CObjectPropertyEvaluatorEmpty final : public CObjectPropertyEvaluatorBase<CWeapon>
 {
     RTTI_DECLARE_TYPEINFO(CObjectPropertyEvaluatorEmpty, CObjectPropertyEvaluatorBase<CWeapon>);
 
@@ -119,7 +119,7 @@ public:
 // CObjectPropertyEvaluatorFull
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectPropertyEvaluatorFull : public CObjectPropertyEvaluatorBase<CWeapon>
+class CObjectPropertyEvaluatorFull final : public CObjectPropertyEvaluatorBase<CWeapon>
 {
     RTTI_DECLARE_TYPEINFO(CObjectPropertyEvaluatorFull, CObjectPropertyEvaluatorBase<CWeapon>);
 
@@ -138,7 +138,7 @@ public:
 // CObjectPropertyEvaluatorReady
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectPropertyEvaluatorReady : public CObjectPropertyEvaluatorBase<CWeapon>
+class CObjectPropertyEvaluatorReady final : public CObjectPropertyEvaluatorBase<CWeapon>
 {
     RTTI_DECLARE_TYPEINFO(CObjectPropertyEvaluatorReady, CObjectPropertyEvaluatorBase<CWeapon>);
 
@@ -157,7 +157,7 @@ public:
 // CObjectPropertyEvaluatorQueue
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectPropertyEvaluatorQueue : public CObjectPropertyEvaluatorBase<CWeapon>
+class CObjectPropertyEvaluatorQueue final : public CObjectPropertyEvaluatorBase<CWeapon>
 {
     RTTI_DECLARE_TYPEINFO(CObjectPropertyEvaluatorQueue, CObjectPropertyEvaluatorBase<CWeapon>);
 
@@ -179,7 +179,7 @@ public:
 // CObjectPropertyEvaluatorNoItems
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectPropertyEvaluatorNoItems : public CPropertyEvaluator<CAI_Stalker>
+class CObjectPropertyEvaluatorNoItems final : public CPropertyEvaluator<CAI_Stalker>
 {
     RTTI_DECLARE_TYPEINFO(CObjectPropertyEvaluatorNoItems, CPropertyEvaluator<CAI_Stalker>);
 
@@ -198,7 +198,7 @@ public:
 // CObjectPropertyEvaluatorMissile
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectPropertyEvaluatorMissile : public CObjectPropertyEvaluatorBase<CMissile>
+class CObjectPropertyEvaluatorMissile final : public CObjectPropertyEvaluatorBase<CMissile>
 {
     RTTI_DECLARE_TYPEINFO(CObjectPropertyEvaluatorMissile, CObjectPropertyEvaluatorBase<CMissile>);
 

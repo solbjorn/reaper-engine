@@ -27,7 +27,7 @@ namespace
 
 //--------------------------------------------------------------------
 
-class noise3_init
+class noise3_init final
 {
 private:
     std::array<int, B + B + 2> p;

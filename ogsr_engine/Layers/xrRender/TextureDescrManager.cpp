@@ -7,7 +7,7 @@
 // eye-params
 float r__dtex_range = 50;
 
-class cl_dt_scaler : public R_constant_setup
+class cl_dt_scaler final : public R_constant_setup
 {
     RTTI_DECLARE_TYPEINFO(cl_dt_scaler, R_constant_setup);
 

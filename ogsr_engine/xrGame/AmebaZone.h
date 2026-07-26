@@ -1,6 +1,6 @@
 #pragma once
 
-class CAmebaZone : public CVisualZone, public CPHUpdateObject
+class CAmebaZone final : public CVisualZone, public CPHUpdateObject
 {
     RTTI_DECLARE_TYPEINFO(CAmebaZone, CVisualZone, CPHUpdateObject);
 

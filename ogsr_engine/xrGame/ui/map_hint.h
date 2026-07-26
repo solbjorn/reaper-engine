@@ -5,7 +5,7 @@
 class CUIStatic;
 class CUIFrameWindow;
 
-class CUIMapHint : public CUIWindow
+class CUIMapHint final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIMapHint, CUIWindow);
 

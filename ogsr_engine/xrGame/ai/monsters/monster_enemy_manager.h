@@ -4,7 +4,7 @@
 
 class CBaseMonster;
 
-class CMonsterEnemyManager
+class CMonsterEnemyManager final
 {
     CBaseMonster* monster{};
     const CEntityAlive* enemy{};

@@ -10,7 +10,7 @@
 class CCustomZone;
 class CInventoryOwner;
 
-struct ITEM_TYPE
+struct ITEM_TYPE final
 {
     Fvector2 freq; // min,max
     HUD_SOUND detect_snds;
@@ -20,7 +20,7 @@ struct ITEM_TYPE
 };
 
 // описание зоны, обнаруженной детектором
-struct ITEM_INFO
+struct ITEM_INFO final
 {
     ITEM_TYPE* curr_ref{};
     float snd_time{};
@@ -127,7 +127,7 @@ public:
     }
 };
 
-class CAfList : public CDetectList<CArtefact>
+class CAfList final : public CDetectList<CArtefact>
 {
     RTTI_DECLARE_TYPEINFO(CAfList, CDetectList<CArtefact>);
 
@@ -208,7 +208,7 @@ protected:
     [[nodiscard]] Fvector GetDirectionForCollision() override;
 };
 
-class CZoneList : public CDetectList<CCustomZone>
+class CZoneList final : public CDetectList<CCustomZone>
 {
     RTTI_DECLARE_TYPEINFO(CZoneList, CDetectList<CCustomZone>);
 

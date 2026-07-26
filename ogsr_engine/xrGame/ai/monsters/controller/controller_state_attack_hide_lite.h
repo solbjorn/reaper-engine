@@ -2,7 +2,7 @@
 
 // Hiding until enemy get out from its sight
 template <typename _Object>
-class CStateControlHideLite : public CState<_Object>
+class CStateControlHideLite final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateControlHideLite<_Object>, CState<_Object>);
 

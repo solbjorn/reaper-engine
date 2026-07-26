@@ -3,7 +3,7 @@
 #include "control_combase.h"
 #include "ai_monster_defs.h"
 
-class CControlMovementBase : public CControl_ComBase
+class CControlMovementBase final : public CControl_ComBase
 {
     RTTI_DECLARE_TYPEINFO(CControlMovementBase, CControl_ComBase);
 

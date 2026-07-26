@@ -10,7 +10,7 @@
 
 #include "character_info_defs.h"
 
-struct REPUTATION_DATA
+struct REPUTATION_DATA final
 {
     REPUTATION_DATA(int, shared_str, LPCSTR);
 
@@ -21,7 +21,7 @@ struct REPUTATION_DATA
 
 class CHARACTER_REPUTATION;
 
-class CHARACTER_REPUTATION : public CIni_IdToIndex<1, REPUTATION_DATA, shared_str, int, CHARACTER_REPUTATION>
+class CHARACTER_REPUTATION final : public CIni_IdToIndex<1, REPUTATION_DATA, shared_str, int, CHARACTER_REPUTATION>
 {
     RTTI_DECLARE_TYPEINFO(CHARACTER_REPUTATION, CIni_IdToIndex<1, REPUTATION_DATA, shared_str, int, CHARACTER_REPUTATION>);
 

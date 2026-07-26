@@ -27,7 +27,7 @@ public:
     void OnFocusLost() override;
 };
 
-class CMapSpotPointer : public CMapSpot
+class CMapSpotPointer final : public CMapSpot
 {
     RTTI_DECLARE_TYPEINFO(CMapSpotPointer, CMapSpot);
 
@@ -41,7 +41,7 @@ public:
     [[nodiscard]] gsl::czstring GetHint() override;
 };
 
-class CMiniMapSpot : public CMapSpot
+class CMiniMapSpot final : public CMapSpot
 {
     RTTI_DECLARE_TYPEINFO(CMiniMapSpot, CMapSpot);
 

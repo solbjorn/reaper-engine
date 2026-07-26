@@ -9,12 +9,13 @@
 #include "../../entity_alive.h"
 #include "../../../Include/xrRender/KinematicsAnimated.h"
 
-class CAI_Crow : public CEntity
+class CAI_Crow final : public CEntity
 {
     RTTI_DECLARE_TYPEINFO(CAI_Crow, CEntity);
 
 private:
     typedef CEntity inherited;
+
     enum ECrowStates
     {
         eUndef = -1,
@@ -35,7 +36,7 @@ private:
     };
 
     // animations
-    struct SAnim
+    struct SAnim final
     {
         std::inplace_vector<MotionID, MAX_ANIM_COUNT> m_Animations;
 
@@ -43,7 +44,7 @@ private:
         void Load(IKinematicsAnimated* visual, LPCSTR prefix);
     };
 
-    struct SSound
+    struct SSound final
     {
         std::inplace_vector<ref_sound, MAX_SND_COUNT> m_Sounds;
 
@@ -58,7 +59,7 @@ public:
     void OnHitEndPlaying();
 
 protected:
-    struct SCrowAnimations
+    struct SCrowAnimations final
     {
         SAnim m_idle;
         SAnim m_fly;
@@ -66,11 +67,14 @@ protected:
         SAnim m_death_idle;
         SAnim m_death_dead;
     };
+
     SCrowAnimations m_Anims;
-    struct SCrowSounds
+
+    struct SCrowSounds final
     {
         SSound m_idle;
     };
+
     SCrowSounds m_Sounds;
 
     Fvector vOldPosition;
@@ -131,14 +135,14 @@ public:
     void net_Export(CSE_Abstract* E) override;
 
     void g_fireParams(CHudItem*, Fvector3&, Fvector3&, const bool = false) override {}
-    virtual void g_WeaponBones(s32&, s32&, s32&) {}
+    void g_WeaponBones(s32&, s32&, s32&) {}
 
     void HitSignal(f32, Fvector3&, CObject*, s16) override;
     void HitImpulse(f32, Fvector3&, Fvector3&) override;
     void Hit(SHit* pHDS) override;
     tmc::task<void> Die(CObject* who) override;
-    [[nodiscard]] virtual f32 ffGetFov() const { return 150.f; }
-    [[nodiscard]] virtual f32 ffGetRange() const { return 30.f; }
+    [[nodiscard]] f32 ffGetFov() const { return 150.0f; }
+    [[nodiscard]] f32 ffGetRange() const { return 30.0f; }
 
     [[nodiscard]] BOOL IsVisibleForHUD() override { return FALSE; }
     [[nodiscard]] bool IsVisibleForZones() override { return false; }

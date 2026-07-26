@@ -7,7 +7,7 @@
 
 #include "Artifact.h"
 
-class CNeedles : public CArtefact
+class CNeedles final : public CArtefact
 {
     RTTI_DECLARE_TYPEINFO(CNeedles, CArtefact);
 

@@ -74,7 +74,7 @@ class XR_NOVTABLE ISpatial : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(ISpatial);
 
 public:
-    struct _spatial
+    struct _spatial final
     {
         Fsphere sphere{};
         u32 type{};
@@ -116,7 +116,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 
-class ISpatial_NODE
+class ISpatial_NODE final
 {
 public:
     ISpatial_NODE* parent; // parent node for "empty-members" optimization
@@ -144,7 +144,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 
-class ISpatial_DB
+class ISpatial_DB final
 {
 private:
     xrCriticalSection cs;

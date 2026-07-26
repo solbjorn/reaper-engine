@@ -7,7 +7,7 @@ class CMapLocationWrapper;
 class CInventoryOwner;
 class CMapLocation;
 
-class CMapManager
+class CMapManager final
 {
     CMapLocationWrapper* m_locations;
 

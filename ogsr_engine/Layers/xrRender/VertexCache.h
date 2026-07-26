@@ -1,7 +1,7 @@
 #ifndef VERTEX_CACHE_H
 #define VERTEX_CACHE_H
 
-class VertexCache
+class VertexCache final
 {
 public:
     VertexCache(int size);

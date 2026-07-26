@@ -13,7 +13,7 @@ void vec_clear(T*& p)
     xr_delete(p);
 }
 
-class rnd_motion
+class rnd_motion final
 {
 private:
     xr_vector<MotionID> motions;
@@ -59,7 +59,7 @@ private:
     xr_vector<rnd_motion*> anims;
 };
 
-class death_anims
+class death_anims final
 {
 public:
     death_anims();

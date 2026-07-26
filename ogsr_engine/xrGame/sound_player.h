@@ -11,7 +11,7 @@
 #include "ai_sounds.h"
 #include "associative_vector.h"
 
-class CSoundPlayer : public virtual RTTI::Enable
+class CSoundPlayer final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CSoundPlayer);
 
@@ -48,12 +48,12 @@ public:
         }
     };
 
-    struct CSoundCollectionParamsFull : public CSoundParams, public CSoundCollectionParams
+    struct CSoundCollectionParamsFull final : public CSoundParams, public CSoundCollectionParams
     {
         CSound_UserDataPtr m_data;
     };
 
-    struct CSoundCollection
+    struct CSoundCollection final
     {
         xr_vector<ref_sound*> m_sounds;
         u32 m_last_sound_id;
@@ -67,7 +67,7 @@ public:
         void load();
     };
 
-    struct CSoundSingle : public CSoundParams
+    struct CSoundSingle final : public CSoundParams
     {
         ref_sound* m_sound;
         u32 m_start_time;
@@ -93,7 +93,7 @@ public:
         IC bool started() const { return (m_started); }
     };
 
-    struct CInappropriateSoundPredicate
+    struct CInappropriateSoundPredicate final
     {
         u32 m_sound_mask;
 
@@ -129,14 +129,16 @@ public:
     explicit CSoundPlayer(CObject* object);
     ~CSoundPlayer() override;
 
-    virtual void reinit();
-    virtual void reload(LPCSTR);
+    void reinit();
+    void reload(LPCSTR);
     void unload();
     u32 add(LPCSTR prefix, u32 max_count, ESoundTypes type, u32 priority, u32 mask, u32 internal_type, LPCSTR bone_name, CSound_UserDataPtr data = {});
-    CSoundCollection* add_deferred(LPCSTR prefix, u32 max_count, ESoundTypes type, u32 priority, u32 mask, u32 internal_type, LPCSTR bone_name, CSound_UserDataPtr data = {});
+    CSoundCollection* add_deferred(LPCSTR prefix, u32 max_count, ESoundTypes type, u32 priority, u32 mask, u32 internal_type, LPCSTR bone_name,
+                                   CSound_UserDataPtr data = {});
     void remove(u32 internal_type);
     void clear();
-    void play(u32 internal_type, u32 max_start_time = 0, u32 min_start_time = 0, u32 max_stop_time = 0, u32 min_stop_time = 0, u32 id = std::numeric_limits<u32>::max());
+    void play(u32 internal_type, u32 max_start_time = 0, u32 min_start_time = 0, u32 max_stop_time = 0, u32 min_stop_time = 0,
+              u32 id = std::numeric_limits<u32>::max());
     void update();
     IC void set_sound_mask(u32 sound_mask);
     IC void remove_active_sounds(u32 sound_mask);

@@ -1,7 +1,7 @@
 #pragma once
 
 // refs
-class CSoundRender_Environment : public CSound_environment
+class CSoundRender_Environment final : public CSound_environment
 {
 public:
     u32 version;

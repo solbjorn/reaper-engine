@@ -5,7 +5,7 @@
 
 class CUIMessageBox;
 
-class CUIMessageBoxEx : public CUIDialogWnd, public CUIWndCallback
+class CUIMessageBoxEx final : public CUIDialogWnd, public CUIWndCallback
 {
     RTTI_DECLARE_TYPEINFO(CUIMessageBoxEx, CUIDialogWnd, CUIWndCallback);
 
@@ -15,7 +15,7 @@ public:
 
     void SetText(LPCSTR text);
     LPCSTR GetText();
-    virtual void Init(LPCSTR xml_template);
+    void Init(LPCSTR xml_template);
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 
     LPCSTR GetHost();

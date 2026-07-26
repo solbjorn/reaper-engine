@@ -10,7 +10,7 @@
 
 #include "entity_alive.h"
 
-class CDangerObject
+class CDangerObject final
 {
 public:
     enum EDangerType : u32

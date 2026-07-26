@@ -4,7 +4,7 @@
 #include "../../../Include/xrRender/Kinematics.h"
 #include "../../../Include/xrRender/animation_motion.h"
 
-struct SControlJumpData : public ControlCom::IComData
+struct SControlJumpData final : public ControlCom::IComData
 {
     CObject* target_object;
     Fvector target_position;
@@ -25,30 +25,30 @@ struct SControlJumpData : public ControlCom::IComData
 
     Flags32 flags;
 
-    struct _prepare
+    struct _prepare final
     {
         MotionID motion;
     } state_prepare;
 
-    struct _prepare_in_move
+    struct _prepare_in_move final
     {
         MotionID motion;
         u32 velocity_mask;
     } state_prepare_in_move;
 
-    struct _glide
+    struct _glide final
     {
         MotionID motion;
     } state_glide;
 
-    struct _ground
+    struct _ground final
     {
         MotionID motion;
         u32 velocity_mask;
     } state_ground;
 };
 
-class CControlJump : public CControl_ComCustom<SControlJumpData>
+class CControlJump final : public CControl_ComCustom<SControlJumpData>
 {
     RTTI_DECLARE_TYPEINFO(CControlJump, CControl_ComCustom<SControlJumpData>);
 
@@ -112,13 +112,13 @@ public:
     void update_frame() override;
 
     // check for distance and angle difference
-    virtual bool can_jump(CObject* target);
+    [[nodiscard]] bool can_jump(CObject* target);
 
     bool can_jump(Fvector const& target, bool const aggressive_jump);
     bool jump_intersect_geometry(Fvector const& target, CObject* ignored_object);
 
     // stop/break jump and all of jumping states
-    virtual void stop();
+    void stop();
 
     float get_max_distance() const { return m_max_distance; }
     float get_min_distance() const { return m_min_distance; }

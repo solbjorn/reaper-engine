@@ -19,7 +19,7 @@ extern u16 g_active_task_objective_id;
 
 class CGameTask;
 
-struct SGameTaskKey
+struct SGameTaskKey final
 {
     CGameTask* game_task{};
     TASK_ID task_id{};
@@ -35,19 +35,19 @@ struct SGameTaskKey
 };
 
 template <typename M>
-struct object_loader::default_load<SGameTaskKey, M>
+struct object_loader::default_load<SGameTaskKey, M> final
 {
     void operator()(SGameTaskKey& data, M& stream) const { data.load(stream); }
 };
 
 template <typename M>
-struct object_saver::default_save<SGameTaskKey, M>
+struct object_saver::default_save<SGameTaskKey, M> final
 {
     void operator()(const SGameTaskKey& data, M& stream) const { data.save(stream); }
 };
 
 template <>
-struct object_destroyer::default_destroy<SGameTaskKey>
+struct object_destroyer::default_destroy<SGameTaskKey> final
 {
     void operator()(SGameTaskKey& data) const { data.destroy(); }
 };

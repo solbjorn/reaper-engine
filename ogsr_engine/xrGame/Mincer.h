@@ -15,7 +15,7 @@
 #include "script_export_space.h"
 #include "PHDestroyable.h"
 
-class CMincer : public CBaseGraviZone, public CPHDestroyableNotificator
+class CMincer final : public CBaseGraviZone, public CPHDestroyableNotificator
 {
     RTTI_DECLARE_TYPEINFO(CMincer, CBaseGraviZone, CPHDestroyableNotificator);
 

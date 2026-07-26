@@ -9,7 +9,7 @@
 #pragma once
 
 template <typename _dist_type, typename _index_type, typename _iteration_type>
-struct SFlooder : public SBaseParameters<_dist_type, _index_type, _iteration_type>
+struct SFlooder final : public SBaseParameters<_dist_type, _index_type, _iteration_type>
 {
     u32 m_dummy;
 

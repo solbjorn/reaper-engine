@@ -43,7 +43,7 @@ public:
     }
 };
 
-class CKnownContactsRegistryWrapper : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CKnownContactsRegistry>>
+class CKnownContactsRegistryWrapper final : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CKnownContactsRegistry>>
 {
     RTTI_DECLARE_TYPEINFO(CKnownContactsRegistryWrapper, CALifeRegistryWrapperObject<CALifeRegistryWrapper<CKnownContactsRegistry>>);
 
@@ -51,7 +51,7 @@ public:
     ~CKnownContactsRegistryWrapper() override = default;
 };
 
-class CEncyclopediaRegistryWrapper : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CEncyclopediaRegistry>>
+class CEncyclopediaRegistryWrapper final : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CEncyclopediaRegistry>>
 {
     RTTI_DECLARE_TYPEINFO(CEncyclopediaRegistryWrapper, CALifeRegistryWrapperObject<CALifeRegistryWrapper<CEncyclopediaRegistry>>);
 
@@ -59,7 +59,7 @@ public:
     ~CEncyclopediaRegistryWrapper() override = default;
 };
 
-class CGameNewsRegistryWrapper : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CGameNewsRegistry>>
+class CGameNewsRegistryWrapper final : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CGameNewsRegistry>>
 {
     RTTI_DECLARE_TYPEINFO(CGameNewsRegistryWrapper, CALifeRegistryWrapperObject<CALifeRegistryWrapper<CGameNewsRegistry>>);
 
@@ -67,7 +67,7 @@ public:
     ~CGameNewsRegistryWrapper() override = default;
 };
 
-class CInfoPortionWrapper : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CInfoPortionRegistry>>
+class CInfoPortionWrapper final : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CInfoPortionRegistry>>
 {
     RTTI_DECLARE_TYPEINFO(CInfoPortionWrapper, CALifeRegistryWrapperObject<CALifeRegistryWrapper<CInfoPortionRegistry>>);
 
@@ -75,7 +75,7 @@ public:
     ~CInfoPortionWrapper() override = default;
 };
 
-class CRelationRegistryWrapper : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CRelationRegistry>>
+class CRelationRegistryWrapper final : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CRelationRegistry>>
 {
     RTTI_DECLARE_TYPEINFO(CRelationRegistryWrapper, CALifeRegistryWrapperObject<CALifeRegistryWrapper<CRelationRegistry>>);
 
@@ -83,7 +83,7 @@ public:
     ~CRelationRegistryWrapper() override = default;
 };
 
-class CMapLocationWrapper : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CMapLocationRegistry>>
+class CMapLocationWrapper final : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CMapLocationRegistry>>
 {
     RTTI_DECLARE_TYPEINFO(CMapLocationWrapper, CALifeRegistryWrapperObject<CALifeRegistryWrapper<CMapLocationRegistry>>);
 
@@ -91,7 +91,7 @@ public:
     ~CMapLocationWrapper() override = default;
 };
 
-class CGameTaskWrapper : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CGameTaskRegistry>>
+class CGameTaskWrapper final : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CGameTaskRegistry>>
 {
     RTTI_DECLARE_TYPEINFO(CGameTaskWrapper, CALifeRegistryWrapperObject<CALifeRegistryWrapper<CGameTaskRegistry>>);
 
@@ -99,7 +99,7 @@ public:
     ~CGameTaskWrapper() override = default;
 };
 
-class CActorStatisticsWrapper : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CActorStatisticRegistry>>
+class CActorStatisticsWrapper final : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CActorStatisticRegistry>>
 {
     RTTI_DECLARE_TYPEINFO(CActorStatisticsWrapper, CALifeRegistryWrapperObject<CALifeRegistryWrapper<CActorStatisticRegistry>>);
 

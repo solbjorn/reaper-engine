@@ -3,7 +3,7 @@
 
 class CBackend;
 
-class R_hemi
+class R_hemi final
 {
 public:
     R_constant* c_pos_faces;

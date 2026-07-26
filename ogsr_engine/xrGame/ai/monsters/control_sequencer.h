@@ -3,12 +3,12 @@
 #include "control_combase.h"
 #include "../../../Include/xrRender/Kinematics.h"
 
-struct SAnimationSequencerData : public ControlCom::IComData
+struct SAnimationSequencerData final : public ControlCom::IComData
 {
     xr_vector<MotionID> motions;
 };
 
-class CAnimationSequencer : public CControl_ComCustom<SAnimationSequencerData>
+class CAnimationSequencer final : public CControl_ComCustom<SAnimationSequencerData>
 {
     RTTI_DECLARE_TYPEINFO(CAnimationSequencer, CControl_ComCustom<SAnimationSequencerData>);
 

@@ -127,7 +127,8 @@ static_assert(sizeof(vertBoned2W) == 64);
 
 #pragma pack(push, 2)
 
-struct vertBoned3W // 70 bytes
+// 70 bytes
+struct vertBoned3W final
 {
     u16 m[3];
     Fvector P;
@@ -147,7 +148,8 @@ static_assert(sizeof(vertBoned3W) == 70);
 
 #pragma pack(pop)
 
-struct vertBoned4W // 76 bytes
+// 76 bytes
+struct vertBoned4W final
 {
     u16 m[4];
     Fvector P;
@@ -175,7 +177,7 @@ enum EJointType : u32
     jtSlider,
 };
 
-struct SJointLimit
+struct SJointLimit final
 {
     Fvector2 limit;
     float spring_factor;
@@ -191,7 +193,7 @@ struct SJointLimit
 };
 static_assert(sizeof(SJointLimit) == 16);
 
-struct SBoneShape
+struct SBoneShape final
 {
     enum EShapeType : u16
     {
@@ -241,7 +243,7 @@ struct SBoneShape
 };
 static_assert(sizeof(SBoneShape) == 112);
 
-struct SJointIKData
+struct SJointIKData final
 {
     // IK
     EJointType type;
@@ -341,7 +343,7 @@ inline IBoneData::~IBoneData() = default;
 class CBone;
 DEFINE_VECTOR(CBone*, BoneVec, BoneIt);
 
-class CBone : public CBoneInstance, public IBoneData
+class CBone final : public CBoneInstance, public IBoneData
 {
     RTTI_DECLARE_TYPEINFO(CBone, CBoneInstance, IBoneData);
 

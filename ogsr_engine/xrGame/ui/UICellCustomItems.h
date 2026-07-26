@@ -29,7 +29,7 @@ public:
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages action) override;
 };
 
-class CUIAmmoCellItem : public CUIInventoryCellItem
+class CUIAmmoCellItem final : public CUIInventoryCellItem
 {
     RTTI_DECLARE_TYPEINFO(CUIAmmoCellItem, CUIInventoryCellItem);
 
@@ -47,7 +47,7 @@ public:
     [[nodiscard]] CWeaponAmmo* object() { return static_cast<CWeaponAmmo*>(m_pData); }
 };
 
-class CUIWeaponCellItem : public CUIInventoryCellItem
+class CUIWeaponCellItem final : public CUIInventoryCellItem
 {
     RTTI_DECLARE_TYPEINFO(CUIWeaponCellItem, CUIInventoryCellItem);
 

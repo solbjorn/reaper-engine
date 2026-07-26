@@ -12,7 +12,7 @@
 
 class CAgentManager;
 
-class CAgentMemoryManager
+class CAgentMemoryManager final
 {
 public:
     typedef MemorySpace::CVisibleObject CVisibleObject;

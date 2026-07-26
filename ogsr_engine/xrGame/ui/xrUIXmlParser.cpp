@@ -20,7 +20,7 @@ shared_str CUIXml::correct_file_name(gsl::czstring path, gsl::czstring fn) const
 #ifdef LOG_ALL_XMLS
 int ListXmlCount = 0;
 
-struct DBGList_
+struct DBGList_ final
 {
     int num;
     bool closed;

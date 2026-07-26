@@ -17,7 +17,7 @@ class game_cl_GameState;
 class CUIPdaMsgListItem;
 class CUIProgressShape;
 
-class CUIMessagesWindow : public CUIWindow
+class CUIMessagesWindow final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIMessagesWindow, CUIWindow);
 

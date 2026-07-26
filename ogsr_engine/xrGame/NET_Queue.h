@@ -2,7 +2,7 @@
 
 #include "xrMessages.h"
 
-class NET_Event
+class NET_Event final
 {
 public:
     u16 ID;
@@ -56,7 +56,7 @@ public:
 
 IC bool operator<(const NET_Event& A, const NET_Event& B) { return A.timestamp < B.timestamp; }
 
-class NET_Queue_Event
+class NET_Queue_Event final
 {
 public:
     xr_deque<NET_Event> queue;

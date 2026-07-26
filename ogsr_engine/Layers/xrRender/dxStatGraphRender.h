@@ -4,7 +4,7 @@
 #include "../../Include/xrRender/StatGraphRender.h"
 #include "../../xr_3da/StatGraph.h"
 
-class dxStatGraphRender : public IStatGraphRender
+class dxStatGraphRender final : public IStatGraphRender
 {
     RTTI_DECLARE_TYPEINFO(dxStatGraphRender, IStatGraphRender);
 

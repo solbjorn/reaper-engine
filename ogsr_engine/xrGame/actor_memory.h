@@ -12,7 +12,7 @@
 
 class CActor;
 
-class CActorMemory : public vision_client
+class CActorMemory final : public vision_client
 {
     RTTI_DECLARE_TYPEINFO(CActorMemory, vision_client);
 

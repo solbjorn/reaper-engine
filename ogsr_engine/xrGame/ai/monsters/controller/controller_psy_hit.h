@@ -4,7 +4,7 @@
 #include "../../../../Include/xrRender/Kinematics.h"
 #include "../../../../xr_3da/bone.h"
 
-class CControllerPsyHit : public CControl_ComCustom<>
+class CControllerPsyHit final : public CControl_ComCustom<>
 {
     RTTI_DECLARE_TYPEINFO(CControllerPsyHit, CControl_ComCustom<>);
 

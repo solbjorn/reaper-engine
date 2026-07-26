@@ -8,7 +8,7 @@
 #include "CustomOutfit.h"
 #include "script_export_space.h"
 
-class CStalkerOutfit : public CCustomOutfit
+class CStalkerOutfit final : public CCustomOutfit
 {
     RTTI_DECLARE_TYPEINFO(CStalkerOutfit, CCustomOutfit);
 

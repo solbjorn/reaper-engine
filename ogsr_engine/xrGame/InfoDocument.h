@@ -9,7 +9,7 @@
 #include "InfoPortionDefs.h"
 #include "script_export_space.h"
 
-class CInfoDocument : public CInventoryItemObject
+class CInfoDocument final : public CInventoryItemObject
 {
     RTTI_DECLARE_TYPEINFO(CInfoDocument, CInventoryItemObject);
 

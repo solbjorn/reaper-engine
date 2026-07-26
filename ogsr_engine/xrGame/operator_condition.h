@@ -9,7 +9,7 @@
 #pragma once
 
 template <typename _condition_type, typename _value_type>
-class COperatorConditionAbstract
+class COperatorConditionAbstract final
 {
 public:
     typedef _condition_type condition_type;

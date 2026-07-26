@@ -53,9 +53,10 @@ public:
 #include "abstract_location_selector_inline.h"
 
 template <typename _Graph, typename _VertexEvaluator, typename _vertex_id_type>
-class CBaseLocationSelector : public CAbstractLocationSelector<_Graph, _VertexEvaluator, _vertex_id_type>
+class CBaseLocationSelector final : public CAbstractLocationSelector<_Graph, _VertexEvaluator, _vertex_id_type>
 {
-    RTTI_DECLARE_TYPEINFO(CBaseLocationSelector<_Graph, _VertexEvaluator, _vertex_id_type>, CAbstractLocationSelector<_Graph, _VertexEvaluator, _vertex_id_type>);
+    RTTI_DECLARE_TYPEINFO(CBaseLocationSelector<_Graph, _VertexEvaluator, _vertex_id_type>,
+                          CAbstractLocationSelector<_Graph, _VertexEvaluator, _vertex_id_type>);
 
 public:
     ~CBaseLocationSelector() override = default;

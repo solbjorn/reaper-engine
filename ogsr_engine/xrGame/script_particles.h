@@ -15,7 +15,7 @@
 class CObjectAnimator;
 class CScriptParticles;
 
-class CScriptParticlesCustom : public CParticlesObject
+class CScriptParticlesCustom final : public CParticlesObject
 {
     RTTI_DECLARE_TYPEINFO(CScriptParticlesCustom, CParticlesObject);
 
@@ -38,7 +38,7 @@ public:
     void remove_owner();
 };
 
-class CScriptParticles : public virtual RTTI::Enable
+class CScriptParticles final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CScriptParticles);
 

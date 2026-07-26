@@ -4,7 +4,7 @@
 #include "../state.h"
 
 template <typename _Object>
-class CStateMonsterAttackOnRun : public CState<_Object>
+class CStateMonsterAttackOnRun final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterAttackOnRun<_Object>, CState<_Object>);
 

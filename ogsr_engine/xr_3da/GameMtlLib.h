@@ -33,7 +33,7 @@ constexpr inline u32 GAMEMTL_CURRENT_VERSION{1};
 #include "../Include/xrRender/WallMarkArray.h"
 #include "../Include/xrRender/RenderFactory.h"
 
-struct SGameMtl
+struct SGameMtl final
 {
     friend class CGameMtlLibrary;
 
@@ -110,7 +110,7 @@ public:
     int GetID() const { return ID; }
 };
 
-struct SGameMtlPair
+struct SGameMtlPair final
 {
     friend class CGameMtlLibrary;
     enum

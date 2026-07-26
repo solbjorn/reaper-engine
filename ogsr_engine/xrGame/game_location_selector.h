@@ -19,7 +19,8 @@ enum ESelectionType : u32
 };
 
 template <typename _VertexEvaluator, typename _vertex_id_type>
-class CBaseLocationSelector<CGameGraph, _VertexEvaluator, _vertex_id_type> : public CAbstractLocationSelector<CGameGraph, _VertexEvaluator, _vertex_id_type>
+class CBaseLocationSelector<CGameGraph, _VertexEvaluator, _vertex_id_type> final
+    : public CAbstractLocationSelector<CGameGraph, _VertexEvaluator, _vertex_id_type>
 {
     RTTI_DECLARE_TYPEINFO(CBaseLocationSelector<CGameGraph, _VertexEvaluator, _vertex_id_type>,
                           CAbstractLocationSelector<CGameGraph, _VertexEvaluator, _vertex_id_type>);

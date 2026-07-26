@@ -8,7 +8,7 @@
 class CPortal;
 class CSector;
 
-struct XR_TRIVIAL _scissor : public Fbox2
+struct XR_TRIVIAL _scissor final : public Fbox2
 {
     f32 depth;
 
@@ -42,10 +42,10 @@ static_assert(sizeof(_scissor) == 24);
 XR_TRIVIAL_ASSERT(_scissor);
 
 // Connector
-class CPortal : public virtual RTTI::Enable
+class CPortal final : public virtual RTTI::Enable
 #ifdef DEBUG
     ,
-                public pureRender
+                      public pureRender
 #endif
 {
     RTTI_DECLARE_TYPEINFO(CPortal
@@ -114,12 +114,12 @@ public:
 class dxRender_Visual;
 
 // Main 'Sector' class
-class CSector : public virtual RTTI::Enable
+class CSector final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CSector);
 
 public:
-    struct level_sector_data_t
+    struct level_sector_data_t final
     {
         xr_vector<u32> portals_id;
         u32 root_id;
@@ -146,7 +146,7 @@ public:
     void setup(const level_sector_data_t& data, std::span<const std::unique_ptr<CPortal>> portals);
 };
 
-class CPortalTraverser
+class CPortalTraverser final
 {
 public:
     enum

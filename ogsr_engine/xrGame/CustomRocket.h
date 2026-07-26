@@ -10,7 +10,7 @@
 
 class CRocketLauncher;
 
-struct SRoketContact
+struct SRoketContact final
 {
     bool contact{};
 

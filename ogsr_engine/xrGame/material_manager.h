@@ -12,7 +12,7 @@
 
 class CPHMovementControl;
 
-class CMaterialManager : public virtual RTTI::Enable
+class CMaterialManager final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CMaterialManager);
 
@@ -33,11 +33,11 @@ public:
     explicit CMaterialManager(CObject* object, CPHMovementControl* movement_control);
     ~CMaterialManager() override;
 
-    virtual void Load(LPCSTR section);
-    virtual void reinit();
-    virtual void reload(LPCSTR);
-    virtual void set_run_mode(bool run_mode);
-    virtual void update(float time_delta, float volume, float step_time, bool standing);
+    void Load(LPCSTR section);
+    void reinit();
+    void reload(LPCSTR);
+    void set_run_mode(bool run_mode);
+    void update(float time_delta, float volume, float step_time, bool standing);
     IC u16 last_material_idx() const;
     IC u16 self_material_idx() const;
     IC SGameMtlPair* get_current_pair();

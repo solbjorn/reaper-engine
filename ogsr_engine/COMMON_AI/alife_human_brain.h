@@ -13,7 +13,7 @@
 class CALifeHumanObjectHandler;
 class CSE_ALifeHumanAbstract;
 
-class CALifeHumanBrain : public CALifeMonsterBrain
+class CALifeHumanBrain final : public CALifeMonsterBrain
 {
     RTTI_DECLARE_TYPEINFO(CALifeHumanBrain, CALifeMonsterBrain);
 

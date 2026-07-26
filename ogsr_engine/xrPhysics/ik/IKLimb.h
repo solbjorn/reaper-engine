@@ -26,7 +26,7 @@ namespace extrapolation
 class points;
 }
 
-class CIKLimb
+class CIKLimb final
 {
 public:
     CIKLimb();

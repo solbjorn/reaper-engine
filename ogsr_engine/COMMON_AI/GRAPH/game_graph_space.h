@@ -84,7 +84,7 @@ public:
     friend class CGameGraph;
 };
 
-class CHeader
+class CHeader final
 {
     u8 m_version;
     _GRAPH_ID m_vertex_count;
@@ -112,7 +112,7 @@ public:
 };
 #pragma pack(pop)
 
-class CLevelPoint
+class CLevelPoint final
 {
     Fvector tPoint;
     u32 tNodeID;
@@ -126,7 +126,7 @@ public:
     IC float distance() const { return (fDistance); }
 };
 
-struct STerrainPlace
+struct STerrainPlace final
 {
     std::inplace_vector<_LOCATION_ID, LOCATION_TYPE_COUNT> tMask;
 };

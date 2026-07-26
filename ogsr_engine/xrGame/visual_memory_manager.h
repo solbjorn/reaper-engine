@@ -15,7 +15,7 @@ class CCustomMonster;
 class CAI_Stalker;
 class vision_client;
 
-class CVisualMemoryManager : public virtual RTTI::Enable
+class CVisualMemoryManager final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CVisualMemoryManager);
 
@@ -90,10 +90,10 @@ public:
     explicit CVisualMemoryManager(vision_client* client);
     ~CVisualMemoryManager() override;
 
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
-    virtual void update(float time_delta);
-    virtual float feel_vision_mtl_transp(CObject* O, u32 element);
+    void reinit();
+    void reload(LPCSTR section);
+    void update(float time_delta);
+    [[nodiscard]] f32 feel_vision_mtl_transp(CObject* O, u32 element);
     void remove_links(CObject* object);
 
 public:

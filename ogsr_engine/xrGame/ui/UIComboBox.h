@@ -10,8 +10,6 @@
 #pragma once
 
 #include "UIEditBox.h"
-//.#include "UI3tButton.h"
-// #include "UIListWnd.h"
 #include "UIListBox.h"
 #include "UIListBoxItem.h"
 #include "UIInteractiveBackground.h"
@@ -19,7 +17,7 @@
 
 class CUIListBoxItem;
 
-class CUIComboBox : public CUIWindow, public CUIOptionsItem
+class CUIComboBox final : public CUIWindow, public CUIOptionsItem
 {
     RTTI_DECLARE_TYPEINFO(CUIComboBox, CUIWindow, CUIOptionsItem);
 
@@ -49,7 +47,7 @@ public:
     void SetVertScroll(bool bVScroll = true) { m_list.SetFixedScrollBar(bVScroll); }
     CUIListBoxItem* AddItem_(LPCSTR str, int _data);
     CUIListBoxItem* AddItem_(LPCSTR str);
-    virtual void Init(float x, float y, float width);
+    void Init(float x, float y, float width);
     void SetItem(int i);
 
     void Init(f32 x, f32 y, f32 width, f32 height) override;
@@ -62,10 +60,10 @@ public:
     void SetFont(CGameFont* pFont) override;
 
 protected:
-    virtual void SetState(UIState state);
+    void SetState(UIState state);
     [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
-    virtual void OnBtnClicked();
+    void OnBtnClicked();
     void ShowList(bool bShow);
     void OnListItemSelect();
     void Update() override;

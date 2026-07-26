@@ -12,7 +12,7 @@
 
 class CStalkerVelocityCollection;
 
-class CStalkerVelocityHolder
+class CStalkerVelocityHolder final
 {
 public:
     typedef CStalkerVelocityCollection COLLECTION;

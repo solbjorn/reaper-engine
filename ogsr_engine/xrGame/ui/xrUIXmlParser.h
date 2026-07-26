@@ -2,7 +2,7 @@
 
 #include "xrXMLParser.h"
 
-class CUIXml : public CXml
+class CUIXml final : public CXml
 {
     RTTI_DECLARE_TYPEINFO(CUIXml, CXml);
 

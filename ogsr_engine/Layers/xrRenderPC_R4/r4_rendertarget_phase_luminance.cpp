@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-struct v_build
+struct v_build final
 {
     Fvector4 p;
     Fvector2 uv0;
@@ -10,7 +10,7 @@ struct v_build
 };
 static_assert(sizeof(v_build) == 48);
 
-struct v_filter
+struct v_filter final
 {
     Fvector4 p;
     Fvector4 uv[8];

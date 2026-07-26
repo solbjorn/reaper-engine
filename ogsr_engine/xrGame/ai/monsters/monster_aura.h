@@ -3,7 +3,7 @@
 
 class CBaseMonster;
 
-class monster_aura
+class monster_aura final
 {
 private:
     CBaseMonster* m_object;

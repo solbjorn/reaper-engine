@@ -4,7 +4,7 @@
 
 #include "XR_IOConsole.h"
 
-class CEvent
+class CEvent final
 {
 private:
     friend class CEventAPI;

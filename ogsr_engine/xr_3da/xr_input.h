@@ -7,14 +7,14 @@ struct IDirectInput8W;
 struct IDirectInputDevice8W;
 
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-//описание класса
+// описание класса
 
 constexpr inline int mouse_device_key{1};
 constexpr inline int keyboard_device_key{2};
 constexpr inline int all_device_key{mouse_device_key | keyboard_device_key};
 constexpr inline int default_key{mouse_device_key | keyboard_device_key};
 
-class CInput : public pureFrame, public pureAppActivate, public pureAppDeactivate
+class CInput final : public pureFrame, public pureAppActivate, public pureAppDeactivate
 {
     RTTI_DECLARE_TYPEINFO(CInput, pureFrame, pureAppActivate, pureAppDeactivate);
 

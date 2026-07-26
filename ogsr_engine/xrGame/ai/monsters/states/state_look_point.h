@@ -4,7 +4,7 @@
 #include "state_data.h"
 
 template <typename _Object>
-class CStateMonsterLookToPoint : public CState<_Object>
+class CStateMonsterLookToPoint final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterLookToPoint<_Object>, CState<_Object>);
 

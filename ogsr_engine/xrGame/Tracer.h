@@ -8,7 +8,7 @@
 
 class CBulletManager;
 
-class CTracer
+class CTracer final
 {
     friend CBulletManager;
 

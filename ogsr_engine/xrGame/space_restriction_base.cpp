@@ -43,7 +43,7 @@ bool CSpaceRestrictionBase::inside(u32 level_vertex_id, bool partially_inside, f
                 CSpaceRestrictionBase_inside(this, Fvector().set(position.x, position.y, position.z), radius));
 }
 
-struct SortByXZ_predicate
+struct SortByXZ_predicate final
 {
     IC bool operator()(u32 v0, u32 v1) const { return (ai().level_graph().vertex(v0)->position().xz() < ai().level_graph().vertex(v1)->position().xz()); }
 };

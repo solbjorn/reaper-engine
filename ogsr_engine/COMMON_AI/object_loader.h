@@ -14,17 +14,17 @@
 namespace object_loader
 {
 template <typename T, typename M>
-struct default_load
+struct default_load final
 {
     void operator()(T& data, M& stream) const { stream.r(&data, sizeof(T)); }
 };
 } // namespace object_loader
 
 template <class M, typename P>
-struct CLoader
+struct CLoader final
 {
     template <typename T>
-    struct CHelper1
+    struct CHelper1 final
     {
         template <bool a>
         static void load_data(std::enable_if_t<!a, T&> data, M& stream, const P& /*p*/)
@@ -42,7 +42,7 @@ struct CLoader
     };
 
     template <typename T>
-    struct CHelper
+    struct CHelper final
     {
         template <bool pointer>
         static void load_data(std::enable_if_t<!pointer, T&> data, M& stream, const P& p)
@@ -59,10 +59,10 @@ struct CLoader
         }
     };
 
-    struct CHelper3
+    struct CHelper3 final
     {
         template <typename T>
-        struct has_value_compare
+        struct has_value_compare final
         {
             template <typename _P>
             static std::true_type select(object_type_traits::detail::other<typename _P::value_compare>*);
@@ -72,7 +72,7 @@ struct CLoader
         };
 
         template <typename T>
-        struct is_tree_structure
+        struct is_tree_structure final
         {
             enum
             {
@@ -81,7 +81,7 @@ struct CLoader
         };
 
         template <typename T1, typename T2>
-        struct add_helper
+        struct add_helper final
         {
             template <bool a>
             static void add(std::enable_if_t<!a, T1&> data, T2&& value)
@@ -119,7 +119,7 @@ struct CLoader
     };
 
     template <typename T>
-    struct CHelper4
+    struct CHelper4 final
     {
         template <bool a>
         static void load_data(std::enable_if_t<!a, T&> data, M& stream, const P& p)
@@ -263,7 +263,7 @@ namespace object_loader
 {
 namespace detail
 {
-struct CEmptyPredicate
+struct CEmptyPredicate final
 {
     template <typename T1, typename T2>
     constexpr void after_load(T1&, T2&) const

@@ -37,7 +37,7 @@ DECLARE_MESSAGE(DeviceReset);
 DECLARE_MESSAGE(ScreenResolutionChanged);
 
 template <typename T>
-class message_registry
+class message_registry final
 {
 private:
     xr_vector<std::pair<T*, gsl::index>> messages;

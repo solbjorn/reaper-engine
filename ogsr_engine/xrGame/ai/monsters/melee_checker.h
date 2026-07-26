@@ -5,7 +5,7 @@ class CEntity;
 
 #define HIT_STACK_SIZE 2
 
-class CMeleeChecker
+class CMeleeChecker final
 {
 private:
     collide::rq_results r_res;

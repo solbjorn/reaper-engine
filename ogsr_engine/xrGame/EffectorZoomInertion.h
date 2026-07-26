@@ -9,7 +9,7 @@
 #include "WeaponMagazined.h"
 #include "script_export_space.h"
 
-class CEffectorZoomInertion : public CEffectorCam
+class CEffectorZoomInertion final : public CEffectorCam
 {
     RTTI_DECLARE_TYPEINFO(CEffectorZoomInertion, CEffectorCam);
 
@@ -48,9 +48,7 @@ public:
     void SetParams(float disp);
 
     tmc::task<bool> ProcessCam(SCamEffectorInfo& info) override;
-    virtual void Init(CWeaponMagazined* pWeapon);
-
-    virtual CEffectorZoomInertion* cast_effector_zoom_inertion() { return this; }
+    void Init(CWeaponMagazined* pWeapon);
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

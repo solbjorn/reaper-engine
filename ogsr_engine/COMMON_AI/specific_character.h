@@ -18,7 +18,7 @@
 // SSpecificCharacterData: данные о конкретном персонаже
 //////////////////////////////////////////////////////////////////////////
 
-struct SSpecificCharacterData : CSharedResource
+struct SSpecificCharacterData final : CSharedResource
 {
 #ifdef XRGAME_EXPORTS
     RTTI_DECLARE_TYPEINFO(SSpecificCharacterData, CSharedResource);
@@ -77,7 +77,7 @@ public:
     bool m_bDefaultForCommunity{};
 
 #ifdef XRGAME_EXPORTS
-    struct SMoneyDef
+    struct SMoneyDef final
     {
         u32 min_money;
         u32 max_money;
@@ -91,7 +91,7 @@ class CInventoryOwner;
 class CCharacterInfo;
 class CSE_ALifeTraderAbstract;
 
-class CSpecificCharacter : public CSharedClass<SSpecificCharacterData, shared_str, false>, public CXML_IdToIndex<CSpecificCharacter>
+class CSpecificCharacter final : public CSharedClass<SSpecificCharacterData, shared_str, false>, public CXML_IdToIndex<CSpecificCharacter>
 {
     RTTI_DECLARE_TYPEINFO(CSpecificCharacter, CSharedClass<SSpecificCharacterData, shared_str, false>, CXML_IdToIndex<CSpecificCharacter>);
 
@@ -108,7 +108,7 @@ public:
     CSpecificCharacter();
     ~CSpecificCharacter() override;
 
-    virtual void Load(shared_str id);
+    void Load(shared_str id);
 
 protected:
     const SSpecificCharacterData* data() const { return XR_ASSERT_VAL(inherited_shared::get_sd() != nullptr); }

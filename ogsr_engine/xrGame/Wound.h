@@ -9,7 +9,7 @@
 
 class NET_Packet;
 
-class CWound : public virtual RTTI::Enable
+class CWound final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CWound);
 
@@ -18,8 +18,8 @@ public:
     ~CWound() override;
 
     // serialization
-    virtual void save(NET_Packet& output_packet);
-    virtual void load(IReader& input_packet);
+    void save(NET_Packet& output_packet);
+    void load(IReader& input_packet);
 
     [[nodiscard]] float TotalSize() const;
     [[nodiscard]] float TypeSize(ALife::EHitType hit_type) const;

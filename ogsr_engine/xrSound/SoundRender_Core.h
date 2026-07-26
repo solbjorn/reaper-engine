@@ -25,7 +25,7 @@ protected:
     void _create_data(ref_sound_data& S, gsl::czstring fName, esound_type sound_type, u32 game_type) override;
 
 public:
-    struct SListener
+    struct SListener final
     {
         Fvector position;
         Fvector orientation[3];
@@ -58,7 +58,7 @@ protected:
     CSoundRender_Environment* e_target{};
 
 public:
-    struct event
+    struct event final
     {
         ref_sound_data_ptr sound_data;
         float range;
@@ -78,7 +78,7 @@ public:
     float fTimer_Delta{};
     sound_event* Handler{};
 
-    struct Occ
+    struct Occ final
     {
         Fvector occ[3]{};
         float occ_value{};

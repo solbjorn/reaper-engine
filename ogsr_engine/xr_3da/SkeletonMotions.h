@@ -23,23 +23,23 @@ enum
 
 #pragma pack(push, 2)
 
-struct CKey
+struct CKey final
 {
     Fquaternion Q; // rotation
     Fvector T; // translation
 };
 
-struct CKeyQR
+struct CKeyQR final
 {
     s16 x, y, z, w; // rotation
 };
 
-struct CKeyQT8
+struct CKeyQT8 final
 {
     s8 x1, y1, z1;
 };
 
-struct CKeyQT16
+struct CKeyQT16 final
 {
     s16 x1, y1, z1;
 };
@@ -47,7 +47,7 @@ struct CKeyQT16
 #pragma pack(pop)
 
 //*** Motion Data *********************************************************************************
-class CMotion
+class CMotion final
 {
     struct
     {
@@ -95,7 +95,7 @@ public:
     }
 };
 
-class motion_marks
+class motion_marks final
 {
 public:
     typedef std::pair<float, float> interval;
@@ -149,7 +149,7 @@ DEFINE_VECTOR(CMotion, MotionVec, MotionVecIt);
 DEFINE_VECTOR(MotionVec*, BoneMotionsVec, BoneMotionsVecIt);
 
 // partition
-class CPartDef
+class CPartDef final
 {
 public:
     shared_str Name;
@@ -160,7 +160,7 @@ public:
     [[nodiscard]] constexpr gsl::index mem_usage() const { return gsl::index{sizeof(*this)} + std::ssize(bones) * gsl::index{sizeof(u32)} + Name.size(); }
 };
 
-class CPartition
+class CPartition final
 {
     CPartDef P[MAX_PARTS];
 
@@ -182,7 +182,7 @@ public:
 };
 
 // shared motions
-struct motions_value
+struct motions_value final
 {
     accel_map m_motion_map; // motion associations
     accel_map m_cycle; // motion data itself	(shared)
@@ -214,7 +214,7 @@ struct motions_value
     }
 };
 
-class motions_container
+class motions_container final
 {
     string_unordered_map<shared_str, motions_value*> container;
 
@@ -230,7 +230,7 @@ public:
 
 extern motions_container* g_pMotionsContainer;
 
-class shared_motions
+class shared_motions final
 {
 private:
     motions_value* p_{};

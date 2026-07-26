@@ -1,7 +1,7 @@
 #pragma once
 
 template <typename _Object>
-class CStateMonsterHittedHide : public CState<_Object>
+class CStateMonsterHittedHide final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterHittedHide<_Object>, CState<_Object>);
 

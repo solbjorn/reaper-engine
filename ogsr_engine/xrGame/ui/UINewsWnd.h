@@ -6,7 +6,7 @@
 class CUIScrollView;
 struct GAME_NEWS_DATA;
 
-class CUINewsWnd : public CUIWindow
+class CUINewsWnd final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUINewsWnd, CUIWindow);
 

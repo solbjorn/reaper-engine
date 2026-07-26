@@ -6,7 +6,7 @@
 
 #include "script_export_space.h"
 
-class CHairsZone : public CVisualZone
+class CHairsZone final : public CVisualZone
 {
     RTTI_DECLARE_TYPEINFO(CHairsZone, CVisualZone);
 

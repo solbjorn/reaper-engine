@@ -76,7 +76,7 @@ enum class EGameActions : s32
     kNOTBINDED = std::numeric_limits<s32>::max(),
 };
 
-struct _keyboard
+struct _keyboard final
 {
     gsl::czstring key_name;
     xr::key_id dik;
@@ -85,7 +85,7 @@ struct _keyboard
     constexpr explicit _keyboard(gsl::czstring name, xr::key_id d) : key_name{name}, dik{d} {}
 };
 
-struct _action
+struct _action final
 {
     gsl::czstring action_name;
     gsl::czstring export_name;
@@ -106,7 +106,7 @@ namespace xr
 [[nodiscard]] std::span<const _keyboard> key_ids();
 } // namespace xr
 
-struct _binding
+struct _binding final
 {
     _action* m_action;
     std::array<_keyboard*, 2> m_keyboard{};
@@ -122,7 +122,7 @@ extern xr_vector<_binding> g_key_bindings;
 
 void CCC_RegisterInput();
 
-class ConsoleBindCmds
+class ConsoleBindCmds final
 {
 public:
     xr_map<xr::key_id, shared_str> m_bindConsoleCmds;

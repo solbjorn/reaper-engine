@@ -4,7 +4,7 @@
 
 namespace extrapolation
 {
-class pose
+class pose final
 {
     Fvector p;
     Fquaternion r;
@@ -20,7 +20,7 @@ public:
 };
 
 class point;
-class point
+class point final
 {
 public:
     point() : m_time(-FLT_MAX) {}
@@ -48,7 +48,7 @@ private:
     float m_time;
 };
 
-class points
+class points final
 {
 public:
     points() : last_update(u32(-1)) {}

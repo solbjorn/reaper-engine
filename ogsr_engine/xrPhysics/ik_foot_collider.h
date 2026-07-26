@@ -4,7 +4,7 @@
 
 class CGameObject;
 
-class ik_pick_query
+class ik_pick_query final
 {
 public:
     constexpr ik_pick_query()
@@ -54,7 +54,7 @@ private:
     ik_foot_geom::e_collide_point _point;
 };
 
-class ik_foot_collider
+class ik_foot_collider final
 {
     ik_pick_query previous_toe_query;
     ik_pick_query previous_heel_query;

@@ -14,7 +14,7 @@
 // CStalkerActionDangerGrenadeTakeCover
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDangerGrenadeTakeCover : public CStalkerActionCombatBase
+class CStalkerActionDangerGrenadeTakeCover final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDangerGrenadeTakeCover, CStalkerActionCombatBase);
 
@@ -34,7 +34,7 @@ public:
 // CStalkerActionDangerGrenadeWaitForExplosion
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDangerGrenadeWaitForExplosion : public CStalkerActionCombatBase
+class CStalkerActionDangerGrenadeWaitForExplosion final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDangerGrenadeWaitForExplosion, CStalkerActionCombatBase);
 
@@ -54,7 +54,7 @@ public:
 // CStalkerActionDangerGrenadeTakeCoverAfterExplosion
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDangerGrenadeTakeCoverAfterExplosion : public CStalkerActionCombatBase
+class CStalkerActionDangerGrenadeTakeCoverAfterExplosion final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDangerGrenadeTakeCoverAfterExplosion, CStalkerActionCombatBase);
 
@@ -77,7 +77,7 @@ public:
 // CStalkerActionDangerGrenadeLookAround
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDangerGrenadeLookAround : public CStalkerActionCombatBase
+class CStalkerActionDangerGrenadeLookAround final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDangerGrenadeLookAround, CStalkerActionCombatBase);
 
@@ -97,7 +97,7 @@ public:
 // CStalkerActionDangerGrenadeSearch
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDangerGrenadeSearch : public CStalkerActionCombatBase
+class CStalkerActionDangerGrenadeSearch final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDangerGrenadeSearch, CStalkerActionCombatBase);
 

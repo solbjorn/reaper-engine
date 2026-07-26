@@ -10,7 +10,7 @@
 
 #include <regex>
 
-class CTradeBoolParameters
+class CTradeBoolParameters final
 {
 public:
     typedef xr_vector<shared_str> SECTIONS;

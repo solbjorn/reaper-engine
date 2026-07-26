@@ -3,7 +3,7 @@
 #include "../xr_3da/Effector.h"
 
 // приседание после падения
-class CEffectorFall : public CEffectorCam
+class CEffectorFall final : public CEffectorCam
 {
     RTTI_DECLARE_TYPEINFO(CEffectorFall, CEffectorCam);
 

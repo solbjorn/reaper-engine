@@ -13,7 +13,7 @@
 #include "object_factory.h"
 
 template <typename _client_type, typename _server_type>
-class CObjectItemClientServer : public CObjectItemAbstract
+class CObjectItemClientServer final : public CObjectItemAbstract
 {
     RTTI_DECLARE_TYPEINFO(CObjectItemClientServer<_client_type, _server_type>, CObjectItemAbstract);
 
@@ -31,7 +31,7 @@ public:
 };
 
 template <typename _client_type_single, typename _client_type_mp, typename _server_type_single, typename _server_type_mp>
-class CObjectItemClientServerSingleMp : public CObjectItemAbstract
+class CObjectItemClientServerSingleMp final : public CObjectItemAbstract
 {
     RTTI_DECLARE_TYPEINFO(CObjectItemClientServerSingleMp<_client_type_single, _client_type_mp, _server_type_single, _server_type_mp>, CObjectItemAbstract);
 

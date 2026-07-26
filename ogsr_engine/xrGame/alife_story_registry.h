@@ -12,7 +12,7 @@
 
 class CSE_ALifeDynamicObject;
 
-class CALifeStoryRegistry : public virtual RTTI::Enable
+class CALifeStoryRegistry final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CALifeStoryRegistry);
 

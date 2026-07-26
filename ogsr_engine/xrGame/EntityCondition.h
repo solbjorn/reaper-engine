@@ -99,7 +99,7 @@ public:
 
     void ClearWounds();
 
-    struct SConditionChangeV
+    struct SConditionChangeV final
     {
         const static int PARAMS_COUNT = 7;
 

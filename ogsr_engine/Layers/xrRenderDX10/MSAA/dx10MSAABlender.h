@@ -1,7 +1,7 @@
 #ifndef dx10MSAABlender_included
 #define dx10MSAABlender_included
 
-class CBlender_msaa : public IBlender
+class CBlender_msaa final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_msaa, IBlender);
 

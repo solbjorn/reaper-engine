@@ -7,7 +7,7 @@
 
 #include "eatable_item_object.h"
 
-class CAntirad : public CEatableItemObject
+class CAntirad final : public CEatableItemObject
 {
     RTTI_DECLARE_TYPEINFO(CAntirad, CEatableItemObject);
 

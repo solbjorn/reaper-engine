@@ -15,7 +15,7 @@ protected:
     xr_vector<f32> mTimes;
 
 public:
-    CPerlinNoiseCustom() { mTimes.resize(mOctaves); }
+    constexpr CPerlinNoiseCustom() { mTimes.resize(mOctaves); }
 
     void SetParams(s32 oct, f32 freq, f32 amp)
     {
@@ -34,7 +34,7 @@ public:
     void SetAmplitude(f32 amp) { mAmplitude = amp; }
 };
 
-class CPerlinNoise1D : public CPerlinNoiseCustom
+class CPerlinNoise1D final : public CPerlinNoiseCustom
 {
 private:
     f32 g1[SAMPLE_SIZE + SAMPLE_SIZE + 2];

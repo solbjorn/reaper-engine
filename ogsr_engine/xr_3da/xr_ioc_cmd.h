@@ -244,7 +244,7 @@ public:
     }
 };
 
-class CCC_String : public IConsole_Command
+class CCC_String final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_String, IConsole_Command);
 
@@ -369,7 +369,7 @@ public:
     }
 };
 
-class CCC_Vector3 : public IConsole_Command
+class CCC_Vector3 final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_Vector3, IConsole_Command);
 
@@ -481,7 +481,7 @@ public:
     void Execute(std::string_view args) override;
 };
 
-class CCC_LoadCFG_custom : public CCC_LoadCFG
+class CCC_LoadCFG_custom final : public CCC_LoadCFG
 {
     RTTI_DECLARE_TYPEINFO(CCC_LoadCFG_custom, CCC_LoadCFG);
 

@@ -4,7 +4,7 @@
 
 //*** Run-time Blend definition *******************************************************************
 
-class CBlend
+class CBlend final
 {
 public:
     enum ECurvature : u32

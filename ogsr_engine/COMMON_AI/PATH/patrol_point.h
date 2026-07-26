@@ -17,7 +17,7 @@ class CGameGraph;
 #include "object_loader.h"
 #include "object_saver.h"
 
-class CPatrolPoint
+class CPatrolPoint final
 {
     friend class CPatrolPathStorage;
     friend class CPatrolPointScript;
@@ -69,13 +69,13 @@ public:
 };
 
 template <typename M>
-struct object_loader::default_load<CPatrolPoint, M>
+struct object_loader::default_load<CPatrolPoint, M> final
 {
     void operator()(CPatrolPoint& data, M& stream) const { data.load(stream); }
 };
 
 template <typename M>
-struct object_saver::default_save<CPatrolPoint, M>
+struct object_saver::default_save<CPatrolPoint, M> final
 {
     void operator()(const CPatrolPoint& data, M& stream) const { data.save(stream); }
 };

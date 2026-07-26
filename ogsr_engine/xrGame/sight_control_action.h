@@ -10,7 +10,7 @@
 
 #include "sight_action.h"
 
-class CSightControlAction : public CSightAction
+class CSightControlAction final : public CSightAction
 {
 protected:
     float m_weight;

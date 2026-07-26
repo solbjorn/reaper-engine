@@ -8,10 +8,10 @@
 
 #pragma once
 
-struct CCloner
+struct CCloner final
 {
     template <typename T>
-    struct CHelper
+    struct CHelper final
     {
         template <bool a>
         IC static void clone(std::enable_if_t<!a, const T&> _1, T& _2)
@@ -98,7 +98,7 @@ struct CCloner
         return (clone(_1, _2, true));
     }
 
-    struct CHelper3
+    struct CHelper3 final
     {
         template <template <typename _1> class T1, typename T2>
         IC static void add(T1<T2>& data, typename T1<T2>::value_type& value)
@@ -128,7 +128,7 @@ struct CCloner
     };
 
     template <typename T>
-    struct CHelper4
+    struct CHelper4 final
     {
         template <bool a>
         IC static void clone(std::enable_if_t<!a, const T&> _1, T& _2)

@@ -31,7 +31,7 @@ IClient::IClient()
     flags.bVerified = TRUE;
 }
 
-IClient::~IClient() {}
+IClient::~IClient() = default;
 
 IClient* IPureServer::ID_to_client(ClientID ID, bool ScanAll) // пока не резать. net_Players - не пустой вектор
 {

@@ -24,7 +24,7 @@ enum ESoundTypes : u32;
 class CCustomMonster;
 class CAI_Stalker;
 
-class CSoundMemoryManager : public virtual RTTI::Enable
+class CSoundMemoryManager final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CSoundMemoryManager);
 
@@ -88,11 +88,11 @@ public:
     inline explicit CSoundMemoryManager(CCustomMonster* object, CAI_Stalker* stalker, CSound_UserDataVisitor* visitor);
     ~CSoundMemoryManager() override;
 
-    virtual void Load(LPCSTR);
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
-    virtual void feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector& Position, float power, float time_to_stop);
-    virtual void update();
+    void Load(LPCSTR);
+    void reinit();
+    void reload(LPCSTR section);
+    void feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector& Position, float power, float time_to_stop);
+    void update();
     void remove_links(CObject* object);
 
 public:

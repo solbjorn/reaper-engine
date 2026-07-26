@@ -10,7 +10,7 @@ extern Fvector4 ps_ssfx_volumetric;
 
 #define MIN_VIRTUAL_SIZE 0.01f
 
-class light : public IRender_Light, public ISpatial
+class light final : public IRender_Light, public ISpatial
 {
     RTTI_DECLARE_TYPEINFO(light, IRender_Light, ISpatial);
 
@@ -26,6 +26,7 @@ public:
         u32 bHudMode : 1;
         u32 bMoveable : 1;
     } flags{};
+
     Fvector position;
     Fvector direction;
     Fvector right;
@@ -68,7 +69,7 @@ public:
     u32 m_xform_frame;
     Fmatrix m_xform;
 
-    struct _vis
+    struct _vis final
     {
         u32 frame2test; // frame the test is sheduled to
         u32 query_id; // ID of occlusion query
@@ -81,20 +82,22 @@ public:
 
     union _xform
     {
-        struct _D
+        struct _D final
         {
             Fmatrix combine[R__NUM_SUN_CASCADES];
             s32 minX, maxX;
             s32 minY, maxY;
         } D;
-        struct _P
+
+        struct _P final
         {
             Fmatrix world;
             Fmatrix view;
             Fmatrix project;
             Fmatrix combine;
         } P;
-        struct _S
+
+        struct _S final
         {
             Fmatrix view;
             Fmatrix project;

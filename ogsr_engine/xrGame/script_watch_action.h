@@ -18,7 +18,7 @@ enum ESightType : u32;
 
 class CScriptGameObject;
 
-class CScriptWatchAction : public CScriptAbstractAction
+class CScriptWatchAction final : public CScriptAbstractAction
 {
     RTTI_DECLARE_TYPEINFO(CScriptWatchAction, CScriptAbstractAction);
 

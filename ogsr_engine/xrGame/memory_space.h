@@ -61,7 +61,7 @@ struct SObjectParams
 };
 
 template <typename T>
-struct CObjectParams : public SObjectParams
+struct CObjectParams final : public SObjectParams
 {
     IC SRotation orientation(const T* object) const;
     IC void fill(const T* game_object);
@@ -167,7 +167,7 @@ public:
     }
 };
 
-struct CHitObject : public CMemoryObject<CEntityAlive>
+struct CHitObject final : public CMemoryObject<CEntityAlive>
 {
     RTTI_DECLARE_TRIVIAL(CHitObject, CMemoryObject<CEntityAlive>);
 
@@ -177,7 +177,7 @@ public:
     float m_amount;
 };
 
-struct CSoundObject : public CMemoryObject<CGameObject>
+struct CSoundObject final : public CMemoryObject<CGameObject>
 {
     RTTI_DECLARE_TRIVIAL(CSoundObject, CMemoryObject<CGameObject>);
 
@@ -195,7 +195,7 @@ public:
     IC int sound_type() const { return (int(m_sound_type)); }
 };
 
-struct CMemoryInfo : public CVisibleObject
+struct CMemoryInfo final : public CVisibleObject
 {
     RTTI_DECLARE_TRIVIAL(CMemoryInfo, CVisibleObject);
 
@@ -219,7 +219,7 @@ add_to_type_list(CMemoryInfo);
 #define script_type_list MemorySpace::save_type_list(CMemoryInfo)
 
 template <typename T>
-struct SLevelTimePredicate
+struct SLevelTimePredicate final
 {
     bool operator()(const CMemoryObject<T>& object1, const CMemoryObject<T>& object2) const { return (object1.m_level_time < object2.m_level_time); }
 };

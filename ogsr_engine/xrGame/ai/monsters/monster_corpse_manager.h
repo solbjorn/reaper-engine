@@ -3,7 +3,7 @@
 
 class CBaseMonster;
 
-class CMonsterCorpseManager
+class CMonsterCorpseManager final
 {
     CBaseMonster* monster{};
     const CEntityAlive* corpse{};

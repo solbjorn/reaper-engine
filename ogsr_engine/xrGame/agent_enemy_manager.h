@@ -15,7 +15,7 @@ class CMemberOrder;
 class CEntityAlive;
 class CAI_Stalker;
 
-class CAgentEnemyManager
+class CAgentEnemyManager final
 {
 public:
     typedef xr_vector<CMemberEnemy> ENEMIES;

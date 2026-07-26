@@ -1,6 +1,6 @@
 #pragma once
 
-struct SMAP_Rect
+struct SMAP_Rect final
 {
     Ivector2 min, max;
 
@@ -40,7 +40,7 @@ struct SMAP_Rect
     }
 };
 
-class SMAP_Allocator
+class SMAP_Allocator final
 {
 private:
     xr_vector<SMAP_Rect> stack; //

@@ -11,7 +11,7 @@ enum
     flTargetLocked = (1 << 1),
 };
 
-struct SBinocVisibleObj
+struct SBinocVisibleObj final
 {
     CObject* m_object;
     CUIStatic m_lt;
@@ -30,7 +30,7 @@ struct SBinocVisibleObj
 
 class CWeaponMagazined;
 
-class CBinocularsVision
+class CBinocularsVision final
 {
     xr_vector<std::unique_ptr<SBinocVisibleObj>> m_active_objects;
 

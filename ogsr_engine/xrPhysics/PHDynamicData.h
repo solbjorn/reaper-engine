@@ -11,7 +11,7 @@
 
 class PHDynamicData;
 
-class PHDynamicData
+class PHDynamicData final
 {
 public:
     static inline void DMXPStoFMX(const dReal* R, const dReal* pos, Fmatrix& aTransform)

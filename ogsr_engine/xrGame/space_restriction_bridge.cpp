@@ -43,11 +43,14 @@ Fsphere CSpaceRestrictionBridge::sphere() const { return (object().sphere()); }
 
 bool CSpaceRestrictionBridge::inside(u32 level_vertex_id, bool partially_inside) { return (object().inside(level_vertex_id, partially_inside)); }
 
-bool CSpaceRestrictionBridge::inside(u32 level_vertex_id, bool partially_inside, float radius) { return (object().inside(level_vertex_id, partially_inside, radius)); }
+bool CSpaceRestrictionBridge::inside(u32 level_vertex_id, bool partially_inside, float radius)
+{
+    return (object().inside(level_vertex_id, partially_inside, radius));
+}
 
 bool CSpaceRestrictionBridge::inside(const Fsphere& sphere) { return (object().inside(sphere)); }
 
-struct CFindByXZ_predicate
+struct CFindByXZ_predicate final
 {
     IC bool operator()(u32 vertex_id, u32 xz) const { return (ai().level_graph().vertex(vertex_id)->position().xz() < xz); }
 };

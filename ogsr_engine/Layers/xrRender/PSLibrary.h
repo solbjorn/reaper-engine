@@ -3,7 +3,7 @@
 #include "ParticleEffectDef.h"
 #include "ParticleGroup.h"
 
-class CPSLibrary
+class CPSLibrary final
 {
     string_unordered_map<shared_str, std::unique_ptr<PS::CPEDef>> m_PEDs;
     string_unordered_map<shared_str, std::unique_ptr<PS::CPGDef>> m_PGDs;

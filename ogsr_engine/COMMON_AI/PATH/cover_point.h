@@ -10,7 +10,7 @@
 
 #include "script_export_space.h"
 
-class CCoverPoint
+class CCoverPoint final
 {
 public:
     Fvector m_position;

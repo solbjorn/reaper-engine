@@ -108,7 +108,7 @@ public:
     ~CODEGeom() override;
 };
 
-class CBoxGeom : public CODEGeom
+class CBoxGeom final : public CODEGeom
 {
     RTTI_DECLARE_TYPEINFO(CBoxGeom, CODEGeom);
 
@@ -131,7 +131,7 @@ public:
     void set_position(const Fvector& ref_point) override;
 };
 
-class CSphereGeom : public CODEGeom
+class CSphereGeom final : public CODEGeom
 {
     RTTI_DECLARE_TYPEINFO(CSphereGeom, CODEGeom);
 
@@ -154,7 +154,7 @@ public:
     void set_position(const Fvector& ref_point) override;
 };
 
-class CCylinderGeom : public CODEGeom
+class CCylinderGeom final : public CODEGeom
 {
     RTTI_DECLARE_TYPEINFO(CCylinderGeom, CODEGeom);
 

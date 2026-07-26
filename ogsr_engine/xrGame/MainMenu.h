@@ -11,7 +11,7 @@ class CUIDialogWnd;
 class CUICursor;
 class CUIMessageBoxEx;
 
-class CMainMenu : public IMainMenu, public IInputReceiver, public pureRender, public CDialogHolder, public CUIWndCallback, public CDeviceResetNotifier
+class CMainMenu final : public IMainMenu, public IInputReceiver, public pureRender, public CDialogHolder, public CUIWndCallback, public CDeviceResetNotifier
 {
     RTTI_DECLARE_TYPEINFO(CMainMenu, IMainMenu, IInputReceiver, pureRender, CDialogHolder, CUIWndCallback, CDeviceResetNotifier);
 

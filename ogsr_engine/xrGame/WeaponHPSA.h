@@ -4,7 +4,7 @@
 #include "WeaponPistol.h"
 #include "script_export_space.h"
 
-class CWeaponHPSA : public CWeaponPistol
+class CWeaponHPSA final : public CWeaponPistol
 {
     RTTI_DECLARE_TYPEINFO(CWeaponHPSA, CWeaponPistol);
 

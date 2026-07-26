@@ -9,7 +9,7 @@
 #pragma once
 
 template <typename T>
-class buffer_vector
+class buffer_vector final
 {
 public:
     typedef T const* const_iterator;

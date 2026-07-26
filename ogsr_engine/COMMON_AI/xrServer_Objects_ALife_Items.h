@@ -115,7 +115,7 @@ add_to_type_list(CSE_ALifeItem);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItem)
 
-class CSE_ALifeItemTorch : public CSE_ALifeItem
+class CSE_ALifeItemTorch final : public CSE_ALifeItem
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeItemTorch, CSE_ALifeItem);
 
@@ -151,7 +151,7 @@ add_to_type_list(CSE_ALifeItemTorch);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemTorch)
 
-class CSE_ALifeItemAmmo : public CSE_ALifeItem
+class CSE_ALifeItemAmmo final : public CSE_ALifeItem
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeItemAmmo, CSE_ALifeItem);
 
@@ -284,7 +284,7 @@ add_to_type_list(CSE_ALifeItemWeaponMagazined);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemWeaponMagazined)
 
-class CSE_ALifeItemWeaponMagazinedWGL : public CSE_ALifeItemWeaponMagazined
+class CSE_ALifeItemWeaponMagazinedWGL final : public CSE_ALifeItemWeaponMagazined
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeItemWeaponMagazinedWGL, CSE_ALifeItemWeaponMagazined);
 
@@ -313,7 +313,7 @@ add_to_type_list(CSE_ALifeItemWeaponMagazinedWGL);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemWeaponMagazinedWGL)
 
-class CSE_ALifeItemWeaponShotGun : public CSE_ALifeItemWeaponMagazined
+class CSE_ALifeItemWeaponShotGun final : public CSE_ALifeItemWeaponMagazined
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeItemWeaponShotGun, CSE_ALifeItemWeaponMagazined);
 
@@ -340,7 +340,7 @@ add_to_type_list(CSE_ALifeItemWeaponShotGun);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemWeaponShotGun)
 
-class CSE_ALifeItemDetector : public CSE_ALifeItem
+class CSE_ALifeItemDetector final : public CSE_ALifeItem
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeItemDetector, CSE_ALifeItem);
 
@@ -368,7 +368,7 @@ add_to_type_list(CSE_ALifeItemDetector);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemDetector)
 
-class CSE_ALifeItemArtefact : public CSE_ALifeItem
+class CSE_ALifeItemArtefact final : public CSE_ALifeItem
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeItemArtefact, CSE_ALifeItem);
 
@@ -395,7 +395,7 @@ add_to_type_list(CSE_ALifeItemArtefact);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemArtefact)
 
-class CSE_ALifeItemPDA : public CSE_ALifeItem
+class CSE_ALifeItemPDA final : public CSE_ALifeItem
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeItemPDA, CSE_ALifeItem);
 
@@ -424,7 +424,7 @@ add_to_type_list(CSE_ALifeItemPDA);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemPDA)
 
-class CSE_ALifeItemDocument : public CSE_ALifeItem
+class CSE_ALifeItemDocument final : public CSE_ALifeItem
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeItemDocument, CSE_ALifeItem);
 
@@ -449,7 +449,7 @@ add_to_type_list(CSE_ALifeItemDocument);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemDocument)
 
-class CSE_ALifeItemGrenade : public CSE_ALifeItem
+class CSE_ALifeItemGrenade final : public CSE_ALifeItem
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeItemGrenade, CSE_ALifeItem);
 
@@ -476,7 +476,7 @@ add_to_type_list(CSE_ALifeItemGrenade);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemGrenade)
 
-class CSE_ALifeItemExplosive : public CSE_ALifeItem
+class CSE_ALifeItemExplosive final : public CSE_ALifeItem
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeItemExplosive, CSE_ALifeItem);
 
@@ -499,7 +499,7 @@ add_to_type_list(CSE_ALifeItemExplosive);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemExplosive)
 
-class CSE_ALifeItemBolt : public CSE_ALifeItem
+class CSE_ALifeItemBolt final : public CSE_ALifeItem
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeItemBolt, CSE_ALifeItem);
 
@@ -528,7 +528,7 @@ add_to_type_list(CSE_ALifeItemBolt);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemBolt)
 
-class CSE_ALifeItemCustomOutfit : public CSE_ALifeItem
+class CSE_ALifeItemCustomOutfit final : public CSE_ALifeItem
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeItemCustomOutfit, CSE_ALifeItem);
 
@@ -556,7 +556,7 @@ add_to_type_list(CSE_ALifeItemCustomOutfit);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemCustomOutfit)
 
-class CSE_InventoryContainer : public CSE_InventoryBoxAbstract, public CSE_ALifeItem
+class CSE_InventoryContainer final : public CSE_InventoryBoxAbstract, public CSE_ALifeItem
 {
     RTTI_DECLARE_TYPEINFO(CSE_InventoryContainer, CSE_InventoryBoxAbstract, CSE_ALifeItem);
 

@@ -8,7 +8,7 @@
 
 #pragma once
 
-struct CVisionParameters
+struct CVisionParameters final
 {
     float m_min_view_distance;
     float m_max_view_distance;

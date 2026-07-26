@@ -3,7 +3,7 @@
 #include "../state.h"
 
 template <typename _Object>
-class CStateMonsterLookActor : public CState<_Object>
+class CStateMonsterLookActor final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterLookActor<_Object>, CState<_Object>);
 
@@ -20,7 +20,7 @@ public:
 };
 
 template <typename _Object>
-class CStateMonsterTurnAwayFromActor : public CState<_Object>
+class CStateMonsterTurnAwayFromActor final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterTurnAwayFromActor<_Object>, CState<_Object>);
 
@@ -36,7 +36,7 @@ public:
 };
 
 template <typename _Object>
-class CStateMonstertTestIdle : public CState<_Object>
+class CStateMonstertTestIdle final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonstertTestIdle<_Object>, CState<_Object>);
 

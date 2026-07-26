@@ -2,7 +2,7 @@
 
 #include "../Include/xrRender/KinematicsAnimated.h"
 
-struct SAnimState
+struct SAnimState final
 {
     MotionID legs_fwd;
     MotionID legs_back;
@@ -11,7 +11,7 @@ struct SAnimState
     void Create(IKinematicsAnimated* K, LPCSTR base0, LPCSTR base1);
 };
 
-struct STorsoWpn
+struct STorsoWpn final
 {
     enum eMovingState
     {
@@ -44,7 +44,7 @@ struct STorsoWpn
 
 #define _total_anim_slots_ 14
 
-struct SActorState
+struct SActorState final
 {
     MotionID legs_idle;
     MotionID jump_begin;
@@ -63,7 +63,7 @@ struct SActorState
     void CreateClimb(IKinematicsAnimated* K);
 };
 
-struct SActorSprintState
+struct SActorSprintState final
 {
     // leg anims
     MotionID legs_fwd;
@@ -72,7 +72,7 @@ struct SActorSprintState
     void Create(IKinematicsAnimated* K);
 };
 
-struct SActorMotions
+struct SActorMotions final
 {
     MotionID m_dead_stop;
     SActorState m_normal;
@@ -83,7 +83,7 @@ struct SActorMotions
 };
 
 // vehicle anims
-struct SVehicleAnimCollection
+struct SVehicleAnimCollection final
 {
     static const u16 MAX_IDLES = 3;
     u16 idles_num;
@@ -93,7 +93,8 @@ struct SVehicleAnimCollection
     SVehicleAnimCollection();
     void Create(IKinematicsAnimated* K, u16 num);
 };
-struct SActorVehicleAnims
+
+struct SActorVehicleAnims final
 {
     static const int TYPES_NUMBER = 2;
     SVehicleAnimCollection m_vehicles_type_collections[TYPES_NUMBER];

@@ -10,7 +10,7 @@
 
 #include "xrServer_Objects_ALife.h"
 
-class CALifeObjectRegistry : public virtual RTTI::Enable
+class CALifeObjectRegistry final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CALifeObjectRegistry);
 
@@ -30,7 +30,7 @@ public:
     CALifeObjectRegistry();
     ~CALifeObjectRegistry() override;
 
-    virtual void save(IWriter& memory_stream);
+    void save(IWriter& memory_stream);
     void load(IReader& file_stream);
 
     IC void add(CSE_ALifeDynamicObject* object);

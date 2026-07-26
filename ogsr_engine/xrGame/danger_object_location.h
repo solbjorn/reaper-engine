@@ -12,7 +12,7 @@
 
 class CGameObject;
 
-class CDangerObjectLocation : public CDangerLocation
+class CDangerObjectLocation final : public CDangerLocation
 {
     RTTI_DECLARE_TYPEINFO(CDangerObjectLocation, CDangerLocation);
 

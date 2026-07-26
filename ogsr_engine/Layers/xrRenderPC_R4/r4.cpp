@@ -25,7 +25,8 @@ namespace xxh
 CRender RImplementation;
 
 //////////////////////////////////////////////////////////////////////////
-class CGlow : public IRender_Glow
+
+class CGlow final : public IRender_Glow
 {
     RTTI_DECLARE_TYPEINFO(CGlow, IRender_Glow);
 
@@ -95,7 +96,7 @@ ShaderElement* CRender::rimp_select_sh_static(dxRender_Visual* pVisual, float cd
 
 namespace
 {
-class cl_parallax : public R_constant_setup
+class cl_parallax final : public R_constant_setup
 {
     RTTI_DECLARE_TYPEINFO(cl_parallax, R_constant_setup);
 
@@ -107,7 +108,7 @@ public:
     }
 } binder_parallax;
 
-class cl_LOD : public R_constant_setup
+class cl_LOD final : public R_constant_setup
 {
     RTTI_DECLARE_TYPEINFO(cl_LOD, R_constant_setup);
 
@@ -115,7 +116,7 @@ public:
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.LOD.set_LOD(C); }
 } binder_LOD;
 
-class cl_pos_decompress_params : public R_constant_setup
+class cl_pos_decompress_params final : public R_constant_setup
 {
     RTTI_DECLARE_TYPEINFO(cl_pos_decompress_params, R_constant_setup);
 
@@ -129,7 +130,7 @@ public:
     }
 } binder_pos_decompress_params;
 
-class cl_water_intensity : public R_constant_setup
+class cl_water_intensity final : public R_constant_setup
 {
     RTTI_DECLARE_TYPEINFO(cl_water_intensity, R_constant_setup);
 
@@ -143,7 +144,7 @@ public:
     }
 } binder_water_intensity;
 
-class cl_sun_shafts_intensity : public R_constant_setup
+class cl_sun_shafts_intensity final : public R_constant_setup
 {
     RTTI_DECLARE_TYPEINFO(cl_sun_shafts_intensity, R_constant_setup);
 
@@ -157,7 +158,7 @@ public:
     }
 } binder_sun_shafts_intensity;
 
-class cl_alpha_ref : public R_constant_setup
+class cl_alpha_ref final : public R_constant_setup
 {
     RTTI_DECLARE_TYPEINFO(cl_alpha_ref, R_constant_setup);
 

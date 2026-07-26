@@ -14,7 +14,7 @@
 
 class CParticlesObject;
 
-class CScriptParticleAction : public CScriptAbstractAction
+class CScriptParticleAction final : public CScriptAbstractAction
 {
     RTTI_DECLARE_TYPEINFO(CScriptParticleAction, CScriptAbstractAction);
 
@@ -37,7 +37,8 @@ public:
     bool m_bAutoRemove{true};
 
     inline CScriptParticleAction();
-    inline explicit CScriptParticleAction(LPCSTR caPartcileToRun, LPCSTR caBoneName, const CParticleParams& tParticleParams = CParticleParams(), bool bAutoRemove = false);
+    inline explicit CScriptParticleAction(LPCSTR caPartcileToRun, LPCSTR caBoneName, const CParticleParams& tParticleParams = CParticleParams(),
+                                          bool bAutoRemove = false);
     inline explicit CScriptParticleAction(LPCSTR caPartcileToRun, const CParticleParams& tParticleParams = CParticleParams(), bool bAutoRemove = false);
     ~CScriptParticleAction() override;
 

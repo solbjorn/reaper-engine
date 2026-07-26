@@ -20,7 +20,7 @@ namespace ar
 } // namespace ar
 
 template <>
-struct std::default_delete<ar::archive>
+struct std::default_delete<ar::archive> final
 {
     constexpr void operator()(ar::archive* ptr) const noexcept { XR_ASSERT(ar::archive_read_free(ptr) == ARCHIVE_OK); }
 };

@@ -9,7 +9,7 @@
 #pragma once
 
 template <typename TPathId, typename TIndex, u32 HashSize, u32 FixSize>
-struct CVertexManagerHashFixed
+struct CVertexManagerHashFixed final
 {
     template <typename TCompoundVertex>
     struct VertexData

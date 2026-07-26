@@ -8,7 +8,7 @@
 // CMonsterEffector
 //////////////////////////////////////////////////////////////////////////
 
-class CMonsterEffector : public CEffectorPP
+class CMonsterEffector final : public CEffectorPP
 {
     RTTI_DECLARE_TYPEINFO(CMonsterEffector, CEffectorPP);
 
@@ -33,7 +33,7 @@ public:
 // CMonsterEffectorHit
 //////////////////////////////////////////////////////////////////////////
 
-class CMonsterEffectorHit : public CEffectorCam
+class CMonsterEffectorHit final : public CEffectorCam
 {
     RTTI_DECLARE_TYPEINFO(CMonsterEffectorHit, CEffectorCam);
 

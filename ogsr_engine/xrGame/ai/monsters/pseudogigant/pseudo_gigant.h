@@ -4,7 +4,7 @@
 #include "../controlled_entity.h"
 #include "script_export_space.h"
 
-class CPseudoGigant : public CBaseMonster, public CControlledEntity<CPseudoGigant>
+class CPseudoGigant final : public CBaseMonster, public CControlledEntity<CPseudoGigant>
 {
     RTTI_DECLARE_TYPEINFO(CPseudoGigant, CBaseMonster, CControlledEntity<CPseudoGigant>);
 

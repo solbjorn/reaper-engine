@@ -7,10 +7,10 @@
 
 class occTri;
 
-class CHOM : public virtual RTTI::Enable
+class CHOM final : public virtual RTTI::Enable
 #ifdef DEBUG
     ,
-             public pureRender
+                   public pureRender
 #endif
 {
     RTTI_DECLARE_TYPEINFO(CHOM

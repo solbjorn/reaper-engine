@@ -1,7 +1,7 @@
 #pragma once
 
 template <class T>
-class _box3
+class _box3 final
 {
 public:
     typedef T TYPE;

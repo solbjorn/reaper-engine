@@ -14,7 +14,7 @@
 // CStalkerActionGetOutOfAnomaly
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionGetOutOfAnomaly : public CStalkerActionBase
+class CStalkerActionGetOutOfAnomaly final : public CStalkerActionBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionGetOutOfAnomaly, CStalkerActionBase);
 
@@ -38,7 +38,7 @@ public:
 // CStalkerActionDetectAnomaly
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDetectAnomaly : public CStalkerActionBase
+class CStalkerActionDetectAnomaly final : public CStalkerActionBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDetectAnomaly, CStalkerActionBase);
 

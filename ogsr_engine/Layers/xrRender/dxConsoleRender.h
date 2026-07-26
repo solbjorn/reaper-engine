@@ -3,7 +3,7 @@
 
 #include "../../Include/xrRender/ConsoleRender.h"
 
-class dxConsoleRender : public IConsoleRender
+class dxConsoleRender final : public IConsoleRender
 {
     RTTI_DECLARE_TYPEINFO(dxConsoleRender, IConsoleRender);
 

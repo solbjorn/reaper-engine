@@ -9,7 +9,7 @@
 #pragma once
 
 template <typename _edge_weight_type, typename _vertex_type>
-class CEdge
+class CEdge final
 {
 public:
     typedef _edge_weight_type edge_weight_type;

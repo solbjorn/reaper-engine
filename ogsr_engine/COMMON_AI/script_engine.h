@@ -24,7 +24,7 @@ enum ELuaMessageType : u32
 };
 }
 
-class CScriptEngine : public virtual RTTI::Enable
+class CScriptEngine final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CScriptEngine);
 
@@ -56,7 +56,7 @@ public:
 
     void setup_auto_load();
     void init();
-    virtual void unload();
+    void unload();
 
     [[nodiscard]] sol::state_view& lua() { return *m_virtual_machine; }
     [[nodiscard]] const sol::state_view& lua() const { return *m_virtual_machine; }

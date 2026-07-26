@@ -3,7 +3,7 @@
 #include "WeaponMagazined.h"
 #include "script_export_space.h"
 
-class CWeaponVintorez : public CWeaponMagazined
+class CWeaponVintorez final : public CWeaponMagazined
 {
     RTTI_DECLARE_TYPEINFO(CWeaponVintorez, CWeaponMagazined);
 

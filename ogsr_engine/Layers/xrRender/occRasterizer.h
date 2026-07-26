@@ -5,7 +5,7 @@
 constexpr inline gsl::index occ_dim_0{64};
 constexpr inline gsl::index occ_dim{occ_dim_0 + 4}; // 2 pixel border around frame
 
-class occTri
+class occTri final
 {
 public:
     occTri* adjacent[3];
@@ -46,7 +46,7 @@ public:
     void on_dbg_render();
 
 #ifdef DEBUG
-    struct pixel_box
+    struct pixel_box final
     {
         Fvector center;
         Fvector radius;

@@ -14,7 +14,7 @@
 class CAgentManager;
 class CEntity;
 
-class CAgentMemberManager : public virtual RTTI::Enable
+class CAgentMemberManager final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CAgentMemberManager);
 

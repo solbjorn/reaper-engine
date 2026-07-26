@@ -26,7 +26,7 @@ enum EHeliHuntState
     eEnemyEntity
 };
 
-struct SHeliEnemy
+struct SHeliEnemy final
 {
     EHeliHuntState type;
     Fvector destEnemyPos;
@@ -48,7 +48,7 @@ enum EHeliBodyState
     eBodyToPoint
 };
 
-struct SHeliBodyState
+struct SHeliBodyState final
 {
     CHelicopter* parent;
     EHeliBodyState type;
@@ -81,9 +81,9 @@ enum EHeilMovementState
     eMovTakeOff
 };
 
-struct SHeliMovementState
+struct SHeliMovementState final
 {
-    struct STmpPt
+    struct STmpPt final
     {
         Fvector point{};
         float dir_h{};
@@ -160,13 +160,13 @@ public:
     tmc::task<void> net_Destroy();
 };
 
-class CHelicopter : public CEntity,
-                    public CShootingObject,
-                    public CRocketLauncher,
-                    public CPHSkeleton,
-                    public CPHDestroyable,
-                    public CHitImmunity,
-                    public CExplosive
+class CHelicopter final : public CEntity,
+                          public CShootingObject,
+                          public CRocketLauncher,
+                          public CPHSkeleton,
+                          public CPHDestroyable,
+                          public CHitImmunity,
+                          public CExplosive
 {
     RTTI_DECLARE_TYPEINFO(CHelicopter, CEntity, CShootingObject, CRocketLauncher, CPHSkeleton, CPHDestroyable, CHitImmunity, CExplosive);
 
@@ -216,14 +216,13 @@ public:
     void startRocket(u16 idx);
 
     // CShootingObject
-    virtual const Fmatrix& ParticlesXFORM() const { return m_fire_bone_xform; }
-
-    virtual const Fvector& CurrentFirePoint() { return m_fire_pos; }
+    [[nodiscard]] const Fmatrix& ParticlesXFORM() const { return m_fire_bone_xform; }
+    [[nodiscard]] const Fvector& CurrentFirePoint() const { return m_fire_pos; }
 
     void MGunFireStart();
     void MGunFireEnd();
     void MGunUpdateFire();
-    virtual void OnShot();
+    void OnShot();
 
     void UpdateMGunDir();
     void UpdateWeapons();

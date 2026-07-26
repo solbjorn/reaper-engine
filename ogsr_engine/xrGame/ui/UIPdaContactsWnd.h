@@ -10,7 +10,7 @@ class CUIAnimatedStatic;
 class CUIScrollView;
 class CPda;
 
-class CUIPdaContactsWnd : public CUIWindow
+class CUIPdaContactsWnd final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIPdaContactsWnd, CUIWindow);
 
@@ -49,7 +49,7 @@ protected:
     CUIAnimatedStatic* UIAnimation;
 };
 
-class CUIPdaContactItem : public CUIPdaListItem, public CUISelectable
+class CUIPdaContactItem final : public CUIPdaListItem, public CUISelectable
 {
     RTTI_DECLARE_TYPEINFO(CUIPdaContactItem, CUIPdaListItem, CUISelectable);
 

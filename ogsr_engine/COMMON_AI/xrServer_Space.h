@@ -10,7 +10,7 @@
 
 #include "script_export_space.h"
 
-struct SRotation
+struct SRotation final
 {
     f32 yaw{}, pitch{}, roll{};
 

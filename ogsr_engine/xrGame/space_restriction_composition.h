@@ -16,7 +16,7 @@ class CSpaceRestrictionHolder;
 
 extern int g_restriction_checker;
 
-class CSpaceRestrictionComposition : public CSpaceRestrictionBase
+class CSpaceRestrictionComposition final : public CSpaceRestrictionBase
 {
     RTTI_DECLARE_TYPEINFO(CSpaceRestrictionComposition, CSpaceRestrictionBase);
 

@@ -27,7 +27,7 @@ enum EChannelType
     ctMaxChannel
 };
 
-struct st_BoneMotion
+struct st_BoneMotion final
 {
     enum
     {
@@ -111,7 +111,7 @@ inline CCustomMotion::~CCustomMotion() = default;
 
 //--------------------------------------------------------------------------
 
-class COMotion : public CCustomMotion
+class COMotion final : public CCustomMotion
 {
     RTTI_DECLARE_TYPEINFO(COMotion, CCustomMotion);
 
@@ -149,7 +149,7 @@ enum ESMFlags
     esmUseWeaponBone = 1 << 7,
 };
 
-struct SAnimParams
+struct SAnimParams final
 {
     float t;
     float min_t;
@@ -181,43 +181,6 @@ public:
         t = min_t;
     }
     void Pause(bool val) { bPlay = !val; }
-};
-
-class CClip : public virtual RTTI::Enable
-{
-    RTTI_DECLARE_TYPEINFO(CClip);
-
-public:
-    struct AnimItem
-    {
-        shared_str name;
-        u16 slot{std::numeric_limits<u16>::max()};
-
-        constexpr AnimItem() = default;
-
-        void set(shared_str nm, u16 s)
-        {
-            name = nm;
-            slot = s;
-        }
-
-        void clear() { set(shared_str{""}, std::numeric_limits<u16>::max()); }
-        [[nodiscard]] constexpr bool valid() const { return name && slot != std::numeric_limits<u16>::max(); }
-        [[nodiscard]] constexpr bool equal(const AnimItem& d) const { return name.equal(d.name) && slot == d.slot; }
-    };
-
-    shared_str name;
-    AnimItem cycles[4];
-    AnimItem fx;
-
-    float fx_power;
-    float length;
-
-    ~CClip() override = default;
-
-    virtual void Save(IWriter& F);
-    virtual bool Load(IReader& F);
-    bool Equal(CClip* c);
 };
 
 #endif

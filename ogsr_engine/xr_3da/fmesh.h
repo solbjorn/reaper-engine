@@ -59,14 +59,14 @@ enum OGF_SkeletonVertType : u32
 constexpr u16 xrOGF_SMParamsVersion = 4;
 
 // OGF_BBOX
-struct ogf_bbox
+struct ogf_bbox final
 {
     Fvector min;
     Fvector max;
 };
 
 // OGF_BSPHERE
-struct ogf_bsphere
+struct ogf_bsphere final
 {
     Fvector c;
     float r;
@@ -74,7 +74,7 @@ struct ogf_bsphere
 
 // OGF_HEADER
 constexpr u8 xrOGF_FormatVersion = 4;
-struct ogf_header
+struct ogf_header final
 {
     u8 format_version; // = xrOGF_FormatVersion
     u8 type; // MT
@@ -84,14 +84,14 @@ struct ogf_header
 };
 
 // Sliding Window Record
-struct FSlideWindow
+struct FSlideWindow final
 {
     u32 offset;
     u16 num_tris;
     u16 num_verts;
 };
 
-struct FSlideWindowItem
+struct FSlideWindowItem final
 {
     FSlideWindow* sw{};
     u32 count{};

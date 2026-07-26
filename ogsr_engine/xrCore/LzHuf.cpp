@@ -18,7 +18,7 @@ namespace
 
 //************************** Internal FS
 
-class LZfs
+class LZfs final
 {
 private:
     u32 codesize;
@@ -149,7 +149,7 @@ public:
     }
 };
 
-class LzHuf
+class LzHuf final
 {
 private:
     LZfs fs;

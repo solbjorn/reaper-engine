@@ -14,7 +14,7 @@
 // CStalkerActionDangerBySoundListenTo
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDangerBySoundListenTo : public CStalkerActionCombatBase
+class CStalkerActionDangerBySoundListenTo final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDangerBySoundListenTo, CStalkerActionCombatBase);
 
@@ -34,7 +34,7 @@ public:
 // CStalkerActionDangerBySoundCheck
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDangerBySoundCheck : public CStalkerActionCombatBase
+class CStalkerActionDangerBySoundCheck final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDangerBySoundCheck, CStalkerActionCombatBase);
 
@@ -54,7 +54,7 @@ public:
 // CStalkerActionDangerBySoundTakeCover
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDangerBySoundTakeCover : public CStalkerActionCombatBase
+class CStalkerActionDangerBySoundTakeCover final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDangerBySoundTakeCover, CStalkerActionCombatBase);
 
@@ -74,7 +74,7 @@ public:
 // CStalkerActionDangerBySoundLookOut
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDangerBySoundLookOut : public CStalkerActionCombatBase
+class CStalkerActionDangerBySoundLookOut final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDangerBySoundLookOut, CStalkerActionCombatBase);
 
@@ -94,7 +94,7 @@ public:
 // CStalkerActionDangerBySoundLookAround
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDangerBySoundLookAround : public CStalkerActionCombatBase
+class CStalkerActionDangerBySoundLookAround final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDangerBySoundLookAround, CStalkerActionCombatBase);
 

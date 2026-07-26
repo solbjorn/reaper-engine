@@ -13,7 +13,7 @@
 
 #define PIX_EVENT_CTX(C, Name) dxPixEventWrapper pixEvent##Name(C, L## #Name)
 
-class dxPixEventWrapper
+class dxPixEventWrapper final
 {
 private:
     const CBackend& cmd_list;

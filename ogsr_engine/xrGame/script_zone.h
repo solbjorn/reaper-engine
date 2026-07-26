@@ -13,7 +13,7 @@
 
 class CScriptGameObject;
 
-class CScriptZone : public CSpaceRestrictor
+class CScriptZone final : public CSpaceRestrictor
 {
     RTTI_DECLARE_TYPEINFO(CScriptZone, CSpaceRestrictor);
 

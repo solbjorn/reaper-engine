@@ -11,7 +11,7 @@ class opaque_timer;
 } // namespace xr
 
 template <>
-struct std::default_delete<xr::detail::opaque_timer>
+struct std::default_delete<xr::detail::opaque_timer> final
 {
     constexpr void operator()(xr::detail::opaque_timer* ptr) const noexcept { CloseHandle(ptr); }
 };

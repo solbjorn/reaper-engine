@@ -4,7 +4,7 @@
 
 class CChimera;
 
-class CStateManagerChimera : public CMonsterStateManager<CChimera>
+class CStateManagerChimera final : public CMonsterStateManager<CChimera>
 {
     RTTI_DECLARE_TYPEINFO(CStateManagerChimera, CMonsterStateManager<CChimera>);
 

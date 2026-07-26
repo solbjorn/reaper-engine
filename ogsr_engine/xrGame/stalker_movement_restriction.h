@@ -14,7 +14,7 @@
 
 class CAI_Stalker;
 
-class CStalkerMovementRestrictor
+class CStalkerMovementRestrictor final
 {
 private:
     CAI_Stalker* m_object;

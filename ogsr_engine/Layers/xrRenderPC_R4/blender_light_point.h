@@ -1,6 +1,6 @@
 #pragma once
 
-class CBlender_accum_point : public IBlender
+class CBlender_accum_point final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_accum_point, IBlender);
 
@@ -13,7 +13,7 @@ public:
     ~CBlender_accum_point() override;
 };
 
-class CBlender_accum_point_msaa : public IBlender
+class CBlender_accum_point_msaa final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_accum_point_msaa, IBlender);
 
@@ -25,7 +25,7 @@ public:
     CBlender_accum_point_msaa();
     ~CBlender_accum_point_msaa() override;
 
-    virtual void SetDefine(LPCSTR Name, LPCSTR Definition)
+    void SetDefine(LPCSTR Name, LPCSTR Definition)
     {
         this->Name = Name;
         this->Definition = Definition;

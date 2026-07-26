@@ -10,7 +10,7 @@ namespace xxh
 }
 
 template <>
-struct std::default_delete<smem_value>
+struct std::default_delete<smem_value> final
 {
     constexpr void operator()(smem_value* ptr) const noexcept { xr_free(ptr); }
 };
@@ -19,7 +19,7 @@ namespace xr
 {
 namespace
 {
-class smem_container_impl
+class smem_container_impl final
 {
 private:
     using val_t = std::unique_ptr<smem_value>;

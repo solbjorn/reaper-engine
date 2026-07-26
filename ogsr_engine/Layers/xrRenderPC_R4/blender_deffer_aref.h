@@ -1,6 +1,6 @@
 #pragma once
 
-class CBlender_deffer_aref : public IBlenderXr
+class CBlender_deffer_aref final : public IBlenderXr
 {
     RTTI_DECLARE_TYPEINFO(CBlender_deffer_aref, IBlenderXr);
 

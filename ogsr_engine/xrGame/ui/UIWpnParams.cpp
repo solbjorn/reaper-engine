@@ -12,7 +12,7 @@
 
 namespace
 {
-struct SLuaWpnParams
+struct SLuaWpnParams final
 {
     sol::function m_functionRPM;
     sol::function m_functionAccuracy;

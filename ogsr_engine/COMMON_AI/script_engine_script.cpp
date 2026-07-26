@@ -16,7 +16,7 @@
 
 namespace
 {
-struct profile_timer_script
+struct profile_timer_script final
 {
     using Clock = std::chrono::high_resolution_clock;
     using Time = Clock::time_point;

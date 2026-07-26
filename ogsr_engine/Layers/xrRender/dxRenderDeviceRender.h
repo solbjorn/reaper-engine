@@ -6,7 +6,7 @@
 
 class CResourceManager;
 
-class dxRenderDeviceRender : public IRenderDeviceRender, public pureFrame
+class XR_NOVTABLE dxRenderDeviceRender : public IRenderDeviceRender, public pureFrame
 {
     RTTI_DECLARE_TYPEINFO(dxRenderDeviceRender, IRenderDeviceRender, pureFrame);
 

@@ -12,7 +12,7 @@
 
 class CEF_Storage;
 
-class CPatternFunction : public CBaseFunction
+class CPatternFunction final : public CBaseFunction
 {
     RTTI_DECLARE_TYPEINFO(CPatternFunction, CBaseFunction);
 
@@ -64,6 +64,6 @@ public:
     explicit CPatternFunction(LPCSTR caEFFileName, CEF_Storage* storage);
     ~CPatternFunction() override;
 
-    virtual void vfLoadEF(LPCSTR caEFFileName);
+    void vfLoadEF(LPCSTR caEFFileName);
     [[nodiscard]] f32 ffGetValue() override;
 };

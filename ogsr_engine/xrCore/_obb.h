@@ -1,7 +1,7 @@
 #pragma once
 
 template <class T>
-struct _obb
+struct _obb final
 {
 public:
     typedef _obb<T> Self;
@@ -43,8 +43,8 @@ protected:
         T fSaveT0 = rfT0, fSaveT1 = rfT1;
 
         bool bNotEntirelyClipped = clip(+dir.x, -start.x - extent[0], rfT0, rfT1) && clip(-dir.x, +start.x - extent[0], rfT0, rfT1) &&
-            clip(+dir.y, -start.y - extent[1], rfT0, rfT1) && clip(-dir.y, +start.y - extent[1], rfT0, rfT1) && clip(+dir.z, -start.z - extent[2], rfT0, rfT1) &&
-            clip(-dir.z, +start.z - extent[2], rfT0, rfT1);
+            clip(+dir.y, -start.y - extent[1], rfT0, rfT1) && clip(-dir.y, +start.y - extent[1], rfT0, rfT1) &&
+            clip(+dir.z, -start.z - extent[2], rfT0, rfT1) && clip(-dir.z, +start.z - extent[2], rfT0, rfT1);
 
         return bNotEntirelyClipped && (rfT0 != fSaveT0 || rfT1 != fSaveT1);
     }

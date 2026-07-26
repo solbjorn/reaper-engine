@@ -2,7 +2,7 @@
 #define dx10StateCache_included
 
 template <class IDeviceState, class StateDecs>
-class dx10StateCache
+class dx10StateCache final
 {
     //	Public interface
 public:
@@ -21,7 +21,7 @@ public:
 
     //	Private declarations
 private:
-    struct StateRecord
+    struct StateRecord final
     {
         u64 m_xxh;
         IDeviceState* m_pState;

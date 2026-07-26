@@ -3,7 +3,7 @@
 #include "../state.h"
 
 template <typename _Object>
-class CStateMonsterFindEnemyWalkAround : public CState<_Object>
+class CStateMonsterFindEnemyWalkAround final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterFindEnemyWalkAround<_Object>, CState<_Object>);
 

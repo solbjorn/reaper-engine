@@ -104,7 +104,7 @@ inline float angle_distance(float a1, float a2)
 //     low = 30, high = 275 means that any angle in the range 30..275 is legal
 //
 
-class AngleInt
+class AngleInt final
 {
 private:
     friend class AngleIntIterator;
@@ -177,7 +177,7 @@ public:
 //
 // Class for iterating through angles
 //
-class AngleIntIterator
+class AngleIntIterator final
 {
     int count;
     int n;
@@ -197,7 +197,7 @@ public:
 //
 // An AngleIntList is used to store a set of AngleInts
 //
-struct AngleIntListNode
+struct AngleIntListNode final
 {
     AngleInt D;
     AngleIntListNode* next;
@@ -206,7 +206,7 @@ struct AngleIntListNode
     AngleIntListNode(float low, float high, AngleIntListNode* n) : D{low, high}, next{n} {}
 };
 
-class AngleIntList
+class AngleIntList final
 {
     friend class AngleIntListIterator;
 
@@ -276,7 +276,7 @@ void Intersect(const AngleIntList& a, const AngleIntList& b, AngleIntList& c);
 //
 // Corresponding iterator
 //
-class AngleIntListIterator
+class AngleIntListIterator final
 {
     AngleIntListNode* a{};
 

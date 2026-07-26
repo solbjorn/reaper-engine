@@ -162,7 +162,7 @@ namespace
 BOOL g_start_total_res = TRUE;
 xrServer::EConnect g_connect_server_err = xrServer::ErrConnect;
 
-struct LevelLoadFinalizer
+struct LevelLoadFinalizer final
 {
     tmc::task<bool> net_start_finalizer() { co_return true; }
 };

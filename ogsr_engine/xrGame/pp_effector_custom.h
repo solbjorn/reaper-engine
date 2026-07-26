@@ -91,7 +91,7 @@ void CPPEffectorCustomController<_Effector>::load(LPCSTR section)
 
 class CPPEffectorController;
 
-class CPPEffectorControlled : public CPPEffectorCustom
+class CPPEffectorControlled final : public CPPEffectorCustom
 {
     RTTI_DECLARE_TYPEINFO(CPPEffectorControlled, CPPEffectorCustom);
 

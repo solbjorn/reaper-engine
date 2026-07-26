@@ -172,7 +172,7 @@ void CLevelDebug::draw_level_info()
 
 void CLevelDebug::CObjectInfo::add_item(LPCSTR text, u32 color, u32 id) { inherited::add_item(SInfoItem(text, color, id)); }
 
-struct DrawInfoPredicate
+struct DrawInfoPredicate final
 {
     float x;
     float y;
@@ -207,7 +207,7 @@ void CLevelDebug::CObjectInfo::draw_info(float x, float& y)
 
 void CLevelDebug::CTextInfo::add_item(LPCSTR text, float x, float y, u32 color, u32 id) { inherited::add_item(STextItem(text, x, y, color, id)); }
 
-struct DrawTextPredicate
+struct DrawTextPredicate final
 {
     void operator()(const CLevelDebug::STextItem& s)
     {
@@ -232,7 +232,7 @@ void CLevelDebug::CLevelInfo::add_item(const Fvector& pos, u32 color, u32 id) { 
 void CLevelDebug::CLevelInfo::add_item(const Fvector& pos1, const Fvector& pos2, u32 color, u32 id) { inherited::add_item(SLevelItem(pos1, pos2, color, id)); }
 void CLevelDebug::CLevelInfo::add_item(const Fvector& pos, float radius, u32 color, u32 id) { inherited::add_item(SLevelItem(pos, radius, color, id)); }
 
-struct DrawLevelPredicate
+struct DrawLevelPredicate final
 {
     void operator()(CLevelDebug::SLevelItem s)
     {

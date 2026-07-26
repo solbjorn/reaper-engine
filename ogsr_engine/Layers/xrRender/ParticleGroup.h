@@ -6,13 +6,14 @@ namespace PS
 {
 class CParticleEffect;
 
-class CPGDef
+class CPGDef final
 {
 public:
     shared_str m_Name;
     Flags32 m_Flags{};
     float m_fTimeLimit{};
-    struct SEffect
+
+    struct SEffect final
     {
         enum
         {
@@ -32,6 +33,7 @@ public:
         float m_Time1{};
         // SEffect() { m_Flags.zero(); /*set(flEnabled)*/ }
     };
+
     DEFINE_VECTOR(SEffect*, EffectVec, EffectIt);
     EffectVec m_Effects;
 
@@ -46,7 +48,7 @@ public:
     BOOL Load2(CInifile& ini);
 };
 
-class CParticleGroup : public dxParticleCustom
+class CParticleGroup final : public dxParticleCustom
 {
     RTTI_DECLARE_TYPEINFO(CParticleGroup, dxParticleCustom);
 
@@ -57,7 +59,8 @@ private:
 
 public:
     DEFINE_VECTOR(dxRender_Visual*, VisualVec, VisualVecIt);
-    struct SItem
+
+    struct SItem final
     {
         dxRender_Visual* _effect;
         VisualVec _children_related;
@@ -91,6 +94,7 @@ public:
         void Play();
         void Stop(BOOL def_stop);
     };
+
     DEFINE_VECTOR(SItem, SItemVec, SItemVecIt);
     SItemVec items;
 

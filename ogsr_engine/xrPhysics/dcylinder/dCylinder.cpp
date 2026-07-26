@@ -1294,7 +1294,7 @@ int dCollideCylCyl(dxGeom* o1, dxGeom* o2, int, dContactGeom* contact, int skip)
     return num;
 }
 
-struct dxPlane
+struct dxPlane final
 {
     dReal p[4];
 };

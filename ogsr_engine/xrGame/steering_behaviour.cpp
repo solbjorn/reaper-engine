@@ -28,7 +28,7 @@ constexpr vec zero_vec{0.f, 0.f, 0.f};
 
 vec random_vec()
 {
-    struct local
+    struct local final
     {
         static float random_component() { return -1.f + 2.f * (rand() / (float)RAND_MAX); }
     };

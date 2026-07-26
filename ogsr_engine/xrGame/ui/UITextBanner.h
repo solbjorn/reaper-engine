@@ -11,7 +11,7 @@
 //  Класс параметров эффекта
 //-----------------------------------------------------------------------------/
 
-struct EffectParams
+struct EffectParams final
 {
     friend class CUITextBanner;
 
@@ -33,7 +33,7 @@ private:
 //  Класс анимироанного баннера
 //-----------------------------------------------------------------------------/
 
-class CUITextBanner : public virtual RTTI::Enable
+class CUITextBanner final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CUITextBanner);
 
@@ -49,7 +49,7 @@ public:
     CUITextBanner() = default;
     ~CUITextBanner() override = default;
 
-    virtual void Update();
+    void Update();
 
 private:
     void vOut(f32 x, f32 y, xr::detail::string_view fmt, xr::detail::format_args args);

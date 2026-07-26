@@ -167,7 +167,7 @@ void dx103DFluidRenderer::CreateJitterTexture()
 namespace
 {
 template <size_t iNumSamples>
-struct HHGG_Gen
+struct HHGG_Gen final
 {
     // cubic b-spline
     consteval float bsW0(float a) { return (1.0f / 6.0f * (-(a * a * a) + (3.0f * a * a) - (3.0f * a) + 1.0f)); }

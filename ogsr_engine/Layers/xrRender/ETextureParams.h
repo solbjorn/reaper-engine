@@ -1,7 +1,7 @@
 #ifndef ETextureParamsH
 #define ETextureParamsH
 
-struct STextureParams
+struct STextureParams final
 {
     enum ETType : u32
     {

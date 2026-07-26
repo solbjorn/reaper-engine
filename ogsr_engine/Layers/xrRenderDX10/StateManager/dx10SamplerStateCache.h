@@ -1,7 +1,7 @@
 #ifndef dx10SamplerStateCache_included
 #define dx10SamplerStateCache_included
 
-class dx10SamplerStateCache
+class dx10SamplerStateCache final
 {
 public:
     enum : u32

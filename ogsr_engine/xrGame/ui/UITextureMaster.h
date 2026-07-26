@@ -13,7 +13,7 @@
 
 class IUISimpleTextureControl;
 
-struct TEX_INFO
+struct TEX_INFO final
 {
     shared_str file;
     Frect rect;
@@ -22,7 +22,7 @@ struct TEX_INFO
     [[nodiscard]] constexpr auto get_rect() const { return rect; }
 };
 
-class CUITextureMaster
+class CUITextureMaster final
 {
 public:
     static void ParseShTexInfo(LPCSTR xml_file);

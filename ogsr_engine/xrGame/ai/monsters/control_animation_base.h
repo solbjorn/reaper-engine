@@ -3,7 +3,7 @@
 #include "control_combase.h"
 #include "ai_monster_defs.h"
 
-struct SEventVelocityBounce : public ControlCom::IEventData
+struct SEventVelocityBounce final : public ControlCom::IEventData
 {
     float m_ratio;
 

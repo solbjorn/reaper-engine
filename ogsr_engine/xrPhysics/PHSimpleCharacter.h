@@ -16,7 +16,7 @@ enum EHitType : u32;
 #include "PHDebug.h"
 #endif
 
-class CPHSimpleCharacter : public CPHCharacter, ICollisionDamageInfo
+class XR_NOVTABLE CPHSimpleCharacter : public CPHCharacter, ICollisionDamageInfo
 {
     RTTI_DECLARE_TYPEINFO(CPHSimpleCharacter, CPHCharacter, ICollisionDamageInfo);
 
@@ -29,7 +29,7 @@ private:
 protected:
     CElevatorState m_elevator_state;
     ////////////////////////////damage////////////////////////////////////////
-    struct SCollisionDamageInfo
+    struct SCollisionDamageInfo final
     {
         SCollisionDamageInfo();
         void Construct();

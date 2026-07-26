@@ -4,7 +4,7 @@
 
 #include "../../xrCore/_stl_extensions.h"
 
-struct PBool
+struct PBool final
 {
     BOOL val;
 
@@ -15,7 +15,7 @@ struct PBool
     void set(BOOL v) { val = v; }
 };
 
-struct PFloat
+struct PFloat final
 {
     float val;
     float mn;
@@ -33,7 +33,7 @@ struct PFloat
     void set(float v) { val = v; }
 };
 
-struct PInt
+struct PInt final
 {
     int val;
     int mn;
@@ -51,7 +51,7 @@ struct PInt
     void set(int v) { val = v; }
 };
 
-struct PVector
+struct PVector final
 {
     Fvector val{};
     float mn{};
@@ -73,7 +73,7 @@ struct PVector
     void set(float x, float y, float z) { val.set(x, y, z); }
 };
 
-struct PDomain
+struct PDomain final
 {
     PAPI::PDomainEnum type;
 
@@ -154,7 +154,7 @@ public:
         tpInt,
     };
 
-    struct SOrder
+    struct SOrder final
     {
         EValType type{};
         std::string name;
@@ -198,7 +198,7 @@ public:
     virtual void Save2(CInifile& ini, gsl::czstring sect);
 };
 
-struct EPAAvoid : public EParticleAction
+struct EPAAvoid final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPAAvoid, EParticleAction);
 
@@ -209,7 +209,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPABounce : public EParticleAction
+struct EPABounce final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPABounce, EParticleAction);
 
@@ -220,7 +220,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPACopyVertexB : public EParticleAction
+struct EPACopyVertexB final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPACopyVertexB, EParticleAction);
 
@@ -231,7 +231,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPADamping : public EParticleAction
+struct EPADamping final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPADamping, EParticleAction);
 
@@ -242,7 +242,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPAExplosion : public EParticleAction
+struct EPAExplosion final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPAExplosion, EParticleAction);
 
@@ -253,7 +253,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPAFollow : public EParticleAction
+struct EPAFollow final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPAFollow, EParticleAction);
 
@@ -264,7 +264,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPAGravitate : public EParticleAction
+struct EPAGravitate final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPAGravitate, EParticleAction);
 
@@ -275,7 +275,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPAGravity : public EParticleAction
+struct EPAGravity final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPAGravity, EParticleAction);
 
@@ -286,7 +286,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPAJet : public EParticleAction
+struct EPAJet final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPAJet, EParticleAction);
 
@@ -297,7 +297,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPAKillOld : public EParticleAction
+struct EPAKillOld final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPAKillOld, EParticleAction);
 
@@ -308,7 +308,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPAMatchVelocity : public EParticleAction
+struct EPAMatchVelocity final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPAMatchVelocity, EParticleAction);
 
@@ -319,7 +319,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPAMove : public EParticleAction
+struct EPAMove final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPAMove, EParticleAction);
 
@@ -330,7 +330,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPAOrbitLine : public EParticleAction
+struct EPAOrbitLine final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPAOrbitLine, EParticleAction);
 
@@ -341,7 +341,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPAOrbitPoint : public EParticleAction
+struct EPAOrbitPoint final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPAOrbitPoint, EParticleAction);
 
@@ -352,7 +352,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPARandomAccel : public EParticleAction
+struct EPARandomAccel final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPARandomAccel, EParticleAction);
 
@@ -363,7 +363,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPARandomDisplace : public EParticleAction
+struct EPARandomDisplace final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPARandomDisplace, EParticleAction);
 
@@ -374,7 +374,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPARandomVelocity : public EParticleAction
+struct EPARandomVelocity final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPARandomVelocity, EParticleAction);
 
@@ -385,7 +385,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPARestore : public EParticleAction
+struct EPARestore final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPARestore, EParticleAction);
 
@@ -396,7 +396,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPAScatter : public EParticleAction
+struct EPAScatter final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPAScatter, EParticleAction);
 
@@ -407,7 +407,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPASink : public EParticleAction
+struct EPASink final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPASink, EParticleAction);
 
@@ -418,7 +418,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPASinkVelocity : public EParticleAction
+struct EPASinkVelocity final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPASinkVelocity, EParticleAction);
 
@@ -429,7 +429,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPASpeedLimit : public EParticleAction
+struct EPASpeedLimit final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPASpeedLimit, EParticleAction);
 
@@ -440,7 +440,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPASource : public EParticleAction
+struct EPASource final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPASource, EParticleAction);
 
@@ -451,7 +451,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPATargetColor : public EParticleAction
+struct EPATargetColor final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPATargetColor, EParticleAction);
 
@@ -462,7 +462,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPATargetSize : public EParticleAction
+struct EPATargetSize final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPATargetSize, EParticleAction);
 
@@ -473,7 +473,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPATargetRotate : public EParticleAction
+struct EPATargetRotate final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPATargetRotate, EParticleAction);
 
@@ -484,7 +484,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPATargetVelocity : public EParticleAction
+struct EPATargetVelocity final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPATargetVelocity, EParticleAction);
 
@@ -495,7 +495,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPAVortex : public EParticleAction
+struct EPAVortex final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPAVortex, EParticleAction);
 
@@ -506,7 +506,7 @@ public:
     void Compile(IWriter& F) override;
 };
 
-struct EPATurbulence : public EParticleAction
+struct EPATurbulence final : public EParticleAction
 {
     RTTI_DECLARE_TYPEINFO(EPATurbulence, EParticleAction);
 

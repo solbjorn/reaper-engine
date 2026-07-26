@@ -26,7 +26,7 @@ int g_restriction_checker = 0;
 
 CSpaceRestrictionComposition::~CSpaceRestrictionComposition() { --g_restriction_checker; }
 
-struct CMergePredicate
+struct CMergePredicate final
 {
     CSpaceRestrictionComposition* m_restriction;
 

@@ -22,7 +22,7 @@ class CBlend;
 class CSoundPlayer;
 class CTraderAnimation;
 
-class CAI_Trader : public CEntityAlive, public CInventoryOwner, public CScriptEntity, public CAI_PhraseDialogManager
+class CAI_Trader final : public CEntityAlive, public CInventoryOwner, public CScriptEntity, public CAI_PhraseDialogManager
 {
     RTTI_DECLARE_TYPEINFO(CAI_Trader, CEntityAlive, CInventoryOwner, CScriptEntity, CAI_PhraseDialogManager);
 
@@ -56,7 +56,7 @@ public:
     [[nodiscard]] BOOL net_SaveRelevant() override { return inherited::net_SaveRelevant(); }
 
     tmc::task<void> Die(CObject* who) override;
-    virtual void Think();
+    void Think();
     void HitSignal(f32, Fvector&, CObject*, s16) override {}
     void HitImpulse(f32, Fvector&, Fvector&) override {}
     void Hit(SHit* pHDS) override;
@@ -67,8 +67,8 @@ public:
     [[nodiscard]] f32 ffGetFov() const override { return 150.0f; }
     [[nodiscard]] f32 ffGetRange() const override { return 30.0f; }
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
-    virtual void feel_touch_new(CObject* O);
-    virtual void DropItemSendMessage(CObject* O);
+    void feel_touch_new(CObject* O);
+    void DropItemSendMessage(CObject* O);
     tmc::task<void> shedule_Update(u32 dt) override;
 
     [[nodiscard]] BOOL UsedAI_Locations() override;

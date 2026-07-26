@@ -209,7 +209,7 @@ inline bool is_bone_head(IKinematics& K, u16 bone)
 }
 
 // 1.	Инерционное движение вперед от попадания в голову
-class type_motion0 : public type_motion
+class type_motion0 final : public type_motion
 {
     RTTI_DECLARE_TYPEINFO(type_motion0, type_motion);
 
@@ -257,7 +257,7 @@ public:
 };
 
 // 2.	Изрешетить пулями (заглушка)
-class type_motion1 : public type_motion
+class type_motion1 final : public type_motion
 {
     RTTI_DECLARE_TYPEINFO(type_motion1, type_motion);
 
@@ -270,7 +270,7 @@ public:
 };
 
 // 3.	Шотган
-class type_motion2 : public type_motion
+class type_motion2 final : public type_motion
 {
     RTTI_DECLARE_TYPEINFO(type_motion2, type_motion);
 
@@ -302,7 +302,7 @@ public:
 };
 
 // 4.	Хедшот (по вероятности), кроме 5 (4)
-class type_motion3 : public type_motion
+class type_motion3 final : public type_motion
 {
     RTTI_DECLARE_TYPEINFO(type_motion3, type_motion);
 
@@ -340,7 +340,7 @@ bool is_snipper(u16 weaponID)
 }
 
 // 5.	Снайперка в голову.
-class type_motion4 : public type_motion
+class type_motion4 final : public type_motion
 {
     RTTI_DECLARE_TYPEINFO(type_motion4, type_motion);
 
@@ -371,7 +371,7 @@ public:
 };
 
 // 6.	Снайперка в тело.
-class type_motion5 : public type_motion
+class type_motion5 final : public type_motion
 {
     RTTI_DECLARE_TYPEINFO(type_motion5, type_motion);
 
@@ -399,7 +399,7 @@ public:
 };
 
 // 7.	Гранта
-class type_motion6 : public type_motion
+class type_motion6 final : public type_motion
 {
     RTTI_DECLARE_TYPEINFO(type_motion6, type_motion);
 

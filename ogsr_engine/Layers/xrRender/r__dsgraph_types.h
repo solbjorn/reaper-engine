@@ -5,7 +5,7 @@ class dxRender_Visual;
 namespace R_dsgraph
 {
 // Elementary types
-struct _NormalItem
+struct _NormalItem final
 {
     dxRender_Visual* pVisual;
 
@@ -13,7 +13,7 @@ struct _NormalItem
     constexpr explicit _NormalItem(dxRender_Visual* v) : pVisual{v} {}
 };
 
-struct XR_TRIVIAL _MatrixItem
+struct XR_TRIVIAL _MatrixItem final
 {
     IRenderable* pObject;
     dxRender_Visual* pVisual;
@@ -50,7 +50,7 @@ struct XR_TRIVIAL _MatrixItem
 };
 XR_TRIVIAL_ASSERT(_MatrixItem);
 
-struct XR_TRIVIAL _MatrixItemS
+struct XR_TRIVIAL _MatrixItemS final
 {
     float ssa;
     IRenderable* pObject;
@@ -60,7 +60,9 @@ struct XR_TRIVIAL _MatrixItemS
     Fmatrix PrevMatrix;
 
     constexpr _MatrixItemS() = default;
-    constexpr explicit _MatrixItemS(float s, dxRender_Visual* v, ShaderElement* e) : ssa{s}, pObject{nullptr}, pVisual{v}, se{e}, Matrix{Fidentity}, PrevMatrix{Fidentity} {}
+    constexpr explicit _MatrixItemS(float s, dxRender_Visual* v, ShaderElement* e)
+        : ssa{s}, pObject{nullptr}, pVisual{v}, se{e}, Matrix{Fidentity}, PrevMatrix{Fidentity}
+    {}
     constexpr explicit _MatrixItemS(float s, IRenderable* o, dxRender_Visual* v, Fmatrix& m, ShaderElement* e)
         : ssa{s}, pObject{o}, pVisual{v}, se{e}, Matrix{m}, PrevMatrix{Fidentity}
     {}

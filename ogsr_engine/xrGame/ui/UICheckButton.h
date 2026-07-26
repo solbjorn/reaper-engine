@@ -3,7 +3,7 @@
 #include "UI3tButton.h"
 #include "UIOptionsItem.h"
 
-class CUICheckButton : public CUI3tButton, public CUIOptionsItem
+class CUICheckButton final : public CUI3tButton, public CUIOptionsItem
 {
     RTTI_DECLARE_TYPEINFO(CUICheckButton, CUI3tButton, CUIOptionsItem);
 

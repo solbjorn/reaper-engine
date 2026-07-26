@@ -4,7 +4,7 @@ class CActor;
 class CAnimatorCamLerpEffector;
 class CPostprocessAnimatorLerp;
 
-class CZoneEffector
+class CZoneEffector final
 {
 private:
     f32 r_min_perc{};

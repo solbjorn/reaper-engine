@@ -13,7 +13,7 @@ class CHudItem;
 class CMotionDef;
 struct attachable_hud_item;
 
-struct motion_descr
+struct motion_descr final
 {
     MotionID mid;
     shared_str name;
@@ -22,14 +22,14 @@ struct motion_descr
     const char* prefix{};
 };
 
-struct motion_params
+struct motion_params final
 {
     float speed_k{1.0f};
     float start_k{0.0f};
     float stop_k{1.0f};
 };
 
-struct player_hud_motion
+struct player_hud_motion final
 {
     motion_params params{};
 
@@ -40,20 +40,20 @@ struct player_hud_motion
     xr_vector<motion_descr> m_additional_animations;
 };
 
-struct player_hud_motion_container
+struct player_hud_motion_container final
 {
     string_unordered_map<shared_str, player_hud_motion> m_anims;
     player_hud_motion* find_motion(const shared_str& name);
     void load(bool has_separated_hands, IKinematicsAnimated* model, IKinematicsAnimated* animatedHudItem, const shared_str& sect);
 };
 
-struct hand_motions
+struct hand_motions final
 {
     shared_str section;
     player_hud_motion_container pm;
 };
 
-struct hud_item_measures
+struct hud_item_measures final
 {
     enum
     {
@@ -75,11 +75,11 @@ struct hud_item_measures
         m_hands_offset_type_aim, // Смотрим в механический прицел
         m_hands_offset_type_gl, // Смотрим в механический прицел в режиме ПГ
         m_hands_offset_type_aim_scope, // Смотрим в присоединяемый нетекстурный прицел (будь то 3д прицел или колиматор) если включен "use_scope_zoom"
-        m_hands_offset_type_gl_scope, // Смотрим в присоединяемый нетекстурный прицел (будь то 3д прицел или колиматор) в режиме ПГ если включен "use_scope_grenade_zoom" - мне вот
-                                      // щас не понятно зачем это надо, но это как-то используют.
+        m_hands_offset_type_gl_scope, // Смотрим в присоединяемый нетекстурный прицел (будь то 3д прицел или колиматор) в режиме ПГ если включен
+                                      // "use_scope_grenade_zoom" - мне вот щас не понятно зачем это надо, но это как-то используют.
         m_hands_offset_type_aim_gl_normal, // Смотрим в механический прицел если гранатомет присоединен
-        m_hands_offset_type_gl_normal_scope, // Смотрим в присоединяемый нетекстурный прицел (будь то 3д прицел или колиматор) если включен "use_scope_zoom" и гранатомет
-                                             // присоединен
+        m_hands_offset_type_gl_normal_scope, // Смотрим в присоединяемый нетекстурный прицел (будь то 3д прицел или колиматор) если включен "use_scope_zoom" и
+                                             // гранатомет присоединен
         m_hands_offset_type_size
     };
     Fvector m_hands_offset[m_hands_offset_size][m_hands_offset_type_size]{};
@@ -111,7 +111,7 @@ enum eMovementLayers
     move_anms_end
 };
 
-struct movement_layer
+struct movement_layer final
 {
     CObjectAnimator* anm;
     float blend_amount[2]{};
@@ -176,7 +176,7 @@ struct movement_layer
     }
 };
 
-struct script_layer
+struct script_layer final
 {
     shared_str m_name;
     CObjectAnimator* anm;
@@ -228,7 +228,7 @@ struct script_layer
     }
 };
 
-struct attachable_hud_item
+struct attachable_hud_item final
 {
 private:
     player_hud_motion_container m_hand_motions;
@@ -282,7 +282,7 @@ public:
     void tune(const Ivector& values);
 };
 
-class player_hud
+class player_hud final
 {
 public:
     player_hud();

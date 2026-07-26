@@ -12,7 +12,7 @@
 #include "UIListWnd.h"
 #include "UIDialogWnd.h"
 
-class CUIDebugFonts : public CUIDialogWnd
+class CUIDebugFonts final : public CUIDialogWnd
 {
     RTTI_DECLARE_TYPEINFO(CUIDebugFonts, CUIDialogWnd);
 

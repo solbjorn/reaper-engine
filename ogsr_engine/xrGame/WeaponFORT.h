@@ -6,7 +6,7 @@
 
 #define SND_RIC_COUNT 5
 
-class CWeaponFORT : public CWeaponPistol
+class CWeaponFORT final : public CWeaponPistol
 {
     RTTI_DECLARE_TYPEINFO(CWeaponFORT, CWeaponPistol);
 

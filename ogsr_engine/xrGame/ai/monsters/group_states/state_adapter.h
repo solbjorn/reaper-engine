@@ -14,7 +14,7 @@
 
 class CBaseMonster;
 
-class CMonsterStateInterface : public virtual RTTI::Enable
+class CMonsterStateInterface final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CMonsterStateInterface);
 
@@ -33,7 +33,7 @@ protected:
 };
 
 template <typename _Object>
-class CMonsterStateAdapter : public CState<_Object>
+class CMonsterStateAdapter final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CMonsterStateAdapter<_Object>, CState<_Object>);
 

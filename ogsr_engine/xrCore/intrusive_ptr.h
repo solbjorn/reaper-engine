@@ -31,7 +31,7 @@ private:
 };
 
 template <typename ObjectType, typename BaseType = intrusive_base>
-class intrusive_ptr
+class intrusive_ptr final
 {
     using object_type = ObjectType;
     using base_type = BaseType;

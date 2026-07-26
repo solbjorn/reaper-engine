@@ -541,7 +541,7 @@ IC u8 TransferenceAndThrowVelToThrowDir(const Fvector& transference, float throw
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-struct SInertVal
+struct SInertVal final
 {
     f32 val{0.0f};
     const f32 inertion;

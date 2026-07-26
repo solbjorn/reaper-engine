@@ -7,7 +7,7 @@ namespace xr
 {
 namespace detail
 {
-class imgui_ingame_editor : public xr::ingame_editor
+class imgui_ingame_editor final : public xr::ingame_editor
 {
     RTTI_DECLARE_TYPEINFO(xr::detail::imgui_ingame_editor, xr::ingame_editor);
 

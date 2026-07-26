@@ -9,7 +9,7 @@
 #pragma once
 
 template <typename _dist_type, typename _index_type, typename _iteration_type>
-struct SNearestVertex : public SBaseParameters<_dist_type, _index_type, _iteration_type>
+struct SNearestVertex final : public SBaseParameters<_dist_type, _index_type, _iteration_type>
 {
     Fvector m_target_position;
 

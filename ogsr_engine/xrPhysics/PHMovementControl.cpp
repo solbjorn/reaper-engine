@@ -1100,7 +1100,7 @@ CElevatorState* CPHMovementControl::ElevatorState()
     return m_character->ElevatorState();
 }
 
-struct STraceBorderQParams
+struct STraceBorderQParams final
 {
     CPHMovementControl* m_movement;
     const Fvector& m_dir;
@@ -1213,7 +1213,7 @@ void CPHMovementControl::VirtualMoveTo(const Fvector& in_pos, Fvector& out_pos)
     XR_ASSERT(CharacterExist());
     XR_DEBUG_ASSERT(_valid(in_pos));
 
-    class ph_character_state_save
+    class ph_character_state_save final
     {
     public:
         ph_character_state_save(CPHCharacter* character) : character_(character), saved_callback_(character->ObjectContactCallBack())

@@ -4,7 +4,8 @@
 #define _INCDEF_TARGASAVER_H_
 
 #pragma pack(push, 1)
-struct tgaImgSpecHeader
+
+struct tgaImgSpecHeader final
 {
     u16 tgaXOrigin;
     u16 tgaYOrigin;
@@ -13,7 +14,8 @@ struct tgaImgSpecHeader
     BYTE tgaDepth;
     BYTE tgaImgDesc;
 };
-struct tgaHeader
+
+struct tgaHeader final
 {
     BYTE tgaIDL;
     BYTE tgaMapType;
@@ -21,12 +23,13 @@ struct tgaHeader
     BYTE tgaClrMapSpec[5];
     tgaImgSpecHeader tgaImgSpec;
 };
+
 #pragma pack(pop)
 
 #define IMG_24B 0
 #define IMG_32B 1
 
-class TGAdesc
+class TGAdesc final
 {
 public:
     int format;
@@ -39,7 +42,6 @@ public:
     ~TGAdesc() = default;
 
     void maketga(IWriter& fs);
-    //	void maketga( int hf );
 };
 
 void tga_save(LPCSTR name, u32 w, u32 h, void* data, BOOL alpha);

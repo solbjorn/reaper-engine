@@ -6,7 +6,7 @@
 class CUI3tButton;
 class CUIEditBox;
 
-class CUIMessageBox : public CUIStatic
+class CUIMessageBox final : public CUIStatic
 {
     RTTI_DECLARE_TYPEINFO(CUIMessageBox, CUIStatic);
 

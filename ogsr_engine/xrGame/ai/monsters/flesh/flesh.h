@@ -4,7 +4,7 @@
 #include "../controlled_entity.h"
 #include "script_export_space.h"
 
-class CAI_Flesh : public CBaseMonster, public CControlledEntity<CAI_Flesh>
+class CAI_Flesh final : public CBaseMonster, public CControlledEntity<CAI_Flesh>
 {
     RTTI_DECLARE_TYPEINFO(CAI_Flesh, CBaseMonster, CControlledEntity<CAI_Flesh>);
 

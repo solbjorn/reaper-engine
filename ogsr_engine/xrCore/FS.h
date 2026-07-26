@@ -123,7 +123,7 @@ public:
     [[nodiscard]] virtual gsl::index flush() { return 0; } // RvP
 };
 
-class CMemoryWriter : public IWriter
+class CMemoryWriter final : public IWriter
 {
     RTTI_DECLARE_TYPEINFO(CMemoryWriter, IWriter);
 
@@ -732,7 +732,7 @@ public:
 };
 
 template <>
-struct std::default_delete<IReader>
+struct std::default_delete<IReader> final
 {
     constexpr void operator()(IReader* ptr) const noexcept { ptr->close(); }
 };

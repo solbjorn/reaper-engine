@@ -1,6 +1,6 @@
 #pragma once
 
-class CLAItem
+class CLAItem final
 {
 public:
     shared_str cName;
@@ -40,7 +40,7 @@ public:
 
 DEFINE_VECTOR(CLAItem*, LAItemVec, LAItemIt);
 
-class ELightAnimLibrary
+class ELightAnimLibrary final
 {
 public:
     LAItemVec Items;

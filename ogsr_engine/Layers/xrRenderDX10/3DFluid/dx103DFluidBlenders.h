@@ -1,6 +1,6 @@
 #pragma once
 
-class CBlender_fluid_advect : public IBlender
+class CBlender_fluid_advect final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_fluid_advect, IBlender);
 
@@ -12,7 +12,7 @@ public:
     void Compile(CBlender_Compile& C) override;
 };
 
-class CBlender_fluid_advect_velocity : public IBlender
+class CBlender_fluid_advect_velocity final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_fluid_advect_velocity, IBlender);
 
@@ -24,7 +24,7 @@ public:
     void Compile(CBlender_Compile& C) override;
 };
 
-class CBlender_fluid_simulate : public IBlender
+class CBlender_fluid_simulate final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_fluid_simulate, IBlender);
 
@@ -36,7 +36,7 @@ public:
     void Compile(CBlender_Compile& C) override;
 };
 
-class CBlender_fluid_obst : public IBlender
+class CBlender_fluid_obst final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_fluid_obst, IBlender);
 
@@ -48,7 +48,7 @@ public:
     void Compile(CBlender_Compile& C) override;
 };
 
-class CBlender_fluid_emitter : public IBlender
+class CBlender_fluid_emitter final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_fluid_emitter, IBlender);
 
@@ -60,7 +60,7 @@ public:
     void Compile(CBlender_Compile& C) override;
 };
 
-class CBlender_fluid_obstdraw : public IBlender
+class CBlender_fluid_obstdraw final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_fluid_obstdraw, IBlender);
 
@@ -72,7 +72,7 @@ public:
     void Compile(CBlender_Compile& C) override;
 };
 
-class CBlender_fluid_raydata : public IBlender
+class CBlender_fluid_raydata final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_fluid_raydata, IBlender);
 
@@ -84,7 +84,7 @@ public:
     void Compile(CBlender_Compile& C) override;
 };
 
-class CBlender_fluid_raycast : public IBlender
+class CBlender_fluid_raycast final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_fluid_raycast, IBlender);
 

@@ -18,7 +18,7 @@ class CAgentManagerPlanner;
 
 // #define USE_SCHEDULER_IN_AGENT_MANAGER
 
-class CAgentManager
+class CAgentManager final
 #ifdef USE_SCHEDULER_IN_AGENT_MANAGER
     : public ISheduled
 #endif

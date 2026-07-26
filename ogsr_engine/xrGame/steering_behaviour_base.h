@@ -13,7 +13,7 @@ class CAI_Rat;
 
 namespace steering_behaviour
 {
-class base : public virtual RTTI::Enable
+class base final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(base);
 

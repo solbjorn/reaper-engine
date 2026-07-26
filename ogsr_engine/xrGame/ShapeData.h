@@ -45,7 +45,7 @@ public:
     };
     XR_TRIVIAL_ASSERT(shape_data);
 
-    struct XR_TRIVIAL shape_def
+    struct XR_TRIVIAL shape_def final
     {
         u8 type;
         shape_data data;

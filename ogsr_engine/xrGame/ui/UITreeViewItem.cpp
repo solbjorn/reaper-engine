@@ -442,7 +442,7 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd* pList
                       CGameFont* pLeafFont, u32 leafColor, bool markRead)
 {
     // Nested function emulation
-    class AddTreeTail_
+    class AddTreeTail_ final
     {
     private:
         CGameFont* pRootFnt;

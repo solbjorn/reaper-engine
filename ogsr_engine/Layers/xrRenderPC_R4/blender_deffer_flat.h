@@ -1,6 +1,6 @@
 #pragma once
 
-class CBlender_deffer_flat : public IBlenderXr
+class CBlender_deffer_flat final : public IBlenderXr
 {
     RTTI_DECLARE_TYPEINFO(CBlender_deffer_flat, IBlenderXr);
 

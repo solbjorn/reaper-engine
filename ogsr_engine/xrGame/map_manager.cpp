@@ -14,7 +14,7 @@
 #include "game_object_space.h"
 #include "alife_simulator_header.h"
 
-struct FindLocationBySpotID
+struct FindLocationBySpotID final
 {
     shared_str spot_id;
     u16 object_id;
@@ -22,14 +22,14 @@ struct FindLocationBySpotID
     bool operator()(const SLocationKey& key) { return (spot_id == key.spot_type) && (object_id == key.object_id); }
 };
 
-struct FindLocationByID
+struct FindLocationByID final
 {
     u16 object_id;
     FindLocationByID(u16 id) : object_id(id) {}
     bool operator()(const SLocationKey& key) { return (object_id == key.object_id); }
 };
 
-struct FindLocation
+struct FindLocation final
 {
     CMapLocation* ml;
     FindLocation(CMapLocation* m) : ml(m) {}

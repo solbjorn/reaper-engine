@@ -132,14 +132,14 @@ namespace SightManager
 enum ESightType : u32;
 }
 
-struct CSightParams
+struct CSightParams final
 {
     SightManager::ESightType m_sight_type;
     CScriptGameObject* m_object;
     Fvector m_vector;
 };
 
-class CScriptGameObject : public virtual RTTI::Enable
+class CScriptGameObject final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CScriptGameObject);
 

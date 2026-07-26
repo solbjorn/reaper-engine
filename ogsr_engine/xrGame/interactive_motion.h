@@ -59,7 +59,7 @@ IC void destroy_motion(interactive_motion*& im)
     xr_delete(im);
 }
 
-class imotion_velocity : public interactive_motion
+class imotion_velocity final : public interactive_motion
 {
     RTTI_DECLARE_TYPEINFO(imotion_velocity, interactive_motion);
 
@@ -74,7 +74,7 @@ public:
     void state_start(CPhysicsShell* s) override;
 };
 
-class imotion_position : public interactive_motion
+class imotion_position final : public interactive_motion
 {
     RTTI_DECLARE_TYPEINFO(imotion_position, interactive_motion);
 

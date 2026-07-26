@@ -18,7 +18,7 @@ static bool check_grass_shadow(const light* L, const CFrustum& VB)
     return true;
 }
 
-struct light_ctx
+struct light_ctx final
 {
     ctx_id_t context_id{R__INVALID_CTX_ID};
     xr::inlined_vector<light*, 14> lights;

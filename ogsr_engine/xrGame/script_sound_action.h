@@ -15,7 +15,7 @@
 #include "script_sound.h"
 #include "ai/monsters/monster_sound_defs.h"
 
-class CScriptSoundAction : public CScriptAbstractAction
+class CScriptSoundAction final : public CScriptAbstractAction
 {
     RTTI_DECLARE_TYPEINFO(CScriptSoundAction, CScriptAbstractAction);
 

@@ -209,7 +209,7 @@ extern float getSmoothedValue(float, float, float);
 } // namespace soundSmoothingParams
 
 /// definition (Sound Params)
-class CSound_params
+class CSound_params final
 {
 public:
     Fvector position{};
@@ -284,13 +284,13 @@ public:
 inline CSound_emitter::~CSound_emitter() = default;
 
 /// definition (Sound Stream Interface)
-class CSound_stream_interface
+class CSound_stream_interface final
 {
 public:
 };
 
 /// definition (Sound Stream Interface)
-class CSound_stats
+class CSound_stats final
 {
 public:
     u32 _rendered;
@@ -298,10 +298,10 @@ public:
     u32 _events;
 };
 
-class CSound_stats_ext
+class CSound_stats_ext final
 {
 public:
-    struct SItem
+    struct SItem final
     {
         CSound_params params;
         CObject* game_object;

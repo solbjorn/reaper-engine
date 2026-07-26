@@ -10,7 +10,7 @@ class CCameraBase;
 
 #define DESIRED_DIR 1
 
-class CWeaponStatMgun : public CPhysicsShellHolder, public CHolderCustom, public CShootingObject
+class CWeaponStatMgun final : public CPhysicsShellHolder, public CHolderCustom, public CShootingObject
 {
     RTTI_DECLARE_TYPEINFO(CWeaponStatMgun, CPhysicsShellHolder, CHolderCustom, CShootingObject);
 
@@ -69,8 +69,8 @@ protected:
 
     void FireStart() override;
     void FireEnd() override;
-    virtual void UpdateFire();
-    virtual void OnShot();
+    void UpdateFire();
+    void OnShot();
     void AddShotEffector();
     void RemoveShotEffector();
     void SetDesiredDir(float h, float p);

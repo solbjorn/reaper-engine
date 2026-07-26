@@ -73,13 +73,13 @@ public:
 
 inline IUIMultiTextureOwner::~IUIMultiTextureOwner() = default;
 
-class CUIMultiTextureOwner : public IUIMultiTextureOwner
+class XR_NOVTABLE CUIMultiTextureOwner : public IUIMultiTextureOwner
 {
     RTTI_DECLARE_TYPEINFO(CUIMultiTextureOwner, IUIMultiTextureOwner);
 
 public:
     CUIMultiTextureOwner() = default;
-    ~CUIMultiTextureOwner() override = default;
+    ~CUIMultiTextureOwner() override = 0;
 
     [[nodiscard]] bool GetTextureAvailability() override { return m_bTextureAvailable; }
     [[nodiscard]] bool GetTextureVisible() override { return m_bTextureVisible; }
@@ -88,6 +88,8 @@ protected:
     bool m_bTextureAvailable{};
     bool m_bTextureVisible{};
 };
+
+inline CUIMultiTextureOwner::~CUIMultiTextureOwner() = default;
 
 class XR_NOVTABLE IUISingleTextureOwner : public CUIMultiTextureOwner, public IUISimpleTextureControl
 {
@@ -103,13 +105,13 @@ public:
 
 inline IUISingleTextureOwner::~IUISingleTextureOwner() = default;
 
-class CUISingleTextureOwner : public IUISingleTextureOwner
+class XR_NOVTABLE CUISingleTextureOwner : public IUISingleTextureOwner
 {
     RTTI_DECLARE_TYPEINFO(CUISingleTextureOwner, IUISingleTextureOwner);
 
 public:
     CUISingleTextureOwner() = default;
-    ~CUISingleTextureOwner() override = default;
+    ~CUISingleTextureOwner() override = 0;
 
     void SetStretchTexture(bool stretch) override { m_bStretchTexture = stretch; }
     [[nodiscard]] bool GetStretchTexture() override { return m_bStretchTexture; }
@@ -117,6 +119,8 @@ public:
 protected:
     bool m_bStretchTexture;
 };
+
+inline CUISingleTextureOwner::~CUISingleTextureOwner() = default;
 
 // Window
 enum EWindowAlignment
@@ -150,13 +154,13 @@ public:
 
 inline IUISimpleWindow::~IUISimpleWindow() = default;
 
-class CUISimpleWindow : public IUISimpleWindow
+class XR_NOVTABLE CUISimpleWindow : public IUISimpleWindow
 {
     RTTI_DECLARE_TYPEINFO(CUISimpleWindow, IUISimpleWindow);
 
 public:
     CUISimpleWindow() = default;
-    ~CUISimpleWindow() override = default;
+    ~CUISimpleWindow() override = 0;
 
     void Init(f32 x, f32 y, f32 width, f32 height) override
     {
@@ -221,6 +225,8 @@ protected:
     EWindowAlignment m_alignment{waNone};
     bool m_bShowMe{};
 };
+
+inline CUISimpleWindow::~CUISimpleWindow() = default;
 
 class CUISelectable : public virtual RTTI::Enable
 {

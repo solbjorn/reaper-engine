@@ -11,7 +11,7 @@
 #include "operator_condition.h"
 
 template <typename _world_property>
-class CConditionState
+class CConditionState final
 {
 public:
     using COperatorCondition = _world_property;

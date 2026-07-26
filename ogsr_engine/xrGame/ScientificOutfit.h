@@ -7,7 +7,7 @@
 
 #include "CustomOutfit.h"
 
-class CScientificOutfit : public CCustomOutfit
+class CScientificOutfit final : public CCustomOutfit
 {
     RTTI_DECLARE_TYPEINFO(CScientificOutfit, CCustomOutfit);
 

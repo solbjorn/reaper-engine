@@ -14,7 +14,7 @@ class CCharacterInfo;
 class CUIXml;
 class CUIScrollView;
 
-class CUICharacterInfo : public CUIWindow
+class CUICharacterInfo final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUICharacterInfo, CUIWindow);
 

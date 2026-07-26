@@ -21,7 +21,7 @@ class CUIEncyclopediaCore;
 class CUIScrollView;
 class CUITreeViewItem;
 
-class CUIEncyclopediaWnd : public CUIWindow
+class CUIEncyclopediaWnd final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIEncyclopediaWnd, CUIWindow);
 
@@ -37,7 +37,7 @@ public:
     CUIEncyclopediaWnd();
     ~CUIEncyclopediaWnd() override;
 
-    virtual void Init();
+    void Init();
     void Show(bool status) override;
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
     void Draw() override;

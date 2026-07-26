@@ -8,7 +8,7 @@
 
 #include "UITabButton.h"
 
-class CUIRadioButton : public CUITabButton
+class CUIRadioButton final : public CUITabButton
 {
     RTTI_DECLARE_TYPEINFO(CUIRadioButton, CUITabButton);
 

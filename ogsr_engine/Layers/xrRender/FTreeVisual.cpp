@@ -63,7 +63,7 @@ void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
     rm_geom.create(vFormat, p_rm_Vertices, p_rm_Indices);
 }
 
-struct FTreeVisual_setup
+struct FTreeVisual_setup final
 {
 public:
     Fvector4 wave;

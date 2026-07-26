@@ -19,7 +19,7 @@ namespace MovementManager
 enum EPathType : u32;
 }
 
-class CALifeMonsterMovementManager
+class CALifeMonsterMovementManager final
 {
 public:
     typedef CSE_ALifeMonsterAbstract object_type;

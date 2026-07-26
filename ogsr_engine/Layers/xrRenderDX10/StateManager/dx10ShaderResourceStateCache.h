@@ -1,8 +1,7 @@
 #ifndef dx10ShaderResourceStateCache_included
 #define dx10ShaderResourceStateCache_included
-#pragma once
 
-class dx10ShaderResourceStateCache
+class dx10ShaderResourceStateCache final
 {
 public:
     dx10ShaderResourceStateCache();

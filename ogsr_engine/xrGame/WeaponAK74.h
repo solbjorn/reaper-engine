@@ -4,7 +4,7 @@
 #include "WeaponMagazinedWGrenade.h"
 #include "script_export_space.h"
 
-class CWeaponAK74 : public CWeaponMagazinedWGrenade
+class CWeaponAK74 final : public CWeaponMagazinedWGrenade
 {
     RTTI_DECLARE_TYPEINFO(CWeaponAK74, CWeaponMagazinedWGrenade);
 

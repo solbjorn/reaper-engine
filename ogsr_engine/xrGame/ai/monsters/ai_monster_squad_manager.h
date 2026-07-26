@@ -3,7 +3,7 @@
 class CMonsterSquad;
 class CEntity;
 
-class CMonsterSquadManager
+class CMonsterSquadManager final
 {
     //------------------------------------------------------------------------
     // Monster classification: Team -> Level -> Squad

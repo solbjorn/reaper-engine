@@ -6,7 +6,7 @@ class CUIStatic;
 class CUIXml;
 struct GAME_NEWS_DATA;
 
-class CUINewsItemWnd : public CUIWindow
+class CUINewsItemWnd final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUINewsItemWnd, CUIWindow);
 

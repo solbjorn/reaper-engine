@@ -6,7 +6,7 @@
 
 class CSE_ALifePHSkeletonObject;
 
-class CPhysicsSkeletonObject : public CPhysicsShellHolder, public CPHSkeleton
+class CPhysicsSkeletonObject final : public CPhysicsShellHolder, public CPHSkeleton
 {
     RTTI_DECLARE_TYPEINFO(CPhysicsSkeletonObject, CPhysicsShellHolder, CPHSkeleton);
 
@@ -29,8 +29,8 @@ protected:
     [[nodiscard]] CPhysicsShellHolder* PPhysicsShellHolder() override { return PhysicsShellHolder(); }
     [[nodiscard]] CPHSkeleton* PHSkeleton() override { return this; }
     void SpawnInitPhysics(CSE_Abstract* D) override;
-    virtual void PHObjectPositionUpdate();
-    virtual void CreatePhysicsShell(CSE_Abstract* e);
+    void PHObjectPositionUpdate();
+    void CreatePhysicsShell(CSE_Abstract* e);
 };
 
 #endif

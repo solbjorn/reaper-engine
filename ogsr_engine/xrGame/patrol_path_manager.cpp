@@ -78,7 +78,7 @@ IC bool CPatrolPathManager::accessible(const Fvector& position) const { return (
 IC bool CPatrolPathManager::accessible(u32 vertex_id) const { return (m_object ? object().accessible(vertex_id) : true); }
 IC bool CPatrolPathManager::accessible(const CPatrolPath::CVertex* vertex) const { return (vertex ? object().accessible(vertex->data().position()) : true); }
 
-struct CAccessabilityEvaluator
+struct CAccessabilityEvaluator final
 {
     const CPatrolPathManager* m_manager;
 

@@ -16,7 +16,7 @@ enum EListType
     iwBelt
 };
 
-struct CUICell
+struct CUICell final
 {
     CUICell() = default;
 
@@ -175,7 +175,7 @@ public:
     void enable_highlight(const bool);
 };
 
-class CUICellContainer : public CUIWindow
+class CUICellContainer final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUICellContainer, CUIWindow);
 

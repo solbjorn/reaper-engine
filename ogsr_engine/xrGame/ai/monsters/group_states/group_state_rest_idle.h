@@ -3,7 +3,7 @@
 #include "../state.h"
 
 template <typename _Object>
-class CStateGroupRestIdle : public CState<_Object>
+class CStateGroupRestIdle final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateGroupRestIdle<_Object>, CState<_Object>);
 

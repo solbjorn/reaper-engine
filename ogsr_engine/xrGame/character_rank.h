@@ -10,7 +10,7 @@
 
 #include "character_info_defs.h"
 
-struct RANK_DATA
+struct RANK_DATA final
 {
     RANK_DATA(int, shared_str, LPCSTR);
 

@@ -14,7 +14,7 @@
 
 #define GRAPH_NAME "game.graph"
 
-class CGameGraph : public virtual RTTI::Enable
+class CGameGraph final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CGameGraph);
 

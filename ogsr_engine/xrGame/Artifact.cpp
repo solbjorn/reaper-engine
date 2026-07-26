@@ -29,7 +29,7 @@ namespace
 constexpr float FASTMODE_DISTANCE{50.f}; // distance to camera from sphere, when zone switches to fast update sequence
 }
 
-struct SArtefactActivation
+struct SArtefactActivation final
 {
     enum EActivationStates
     {
@@ -41,7 +41,7 @@ struct SArtefactActivation
         eMax
     };
 
-    struct SStateDef
+    struct SStateDef final
     {
         shared_str m_snd;
         shared_str m_particle;

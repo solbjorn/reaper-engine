@@ -1,7 +1,7 @@
 #ifndef WAVEFORM_H
 #define WAVEFORM_H
 
-struct WaveForm
+struct WaveForm final
 {
     enum EFunction : u32
     {

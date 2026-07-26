@@ -12,7 +12,7 @@
 
 class CCoverPoint;
 
-class CDangerCoverLocation : public CDangerLocation
+class CDangerCoverLocation final : public CDangerLocation
 {
     RTTI_DECLARE_TYPEINFO(CDangerCoverLocation, CDangerLocation);
 

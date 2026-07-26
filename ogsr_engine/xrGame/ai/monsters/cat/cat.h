@@ -3,7 +3,7 @@
 #include "../basemonster/base_monster.h"
 #include "script_export_space.h"
 
-class CCat : public CBaseMonster
+class CCat final : public CBaseMonster
 {
     RTTI_DECLARE_TYPEINFO(CCat, CBaseMonster);
 

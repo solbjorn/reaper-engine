@@ -8,7 +8,7 @@
 
 #pragma once
 
-struct CDataStorageBinaryHeap
+struct CDataStorageBinaryHeap final
 {
     template <typename TCompoundVertex>
     struct VertexData

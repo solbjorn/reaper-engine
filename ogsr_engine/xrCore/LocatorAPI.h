@@ -10,12 +10,12 @@
 
 class CStreamReader;
 
-class CLocatorAPI
+class CLocatorAPI final
 {
     friend class FS_Path;
 
 public:
-    struct file
+    struct file final
     {
         const char* name; // low-case name
         gsl::index vfs; // VFS_STANDARD_FILE - standart file
@@ -36,7 +36,7 @@ private:
         [[nodiscard]] constexpr bool operator()(const file& x, const file& y) const { return xr_strcmp(x.name, y.name) < 0; }
     };
 
-    struct archive
+    struct archive final
     {
         shared_str path;
         gsl::index vfs_idx{VFS_STANDARD_FILE};

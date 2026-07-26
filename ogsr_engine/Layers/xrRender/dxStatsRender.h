@@ -3,7 +3,7 @@
 
 #include "../../Include/xrRender/StatsRender.h"
 
-class dxStatsRender : public IStatsRender
+class dxStatsRender final : public IStatsRender
 {
     RTTI_DECLARE_TYPEINFO(dxStatsRender, IStatsRender);
 

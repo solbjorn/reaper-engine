@@ -8,7 +8,7 @@
 
 struct SArtefactActivation;
 
-struct SArtefactDetectorsSupport
+struct SArtefactDetectorsSupport final
 {
     CArtefact* m_parent;
     ref_sound m_sound;

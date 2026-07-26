@@ -1,6 +1,6 @@
 #pragma once
 
-class CBlender_blur : public IBlender
+class CBlender_blur final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_blur, IBlender);
 
@@ -14,7 +14,7 @@ public:
 };
 
 // SSS
-class CBlender_ssfx_ssr : public IBlender
+class CBlender_ssfx_ssr final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_ssfx_ssr, IBlender);
 
@@ -27,7 +27,7 @@ public:
     ~CBlender_ssfx_ssr() override;
 };
 
-class CBlender_ssfx_volumetric_blur : public IBlender
+class CBlender_ssfx_volumetric_blur final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_ssfx_volumetric_blur, IBlender);
 
@@ -40,7 +40,7 @@ public:
     ~CBlender_ssfx_volumetric_blur() override;
 };
 
-class CBlender_ssfx_ao : public IBlender
+class CBlender_ssfx_ao final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_ssfx_ao, IBlender);
 
@@ -53,7 +53,7 @@ public:
     ~CBlender_ssfx_ao() override;
 };
 
-class CBlender_ssfx_sss : public IBlender
+class CBlender_ssfx_sss final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_ssfx_sss, IBlender);
 
@@ -66,7 +66,7 @@ public:
     ~CBlender_ssfx_sss() override;
 };
 
-class CBlender_ssfx_sss_ext : public IBlender
+class CBlender_ssfx_sss_ext final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_ssfx_sss_ext, IBlender);
 
@@ -79,7 +79,7 @@ public:
     ~CBlender_ssfx_sss_ext() override;
 };
 
-class CBlender_ssfx_rain : public IBlender
+class CBlender_ssfx_rain final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_ssfx_rain, IBlender);
 
@@ -92,7 +92,7 @@ public:
     ~CBlender_ssfx_rain() override;
 };
 
-class CBlender_ssfx_water_blur : public IBlender
+class CBlender_ssfx_water_blur final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_ssfx_water_blur, IBlender);
 

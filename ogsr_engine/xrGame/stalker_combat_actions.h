@@ -22,7 +22,7 @@ enum EMovementType : u32;
 // CStalkerActionGetItemToKill
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionGetItemToKill : public CStalkerActionCombatBase
+class CStalkerActionGetItemToKill final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionGetItemToKill, CStalkerActionCombatBase);
 
@@ -42,7 +42,7 @@ public:
 // CStalkerActionMakeItemKilling
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionMakeItemKilling : public CStalkerActionCombatBase
+class CStalkerActionMakeItemKilling final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionMakeItemKilling, CStalkerActionCombatBase);
 
@@ -62,7 +62,7 @@ public:
 // CStalkerActionRetreatFromEnemy
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionRetreatFromEnemy : public CStalkerActionCombatBase
+class CStalkerActionRetreatFromEnemy final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionRetreatFromEnemy, CStalkerActionCombatBase);
 
@@ -83,7 +83,7 @@ public:
 // CStalkerActionGetReadyToKill
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionGetReadyToKill : public CStalkerActionCombatBase
+class CStalkerActionGetReadyToKill final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionGetReadyToKill, CStalkerActionCombatBase);
 
@@ -108,7 +108,7 @@ public:
 // CStalkerActionKillEnemy
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionKillEnemy : public CStalkerActionCombatBase
+class CStalkerActionKillEnemy final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionKillEnemy, CStalkerActionCombatBase);
 
@@ -128,7 +128,7 @@ public:
 // CStalkerActionTakeCover
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionTakeCover : public CStalkerActionCombatBase
+class CStalkerActionTakeCover final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionTakeCover, CStalkerActionCombatBase);
 
@@ -152,7 +152,7 @@ public:
 // CStalkerActionLookOut
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionLookOut : public CStalkerActionCombatBase
+class CStalkerActionLookOut final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionLookOut, CStalkerActionCombatBase);
 
@@ -175,7 +175,7 @@ public:
 // CStalkerActionHoldPosition
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionHoldPosition : public CStalkerActionCombatBase
+class CStalkerActionHoldPosition final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionHoldPosition, CStalkerActionCombatBase);
 
@@ -195,7 +195,7 @@ public:
 // CStalkerActionGetDistance
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionGetDistance : public CStalkerActionCombatBase
+class CStalkerActionGetDistance final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionGetDistance, CStalkerActionCombatBase);
 
@@ -215,7 +215,7 @@ public:
 // CStalkerActionDetourEnemy
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDetourEnemy : public CStalkerActionCombatBase
+class CStalkerActionDetourEnemy final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDetourEnemy, CStalkerActionCombatBase);
 
@@ -235,7 +235,7 @@ public:
 // CStalkerActionSearchEnemy
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionSearchEnemy : public CStalkerActionCombatBase
+class CStalkerActionSearchEnemy final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionSearchEnemy, CStalkerActionCombatBase);
 
@@ -255,7 +255,7 @@ public:
 // CStalkerActionPostCombatWait
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionPostCombatWait : public CStalkerActionCombatBase
+class CStalkerActionPostCombatWait final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionPostCombatWait, CStalkerActionCombatBase);
 
@@ -275,7 +275,7 @@ public:
 // CStalkerActionHideFromGrenade
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionHideFromGrenade : public CStalkerActionCombatBase
+class CStalkerActionHideFromGrenade final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionHideFromGrenade, CStalkerActionCombatBase);
 
@@ -295,7 +295,7 @@ public:
 // CStalkerActionSuddenAttack
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionSuddenAttack : public CStalkerActionCombatBase
+class CStalkerActionSuddenAttack final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionSuddenAttack, CStalkerActionCombatBase);
 
@@ -315,7 +315,7 @@ public:
 // CStalkerActionKillEnemyIfPlayerOnThePath
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionKillEnemyIfPlayerOnThePath : public CStalkerActionCombatBase
+class CStalkerActionKillEnemyIfPlayerOnThePath final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionKillEnemyIfPlayerOnThePath, CStalkerActionCombatBase);
 
@@ -335,7 +335,7 @@ public:
 // CStalkerActionCriticalHit
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionCriticalHit : public CStalkerActionCombatBase
+class CStalkerActionCriticalHit final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionCriticalHit, CStalkerActionCombatBase);
 

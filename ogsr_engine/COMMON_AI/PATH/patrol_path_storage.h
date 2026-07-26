@@ -16,7 +16,7 @@ class CGameGraph;
 #include "object_interfaces.h"
 #include "associative_vector.h"
 
-class CPatrolPathStorage : public IPureSerializeObject<IReader, IWriter>
+class CPatrolPathStorage final : public IPureSerializeObject<IReader, IWriter>
 {
     RTTI_DECLARE_TYPEINFO(CPatrolPathStorage, IPureSerializeObject<IReader, IWriter>);
 

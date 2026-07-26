@@ -11,7 +11,7 @@ namespace detail
 {
 namespace
 {
-struct theme
+struct theme final
 {
     gsl::czstring name;
     gsl::czstring author;
@@ -1658,7 +1658,8 @@ const theme* active = &themes[4];
 
 void selectable(const ImGuiStyle& style, const theme& theme)
 {
-    if (ImGui::Selectable(theme.name, active == &theme, ImGuiSelectableFlags_AllowOverlap, ImVec2{0.0f, ImGui::GetFrameHeight() + 17.0f + style.FramePadding.y * 2.0f}))
+    if (ImGui::Selectable(theme.name, active == &theme, ImGuiSelectableFlags_AllowOverlap,
+                          ImVec2{0.0f, ImGui::GetFrameHeight() + 17.0f + style.FramePadding.y * 2.0f}))
         active = &theme;
 
     ImGui::SameLine();

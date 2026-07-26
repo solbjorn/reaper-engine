@@ -2,7 +2,7 @@
 
 #include "UILabel.h"
 
-class CUIListBoxItem : public CUILabel, public CUISelectable
+class CUIListBoxItem final : public CUILabel, public CUISelectable
 {
     RTTI_DECLARE_TYPEINFO(CUIListBoxItem, CUILabel, CUISelectable);
 

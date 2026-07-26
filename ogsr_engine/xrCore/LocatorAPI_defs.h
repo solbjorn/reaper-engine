@@ -31,7 +31,7 @@ enum FS_List : u32
     FS_NoLower = 1 << 4,
 };
 
-class FS_Path
+class FS_Path final
 {
 public:
     enum

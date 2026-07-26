@@ -14,7 +14,7 @@ extern bool g_enable_memory_debug;
 #define XR_RESTRICT __declspec(restrict)
 #endif
 
-class xrMemory
+class xrMemory final
 {
 public:
     [[nodiscard]] static gsl::index mem_usage(gsl::index* pBlocksUsed = nullptr, gsl::index* pBlocksFree = nullptr);
@@ -291,7 +291,7 @@ constexpr void xr_delete(T*& ptr)
 
 [[nodiscard]] gsl::index mem_usage_impl(gsl::index* pBlocksUsed, gsl::index* pBlocksFree);
 
-struct SProcessMemInfo
+struct SProcessMemInfo final
 {
     u64 PeakWorkingSetSize;
     u64 WorkingSetSize;

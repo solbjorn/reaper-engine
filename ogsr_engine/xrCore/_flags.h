@@ -1,7 +1,7 @@
 #pragma once
 
 template <class T>
-struct _flags
+struct _flags final
 {
 public:
     typedef T TYPE;

@@ -7,7 +7,7 @@
 class CLAItem;
 class CMonsterEffector;
 
-class CTorch : public CInventoryItemObject
+class CTorch final : public CInventoryItemObject
 {
     RTTI_DECLARE_TYPEINFO(CTorch, CInventoryItemObject);
 

@@ -7,7 +7,7 @@
 
 #include "FoodItem.h"
 
-class CBottleItem : public CFoodItem
+class CBottleItem final : public CFoodItem
 {
     RTTI_DECLARE_TYPEINFO(CBottleItem, CFoodItem);
 

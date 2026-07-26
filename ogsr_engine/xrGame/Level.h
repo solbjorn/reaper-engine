@@ -45,7 +45,7 @@ class CMapManager;
 
 class DBG_ScriptObject;
 
-class GlobalFeelTouch : public Feel::Touch
+class GlobalFeelTouch final : public Feel::Touch
 {
     RTTI_DECLARE_TYPEINFO(GlobalFeelTouch, Feel::Touch);
 
@@ -320,7 +320,7 @@ add_to_type_list(CLevel);
 #undef script_type_list
 #define script_type_list save_type_list(CLevel)
 
-struct CKeyBinding
+struct CKeyBinding final
 {
 public:
     bool ignore{};

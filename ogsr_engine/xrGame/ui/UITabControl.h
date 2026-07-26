@@ -9,7 +9,7 @@ class CUIButton;
 
 DEF_VECTOR(TABS_VECTOR, CUITabButton*);
 
-class CUITabControl : public CUIWindow, public CUIOptionsItem
+class CUITabControl final : public CUIWindow, public CUIOptionsItem
 {
     RTTI_DECLARE_TYPEINFO(CUITabControl, CUIWindow, CUIOptionsItem);
 
@@ -25,9 +25,9 @@ public:
     [[nodiscard]] bool IsChanged() override;
 
     [[nodiscard]] bool OnKeyboard(xr::key_id dik, EUIMessages keyboard_action) override;
-    virtual void OnTabChange(int iCur, int iPrev);
-    virtual void OnStaticFocusReceive(CUIWindow* pWnd);
-    virtual void OnStaticFocusLost(CUIWindow* pWnd);
+    void OnTabChange(int iCur, int iPrev);
+    void OnStaticFocusReceive(CUIWindow* pWnd);
+    void OnStaticFocusLost(CUIWindow* pWnd);
 
     // Добавление кнопки-закладки в список закладок контрола
     bool AddItem(const char* pItemName, const char* pTexName, float x, float y, float width, float height);

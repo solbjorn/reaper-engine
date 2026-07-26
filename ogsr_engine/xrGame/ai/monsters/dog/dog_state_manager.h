@@ -4,7 +4,7 @@
 
 class CAI_Dog;
 
-class CStateManagerDog : public CMonsterStateManager<CAI_Dog>
+class CStateManagerDog final : public CMonsterStateManager<CAI_Dog>
 {
     RTTI_DECLARE_TYPEINFO(CStateManagerDog, CMonsterStateManager<CAI_Dog>);
 

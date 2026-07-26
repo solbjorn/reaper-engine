@@ -6,7 +6,7 @@
 
 class CUIOptionsItem;
 
-class CUIOptionsManager
+class CUIOptionsManager final
 {
     friend class CUIOptionsItem;
 

@@ -9,7 +9,8 @@ IC u32 net_flags(BOOL bReliable = FALSE, BOOL bSequental = TRUE, BOOL bHighPrior
     return (bReliable ? DPNSEND_GUARANTEED : DPNSEND_NOCOMPLETE) | (bSequental ? 0 : DPNSEND_NONSEQUENTIAL) | (bHighPriority ? DPNSEND_PRIORITY_HIGH : 0) |
         (bSendImmediatelly ? DPNSEND_IMMEDIATELLY : 0);
 }
-struct MSYS_CONFIG
+
+struct MSYS_CONFIG final
 {
     u32 sign1; // 0x12071980;
     u32 sign2; // 0x26111975;

@@ -4,7 +4,7 @@
 #include "motion.h"
 
 // refs
-class CObjectAnimator : public virtual RTTI::Enable
+class CObjectAnimator final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CObjectAnimator);
 

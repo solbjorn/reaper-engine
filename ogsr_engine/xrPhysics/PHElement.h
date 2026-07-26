@@ -16,7 +16,7 @@ class CPHFracture;
 struct SPHImpact;
 class CPHFracturesHolder;
 
-class CPHElement : public CPhysicsElement, public CPHSynchronize, public CPHDisablingFull, public CPHGeometryOwner
+class CPHElement final : public CPhysicsElement, public CPHSynchronize, public CPHDisablingFull, public CPHGeometryOwner
 {
     RTTI_DECLARE_TYPEINFO(CPHElement, CPhysicsElement, CPHSynchronize, CPHDisablingFull, CPHGeometryOwner);
 
@@ -135,9 +135,9 @@ public:
     [[nodiscard]] bool isEnabled() override { return isActive() && dBodyIsEnabled(m_body); }
     [[nodiscard]] bool isFullActive() override { return isActive() && !m_flags.test(flActivating); }
     [[nodiscard]] bool isActive() override { return !!m_flags.test(flActive); }
-    virtual void Freeze(); //
-    virtual void UnFreeze(); //
-    virtual bool EnabledStateOnStep() { return dBodyIsEnabled(m_body) || m_flags.test(flEnabledOnStep); } //
+    void Freeze(); //
+    void UnFreeze(); //
+    [[nodiscard]] bool EnabledStateOnStep() { return dBodyIsEnabled(m_body) || m_flags.test(flEnabledOnStep); } //
     ////////////////////////////////////////////////Updates///////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     bool AnimToVel(float dt, float l_limit, float a_limit);
@@ -149,7 +149,7 @@ public:
     void StataticRootBonesCallBack(CBoneInstance* B);
     void PhDataUpdate(dReal step); // ph update
     void PhTune(dReal step); // ph update
-    virtual void Update(); // called update CL visual influence
+    void Update(); // called update CL visual influence
     //////////////////////////////////////////////////Dynamics////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -165,7 +165,7 @@ public:
         angular = k_w; //
     }
 
-    virtual void applyImpact(const SPHImpact& impact); //
+    void applyImpact(const SPHImpact& impact); //
     void applyImpulseTrace(const Fvector& pos, const Fvector& dir, f32 val, const u16 id) override; // called anywhere ph state influent
     void set_DisableParams(const SAllDDOParams& params) override; //
     void set_DynamicLimits(f32 l_limit = default_l_limit, f32 w_limit = default_w_limit) override; // aux (may not be)
@@ -179,8 +179,8 @@ public:
     void applyImpulseVsMC(const Fvector3& pos, const Fvector3& dir, f32 val) override; //
     void applyImpulseVsGF(const Fvector3& pos, const Fvector3& dir, f32 val) override; //
     void applyGravityAccel(const Fvector3& accel) override;
-    virtual void getForce(Fvector& force);
-    virtual void getTorque(Fvector& torque);
+    void getForce(Fvector& force);
+    void getTorque(Fvector& torque);
     void get_LinearVel(Fvector& velocity) override; // aux
     void get_AngularVel(Fvector& velocity) override; // aux
     void set_LinearVel(const Fvector3& velocity) override; // called anywhere ph state influent
@@ -197,9 +197,9 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void SetTransform(const Fmatrix& m0) override; //
     void TransformPosition(const Fmatrix& form) override;
-    virtual void getQuaternion(Fquaternion& quaternion); //
-    virtual void setQuaternion(const Fquaternion& quaternion); //
-    virtual void SetGlobalPositionDynamic(const Fvector& position); //
+    void getQuaternion(Fquaternion& quaternion); //
+    void setQuaternion(const Fquaternion& quaternion); //
+    void SetGlobalPositionDynamic(const Fvector& position); //
     void GetGlobalPositionDynamic(Fvector* v) override; //
     void cv2obj_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& xform) override; //
     void cv2bone_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& xform) override; //
@@ -217,7 +217,7 @@ public:
     [[nodiscard]] CPhysicsElement* get_ParentElement() override { return m_parent_element; }
     void SetShell(CPHShell* p); // aux
     [[nodiscard]] dBodyID get_body() override { return m_body; } // aux
-    virtual dBodyID get_bodyConst() const { return m_body; } // aux
+    [[nodiscard]] dBodyID get_bodyConst() const { return m_body; } // aux
     //////////////////////////////////////////////////////Breakable//////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     IC CPHFracturesHolder* FracturesHolder() { return m_fratures_holder; } // aux

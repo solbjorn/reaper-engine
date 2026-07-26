@@ -32,10 +32,12 @@ constexpr inline const char* m_pShaderTextureNames[]{
     "Texture_color", //	RENDER_TARGET_COLOR_IN,
 };
 
-constexpr inline std::array<Fvector, 8> XR_ALIGNED_DEFAULT vertices{Fvector{0.0f, 0.0f, 0.0f}, Fvector{0.0f, 0.0f, 1.0f}, Fvector{0.0f, 1.0f, 0.0f}, Fvector{0.0f, 1.0f, 1.0f},
-                                                                    Fvector{1.0f, 0.0f, 0.0f}, Fvector{1.0f, 0.0f, 1.0f}, Fvector{1.0f, 1.0f, 0.0f}, Fvector{1.0f, 1.0f, 1.0f}};
+constexpr inline std::array<Fvector, 8> XR_ALIGNED_DEFAULT vertices{Fvector{0.0f, 0.0f, 0.0f}, Fvector{0.0f, 0.0f, 1.0f}, Fvector{0.0f, 1.0f, 0.0f},
+                                                                    Fvector{0.0f, 1.0f, 1.0f}, Fvector{1.0f, 0.0f, 0.0f}, Fvector{1.0f, 0.0f, 1.0f},
+                                                                    Fvector{1.0f, 1.0f, 0.0f}, Fvector{1.0f, 1.0f, 1.0f}};
 constexpr inline u32 m_iGridBoxVertNum{sizeof(vertices) / sizeof(vertices[0])};
-constexpr inline std::array<u16, 36> XR_ALIGNED_DEFAULT indices{0, 4, 1, 1, 4, 5, 0, 1, 2, 2, 1, 3, 4, 6, 5, 6, 7, 5, 2, 3, 6, 3, 7, 6, 1, 5, 3, 3, 5, 7, 0, 2, 4, 2, 6, 4};
+constexpr inline std::array<u16, 36> XR_ALIGNED_DEFAULT indices{0, 4, 1, 1, 4, 5, 0, 1, 2, 2, 1, 3, 4, 6, 5, 6, 7, 5,
+                                                                2, 3, 6, 3, 7, 6, 1, 5, 3, 3, 5, 7, 0, 2, 4, 2, 6, 4};
 constexpr inline u32 m_iGridBoxFaceNum{(sizeof(indices) / sizeof(indices[0])) / 3};
 
 constexpr inline DXGI_FORMAT m_VPRenderTargetFormats[]{
@@ -47,7 +49,7 @@ constexpr inline DXGI_FORMAT m_VPRenderTargetFormats[]{
 
 class dx103DFluidData;
 
-class dx103DFluidRenderer
+class dx103DFluidRenderer final
 {
 public:
     enum Renderer_RT
@@ -86,7 +88,7 @@ private:
         RS_NumShaders
     };
 
-    struct FogLighting
+    struct FogLighting final
     {
         Fvector3 m_vLightIntencity{};
 

@@ -4,7 +4,7 @@
 
 class CPhysicsShellHolder;
 
-class CPHSoundPlayer : public virtual RTTI::Enable
+class CPHSoundPlayer final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CPHSoundPlayer);
 

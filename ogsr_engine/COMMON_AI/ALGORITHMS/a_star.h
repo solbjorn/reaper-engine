@@ -13,7 +13,7 @@
 #include "dijkstra.h"
 
 template <typename TDistance, typename TVertexData>
-struct AStarVertexData
+struct AStarVertexData final
 {
     template <typename TCompoundVertex>
     struct VertexData : TVertexData::template VertexData<TCompoundVertex>
@@ -30,15 +30,16 @@ struct AStarVertexData
 
 template <typename TDistance, typename TPriorityQueue, typename TVertexManager, typename TVertexAllocator, bool EuclidianHeuristics = true,
           typename TPathBuilder = CVertexPath<EuclidianHeuristics>, typename TIteration = u32, typename TVertexData = EmptyVertexData>
-class CAStar : public CDijkstra<TDistance, TPriorityQueue, TVertexManager, TVertexAllocator, EuclidianHeuristics, TPathBuilder, TIteration, AStarVertexData<TDistance, TVertexData>>
+class CAStar final : public CDijkstra<TDistance, TPriorityQueue, TVertexManager, TVertexAllocator, EuclidianHeuristics, TPathBuilder, TIteration,
+                                      AStarVertexData<TDistance, TVertexData>>
 {
-    RTTI_DECLARE_TYPEINFO(
-        CAStar<TDistance, TPriorityQueue, TVertexManager, TVertexAllocator, EuclidianHeuristics, TPathBuilder, TIteration, TVertexData>,
-        CDijkstra<TDistance, TPriorityQueue, TVertexManager, TVertexAllocator, EuclidianHeuristics, TPathBuilder, TIteration, AStarVertexData<TDistance, TVertexData>>);
+    RTTI_DECLARE_TYPEINFO(CAStar<TDistance, TPriorityQueue, TVertexManager, TVertexAllocator, EuclidianHeuristics, TPathBuilder, TIteration, TVertexData>,
+                          CDijkstra<TDistance, TPriorityQueue, TVertexManager, TVertexAllocator, EuclidianHeuristics, TPathBuilder, TIteration,
+                                    AStarVertexData<TDistance, TVertexData>>);
 
 protected:
-    using Inherited =
-        CDijkstra<TDistance, TPriorityQueue, TVertexManager, TVertexAllocator, EuclidianHeuristics, TPathBuilder, TIteration, AStarVertexData<TDistance, TVertexData>>;
+    using Inherited = CDijkstra<TDistance, TPriorityQueue, TVertexManager, TVertexAllocator, EuclidianHeuristics, TPathBuilder, TIteration,
+                                AStarVertexData<TDistance, TVertexData>>;
     using Vertex = typename Inherited::Vertex;
     using Distance = typename Vertex::Distance;
     using Index = typename Vertex::Index;

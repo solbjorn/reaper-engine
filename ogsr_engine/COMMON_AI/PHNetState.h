@@ -3,7 +3,7 @@
 
 class NET_Packet;
 
-struct SPHNetState
+struct SPHNetState final
 {
     Fvector linear_vel;
     Fvector angular_vel;
@@ -43,7 +43,7 @@ DEFINE_VECTOR(SPHNetState, PHNETSTATE_VECTOR, PHNETSTATE_I);
 
 #include "../xr_3da/vismask.h"
 
-struct SPHBonesData
+struct SPHBonesData final
 {
     VisMask bones_mask;
     u16 root_bone;

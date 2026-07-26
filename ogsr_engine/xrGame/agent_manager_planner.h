@@ -13,7 +13,7 @@
 class CAgentManager;
 class CObject;
 
-class CAgentManagerPlanner : public CActionPlanner<CAgentManager>
+class CAgentManagerPlanner final : public CActionPlanner<CAgentManager>
 {
     RTTI_DECLARE_TYPEINFO(CAgentManagerPlanner, CActionPlanner<CAgentManager>);
 

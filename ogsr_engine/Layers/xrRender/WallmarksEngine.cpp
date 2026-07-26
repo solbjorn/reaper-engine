@@ -13,7 +13,7 @@
 
 namespace WallmarksEngine
 {
-struct wm_slot
+struct wm_slot final
 {
     typedef CWallmarksEngine::StaticWMVec StaticWMVec;
     ref_shader shader;

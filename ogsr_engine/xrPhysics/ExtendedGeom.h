@@ -12,7 +12,7 @@ class CPhysicsShellHolder;
 extern u32 dbg_total_saved_tries;
 #endif
 
-class CObjectContactCallback
+class CObjectContactCallback final
 {
     CObjectContactCallback* next{nullptr};
     ObjectContactCallbackFun* callback;
@@ -90,7 +90,8 @@ public:
 };
 
 class CGameObject;
-struct dxGeomUserData
+
+struct dxGeomUserData final
 {
     dVector3 last_pos;
     bool pushing_neg, pushing_b_neg, b_static_colide;

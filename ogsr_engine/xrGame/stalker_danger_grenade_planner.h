@@ -12,7 +12,7 @@
 
 class CAI_Stalker;
 
-class CStalkerDangerGrenadePlanner : public CActionPlannerActionScript<CAI_Stalker>
+class CStalkerDangerGrenadePlanner final : public CActionPlannerActionScript<CAI_Stalker>
 {
     RTTI_DECLARE_TYPEINFO(CStalkerDangerGrenadePlanner, CActionPlannerActionScript<CAI_Stalker>);
 

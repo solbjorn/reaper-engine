@@ -43,7 +43,7 @@ tmc::task<void> CInventoryOwner::OnEvent(NET_Packet& P, u16 type)
     co_return;
 }
 
-class CFindByIDPred
+class CFindByIDPred final
 {
 public:
     CFindByIDPred(shared_str element_to_find) { element = element_to_find; }

@@ -6,7 +6,7 @@
 
 #include "UICustomSpin.h"
 
-class CUISpinText : public CUICustomSpin
+class CUISpinText final : public CUICustomSpin
 {
     RTTI_DECLARE_TYPEINFO(CUISpinText, CUICustomSpin);
 
@@ -33,7 +33,7 @@ protected:
     void DecVal() override {}
     void SetItem();
 
-    struct SInfo
+    struct SInfo final
     {
         shared_str _orig;
         shared_str _transl;

@@ -1,10 +1,10 @@
 #ifndef TSS_DEF_H
 #define TSS_DEF_H
 
-class SimulatorStates
+class SimulatorStates final
 {
 private:
-    struct State
+    struct State final
     {
         u32 type; // 0=RS, 1=TSS
         u32 v1, v2, v3;

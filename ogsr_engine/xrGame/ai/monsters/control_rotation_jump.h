@@ -3,7 +3,7 @@
 #include "control_combase.h"
 #include "../../../Include/xrRender/Kinematics.h"
 
-struct SControlRotationJumpData : public ControlCom::IComData
+struct SControlRotationJumpData final : public ControlCom::IComData
 {
     MotionID anim_stop_ls, anim_run_ls;
     MotionID anim_stop_rs, anim_run_rs;
@@ -18,7 +18,7 @@ struct SControlRotationJumpData : public ControlCom::IComData
     Flags32 flags;
 };
 
-class CControlRotationJump : public CControl_ComCustom<SControlRotationJumpData>
+class CControlRotationJump final : public CControl_ComCustom<SControlRotationJumpData>
 {
     RTTI_DECLARE_TYPEINFO(CControlRotationJump, CControl_ComCustom<SControlRotationJumpData>);
 

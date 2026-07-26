@@ -248,7 +248,7 @@ static void construct_restriction_string(StrType& temp_restrictions, const xr_ve
 }
 
 template <bool add>
-struct CRestrictionPredicate
+struct CRestrictionPredicate final
 {
     RestrictionSpace::ERestrictorTypes m_restrictor_type;
 

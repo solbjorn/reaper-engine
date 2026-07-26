@@ -38,7 +38,7 @@
 #include "ai_debug.h"
 #endif // MASTER_GOLD
 
-struct SRemoveOfflinePredicate
+struct SRemoveOfflinePredicate final
 {
     bool operator()(const MemorySpace::CVisibleObject& object) const
     {
@@ -51,7 +51,7 @@ struct SRemoveOfflinePredicate
     }
 };
 
-struct CVisibleObjectPredicate
+struct CVisibleObjectPredicate final
 {
     u32 m_id;
 
@@ -64,7 +64,7 @@ struct CVisibleObjectPredicate
     }
 };
 
-struct CNotYetVisibleObjectPredicate
+struct CNotYetVisibleObjectPredicate final
 {
     const CGameObject* m_game_object;
 
@@ -526,7 +526,7 @@ float CVisualMemoryManager::feel_vision_mtl_transp(CObject* O, u32 element)
     return vis;
 }
 
-struct CVisibleObjectPredicateEx
+struct CVisibleObjectPredicateEx final
 {
     const CObject* m_object;
 

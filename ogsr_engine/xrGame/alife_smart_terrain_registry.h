@@ -13,7 +13,7 @@
 class CSE_ALifeDynamicObject;
 class CSE_ALifeSmartZone;
 
-class CALifeSmartTerrainRegistry : public virtual RTTI::Enable
+class CALifeSmartTerrainRegistry final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CALifeSmartTerrainRegistry);
 

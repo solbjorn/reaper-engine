@@ -7,7 +7,7 @@
 #define AL_GENERIC_SOFTWARE "Generic Software"
 #define AL_SOFT "OpenAL Soft"
 
-struct ALDeviceDesc
+struct ALDeviceDesc final
 {
     string256 name;
 
@@ -25,7 +25,7 @@ struct ALDeviceDesc
     }
 };
 
-class ALDeviceList
+class ALDeviceList final
 {
 private:
     string512 m_defaultDeviceName{};

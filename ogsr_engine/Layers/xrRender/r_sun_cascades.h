@@ -2,7 +2,7 @@
 
 namespace sun
 {
-struct ray
+struct ray final
 {
     Fvector3 D;
     Fvector3 P;
@@ -11,7 +11,7 @@ struct ray
     ray(Fvector3 const& _P, Fvector3 const& _D) : D{_D}, P{_P} {}
 };
 
-struct cascade
+struct cascade final
 {
     ctx_id_t context_id{R__INVALID_CTX_ID};
     u32 cascade_ind;

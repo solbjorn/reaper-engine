@@ -12,7 +12,7 @@
 #include "data_storage_constructor.h"
 
 template <typename TDistance, typename TVertexData>
-struct DijkstraVertexData
+struct DijkstraVertexData final
 {
     template <typename TCompoundVertex>
     struct VertexData : TVertexData::template VertexData<TCompoundVertex>

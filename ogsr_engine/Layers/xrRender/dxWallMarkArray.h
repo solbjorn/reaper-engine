@@ -3,7 +3,7 @@
 
 #include "../../Include/xrRender/WallMarkArray.h"
 
-class dxWallMarkArray : public IWallMarkArray
+class dxWallMarkArray final : public IWallMarkArray
 {
     RTTI_DECLARE_TYPEINFO(dxWallMarkArray, IWallMarkArray);
 

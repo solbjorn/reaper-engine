@@ -420,7 +420,7 @@ public:
 // DEBUG stuff
 #ifdef DEBUG
 public:
-    struct SDebugInfo
+    struct SDebugInfo final
     {
         bool active;
         float x;
@@ -449,7 +449,6 @@ public:
     //-------------------------------------------------------------------
     // CBaseMonster's      Steering Behaviour
     //-------------------------------------------------------------------
-public:
     steering_behaviour::manager* get_steer_manager();
 
     float get_feel_enemy_who_just_hit_max_distance() { return m_feel_enemy_who_just_hit_max_distance; }
@@ -475,7 +474,7 @@ private:
     // CBaseMonster's  Atack on Move Parameters
     //-------------------------------------------------------------------
 public:
-    struct attack_on_move_params_t
+    struct attack_on_move_params_t final
     {
         bool enabled;
         float max_go_close_time;

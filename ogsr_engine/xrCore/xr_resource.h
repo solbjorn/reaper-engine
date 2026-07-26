@@ -98,7 +98,7 @@ public:
 
 // resptr_CORE
 template <typename T, typename C>
-class resptr_core : public C
+class resptr_core final : public C
 {
 protected:
     typedef resptr_core this_type;

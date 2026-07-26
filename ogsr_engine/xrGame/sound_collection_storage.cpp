@@ -13,7 +13,7 @@
 
 CSoundCollectionStorage* g_sound_collection_storage{};
 
-class collection_predicate
+class collection_predicate final
 {
 private:
     typedef CSoundCollectionStorage::CSoundCollectionParams CSoundCollectionParams;

@@ -25,7 +25,8 @@ class IRenderDevice
 class CRenderDeviceData
 {
 public:
-    class CSecondVPParams //--#SM+#-- +SecondVP+
+    // --#SM+#-- +SecondVP+
+    class CSecondVPParams final
     {
     public:
         bool m_bCamReady; // Флаг готовности камеры (FOV, позиция, и т.п) к рендеру второго вьюпорта
@@ -116,12 +117,10 @@ public:
 };
 
 class CRenderDeviceBase : public IRenderDevice, public CRenderDeviceData
-{
-public:
-};
+{};
 
 // refs
-class CRenderDevice : public CRenderDeviceBase
+class CRenderDevice final : public CRenderDeviceBase
 {
 private:
     u32 camFrame{std::numeric_limits<u32>::max()};
@@ -288,7 +287,7 @@ extern float refresh_rate;
 extern bool g_bBenchmark;
 extern xr_list<CallMe::Delegate<tmc::task<bool>()>> g_loading_events;
 
-class CLoadScreenRenderer : public pureRender
+class CLoadScreenRenderer final : public pureRender
 {
     RTTI_DECLARE_TYPEINFO(CLoadScreenRenderer, pureRender);
 

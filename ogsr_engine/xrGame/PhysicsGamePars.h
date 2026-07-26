@@ -5,14 +5,14 @@ extern float object_damage_factor;
 extern float collide_volume_max;
 extern float collide_volume_min;
 
-struct EffectPars
+struct EffectPars final
 {
     const static float vel_cret_sound;
     const static float vel_cret_particles;
     const static float vel_cret_wallmark;
 };
 
-struct CharacterEffectPars
+struct CharacterEffectPars final
 {
     const static float vel_cret_sound;
     const static float vel_cret_particles;

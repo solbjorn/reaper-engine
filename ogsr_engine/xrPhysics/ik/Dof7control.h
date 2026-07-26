@@ -58,7 +58,7 @@
 //       R1 : Shoulder joints
 //
 
-class SRS
+class SRS final
 {
 private:
     short project_to_workspace;

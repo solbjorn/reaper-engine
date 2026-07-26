@@ -15,7 +15,7 @@ XR_DIAG_POP();
 
 namespace xr
 {
-class key_id
+class key_id final
 {
 public:
     enum class joystick : s32

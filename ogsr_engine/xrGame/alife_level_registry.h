@@ -17,7 +17,7 @@
 
 class CSE_ALifeDynamicObject;
 
-class CALifeLevelRegistry : public CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeDynamicObject>
+class CALifeLevelRegistry final : public CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeDynamicObject>
 {
     RTTI_DECLARE_TYPEINFO(CALifeLevelRegistry, CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeDynamicObject>);
 

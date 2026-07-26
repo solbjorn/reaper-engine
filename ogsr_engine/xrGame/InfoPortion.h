@@ -9,7 +9,7 @@
 #include "GameTaskDefs.h"
 #include "PhraseDialogDefs.h"
 
-struct SInfoPortionData : CSharedResource
+struct SInfoPortionData final : CSharedResource
 {
     RTTI_DECLARE_TYPEINFO(SInfoPortionData, CSharedResource);
 
@@ -43,7 +43,7 @@ public:
 class CInfoPortion;
 
 // квант  - порция информации
-class CInfoPortion : public CSharedClass<SInfoPortionData, shared_str, false>, public CXML_IdToIndex<CInfoPortion>
+class CInfoPortion final : public CSharedClass<SInfoPortionData, shared_str, false>, public CXML_IdToIndex<CInfoPortion>
 {
     RTTI_DECLARE_TYPEINFO(CInfoPortion, CSharedClass<SInfoPortionData, shared_str, false>, CXML_IdToIndex<CInfoPortion>);
 
@@ -60,10 +60,8 @@ public:
     // инициализация info данными
     // если info с таким id раньше не использовался
     // он будет загружен из файла
-    virtual void Load(shared_str info_str_id);
-    //	virtual void Load	(INFO_INDEX info_index);
+    void Load(shared_str info_str_id);
 
-    //	const LOCATIONS_VECTOR&							MapLocations()	const {return info_data()->m_MapLocations;}
     const ARTICLE_ID_VECTOR& Articles() const { return info_data()->m_Articles; }
     const ARTICLE_ID_VECTOR& ArticlesDisable() const { return info_data()->m_ArticlesDisable; }
     const TASK_ID_VECTOR& GameTasks() const { return info_data()->m_GameTasks; }

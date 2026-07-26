@@ -14,7 +14,7 @@ class CSE_ALifeObject;
 class CScriptGameObject;
 class NET_Packet;
 
-class CScriptBinderObject : public virtual RTTI::Enable
+class CScriptBinderObject final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CScriptBinderObject);
 
@@ -43,15 +43,15 @@ public:
     explicit CScriptBinderObject(CScriptGameObject* object);
     ~CScriptBinderObject() override;
 
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
-    virtual tmc::task<bool> net_Spawn(SpawnType DC);
-    virtual tmc::task<void> net_Destroy();
-    virtual tmc::task<void> shedule_Update(u32 time_delta);
-    virtual void save(NET_Packet* output_packet);
-    virtual void load(IReader* input_packet);
-    virtual bool net_SaveRelevant();
-    virtual void net_Relcase(CScriptGameObject* object);
+    void reinit();
+    void reload(LPCSTR section);
+    tmc::task<bool> net_Spawn(SpawnType DC);
+    tmc::task<void> net_Destroy();
+    tmc::task<void> shedule_Update(u32 time_delta);
+    void save(NET_Packet* output_packet);
+    void load(IReader* input_packet);
+    [[nodiscard]] bool net_SaveRelevant();
+    void net_Relcase(CScriptGameObject* object);
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

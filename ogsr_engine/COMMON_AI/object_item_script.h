@@ -11,7 +11,7 @@
 #include "object_factory_space.h"
 #include "object_item_abstract.h"
 
-class CObjectItemScript : public CObjectItemAbstract
+class CObjectItemScript final : public CObjectItemAbstract
 {
     RTTI_DECLARE_TYPEINFO(CObjectItemScript, CObjectItemAbstract);
 

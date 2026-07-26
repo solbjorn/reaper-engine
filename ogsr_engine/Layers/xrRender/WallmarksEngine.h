@@ -11,7 +11,7 @@ struct wm_slot;
 class CSkeletonWallmark;
 class CKinematics;
 
-class CWallmarksEngine
+class CWallmarksEngine final
 {
 public:
     typedef WallmarksEngine::wm_slot wm_slot;

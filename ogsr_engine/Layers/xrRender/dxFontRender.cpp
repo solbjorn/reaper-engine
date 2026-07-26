@@ -22,19 +22,19 @@ XR_DIAG_POP();
 } // namespace skb
 
 template <>
-struct std::default_delete<hb::hb_blob_t>
+struct std::default_delete<hb::hb_blob_t> final
 {
     constexpr void operator()(hb::hb_blob_t* ptr) const noexcept { hb::hb_blob_destroy(ptr); }
 };
 
 template <>
-struct std::default_delete<hb::hb_face_t>
+struct std::default_delete<hb::hb_face_t> final
 {
     constexpr void operator()(hb::hb_face_t* ptr) const noexcept { hb::hb_face_destroy(ptr); }
 };
 
 template <>
-struct std::default_delete<hb::hb_font_t>
+struct std::default_delete<hb::hb_font_t> final
 {
     constexpr void operator()(hb::hb_font_t* ptr) const noexcept { hb::hb_font_destroy(ptr); }
 };
@@ -44,31 +44,31 @@ XR_UNFORMATTABLE(hb::hb_face_t);
 XR_UNFORMATTABLE(hb::hb_font_t);
 
 template <>
-struct std::default_delete<skb::skb_font_collection_t>
+struct std::default_delete<skb::skb_font_collection_t> final
 {
     constexpr void operator()(skb::skb_font_collection_t* ptr) const noexcept { skb::skb_font_collection_destroy(ptr); }
 };
 
 template <>
-struct std::default_delete<skb::skb_image_atlas_t>
+struct std::default_delete<skb::skb_image_atlas_t> final
 {
     constexpr void operator()(skb::skb_image_atlas_t* ptr) const noexcept { skb::skb_image_atlas_destroy(ptr); }
 };
 
 template <>
-struct std::default_delete<skb::skb_layout_t>
+struct std::default_delete<skb::skb_layout_t> final
 {
     constexpr void operator()(skb::skb_layout_t* ptr) const noexcept { skb::skb_layout_destroy(ptr); }
 };
 
 template <>
-struct std::default_delete<skb::skb_rasterizer_t>
+struct std::default_delete<skb::skb_rasterizer_t> final
 {
     constexpr void operator()(skb::skb_rasterizer_t* ptr) const noexcept { skb::skb_rasterizer_destroy(ptr); }
 };
 
 template <>
-struct std::default_delete<skb::skb_temp_alloc_t>
+struct std::default_delete<skb::skb_temp_alloc_t> final
 {
     constexpr void operator()(skb::skb_temp_alloc_t* ptr) const noexcept { skb::skb_temp_alloc_destroy(ptr); }
 };

@@ -41,7 +41,7 @@
 #define TRADE_CHARACTER_XML "trade_character.xml"
 #define TRADE_ITEM_XML "trade_item.xml"
 
-struct CUITradeInternal
+struct CUITradeInternal final
 {
     CUIStatic UIStaticTop;
     CUIStatic UIStaticBottom;

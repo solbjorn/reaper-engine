@@ -2,7 +2,7 @@
 
 #include "UIWindow.h"
 
-class CUICarPanel : public CUIWindow
+class CUICarPanel final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUICarPanel, CUIWindow);
 

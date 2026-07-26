@@ -13,12 +13,12 @@
 #include "safe_map_iterator.h"
 #include "ai_debug.h"
 
-class CALifeScheduleRegistry : public CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeSchedulable, std::less<ALife::_OBJECT_ID>, false>
+class CALifeScheduleRegistry final : public CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeSchedulable, std::less<ALife::_OBJECT_ID>, false>
 {
     RTTI_DECLARE_TYPEINFO(CALifeScheduleRegistry, CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeSchedulable, std::less<ALife::_OBJECT_ID>, false>);
 
 private:
-    struct CUpdatePredicate
+    struct CUpdatePredicate final
     {
         u32 m_count;
         mutable u32 m_current{};

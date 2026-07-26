@@ -1,7 +1,7 @@
 #pragma once
 
 template <typename _Object>
-class CStateMonsterPanicRun : public CState<_Object>
+class CStateMonsterPanicRun final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterPanicRun<_Object>, CState<_Object>);
 

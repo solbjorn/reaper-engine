@@ -1,7 +1,7 @@
 #pragma once
 
 template <typename _Object>
-class CStateControlFire : public CState<_Object>
+class CStateControlFire final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateControlFire<_Object>, CState<_Object>);
 

@@ -16,7 +16,7 @@ struct STRING_TABLE_DATA
     STRING_TABLE_MAP m_string_key_binding;
 };
 
-class CStringTable
+class CStringTable final
 {
 public:
     static void Destroy();

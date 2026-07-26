@@ -17,7 +17,7 @@ class CLAItem;
 
 //////////////////////////////////////////////////////////////////////////
 
-class CUIColorAnimatorWrapper
+class CUIColorAnimatorWrapper final
 {
 public:
     // Анимация сразу играется после создания объекта.

@@ -7,7 +7,7 @@ class CUI3tButton;
 class CUIFrameLineWnd;
 class CUITrackButton;
 
-class CUITrackBar : public CUIWindow, public CUIOptionsItem
+class CUITrackBar final : public CUIWindow, public CUIOptionsItem
 {
     RTTI_DECLARE_TYPEINFO(CUITrackBar, CUIWindow, CUIOptionsItem);
 

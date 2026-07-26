@@ -10,7 +10,7 @@
 #include "inventory_item_object.h"
 #include "DelayedActionFuse.h"
 
-class CExplosiveItem : public CInventoryItemObject, public CDelayedActionFuse, public CExplosive
+class CExplosiveItem final : public CInventoryItemObject, public CDelayedActionFuse, public CExplosive
 {
     RTTI_DECLARE_TYPEINFO(CExplosiveItem, CInventoryItemObject, CDelayedActionFuse, CExplosive);
 

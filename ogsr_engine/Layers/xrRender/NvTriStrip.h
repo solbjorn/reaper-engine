@@ -22,7 +22,7 @@ enum PrimType
     PT_FAN
 };
 
-struct PrimitiveGroup
+struct PrimitiveGroup final
 {
     PrimType type{PT_STRIP};
     u32 numIndices{};

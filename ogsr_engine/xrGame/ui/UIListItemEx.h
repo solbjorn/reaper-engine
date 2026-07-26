@@ -11,7 +11,7 @@
 
 #include "UIListItem.h"
 
-class CUIListItemEx : public CUIListItem
+class CUIListItemEx final : public CUIListItem
 {
     RTTI_DECLARE_TYPEINFO(CUIListItemEx, CUIListItem);
 
@@ -23,9 +23,9 @@ public:
     ~CUIListItemEx() override;
 
     void SendMessage(CUIWindow*, s16 msg, void*) override;
-    virtual void SetSelectionColor(u32 dwColor);
+    void SetSelectionColor(u32 dwColor);
     void Draw() override;
-    virtual void dummy() {}
+    void dummy() {}
 
 protected:
     u32 m_dwSelectionColor;

@@ -259,7 +259,7 @@ void CEnemyManager::on_enemy_change(const CEntityAlive* previous_enemy)
 
 void CEnemyManager::remove_wounded()
 {
-    struct no_wounded
+    struct no_wounded final
     {
         IC static bool predicate(const CEntityAlive* enemy)
         {

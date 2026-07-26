@@ -3,7 +3,7 @@
 
 #include "PHGeometryOwner.h"
 
-class CPHPositionsPairs
+class CPHPositionsPairs final
 {
     GEOM_I geom;
 
@@ -30,7 +30,7 @@ public:
     IC bool operator!=(const CPHPositionsPairs& right) const { return geom != right.geom; }
 };
 
-class CPHMoveStorage
+class CPHMoveStorage final
 {
     GEOM_STORAGE m_trace_geometries;
 

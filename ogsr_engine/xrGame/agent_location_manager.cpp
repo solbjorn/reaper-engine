@@ -19,7 +19,7 @@ namespace
 {
 constexpr float MIN_SUITABLE_ENEMY_DISTANCE{3.f}; // 10.f;
 
-struct CRemoveOldDangerCover
+struct CRemoveOldDangerCover final
 {
     typedef CAgentMemberManager::MEMBER_STORAGE MEMBER_STORAGE;
 
@@ -50,7 +50,7 @@ struct CRemoveOldDangerCover
     }
 };
 
-struct CDangerLocationPredicate
+struct CDangerLocationPredicate final
 {
     Fvector m_position;
 
@@ -162,7 +162,8 @@ void CAgentLocationManager::add(CDangerLocationPtr location)
 
 void CAgentLocationManager::remove_old_danger_covers()
 {
-    m_danger_locations.erase(std::remove_if(m_danger_locations.begin(), m_danger_locations.end(), CRemoveOldDangerCover(&object().member())), m_danger_locations.end());
+    m_danger_locations.erase(std::remove_if(m_danger_locations.begin(), m_danger_locations.end(), CRemoveOldDangerCover(&object().member())),
+                             m_danger_locations.end());
 }
 
 float CAgentLocationManager::danger(const CCoverPoint* cover, CAI_Stalker* member) const

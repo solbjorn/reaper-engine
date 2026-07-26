@@ -137,7 +137,7 @@ void get_files_list(xr_vector<shared_str>& files, LPCSTR dir, LPCSTR file_ext)
     FS.m_Flags.set(CLocatorAPI::flNeedCheck, FALSE);
 }
 
-class CCC_MemStats : public IConsole_Command
+class CCC_MemStats final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_MemStats, IConsole_Command);
 
@@ -212,7 +212,7 @@ public:
 };
 
 // console commands
-class CCC_GameDifficulty : public CCC_Token
+class CCC_GameDifficulty final : public CCC_Token
 {
     RTTI_DECLARE_TYPEINFO(CCC_GameDifficulty, CCC_Token);
 
@@ -247,7 +247,7 @@ gsl::czstring GetLanguagesToken() { return LanguagesToken[LanguageID].name; }
 
 namespace
 {
-class CCC_GameLanguage : public CCC_Token
+class CCC_GameLanguage final : public CCC_Token
 {
     RTTI_DECLARE_TYPEINFO(CCC_GameLanguage, CCC_Token);
 
@@ -319,7 +319,7 @@ private:
 };
 
 #ifdef DEBUG
-class CCC_ALifePath : public IConsole_Command
+class CCC_ALifePath final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_ALifePath, IConsole_Command);
 
@@ -354,7 +354,7 @@ public:
 #endif // DEBUG
 
 #ifndef MASTER_GOLD
-class CCC_ALifeTimeFactor : public IConsole_Command
+class CCC_ALifeTimeFactor final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_ALifeTimeFactor, IConsole_Command);
 
@@ -381,7 +381,7 @@ public:
     }
 };
 
-class CCC_ALifeSwitchDistance : public IConsole_Command
+class CCC_ALifeSwitchDistance final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_ALifeSwitchDistance, IConsole_Command);
 
@@ -417,7 +417,7 @@ public:
     }
 };
 
-class CCC_ALifeProcessTime : public IConsole_Command
+class CCC_ALifeProcessTime final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_ALifeProcessTime, IConsole_Command);
 
@@ -452,7 +452,7 @@ public:
     }
 };
 
-class CCC_ALifeObjectsPerUpdate : public IConsole_Command
+class CCC_ALifeObjectsPerUpdate final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_ALifeObjectsPerUpdate, IConsole_Command);
 
@@ -481,7 +481,7 @@ public:
     }
 };
 
-class CCC_ALifeSwitchFactor : public IConsole_Command
+class CCC_ALifeSwitchFactor final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_ALifeSwitchFactor, IConsole_Command);
 
@@ -511,7 +511,7 @@ public:
 };
 #endif // !MASTER_GOLD
 
-class CCC_TimeFactor : public IConsole_Command
+class CCC_TimeFactor final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_TimeFactor, IConsole_Command);
 
@@ -532,7 +532,7 @@ public:
     }
 };
 
-class CCC_DemoRecord : public IConsole_Command
+class CCC_DemoRecord final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DemoRecord, IConsole_Command);
 
@@ -571,7 +571,7 @@ private:
     }
 };
 
-class CCC_DemoPlay : public IConsole_Command
+class CCC_DemoPlay final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DemoPlay, IConsole_Command);
 
@@ -638,7 +638,7 @@ bool valid_file_name(LPCSTR file_name)
     return (true);
 }
 
-class CCC_ALifeSave : public IConsole_Command
+class CCC_ALifeSave final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_ALifeSave, IConsole_Command);
 
@@ -726,7 +726,7 @@ private:
     }
 };
 
-class CCC_ALifeLoadFrom : public IConsole_Command
+class CCC_ALifeLoadFrom final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_ALifeLoadFrom, IConsole_Command);
 
@@ -777,7 +777,7 @@ private:
     void fill_tips(vecTips& tips) override { get_files_list(tips, "$game_saves$", SAVE_EXTENSION); }
 };
 
-class CCC_LoadLastSave : public IConsole_Command
+class CCC_LoadLastSave final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_LoadLastSave, IConsole_Command);
 
@@ -823,7 +823,7 @@ public:
     }
 };
 
-class CCC_FloatBlock : public CCC_Float
+class CCC_FloatBlock final : public CCC_Float
 {
     RTTI_DECLARE_TYPEINFO(CCC_FloatBlock, CCC_Float);
 
@@ -833,7 +833,7 @@ public:
 };
 
 #ifdef DEBUG
-class CCC_DrawGameGraphAll : public IConsole_Command
+class CCC_DrawGameGraphAll final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DrawGameGraphAll, IConsole_Command);
 
@@ -853,7 +853,7 @@ public:
     }
 };
 
-class CCC_DrawGameGraphCurrent : public IConsole_Command
+class CCC_DrawGameGraphCurrent final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DrawGameGraphCurrent, IConsole_Command);
 
@@ -873,7 +873,7 @@ public:
     }
 };
 
-class CCC_DrawGameGraphLevel : public IConsole_Command
+class CCC_DrawGameGraphLevel final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DrawGameGraphLevel, IConsole_Command);
 
@@ -907,7 +907,7 @@ public:
     }
 };
 
-class CCC_DumpInfos : public IConsole_Command
+class CCC_DumpInfos final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DumpInfos, IConsole_Command);
 
@@ -925,7 +925,7 @@ public:
     [[nodiscard]] xr_string Info() const override { return "dumps all infoportions that actor have"; }
 };
 
-class CCC_DumpMap : public IConsole_Command
+class CCC_DumpMap final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DumpMap, IConsole_Command);
 
@@ -937,7 +937,7 @@ public:
     [[nodiscard]] xr_string Info() const override { return "dumps all currentmap locations"; }
 };
 
-class CCC_DumpCreatures : public IConsole_Command
+class CCC_DumpCreatures final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DumpCreatures, IConsole_Command);
 
@@ -962,7 +962,7 @@ public:
     [[nodiscard]] xr_string Info() const override { return "dumps all creature names"; }
 };
 
-class CCC_DebugFonts : public IConsole_Command
+class CCC_DebugFonts final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DebugFonts, IConsole_Command);
 
@@ -973,7 +973,7 @@ public:
     void Execute(std::string_view) override { HUD().GetUI()->StartStopMenu(xr_new<CUIDebugFonts>(), true); }
 };
 
-class CCC_DebugNode : public IConsole_Command
+class CCC_DebugNode final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DebugNode, IConsole_Command);
 
@@ -1004,7 +1004,7 @@ public:
     }
 };
 
-class CCC_ShowMonsterInfo : public IConsole_Command
+class CCC_ShowMonsterInfo final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_ShowMonsterInfo, IConsole_Command);
 
@@ -1034,7 +1034,7 @@ public:
     }
 };
 
-class CCC_DbgPhTrackObj : public IConsole_Command
+class CCC_DbgPhTrackObj final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DbgPhTrackObj, IConsole_Command);
 
@@ -1050,7 +1050,7 @@ public:
 };
 #endif
 
-class CCC_PHIterations : public CCC_Integer
+class CCC_PHIterations final : public CCC_Integer
 {
     RTTI_DECLARE_TYPEINFO(CCC_PHIterations, CCC_Integer);
 
@@ -1065,7 +1065,7 @@ public:
     }
 };
 
-class CCC_PHGravity : public IConsole_Command
+class CCC_PHGravity final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_PHGravity, IConsole_Command);
 
@@ -1091,7 +1091,7 @@ public:
     [[nodiscard]] xr_string Status() const override { return xr::format("{}", ph_world != nullptr ? ph_world->Gravity() : default_world_gravity); }
 };
 
-class CCC_PHFps : public IConsole_Command
+class CCC_PHFps final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_PHFps, IConsole_Command);
 
@@ -1114,7 +1114,7 @@ public:
     [[nodiscard]] xr_string Status() const override { return xr::format("{}", 1.0f / fixed_step); }
 };
 
-struct CCC_JumpToLevel : public IConsole_Command
+struct CCC_JumpToLevel final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_JumpToLevel, IConsole_Command);
 
@@ -1164,7 +1164,7 @@ public:
     }
 };
 
-class CCC_Spawn : public IConsole_Command
+class CCC_Spawn final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_Spawn, IConsole_Command);
 
@@ -1213,7 +1213,7 @@ public:
     }
 };
 
-class CCC_SpawnToInventory : public IConsole_Command
+class CCC_SpawnToInventory final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_SpawnToInventory, IConsole_Command);
 
@@ -1278,7 +1278,7 @@ public:
     }
 };
 
-class CCC_LuaGCMethod : public CCC_Token
+class CCC_LuaGCMethod final : public CCC_Token
 {
     RTTI_DECLARE_TYPEINFO(CCC_LuaGCMethod, CCC_Token);
 
@@ -1314,7 +1314,7 @@ public:
     }
 };
 
-class CCC_MainMenu : public IConsole_Command
+class CCC_MainMenu final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_MainMenu, IConsole_Command);
 
@@ -1347,7 +1347,7 @@ private:
 };
 
 #ifndef MASTER_GOLD
-struct CCC_StartTimeSingle : public IConsole_Command
+struct CCC_StartTimeSingle final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_StartTimeSingle, IConsole_Command);
 
@@ -1382,7 +1382,7 @@ public:
     }
 };
 
-struct CCC_TimeFactorSingle : public CCC_Float
+struct CCC_TimeFactorSingle final : public CCC_Float
 {
     RTTI_DECLARE_TYPEINFO(CCC_TimeFactorSingle, CCC_Float);
 
@@ -1405,7 +1405,7 @@ public:
 #ifdef DEBUG
 class CCC_RadioGroupMask2;
 
-class CCC_RadioMask : public CCC_Mask
+class CCC_RadioMask final : public CCC_Mask
 {
     RTTI_DECLARE_TYPEINFO(CCC_RadioGroupMask, CCC_Mask);
 
@@ -1422,7 +1422,7 @@ public:
     IC void Set(BOOL V) { value->set(mask, V); }
 };
 
-class CCC_RadioGroupMask2
+class CCC_RadioGroupMask2 final
 {
     CCC_RadioMask& mask0;
     CCC_RadioMask& mask1;
@@ -1468,7 +1468,7 @@ void CCC_RadioMask::Execute(std::string_view args)
     } \
     XR_MACRO_END()
 
-struct CCC_DbgBullets : public CCC_Integer
+struct CCC_DbgBullets final : public CCC_Integer
 {
     RTTI_DECLARE_TYPEINFO(CCC_DbgBullets, CCC_Integer);
 
@@ -1487,7 +1487,7 @@ public:
 };
 #endif // DEBUG
 
-class CCC_TuneAttachableItem : public IConsole_Command
+class CCC_TuneAttachableItem final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_TuneAttachableItem, IConsole_Command);
 
@@ -1548,7 +1548,7 @@ public:
     }
 };
 
-class CCC_TuneAttachableItemInSlot : public IConsole_Command
+class CCC_TuneAttachableItemInSlot final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_TuneAttachableItemInSlot, IConsole_Command);
 
@@ -1616,7 +1616,7 @@ public:
 };
 
 #ifdef DEBUG
-class CCC_Crash : public IConsole_Command
+class CCC_Crash final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_Crash, IConsole_Command);
 
@@ -1632,7 +1632,7 @@ public:
     }
 };
 
-class CCC_DumpModelBones : public IConsole_Command
+class CCC_DumpModelBones final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DumpModelBones, IConsole_Command);
 
@@ -1680,7 +1680,7 @@ public:
     }
 };
 
-class CCC_ShowAnimationStats : public IConsole_Command
+class CCC_ShowAnimationStats final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_ShowAnimationStats, IConsole_Command);
 
@@ -1691,7 +1691,7 @@ public:
     void Execute(std::string_view) override { show_animation_stats(); }
 };
 
-class CCC_DumpObjects : public IConsole_Command
+class CCC_DumpObjects final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DumpObjects, IConsole_Command);
 
@@ -1704,7 +1704,7 @@ public:
 #endif // DEBUG
 
 // Change weather immediately
-class CCC_SetWeather : public IConsole_Command
+class CCC_SetWeather final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_SetWeather, IConsole_Command);
 
@@ -1741,7 +1741,7 @@ public:
 };
 
 #ifdef USE_MEMORY_VALIDATOR
-class CCC_DbgMemoryDump : public IConsole_Command
+class CCC_DbgMemoryDump final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DbgMemoryDump, IConsole_Command);
 
@@ -1772,7 +1772,7 @@ public:
     }
 };
 
-class CCC_DbgMemoryClear : public IConsole_Command
+class CCC_DbgMemoryClear final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DbgMemoryClear, IConsole_Command);
 
@@ -1783,7 +1783,7 @@ public:
     void Execute(std::string_view) override { PointerRegistryClear(); }
 };
 
-class CCC_DbgMemoryInfo : public IConsole_Command
+class CCC_DbgMemoryInfo final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DbgMemoryInfo, IConsole_Command);
 
@@ -1795,7 +1795,7 @@ public:
 };
 #endif // USE_MEMORY_VALIDATOR
 
-class CCC_UI_Reload : public IConsole_Command
+class CCC_UI_Reload final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_UI_Reload, IConsole_Command);
 

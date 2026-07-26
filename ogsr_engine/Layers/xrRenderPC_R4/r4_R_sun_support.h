@@ -5,10 +5,10 @@ constexpr inline u32 LIGHT_CUBOIDSIDEPOLYS_COUNT{4};
 constexpr inline u32 LIGHT_CUBOIDVERTICES_COUNT{2 * LIGHT_CUBOIDSIDEPOLYS_COUNT};
 
 template <bool _debug>
-class FixedConvexVolume
+class FixedConvexVolume final
 {
 public:
-    struct _poly
+    struct _poly final
     {
         int points[4];
         Fplane plane;
@@ -274,18 +274,19 @@ public:
 //		 light source. really slow, but it works for our simple usage :)
 // note: normals points to 'outside'
 //////////////////////////////////////////////////////////////////////////
+
 template <bool _debug>
-class DumbConvexVolume
+class DumbConvexVolume final
 {
 public:
-    struct _poly
+    struct _poly final
     {
         xr_vector<int> points;
         Fvector3 planeN;
         float planeD;
         float classify(Fvector3& p) { return planeN.dotproduct(p) + planeD; }
     };
-    struct _edge
+    struct _edge final
     {
         int p0, p1;
         int counter;

@@ -7,7 +7,7 @@
 #include <sys/stat.h>
 #include <share.h>
 
-class CFileWriter : public IWriter
+class CFileWriter final : public IWriter
 {
     RTTI_DECLARE_TYPEINFO(CFileWriter, IWriter);
 
@@ -73,7 +73,7 @@ public:
 };
 
 // It automatically frees memory after destruction
-class CTempReader : public IReader
+class CTempReader final : public IReader
 {
     RTTI_DECLARE_TYPEINFO(CTempReader, IReader);
 
@@ -82,7 +82,7 @@ public:
     ~CTempReader() override;
 };
 
-class CPackReader : public IReader
+class CPackReader final : public IReader
 {
     RTTI_DECLARE_TYPEINFO(CPackReader, IReader);
 
@@ -93,7 +93,7 @@ public:
     ~CPackReader() override;
 };
 
-class CVirtualFileReader : public IReader
+class CVirtualFileReader final : public IReader
 {
     RTTI_DECLARE_TYPEINFO(CVirtualFileReader, IReader);
 

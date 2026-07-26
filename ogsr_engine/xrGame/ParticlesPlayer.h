@@ -18,7 +18,7 @@ class CParticlesPlayer : public virtual RTTI::Enable
 
 public:
     // структура с внутренней информацией о партикле
-    struct SParticlesInfo
+    struct SParticlesInfo final
     {
         CParticlesObject* ps;
         Fvector angles;
@@ -29,7 +29,7 @@ public:
     DEFINE_VECTOR(SParticlesInfo, ParticlesInfoList, ParticlesInfoListIt);
 
     // структура для косточки с списком запущенных партиклов
-    struct SBoneInfo
+    struct SBoneInfo final
     {
         u16 index;
         Fvector offset;

@@ -36,7 +36,7 @@ void CMonsterHitMemory::add_hit(CObject* who, EHitSide side)
         *it = new_hit_info;
 }
 
-struct predicate_old_hit
+struct predicate_old_hit final
 {
     TTime cur_time;
     TTime mem_time;
@@ -146,7 +146,7 @@ Fvector CMonsterHitMemory::get_last_hit_position()
     return last_hit.position;
 }
 
-struct predicate_old_info
+struct predicate_old_info final
 {
     const CObject* object;
 

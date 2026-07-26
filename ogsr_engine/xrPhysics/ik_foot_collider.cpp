@@ -24,7 +24,7 @@ namespace
 {
 constexpr Fplane invalide_plane{-FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX};
 
-struct ik_pick_result
+struct ik_pick_result final
 {
     ik_pick_result(ik_foot_geom::e_collide_point _point) : p(invalide_plane), position(Fvector().set(-FLT_MAX, -FLT_MAX, -FLT_MAX)), point(_point), range(0)
     {

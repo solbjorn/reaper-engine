@@ -290,7 +290,7 @@ inline IResourceManager::~IResourceManager() = default;
 class ShExports final
 {
     template <typename T, std::size_t Size>
-    struct PositionsStorage
+    struct PositionsStorage final
     {
         T Positions[Size]{};
 

@@ -4,7 +4,7 @@
 #include "WeaponMagazined.h"
 #include "script_export_space.h"
 
-class CWeaponLR300 : public CWeaponMagazined
+class CWeaponLR300 final : public CWeaponMagazined
 {
     RTTI_DECLARE_TYPEINFO(CWeaponLR300, CWeaponMagazined);
 

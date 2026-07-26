@@ -13,7 +13,7 @@
 #include "HWCaps.h"
 #include "stats_manager.h"
 
-class CHW : public pureAppActivate, public pureAppDeactivate
+class CHW final : public pureAppActivate, public pureAppDeactivate
 {
     RTTI_DECLARE_TYPEINFO(CHW, pureAppActivate, pureAppDeactivate);
 

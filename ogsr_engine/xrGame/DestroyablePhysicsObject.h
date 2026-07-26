@@ -6,7 +6,11 @@
 #include "damage_manager.h"
 #include "hit_immunity.h"
 
-class CDestroyablePhysicsObject : public CPhysicObject, public CPHDestroyable, public CPHCollisionDamageReceiver, public CHitImmunity, public CDamageManager
+class CDestroyablePhysicsObject final : public CPhysicObject,
+                                        public CPHDestroyable,
+                                        public CPHCollisionDamageReceiver,
+                                        public CHitImmunity,
+                                        public CDamageManager
 {
     RTTI_DECLARE_TYPEINFO(CDestroyablePhysicsObject, CPhysicObject, CPHDestroyable, CPHCollisionDamageReceiver, CHitImmunity, CDamageManager);
 

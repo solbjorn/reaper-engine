@@ -4,7 +4,8 @@
 
 namespace KinematicsABT
 {
-struct additional_bone_transform // Описывает постоянное смещение для указанной кости --#SM+#--
+// Описывает постоянное смещение для указанной кости --#SM+#--
+struct additional_bone_transform final
 {
     bool m_bRotGlobal; // Use XYZ axis instead of HPB
     u16 m_bone_id; // Bone ID

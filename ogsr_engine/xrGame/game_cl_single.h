@@ -2,7 +2,7 @@
 
 #include "game_cl_base.h"
 
-class game_cl_Single : public game_cl_GameState
+class game_cl_Single final : public game_cl_GameState
 {
     RTTI_DECLARE_TYPEINFO(game_cl_Single, game_cl_GameState);
 

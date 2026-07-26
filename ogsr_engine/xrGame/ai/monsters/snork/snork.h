@@ -3,7 +3,7 @@
 #include "../basemonster/base_monster.h"
 #include "script_export_space.h"
 
-class CSnork : public CBaseMonster
+class CSnork final : public CBaseMonster
 {
     RTTI_DECLARE_TYPEINFO(CSnork, CBaseMonster);
 

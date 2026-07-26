@@ -15,7 +15,7 @@
 #include "memory_manager.h"
 #include "enemy_manager.h"
 
-struct SAttackGoodwillStorage
+struct SAttackGoodwillStorage final
 {
     CHARACTER_GOODWILL friend_attack_goodwill;
     CHARACTER_GOODWILL neutral_attack_goodwill;

@@ -7,7 +7,7 @@
 
 #include "Artifact.h"
 
-class CElectricBall : public CArtefact
+class CElectricBall final : public CArtefact
 {
     RTTI_DECLARE_TYPEINFO(CElectricBall, CArtefact);
 

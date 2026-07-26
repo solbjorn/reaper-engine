@@ -28,7 +28,7 @@ struct SContour;
 
 class CCoverPoint;
 
-class CLevelGraph : public virtual RTTI::Enable
+class CLevelGraph final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CLevelGraph);
 
@@ -174,15 +174,16 @@ public:
     IC u32 vertex_id(const CLevelGraph::CVertex* vertex) const;
     u32 vertex_id(const Fvector& position) const;
     [[nodiscard]] u32 vertex_id(u32 current_node_id, const Fvector& position) const;
-    void choose_point(const Fvector& start_point, const Fvector& finish_point, const SContour& contour, int vertex_id, Fvector& temp_point, int& saved_index) const;
+    void choose_point(const Fvector& start_point, const Fvector& finish_point, const SContour& contour, int vertex_id, Fvector& temp_point,
+                      int& saved_index) const;
     IC bool check_vertex_in_direction(u32 start_vertex_id, const Fvector& start_position, u32 finish_vertex_id) const;
     IC u32 check_position_in_direction(u32 start_vertex_id, const Fvector& start_position, const Fvector& finish_position) const;
-    [[nodiscard]] f32 farthest_vertex_in_direction(u32 start_vertex_id, const Fvector& start_point, const Fvector& finish_point, u32& finish_vertex_id, xr_vector<bool>* tpaMarks,
-                                                   bool check_accessability = false) const;
+    [[nodiscard]] f32 farthest_vertex_in_direction(u32 start_vertex_id, const Fvector& start_point, const Fvector& finish_point, u32& finish_vertex_id,
+                                                   xr_vector<bool>* tpaMarks, bool check_accessability = false) const;
 
     template <bool bAssignY, typename T>
-    IC bool create_straight_path(u32 start_vertex_id, const Fvector2& start_point, const Fvector2& finish_point, xr_vector<T>& tpaOutputPoints, const T& example,
-                                 bool bAddFirstPoint, bool bClearPath = true) const;
+    IC bool create_straight_path(u32 start_vertex_id, const Fvector2& start_point, const Fvector2& finish_point, xr_vector<T>& tpaOutputPoints,
+                                 const T& example, bool bAddFirstPoint, bool bClearPath = true) const;
 
     template <typename T>
     IC void assign_y_values(xr_vector<T>& path);

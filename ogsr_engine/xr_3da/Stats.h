@@ -23,10 +23,10 @@ public:
     ~CStatsPhysics() override = default;
 };
 
-class CStats : public CStatsPhysics
+class CStats final : public CStatsPhysics
 #ifdef DEBUG
     ,
-               public pureRender
+                     public pureRender
 #endif
 {
     RTTI_DECLARE_TYPEINFO(CStats, CStatsPhysics

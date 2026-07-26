@@ -21,7 +21,7 @@ constexpr inline u32 CULL_CW{D3DCULL_CW};
 constexpr inline u32 CULL_NONE{D3DCULL_NONE};
 
 ///		detailed statistic
-struct R_statistics_element
+struct R_statistics_element final
 {
     u32 verts, dips;
     ICF void add(u32 _verts)
@@ -31,7 +31,7 @@ struct R_statistics_element
     }
 };
 
-struct R_statistics
+struct R_statistics final
 {
     R_statistics_element s_static;
     R_statistics_element s_flora;
@@ -46,7 +46,7 @@ struct R_statistics
     R_statistics_element s_dynamic_4B;
 };
 
-class CBackend
+class CBackend final
 {
 public:
     static constexpr auto MaxCBuffers = 14uz;
@@ -130,7 +130,7 @@ private:
     CTexture* textures_cs[CTexture::mtMaxComputeShaderTextures]; // 4 vs
 
 public:
-    struct _stats
+    struct _stats final
     {
         u32 polys;
         u32 verts;

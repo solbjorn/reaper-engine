@@ -12,7 +12,7 @@ namespace Feel
 {
 namespace
 {
-struct SFeelParam
+struct SFeelParam final
 {
     Vision* parent;
     Vision::feel_visible_Item* item;

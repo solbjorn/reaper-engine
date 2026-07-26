@@ -12,7 +12,7 @@ IC void KEY_Interp(CKey& D, const CKey& K1, const CKey& K2, float delta)
     D.T.lerp(K1.T, K2.T, delta);
 }
 
-struct ConsistantKey
+struct ConsistantKey final
 {
     const CKey* K;
     float w;

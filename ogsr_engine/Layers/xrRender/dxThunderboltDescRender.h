@@ -5,7 +5,7 @@
 
 class IRender_DetailModel;
 
-class dxThunderboltDescRender : public IThunderboltDescRender
+class dxThunderboltDescRender final : public IThunderboltDescRender
 {
     RTTI_DECLARE_TYPEINFO(dxThunderboltDescRender, IThunderboltDescRender);
 

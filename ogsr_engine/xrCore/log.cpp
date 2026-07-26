@@ -21,7 +21,7 @@ namespace xr
 {
 namespace
 {
-class log_pool
+class log_pool final
 {
 public:
     using msg_vec = xr_vector<std::pair<size_t, xr_string>>;

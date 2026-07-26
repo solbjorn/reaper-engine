@@ -25,7 +25,7 @@ public:
     [[nodiscard]] f32 GetWorldPitch() const override { return pitch; }
 };
 
-class CCameraLook2 : public CCameraLook
+class CCameraLook2 final : public CCameraLook
 {
     RTTI_DECLARE_TYPEINFO(CCameraLook2, CCameraLook);
 

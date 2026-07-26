@@ -7,7 +7,7 @@
 class CPhysicsShellHolder;
 class CUIXml;
 
-class CUIWpnParams : public CUIWindow
+class CUIWpnParams final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIWpnParams, CUIWindow);
 

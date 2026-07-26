@@ -8,7 +8,7 @@ public:
     ~SBaseEffector() override = default;
 };
 
-struct SCamEffectorInfo
+struct SCamEffectorInfo final
 {
     Fvector p{};
     Fvector d{0.0f, 0.0f, 1.0f};

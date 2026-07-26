@@ -4,7 +4,7 @@
 #include "../controlled_entity.h"
 #include "script_export_space.h"
 
-class CAI_Dog : public CBaseMonster, public CControlledEntity<CAI_Dog>
+class CAI_Dog final : public CBaseMonster, public CControlledEntity<CAI_Dog>
 {
     RTTI_DECLARE_TYPEINFO(CAI_Dog, CBaseMonster, CControlledEntity<CAI_Dog>);
 
@@ -24,7 +24,7 @@ public:
     void HitEntityInJump(const CEntity* pEntity) override;
 
     [[nodiscard]] bool ability_can_drag() override { return true; }
-    [[nodiscard]] virtual u32 get_attack_rebuild_time();
+    [[nodiscard]] u32 get_attack_rebuild_time();
     [[nodiscard]] bool can_use_agressive_jump(const CObject*) override;
 
 public:

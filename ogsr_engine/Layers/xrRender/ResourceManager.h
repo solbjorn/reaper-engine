@@ -13,7 +13,7 @@
 class dx10ConstantBuffer;
 
 // defs
-class CResourceManager : public IResourceManager
+class CResourceManager final : public IResourceManager
 {
     RTTI_DECLARE_TYPEINFO(CResourceManager, IResourceManager);
 

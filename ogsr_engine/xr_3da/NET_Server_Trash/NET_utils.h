@@ -4,7 +4,7 @@
 
 constexpr inline u32 NET_PacketSizeLimit{8192};
 
-struct NET_Buffer
+struct NET_Buffer final
 {
     BYTE data[NET_PacketSizeLimit];
     u32 count;

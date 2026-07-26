@@ -15,7 +15,7 @@
 #include "space_restrictor.h"
 #include "graph_engine.h"
 
-struct CBorderMergePredicate
+struct CBorderMergePredicate final
 {
     CSpaceRestrictionShape* m_restriction;
 
@@ -31,7 +31,7 @@ struct CBorderMergePredicate
 };
 
 #ifdef DEBUG
-struct CShapeTestPredicate
+struct CShapeTestPredicate final
 {
     CSpaceRestrictionShape* m_restriction;
 

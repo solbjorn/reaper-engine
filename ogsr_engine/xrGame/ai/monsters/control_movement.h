@@ -2,13 +2,13 @@
 
 #include "control_combase.h"
 
-struct SControlMovementData : public ControlCom::IComData
+struct SControlMovementData final : public ControlCom::IComData
 {
     float velocity_target;
     float acc;
 };
 
-class CControlMovement : public CControl_ComPure<SControlMovementData>
+class CControlMovement final : public CControl_ComPure<SControlMovementData>
 {
     RTTI_DECLARE_TYPEINFO(CControlMovement, CControl_ComPure<SControlMovementData>);
 

@@ -23,7 +23,7 @@ typedef CWrapperAbstract2<CAI_Stalker, CPropertyEvaluatorMember> CStalkerPropert
 // CStalkerPropertyEvaluatorDangers
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorDangers : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorDangers final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorDangers, CStalkerPropertyEvaluator);
 
@@ -41,7 +41,7 @@ public:
 // CStalkerPropertyEvaluatorDangerUnknown
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorDangerUnknown : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorDangerUnknown final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorDangerUnknown, CStalkerPropertyEvaluator);
 
@@ -59,7 +59,7 @@ public:
 // CStalkerPropertyEvaluatorDangerInDirection
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorDangerInDirection : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorDangerInDirection final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorDangerInDirection, CStalkerPropertyEvaluator);
 
@@ -77,7 +77,7 @@ public:
 // CStalkerPropertyEvaluatorDangerWithGrenade
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorDangerWithGrenade : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorDangerWithGrenade final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorDangerWithGrenade, CStalkerPropertyEvaluator);
 
@@ -95,7 +95,7 @@ public:
 // CStalkerPropertyEvaluatorDangerBySound
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorDangerBySound : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorDangerBySound final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorDangerBySound, CStalkerPropertyEvaluator);
 
@@ -113,7 +113,7 @@ public:
 // CStalkerPropertyEvaluatorDangerUnknownCoverActual
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorDangerUnknownCoverActual : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorDangerUnknownCoverActual final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorDangerUnknownCoverActual, CStalkerPropertyEvaluator);
 
@@ -134,7 +134,7 @@ public:
 // CStalkerPropertyEvaluatorDangerGrenadeExploded
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorDangerGrenadeExploded : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorDangerGrenadeExploded final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorDangerGrenadeExploded, CStalkerPropertyEvaluator);
 
@@ -152,7 +152,7 @@ public:
 // CStalkerPropertyEvaluatorGrenadeToExplode
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorGrenadeToExplode : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorGrenadeToExplode final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorGrenadeToExplode, CStalkerPropertyEvaluator);
 
@@ -170,7 +170,7 @@ public:
 // CStalkerPropertyEvaluatorEnemyWounded
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorEnemyWounded : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorEnemyWounded final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorEnemyWounded, CStalkerPropertyEvaluator);
 

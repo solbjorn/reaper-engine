@@ -11,7 +11,7 @@ constexpr inline float lt_inc{4.0f};
 constexpr inline float lt_dec{2.0f};
 constexpr inline int lt_hemisamples{26};
 
-class CROS_impl : public IRender_ObjectSpecific
+class CROS_impl final : public IRender_ObjectSpecific
 {
     RTTI_DECLARE_TYPEINFO(CROS_impl, IRender_ObjectSpecific);
 
@@ -27,7 +27,7 @@ public:
         NUM_FACES
     };
 
-    struct Item
+    struct Item final
     {
         u32 frame_touched; // to track creation & removal
         light* source; //
@@ -36,7 +36,7 @@ public:
         float energy; //
     };
 
-    struct Light
+    struct Light final
     {
         light* source;
         float energy;

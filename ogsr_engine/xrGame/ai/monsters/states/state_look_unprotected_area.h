@@ -7,7 +7,7 @@
 #include "level_graph.h"
 
 template <typename _Object>
-class CStateMonsterLookToUnprotectedArea : public CState<_Object>
+class CStateMonsterLookToUnprotectedArea final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterLookToUnprotectedArea<_Object>, CState<_Object>);
 

@@ -7,7 +7,7 @@
 
 #include "../tss.h"
 
-class CBlender_Compile
+class CBlender_Compile final
 {
 public:
     sh_list L_textures;

@@ -5,7 +5,7 @@
 
 class SimulatorStates;
 
-class dx10State
+class dx10State final
 {
     //	Public interface
 public:

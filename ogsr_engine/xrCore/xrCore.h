@@ -127,7 +127,7 @@ DEFINE_VECTOR(shared_str, RStringVec, RStringVecIt);
 #include "intrusive_ptr.h"
 
 // ********************************************** The Core definition
-class xrCore
+class xrCore final
 {
 public:
     string64 ApplicationName;
@@ -144,7 +144,7 @@ public:
     };
 
     Flags64 Features{};
-    struct Feature
+    struct Feature final
     {
         static constexpr u64 equipped_untradable = 1ull << 0, highlight_equipped = 1ull << 1, af_radiation_immunity_mod = 1ull << 2,
                              condition_jump_weight_mod = 1ull << 3, forcibly_equivalent_slots = 1ull << 4, slots_extend_menu = 1ull << 5,

@@ -491,7 +491,7 @@ namespace
 {
 BOOL bRemapped = FALSE;
 
-class CCC_Bind : public IConsole_Command
+class CCC_Bind final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_Bind, IConsole_Command);
 
@@ -574,7 +574,7 @@ public:
     }
 };
 
-class CCC_UnBind : public IConsole_Command
+class CCC_UnBind final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_UnBind, IConsole_Command);
 
@@ -604,7 +604,7 @@ public:
     }
 };
 
-class CCC_ListActions : public IConsole_Command
+class CCC_ListActions final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_ListActions, IConsole_Command);
 
@@ -623,7 +623,7 @@ public:
     }
 };
 
-class CCC_UnBindAll : public IConsole_Command
+class CCC_UnBindAll final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_UnBindAll, IConsole_Command);
 
@@ -651,7 +651,7 @@ public:
     }
 };
 
-class CCC_BindList : public IConsole_Command
+class CCC_BindList final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_BindList, IConsole_Command);
 
@@ -674,7 +674,7 @@ public:
     }
 };
 
-class CCC_BindConsoleCmd : public IConsole_Command
+class CCC_BindConsoleCmd final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_BindConsoleCmd, IConsole_Command);
 
@@ -706,7 +706,7 @@ public:
     void Save(IWriter* F) override { bindConsoleCmds.save(F); }
 };
 
-class CCC_UnBindConsoleCmd : public IConsole_Command
+class CCC_UnBindConsoleCmd final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_UnBindConsoleCmd, IConsole_Command);
 

@@ -5,7 +5,7 @@
 
 class CUIStatic;
 
-class CUICursor : public pureRender
+class CUICursor final : public pureRender
 {
     RTTI_DECLARE_TYPEINFO(CUICursor, pureRender);
 

@@ -4,7 +4,7 @@
 #include "state_data.h"
 
 template <typename _Object>
-class CStateMonsterHideFromPoint : public CState<_Object>
+class CStateMonsterHideFromPoint final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterHideFromPoint<_Object>, CState<_Object>);
 

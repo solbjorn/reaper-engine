@@ -4,7 +4,7 @@
 
 class CMapLocation;
 
-struct SLocationKey
+struct SLocationKey final
 {
     shared_str spot_type;
     CMapLocation* location{};
@@ -22,19 +22,19 @@ struct SLocationKey
 };
 
 template <typename M>
-struct object_loader::default_load<SLocationKey, M>
+struct object_loader::default_load<SLocationKey, M> final
 {
     void operator()(SLocationKey& data, M& stream) const { data.load(stream); }
 };
 
 template <typename M>
-struct object_saver::default_save<SLocationKey, M>
+struct object_saver::default_save<SLocationKey, M> final
 {
     void operator()(const SLocationKey& data, M& stream) const { data.save(stream); }
 };
 
 template <>
-struct object_destroyer::default_destroy<SLocationKey>
+struct object_destroyer::default_destroy<SLocationKey> final
 {
     void operator()(SLocationKey& data) const { data.destroy(); }
 };

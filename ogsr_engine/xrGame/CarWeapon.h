@@ -6,7 +6,7 @@
 
 class CPhysicsShellHolder;
 
-class CCarWeapon : public CShootingObject
+class CCarWeapon final : public CShootingObject
 {
     RTTI_DECLARE_TYPEINFO(CCarWeapon, CShootingObject);
 
@@ -17,8 +17,8 @@ protected:
     void ResetBoneCallbacks();
     void FireStart() override;
     void FireEnd() override;
-    virtual void UpdateFire();
-    virtual void OnShot();
+    void UpdateFire();
+    void OnShot();
     void UpdateBarrelDir();
     [[nodiscard]] const Fvector3& get_CurrentFirePoint() override;
     [[nodiscard]] const Fmatrix& get_ParticlesXFORM() override;

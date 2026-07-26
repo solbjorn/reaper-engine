@@ -14,7 +14,7 @@
 
 class CScriptGameObject;
 
-class CScriptObjectAction : public CScriptAbstractAction
+class CScriptObjectAction final : public CScriptAbstractAction
 {
     RTTI_DECLARE_TYPEINFO(CScriptObjectAction, CScriptAbstractAction);
 

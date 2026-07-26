@@ -7,7 +7,7 @@ class CUICustomMap;
 
 //////////////////////////////////////////////////////////////////////////
 
-class CUIZoneMap : public virtual RTTI::Enable
+class CUIZoneMap final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CUIZoneMap);
 

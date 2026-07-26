@@ -4,7 +4,7 @@
 #include "state_data.h"
 
 template <typename _Object>
-class CStateMonsterCustomAction : public CState<_Object>
+class CStateMonsterCustomAction final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterCustomAction<_Object>, CState<_Object>);
 

@@ -34,7 +34,7 @@ class CPatrolPath;
 class CScriptGameObject;
 class CPatrolPathParams;
 
-class CScriptMovementAction : public CScriptAbstractAction
+class CScriptMovementAction final : public CScriptAbstractAction
 {
     RTTI_DECLARE_TYPEINFO(CScriptMovementAction, CScriptAbstractAction);
 
@@ -89,12 +89,12 @@ public:
 
 public:
     CScriptMovementAction();
-    inline explicit CScriptMovementAction(MonsterSpace::EBodyState tBodyState, MonsterSpace::EMovementType tMovementType, DetailPathManager::EDetailPathType tPathType,
-                                          CScriptGameObject* tpObjectToGo, float fSpeed = 0.f);
+    inline explicit CScriptMovementAction(MonsterSpace::EBodyState tBodyState, MonsterSpace::EMovementType tMovementType,
+                                          DetailPathManager::EDetailPathType tPathType, CScriptGameObject* tpObjectToGo, float fSpeed = 0.f);
     explicit CScriptMovementAction(MonsterSpace::EBodyState tBodyState, MonsterSpace::EMovementType tMovementType, DetailPathManager::EDetailPathType tPathType,
                                    const CPatrolPathParams& tPatrolPathParams, float fSpeed = 0.f);
-    inline explicit CScriptMovementAction(MonsterSpace::EBodyState tBodyState, MonsterSpace::EMovementType tMovementType, DetailPathManager::EDetailPathType tPathType,
-                                          const Fvector& tPosition, float fSpeed = 0.f);
+    inline explicit CScriptMovementAction(MonsterSpace::EBodyState tBodyState, MonsterSpace::EMovementType tMovementType,
+                                          DetailPathManager::EDetailPathType tPathType, const Fvector& tPosition, float fSpeed = 0.f);
     explicit CScriptMovementAction(const Fvector& tPosition, float fSpeed);
     inline explicit CScriptMovementAction(const EInputKeys tInputKeys, float fSpeed = 0.f);
     // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -104,7 +104,8 @@ public:
     explicit CScriptMovementAction(MonsterSpace::EScriptMonsterMoveAction tAct, CPatrolPathParams& tPatrolPathParams, float dist_to_end = -1.f);
     explicit CScriptMovementAction(MonsterSpace::EScriptMonsterMoveAction tAct, CScriptGameObject* tpObjectToGo, float dist_to_end = -1.f);
     explicit CScriptMovementAction(MonsterSpace::EScriptMonsterMoveAction tAct, u32 node_id, Fvector& tPosition, float dist_to_end = -1.f);
-    inline explicit CScriptMovementAction(MonsterSpace::EScriptMonsterMoveAction tAct, Fvector& tPosition, float dist_to_end, MonsterSpace::EScriptMonsterSpeedParam speed_param);
+    inline explicit CScriptMovementAction(MonsterSpace::EScriptMonsterMoveAction tAct, Fvector& tPosition, float dist_to_end,
+                                          MonsterSpace::EScriptMonsterSpeedParam speed_param);
     explicit CScriptMovementAction(MonsterSpace::EScriptMonsterMoveAction tAct, CPatrolPathParams& tPatrolPathParams, float dist_to_end,
                                    MonsterSpace::EScriptMonsterSpeedParam speed_param);
     inline explicit CScriptMovementAction(MonsterSpace::EScriptMonsterMoveAction tAct, CScriptGameObject* tpObjectToGo, float dist_to_end,

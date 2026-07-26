@@ -23,7 +23,7 @@ class CScriptEntity : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CScriptEntity);
 
 public:
-    struct CSavedSound
+    struct CSavedSound final
     {
         CScriptGameObject* m_lua_game_object;
         int m_sound_type;

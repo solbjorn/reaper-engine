@@ -8,7 +8,7 @@ namespace xr
 {
 namespace detail
 {
-struct ImguiWnd
+struct ImguiWnd final
 {
     explicit ImguiWnd(gsl::czstring name, bool* pOpen = nullptr)
     {

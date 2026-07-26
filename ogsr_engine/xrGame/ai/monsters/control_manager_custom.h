@@ -14,7 +14,7 @@ class CControlThreaten;
 class CControlCriticalWound;
 class CEntityAlive;
 
-class CControlManagerCustom : public CControl_ComBase
+class CControlManagerCustom final : public CControl_ComBase
 {
     RTTI_DECLARE_TYPEINFO(CControlManagerCustom, CControl_ComBase);
 

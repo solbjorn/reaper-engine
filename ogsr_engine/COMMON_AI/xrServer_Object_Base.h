@@ -34,7 +34,7 @@ class CSE_ALifeSmartZone;
 class CSE_ALifeOnlineOfflineGroup;
 class CSE_ALifeItemPDA;
 
-class CPureServerObject : public IPureServerObject
+class XR_NOVTABLE CPureServerObject : public IPureServerObject
 {
     RTTI_DECLARE_TYPEINFO(CPureServerObject, IPureServerObject);
 
@@ -43,7 +43,7 @@ public:
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 
-    ~CPureServerObject() override = default;
+    ~CPureServerObject() override = 0;
 
     void load(IReader& tFileStream) override;
     void save(IWriter& tMemoryStream) override;
@@ -51,7 +51,9 @@ public:
     virtual void save(NET_Packet& tNetPacket);
 };
 
-class CSE_Abstract : public ISE_Abstract, public CPureServerObject, public CScriptValueContainer
+inline CPureServerObject::~CPureServerObject() = default;
+
+class XR_NOVTABLE CSE_Abstract : public ISE_Abstract, public CPureServerObject, public CScriptValueContainer
 {
     RTTI_DECLARE_TYPEINFO(CSE_Abstract, ISE_Abstract, CPureServerObject, CScriptValueContainer);
 

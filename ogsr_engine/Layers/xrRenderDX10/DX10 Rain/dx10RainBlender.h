@@ -1,7 +1,7 @@
 #ifndef dx10RainBlender_included
 #define dx10RainBlender_included
 
-class CBlender_rain : public IBlender
+class CBlender_rain final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_rain, IBlender);
 
@@ -13,7 +13,7 @@ public:
     void Compile(CBlender_Compile& C) override;
 };
 
-class CBlender_rain_msaa : public IBlender
+class CBlender_rain_msaa final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_rain_msaa, IBlender);
 
@@ -27,7 +27,7 @@ public:
     [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: DX10 MSAA rain blender"; }
 
     void Compile(CBlender_Compile& C) override;
-    virtual void SetDefine(LPCSTR Name, LPCSTR Definition);
+    void SetDefine(LPCSTR Name, LPCSTR Definition);
 };
 
 #endif //	dx10RainBlender_included

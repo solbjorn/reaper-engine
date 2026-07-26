@@ -5,7 +5,7 @@
 #include "../../../alife_smart_terrain_task.h"
 
 template <typename _Object>
-class CStateMonsterSmartTerrainTask : public CState<_Object>
+class CStateMonsterSmartTerrainTask final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterSmartTerrainTask<_Object>, CState<_Object>);
 

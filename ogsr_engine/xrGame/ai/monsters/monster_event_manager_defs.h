@@ -13,5 +13,5 @@ enum EEventType
     eventVelocityBounce,
 };
 
-class IEventData
+class IEventData final
 {};

@@ -18,7 +18,7 @@
 class CServerEntityWrapper;
 class CGameGraph;
 
-class CALifeSpawnRegistry : public virtual RTTI::Enable
+class CALifeSpawnRegistry final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CALifeSpawnRegistry);
 
@@ -48,8 +48,6 @@ private:
     bool m_separated_graphs{true};
 
 protected:
-    // void							save_updates				(IWriter &stream);
-    // void							load_updates				(IReader &stream);
     void build_story_spawns();
     void build_root_spawns();
     void fill_new_spawns_single(SPAWN_GRAPH::CVertex* vertex, xr_vector<ALife::_SPAWN_ID>& spawns, ALife::_TIME_ID game_time);
@@ -64,8 +62,8 @@ public:
     CALifeSpawnRegistry();
     ~CALifeSpawnRegistry() override;
 
-    virtual void load(IReader& file_stream, xrGUID* save_guid = nullptr);
-    virtual void save(IWriter& memory_stream);
+    void load(IReader& file_stream, xrGUID* save_guid = nullptr);
+    void save(IWriter& memory_stream);
     void load(IReader& file_stream, LPCSTR game_name);
     void load(LPCSTR spawn_name);
     void fill_new_spawns(xr_vector<ALife::_SPAWN_ID>& spawns, ALife::_TIME_ID game_time);
@@ -73,7 +71,6 @@ public:
     IC const SPAWN_GRAPH& spawns() const;
     shared_str const& get_spawn_name() const { return m_spawn_name; }
     IReader* get_spawn_file() const { return m_file; }
-    // IC void assign_artefact_position(CSE_ALifeAnomalousZone* anomaly, CSE_ALifeDynamicObject* object) const;
 
     // Используется только в луа
     ALife::_SPAWN_ID spawn_id(const ALife::_SPAWN_STORY_ID& spawn_story_id) const;

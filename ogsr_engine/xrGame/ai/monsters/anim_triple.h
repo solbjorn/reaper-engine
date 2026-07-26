@@ -17,13 +17,13 @@ enum EStateAnimTriple
 #define TA_EXECUTE_ONCE true
 #define TA_EXECUTE_LOOPED false
 
-struct STripleAnimEventData : public ControlCom::IEventData
+struct STripleAnimEventData final : public ControlCom::IEventData
 {
     u32 m_current_state;
     IC STripleAnimEventData(u32 state) : m_current_state(state) {}
 };
 
-struct SAnimationTripleData : public ControlCom::IComData
+struct SAnimationTripleData final : public ControlCom::IComData
 {
     MotionID pool[3];
     bool skip_prepare;
@@ -31,7 +31,7 @@ struct SAnimationTripleData : public ControlCom::IComData
     u32 capture_type;
 };
 
-class CAnimationTriple : public CControl_ComCustom<SAnimationTripleData>
+class CAnimationTriple final : public CControl_ComCustom<SAnimationTripleData>
 {
     RTTI_DECLARE_TYPEINFO(CAnimationTriple, CControl_ComCustom<SAnimationTripleData>);
 

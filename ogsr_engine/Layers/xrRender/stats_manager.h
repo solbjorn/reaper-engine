@@ -15,7 +15,7 @@ enum enum_stats_buffer_type
     enum_stats_buffer_type_COUNT
 };
 
-class stats_manager
+class stats_manager final
 {
 public:
     ~stats_manager() = default;
@@ -37,7 +37,7 @@ private:
     void decrement_stats(u32 size, enum_stats_buffer_type type, _D3DPOOL location, void* buff_ptr);
 
 #ifdef DEBUG
-    struct stats_item
+    struct stats_item final
     {
         void* buff_ptr;
         u32 size;

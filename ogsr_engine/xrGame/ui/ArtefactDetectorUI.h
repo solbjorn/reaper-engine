@@ -22,7 +22,7 @@ public:
     virtual void update() {}
 };
 
-class CUIDetectorWave : public CUIFrameLineWnd
+class CUIDetectorWave final : public CUIFrameLineWnd
 {
     RTTI_DECLARE_TYPEINFO(CUIDetectorWave, CUIFrameLineWnd);
 
@@ -42,7 +42,7 @@ public:
     void Update() override;
 };
 
-class CUIArtefactDetectorSimple : public CUIArtefactDetectorBase
+class CUIArtefactDetectorSimple final : public CUIArtefactDetectorBase
 {
     RTTI_DECLARE_TYPEINFO(CUIArtefactDetectorSimple, CUIArtefactDetectorBase);
 
@@ -69,7 +69,7 @@ public:
     void construct(CSimpleDetector* p);
 };
 
-class CUIArtefactDetectorElite : public CUIArtefactDetectorBase, public CUIWindow
+class CUIArtefactDetectorElite final : public CUIArtefactDetectorBase, public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIArtefactDetectorElite, CUIArtefactDetectorBase, CUIWindow);
 
@@ -103,7 +103,7 @@ public:
     void RegisterItemToDraw(const Fvector& p, const shared_str& palette_idx);
 };
 
-class CUIArtefactDetectorAdv : public CUIArtefactDetectorBase
+class CUIArtefactDetectorAdv final : public CUIArtefactDetectorBase
 {
     RTTI_DECLARE_TYPEINFO(CUIArtefactDetectorAdv, CUIArtefactDetectorBase);
 

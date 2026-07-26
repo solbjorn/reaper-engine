@@ -487,7 +487,7 @@ bool CAI_Stalker::ready_to_detour()
     return (weapon->GetAmmoElapsed() > weapon->GetAmmoMagSize() / 2);
 }
 
-class ray_query_param
+class ray_query_param final
 {
 public:
     CAI_Stalker* m_holder;

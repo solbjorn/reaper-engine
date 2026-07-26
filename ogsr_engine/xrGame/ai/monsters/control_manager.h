@@ -16,7 +16,7 @@ namespace debug { class text_tree; }
 class CBaseMonster;
 class CControl_Com;
 
-class CControl_Manager
+class CControl_Manager final
 {
     CBaseMonster* m_object;
     xr_vector<CObject*> m_nearest;

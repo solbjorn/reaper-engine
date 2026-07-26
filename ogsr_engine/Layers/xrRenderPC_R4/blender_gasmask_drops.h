@@ -1,6 +1,6 @@
 #pragma once
 
-class CBlender_gasmask_drops : public IBlender
+class CBlender_gasmask_drops final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_gasmask_drops, IBlender);
 

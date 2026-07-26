@@ -19,7 +19,7 @@ static_assert(offsetof(str_value, value) == sizeof(str_value));
 
 //////////////////////////////////////////////////////////////////////////
 
-class str_container
+class str_container final
 {
 public:
     [[nodiscard]] static str_value* dock(std::string_view value);
@@ -32,7 +32,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 
-class shared_str
+class shared_str final
 {
 private:
     str_value* p_{};

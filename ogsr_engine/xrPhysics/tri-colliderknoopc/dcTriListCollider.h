@@ -16,7 +16,7 @@ enum
     fl_engaged_s2 = 1 << 5,
 };
 
-class dcTriListCollider
+class dcTriListCollider final
 {
     dxGeom* Geometry; // The geom object
     dxTriList* GeomData; // Buffered pointer to classdata

@@ -10,7 +10,7 @@ class CUICharacterInfo;
 class CUIScrollView;
 class CUIXml;
 
-class CUIActorInfoWnd : public CUIWindow
+class CUIActorInfoWnd final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIActorInfoWnd, CUIWindow);
 
@@ -20,7 +20,7 @@ public:
     CUIActorInfoWnd();
     ~CUIActorInfoWnd() override = default;
 
-    virtual void Init();
+    void Init();
     void Show(bool status) override;
     [[nodiscard]] CUIScrollView& DetailList() { return *UIDetailList; }
     [[nodiscard]] CUIScrollView& MasterList() { return *UIMasterList; }
@@ -44,7 +44,7 @@ protected:
     void FillMasterPart(CUIXml* xml, const shared_str& key_name);
 };
 
-class CUIActorStaticticHeader : public CUIWindow, public CUISelectable
+class CUIActorStaticticHeader final : public CUIWindow, public CUISelectable
 {
     RTTI_DECLARE_TYPEINFO(CUIActorStaticticHeader, CUIWindow, CUISelectable);
 
@@ -69,7 +69,7 @@ public:
     shared_str m_id;
 };
 
-class CUIActorStaticticDetail : public CUIWindow
+class CUIActorStaticticDetail final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIActorStaticticDetail, CUIWindow);
 

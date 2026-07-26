@@ -16,7 +16,7 @@
 #include "space_restriction_base.h"
 
 template <bool a>
-struct CMergeInOutPredicate
+struct CMergeInOutPredicate final
 {
     SpaceRestrictionHolder::CBaseRestrictionPtr m_out;
     SpaceRestrictionHolder::CBaseRestrictionPtr m_in;
@@ -35,7 +35,7 @@ struct CMergeInOutPredicate
     }
 };
 
-struct CRemoveMergedFreeInRestrictions
+struct CRemoveMergedFreeInRestrictions final
 {
     CSpaceRestriction::RESTRICTIONS* m_restrictions;
 

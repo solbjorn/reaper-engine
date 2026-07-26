@@ -1,7 +1,7 @@
 #ifndef TRAJECTORIES_H
 #define TRAJECTORIES_H
 
-struct trajectory_pick
+struct trajectory_pick final
 {
     Fvector center;
     Fvector z_axis;

@@ -18,7 +18,7 @@ class CUIMessageBox;
 class IInventoryBox;
 class CInventoryOwner;
 
-class CUIGameSP : public CUIGameCustom
+class CUIGameSP final : public CUIGameCustom
 {
     RTTI_DECLARE_TYPEINFO(CUIGameSP, CUIGameCustom);
 
@@ -54,7 +54,7 @@ public:
     void ShowHidePda(const bool show);
 };
 
-class CChangeLevelWnd : public CUIDialogWnd
+class CChangeLevelWnd final : public CUIDialogWnd
 {
     RTTI_DECLARE_TYPEINFO(CChangeLevelWnd, CUIDialogWnd);
 

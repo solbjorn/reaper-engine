@@ -40,7 +40,7 @@ enum init_mode
     im_count
 }; // init_mode
 
-class line_edit_control
+class line_edit_control final
 {
 private:
     typedef text_editor::base Base;

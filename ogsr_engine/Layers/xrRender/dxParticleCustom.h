@@ -8,7 +8,7 @@
 
 //---------------------------------------------------------------------------
 
-class dxParticleCustom : public dxRender_Visual, public IParticleCustom
+class XR_NOVTABLE dxParticleCustom : public dxRender_Visual, public IParticleCustom
 {
     RTTI_DECLARE_TYPEINFO(dxParticleCustom, dxRender_Visual, IParticleCustom);
 

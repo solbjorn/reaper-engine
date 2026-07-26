@@ -14,7 +14,7 @@ struct dContact;
 
 DEFINE_VECTOR(CEntityAlive*, ALIVE_LIST, ALIVE_LIST_it);
 
-class CBastArtefact : public CArtefact, public Feel::Touch
+class CBastArtefact final : public CArtefact, public Feel::Touch
 {
     RTTI_DECLARE_TYPEINFO(CBastArtefact, CArtefact, Feel::Touch);
 

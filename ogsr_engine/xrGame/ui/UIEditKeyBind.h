@@ -7,7 +7,7 @@ class CUIColorAnimatorWrapper;
 struct _action;
 struct _keyboard;
 
-class CUIEditKeyBind : public CUILabel, public CUIOptionsItem
+class CUIEditKeyBind final : public CUILabel, public CUIOptionsItem
 {
     RTTI_DECLARE_TYPEINFO(CUIEditKeyBind, CUILabel, CUIOptionsItem);
 

@@ -407,7 +407,7 @@ void CActor::Load(LPCSTR section)
 
 void CActor::PHHit(SHit& H) { m_pPhysics_support->in_Hit(H, !g_Alive()); }
 
-struct playing_pred
+struct playing_pred final
 {
     IC bool operator()(ref_sound& s) { return !!s._feedback(); }
 };

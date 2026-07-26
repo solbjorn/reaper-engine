@@ -28,7 +28,7 @@ struct animation_id_predicate
     }
 };
 
-struct animation_stats
+struct animation_stats final
 {
     //	shared_str	m_visual_id;
     u32 m_frame_count;
@@ -79,7 +79,7 @@ void show_animations()
     for (; I != E; ++I, ++i)
         *i = (const ANIMATION_STATS_PAIR*)&(*I).first;
 
-    struct predicate
+    struct predicate final
     {
         static IC bool frame_count(const ANIMATION_STATS_PAIR* const& _1, const ANIMATION_STATS_PAIR* const& _2)
         {
@@ -106,7 +106,7 @@ void show_blends()
     for (; I != E; ++I, ++i)
         *i = (const BLEND_STATS_PAIR*)&(*I).first;
 
-    struct predicate
+    struct predicate final
     {
         static IC bool blend_count(const BLEND_STATS_PAIR* const& _1, const BLEND_STATS_PAIR* const& _2) { return (_1->second < _2->second); }
     };

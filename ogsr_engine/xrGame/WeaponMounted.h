@@ -8,7 +8,7 @@
 #include "WeaponAmmo.h"
 #include "PhysicsShellHolder.h"
 
-class CWeaponMounted : public CPhysicsShellHolder, public CHolderCustom, public CShootingObject
+class CWeaponMounted final : public CPhysicsShellHolder, public CHolderCustom, public CShootingObject
 {
     RTTI_DECLARE_TYPEINFO(CWeaponMounted, CPhysicsShellHolder, CHolderCustom, CShootingObject);
 
@@ -45,8 +45,8 @@ public:
 protected:
     void FireStart() override;
     void FireEnd() override;
-    virtual void UpdateFire();
-    virtual void OnShot();
+    void UpdateFire();
+    void OnShot();
     void AddShotEffector();
     void RemoveShotEffector();
 

@@ -8,7 +8,7 @@
 #include "Tracer.h"
 
 // структура, описывающая пулю и ее свойства в полете
-struct SBullet
+struct SBullet final
 {
     u32 frame_num; // номер кадра на котором была запущена пуля
     union
@@ -84,7 +84,7 @@ public:
 
 class CLevel;
 
-class CBulletManager : public virtual RTTI::Enable
+class CBulletManager final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CBulletManager);
 
@@ -192,7 +192,7 @@ public:
     void Render();
 };
 
-struct bullet_test_callback_data
+struct bullet_test_callback_data final
 {
     SBullet* pBullet;
     bool bStopTracing;

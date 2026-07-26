@@ -11,7 +11,7 @@
 #include "space_restrictor.h"
 #include "script_export_space.h"
 
-class CSmartZone : public CSpaceRestrictor
+class CSmartZone final : public CSpaceRestrictor
 {
     RTTI_DECLARE_TYPEINFO(CSmartZone, CSpaceRestrictor);
 

@@ -2,11 +2,11 @@
 
 #ifdef DEBUG
 
-class CLevelDebug
+class CLevelDebug final
 {
 public:
     template <typename T>
-    class CItemBase
+    class CItemBase final
     {
         xr_vector<T> m_data;
         typedef typename xr_vector<T>::iterator ITEM_STORAGE_VEC_IT;
@@ -18,14 +18,14 @@ public:
             bool operator()(const T& item) { return (item.text == text); }
         };
 
-        struct remove_id_pred
+        struct remove_id_pred final
         {
             u32 id;
             remove_id_pred(u32 i) : id(i) {}
             bool operator()(const T& item) { return (item.id == id); }
         };
 
-        struct sort_id_pred
+        struct sort_id_pred final
         {
             bool operator()(const T& item1, const T& item2) { return (item1.id < item2.id); }
         };
@@ -65,7 +65,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////
 
-    struct SInfoItem
+    struct SInfoItem final
     {
         shared_str text;
         u32 color;
@@ -74,7 +74,7 @@ public:
         SInfoItem(LPCSTR str, u32 col, u32 i) : text(str), color(col), id(i) {}
     };
 
-    class CObjectInfo : public CItemBase<SInfoItem>
+    class CObjectInfo final : public CItemBase<SInfoItem>
     {
         typedef CItemBase<SInfoItem> inherited;
 
@@ -101,7 +101,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////
 
-    struct STextItem
+    struct STextItem final
     {
         shared_str text;
 
@@ -114,7 +114,7 @@ public:
         STextItem(LPCSTR str, float coord_x, float coord_y, u32 col, u32 i) : text(str), x(coord_x), y(coord_y), color(col), id(i) {}
     };
 
-    class CTextInfo : public CItemBase<STextItem>
+    class CTextInfo final : public CItemBase<STextItem>
     {
         typedef CItemBase<STextItem> inherited;
 
@@ -125,7 +125,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////
 
-    struct SLevelItem
+    struct SLevelItem final
     {
         Fvector position1;
         Fvector position2;
@@ -169,7 +169,7 @@ public:
         }
     };
 
-    class CLevelInfo : public CItemBase<SLevelItem>
+    class CLevelInfo final : public CItemBase<SLevelItem>
     {
         typedef CItemBase<SLevelItem> inherited;
 
@@ -222,7 +222,7 @@ private:
     CLevelInfo& level_info(void* class_ptr, LPCSTR class_name);
 
 private:
-    struct SKey
+    struct SKey final
     {
         void* class_ptr;
         LPCSTR class_name;

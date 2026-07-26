@@ -24,7 +24,7 @@ public:
     ~CLinearRegistryType() override = default;
 };
 
-class CALifeRegistryContainer : public CLinearRegistryType<registry_type_list>
+class CALifeRegistryContainer final : public CLinearRegistryType<registry_type_list>
 {
     RTTI_DECLARE_TYPEINFO(CALifeRegistryContainer, CLinearRegistryType<registry_type_list>);
 

@@ -3,7 +3,7 @@
 #include "CameraEffector.h"
 #include "../xr_3da/CameraManager.h"
 
-class CEffectorBobbing : public CEffectorCam
+class CEffectorBobbing final : public CEffectorCam
 {
     RTTI_DECLARE_TYPEINFO(CEffectorBobbing, CEffectorCam);
 

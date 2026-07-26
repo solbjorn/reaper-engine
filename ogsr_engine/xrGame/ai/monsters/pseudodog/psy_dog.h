@@ -6,7 +6,7 @@
 class CPsyDogAura;
 class CPsyDogPhantom;
 
-class CPsyDog : public CAI_PseudoDog
+class CPsyDog final : public CAI_PseudoDog
 {
     RTTI_DECLARE_TYPEINFO(CPsyDog, CAI_PseudoDog);
 
@@ -71,7 +71,7 @@ add_to_type_list(CPsyDog);
 // Phantom Psy Dog
 //////////////////////////////////////////////////////////////////////////
 
-class CPsyDogPhantom : public CAI_PseudoDog
+class CPsyDogPhantom final : public CAI_PseudoDog
 {
     RTTI_DECLARE_TYPEINFO(CPsyDogPhantom, CAI_PseudoDog);
 

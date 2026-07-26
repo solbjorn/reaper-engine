@@ -3,7 +3,7 @@
 
 class CBackend;
 
-class R_tree
+class R_tree final
 {
 public:
     R_constant* c_m_xform_v;

@@ -11,7 +11,7 @@
 #include "movement_manager.h"
 #include "level_path_manager.h"
 
-class CLevelPathBuilder
+class CLevelPathBuilder final
 {
 private:
     CMovementManager* m_object;

@@ -4,7 +4,7 @@
 #include "WeaponShotgun.h"
 #include "script_export_space.h"
 
-class CWeaponRG6 : public CRocketLauncher, public CWeaponShotgun
+class CWeaponRG6 final : public CRocketLauncher, public CWeaponShotgun
 {
     RTTI_DECLARE_TYPEINFO(CWeaponRG6, CRocketLauncher, CWeaponShotgun);
 
@@ -21,7 +21,7 @@ public:
 
 protected:
     void FireTrace(const Fvector3& P, const Fvector3& D) override;
-    virtual void LaunchGrenade(const Fvector& P, const Fvector& D);
+    void LaunchGrenade(const Fvector& P, const Fvector& D);
     [[nodiscard]] u8 AddCartridge(u8 cnt) override;
 
     [[nodiscard]] size_t GetWeaponTypeForCollision() const override { return RG_6; }

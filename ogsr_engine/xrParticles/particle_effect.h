@@ -3,7 +3,7 @@
 namespace PAPI
 {
 // A effect of particles - Info and an array of Particles
-struct ParticleEffect
+struct ParticleEffect final
 {
     Particle* particles; // Actually, num_particles in size
     OnBirthParticleCB b_cb{};

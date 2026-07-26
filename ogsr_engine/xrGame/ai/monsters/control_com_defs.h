@@ -40,6 +40,7 @@ enum EControlType : u32
 
 struct IComData
 {};
+
 struct IEventData
 {};
 

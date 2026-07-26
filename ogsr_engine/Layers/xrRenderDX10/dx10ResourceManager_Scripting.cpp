@@ -13,7 +13,7 @@
 namespace
 {
 // wrapper
-class adopt_dx10sampler
+class adopt_dx10sampler final
 {
     CBlender_Compile* m_pC;
     u32 m_SI; //	Sampler index
@@ -59,7 +59,7 @@ public:
     //{ if (C) C->i_Filter_Mag(stage,D3DTEXF_LINEAR);										return *this;	}
 };
 /*
-class	adopt_dx10texture
+class adopt_dx10texture final
 {
     CBlender_Compile*		m_pC;
     u32						m_TI;	//	Sampler index
@@ -70,7 +70,7 @@ public:
 */
 
 // wrapper
-class adopt_compiler
+class adopt_compiler final
 {
     CBlender_Compile* C;
     bool& m_bFirstPass;
@@ -231,7 +231,7 @@ void lua_panic(s32 code)
     return data;
 }
 
-class lua_scoped_handler
+class lua_scoped_handler final
 {
 private:
     decltype(std::declval<xrDebug>().get_lua_panic()) old_panic{nullptr};

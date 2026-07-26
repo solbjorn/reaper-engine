@@ -4,7 +4,7 @@
 #include "../../../ai_debug.h"
 
 template <typename _Object>
-class CStateMonsterRestFun : public CState<_Object>
+class CStateMonsterRestFun final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterRestFun<_Object>, CState<_Object>);
 

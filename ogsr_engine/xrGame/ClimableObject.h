@@ -7,7 +7,7 @@ class CPHCharacter;
 struct dContact;
 struct SGameMtl;
 
-class CClimableObject : public CPhysicsShellHolder
+class CClimableObject final : public CPhysicsShellHolder
 {
     RTTI_DECLARE_TYPEINFO(CClimableObject, CPhysicsShellHolder);
 
@@ -32,7 +32,7 @@ public:
     void Center(Fvector& C) const override;
     [[nodiscard]] f32 Radius() const override;
 
-    virtual void OnRender();
+    void OnRender();
 
 protected:
     [[nodiscard]] BOOL UsedAI_Locations() override;

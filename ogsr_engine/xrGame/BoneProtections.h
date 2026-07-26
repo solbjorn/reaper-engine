@@ -1,8 +1,8 @@
 #pragma once
 
-struct SBoneProtections
+struct SBoneProtections final
 {
-    struct BoneProtection
+    struct BoneProtection final
     {
         float koeff;
         float armour;

@@ -15,7 +15,7 @@ enum XRDX10RENDERSTATETYPE
     XRDX10RS_ALPHATOCOVERAGE = 1024
 };
 
-class CSimulatorTSS
+class CSimulatorTSS final
 {
 public:
     IC void Set(SimulatorStates& container, u32 S, u32 N, u32 V) { container.set_TSS(S, N, V); }
@@ -59,7 +59,7 @@ public:
     }
 };
 
-class CSimulatorRS
+class CSimulatorRS final
 {
 public:
     IC void Set(SimulatorStates& container, u32 N, u32 V)
@@ -69,7 +69,7 @@ public:
     }
 };
 
-class CSimulator
+class CSimulator final
 {
 public:
     CSimulatorTSS TSS;

@@ -67,7 +67,7 @@ typedef struct tagSoundElement
     }
 } SoundElem;
 
-class CMonsterSoundMemory : public virtual RTTI::Enable
+class CMonsterSoundMemory final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CMonsterSoundMemory);
 

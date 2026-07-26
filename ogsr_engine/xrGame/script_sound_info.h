@@ -4,7 +4,7 @@
 
 class CScriptGameObject;
 
-class CScriptSoundInfo
+class CScriptSoundInfo final
 {
 public:
     CScriptGameObject* who{};

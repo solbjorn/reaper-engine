@@ -25,7 +25,7 @@ class dxRender_Visual;
 struct light_ctx;
 
 // definition
-class CRender : public IRender_interface, public dxRenderDeviceRender
+class CRender final : public IRender_interface, public dxRenderDeviceRender
 {
     RTTI_DECLARE_TYPEINFO(CRender, IRender_interface, dxRenderDeviceRender);
 
@@ -36,7 +36,7 @@ public:
         PHASE_SMAP = 1, // E[1]
     };
 
-    struct _options
+    struct _options final
     {
         static constexpr bool ssfx_branches = true;
         static constexpr bool ssfx_blood = true;
@@ -62,7 +62,7 @@ public:
 
         u32 dx11_enable_tessellation : 1;
     } o;
-    struct _stats
+    struct _stats final
     {
         u32 l_total, l_visible;
         u32 l_shadowed, l_unshadowed;
@@ -182,17 +182,17 @@ public:
     void add_Visual(u32 context_id, IRenderable* root, IRenderVisual* V, Fmatrix& m) override;
 
     // wallmarks
-    virtual void add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
+    void add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
     void add_StaticWallmark(IWallMarkArray* pArray, const Fvector3& P, f32 s, CDB::TRI* T, Fvector3* V) override;
     void add_StaticWallmark(const wm_shader& S, const Fvector3& P, f32 s, CDB::TRI* T, Fvector3* V) override;
     void clear_static_wallmarks() override;
-    virtual void add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm);
-    virtual void add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size);
+    void add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm);
+    void add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size);
     void add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector3& start, const Fvector3& dir, f32 size) override;
 
     //
-    virtual IBlenderXr* blender_create(CLASS_ID cls);
-    virtual void blender_destroy(IBlenderXr*&);
+    [[nodiscard]] IBlenderXr* blender_create(CLASS_ID cls);
+    void blender_destroy(IBlenderXr*&);
 
     //
     [[nodiscard]] IRender_ObjectSpecific* ros_create() override;
@@ -204,12 +204,12 @@ public:
 
     // Models
     [[nodiscard]] IRenderVisual* model_CreateParticles(gsl::czstring name) override;
-    virtual IRender_DetailModel* model_CreateDM(IReader* F);
+    [[nodiscard]] IRender_DetailModel* model_CreateDM(IReader* F);
     [[nodiscard]] IRenderVisual* model_Create(gsl::czstring name, IReader* data = nullptr) override;
     [[nodiscard]] IRenderVisual* model_CreateChild(gsl::czstring name, IReader* data) override;
     [[nodiscard]] IRenderVisual* model_Duplicate(IRenderVisual* V) override;
     void model_Delete(IRenderVisual*& V, BOOL bDiscard) override;
-    virtual void model_Delete(IRender_DetailModel*& F);
+    void model_Delete(IRender_DetailModel*& F);
     void model_Logging(BOOL bEnable) override { Models->Logging(bEnable); }
     void models_Prefetch() override;
     void models_Clear(BOOL b_complete) override;

@@ -12,7 +12,7 @@
 #include "alife_update_manager.h"
 #include "script_export_space.h"
 
-class CALifeSimulator : public CALifeUpdateManager, public CALifeInteractionManager
+class CALifeSimulator final : public CALifeUpdateManager, public CALifeInteractionManager
 {
     RTTI_DECLARE_TYPEINFO(CALifeSimulator, CALifeUpdateManager, CALifeInteractionManager);
 

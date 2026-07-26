@@ -10,7 +10,7 @@
 
 #include "../Include/xrRender/DebugRender.h"
 
-class CDebugRenderer
+class CDebugRenderer final
 {
 private:
     void add_lines(Fvector const* vertices, u32 const& vertex_count, u16 const* pairs, u32 const& pair_count, u32 const& color, bool hud_mode);
@@ -20,7 +20,8 @@ public:
 
 public:
     inline void draw_line(const Fmatrix&, const Fvector& vertex0, const Fvector& vertex1, const u32& color, bool hud_mode = false);
-    IC void draw_aabb(const Fvector& center, const float& half_radius_x, const float& half_radius_y, const float& half_radius_z, const u32& color, bool hud_mode = false);
+    IC void draw_aabb(const Fvector& center, const float& half_radius_x, const float& half_radius_y, const float& half_radius_z, const u32& color,
+                      bool hud_mode = false);
     void draw_obb(const Fmatrix& matrix, const u32& color, bool hud_mode = false);
     void draw_obb(const Fmatrix& matrix, const Fvector& half_size, const u32& color, bool hud_mode = false);
     void draw_ellipse(const Fmatrix& matrix, const u32& color, bool hud_mode = false);

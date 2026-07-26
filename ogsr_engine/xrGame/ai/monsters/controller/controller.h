@@ -11,7 +11,7 @@ class SndShockEffector;
 class CControllerPsyHit;
 class CControllerAura;
 
-class CController : public CBaseMonster, public CControlledActor
+class CController final : public CBaseMonster, public CControlledActor
 {
     RTTI_DECLARE_TYPEINFO(CController, CBaseMonster, CControlledActor);
 

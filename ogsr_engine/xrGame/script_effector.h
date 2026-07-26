@@ -12,7 +12,7 @@
 #include "script_export_space.h"
 #include "../xr_3da/CameraManager.h"
 
-class CScriptEffector : public CEffectorPP
+class CScriptEffector final : public CEffectorPP
 {
     RTTI_DECLARE_TYPEINFO(CScriptEffector, CEffectorPP);
 
@@ -34,8 +34,8 @@ public:
     ~CScriptEffector() override = default;
 
     [[nodiscard]] BOOL Process(SPPInfo& pp) override;
-    virtual void Add();
-    virtual void Remove();
+    void Add();
+    void Remove();
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

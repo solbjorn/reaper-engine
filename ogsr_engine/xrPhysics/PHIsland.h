@@ -11,7 +11,7 @@ XR_DIAG_POP();
 
 #include "PhysicsCommon.h"
 
-class CPHIslandFlags
+class CPHIslandFlags final
 {
     static const int base = 8;
     static const int shift_to_variable = base / 2;
@@ -48,7 +48,7 @@ public:
     IC void unmerge() { flags.flags = ((flags.flags & mask_static) << shift_to_variable) | (flags.flags & mask_static); }
 };
 
-class CPHIsland : public dxWorld
+class CPHIsland final : public dxWorld
 {
     // bool						b_active				;
     CPHIslandFlags m_flags;

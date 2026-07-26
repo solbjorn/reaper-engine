@@ -17,7 +17,7 @@
 class CRestrictedObject;
 class CGameObject;
 
-struct CExtrapolateCallback
+struct CExtrapolateCallback final
 {
     sol::function m_callback;
     sol::object m_object;
@@ -34,7 +34,7 @@ struct CExtrapolateCallback
     }
 };
 
-class CPatrolPathManager : public virtual RTTI::Enable
+class CPatrolPathManager final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CPatrolPathManager);
 
@@ -67,7 +67,7 @@ public:
     inline explicit CPatrolPathManager(CRestrictedObject* object, CGameObject* game_object);
     ~CPatrolPathManager() override;
 
-    virtual void reinit();
+    void reinit();
     inline CExtrapolateCallback& extrapolate_callback();
     inline const CExtrapolateCallback& extrapolate_callback() const;
     IC void make_inactual();

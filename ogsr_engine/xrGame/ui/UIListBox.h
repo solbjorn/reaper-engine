@@ -4,7 +4,7 @@
 
 class CUIListBoxItem;
 
-class CUIListBox : public CUIScrollView, public IUIFontControl
+class CUIListBox final : public CUIScrollView, public IUIFontControl
 {
     RTTI_DECLARE_TYPEINFO(CUIListBox, CUIScrollView, IUIFontControl);
 

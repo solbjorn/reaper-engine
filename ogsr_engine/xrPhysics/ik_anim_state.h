@@ -4,7 +4,7 @@ class CBlend;
 class motion_marks;
 class IKinematicsAnimated;
 
-class ik_anim_state
+class ik_anim_state final
 {
     const CBlend* current_blend{};
     bool is_step{};

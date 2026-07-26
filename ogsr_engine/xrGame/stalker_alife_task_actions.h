@@ -16,7 +16,7 @@ class CAI_Trader;
 // CStalkerActionSolveZonePuzzle
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionSolveZonePuzzle : public CStalkerActionBase
+class CStalkerActionSolveZonePuzzle final : public CStalkerActionBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionSolveZonePuzzle, CStalkerActionBase);
 
@@ -39,7 +39,7 @@ public:
 // CStalkerActionSmartTerrain
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionSmartTerrain : public CStalkerActionBase
+class CStalkerActionSmartTerrain final : public CStalkerActionBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionSmartTerrain, CStalkerActionBase);
 

@@ -1,6 +1,6 @@
 #pragma once
 
-class CBlender_dof : public IBlender
+class CBlender_dof final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_dof, IBlender);
 

@@ -8,7 +8,7 @@ class CGameTask;
 class CMapLocation;
 class SGameTaskObjective;
 
-class CGameTaskManager
+class CGameTaskManager final
 {
     CGameTaskWrapper* m_gametasks;
 

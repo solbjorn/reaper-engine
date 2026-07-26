@@ -13,7 +13,7 @@
 
 class CSE_ALifeCreatureActor;
 
-class CALifeGraphRegistry : public virtual RTTI::Enable
+class CALifeGraphRegistry final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CALifeGraphRegistry);
 

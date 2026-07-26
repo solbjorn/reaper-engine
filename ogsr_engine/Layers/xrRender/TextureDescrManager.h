@@ -5,9 +5,9 @@
 
 class cl_dt_scaler;
 
-class CTextureDescrMngr
+class CTextureDescrMngr final
 {
-    struct texture_assoc
+    struct texture_assoc final
     {
         shared_str detail_name;
         xr::bitset<2> usage;
@@ -18,13 +18,15 @@ class CTextureDescrMngr
             flBumpDetail
         };
     };
-    struct texture_spec
+
+    struct texture_spec final
     {
         shared_str m_bump_name;
         float m_material;
         bool m_use_steep_parallax{false};
     };
-    struct texture_desc
+
+    struct texture_desc final
     {
         texture_assoc* m_assoc{};
         texture_spec* m_spec{};

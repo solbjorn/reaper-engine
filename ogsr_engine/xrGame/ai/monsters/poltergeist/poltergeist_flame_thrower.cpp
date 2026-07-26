@@ -147,7 +147,7 @@ void CPolterFlame::select_state(SFlameElement* elem, EFlameState state)
     }
 }
 
-struct remove_predicate
+struct remove_predicate final
 {
     bool operator()(CPolterFlame::SFlameElement* element) { return (!element); }
 };

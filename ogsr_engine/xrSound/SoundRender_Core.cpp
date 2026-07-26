@@ -204,7 +204,7 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
     XR_ASSERT(I->find_chunk(0) > 0);
     XR_ASSERT(I->r_u32() == 0, "invalid SOM version");
 
-    struct SOM_poly
+    struct SOM_poly final
     {
         Fvector3 v1;
         Fvector3 v2;

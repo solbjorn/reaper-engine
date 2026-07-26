@@ -4,7 +4,7 @@
 
 class CIKLimb;
 
-struct SCalculateData
+struct SCalculateData final
 {
     float const* m_angles{};
     CIKLimb* m_limb{};

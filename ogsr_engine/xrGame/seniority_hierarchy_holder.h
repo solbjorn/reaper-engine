@@ -12,7 +12,7 @@
 
 class CTeamHierarchyHolder;
 
-class CSeniorityHierarchyHolder : public virtual RTTI::Enable
+class CSeniorityHierarchyHolder final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CSeniorityHierarchyHolder);
 

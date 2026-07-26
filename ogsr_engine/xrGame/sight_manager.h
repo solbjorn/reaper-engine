@@ -18,7 +18,7 @@ class CVertex;
 
 class CAI_Stalker;
 
-class CSightManager : public CSetupManager<CSightControlAction, CAI_Stalker, u32>
+class CSightManager final : public CSetupManager<CSightControlAction, CAI_Stalker, u32>
 {
     RTTI_DECLARE_TYPEINFO(CSightManager, CSetupManager<CSightControlAction, CAI_Stalker, u32>);
 
@@ -35,9 +35,9 @@ public:
     explicit CSightManager(CAI_Stalker* object);
     ~CSightManager() override;
 
-    virtual void Load(gsl::czstring);
+    void Load(gsl::czstring);
     void reinit() override;
-    virtual void reload(gsl::czstring section);
+    void reload(gsl::czstring section);
     void remove_links(CObject* object);
     void Exec_Look(float dt);
     bool bfIf_I_SeePosition(Fvector tPosition) const;

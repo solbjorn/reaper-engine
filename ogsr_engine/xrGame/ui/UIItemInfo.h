@@ -10,7 +10,7 @@ class CUIWpnParams;
 class CUIArtefactParams;
 class CPhysicsShellHolder;
 
-class CUIItemInfo : public CUIWindow
+class CUIItemInfo final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIItemInfo, CUIWindow);
 

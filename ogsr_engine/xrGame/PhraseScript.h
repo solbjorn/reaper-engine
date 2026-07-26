@@ -12,7 +12,7 @@ class CGameObject;
 class CInventoryOwner;
 class CUIXml;
 
-class CPhraseScript : public virtual RTTI::Enable
+class CPhraseScript final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CPhraseScript);
 
@@ -21,20 +21,21 @@ public:
     ~CPhraseScript() override;
 
     // загрузка из XML файла
-    virtual void Load(CUIXml* ui_xml, pugi::xml_node phrase_node);
+    void Load(CUIXml* ui_xml, pugi::xml_node phrase_node);
 
     // вызов с одним параметром (info_portion)
-    [[nodiscard]] virtual bool Precondition(const CGameObject* pSpeaker, LPCSTR dialog_id, LPCSTR phrase_id) const;
-    virtual void Action(const CGameObject* pSpeaker, LPCSTR dialog_id, LPCSTR) const;
+    [[nodiscard]] bool Precondition(const CGameObject* pSpeaker, LPCSTR dialog_id, LPCSTR phrase_id) const;
+    void Action(const CGameObject* pSpeaker, LPCSTR dialog_id, LPCSTR) const;
     // вызов с двумя параметрами (dialog, phrase)
-    [[nodiscard]] virtual bool Precondition(const CGameObject* pSpeaker1, const CGameObject* pSpeaker2, LPCSTR dialog_id, LPCSTR phrase_id, LPCSTR next_phrase_id) const;
-    virtual void Action(const CGameObject* pSpeaker1, const CGameObject* pSpeaker2, LPCSTR dialog_id, LPCSTR phrase_id) const;
+    [[nodiscard]] bool Precondition(const CGameObject* pSpeaker1, const CGameObject* pSpeaker2, LPCSTR dialog_id, LPCSTR phrase_id,
+                                    LPCSTR next_phrase_id) const;
+    void Action(const CGameObject* pSpeaker1, const CGameObject* pSpeaker2, LPCSTR dialog_id, LPCSTR phrase_id) const;
 
     DEFINE_VECTOR(shared_str, PRECONDITION_VECTOR, PRECONDITION_VECTOR_IT);
-    [[nodiscard]] virtual const PRECONDITION_VECTOR& Preconditions() const { return m_Preconditions; }
+    [[nodiscard]] const PRECONDITION_VECTOR& Preconditions() const { return m_Preconditions; }
 
     DEFINE_VECTOR(shared_str, ACTION_NAME_VECTOR, ACTION_NAME_VECTOR_IT);
-    [[nodiscard]] virtual const ACTION_NAME_VECTOR& Actions() const { return m_ScriptActions; }
+    [[nodiscard]] const ACTION_NAME_VECTOR& Actions() const { return m_ScriptActions; }
 
     void AddPrecondition(LPCSTR str);
     void AddAction(LPCSTR str);
@@ -43,7 +44,8 @@ public:
     void AddGiveInfo(LPCSTR str);
     void AddDisableInfo(LPCSTR str);
     void SetScriptText(LPCSTR str) { m_sScriptTextFunc._set(str); }
-    [[nodiscard]] LPCSTR GetScriptText(LPCSTR str_to_translate, const CGameObject* pSpeakerGO1, const CGameObject* pSpeakerGO2, LPCSTR dialog_id, LPCSTR phrase_id);
+    [[nodiscard]] LPCSTR GetScriptText(LPCSTR str_to_translate, const CGameObject* pSpeakerGO1, const CGameObject* pSpeakerGO2, LPCSTR dialog_id,
+                                       LPCSTR phrase_id);
 
 protected:
     // загрузка содержания последовательности тагов в контейнер строк
@@ -51,8 +53,8 @@ protected:
     void LoadSequence(CUIXml* ui_xml, pugi::xml_node phrase_node, LPCSTR tag, T& str_vector);
 
     // манипуляции с информацией во время вызовов Precondition и Action
-    [[nodiscard]] virtual bool CheckInfo(const CInventoryOwner* pOwner) const;
-    virtual void TransferInfo(const CInventoryOwner* pOwner) const;
+    [[nodiscard]] bool CheckInfo(const CInventoryOwner* pOwner) const;
+    void TransferInfo(const CInventoryOwner* pOwner) const;
 
     shared_str m_sScriptTextFunc;
 

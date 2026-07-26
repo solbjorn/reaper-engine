@@ -13,7 +13,7 @@ namespace PAPI
     void Execute(ParticleEffect* pe, const float dt) override; \
     void Transform(const Fmatrix& m) override
 
-struct PAAvoid : public ParticleAction
+struct PAAvoid final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PAAvoid, ParticleAction);
 
@@ -29,7 +29,7 @@ public:
     _METHODS();
 };
 
-struct PABounce : public ParticleAction
+struct PABounce final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PABounce, ParticleAction);
 
@@ -45,7 +45,7 @@ public:
     _METHODS();
 };
 
-struct PACopyVertexB : public ParticleAction
+struct PACopyVertexB final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PACopyVertexB, ParticleAction);
 
@@ -57,7 +57,7 @@ public:
     _METHODS();
 };
 
-struct PADamping : public ParticleAction
+struct PADamping final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PADamping, ParticleAction);
 
@@ -71,7 +71,7 @@ public:
     _METHODS();
 };
 
-struct PAExplosion : public ParticleAction
+struct PAExplosion final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PAExplosion, ParticleAction);
 
@@ -89,7 +89,7 @@ public:
     _METHODS();
 };
 
-struct PAFollow : public ParticleAction
+struct PAFollow final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PAFollow, ParticleAction);
 
@@ -103,7 +103,7 @@ public:
     _METHODS();
 };
 
-struct PAGravitate : public ParticleAction
+struct PAGravitate final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PAGravitate, ParticleAction);
 
@@ -117,7 +117,7 @@ public:
     _METHODS();
 };
 
-struct PAGravity : public ParticleAction
+struct PAGravity final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PAGravity, ParticleAction);
 
@@ -130,7 +130,7 @@ public:
     _METHODS();
 };
 
-struct PAJet : public ParticleAction
+struct PAJet final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PAJet, ParticleAction);
 
@@ -148,7 +148,7 @@ public:
     _METHODS();
 };
 
-struct PAKillOld : public ParticleAction
+struct PAKillOld final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PAKillOld, ParticleAction);
 
@@ -161,7 +161,7 @@ public:
     _METHODS();
 };
 
-struct PAMatchVelocity : public ParticleAction
+struct PAMatchVelocity final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PAMatchVelocity, ParticleAction);
 
@@ -175,7 +175,7 @@ public:
     _METHODS();
 };
 
-struct PAMove : public ParticleAction
+struct PAMove final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PAMove, ParticleAction);
 
@@ -185,7 +185,7 @@ public:
     _METHODS();
 };
 
-struct PAOrbitLine : public ParticleAction
+struct PAOrbitLine final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PAOrbitLine, ParticleAction);
 
@@ -201,7 +201,7 @@ public:
     _METHODS();
 };
 
-struct PAOrbitPoint : public ParticleAction
+struct PAOrbitPoint final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PAOrbitPoint, ParticleAction);
 
@@ -217,7 +217,7 @@ public:
     _METHODS();
 };
 
-struct PARandomAccel : public ParticleAction
+struct PARandomAccel final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PARandomAccel, ParticleAction);
 
@@ -230,7 +230,7 @@ public:
     _METHODS();
 };
 
-struct PARandomDisplace : public ParticleAction
+struct PARandomDisplace final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PARandomDisplace, ParticleAction);
 
@@ -243,7 +243,7 @@ public:
     _METHODS();
 };
 
-struct PARandomVelocity : public ParticleAction
+struct PARandomVelocity final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PARandomVelocity, ParticleAction);
 
@@ -256,7 +256,7 @@ public:
     _METHODS();
 };
 
-struct PARestore : public ParticleAction
+struct PARestore final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PARestore, ParticleAction);
 
@@ -268,7 +268,7 @@ public:
     _METHODS();
 };
 
-struct PAScatter : public ParticleAction
+struct PAScatter final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PAScatter, ParticleAction);
 
@@ -284,7 +284,7 @@ public:
     _METHODS();
 };
 
-struct PASink : public ParticleAction
+struct PASink final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PASink, ParticleAction);
 
@@ -298,7 +298,7 @@ public:
     _METHODS();
 };
 
-struct PASinkVelocity : public ParticleAction
+struct PASinkVelocity final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PASinkVelocity, ParticleAction);
 
@@ -312,7 +312,7 @@ public:
     _METHODS();
 };
 
-struct PASpeedLimit : public ParticleAction
+struct PASpeedLimit final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PASpeedLimit, ParticleAction);
 
@@ -325,7 +325,7 @@ public:
     _METHODS();
 };
 
-struct PASource : public ParticleAction
+struct PASource final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PASource, ParticleAction);
 
@@ -356,7 +356,7 @@ public:
     _METHODS();
 };
 
-struct PATargetColor : public ParticleAction
+struct PATargetColor final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PATargetColor, ParticleAction);
 
@@ -372,7 +372,7 @@ public:
     _METHODS();
 };
 
-struct PATargetSize : public ParticleAction
+struct PATargetSize final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PATargetSize, ParticleAction);
 
@@ -385,7 +385,7 @@ public:
     _METHODS();
 };
 
-struct PATargetRotate : public ParticleAction
+struct PATargetRotate final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PATargetRotate, ParticleAction);
 
@@ -398,7 +398,7 @@ public:
     _METHODS();
 };
 
-struct PATargetVelocity : public ParticleAction
+struct PATargetVelocity final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PATargetVelocity, ParticleAction);
 
@@ -412,7 +412,7 @@ public:
     _METHODS();
 };
 
-struct PAVortex : public ParticleAction
+struct PAVortex final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PAVortex, ParticleAction);
 
@@ -430,7 +430,7 @@ public:
     _METHODS();
 };
 
-struct PATurbulence : public ParticleAction
+struct PATurbulence final : public ParticleAction
 {
     RTTI_DECLARE_TYPEINFO(PATurbulence, ParticleAction);
 

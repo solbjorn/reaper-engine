@@ -139,7 +139,7 @@ constexpr inline float AA_QZERO_TOLERANCE{0.0001f};
 constexpr inline float QEPSILON{0.00001f};
 
 template <class T>
-struct _quaternion
+struct _quaternion final
 {
 public:
     typedef T TYPE;

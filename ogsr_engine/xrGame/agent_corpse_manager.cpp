@@ -17,12 +17,12 @@
 #include "agent_manager.h"
 #include "agent_member_manager.h"
 
-struct CRemoveMemberCorpsesPredicate
+struct CRemoveMemberCorpsesPredicate final
 {
     IC bool operator()(CMemberCorpse& corpse) const { return (!!corpse.reactor()); }
 };
 
-struct CRemoveOfflineCorpsesPredicate
+struct CRemoveOfflineCorpsesPredicate final
 {
     CObject* m_object;
     IC CRemoveOfflineCorpsesPredicate(CObject* object)

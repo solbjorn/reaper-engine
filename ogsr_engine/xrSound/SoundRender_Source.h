@@ -17,7 +17,7 @@ public:
     s64 dwBytesTotal{};
     float fTimeTotal{};
 
-    struct info
+    struct info final
     {
     public:
         u32 samplerate;

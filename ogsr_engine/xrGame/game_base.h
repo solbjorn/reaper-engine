@@ -8,7 +8,7 @@
 
 class NET_Packet;
 
-struct RPoint
+struct RPoint final
 {
     Fvector P;
     Fvector A;
@@ -26,7 +26,7 @@ struct RPoint
     bool operator==(const u32& ID) const { return (Blocked && BlockedByID == ID); }
 };
 
-struct Bonus_Money_Struct
+struct Bonus_Money_Struct final
 {
     s32 Money;
     u8 Reason;
@@ -45,7 +45,7 @@ struct Bonus_Money_Struct
     }
 };
 
-struct game_PlayerState
+struct game_PlayerState final
 {
     string64 name;
     u8 team;
@@ -117,7 +117,7 @@ public:
     bool m_bClearRun;
 };
 
-struct game_TeamState
+struct game_TeamState final
 {
     int score;
     u16 num_targets;

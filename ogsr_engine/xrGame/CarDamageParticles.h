@@ -4,7 +4,7 @@ class CCar;
 
 DEFINE_VECTOR(u16, BIDS, BIDS_I);
 
-struct CCarDamageParticles
+struct CCarDamageParticles final
 {
     BIDS bones1;
     BIDS bones2;

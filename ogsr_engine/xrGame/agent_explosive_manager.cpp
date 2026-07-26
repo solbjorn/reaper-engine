@@ -26,7 +26,7 @@ namespace
 constexpr float GRENADE_RADIUS{10.f};
 constexpr u32 AFTER_GRENADE_DESTROYED_INTERVAL{1000};
 
-struct CRemoveExplosivesPredicate
+struct CRemoveExplosivesPredicate final
 {
     IC bool operator()(CDangerExplosive& explosive) const { return (!!explosive.m_reactor); }
 };

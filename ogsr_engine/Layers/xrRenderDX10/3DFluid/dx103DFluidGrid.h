@@ -2,7 +2,7 @@
 
 struct VS_INPUT_FLUIDSIM_STRUCT;
 
-class dx103DFluidGrid
+class dx103DFluidGrid final
 {
 public:
     dx103DFluidGrid();

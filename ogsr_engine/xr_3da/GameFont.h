@@ -4,7 +4,7 @@
 
 #include "../Include/xrRender/FontRender.h"
 
-class CGameFont
+class CGameFont final
 {
     friend class dxFontRender;
 
@@ -18,7 +18,7 @@ public:
     };
 
 private:
-    struct String
+    struct String final
     {
         xr_string string;
         float x, y;

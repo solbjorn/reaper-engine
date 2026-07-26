@@ -14,7 +14,7 @@ namespace
 ObjectContactCallbackFun* saved_callback{};
 float max_depth{};
 
-struct STestCallbackPars
+struct STestCallbackPars final
 {
     static float calback_friction_factor;
     static float depth_to_use_force;
@@ -35,7 +35,7 @@ float STestCallbackPars::callback_erp_factor = 1.f;
 float STestCallbackPars::decrement_depth = 0.f;
 float STestCallbackPars::max_real_depth = 0.2f;
 
-struct STestFootCallbackPars
+struct STestFootCallbackPars final
 {
     static float calback_friction_factor;
     static float depth_to_use_force;
@@ -110,7 +110,7 @@ ObjectContactCallbackFun* TestFootDepthCallback = &TTestDepthCallback<STestFootC
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-class CVelocityLimiter : public CPHUpdateObject
+class CVelocityLimiter final : public CPHUpdateObject
 {
     RTTI_DECLARE_TYPEINFO(CVelocityLimiter, CPHUpdateObject);
 

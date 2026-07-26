@@ -23,7 +23,7 @@ enum xrProperties : u32
     xrPID_MARKER_TEMPLATE,
 };
 
-struct xrP_INTEGER
+struct xrP_INTEGER final
 {
     int value{0};
     int min{0};
@@ -31,15 +31,15 @@ struct xrP_INTEGER
 };
 static_assert(sizeof(xrP_INTEGER) == 12);
 
-struct xrP_BOOL
+struct xrP_BOOL final
 {
     BOOL value{FALSE};
 };
 static_assert(sizeof(xrP_BOOL) == 4);
 
-struct xrP_TOKEN
+struct xrP_TOKEN final
 {
-    struct Item
+    struct Item final
     {
         u32 ID;
         string64 str;

@@ -12,7 +12,7 @@
 #include "../xr_3da/Feel_Touch.h"
 #include "game_graph_space.h"
 
-class CLevelChanger : public CGameObject, public Feel::Touch
+class CLevelChanger final : public CGameObject, public Feel::Touch
 {
     RTTI_DECLARE_TYPEINFO(CLevelChanger, CGameObject, Feel::Touch);
 

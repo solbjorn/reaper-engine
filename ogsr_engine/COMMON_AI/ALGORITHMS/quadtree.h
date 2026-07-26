@@ -9,12 +9,12 @@
 #pragma once
 
 template <typename _object_type>
-class CQuadTree : public virtual RTTI::Enable
+class CQuadTree final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CQuadTree<_object_type>);
 
 public:
-    struct CQuadNode
+    struct CQuadNode final
     {
         CQuadNode* m_neighbours[4];
 
@@ -23,7 +23,7 @@ public:
         ~CQuadNode() {}
     };
 
-    struct CListItem
+    struct CListItem final
     {
         _object_type* m_object{};
         CListItem* m_next{};
@@ -34,7 +34,7 @@ public:
     };
 
     template <typename T>
-    struct CPool
+    struct CPool final
     {
         explicit CPool(u32 max_object_count) : m_max_object_count{max_object_count} {}
 

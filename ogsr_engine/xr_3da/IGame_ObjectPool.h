@@ -5,7 +5,7 @@ class CObject;
 
 //-----------------------------------------------------------------------------------------------------------
 
-class IGame_ObjectPool : public virtual RTTI::Enable
+class IGame_ObjectPool final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IGame_ObjectPool);
 

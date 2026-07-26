@@ -11,7 +11,7 @@ class CUIMainIngameWnd;
 class CUIMessagesWindow;
 struct SDrawStaticStruct;
 
-class CUI : public CDialogHolder
+class CUI final : public CDialogHolder
 {
     RTTI_DECLARE_TYPEINFO(CUI, CDialogHolder);
 

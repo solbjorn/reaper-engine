@@ -1,6 +1,6 @@
 #pragma once
 
-struct xrGUID
+struct xrGUID final
 {
     u64 g[2];
 
@@ -41,14 +41,14 @@ enum EBuildQuality : u16
     ebqCustom,
 };
 
-struct hdrLEVEL
+struct hdrLEVEL final
 {
     u16 XRLC_version;
     u16 XRLC_quality;
 };
 static_assert(sizeof(hdrLEVEL) == 4);
 
-struct hdrCFORM
+struct hdrCFORM final
 {
     u32 version;
     u32 vertcount;
@@ -68,7 +68,7 @@ struct hdrNODES
 };
 static_assert(sizeof(hdrNODES) == 56);
 
-class NodePosition
+class NodePosition final
 {
     u8 data[5];
 
@@ -199,7 +199,7 @@ static_assert(sizeof(NodeCompressed) == 21);
 
 #pragma pack(pop)
 
-struct SNodePositionOld
+struct SNodePositionOld final
 {
     s16 x;
     u16 y;

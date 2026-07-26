@@ -10,7 +10,7 @@
 
 namespace PS
 {
-class CParticleEffect : public dxParticleCustom
+class CParticleEffect final : public dxParticleCustom
 {
     RTTI_DECLARE_TYPEINFO(CParticleEffect, dxParticleCustom);
 

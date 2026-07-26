@@ -15,7 +15,7 @@ class CSE_ALifeInventoryItem;
 class CSE_ALifeGroupAbstract;
 class CSE_ALifeHumanAbstract;
 
-class CALifeHumanObjectHandler
+class CALifeHumanObjectHandler final
 {
 public:
     typedef CSE_ALifeHumanAbstract object_type;

@@ -7,7 +7,7 @@
 
 #include "inventory_item_object.h"
 
-class CSilencer : public CInventoryItemObject
+class CSilencer final : public CInventoryItemObject
 {
     RTTI_DECLARE_TYPEINFO(CSilencer, CInventoryItemObject);
 

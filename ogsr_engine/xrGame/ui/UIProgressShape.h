@@ -4,7 +4,7 @@
 
 class CUIStatic;
 
-class CUIProgressShape : public CUIWindow
+class CUIProgressShape final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIProgressShape, CUIWindow);
 

@@ -5,7 +5,7 @@
 
 #include <theora/theora.h>
 
-class CTheoraStream : public virtual RTTI::Enable
+class CTheoraStream final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CTheoraStream);
 

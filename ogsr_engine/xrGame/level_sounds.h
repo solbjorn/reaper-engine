@@ -2,7 +2,7 @@
 #ifndef LevelSoundsH
 #define LevelSoundsH
 
-struct SStaticSound
+struct SStaticSound final
 {
     ref_sound m_Source;
     Ivector2 m_ActiveTime;
@@ -21,7 +21,7 @@ public:
 };
 
 // music interface
-struct SMusicTrack
+struct SMusicTrack final
 {
 #ifdef DEBUG
     shared_str m_DbgName;
@@ -40,7 +40,7 @@ public:
     void SetVolume(float volume);
 };
 
-class CLevelSoundManager
+class CLevelSoundManager final
 {
     DEFINE_VECTOR(SStaticSound, StaticSoundsVec, StaticSoundsVecIt);
     StaticSoundsVec m_StaticSounds;

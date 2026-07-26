@@ -10,19 +10,19 @@ enum mix_type
     add,
 };
 
-struct channal_rule
+struct channal_rule final
 {
     mix_type intern_;
     mix_type extern_;
 };
 
-struct channel_def
+struct channel_def final
 {
     float factor;
     channal_rule rule;
 };
 
-class channels
+class channels final
 {
 public:
     static constexpr u32 max{MAX_CHANNELS};

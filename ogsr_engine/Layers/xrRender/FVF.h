@@ -25,7 +25,7 @@ struct alignas(16) L
 static_assert(sizeof(struct L) == 16);
 constexpr u32 F_L = D3DFVF_XYZ | D3DFVF_DIFFUSE;
 
-struct V
+struct V final
 {
     Fvector p;
     float tx, ty;
@@ -70,7 +70,7 @@ struct alignas(8) LIT
 static_assert(sizeof(struct LIT) == 24);
 constexpr u32 F_LIT = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 
-struct TL0uv
+struct TL0uv final
 {
     float px, py, pz, pw;
     u32 color;
@@ -101,7 +101,7 @@ struct TL0uv
 static_assert(sizeof(struct TL0uv) == 20);
 constexpr u32 F_TL0uv = D3DFVF_XYZRHW | D3DFVF_DIFFUSE;
 
-struct TL
+struct TL final
 {
     float px, py, pz, pw;
     u32 color;
@@ -137,7 +137,7 @@ struct TL
 static_assert(sizeof(struct TL) == 28);
 constexpr u32 F_TL = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 
-struct TL2uv
+struct TL2uv final
 {
     float px, py, pz, pw;
     u32 color;
@@ -175,7 +175,7 @@ struct TL2uv
 static_assert(sizeof(struct TL2uv) == 36);
 constexpr u32 F_TL2uv = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX2;
 
-struct TL4uv
+struct TL4uv final
 {
     float px, py, pz, pw;
     u32 color;

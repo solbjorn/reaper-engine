@@ -70,7 +70,7 @@ public:
     bool m_select_untradable{};
 };
 
-class CUIDragItem : public CUIWindow, public pureRender, public pureFrame
+class CUIDragItem final : public CUIWindow, public pureRender, public pureFrame
 {
     RTTI_DECLARE_TYPEINFO(CUIDragItem, CUIWindow, pureRender, pureFrame);
 
@@ -86,7 +86,7 @@ public:
     explicit CUIDragItem(CUICellItem* parent);
     ~CUIDragItem() override;
 
-    virtual void Init(const ui_shader& sh, const Frect& rect, const Frect& text_rect);
+    void Init(const ui_shader& sh, const Frect& rect, const Frect& text_rect);
     CUIStatic* wnd() { return &m_static; }
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
     void Draw() override;

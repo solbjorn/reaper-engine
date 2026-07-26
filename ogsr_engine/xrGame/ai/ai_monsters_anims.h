@@ -24,7 +24,7 @@ public:
 };
 
 template <LPCSTR caBaseNames[]>
-class CAniFVector
+class CAniFVector final
 {
 public:
     ANIM_VECTOR A;
@@ -51,7 +51,7 @@ public:
 };
 
 template <class TYPE_NAME, LPCSTR caBaseNames[]>
-class CAniCollection
+class CAniCollection final
 {
 public:
     xr_vector<TYPE_NAME> A;

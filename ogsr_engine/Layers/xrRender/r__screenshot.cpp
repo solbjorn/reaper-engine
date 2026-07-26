@@ -138,7 +138,7 @@ void grant_ownership(basisu::imagef& image, basisu::vec4F* pixels, u32 w, u32 h)
     image.get_pixels().grant_ownership(pixels, w * h, w * h);
 
     // basisu::image has ::grant_ownership(), but basisu::imagef does not. Why...
-    struct fake_imagef
+    struct fake_imagef final
     {
         u32 width;
         u32 height;

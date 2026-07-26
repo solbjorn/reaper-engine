@@ -9,7 +9,7 @@
 #pragma once
 
 template <typename TPathId, typename TBucketId, u32 BucketCount, bool ClearBuckets>
-struct CDataStorageBucketList
+struct CDataStorageBucketList final
 {
     template <typename TCompoundVertex>
     struct VertexData

@@ -110,7 +110,7 @@ enum
 // sets of bounds on psi one for each family
 //
 
-class SimpleJtLimit
+class SimpleJtLimit final
 {
 private:
     int type;
@@ -209,7 +209,7 @@ public:
 // sin(gamma) = a3*cos(psi) + b3*sin(psi) + c3
 //
 
-class ComplexJtLimit
+class ComplexJtLimit final
 {
 private:
     PsiEquation cos_eq; // cos(theta) equation

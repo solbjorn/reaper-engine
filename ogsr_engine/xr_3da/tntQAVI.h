@@ -2,7 +2,7 @@
 
 #include "vfw.h"
 
-class CAviPlayerCustom
+class CAviPlayerCustom final
 {
 protected:
     CAviPlayerCustom* alpha{};

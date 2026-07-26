@@ -384,7 +384,7 @@ void CPHGeometryOwner::CreateSimulBase()
     }
 }
 
-struct SFindPred
+struct SFindPred final
 {
     u16 m_val;
     SFindPred(u16 val) { m_val = val; }

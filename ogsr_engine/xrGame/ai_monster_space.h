@@ -74,7 +74,7 @@ enum EObjectAction : u32
     eObjectActionDummy = u32(-1),
 };
 
-struct SBoneRotation
+struct SBoneRotation final
 {
     SRotation current;
     SRotation target;

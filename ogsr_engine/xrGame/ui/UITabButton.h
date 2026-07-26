@@ -10,7 +10,6 @@
 #pragma once
 
 #include "UI3tButton.h"
-//.#include "UIFrameWindow.h"
 
 class CUITabButton : public CUI3tButton
 {
@@ -23,16 +22,9 @@ public:
     ~CUITabButton() override;
 
     // behavior
-    //.	virtual void AssociateWindow(CUIFrameWindow* pWindow);
-    //.	virtual CUIFrameWindow* GetAssociatedWindow();
-    //.	virtual void ShowAssociatedWindow(bool bShow = true);
     void SendMessage(CUIWindow* pWnd, s16 msg, void* = nullptr) override;
     [[nodiscard]] bool OnMouse(f32 x, f32 y, EUIMessages mouse_action) override;
     [[nodiscard]] bool OnMouseDown(sf::Mouse::Button mouse_btn) override;
     void Update() override;
-
-    //.protected:
-    // associated window
-    //.	CUIFrameWindow* m_pAssociatedWindow;
 };
 XR_SOL_BASE_CLASSES(CUITabButton);

@@ -4,7 +4,7 @@
 
 class CBaseMonster;
 
-class CMonsterEnemyMemory
+class CMonsterEnemyMemory final
 {
     CBaseMonster* monster{};
     TTime time_memory{15000};

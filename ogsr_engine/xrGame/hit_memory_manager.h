@@ -23,7 +23,7 @@ class CEntityAlive;
 class CCustomMonster;
 class CAI_Stalker;
 
-class CHitMemoryManager : public virtual RTTI::Enable
+class CHitMemoryManager final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CHitMemoryManager);
 
@@ -56,10 +56,10 @@ public:
     inline explicit CHitMemoryManager(CCustomMonster* object, CAI_Stalker* stalker);
     ~CHitMemoryManager() override;
 
-    virtual void Load(LPCSTR);
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
-    virtual void update();
+    void Load(LPCSTR);
+    void reinit();
+    void reload(LPCSTR section);
+    void update();
     void remove_links(CObject* object);
 
 public:

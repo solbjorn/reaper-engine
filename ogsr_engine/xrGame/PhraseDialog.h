@@ -41,7 +41,7 @@ DEFINE_VECTOR(CPhrase*, PHRASE_VECTOR, PHRASE_VECTOR_IT);
 class CPhraseDialog;
 class CPhraseDialogManager;
 
-class CPhraseDialog : public CSharedClass<SPhraseDialogData, shared_str, false>, public CXML_IdToIndex<CPhraseDialog>, public intrusive_base
+class CPhraseDialog final : public CSharedClass<SPhraseDialogData, shared_str, false>, public CXML_IdToIndex<CPhraseDialog>, public intrusive_base
 {
     RTTI_DECLARE_TYPEINFO(CPhraseDialog, CSharedClass<SPhraseDialogData, shared_str, false>, CXML_IdToIndex<CPhraseDialog>, intrusive_base);
 
@@ -55,21 +55,22 @@ public:
     CPhraseDialog();
     ~CPhraseDialog() override;
 
-    virtual void Load(shared_str dialog_id);
+    void Load(shared_str dialog_id);
 
     // связь диалога между двумя DialogManager
-    virtual void Init(CPhraseDialogManager* speaker_first, CPhraseDialogManager* speaker_second);
+    void Init(CPhraseDialogManager* speaker_first, CPhraseDialogManager* speaker_second);
 
     IC bool IsInited() const { return FirstSpeaker() && SecondSpeaker(); }
 
     // реинициализация диалога
-    virtual void Reset();
+    void Reset();
 
     // список предикатов начала диалога
-    virtual bool Precondition(const CGameObject* pSpeaker1, const CGameObject* pSpeaker2);
+    [[nodiscard]] bool Precondition(const CGameObject* pSpeaker1, const CGameObject* pSpeaker2);
 
     // список доступных в данный момент фраз
-    virtual const PHRASE_VECTOR& PhraseList() const { return m_PhraseVector; }
+    [[nodiscard]] const PHRASE_VECTOR& PhraseList() const { return m_PhraseVector; }
+
     bool allIsDummy();
     // сказать фразу и перейти к следующей стадии диалога
     // если вернули false, то считаем, что диалог закончился
@@ -104,6 +105,7 @@ public:
     {
         return (FirstSpeaker() == dialog_manager && FirstIsSpeaking()) || (SecondSpeaker() == dialog_manager && SecondIsSpeaking());
     }
+
     CPhraseDialogManager* OurPartner(CPhraseDialogManager* dialog_manager) const;
 
 protected:

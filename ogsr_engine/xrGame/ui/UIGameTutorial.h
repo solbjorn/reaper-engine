@@ -7,7 +7,7 @@ class CUIStatic;
 class CUISequenceItem;
 class CUIXml;
 
-class CUISequencer : public pureFrame, public pureRender, public IInputReceiver
+class CUISequencer final : public pureFrame, public pureRender, public IInputReceiver
 {
     RTTI_DECLARE_TYPEINFO(CUISequencer, pureFrame, pureRender, IInputReceiver);
 
@@ -92,7 +92,7 @@ public:
 
 inline CUISequenceItem::~CUISequenceItem() = default;
 
-class CUISequenceSimpleItem : public CUISequenceItem
+class CUISequenceSimpleItem final : public CUISequenceItem
 {
     RTTI_DECLARE_TYPEINFO(CUISequenceSimpleItem, CUISequenceItem);
 
@@ -121,7 +121,7 @@ public:
     Fvector2 m_desired_cursor_pos;
     xr::key_id m_continue_dik_guard;
 
-    struct SActionItem
+    struct SActionItem final
     {
         EGameActions m_action;
         shared_str m_functor;
@@ -144,7 +144,7 @@ public:
     [[nodiscard]] bool IsPlaying() override;
 };
 
-class CUISequenceVideoItem : public CUISequenceItem
+class CUISequenceVideoItem final : public CUISequenceItem
 {
     RTTI_DECLARE_TYPEINFO(CUISequenceVideoItem, CUISequenceItem);
 

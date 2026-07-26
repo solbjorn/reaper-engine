@@ -14,7 +14,7 @@
 
 class CSpaceRestrictionBase;
 
-class CSpaceRestrictionBridge : public RestrictionSpace::CTimeIntrusiveBase
+class CSpaceRestrictionBridge final : public RestrictionSpace::CTimeIntrusiveBase
 {
     RTTI_DECLARE_TYPEINFO(CSpaceRestrictionBridge, RestrictionSpace::CTimeIntrusiveBase);
 

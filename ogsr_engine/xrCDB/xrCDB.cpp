@@ -235,7 +235,7 @@ bool MODEL::deserialize_tree(IReader* stream)
 
     auto mTree = std::make_unique<AABBNoLeafTree>();
 
-    struct faketree
+    struct faketree final
     {
         u8 pad1[8];
         u32 mNbNodes;
@@ -246,7 +246,7 @@ bool MODEL::deserialize_tree(IReader* stream)
     ft->mNbNodes = hdr.nodes_num;
     ft->mNodes = nodes.release();
 
-    struct fakemodel
+    struct fakemodel final
     {
         u8 pad1[16];
         u32 mModelCode;

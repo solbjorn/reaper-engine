@@ -6,7 +6,7 @@
 
 class CParticlesObject;
 
-class CPhantom : public CEntity
+class CPhantom final : public CEntity
 {
     RTTI_DECLARE_TYPEINFO(CPhantom, CEntity);
 
@@ -36,7 +36,7 @@ private:
 
     CallMe::Delegate<void()> UpdateEvent;
 
-    struct SStateData
+    struct SStateData final
     {
         shared_str particles;
         ref_sound sound;

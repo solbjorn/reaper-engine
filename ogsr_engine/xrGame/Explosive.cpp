@@ -155,7 +155,7 @@ tmc::task<void> CExplosive::net_Destroy()
     co_return;
 }
 
-struct SExpQParams
+struct SExpQParams final
 {
 #ifdef DEBUG
 
@@ -734,7 +734,7 @@ void CExplosive::ExplodeWaveProcessObject(collide::rq_results& storage, CPhysics
 #endif
 }
 
-struct SRemovePred
+struct SRemovePred final
 {
     bool operator()(CGameObject* O) { return !!O->getDestroy(); }
 };

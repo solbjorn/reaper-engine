@@ -75,7 +75,7 @@ private:
 // evade
 //----------------------------------------------------------
 
-class evade : public base
+class evade final : public base
 {
     RTTI_DECLARE_TYPEINFO(evade, base);
 
@@ -113,7 +113,7 @@ private:
 // pursue
 //----------------------------------------------------------
 
-class pursue : public base
+class pursue final : public base
 {
     RTTI_DECLARE_TYPEINFO(pursue, base);
 
@@ -154,7 +154,7 @@ private:
 // restrictor
 //----------------------------------------------------------
 
-class restrictor : public base
+class restrictor final : public base
 {
     RTTI_DECLARE_TYPEINFO(restrictor, base);
 
@@ -191,7 +191,7 @@ private:
 // wander
 //----------------------------------------------------------
 
-class wander : public base
+class wander final : public base
 {
     RTTI_DECLARE_TYPEINFO(wander, base);
 
@@ -241,7 +241,7 @@ private:
 // containment
 //----------------------------------------------------------
 
-class containment : public base
+class containment final : public base
 {
     RTTI_DECLARE_TYPEINFO(containment, base);
 
@@ -284,7 +284,7 @@ private:
 // grouping: cohesion + separation
 //----------------------------------------------------------
 
-class grouping : public base
+class grouping final : public base
 {
     RTTI_DECLARE_TYPEINFO(grouping, base);
 
@@ -330,7 +330,7 @@ private:
 // manager
 //----------------------------------------------------------
 
-class manager : public virtual RTTI::Enable
+class manager final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(manager);
 

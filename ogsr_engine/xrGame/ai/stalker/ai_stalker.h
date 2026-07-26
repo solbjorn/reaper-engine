@@ -66,7 +66,7 @@ struct SBoneProtections;
 class CDangerLocation;
 class CRestrictedObject;
 
-class CAI_Stalker : public CCustomMonster, public CObjectHandler, public CAI_PhraseDialogManager, public CStepManager
+class CAI_Stalker final : public CCustomMonster, public CObjectHandler, public CAI_PhraseDialogManager, public CStepManager
 {
     RTTI_DECLARE_TYPEINFO(CAI_Stalker, CCustomMonster, CObjectHandler, CAI_PhraseDialogManager, CStepManager);
 
@@ -166,7 +166,7 @@ public:
     void Load(gsl::czstring section) override;
     void reinit() override;
     void reload(gsl::czstring section) override;
-    virtual void LoadSounds(LPCSTR section);
+    void LoadSounds(LPCSTR section);
 
     tmc::task<bool> net_Spawn(CSE_Abstract* DC) override;
     void net_Export(CSE_Abstract* E) override;
@@ -213,11 +213,10 @@ public:
     void UpdateAvailableDialogs(CPhraseDialogManager* partner) override;
 
     // scripts
-    virtual CWeapon* GetCurrentWeapon() const;
-    virtual u32 GetWeaponAmmo() const;
-    //	virtual CInventoryItem				*GetCurrentEquipment	() const; <- moved to InventoryOwner::GetCurrentOutfit
-    virtual CInventoryItem* GetMedikit() const;
-    virtual CInventoryItem* GetFood() const;
+    [[nodiscard]] CWeapon* GetCurrentWeapon() const;
+    [[nodiscard]] u32 GetWeaponAmmo() const;
+    [[nodiscard]] CInventoryItem* GetMedikit() const;
+    [[nodiscard]] CInventoryItem* GetFood() const;
     [[nodiscard]] bool bfAssignMovement(CScriptEntityAction* tpEntityAction) override;
     [[nodiscard]] bool bfAssignWatch(CScriptEntityAction* tpEntityAction) override;
     void ResetScriptData(void* P = nullptr) override;
@@ -292,7 +291,7 @@ public:
 
     // ALife
 private:
-    struct CTradeItem
+    struct CTradeItem final
     {
         CInventoryItem* m_item;
         ALife::_OBJECT_ID m_owner_id;

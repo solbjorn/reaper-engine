@@ -9,7 +9,7 @@
 #include <atomic>
 #include <source_location>
 
-class xrDebug
+class xrDebug final
 {
 private:
     using lua_panic_handler = void (*)(s32);
@@ -56,7 +56,7 @@ namespace xr
 {
 // Strictly-typed Windows error codes with custom formatters (in format.h).
 
-class hresult
+class hresult final
 {
 private:
     unsigned long val;
@@ -69,7 +69,7 @@ public:
     [[nodiscard]] std::string what() const { return xrDebug::format_system(val); }
 };
 
-class last_error
+class last_error final
 {
 private:
     unsigned long val;
@@ -81,7 +81,7 @@ public:
     [[nodiscard]] std::string what() const { return xrDebug::format_system(val); }
 };
 
-class ntstatus
+class ntstatus final
 {
 private:
     unsigned long val;

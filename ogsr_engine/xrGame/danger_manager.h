@@ -17,7 +17,7 @@ struct CSoundObject;
 struct CHitObject;
 } // namespace MemorySpace
 
-class CDangerManager : public virtual RTTI::Enable
+class CDangerManager final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CDangerManager);
 
@@ -45,14 +45,14 @@ public:
     inline explicit CDangerManager(CCustomMonster* object);
     ~CDangerManager() override;
 
-    virtual void Load(LPCSTR);
-    virtual void reinit();
-    virtual void reload(LPCSTR);
-    virtual void update();
-    virtual bool useful(const CDangerObject& object) const;
-    virtual bool is_useful(const CDangerObject& object) const;
-    virtual float evaluate(const CDangerObject& object) const;
-    virtual float do_evaluate(const CDangerObject& object) const;
+    void Load(LPCSTR);
+    void reinit();
+    void reload(LPCSTR);
+    void update();
+    [[nodiscard]] bool useful(const CDangerObject& object) const;
+    [[nodiscard]] bool is_useful(const CDangerObject& object) const;
+    [[nodiscard]] f32 evaluate(const CDangerObject& object) const;
+    [[nodiscard]] f32 do_evaluate(const CDangerObject& object) const;
     void remove_links(const CObject* object);
     IC void reset();
 

@@ -2,10 +2,10 @@
 
 #include "ISheduled.h"
 
-class CSheduler
+class CSheduler final
 {
 private:
-    struct Item
+    struct Item final
     {
         u32 dwTimeForExecute;
         u32 dwTimeOfLastExecute;
@@ -13,7 +13,7 @@ private:
         ISheduled* Object;
     };
 
-    struct ItemReg
+    struct ItemReg final
     {
         bool OP;
         bool RT;

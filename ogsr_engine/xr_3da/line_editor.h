@@ -13,7 +13,7 @@
 
 namespace text_editor
 {
-class line_editor : public IInputReceiver
+class line_editor final : public IInputReceiver
 {
     RTTI_DECLARE_TYPEINFO(line_editor, IInputReceiver);
 

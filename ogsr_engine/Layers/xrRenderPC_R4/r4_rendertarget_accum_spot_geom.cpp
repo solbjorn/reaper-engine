@@ -27,7 +27,7 @@ void CRenderTarget::accum_spot_geom_destroy()
     _RELEASE(g_accum_spot_vb);
 }
 
-struct Slice
+struct Slice final
 {
     Fvector m_Vert[4];
 };

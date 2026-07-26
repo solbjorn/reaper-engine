@@ -12,7 +12,7 @@
 #define SLEEP_EFFECTOR_TYPE_ID 8
 #define FATIGUE_EFFECTOR_TYPE_ID 33
 
-class CSleepEffectorPP : public CEffectorPP
+class CSleepEffectorPP final : public CEffectorPP
 {
     RTTI_DECLARE_TYPEINFO(CSleepEffectorPP, CEffectorPP);
 
@@ -41,7 +41,7 @@ public:
     SLEEP_STATE m_eSleepState;
 };
 
-struct SSleepEffector
+struct SSleepEffector final
 {
     SPPInfo ppi;
     float time;

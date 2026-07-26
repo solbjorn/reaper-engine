@@ -12,7 +12,7 @@
 #include "game_graph.h"
 
 template <typename _VertexEvaluator, typename _vertex_id_type, typename _index_type>
-class CBasePathManager<CGameGraph, _VertexEvaluator, _vertex_id_type, _index_type>
+class CBasePathManager<CGameGraph, _VertexEvaluator, _vertex_id_type, _index_type> final
     : public CAbstractPathManager<CGameGraph, _VertexEvaluator, _vertex_id_type, _index_type>
 {
     RTTI_DECLARE_TYPEINFO(CBasePathManager<CGameGraph, _VertexEvaluator, _vertex_id_type, _index_type>,
@@ -34,7 +34,7 @@ public:
     inline explicit CBasePathManager(CRestrictedObject* object);
     ~CBasePathManager() override = default;
 
-    IC virtual void reinit(const CGameGraph* graph = nullptr);
+    inline void reinit(const CGameGraph* graph = nullptr);
     IC bool actual() const;
     inline void select_intermediate_vertex() override;
     [[nodiscard]] inline bool completed() const override;

@@ -12,7 +12,7 @@
 
 #include "../xr_3da/LightAnimLibrary.h"
 
-struct lanim_wrapper
+struct lanim_wrapper final
 {
 private:
     CLAItem* item;
@@ -39,6 +39,6 @@ public:
 
 void lanim_registrator::script_register(sol::state_view& lua)
 {
-    lua.new_usertype<lanim_wrapper>("color_animator", sol::no_constructor, sol::call_constructor, sol::constructors<lanim_wrapper(LPCSTR)>(), "load", &lanim_wrapper::load,
-                                    "calculate", &lanim_wrapper::calculate, "length", &lanim_wrapper::length);
+    lua.new_usertype<lanim_wrapper>("color_animator", sol::no_constructor, sol::call_constructor, sol::constructors<lanim_wrapper(LPCSTR)>(), "load",
+                                    &lanim_wrapper::load, "calculate", &lanim_wrapper::calculate, "length", &lanim_wrapper::length);
 }

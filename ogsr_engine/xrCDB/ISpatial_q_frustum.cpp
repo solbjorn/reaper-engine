@@ -2,7 +2,7 @@
 
 namespace
 {
-class XR_TRIVIAL walker
+class XR_TRIVIAL walker final
 {
 public:
     ISpatial_DB* space;

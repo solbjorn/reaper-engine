@@ -11,7 +11,7 @@
 #include "graph_engine_space.h"
 #include "script_export_space.h"
 
-class CPropertyStorage
+class CPropertyStorage final
 {
 public:
     typedef GraphEngineSpace::_solver_condition_type _condition_type;

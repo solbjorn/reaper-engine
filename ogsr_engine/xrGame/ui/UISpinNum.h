@@ -9,7 +9,7 @@
 
 #include "UICustomSpin.h"
 
-class CUISpinNum : public CUICustomSpin
+class CUISpinNum final : public CUICustomSpin
 {
     RTTI_DECLARE_TYPEINFO(CUISpinNum, CUICustomSpin);
 
@@ -45,7 +45,7 @@ protected:
 };
 XR_SOL_BASE_CLASSES(CUISpinNum);
 
-class CUISpinFlt : public CUICustomSpin
+class CUISpinFlt final : public CUICustomSpin
 {
     RTTI_DECLARE_TYPEINFO(CUISpinFlt, CUICustomSpin);
 

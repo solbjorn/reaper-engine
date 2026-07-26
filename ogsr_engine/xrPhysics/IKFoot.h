@@ -3,7 +3,7 @@
 #include "ik_calculate_data.h"
 #include "ik_foot_collider.h"
 
-struct local_vector
+struct local_vector final
 {
     Fvector v{};
     u16 bone{std::numeric_limits<u16>::max()};
@@ -14,7 +14,7 @@ struct SCalculateData;
 struct SIKCollideData;
 class CGameObject;
 
-class CIKFoot
+class CIKFoot final
 {
 public:
     CIKFoot();
@@ -48,8 +48,8 @@ public:
     void Collide(SIKCollideData& cld, ik_foot_collider& collider, const Fmatrix& ref_bone, const Fmatrix& object_matrix, CGameObject* O) const;
 
 private:
-    ik_goal_matrix::e_collide_state CollideFoot(float angle, float& out_angle, const Fvector& global_toe, const Fvector& foot_normal, const Fvector& global_bone_pos,
-                                                const Fplane& p, const Fvector& ax) const;
+    ik_goal_matrix::e_collide_state CollideFoot(float angle, float& out_angle, const Fvector& global_toe, const Fvector& foot_normal,
+                                                const Fvector& global_bone_pos, const Fplane& p, const Fvector& ax) const;
     ik_goal_matrix::e_collide_state rotate(Fmatrix& xm, const Fplane& p, const Fvector& normal, const Fvector& global_point, bool collide) const;
 
     IC bool make_shift(Fmatrix& xm, const Fvector& cl_point, bool collide, const Fplane& p, const Fvector& pick_dir) const;

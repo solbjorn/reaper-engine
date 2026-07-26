@@ -68,7 +68,7 @@ void CTelekinesis::clear_deactivate()
     CPHUpdateObject::Deactivate();
 }
 
-struct SFindPred
+struct SFindPred final
 {
     CPhysicsShellHolder* obj;
     SFindPred(CPhysicsShellHolder* aobj) { obj = aobj; }

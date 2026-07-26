@@ -585,7 +585,7 @@ void CControlAnimationBase::set_animation_speed()
     ctrl_data->set_speed(m_cur_anim.speed._get_target());
 }
 
-class ray_query_param
+class ray_query_param final
 {
 public:
     const CBaseMonster* m_holder;

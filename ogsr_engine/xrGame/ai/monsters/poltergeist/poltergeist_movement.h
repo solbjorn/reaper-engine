@@ -5,7 +5,7 @@
 class CPoltergeist;
 class CCustomMonster;
 
-class CPoltergeisMovementManager : public CControlPathBuilder
+class CPoltergeisMovementManager final : public CControlPathBuilder
 {
     RTTI_DECLARE_TYPEINFO(CPoltergeisMovementManager, CControlPathBuilder);
 

@@ -7,7 +7,7 @@
 class CMotionStats;
 class CCoverEvaluatorCloseToEnemy;
 
-class CControlPathBuilderBase : public CControl_ComBase
+class CControlPathBuilderBase final : public CControl_ComBase
 {
     RTTI_DECLARE_TYPEINFO(CControlPathBuilderBase, CControl_ComBase);
 
@@ -31,7 +31,7 @@ private:
     // build path members
     // -----------------------------------------------------------
 
-    class STarget
+    class STarget final
     {
         Fvector _position;
         u32 _node;

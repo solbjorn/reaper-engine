@@ -50,7 +50,7 @@ enum EDBGPHDrawMode
 } dbg_ph_draw_mode = dmSecondaryThread;
 u32 cash_draw_remove_time = u32(-1);
 
-struct SPHDBGDrawTri : public SPHDBGDrawAbsract
+struct SPHDBGDrawTri final : public SPHDBGDrawAbsract
 {
     RTTI_DECLARE_TYPEINFO(SPHDBGDrawTri, SPHDBGDrawAbsract);
 
@@ -119,7 +119,7 @@ static void clear_vector(PHABS_DBG_V& v)
 void DBG_DrawTri(CDB::RESULT* T, u32 c) { DBG_DrawPHAbstruct(xr_new<SPHDBGDrawTri>(T, c)); }
 void DBG_DrawTri(CDB::TRI* T, const Fvector* V_verts, u32 c) { DBG_DrawPHAbstruct(xr_new<SPHDBGDrawTri>(T, V_verts, c)); }
 
-struct SPHDBGDrawLine : public SPHDBGDrawAbsract
+struct SPHDBGDrawLine final : public SPHDBGDrawAbsract
 {
     RTTI_DECLARE_TYPEINFO(SPHDBGDrawLine, SPHDBGDrawAbsract);
 
@@ -216,7 +216,7 @@ void DBG_DrawRotationZ(const Fmatrix& m, float ang0, float ang1, float size, u32
     DBG_DrawRotation<2>(ang0, ang1, m, Fvector().set(0, 1, 0), size, ac, solid, tessel);
 }
 
-struct SPHDBGDrawAABB : public SPHDBGDrawAbsract
+struct SPHDBGDrawAABB final : public SPHDBGDrawAbsract
 {
     RTTI_DECLARE_TYPEINFO(SPHDBGDrawAABB, SPHDBGDrawAbsract);
 
@@ -238,7 +238,7 @@ public:
 
 void DBG_DrawAABB(const Fvector& center, const Fvector& AABB, u32 c) { DBG_DrawPHAbstruct(xr_new<SPHDBGDrawAABB>(center, AABB, c)); }
 
-struct SPHDBGDrawOBB : public SPHDBGDrawAbsract
+struct SPHDBGDrawOBB final : public SPHDBGDrawAbsract
 {
     RTTI_DECLARE_TYPEINFO(SPHDBGDrawOBB, SPHDBGDrawAbsract);
 
@@ -261,7 +261,7 @@ public:
 
 void DBG_DrawOBB(const Fmatrix& m, const Fvector h, u32 c) { DBG_DrawPHAbstruct(xr_new<SPHDBGDrawOBB>(m, h, c)); };
 
-struct SPHDBGDrawPoint : public SPHDBGDrawAbsract
+struct SPHDBGDrawPoint final : public SPHDBGDrawAbsract
 {
     RTTI_DECLARE_TYPEINFO(SPHDBGDrawPoint, SPHDBGDrawAbsract);
 
@@ -291,7 +291,7 @@ public:
 
 void DBG_DrawPoint(const Fvector& p, float size, u32 c) { DBG_DrawPHAbstruct(xr_new<SPHDBGDrawPoint>(p, size, c)); }
 
-struct SPHDBGOutText : public SPHDBGDrawAbsract
+struct SPHDBGOutText final : public SPHDBGDrawAbsract
 {
     RTTI_DECLARE_TYPEINFO(SPHDBGOutText, SPHDBGDrawAbsract);
 

@@ -11,7 +11,7 @@
 class CStalkerAnimationData;
 class IKinematicsAnimated;
 
-class CStalkerAnimationDataStorage : public virtual RTTI::Enable
+class CStalkerAnimationDataStorage final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CStalkerAnimationDataStorage);
 

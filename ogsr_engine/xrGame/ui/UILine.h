@@ -14,7 +14,7 @@
 
 // Attention! Destructor is not virtual.
 // if you want to inherit this class then make _coresponding_ changes
-class CUILine
+class CUILine final
 {
     friend class CUILines;
 

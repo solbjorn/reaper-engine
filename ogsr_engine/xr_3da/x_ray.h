@@ -5,13 +5,13 @@ class CGameFont;
 class ILoadingScreen;
 
 // definition
-class CApplication : public pureFrame, public IEventReceiver
+class CApplication final : public pureFrame, public IEventReceiver
 {
     RTTI_DECLARE_TYPEINFO(CApplication, pureFrame, IEventReceiver);
 
 public:
     // levels
-    struct sLevelInfo
+    struct sLevelInfo final
     {
         char* folder;
     };

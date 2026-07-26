@@ -63,7 +63,7 @@ tmc::task<bool> CBlackGraviArtefact::net_Spawn(CSE_Abstract* DC)
     co_return true;
 }
 
-struct SRP
+struct SRP final
 {
     const CPhysicsShellHolder* obj;
     SRP(const CPhysicsShellHolder* O) { obj = O; }

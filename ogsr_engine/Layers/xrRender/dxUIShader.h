@@ -4,7 +4,7 @@
 
 extern string_unordered_map<std::string, ref_shader> g_UIShadersCache;
 
-class dxUIShader : public IUIShader
+class dxUIShader final : public IUIShader
 {
     RTTI_DECLARE_TYPEINFO(dxUIShader, IUIShader);
 

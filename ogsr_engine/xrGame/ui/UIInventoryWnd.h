@@ -19,7 +19,7 @@ class CUI3tButton;
 class CUIDragDropListEx;
 class CUICellItem;
 
-class CUIInventoryWnd : public CUIDialogWnd
+class CUIInventoryWnd final : public CUIDialogWnd
 {
     RTTI_DECLARE_TYPEINFO(CUIInventoryWnd, CUIDialogWnd);
 
@@ -33,7 +33,7 @@ public:
     CUIInventoryWnd();
     ~CUIInventoryWnd() override;
 
-    virtual void Init();
+    void Init();
 
     void InitInventory();
     void InitInventory_delayed();

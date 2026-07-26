@@ -15,7 +15,7 @@ namespace LevelGraph
 class CVertex;
 }
 
-class CAI_ObjectLocation : public virtual RTTI::Enable
+class CAI_ObjectLocation final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CAI_ObjectLocation);
 
@@ -28,7 +28,7 @@ public:
     ~CAI_ObjectLocation() override = default;
 
     void init();
-    inline virtual void reinit();
+    inline void reinit();
 
     void game_vertex(const GameGraph::CVertex* game_vertex);
     void game_vertex(const GameGraph::_GRAPH_ID game_vertex_id);

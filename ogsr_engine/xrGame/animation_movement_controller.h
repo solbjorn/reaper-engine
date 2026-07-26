@@ -4,7 +4,7 @@
 
 class CBlend;
 
-class animation_movement_controller
+class animation_movement_controller final
 {
     Fmatrix m_startObjXForm;
     Fmatrix m_startRootXform;

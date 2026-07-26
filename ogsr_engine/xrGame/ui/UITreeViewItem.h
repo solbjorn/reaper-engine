@@ -15,7 +15,7 @@
 
 class CUIListWnd;
 
-class CUITreeViewItem : public CUIListItem
+class CUITreeViewItem final : public CUIListItem
 {
     RTTI_DECLARE_TYPEINFO(CUITreeViewItem, CUIListItem);
 
@@ -44,7 +44,7 @@ public:
 protected:
     // Функция вызываемая при изменении свойства рута
     // для изменения визуального представления себя
-    virtual void OnRootChanged();
+    void OnRootChanged();
 
 public:
     // Раксрыть/свернуть локальнцю иерархию
@@ -55,7 +55,7 @@ public:
 protected:
     // Функция вызываемая при изменении cостояния открыто/закрыто
     // для изменения визуального представления себя
-    virtual void OnOpenClose();
+    void OnOpenClose();
 
 public:
     // Список элементов, которые уровнем ниже нас

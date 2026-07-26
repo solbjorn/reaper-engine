@@ -8,7 +8,7 @@
 #define AXIS_Z (1 << 2)
 
 // параметры движения характерные для конкретной оси в боне
-struct bonesAxis
+struct bonesAxis final
 {
     float cur_yaw;
     float target_yaw;
@@ -17,7 +17,7 @@ struct bonesAxis
 };
 
 // бона с параметрами движения по осям
-struct bonesBone
+struct bonesBone final
 {
     CBoneInstance* bone{};
     bonesAxis params;
@@ -32,7 +32,7 @@ struct bonesBone
 };
 
 // управление движениями костей
-class bonesManipulation
+class bonesManipulation final
 {
     xr_vector<bonesBone> m_Bones;
     u32 freeze_time{};

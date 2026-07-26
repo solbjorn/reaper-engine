@@ -46,7 +46,7 @@ void CMonsterSquad::ProcessAttack()
     }
 }
 
-struct sort_predicate
+struct sort_predicate final
 {
     const CEntity* enemy;
 

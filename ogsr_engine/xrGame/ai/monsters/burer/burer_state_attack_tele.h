@@ -4,7 +4,7 @@
 #include "../../../Grenade.h"
 
 template <typename Object>
-class CStateBurerAttackTele : public CState<Object>
+class CStateBurerAttackTele final : public CState<Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateBurerAttackTele<Object>, CState<Object>);
 

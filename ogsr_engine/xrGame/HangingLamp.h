@@ -16,7 +16,7 @@ class CPhysicsElement;
 class CSE_ALifeObjectHangingLamp;
 class CPHElement;
 
-class CHangingLamp : public CPhysicsShellHolder, public CPHSkeleton
+class CHangingLamp final : public CPhysicsShellHolder, public CPHSkeleton
 {
     RTTI_DECLARE_TYPEINFO(CHangingLamp, CPhysicsShellHolder, CPHSkeleton);
 

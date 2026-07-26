@@ -11,7 +11,7 @@ class light;
 
 #include "xrSheduler.h"
 
-class CEngine
+class CEngine final
 {
 public:
     // DLL api stuff

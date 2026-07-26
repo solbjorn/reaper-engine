@@ -10,7 +10,7 @@
 // Atomic resources
 //////////////////////////////////////////////////////////////////////////
 
-struct SInputSignature : public xr_resource_flagged
+struct SInputSignature final : public xr_resource_flagged
 {
     RTTI_DECLARE_TYPEINFO(SInputSignature, xr_resource_flagged);
 
@@ -24,7 +24,7 @@ typedef resptr_core<SInputSignature, resptr_base<SInputSignature>> ref_input_sig
 
 //////////////////////////////////////////////////////////////////////////
 
-struct SVS : public xr_resource_named
+struct SVS final : public xr_resource_named
 {
     RTTI_DECLARE_TYPEINFO(SVS, xr_resource_named);
 

@@ -6,7 +6,7 @@
 
 class CController;
 
-class CControllerDirection : public CControlDirectionBase
+class CControllerDirection final : public CControlDirectionBase
 {
     RTTI_DECLARE_TYPEINFO(CControllerDirection, CControlDirectionBase);
 

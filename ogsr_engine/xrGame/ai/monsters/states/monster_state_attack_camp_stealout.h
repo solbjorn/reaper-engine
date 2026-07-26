@@ -1,7 +1,7 @@
 #pragma once
 
 template <typename _Object>
-class CStateMonsterAttackCampStealOut : public CStateMove<_Object>
+class CStateMonsterAttackCampStealOut final : public CStateMove<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterAttackCampStealOut<_Object>, CStateMove<_Object>);
 

@@ -313,7 +313,7 @@ public:
 
 //-----------------------------------------------------------------------
 
-class CCC_detail_radius : public CCC_Integer
+class CCC_detail_radius final : public CCC_Integer
 {
     RTTI_DECLARE_TYPEINFO(CCC_detail_radius, CCC_Integer);
 
@@ -337,7 +337,7 @@ public:
     }
 };
 
-class CCC_detail_reset : public CCC_Float
+class CCC_detail_reset final : public CCC_Float
 {
     RTTI_DECLARE_TYPEINFO(CCC_detail_reset, CCC_Float);
 
@@ -358,7 +358,7 @@ public:
     }
 };
 
-class CCC_tf_Aniso : public CCC_Integer
+class CCC_tf_Aniso final : public CCC_Integer
 {
     RTTI_DECLARE_TYPEINFO(CCC_tf_Aniso, CCC_Integer);
 
@@ -381,7 +381,7 @@ public:
     }
 };
 
-class CCC_tf_MipBias : public CCC_Float
+class CCC_tf_MipBias final : public CCC_Float
 {
     RTTI_DECLARE_TYPEINFO(CCC_tf_MipBias, CCC_Float);
 
@@ -404,7 +404,7 @@ public:
     }
 };
 
-class CCC_Screenshot : public IConsole_Command
+class CCC_Screenshot final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_Screenshot, IConsole_Command);
 
@@ -425,7 +425,7 @@ public:
 };
 
 #ifdef DEBUG
-class CCC_ModelPoolStat : public IConsole_Command
+class CCC_ModelPoolStat final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_ModelPoolStat, IConsole_Command);
 
@@ -439,7 +439,7 @@ public:
 
 //-----------------------------------------------------------------------
 
-class CCC_Preset : public CCC_Token
+class CCC_Preset final : public CCC_Token
 {
     RTTI_DECLARE_TYPEINFO(CCC_Preset, CCC_Token);
 
@@ -466,7 +466,7 @@ public:
     }
 };
 
-class CCC_VideoMemoryStats : public IConsole_Command
+class CCC_VideoMemoryStats final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_VideoMemoryStats, IConsole_Command);
 
@@ -506,7 +506,7 @@ public:
 };
 
 #ifdef DEBUG
-class CCC_DumpResources : public IConsole_Command
+class CCC_DumpResources final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DumpResources, IConsole_Command);
 
@@ -522,7 +522,7 @@ public:
 };
 
 //	Allow real-time fog config reload
-class CCC_Fog_Reload : public IConsole_Command
+class CCC_Fog_Reload final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_Fog_Reload, IConsole_Command);
 
@@ -534,7 +534,7 @@ public:
 };
 #endif //	DEBUG
 
-class CCC_PART_Export : public IConsole_Command
+class CCC_PART_Export final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_PART_Export, IConsole_Command);
 
@@ -565,7 +565,7 @@ public:
     }
 };
 
-class CCC_PART_Import : public IConsole_Command
+class CCC_PART_Import final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_PART_Import, IConsole_Command);
 

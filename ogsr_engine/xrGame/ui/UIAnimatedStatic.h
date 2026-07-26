@@ -3,7 +3,7 @@
 
 #include "UIStatic.h"
 
-class CUIAnimatedStatic : public CUIStatic
+class CUIAnimatedStatic final : public CUIStatic
 {
     RTTI_DECLARE_TYPEINFO(CUIAnimatedStatic, CUIStatic);
 

@@ -3,7 +3,7 @@
 class dx103DFluidGrid;
 class dx103DFluidData;
 
-class dx103DFluidEmitters
+class dx103DFluidEmitters final
 {
 public:
     enum EmitterType
@@ -13,7 +13,7 @@ public:
         ET_EmittersTypeNum
     };
 
-    struct CEmitter
+    struct CEmitter final
     {
         EmitterType m_eType{};
 

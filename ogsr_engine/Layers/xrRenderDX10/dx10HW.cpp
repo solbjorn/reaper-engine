@@ -528,7 +528,7 @@ void CHW::updateWindowProps(HWND m_hWnd) const
 
 namespace
 {
-struct _uniq_mode
+struct _uniq_mode final
 {
     gsl::czstring _val;
 

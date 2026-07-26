@@ -9,7 +9,7 @@
 
 trivial_encryptor g_trivial_encryptor;
 
-class random32
+class random32 final
 {
 private:
     u32 m_seed;

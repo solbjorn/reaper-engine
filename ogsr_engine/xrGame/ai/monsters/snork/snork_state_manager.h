@@ -4,7 +4,7 @@
 
 class CSnork;
 
-class CStateManagerSnork : public CMonsterStateManager<CSnork>
+class CStateManagerSnork final : public CMonsterStateManager<CSnork>
 {
     RTTI_DECLARE_TYPEINFO(CStateManagerSnork, CMonsterStateManager<CSnork>);
 

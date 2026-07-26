@@ -2,7 +2,7 @@
 
 #include "UIButton.h"
 
-class CUIScrollBox : public CUIStatic
+class CUIScrollBox final : public CUIStatic
 {
     RTTI_DECLARE_TYPEINFO(CUIScrollBox, CUIStatic);
 

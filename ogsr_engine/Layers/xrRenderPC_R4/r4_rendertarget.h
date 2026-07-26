@@ -8,7 +8,7 @@ class light_Package;
 //	no less than 2
 #define VOLUMETRIC_SLICES 100
 
-class CRenderTarget : public IRender_Target
+class CRenderTarget final : public IRender_Target
 {
     RTTI_DECLARE_TYPEINFO(CRenderTarget, IRender_Target);
 
@@ -27,7 +27,7 @@ public:
     IBlender* b_accum_point_msaa;
 
 #ifdef DEBUG
-    struct dbg_line_t
+    struct dbg_line_t final
     {
         Fvector P0, P1;
         u32 color;

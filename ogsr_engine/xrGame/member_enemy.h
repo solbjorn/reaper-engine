@@ -12,7 +12,7 @@
 
 class CEntityAlive;
 
-class CMemberEnemy
+class CMemberEnemy final
 {
 public:
     typedef MemorySpace::squad_mask_type squad_mask_type;

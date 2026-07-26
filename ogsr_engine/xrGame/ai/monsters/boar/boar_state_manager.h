@@ -4,7 +4,7 @@
 
 class CAI_Boar;
 
-class CStateManagerBoar : public CMonsterStateManager<CAI_Boar>
+class CStateManagerBoar final : public CMonsterStateManager<CAI_Boar>
 {
     RTTI_DECLARE_TYPEINFO(CStateManagerBoar, CMonsterStateManager<CAI_Boar>);
 

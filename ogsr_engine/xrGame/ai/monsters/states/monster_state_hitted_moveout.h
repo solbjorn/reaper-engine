@@ -3,7 +3,7 @@
 #include "../../../detail_path_manager.h"
 
 template <typename _Object>
-class CStateMonsterHittedMoveOut : public CState<_Object>
+class CStateMonsterHittedMoveOut final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterHittedMoveOut<_Object>, CState<_Object>);
 

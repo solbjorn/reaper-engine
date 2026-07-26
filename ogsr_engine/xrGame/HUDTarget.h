@@ -10,7 +10,7 @@ constexpr inline u32 C_DEFAULT{D3DCOLOR_XRGB(0xff, 0xff, 0xff)};
 
 class CHUDManager;
 
-class CHUDTarget
+class CHUDTarget final
 {
 private:
     friend class CHUDManager;

@@ -20,7 +20,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 // CControllerCoverEvaluator
-class CCoverEvaluator : public CCoverEvaluatorBase
+class CCoverEvaluator final : public CCoverEvaluatorBase
 {
     RTTI_DECLARE_TYPEINFO(CCoverEvaluator, CCoverEvaluatorBase);
 

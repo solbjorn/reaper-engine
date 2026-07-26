@@ -18,7 +18,7 @@ class CCoverManager;
 class CScriptEngine;
 class CPatrolPathStorage;
 
-class CAI_Space : public virtual RTTI::Enable
+class CAI_Space final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CAI_Space);
 

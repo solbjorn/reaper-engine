@@ -2,7 +2,7 @@
 
 class CBaseMonster;
 
-class CMonsterMorale
+class CMonsterMorale final
 {
     // external parameters
     float m_hit_quant;

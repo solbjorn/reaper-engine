@@ -4,7 +4,7 @@
 
 class CController;
 
-class CStateManagerController : public CMonsterStateManager<CController>
+class CStateManagerController final : public CMonsterStateManager<CController>
 {
     RTTI_DECLARE_TYPEINFO(CStateManagerController, CMonsterStateManager<CController>);
 

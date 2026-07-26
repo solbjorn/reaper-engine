@@ -7,7 +7,7 @@
 
 constexpr int DEFAULT_NEWS_SHOW_TIME{5000};
 
-struct GAME_NEWS_DATA
+struct GAME_NEWS_DATA final
 {
 public:
     enum eNewsType
@@ -35,13 +35,13 @@ private:
 };
 
 template <typename M>
-struct object_loader::default_load<GAME_NEWS_DATA, M>
+struct object_loader::default_load<GAME_NEWS_DATA, M> final
 {
     void operator()(GAME_NEWS_DATA& data, M& stream) const { data.load(stream); }
 };
 
 template <typename M>
-struct object_saver::default_save<GAME_NEWS_DATA, M>
+struct object_saver::default_save<GAME_NEWS_DATA, M> final
 {
     void operator()(const GAME_NEWS_DATA& data, M& stream) const { data.save(stream); }
 };

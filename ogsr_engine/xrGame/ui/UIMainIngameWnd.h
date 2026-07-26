@@ -26,7 +26,7 @@ class CWeapon;
 class CMissile;
 class CInventoryItem;
 
-class CUIMainIngameWnd : public CUIWindow
+class CUIMainIngameWnd final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIMainIngameWnd, CUIWindow);
 
@@ -34,7 +34,7 @@ public:
     CUIMainIngameWnd();
     ~CUIMainIngameWnd() override;
 
-    virtual void Init();
+    void Init();
     void Draw() override;
     void Update() override;
 

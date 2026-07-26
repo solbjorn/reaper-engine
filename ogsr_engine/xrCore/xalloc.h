@@ -5,7 +5,7 @@
 #include "xrMemory.h"
 
 template <typename T>
-class xalloc
+class xalloc final
 {
 public:
     using size_type = size_t;

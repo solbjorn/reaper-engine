@@ -11,7 +11,7 @@
 #include "graph_abstract.h"
 #include "patrol_point.h"
 
-class CPatrolPath : public CGraphAbstractSerialize<CPatrolPoint, float, u32>
+class CPatrolPath final : public CGraphAbstractSerialize<CPatrolPoint, float, u32>
 {
     RTTI_DECLARE_TYPEINFO(CPatrolPath, CGraphAbstractSerialize<CPatrolPoint, float, u32>);
 
@@ -19,7 +19,7 @@ public:
     friend class CPatrolPathScript;
 
 private:
-    struct CAlwaysTrueEvaluator
+    struct CAlwaysTrueEvaluator final
     {
         [[nodiscard]] constexpr inline bool operator()(const Fvector&) const { return true; }
     };

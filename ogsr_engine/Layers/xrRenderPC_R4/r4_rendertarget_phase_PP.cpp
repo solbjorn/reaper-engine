@@ -93,7 +93,7 @@ BOOL CRenderTarget::u_need_PP()
 
 bool CRenderTarget::u_need_CM() { return (param_color_map_influence > 0.001f); }
 
-struct TL_2c3uv
+struct TL_2c3uv final
 {
     Fvector4 p;
     u32 color0;

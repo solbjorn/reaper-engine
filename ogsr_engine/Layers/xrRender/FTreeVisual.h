@@ -9,7 +9,7 @@ class FTreeVisual : public dxRender_Visual, public IRender_Mesh
     RTTI_DECLARE_TYPEINFO(FTreeVisual, dxRender_Visual, IRender_Mesh);
 
 private:
-    struct _5color
+    struct _5color final
     {
         Fvector rgb; // - all static lighting
         float hemi; // - hemisphere
@@ -31,7 +31,7 @@ public:
     void Release() override;
 };
 
-class FTreeVisual_ST : public FTreeVisual
+class FTreeVisual_ST final : public FTreeVisual
 {
     RTTI_DECLARE_TYPEINFO(FTreeVisual_ST, FTreeVisual);
 
@@ -47,7 +47,7 @@ public:
     void Release() override;
 };
 
-class FTreeVisual_PM : public FTreeVisual
+class FTreeVisual_PM final : public FTreeVisual
 {
     RTTI_DECLARE_TYPEINFO(FTreeVisual_PM, FTreeVisual);
 

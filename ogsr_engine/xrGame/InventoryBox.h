@@ -63,7 +63,7 @@ public:
     [[nodiscard]] CGameObject& object() override { return *smart_cast<CGameObject*>(this); }
 };
 
-class CInventoryBox : public CCustomInventoryBox<CGameObject> // CBasicInventoryBox
+class CInventoryBox final : public CCustomInventoryBox<CGameObject> // CBasicInventoryBox
 {
     RTTI_DECLARE_TYPEINFO(CInventoryBox, CCustomInventoryBox<CGameObject>);
 

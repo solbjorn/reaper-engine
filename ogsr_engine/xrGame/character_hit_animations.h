@@ -4,7 +4,7 @@
 
 class CEntityAlive;
 
-class character_hit_animation_controller
+class character_hit_animation_controller final
 {
 public:
     void SetupHitMotions(IKinematicsAnimated& ca);

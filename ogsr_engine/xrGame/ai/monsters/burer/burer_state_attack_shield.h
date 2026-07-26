@@ -3,7 +3,7 @@
 #include "../state.h"
 
 template <typename Object>
-class CStateBurerShield : public CState<Object>
+class CStateBurerShield final : public CState<Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateBurerShield<Object>, CState<Object>);
 

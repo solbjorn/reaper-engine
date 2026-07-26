@@ -4,7 +4,7 @@
 
 #define CAP_VERSION(a, b) (u32(a) * 10 + u32(b))
 
-class CHWCaps
+class CHWCaps final
 {
 public:
     enum
@@ -13,7 +13,7 @@ public:
     };
 
 public:
-    struct caps_Geometry
+    struct caps_Geometry final
     {
         u32 dwRegisters : 16;
         u32 dwInstructions : 16;
@@ -24,7 +24,7 @@ public:
         u32 dwClipPlanes : 4;
         u32 dwVertexCache : 8;
     };
-    struct caps_Raster
+    struct caps_Raster final
     {
         u32 dwRegisters : 16;
         u32 dwInstructions : 16;

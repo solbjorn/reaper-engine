@@ -5,7 +5,7 @@
 class CUIStatic;
 class CUIFrameLineWnd;
 
-class CUIButtonHint : public CUIWindow, public pureRender
+class CUIButtonHint final : public CUIWindow, public pureRender
 {
     RTTI_DECLARE_TYPEINFO(CUIButtonHint, CUIWindow, pureRender);
 

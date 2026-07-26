@@ -24,7 +24,7 @@ extern float dbg_vel_collid_damage_to_display;
 extern LPCSTR dbg_trace_object;
 
 #ifdef DRAW_CONTACTS
-struct SPHContactDBGDraw
+struct SPHContactDBGDraw final
 {
     int geomClass;
     Fvector norm;
@@ -74,6 +74,7 @@ enum
     phDbgTrackObject = 1 << 31
 
 };
+
 /// ph_dbg_draw_mask1 ne pereputat by blin!
 enum
 {
@@ -83,7 +84,8 @@ enum
     phDbgHitAnims = 1 << 3,
     phDbgDrawIKLimits = 1 << 4
 };
-struct SPHObjDBGDraw
+
+struct SPHObjDBGDraw final
 {
     Fvector AABB;
     Fvector AABB_center;
@@ -143,7 +145,7 @@ void PH_DBG_Clear();
 LPCSTR PH_DBG_ObjectTrack();
 void PH_DBG_SetTrackObject(LPCSTR obj);
 
-struct CFunctionGraph
+struct CFunctionGraph final
 {
 public:
     using type_function = CallMe::Delegate<float(float)>;
@@ -152,9 +154,7 @@ private:
     CStatGraph* m_stat_graph;
     type_function m_function;
     float x_min, x_max, s;
-    // float y_min,y_max;
-    // Fvector2 left_bottom;
-    // Fvector2 range;
+
 public:
     CFunctionGraph();
     ~CFunctionGraph();

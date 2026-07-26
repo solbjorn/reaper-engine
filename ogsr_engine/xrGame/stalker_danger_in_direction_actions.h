@@ -14,7 +14,7 @@
 // CStalkerActionDangerInDirectionTakeCover
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDangerInDirectionTakeCover : public CStalkerActionCombatBase
+class CStalkerActionDangerInDirectionTakeCover final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDangerInDirectionTakeCover, CStalkerActionCombatBase);
 
@@ -34,7 +34,7 @@ public:
 // CStalkerActionDangerInDirectionLookOut
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDangerInDirectionLookOut : public CStalkerActionCombatBase
+class CStalkerActionDangerInDirectionLookOut final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDangerInDirectionLookOut, CStalkerActionCombatBase);
 
@@ -54,7 +54,7 @@ public:
 // CStalkerActionDangerInDirectionHoldPosition
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDangerInDirectionHoldPosition : public CStalkerActionCombatBase
+class CStalkerActionDangerInDirectionHoldPosition final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDangerInDirectionHoldPosition, CStalkerActionCombatBase);
 
@@ -74,7 +74,7 @@ public:
 // CStalkerActionDangerInDirectionDetour
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDangerInDirectionDetour : public CStalkerActionCombatBase
+class CStalkerActionDangerInDirectionDetour final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDangerInDirectionDetour, CStalkerActionCombatBase);
 
@@ -94,7 +94,7 @@ public:
 // CStalkerActionDangerInDirectionSearch
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionDangerInDirectionSearch : public CStalkerActionCombatBase
+class CStalkerActionDangerInDirectionSearch final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionDangerInDirectionSearch, CStalkerActionCombatBase);
 

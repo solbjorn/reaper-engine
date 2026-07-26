@@ -1,7 +1,7 @@
 #ifndef PH_IMPACT_H
 #define PH_IMPACT_H
 
-struct SPHImpact
+struct SPHImpact final
 {
     Fvector force;
     Fvector point;

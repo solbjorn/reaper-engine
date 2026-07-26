@@ -3,7 +3,7 @@
 class CPhysicsShell;
 class CPhysicsShellHolder;
 
-class physics_shell_animated : public virtual RTTI::Enable
+class physics_shell_animated final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(physics_shell_animated);
 
@@ -22,5 +22,5 @@ public:
     bool update(const Fmatrix& xrorm);
 
 protected:
-    virtual void create_shell(CPhysicsShellHolder* O);
+    void create_shell(CPhysicsShellHolder* O);
 };

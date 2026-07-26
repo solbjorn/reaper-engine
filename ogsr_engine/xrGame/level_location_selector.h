@@ -12,9 +12,11 @@
 #include "level_graph.h"
 
 template <typename _VertexEvaluator, typename _vertex_id_type>
-class CBaseLocationSelector<CLevelGraph, _VertexEvaluator, _vertex_id_type> : public CAbstractLocationSelector<CLevelGraph, _VertexEvaluator, _vertex_id_type>
+class CBaseLocationSelector<CLevelGraph, _VertexEvaluator, _vertex_id_type> final
+    : public CAbstractLocationSelector<CLevelGraph, _VertexEvaluator, _vertex_id_type>
 {
-    RTTI_DECLARE_TYPEINFO(CBaseLocationSelector<CLevelGraph, _VertexEvaluator, _vertex_id_type>, CAbstractLocationSelector<CLevelGraph, _VertexEvaluator, _vertex_id_type>);
+    RTTI_DECLARE_TYPEINFO(CBaseLocationSelector<CLevelGraph, _VertexEvaluator, _vertex_id_type>,
+                          CAbstractLocationSelector<CLevelGraph, _VertexEvaluator, _vertex_id_type>);
 
 public:
     typedef CLevelGraph _Graph;

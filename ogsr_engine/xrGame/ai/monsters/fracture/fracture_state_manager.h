@@ -4,7 +4,7 @@
 
 class CFracture;
 
-class CStateManagerFracture : public CMonsterStateManager<CFracture>
+class CStateManagerFracture final : public CMonsterStateManager<CFracture>
 {
     RTTI_DECLARE_TYPEINFO(CStateManagerFracture, CMonsterStateManager<CFracture>);
 

@@ -442,7 +442,7 @@ void discord::update()
 
 // Integration switch
 
-class ccc_social : public CCC_Bool
+class ccc_social final : public CCC_Bool
 {
     RTTI_DECLARE_TYPEINFO(ccc_social, CCC_Bool);
 

@@ -8,7 +8,7 @@
 
 #define FAKE_DEATH_TYPES_COUNT 4
 
-class CZombie : public CBaseMonster, public CControlledEntity<CZombie>
+class CZombie final : public CBaseMonster, public CControlledEntity<CZombie>
 {
     RTTI_DECLARE_TYPEINFO(CZombie, CBaseMonster, CControlledEntity<CZombie>);
 

@@ -1,6 +1,6 @@
 #pragma once
 
-class CBlender_gasmask_dudv : public IBlender
+class CBlender_gasmask_dudv final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_gasmask_dudv, IBlender);
 

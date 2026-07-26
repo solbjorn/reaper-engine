@@ -4,7 +4,7 @@ class CCoverPoint;
 class CCoverEvaluator;
 class CBaseMonster;
 
-class CMonsterCoverManager
+class CMonsterCoverManager final
 {
     CBaseMonster* m_object;
     CCoverEvaluator* m_ce_best{};

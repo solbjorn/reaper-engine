@@ -15,7 +15,7 @@ static xr_string update_path_script(CLocatorAPI* fs, LPCSTR initial, LPCSTR src)
     return temp;
 }
 
-class FS_file_list
+class FS_file_list final
 {
     xr_vector<LPSTR>* m_p;
 
@@ -27,7 +27,7 @@ public:
     void Free() { FS.file_list_close(m_p); }
 };
 
-struct FS_item
+struct FS_item final
 {
     string_path name;
     s64 size;
@@ -81,7 +81,7 @@ static bool nameSorter(const FS_item& itm1, const FS_item& itm2)
     return (xr_strcmp(itm2.name, itm1.name) < 0);
 }
 
-class FS_file_list_ex
+class FS_file_list_ex final
 {
     xr_vector<FS_item> m_file_items;
 

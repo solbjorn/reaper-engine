@@ -36,17 +36,17 @@ struct dSurfaceParameters;
 class CScriptEntityAction;
 class car_memory;
 
-class CCar : public CEntity,
-             public CScriptEntity,
-             public CPHUpdateObject,
-             public CHolderCustom,
-             public CPHSkeleton,
-             public CDamagableItem,
-             public CPHDestroyable,
-             public CPHCollisionDamageReceiver,
-             public CHitImmunity,
-             public CExplosive,
-             public CDelayedActionFuse
+class CCar final : public CEntity,
+                   public CScriptEntity,
+                   public CPHUpdateObject,
+                   public CHolderCustom,
+                   public CPHSkeleton,
+                   public CDamagableItem,
+                   public CPHDestroyable,
+                   public CPHCollisionDamageReceiver,
+                   public CHitImmunity,
+                   public CExplosive,
+                   public CDelayedActionFuse
 {
     RTTI_DECLARE_TYPEINFO(CCar, CEntity, CScriptEntity, CPHUpdateObject, CHolderCustom, CPHSkeleton, CDamagableItem, CPHDestroyable, CPHCollisionDamageReceiver,
                           CHitImmunity, CExplosive, CDelayedActionFuse);
@@ -150,7 +150,7 @@ public:
     float m_power_neutral_factor; // multiplier for power when accelerator is not pressed (0-1,0.25)
     bool b_exploded{};
 
-    struct SWheel : public CDamagableHealthItem
+    struct SWheel final : public CDamagableHealthItem
     {
         RTTI_DECLARE_TYPEINFO(SWheel, CDamagableHealthItem);
 
@@ -163,7 +163,7 @@ public:
         u16 bone_id{BI_NONE};
         bool inited{};
 
-        struct SWheelCollisionParams
+        struct SWheelCollisionParams final
         {
             float spring_factor{1.0f};
             float damping_factor{1.0f};
@@ -196,7 +196,7 @@ public:
         void ApplyDamage(u16 level) override;
     };
 
-    struct SWheelDrive
+    struct SWheelDrive final
     {
         SWheel* pwheel;
         float pos_fvd;
@@ -210,7 +210,7 @@ public:
         void Load(LPCSTR) {}
     };
 
-    struct SWheelSteer
+    struct SWheelSteer final
     {
         SWheel* pwheel;
         float pos_right;
@@ -229,7 +229,7 @@ public:
         void Load(LPCSTR) {}
     };
 
-    struct SWheelBreak
+    struct SWheelBreak final
     {
         SWheel* pwheel;
         float break_torque;
@@ -242,7 +242,7 @@ public:
         void Load(LPCSTR section);
     };
 
-    struct SExhaust
+    struct SExhaust final
     {
         Fmatrix transform;
         // Fvector				velocity;
@@ -266,7 +266,7 @@ public:
         SExhaust& operator=(SExhaust&&) = default;
     };
 
-    struct SDoor : public CDamagableHealthItem
+    struct SDoor final : public CDamagableHealthItem
     {
         RTTI_DECLARE_TYPEINFO(SDoor, CDamagableHealthItem);
 
@@ -284,7 +284,7 @@ public:
         float closed_angle{};
         u32 open_time{};
 
-        struct SDoorway
+        struct SDoorway final
         {
             Fvector2 door_plane_ext;
             _vector2<int> door_plane_axes;
@@ -342,7 +342,7 @@ public:
         ~SDoor() override = default;
     };
 
-    struct SCarSound
+    struct SCarSound final
     {
         ref_sound snd_engine;
         ref_sound snd_engine_start;
@@ -530,7 +530,7 @@ private:
     static void cb_Steer(CBoneInstance* B);
     void Hit(SHit* pHDS) override;
     tmc::task<void> Die(CObject* who) override;
-    virtual void PHHit(float, Fvector& dir, CObject*, s16 element, Fvector p_in_object_space, float impulse, ALife::EHitType hit_type);
+    void PHHit(float, Fvector& dir, CObject*, s16 element, Fvector p_in_object_space, float impulse, ALife::EHitType hit_type);
     bool WheelHit(float P, s16 element);
     bool DoorHit(float P, s16 element, ALife::EHitType hit_type);
 
@@ -576,7 +576,7 @@ public:
     void OnKeyboardPress(EGameActions cmd) override;
     void OnKeyboardRelease(EGameActions cmd) override;
     void OnKeyboardHold(EGameActions cmd) override;
-    virtual void vfProcessInputKey(EGameActions iCommand, bool bPressed);
+    void vfProcessInputKey(EGameActions iCommand, bool bPressed);
     tmc::task<void> OnEvent(NET_Packet& P, u16 type) override;
     void OnAfterExplosion() override;
     void OnBeforeExplosion() override;
@@ -592,8 +592,8 @@ public:
     float FireDirDiff();
     bool isObjectVisible(CScriptGameObject* O);
     Fvector CurrentVel();
-    virtual float GetfHealth() const { return CEntity::GetfHealth(); }
-    virtual float SetfHealth(float value) { return CEntity::SetfHealth(value); }
+    [[nodiscard]] f32 GetfHealth() const { return CEntity::GetfHealth(); }
+    [[nodiscard]] f32 SetfHealth(f32 value) { return CEntity::SetfHealth(value); }
 
     // Hits
     void HitSignal(f32, Fvector3&, CObject*, s16) override {}

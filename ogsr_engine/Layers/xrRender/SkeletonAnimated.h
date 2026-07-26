@@ -37,7 +37,7 @@ public:
 
 //*** The visual itself ***************************************************************************
 
-class CKinematicsAnimated : public CKinematics, public IKinematicsAnimated
+class CKinematicsAnimated final : public CKinematics, public IKinematicsAnimated
 {
     RTTI_DECLARE_TYPEINFO(CKinematicsAnimated, CKinematics, IKinematicsAnimated);
 
@@ -72,7 +72,7 @@ private:
 
     CBlendInstance* blend_instances{};
 
-    struct SMotionsSlot
+    struct SMotionsSlot final
     {
         shared_motions motions;
         BoneMotionsVec bone_motions;

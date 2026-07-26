@@ -8,7 +8,7 @@
 
 #pragma once
 
-class CStalkerAnimationScript
+class CStalkerAnimationScript final
 {
 private:
     MotionID m_animation;

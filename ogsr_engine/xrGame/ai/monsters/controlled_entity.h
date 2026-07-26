@@ -11,7 +11,7 @@ enum ETask : u32
     eTaskNone = u32(-1)
 };
 
-struct SControlledInfo
+struct SControlledInfo final
 {
     const CEntity* m_object;
     ETask m_task;
@@ -53,7 +53,7 @@ class CControlledEntity : public CControlledEntityBase
 public:
     SControlledInfo m_data{};
 
-    struct SGroupID
+    struct SGroupID final
     {
         int team_id;
         int squad_id;

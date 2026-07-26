@@ -4,7 +4,7 @@
 #include "../../../ai_debug.h"
 
 template <typename _Object>
-class CStateControllerAttack : public CState<_Object>
+class CStateControllerAttack final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateControllerAttack<_Object>, CState<_Object>);
 

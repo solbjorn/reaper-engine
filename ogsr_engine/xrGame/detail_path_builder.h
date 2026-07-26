@@ -11,7 +11,7 @@
 #include "movement_manager.h"
 #include "detail_path_manager.h"
 
-class CDetailPathBuilder
+class CDetailPathBuilder final
 {
 private:
     typedef CMovementManager::CLevelPathManager CLevelPathManager;

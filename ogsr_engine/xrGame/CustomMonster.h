@@ -30,7 +30,7 @@ class CAI_Stalker;
 class CDangerObject;
 class CCustomMonsterScript;
 
-class CCustomMonster : public CEntityAlive, public CScriptEntity, public Feel::Vision, public Feel::Sound, public Feel::Touch
+class XR_NOVTABLE CCustomMonster : public CEntityAlive, public CScriptEntity, public Feel::Vision, public Feel::Sound, public Feel::Touch
 {
     RTTI_DECLARE_TYPEINFO(CCustomMonster, CEntityAlive, CScriptEntity, Feel::Vision, Feel::Sound, Feel::Touch);
 
@@ -48,7 +48,7 @@ private:
     u32 m_last_client_update_time;
 
 protected:
-    struct SAnimState
+    struct SAnimState final
     {
         MotionID fwd;
         MotionID back;
@@ -87,7 +87,7 @@ public:
 
     u32 m_dwCurrentTime; // time updated in UpdateCL
 
-    struct net_update
+    struct net_update final
     {
         u32 dwTimeStamp; // server(game) timestamp
         float o_model; // model yaw

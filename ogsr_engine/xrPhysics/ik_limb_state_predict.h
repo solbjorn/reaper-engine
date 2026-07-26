@@ -1,6 +1,6 @@
 #pragma once
 
-struct ik_limb_state_predict
+struct ik_limb_state_predict final
 {
     float time_to_footstep;
     float footstep_shift;

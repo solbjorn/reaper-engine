@@ -3,7 +3,7 @@
 #include "../state.h"
 
 template <typename _Object>
-class CStateMonsterPanic : public CState<_Object>
+class CStateMonsterPanic final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterPanic<_Object>, CState<_Object>);
 

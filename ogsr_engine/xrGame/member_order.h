@@ -18,10 +18,10 @@ class CCoverPoint;
 class CExplosive;
 class CGameObject;
 
-class CMemberOrder
+class CMemberOrder final
 {
 public:
-    struct CMemberDeathReaction
+    struct CMemberDeathReaction final
     {
         CAI_Stalker* m_member;
         u32 m_time;
@@ -37,7 +37,7 @@ public:
         }
     };
 
-    struct CGrenadeReaction
+    struct CGrenadeReaction final
     {
         const CExplosive* m_grenade;
         const CGameObject* m_game_object;

@@ -7,7 +7,7 @@
 
 #include "Artifact.h"
 
-class CThornArtefact : public CArtefact
+class CThornArtefact final : public CArtefact
 {
     RTTI_DECLARE_TYPEINFO(CThornArtefact, CArtefact);
 

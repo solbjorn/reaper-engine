@@ -66,13 +66,13 @@ class CBlend;
 #define SIMPLE_ENEMY_HIT_TEST
 
 // StepSounds
-struct SStepSound
+struct SStepSound final
 {
     float vol;
     float freq;
 };
 
-struct SAttackEffector
+struct SAttackEffector final
 {
     SPPInfo ppi;
     float time;
@@ -86,7 +86,7 @@ struct SAttackEffector
     float ce_power;
 };
 
-struct SVelocityParam
+struct SVelocityParam final
 {
     struct
     {
@@ -294,7 +294,7 @@ struct SAnimItem
 #define SKIP_IF_AGGRESSIVE true
 
 // описание перехода
-struct STransition
+struct STransition final
 {
     struct
     {
@@ -309,7 +309,7 @@ struct STransition
 };
 
 // элемент движения
-struct SMotionItem
+struct SMotionItem final
 {
     EMotionAnim anim;
     bool is_turn_params;
@@ -323,7 +323,7 @@ struct SMotionItem
 };
 
 // подмена анимаций (если *flag == true, то необходимо заменить анимацию)
-struct SReplacedAnim
+struct SReplacedAnim final
 {
     EMotionAnim cur_anim;
     EMotionAnim new_anim;
@@ -357,7 +357,7 @@ typedef struct
 
 } SAttackAnimation;
 
-struct SAAParam
+struct SAAParam final
 {
     MotionID motion;
     float time;
@@ -379,7 +379,7 @@ struct SAAParam
 
 DEFINE_VECTOR(SAAParam, AA_VECTOR, AA_VECTOR_IT);
 
-struct SCurrentAnimationInfo
+struct SCurrentAnimationInfo final
 {
     shared_str name;
 
@@ -417,7 +417,7 @@ struct SCurrentAnimationInfo
 
 //////////////////////////////////////////////////////////////////////////
 
-struct t_fx_index
+struct t_fx_index final
 {
     s8 front;
     s8 back;
@@ -443,7 +443,7 @@ DEFINE_MAP(shared_str, t_fx_index, FX_MAP_STRING, FX_MAP_STRING_IT);
 
 DEFINE_VECTOR(SEQ_VECTOR, VELOCITY_CHAIN_VEC, VELOCITY_CHAIN_VEC_IT);
 
-struct SVelocity
+struct SVelocity final
 {
     float current;
     float target;
@@ -455,7 +455,7 @@ struct SVelocity
     }
 };
 
-struct SMotionVel
+struct SMotionVel final
 {
     float linear;
     float angular;
@@ -503,7 +503,7 @@ enum EAccelValue
 #define QUADRUPEDAL 4
 #define BIPEDAL 2
 
-struct SMonsterEnemy
+struct SMonsterEnemy final
 {
     Fvector position;
     u32 vertex;
@@ -515,7 +515,7 @@ class CEntityAlive;
 
 DEFINE_MAP(const CEntityAlive*, SMonsterEnemy, ENEMIES_MAP, ENEMIES_MAP_IT);
 
-struct SMonsterCorpse
+struct SMonsterCorpse final
 {
     Fvector position;
     u32 vertex;
@@ -524,7 +524,7 @@ struct SMonsterCorpse
 
 DEFINE_MAP(const CEntityAlive*, SMonsterCorpse, CORPSE_MAP, CORPSE_MAP_IT);
 
-struct SMonsterHit
+struct SMonsterHit final
 {
     CObject* object;
     TTime time;

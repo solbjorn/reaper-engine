@@ -8,7 +8,7 @@
 
 #pragma once
 
-class CScriptValue : public virtual RTTI::Enable
+class CScriptValue final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CScriptValue);
 

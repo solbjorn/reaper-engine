@@ -93,7 +93,7 @@ add_to_type_list(CSE_ALifeTraderAbstract);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeTraderAbstract)
 
-class CSE_ALifeTrader : public CSE_ALifeDynamicObjectVisual, public CSE_ALifeTraderAbstract
+class CSE_ALifeTrader final : public CSE_ALifeDynamicObjectVisual, public CSE_ALifeTraderAbstract
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeTrader, CSE_ALifeDynamicObjectVisual, CSE_ALifeTraderAbstract);
 
@@ -110,17 +110,19 @@ public:
     [[nodiscard]] CSE_Abstract* init() override;
     [[nodiscard]] CSE_Abstract* base() override;
     [[nodiscard]] const CSE_Abstract* base() const override;
-    virtual bool natural_weapon() const { return false; }
-    virtual bool natural_detector() const { return false; }
+    [[nodiscard]] bool natural_weapon() const { return false; }
+    [[nodiscard]] bool natural_detector() const { return false; }
 
 #ifdef XRGAME_EXPORTS
     void spawn_supplies() override;
     void add_online(const bool& update_registries) override;
     void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries) override;
 #endif
+
 #ifdef DEBUG
-    virtual bool match_configuration() const;
+    [[nodiscard]] bool match_configuration() const;
 #endif
+
     [[nodiscard]] CSE_Abstract* cast_abstract() override { return this; }
     [[nodiscard]] CSE_ALifeTraderAbstract* cast_trader_abstract() override { return this; }
     [[nodiscard]] CSE_ALifeTrader* cast_trader() override { return this; }
@@ -210,7 +212,7 @@ add_to_type_list(CSE_ALifeAnomalousZone);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeAnomalousZone)
 
-class CSE_ALifeTorridZone : public CSE_ALifeCustomZone, public CSE_Motion
+class CSE_ALifeTorridZone final : public CSE_ALifeCustomZone, public CSE_Motion
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeTorridZone, CSE_ALifeCustomZone, CSE_Motion);
 
@@ -236,7 +238,7 @@ add_to_type_list(CSE_ALifeTorridZone);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeTorridZone)
 
-class CSE_ALifeZoneVisual : public CSE_ALifeAnomalousZone, public CSE_Visual
+class CSE_ALifeZoneVisual final : public CSE_ALifeAnomalousZone, public CSE_Visual
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeZoneVisual, CSE_ALifeAnomalousZone, CSE_Visual);
 
@@ -433,7 +435,7 @@ add_to_type_list(CSE_ALifeMonsterAbstract);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeMonsterAbstract)
 
-class CSE_ALifeCreatureActor : public CSE_ALifeCreatureAbstract, public CSE_ALifeTraderAbstract, public CSE_PHSkeleton
+class CSE_ALifeCreatureActor final : public CSE_ALifeCreatureAbstract, public CSE_ALifeTraderAbstract, public CSE_PHSkeleton
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeCreatureActor, CSE_ALifeCreatureAbstract, CSE_ALifeTraderAbstract, CSE_PHSkeleton);
 
@@ -467,16 +469,19 @@ public:
     [[nodiscard]] CSE_Abstract* init() override;
     void load(NET_Packet& tNetPacket) override;
     [[nodiscard]] bool can_save() const override { return true; }
-    [[nodiscard]] virtual bool natural_weapon() const { return false; }
-    [[nodiscard]] virtual bool natural_detector() const { return false; }
+    [[nodiscard]] bool natural_weapon() const { return false; }
+    [[nodiscard]] bool natural_detector() const { return false; }
+
 #ifdef XRGAME_EXPORTS
     void spawn_supplies() override;
     void add_online(const bool& update_registries) override;
     void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries) override;
 #endif
+
 #ifdef DEBUG
-    virtual bool match_configuration() const;
+    [[nodiscard]] bool match_configuration() const;
 #endif
+
     [[nodiscard]] CSE_Abstract* cast_abstract() override { return this; }
     [[nodiscard]] CSE_ALifeTraderAbstract* cast_trader_abstract() override { return this; }
 
@@ -491,7 +496,7 @@ add_to_type_list(CSE_ALifeCreatureActor);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeCreatureActor)
 
-class CSE_ALifeCreatureCrow : public CSE_ALifeCreatureAbstract
+class CSE_ALifeCreatureCrow final : public CSE_ALifeCreatureAbstract
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeCreatureCrow, CSE_ALifeCreatureAbstract);
 
@@ -516,7 +521,7 @@ add_to_type_list(CSE_ALifeCreatureCrow);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeCreatureCrow)
 
-class CSE_ALifeCreaturePhantom : public CSE_ALifeCreatureAbstract
+class CSE_ALifeCreaturePhantom final : public CSE_ALifeCreatureAbstract
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeCreaturePhantom, CSE_ALifeCreatureAbstract);
 
@@ -541,7 +546,7 @@ add_to_type_list(CSE_ALifeCreaturePhantom);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeCreaturePhantom)
 
-class CSE_ALifeMonsterZombie : public CSE_ALifeMonsterAbstract
+class CSE_ALifeMonsterZombie final : public CSE_ALifeMonsterAbstract
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeMonsterZombie, CSE_ALifeMonsterAbstract);
 
@@ -614,7 +619,7 @@ add_to_type_list(CSE_ALifeMonsterBase);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeMonsterBase)
 
-class CSE_ALifePsyDogPhantom : public CSE_ALifeMonsterBase
+class CSE_ALifePsyDogPhantom final : public CSE_ALifeMonsterBase
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifePsyDogPhantom, CSE_ALifeMonsterBase);
 
@@ -700,7 +705,7 @@ add_to_type_list(CSE_ALifeHumanAbstract);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeHumanAbstract)
 
-class CSE_ALifeHumanStalker : public CSE_ALifeHumanAbstract, public CSE_PHSkeleton
+class CSE_ALifeHumanStalker final : public CSE_ALifeHumanAbstract, public CSE_PHSkeleton
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeHumanStalker, CSE_ALifeHumanAbstract, CSE_PHSkeleton);
 
@@ -729,7 +734,7 @@ add_to_type_list(CSE_ALifeHumanStalker);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeHumanStalker)
 
-class CSE_ALifeOnlineOfflineGroup : public CSE_ALifeDynamicObject, public CSE_ALifeSchedulable
+class CSE_ALifeOnlineOfflineGroup final : public CSE_ALifeDynamicObject, public CSE_ALifeSchedulable
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeOnlineOfflineGroup, CSE_ALifeDynamicObject, CSE_ALifeSchedulable);
 

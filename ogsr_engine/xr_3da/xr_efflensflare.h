@@ -9,24 +9,24 @@
 class CInifile;
 class CEnvironment;
 
-class CLensFlareDescriptor
+class CLensFlareDescriptor final
 {
 public:
     struct SFlare
     {
-        float fOpacity;
-        float fRadius;
-        float fPosition;
+        f32 fOpacity{0.0f};
+        f32 fRadius{0.0f};
+        f32 fPosition{0.0f};
         shared_str texture;
         shared_str shader;
         FactoryPtr<IFlareRender> m_pRender;
-        // ref_shader		hShader;
-        SFlare() { fOpacity = fRadius = fPosition = 0; }
     };
-    struct SSource : public SFlare
+
+    struct SSource final : public SFlare
     {
         BOOL ignore_color;
     };
+
     DEFINE_VECTOR(SFlare, FlareVec, FlareIt);
     FlareVec m_Flares;
 
@@ -50,7 +50,6 @@ public:
     void SetGradient(float fMaxRadius, float fOpacity, LPCSTR tex_name, LPCSTR sh_name);
     void SetSource(float fRadius, BOOL ign_color, LPCSTR tex_name, LPCSTR sh_name);
     void AddFlare(float fRadius, float fOpacity, float fPosition, LPCSTR tex_name, LPCSTR sh_name);
-    // ref_shader			CreateShader	(LPCSTR tex_name, LPCSTR sh_name);
 
     shared_str section;
 
@@ -61,9 +60,10 @@ public:
     void OnDeviceCreate();
     void OnDeviceDestroy();
 };
+
 DEFINE_VECTOR(CLensFlareDescriptor*, LensFlareDescVec, LensFlareDescIt);
 
-class CLensFlare : public virtual RTTI::Enable
+class CLensFlare final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CLensFlare);
 

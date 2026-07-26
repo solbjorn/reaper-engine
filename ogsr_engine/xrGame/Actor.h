@@ -60,7 +60,7 @@ class CLocationManager;
 
 class CActorCameraManager;
 
-struct ActorRestoreParams
+struct ActorRestoreParams final
 {
     float HealthRestoreSpeed;
     float PowerRestoreSpeed;
@@ -155,7 +155,7 @@ protected:
     virtual void AddGameTask(const CInfoPortion* info_portion) const;
 
 protected:
-    struct SDefNewsMsg
+    struct SDefNewsMsg final
     {
         GAME_NEWS_DATA* news_data;
         u32 time;

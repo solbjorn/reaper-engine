@@ -3,7 +3,7 @@
 
 class CBackend;
 
-class R_constants
+class R_constants final
 {
 public:
     enum BufferType

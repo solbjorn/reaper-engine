@@ -150,7 +150,7 @@ namespace
     return false
 
 template <bool bClass3, bool bFirst>
-class box_collider
+class box_collider final
 {
 public:
     COLLIDER* dest;

@@ -23,7 +23,7 @@ void CMonsterSquad::ProcessIdle()
     Idle_AssignAction(m_temp_entities);
 }
 
-struct CPredicateSideSort
+struct CPredicateSideSort final
 {
     Fvector target;
 

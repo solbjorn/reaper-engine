@@ -69,7 +69,7 @@ enum index : u32
     CB_BufferComputeShader = 0x60,
 };
 
-struct R_constant_load
+struct R_constant_load final
 {
     // linear index (pixel)
     u16 index{std::numeric_limits<u16>::max()};
@@ -81,7 +81,7 @@ struct R_constant_load
     [[nodiscard]] constexpr bool equal(const R_constant_load& C) const { return index == C.index && cls == C.cls; }
 };
 
-struct R_constant : public xr_resource
+struct R_constant final : public xr_resource
 {
     RTTI_DECLARE_TYPEINFO(R_constant, xr_resource);
 
@@ -154,7 +154,7 @@ public:
 
 inline R_constant_setup::~R_constant_setup() = default;
 
-class R_constant_table : public xr_resource_flagged
+class R_constant_table final : public xr_resource_flagged
 {
     RTTI_DECLARE_TYPEINFO(R_constant_table, xr_resource_flagged);
 

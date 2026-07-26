@@ -27,7 +27,7 @@ class XR_NOVTABLE CObject : public DLL_Pure, public ISpatial, public ISheduled, 
     RTTI_DECLARE_TYPEINFO(CObject, DLL_Pure, ISpatial, ISheduled, IRenderable, ICollidable);
 
 public:
-    struct SavedPosition
+    struct SavedPosition final
     {
         u32 dwTime;
         Fvector vPosition;

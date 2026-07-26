@@ -5,7 +5,7 @@
 #include "../HUDManager.h"
 #include "../object_broker.h"
 
-struct event_comparer
+struct event_comparer final
 {
     shared_str name;
     s16 event;

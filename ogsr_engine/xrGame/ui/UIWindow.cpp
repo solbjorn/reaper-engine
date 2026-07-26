@@ -17,7 +17,7 @@ namespace
 {
 int ListWndCount = 0;
 
-struct DBGList
+struct DBGList final
 {
     int num;
     bool closed;

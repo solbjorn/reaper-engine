@@ -82,7 +82,7 @@ public:
 };
 
 // Model definition
-class MODEL : Noncopyable
+class MODEL final : Noncopyable
 {
     friend class COLLIDER;
 
@@ -196,7 +196,7 @@ enum
 };
 
 // Collider itself
-class COLLIDER
+class COLLIDER final
 {
     // Result management
     xr_vector<RESULT> rd;
@@ -236,7 +236,7 @@ public:
 };
 
 //
-class Collector
+class Collector final
 {
     xr_vector<Fvector> verts;
     xr_vector<TRI> faces;
@@ -270,7 +270,7 @@ public:
     }
 };
 
-class CollectorPacked : public Noncopyable
+class CollectorPacked final : public Noncopyable
 {
 private:
     static constexpr gsl::index clpMX{24}, clpMY{16}, clpMZ{24};

@@ -1,6 +1,6 @@
 #pragma once
 
-struct MotionID
+struct MotionID final
 {
 private:
     typedef const MotionID* (MotionID::*unspecified_bool_type)() const;

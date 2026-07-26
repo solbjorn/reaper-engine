@@ -3,7 +3,7 @@
 
 class CBackend;
 
-class R_xforms
+class R_xforms final
 {
 public:
     Fmatrix m_w; // Basic	- world

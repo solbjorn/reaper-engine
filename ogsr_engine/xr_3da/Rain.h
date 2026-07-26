@@ -12,13 +12,14 @@ class IRender_DetailModel;
 
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/RainRender.h"
+
 //
-class CEffect_Rain
+class CEffect_Rain final
 {
     friend class dxRainRender;
 
 private:
-    struct Item
+    struct Item final
     {
         Fvector P;
         Fvector Phit;
@@ -29,13 +30,15 @@ private:
         u32 uv_set;
         void invalidate() { dwTime_Life = 0; }
     };
-    struct Particle
+
+    struct Particle final
     {
         Particle *next, *prev;
         Fmatrix mXForm;
         Fsphere bounds;
         float time;
     };
+
     enum States
     {
         stIdle = 0,

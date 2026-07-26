@@ -13,7 +13,7 @@
 
 class CCar;
 
-class car_memory : public vision_client
+class car_memory final : public vision_client
 {
     RTTI_DECLARE_TYPEINFO(car_memory, vision_client);
 

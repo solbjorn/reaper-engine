@@ -26,7 +26,7 @@ protected:
     CUIArtefactDetectorElite& ui();
 };
 
-class CScientificDetector : public CEliteDetector
+class CScientificDetector final : public CEliteDetector
 {
     RTTI_DECLARE_TYPEINFO(CScientificDetector, CEliteDetector);
 

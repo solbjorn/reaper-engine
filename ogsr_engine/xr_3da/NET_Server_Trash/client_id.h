@@ -1,6 +1,6 @@
 #pragma once
 
-class ClientID
+class ClientID final
 {
     u32 id{};
 

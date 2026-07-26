@@ -4,7 +4,7 @@
 #include "MathUtils.h"
 #include "PHValideValues.h"
 
-class CPHActivationShape : public CPHObject
+class CPHActivationShape final : public CPHObject
 {
     RTTI_DECLARE_TYPEINFO(CPHActivationShape, CPHObject);
 

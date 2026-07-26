@@ -19,7 +19,7 @@ class CUICheckButton;
 class CUIDragDropListEx;
 class CUIEditBox;
 
-class UIHelper
+class UIHelper final
 {
 public:
     UIHelper() = default;

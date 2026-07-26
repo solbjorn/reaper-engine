@@ -5,7 +5,7 @@ class CInventory;
 class CInventoryItem;
 class CEntity;
 
-class CTrade
+class CTrade final
 {
     xr_vector<CObject*> m_nearest;
 
@@ -34,7 +34,6 @@ class CTrade
         }
     };
 
-    
 public:
     void TradeCB(bool bStart);
     SInventoryOwner pThis;

@@ -31,7 +31,7 @@ protected:
 
 // -------------------------------------------------------------------------------------------------
 
-class callback_base : public base
+class callback_base final : public base
 {
     RTTI_DECLARE_TYPEINFO(callback_base, base);
 
@@ -51,7 +51,7 @@ protected:
 
 // -------------------------------------------------------------------------------------------------
 
-class type_pair : public base
+class type_pair final : public base
 {
     RTTI_DECLARE_TYPEINFO(type_pair, base);
 
@@ -71,7 +71,7 @@ private:
 
 // -------------------------------------------------------------------------------------------------
 
-class key_state_base : public base
+class key_state_base final : public base
 {
     RTTI_DECLARE_TYPEINFO(key_state_base, base);
 

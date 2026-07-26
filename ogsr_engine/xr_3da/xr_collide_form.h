@@ -51,7 +51,7 @@ struct XR_TRIVIAL alignas(16) clQueryTri
 };
 XR_TRIVIAL_ASSERT(clQueryTri);
 
-struct clQueryCollision
+struct clQueryCollision final
 {
     xr_vector<CObject*> objects; // affected objects
     xr_vector<clQueryTri> tris; // triangles		(if queried)
@@ -144,7 +144,7 @@ public:
 
 inline ICollisionForm::~ICollisionForm() = default;
 
-class CCF_Skeleton : public ICollisionForm
+class CCF_Skeleton final : public ICollisionForm
 {
     RTTI_DECLARE_TYPEINFO(CCF_Skeleton, ICollisionForm);
 
@@ -154,7 +154,7 @@ public:
     XR_DIAG_IGNORE("-Wignored-attributes");
 #endif
 
-    struct XR_TRIVIAL SElement
+    struct XR_TRIVIAL SElement final
     {
         union
         {
@@ -242,7 +242,7 @@ public:
     }
 };
 
-class CCF_Shape : public ICollisionForm
+class CCF_Shape final : public ICollisionForm
 {
     RTTI_DECLARE_TYPEINFO(CCF_Shape, ICollisionForm);
 
@@ -284,7 +284,7 @@ public:
     };
     XR_TRIVIAL_ASSERT(shape_data);
 
-    struct XR_TRIVIAL shape_def
+    struct XR_TRIVIAL shape_def final
     {
         int type;
         shape_data data;

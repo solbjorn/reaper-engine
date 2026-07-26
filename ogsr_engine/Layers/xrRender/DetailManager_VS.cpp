@@ -15,7 +15,7 @@ static constexpr D3DVERTEXELEMENT9 dwDecl[] = {{0, 0, D3DDECLTYPE_FLOAT3, D3DDEC
                                                {0, 12, D3DDECLTYPE_SHORT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0}, // uv
                                                D3DDECL_END()};
 
-struct vertHW
+struct vertHW final
 {
     float x, y, z;
     short u, v, t, mid;

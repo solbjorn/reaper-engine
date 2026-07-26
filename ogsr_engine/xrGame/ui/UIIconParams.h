@@ -3,7 +3,7 @@
 #include "UIStatic.h"
 #include "../UIStaticItem.h"
 
-class CIconParams
+class CIconParams final
 {
     bool loaded{};
 

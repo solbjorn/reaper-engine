@@ -9,7 +9,7 @@
 #include "object_saver.h"
 
 // структура, описывающая отношение одного персонажа к другому или к группировке
-struct SRelation
+struct SRelation final
 {
     SRelation();
 
@@ -25,7 +25,7 @@ DEFINE_MAP(u16, SRelation, PERSONAL_RELATION_MAP, PERSONAL_RELATION_MAP_IT);
 DEFINE_MAP(CHARACTER_COMMUNITY_INDEX, SRelation, COMMUNITY_RELATION_MAP, COMMUNITY_RELATION_MAP_IT);
 
 // структура, существует для каждого персонажа в игре
-struct RELATION_DATA
+struct RELATION_DATA final
 {
     void clear();
 
@@ -40,13 +40,13 @@ struct RELATION_DATA
 };
 
 template <typename M>
-struct object_loader::default_load<RELATION_DATA, M>
+struct object_loader::default_load<RELATION_DATA, M> final
 {
     void operator()(RELATION_DATA& data, M& stream) const { data.load(stream); }
 };
 
 template <typename M>
-struct object_saver::default_save<RELATION_DATA, M>
+struct object_saver::default_save<RELATION_DATA, M> final
 {
     void operator()(const RELATION_DATA& data, M& stream) const { data.save(stream); }
 };

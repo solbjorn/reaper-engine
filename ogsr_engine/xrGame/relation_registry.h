@@ -19,7 +19,7 @@ class CEntityAlive;
 
 //////////////////////////////////////////////////////////////////////////
 
-struct RELATION_REGISTRY : public virtual RTTI::Enable
+struct RELATION_REGISTRY final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(RELATION_REGISTRY);
 
@@ -79,7 +79,7 @@ public:
     void Action(CEntityAlive* from, CEntityAlive* to, ERelationAction action);
 
 public:
-    struct FIGHT_DATA
+    struct FIGHT_DATA final
     {
         FIGHT_DATA();
         u16 attacker;
@@ -92,7 +92,7 @@ public:
         ALife::ERelationType defender_to_attacker; // как относился атакованый к нападавшему во время начальной атаки
     };
 
-    struct RELATION_MAP_SPOTS
+    struct RELATION_MAP_SPOTS final
     {
         RELATION_MAP_SPOTS();
         shared_str spot_names[ALife::eRelationTypeLast + 1];

@@ -6,7 +6,7 @@
 
 class CBaseMonster;
 
-class anti_aim_ability : public CControl_ComCustom<>
+class anti_aim_ability final : public CControl_ComCustom<>
 {
     RTTI_DECLARE_TYPEINFO(anti_aim_ability, CControl_ComCustom<>);
 
@@ -47,7 +47,7 @@ public:
 
     void set_callback(hit_callback callback) { m_callback = callback; }
     void on_monster_death();
-    virtual bool check_start_condition();
+    [[nodiscard]] bool check_start_condition();
 
 private:
     bool can_detect();

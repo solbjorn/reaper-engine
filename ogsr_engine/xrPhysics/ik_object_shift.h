@@ -5,7 +5,7 @@ namespace extrapolation
 class points;
 }
 
-class object_shift
+class object_shift final
 {
     float current{};
     float taget{};

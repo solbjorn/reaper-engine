@@ -1,6 +1,6 @@
 #pragma once
 
-class CBlender_bloom_build : public IBlender
+class CBlender_bloom_build final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_bloom_build, IBlender);
 
@@ -13,7 +13,7 @@ public:
     ~CBlender_bloom_build() override;
 };
 
-class CBlender_bloom_build_msaa : public IBlender
+class CBlender_bloom_build_msaa final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_bloom_build_msaa, IBlender);
 
@@ -26,7 +26,7 @@ public:
     ~CBlender_bloom_build_msaa() override;
 };
 
-class CBlender_postprocess_msaa : public IBlender
+class CBlender_postprocess_msaa final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_postprocess_msaa, IBlender);
 
@@ -39,7 +39,7 @@ public:
     ~CBlender_postprocess_msaa() override;
 };
 
-class CBlender_ssfx_bloom_build : public IBlender
+class CBlender_ssfx_bloom_build final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_ssfx_bloom_build, IBlender);
 
@@ -52,7 +52,7 @@ public:
     ~CBlender_ssfx_bloom_build() override;
 };
 
-class CBlender_ssfx_bloom_lens : public IBlender
+class CBlender_ssfx_bloom_lens final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_ssfx_bloom_lens, IBlender);
 
@@ -65,7 +65,7 @@ public:
     ~CBlender_ssfx_bloom_lens() override;
 };
 
-class CBlender_ssfx_bloom_downsample : public IBlender
+class CBlender_ssfx_bloom_downsample final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_ssfx_bloom_downsample, IBlender);
 
@@ -78,7 +78,7 @@ public:
     ~CBlender_ssfx_bloom_downsample() override;
 };
 
-class CBlender_ssfx_bloom_upsample : public IBlender
+class CBlender_ssfx_bloom_upsample final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_ssfx_bloom_upsample, IBlender);
 

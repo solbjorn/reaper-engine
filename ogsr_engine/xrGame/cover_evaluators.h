@@ -84,7 +84,7 @@ public:
 // CCoverEvaluatorFarFromEnemy
 //////////////////////////////////////////////////////////////////////////
 
-class CCoverEvaluatorFarFromEnemy : public CCoverEvaluatorCloseToEnemy
+class CCoverEvaluatorFarFromEnemy final : public CCoverEvaluatorCloseToEnemy
 {
     RTTI_DECLARE_TYPEINFO(CCoverEvaluatorFarFromEnemy, CCoverEvaluatorCloseToEnemy);
 
@@ -120,7 +120,7 @@ public:
 // CCoverEvaluatorBestByTime
 //////////////////////////////////////////////////////////////////////////
 
-class CCoverEvaluatorBestByTime : public CCoverEvaluatorBest
+class CCoverEvaluatorBestByTime final : public CCoverEvaluatorBest
 {
     RTTI_DECLARE_TYPEINFO(CCoverEvaluatorBestByTime, CCoverEvaluatorBest);
 
@@ -138,7 +138,7 @@ public:
 // CCoverEvaluatorAngle
 //////////////////////////////////////////////////////////////////////////
 
-class CCoverEvaluatorAngle : public CCoverEvaluatorCloseToEnemy
+class CCoverEvaluatorAngle final : public CCoverEvaluatorCloseToEnemy
 {
     RTTI_DECLARE_TYPEINFO(CCoverEvaluatorAngle, CCoverEvaluatorCloseToEnemy);
 
@@ -165,7 +165,7 @@ public:
 // CCoverEvaluatorSafe
 //////////////////////////////////////////////////////////////////////////
 
-class CCoverEvaluatorSafe : public CCoverEvaluatorBase
+class CCoverEvaluatorSafe final : public CCoverEvaluatorBase
 {
     RTTI_DECLARE_TYPEINFO(CCoverEvaluatorSafe, CCoverEvaluatorBase);
 
@@ -187,7 +187,7 @@ public:
 // CCoverEvaluatorRandomGame
 //////////////////////////////////////////////////////////////////////////
 
-class CCoverEvaluatorRandomGame : public CCoverEvaluatorBase
+class CCoverEvaluatorRandomGame final : public CCoverEvaluatorBase
 {
     RTTI_DECLARE_TYPEINFO(CCoverEvaluatorRandomGame, CCoverEvaluatorBase);
 
@@ -213,7 +213,7 @@ public:
 // CCoverEvaluatorAmbush
 //////////////////////////////////////////////////////////////////////////
 
-class CCoverEvaluatorAmbush : public CCoverEvaluatorBase
+class CCoverEvaluatorAmbush final : public CCoverEvaluatorBase
 {
     RTTI_DECLARE_TYPEINFO(CCoverEvaluatorAmbush, CCoverEvaluatorBase);
 

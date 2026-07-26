@@ -16,7 +16,7 @@
 #ifdef LOG_ALL_LINES
 int ListLinesCount = 0;
 
-struct DBGList
+struct DBGList final
 {
     CUILine* wnd;
     int num;

@@ -157,7 +157,7 @@ tmc::task<bool> CCar::net_Spawn(CSE_Abstract* DC)
     PKinematics(Visual())->CalculateBones_Invalidate();
     PKinematics(Visual())->CalculateBones();
     m_fSaveMaxRPM = m_max_rpm;
-    SetfHealth(co->health);
+    std::ignore = SetfHealth(co->health);
 
     if (!g_Alive())
         b_exploded = true;

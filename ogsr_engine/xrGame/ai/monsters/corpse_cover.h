@@ -2,7 +2,7 @@
 
 #include "../../cover_evaluators.h"
 
-class CMonsterCorpseCoverEvaluator : public CCoverEvaluatorBase
+class CMonsterCorpseCoverEvaluator final : public CCoverEvaluatorBase
 {
     RTTI_DECLARE_TYPEINFO(CMonsterCorpseCoverEvaluator, CCoverEvaluatorBase);
 

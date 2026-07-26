@@ -1,6 +1,6 @@
 #pragma once
 
-class Point
+class Point final
 {
 public:
     //! Empty constructor

@@ -45,7 +45,7 @@ struct alignas(8) v_skybox
 static_assert(sizeof(v_skybox) == 40);
 constexpr u32 v_skybox_fvf = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX2 | D3DFVF_TEXCOORDSIZE3(0) | D3DFVF_TEXCOORDSIZE3(1);
 
-struct v_clouds
+struct v_clouds final
 {
     Fvector3 p;
     u32 color;
@@ -61,7 +61,7 @@ struct v_clouds
 static_assert(sizeof(v_clouds) == 20);
 constexpr u32 v_clouds_fvf = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_SPECULAR;
 
-class CBlender_skybox : public IBlender
+class CBlender_skybox final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_skybox, IBlender);
 

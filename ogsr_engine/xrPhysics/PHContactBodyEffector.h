@@ -5,7 +5,7 @@
 
 struct SGameMtl;
 
-class CPHContactBodyEffector : public CPHBaseBodyEffector
+class CPHContactBodyEffector final : public CPHBaseBodyEffector
 {
     dContact m_contact;
     float m_recip_flotation;

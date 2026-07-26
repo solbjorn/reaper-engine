@@ -18,7 +18,7 @@ std::unique_ptr<CLocatorAPI> xr_FS;
 
 namespace
 {
-struct _open_file
+struct _open_file final
 {
     union
     {
@@ -33,7 +33,7 @@ template <typename T>
 struct eq_pointer;
 
 template <>
-struct eq_pointer<IReader>
+struct eq_pointer<IReader> final
 {
     IReader* _val;
     eq_pointer(IReader* p) : _val(p) {}
@@ -41,21 +41,21 @@ struct eq_pointer<IReader>
 };
 
 template <>
-struct eq_pointer<CStreamReader>
+struct eq_pointer<CStreamReader> final
 {
     CStreamReader* _val;
     eq_pointer(CStreamReader* p) : _val(p) {}
     bool operator()(_open_file& itm) const { return _val == itm._stream_reader; }
 };
 
-struct eq_fname_free
+struct eq_fname_free final
 {
     shared_str _val;
     eq_fname_free(shared_str s) : _val(s) {}
     bool operator()(_open_file& itm) const { return _val == itm._fn && itm._reader == nullptr; }
 };
 
-struct eq_fname_check
+struct eq_fname_check final
 {
     shared_str _val;
     eq_fname_check(shared_str s) : _val(s) {}

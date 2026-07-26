@@ -308,7 +308,7 @@ void CSoundMemoryManager::add(const CObject* object, int sound_type, const Fvect
     }
 }
 
-struct CRemoveOfflinePredicate
+struct CRemoveOfflinePredicate final
 {
     bool operator()(const MemorySpace::CSoundObject& object) const
     {
@@ -340,7 +340,7 @@ void CSoundMemoryManager::update()
 #endif
 }
 
-struct CSoundObjectPredicate
+struct CSoundObjectPredicate final
 {
     const CObject* m_object;
 

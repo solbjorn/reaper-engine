@@ -3,7 +3,7 @@
 #include "actor_statistic_defs.h"
 
 class CActorStatisticsWrapper;
-class CActorStatisticMgr
+class CActorStatisticMgr final
 {
 private:
     CActorStatisticsWrapper* m_actor_stats_wrapper;

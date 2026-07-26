@@ -16,7 +16,7 @@ class CInifile;
 class IKinematicsAnimated;
 class IRenderVisual;
 
-struct IterateBlendsCallback : public virtual RTTI::Enable
+struct XR_NOVTABLE IterateBlendsCallback : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IterateBlendsCallback);
 
@@ -28,7 +28,7 @@ public:
 
 inline IterateBlendsCallback::~IterateBlendsCallback() = default;
 
-struct IUpdateTracksCallback : public virtual RTTI::Enable
+struct XR_NOVTABLE IUpdateTracksCallback : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IUpdateTracksCallback);
 
@@ -40,13 +40,13 @@ public:
 
 inline IUpdateTracksCallback::~IUpdateTracksCallback() = default;
 
-struct SKeyTable
+struct SKeyTable final
 {
     CKey keys[MAX_CHANNELS][MAX_BLENDED]; // all keys
     CBlend* blends[MAX_CHANNELS][MAX_BLENDED]; // blend pointers
     int chanel_blend_conts[MAX_CHANNELS]; // channel counts
 
-    SKeyTable() { std::fill_n(chanel_blend_conts, MAX_CHANNELS, 0); }
+    constexpr SKeyTable() { std::fill_n(chanel_blend_conts, MAX_CHANNELS, 0); }
 };
 
 class XR_NOVTABLE IKinematicsAnimated : public virtual RTTI::Enable

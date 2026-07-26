@@ -160,7 +160,7 @@ CLensFlare::~CLensFlare()
     delete_data(m_Palette);
 }
 
-struct STranspParam
+struct STranspParam final
 {
     Fvector P;
     Fvector D;

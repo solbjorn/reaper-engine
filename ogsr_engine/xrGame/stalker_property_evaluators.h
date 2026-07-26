@@ -23,7 +23,7 @@ typedef CWrapperAbstract2<CAI_Stalker, CPropertyEvaluatorMember> CStalkerPropert
 // CStalkerPropertyEvaluatorALife
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorALife : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorALife final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorALife, CStalkerPropertyEvaluator);
 
@@ -41,7 +41,7 @@ public:
 // CStalkerPropertyEvaluatorAlive
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorAlive : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorAlive final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorAlive, CStalkerPropertyEvaluator);
 
@@ -59,7 +59,7 @@ public:
 // CStalkerPropertyEvaluatorItems
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorItems : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorItems final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorItems, CStalkerPropertyEvaluator);
 
@@ -77,7 +77,7 @@ public:
 // CStalkerPropertyEvaluatorEnemies
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorEnemies : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorEnemies final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorEnemies, CStalkerPropertyEvaluator);
 
@@ -99,7 +99,7 @@ public:
 // CStalkerPropertyEvaluatorSeeEnemy
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorSeeEnemy : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorSeeEnemy final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorSeeEnemy, CStalkerPropertyEvaluator);
 
@@ -117,7 +117,7 @@ public:
 // CStalkerPropertyEvaluatorEnemySeeMe
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorEnemySeeMe : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorEnemySeeMe final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorEnemySeeMe, CStalkerPropertyEvaluator);
 
@@ -135,7 +135,7 @@ public:
 // CStalkerPropertyEvaluatorItemToKill
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorItemToKill : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorItemToKill final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorItemToKill, CStalkerPropertyEvaluator);
 
@@ -153,7 +153,7 @@ public:
 // CStalkerPropertyEvaluatorItemCanKill
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorItemCanKill : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorItemCanKill final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorItemCanKill, CStalkerPropertyEvaluator);
 
@@ -171,7 +171,7 @@ public:
 // CStalkerPropertyEvaluatorFoundItemToKill
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorFoundItemToKill : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorFoundItemToKill final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorFoundItemToKill, CStalkerPropertyEvaluator);
 
@@ -189,7 +189,7 @@ public:
 // CStalkerPropertyEvaluatorFoundAmmo
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorFoundAmmo : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorFoundAmmo final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorFoundAmmo, CStalkerPropertyEvaluator);
 
@@ -207,7 +207,7 @@ public:
 // CStalkerPropertyEvaluatorReadyToKill
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorReadyToKill : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorReadyToKill final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorReadyToKill, CStalkerPropertyEvaluator);
 
@@ -225,7 +225,7 @@ public:
 // CStalkerPropertyEvaluatorReadyToDetour
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorReadyToDetour : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorReadyToDetour final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorReadyToDetour, CStalkerPropertyEvaluator);
 
@@ -243,7 +243,7 @@ public:
 // CStalkerPropertyEvaluatorAnomaly
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorAnomaly : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorAnomaly final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorAnomaly, CStalkerPropertyEvaluator);
 
@@ -261,7 +261,7 @@ public:
 // CStalkerPropertyEvaluatorInsideAnomaly
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorInsideAnomaly : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorInsideAnomaly final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorInsideAnomaly, CStalkerPropertyEvaluator);
 
@@ -279,7 +279,7 @@ public:
 // CStalkerPropertyEvaluatorPanic
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorPanic : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorPanic final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorPanic, CStalkerPropertyEvaluator);
 
@@ -297,7 +297,7 @@ public:
 // CStalkerPropertyEvaluatorSmartTerrainTask
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorSmartTerrainTask : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorSmartTerrainTask final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorSmartTerrainTask, CStalkerPropertyEvaluator);
 
@@ -315,7 +315,7 @@ public:
 // CStalkerPropertyEvaluatorEnemyReached
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorEnemyReached : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorEnemyReached final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorEnemyReached, CStalkerPropertyEvaluator);
 
@@ -333,7 +333,7 @@ public:
 // CStalkerPropertyEvaluatorPlayerOnThePath
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorPlayerOnThePath : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorPlayerOnThePath final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorPlayerOnThePath, CStalkerPropertyEvaluator);
 
@@ -351,7 +351,7 @@ public:
 // CStalkerPropertyEvaluatorEnemyCriticallyWounded
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerPropertyEvaluatorEnemyCriticallyWounded : public CStalkerPropertyEvaluator
+class CStalkerPropertyEvaluatorEnemyCriticallyWounded final : public CStalkerPropertyEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorEnemyCriticallyWounded, CStalkerPropertyEvaluator);
 

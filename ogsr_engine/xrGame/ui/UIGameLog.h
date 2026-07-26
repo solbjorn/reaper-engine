@@ -17,7 +17,7 @@ class CUIXml;
 class CUIPdaMsgListItem;
 class CUIStatic;
 
-class CUIGameLog : public CUIScrollView
+class CUIGameLog final : public CUIScrollView
 {
     RTTI_DECLARE_TYPEINFO(CUIGameLog, CUIScrollView);
 

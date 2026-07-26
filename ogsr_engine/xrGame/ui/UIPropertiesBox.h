@@ -5,7 +5,7 @@
 
 #include "../script_export_space.h"
 
-class CUIPropertiesBox : public CUIFrameWindow
+class CUIPropertiesBox final : public CUIFrameWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIPropertiesBox, CUIFrameWindow);
 
@@ -28,8 +28,8 @@ public:
     void RemoveItemByTAG(u32 tag_value);
     void RemoveAll();
 
-    virtual void Show(const Frect& parent_rect, const Fvector2& point);
-    virtual void Hide();
+    void Show(const Frect& parent_rect, const Fvector2& point);
+    void Hide();
 
     void Update() override;
     void Draw() override;

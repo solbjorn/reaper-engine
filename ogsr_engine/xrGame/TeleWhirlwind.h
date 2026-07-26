@@ -8,7 +8,7 @@
 class CTeleWhirlwind;
 class CGameObject;
 
-class CTeleWhirlwindObject : public CTelekineticObject
+class CTeleWhirlwindObject final : public CTelekineticObject
 {
     RTTI_DECLARE_TYPEINFO(CTeleWhirlwindObject, CTelekineticObject);
 
@@ -31,10 +31,10 @@ public:
     void release() override;
     void fire(const Fvector&, float) override;
     void switch_state(ETelekineticState new_state) override;
-    [[nodiscard]] virtual bool destroy_object(const Fvector3 dir, f32 val);
+    [[nodiscard]] bool destroy_object(const Fvector3 dir, f32 val);
 };
 
-class CTeleWhirlwind : public CTelekinesis
+class CTeleWhirlwind final : public CTelekinesis
 {
     RTTI_DECLARE_TYPEINFO(CTeleWhirlwind, CTelekinesis);
 

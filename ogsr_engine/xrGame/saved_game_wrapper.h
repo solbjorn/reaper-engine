@@ -12,7 +12,7 @@
 #include "game_graph_space.h"
 #include "script_export_space.h"
 
-class CSavedGameWrapper
+class CSavedGameWrapper final
 {
 public:
     typedef ALife::_TIME_ID _TIME_ID;

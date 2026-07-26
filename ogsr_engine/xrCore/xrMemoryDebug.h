@@ -1,6 +1,6 @@
 #pragma once
 
-struct PointerInfo
+struct PointerInfo final
 {
 public:
     std::string identity;
@@ -11,7 +11,7 @@ public:
 };
 
 template <typename T>
-struct PointerAllocator
+struct PointerAllocator final
 {
 public:
     using size_type = size_t;

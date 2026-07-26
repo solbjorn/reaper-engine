@@ -2,7 +2,7 @@
 
 #include "../../../CameraEffector.h"
 
-class CPseudogigantStepEffector : public CEffectorCam
+class CPseudogigantStepEffector final : public CEffectorCam
 {
     RTTI_DECLARE_TYPEINFO(CPseudogigantStepEffector, CEffectorCam);
 

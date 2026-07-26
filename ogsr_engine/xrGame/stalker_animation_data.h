@@ -11,7 +11,7 @@
 #include "stalker_animation_state.h"
 #include "stalker_animation_names.h"
 
-class CStalkerAnimationData
+class CStalkerAnimationData final
 {
 public:
     typedef CStalkerAnimationState::WEAPON_ACTIONS WEAPON_ACTIONS;

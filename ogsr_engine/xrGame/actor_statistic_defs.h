@@ -4,7 +4,7 @@
 
 extern xr_token actor_stats_token[];
 
-struct SStatDetailBData
+struct SStatDetailBData final
 {
     shared_str key;
     s32 int_count;
@@ -16,13 +16,13 @@ struct SStatDetailBData
 };
 
 template <typename M>
-struct object_loader::default_load<SStatDetailBData, M>
+struct object_loader::default_load<SStatDetailBData, M> final
 {
     void operator()(SStatDetailBData& data, M& stream) const { data.load(stream); }
 };
 
 template <typename M>
-struct object_saver::default_save<SStatDetailBData, M>
+struct object_saver::default_save<SStatDetailBData, M> final
 {
     void operator()(const SStatDetailBData& data, M& stream) const { data.save(stream); }
 };
@@ -44,13 +44,13 @@ struct SStatSectionData
 };
 
 template <typename M>
-struct object_loader::default_load<SStatSectionData, M>
+struct object_loader::default_load<SStatSectionData, M> final
 {
     void operator()(SStatSectionData& data, M& stream) const { data.load(stream); }
 };
 
 template <typename M>
-struct object_saver::default_save<SStatSectionData, M>
+struct object_saver::default_save<SStatSectionData, M> final
 {
     void operator()(const SStatSectionData& data, M& stream) const { data.save(stream); }
 };

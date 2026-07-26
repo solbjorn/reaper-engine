@@ -45,7 +45,7 @@ namespace GameObject
 enum ECallbackType : u32;
 }
 
-struct GOCallbackInfo
+struct GOCallbackInfo final
 {
     sol::function m_callback;
     sol::object m_object;
@@ -65,7 +65,7 @@ struct GOCallbackInfo
     }
 };
 
-struct FeelTouchAddon
+struct FeelTouchAddon final
 {
     Feel::Touch feel_touch;
     f32 radius;

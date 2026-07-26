@@ -27,7 +27,7 @@ constexpr float SQUARE_SOUND_EFFECT_DIST{SOUND_EFFECT_DIST * SOUND_EFFECT_DIST};
 constexpr float minimal_plane_distance_between_liquid_particles{0.2f};
 } // namespace
 
-class CPHParticlesPlayCall : public CPHAction, public CPHReqComparerV
+class CPHParticlesPlayCall final : public CPHAction, public CPHReqComparerV
 {
     RTTI_DECLARE_TYPEINFO(CPHParticlesPlayCall, CPHAction, CPHReqComparerV);
 
@@ -90,7 +90,7 @@ public:
     [[nodiscard]] bool compare(const CPHReqComparerV* v) const override { return v->compare(this); }
 };
 
-class CPHParticlesCondition : public CPHCondition, public CPHReqComparerV
+class CPHParticlesCondition final : public CPHCondition, public CPHReqComparerV
 {
     RTTI_DECLARE_TYPEINFO(CPHParticlesCondition, CPHCondition, CPHReqComparerV);
 
@@ -103,7 +103,7 @@ private:
     [[nodiscard]] bool obsolete() const noexcept override { return false; }
 };
 
-class CPHFindParticlesComparer : public CPHReqComparerV
+class CPHFindParticlesComparer final : public CPHReqComparerV
 {
     RTTI_DECLARE_TYPEINFO(CPHFindParticlesComparer, CPHReqComparerV);
 
@@ -115,7 +115,7 @@ public:
     ~CPHFindParticlesComparer() override = default;
 
 private:
-    [[nodiscard]] virtual bool compare(const CPHReqComparerV* v) const { return v->compare(this); }
+    [[nodiscard]] bool compare(const CPHReqComparerV* v) const { return v->compare(this); }
     [[nodiscard]] bool compare(const CPHParticlesCondition*) const override { return true; }
 
     [[nodiscard]] bool compare(const CPHParticlesPlayCall* v) const override
@@ -132,7 +132,7 @@ private:
 
 namespace
 {
-class CPHWallMarksCall : public CPHAction
+class CPHWallMarksCall final : public CPHAction
 {
     RTTI_DECLARE_TYPEINFO(CPHWallMarksCall, CPHAction);
 

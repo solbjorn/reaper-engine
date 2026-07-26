@@ -4,7 +4,7 @@
 #include "../states/state_data.h"
 
 template <typename _Object>
-class CStateGroupSquadMoveToRadiusEx : public CState<_Object>
+class CStateGroupSquadMoveToRadiusEx final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateGroupSquadMoveToRadiusEx<_Object>, CState<_Object>);
 
@@ -27,7 +27,7 @@ public:
 };
 
 template <typename _Object>
-class CStateGroupSquadMoveToRadius : public CState<_Object>
+class CStateGroupSquadMoveToRadius final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateGroupSquadMoveToRadius<_Object>, CState<_Object>);
 

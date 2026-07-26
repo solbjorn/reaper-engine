@@ -3,13 +3,13 @@
 #include "control_combase.h"
 #include "../../../Include/xrRender/Kinematics.h"
 
-struct SControlMeleeJumpData : public ControlCom::IComData
+struct SControlMeleeJumpData final : public ControlCom::IComData
 {
     MotionID anim_ls;
     MotionID anim_rs;
 };
 
-class CControlMeleeJump : public CControl_ComCustom<SControlMeleeJumpData>
+class CControlMeleeJump final : public CControl_ComCustom<SControlMeleeJumpData>
 {
     RTTI_DECLARE_TYPEINFO(CControlMeleeJump, CControl_ComCustom<SControlMeleeJumpData>);
 

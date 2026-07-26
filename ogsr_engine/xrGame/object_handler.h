@@ -22,7 +22,7 @@ class CMissile;
 class CFoodItem;
 class CObjectHandlerPlanner;
 
-class CObjectHandler : public CInventoryOwner
+class XR_NOVTABLE CObjectHandler : public CInventoryOwner
 {
     RTTI_DECLARE_TYPEINFO(CObjectHandler, CInventoryOwner);
 

@@ -11,7 +11,7 @@ class COMotion;
 struct SAnimParams;
 
 // class
-class CDemoPlay : public CEffectorCam
+class CDemoPlay final : public CEffectorCam
 {
     RTTI_DECLARE_TYPEINFO(CDemoPlay, CEffectorCam);
 

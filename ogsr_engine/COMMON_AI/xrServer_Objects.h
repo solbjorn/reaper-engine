@@ -164,7 +164,7 @@ add_to_type_list(CSE_Shape);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_Shape)
 
-class CSE_Temporary : public CSE_Abstract
+class CSE_Temporary final : public CSE_Abstract
 {
     RTTI_DECLARE_TYPEINFO(CSE_Temporary, CSE_Abstract);
 

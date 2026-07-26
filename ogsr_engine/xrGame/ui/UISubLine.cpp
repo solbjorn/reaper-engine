@@ -18,7 +18,7 @@
 #ifdef LOG_ALL_LINES
 int ListSubLinesCount = 0;
 
-struct DBGList
+struct DBGList final
 {
     CUISubLine* wnd;
     int num;

@@ -9,7 +9,7 @@
 #include "Explosive.h"
 #include "inventory_item.h"
 
-class CExplosiveRocket : public CCustomRocket, public CInventoryItem, public CExplosive
+class CExplosiveRocket final : public CCustomRocket, public CInventoryItem, public CExplosive
 {
     RTTI_DECLARE_TYPEINFO(CExplosiveRocket, CCustomRocket, CInventoryItem, CExplosive);
 

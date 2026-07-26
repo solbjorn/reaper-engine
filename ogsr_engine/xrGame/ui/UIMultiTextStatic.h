@@ -57,7 +57,7 @@ public:
     void RemovePhraseByIndex(u32 idx);
 };
 
-class CUICaption : public virtual RTTI::Enable, protected CUIMultiTextStatic
+class CUICaption final : public virtual RTTI::Enable, protected CUIMultiTextStatic
 {
     RTTI_DECLARE_TYPEINFO(CUICaption, CUIMultiTextStatic);
 

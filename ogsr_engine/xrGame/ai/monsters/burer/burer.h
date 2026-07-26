@@ -10,7 +10,7 @@
 class CCharacterPhysicsSupport;
 class CBurerFastGravi;
 
-class CBurer : public CBaseMonster, public CTelekinesis
+class CBurer final : public CBaseMonster, public CTelekinesis
 {
     RTTI_DECLARE_TYPEINFO(CBurer, CBaseMonster, CTelekinesis);
 
@@ -75,7 +75,7 @@ public:
     };
     //////////////////////////////////////////////////////////////////////////
 
-    struct gravi_params
+    struct gravi_params final
     {
         float speed;
         u32 cooldown;

@@ -10,7 +10,7 @@
 
 class CAI_Stalker;
 
-class CMemberCorpse
+class CMemberCorpse final
 {
 private:
     CAI_Stalker* m_corpse;

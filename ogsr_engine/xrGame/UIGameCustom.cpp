@@ -18,7 +18,7 @@ void Remove_all_statics()
     delete_data(HUD().GetUI()->UIGame()->m_custom_statics_sorted);
 }
 
-struct predicate_remove_stat
+struct predicate_remove_stat final
 {
     bool operator()(SDrawStaticStruct& s) { return (!s.IsActual()); }
 };

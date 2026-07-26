@@ -2,7 +2,7 @@
 
 #include "script_export_space.h"
 
-struct fs_registrator
+struct fs_registrator final
 {
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

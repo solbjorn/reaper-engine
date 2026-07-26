@@ -1,7 +1,7 @@
 #pragma once
 
 template <typename _Object>
-class CScanningAbility : public virtual RTTI::Enable
+class CScanningAbility final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CScanningAbility<_Object>);
 

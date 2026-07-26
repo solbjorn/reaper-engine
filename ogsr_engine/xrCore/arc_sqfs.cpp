@@ -29,49 +29,49 @@ XR_DIAG_POP();
 } // namespace sqfs
 
 template <>
-struct std::default_delete<sqfs::sqfs_compressor_t>
+struct std::default_delete<sqfs::sqfs_compressor_t> final
 {
     constexpr void operator()(sqfs::sqfs_compressor_t* ptr) const noexcept { sqfs::sqfs_drop(ptr); }
 };
 
 template <>
-struct std::default_delete<sqfs::sqfs_data_reader_t>
+struct std::default_delete<sqfs::sqfs_data_reader_t> final
 {
     constexpr void operator()(sqfs::sqfs_data_reader_t* ptr) const noexcept { sqfs::sqfs_drop(ptr); }
 };
 
 template <>
-struct std::default_delete<sqfs::sqfs_dir_entry_t>
+struct std::default_delete<sqfs::sqfs_dir_entry_t> final
 {
     constexpr void operator()(sqfs::sqfs_dir_entry_t* ptr) const noexcept { sqfs::sqfs_free(ptr); }
 };
 
 template <>
-struct std::default_delete<sqfs::sqfs_dir_iterator_t>
+struct std::default_delete<sqfs::sqfs_dir_iterator_t> final
 {
     constexpr void operator()(sqfs::sqfs_dir_iterator_t* ptr) const noexcept { sqfs::sqfs_drop(ptr); }
 };
 
 template <>
-struct std::default_delete<sqfs::sqfs_dir_reader_t>
+struct std::default_delete<sqfs::sqfs_dir_reader_t> final
 {
     constexpr void operator()(sqfs::sqfs_dir_reader_t* ptr) const noexcept { sqfs::sqfs_drop(ptr); }
 };
 
 template <>
-struct std::default_delete<sqfs::sqfs_file_t>
+struct std::default_delete<sqfs::sqfs_file_t> final
 {
     constexpr void operator()(sqfs::sqfs_file_t* ptr) const noexcept { sqfs::sqfs_drop(ptr); }
 };
 
 template <>
-struct std::default_delete<sqfs::sqfs_id_table_t>
+struct std::default_delete<sqfs::sqfs_id_table_t> final
 {
     constexpr void operator()(sqfs::sqfs_id_table_t* ptr) const noexcept { sqfs::sqfs_drop(ptr); }
 };
 
 template <>
-struct std::default_delete<sqfs::sqfs_inode_generic_t>
+struct std::default_delete<sqfs::sqfs_inode_generic_t> final
 {
     constexpr void operator()(sqfs::sqfs_inode_generic_t* ptr) const noexcept { sqfs::sqfs_free(ptr); }
 };

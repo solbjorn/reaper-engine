@@ -7,7 +7,7 @@ class Basis;
 
 // Basis
 // -----
-class Basis
+class Basis final
 {
 private:
     enum eDimensions
@@ -47,7 +47,7 @@ public:
 
 // Miniball
 // --------
-class Miniball
+class Miniball final
 {
 public:
     // types

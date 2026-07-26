@@ -2,7 +2,7 @@
 
 #include "pseudodog_state_manager.h"
 
-class CStateManagerPsyDog : public CStateManagerPseudodog
+class CStateManagerPsyDog final : public CStateManagerPseudodog
 {
     RTTI_DECLARE_TYPEINFO(CStateManagerPsyDog, CStateManagerPseudodog);
 

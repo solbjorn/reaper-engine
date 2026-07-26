@@ -1,8 +1,8 @@
 #pragma once
 
-struct firedeps
+struct firedeps final
 {
-    Fmatrix m_FireParticlesXForm; //направление для партиклов огня и дыма
+    Fmatrix m_FireParticlesXForm; // направление для партиклов огня и дыма
     Fvector vLastFP{}; // fire point
     Fvector vLastFP2{}; // fire point2
     Fvector vLastFD{}; // fire direction

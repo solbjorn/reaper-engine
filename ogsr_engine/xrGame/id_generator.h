@@ -8,12 +8,12 @@
 
 #pragma once
 
-template <typename TIME_ID, typename TYPE_ID, typename VALUE_ID, typename BLOCK_ID, typename CHUNK_ID, VALUE_ID tMinValue, VALUE_ID tMaxValue, CHUNK_ID tBlockSize,
-          VALUE_ID tInvalidValueID = tMaxValue, TIME_ID tStartTime = 0>
+template <typename TIME_ID, typename TYPE_ID, typename VALUE_ID, typename BLOCK_ID, typename CHUNK_ID, VALUE_ID tMinValue, VALUE_ID tMaxValue,
+          CHUNK_ID tBlockSize, VALUE_ID tInvalidValueID = tMaxValue, TIME_ID tStartTime = 0>
 class CID_Generator
 {
 private:
-    struct SID_Block
+    struct SID_Block final
     {
         CHUNK_ID m_tCount;
         TIME_ID m_tTimeID;

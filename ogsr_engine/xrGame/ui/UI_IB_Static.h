@@ -12,14 +12,14 @@
 #include "UIInteractiveBackground.h"
 #include "UIStatic.h"
 
-class CUI_IB_Static : public CUIInteractiveBackground<CUIStatic>
+class CUI_IB_Static final : public CUIInteractiveBackground<CUIStatic>
 {
     RTTI_DECLARE_TYPEINFO(CUI_IB_Static, CUIInteractiveBackground<CUIStatic>);
 
 public:
     ~CUI_IB_Static() override = default;
 
-    virtual void SetTextureOffset(float x, float y);
-    virtual void SetStretchTexture(bool stretch_texture);
-    virtual void EnableHeading(bool b);
+    void SetTextureOffset(float x, float y);
+    void SetStretchTexture(bool stretch_texture);
+    void EnableHeading(bool b);
 };

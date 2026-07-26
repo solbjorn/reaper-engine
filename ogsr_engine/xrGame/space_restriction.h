@@ -18,7 +18,7 @@
 
 class CSpaceRestrictionManager;
 
-class CSpaceRestriction : public RestrictionSpace::CTimeIntrusiveBase, public CSpaceRestrictionAbstract
+class CSpaceRestriction final : public RestrictionSpace::CTimeIntrusiveBase, public CSpaceRestrictionAbstract
 {
     RTTI_DECLARE_TYPEINFO(CSpaceRestriction, RestrictionSpace::CTimeIntrusiveBase, CSpaceRestrictionAbstract);
 

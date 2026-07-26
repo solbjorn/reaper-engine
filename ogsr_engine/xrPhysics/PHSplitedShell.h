@@ -3,7 +3,7 @@
 
 #include "PHShell.h"
 
-class CPHSplitedShell : public CPHShell
+class CPHSplitedShell final : public CPHShell
 {
     RTTI_DECLARE_TYPEINFO(CPHSplitedShell, CPHShell);
 

@@ -8,7 +8,7 @@
 
 struct Triangle;
 
-struct dxBox
+struct dxBox final
 {
     dVector3 side; // side lengths (x,y,z)
 };

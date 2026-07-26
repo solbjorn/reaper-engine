@@ -4,7 +4,7 @@
 #include "state_data.h"
 
 template <typename _Object>
-class CStateMonsterMoveAroundPoint : public CState<_Object>
+class CStateMonsterMoveAroundPoint final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterMoveAroundPoint<_Object>, CState<_Object>);
 

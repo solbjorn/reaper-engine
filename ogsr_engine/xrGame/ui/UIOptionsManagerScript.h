@@ -2,7 +2,7 @@
 
 #include "../script_export_space.h"
 
-class CUIOptionsManagerScript
+class CUIOptionsManagerScript final
 {
 public:
     void SaveBackupValues(const char* group);

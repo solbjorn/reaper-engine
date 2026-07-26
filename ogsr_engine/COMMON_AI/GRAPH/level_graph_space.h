@@ -10,7 +10,7 @@
 
 namespace LevelGraph
 {
-class CHeader : private hdrNODES
+class CHeader final : private hdrNODES
 {
 private:
     friend class CRenumbererConverter;
@@ -49,7 +49,7 @@ struct SSegment
     Fvector v2;
 };
 
-struct SContour : public SSegment
+struct SContour final : public SSegment
 {
     Fvector v3;
     Fvector v4;

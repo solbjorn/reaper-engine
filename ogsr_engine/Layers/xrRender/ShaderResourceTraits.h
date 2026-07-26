@@ -6,7 +6,7 @@ template <typename T>
 struct ShaderTypeTraits;
 
 template <>
-struct ShaderTypeTraits<SHS>
+struct ShaderTypeTraits<SHS> final
 {
     using MapType = CResourceManager::map_HS;
     using DXIface = ID3D11HullShader;
@@ -25,7 +25,7 @@ struct ShaderTypeTraits<SHS>
 };
 
 template <>
-struct ShaderTypeTraits<SDS>
+struct ShaderTypeTraits<SDS> final
 {
     using MapType = CResourceManager::map_DS;
     using DXIface = ID3D11DomainShader;
@@ -44,7 +44,7 @@ struct ShaderTypeTraits<SDS>
 };
 
 template <>
-struct ShaderTypeTraits<SCS>
+struct ShaderTypeTraits<SCS> final
 {
     using MapType = CResourceManager::map_CS;
     using DXIface = ID3D11ComputeShader;

@@ -214,7 +214,7 @@ void CLevel::net_Update()
 
 namespace
 {
-struct _NetworkProcessor : public pureFrame
+struct _NetworkProcessor final : public pureFrame
 {
     RTTI_DECLARE_TYPEINFO(_NetworkProcessor, pureFrame);
 

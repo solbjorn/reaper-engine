@@ -5,7 +5,7 @@
 class CObject;
 class NET_Packet;
 
-class CObjectList
+class CObjectList final
 {
 private:
     // data

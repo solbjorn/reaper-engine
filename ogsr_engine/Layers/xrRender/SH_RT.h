@@ -3,7 +3,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-class CRT : public xr_resource_named
+class CRT final : public xr_resource_named
 {
     RTTI_DECLARE_TYPEINFO(CRT, xr_resource_named);
 

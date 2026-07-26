@@ -21,7 +21,7 @@ class CPHSynchronize;
 class ICollisionDamageInfo;
 class CElevatorState;
 
-class CPHMovementControl
+class CPHMovementControl final
 {
     friend class CScriptActor;
     collide::rq_results storage;

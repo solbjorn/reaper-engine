@@ -40,7 +40,7 @@ public:
     }
 };
 
-class CStalkerActionAlreadyDead : public CStalkerActionBase
+class CStalkerActionAlreadyDead final : public CStalkerActionBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionAlreadyDead, CStalkerActionBase);
 

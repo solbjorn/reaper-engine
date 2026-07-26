@@ -2,14 +2,14 @@
 
 #include "NET_Shared.h"
 
-struct SClientConnectData
+struct SClientConnectData final
 {
     ClientID clientID;
     string64 name;
     string64 pass;
     u32 process_id;
 
-    SClientConnectData()
+    constexpr SClientConnectData()
     {
         name[0] = pass[0] = 0;
         process_id = 0;
@@ -18,7 +18,7 @@ struct SClientConnectData
 
 class IPureServer;
 
-struct ip_address
+struct ip_address final
 {
     union
     {
@@ -45,7 +45,7 @@ class IClient : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IClient);
 
 public:
-    struct Flags
+    struct Flags final
     {
         u32 bLocal : 1;
         u32 bConnected : 1;

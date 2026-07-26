@@ -12,7 +12,7 @@
 
 class CSE_Abstract;
 
-class CServerEntityWrapper : public IPureSerializeObject<IReader, IWriter>
+class CServerEntityWrapper final : public IPureSerializeObject<IReader, IWriter>
 {
     RTTI_DECLARE_TYPEINFO(CServerEntityWrapper, IPureSerializeObject<IReader, IWriter>);
 

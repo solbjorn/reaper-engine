@@ -13,7 +13,7 @@
 
 class CScriptGameObject;
 
-class CScriptHit
+class CScriptHit final
 {
 public:
     float m_fPower{100.f};

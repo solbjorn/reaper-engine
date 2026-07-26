@@ -17,7 +17,7 @@ static_assert(offsetof(smem_value, value) == sizeof(smem_value));
 
 //////////////////////////////////////////////////////////////////////////
 
-class smem_container
+class smem_container final
 {
 public:
     [[nodiscard]] static smem_value* dock(gsl::index dwSize, const void* ptr);
@@ -30,7 +30,7 @@ public:
 //////////////////////////////////////////////////////////////////////////
 
 template <typename T>
-class ref_smem
+class ref_smem final
 {
 private:
     smem_value* p_{};
@@ -134,7 +134,11 @@ public:
     [[nodiscard]] constexpr const T* operator*() const { return p_ ? reinterpret_cast<const T*>(p_->value) : nullptr; }
 
     [[nodiscard]] constexpr operator std::span<T>() { return p_ ? std::span<T>{**this, gsl::narrow_cast<size_t>(size())} : std::span<T>{}; }
-    [[nodiscard]] constexpr operator std::span<const T>() const { return p_ ? std::span<const T>{**this, gsl::narrow_cast<size_t>(size())} : std::span<const T>{}; }
+
+    [[nodiscard]] constexpr operator std::span<const T>() const
+    {
+        return p_ ? std::span<const T>{**this, gsl::narrow_cast<size_t>(size())} : std::span<const T>{};
+    }
 
     [[nodiscard]] constexpr T& operator[](gsl::index id) { return std::span<T>{*this}[gsl::narrow_cast<size_t>(id)]; }
     [[nodiscard]] constexpr const T& operator[](gsl::index id) const { return std::span<const T>{*this}[gsl::narrow_cast<size_t>(id)]; }

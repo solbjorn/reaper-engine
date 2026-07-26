@@ -1,6 +1,6 @@
 #pragma once
 
-struct XR_TRIVIAL Flight
+struct XR_TRIVIAL Flight final
 {
 public:
     u32 type; /* Type of light source */

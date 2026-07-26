@@ -18,7 +18,7 @@
 #include "script_action_condition.h"
 #include "script_monster_action.h"
 
-class CScriptEntityAction : public virtual RTTI::Enable
+class CScriptEntityAction final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CScriptEntityAction);
 

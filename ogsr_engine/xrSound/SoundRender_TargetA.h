@@ -4,7 +4,7 @@
 #include "SoundRender_Target.h"
 #include "SoundRender_CoreA.h"
 
-class CSoundRender_TargetA : public CSoundRender_Target
+class CSoundRender_TargetA final : public CSoundRender_Target
 {
     RTTI_DECLARE_TYPEINFO(CSoundRender_TargetA, CSoundRender_Target);
 

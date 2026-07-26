@@ -687,7 +687,7 @@ float CIKLimb::get_time_to_step_begin(const CBlend& B) const
         return phInfinity;
 }
 
-struct ssaved_callback
+struct ssaved_callback final
 {
     ssaved_callback() = delete;
     ssaved_callback(CBoneInstance& bi)

@@ -46,7 +46,7 @@ IC void OrientToNorm(const Fvector& normal, Fmatrix& form, Fobb& box)
     }
 }
 
-class CPHLeaderGeomShell : public CPHStaticGeomShell
+class CPHLeaderGeomShell final : public CPHStaticGeomShell
 {
     RTTI_DECLARE_TYPEINFO(CPHLeaderGeomShell, CPHStaticGeomShell);
 

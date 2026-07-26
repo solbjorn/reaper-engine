@@ -5,7 +5,7 @@
 #ifndef AFX_BLENDER_VERTEX_AREF_H__07141B30_A968_407E_86F8_D12702FE0B9B__INCLUDED_3
 #define AFX_BLENDER_VERTEX_AREF_H__07141B30_A968_407E_86F8_D12702FE0B9B__INCLUDED_3
 
-class CBlender_Tree : public IBlenderXr
+class CBlender_Tree final : public IBlenderXr
 {
     RTTI_DECLARE_TYPEINFO(CBlender_Tree, IBlenderXr);
 

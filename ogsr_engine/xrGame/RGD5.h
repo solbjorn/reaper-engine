@@ -3,7 +3,7 @@
 #include "Grenade.h"
 #include "script_export_space.h"
 
-class CRGD5 : public CGrenade
+class CRGD5 final : public CGrenade
 {
     RTTI_DECLARE_TYPEINFO(CRGD5, CGrenade);
 

@@ -8,7 +8,7 @@ class CUIFrameLineWnd;
 class CUIXml;
 class CEncyclopediaArticle;
 
-class CUITaskDescrWnd : public CUIWindow
+class CUITaskDescrWnd final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUITaskDescrWnd, CUIWindow);
 

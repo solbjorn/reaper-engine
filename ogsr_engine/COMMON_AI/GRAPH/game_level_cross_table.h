@@ -18,13 +18,13 @@
 #define CROSS_TABLE_CHUNK_VERSION 0
 #define CROSS_TABLE_CHUNK_DATA 1
 
-class CGameLevelCrossTable : public virtual RTTI::Enable
+class CGameLevelCrossTable final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CGameLevelCrossTable);
 
 public:
 #pragma pack(push, 2)
-    class CHeader
+    class CHeader final
     {
         u32 dwVersion{};
         u32 dwNodeCount{};
@@ -40,7 +40,7 @@ public:
         IC const xrGUID& game_guid() const;
     };
 
-    class CCell
+    class CCell final
     {
         GameGraph::_GRAPH_ID tGraphIndex{};
         f32 fDistance{};

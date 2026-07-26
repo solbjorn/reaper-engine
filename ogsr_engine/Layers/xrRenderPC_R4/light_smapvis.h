@@ -1,6 +1,6 @@
 #pragma once
 
-class smapvis : public R_feedback
+class smapvis final : public R_feedback
 {
     RTTI_DECLARE_TYPEINFO(smapvis, R_feedback);
 

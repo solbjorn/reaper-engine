@@ -3,7 +3,7 @@
 
 #include "../../Include/xrRender/UIRender.h"
 
-class dxUIRender : public IUIRender
+class dxUIRender final : public IUIRender
 {
     RTTI_DECLARE_TYPEINFO(dxUIRender, IUIRender);
 

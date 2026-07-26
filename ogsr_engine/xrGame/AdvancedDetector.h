@@ -4,7 +4,7 @@
 
 class CUIArtefactDetectorAdv;
 
-class CAdvancedDetector : public CCustomDetector
+class CAdvancedDetector final : public CCustomDetector
 {
     RTTI_DECLARE_TYPEINFO(CAdvancedDetector, CCustomDetector);
 

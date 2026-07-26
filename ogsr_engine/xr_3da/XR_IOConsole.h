@@ -17,7 +17,7 @@ class line_editor;
 class line_edit_control;
 } // namespace text_editor
 
-struct TipString
+struct TipString final
 {
     shared_str text;
     int HL_start; // Highlight
@@ -54,7 +54,7 @@ struct TipString
     IC bool operator==(shared_str const& tips_text) { return (text == tips_text); }
 };
 
-class CConsole : public pureRender, public pureFrame, public pureScreenResolutionChanged
+class CConsole final : public pureRender, public pureFrame, public pureScreenResolutionChanged
 {
     RTTI_DECLARE_TYPEINFO(CConsole, pureRender, pureFrame, pureScreenResolutionChanged);
 
@@ -105,8 +105,8 @@ public:
     CConsole();
     ~CConsole() override;
 
-    virtual void Initialize();
-    // virtual void Destroy();
+    void Initialize();
+    // void Destroy();
 
     tmc::task<void> OnRender() override;
     tmc::task<void> OnFrame() override;

@@ -3,7 +3,7 @@
 
 class CBaseMonster;
 
-class CMonsterHitMemory
+class CMonsterHitMemory final
 {
     CBaseMonster* monster{};
     TTime time_memory{10000};

@@ -13,7 +13,7 @@
 #include "object_item_abstract.h"
 
 template <typename _unknown_type, bool _client_type>
-class CObjectItemSingle : public CObjectItemAbstract
+class CObjectItemSingle final : public CObjectItemAbstract
 {
     RTTI_DECLARE_TYPEINFO(CObjectItemSingle<_unknown_type, _client_type>, CObjectItemAbstract);
 
@@ -30,7 +30,7 @@ public:
 };
 
 template <typename _unknown_type>
-class CObjectItemSingle<_unknown_type, true> : public CObjectItemAbstract
+class CObjectItemSingle<_unknown_type, true> final : public CObjectItemAbstract
 {
     RTTI_DECLARE_TYPEINFO(CObjectItemSingle<_unknown_type, true>, CObjectItemAbstract);
 

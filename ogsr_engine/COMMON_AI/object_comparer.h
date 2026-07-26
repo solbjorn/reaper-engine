@@ -9,10 +9,10 @@
 #pragma once
 
 template <typename P>
-struct CComparer
+struct CComparer final
 {
     template <typename T>
-    struct CHelper
+    struct CHelper final
     {
         template <bool a>
         IC static bool compare(std::enable_if_t<!a, const T&> a1, const T& a2, const P& p)
@@ -108,7 +108,7 @@ struct CComparer
         return compare(q1, q2, p, true);
     }
 
-    struct CHelper3
+    struct CHelper3 final
     {
         template <typename T>
         IC static bool compare(const T& a1, const T& a2, const P& p)
@@ -126,7 +126,7 @@ struct CComparer
     };
 
     template <typename T>
-    struct CHelper4
+    struct CHelper4 final
     {
         template <bool a>
         IC static bool compare(std::enable_if_t<!a, const T&> a1, const T& a2, const P& p)
@@ -171,7 +171,7 @@ namespace object_comparer
 namespace detail
 {
 template <template <typename TX> class P>
-struct comparer
+struct comparer final
 {
     template <typename T>
     IC bool operator()(const T& a1, const T& a2) const

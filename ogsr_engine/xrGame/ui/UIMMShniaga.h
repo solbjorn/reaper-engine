@@ -8,7 +8,7 @@ class CUIXml;
 class CUIScrollView;
 class CMMSound;
 
-class CUIMMShniaga : public CUIWindow, public CDeviceResetNotifier
+class CUIMMShniaga final : public CUIWindow, public CDeviceResetNotifier
 {
     RTTI_DECLARE_TYPEINFO(CUIMMShniaga, CUIWindow, CDeviceResetNotifier);
 

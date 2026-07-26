@@ -4,7 +4,9 @@
 
 #include "ode/src/collision_kernel.h"
 
-struct dxGeomTransform : public dxGeom
+namespace
+{
+struct XR_NOVTABLE dxGeomTransform : public dxGeom
 {
     dxGeom* obj{}; // object that is being transformed
     int cleanup{}; // 1 to destroy obj when destroyed
@@ -15,13 +17,11 @@ struct dxGeomTransform : public dxGeom
     dVector3 final_pos;
     dMatrix3 final_R;
 
-    dxGeomTransform(dSpaceID space) : dxGeom{space, 1}
-    {
-        type = dGeomTransformClass;
-        dSetZero(final_pos, 4);
-        dRSetIdentity(final_R);
-    }
+    ~dxGeomTransform() override = 0;
 };
+
+inline dxGeomTransform::~dxGeomTransform() = default;
+} // namespace
 
 void CPHPositionsPairs::Positions(const Fvector*& p0, const Fvector*& p1)
 {

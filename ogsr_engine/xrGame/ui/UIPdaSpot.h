@@ -8,7 +8,7 @@ class CUI3tButton;
 class CUIStatic;
 class CUIEditBoxEx;
 
-class CUIPdaSpot : public CUIDialogWnd, public CUIWndCallback
+class CUIPdaSpot final : public CUIDialogWnd, public CUIWndCallback
 {
     RTTI_DECLARE_TYPEINFO(CUIPdaSpot, CUIDialogWnd, CUIWndCallback);
 

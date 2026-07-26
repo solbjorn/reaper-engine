@@ -8,7 +8,7 @@
 #include "../../xr_3da/Properties.h"
 #include "Blender_Recorder.h"
 
-class CBlender_DESC
+class CBlender_DESC final
 {
 public:
     CLASS_ID CLS;
@@ -62,7 +62,7 @@ public:
 
 inline IBlender::~IBlender() = default;
 
-class IBlenderXr : public IBlender, public CPropertyBase
+class XR_NOVTABLE IBlenderXr : public IBlender, public CPropertyBase
 {
     RTTI_DECLARE_TYPEINFO(IBlenderXr, IBlender, CPropertyBase);
 

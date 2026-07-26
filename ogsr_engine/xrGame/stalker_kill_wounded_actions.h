@@ -14,7 +14,7 @@
 // CStalkerActionReachWounded
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionReachWounded : public CStalkerActionCombatBase
+class CStalkerActionReachWounded final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionReachWounded, CStalkerActionCombatBase);
 
@@ -34,7 +34,7 @@ public:
 // CStalkerActionAimWounded
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionAimWounded : public CStalkerActionCombatBase
+class CStalkerActionAimWounded final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionAimWounded, CStalkerActionCombatBase);
 
@@ -54,7 +54,7 @@ public:
 // CStalkerActionPrepareWounded
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionPrepareWounded : public CStalkerActionCombatBase
+class CStalkerActionPrepareWounded final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionPrepareWounded, CStalkerActionCombatBase);
 
@@ -74,7 +74,7 @@ public:
 // CStalkerActionKillWounded
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionKillWounded : public CStalkerActionCombatBase
+class CStalkerActionKillWounded final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionKillWounded, CStalkerActionCombatBase);
 
@@ -94,7 +94,7 @@ public:
 // CStalkerActionPauseAfterKill
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionPauseAfterKill : public CStalkerActionCombatBase
+class CStalkerActionPauseAfterKill final : public CStalkerActionCombatBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionPauseAfterKill, CStalkerActionCombatBase);
 

@@ -1,7 +1,7 @@
 #pragma once
 
 template <typename _Object>
-class CStatePsyDogHide : public CState<_Object>
+class CStatePsyDogHide final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStatePsyDogHide<_Object>, CState<_Object>);
 

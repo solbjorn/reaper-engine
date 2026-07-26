@@ -1,6 +1,6 @@
 #pragma once
 
-class CBlender_accum_direct : public IBlender
+class CBlender_accum_direct final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_accum_direct, IBlender);
 
@@ -13,7 +13,7 @@ public:
     ~CBlender_accum_direct() override;
 };
 
-class CBlender_accum_direct_msaa : public IBlender
+class CBlender_accum_direct_msaa final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_accum_direct_msaa, IBlender);
 
@@ -22,7 +22,7 @@ public:
 
     void Compile(CBlender_Compile& C) override;
 
-    virtual void SetDefine(LPCSTR Name, LPCSTR Definition)
+    void SetDefine(LPCSTR Name, LPCSTR Definition)
     {
         this->Name = Name;
         this->Definition = Definition;
@@ -35,7 +35,7 @@ public:
     ~CBlender_accum_direct_msaa() override;
 };
 
-class CBlender_accum_direct_volumetric_msaa : public IBlender
+class CBlender_accum_direct_volumetric_msaa final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_accum_direct_volumetric_msaa, IBlender);
 
@@ -44,7 +44,7 @@ public:
 
     void Compile(CBlender_Compile& C) override;
 
-    virtual void SetDefine(LPCSTR Name, LPCSTR Definition)
+    void SetDefine(LPCSTR Name, LPCSTR Definition)
     {
         this->Name = Name;
         this->Definition = Definition;
@@ -57,7 +57,7 @@ public:
     LPCSTR Definition{};
 };
 
-class CBlender_accum_direct_volumetric_sun_msaa : public IBlender
+class CBlender_accum_direct_volumetric_sun_msaa final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_accum_direct_volumetric_sun_msaa, IBlender);
 
@@ -66,7 +66,7 @@ public:
 
     void Compile(CBlender_Compile& C) override;
 
-    virtual void SetDefine(LPCSTR Name, LPCSTR Definition)
+    void SetDefine(LPCSTR Name, LPCSTR Definition)
     {
         this->Name = Name;
         this->Definition = Definition;

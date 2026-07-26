@@ -12,7 +12,7 @@
 #include "../UI.h"
 #include "uiabstract.h"
 
-class CUILines : public IUITextControl, public CUISimpleWindow
+class CUILines final : public IUITextControl, public CUISimpleWindow
 {
     RTTI_DECLARE_TYPEINFO(CUILines, IUITextControl, CUISimpleWindow);
 

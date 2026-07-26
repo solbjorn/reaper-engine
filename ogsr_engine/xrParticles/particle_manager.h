@@ -7,7 +7,7 @@
 
 namespace PAPI
 {
-class CParticleManager : public IParticleManager
+class CParticleManager final : public IParticleManager
 {
     RTTI_DECLARE_TYPEINFO(CParticleManager, IParticleManager);
 

@@ -1,14 +1,14 @@
 #ifndef DISABLING_PARAMS_H
 #define DISABLING_PARAMS_H
 
-struct SOneDDOParams
+struct SOneDDOParams final
 {
     void Mul(float v);
     float velocity;
     float acceleration;
 };
 
-struct SAllDDOParams
+struct SAllDDOParams final
 {
     void Reset();
     void Load(CInifile* ini);
@@ -17,7 +17,7 @@ struct SAllDDOParams
     u16 L2frames;
 };
 
-struct SAllDDWParams
+struct SAllDDWParams final
 {
     SAllDDOParams objects_params;
     float reanable_factor;

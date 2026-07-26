@@ -14,7 +14,7 @@
 
 class CPatrolPoint;
 
-class CALifeSmartTerrainTask
+class CALifeSmartTerrainTask final
 {
 private:
 #ifdef DEBUG

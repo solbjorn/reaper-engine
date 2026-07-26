@@ -3,7 +3,7 @@
 #include "../state.h"
 
 template <typename _Object>
-class CStateBloodsuckerVampireHide : public CState<_Object>
+class CStateBloodsuckerVampireHide final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateBloodsuckerVampireHide<_Object>, CState<_Object>);
 

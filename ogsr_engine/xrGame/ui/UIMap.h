@@ -71,7 +71,7 @@ protected:
     virtual void UpdateSpots() {}
 };
 
-class CUIGlobalMap : public CUICustomMap
+class CUIGlobalMap final : public CUICustomMap
 {
     RTTI_DECLARE_TYPEINFO(CUIGlobalMap, CUICustomMap);
 
@@ -110,7 +110,7 @@ public:
     void DrawText() override;
 };
 
-class CUILevelMap : public CUICustomMap
+class CUILevelMap final : public CUICustomMap
 {
     RTTI_DECLARE_TYPEINFO(CUILevelMap, CUICustomMap);
 
@@ -142,7 +142,7 @@ protected:
     void UpdateSpots() override;
 };
 
-class CUIMiniMap : public CUICustomMap
+class CUIMiniMap final : public CUICustomMap
 {
     RTTI_DECLARE_TYPEINFO(CUIMiniMap, CUICustomMap);
 

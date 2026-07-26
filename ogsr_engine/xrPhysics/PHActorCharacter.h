@@ -24,7 +24,7 @@ struct SPHCharacterRestrictor
 };
 
 template <CPHCharacter::ERestrictionType Ttype>
-struct TPHCharacterRestrictor : public SPHCharacterRestrictor
+struct TPHCharacterRestrictor final : public SPHCharacterRestrictor
 {
     TPHCharacterRestrictor() : SPHCharacterRestrictor{Ttype} {}
 
@@ -78,7 +78,7 @@ IC RESTRICTOR_I begin(RESRICTORS_V& v) { return v.begin(); }
 
 IC RESTRICTOR_I end(RESRICTORS_V& v) { return v.end(); }
 
-class CPHActorCharacter : public CPHSimpleCharacter
+class CPHActorCharacter final : public CPHSimpleCharacter
 {
     RTTI_DECLARE_TYPEINFO(CPHActorCharacter, CPHSimpleCharacter);
 

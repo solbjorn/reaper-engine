@@ -7,7 +7,7 @@ class CIKLimb;
 
 IC bool state_valide(const calculate_state& prev_state);
 
-class ik_limb_state
+class ik_limb_state final
 {
     calculate_state state{};
     const CIKLimb* limb{};

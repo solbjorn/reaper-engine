@@ -4,7 +4,7 @@
 
 class CPoltergeist;
 
-class CStateManagerPoltergeist : public CMonsterStateManager<CPoltergeist>
+class CStateManagerPoltergeist final : public CMonsterStateManager<CPoltergeist>
 {
     RTTI_DECLARE_TYPEINFO(CStateManagerPoltergeist, CMonsterStateManager<CPoltergeist>);
 

@@ -3,7 +3,7 @@
 
 class CBackend;
 
-class R_LOD
+class R_LOD final
 {
 public:
     R_constant* c_LOD;

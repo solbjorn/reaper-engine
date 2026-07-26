@@ -34,7 +34,7 @@ inline ParticleAction::~ParticleAction() = default;
 
 DEFINE_VECTOR(ParticleAction*, PAVec, PAVecIt);
 
-class ParticleActions
+class ParticleActions final
 {
     PAVec m_actions;
 

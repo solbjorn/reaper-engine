@@ -13,7 +13,7 @@
 
 class CCustomMonster;
 
-class CItemManager : public CObjectManager<const CGameObject>
+class CItemManager final : public CObjectManager<const CGameObject>
 {
     RTTI_DECLARE_TYPEINFO(CItemManager, CObjectManager<const CGameObject>);
 
@@ -28,13 +28,13 @@ public:
     inline explicit CItemManager(CCustomMonster* object);
     ~CItemManager() override = default;
 
-    virtual bool useful(const CGameObject* object) const;
+    [[nodiscard]] bool useful(const CGameObject* object) const;
     [[nodiscard]] bool is_useful(const CGameObject* object) const override;
-    virtual float evaluate(const CGameObject* object) const;
+    [[nodiscard]] f32 evaluate(const CGameObject* object) const;
     [[nodiscard]] f32 do_evaluate(const CGameObject* object) const override;
     void update() override;
     void remove_links(CObject* object);
-    virtual void on_restrictions_change();
+    void on_restrictions_change();
 };
 
 #include "item_manager_inline.h"

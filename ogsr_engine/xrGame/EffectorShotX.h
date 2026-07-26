@@ -3,7 +3,7 @@
 #include "EffectorShot.h"
 
 // Этот класс в ЗП удалён и по видимому не используется.
-class CCameraShotEffectorX : public CCameraShotEffector
+class CCameraShotEffectorX final : public CCameraShotEffector
 {
     RTTI_DECLARE_TYPEINFO(CCameraShotEffectorX, CCameraShotEffector);
 
@@ -19,5 +19,5 @@ public:
     void Clear() override;
 
 protected:
-    virtual void UpdateActorCamera(float dPitch, float dYaw);
+    void UpdateActorCamera(float dPitch, float dYaw);
 };

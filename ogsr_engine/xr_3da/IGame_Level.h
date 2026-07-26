@@ -18,7 +18,7 @@ namespace Feel
 class Sound;
 }
 
-class CServerInfo
+class CServerInfo final
 {
 private:
     enum
@@ -26,7 +26,7 @@ private:
         max_item = 15
     };
 
-    struct SItem_ServerInfo
+    struct SItem_ServerInfo final
     {
         string128 name;
         u32 color;
@@ -78,7 +78,7 @@ public:
     CCustomHUD* pHUD{};
 
 public: // deferred sound events
-    struct _esound_delegate
+    struct _esound_delegate final
     {
         Feel::Sound* dest;
         ref_sound_data_ptr source;

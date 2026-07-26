@@ -3,7 +3,7 @@
 
 #include "../xr_3da/CameraBase.h"
 
-class CCameraFirstEye : public CCameraBase
+class CCameraFirstEye final : public CCameraBase
 {
     RTTI_DECLARE_TYPEINFO(CCameraFirstEye, CCameraBase);
 

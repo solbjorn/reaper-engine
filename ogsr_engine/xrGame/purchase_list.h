@@ -13,7 +13,7 @@
 class CInventoryOwner;
 class CGameObject;
 
-class CPurchaseList
+class CPurchaseList final
 {
 public:
     typedef associative_vector<shared_str, float> DEFICITS;

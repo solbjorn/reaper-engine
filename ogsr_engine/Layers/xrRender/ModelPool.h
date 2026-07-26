@@ -12,14 +12,14 @@ struct SEmitter;
 }
 
 // defs
-class CModelPool : public virtual RTTI::Enable
+class CModelPool final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CModelPool);
 
 private:
     friend class CRender;
 
-    struct ModelDef
+    struct ModelDef final
     {
         shared_str name;
         dxRender_Visual* model{};

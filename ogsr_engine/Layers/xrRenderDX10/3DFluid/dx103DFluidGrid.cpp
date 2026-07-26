@@ -6,7 +6,7 @@
 
 #include <Utilities/FlexibleVertexFormat.h>
 
-struct VS_INPUT_FLUIDSIM_STRUCT
+struct VS_INPUT_FLUIDSIM_STRUCT final
 {
     Fvector3 Pos; // Clip space position for slice vertices
     Fvector3 Tex; // Cell coordinates in 0-"texture dimension" range

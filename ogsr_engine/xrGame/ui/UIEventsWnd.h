@@ -15,7 +15,7 @@ class CUITaskDescrWnd;
 class CUIScrollView;
 class CUITaskItem;
 
-class CUIEventsWnd : public CUIWindow, public CUIWndCallback
+class CUIEventsWnd final : public CUIWindow, public CUIWndCallback
 {
     RTTI_DECLARE_TYPEINFO(CUIEventsWnd, CUIWindow, CUIWndCallback);
 

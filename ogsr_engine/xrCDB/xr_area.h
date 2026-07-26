@@ -12,7 +12,7 @@ class CObject;
 //-----------------------------------------------------------------------------------------------------------
 // Space Area
 //-----------------------------------------------------------------------------------------------------------
-class CObjectSpace
+class CObjectSpace final
 {
 private:
     // Debug
@@ -27,8 +27,10 @@ public:
 #endif
 
 private:
-    [[nodiscard]] BOOL _RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::ray_cache* cache, const CObject* ignore_object);
-    [[nodiscard]] BOOL _RayPick(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::rq_result& R, const CObject* ignore_object) const;
+    [[nodiscard]] BOOL _RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::ray_cache* cache,
+                                const CObject* ignore_object);
+    [[nodiscard]] BOOL _RayPick(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::rq_result& R,
+                                const CObject* ignore_object) const;
     [[nodiscard]] BOOL _RayQuery(collide::rq_results& dest, const collide::ray_defs& rq, collide::rq_callback* cb, LPVOID user_data, collide::test_callback* tb,
                                  const CObject* ignore_object) const;
 
@@ -39,20 +41,24 @@ public:
     void Load();
 
     // Occluded/No
-    [[nodiscard]] BOOL RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::ray_cache* cache, const CObject* ignore_object);
+    [[nodiscard]] BOOL RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::ray_cache* cache,
+                               const CObject* ignore_object);
 
     // Game raypick (nearest) - returns object and addititional params
-    [[nodiscard]] BOOL RayPick(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::rq_result& R, const CObject* ignore_object) const;
+    [[nodiscard]] BOOL RayPick(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::rq_result& R,
+                               const CObject* ignore_object) const;
 
     // General collision query
     [[nodiscard]] BOOL RayQuery(collide::rq_results& dest, const collide::ray_defs& rq, collide::rq_callback* cb, LPVOID user_data, collide::test_callback* tb,
                                 const CObject* ignore_object) const;
 
-    [[nodiscard]] bool BoxQuery(Fvector const& box_center, Fvector const& box_z_axis, Fvector const& box_y_axis, Fvector const& box_sizes, xr_vector<Fvector>* out_tris) const;
+    [[nodiscard]] bool BoxQuery(Fvector const& box_center, Fvector const& box_z_axis, Fvector const& box_y_axis, Fvector const& box_sizes,
+                                xr_vector<Fvector>* out_tris) const;
 
     [[nodiscard]] gsl::index GetNearest(xr_vector<CObject*>& q_nearest, ICollisionForm* obj, float range);
     [[nodiscard]] gsl::index GetNearest(xr_vector<CObject*>& q_nearest, const Fvector& point, float range, CObject* ignore_object);
-    [[nodiscard]] gsl::index GetNearest(xr_vector<ISpatial*>& q_spatial, xr_vector<CObject*>& q_nearest, const Fvector& point, float range, CObject* ignore_object);
+    [[nodiscard]] gsl::index GetNearest(xr_vector<ISpatial*>& q_spatial, xr_vector<CObject*>& q_nearest, const Fvector& point, float range,
+                                        CObject* ignore_object);
 
     [[nodiscard]] CDB::TRI* GetStaticTris() { return Static.get_tris(); }
     [[nodiscard]] const CDB::TRI* GetStaticTris() const { return Static.get_tris(); }

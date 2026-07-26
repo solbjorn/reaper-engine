@@ -21,7 +21,7 @@ class CMissile;
 class CPropertyStorage;
 class CStalkerAnimationData;
 
-class CStalkerAnimationManager : public virtual RTTI::Enable
+class CStalkerAnimationManager final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CStalkerAnimationManager);
 
@@ -147,9 +147,9 @@ private:
 public:
     ~CStalkerAnimationManager() override = default;
 
-    virtual void reinit();
-    virtual void reload(CAI_Stalker* object);
-    virtual void update();
+    void reinit();
+    void reload(CAI_Stalker* object);
+    void update();
     void play_fx(float power_factor, int fx_index);
     void play_delayed_callbacks();
 

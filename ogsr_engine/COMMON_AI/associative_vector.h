@@ -11,7 +11,8 @@
 #include "associative_vector_compare_predicate.h"
 
 template <typename _key_type, typename _data_type, typename _compare_predicate_type = std::less<_key_type>>
-class associative_vector : protected xr_vector<std::pair<_key_type, _data_type>>, protected associative_vector_compare_predicate<_key_type, _data_type, _compare_predicate_type>
+class associative_vector final : protected xr_vector<std::pair<_key_type, _data_type>>,
+                                 protected associative_vector_compare_predicate<_key_type, _data_type, _compare_predicate_type>
 {
 private:
     typedef associative_vector<_key_type, _data_type, _compare_predicate_type> self_type;
@@ -105,6 +106,7 @@ public:
 };
 
 template <typename _key_type, typename _data_type, typename _compare_predicate_type>
-IC void swap(associative_vector<_key_type, _data_type, _compare_predicate_type>& left, associative_vector<_key_type, _data_type, _compare_predicate_type>& right);
+IC void swap(associative_vector<_key_type, _data_type, _compare_predicate_type>& left,
+             associative_vector<_key_type, _data_type, _compare_predicate_type>& right);
 
 #include "associative_vector_inline.h"

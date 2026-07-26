@@ -5,7 +5,7 @@
 #include "TriPrimitiveCollideClassDef.h"
 #include "dcTriListCollider.h"
 
-struct dxCylinder
+struct dxCylinder final
 {
     // cylinder
     dReal radius, lz; // radius, length along z axis */

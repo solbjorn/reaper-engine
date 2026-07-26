@@ -11,7 +11,7 @@
 #include "trade_factor_parameters.h"
 #include "trade_bool_parameters.h"
 
-class CTradeActionParameters
+class CTradeActionParameters final
 {
 private:
     CTradeFactorParameters m_enabled;

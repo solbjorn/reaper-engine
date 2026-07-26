@@ -2,7 +2,7 @@
 
 #include "CustomZone.h"
 
-class CNoGravityZone : public CCustomZone
+class CNoGravityZone final : public CCustomZone
 {
     RTTI_DECLARE_TYPEINFO(CNoGravityZone, CCustomZone);
 

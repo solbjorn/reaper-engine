@@ -53,7 +53,7 @@ public:
     void finalize() override;
 };
 
-class CMapActionResize : public CMapActionZoomControl
+class CMapActionResize final : public CMapActionZoomControl
 {
     RTTI_DECLARE_TYPEINFO(CMapActionResize, CMapActionZoomControl);
 
@@ -68,7 +68,7 @@ public:
     void finalize() override;
 };
 
-class CMapActionMinimize : public CMapActionZoomControl
+class CMapActionMinimize final : public CMapActionZoomControl
 {
     RTTI_DECLARE_TYPEINFO(CMapActionMinimize, CMapActionZoomControl);
 
@@ -83,7 +83,7 @@ public:
     void finalize() override;
 };
 
-class CMapActionIdle : public CSomeMapAction
+class CMapActionIdle final : public CSomeMapAction
 {
     RTTI_DECLARE_TYPEINFO(CMapActionIdle, CSomeMapAction);
 
@@ -112,7 +112,7 @@ public:
     ~CSomeMapEvaluator() override = default;
 };
 
-class CEvaluatorTargetMapShown : public CSomeMapEvaluator
+class CEvaluatorTargetMapShown final : public CSomeMapEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CEvaluatorTargetMapShown, CSomeMapEvaluator);
 
@@ -126,7 +126,7 @@ public:
     [[nodiscard]] bool evaluate() override;
 };
 
-class CEvaluatorMapMinimized : public CSomeMapEvaluator
+class CEvaluatorMapMinimized final : public CSomeMapEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CEvaluatorMapMinimized, CSomeMapEvaluator);
 
@@ -140,7 +140,7 @@ public:
     [[nodiscard]] bool evaluate() override;
 };
 
-class CEvaluatorMapResized : public CSomeMapEvaluator
+class CEvaluatorMapResized final : public CSomeMapEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CEvaluatorMapResized, CSomeMapEvaluator);
 
@@ -154,7 +154,7 @@ public:
     [[nodiscard]] bool evaluate() override;
 };
 
-class CEvaluatorMapConst : public CSomeMapEvaluator
+class CEvaluatorMapConst final : public CSomeMapEvaluator
 {
     RTTI_DECLARE_TYPEINFO(CEvaluatorMapConst, CSomeMapEvaluator);
 

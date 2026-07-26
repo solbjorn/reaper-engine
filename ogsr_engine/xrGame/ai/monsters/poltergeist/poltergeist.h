@@ -13,7 +13,7 @@ class CPolterTele;
 
 //////////////////////////////////////////////////////////////////////////
 
-class CPoltergeist : public CBaseMonster, public CTelekinesis, public CEnergyHolder
+class CPoltergeist final : public CBaseMonster, public CTelekinesis, public CEnergyHolder
 {
     RTTI_DECLARE_TYPEINFO(CPoltergeist, CBaseMonster, CTelekinesis, CEnergyHolder);
 
@@ -193,7 +193,7 @@ public:
 // Flame
 //////////////////////////////////////////////////////////////////////////
 
-class CPolterFlame : public CPolterSpecialAbility
+class CPolterFlame final : public CPolterSpecialAbility
 {
     RTTI_DECLARE_TYPEINFO(CPolterFlame, CPolterSpecialAbility);
 
@@ -245,7 +245,7 @@ public:
     };
 
 public:
-    struct SFlameElement
+    struct SFlameElement final
     {
         const CObject* target_object;
         Fvector position;
@@ -280,7 +280,7 @@ private:
 // TELE
 //////////////////////////////////////////////////////////////////////////
 
-class CPolterTele : public CPolterSpecialAbility
+class CPolterTele final : public CPolterSpecialAbility
 {
     RTTI_DECLARE_TYPEINFO(CPolterTele, CPolterSpecialAbility);
 

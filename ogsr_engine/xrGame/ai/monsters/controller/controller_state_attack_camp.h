@@ -1,7 +1,7 @@
 #pragma once
 
 template <typename _Object>
-class CStateControlCamp : public CState<_Object>
+class CStateControlCamp final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateControlCamp<_Object>, CState<_Object>);
 

@@ -42,14 +42,14 @@ using fmt::make_format_args;
 using fmt::string_view;
 using fmt::vformat;
 
-struct unformattable
+struct unformattable final
 {};
 } // namespace detail
 
 // Disable formatting of a type when unwanted, e.g. when the type is incomplete.
 #define XR_UNFORMATTABLE(x) \
     template <> \
-    struct fmt::formatter<x> : fmt::formatter<xr::detail::unformattable> \
+    struct fmt::formatter<x> final : fmt::formatter<xr::detail::unformattable> \
     {}; \
     static_assert(!fmt::is_formattable<x>::value)
 } // namespace xr
@@ -99,26 +99,26 @@ using std::make_format_args;
 using std::string_view;
 using std::vformat;
 
-struct unformattable
+struct unformattable final
 {};
 } // namespace detail
 
 // Disable formatting of a type when unwanted, e.g. when the type is incomplete.
 #define XR_UNFORMATTABLE(x) \
     template <> \
-    struct std::formatter<x> : std::formatter<xr::detail::unformattable> \
+    struct std::formatter<x> final : std::formatter<xr::detail::unformattable> \
     {}; \
     static_assert(!std::formattable<x, char>)
 } // namespace xr
 
 template <typename T>
-struct std::formatter<std::atomic<T>> : std::formatter<T>
+struct std::formatter<std::atomic<T>> final : std::formatter<T>
 {
     [[nodiscard]] constexpr auto format(const std::atomic<T>& val, std::format_context& ctx) const { return std::formatter<T>::format(val.load(), ctx); }
 };
 
 template <>
-struct std::formatter<Fvector2> : std::formatter<std::array<f32, 2>>
+struct std::formatter<Fvector2> final : std::formatter<std::array<f32, 2>>
 {
     [[nodiscard]] constexpr auto format(const Fvector2& vec, std::format_context& ctx) const
     {
@@ -127,7 +127,7 @@ struct std::formatter<Fvector2> : std::formatter<std::array<f32, 2>>
 };
 
 template <>
-struct std::formatter<Fvector3> : std::formatter<std::array<f32, 3>>
+struct std::formatter<Fvector3> final : std::formatter<std::array<f32, 3>>
 {
     [[nodiscard]] constexpr auto format(const Fvector3& vec, std::format_context& ctx) const
     {
@@ -136,7 +136,7 @@ struct std::formatter<Fvector3> : std::formatter<std::array<f32, 3>>
 };
 
 template <>
-struct std::formatter<Fvector4> : std::formatter<std::array<f32, 4>>
+struct std::formatter<Fvector4> final : std::formatter<std::array<f32, 4>>
 {
     [[nodiscard]] constexpr auto format(const Fvector4& vec, std::format_context& ctx) const
     {
@@ -145,7 +145,7 @@ struct std::formatter<Fvector4> : std::formatter<std::array<f32, 4>>
 };
 
 template <>
-struct std::formatter<shared_str> : std::formatter<std::string_view>
+struct std::formatter<shared_str> final : std::formatter<std::string_view>
 {
     [[nodiscard]] constexpr auto format(const shared_str& str, std::format_context& ctx) const
     {
@@ -154,7 +154,7 @@ struct std::formatter<shared_str> : std::formatter<std::string_view>
 };
 
 template <>
-struct std::formatter<sf::String> : std::formatter<xr_string>
+struct std::formatter<sf::String> final : std::formatter<xr_string>
 {
     [[nodiscard]] constexpr auto format(const sf::String& str, std::format_context& ctx) const
     {
@@ -164,7 +164,7 @@ struct std::formatter<sf::String> : std::formatter<xr_string>
 };
 
 template <>
-struct std::formatter<xr::hresult> : std::formatter<xr_string>
+struct std::formatter<xr::hresult> final : std::formatter<xr_string>
 {
     [[nodiscard]] constexpr auto format(const xr::hresult& hr, std::format_context& ctx) const
     {
@@ -173,7 +173,7 @@ struct std::formatter<xr::hresult> : std::formatter<xr_string>
 };
 
 template <>
-struct std::formatter<xr::last_error> : std::formatter<xr_string>
+struct std::formatter<xr::last_error> final : std::formatter<xr_string>
 {
     [[nodiscard]] constexpr auto format(const xr::last_error& le, std::format_context& ctx) const
     {
@@ -182,7 +182,7 @@ struct std::formatter<xr::last_error> : std::formatter<xr_string>
 };
 
 template <>
-struct std::formatter<xr::ntstatus> : std::formatter<xr_string>
+struct std::formatter<xr::ntstatus> final : std::formatter<xr_string>
 {
     [[nodiscard]] constexpr auto format(const xr::ntstatus& nt, std::format_context& ctx) const
     {
@@ -200,7 +200,7 @@ XR_DIAG_IGNORE("-Wsign-conversion");
 XR_DIAG_POP();
 
 template <typename T>
-struct scn::scanner<Fvector2, T> : scn::scanner<std::inplace_vector<f32, 2>, T>
+struct scn::scanner<Fvector2, T> final : scn::scanner<std::inplace_vector<f32, 2>, T>
 {
     template <typename Context>
     [[nodiscard]] constexpr auto scan(Fvector2& val, Context& ctx) -> scn::scan_expected<typename Context::iterator>
@@ -224,7 +224,7 @@ struct scn::scanner<Fvector2, T> : scn::scanner<std::inplace_vector<f32, 2>, T>
 };
 
 template <typename T>
-struct scn::scanner<Fvector3, T> : scn::scanner<std::inplace_vector<f32, 3>, T>
+struct scn::scanner<Fvector3, T> final : scn::scanner<std::inplace_vector<f32, 3>, T>
 {
     template <typename Context>
     [[nodiscard]] constexpr auto scan(Fvector3& val, Context& ctx) -> scn::scan_expected<typename Context::iterator>
@@ -248,7 +248,7 @@ struct scn::scanner<Fvector3, T> : scn::scanner<std::inplace_vector<f32, 3>, T>
 };
 
 template <typename T>
-struct scn::scanner<Fvector4, T> : scn::scanner<std::inplace_vector<f32, 4>, T>
+struct scn::scanner<Fvector4, T> final : scn::scanner<std::inplace_vector<f32, 4>, T>
 {
     template <typename Context>
     [[nodiscard]] constexpr auto scan(Fvector4& val, Context& ctx) -> scn::scan_expected<typename Context::iterator>

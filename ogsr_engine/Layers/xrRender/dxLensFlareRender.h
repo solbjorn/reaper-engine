@@ -3,7 +3,7 @@
 
 #include "../../Include/xrRender/LensFlareRender.h"
 
-class dxFlareRender : public IFlareRender
+class dxFlareRender final : public IFlareRender
 {
     RTTI_DECLARE_TYPEINFO(dxFlareRender, IFlareRender);
 
@@ -20,7 +20,7 @@ public:
     ref_shader hShader;
 };
 
-class dxLensFlareRender : public ILensFlareRender
+class dxLensFlareRender final : public ILensFlareRender
 {
     RTTI_DECLARE_TYPEINFO(dxLensFlareRender, ILensFlareRender);
 

@@ -5,7 +5,7 @@
 
 class CLAItem;
 
-class CProjector : public CScriptObject
+class CProjector final : public CScriptObject
 {
     RTTI_DECLARE_TYPEINFO(CProjector, CScriptObject);
 
@@ -23,7 +23,7 @@ public:
 
     u16 guid_bone{};
 
-    struct SBoneRot
+    struct SBoneRot final
     {
         float velocity;
         u16 id;

@@ -15,7 +15,7 @@ class CLAItem;
 
 class CEnvironment;
 
-struct SThunderboltDesc
+struct SThunderboltDesc final
 {
     // geom
     // IRender_DetailModel*		l_model;
@@ -24,7 +24,7 @@ struct SThunderboltDesc
     ref_sound snd;
 
     // gradient
-    struct SFlare
+    struct SFlare final
     {
         float fOpacity;
         Fvector2 fRadius;
@@ -57,7 +57,7 @@ public:
     void create_center_gradient_shoc(CInifile* pIni, shared_str const& sect);
 };
 
-struct SThunderboltCollection
+struct SThunderboltCollection final
 {
     DEFINE_VECTOR(SThunderboltDesc*, DescVec, DescIt);
     DescVec palette;
@@ -73,7 +73,7 @@ public:
 
 #define THUNDERBOLT_CACHE_SIZE 8
 //
-class CEffect_Thunderbolt
+class CEffect_Thunderbolt final
 {
     friend class dxThunderboltRender;
 

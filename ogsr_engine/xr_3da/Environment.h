@@ -22,7 +22,7 @@ class CLensFlareDescriptor;
 #define DAY_LENGTH 86400.f
 
 // t-defs
-class CEnvModifier
+class CEnvModifier final
 {
 public:
     Fvector3 position;
@@ -41,10 +41,10 @@ public:
     float sum(CEnvModifier& _another, Fvector3& view);
 };
 
-class CEnvAmbient
+class CEnvAmbient final
 {
 public:
-    struct SEffect
+    struct SEffect final
     {
         ref_sound sound;
         shared_str particles;
@@ -59,7 +59,7 @@ public:
     };
     DEFINE_VECTOR(SEffect*, EffectVec, EffectVecIt);
 
-    struct SSndChannel
+    struct SSndChannel final
     {
         shared_str m_load_section;
         Fvector2 m_sound_dist;
@@ -190,7 +190,7 @@ public:
     shared_str m_identifier;
 };
 
-class CEnvDescriptorMixer : public CEnvDescriptor
+class CEnvDescriptorMixer final : public CEnvDescriptor
 {
 public:
     float weight;
@@ -203,7 +203,7 @@ public:
     void lerp(CEnvironment* parent, CEnvDescriptor& A, CEnvDescriptor& B, float f, CEnvModifier& M, float m_power);
 };
 
-class CEnvironment
+class CEnvironment final
 {
     friend class dxEnvironmentRender;
 

@@ -13,7 +13,7 @@ class CUICellItem;
 class IInventoryBox;
 class CInventoryOwner;
 
-class CUICarBodyWnd : public CUIDialogWnd
+class CUICarBodyWnd final : public CUIDialogWnd
 {
     RTTI_DECLARE_TYPEINFO(CUICarBodyWnd, CUIDialogWnd);
 
@@ -26,7 +26,7 @@ public:
     CUICarBodyWnd();
     ~CUICarBodyWnd() override;
 
-    virtual void Init();
+    void Init();
     [[nodiscard]] bool StopAnyMove() override { return true; }
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);

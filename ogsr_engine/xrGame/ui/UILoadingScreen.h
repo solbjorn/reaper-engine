@@ -14,7 +14,7 @@
 #include "UIWindow.h"
 #include "UIProgressBar.h"
 
-class UILoadingScreen : public ILoadingScreen, public CUIWindow
+class UILoadingScreen final : public ILoadingScreen, public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(UILoadingScreen, ILoadingScreen, CUIWindow);
 

@@ -4,7 +4,7 @@
 
 class CTimer_paused;
 
-class pauseMngr
+class pauseMngr final
 {
     xr_vector<CTimer_paused*> m_timers;
     bool paused;
@@ -171,7 +171,7 @@ public:
 
 extern BOOL g_bEnableStatGather;
 
-class CStatTimer
+class CStatTimer final
 {
     using Duration = CTimerBase::Duration;
 

@@ -21,7 +21,7 @@ class CUILevelMap;
 
 DEFINE_MAP(shared_str, CUICustomMap*, GameMaps, GameMapsPairIt);
 
-class CUIMapWnd : public CUIWindow, public CUIWndCallback
+class CUIMapWnd final : public CUIWindow, public CUIWndCallback
 {
     RTTI_DECLARE_TYPEINFO(CUIMapWnd, CUIWindow, CUIWndCallback);
 
@@ -84,7 +84,7 @@ public:
     CUIMapWnd();
     ~CUIMapWnd() override;
 
-    virtual void Init(LPCSTR xml_name, LPCSTR start_from);
+    void Init(LPCSTR xml_name, LPCSTR start_from);
     void Show(bool status) override;
     void Draw() override;
     void Reset() override;

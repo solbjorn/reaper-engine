@@ -12,7 +12,7 @@
 
 DEFINE_VECTOR(CPhysicsShellHolder*, GAME_OBJECT_LIST, GAME_OBJECT_LIST_it);
 
-class CBlackGraviArtefact : public CGraviArtefact, public Feel::Touch
+class CBlackGraviArtefact final : public CGraviArtefact, public Feel::Touch
 {
     RTTI_DECLARE_TYPEINFO(CBlackGraviArtefact, CGraviArtefact, Feel::Touch);
 

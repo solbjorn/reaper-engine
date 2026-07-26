@@ -67,7 +67,7 @@ void IConsole_Command::add_LRU_to_tips(vecTips& tips)
 
 namespace
 {
-class CCC_Quit : public IConsole_Command
+class CCC_Quit final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_Quit, IConsole_Command);
 
@@ -88,7 +88,7 @@ private:
 };
 
 #ifdef DEBUG_MEMORY_MANAGER
-class CCC_MemStat : public IConsole_Command
+class CCC_MemStat final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_MemStat, IConsole_Command);
 
@@ -109,7 +109,7 @@ public:
     }
 };
 
-class CCC_DbgMemCheck : public IConsole_Command
+class CCC_DbgMemCheck final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DbgMemCheck, IConsole_Command);
 
@@ -128,7 +128,7 @@ public:
 #endif // DEBUG_MEMORY_MANAGER
 
 #ifdef DEBUG
-class CCC_DbgStrCheck : public IConsole_Command
+class CCC_DbgStrCheck final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DbgStrCheck, IConsole_Command);
 
@@ -139,7 +139,7 @@ public:
     void Execute(std::string_view) override { str_container::verify(); }
 };
 
-class CCC_DbgStrDump : public IConsole_Command
+class CCC_DbgStrDump final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DbgStrDump, IConsole_Command);
 
@@ -151,7 +151,7 @@ public:
 };
 #endif // DEBUG
 
-class CCC_DbgLALibDump : public IConsole_Command
+class CCC_DbgLALibDump final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DbgLALibDump, IConsole_Command);
 
@@ -163,7 +163,7 @@ public:
 };
 
 //-----------------------------------------------------------------------
-class CCC_MotionsStat : public IConsole_Command
+class CCC_MotionsStat final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_MotionsStat, IConsole_Command);
 
@@ -175,7 +175,7 @@ public:
 };
 
 #ifdef DEBUG
-class CCC_TexturesStat : public IConsole_Command
+class CCC_TexturesStat final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_TexturesStat, IConsole_Command);
 
@@ -188,7 +188,7 @@ public:
 
 //-----------------------------------------------------------------------
 
-class CCC_E_Dump : public IConsole_Command
+class CCC_E_Dump final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_E_Dump, IConsole_Command);
 
@@ -199,7 +199,7 @@ public:
     void Execute(std::string_view) override { Engine.Event.Dump(); }
 };
 
-class CCC_E_Signal : public IConsole_Command
+class CCC_E_Signal final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_E_Signal, IConsole_Command);
 
@@ -236,7 +236,7 @@ private:
 
 //-----------------------------------------------------------------------
 
-class CCC_Help : public IConsole_Command
+class CCC_Help final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_Help, IConsole_Command);
 
@@ -277,7 +277,7 @@ public:
 };
 
 #ifdef DEBUG
-class CCC_DumpOpenFiles : public IConsole_Command
+class CCC_DumpOpenFiles final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DumpOpenFiles, IConsole_Command);
 
@@ -301,7 +301,7 @@ public:
 
 //-----------------------------------------------------------------------
 
-class CCC_SaveCFG : public IConsole_Command
+class CCC_SaveCFG final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_SaveCFG, IConsole_Command);
 
@@ -412,7 +412,7 @@ bool CCC_LoadCFG_custom::allow(LPCSTR cmd) { return (cmd == strstr(cmd, m_cmd));
 namespace
 {
 //-----------------------------------------------------------------------
-class CCC_Start : public IConsole_Command
+class CCC_Start final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_Start, IConsole_Command);
 
@@ -441,7 +441,7 @@ private:
     tmc::task<void> execute_async(std::array<std::byte, 16>& arg) { co_await Engine.Event.Defer("KERNEL:start", *reinterpret_cast<const uintptr_t*>(&arg)); }
 };
 
-class CCC_Disconnect : public IConsole_Command
+class CCC_Disconnect final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_Disconnect, IConsole_Command);
 
@@ -457,7 +457,7 @@ private:
 
 //-----------------------------------------------------------------------
 
-class CCC_VID_Reset : public IConsole_Command
+class CCC_VID_Reset final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_VID_Reset, IConsole_Command);
 
@@ -475,7 +475,7 @@ private:
     tmc::task<void> execute_async(std::array<std::byte, 16>&) { co_await Device.Reset(); }
 };
 
-class CCC_VidMode : public CCC_Token
+class CCC_VidMode final : public CCC_Token
 {
     RTTI_DECLARE_TYPEINFO(CCC_VidMode, CCC_Token);
 
@@ -533,7 +533,7 @@ public:
     }
 };
 
-class CCC_Screenmode : public CCC_Token
+class CCC_Screenmode final : public CCC_Token
 {
     RTTI_DECLARE_TYPEINFO(CCC_Screenmode, CCC_Token);
 
@@ -612,7 +612,7 @@ private:
 
 //-----------------------------------------------------------------------
 
-class CCC_SND_Restart : public IConsole_Command
+class CCC_SND_Restart final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_SND_Restart, IConsole_Command);
 
@@ -628,7 +628,7 @@ public:
 #if 0
 f32 ps_gamma{1.0f}, ps_brightness{1.0f}, ps_contrast{1.0f};
 
-class CCC_Gamma : public CCC_Float
+class CCC_Gamma final : public CCC_Float
 {
     RTTI_DECLARE_TYPEINFO(CCC_Gamma, CCC_Float);
 
@@ -653,7 +653,7 @@ public:
 
 //-----------------------------------------------------------------------
 
-class CCC_r2 : public CCC_Token
+class CCC_r2 final : public CCC_Token
 {
     RTTI_DECLARE_TYPEINFO(CCC_r2, CCC_Token);
 
@@ -686,7 +686,7 @@ public:
     }
 };
 
-class CCC_soundDevice : public CCC_Token
+class CCC_soundDevice final : public CCC_Token
 {
     RTTI_DECLARE_TYPEINFO(CCC_soundDevice, CCC_Token);
 
@@ -732,7 +732,7 @@ public:
     }
 };
 
-class CCC_ExclusiveMode : public CCC_Mask
+class CCC_ExclusiveMode final : public CCC_Mask
 {
     RTTI_DECLARE_TYPEINFO(CCC_ExclusiveMode, CCC_Mask);
 
@@ -753,7 +753,7 @@ public:
     }
 };
 
-class CCC_HideConsole : public IConsole_Command
+class CCC_HideConsole final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_HideConsole, IConsole_Command);
 
@@ -768,7 +768,7 @@ private:
     tmc::task<void> execute_async(std::array<std::byte, 16>&) { co_await Console->Hide(); }
 };
 
-class CCC_SoundParamsSmoothing : public CCC_Integer
+class CCC_SoundParamsSmoothing final : public CCC_Integer
 {
     RTTI_DECLARE_TYPEINFO(CCC_SoundParamsSmoothing, CCC_Integer);
 

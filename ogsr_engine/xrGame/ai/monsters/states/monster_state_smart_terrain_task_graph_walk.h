@@ -3,7 +3,7 @@
 #include "../state.h"
 
 template <typename _Object>
-class CStateMonsterSmartTerrainTaskGraphWalk : public CStateMove<_Object>
+class CStateMonsterSmartTerrainTaskGraphWalk final : public CStateMove<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterSmartTerrainTaskGraphWalk<_Object>, CStateMove<_Object>);
 

@@ -4,7 +4,7 @@
 
 class CPseudoGigant;
 
-class CStateManagerGigant : public CMonsterStateManager<CPseudoGigant>
+class CStateManagerGigant final : public CMonsterStateManager<CPseudoGigant>
 {
     RTTI_DECLARE_TYPEINFO(CStateManagerGigant, CMonsterStateManager<CPseudoGigant>);
 

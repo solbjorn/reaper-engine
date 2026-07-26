@@ -42,7 +42,7 @@ public:
     CUIEventsWnd* m_EventsWnd;
 };
 
-class CUITaskRootItem : public CUITaskItem
+class CUITaskRootItem final : public CUITaskItem
 {
     RTTI_DECLARE_TYPEINFO(CUITaskRootItem, CUITaskItem);
 
@@ -70,7 +70,7 @@ public:
     [[nodiscard]] bool OnDbClick() override;
 };
 
-class CUITaskSubItem : public CUITaskItem
+class CUITaskSubItem final : public CUITaskItem
 {
     RTTI_DECLARE_TYPEINFO(CUITaskSubItem, CUITaskItem);
 

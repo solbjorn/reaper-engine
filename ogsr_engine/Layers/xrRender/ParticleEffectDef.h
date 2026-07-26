@@ -44,7 +44,7 @@ struct SFrame
     }
 };
 
-class CPEDef
+class CPEDef final
 {
 public:
     enum

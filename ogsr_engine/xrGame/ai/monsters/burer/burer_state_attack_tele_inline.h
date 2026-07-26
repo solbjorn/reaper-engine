@@ -361,7 +361,7 @@ bool CStateBurerAttackTele<Object>::CheckTeleStart()
     return true;
 }
 
-class best_object_predicate
+class best_object_predicate final
 {
     Fvector enemy_pos;
     Fvector monster_pos;
@@ -383,7 +383,7 @@ public:
     }
 };
 
-class best_object_predicate2
+class best_object_predicate2 final
 {
     Fvector enemy_pos;
     Fvector monster_pos;

@@ -4,7 +4,7 @@
 #include "../../../CameraEffector.h"
 #include "../../../../xr_3da/CameraManager.h"
 
-class CVampirePPEffector : public CEffectorPP
+class CVampirePPEffector final : public CEffectorPP
 {
     RTTI_DECLARE_TYPEINFO(CVampirePPEffector, CEffectorPP);
 
@@ -25,7 +25,7 @@ public:
 // Vampire Camera Effector
 //////////////////////////////////////////////////////////////////////////
 
-class CVampireCameraEffector : public CEffectorCam
+class CVampireCameraEffector final : public CEffectorCam
 {
     RTTI_DECLARE_TYPEINFO(CVampireCameraEffector, CEffectorCam);
 

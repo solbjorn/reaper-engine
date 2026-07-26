@@ -9,7 +9,7 @@
 #include "alife_simulator.h"
 
 template <typename _registry_type>
-class CALifeRegistryWrapper : public virtual RTTI::Enable
+class CALifeRegistryWrapper final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CALifeRegistryWrapper<_registry_type>);
 

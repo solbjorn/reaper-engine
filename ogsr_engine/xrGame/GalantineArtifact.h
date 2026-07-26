@@ -7,7 +7,7 @@
 
 #include "Artifact.h"
 
-class CGalantineArtefact : public CArtefact
+class CGalantineArtefact final : public CArtefact
 {
     RTTI_DECLARE_TYPEINFO(CGalantineArtefact, CArtefact);
 

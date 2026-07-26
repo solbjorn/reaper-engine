@@ -41,7 +41,7 @@ public:
 
 inline CPHAction::~CPHAction() = default;
 
-class CPHOnesCondition : public CPHCondition
+class CPHOnesCondition final : public CPHCondition
 {
     RTTI_DECLARE_TYPEINFO(CPHOnesCondition, CPHCondition);
 
@@ -60,7 +60,7 @@ public:
     [[nodiscard]] bool obsolete() const override { return b_called; }
 };
 
-class CPHDummiAction : public CPHAction
+class CPHDummiAction final : public CPHAction
 {
     RTTI_DECLARE_TYPEINFO(CPHDummiAction, CPHAction);
 
@@ -71,7 +71,7 @@ public:
     [[nodiscard]] bool obsolete() const override { return false; }
 };
 
-class CPHCall
+class CPHCall final
 {
     CPHAction* m_action;
     CPHCondition* m_condition;
@@ -96,7 +96,7 @@ public:
 
 DEFINE_VECTOR(std::unique_ptr<CPHCall>, PHCALL_STORAGE, PHCALL_I);
 
-class CPHCommander
+class CPHCommander final
 {
     PHCALL_STORAGE m_calls;
 

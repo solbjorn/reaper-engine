@@ -5,7 +5,7 @@
 
 #include "../ode_include.h"
 
-struct dcVector3
+struct dcVector3 final
 {
     float x, y, z;
 
@@ -268,7 +268,7 @@ void dGeomTriListGetTriangle(dGeomID g, int Index, dVector3* v0, dVector3* v1, d
 
 class dcTriListCollider;
 
-struct dxTriList
+struct dxTriList final
 {
     dReal p[4]; // dxPlane
 
@@ -279,7 +279,7 @@ struct dxTriList
     dcTriListCollider* Collider;
 };
 
-struct dcPlane
+struct dcPlane final
 {
     dcVector3 Normal;
 

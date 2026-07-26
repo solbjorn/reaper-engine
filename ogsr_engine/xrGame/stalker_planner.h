@@ -14,7 +14,7 @@
 
 class CAI_Stalker;
 
-class CStalkerPlanner : public CActionPlannerScript<CAI_Stalker>
+class CStalkerPlanner final : public CActionPlannerScript<CAI_Stalker>
 {
     RTTI_DECLARE_TYPEINFO(CStalkerPlanner, CActionPlannerScript<CAI_Stalker>);
 
@@ -35,25 +35,24 @@ protected:
     void add_evaluators();
     void add_actions();
 
-#ifdef LOG_ACTION
 public:
-    virtual LPCSTR action2string(const _action_id_type& action_id);
-    virtual LPCSTR property2string(const _condition_type& property_id);
+#ifdef LOG_ACTION
+    [[nodiscard]] LPCSTR action2string(const _action_id_type& action_id);
+    [[nodiscard]] LPCSTR property2string(const _condition_type& property_id);
 #endif
 
-public:
     CStalkerPlanner();
     ~CStalkerPlanner() override;
 
     void setup(CAI_Stalker* object) override;
-    virtual void update(u32);
+    void update(u32);
     IC void affect_cover(bool value);
     IC bool affect_cover() const;
     IC void active(bool);
     IC bool active() const;
 
 #ifdef LOG_ACTION
-    virtual LPCSTR object_name() const;
+    [[nodiscard]] LPCSTR object_name() const;
 #endif
 };
 

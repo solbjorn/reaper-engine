@@ -6,7 +6,7 @@
 class CUIStaticItem;
 class CLAItem;
 
-struct SHitMark
+struct SHitMark final
 {
     CUIStaticItem* m_UIStaticItem;
     float m_StartTime;
@@ -21,7 +21,7 @@ struct SHitMark
     void Draw(float dir);
 };
 
-class CHitMarker
+class CHitMarker final
 {
 public:
     FactoryPtr<IUIShader> hShader2;

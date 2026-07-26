@@ -3,7 +3,7 @@
 #include "../state.h"
 
 template <typename _Object>
-class CStateMonsterMoveToRestrictor : public CState<_Object>
+class CStateMonsterMoveToRestrictor final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterMoveToRestrictor<_Object>, CState<_Object>);
 

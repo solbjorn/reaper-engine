@@ -3,7 +3,7 @@
 #include "WeaponPistol.h"
 #include "script_export_space.h"
 
-class CWeaponWalther : public CWeaponPistol
+class CWeaponWalther final : public CWeaponPistol
 {
     RTTI_DECLARE_TYPEINFO(CWeaponWalther, CWeaponPistol);
 

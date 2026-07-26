@@ -8,7 +8,7 @@
 #include "UIStatic.h"
 #include "../InventoryOwner.h"
 
-class CUIPdaMsgListItem : public CUIStatic
+class CUIPdaMsgListItem final : public CUIStatic
 {
     RTTI_DECLARE_TYPEINFO(CUIPdaMsgListItem, CUIStatic);
 
@@ -16,7 +16,7 @@ public:
     ~CUIPdaMsgListItem() override = default;
 
     void Init(f32 x, f32 y, f32 width, f32 height) override;
-    virtual void InitCharacter(CInventoryOwner* pInvOwner);
+    void InitCharacter(CInventoryOwner* pInvOwner);
     void SetTextColor(u32 color) override;
     void SetFont(CGameFont* pFont) override;
     void SetColor(u32 color) override;

@@ -4,7 +4,7 @@
 
 class CAI_Bloodsucker;
 
-class CStateManagerBloodsucker : public CMonsterStateManager<CAI_Bloodsucker>
+class CStateManagerBloodsucker final : public CMonsterStateManager<CAI_Bloodsucker>
 {
     RTTI_DECLARE_TYPEINFO(CStateManagerBloodsucker, CMonsterStateManager<CAI_Bloodsucker>);
 

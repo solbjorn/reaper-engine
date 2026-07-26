@@ -77,7 +77,7 @@ void CControl_Manager::reinit()
     }
 }
 
-struct predicate_remove
+struct predicate_remove final
 {
     bool operator()(const CControl_Com* com) const { return (com == nullptr); }
 };

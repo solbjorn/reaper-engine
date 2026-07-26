@@ -15,7 +15,7 @@
 // alpet : в этом файле при добавлении экспортеров с зависимостями наследования, необходимо соблюдать порядок - сначала экспортируются базовые классы
 // NOTE  : требуется именно класс вместо структуры, чтобы объявить его френдом
 
-class CAnomalyZoneScript
+class CAnomalyZoneScript final
 {
     static void set_zone_state(CCustomZone* obj, u32 new_state);
 
@@ -26,7 +26,7 @@ add_to_type_list(CAnomalyZoneScript);
 #undef script_type_list
 #define script_type_list save_type_list(CAnomalyZoneScript)
 
-class CInventoryScript
+class CInventoryScript final
 {
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
@@ -35,7 +35,7 @@ add_to_type_list(CInventoryScript);
 #undef script_type_list
 #define script_type_list save_type_list(CInventoryScript)
 
-class CEatableItemScript
+class CEatableItemScript final
 {
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
@@ -44,7 +44,7 @@ add_to_type_list(CEatableItemScript);
 #undef script_type_list
 #define script_type_list save_type_list(CEatableItemScript)
 
-class CEntityScript
+class CEntityScript final
 {
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
@@ -53,7 +53,7 @@ add_to_type_list(CEntityScript);
 #undef script_type_list
 #define script_type_list save_type_list(CEntityScript)
 
-class CMonsterScript
+class CMonsterScript final
 {
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
@@ -62,7 +62,7 @@ add_to_type_list(CMonsterScript);
 #undef script_type_list
 #define script_type_list save_type_list(CMonsterScript)
 
-class COutfitScript
+class COutfitScript final
 {
 protected:
     template <ALife::EHitType idx>
@@ -86,7 +86,7 @@ add_to_type_list(COutfitScript);
 #undef script_type_list
 #define script_type_list save_type_list(COutfitScript)
 
-class CWeaponScript
+class CWeaponScript final
 {
 public:
     static const xr_vector<int>& get_fire_modes(CWeaponMagazined* wpn);
@@ -101,7 +101,7 @@ add_to_type_list(CWeaponScript);
 #undef script_type_list
 #define script_type_list save_type_list(CWeaponScript)
 
-class CCustomMonsterScript
+class CCustomMonsterScript final
 {
 public:
     static u32 GetDestVertexId(CCustomMonster* monster)

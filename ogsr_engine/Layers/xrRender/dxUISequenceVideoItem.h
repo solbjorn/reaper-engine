@@ -3,7 +3,7 @@
 
 #include "../../Include/xrRender/UISequenceVideoItem.h"
 
-class dxUISequenceVideoItem : public IUISequenceVideoItem
+class dxUISequenceVideoItem final : public IUISequenceVideoItem
 {
     RTTI_DECLARE_TYPEINFO(dxUISequenceVideoItem, IUISequenceVideoItem);
 

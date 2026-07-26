@@ -1,6 +1,6 @@
 #pragma once
 
-class CInvisibility : public virtual RTTI::Enable
+class CInvisibility final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CInvisibility);
 
@@ -22,12 +22,12 @@ private:
     f32 m_speed{}; // energy change speed (external)
 
 protected:
-    virtual void reload(LPCSTR section);
-    virtual void reinit();
-    virtual void frame_update();
+    void reload(LPCSTR section);
+    void reinit();
+    void frame_update();
 
-    virtual void on_activate() {}
-    virtual void on_deactivate() {}
+    void on_activate() {}
+    void on_deactivate() {}
 
 public:
     ~CInvisibility() override = default;

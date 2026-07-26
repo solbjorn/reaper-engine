@@ -37,7 +37,7 @@
 #include "Dof7control.h"
 #include "eulersolver.h"
 
-class Limb
+class Limb final
 {
 private:
     //    short check_limits;
@@ -104,7 +104,8 @@ public:
     Limb& operator=(const Limb&);
     Limb& operator=(Limb&&);
 
-    void init(const Matrix T, const Matrix S, int s1_euler, int s2_euler, const float proj_axis[3], const float pos_axis[3], const float min[7], const float max[7]);
+    void init(const Matrix T, const Matrix S, int s1_euler, int s2_euler, const float proj_axis[3], const float pos_axis[3], const float min[7],
+              const float max[7]);
 
     Limb(const Matrix T, const Matrix S, int s1_euler, int s2_euler, const float proj_axis[3], const float pos_axis[3], const float Min[7], const float Max[7])
     {

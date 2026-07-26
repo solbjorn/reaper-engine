@@ -6,7 +6,7 @@ class CObjectAnimator;
 class CEffectorController;
 class CActor;
 
-class CActorCameraManager : public CCameraManager
+class CActorCameraManager final : public CCameraManager
 {
     RTTI_DECLARE_TYPEINFO(CActorCameraManager, CCameraManager);
 
@@ -34,7 +34,7 @@ void AddEffector(CActor* A, int type, const shared_str& sect_name, GET_KOEFF_FUN
 void AddEffector(CActor* A, int type, const shared_str& sect_name, CEffectorController*);
 void RemoveEffector(CActor* A, int type);
 
-class CEffectorController : public virtual RTTI::Enable
+class XR_NOVTABLE CEffectorController : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CEffectorController);
 
@@ -78,7 +78,7 @@ public:
     [[nodiscard]] bool AbsolutePositioning() override { return m_bAbsolutePositioning; }
 };
 
-class CAnimatorCamEffectorScriptCB : public CAnimatorCamEffector
+class CAnimatorCamEffectorScriptCB final : public CAnimatorCamEffector
 {
     RTTI_DECLARE_TYPEINFO(CAnimatorCamEffectorScriptCB, CAnimatorCamEffector);
 
@@ -112,7 +112,7 @@ public:
     tmc::task<bool> ProcessCam(SCamEffectorInfo& info) override;
 };
 
-class CAnimatorCamLerpEffectorConst : public CAnimatorCamLerpEffector
+class CAnimatorCamLerpEffectorConst final : public CAnimatorCamLerpEffector
 {
     RTTI_DECLARE_TYPEINFO(CAnimatorCamLerpEffectorConst, CAnimatorCamLerpEffector);
 
@@ -131,7 +131,7 @@ public:
     float GetFactor() { return m_factor; }
 };
 
-class CCameraEffectorControlled : public CAnimatorCamLerpEffector
+class CCameraEffectorControlled final : public CAnimatorCamLerpEffector
 {
     RTTI_DECLARE_TYPEINFO(CCameraEffectorControlled, CAnimatorCamLerpEffector);
 
@@ -144,7 +144,7 @@ public:
     [[nodiscard]] BOOL Valid() override;
 };
 
-class SndShockEffector : public CEffectorController
+class SndShockEffector final : public CEffectorController
 {
     RTTI_DECLARE_TYPEINFO(SndShockEffector, CEffectorController);
 
@@ -173,7 +173,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 
-class CControllerPsyHitCamEffector : public CEffectorCam
+class CControllerPsyHitCamEffector final : public CEffectorCam
 {
     RTTI_DECLARE_TYPEINFO(CControllerPsyHitCamEffector, CEffectorCam);
 

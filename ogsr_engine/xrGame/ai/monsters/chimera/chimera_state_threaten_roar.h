@@ -3,7 +3,7 @@
 #include "../state.h"
 
 template <typename _Object>
-class CStateChimeraThreatenRoar : public CState<_Object>
+class CStateChimeraThreatenRoar final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateChimeraThreatenRoar<_Object>, CState<_Object>);
 

@@ -6,7 +6,7 @@
 
 #include "../../../pp_effector_custom.h"
 
-class CPPEffectorPsyDogAura : public CPPEffectorCustom
+class CPPEffectorPsyDogAura final : public CPPEffectorCustom
 {
     RTTI_DECLARE_TYPEINFO(CPPEffectorPsyDogAura, CPPEffectorCustom);
 
@@ -34,7 +34,7 @@ public:
 class CPsyDog;
 class CActor;
 
-class CPsyDogAura : public CPPEffectorCustomController<CPPEffectorPsyDogAura>
+class CPsyDogAura final : public CPPEffectorCustomController<CPPEffectorPsyDogAura>
 {
     RTTI_DECLARE_TYPEINFO(CPsyDogAura, CPPEffectorCustomController<CPPEffectorPsyDogAura>);
 

@@ -17,7 +17,7 @@
 // CAlienEffectorPP
 ////////////////////////////////////////////////////////////////////////////////////
 
-class CAlienEffectorPP : public CEffectorPP
+class CAlienEffectorPP final : public CEffectorPP
 {
     RTTI_DECLARE_TYPEINFO(CAlienEffectorPP, CEffectorPP);
 
@@ -72,7 +72,7 @@ void CAlienEffectorPP::Destroy()
 // Alien Camera Effector
 //////////////////////////////////////////////////////////////////////////
 
-class CAlienEffector : public CEffectorCam
+class CAlienEffector final : public CEffectorCam
 {
     RTTI_DECLARE_TYPEINFO(CAlienEffector, CEffectorCam);
 

@@ -4,7 +4,7 @@
 #include "../controlled_entity.h"
 #include "script_export_space.h"
 
-class CAI_Boar : public CBaseMonster, public CControlledEntity<CAI_Boar>
+class CAI_Boar final : public CBaseMonster, public CControlledEntity<CAI_Boar>
 {
     RTTI_DECLARE_TYPEINFO(CAI_Boar, CBaseMonster, CControlledEntity<CAI_Boar>);
 
@@ -21,7 +21,7 @@ public:
 
     tmc::task<void> UpdateCL() override;
 
-    [[nodiscard]] virtual bool CanExecRotationJump() { return true; }
+    [[nodiscard]] bool CanExecRotationJump() { return true; }
     void CheckSpecParams(u32) override {}
 
     // look at enemy

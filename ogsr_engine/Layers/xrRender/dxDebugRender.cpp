@@ -108,7 +108,7 @@ void dxDebugRender::DestroyDebugShader(dbgShaderHandle shdHandle) { m_dbgShaders
 void dxDebugRender::dbg_DrawTRI(const Fmatrix& T, const Fvector& p1, const Fvector& p2, const Fvector& p3, u32 C) { RCache.dbg_DrawTRI(T, p1, p2, p3, C); }
 
 #ifdef DEBUG
-struct RDebugRender : public dxDebugRender, public pureRender
+struct RDebugRender final : public dxDebugRender, public pureRender
 {
     RTTI_DECLARE_TYPEINFO(RDebugRender, dxDebugRender, pureRender);
 

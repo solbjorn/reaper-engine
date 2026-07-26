@@ -41,7 +41,7 @@ public:
 static_assert(sizeof(vis_marker) == 32);
 XR_TRIVIAL_ASSERT(vis_marker);
 
-struct XR_TRIVIAL vis_data
+struct XR_TRIVIAL vis_data final
 {
     Fsphere sphere; //
     Fbox box; //

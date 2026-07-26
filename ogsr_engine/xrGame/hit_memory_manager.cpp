@@ -28,7 +28,7 @@
 #include "ai_debug.h"
 #endif // MASTER_GOLD
 
-struct CHitObjectPredicate
+struct CHitObjectPredicate final
 {
     const CObject* m_object;
 
@@ -179,7 +179,7 @@ void CHitMemoryManager::add(const CHitObject& _hit_object)
     }
 }
 
-struct CRemoveOfflinePredicate
+struct CRemoveOfflinePredicate final
 {
     bool operator()(const MemorySpace::CHitObject& object) const { return !object.m_object || !!object.m_object->getDestroy() || object.m_object->H_Parent(); }
 };

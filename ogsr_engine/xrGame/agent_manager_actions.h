@@ -18,7 +18,7 @@ typedef CActionBase<CAgentManager> CAgentManagerActionBase;
 // CAgentManagerActionNoOrders
 //////////////////////////////////////////////////////////////////////////
 
-class CAgentManagerActionNoOrders : public CAgentManagerActionBase
+class CAgentManagerActionNoOrders final : public CAgentManagerActionBase
 {
     RTTI_DECLARE_TYPEINFO(CAgentManagerActionNoOrders, CAgentManagerActionBase);
 
@@ -36,7 +36,7 @@ public:
 // CAgentManagerActionGatherItems
 //////////////////////////////////////////////////////////////////////////
 
-class CAgentManagerActionGatherItems : public CAgentManagerActionBase
+class CAgentManagerActionGatherItems final : public CAgentManagerActionBase
 {
     RTTI_DECLARE_TYPEINFO(CAgentManagerActionGatherItems, CAgentManagerActionBase);
 
@@ -52,7 +52,7 @@ public:
 // CAgentManagerActionKillEnemy
 //////////////////////////////////////////////////////////////////////////
 
-class CAgentManagerActionKillEnemy : public CAgentManagerActionBase
+class CAgentManagerActionKillEnemy final : public CAgentManagerActionBase
 {
     RTTI_DECLARE_TYPEINFO(CAgentManagerActionKillEnemy, CAgentManagerActionBase);
 
@@ -72,7 +72,7 @@ public:
 // CAgentManagerActionReactOnDanger
 //////////////////////////////////////////////////////////////////////////
 
-class CAgentManagerActionReactOnDanger : public CAgentManagerActionBase
+class CAgentManagerActionReactOnDanger final : public CAgentManagerActionBase
 {
     RTTI_DECLARE_TYPEINFO(CAgentManagerActionReactOnDanger, CAgentManagerActionBase);
 

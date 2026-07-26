@@ -26,7 +26,7 @@ namespace MonsterSpace
 enum EObjectAction : u32;
 }
 
-class CObjectHandlerPlanner : public CActionPlanner<CAI_Stalker, true>
+class CObjectHandlerPlanner final : public CActionPlanner<CAI_Stalker, true>
 {
     RTTI_DECLARE_TYPEINFO(CObjectHandlerPlanner, CActionPlanner<CAI_Stalker, true>);
 

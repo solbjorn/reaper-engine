@@ -22,7 +22,8 @@ public:
 //---------------------------------------------------------------------------------------
 // 2D Frustum & 2D Vertex
 //---------------------------------------------------------------------------------------
-struct S2DVert
+
+struct S2DVert final
 {
     Fvector2 pt;
     Fvector2 uv;
@@ -63,7 +64,7 @@ public:
     void Clear() { planes.clear(); }
 };
 
-class ui_core : public CDeviceResetNotifier
+class ui_core final : public CDeviceResetNotifier
 {
     RTTI_DECLARE_TYPEINFO(ui_core, CDeviceResetNotifier);
 

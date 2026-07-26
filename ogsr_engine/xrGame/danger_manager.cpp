@@ -20,7 +20,7 @@
 
 namespace
 {
-struct CDangerPredicate
+struct CDangerPredicate final
 {
     const CObject* m_object;
 
@@ -38,7 +38,7 @@ struct CDangerPredicate
     }
 };
 
-struct CFindPredicate
+struct CFindPredicate final
 {
     const CDangerObject* m_object;
 
@@ -47,7 +47,7 @@ struct CFindPredicate
     IC bool operator()(const CDangerObject& object) const { return (*m_object == object); }
 };
 
-struct CRemoveByTimePredicate
+struct CRemoveByTimePredicate final
 {
     u32 m_time_line;
     CDangerManager* m_manager;

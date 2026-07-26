@@ -11,7 +11,7 @@
 
 // структура хранит строковый id элемента
 // файл и позицию, где этот элемент находится
-struct ITEM_DATA
+struct ITEM_DATA final
 {
     shared_str id;
     int index;

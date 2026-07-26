@@ -16,7 +16,7 @@
 
 CStalkerAnimationDataStorage* g_stalker_animation_data_storage{};
 
-class data_predicate
+class data_predicate final
 {
 private:
     IKinematicsAnimated* m_object;

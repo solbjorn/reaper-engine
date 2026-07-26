@@ -2,7 +2,7 @@
 #define xrPoolH
 
 template <typename T, gsl::index granularity>
-class poolSS
+class poolSS final
 {
     T* list{};
     xr_vector<T*> blocks;

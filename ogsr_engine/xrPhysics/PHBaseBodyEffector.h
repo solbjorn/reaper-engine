@@ -9,7 +9,7 @@ protected:
     dBodyID m_body;
 
 public:
-    void Init(dBodyID body) { m_body = body; }
+    constexpr void Init(dBodyID body) { m_body = body; }
 };
 
 #endif

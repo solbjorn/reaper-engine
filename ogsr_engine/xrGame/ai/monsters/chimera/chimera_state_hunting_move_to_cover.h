@@ -3,7 +3,7 @@
 #include "../state.h"
 
 template <typename _Object>
-class CStateChimeraHuntingMoveToCover : public CState<_Object>
+class CStateChimeraHuntingMoveToCover final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateChimeraHuntingMoveToCover<_Object>, CState<_Object>);
 

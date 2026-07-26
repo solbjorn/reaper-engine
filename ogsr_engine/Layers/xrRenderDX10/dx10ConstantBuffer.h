@@ -6,7 +6,7 @@
 struct R_constant;
 struct R_constant_load;
 
-class dx10ConstantBuffer : public xr_resource_named
+class dx10ConstantBuffer final : public xr_resource_named
 {
     RTTI_DECLARE_TYPEINFO(dx10ConstantBuffer, xr_resource_named);
 

@@ -1,6 +1,6 @@
 #pragma once
 
-class CBlender_light_occq : public IBlender
+class CBlender_light_occq final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_light_occq, IBlender);
 

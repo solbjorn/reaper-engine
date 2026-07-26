@@ -3,7 +3,7 @@
 #include "Missile.h"
 #include "DamageSource.h"
 
-class CBolt : public CMissile, public IDamageSource
+class CBolt final : public CMissile, public IDamageSource
 {
     RTTI_DECLARE_TYPEINFO(CBolt, CMissile, IDamageSource);
 

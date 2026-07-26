@@ -81,7 +81,7 @@ public:
 // CObjectActionCommand
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectActionCommand : public CObjectActionBase<CInventoryItem>
+class CObjectActionCommand final : public CObjectActionBase<CInventoryItem>
 {
     RTTI_DECLARE_TYPEINFO(CObjectActionCommand, CObjectActionBase<CInventoryItem>);
 
@@ -101,7 +101,7 @@ public:
 // CObjectActionShow
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectActionShow : public CObjectActionBase<CInventoryItem>
+class CObjectActionShow final : public CObjectActionBase<CInventoryItem>
 {
     RTTI_DECLARE_TYPEINFO(CObjectActionShow, CObjectActionBase<CInventoryItem>);
 
@@ -123,7 +123,7 @@ public:
 // CObjectActionHide
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectActionHide : public CObjectActionBase<CInventoryItem>
+class CObjectActionHide final : public CObjectActionBase<CInventoryItem>
 {
     RTTI_DECLARE_TYPEINFO(CObjectActionHide, CObjectActionBase<CInventoryItem>);
 
@@ -141,7 +141,7 @@ public:
 // CObjectActionReload
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectActionReload : public CObjectActionBase<CInventoryItem>
+class CObjectActionReload final : public CObjectActionBase<CInventoryItem>
 {
     RTTI_DECLARE_TYPEINFO(CObjectActionReload, CObjectActionBase<CInventoryItem>);
 
@@ -163,7 +163,7 @@ public:
 // CObjectActionFire
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectActionFire : public CObjectActionBase<CInventoryItem>
+class CObjectActionFire final : public CObjectActionBase<CInventoryItem>
 {
     RTTI_DECLARE_TYPEINFO(CObjectActionFire, CObjectActionBase<CInventoryItem>);
 
@@ -186,7 +186,7 @@ public:
 // CObjectActionStrapping
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectActionStrapping : public CObjectActionBase<CInventoryItem>
+class CObjectActionStrapping final : public CObjectActionBase<CInventoryItem>
 {
     RTTI_DECLARE_TYPEINFO(CObjectActionStrapping, CObjectActionBase<CInventoryItem>);
 
@@ -211,7 +211,7 @@ public:
 // CObjectActionStrappingToIdle
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectActionStrappingToIdle : public CObjectActionBase<CInventoryItem>
+class CObjectActionStrappingToIdle final : public CObjectActionBase<CInventoryItem>
 {
     RTTI_DECLARE_TYPEINFO(CObjectActionStrappingToIdle, CObjectActionBase<CInventoryItem>);
 
@@ -237,7 +237,7 @@ public:
 // CObjectActionUnstrapping
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectActionUnstrapping : public CObjectActionBase<CInventoryItem>
+class CObjectActionUnstrapping final : public CObjectActionBase<CInventoryItem>
 {
     RTTI_DECLARE_TYPEINFO(CObjectActionUnstrapping, CObjectActionBase<CInventoryItem>);
 
@@ -263,7 +263,7 @@ public:
 // CObjectActionUnstrappingToIdle
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectActionUnstrappingToIdle : public CObjectActionBase<CInventoryItem>
+class CObjectActionUnstrappingToIdle final : public CObjectActionBase<CInventoryItem>
 {
     RTTI_DECLARE_TYPEINFO(CObjectActionUnstrappingToIdle, CObjectActionBase<CInventoryItem>);
 
@@ -288,7 +288,7 @@ public:
 // CObjectActionQueueWait
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectActionQueueWait : public CObjectActionBase<CInventoryItem>
+class CObjectActionQueueWait final : public CObjectActionBase<CInventoryItem>
 {
     RTTI_DECLARE_TYPEINFO(CObjectActionQueueWait, CObjectActionBase<CInventoryItem>);
 
@@ -311,7 +311,7 @@ public:
 // CObjectActionSwitch
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectActionSwitch : public CObjectActionBase<CInventoryItem>
+class CObjectActionSwitch final : public CObjectActionBase<CInventoryItem>
 {
     RTTI_DECLARE_TYPEINFO(CObjectActionSwitch, CObjectActionBase<CInventoryItem>);
 
@@ -333,7 +333,7 @@ public:
 // CObjectActionDrop
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectActionDrop : public CObjectActionBase<CInventoryItem>
+class CObjectActionDrop final : public CObjectActionBase<CInventoryItem>
 {
     RTTI_DECLARE_TYPEINFO(CObjectActionDrop, CObjectActionBase<CInventoryItem>);
 
@@ -351,7 +351,7 @@ public:
 // CObjectActionThreaten
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectActionThreaten : public CObjectActionBase<CAI_Stalker>
+class CObjectActionThreaten final : public CObjectActionBase<CAI_Stalker>
 {
     RTTI_DECLARE_TYPEINFO(CObjectActionThreaten, CObjectActionBase<CAI_Stalker>);
 
@@ -369,7 +369,7 @@ public:
 // CObjectActionAim
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectActionAim : public CObjectActionMember<CInventoryItem>
+class CObjectActionAim final : public CObjectActionMember<CInventoryItem>
 {
     RTTI_DECLARE_TYPEINFO(CObjectActionAim, CObjectActionMember<CInventoryItem>);
 
@@ -392,7 +392,7 @@ public:
 // CObjectActionIdle
 //////////////////////////////////////////////////////////////////////////
 
-class CObjectActionIdle : public CObjectActionBase<CInventoryItem>
+class CObjectActionIdle final : public CObjectActionBase<CInventoryItem>
 {
     RTTI_DECLARE_TYPEINFO(CObjectActionIdle, CObjectActionBase<CInventoryItem>);
 

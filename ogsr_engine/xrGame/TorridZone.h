@@ -4,7 +4,7 @@
 
 class CObjectAnimator;
 
-class CTorridZone : public CMosquitoBald
+class CTorridZone final : public CMosquitoBald
 {
     RTTI_DECLARE_TYPEINFO(CTorridZone, CMosquitoBald);
 

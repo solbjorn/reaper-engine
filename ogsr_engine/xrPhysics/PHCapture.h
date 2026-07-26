@@ -14,7 +14,7 @@ enum EPHCaptureState
 
 class CPHCharacter;
 
-class CPHCapture : public CPHUpdateObject
+class CPHCapture final : public CPHUpdateObject
 {
     RTTI_DECLARE_TYPEINFO(CPHCapture, CPHUpdateObject);
 

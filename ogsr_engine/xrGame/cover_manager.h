@@ -16,7 +16,7 @@ namespace LevelGraph
 class CVertex;
 }
 
-class CCoverManager : public virtual RTTI::Enable
+class CCoverManager final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CCoverManager);
 

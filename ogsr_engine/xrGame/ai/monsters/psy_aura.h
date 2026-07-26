@@ -5,7 +5,7 @@
 
 class CBaseMonster;
 
-class CPsyAura : public Feel::Touch, public CEnergyHolder
+class CPsyAura final : public Feel::Touch, public CEnergyHolder
 {
     RTTI_DECLARE_TYPEINFO(CPsyAura, Feel::Touch, CEnergyHolder);
 
@@ -24,7 +24,7 @@ public:
     void init_external(CBaseMonster* obj) { m_object = obj; }
     [[nodiscard]] BOOL feel_touch_contact(CObject*) override { return false; }
     tmc::task<void> schedule_update() override;
-    virtual void process_objects_in_aura() {}
+    void process_objects_in_aura() {}
 
     // свойства поля
     void set_radius(float R) { m_radius = R; }

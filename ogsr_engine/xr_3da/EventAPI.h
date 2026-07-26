@@ -20,10 +20,10 @@ inline IEventReceiver::~IEventReceiver() = default;
 
 //---------------------------------------------------------------------
 
-class CEventAPI
+class CEventAPI final
 {
 private:
-    struct Deferred
+    struct Deferred final
     {
         CEvent* E;
         u64 P1;

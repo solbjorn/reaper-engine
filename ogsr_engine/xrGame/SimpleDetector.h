@@ -4,7 +4,7 @@
 
 class CUIArtefactDetectorSimple;
 
-class CSimpleDetector : public CCustomDetector
+class CSimpleDetector final : public CCustomDetector
 {
     RTTI_DECLARE_TYPEINFO(CSimpleDetector, CCustomDetector);
 

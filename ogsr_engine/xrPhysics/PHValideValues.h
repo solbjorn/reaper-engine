@@ -1,7 +1,7 @@
 #ifndef PH_VALIDE_VALUES
 #define PH_VALIDE_VALUES
 
-class CSafeValue
+class CSafeValue final
 {
     f32 m_safe_value;
 
@@ -23,7 +23,7 @@ public:
     }
 };
 
-class CSafeVector3
+class CSafeVector3 final
 {
     CSafeValue m_safe_values[3];
 
@@ -36,7 +36,7 @@ public:
     }
 };
 
-class CSafeVector4
+class CSafeVector4 final
 {
     CSafeValue m_safe_values[4];
 
@@ -50,7 +50,7 @@ public:
     }
 };
 
-class CSafeBodyLinearState
+class CSafeBodyLinearState final
 {
     CSafeVector3 m_safe_position;
     CSafeVector3 m_safe_linear_vel;
@@ -75,7 +75,7 @@ public:
     }
 };
 
-class CSafeFixedRotationState
+class CSafeFixedRotationState final
 {
     CSafeBodyLinearState m_safe_linear_state;
 
@@ -96,7 +96,7 @@ public:
     }
 };
 
-class CSafeBodyAngularState
+class CSafeBodyAngularState final
 {
     CSafeVector3 m_safe_angular_vel;
     CSafeVector4 m_safe_quaternion;
@@ -123,7 +123,7 @@ public:
     }
 };
 
-class CSafeBodyState
+class CSafeBodyState final
 {
     CSafeBodyLinearState m_safe_linear_state;
     CSafeBodyAngularState m_safe_angular_state;

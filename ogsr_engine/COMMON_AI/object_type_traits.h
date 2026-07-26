@@ -12,7 +12,7 @@
 
 #define declare_has(a) \
     template <typename T> \
-    struct has_##a \
+    struct has_##a final \
     { \
         template <typename P> \
         static std::true_type select(detail::other<typename P::a>*); \
@@ -22,10 +22,10 @@
     }
 
 template <bool expression, typename T1, typename T2>
-struct _if
+struct _if final
 {
     template <bool>
-    struct selector
+    struct selector final
     {
         typedef T2 result;
     };
@@ -65,14 +65,14 @@ struct is_base_and_derived : std::conjunction<std::is_class<T>, std::is_class<U>
 } // namespace detail
 
 template <typename T, typename U>
-struct is_base_and_derived : detail::is_base_and_derived<std::remove_const_t<T>, std::remove_const_t<U>>
+struct is_base_and_derived final : detail::is_base_and_derived<std::remove_const_t<T>, std::remove_const_t<U>>
 {};
 
 template <typename T, typename U>
 constexpr bool is_base_and_derived_v = is_base_and_derived<T, U>::value;
 
 template <template <typename _1> class T1, typename T2>
-struct is_base_and_derived_or_same_from_template
+struct is_base_and_derived_or_same_from_template final
 {
     template <typename P>
     static std::true_type select(T1<P>*);
@@ -87,7 +87,7 @@ declare_has(value_type);
 declare_has(size_type);
 
 template <typename T>
-struct is_stl_container
+struct is_stl_container final
 {
     enum
     {

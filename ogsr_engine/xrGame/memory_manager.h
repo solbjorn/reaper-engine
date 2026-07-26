@@ -25,7 +25,7 @@ namespace MemorySpace
 struct CMemoryInfo;
 }
 
-class CMemoryManager : public virtual RTTI::Enable
+class CMemoryManager final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CMemoryManager);
 
@@ -55,12 +55,12 @@ public:
     explicit CMemoryManager(CEntityAlive* entity_alive, CSound_UserDataVisitor* visitor);
     ~CMemoryManager() override;
 
-    virtual void Load(LPCSTR section);
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
-    virtual void update(float time_delta);
+    void Load(LPCSTR section);
+    void reinit();
+    void reload(LPCSTR section);
+    void update(f32 time_delta);
     void remove_links(CObject* object);
-    virtual void on_restrictions_change();
+    void on_restrictions_change();
 
 public:
     void enable(const CObject* object, bool enable);

@@ -7,7 +7,7 @@
 class CCustomZone;
 
 // описание типа зоны
-struct ZONE_TYPE_SHOC
+struct ZONE_TYPE_SHOC final
 {
     // интервал частот отыгрывания звука
     float min_freq;
@@ -20,7 +20,7 @@ struct ZONE_TYPE_SHOC
 };
 
 // описание зоны, обнаруженной детектором
-struct ZONE_INFO_SHOC
+struct ZONE_INFO_SHOC final
 {
     u32 snd_time;
     // текущая частота работы датчика
@@ -104,7 +104,7 @@ public:
     [[nodiscard]] u32 ef_detector_type() const override;
 };
 
-class CSimpleDetectorSHOC : public CCustomDetectorSHOC
+class CSimpleDetectorSHOC final : public CCustomDetectorSHOC
 {
     RTTI_DECLARE_TYPEINFO(CSimpleDetectorSHOC, CCustomDetectorSHOC);
 

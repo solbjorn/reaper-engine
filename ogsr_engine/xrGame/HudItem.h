@@ -232,7 +232,7 @@ public:
     virtual void on_renderable_Render(u32 context_id, IRenderable* root) = 0;
 
 public:
-    class CWeaponBobbing
+    class CWeaponBobbing final
     {
     private:
         CHudItem* parent_hud_item;
@@ -330,7 +330,7 @@ private:
 
     bool allow_bobbing{true};
 
-    struct inertion_params
+    struct inertion_params final
     {
         float m_pitch_offset_r;
         float m_pitch_offset_n;

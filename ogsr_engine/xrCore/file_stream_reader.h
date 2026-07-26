@@ -3,7 +3,7 @@
 
 #include "stream_reader.h"
 
-class CFileStreamReader : public CMapStreamReader
+class CFileStreamReader final : public CMapStreamReader
 {
     RTTI_DECLARE_TYPEINFO(CFileStreamReader, CMapStreamReader);
 
@@ -16,7 +16,7 @@ private:
 public:
     ~CFileStreamReader() override = default;
 
-    virtual void construct(LPCSTR file_name, gsl::index window_size);
+    void construct(LPCSTR file_name, gsl::index window_size);
     void destroy() override;
 };
 

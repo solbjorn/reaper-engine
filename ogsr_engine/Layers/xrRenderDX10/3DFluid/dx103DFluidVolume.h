@@ -3,7 +3,7 @@
 #include "dx103DFluidData.h"
 #include "../../xrRender/FBasicVisual.h"
 
-class dx103DFluidVolume : public dxRender_Visual
+class dx103DFluidVolume final : public dxRender_Visual
 {
     RTTI_DECLARE_TYPEINFO(dx103DFluidVolume, dxRender_Visual);
 

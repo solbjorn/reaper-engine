@@ -2,7 +2,7 @@
 #define __XR_CORE_MATRIX33_H
 
 template <class T>
-struct _matrix33
+struct _matrix33 final
 {
 public:
     typedef _matrix33<T> Self;

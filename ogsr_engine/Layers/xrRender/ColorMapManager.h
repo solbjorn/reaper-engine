@@ -5,7 +5,7 @@
 //	Stores used textures in a separate map to avoid removal of
 //	of color map textures from memory.
 
-class ColorMapManager
+class ColorMapManager final
 {
 public:
     ColorMapManager();

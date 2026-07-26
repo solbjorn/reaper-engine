@@ -4,7 +4,7 @@
 
 class CZombie;
 
-class CStateManagerZombie : public CMonsterStateManager<CZombie>
+class CStateManagerZombie final : public CMonsterStateManager<CZombie>
 {
     RTTI_DECLARE_TYPEINFO(CStateManagerZombie, CMonsterStateManager<CZombie>);
 

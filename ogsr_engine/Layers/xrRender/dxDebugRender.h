@@ -2,7 +2,7 @@
 
 #include "../../Include/xrRender/DebugRender.h"
 
-class dxDebugRender : public IDebugRender
+class dxDebugRender final : public IDebugRender
 {
     RTTI_DECLARE_TYPEINFO(dxDebugRender, IDebugRender);
 

@@ -14,7 +14,7 @@ class CObject;
 class CAgentManager;
 class CMemberOrder;
 
-class CAgentExplosiveManager
+class CAgentExplosiveManager final
 {
 public:
     typedef xr_vector<CDangerExplosive> EXPLOSIVES;

@@ -8,7 +8,7 @@
 
 #include "Artifact.h"
 
-class CMercuryBall : public CArtefact
+class CMercuryBall final : public CArtefact
 {
     RTTI_DECLARE_TYPEINFO(CMercuryBall, CArtefact);
 

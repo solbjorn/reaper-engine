@@ -9,7 +9,7 @@ class CGameObject;
 class CBlend;
 struct SIKCrlCalcData;
 
-class CIKLimbsController
+class CIKLimbsController final
 {
 private:
     static constexpr u16 max_size{4};

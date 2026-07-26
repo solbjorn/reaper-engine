@@ -17,7 +17,7 @@ enum EDetailPathType : u32
     eDetailPathTypeSmoothCriteria,
 };
 
-struct STravelPathPoint
+struct STravelPathPoint final
 {
     Fvector position;
     u32 vertex_id;

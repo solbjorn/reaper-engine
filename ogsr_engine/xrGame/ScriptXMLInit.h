@@ -29,7 +29,7 @@ class CUIMMShniaga;
 class CUIScrollView;
 class CUIProgressBar;
 
-class CScriptXmlInit
+class CScriptXmlInit final
 {
 public:
     CScriptXmlInit();

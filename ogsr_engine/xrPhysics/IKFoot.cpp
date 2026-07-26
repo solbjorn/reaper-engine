@@ -42,7 +42,7 @@ void CIKFoot::Create(IKinematics* K, LPCSTR section, u16 bones[4])
     set_toe(bones);
 }
 
-struct envc : public SEnumVerticesCallback
+struct envc final : public SEnumVerticesCallback
 {
     Fvector& pos;
     Fvector start_pos{};

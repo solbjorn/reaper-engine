@@ -7,7 +7,7 @@ class CInventoryItem;
 class CHudItem;
 class CInventoryOwner;
 
-class CInventorySlot
+class CInventorySlot final
 {
 public:
     PIItem m_pIItem{};

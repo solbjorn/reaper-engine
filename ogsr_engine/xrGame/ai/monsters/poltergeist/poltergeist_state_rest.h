@@ -3,7 +3,7 @@
 #include "../states/monster_state_rest.h"
 
 template <typename _Object>
-class CPoltergeistStateRest : public CStateMonsterRest<_Object>
+class CPoltergeistStateRest final : public CStateMonsterRest<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CPoltergeistStateRest<_Object>, CStateMonsterRest<_Object>);
 

@@ -11,12 +11,12 @@ class XR_NOVTABLE IRender_DetailModel : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IRender_DetailModel);
 
 public:
-    struct fvfVertexIn
+    struct fvfVertexIn final
     {
         Fvector P;
         float u, v;
     };
-    struct fvfVertexOut
+    struct fvfVertexOut final
     {
         Fvector P;
         u32 C;

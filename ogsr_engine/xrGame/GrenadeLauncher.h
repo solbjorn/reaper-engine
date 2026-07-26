@@ -7,7 +7,7 @@
 
 #include "inventory_item_object.h"
 
-class CGrenadeLauncher : public CInventoryItemObject
+class CGrenadeLauncher final : public CInventoryItemObject
 {
     RTTI_DECLARE_TYPEINFO(CGrenadeLauncher, CInventoryItemObject);
 

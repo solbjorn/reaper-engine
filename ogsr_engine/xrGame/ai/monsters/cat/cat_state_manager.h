@@ -4,7 +4,7 @@
 
 class CCat;
 
-class CStateManagerCat : public CMonsterStateManager<CCat>
+class CStateManagerCat final : public CMonsterStateManager<CCat>
 {
     RTTI_DECLARE_TYPEINFO(CStateManagerCat, CMonsterStateManager<CCat>);
 

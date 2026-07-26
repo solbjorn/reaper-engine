@@ -1,6 +1,6 @@
 #pragma once
 
-class CWalmarkManager
+class CWalmarkManager final
 {
 private:
     FactoryPtr<IWallMarkArray> m_wallmarks;

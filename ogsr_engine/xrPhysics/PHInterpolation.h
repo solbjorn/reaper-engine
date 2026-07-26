@@ -4,7 +4,7 @@
 #include "CycleConstStorage.h"
 #include "ode_include.h"
 
-class CPHInterpolation
+class CPHInterpolation final
 {
 public:
     CPHInterpolation() = default;

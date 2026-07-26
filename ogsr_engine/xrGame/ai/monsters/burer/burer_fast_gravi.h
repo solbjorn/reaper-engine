@@ -2,7 +2,7 @@
 
 #include "../control_combase.h"
 
-class CBurerFastGravi : public CControl_ComCustom<>
+class CBurerFastGravi final : public CControl_ComCustom<>
 {
     RTTI_DECLARE_TYPEINFO(CBurerFastGravi, CControl_ComCustom<>);
 

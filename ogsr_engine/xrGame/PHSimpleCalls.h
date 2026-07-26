@@ -36,7 +36,7 @@ add_to_type_list(CPHCallOnStepCondition);
 #undef script_type_list
 #define script_type_list save_type_list(CPHCallOnStepCondition)
 
-class CPHExpireOnStepCondition : public CPHCallOnStepCondition
+class CPHExpireOnStepCondition final : public CPHCallOnStepCondition
 {
     RTTI_DECLARE_TYPEINFO(CPHExpireOnStepCondition, CPHCallOnStepCondition);
 
@@ -54,7 +54,7 @@ add_to_type_list(CPHExpireOnStepCondition);
 #undef script_type_list
 #define script_type_list save_type_list(CPHExpireOnStepCondition)
 
-class CPHShellBasedAction : public CPHAction
+class XR_NOVTABLE CPHShellBasedAction : public CPHAction
 {
     RTTI_DECLARE_TYPEINFO(CPHShellBasedAction, CPHAction);
 
@@ -63,13 +63,15 @@ protected:
 
 public:
     explicit CPHShellBasedAction(CPhysicsShell* shell);
-    ~CPHShellBasedAction() override = default;
+    ~CPHShellBasedAction() override = 0;
 
     [[nodiscard]] virtual bool compare(const CPhysicsShell* shl) const { return shl == m_shell; }
     [[nodiscard]] bool obsolete() const override;
 };
 
-class CPHConstForceAction : public CPHShellBasedAction
+inline CPHShellBasedAction::~CPHShellBasedAction() = default;
+
+class CPHConstForceAction final : public CPHShellBasedAction
 {
     RTTI_DECLARE_TYPEINFO(CPHConstForceAction, CPHShellBasedAction);
 
@@ -91,7 +93,7 @@ add_to_type_list(CPHConstForceAction);
 #undef script_type_list
 #define script_type_list save_type_list(CPHConstForceAction)
 
-class CPHReqComparerHasShell : public CPHReqComparerV
+class CPHReqComparerHasShell final : public CPHReqComparerV
 {
     RTTI_DECLARE_TYPEINFO(CPHReqComparerHasShell, CPHReqComparerV);
 

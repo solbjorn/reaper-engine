@@ -2,7 +2,7 @@
 
 #include "FHierrarhyVisual.h"
 
-class FLOD : public FHierrarhyVisual
+class FLOD final : public FHierrarhyVisual
 {
     RTTI_DECLARE_TYPEINFO(FLOD, FHierrarhyVisual);
 
@@ -19,14 +19,14 @@ public:
     };
     static_assert(sizeof(_vertex) == 28);
 
-    struct _face
+    struct _face final
     {
         _vertex v[4];
         Fvector N;
     };
     static_assert(sizeof(_face) == 124);
 
-    struct _hw
+    struct _hw final
     {
         Fvector p0;
         Fvector p1;

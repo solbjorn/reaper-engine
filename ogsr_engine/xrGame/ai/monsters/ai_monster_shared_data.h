@@ -1,7 +1,8 @@
 #pragma once
+
 #include "ai_monster_defs.h"
 
-struct SMonsterSettings
+struct SMonsterSettings final
 {
     // float speed factors
 

@@ -6,7 +6,8 @@
 #include "../Include/xrRender/StatGraphRender.h"
 
 //---------------------------------------------------------------------------
-class CStatGraph : public pureRender
+
+class CStatGraph final : public pureRender
 {
     RTTI_DECLARE_TYPEINFO(CStatGraph, pureRender);
 
@@ -24,7 +25,7 @@ public:
     };
 
 protected:
-    struct SElement
+    struct SElement final
     {
         u32 color;
         float data;
@@ -35,7 +36,8 @@ protected:
         }
     };
     DEFINE_DEQUE(SElement, ElementsDeq, ElementsDeqIt);
-    struct SSubGraph
+
+    struct SSubGraph final
     {
         EStyle style;
         ElementsDeq elements;
@@ -43,6 +45,7 @@ protected:
         void SetStyle(EStyle s) { style = s; }
     };
     DEFINE_VECTOR(SSubGraph, SubGraphVec, SubGraphVecIt);
+
     SubGraphVec subgraphs;
 
     float mn, mx;
@@ -55,10 +58,8 @@ protected:
     u32 rect_color;
     u32 back_color;
     FactoryPtr<IStatGraphRender> m_pRender;
-    // ref_geom 		hGeomTri;
-    // ref_geom 		hGeomLine;
 
-    struct SMarker
+    struct SMarker final
     {
         EStyle m_eStyle;
         float m_fPos;

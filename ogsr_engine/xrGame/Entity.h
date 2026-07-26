@@ -47,7 +47,7 @@ public:
 
     virtual void ChangeTeam(s32 team, s32 squad, s32 group);
 
-    struct SEntityState
+    struct SEntityState final
     {
         u32 bJump : 1;
         u32 bCrouch : 1;

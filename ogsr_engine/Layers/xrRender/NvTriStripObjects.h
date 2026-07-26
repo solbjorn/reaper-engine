@@ -11,7 +11,7 @@
 //
 /////////////////////////////////////////////////////////////////////////////////
 
-struct MyVertex
+struct MyVertex final
 {
     float x, y, z;
     float nx, ny, nz;
@@ -49,7 +49,7 @@ public:
 // nice and dumb edge class that points knows its
 // indices, the two faces, and the next edge using
 // the lesser of the indices
-class NvEdgeInfo
+class NvEdgeInfo final
 {
 public:
     // we will appear in 2 lists.  this is a good
@@ -77,7 +77,7 @@ public:
 // to begin a triangle strip.  Some operations may
 // want to create lists of such items, so they were
 // pulled out into a class
-class NvStripStartInfo
+class NvStripStartInfo final
 {
 public:
     NvStripStartInfo(NvFaceInfo* startFace, NvEdgeInfo* startEdge, bool toV1) : m_startFace{startFace}, m_startEdge{startEdge}, m_toV1{toV1} {}
@@ -106,7 +106,7 @@ inline void SWAP(T& first, T& second)
 }
 
 // This is a summary of a strip that has been built
-class NvStripInfo
+class NvStripInfo final
 {
 public:
     // A little information about the creation of the triangle strips

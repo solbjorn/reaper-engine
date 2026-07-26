@@ -1,7 +1,7 @@
 #pragma once
 
 template <typename _Object>
-class CStateGroupPanicRun : public CState<_Object>
+class CStateGroupPanicRun final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateGroupPanicRun<_Object>, CState<_Object>);
 

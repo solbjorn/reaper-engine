@@ -2,7 +2,7 @@
 
 #include "../xr_3da/NET_Server_Trash/NET_utils.h"
 
-struct GameEvent
+struct GameEvent final
 {
     u16 type;
     u32 time;
@@ -10,7 +10,7 @@ struct GameEvent
     NET_Packet P;
 };
 
-class GameEventQueue
+class GameEventQueue final
 {
     xrCriticalSection cs;
     xr_deque<GameEvent*> ready;

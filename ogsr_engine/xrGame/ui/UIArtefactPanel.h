@@ -8,7 +8,7 @@
 class CUIXml;
 class CArtefact;
 
-class CUIArtefactPanel : public CUIWindow
+class CUIArtefactPanel final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIArtefactPanel, CUIWindow);
 
@@ -16,7 +16,7 @@ public:
     CUIArtefactPanel() = default;
     ~CUIArtefactPanel() override = default;
 
-    virtual void InitIcons(const TIItemContainer& artefacts);
+    void InitIcons(const TIItemContainer& artefacts);
     void Draw() override;
     void InitFromXML(CUIXml& xml, LPCSTR path, int index);
 

@@ -5,7 +5,7 @@
 
 #pragma once
 
-struct HUD_SOUND
+struct HUD_SOUND final
 {
     HUD_SOUND() = default;
     HUD_SOUND(const HUD_SOUND&) = default;
@@ -18,7 +18,8 @@ struct HUD_SOUND
     ////////////////////////////////////
     // работа со звуками
     /////////////////////////////////////
-    static void LoadSound(LPCSTR section, LPCSTR line, ref_sound& hud_snd, int type = sg_SourceType, float* volume = nullptr, float* delay = nullptr, float* freq = nullptr);
+    static void LoadSound(LPCSTR section, LPCSTR line, ref_sound& hud_snd, int type = sg_SourceType, float* volume = nullptr, float* delay = nullptr,
+                          float* freq = nullptr);
 
     static void LoadSound(LPCSTR section, LPCSTR line, HUD_SOUND& hud_snd, int type = sg_SourceType);
 
@@ -47,7 +48,7 @@ struct HUD_SOUND
         }
     }
 
-    struct SSnd
+    struct SSnd final
     {
         ref_sound snd;
         float delay; // задержка перед проигрыванием

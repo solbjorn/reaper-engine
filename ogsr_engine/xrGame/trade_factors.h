@@ -8,7 +8,7 @@
 
 #pragma once
 
-class CTradeFactors
+class CTradeFactors final
 {
 private:
     float m_friend_factor;

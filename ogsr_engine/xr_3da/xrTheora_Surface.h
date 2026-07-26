@@ -3,7 +3,7 @@
 // refs
 class CTheoraStream;
 
-class CTheoraSurface : public virtual RTTI::Enable
+class CTheoraSurface final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CTheoraSurface);
 

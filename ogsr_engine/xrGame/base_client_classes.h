@@ -63,7 +63,7 @@ add_to_type_list(CAnomalyDetectorScript);
 #undef script_type_list
 #define script_type_list save_type_list(CAnomalyDetectorScript)
 
-class CPatrolPointScript
+class CPatrolPointScript final
 {
 public:
     static LPCSTR getName(CPatrolPoint*);
@@ -76,7 +76,7 @@ add_to_type_list(CPatrolPointScript);
 #undef script_type_list
 #define script_type_list save_type_list(CPatrolPointScript)
 
-class CPatrolPathScript
+class CPatrolPathScript final
 {
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

@@ -4,7 +4,7 @@
 
 class CBurer;
 
-class CStateManagerBurer : public CMonsterStateManager<CBurer>
+class CStateManagerBurer final : public CMonsterStateManager<CBurer>
 {
     RTTI_DECLARE_TYPEINFO(CStateManagerBurer, CMonsterStateManager<CBurer>);
 

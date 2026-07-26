@@ -19,7 +19,7 @@ class CUITradeWnd;
 //
 ///////////////////////////////////////
 
-class CUITalkWnd : public CUIDialogWnd
+class CUITalkWnd final : public CUIDialogWnd
 {
     RTTI_DECLARE_TYPEINFO(CUITalkWnd, CUIDialogWnd);
 
@@ -33,7 +33,7 @@ public:
     CUITalkWnd();
     ~CUITalkWnd() override;
 
-    virtual void Init();
+    void Init();
 
     [[nodiscard]] bool StopAnyMove() override { return true; }
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);

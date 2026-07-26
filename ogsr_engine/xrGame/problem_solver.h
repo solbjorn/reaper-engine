@@ -85,7 +85,7 @@ private:
     IC edge_value_type estimate_edge_weight_impl(const _index_type& vertex_index, bool) const;
 
 private:
-    struct helper
+    struct helper final
     {
         template <bool a>
         static IC edge_value_type estimate_edge_weight_impl(std::enable_if_t<!a, self_type const&> self, const _index_type& vertex_index)

@@ -10,7 +10,7 @@
 
 #include "script_export_space.h"
 
-class CParticleParams : public virtual RTTI::Enable
+class CParticleParams final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CParticleParams);
 

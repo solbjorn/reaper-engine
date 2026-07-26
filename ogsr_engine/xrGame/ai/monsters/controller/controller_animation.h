@@ -6,7 +6,7 @@
 
 class CController;
 
-class CControllerAnimation : public CControlAnimationBase
+class CControllerAnimation final : public CControlAnimationBase
 {
     RTTI_DECLARE_TYPEINFO(CControllerAnimation, CControlAnimationBase);
 

@@ -3,7 +3,7 @@
 #include "../state.h"
 
 template <typename _Object>
-class CStateGroupAttackMoveToHomePoint : public CState<_Object>
+class CStateGroupAttackMoveToHomePoint final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateGroupAttackMoveToHomePoint<_Object>, CState<_Object>);
 

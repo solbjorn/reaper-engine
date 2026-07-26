@@ -124,7 +124,7 @@ SoundElem& CMonsterSoundMemory::GetSound()
     return (*it);
 }
 
-struct pred_remove_nonactual_sounds
+struct pred_remove_nonactual_sounds final
 {
     TTime new_time;
 
@@ -187,7 +187,7 @@ bool CMonsterSoundMemory::get_sound_from_object(const CObject* obj, SoundElem& v
     return false;
 }
 
-struct pred_remove_relcase
+struct pred_remove_relcase final
 {
     CObject* obj;
     pred_remove_relcase(CObject* o) { obj = o; }

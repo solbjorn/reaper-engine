@@ -69,7 +69,7 @@ add_to_type_list(CSE_ALifeSchedulable);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeSchedulable)
 
-class CSE_ALifeGraphPoint : public CSE_Abstract
+class CSE_ALifeGraphPoint final : public CSE_Abstract
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeGraphPoint, CSE_Abstract);
 
@@ -219,7 +219,7 @@ add_to_type_list(CSE_ALifeGroupAbstract);
 #define script_type_list save_type_list(CSE_ALifeGroupAbstract)
 
 template <class __A>
-class CSE_ALifeGroupTemplate : public __A, public CSE_ALifeGroupAbstract
+class CSE_ALifeGroupTemplate final : public __A, public CSE_ALifeGroupAbstract
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeGroupTemplate<__A>, __A, CSE_ALifeGroupAbstract);
 
@@ -354,7 +354,7 @@ add_to_type_list(CSE_ALifeDynamicObjectVisual);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeDynamicObjectVisual)
 
-class CSE_ALifePHSkeletonObject : public CSE_ALifeDynamicObjectVisual, public CSE_PHSkeleton
+class CSE_ALifePHSkeletonObject final : public CSE_ALifeDynamicObjectVisual, public CSE_PHSkeleton
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifePHSkeletonObject, CSE_ALifeDynamicObjectVisual, CSE_PHSkeleton);
 
@@ -413,7 +413,7 @@ add_to_type_list(CSE_ALifeSpaceRestrictor);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeSpaceRestrictor)
 
-class CSE_ALifeLevelChanger : public CSE_ALifeSpaceRestrictor
+class CSE_ALifeLevelChanger final : public CSE_ALifeSpaceRestrictor
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeLevelChanger, CSE_ALifeSpaceRestrictor);
 
@@ -444,7 +444,7 @@ add_to_type_list(CSE_ALifeLevelChanger);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeLevelChanger)
 
-class CSE_ALifeSmartZone : public CSE_ALifeSpaceRestrictor, public CSE_ALifeSchedulable
+class CSE_ALifeSmartZone final : public CSE_ALifeSpaceRestrictor, public CSE_ALifeSchedulable
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeSmartZone, CSE_ALifeSpaceRestrictor, CSE_ALifeSchedulable);
 
@@ -463,8 +463,8 @@ public:
     [[nodiscard]] CSE_Abstract* cast_abstract() override { return this; }
     [[nodiscard]] CSE_ALifeSchedulable* cast_schedulable() override { return this; }
     void update() override;
-    virtual float detect_probability() { return 0.0f; }
-    virtual void smart_touch(CSE_ALifeMonsterAbstract*) {}
+    [[nodiscard]] f32 detect_probability() { return 0.0f; }
+    void smart_touch(CSE_ALifeMonsterAbstract*) {}
     [[nodiscard]] bool used_ai_locations() const override { return true; }
     [[nodiscard]] CSE_ALifeSmartZone* cast_smart_zone() override { return this; }
 #ifdef XRGAME_EXPORTS
@@ -473,11 +473,11 @@ public:
     [[nodiscard]] CSE_ALifeDynamicObject* tpfGetBestDetector() override;
     [[nodiscard]] ALife::EMeetActionType tfGetActionType(CSE_ALifeSchedulable* tpALifeSchedulable, int, bool) override;
     // additional functionality
-    virtual bool enabled(CSE_ALifeMonsterAbstract* object) const;
-    virtual float suitable(CSE_ALifeMonsterAbstract* object) const;
-    virtual void register_npc(CSE_ALifeMonsterAbstract* object);
-    virtual void unregister_npc(CSE_ALifeMonsterAbstract* object);
-    virtual CALifeSmartTerrainTask* task(CSE_ALifeMonsterAbstract* object);
+    [[nodiscard]] bool enabled(CSE_ALifeMonsterAbstract* object) const;
+    [[nodiscard]] f32 suitable(CSE_ALifeMonsterAbstract* object) const;
+    void register_npc(CSE_ALifeMonsterAbstract* object);
+    void unregister_npc(CSE_ALifeMonsterAbstract* object);
+    [[nodiscard]] CALifeSmartTerrainTask* task(CSE_ALifeMonsterAbstract* object);
 #endif
 
     void UPDATE_Read(NET_Packet& P) override;
@@ -491,7 +491,7 @@ add_to_type_list(CSE_ALifeSmartZone);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeSmartZone)
 
-class CSE_ALifeObjectPhysic : public CSE_ALifeDynamicObjectVisual, public CSE_PHSkeleton
+class CSE_ALifeObjectPhysic final : public CSE_ALifeDynamicObjectVisual, public CSE_PHSkeleton
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeObjectPhysic, CSE_ALifeDynamicObjectVisual, CSE_PHSkeleton);
 
@@ -524,7 +524,7 @@ add_to_type_list(CSE_ALifeObjectPhysic);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeObjectPhysic)
 
-class CSE_ALifeObjectHangingLamp : public CSE_ALifeDynamicObjectVisual, public CSE_PHSkeleton
+class CSE_ALifeObjectHangingLamp final : public CSE_ALifeDynamicObjectVisual, public CSE_PHSkeleton
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeObjectHangingLamp, CSE_ALifeDynamicObjectVisual, CSE_PHSkeleton);
 
@@ -598,7 +598,7 @@ add_to_type_list(CSE_ALifeObjectHangingLamp);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeObjectHangingLamp)
 
-class CSE_ALifeObjectProjector : public CSE_ALifeDynamicObjectVisual
+class CSE_ALifeObjectProjector final : public CSE_ALifeDynamicObjectVisual
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeObjectProjector, CSE_ALifeDynamicObjectVisual);
 
@@ -623,7 +623,7 @@ add_to_type_list(CSE_ALifeObjectProjector);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeObjectProjector)
 
-class CSE_ALifeHelicopter : public CSE_ALifeDynamicObjectVisual, public CSE_Motion, public CSE_PHSkeleton
+class CSE_ALifeHelicopter final : public CSE_ALifeDynamicObjectVisual, public CSE_Motion, public CSE_PHSkeleton
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeHelicopter, CSE_ALifeDynamicObjectVisual, CSE_Motion, CSE_PHSkeleton);
 
@@ -656,7 +656,7 @@ add_to_type_list(CSE_ALifeHelicopter);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeHelicopter)
 
-class CSE_ALifeCar : public CSE_ALifeDynamicObjectVisual, public CSE_PHSkeleton
+class CSE_ALifeCar final : public CSE_ALifeDynamicObjectVisual, public CSE_PHSkeleton
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeCar, CSE_ALifeDynamicObjectVisual, CSE_PHSkeleton);
 
@@ -673,7 +673,7 @@ public:
         u8 open_state;
         float health;
     };
-    struct SWheelState
+    struct SWheelState final
     {
         void read(NET_Packet& P);
         void write(NET_Packet& P);
@@ -707,7 +707,7 @@ add_to_type_list(CSE_ALifeCar);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeCar)
 
-class CSE_ALifeObjectBreakable : public CSE_ALifeDynamicObjectVisual
+class CSE_ALifeObjectBreakable final : public CSE_ALifeDynamicObjectVisual
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeObjectBreakable, CSE_ALifeDynamicObjectVisual);
 
@@ -735,7 +735,7 @@ add_to_type_list(CSE_ALifeObjectBreakable);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeObjectBreakable)
 
-class CSE_ALifeObjectClimable : public CSE_Shape, public CSE_ALifeDynamicObject
+class CSE_ALifeObjectClimable final : public CSE_Shape, public CSE_ALifeDynamicObject
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeObjectClimable, CSE_Shape, CSE_ALifeDynamicObject);
 
@@ -763,7 +763,7 @@ add_to_type_list(CSE_ALifeObjectClimable);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeObjectClimable)
 
-class CSE_ALifeMountedWeapon : public CSE_ALifeDynamicObjectVisual
+class CSE_ALifeMountedWeapon final : public CSE_ALifeDynamicObjectVisual
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeMountedWeapon, CSE_ALifeDynamicObjectVisual);
 
@@ -786,7 +786,7 @@ add_to_type_list(CSE_ALifeMountedWeapon);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeMountedWeapon)
 
-class CSE_ALifeStationaryMgun : public CSE_ALifeDynamicObjectVisual
+class CSE_ALifeStationaryMgun final : public CSE_ALifeDynamicObjectVisual
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeStationaryMgun, CSE_ALifeDynamicObjectVisual);
 
@@ -822,7 +822,7 @@ public:
     ~CSE_InventoryBoxAbstract() override = default;
 };
 
-class CSE_InventoryBox : public CSE_ALifeDynamicObjectVisual, public CSE_InventoryBoxAbstract
+class CSE_InventoryBox final : public CSE_ALifeDynamicObjectVisual, public CSE_InventoryBoxAbstract
 {
     RTTI_DECLARE_TYPEINFO(CSE_InventoryBox, CSE_ALifeDynamicObjectVisual, CSE_InventoryBoxAbstract);
 

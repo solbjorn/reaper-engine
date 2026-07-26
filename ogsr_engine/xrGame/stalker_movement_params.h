@@ -26,7 +26,7 @@ namespace DetailPathManager
 enum EDetailPathType : u32;
 }
 
-class CStalkerMovementParams
+class CStalkerMovementParams final
 {
     friend class CStalkerMovementManager;
 

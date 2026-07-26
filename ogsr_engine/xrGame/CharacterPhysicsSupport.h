@@ -14,7 +14,7 @@ class CPhysicsShell;
 class CIKLimbsController;
 class interactive_motion;
 
-class CCharacterPhysicsSupport : public CPHSkeleton, public CPHDestroyable
+class CCharacterPhysicsSupport final : public CPHSkeleton, public CPHDestroyable
 {
     RTTI_DECLARE_TYPEINFO(CCharacterPhysicsSupport, CPHSkeleton, CPHDestroyable);
 
@@ -45,7 +45,7 @@ private:
         fl_block_hit = 1 << 3,
     };
 
-    struct animation_movement_state
+    struct animation_movement_state final
     {
         bool active;
         bool character_exist;
@@ -116,7 +116,7 @@ protected:
 
 public:
     IC CPHMovementControl* movement() { return m_PhysicMovementControl; }
-    virtual const Fvector MovementVelocity() { return m_PhysicMovementControl->GetVelocity(); }
+    [[nodiscard]] const Fvector MovementVelocity() { return m_PhysicMovementControl->GetVelocity(); }
     IC CPHSoundPlayer* ph_sound_player() { return &m_ph_sound_player; }
     IC CIKLimbsController* ik_controller() { return m_ik_controller; }
     void SetRemoved();

@@ -1,6 +1,6 @@
 #pragma once
 
-class CBlender_accum_direct_mask : public IBlender
+class CBlender_accum_direct_mask final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_accum_direct_mask, IBlender);
 
@@ -13,14 +13,14 @@ public:
     ~CBlender_accum_direct_mask() override;
 };
 
-class CBlender_accum_direct_mask_msaa : public IBlender
+class CBlender_accum_direct_mask_msaa final : public IBlender
 {
     RTTI_DECLARE_TYPEINFO(CBlender_accum_direct_mask_msaa, IBlender);
 
 public:
     [[nodiscard]] gsl::czstring getComment() override { return "INTERNAL: mask direct light msaa"; }
 
-    virtual void SetDefine(LPCSTR Name, LPCSTR Definition)
+    void SetDefine(LPCSTR Name, LPCSTR Definition)
     {
         this->Name = Name;
         this->Definition = Definition;

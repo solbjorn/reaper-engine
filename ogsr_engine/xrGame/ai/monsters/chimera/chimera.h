@@ -3,7 +3,7 @@
 #include "../basemonster/base_monster.h"
 #include "script_export_space.h"
 
-class CChimera : public CBaseMonster
+class CChimera final : public CBaseMonster
 {
     RTTI_DECLARE_TYPEINFO(CChimera, CBaseMonster);
 

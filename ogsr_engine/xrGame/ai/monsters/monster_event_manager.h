@@ -15,7 +15,7 @@ class CMonsterEventManager
         event_struc(typeEvent e) : delegate(e) { need_remove = false; }
     };
 
-    struct pred_remove
+    struct pred_remove final
     {
         bool operator()(const event_struc& param) { return param.need_remove; }
     };

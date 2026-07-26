@@ -28,7 +28,7 @@ namespace hash_fixed_vertex_manager
 inline u32 to_u32(const GraphEngineSpace::CWorldState& other) { return other.hash_value(); }
 } // namespace hash_fixed_vertex_manager
 
-class CGraphEngine : public virtual RTTI::Enable
+class CGraphEngine final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CGraphEngine);
 
@@ -47,7 +47,8 @@ public:
     using CSolverVertexManager = CVertexManagerHashFixed<u32, GraphEngineSpace::_solver_index_type, 256, 8 * 1024>;
     using CSolverVertexAllocator = CVertexAllocatorFixed<8 * 1024>;
     using SolverAlgorithmStorage = CEdgePath<GraphEngineSpace::_solver_edge_type, true>;
-    using CSolverAlgorithm = CAStar<GraphEngineSpace::_solver_dist_type, CSolverPriorityQueue, CSolverVertexManager, CSolverVertexAllocator, true, SolverAlgorithmStorage>;
+    using CSolverAlgorithm =
+        CAStar<GraphEngineSpace::_solver_dist_type, CSolverPriorityQueue, CSolverVertexManager, CSolverVertexAllocator, true, SolverAlgorithmStorage>;
 
     CAlgorithm* m_algorithm;
     CSolverAlgorithm* m_solver_algorithm;
@@ -72,7 +73,8 @@ public:
 
     template <typename T1, typename T2, typename T3, typename T4, typename T5, bool T6, typename T7, typename T8, typename _Parameters>
     IC bool search(const CProblemSolver<T1, T2, T3, T4, T5, T6, T7, T8>& graph, const GraphEngineSpace::_solver_index_type& start_node,
-                   const GraphEngineSpace::_solver_index_type& dest_node, xr_vector<GraphEngineSpace::_solver_edge_type>* node_path, const _Parameters& parameters);
+                   const GraphEngineSpace::_solver_index_type& dest_node, xr_vector<GraphEngineSpace::_solver_edge_type>* node_path,
+                   const _Parameters& parameters);
 };
 
 #include "problem_solver_inline_ext.h"

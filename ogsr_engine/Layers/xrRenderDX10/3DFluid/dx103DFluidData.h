@@ -2,7 +2,7 @@
 
 #include "dx103DFluidEmitters.h"
 
-class dx103DFluidData
+class dx103DFluidData final
 {
 public:
     enum eVolumePrivateRT
@@ -19,7 +19,7 @@ public:
         ST_FIRE,
     };
 
-    struct Settings
+    struct Settings final
     {
         float m_fHemi;
         float m_fConfinementScale;

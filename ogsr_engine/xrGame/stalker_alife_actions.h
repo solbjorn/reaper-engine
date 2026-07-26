@@ -14,7 +14,7 @@
 // CStalkerActionGatherItems
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionGatherItems : public CStalkerActionBase
+class CStalkerActionGatherItems final : public CStalkerActionBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionGatherItems, CStalkerActionBase);
 
@@ -34,7 +34,7 @@ public:
 // CStalkerActionNoALife
 //////////////////////////////////////////////////////////////////////////
 
-class CStalkerActionNoALife : public CStalkerActionBase
+class CStalkerActionNoALife final : public CStalkerActionBase
 {
     RTTI_DECLARE_TYPEINFO(CStalkerActionNoALife, CStalkerActionBase);
 

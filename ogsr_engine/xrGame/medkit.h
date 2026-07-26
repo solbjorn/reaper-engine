@@ -7,7 +7,7 @@
 
 #include "eatable_item_object.h"
 
-class CMedkit : public CEatableItemObject
+class CMedkit final : public CEatableItemObject
 {
     RTTI_DECLARE_TYPEINFO(CMedkit, CEatableItemObject);
 

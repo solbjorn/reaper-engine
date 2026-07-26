@@ -6,9 +6,11 @@
 class CEntity;
 class CEntityAlive;
 class CBaseMonster;
+
 //////////////////////////////////////////////////////////////////////////
 // Member local goal notification
 //////////////////////////////////////////////////////////////////////////
+
 enum EMemberGoalType
 {
     MG_AttackEnemy, // entity
@@ -20,7 +22,7 @@ enum EMemberGoalType
     MG_None,
 };
 
-struct SMemberGoal
+struct SMemberGoal final
 {
     EMemberGoalType type{MG_None};
     CEntity* entity{};
@@ -33,6 +35,7 @@ struct SMemberGoal
 //////////////////////////////////////////////////////////////////////////
 // Squad command
 //////////////////////////////////////////////////////////////////////////
+
 enum ESquadCommandType
 {
     SC_EXPLORE,
@@ -46,7 +49,7 @@ enum ESquadCommandType
     SC_NONE,
 };
 
-struct SSquadCommand
+struct SSquadCommand final
 {
     ESquadCommandType type; // тип команды
 
@@ -58,7 +61,8 @@ struct SSquadCommand
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // MonsterSquad Class
-class CMonsterSquad
+
+class CMonsterSquad final
 {
 public:
     using MEMBER_COMMAND_MAP = xr_map<const CEntity*, SSquadCommand>;
@@ -195,7 +199,7 @@ private:
     Fvector calc_monster_target_dir(CBaseMonster* monster, const CEntity* enemy);
 };
 
-class squad_grouping_behaviour : public steering_behaviour::grouping::params
+class squad_grouping_behaviour final : public steering_behaviour::grouping::params
 {
     RTTI_DECLARE_TYPEINFO(squad_grouping_behaviour, steering_behaviour::grouping::params);
 

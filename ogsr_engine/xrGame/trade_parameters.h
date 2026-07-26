@@ -10,10 +10,10 @@
 
 #include "trade_action_parameters.h"
 
-class CTradeParameters
+class CTradeParameters final
 {
 public:
-    struct _buy_parameters
+    struct _buy_parameters final
     {};
     typedef _buy_parameters* action_buy;
 

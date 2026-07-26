@@ -1,7 +1,7 @@
 #pragma once
 
 template <typename _Object>
-class CStateMonsterDrag : public CState<_Object>
+class CStateMonsterDrag final : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMonsterDrag<_Object>, CState<_Object>);
 

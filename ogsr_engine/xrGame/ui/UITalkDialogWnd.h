@@ -14,7 +14,7 @@
 class CUIScrollView;
 class CUIXml;
 
-class CUITalkDialogWnd : public CUIWindow, public CUIWndCallback
+class CUITalkDialogWnd final : public CUIWindow, public CUIWndCallback
 {
     RTTI_DECLARE_TYPEINFO(CUITalkDialogWnd, CUIWindow, CUIWndCallback);
 
@@ -30,8 +30,8 @@ public:
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 
-    virtual void Show();
-    virtual void Hide();
+    void Show();
+    void Hide();
 
     u32 GetHeaderColor() { return m_iNameTextColor; }
     CGameFont* GetHeaderFont() { return m_pNameTextFont; }
@@ -90,7 +90,7 @@ private:
     void OnQuestionClicked(CUIWindow* w, void*);
 };
 
-class CUIQuestionItem : public CUIWindow, public CUIWndCallback
+class CUIQuestionItem final : public CUIWindow, public CUIWndCallback
 {
     RTTI_DECLARE_TYPEINFO(CUIQuestionItem, CUIWindow, CUIWndCallback);
 
@@ -131,7 +131,7 @@ public:
     void Init(LPCSTR text, LPCSTR name);
 };
 
-class CUIAnswerItemIconed : public CUIAnswerItem
+class CUIAnswerItemIconed final : public CUIAnswerItem
 {
     RTTI_DECLARE_TYPEINFO(CUIAnswerItemIconed, CUIAnswerItem);
 

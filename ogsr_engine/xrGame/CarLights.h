@@ -6,7 +6,7 @@
 class CCarLights;
 class CCar;
 
-struct SCarLight
+struct SCarLight final
 {
     ref_light light_render{};
     ref_glow glow_render{};
@@ -27,7 +27,7 @@ struct SCarLight
 
 DEFINE_VECTOR(SCarLight*, LIGHTS_STORAGE, LIGHTS_I);
 
-class CCarLights
+class CCarLights final
 {
 public:
     void ParseDefinitions();
@@ -44,7 +44,7 @@ public:
     ~CCarLights();
 
 protected:
-    struct SFindLightPredicate
+    struct SFindLightPredicate final
     {
         const SCarLight* m_light;
 

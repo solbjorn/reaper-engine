@@ -25,7 +25,7 @@ class mz_zip_reader;
 } // namespace xr
 
 template <>
-struct std::default_delete<xr::detail::mz_zip_reader>
+struct std::default_delete<xr::detail::mz_zip_reader> final
 {
     constexpr void operator()(xr::detail::mz_zip_reader* ptr) const noexcept
     {

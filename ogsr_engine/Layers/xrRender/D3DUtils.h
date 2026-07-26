@@ -11,7 +11,7 @@
 #define DU_DRAW_DIP RCache.dbg_DIP
 #define DU_DRAW_DP RCache.dbg_DP
 
-struct SPrimitiveBuffer
+struct SPrimitiveBuffer final
 {
     ref_geom pGeom{};
     u32 v_cnt;
@@ -34,7 +34,7 @@ public:
 // Utilities
 //----------------------------------------------------
 
-class CDrawUtilities : public CDUInterface, public pureRender
+class CDrawUtilities final : public CDUInterface, public pureRender
 {
     RTTI_DECLARE_TYPEINFO(CDrawUtilities, CDUInterface, pureRender);
 
@@ -79,7 +79,7 @@ public:
     //----------------------------------------------------
     void DrawCross(const Fvector3& p, f32 szx1, f32 szy1, f32 szz1, f32 szx2, f32 szy2, f32 szz2, u32 clr, BOOL bRot45 = false) override;
     void DrawCross(const Fvector3& p, f32 sz, u32 clr, BOOL bRot45 = false) override { DrawCross(p, sz, sz, sz, sz, sz, sz, clr, bRot45); }
-    virtual void DrawEntity(u32 clr, ref_shader s);
+    void DrawEntity(u32 clr, ref_shader s);
     void DrawFlag(const Fvector3& p, f32 heading, f32 height, f32 sz, f32 sz_fl, u32 clr, BOOL bDrawEntity) override;
     void DrawRomboid(const Fvector3& p, f32 radius, u32 clr) override;
     void DrawJoint(const Fvector3& p, f32 radius, u32 clr) override;
@@ -164,9 +164,9 @@ public:
 
     void DrawIndexedPrimitive(s32, u32, const Fvector3&, const Fvector3*, const u32&, const u32*, const u32&, const u32&, f32 = 1.0f) override {}
 
-    virtual void DrawPrimitiveL(D3DPRIMITIVETYPE pt, u32 pc, Fvector* vertices, int vc, u32 color, BOOL bCull, BOOL bCycle);
-    virtual void DrawPrimitiveTL(D3DPRIMITIVETYPE pt, u32 pc, FVF::TL* vertices, int vc, BOOL bCull, BOOL bCycle);
-    virtual void DrawPrimitiveLIT(D3DPRIMITIVETYPE pt, u32 pc, FVF::LIT* vertices, int vc, BOOL bCull, BOOL bCycle);
+    void DrawPrimitiveL(D3DPRIMITIVETYPE pt, u32 pc, Fvector* vertices, int vc, u32 color, BOOL bCull, BOOL bCycle);
+    void DrawPrimitiveTL(D3DPRIMITIVETYPE pt, u32 pc, FVF::TL* vertices, int vc, BOOL bCull, BOOL bCycle);
+    void DrawPrimitiveLIT(D3DPRIMITIVETYPE pt, u32 pc, FVF::LIT* vertices, int vc, BOOL bCull, BOOL bCycle);
 
     void OutText(const Fvector3& pos, gsl::czstring text, u32 color = 0xFF000000, u32 shadow_color = 0xFF909090) override;
 

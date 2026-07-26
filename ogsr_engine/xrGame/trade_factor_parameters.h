@@ -13,7 +13,7 @@
 
 #include <regex>
 
-class CTradeFactorParameters
+class CTradeFactorParameters final
 {
     string_unordered_map<shared_str, CTradeFactors> m_factors;
     xr_vector<std::pair<std::regex, CTradeFactors>> m_factors_re;

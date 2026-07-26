@@ -5,7 +5,7 @@ enum class DeviceState;
 
 namespace xr
 {
-struct render_memory_usage
+struct render_memory_usage final
 {
     gsl::index c_base;
     gsl::index c_lmaps;

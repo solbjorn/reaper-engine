@@ -8,7 +8,7 @@ class CUIStatic;
 class CUIXml;
 struct ActorRestoreParams;
 
-class CUIOutfitInfo : public CUIWindow
+class CUIOutfitInfo final : public CUIWindow
 {
     RTTI_DECLARE_TYPEINFO(CUIOutfitInfo, CUIWindow);
 

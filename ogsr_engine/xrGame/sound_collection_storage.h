@@ -10,7 +10,7 @@
 
 #include "sound_player.h"
 
-class CSoundCollectionStorage : public virtual RTTI::Enable
+class CSoundCollectionStorage final : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CSoundCollectionStorage);
 

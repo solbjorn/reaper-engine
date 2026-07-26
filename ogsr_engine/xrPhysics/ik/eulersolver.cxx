@@ -98,7 +98,7 @@ typedef struct
 //   sin(z)*cos(x) =  R[0][1]
 //   cos(z)*cos(x) =  R[1][1]
 //
-struct EulerTableEntry
+struct EulerTableEntry final
 {
     int simple_jt_type;
     int simple_jt;
