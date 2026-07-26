@@ -8,7 +8,7 @@ endif()
 
 set(conformance_options "/Brepro /bigobj /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__STDC__ /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /Zc:checkGwOdr /Zc:forScope /Zc:templateScope /Zc:u8EscapeEncoding /Zc:wchar_t /JMC- /EHsc- /DNOMINMAX /DSTRICT -fstrict-aliasing -fno-delayed-template-parsing -fno-wrapv /D_CRT_STDIO_ISO_WIDE_SPECIFIERS -fno-ms-compatibility -fgnuc-version=0 /utf-8")
 
-set(llvm_options "-fuse-ld=lld-link -gcodeview-ghash -march=skylake -mavx2 -mbmi -mbmi2 -mfma -mlzcnt -mvpclmulqdq -flto -fmerge-all-constants -fforce-emit-vtables -fwhole-program-vtables /clang:-fcoro-aligned-allocation")
+set(llvm_options "-fuse-ld=lld-link -gcodeview-ghash -march=x86-64-v3 -mavx2 -mbmi -mbmi2 -mfma -mlzcnt -flto -fmerge-all-constants -fforce-emit-vtables -fwhole-program-vtables /clang:-fcoro-aligned-allocation")
 
 set(warning_options "-Wextra -Wmost -Wno-error=unused-command-line-argument -Werror=format -Wformat-nonliteral -Werror=format-pedantic -Werror=format-signedness -Werror=format-type-confusion -Werror=inconsistent-missing-override -Werror=microsoft -Werror=move -Werror=nan-infinity-disabled -Werror=parentheses -Werror=strict-aliasing -Werror=tautological-compare -Werror=typename-missing -Werror=weak-vtables")
 
