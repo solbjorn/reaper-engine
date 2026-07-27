@@ -51,7 +51,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\legacy\OpCoDe\OpCoDe;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;..\xrCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\legacy\OpCoDe\OpCoDe;$(SolutionDir)\3rd_party\Src\tmc\cpu_features\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;..\xrCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_LIB;ICE_NO_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>%(AdditionalOptions) -Wconversion -Wnarrowing -Wold-style-cast -Wsigned-enum-bitfield</AdditionalOptions>
       <StringPooling>true</StringPooling>
@@ -85,7 +85,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\legacy\OpCoDe\OpCoDe;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;..\xrCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\legacy\OpCoDe\OpCoDe;$(SolutionDir)\3rd_party\Src\tmc\cpu_features\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;..\xrCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_LIB;ICE_NO_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>%(AdditionalOptions) -Wconversion -Wnarrowing -Wold-style-cast -Wsigned-enum-bitfield</AdditionalOptions>
       <StringPooling>false</StringPooling>

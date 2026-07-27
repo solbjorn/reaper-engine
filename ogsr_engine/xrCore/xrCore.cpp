@@ -4,6 +4,7 @@
 
 #include "xrCore.h"
 
+#include "cpu.h"
 #include "sleep.h"
 #include "xrXMLParser.h"
 
@@ -78,7 +79,7 @@ void xrCore::_initialize(gsl::czstring _ApplicationName, bool init_fs, gsl::czst
         SProcessMemInfo memCounters;
         GetProcessMemInfo(memCounters);
 
-        _initialize_cpu();
+        CPU::ID.print();
 
         xr::detail::xml_init();
         xr_FS = std::make_unique<CLocatorAPI>();

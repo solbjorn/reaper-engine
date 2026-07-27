@@ -193,6 +193,9 @@
 [submodule "3rd_party/Src/tmc/cpputils"]
 	path = 3rd_party/Src/tmc/cpputils
 	url = https://github.com/tzcnt/cpputils.git
+[submodule "3rd_party/Src/tmc/cpu_features/cpu_features"]
+	path = 3rd_party/Src/tmc/cpu_features/cpu_features
+	url = https://github.com/google/cpu_features.git
 [submodule "3rd_party/Src/tmc/hwloc/hwloc"]
 	path = 3rd_party/Src/tmc/hwloc/hwloc
 	url = https://github.com/open-mpi/hwloc.git

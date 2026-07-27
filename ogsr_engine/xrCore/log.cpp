@@ -2,7 +2,7 @@
 
 #include "log.h"
 
-#include "xrcpuid.h"
+#include "cpu.h"
 
 #include <SFML/System/Err.hpp>
 

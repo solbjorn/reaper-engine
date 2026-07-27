@@ -21,6 +21,7 @@
       <BuildDependency Project="3rd_party/Src/system/llvm/llvm.vcxproj" />
     </Project>
     <Project Path="3rd_party/Src/luajit2/luajit2.vcxproj" Id="632aeeb6-dc06-4e15-9551-b2b09a4b73c5" />
+    <Project Path="3rd_party/Src/tmc/cpu_features/cpu_features.vcxproj" Id="67a8a666-6d9a-4cee-95ae-ba1176549e7c" />
     <Project Path="3rd_party/Src/tmc/hwloc/hwloc.vcxproj" Id="a3f8db74-fed0-4ed3-9e51-f5b4e5ac9713" />
   </Folder>
   <Folder Name="/3rd_party/Archiving/">
@@ -221,6 +222,7 @@
   </Project>
   <Project Path="ogsr_engine/xrCDB/xrCDB.vcxproj" Id="a19b1df2-82ec-4364-8bdf-85d13a1c89b5">
     <BuildDependency Project="3rd_party/Src/legacy/OpCoDe/OpCoDe.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/tmc/cpu_features/cpu_features.vcxproj" />
     <BuildDependency Project="3rd_party/Src/utility/xxHash/xxHash.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrCore/xrCore.vcxproj" Id="a0f7d1fb-59a7-4717-a7e4-96f37e91998e">
@@ -234,6 +236,7 @@
     <BuildDependency Project="3rd_party/Src/formatting/scn/scn.vcxproj" />
     <BuildDependency Project="3rd_party/Src/system/abseil/abseil.vcxproj" />
     <BuildDependency Project="3rd_party/Src/system/mimalloc/mimalloc.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/tmc/cpu_features/cpu_features.vcxproj" />
     <BuildDependency Project="3rd_party/Src/utility/pugixml/pugixml.vcxproj" />
     <BuildDependency Project="3rd_party/Src/utility/xxHash/xxHash.vcxproj" />
   </Project>
@@ -258,6 +261,7 @@
   </Project>
   <Project Path="ogsr_engine/xr_3da/XR_3DA.vcxproj" Id="2578c6d8-660d-48ae-9322-7422f8664f06">
     <BuildDependency Project="3rd_party/Src/Xiph/theora/theora.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/tmc/cpu_features/cpu_features.vcxproj" />
     <BuildDependency Project="3rd_party/Src/utility/xxHash/xxHash.vcxproj" />
   </Project>
 </Solution>

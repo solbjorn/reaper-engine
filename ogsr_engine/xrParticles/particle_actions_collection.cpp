@@ -1,6 +1,8 @@
 #include "stdafx.h"
 
 #include "particle_actions_collection.h"
+
+#include "noise.h"
 #include "particle_effect.h"
 
 #include "../Layers/xrRender/xrRender_console.h"
@@ -1643,14 +1645,9 @@ void PAVortex::Transform(const Fmatrix& m)
 
 //-------------------------------------------------------------------------------------------------
 
-// Turbulence
-#include "noise.h"
-
-#include <xmmintrin.h>
-
 namespace
 {
-ICF __m128 _mm_load_fvector(const Fvector& v)
+[[nodiscard]] constexpr __m128 _mm_load_fvector(const Fvector& v)
 {
     __m128 R1, R2;
 
@@ -1663,7 +1660,7 @@ ICF __m128 _mm_load_fvector(const Fvector& v)
     return R1;
 }
 
-ICF void _mm_store_fvector(Fvector& v, const __m128 R1)
+constexpr void _mm_store_fvector(Fvector& v, const __m128 R1)
 {
     __m128 R2;
 

@@ -11,8 +11,6 @@
 #include "../../xr_3da/IGame_Persistent.h"
 #include "../../xr_3da/Environment.h"
 
-#include <xmmintrin.h>
-
 //--------------------------------------------------- Decompression
 
 namespace

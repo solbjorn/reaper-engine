@@ -263,9 +263,6 @@ tmc::task<void> CHW::CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight)
     _RELEASE(swapchain3);
     _SHOW_REF("* CREATE: DeviceREF:", pDevice);
 
-    size_t memory = Desc.DedicatedVideoMemory;
-    Msg("*     Texture memory: {} M", memory / (1024 * 1024));
-
     //	Create render target and depth-stencil views here
 
     // NOTE: this seems required to get the default render target to match the swap chain resolution

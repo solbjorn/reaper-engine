@@ -7,8 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include <immintrin.h>
-
 #ifdef abs
 #undef abs
 #endif

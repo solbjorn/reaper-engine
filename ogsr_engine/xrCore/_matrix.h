@@ -1244,6 +1244,7 @@ template <typename T>
     return _valid(m.i) && _valid(m._14) && _valid(m.j) && _valid(m._24) && _valid(m.k) && _valid(m._34) && _valid(m.c) && _valid(m._44);
 }
 
-extern const Fmatrix Fidentity;
+// Open-coded DirectX::g_XMIdentityR{0,1,2,3} not usable in constant expressions
+constexpr inline Fmatrix Fidentity{1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
 
 #endif /* __XR_CORE_MATRIX_H */

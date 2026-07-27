@@ -32,6 +32,7 @@ XR_DIAG_POP();
 namespace xr
 {
 using fmt::format;
+using fmt::format_to;
 using fmt::format_to_n;
 
 namespace detail
@@ -89,6 +90,7 @@ XR_DIAG_POP();
 namespace xr
 {
 using std::format;
+using std::format_to;
 using std::format_to_n;
 
 namespace detail

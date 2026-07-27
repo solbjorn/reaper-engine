@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "xrcpuid.h"
+#include "cpu.h"
 
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wcast-qual");
@@ -18,8 +18,6 @@ XR_DIAG_IGNORE("-Wunused-parameter");
 #include <Opcode.h>
 
 XR_DIAG_POP();
-
-#include <xmmintrin.h>
 
 using namespace CDB;
 using namespace Opcode;

@@ -2,11 +2,9 @@
 
 #include "noise.h"
 
-#include <xmmintrin.h>
-
 namespace
 {
-[[nodiscard]] ICF int iFloor_SSE(float x) { return _mm_cvtt_ss2si(_mm_set_ss(x)); }
+[[nodiscard]] constexpr s32 iFloor_SSE(f32 x) { return _mm_cvtt_ss2si(_mm_set_ss(x)); }
 
 //==============================================================================
 // Perlin's noise from Texturing and Modeling...

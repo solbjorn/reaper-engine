@@ -63,23 +63,20 @@
     <ClCompile Include="_compressed_normal.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="_math.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
     <ClInclude Include="_random.cpp">
       <Filter>Math</Filter>
     </ClInclude>
     <ClCompile Include="_sphere.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="xrcpuid.cpp">
-      <Filter>Math\CPU</Filter>
-    </ClCompile>
     <ClCompile Include="_std_extensions.cpp">
       <Filter>Math\Extensions</Filter>
     </ClCompile>
     <ClCompile Include="clsid.cpp">
       <Filter>Math\Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="cpu.cpp">
+      <Filter>Math\CPU</Filter>
     </ClCompile>
     <ClCompile Include="xr_trims.cpp">
       <Filter>Math\Extensions</Filter>
@@ -240,9 +237,6 @@
     <ClInclude Include="format.h">
       <Filter>Kernel</Filter>
     </ClInclude>
-    <ClInclude Include="xrcpuid.h">
-      <Filter>Math\CPU</Filter>
-    </ClInclude>
     <ClInclude Include="xrPool.h">
       <Filter>Math\STLext</Filter>
     </ClInclude>
@@ -254,6 +248,9 @@
     </ClInclude>
     <ClInclude Include="clsid.h">
       <Filter>Math\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="cpu.h">
+      <Filter>Math\CPU</Filter>
     </ClInclude>
     <ClInclude Include="xr_trims.h">
       <Filter>Math\Extensions</Filter>

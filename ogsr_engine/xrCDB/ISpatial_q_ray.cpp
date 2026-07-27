@@ -1,8 +1,6 @@
 #include "stdafx.h"
 
-#include "xrcpuid.h"
-
-#include <xmmintrin.h>
+#include "cpu.h"
 
 namespace
 {

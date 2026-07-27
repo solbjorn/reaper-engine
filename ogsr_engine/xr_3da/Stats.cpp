@@ -2,7 +2,6 @@
 
 #include "Stats.h"
 
-#include "xrcpuid.h"
 #include "GameFont.h"
 #include "../xrCDB/ISpatial.h"
 #include "IGame_Persistent.h"
@@ -10,6 +9,8 @@
 #include "xr_object.h"
 
 #include "../Include/xrRender/DrawUtils.h"
+
+#include "cpu.h"
 
 #include <mmsystem.h>
 #include <psapi.h>

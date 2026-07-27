@@ -22,7 +22,7 @@
 #include "ILoadingScreen.h"
 #include "splash.h"
 
-#include "xrcpuid.h"
+#include "cpu.h"
 
 #define CORE_FEATURE_SET(feature, section) Core.Features.set(xrCore::Feature::feature, READ_IF_EXISTS(pSettings, r_bool, section, #feature, false))
 
@@ -414,7 +414,7 @@ s32 main(std::string_view cmdline, void* handle)
         cpu.set_thread_count(cpus);
 
     cpu.fill_thread_occupancy().set_thread_init_hook([](tmc::topology::thread_info info) { CPU::ID.threads.emplace_back(std::move(info)); }).init();
-    std::ranges::sort(CPU::ID.threads, [](const auto& a, const auto& b) { return a.index < b.index; });
+    CPU::ID.init();
 
     std::atomic<xr::tmc_atomic_wait_t> code{xr::code_start};
     tmc::post(cpu, xr::main_async(cmdline, handle, code), xr::tmc_priority_high, 0);

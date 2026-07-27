@@ -2,8 +2,6 @@
 
 #include "ParticleEffect.h"
 
-#include <xmmintrin.h>
-
 using namespace PAPI;
 using namespace PS;
 
