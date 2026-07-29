@@ -120,16 +120,20 @@ template <std::signed_integral T>
 {
     return gsl::narrow_cast<T>(xr::rounddown(gsl::narrow_cast<std::make_unsigned_t<T>>(x), gsl::narrow_cast<std::make_unsigned_t<T>>(a)));
 }
-} // namespace xr
 
-// Pack 64-bit value into <= 32 bits
-// https://elixir.bootlin.com/linux/v6.13-rc3/source/include/linux/hash.h#L24
-[[nodiscard]] constexpr u32 hash_64(u64 val, u32 bits)
+// Pack 64-bit value into 32 bits
+[[nodiscard]] constexpr u32 wang_64_32(u64 key) noexcept
 {
-    constexpr u64 GOLDEN_RATIO_64{0x61C8864680B583EBull};
+    key = (~key) + (key << 18);
+    key = key ^ (key >> 31);
+    key = (key + (key << 2)) + (key << 4);
+    key = key ^ (key >> 11);
+    key = key + (key << 6);
+    key = key ^ (key >> 22);
 
-    return gsl::narrow_cast<u32>((val * GOLDEN_RATIO_64) >> (64 - bits));
+    return gsl::narrow_cast<u32>(key);
 }
+} // namespace xr
 
 constexpr ICF void xr_memcpy_const(void* dst, const void* src, size_t size)
 {

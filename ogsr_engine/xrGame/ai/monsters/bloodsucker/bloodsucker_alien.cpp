@@ -11,7 +11,8 @@
 #include "../../../../xr_3da/CustomHUD.h"
 #include "../../../ActorEffector.h"
 
-#define EFFECTOR_ID_GEN(type) type(hash_64(reinterpret_cast<uintptr_t>(this), 32))
+#define EFFECTOR_ID_GEN(type) \
+    type { xr::wang_64_32(std::bit_cast<std::uintptr_t>(this)) }
 
 ////////////////////////////////////////////////////////////////////////////////////
 // CAlienEffectorPP

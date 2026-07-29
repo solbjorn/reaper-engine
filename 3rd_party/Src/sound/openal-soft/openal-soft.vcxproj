@@ -50,8 +50,7 @@
       cmake --build . --config $(Configuration)
       copy /Y "OpenAL32.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\OpenAL32.lib"
       md "$(SolutionDir)\bin_$(PlatformShortName)"
-      copy /Y "..\configs\alsoft.ini" "$(SolutionDir)\bin_$(PlatformShortName)\alsoft.ini"
-      copy /Y "..\configs\CIAIR_48000.mhr" "$(SolutionDir)\bin_$(PlatformShortName)\CIAIR_48000.mhr"
+      copy /Y "..\bin\alsoft.ini" "$(SolutionDir)\bin_$(PlatformShortName)\alsoft.ini"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
       RD /S/Q _Build

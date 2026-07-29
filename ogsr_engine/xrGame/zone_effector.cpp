@@ -32,7 +32,7 @@ void CZoneEffector::Activate()
     if (m_pp_effector == nullptr && !m_pp_fname.empty())
     {
         m_pp_effector = xr_new<CPostprocessAnimatorLerp>();
-        m_pp_effector->SetType(EEffectorPPType{hash_64(reinterpret_cast<uintptr_t>(this), 32)});
+        m_pp_effector->SetType(EEffectorPPType{xr::wang_64_32(std::bit_cast<std::uintptr_t>(this))});
         m_pp_effector->SetCyclic(true);
         m_pp_effector->SetFactorFunc(CallMe::fromMethod<&CZoneEffector::GetFactor>(this));
         m_pp_effector->Load(m_pp_fname.c_str());
@@ -54,7 +54,7 @@ void CZoneEffector::Stop()
 {
     if (m_pp_effector != nullptr)
     {
-        m_pActor->Cameras().RemovePPEffector(EEffectorPPType{hash_64(reinterpret_cast<uintptr_t>(this), 32)});
+        m_pActor->Cameras().RemovePPEffector(EEffectorPPType{xr::wang_64_32(std::bit_cast<std::uintptr_t>(this))});
         m_pp_effector = nullptr;
     }
 

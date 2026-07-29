@@ -5,7 +5,8 @@
 #include "Actor.h"
 #include "ActorEffector.h"
 
-#define TRANSLATE_TYPE(val) EEffectorPPType(val ? (this)->typeId() : hash_64(reinterpret_cast<uintptr_t>(this), 32))
+#define TRANSLATE_TYPE(val) \
+    EEffectorPPType { xr::wang_64_32(val ? std::bit_cast<std::uintptr_t>((this)->typeId()) : std::bit_cast<std::uintptr_t>(this)) }
 
 CPPEffectorCustom::CPPEffectorCustom(const SPPInfo& ppi, bool one_instance, bool destroy_from_engine)
     : inherited(TRANSLATE_TYPE(one_instance), flt_max, destroy_from_engine)

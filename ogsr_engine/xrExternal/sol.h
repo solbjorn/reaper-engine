@@ -62,7 +62,7 @@ using sol_bases = typename RTTI::type_descriptor<T>::base_types ::template to<so
     { \
         typedef RTTI::type_descriptor<T>::declared_base_types ::template to<sol::types> type; \
     }; \
-    static_assert(T::TypeInfo::Name() == RTTI::TypeName<T>())
+    static_assert(T::TypeInfo::Id() == RTTI::FastTypeId<T>())
 
 // ^ Bonus assertion that T::TypeInfo is declared explicitly, not inherited
 
@@ -72,8 +72,8 @@ inline sol::table sol_new_enum(sol::state_view& lua, std::string_view name, sol:
 {
     if constexpr (read_only)
     {
-        sol::table x = lua.globals().create_with(sol::meta_function::new_index, sol::detail::fail_on_newindex, sol::meta_function::index, target, sol::meta_function::pairs,
-                                                 sol::stack::stack_detail::readonly_pairs);
+        sol::table x = lua.globals().create_with(sol::meta_function::new_index, sol::detail::fail_on_newindex, sol::meta_function::index, target,
+                                                 sol::meta_function::pairs, sol::stack::stack_detail::readonly_pairs);
         sol::table shim = lua.globals().create_named(name, sol::metatable_key, x);
 
         return shim;

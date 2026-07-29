@@ -12,7 +12,7 @@ namespace hash_fixed_vertex_manager
 {
 [[nodiscard]] extern u32 to_u32(const GraphEngineSpace::CWorldState& other);
 
-[[nodiscard]] constexpr u32 to_u32(const shared_str& string) { return hash_64(string ? string._get()->hash : 0x2d06800538d394c2, 32); }
+[[nodiscard]] constexpr u32 to_u32(const shared_str& string) { return xr::wang_64_32(string ? string._get()->hash : 0x2d06800538d394c2ull); }
 } // namespace hash_fixed_vertex_manager
 
 #define TEMPLATE_SPECIALIZATION \

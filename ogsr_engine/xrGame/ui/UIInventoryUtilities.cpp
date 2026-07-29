@@ -58,8 +58,9 @@ bool InventoryUtilities::GreaterRoomInRuck(PIItem item1, PIItem item2)
 
         if (r1.y == r2.y)
         {
-            auto s = s64{item1->typeId()} - item2->typeId();
-            if (!s)
+            const auto s1 = item1->typeId();
+            const auto s2 = item2->typeId();
+            if (s1 == s2)
             {
                 const CLASS_ID class1 = TEXT2CLSID(pSettings->r_string(item1->object().cNameSect(), "class"));
                 const CLASS_ID class2 = TEXT2CLSID(pSettings->r_string(item2->object().cNameSect(), "class"));
@@ -96,7 +97,7 @@ bool InventoryUtilities::GreaterRoomInRuck(PIItem item1, PIItem item2)
             }
             else
             {
-                return s < 0;
+                return std::bit_cast<std::uintptr_t>(s1) < std::bit_cast<std::uintptr_t>(s2);
             }
         }
     }
