@@ -413,7 +413,15 @@ s32 main(std::string_view cmdline, void* handle)
     if (cpus != 0)
         cpu.set_thread_count(cpus);
 
-    cpu.fill_thread_occupancy().set_thread_init_hook([](tmc::topology::thread_info info) { CPU::ID.threads.emplace_back(std::move(info)); }).init();
+    std::mutex lock;
+
+    cpu.fill_thread_occupancy()
+        .set_thread_init_hook([&lock](tmc::topology::thread_info info) {
+            const std::scoped_lock scope{lock};
+            CPU::ID.threads.emplace_back(std::move(info));
+        })
+        .init();
+
     CPU::ID.init();
 
     std::atomic<xr::tmc_atomic_wait_t> code{xr::code_start};
