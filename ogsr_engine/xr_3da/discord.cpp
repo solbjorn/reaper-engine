@@ -45,13 +45,13 @@ private:
         std::string access;
         std::string refresh;
         discordpp::AuthorizationTokenType type;
-        decltype(std::chrono::high_resolution_clock::now()) expires;
+        decltype(std::chrono::system_clock::now()) expires;
 
     public:
         [[nodiscard]] constexpr std::pair<discordpp::AuthorizationTokenType, std::string> creds() const { return std::make_pair(type, access); }
         [[nodiscard]] constexpr auto ref() const { return refresh; }
 
-        [[nodiscard]] constexpr bool expired() const { return expires <= std::chrono::high_resolution_clock::now(); }
+        [[nodiscard]] constexpr bool expired() const { return expires <= std::chrono::system_clock::now(); }
 
         constexpr void set(std::string access, std::string refresh, discordpp::AuthorizationTokenType type, s32 expires);
 
@@ -86,7 +86,7 @@ private:
         {"RPC manager reset", discordpp::LoggingSeverity::Warning, discordpp::LoggingSeverity::Info},
     }};
 
-#ifdef DEBUG
+#ifdef _DEBUG
     static constexpr auto severity{discordpp::LoggingSeverity::Info};
 #else
     static constexpr auto severity{discordpp::LoggingSeverity::Warning};
@@ -134,7 +134,7 @@ constexpr void discord::meta::set(std::string access, std::string refresh, disco
     this->refresh = std::move(refresh);
 
     this->type = type;
-    this->expires = std::chrono::high_resolution_clock::now() + std::chrono::seconds{expires - 24 * 3600};
+    this->expires = std::chrono::system_clock::now() + std::chrono::seconds{expires - 24 * 3600};
 }
 
 bool discord::meta::load()
@@ -170,7 +170,7 @@ bool discord::meta::load()
     rd->r(&refresh[0], hdr.rlen);
 
     this->type = type;
-    expires = decltype(expires){} + std::chrono::nanoseconds{hdr.exp};
+    expires = decltype(expires){} + std::chrono::duration_cast<decltype(expires)::duration>(std::chrono::nanoseconds{hdr.exp});
 
     return true;
 }
