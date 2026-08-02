@@ -68,16 +68,15 @@ void show(std::string_view msg)
     if (xr::is_debugger_present())
         return;
 
-    if (!Debug.to_log())
+    if (Debug.to_log())
     {
-        tmc::post(xr::tmc_cpu_st_executor(), [](gsl::czstring msg) -> tmc::task<void> {
-            ::MessageBoxA(gGameWindow, msg, "FATAL ERROR", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
-            co_return;
-        }(msg.data()));
+        const std::string_view path{logFName};
+        ::ShellExecuteW(nullptr, L"open", sf::String::fromUtf8(path.begin(), path.end()).toWideString().c_str(), nullptr, nullptr, SW_SHOW);
     }
     else
     {
-        ::ShellExecuteA(nullptr, "open", logFName, nullptr, nullptr, SW_SHOW);
+        ::MessageBoxW(nullptr, sf::String::fromUtf8(msg.begin(), msg.end()).toWideString().c_str(), L"FATAL ERROR",
+                      MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND | MB_TOPMOST);
     }
 }
 

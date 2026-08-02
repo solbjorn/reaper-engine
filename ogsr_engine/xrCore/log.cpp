@@ -134,19 +134,18 @@ void log_pool::flush()
     msg_vec msgs;
 
     pool.for_each_available([&msgs](auto&& vec) {
-        std::ranges::move(vec, std::back_inserter(msgs));
+        msgs.append_range(std::views::as_rvalue(vec));
         vec.clear();
     });
 
-    std::ranges::stable_sort(
-        msgs, [](const auto& a, const auto& b) { return std::string_view{a.second.data(), a.first} < std::string_view{b.second.data(), b.first}; });
+    std::ranges::stable_sort(msgs, {}, [] [[nodiscard]] (const auto& msg) { return msg.second.subview(0, msg.first); });
     const auto open = logfs.is_open();
 
     for (auto&& msg : msgs)
     {
         // Visual Studio
         if (xr::is_debugger_present())
-            OutputDebugStringA(msg.second.c_str() + msg.first);
+            ::OutputDebugStringW(sf::String::fromUtf8(msg.second.begin(), msg.second.end()).toWideString().c_str() + msg.first);
 
         // Log file
         if (open)
