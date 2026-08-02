@@ -33,7 +33,7 @@ namespace
 class dwfs_logger final : public dwarfs::logger
 {
 private:
-#ifdef DEBUG
+#ifdef _DEBUG
     static constexpr auto thresh = dwarfs::logger::level_type::INFO;
     using policy = dwarfs::debug_logger_policy;
 #else
@@ -250,7 +250,7 @@ constexpr dwarfs::reader::filesystem_options opts{.image_offset = dwarfs::reader
 void CLocatorAPI::archive::open_dwfs()
 {
     xr::dwfs_cb(cb) = dwarfs::reader::filesystem_v2{
-        xr::lg, xr::os, std::u8string_view{reinterpret_cast<const char8_t*>(path.c_str()), gsl::narrow_cast<std::size_t>(path.size())}, xr::opts};
+        xr::lg, xr::os, std::u8string_view{reinterpret_cast<gsl::cu8zstring>(path.c_str()), gsl::narrow_cast<std::size_t>(path.size())}, xr::opts};
 }
 
 void CLocatorAPI::archive::autoload_dwfs()

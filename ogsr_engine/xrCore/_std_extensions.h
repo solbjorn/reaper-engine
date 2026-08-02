@@ -81,6 +81,12 @@ constexpr inline bool _valid(T x)
 
 char* timestamp(string64& dest);
 
+namespace gsl
+{
+// GSL doesn't provide one
+using cu8zstring = gsl::basic_zstring<const char8_t, gsl::dynamic_extent>;
+} // namespace gsl
+
 namespace xr
 {
 template <typename T>
