@@ -481,7 +481,7 @@ tmc::task<void> main_async(std::string_view cmdline, void* handle, std::atomic<x
         co_await Device.Initialize();
 
         co_await std::move(in);
-        pInput->Attach();
+        co_await pInput->Attach();
 
         InitConsole();
 

@@ -95,7 +95,6 @@ class IInputReceiver : public virtual RTTI::Enable
 public:
     ~IInputReceiver() override = default;
 
-    static void IR_GetLastMouseDelta(Ivector2& p);
     static void IR_GetMousePosScreen(Ivector2& p);
     static void IR_GetMousePosReal(HWND hwnd, Ivector2& p);
     static void IR_GetMousePosReal(Ivector2& p);
@@ -109,13 +108,12 @@ public:
     virtual tmc::task<void> IR_OnActivate() { co_return; }
     virtual void IR_OnDeactivate();
 
-    virtual tmc::task<void> IR_OnMouseWheel(gsl::index) { co_return; }
-    virtual void IR_OnMouseMove(s32, s32) {}
-    virtual void IR_OnMouseStop(s32, s32) {}
-
     virtual tmc::task<void> IR_OnKeyboardPress(xr::key_id) { co_return; }
     virtual void IR_OnKeyboardRelease(xr::key_id) {}
     virtual tmc::task<void> IR_OnKeyboardHold(xr::key_id) { co_return; }
+
+    virtual void IR_OnMouseMove(s32, s32) {}
+    virtual tmc::task<void> IR_OnMouseWheel(gsl::index) { co_return; }
 };
 
 extern float psMouseSens;

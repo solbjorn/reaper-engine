@@ -21,8 +21,6 @@
       <BuildDependency Project="3rd_party/Src/system/llvm/llvm.vcxproj" />
     </Project>
     <Project Path="3rd_party/Src/luajit2/luajit2.vcxproj" Id="632aeeb6-dc06-4e15-9551-b2b09a4b73c5" />
-    <Project Path="3rd_party/Src/tmc/cpu_features/cpu_features.vcxproj" Id="67a8a666-6d9a-4cee-95ae-ba1176549e7c" />
-    <Project Path="3rd_party/Src/tmc/hwloc/hwloc.vcxproj" Id="a3f8db74-fed0-4ed3-9e51-f5b4e5ac9713" />
   </Folder>
   <Folder Name="/3rd_party/Archiving/">
     <Project Path="3rd_party/Src/archiving/archive/archive.vcxproj" Id="9a4160c2-8c27-4146-8df9-80f1f3ab1b10">
@@ -122,9 +120,7 @@
     </Project>
   </Folder>
   <Folder Name="/3rd_party/i18n/">
-    <Project Path="3rd_party/Src/i18n/SheenBidi/SheenBidi.vcxproj" Id="c651434c-b5c3-4713-bb06-f62190a37a87">
-      <BuildDependency Project="3rd_party/Src/system/llvm/llvm.vcxproj" />
-    </Project>
+    <Project Path="3rd_party/Src/i18n/SheenBidi/SheenBidi.vcxproj" Id="c651434c-b5c3-4713-bb06-f62190a37a87" />
     <Project Path="3rd_party/Src/i18n/budouxc/budouxc.vcxproj" Id="9547a077-04ba-477b-8b11-49c0fc49b586" />
     <Project Path="3rd_party/Src/i18n/unibreak/unibreak.vcxproj" Id="2e26d854-2878-4053-92d0-c19a68e32e3d" />
   </Folder>
@@ -188,6 +184,10 @@
     <Project Path="3rd_party/Src/system/mimalloc/mimalloc.vcxproj" Id="c0e0a539-f615-4317-b12c-24b77195b41a">
       <BuildDependency Project="3rd_party/Src/system/llvm/llvm.vcxproj" />
     </Project>
+  </Folder>
+  <Folder Name="/3rd_party/TooManyCooks/">
+    <Project Path="3rd_party/Src/tmc/cpu_features/cpu_features.vcxproj" Id="67a8a666-6d9a-4cee-95ae-ba1176549e7c" />
+    <Project Path="3rd_party/Src/tmc/hwloc/hwloc.vcxproj" Id="a3f8db74-fed0-4ed3-9e51-f5b4e5ac9713" />
   </Folder>
   <Folder Name="/3rd_party/Utility/">
     <Project Path="3rd_party/Src/utility/pugixml/pugixml.vcxproj" Id="f254d5d1-d566-4af3-b402-4df3a717daf2">

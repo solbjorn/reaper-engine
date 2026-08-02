@@ -7,13 +7,9 @@
 
 #include <SFML/Window/Joystick.hpp>
 
-#define DIRECTINPUT_VERSION 0x0800
-#include <dinput.h>
+#include <hidusage.h>
 
-#define MOUSEBUFFERSIZE 64
-#define KEYBOARDBUFFERSIZE 64
-
-CInput* pInput{};
+CInput* pInput{nullptr};
 
 namespace
 {
@@ -24,130 +20,47 @@ float psMouseSens = 1.f;
 float psMouseSensScale = 1.f;
 Flags32 psMouseInvert = {FALSE};
 
-CInput::CInput(bool exclusive) : is_exclusive_mode{exclusive} { Log("Starting INPUT device..."); }
+CInput::CInput()
+{
+    keyboard_events.reserve(16);
+    mouse_events.reserve(16);
 
-tmc::task<void> CInput::co_CInput(u32 device)
+    mouse_buffer.reserve(4096);
+    mouse_buffer.resize(mouse_buffer.capacity());
+}
+
+tmc::task<void> CInput::co_CInput()
 {
     //===================== Dummy pack
     co_await iCapture(&dummyController);
-
-    if (!pDI)
-        XR_ASSERT(xr::hr(DirectInput8Create(GetModuleHandle(nullptr), DIRECTINPUT_VERSION, IID_IDirectInput8W, (void**)&pDI, nullptr)));
-
-    // KEYBOARD
-    if (device & keyboard_device_key)
-        XR_ASSERT(xr::hr(CreateInputDevice(&pKeyboard, GUID_SysKeyboard, &c_dfDIKeyboard, KEYBOARDBUFFERSIZE)));
-
-    // MOUSE
-    if (device & mouse_device_key)
-        XR_ASSERT(xr::hr(CreateInputDevice(&pMouse, GUID_SysMouse, &c_dfDIMouse2, MOUSEBUFFERSIZE)));
 
     Device.seqAppActivate.Add(this);
     Device.seqAppDeactivate.Add(this);
     Device.seqFrame.Add(this, REG_PRIORITY_HIGH);
 }
 
-tmc::task<void> CInput::co_create(bool exclusive, u32 device)
+tmc::task<void> CInput::co_create()
 {
-    pInput = new (xr_alloc<CInput>(1)) CInput{exclusive};
-    co_await pInput->co_CInput(device);
+    pInput = new (xr_alloc<CInput>(1)) CInput{};
+    co_await pInput->co_CInput();
 }
 
-CInput::~CInput(void)
+CInput::~CInput()
 {
     Device.seqFrame.Remove(this);
     Device.seqAppDeactivate.Remove(this);
     Device.seqAppActivate.Remove(this);
-
-    // Unacquire and release the device's interfaces
-    if (pMouse)
-    {
-        pMouse->Unacquire();
-        _RELEASE(pMouse);
-    }
-
-    if (pKeyboard)
-    {
-        pKeyboard->Unacquire();
-        _RELEASE(pKeyboard);
-    }
-
-    _SHOW_REF("Input: ", pDI);
-    _RELEASE(pDI);
 }
 
-//-----------------------------------------------------------------------------
-// Name: CreateInputDevice()
-// Desc: Create a DirectInput device.
-//-----------------------------------------------------------------------------
-HRESULT CInput::CreateInputDevice(IDirectInputDevice8W** device, GUID guidDevice, const DIDATAFORMAT* pdidDataFormat, u32 buf_size)
+tmc::task<void> CInput::Attach()
 {
-    // Obtain an interface to the input device
-    XR_ASSERT(xr::hr(pDI->CreateDevice(guidDevice, device, nullptr)));
+    co_await tmc::resume_on(xr::tmc_cpu_st_executor());
 
-    // Set the device data format. Note: a data format specifies which
-    // controls on a device we are interested in, and how they should be
-    // reported.
-    XR_ASSERT(xr::hr((*device)->SetDataFormat(pdidDataFormat)));
+    const ::RAWINPUTDEVICE rid{.usUsagePage = HID_USAGE_PAGE_GENERIC, .usUsage = HID_USAGE_GENERIC_MOUSE, .dwFlags = 0, .hwndTarget = Device.m_hWnd};
+    XR_ASSERT(::RegisterRawInputDevices(&rid, 1, sizeof(rid)), "", xr::GetLastError());
 
-    // setup the buffer size for the keyboard data
-    DIPROPDWORD dipdw;
-    dipdw.diph.dwSize = sizeof(DIPROPDWORD);
-    dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-    dipdw.diph.dwObj = 0;
-    dipdw.diph.dwHow = DIPH_DEVICE;
-    dipdw.dwData = buf_size;
-
-    XR_ASSERT(xr::hr((*device)->SetProperty(DIPROP_BUFFERSIZE, &dipdw.diph)));
-
-    return S_OK;
-}
-
-void CInput::Attach()
-{
-    // Set the cooperativity level to let DirectInput know how this device
-    // should interact with the system and with other DirectInput applications.
-    if (pKeyboard != nullptr)
-        XR_ASSERT(xr::hr(pKeyboard->SetCooperativeLevel(Device.m_hWnd, (is_exclusive_mode ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND)));
-
-    if (pMouse != nullptr)
-        XR_ASSERT(
-            xr::hr(pMouse->SetCooperativeLevel(Device.m_hWnd, (is_exclusive_mode ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND | DISCL_NOWINKEY)));
-}
-
-//-----------------------------------------------------------------------
-
-void CInput::SetAllAcquire(BOOL bAcquire)
-{
-    if (pMouse)
-        bAcquire ? pMouse->Acquire() : pMouse->Unacquire();
-    if (pKeyboard)
-        bAcquire ? pKeyboard->Acquire() : pKeyboard->Unacquire();
-}
-
-void CInput::SetMouseAcquire(BOOL bAcquire)
-{
-    if (pMouse)
-        bAcquire ? pMouse->Acquire() : pMouse->Unacquire();
-}
-
-void CInput::SetKBDAcquire(BOOL bAcquire)
-{
-    if (pKeyboard)
-        bAcquire ? pKeyboard->Acquire() : pKeyboard->Unacquire();
-}
-
-void CInput::exclusive_mode(const bool exclusive)
-{
-    is_exclusive_mode = exclusive;
-
-    pKeyboard->Unacquire();
-    pMouse->Unacquire();
-
-    Attach();
-
-    pKeyboard->Acquire();
-    pMouse->Acquire();
+    tid = ::GetWindowThreadProcessId(Device.m_hWnd, nullptr);
+    caps = ::GetKeyState(VK_CAPITAL) & 0x1;
 }
 
 //-----------------------------------------------------------------------
@@ -159,12 +72,13 @@ namespace
 class keyconv final
 {
 private:
-    std::array<s32, sf::Keyboard::ScancodeCount> to_dik{};
-    std::array<sf::Keyboard::Scancode, 0xf0> to_scan;
+    std::array<sf::Keyboard::Scancode, 0x90> to_scan;
+    std::array<sf::Keyboard::Scancode, 0x90> to_ext;
+    std::array<s32, sf::Keyboard::ScancodeCount> to_code{0};
 
-    [[nodiscard]] constexpr sf::Keyboard::Scancode init(s32 dik)
+    [[nodiscard]] constexpr sf::Keyboard::Scancode init(s32 code, bool ext)
     {
-        switch (dik)
+        switch (code)
         {
         case 0x01: return sf::Keyboard::Scancode::Escape;
         case 0x02: return sf::Keyboard::Scancode::Num1;
@@ -181,7 +95,7 @@ private:
         case 0x0D: return sf::Keyboard::Scancode::Equal;
         case 0x0E: return sf::Keyboard::Scancode::Backspace;
         case 0x0F: return sf::Keyboard::Scancode::Tab;
-        case 0x10: return sf::Keyboard::Scancode::Q;
+        case 0x10: return ext ? sf::Keyboard::Scancode::MediaPreviousTrack : sf::Keyboard::Scancode::Q;
         case 0x11: return sf::Keyboard::Scancode::W;
         case 0x12: return sf::Keyboard::Scancode::E;
         case 0x13: return sf::Keyboard::Scancode::R;
@@ -190,18 +104,18 @@ private:
         case 0x16: return sf::Keyboard::Scancode::U;
         case 0x17: return sf::Keyboard::Scancode::I;
         case 0x18: return sf::Keyboard::Scancode::O;
-        case 0x19: return sf::Keyboard::Scancode::P;
+        case 0x19: return ext ? sf::Keyboard::Scancode::MediaNextTrack : sf::Keyboard::Scancode::P;
         case 0x1A: return sf::Keyboard::Scancode::LBracket;
         case 0x1B: return sf::Keyboard::Scancode::RBracket;
-        case 0x1C: return sf::Keyboard::Scancode::Enter;
-        case 0x1D: return sf::Keyboard::Scancode::LControl;
-        case 0x1E: return sf::Keyboard::Scancode::A;
+        case 0x1C: return ext ? sf::Keyboard::Scancode::NumpadEnter : sf::Keyboard::Scancode::Enter;
+        case 0x1D: return ext ? sf::Keyboard::Scancode::RControl : sf::Keyboard::Scancode::LControl;
+        case 0x1E: return ext ? sf::Keyboard::Scancode::Select : sf::Keyboard::Scancode::A;
         case 0x1F: return sf::Keyboard::Scancode::S;
-        case 0x20: return sf::Keyboard::Scancode::D;
-        case 0x21: return sf::Keyboard::Scancode::F;
-        case 0x22: return sf::Keyboard::Scancode::G;
+        case 0x20: return ext ? sf::Keyboard::Scancode::VolumeMute : sf::Keyboard::Scancode::D;
+        case 0x21: return ext ? sf::Keyboard::Scancode::LaunchApplication1 : sf::Keyboard::Scancode::F;
+        case 0x22: return ext ? sf::Keyboard::Scancode::MediaPlayPause : sf::Keyboard::Scancode::G;
         case 0x23: return sf::Keyboard::Scancode::H;
-        case 0x24: return sf::Keyboard::Scancode::J;
+        case 0x24: return ext ? sf::Keyboard::Scancode::MediaStop : sf::Keyboard::Scancode::J;
         case 0x25: return sf::Keyboard::Scancode::K;
         case 0x26: return sf::Keyboard::Scancode::L;
         case 0x27: return sf::Keyboard::Scancode::Semicolon;
@@ -211,17 +125,17 @@ private:
         case 0x2B: return sf::Keyboard::Scancode::Backslash;
         case 0x2C: return sf::Keyboard::Scancode::Z;
         case 0x2D: return sf::Keyboard::Scancode::X;
-        case 0x2E: return sf::Keyboard::Scancode::C;
+        case 0x2E: return ext ? sf::Keyboard::Scancode::VolumeDown : sf::Keyboard::Scancode::C;
         case 0x2F: return sf::Keyboard::Scancode::V;
-        case 0x30: return sf::Keyboard::Scancode::B;
+        case 0x30: return ext ? sf::Keyboard::Scancode::VolumeUp : sf::Keyboard::Scancode::B;
         case 0x31: return sf::Keyboard::Scancode::N;
-        case 0x32: return sf::Keyboard::Scancode::M;
+        case 0x32: return ext ? sf::Keyboard::Scancode::HomePage : sf::Keyboard::Scancode::M;
         case 0x33: return sf::Keyboard::Scancode::Comma;
         case 0x34: return sf::Keyboard::Scancode::Period;
-        case 0x35: return sf::Keyboard::Scancode::Slash;
+        case 0x35: return ext ? sf::Keyboard::Scancode::NumpadDivide : sf::Keyboard::Scancode::Slash;
         case 0x36: return sf::Keyboard::Scancode::RShift;
-        case 0x37: return sf::Keyboard::Scancode::NumpadMultiply;
-        case 0x38: return sf::Keyboard::Scancode::LAlt;
+        case 0x37: return ext ? sf::Keyboard::Scancode::PrintScreen : sf::Keyboard::Scancode::NumpadMultiply;
+        case 0x38: return ext ? sf::Keyboard::Scancode::RAlt : sf::Keyboard::Scancode::LAlt;
         case 0x39: return sf::Keyboard::Scancode::Space;
         case 0x3A: return sf::Keyboard::Scancode::CapsLock;
         case 0x3B: return sf::Keyboard::Scancode::F1;
@@ -234,77 +148,42 @@ private:
         case 0x42: return sf::Keyboard::Scancode::F8;
         case 0x43: return sf::Keyboard::Scancode::F9;
         case 0x44: return sf::Keyboard::Scancode::F10;
-        case 0x45: return sf::Keyboard::Scancode::NumLock;
+        case 0x45: return ext ? sf::Keyboard::Scancode::NumLock : sf::Keyboard::Scancode::Pause;
         case 0x46: return sf::Keyboard::Scancode::ScrollLock;
-        case 0x47: return sf::Keyboard::Scancode::Numpad7;
-        case 0x48: return sf::Keyboard::Scancode::Numpad8;
-        case 0x49: return sf::Keyboard::Scancode::Numpad9;
+        case 0x47: return ext ? sf::Keyboard::Scancode::Home : sf::Keyboard::Scancode::Numpad7;
+        case 0x48: return ext ? sf::Keyboard::Scancode::Up : sf::Keyboard::Scancode::Numpad8;
+        case 0x49: return ext ? sf::Keyboard::Scancode::PageUp : sf::Keyboard::Scancode::Numpad9;
         case 0x4A: return sf::Keyboard::Scancode::NumpadMinus;
-        case 0x4B: return sf::Keyboard::Scancode::Numpad4;
+        case 0x4B: return ext ? sf::Keyboard::Scancode::Left : sf::Keyboard::Scancode::Numpad4;
         case 0x4C: return sf::Keyboard::Scancode::Numpad5;
-        case 0x4D: return sf::Keyboard::Scancode::Numpad6;
+        case 0x4D: return ext ? sf::Keyboard::Scancode::Right : sf::Keyboard::Scancode::Numpad6;
         case 0x4E: return sf::Keyboard::Scancode::NumpadPlus;
-        case 0x4F: return sf::Keyboard::Scancode::Numpad1;
-        case 0x50: return sf::Keyboard::Scancode::Numpad2;
-        case 0x51: return sf::Keyboard::Scancode::Numpad3;
-        case 0x52: return sf::Keyboard::Scancode::Numpad0;
-        case 0x53: return sf::Keyboard::Scancode::NumpadDecimal;
+        case 0x4F: return ext ? sf::Keyboard::Scancode::End : sf::Keyboard::Scancode::Numpad1;
+        case 0x50: return ext ? sf::Keyboard::Scancode::Down : sf::Keyboard::Scancode::Numpad2;
+        case 0x51: return ext ? sf::Keyboard::Scancode::PageDown : sf::Keyboard::Scancode::Numpad3;
+        case 0x52: return ext ? sf::Keyboard::Scancode::Insert : sf::Keyboard::Scancode::Numpad0;
+        case 0x53: return ext ? sf::Keyboard::Scancode::Delete : sf::Keyboard::Scancode::NumpadDecimal;
         case 0x56: return sf::Keyboard::Scancode::NonUsBackslash;
         case 0x57: return sf::Keyboard::Scancode::F11;
         case 0x58: return sf::Keyboard::Scancode::F12;
+        case 0x5B: return ext ? sf::Keyboard::Scancode::LSystem : sf::Keyboard::Scancode::Unknown;
+        case 0x5C: return ext ? sf::Keyboard::Scancode::RSystem : sf::Keyboard::Scancode::Unknown;
+        case 0x5D: return ext ? sf::Keyboard::Scancode::Menu : sf::Keyboard::Scancode::Unknown;
+        case 0x63: return ext ? sf::Keyboard::Scancode::Help : sf::Keyboard::Scancode::Unknown;
         case 0x64: return sf::Keyboard::Scancode::F13;
-        case 0x65: return sf::Keyboard::Scancode::F14;
-        case 0x66: return sf::Keyboard::Scancode::F15;
-        case 0x67: return sf::Keyboard::Scancode::F16;
-        case 0x68: return sf::Keyboard::Scancode::F17;
-        case 0x69: return sf::Keyboard::Scancode::F18;
-        case 0x6A: return sf::Keyboard::Scancode::F19;
-        case 0x6B: return sf::Keyboard::Scancode::F20;
-        case 0x6C: return sf::Keyboard::Scancode::F21;
-        case 0x6D: return sf::Keyboard::Scancode::F22;
+        case 0x65: return ext ? sf::Keyboard::Scancode::Search : sf::Keyboard::Scancode::F14;
+        case 0x66: return ext ? sf::Keyboard::Scancode::Favorites : sf::Keyboard::Scancode::F15;
+        case 0x67: return ext ? sf::Keyboard::Scancode::Refresh : sf::Keyboard::Scancode::F16;
+        case 0x68: return ext ? sf::Keyboard::Scancode::Stop : sf::Keyboard::Scancode::F17;
+        case 0x69: return ext ? sf::Keyboard::Scancode::Forward : sf::Keyboard::Scancode::F18;
+        case 0x6A: return ext ? sf::Keyboard::Scancode::Back : sf::Keyboard::Scancode::F19;
+        case 0x6B: return ext ? sf::Keyboard::Scancode::LaunchApplication1 : sf::Keyboard::Scancode::F20;
+        case 0x6C: return ext ? sf::Keyboard::Scancode::LaunchMail : sf::Keyboard::Scancode::F21;
+        case 0x6D: return ext ? sf::Keyboard::Scancode::LaunchMediaSelect : sf::Keyboard::Scancode::F22;
         case 0x6E: return sf::Keyboard::Scancode::F23;
         case 0x76: return sf::Keyboard::Scancode::F24;
         case 0x7E: return sf::Keyboard::Scancode::NumpadEqual;
         case 0x8D: return sf::Keyboard::Scancode::NumpadEqual;
-        case 0x90: return sf::Keyboard::Scancode::MediaPreviousTrack;
-        case 0x99: return sf::Keyboard::Scancode::MediaNextTrack;
-        case 0x9C: return sf::Keyboard::Scancode::NumpadEnter;
-        case 0x9D: return sf::Keyboard::Scancode::RControl;
-        case 0x9E: return sf::Keyboard::Scancode::Select;
-        case 0xA0: return sf::Keyboard::Scancode::VolumeMute;
-        case 0xA1: return sf::Keyboard::Scancode::LaunchApplication2;
-        case 0xA2: return sf::Keyboard::Scancode::MediaPlayPause;
-        case 0xA4: return sf::Keyboard::Scancode::MediaStop;
-        case 0xAE: return sf::Keyboard::Scancode::VolumeDown;
-        case 0xB0: return sf::Keyboard::Scancode::VolumeUp;
-        case 0xB2: return sf::Keyboard::Scancode::HomePage;
-        case 0xB5: return sf::Keyboard::Scancode::NumpadDivide;
-        case 0xB7: return sf::Keyboard::Scancode::PrintScreen;
-        case 0xB8: return sf::Keyboard::Scancode::RAlt;
-        case 0xC5: return sf::Keyboard::Scancode::Pause;
-        case 0xC7: return sf::Keyboard::Scancode::Home;
-        case 0xC8: return sf::Keyboard::Scancode::Up;
-        case 0xC9: return sf::Keyboard::Scancode::PageUp;
-        case 0xCB: return sf::Keyboard::Scancode::Left;
-        case 0xCD: return sf::Keyboard::Scancode::Right;
-        case 0xCF: return sf::Keyboard::Scancode::End;
-        case 0xD0: return sf::Keyboard::Scancode::Down;
-        case 0xD1: return sf::Keyboard::Scancode::PageDown;
-        case 0xD2: return sf::Keyboard::Scancode::Insert;
-        case 0xD3: return sf::Keyboard::Scancode::Delete;
-        case 0xDB: return sf::Keyboard::Scancode::LSystem;
-        case 0xDC: return sf::Keyboard::Scancode::RSystem;
-        case 0xDD: return sf::Keyboard::Scancode::Menu;
-        case 0xE1: return sf::Keyboard::Scancode::Help;
-        case 0xE5: return sf::Keyboard::Scancode::Search;
-        case 0xE6: return sf::Keyboard::Scancode::Favorites;
-        case 0xE7: return sf::Keyboard::Scancode::Refresh;
-        case 0xE8: return sf::Keyboard::Scancode::Stop;
-        case 0xE9: return sf::Keyboard::Scancode::Forward;
-        case 0xEA: return sf::Keyboard::Scancode::Back;
-        case 0xEB: return sf::Keyboard::Scancode::LaunchApplication1;
-        case 0xEC: return sf::Keyboard::Scancode::LaunchMail;
-        case 0xED: return sf::Keyboard::Scancode::LaunchMediaSelect;
         default: return sf::Keyboard::Scancode::Unknown;
         }
     }
@@ -312,22 +191,27 @@ private:
 public:
     constexpr keyconv()
     {
-        for (auto [dik, scan] : std::views::enumerate(to_scan))
+        for (auto [code, scan, ext] : std::views::zip(std::views::iota(0z, std::ssize(to_scan)), to_scan, to_ext))
         {
-            scan = init(dik);
+            scan = init(code, false);
+            ext = init(code, true);
 
             if (scan != sf::Keyboard::Scancode::Unknown)
-                to_dik[std::to_underlying(scan)] = dik;
+                to_code[std::to_underlying(scan)] = code;
         }
     }
 
-    [[nodiscard]] constexpr sf::Keyboard::Scancode scan(s32 dik) const { return dik < std::ssize(to_scan) ? to_scan[dik] : sf::Keyboard::Scancode::Unknown; }
-    [[nodiscard]] constexpr s32 dik(sf::Keyboard::Scancode scan) const
+    [[nodiscard]] constexpr sf::Keyboard::Scancode scan(s32 code, bool ext) const
     {
-        if (scan == sf::Keyboard::Scancode::Unknown || std::to_underlying(scan) >= std::ssize(to_dik))
+        return code < std::ssize(to_scan) ? (ext ? to_ext : to_scan)[code] : sf::Keyboard::Scancode::Unknown;
+    }
+
+    [[nodiscard]] constexpr s32 code(sf::Keyboard::Scancode scan) const
+    {
+        if (scan == sf::Keyboard::Scancode::Unknown || std::to_underlying(scan) >= std::ssize(to_code))
             return 0;
 
-        return to_dik[std::to_underlying(scan)];
+        return to_code[std::to_underlying(scan)];
     }
 };
 
@@ -335,97 +219,202 @@ constexpr keyconv keyconv;
 } // namespace
 } // namespace xr
 
-namespace
-{
-BOOL b_altF4 = FALSE;
-}
-
 tmc::task<void> CInput::KeyUpdate()
 {
-    HRESULT hr;
-    DWORD dwElements = KEYBOARDBUFFERSIZE;
-    DIDEVICEOBJECTDATA od[KEYBOARDBUFFERSIZE];
-
-    hr = XR_ASSERT_VAL(pKeyboard != nullptr)->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0);
-    if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
-    {
-        hr = pKeyboard->Acquire();
-        if (hr != S_OK)
-            co_return;
-
-        hr = pKeyboard->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0);
-        if (hr != S_OK)
-            co_return;
-    }
-
     const bool editor = !!xr::editor();
+    auto new_state = keyboard_state;
 
-    for (u32 i = 0; i < dwElements; ++i)
+    for (auto [msg, wp, lp] : keyboard_events)
     {
-        const auto key = xr::keyconv.scan(od[i].dwOfs);
+        bool pressed = msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN;
+        if (pressed && (HIWORD(lp) & KF_REPEAT))
+            continue;
 
-        KBState.set(std::to_underlying(key), !!(od[i].dwData & 0x80));
-        if (KBState[std::to_underlying(key)])
+        s32 code;
+        bool ext;
+
+        // Num Lock and Pause are broken beyond belief
+        if (wp == VK_PAUSE || wp == VK_NUMLOCK)
         {
-            if (this->is_exclusive_mode && (key == sf::Keyboard::Scancode::LShift || key == sf::Keyboard::Scancode::RShift) &&
-                (this->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LAlt}) || this->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RAlt})))
-            {
-                // Переключили язык. В эксклюзивном режиме это обязательно для правильной работы функции DikToChar
-                auto scope = co_await tmc::enter(xr::tmc_cpu_st_executor());
-                PostMessage(gGameWindow, WM_INPUTLANGCHANGEREQUEST, 2, 0);
-                co_await scope.exit();
-            }
+            code = 0x45;
+            ext = wp == VK_NUMLOCK;
+        }
+        else
+        {
+            code = LOBYTE(HIWORD(lp));
+            ext = !!(HIWORD(lp) & KF_EXTENDED);
+        }
+
+        // Rare system events
+        if (code == 0)
+            code = gsl::narrow_cast<s32>(::MapVirtualKeyW(wp, MAPVK_VK_TO_VSC));
+
+        const auto key = xr::keyconv.scan(code, ext);
+        if (key == sf::Keyboard::Scancode::Unknown)
+            continue;
+
+        if (pressed)
+        {
+            if (key == sf::Keyboard::Scancode::CapsLock)
+                caps = !caps;
 
             if (!editor || !xr::editor()->key_press(xr::key_id{key}))
                 co_await cbStack.back()->IR_OnKeyboardPress(xr::key_id{key});
+
+            // Pause never generates a WM_KEYUP, release it immediately
+            if (key == sf::Keyboard::Scancode::Pause)
+                pressed = false;
         }
-        else
+
+        if (!pressed)
         {
             if (!editor || !xr::editor()->key_release(xr::key_id{key}))
                 cbStack.back()->IR_OnKeyboardRelease(xr::key_id{key});
         }
+
+        new_state.set(std::to_underlying(key), pressed);
     }
 
-    for (s32 key{0}; key < s32{sf::Keyboard::ScancodeCount}; ++key)
+    keyboard_events.clear();
+
+    const auto hold = keyboard_state & new_state;
+    auto idx = hold.first_one();
+
+    while (idx < hold.size())
     {
-        if (!KBState[key])
+        const auto key = xr::key_id{sf::Keyboard::Scancode{gsl::narrow_cast<s32>(idx)}};
+
+        if (!editor || !xr::editor()->key_hold(key))
+            co_await cbStack.back()->IR_OnKeyboardHold(key);
+
+        idx = hold.next_one(idx + 1);
+    }
+
+    keyboard_state = new_state;
+}
+
+void CInput::mouse_move()
+{
+    while (true)
+    {
+        auto size = gsl::narrow_cast<u32>(mouse_buffer.size());
+        auto ret = ::GetRawInputBuffer(reinterpret_cast<::RAWINPUT*>(mouse_buffer.data()), &size, sizeof(::RAWINPUTHEADER));
+
+        if (ret == 0)
+            return;
+
+        if (ret == std::numeric_limits<u32>::max())
+        {
+            XR_ASSERT(xr::GetLastError() == xr::last_error{ERROR_INSUFFICIENT_BUFFER});
+
+            mouse_buffer.reserve(size);
+            mouse_buffer.resize(mouse_buffer.capacity());
+
             continue;
+        }
 
-        if (!editor || !xr::editor()->key_hold(xr::key_id{sf::Keyboard::Scancode{key}}))
-            co_await cbStack.back()->IR_OnKeyboardHold(xr::key_id{sf::Keyboard::Scancode{key}});
+        auto block = reinterpret_cast<const ::RAWINPUT*>(mouse_buffer.data());
+
+#define QWORD u64
+        while (ret > 0)
+        {
+            if (block->header.dwType == RIM_TYPEMOUSE && !(block->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE))
+            {
+                mouse_dx += block->data.mouse.lLastX;
+                mouse_dy += block->data.mouse.lLastY;
+            }
+
+            block = NEXTRAWINPUTBLOCK(const_cast<::RAWINPUT*>(block));
+            --ret;
+        }
+#undef QWORD
     }
+}
 
-    if (!b_altF4 && iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::F4}) &&
-        (iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LAlt}) || iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RAlt})))
+tmc::task<void> CInput::MouseUpdate()
+{
+    const bool editor = !!xr::editor();
+    auto new_state = mouse_state;
+    gsl::index z{0};
+
+    for (auto [msg, wp] : mouse_events)
     {
-        b_altF4 = TRUE;
+        if (msg == WM_MOUSEWHEEL)
+        {
+            z += GET_WHEEL_DELTA_WPARAM(wp);
+            continue;
+        }
 
-        co_await Engine.Event.Defer("KERNEL:disconnect");
-        co_await Engine.Event.Defer("KERNEL:quit");
+        sf::Mouse::Button btn;
+        bool pressed{false};
+
+        switch (msg)
+        {
+        case WM_LBUTTONDOWN: pressed = true; [[fallthrough]];
+        case WM_LBUTTONUP: btn = sf::Mouse::Button::Left; break;
+        case WM_RBUTTONDOWN: pressed = true; [[fallthrough]];
+        case WM_RBUTTONUP: btn = sf::Mouse::Button::Right; break;
+        case WM_MBUTTONDOWN: pressed = true; [[fallthrough]];
+        case WM_MBUTTONUP: btn = sf::Mouse::Button::Middle; break;
+        case WM_XBUTTONDOWN: pressed = true; [[fallthrough]];
+        case WM_XBUTTONUP: btn = GET_XBUTTON_WPARAM(wp) == XBUTTON1 ? sf::Mouse::Button::Extra1 : sf::Mouse::Button::Extra2; break;
+        default: continue;
+        }
+
+        if (pressed)
+        {
+            if (!editor || !xr::editor()->key_press(xr::key_id{btn}))
+                co_await cbStack.back()->IR_OnKeyboardPress(xr::key_id{btn});
+        }
+        else
+        {
+            if (!editor || !xr::editor()->key_release(xr::key_id{btn}))
+                cbStack.back()->IR_OnKeyboardRelease(xr::key_id{btn});
+        }
+
+        new_state.set(std::to_underlying(btn), pressed);
     }
+
+    mouse_events.clear();
+
+    const auto hold = mouse_state & new_state;
+    auto idx = hold.first_one();
+
+    while (idx < hold.size())
+    {
+        const auto btn = xr::key_id{sf::Mouse::Button{gsl::narrow_cast<s32>(idx)}};
+
+        if (!editor || !xr::editor()->key_hold(btn))
+            co_await cbStack.back()->IR_OnKeyboardHold(btn);
+
+        idx = hold.next_one(idx + 1);
+    }
+
+    if (mouse_dx != 0 || mouse_dy != 0)
+    {
+        if (!editor || !xr::editor()->mouse_move(mouse_dx, mouse_dy))
+            cbStack.back()->IR_OnMouseMove(mouse_dx, mouse_dy);
+
+        mouse_dx = 0;
+        mouse_dy = 0;
+    }
+
+    if (z != 0)
+    {
+        if (!editor || !xr::editor()->mouse_wheel(z))
+            co_await cbStack.back()->IR_OnMouseWheel(z);
+    }
+
+    mouse_state = new_state;
 }
 
 bool CInput::iGetAsyncKeyState(xr::key_id dik) const
 {
     if (dik.is<sf::Keyboard::Scancode>())
-    {
-        // KRodin: да-да, я знаю, что этот код ужасен.
-        const auto key = dik.get<sf::Keyboard::Scancode>();
-        switch (key)
-        {
-        case sf::Keyboard::Scancode::Unknown: return false;
-        case sf::Keyboard::Scancode::LAlt:
-        case sf::Keyboard::Scancode::RAlt:
-        case sf::Keyboard::Scancode::Tab:
-        case sf::Keyboard::Scancode::LControl:
-        case sf::Keyboard::Scancode::RControl:
-        case sf::Keyboard::Scancode::Delete: return sf::Keyboard::isKeyPressed(key);
-        default: return KBState[std::to_underlying(key)];
-        }
-    }
+        return keyboard_state[std::to_underlying(dik.get<sf::Keyboard::Scancode>())];
 
     if (dik.is<sf::Mouse::Button>())
-        return mouseState[std::to_underlying(dik.get<sf::Mouse::Button>())];
+        return mouse_state[std::to_underlying(dik.get<sf::Mouse::Button>())];
 
     if (dik.is<xr::key_id::joystick>())
     {
@@ -439,221 +428,12 @@ bool CInput::iGetAsyncKeyState(xr::key_id dik) const
     return false;
 }
 
-tmc::task<void> CInput::MouseUpdate()
-{
-#pragma push_macro("FIELD_OFFSET")
-#undef FIELD_OFFSET
-#define FIELD_OFFSET offsetof // Фиксим warning C4644 - просто переводим макрос из винсдк на использование стандартного оффсетофа.
-
-    HRESULT hr;
-    DWORD dwElements = MOUSEBUFFERSIZE;
-    DIDEVICEOBJECTDATA od[MOUSEBUFFERSIZE];
-
-    hr = XR_ASSERT_VAL(pMouse != nullptr)->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0);
-    if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
-    {
-        hr = pMouse->Acquire();
-        if (hr != S_OK)
-            co_return;
-
-        hr = pMouse->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0);
-        if (hr != S_OK)
-            co_return;
-    }
-
-    const auto mouse_prev = mouseState;
-    const bool editor = !!xr::editor();
-
-    offs[0] = offs[1] = offs[2] = 0;
-
-    for (u32 i = 0; i < dwElements; i++)
-    {
-        switch (od[i].dwOfs)
-        {
-        case DIMOFS_X:
-            offs[0] += od[i].dwData;
-            timeStamp[0] = od[i].dwTimeStamp;
-            break;
-        case DIMOFS_Y:
-            offs[1] += od[i].dwData;
-            timeStamp[1] = od[i].dwTimeStamp;
-            break;
-        case DIMOFS_Z:
-            offs[2] += od[i].dwData;
-            timeStamp[2] = od[i].dwTimeStamp;
-            break;
-        case DIMOFS_BUTTON0:
-            if (od[i].dwData & 0x80)
-            {
-                mouseState.set(std::to_underlying(sf::Mouse::Button::Left));
-
-                if (!editor || !xr::editor()->key_press(xr::key_id{sf::Mouse::Button::Left}))
-                    co_await cbStack.back()->IR_OnKeyboardPress(xr::key_id{sf::Mouse::Button::Left});
-            }
-
-            if (!(od[i].dwData & 0x80))
-            {
-                mouseState.reset(std::to_underlying(sf::Mouse::Button::Left));
-
-                if (!editor || !xr::editor()->key_release(xr::key_id{sf::Mouse::Button::Left}))
-                    cbStack.back()->IR_OnKeyboardRelease(xr::key_id{sf::Mouse::Button::Left});
-            }
-
-            break;
-        case DIMOFS_BUTTON1:
-            if (od[i].dwData & 0x80)
-            {
-                mouseState.set(std::to_underlying(sf::Mouse::Button::Right));
-
-                if (!editor || !xr::editor()->key_press(xr::key_id{sf::Mouse::Button::Right}))
-                    co_await cbStack.back()->IR_OnKeyboardPress(xr::key_id{sf::Mouse::Button::Right});
-            }
-
-            if (!(od[i].dwData & 0x80))
-            {
-                mouseState.reset(std::to_underlying(sf::Mouse::Button::Right));
-
-                if (!editor || !xr::editor()->key_release(xr::key_id{sf::Mouse::Button::Right}))
-                    cbStack.back()->IR_OnKeyboardRelease(xr::key_id{sf::Mouse::Button::Right});
-            }
-
-            break;
-        case DIMOFS_BUTTON2:
-            if (od[i].dwData & 0x80)
-            {
-                mouseState.set(std::to_underlying(sf::Mouse::Button::Middle));
-
-                if (!editor || !xr::editor()->key_press(xr::key_id{sf::Mouse::Button::Middle}))
-                    co_await cbStack.back()->IR_OnKeyboardPress(xr::key_id{sf::Mouse::Button::Middle});
-            }
-
-            if (!(od[i].dwData & 0x80))
-            {
-                mouseState.reset(std::to_underlying(sf::Mouse::Button::Middle));
-
-                if (!editor || !xr::editor()->key_release(xr::key_id{sf::Mouse::Button::Middle}))
-                    cbStack.back()->IR_OnKeyboardRelease(xr::key_id{sf::Mouse::Button::Middle});
-            }
-
-            break;
-        case DIMOFS_BUTTON3:
-            if (od[i].dwData & 0x80)
-            {
-                mouseState.set(std::to_underlying(sf::Mouse::Button::Extra1));
-
-                if (!editor || !xr::editor()->key_press(xr::key_id{sf::Mouse::Button::Extra1}))
-                    co_await cbStack.back()->IR_OnKeyboardPress(xr::key_id{sf::Mouse::Button::Extra1});
-            }
-
-            if (!(od[i].dwData & 0x80))
-            {
-                mouseState.reset(std::to_underlying(sf::Mouse::Button::Extra1));
-
-                if (!editor || !xr::editor()->key_release(xr::key_id{sf::Mouse::Button::Extra1}))
-                    cbStack.back()->IR_OnKeyboardRelease(xr::key_id{sf::Mouse::Button::Extra1});
-            }
-
-            break;
-        case DIMOFS_BUTTON4:
-            if (od[i].dwData & 0x80)
-            {
-                mouseState.set(std::to_underlying(sf::Mouse::Button::Extra2));
-
-                if (!editor || !xr::editor()->key_press(xr::key_id{sf::Mouse::Button::Extra2}))
-                    co_await cbStack.back()->IR_OnKeyboardPress(xr::key_id{sf::Mouse::Button::Extra2});
-            }
-
-            if (!(od[i].dwData & 0x80))
-            {
-                mouseState.reset(std::to_underlying(sf::Mouse::Button::Extra2));
-
-                if (!editor || !xr::editor()->key_release(xr::key_id{sf::Mouse::Button::Extra2}))
-                    cbStack.back()->IR_OnKeyboardRelease(xr::key_id{sf::Mouse::Button::Extra2});
-            }
-
-            break;
-        }
-    }
-
-    // Giperion: double check mouse buttons state
-    DIMOUSESTATE2 MouseState;
-    hr = pMouse->GetDeviceState(sizeof(MouseState), &MouseState);
-
-    if (hr == S_OK)
-    {
-        auto& state = *reinterpret_cast<const std::array<u8, 8>*>(&MouseState.rgbButtons);
-        co_await RecheckMouseButtons(state, editor);
-    }
-    //-Giperion
-
-    co_await isButtonsOnHold(mouse_prev, editor);
-
-    if (dwElements)
-    {
-        if (offs[0] || offs[1])
-        {
-            if (!editor || !xr::editor()->mouse_move(offs[0], offs[1]))
-                cbStack.back()->IR_OnMouseMove(offs[0], offs[1]);
-        }
-
-        if (offs[2])
-        {
-            if (!editor || !xr::editor()->mouse_wheel(offs[2]))
-                co_await cbStack.back()->IR_OnMouseWheel(offs[2]);
-        }
-    }
-    else
-    {
-        if (timeStamp[1] && ((dwCurTime - timeStamp[1]) >= mouse_dt))
-            cbStack.back()->IR_OnMouseStop(DIMOFS_Y, timeStamp[1] = 0);
-        if (timeStamp[0] && ((dwCurTime - timeStamp[0]) >= mouse_dt))
-            cbStack.back()->IR_OnMouseStop(DIMOFS_X, timeStamp[0] = 0);
-    }
-
-#pragma pop_macro("FIELD_OFFSET")
-}
-
-tmc::task<void> CInput::RecheckMouseButtons(std::array<u8, 8> state, bool editor)
-{
-    for (s32 i{0}; i < s32{sf::Mouse::ButtonCount}; ++i)
-    {
-        if ((state[i] & 0x80) && !mouseState[i])
-        {
-            mouseState.set(i);
-
-            if (!editor || !xr::editor()->key_press(xr::key_id{sf::Mouse::Button{i}}))
-                co_await cbStack.back()->IR_OnKeyboardPress(xr::key_id{sf::Mouse::Button{i}});
-        }
-        else if (!(state[i] & 0x80) && mouseState[i])
-        {
-            mouseState.reset(i);
-
-            if (!editor || !xr::editor()->key_release(xr::key_id{sf::Mouse::Button{i}}))
-                cbStack.back()->IR_OnKeyboardRelease(xr::key_id{sf::Mouse::Button{i}});
-        }
-    }
-}
-
-tmc::task<void> CInput::isButtonsOnHold(xr::bitset<sf::Mouse::ButtonCount> mouse_prev, bool editor)
-{
-    for (s32 i{0}; i < s32{sf::Mouse::ButtonCount}; ++i)
-    {
-        if (!mouseState[i] || !mouse_prev[i])
-            continue;
-
-        if (!editor || !xr::editor()->key_hold(xr::key_id{sf::Mouse::Button{i}}))
-            co_await cbStack.back()->IR_OnKeyboardHold(xr::key_id{sf::Mouse::Button{i}});
-    }
-}
-
 tmc::task<void> CInput::iCapture(IInputReceiver* p)
 {
     XR_ASSERT(p != nullptr);
 
-    if (pMouse)
-        co_await MouseUpdate();
-    if (pKeyboard)
-        co_await KeyUpdate();
+    co_await MouseUpdate();
+    co_await KeyUpdate();
 
     // change focus
     if (!cbStack.empty())
@@ -661,11 +441,6 @@ tmc::task<void> CInput::iCapture(IInputReceiver* p)
 
     cbStack.push_back(p);
     co_await cbStack.back()->IR_OnActivate();
-
-    // prepare for _new_ controller
-    std::memset(timeStamp, 0, sizeof(timeStamp));
-    std::memset(timeSave, 0, sizeof(timeSave));
-    std::memset(offs, 0, sizeof(offs));
 }
 
 tmc::task<void> CInput::iRelease(IInputReceiver* p)
@@ -698,13 +473,12 @@ tmc::task<void> CInput::OnAppActivate()
     if (CurrentIR() != nullptr)
         co_await CurrentIR()->IR_OnActivate();
 
-    SetAllAcquire(true);
+    keyboard_state.reset();
+    mouse_state.reset();
 
-    mouseState.reset();
-    KBState.reset();
-    std::memset(timeStamp, 0, sizeof(timeStamp));
-    std::memset(timeSave, 0, sizeof(timeSave));
-    std::memset(offs, 0, sizeof(offs));
+    caps = false;
+    mouse_dx = 0;
+    mouse_dy = 0;
 }
 
 tmc::task<void> CInput::OnAppDeactivate()
@@ -712,13 +486,12 @@ tmc::task<void> CInput::OnAppDeactivate()
     if (CurrentIR())
         CurrentIR()->IR_OnDeactivate();
 
-    SetAllAcquire(false);
+    keyboard_state.reset();
+    mouse_state.reset();
 
-    mouseState.reset();
-    KBState.reset();
-    std::memset(timeStamp, 0, sizeof(timeStamp));
-    std::memset(timeSave, 0, sizeof(timeSave));
-    std::memset(offs, 0, sizeof(offs));
+    caps = false;
+    mouse_dx = 0;
+    mouse_dy = 0;
 
     co_return;
 }
@@ -726,87 +499,76 @@ tmc::task<void> CInput::OnAppDeactivate()
 tmc::task<void> CInput::OnFrame()
 {
     Device.Statistic->Input.Begin();
-    dwCurTime = Device.TimerAsync_MMT();
 
-    if (pKeyboard)
-        co_await KeyUpdate();
-    if (pMouse)
-        co_await MouseUpdate();
+    co_await KeyUpdate();
+    co_await MouseUpdate();
 
     Device.Statistic->Input.End();
 }
 
 IInputReceiver* CInput::CurrentIR() const { return !cbStack.empty() ? cbStack.back() : nullptr; }
 
-u16 CInput::DikToChar(sf::Keyboard::Scancode dik, bool utf) const
+char32_t CInput::DikToChar(sf::Keyboard::Scancode dik) const
 {
-    switch (dik)
+    const auto win = xr::keyconv.code(dik);
+    if (win == 0)
+        return '\0';
+
+    const auto layout = ::GetKeyboardLayout(tid);
+    if (layout == nullptr)
+        return '\0';
+
+    const auto virt = ::MapVirtualKeyExW(win, MAPVK_VSC_TO_VK_EX, layout);
+    if (virt == 0)
+        return '\0';
+
+    std::array<u8, 256> ks{0};
+
+    if (const auto lc = keyboard_state.test(std::to_underlying(sf::Keyboard::Scancode::LControl)),
+        rc = keyboard_state.test(std::to_underlying(sf::Keyboard::Scancode::RControl));
+        lc || rc)
     {
-    // Эти клавиши через ToAscii не обработать, поэтому пропишем явно
-    case sf::Keyboard::Scancode::Numpad0: return '0';
-    case sf::Keyboard::Scancode::Numpad1: return '1';
-    case sf::Keyboard::Scancode::Numpad2: return '2';
-    case sf::Keyboard::Scancode::Numpad3: return '3';
-    case sf::Keyboard::Scancode::Numpad4: return '4';
-    case sf::Keyboard::Scancode::Numpad5: return '5';
-    case sf::Keyboard::Scancode::Numpad6: return '6';
-    case sf::Keyboard::Scancode::Numpad7: return '7';
-    case sf::Keyboard::Scancode::Numpad8: return '8';
-    case sf::Keyboard::Scancode::Numpad9: return '9';
-    case sf::Keyboard::Scancode::NumpadDivide: return '/';
-    case sf::Keyboard::Scancode::NumpadDecimal: return '.';
-    //
-    default:
-        u8 State[256]{};
-        if (this->is_exclusive_mode)
-        {
-            // GetKeyboardState в данном случае не используем, потому что оно очень глючно работает в эксклюзивном режиме
-            if (this->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::LShift}) || this->iGetAsyncKeyState(xr::key_id{sf::Keyboard::Scancode::RShift}))
-                State[VK_SHIFT] = 0x80; // Для получения правильных символов при зажатом shift
-        }
-        else
-        {
-            if (!GetKeyboardState(State))
-                return 0;
-        }
-
-        const auto win = xr::keyconv.dik(dik);
-        u16 output{};
-
-        if (utf)
-        {
-            WCHAR symbol{};
-            if (this->is_exclusive_mode)
-            {
-                auto layout = GetKeyboardLayout(GetWindowThreadProcessId(gGameWindow, nullptr));
-                if (ToUnicodeEx(MapVirtualKeyEx(win, MAPVK_VSC_TO_VK, layout), win, State, &symbol, 1, 0, layout) != 1)
-                    return 0;
-            }
-            else
-            {
-                if (ToUnicode(MapVirtualKey(win, MAPVK_VSC_TO_VK), win, State, &symbol, 1, 0) != 1)
-                    return 0;
-            }
-            WideCharToMultiByte(CP_UTF8, 0, &symbol, 1, reinterpret_cast<char*>(&output), sizeof output, nullptr, nullptr);
-            return output;
-        }
-        else
-        {
-            if (this->is_exclusive_mode)
-            {
-                auto layout = GetKeyboardLayout(GetWindowThreadProcessId(gGameWindow, nullptr));
-                if (ToAsciiEx(MapVirtualKeyEx(win, MAPVK_VSC_TO_VK, layout), win, State, &output, 0, layout) == 1)
-                    return output;
-            }
-            else
-            {
-                if (ToAscii(MapVirtualKey(win, MAPVK_VSC_TO_VK), win, State, &output, 0) == 1)
-                    return output;
-            }
-        }
+        ks[VK_CONTROL] = 0x80;
+        ks[VK_LCONTROL] = lc ? 0x80 : 0;
+        ks[VK_RCONTROL] = rc ? 0x80 : 0;
     }
 
-    return 0;
+    if (const auto ls = keyboard_state.test(std::to_underlying(sf::Keyboard::Scancode::LShift)),
+        rs = keyboard_state.test(std::to_underlying(sf::Keyboard::Scancode::RShift));
+        ls || rs)
+    {
+        ks[VK_SHIFT] = 0x80;
+        ks[VK_LSHIFT] = ls ? 0x80 : 0;
+        ks[VK_RSHIFT] = rs ? 0x80 : 0;
+    }
+
+    if (const auto la = keyboard_state.test(std::to_underlying(sf::Keyboard::Scancode::LAlt)),
+        ra = keyboard_state.test(std::to_underlying(sf::Keyboard::Scancode::RAlt));
+        la || ra)
+    {
+        ks[VK_MENU] = 0x80;
+        ks[VK_LMENU] = la ? 0x80 : 0;
+        ks[VK_RMENU] = ra ? 0x80 : 0;
+    }
+
+    ks[VK_CAPITAL] = caps ? 0x1 : 0;
+
+    std::array<wchar_t, 16> cb{'\0'};
+    const auto result = ::ToUnicodeEx(virt, win, ks.data(), cb.data(), cb.size(), 0x4, layout);
+
+    if (result <= 0 || result > 2)
+        return '\0';
+    if (result == 1)
+        return cb[0];
+
+    // UTF-32 character: a surrogate pair of UTF-16
+    if (cb[0] < 0xd800 || cb[0] > 0xdbff || cb[1] < 0xdc00 || cb[1] > 0xdfff)
+        return '\0';
+
+    char32_t res;
+    sf::Utf16::toUtf32(cb.begin(), cb.begin() + 2, &res);
+
+    return res;
 }
 
 // https://stackoverflow.com/a/36827574

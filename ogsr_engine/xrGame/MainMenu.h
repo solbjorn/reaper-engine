@@ -69,13 +69,11 @@ public:
     [[nodiscard]] bool IsLanguageChanged() const { return languageChanged; }
     void SetLanguageChanged(bool status) { languageChanged = status; }
 
-    void IR_OnMouseMove(s32 x, s32 y) override;
-    void IR_OnMouseStop(s32, s32) override;
-
     tmc::task<void> IR_OnKeyboardPress(xr::key_id dik) override;
     void IR_OnKeyboardRelease(xr::key_id dik) override;
     tmc::task<void> IR_OnKeyboardHold(xr::key_id dik) override;
 
+    void IR_OnMouseMove(s32 x, s32 y) override;
     tmc::task<void> IR_OnMouseWheel(gsl::index direction) override;
 
     bool OnRenderPPUI_query();

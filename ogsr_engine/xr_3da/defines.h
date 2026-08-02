@@ -53,11 +53,9 @@ enum : u32
     /* 1ul << 16ul, */
     /* 1ul << 17ul, */
     /* 1ul << 18ul, */
-
-    rsExclusiveMode = 1ul << 19ul,
+    // 1ul << 19ul,
 };
 
-//. extern	u32			psCurrentMode		;
 extern u32 psCurrentVidMode[];
 extern Flags32 psDeviceFlags;
 extern Flags32 psDeviceFlags2;

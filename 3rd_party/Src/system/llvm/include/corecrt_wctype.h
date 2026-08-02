@@ -11,7 +11,7 @@ int iswspace(wchar_t c);
 } // extern "C"
 #endif
 
-#define iswspace crt_iswspace
+#define iswspace dontuse_crt_iswspace
 
 #include_next <corecrt_wctype.h>
 

@@ -14,8 +14,8 @@ void qsort(void* array, size_t array_size, size_t elem_size, int (*compare)(cons
 } // extern "C"
 #endif
 
-#define bsearch crt_bsearch
-#define qsort crt_qsort
+#define bsearch dontuse_crt_bsearch
+#define qsort dontuse_crt_qsort
 
 #include_next <corecrt_search.h>
 

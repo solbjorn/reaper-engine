@@ -62,7 +62,8 @@ tmc::task<void> type_pair::on_key_press(line_edit_control* const control)
     char c = 0;
     if (m_translate)
     {
-        c = static_cast<char>(pInput->DikToChar(m_dik, false));
+        if (const auto ret = pInput->DikToChar(m_dik); ret != '\0' && ret <= std::numeric_limits<u8>::max())
+            c = gsl::narrow_cast<char>(ret);
     }
     else
     {

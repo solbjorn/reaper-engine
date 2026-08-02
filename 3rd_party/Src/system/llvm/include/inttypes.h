@@ -21,8 +21,8 @@ uintmax_t strtoumax(const char* __restrict str, char** __restrict str_end, int b
 } // extern "C"
 #endif
 
-#define strtoimax crt_strtoimax
-#define strtoumax crt_strtoumax
+#define strtoimax dontuse_crt_strtoimax
+#define strtoumax dontuse_crt_strtoumax
 
 #include_next <inttypes.h>
 

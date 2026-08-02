@@ -216,7 +216,6 @@ public:
     void IR_OnKeyboardRelease(xr::key_id btn) override;
     tmc::task<void> IR_OnKeyboardHold(xr::key_id btn) override;
     void IR_OnMouseMove(s32, s32) override;
-    void IR_OnMouseStop(s32, s32) override;
     tmc::task<void> IR_OnMouseWheel(gsl::index direction) override;
     tmc::task<void> IR_OnActivate() override;
 

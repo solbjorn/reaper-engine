@@ -2,72 +2,44 @@
 
 #include "IInputReceiver.h"
 
-struct _DIDATAFORMAT;
-struct IDirectInput8W;
-struct IDirectInputDevice8W;
-
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // описание класса
-
-constexpr inline int mouse_device_key{1};
-constexpr inline int keyboard_device_key{2};
-constexpr inline int all_device_key{mouse_device_key | keyboard_device_key};
-constexpr inline int default_key{mouse_device_key | keyboard_device_key};
 
 class CInput final : public pureFrame, public pureAppActivate, public pureAppDeactivate
 {
     RTTI_DECLARE_TYPEINFO(CInput, pureFrame, pureAppActivate, pureAppDeactivate);
 
-public:
-    enum
-    {
-        COUNT_MOUSE_AXIS = 3,
-    };
-
 private:
-    IDirectInput8W* pDI{}; // The DInput object
-    IDirectInputDevice8W* pMouse{}; // The DIDevice7 interface
-    IDirectInputDevice8W* pKeyboard{}; // The DIDevice7 interface
+    xr_vector<std::tuple<u32, std::size_t, std::ptrdiff_t>> keyboard_events;
+    xr::bitset<sf::Keyboard::ScancodeCount> keyboard_state;
 
-    u32 timeStamp[COUNT_MOUSE_AXIS]{};
-    u32 timeSave[COUNT_MOUSE_AXIS]{};
-    int offs[COUNT_MOUSE_AXIS]{};
-    xr::bitset<sf::Mouse::ButtonCount> mouseState;
-    xr::bitset<sf::Keyboard::ScancodeCount> KBState;
+    xr_vector<std::pair<u32, std::size_t>> mouse_events;
+    xr::bitset<sf::Mouse::ButtonCount> mouse_state;
 
-    HRESULT CreateInputDevice(IDirectInputDevice8W** device, GUID guidDevice, const _DIDATAFORMAT* pdidDataFormat, u32 buf_size);
-
-    //	xr_stack<IInputReceiver*>	cbStack;
     xr_vector<IInputReceiver*> cbStack;
 
-    tmc::task<void> MouseUpdate();
-    tmc::task<void> RecheckMouseButtons(std::array<u8, 8> state, bool editor);
-    tmc::task<void> isButtonsOnHold(xr::bitset<sf::Mouse::ButtonCount> mouse_prev, bool editor);
+    xr_vector<std::byte> mouse_buffer;
+    gsl::index mouse_dx{0};
+    gsl::index mouse_dy{0};
+
+    unsigned long tid{0};
+    bool caps{false};
+
     tmc::task<void> KeyUpdate();
-    bool is_exclusive_mode;
+    tmc::task<void> MouseUpdate();
 
-    u32 mouse_dt{25};
-
-public:
-    u32 dwCurTime;
-
-private:
-    explicit CInput(bool exclusive);
-    tmc::task<void> co_CInput(u32 device);
+    CInput();
+    tmc::task<void> co_CInput();
 
 public:
-    static tmc::task<void> co_create(bool exclusive = true, u32 device = default_key);
+    static tmc::task<void> co_create();
     ~CInput() override;
 
-    void Attach();
-    void SetAllAcquire(BOOL bAcquire = TRUE);
-    void SetMouseAcquire(BOOL bAcquire);
-    void SetKBDAcquire(BOOL bAcquire);
+    tmc::task<void> Attach();
 
     tmc::task<void> iCapture(IInputReceiver* pc);
     tmc::task<void> iRelease(IInputReceiver* pc);
     [[nodiscard]] bool iGetAsyncKeyState(xr::key_id dik) const;
-    void iGetLastMouseDelta(Ivector2& p) { p.set(offs[0], offs[1]); }
 
     tmc::task<void> OnFrame() override;
     tmc::task<void> OnAppActivate() override;
@@ -75,13 +47,35 @@ public:
 
     [[nodiscard]] IInputReceiver* CurrentIR() const;
 
-    void exclusive_mode(const bool exclusive);
-    bool exclusive_mode() const { return is_exclusive_mode; }
+    void keyboard_event(u32 msg, std::size_t wp, std::ptrdiff_t lp)
+    {
+        // Prevent Win keys from showing Start Menu: inject a fake key event which makes
+        // Windows think it was a [non-existent] hotkey combination.
+        if ((wp == VK_LWIN || wp == VK_RWIN) && (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN))
+        {
+            std::array<::INPUT, 2> fake{};
+
+            fake[0].type = INPUT_KEYBOARD;
+            fake[0].ki.wVk = 0xe8;
+
+            fake[1].type = INPUT_KEYBOARD;
+            fake[1].ki.wVk = 0xe8;
+            fake[1].ki.dwFlags = KEYEVENTF_KEYUP;
+
+            ::SendInput(fake.size(), fake.data(), sizeof(::INPUT));
+        }
+
+        // Filter-out the fake key code used above
+        if (wp != 0xe8)
+            keyboard_events.emplace_back(msg, wp, lp);
+    }
+
+    void mouse_event(u32 msg, std::size_t wp) { mouse_events.emplace_back(msg, wp); }
+    void mouse_move();
 
     // Возвращает символ по коду клавиши. Учитывается переключение языка, зажатый shift и caps lock
-    // ( caps lock учитывается только в неэксклюзивном режиме, из-за его особенностей )
-    // В случае неудачи функция возвращает 0.
-    [[nodiscard]] u16 DikToChar(sf::Keyboard::Scancode dik, bool utf) const;
+    // В случае неудачи функция возвращает '\0'.
+    [[nodiscard]] char32_t DikToChar(sf::Keyboard::Scancode dik) const;
 
     void clip_cursor(bool clip);
 };

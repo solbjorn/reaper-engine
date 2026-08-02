@@ -53,20 +53,20 @@ static __attribute__((always_inline)) __attribute__((__unused__)) size_t strnlen
 } // extern "C"
 #endif
 
-#define _memccpy crt__memccpy
-#define _strdup crt__strdup
-#define _stricmp crt__stricmp
-#define _strnicmp crt__strnicmp
-#define memccpy crt_memccpy
-#define strcspn crt_strcspn
-#define strdup crt_strdup
-#define strncat crt_strncat
-#define strncmp crt_strncmp
-#define strncpy crt_strncpy
-#define strnlen crt_strnlen
-#define strnlen_s crt_strnlen_s
-#define strspn crt_strspn
-#define strtok crt_strtok
+#define _memccpy dontuse_crt__memccpy
+#define _strdup dontuse_crt__strdup
+#define _stricmp dontuse_crt__stricmp
+#define _strnicmp dontuse_crt__strnicmp
+#define memccpy dontuse_crt_memccpy
+#define strcspn dontuse_crt_strcspn
+#define strdup dontuse_crt_strdup
+#define strncat dontuse_crt_strncat
+#define strncmp dontuse_crt_strncmp
+#define strncpy dontuse_crt_strncpy
+#define strnlen dontuse_crt_strnlen
+#define strnlen_s dontuse_crt_strnlen_s
+#define strspn dontuse_crt_strspn
+#define strtok dontuse_crt_strtok
 
 #include_next <string.h>
 

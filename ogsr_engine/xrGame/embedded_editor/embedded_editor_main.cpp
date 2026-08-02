@@ -471,7 +471,7 @@ bool imgui_ingame_editor::key_press(xr::key_id key)
     if (!key.is<sf::Keyboard::Scancode>())
         return true;
 
-    if (const auto ch = pInput->DikToChar(key.get<sf::Keyboard::Scancode>(), false); ch != 0)
+    if (const auto ch = pInput->DikToChar(key.get<sf::Keyboard::Scancode>()); ch != '\0')
         io.AddInputCharacter(ch);
 
     i_key_holding[key] = Device.dwTimeContinual + AutoRepeatDelay;
@@ -513,7 +513,7 @@ bool imgui_ingame_editor::key_hold(xr::key_id key)
 
     if (auto iter = i_key_holding.find(key); iter != i_key_holding.end() && Device.dwTimeContinual > iter->second)
     {
-        if (const auto ch = pInput->DikToChar(key.get<sf::Keyboard::Scancode>(), false); ch != 0)
+        if (const auto ch = pInput->DikToChar(key.get<sf::Keyboard::Scancode>()); ch != '\0')
             ImGui::GetIO().AddInputCharacter(ch);
 
         iter->second = Device.dwTimeContinual + AutoRepeatRate;

@@ -4,8 +4,6 @@
 
 #include "resource.h"
 
-extern LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
 tmc::task<void> CRenderDevice::Initialize()
 {
     Log("Initializing Engine...");
@@ -22,7 +20,7 @@ tmc::task<void> CRenderDevice::Initialize()
         // Register the windows class
         HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(nullptr);
         WNDCLASSW wndClass{0,
-                           WndProc,
+                           &CRenderDevice::wnd_proc,
                            0,
                            0,
                            hInstance,

@@ -20,16 +20,16 @@ int toupper(int c);
 } // extern "C"
 #endif
 
-#define isalnum crt_isalnum
-#define isalpha crt_isalpha
-#define isblank crt_isblank
-#define iscntrl crt_iscntrl
-#define isprint crt_isprint
-#define isspace crt_isspace
-#define isupper crt_isupper
-#define isxdigit crt_isxdigit
-#define tolower crt_tolower
-#define toupper crt_toupper
+#define isalnum dontuse_crt_isalnum
+#define isalpha dontuse_crt_isalpha
+#define isblank dontuse_crt_isblank
+#define iscntrl dontuse_crt_iscntrl
+#define isprint dontuse_crt_isprint
+#define isspace dontuse_crt_isspace
+#define isupper dontuse_crt_isupper
+#define isxdigit dontuse_crt_isxdigit
+#define tolower dontuse_crt_tolower
+#define toupper dontuse_crt_toupper
 
 #include_next <ctype.h>
 

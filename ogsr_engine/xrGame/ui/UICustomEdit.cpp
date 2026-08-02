@@ -162,12 +162,12 @@ bool CUICustomEdit::KeyPressed(sf::Keyboard::Scancode dik)
         bChanged = true;
         break;
     default:
-        const u16 out_me = pInput->DikToChar(dik, m_lines.GetFont()->IsMultibyte());
-        if (out_me)
+        if (const auto out_me = pInput->DikToChar(dik);
+            out_me != '\0' && out_me <= (m_lines.GetFont()->IsMultibyte() ? std::numeric_limits<u16>::max() : std::numeric_limits<u8>::max()))
         {
             if (!m_bNumbersOnly || (out_me >= '0' && out_me <= '9') || (m_bFloatNumbers && out_me == '.' && !strchr(m_lines.GetText(), '.')))
             {
-                AddChar(out_me);
+                AddChar(gsl::narrow_cast<u16>(out_me));
                 bChanged = true;
             }
         }

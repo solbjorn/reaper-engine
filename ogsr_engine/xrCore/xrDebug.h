@@ -78,6 +78,7 @@ public:
     constexpr explicit last_error(unsigned long val) : val{val} {}
 
     [[nodiscard]] constexpr auto code() const { return val; }
+    [[nodiscard]] constexpr auto operator==(const xr::last_error& that) const { return val == that.val; }
     [[nodiscard]] std::string what() const { return xrDebug::format_system(val); }
 };
 

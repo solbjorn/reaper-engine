@@ -732,27 +732,6 @@ public:
     }
 };
 
-class CCC_ExclusiveMode final : public CCC_Mask
-{
-    RTTI_DECLARE_TYPEINFO(CCC_ExclusiveMode, CCC_Mask);
-
-private:
-    using inherited = CCC_Mask;
-
-public:
-    explicit CCC_ExclusiveMode(gsl::czstring N, Flags32& V, u32 M) : inherited{N, V, M} {}
-    ~CCC_ExclusiveMode() override = default;
-
-    void Execute(std::string_view args) override
-    {
-        inherited::Execute(args);
-
-        const bool val = GetValue();
-        if (val != pInput->exclusive_mode())
-            pInput->exclusive_mode(val);
-    }
-};
-
 class CCC_HideConsole final : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_HideConsole, IConsole_Command);
@@ -923,8 +902,6 @@ void CCC_Register()
 #ifdef DEBUG
     XR_CMD(CCC_DumpOpenFiles, "dump_open_files");
 #endif
-
-    XR_CMD(CCC_ExclusiveMode, "input_exclusive_mode", psDeviceFlags, rsExclusiveMode);
 
     XR_CMD(CCC_HideConsole, "hide");
 

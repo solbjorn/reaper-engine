@@ -9,8 +9,6 @@
 tmc::task<void> IInputReceiver::IR_Capture() { co_await XR_ASSERT_VAL(pInput != nullptr)->iCapture(this); }
 tmc::task<void> IInputReceiver::IR_Release() { co_await XR_ASSERT_VAL(pInput != nullptr)->iRelease(this); }
 
-void IInputReceiver::IR_GetLastMouseDelta(Ivector2& p) { XR_ASSERT_VAL(pInput != nullptr)->iGetLastMouseDelta(p); }
-
 void IInputReceiver::IR_OnDeactivate()
 {
     for (s32 i{0}; i < s32{sf::Keyboard::ScancodeCount}; ++i)
@@ -30,9 +28,6 @@ void IInputReceiver::IR_OnDeactivate()
         if (IR_GetKeyState(xr::key_id{xr::key_id::joystick{i}}))
             IR_OnKeyboardRelease(xr::key_id{xr::key_id::joystick{i}});
     }
-
-    IR_OnMouseStop(0, 0);
-    IR_OnMouseStop(4, 0);
 }
 
 bool IInputReceiver::IR_GetKeyState(xr::key_id dik) const { return XR_ASSERT_VAL(pInput != nullptr)->iGetAsyncKeyState(dik); }

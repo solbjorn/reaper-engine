@@ -47,39 +47,39 @@ float tanf(float x);
 } // extern "C"
 #endif
 
-#define _copysign crt__copysign
-#define _hypotf crt__hypotf
-#define acosf crt_acosf
-#define asinf crt_asinf
-#define atan2f crt_atan2f
-#define atanf crt_atanf
-#define atof crt_atof
-#define copysign crt_copysign
-#define cosf crt_cosf
-#define expf crt_expf
-#define fmodf crt_fmodf
-#define frexp crt_frexp
-#define frexpf crt_frexpf
-#define hypot crt_hypot
-#define hypotf crt_hypotf
-#define ldexp crt_ldexp
-#define ldexpf crt_ldexpf
-#define ldexpl crt_ldexpl
-#define llround crt_llround
-#define log10f crt_log10f
-#define log2 crt_log2
-#define log2f crt_log2f
-#define logb crt_logb
-#define logf crt_logf
-#define lrintf crt_lrintf
-#define lround crt_lround
-#define lroundf crt_lroundf
-#define nextafterf crt_nextafterf
-#define powf crt_powf
-#define scalbn crt_scalbn
-#define sinf crt_sinf
-#define sqrtf crt_sqrtf
-#define tanf crt_tanf
+#define _copysign dontuse_crt__copysign
+#define _hypotf dontuse_crt__hypotf
+#define acosf dontuse_crt_acosf
+#define asinf dontuse_crt_asinf
+#define atan2f dontuse_crt_atan2f
+#define atanf dontuse_crt_atanf
+#define atof dontuse_crt_atof
+#define copysign dontuse_crt_copysign
+#define cosf dontuse_crt_cosf
+#define expf dontuse_crt_expf
+#define fmodf dontuse_crt_fmodf
+#define frexp dontuse_crt_frexp
+#define frexpf dontuse_crt_frexpf
+#define hypot dontuse_crt_hypot
+#define hypotf dontuse_crt_hypotf
+#define ldexp dontuse_crt_ldexp
+#define ldexpf dontuse_crt_ldexpf
+#define ldexpl dontuse_crt_ldexpl
+#define llround dontuse_crt_llround
+#define log10f dontuse_crt_log10f
+#define log2 dontuse_crt_log2
+#define log2f dontuse_crt_log2f
+#define logb dontuse_crt_logb
+#define logf dontuse_crt_logf
+#define lrintf dontuse_crt_lrintf
+#define lround dontuse_crt_lround
+#define lroundf dontuse_crt_lroundf
+#define nextafterf dontuse_crt_nextafterf
+#define powf dontuse_crt_powf
+#define scalbn dontuse_crt_scalbn
+#define sinf dontuse_crt_sinf
+#define sqrtf dontuse_crt_sqrtf
+#define tanf dontuse_crt_tanf
 
 #include_next <corecrt_math.h>
 

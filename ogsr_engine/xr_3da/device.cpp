@@ -365,21 +365,34 @@ tmc::task<void> CRenderDevice::process_second()
 
 tmc::task<void> CRenderDevice::message_loop()
 {
-    MSG msg;
-    PeekMessage(&msg, nullptr, 0U, 0U, PM_NOREMOVE);
-
-    while (msg.message != WM_QUIT)
+    while (true)
     {
-        if (PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
+        const auto start = std::chrono::high_resolution_clock::now();
 
-            co_await tmc::spawn_clang(process_frame_async(), tmc::cpu_executor());
-            continue;
+        // Process everything before and after WM_INPUT in two passes, yeah MS who needs masks
+        u32 min{0}, max{WM_INPUT - 1};
+        ::MSG msg;
+
+    again:
+        while (::PeekMessageW(&msg, nullptr, min, max, PM_REMOVE))
+        {
+            if (msg.message == WM_QUIT)
+                co_return;
+
+            ::TranslateMessage(&msg);
+            ::DispatchMessageW(&msg);
         }
 
-        const auto start = std::chrono::high_resolution_clock::now();
+        if (min == 0)
+        {
+            min = WM_INPUT + 1;
+            max = std::numeric_limits<u16>::max();
+
+            goto again;
+        }
+
+        pInput->mouse_move();
+        co_await tmc::spawn_clang(process_frame_async(), tmc::cpu_executor());
 
         if (xr::social())
             xr::social()->update();

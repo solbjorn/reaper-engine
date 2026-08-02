@@ -36,15 +36,14 @@ public:
     [[nodiscard]] bool IsActive() { return m_bActive; }
 
     // IInputReceiver
-    void IR_OnMouseMove(s32 x, s32 y) override;
-    void IR_OnMouseStop(s32 x, s32 y) override;
+    tmc::task<void> IR_OnActivate() override;
 
     tmc::task<void> IR_OnKeyboardPress(xr::key_id dik) override;
     void IR_OnKeyboardRelease(xr::key_id dik) override;
     tmc::task<void> IR_OnKeyboardHold(xr::key_id dik) override;
 
+    void IR_OnMouseMove(s32 x, s32 y) override;
     tmc::task<void> IR_OnMouseWheel(gsl::index direction) override;
-    tmc::task<void> IR_OnActivate() override;
 };
 
 class XR_NOVTABLE CUISequenceItem : public virtual RTTI::Enable

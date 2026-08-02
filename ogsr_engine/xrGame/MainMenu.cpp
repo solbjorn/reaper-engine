@@ -226,8 +226,6 @@ void CMainMenu::IR_OnMouseMove(int x, int y)
         std::ignore = MainInputReceiver()->IR_OnMouseMove(x, y);
 }
 
-void CMainMenu::IR_OnMouseStop(int, int) {}
-
 tmc::task<void> CMainMenu::IR_OnKeyboardPress(xr::key_id dik)
 {
     if (!IsActive())

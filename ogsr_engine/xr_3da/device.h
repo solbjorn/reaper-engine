@@ -268,7 +268,9 @@ public:
     tmc::task<void> execute_async(gsl::czstring cmd);
 
     void update_dpi_scale();
-    bool on_message(UINT uMsg, WPARAM wParam, LRESULT& result);
+
+    [[nodiscard]] std::pair<bool, s32> on_message(u32 msg, std::size_t wp, std::ptrdiff_t lp);
+    [[nodiscard]] static CALLBACK std::ptrdiff_t wnd_proc(HWND hWnd, u32 msg, std::size_t wp, std::ptrdiff_t lp);
 
 private:
     void CalcFrameStats();
@@ -302,9 +304,6 @@ public:
     bool b_registered;
     bool b_need_user_input{};
 };
-
-// Device_wndproc.cpp
-LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 // device.cpp
 extern BOOL bShowPauseString;

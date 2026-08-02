@@ -32,18 +32,18 @@ unsigned long long strtoull(const char* __restrict str, char** __restrict str_en
 } // extern "C"
 #endif
 
-#define _lldiv_t crt__lldiv_t
-#define atof crt_atof
-#define atoi crt_atoi
-#define lldiv crt_lldiv
-#define lldiv_t crt_lldiv_t
-#define strtod crt_strtod
-#define strtof crt_strtof
-#define strtol crt_strtol
-#define strtold crt_strtold
-#define strtoll crt_strtoll
-#define strtoul crt_strtoul
-#define strtoull crt_strtoull
+#define _lldiv_t dontuse_crt__lldiv_t
+#define atof dontuse_crt_atof
+#define atoi dontuse_crt_atoi
+#define lldiv dontuse_crt_lldiv
+#define lldiv_t dontuse_crt_lldiv_t
+#define strtod dontuse_crt_strtod
+#define strtof dontuse_crt_strtof
+#define strtol dontuse_crt_strtol
+#define strtold dontuse_crt_strtold
+#define strtoll dontuse_crt_strtoll
+#define strtoul dontuse_crt_strtoul
+#define strtoull dontuse_crt_strtoull
 
 #include_next <stdlib.h>
 

@@ -64,7 +64,7 @@ HWND ShowSplash(HINSTANCE hInstance)
     static constexpr std::wstring_view c_szSplashClass{L"SplashWindow"};
 
     WNDCLASSW wc{};
-    wc.lpfnWndProc = DefWindowProc;
+    wc.lpfnWndProc = ::DefWindowProcW;
     wc.hInstance = hInstance;
     wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
     wc.lpszClassName = c_szSplashClass.data();

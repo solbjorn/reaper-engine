@@ -285,8 +285,6 @@ tmc::task<void> CLevel::IR_OnKeyboardHold(xr::key_id key)
     }
 }
 
-void CLevel::IR_OnMouseStop(int, int) {}
-
 tmc::task<void> CLevel::IR_OnActivate()
 {
     if (!pInput)
