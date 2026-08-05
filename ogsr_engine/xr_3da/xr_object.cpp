@@ -141,8 +141,10 @@ void CObject::Load(LPCSTR section)
     {
         string_path tmp;
         strcpy_s(tmp, pSettings->r_string(section, "visual"));
-        if (strext(tmp))
-            *strext(tmp) = 0;
+
+        if (const auto ext = strext(tmp); ext != nullptr)
+            *ext = '\0';
+
         xr_strlwr(tmp);
 
         cNameVisual_set(shared_str{tmp});

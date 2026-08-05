@@ -23,10 +23,11 @@ CSE_Visual::CSE_Visual(LPCSTR name)
     {
         string_path tmp;
         strcpy_s(tmp, name);
-        if (strext(tmp))
-            *strext(tmp) = 0;
-        xr_strlwr(tmp);
 
+        if (const auto ext = strext(tmp); ext != nullptr)
+            *ext = '\0';
+
+        xr_strlwr(tmp);
         visual_name._set(tmp);
     }
     else
@@ -44,10 +45,11 @@ void CSE_Visual::set_visual(LPCSTR name)
 {
     string_path tmp;
     strcpy_s(tmp, name);
-    if (strext(tmp))
-        *strext(tmp) = 0;
-    xr_strlwr(tmp);
 
+    if (const auto ext = strext(tmp); ext != nullptr)
+        *ext = '\0';
+
+    xr_strlwr(tmp);
     visual_name._set(tmp);
 }
 

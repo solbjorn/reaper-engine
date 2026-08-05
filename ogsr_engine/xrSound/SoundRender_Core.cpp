@@ -315,8 +315,9 @@ void CSoundRender_Core::attach_tail(ref_sound& S, const char* fName)
         return;
     string_path fn;
     xr_strcpy(fn, fName);
-    if (strext(fn))
-        *strext(fn) = 0;
+
+    if (const auto ext = strext(fn); ext != nullptr)
+        *ext = '\0';
 
     if (S._p->fn_attached[0].size() && S._p->fn_attached[1].size())
     {
@@ -464,8 +465,10 @@ void CSoundRender_Core::_create_data(ref_sound_data& S, LPCSTR fName, esound_typ
 {
     string_path fn;
     xr_strcpy(fn, fName);
-    if (strext(fn))
-        *strext(fn) = 0;
+
+    if (const auto ext = strext(fn); ext != nullptr)
+        *ext = '\0';
+
     S.handle = (CSound_source*)SoundRender->i_create_source(fn);
     S.g_type = (game_type == sg_SourceType) ? S.handle->game_type() : game_type;
     S.s_type = sound_type;

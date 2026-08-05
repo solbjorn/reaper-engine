@@ -272,8 +272,9 @@ void CSoundRender_Source::load(LPCSTR name)
     string_path fn, N;
     xr_strcpy(N, name);
     _strlwr(N);
-    if (strext(N))
-        *strext(N) = 0;
+
+    if (const auto ext = strext(N); ext != nullptr)
+        *ext = '\0';
 
     fname._set(N);
 

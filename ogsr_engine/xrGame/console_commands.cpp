@@ -1651,7 +1651,7 @@ public:
         string_path name;
         string_path fn;
 
-        if (0 == strext(args.data()))
+        if (strext(args.data()) == nullptr)
             strconcat(sizeof(name), name, args.data(), ".ogf");
         else
             strcpy_s(name, sizeof(name), args.data());

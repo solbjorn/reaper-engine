@@ -9,8 +9,9 @@ CSoundRender_Source* CSoundRender_Core::i_create_source(LPCSTR name)
     string256 id;
     xr_strcpy(id, name);
     _strlwr(id);
-    if (strext(id))
-        *strext(id) = 0;
+
+    if (const auto ext = strext(id); ext != nullptr)
+        *ext = '\0';
 
     std::scoped_lock lock(s_sources_lock);
 

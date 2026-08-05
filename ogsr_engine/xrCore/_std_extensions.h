@@ -309,8 +309,20 @@ constexpr ICF void xr_memcpy(void* dst, const void* src, size_t size)
 }
 
 // return pointer to ".ext"
-inline const char* strext(const char* str) { return std::strrchr(str, '.'); }
-inline char* strext(char* str) { return std::strrchr(str, '.'); }
+[[nodiscard]] constexpr gsl::czstring strext(gsl::czstring str)
+{
+    std::string_view sv{str};
+
+    if (const auto pos = sv.find_last_of("/\\"); pos != std::string_view::npos)
+        sv = sv.subview(pos + 1);
+
+    if (const auto pos = sv.rfind('.'); pos != std::string_view::npos)
+        return &sv[pos];
+
+    return nullptr;
+}
+
+[[nodiscard]] constexpr gsl::zstring strext(gsl::zstring str) { return const_cast<gsl::zstring>(strext(static_cast<gsl::czstring>(str))); }
 
 [[nodiscard]] constexpr gsl::index xr_strlen(std::string_view sv) { return std::ssize(sv); }
 [[nodiscard]] constexpr gsl::index xr_strlen(gsl::czstring str) { return xr_strlen(std::string_view{str}); }

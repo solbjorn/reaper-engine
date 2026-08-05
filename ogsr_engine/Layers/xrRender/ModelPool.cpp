@@ -212,8 +212,9 @@ dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
 
     xr_strcpy(low_name, name);
     _strlwr(low_name);
-    if (strext(low_name))
-        *strext(low_name) = '\0';
+
+    if (const auto ext = strext(low_name); ext != nullptr)
+        *ext = '\0';
 
     // 0. Search POOL
     auto it = Pool.find(low_name);
@@ -281,8 +282,9 @@ dxRender_Visual* CModelPool::CreateChild(LPCSTR name, IReader* data)
 
     xr_strcpy(low_name, name);
     _strlwr(low_name);
-    if (strext(low_name))
-        *strext(low_name) = 0;
+
+    if (const auto ext = strext(low_name); ext != nullptr)
+        *ext = '\0';
 
     // 1. Search for already loaded model
     dxRender_Visual* Base = Instance_Find(low_name);

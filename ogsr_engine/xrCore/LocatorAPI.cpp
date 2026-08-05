@@ -872,8 +872,10 @@ xr_vector<char*>* CLocatorAPI::file_list_open(const char* _path, u32 flags)
             LPSTR fname = dest->back();
 
             if (flags & FS_ClampExt)
-                if (strext(fname))
-                    *strext(fname) = 0;
+            {
+                if (const auto ext = strext(fname); ext != nullptr)
+                    *ext = '\0';
+            }
         }
         else
         {

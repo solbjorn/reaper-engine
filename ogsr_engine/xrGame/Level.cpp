@@ -181,8 +181,9 @@ bool CLevel::PrefetchSound(LPCSTR name)
     string_path tmp;
     strcpy_s(tmp, name);
     xr_strlwr(tmp);
-    if (strext(tmp))
-        *strext(tmp) = '\0';
+
+    if (const auto ext = strext(tmp); ext != nullptr)
+        *ext = '\0';
 
     // find in registry
     auto it = sound_registry.find(tmp);

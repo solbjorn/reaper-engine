@@ -61,8 +61,10 @@ void CResourceManager::LoadShaderFile(LPCSTR fname)
 
     string_path ini_path;
     strcpy_s(ini_path, fname);
-    if (strext(ini_path))
-        *strext(ini_path) = 0;
+
+    if (const auto ext = strext(ini_path); ext != nullptr)
+        *ext = '\0';
+
     strcat_s(ini_path, ".ltx");
 
     CInifile ini(ini_path, 0, 1, bShadersXrExport);

@@ -32,8 +32,8 @@ CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : 
     string_path nm, fn;
     strcpy_s(nm, sizeof(nm), name);
 
-    if (strext(nm))
-        strcpy(strext(nm), ".anm");
+    if (const auto ext = strext(nm); ext != nullptr)
+        strcpy(ext, ".anm");
 
     if (FS.exist(fn, "$level$", nm) || FS.exist(fn, "$game_anims$", nm))
     {

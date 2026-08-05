@@ -151,8 +151,10 @@ void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
 
     string_path ini_path;
     strcpy_s(ini_path, N);
-    if (strext(ini_path))
-        *strext(ini_path) = 0;
+
+    if (const auto ext = strext(ini_path); ext != nullptr)
+        *ext = '\0';
+
     strcat_s(ini_path, ".ltx");
 
     // try to read custom user data for module from ltx file

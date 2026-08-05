@@ -29,8 +29,9 @@ void CUIFrameRect::InitTexture(const char* texture)
 {
     string_path fn, buf;
     strcpy_s(buf, texture);
-    if (strext(buf))
-        *strext(buf) = 0;
+
+    if (const auto ext = strext(buf); ext != nullptr)
+        *ext = '\0';
 
     if (FS.exist(fn, "$game_textures$", buf, ".ini"))
     {

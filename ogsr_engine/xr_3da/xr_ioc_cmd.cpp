@@ -318,8 +318,9 @@ public:
         if (!b_abs_name)
             std::ignore = FS.update_path(cfg_full_name, "$app_data_root$", cfg_full_name);
 
-        if (strext(cfg_full_name))
-            *strext(cfg_full_name) = 0;
+        if (const auto ext = strext(cfg_full_name); ext != nullptr)
+            *ext = '\0';
+
         xr_strcat(cfg_full_name, ".ltx");
 
         BOOL b_allow = TRUE;
@@ -352,8 +353,10 @@ void CCC_LoadCFG::Execute(std::string_view args)
     string_path cfg_name;
 
     xr_strcpy(cfg_name, args.data());
-    if (strext(cfg_name))
-        *strext(cfg_name) = 0;
+
+    if (const auto ext = strext(cfg_name); ext != nullptr)
+        *ext = '\0';
+
     xr_strcat(cfg_name, ".ltx");
 
     string_path cfg_full_name;
