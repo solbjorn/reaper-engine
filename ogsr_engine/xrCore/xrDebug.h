@@ -4,10 +4,9 @@
 
 #include "../xrExternal/assert.h"
 
-#include <gsl/util>
+#include <gsl/zstring>
 
 #include <atomic>
-#include <source_location>
 
 class xrDebug final
 {
@@ -15,7 +14,7 @@ private:
     using lua_panic_handler = void (*)(s32);
     using lua_trace_handler = std::string (*)();
 
-    std::atomic<bool> log{false};
+    std::atomic<gsl::czstring> log{nullptr};
 
     lua_panic_handler lua_panic{nullptr};
     lua_trace_handler lua_trace{nullptr};
@@ -36,13 +35,16 @@ public:
         return trace;
     }
 
-    static void _initialize();
+    [[nodiscard]] constexpr gsl::czstring to_log() const { return log; }
 
-    [[nodiscard]] constexpr bool to_log() const { return log; }
-    constexpr void to_log(bool val) { log = val; }
+    static void _initialize();
+    static void thread_init(std::size_t);
+
+    void to_log(gsl::czstring path);
 
     [[nodiscard]] static std::string format_system(unsigned long code, bool module = false);
 
+    // Legacy, to be removed when xrGame is converted to [lib]assert
     [[noreturn]] void fail(const char* e1, const char* file, gsl::index line, const char* function);
     [[noreturn]] void fail(const char* e1, const std::string& e2, const char* file, gsl::index line, const char* function);
     [[noreturn]] void fail(const char* e1, const char* e2, const char* file, gsl::index line, const char* function);
@@ -126,7 +128,5 @@ constexpr void breakpoint() noexcept { LIBASSERT_BREAKPOINT(); }
 extern xrDebug Debug;
 extern HWND gGameWindow;
 extern bool ExitFromWinMain;
-
-void LogStackTrace(const char* header, const bool dump_lua_locals = true);
 
 #include "xrDebug_macros.h"

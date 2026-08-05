@@ -45,8 +45,16 @@ public:
     xr_vector<tmc::topology::thread_info> threads;
     tmc::topology::cpu_topology topo;
 
-    [[nodiscard]] constexpr bool on_cpu() const { return tmc::current_executor() == cpu; }
-    [[nodiscard]] constexpr bool on_st() const { return tmc::current_executor() == st; }
+    [[nodiscard]] constexpr auto this_thread() const
+    {
+        if (tmc::current_executor() == cpu)
+            return xr::format("{}{:02}P{}", threads[tmc::current_thread_index()].group.cpu_kind == tmc::topology::cpu_kind::PERFORMANCE ? "PE" : "EF",
+                              tmc::current_thread_index(), tmc::current_priority());
+        else if (tmc::current_executor() == st)
+            return xr::format("ST00P{}", tmc::current_priority());
+        else
+            return xr::format("E{:X>5}", std::this_thread::get_id());
+    }
 
     void init();
     void print();

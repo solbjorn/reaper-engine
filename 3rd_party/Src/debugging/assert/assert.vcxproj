@@ -46,7 +46,7 @@
       md _Build2
       cd _Build2
       echo * > .gitignore
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" ..\..\enchantum
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" ..\..\..\formatting\enchantum
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)
       md "$(Configuration)\$(PlatformShortName)\lib\cmake\enchantum"
@@ -59,7 +59,7 @@
       md _Build
       cd _Build
       echo * > .gitignore
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\formatting\assert\_Build2\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\formatting\cpptrace\_Build\$(Configuration)\$(PlatformShortName)" -DLIBASSERT_DISABLE_CXX_20_MODULES=ON -DLIBASSERT_STD_FORMAT=OFF -DLIBASSERT_USE_ENCHANTUM=ON -DLIBASSERT_USE_EXTERNAL_CPPTRACE=ON -DLIBASSERT_USE_EXTERNAL_ENCHANTUM=ON ..\libassert
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\debugging\assert\_Build2\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\debugging\cpptrace\_Build\$(Configuration)\$(PlatformShortName)" -DLIBASSERT_DISABLE_CXX_20_MODULES=ON -DLIBASSERT_STD_FORMAT=OFF -DLIBASSERT_USE_ENCHANTUM=ON -DLIBASSERT_USE_EXTERNAL_CPPTRACE=ON -DLIBASSERT_USE_EXTERNAL_ENCHANTUM=ON ..\libassert
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)
       copy /Y "assert.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\assert.lib"

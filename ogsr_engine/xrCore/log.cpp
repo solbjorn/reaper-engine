@@ -15,7 +15,7 @@
 #include <fstream>
 
 xr_vector<xr_string> LogFile;
-string_path logFName;
+static string_path logFName;
 
 namespace xr
 {
@@ -24,7 +24,7 @@ namespace
 class log_pool final
 {
 public:
-    using msg_vec = xr_vector<std::pair<size_t, xr_string>>;
+    using msg_vec = xr_vector<xr_string>;
 
 private:
     class absl_sink final : public absl::LogSink
@@ -102,6 +102,7 @@ log_pool::log_pool()
 
 log_pool::~log_pool()
 {
+    Debug.to_log(nullptr);
     flush();
 
     absl::RemoveLogSink(&absls);
@@ -138,22 +139,22 @@ void log_pool::flush()
         vec.clear();
     });
 
-    std::ranges::stable_sort(msgs, {}, [] [[nodiscard]] (const auto& msg) { return msg.second.subview(0, msg.first); });
+    std::ranges::stable_sort(msgs, {}, [] [[nodiscard]] (const auto& msg) { return msg.subview(0, xr::detail::log_pfx_len); });
     const auto open = logfs.is_open();
 
     for (auto&& msg : msgs)
     {
         // Visual Studio
         if (xr::is_debugger_present())
-            ::OutputDebugStringW(sf::String::fromUtf8(msg.second.begin(), msg.second.end()).toWideString().c_str() + msg.first);
+            ::OutputDebugStringW(sf::String::fromUtf8(msg.begin(), msg.end()).toWideString().c_str() + xr::detail::log_pfx_len);
 
         // Log file
         if (open)
-            logfs.write(msg.second.data(), std::ssize(msg.second));
+            logfs.write(msg.c_str(), std::ssize(msg));
 
         // Console history
-        const auto count = msg.second.size() - msg.first - 1;
-        const auto& back = LogFile.emplace_back(std::move(msg.second), msg.first, count);
+        const auto count = msg.size() - xr::detail::log_pfx_len - 1;
+        const auto& back = LogFile.emplace_back(std::move(msg), xr::detail::log_pfx_len, count);
 
         static xr_string last_str;
         static gsl::index last_cnt;
@@ -197,38 +198,21 @@ namespace
 {
 void add_one(xr::log_pool::msg_vec& vec, xr_string&& split)
 {
-    const auto gen_pfx = [&split] {
-        using namespace std::chrono;
+    const auto orig = split.size();
 
-        string64 buf, curTime;
-        const auto now = system_clock::now();
-        const auto time = system_clock::to_time_t(now);
-        const auto ms = duration_cast<milliseconds>(now.time_since_epoch()) - duration_cast<seconds>(now.time_since_epoch());
-        const auto lt = xr::localtime(time);
+    split.resize_and_overwrite(xr::detail::log_pfx_len + orig + 1, [orig] [[nodiscard]] (gsl::zstring p, std::size_t size) noexcept {
+        const auto now = std::chrono::system_clock::now();
+        const auto lt = xr::localtime(std::chrono::system_clock::to_time_t(now));
 
-        std::strftime(buf, sizeof(buf), "%d.%m.%y %H:%M:%S", &lt);
-        sprintf_s(curTime, "[%s.%03lld]", buf, ms.count());
-        const auto slen = xr_strlen(curTime);
+        std::memmove(p + xr::detail::log_pfx_len, p, orig);
+        xr::format_to(p, "[{:02}.{:02}.{:02} {:02}:{:02}:{:02}.{:03}] [{}] ", lt.tm_mday, lt.tm_mon + 1, lt.tm_year % 100, lt.tm_hour, lt.tm_min, lt.tm_sec,
+                      std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count() % 1000, CPU::ID.this_thread());
+        p[size - 1] = '\n';
 
-        std::array<char, 16> tid;
-        gsl::index tlen;
+        return size;
+    });
 
-        if (CPU::ID.on_cpu())
-            tlen = xr_sprintf(tid.data(), tid.size(), "[%s%02zuP%1zu]",
-                              CPU::ID.threads[tmc::current_thread_index()].group.cpu_kind == tmc::topology::cpu_kind::PERFORMANCE ? "PE" : "EF",
-                              tmc::current_thread_index(), tmc::current_priority());
-        else if (CPU::ID.on_st())
-            tlen = xr_sprintf(tid.data(), tid.size(), "[ST00P%1zu]", tmc::current_priority());
-        else
-            tlen = xr_sprintf(tid.data(), tid.size(), "[EX%s]", xr::format("{}", std::this_thread::get_id()).c_str());
-
-        split = xr::format("{} {} {}\n", std::string_view{curTime, gsl::narrow_cast<size_t>(slen)},
-                           std::string_view{tid.data(), gsl::narrow_cast<size_t>(tlen)}, split);
-
-        return gsl::narrow_cast<size_t>(slen + 1 + tlen + 1);
-    };
-
-    vec.emplace_back(gen_pfx(), std::move(split));
+    vec.emplace_back(std::move(split));
 }
 } // namespace
 } // namespace xr
@@ -307,5 +291,5 @@ void CreateLog(BOOL nl)
     VerifyPath(logFName);
 
     xr::log->open(logFName);
-    Debug.to_log(true);
+    Debug.to_log(logFName);
 }

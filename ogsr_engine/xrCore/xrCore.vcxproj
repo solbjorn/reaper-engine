@@ -64,7 +64,7 @@
       <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\archiving\archive\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\archiving\dwarfs\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\archiving\minizip\_Build\$(Configuration)\$(PlatformShortName)\include\minizip;$(SolutionDir)\3rd_party\Src\archiving\squashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\system\boost\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\system\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tmc\cpputils\include;$(SolutionDir)\3rd_party\Src\tmc\cpu_features\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\utility\json\include;$(SolutionDir)\3rd_party\Src\utility\pugixml\pugixml\src;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\archiving\archive\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\archiving\dwarfs\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\archiving\minizip\_Build\$(Configuration)\$(PlatformShortName)\include\minizip;$(SolutionDir)\3rd_party\Src\archiving\squashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\debugging\sentry\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\system\boost\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\system\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tmc\cpputils\include;$(SolutionDir)\3rd_party\Src\tmc\cpu_features\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\utility\json\include;$(SolutionDir)\3rd_party\Src\utility\pugixml\pugixml\src;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -97,7 +97,7 @@
       <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\archiving\archive\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\archiving\dwarfs\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\archiving\minizip\_Build\$(Configuration)\$(PlatformShortName)\include\minizip;$(SolutionDir)\3rd_party\Src\archiving\squashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\system\boost\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\system\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tmc\cpputils\include;$(SolutionDir)\3rd_party\Src\tmc\cpu_features\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\utility\json\include;$(SolutionDir)\3rd_party\Src\utility\pugixml\pugixml\src;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\archiving\archive\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\archiving\dwarfs\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\archiving\minizip\_Build\$(Configuration)\$(PlatformShortName)\include\minizip;$(SolutionDir)\3rd_party\Src\archiving\squashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\debugging\sentry\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\system\boost\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\system\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tmc\cpputils\include;$(SolutionDir)\3rd_party\Src\tmc\cpu_features\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\utility\json\include;$(SolutionDir)\3rd_party\Src\utility\pugixml\pugixml\src;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
@@ -110,7 +110,6 @@
   <ItemGroup>
     <ClCompile Include="..\Layers\xrAPI\xrAPI.cpp" />
     <ClCompile Include="FTimer.cpp" />
-    <ClCompile Include="stacktrace_collector.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -141,6 +140,7 @@
     <ClCompile Include="file_stream_reader.cpp" />
     <ClCompile Include="xrMemory.cpp" />
     <ClCompile Include="xrDebugNew.cpp" />
+    <ClCompile Include="sentry.cpp" />
     <ClCompile Include="xrsharedmem.cpp" />
     <ClCompile Include="xrstring.cpp" />
     <ClCompile Include="LzHuf.cpp" />
@@ -150,7 +150,6 @@
     <ClInclude Include="buffer_vector.h" />
     <ClInclude Include="buffer_vector_inline.h" />
     <ClInclude Include="FTimer.h" />
-    <ClInclude Include="stacktrace_collector.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="trivial_encryptor.h" />
     <ClInclude Include="xalloc.h" />
@@ -202,6 +201,7 @@
     <ClInclude Include="file_stream_reader.h" />
     <ClInclude Include="xrMemory.h" />
     <ClInclude Include="xrDebug.h" />
+    <ClInclude Include="sentry.h" />
     <ClInclude Include="xrDebug_macros.h" />
     <ClInclude Include="xr_resource.h" />
     <ClInclude Include="xrsharedmem.h" />

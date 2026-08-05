@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{d4e6d165-806e-4e9b-817e-fd6b93417270}</ProjectGuid>
+    <ProjectGuid>{9d9b5f27-851e-45c0-b1cb-5e3e347eb60e}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
-    <ProjectName>ktx</ProjectName>
+    <ProjectName>sentry</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(SolutionDir)\3rd_party\Src\3rd_party_lib_properties.props" />
@@ -38,20 +38,28 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\ktx.lib</NMakeOutput>
+    <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\sentry.lib</NMakeOutput>
     <NMakeBuildCommandLine>
       set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;%PATH%"
       set "LIBC_OPTIONS=$(libcOptions)"
-      set "LIBCXX_OPTIONS=$(libcxxOptions) /FIcmath /FIexception"
+      set "LIBCXX_OPTIONS=$(libcxxOptions)"
       set "LIBCXX_PATH=$(libcxxPath)"
       md _Build
       cd _Build
       echo * > .gitignore
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DBUILD_SHARED_LIBS=OFF -DCPU_ARCHITECTURE=x86_64 -DASTCENC_ISA_AVX2=ON -DBASISU_OPENCL=ON -DBASISU_SSE=ON -DKTX_FEATURE_TESTS=OFF ..\KTX-Software
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\compression\zlib\_Build\$(Configuration)\$(PlatformShortName)" -DCMAKE_EXE_LINKER_FLAGS="/machine:x64 $(SolutionDir)\3rd_party\Src\system\llvm\_Build\libc\lib\llvmlibc.lib" -DCMAKE_SHARED_LINKER_FLAGS="/machine:x64 $(SolutionDir)\3rd_party\Src\system\llvm\_Build\libc\lib\llvmlibc.lib" -DBUILD_SHARED_LIBS=OFF -DSENTRY_BUILD_EXAMPLES=OFF -DSENTRY_BUILD_TESTS=OFF -DSENTRY_TRANSPORT_COMPRESSION=ON ..\sentry-native
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)
-      copy /Y "..\KTX-Software\external\basis_universal\OpenCL\lib\OpenCL64.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\OpenCL.lib"
-      copy /Y "$(Configuration)\$(PlatformShortName)\lib\ktx.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\ktx.lib"
+      copy /Y "$(Configuration)\$(PlatformShortName)\lib\crashpad_client.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\crashpad_client.lib"
+      copy /Y "$(Configuration)\$(PlatformShortName)\lib\crashpad_mpack.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\crashpad_mpack.lib"
+      copy /Y "$(Configuration)\$(PlatformShortName)\lib\crashpad_util.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\crashpad_util.lib"
+      copy /Y "$(Configuration)\$(PlatformShortName)\lib\mini_chromium.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\mini_chromium.lib"
+      copy /Y "$(Configuration)\$(PlatformShortName)\lib\sentry.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\sentry.lib"
+      md "$(SolutionDir)\bin_$(PlatformShortName)"
+      copy /Y "$(Configuration)\$(PlatformShortName)\bin\crashpad_handler.exe" "$(SolutionDir)\bin_$(PlatformShortName)\crashpad_handler.exe"
+      copy /Y "$(Configuration)\$(PlatformShortName)\bin\crashpad_handler.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\crashpad_handler.pdb"
+      copy /Y "$(Configuration)\$(PlatformShortName)\bin\crashpad_wer.dll" "$(SolutionDir)\bin_$(PlatformShortName)\crashpad_wer.dll"
+      copy /Y "$(Configuration)\$(PlatformShortName)\bin\crashpad_wer.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\crashpad_wer.pdb"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
       RD /S/Q _Build

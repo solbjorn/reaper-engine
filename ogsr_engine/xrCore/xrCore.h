@@ -43,8 +43,6 @@
 #define XR_NOVTABLE
 #endif
 
-#define XR_PRINTF(a, b) __attribute__((__format__(printf, a, b)))
-
 // As of LLVM 21, [[clang::trivial_abi]] with MSVC ABI barely works:
 // * doesn't work when inheriting a trivial base
 // * doesn't work when a class has a user-defined move

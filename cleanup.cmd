@@ -25,7 +25,6 @@ RD /s /q 3rd_party\Src\archiving\dwarfs\_Build
 RD /s /q 3rd_party\Src\archiving\dwarfs\_Build2
 RD /s /q 3rd_party\Src\archiving\minizip\_Build
 RD /s /q 3rd_party\Src\archiving\squashfs\_Build
-RD /s /q 3rd_party\Src\crypto\_Build
 RD /s /q 3rd_party\Src\compression\brotli\_Build
 RD /s /q 3rd_party\Src\compression\bzip2\_Build
 RD /s /q 3rd_party\Src\compression\deflate\_Build
@@ -34,9 +33,11 @@ RD /s /q 3rd_party\Src\compression\lzma\_Build
 RD /s /q 3rd_party\Src\compression\zlib\_Build
 RD /s /q 3rd_party\Src\compression\zstd\_Build
 RD /s /q 3rd_party\Src\compression\zxc\_Build
-RD /s /q 3rd_party\Src\formatting\assert\_Build
-RD /s /q 3rd_party\Src\formatting\assert\_Build2
-RD /s /q 3rd_party\Src\formatting\cpptrace\_Build
+RD /s /q 3rd_party\Src\crypto\_Build
+RD /s /q 3rd_party\Src\debugging\assert\_Build
+RD /s /q 3rd_party\Src\debugging\assert\_Build2
+RD /s /q 3rd_party\Src\debugging\cpptrace\_Build
+RD /s /q 3rd_party\Src\debugging\sentry\_Build
 RD /s /q 3rd_party\Src\formatting\fmt\_Build
 RD /s /q 3rd_party\Src\formatting\re2\_Build
 RD /s /q 3rd_party\Src\formatting\scn\_Build

@@ -99,12 +99,21 @@
 [submodule "3rd_party/Src/crypto/boringssl"]
 	path = 3rd_party/Src/crypto/boringssl
 	url = https://github.com/google/boringssl.git
-[submodule "3rd_party/Src/formatting/assert/libassert"]
-	path = 3rd_party/Src/formatting/assert/libassert
+[submodule "3rd_party/Src/debugging/assert/libassert"]
+	path = 3rd_party/Src/debugging/assert/libassert
 	url = https://github.com/jeremy-rifkin/libassert.git
-[submodule "3rd_party/Src/formatting/cpptrace/cpptrace"]
-	path = 3rd_party/Src/formatting/cpptrace/cpptrace
+[submodule "3rd_party/Src/debugging/cpptrace/cpptrace"]
+	path = 3rd_party/Src/debugging/cpptrace/cpptrace
 	url = https://github.com/jeremy-rifkin/cpptrace.git
+[submodule "3rd_party/Src/debugging/renderdoc"]
+	path = 3rd_party/Src/debugging/renderdoc
+	url = https://github.com/baldurk/renderdoc.git
+[submodule "3rd_party/Src/debugging/sentry/sentry-native"]
+	path = 3rd_party/Src/debugging/sentry/sentry-native
+	url = https://github.com/getsentry/sentry-native.git
+[submodule "3rd_party/Src/debugging/tracy"]
+	path = 3rd_party/Src/debugging/tracy
+	url = https://github.com/wolfpld/tracy.git
 [submodule "3rd_party/Src/formatting/enchantum"]
 	path = 3rd_party/Src/formatting/enchantum
 	url = https://github.com/ZXShady/enchantum.git
@@ -167,9 +176,6 @@
 [submodule "3rd_party/Src/sound/sndfile/libsndfile"]
 	path = 3rd_party/Src/sound/sndfile/libsndfile
 	url = https://github.com/libsndfile/libsndfile.git
-[submodule "3rd_party/Src/renderdoc"]
-	path = 3rd_party/Src/renderdoc
-	url = https://github.com/baldurk/renderdoc.git
 [submodule "3rd_party/Src/sol2"]
 	path = 3rd_party/Src/sol2
 	url = https://github.com/reworks-org/sol2.git
@@ -220,9 +226,6 @@
 [submodule "3rd_party/Src/utility/rtti"]
 	path = 3rd_party/Src/utility/rtti
 	url = https://github.com/solbjorn/rtti.git
-[submodule "3rd_party/Src/utility/tracy"]
-	path = 3rd_party/Src/utility/tracy
-	url = https://github.com/wolfpld/tracy.git
 [submodule "3rd_party/Src/utility/xxHash/xxHash"]
 	path = 3rd_party/Src/utility/xxHash/xxHash
 	url = https://github.com/Cyan4973/xxHash.git

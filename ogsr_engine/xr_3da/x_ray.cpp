@@ -417,6 +417,8 @@ s32 main(std::string_view cmdline, void* handle)
 
     cpu.fill_thread_occupancy()
         .set_thread_init_hook([&lock](tmc::topology::thread_info info) {
+            xrDebug::thread_init(info.index);
+
             const std::scoped_lock scope{lock};
             CPU::ID.threads.emplace_back(std::move(info));
         })
@@ -439,7 +441,7 @@ s32 main(std::string_view cmdline, void* handle)
 
 tmc::task<void> main_async(std::string_view cmdline, void* handle, std::atomic<xr::tmc_atomic_wait_t>& code)
 {
-    xr::tmc_cpu_st_executor().init();
+    xr::tmc_cpu_st_executor().set_thread_init_hook(&xrDebug::thread_init).init();
 
     auto in = co_await tmc::fork_clang(CInput::co_create(), tmc::current_executor(), xr::tmc_priority_any);
     auto snd = co_await tmc::fork_clang(CSound_manager_interface::_create(0), tmc::current_executor(), xr::tmc_priority_any);

@@ -34,6 +34,7 @@ size_t strnlen(const char* src, size_t n);
 size_t strspn(const char* src, const char* segment);
 char* strtok(char* __restrict src, const char* __restrict delimiter_string);
 
+static __attribute__((always_inline)) __attribute__((__unused__)) char* _strdup(const char* src) { return strdup(src); }
 static __attribute__((always_inline)) __attribute__((__unused__)) int _stricmp(const char* left, const char* right) { return strcasecmp(left, right); }
 
 static __attribute__((always_inline)) __attribute__((__unused__)) int _strnicmp(const char* left, const char* right, size_t n)
@@ -86,7 +87,6 @@ static __attribute__((always_inline)) __attribute__((__unused__)) size_t strnlen
 #undef _memccpy
 
 #define _memccpy memccpy
-#define _strdup strdup
 
 #undef __restrict
 

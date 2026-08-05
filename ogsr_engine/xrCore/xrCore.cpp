@@ -11,8 +11,6 @@
 #include <mmsystem.h>
 #include <objbase.h>
 
-#pragma comment(lib, "winmm.lib")
-
 xrCore Core;
 
 // indicate that we reach WinMain, and all static variables are initialized

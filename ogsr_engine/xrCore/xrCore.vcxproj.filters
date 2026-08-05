@@ -126,6 +126,9 @@
     <ClCompile Include="xrDebugNew.cpp">
       <Filter>Debug core</Filter>
     </ClCompile>
+    <ClCompile Include="sentry.cpp">
+      <Filter>Debug core</Filter>
+    </ClCompile>
     <ClCompile Include="xrsharedmem.cpp">
       <Filter>shared memory/string library</Filter>
     </ClCompile>
@@ -134,9 +137,6 @@
     </ClCompile>
     <ClCompile Include="LzHuf.cpp">
       <Filter>Compression\lz</Filter>
-    </ClCompile>
-    <ClCompile Include="stacktrace_collector.cpp">
-      <Filter>Debug core</Filter>
     </ClCompile>
     <ClCompile Include="xrMemoryDebug.cpp">
       <Filter>Memory manager</Filter>
@@ -291,6 +291,9 @@
     <ClInclude Include="xrDebug.h">
       <Filter>Debug core</Filter>
     </ClInclude>
+    <ClInclude Include="sentry.h">
+      <Filter>Debug core</Filter>
+    </ClInclude>
     <ClInclude Include="xrDebug_macros.h">
       <Filter>Debug core</Filter>
     </ClInclude>
@@ -308,9 +311,6 @@
     </ClInclude>
     <ClInclude Include="lzhuf.h">
       <Filter>Compression\lz</Filter>
-    </ClInclude>
-    <ClInclude Include="stacktrace_collector.h">
-      <Filter>Debug core</Filter>
     </ClInclude>
     <ClInclude Include="xrMemoryDebug.h">
       <Filter>Memory manager</Filter>

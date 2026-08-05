@@ -173,6 +173,12 @@ if(PA_USE_ASIO)
   set(conformance_options "${conformance_options} -Dalloca=_alloca -UNOMINMAX")
 endif()
 
+# sentry
+if(SENTRY_TRANSPORT_COMPRESSION)
+  set(conformance_options "${conformance_options} -DLK_UNLCK=_LK_UNLCK")
+  set(warning_options "${warning_options} -Wno-error=c++-keyword -Wno-error=gnu-include-next -Wno-error=implicit-int-enum-cast -Wno-error=implicit-void-ptr-cast -Wno-error=jump-misses-init -Wno-error=language-extension-token -Wno-error=microsoft-enum-value -Wno-error=missing-format-attribute -Wno-error=nrvo -Wno-error=padded -Wno-error=pre-c23-compat -Wno-error=used-but-marked-unused")
+endif()
+
 # sndfile
 if(EXISTS "${CMAKE_SOURCE_DIR}/sndfile.pc.in")
   set(conformance_options "${conformance_options} -DENABLE_OPUS_CUSTOM_API -DENABLE_QEXT -DFLAC__NO_DLL -Daccess=_access -Dclose=_close -Dfstat=_fstat -Dfstat64=_fstat64 -Dlseek=_lseek -Dmemccpy=_memccpy -Doff_t=_off_t -Dopen=_open -Dpipe=_pipe -Dread=_read -Dstat=_stat -Dwrite=_write")

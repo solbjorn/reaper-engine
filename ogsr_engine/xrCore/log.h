@@ -17,14 +17,15 @@ void Log(gsl::czstring msg, const Fmatrix& dop);
 void CreateLog(BOOL no_log = FALSE);
 
 extern xr_vector<xr_string> LogFile;
-extern string_path logFName;
 
 namespace xr
 {
 namespace detail
 {
+constexpr inline auto log_pfx_len{33uz};
+
 void log_init();
-}
+} // namespace detail
 
 void log_flush();
 } // namespace xr

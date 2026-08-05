@@ -2,18 +2,13 @@
 
 #include "xrDebug.h"
 
-#include "stacktrace_collector.h"
+#include "sentry.h"
 
 #include <cpptrace/from_current.hpp>
 #include <cpptrace/utils.hpp>
 
 #include <csignal>
 
-#ifdef USE_OWN_MINI_DUMP
-#include <DbgHelp.h>
-#endif
-
-#include <VersionHelpers.h>
 #include <shellapi.h>
 #include <use_ansi.h>
 
@@ -26,7 +21,30 @@ namespace xr
 {
 namespace
 {
-long (*orig)(_EXCEPTION_POINTERS*){nullptr};
+constexpr auto assert_len{180uz - xr::detail::log_pfx_len};
+
+#ifdef XR_SENTRY
+#if __has_feature(address_sanitizer) || defined(__SANITIZE_ADDRESS__)
+#define XR_SENTRY_ASAN
+#endif
+
+// VC Runtime's UEF to invoke std::terminate() and rethrow uncaught C++ exceptions
+long (*term)(::EXCEPTION_POINTERS*){nullptr};
+// Crashpad's SIGABRT handler for artificial crashes (no exception pointers)
+void (*abrt)(s32){nullptr};
+
+#ifndef XR_SENTRY_ASAN
+// Engine's VEH to catch STATUS_HEAP_CORRUPTION before Crashpad
+void* veh{nullptr};
+#endif
+
+// Exception pointers to pass to Crashpad from UEF
+::EXCEPTION_POINTERS* maybe_info{nullptr};
+#endif // XR_SENTRY
+
+// Crashpad's UEF when Sentry is enabled, VC Runtime's UEF for std::terminate() otherwise
+long (*orig)(::EXCEPTION_POINTERS*){nullptr};
+// Formatted stacktrace when captured inside UEF
 xr_string maybe_trace;
 
 void log_callback(cpptrace::log_level lvl, gsl::czstring msg)
@@ -52,7 +70,7 @@ void show(std::string_view msg)
     if (bool exp{false}; !hit.compare_exchange_strong(exp, true))
         return;
 
-    if (Debug.to_log())
+    if (Debug.to_log() != nullptr)
         Log(msg);
 
     xr::log_flush();
@@ -68,21 +86,17 @@ void show(std::string_view msg)
     if (xr::is_debugger_present())
         return;
 
-    if (Debug.to_log())
-    {
-        const std::string_view path{logFName};
-        ::ShellExecuteW(nullptr, L"open", sf::String::fromUtf8(path.begin(), path.end()).toWideString().c_str(), nullptr, nullptr, SW_SHOW);
-    }
+    if (const auto log = Debug.to_log(); log != nullptr)
+        ::ShellExecuteW(nullptr, L"open", std::filesystem::path{reinterpret_cast<gsl::cu8zstring>(log)}.c_str(), nullptr, nullptr, SW_SHOW);
     else
-    {
         ::MessageBoxW(nullptr, sf::String::fromUtf8(msg.begin(), msg.end()).toWideString().c_str(), L"FATAL ERROR",
                       MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND | MB_TOPMOST);
-    }
 }
 
 [[noreturn]] void failure_handler(const libassert::assertion_info& info)
 {
-    auto msg = xr::format("\n{}\nStack trace:\n{}", info.header(180 - 33), xr::maybe_trace.empty() ? info.print_stacktrace(180 - 33) : xr::maybe_trace);
+    auto msg =
+        xr::format("\n{}\nStack trace:\n{}", info.header(xr::assert_len), xr::maybe_trace.empty() ? info.print_stacktrace(xr::assert_len) : xr::maybe_trace);
 
     if (auto trace = Debug.get_lua_trace(); trace != nullptr)
         msg += trace();
@@ -90,17 +104,33 @@ void show(std::string_view msg)
     while (msg.back() == '\n')
         msg.pop_back();
 
-    xr::show(std::move(msg));
+    xr::show(msg);
+#ifdef XR_SENTRY
+    xr::sentry().event_msg(msg.subview(1, msg.find("\nStack trace:\n") - 2));
 
-    if (!xr::is_debugger_present())
-        std::quick_exit(EXIT_SUCCESS);
-    else
+    if (xr::maybe_trace.empty())
+        xr::sentry().event_trace(info.get_stacktrace());
+#endif
+
+    if (xr::is_debugger_present())
         xr::breakpoint();
 
+#ifdef XR_SENTRY
+    // Uncaught C++ exceptions: unhandled_filter() -> VC Runtime's UEF -> std::terminate() -> failure_handler() -> Crashpad's UEF
+    // SEH, Lua errors: unhandled_filter() -> failure_handler() -> Crashpad's UEF
+    // Assertions, signals: failure_handler() -> Crashpad's SIGABRT handler
+    if (xr::maybe_info != nullptr)
+        xr::orig(xr::maybe_info);
+    else
+        xr::abrt(SIGABRT);
+
     xr::unreachable();
+#else
+    std::quick_exit(EXIT_FAILURE);
+#endif
 }
 
-void terminate()
+[[noreturn]] void terminate()
 {
     xr_string description;
     xr_string type;
@@ -137,7 +167,7 @@ void terminate()
         XR_PANIC("unexpected application termination");
 }
 
-void signal_handler(s32 sig)
+[[noreturn]] void signal_handler(s32 sig)
 {
     std::string_view desc;
 
@@ -154,10 +184,10 @@ void signal_handler(s32 sig)
     default: break;
     }
 
-    XR_ASSERT(sig == 0, desc);
+    XR_PANIC(desc, sig);
 }
 
-void new_handler()
+[[noreturn]] s32 new_handler(std::size_t size)
 {
     Memory.mem_compact();
 
@@ -165,10 +195,10 @@ void new_handler()
     const auto str_economy = str_container::stat_economy() / 1024;
     const auto smem_economy = smem_container::stat_economy() / 1024;
 
-    XR_PANIC("out of memory", process_heap, str_economy, smem_economy);
+    XR_PANIC("out of memory", size, process_heap, str_economy, smem_economy);
 }
 
-void invalid_parameter_handler(gsl::cwzstring expr, gsl::cwzstring fn, gsl::cwzstring f, u32 line, uintptr_t reserved)
+[[noreturn]] void invalid_parameter_handler(gsl::cwzstring expr, gsl::cwzstring fn, gsl::cwzstring f, u32 line, std::uintptr_t reserved)
 {
     if (expr == nullptr || fn == nullptr || f == nullptr)
         XR_PANIC("invalid parameter", line, reserved);
@@ -202,7 +232,7 @@ private:
     }
 
 public:
-    constexpr explicit lua_panic_handler(const _EXCEPTION_RECORD& rec)
+    constexpr explicit lua_panic_handler(const ::EXCEPTION_RECORD& rec)
     {
         const auto maybe_code = rec.ExceptionCode ^ lua_exception_base;
         if (maybe_code > std::numeric_limits<u8>::max())
@@ -225,7 +255,7 @@ public:
 // the handler with the particular codes. If that's the case, the handler
 // shouldn't exit immediately -- pass it to the default handler, which will
 // call std::terminate() where it can be rethrown and logged.
-[[nodiscard]] constexpr bool is_cpp_exception(const _EXCEPTION_RECORD& rec)
+[[nodiscard]] constexpr bool is_cpp_exception(const ::EXCEPTION_RECORD& rec)
 {
     if (rec.ExceptionCode != 0xe06d7363 || rec.NumberParameters != 4)
         return false;
@@ -240,11 +270,7 @@ public:
     }
 }
 
-#ifdef USE_OWN_MINI_DUMP
-void save_mini_dump(_EXCEPTION_POINTERS* info);
-#endif
-
-[[nodiscard]] long unhandled_filter(_EXCEPTION_POINTERS* info)
+[[nodiscard]] long unhandled_filter(::EXCEPTION_POINTERS* info)
 {
     static std::atomic<bool> hit{false};
 
@@ -259,10 +285,18 @@ out:
     cpptrace::detail::maybe_collect_trace(info, EXCEPTION_EXECUTE_HANDLER);
 
     if (const auto& trace = cpptrace::from_current_exception(); !trace.empty())
-        xr::maybe_trace = libassert::print_stacktrace(trace, 180 - 33);
+    {
+        xr::maybe_trace = libassert::print_stacktrace(trace, xr::assert_len);
+#ifdef XR_SENTRY
+        xr::sentry().event_trace(trace);
+    }
 
-#ifdef USE_OWN_MINI_DUMP
-    save_mini_dump(info);
+    xr::maybe_info = info;
+
+    if (cpp)
+        return xr::term != nullptr ? xr::term(info) : EXCEPTION_CONTINUE_SEARCH;
+#else
+    }
 #endif
 
     if (!cpp && !panic)
@@ -271,57 +305,157 @@ out:
         XR_PANIC(code.what(), code, errno, xr::GetLastError());
     }
 
+    // Falls to Lua error handler if detected
     goto out;
 }
+
+#ifdef XR_SENTRY
+#ifndef XR_SENTRY_ASAN
+[[nodiscard]] long vectored_handler(::EXCEPTION_POINTERS* info)
+{
+    return info->ExceptionRecord->ExceptionCode == STATUS_HEAP_CORRUPTION ? xr::unhandled_filter(info) : EXCEPTION_CONTINUE_SEARCH;
+}
+#endif
+
+void sentry_close()
+{
+#ifndef XR_SENTRY_ASAN
+    ::RemoveVectoredExceptionHandler(xr::veh);
+#endif
+    xr::sentry().close();
+}
+
+void sentry_init(gsl::czstring log = nullptr)
+{
+    if (log == nullptr)
+    {
+        xr::term = ::SetUnhandledExceptionFilter(nullptr);
+        ::SetUnhandledExceptionFilter(xr::term);
+    }
+    else
+    {
+        xr::sentry_close();
+    }
+
+    if (const auto ret = xr::sentry().init(log); ret != 0)
+    {
+        xr::show(xr::format("Failed to initialize Sentry: {}", ret));
+
+        if (xr::is_debugger_present())
+            xr::breakpoint();
+
+        std::quick_exit(EXIT_FAILURE);
+    }
+
+    // Restore for the 2nd time, initially restored below
+    if (log != nullptr)
+        xr::orig = ::SetUnhandledExceptionFilter(&xr::unhandled_filter);
+
+#ifndef XR_SENTRY_ASAN
+    xr::veh = ::AddVectoredExceptionHandler(true, xr::vectored_handler);
+#endif
+    xr::abrt = std::signal(SIGABRT, &xr::signal_handler);
+}
+#endif // XR_SENTRY
 } // namespace
 } // namespace xr
 
-static const char* GetThreadName()
+void xrDebug::_initialize()
 {
-    if (IsWindows10OrGreater())
-    {
-        static const HMODULE KernelLib = GetModuleHandleA("kernel32.dll");
-        using FuncGetThreadDescription = HRESULT (*)(HANDLE, PWSTR*);
+    xr::detail::log_init();
+    cpptrace::set_log_callback(&xr::log_callback);
 
-        static const auto pGetThreadDescription = reinterpret_cast<FuncGetThreadDescription>(GetProcAddress(KernelLib, "GetThreadDescription"));
-        if (pGetThreadDescription)
-        {
-            PWSTR wThreadName = nullptr;
-            if (SUCCEEDED(pGetThreadDescription(GetCurrentThread(), &wThreadName)))
-            {
-                if (wThreadName)
-                {
-                    static string64 ResThreadName{};
+    libassert::set_color_scheme(libassert::color_scheme::blank);
+    libassert::set_failure_handler(&xr::failure_handler);
 
-                    WideCharToMultiByte(CP_OEMCP, 0, wThreadName, gsl::narrow_cast<s32>(wcslen(wThreadName)), ResThreadName, sizeof(ResThreadName), nullptr,
-                                        nullptr);
-                    LocalFree(wThreadName);
+    std::atexit([] { XR_ASSERT(ExitFromWinMain, "unexpected application exit"); });
+    std::set_terminate(&xr::terminate);
 
-                    if (xr_strlen(ResThreadName) > 0)
-                        return ResThreadName;
-                }
-            }
-        }
-    }
+#ifdef XR_SENTRY
+    xr::sentry_init();
+#else
+    ::_set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
+#endif
 
-    return "UNKNOWN";
+    for (auto sig : std::array{SIGILL, SIGFPE, SIGTERM, SIGABRT, SIGABRT_COMPAT})
+        std::signal(sig, &xr::signal_handler);
+
+    ::_set_new_mode(1);
+    ::_set_new_handler(&xr::new_handler);
+    std::set_new_handler([] { xr::new_handler(0); });
+
+    ::_set_invalid_parameter_handler(&xr::invalid_parameter_handler);
+    ::_set_purecall_handler([] { XR_PANIC("pure virtual function call"); });
+
+    xr::orig = ::SetUnhandledExceptionFilter(&xr::unhandled_filter);
 }
 
-void LogStackTrace(const char* header, const bool)
+void xrDebug::thread_init(std::size_t) { std::set_terminate(&xr::terminate); }
+
+void xrDebug::to_log(gsl::czstring path)
+{
+    log = path;
+
+#ifdef XR_SENTRY
+    if (path != nullptr)
+        xr::sentry_init(path);
+    else
+        xr::sentry_close();
+#endif
+}
+
+std::string xrDebug::format_system(unsigned long code, bool module)
+{
+    constexpr auto drop = [] [[nodiscard]] (char ch) { return ch == ' ' || ch == '.' || ch == '\n' || ch == '\r'; };
+    constexpr unsigned long lang{0x409}; // en-US
+
+    unsigned long flags{FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS};
+    ::HINSTANCE__* handle{nullptr};
+    gsl::zstring str{nullptr};
+
+    if (module)
+    {
+        handle = ::LoadLibraryA("ntdll.dll");
+        flags |= FORMAT_MESSAGE_FROM_HMODULE;
+    }
+
+    const auto _ = gsl::finally([str, handle] {
+        ::LocalFree(str);
+
+        if (handle != nullptr)
+            ::FreeLibrary(handle);
+    });
+
+    auto n = ::FormatMessageA(flags, handle, code, lang, reinterpret_cast<gsl::zstring>(&str), 0, nullptr);
+    while (n > 0 && drop(str[n - 1]))
+        --n;
+
+    if (n == 0)
+        return "unknown error";
+
+    std::string ret{str, n};
+    std::ranges::replace(ret, '\n', ' ');
+
+    return ret;
+}
+
+// Legacy, to be removed when xrGame is converted to [lib]assert
+
+namespace
+{
+void LogStackTrace(const char* header)
 {
     __try
     {
         Log("********************************************************************************");
-        Msg("!![{}] Thread: [{}]", std::source_location::current().function_name(), GetThreadName());
-        Log(BuildStackTrace(header));
+        Msg("!![{}]", std::source_location::current().function_name());
+        Log(header);
         Log("********************************************************************************");
     }
     __finally
     {}
 }
 
-namespace
-{
 void gather_info(const char* expression, const char* description, const char* argument0, const char* argument1, const char* file, gsl::index line,
                  const char* function, char* assertion_info)
 {
@@ -413,11 +547,7 @@ void gather_info(const char* expression, const char* description, const char* ar
         }
     }
 
-#ifdef USE_OWN_MINI_DUMP
-    buffer += sprintf(buffer, "See log file and minidump for detailed information\r\n");
-#else
     buffer += sprintf(buffer, "See log file for detailed information\r\n");
-#endif
     LogStackTrace("!!stack trace:\n");
 }
 } // namespace
@@ -434,25 +564,16 @@ void xrDebug::backend(const char* expression, const char* description, const cha
     string4096 assertion_info;
     gather_info(expression, description, argument0, argument1, file, line, function, assertion_info);
 
-    // KRodin: у меня этот способ не работает - происходит исключение внутри функции save_mini_dump(). Если сильно надо будет тут получать
-    // минидампы - придумать другой способ.
-    /*
-#ifdef USE_OWN_MINI_DUMP
-    if (!xr::is_debugger_present())
-        save_mini_dump(nullptr);
-#endif
-    */
-
     auto endline = "\r\n";
     auto buffer = assertion_info + xr_strlen(assertion_info);
     buffer += sprintf(buffer, "%sPress OK to abort execution%s", endline, endline);
 
     xr::show({});
 
-    if (!xr::is_debugger_present())
-        quick_exit(EXIT_SUCCESS);
-    else
+    if (xr::is_debugger_present())
         xr::breakpoint();
+
+    std::quick_exit(EXIT_FAILURE);
 }
 
 void xrDebug::fail(const char* e1, const char* file, gsl::index line, const char* function)
@@ -483,140 +604,4 @@ void xrDebug::fail(const char* e1, const char* e2, const char* e3, const char* e
 {
     backend(e1, e2, e3, e4, file, line, function);
     xr::unreachable();
-}
-
-#ifdef USE_OWN_MINI_DUMP
-namespace xr
-{
-namespace
-{
-void save_mini_dump(_EXCEPTION_POINTERS* info)
-{
-    __try
-    {
-        string_path szDumpPath;
-        string64 t_stemp;
-
-        timestamp(t_stemp);
-        strcpy_s(szDumpPath, Core.ApplicationName);
-        strcat_s(szDumpPath, "_");
-        strcat_s(szDumpPath, Core.UserName);
-        strcat_s(szDumpPath, "_");
-        strcat_s(szDumpPath, t_stemp);
-        strcat_s(szDumpPath, ".mdmp");
-
-        __try
-        {
-            if (FS.path_exist("$logs$"))
-                std::ignore = FS.update_path(szDumpPath, "$logs$", szDumpPath);
-        }
-        __except (EXCEPTION_EXECUTE_HANDLER)
-        {
-            string_path temp;
-            strcpy_s(temp, szDumpPath);
-            strcpy_s(szDumpPath, "logs/");
-            strcat_s(szDumpPath, temp);
-        }
-
-        // create the file
-        auto hFile = ::CreateFileA(szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-        if (INVALID_HANDLE_VALUE == hFile)
-        {
-            // try to place into current directory
-            std::memmove(szDumpPath, szDumpPath + 5, gsl::narrow_cast<size_t>(xr_strlen(szDumpPath)));
-            hFile = ::CreateFileA(szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-        }
-        if (hFile != INVALID_HANDLE_VALUE)
-        {
-            _MINIDUMP_EXCEPTION_INFORMATION ExInfo;
-
-            ExInfo.ThreadId = ::GetCurrentThreadId();
-            ExInfo.ExceptionPointers = info;
-            ExInfo.ClientPointers = false;
-
-            // write the dump
-            auto dump_flags = MINIDUMP_TYPE(MiniDumpNormal | MiniDumpFilterMemory | MiniDumpScanMemory);
-
-            BOOL bOK = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, dump_flags, &ExInfo, nullptr, nullptr);
-            if (bOK)
-                Msg("--Saved dump file to [{}]", szDumpPath);
-            else
-                Msg("!!Failed to save dump file to [{}] (error [{}])", szDumpPath, xr::GetLastError());
-
-            ::CloseHandle(hFile);
-        }
-        else
-        {
-            Msg("!!Failed to create dump file [{}] (error [{}])", szDumpPath, xr::GetLastError());
-        }
-    }
-    __except (EXCEPTION_EXECUTE_HANDLER)
-    {
-        Msg("Exception catched in function [{}]", std::source_location::current().function_name());
-    }
-}
-} // namespace
-} // namespace xr
-#endif
-
-std::string xrDebug::format_system(unsigned long code, bool module)
-{
-    constexpr auto drop = [] [[nodiscard]] (char ch) { return ch == ' ' || ch == '.' || ch == '\n' || ch == '\r'; };
-    constexpr unsigned long lang{0x409}; // en-US
-
-    unsigned long flags{FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS};
-    ::HINSTANCE__* handle{nullptr};
-    gsl::zstring str{nullptr};
-
-    if (module)
-    {
-        handle = ::LoadLibraryA("ntdll.dll");
-        flags |= FORMAT_MESSAGE_FROM_HMODULE;
-    }
-
-    const auto _ = gsl::finally([str, handle] {
-        ::LocalFree(str);
-
-        if (handle != nullptr)
-            ::FreeLibrary(handle);
-    });
-
-    auto n = ::FormatMessageA(flags, handle, code, lang, reinterpret_cast<gsl::zstring>(&str), 0, nullptr);
-    while (n > 0 && drop(str[n - 1]))
-        --n;
-
-    if (n == 0)
-        return "unknown error";
-
-    std::string ret{str, n};
-    std::ranges::replace(ret, '\n', ' ');
-
-    return ret;
-}
-
-void xrDebug::_initialize()
-{
-    cpptrace::set_log_callback(&xr::log_callback);
-
-    libassert::set_color_scheme(libassert::color_scheme::blank);
-    libassert::set_failure_handler(&xr::failure_handler);
-
-    std::atexit([] { XR_ASSERT(ExitFromWinMain, "unexpected application exit"); });
-    std::set_terminate(&xr::terminate);
-
-    ::_set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
-    std::signal(SIGINT, nullptr);
-
-    for (auto sig : std::array{SIGILL, SIGFPE, SIGTERM, SIGABRT, SIGABRT_COMPAT})
-        std::signal(sig, &xr::signal_handler);
-
-    ::_set_new_mode(1);
-    std::set_new_handler(&xr::new_handler);
-
-    ::_set_invalid_parameter_handler(&xr::invalid_parameter_handler);
-    ::_set_purecall_handler([] { XR_PANIC("pure virtual function call"); });
-
-    xr::orig = ::SetUnhandledExceptionFilter(&xr::unhandled_filter);
-
-    xr::detail::log_init();
 }

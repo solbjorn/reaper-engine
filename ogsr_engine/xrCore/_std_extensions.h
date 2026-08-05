@@ -2,7 +2,6 @@
 #define __XRCORE_STD_EXTENSIONS_H
 
 #include <gsl/narrow>
-#include <gsl/zstring>
 
 #include <algorithm>
 #include <memory>

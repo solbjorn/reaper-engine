@@ -1,5 +1,7 @@
 #pragma once
 
+#include <source_location>
+
 #define DEBUG_INFO std::source_location::current().file_name(), std::source_location::current().line(), std::source_location::current().function_name()
 
 #define R_ASSERT(expr, ...) \

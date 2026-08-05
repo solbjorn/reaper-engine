@@ -4,9 +4,6 @@
 // скопировать этот файл в нее и изменить, как требуется.
 
 //***********************************[Настройки отладочных режимов]***********************************
-// Включает создание минидампов при вылетах
-#define USE_OWN_MINI_DUMP
-
 // Включает новые отладочные сообщения и ассерты - LogDbg, MsgDbg
 // #define OGSR_TOTAL_DBG
 
@@ -79,6 +76,11 @@
 // #define IMGUI_DISABLE
 // Uncomment to enable ImGui exports to Lua
 #define XR_IMGUI_LUA
+
+// Enable Sentry + Crashpad crash backend
+#define XR_SENTRY
+// Sentry cloud DSN
+#define XR_SENTRY_DSN nullptr
 
 // Enable RenderDoc integration (place a prebuilt renderdoc.dll to bin_x64/)
 #define XR_USE_RENDERDOC

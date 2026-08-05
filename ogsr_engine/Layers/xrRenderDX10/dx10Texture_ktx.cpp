@@ -373,8 +373,8 @@ ID3DBaseTexture* CRender::texture_load_ktx(const string_path& path, u32& size)
 
         if (ktx::ktxTexture2_IsTranscodable(tex2))
         {
-            if (const auto res =
-                    ktx::ktxTexture2_TranscodeBasis(tex2, ktx::ktxTexture2_IsHDR(tex2) ? ktx::KTX_TTF_BC6HU : ktx::KTX_TTF_BC7_RGBA, ktx::KTX_TF_HIGH_QUALITY);
+            if (const auto res = ktx::ktxTexture2_TranscodeBasis(tex2, ktx::ktxTexture2_IsHDR(tex2) ? ktx::KTX_TTF_BC6HU_RGB : ktx::KTX_TTF_BC7_RGBA,
+                                                                 ktx::KTX_TF_HIGH_QUALITY);
                 res != ktx::KTX_SUCCESS)
             {
                 Msg("! Failed to transcode BasisLZ/ETC1S/UASTC-encoded KTX2 texture: [{}], error: [{}]", path, res);
