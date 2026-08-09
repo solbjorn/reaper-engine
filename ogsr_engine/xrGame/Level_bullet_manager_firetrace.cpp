@@ -175,14 +175,11 @@ BOOL CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID param
     {
         // статический объект
         // получить треугольник и узнать его материал
-        CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
-        hit_material_idx = T->material;
+        hit_material_idx = Level().ObjectSpace.GetStaticTris()[result.element].material;
 
         SGameMtl* mtl = GMLib.GetMaterialByIdx(hit_material_idx);
         if (fsimilar(mtl->fShootFactor, 1.0f, EPS)) // Если материал полностью простреливаемый
-        {
             pData->bStopTracing = false;
-        }
         else
             Level().BulletManager().RegisterEvent(EVENT_HIT, FALSE, bullet, end_point, result, hit_material_idx);
     }
@@ -214,17 +211,12 @@ void CBulletManager::FireShotmark(SBullet* bullet, const Fvector& vDir, const Fv
             ::Render->add_SkeletonWallmark(&R.O->renderable.xform, PKinematics(R.O->Visual()), &*mtl_pair->CollideMarks, p, bullet->dir, bullet->wallmark_size);
         }
     }
-    else
+    // вычислить нормаль к пораженной поверхности
+    else if (mtl_pair != nullptr && !mtl_pair->CollideMarks->empty() && ShowMark)
     {
-        // вычислить нормаль к пораженной поверхности
-        Fvector* pVerts = Level().ObjectSpace.GetStaticVerts();
-        CDB::TRI* pTri = Level().ObjectSpace.GetStaticTris() + R.element;
-
-        if (mtl_pair && !mtl_pair->CollideMarks->empty() && ShowMark)
-        {
-            // добавить отметку на материале
-            ::Render->add_StaticWallmark(&*mtl_pair->CollideMarks, vEnd, bullet->wallmark_size, pTri, pVerts);
-        }
+        // добавить отметку на материале
+        ::Render->add_StaticWallmark(&*mtl_pair->CollideMarks, vEnd, bullet->wallmark_size, Level().ObjectSpace.GetStaticTris()[R.element],
+                                     Level().ObjectSpace.GetStaticVerts());
     }
 
     ref_sound* pSound = (!mtl_pair || mtl_pair->CollideSounds.empty()) ? nullptr : &mtl_pair->CollideSounds[::Random.randI(0, mtl_pair->CollideSounds.size())];
@@ -332,26 +324,6 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
     // отправить хит пораженному объекту
     if (E.bullet.flags.allow_sendhit && !E.Repeated)
     {
-        /*
-                NET_Packet		P;
-        //		CGameObject::u_EventGen	(P,(AddStatistic)? GE_HIT_STATISTIC : GE_HIT,E.R.O->ID());
-                P.w_u16			(E.bullet.parent_id);
-                P.w_u16			(E.bullet.weapon_id);
-                P.w_dir			(original_dir);
-                P.w_float		(power);
-                P.w_s16			((s16)E.R.element);
-                P.w_vec3		(position_in_bone_space);
-                P.w_float		(impulse);
-                P.w_u16			(u16(E.bullet.hit_type));
-                if (E.bullet.hit_type == ALife::eHitTypeFireWound)
-                    P.w_float	(E.bullet.ap);
-
-                if (AddStatistic)
-                    P.w_u32(E.bullet.m_dwID);
-
-                CGameObject::u_EventSend (P);
-        */
-
         SHit Hit =
             SHit(power, original_dir, nullptr, u16(E.R.element), position_in_bone_space, impulse, E.bullet.hit_type, E.bullet.ap, E.bullet.flags.aim_bullet);
 
@@ -394,11 +366,13 @@ std::pair<float, float> CBulletManager::ObjectHit(SBullet* bullet, const Fvector
     else
     {
         // вычислить нормаль к поверхности
-        Fvector* pVerts = Level().ObjectSpace.GetStaticVerts();
-        CDB::TRI* pTri = Level().ObjectSpace.GetStaticTris() + R.element;
-        hit_normal.mknormal(pVerts[pTri->verts[0]], pVerts[pTri->verts[1]], pVerts[pTri->verts[2]]);
+        const auto pVerts = Level().ObjectSpace.GetStaticVerts();
+        auto& pTri = Level().ObjectSpace.GetStaticTris()[R.element];
+
+        hit_normal.mknormal(pVerts[pTri.verts[0]].xyz(), pVerts[pTri.verts[1]].xyz(), pVerts[pTri.verts[2]].xyz());
     }
     //----------- normal - end
+
     float old_speed, energy_lost;
     old_speed = bullet->speed;
 

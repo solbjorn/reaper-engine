@@ -288,10 +288,10 @@ float CSoundRender_Core::occRayTestMtl(const Fvector& pos, const Fvector& dir, f
 
             if (!occ->valid)
             {
-                const Fvector* V = geom_OCC->get_verts();
-                occ->occ[0].set(V[T.verts[0]]);
-                occ->occ[1].set(V[T.verts[1]]);
-                occ->occ[2].set(V[T.verts[2]]);
+                const auto V = geom_OCC->get_verts();
+                occ->occ[0].set(V[T.verts[0]].xyz());
+                occ->occ[1].set(V[T.verts[1]].xyz());
+                occ->occ[2].set(V[T.verts[2]].xyz());
                 occ->valid = true;
             }
 

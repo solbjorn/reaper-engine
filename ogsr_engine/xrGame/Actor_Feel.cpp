@@ -71,6 +71,7 @@ void CActor::PickupModeOff() { m_bPickupMode = false; }
 ICF static BOOL info_trace_callback(collide::rq_result& result, LPVOID params)
 {
     BOOL& bOverlaped = *(BOOL*)params;
+
     if (result.O)
     {
         if (Level().CurrentEntity() == result.O)
@@ -87,15 +88,17 @@ ICF static BOOL info_trace_callback(collide::rq_result& result, LPVOID params)
     else
     {
         // получить треугольник и узнать его материал
-        CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
-        const auto* mtl = GMLib.GetMaterialByIdx(T->material);
+        const auto mtl = GMLib.GetMaterialByIdx(Level().ObjectSpace.GetStaticTris()[result.element].material);
+
         if (mtl->Flags.is(SGameMtl::flPassable))
             return TRUE;
         // возможно это сетка-рабица и через нее можно брать предметы
         else if (fsimilar(mtl->fVisTransparencyFactor, 1.0f, EPS) && fsimilar(mtl->fShootFactor, 1.0f, EPS) && mtl->Flags.is(SGameMtl::flSuppressWallmarks))
             return TRUE;
     }
+
     bOverlaped = TRUE;
+
     return FALSE;
 }
 

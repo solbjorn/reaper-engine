@@ -1116,18 +1116,15 @@ BOOL CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID 
         return true;
 
     STraceBorderQParams& p = *(STraceBorderQParams*)params;
-    u16 mtl_idx = GAMEMTL_NONE_IDX;
-    CDB::TRI* T{nullptr};
 
     // получить треугольник и узнать его материал
-    T = Level().ObjectSpace.GetStaticTris() + result.element;
-    mtl_idx = XR_ASSERT_VAL(T != nullptr)->material;
+    auto& T = Level().ObjectSpace.GetStaticTris()[result.element];
 
-    SGameMtl* mtl = GMLib.GetMaterialByIdx(mtl_idx);
-    if (mtl->Flags.test(SGameMtl::flInjurious))
+    if (GMLib.GetMaterialByIdx(T.material)->Flags.test(SGameMtl::flInjurious))
     {
         Fvector tri_norm;
-        GetNormal(T, tri_norm);
+        GetNormal(&T, tri_norm);
+
         if (p.m_dir.dotproduct(tri_norm) < 0.f)
             p.m_movement->in_dead_area_count++;
         else

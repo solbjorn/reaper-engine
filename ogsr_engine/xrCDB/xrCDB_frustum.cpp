@@ -1,100 +1,97 @@
 #include "stdafx.h"
 
-XR_DIAG_PUSH();
-XR_DIAG_IGNORE("-Wcast-qual");
-XR_DIAG_IGNORE("-Wclass-conversion");
-XR_DIAG_IGNORE("-Wfloat-conversion");
-XR_DIAG_IGNORE("-Wfloat-equal");
-XR_DIAG_IGNORE("-Wheader-hygiene");
-XR_DIAG_IGNORE("-Wold-style-cast");
-XR_DIAG_IGNORE("-Woverloaded-virtual");
-XR_DIAG_IGNORE("-Wshorten-64-to-32");
-XR_DIAG_IGNORE("-Wsign-conversion");
-XR_DIAG_IGNORE("-Wunknown-pragmas");
-XR_DIAG_IGNORE("-Wunused-parameter");
-
-#include <Opcode.h>
-
-XR_DIAG_POP();
+#include "../xrExternal/tinybvh.h"
 
 using namespace CDB;
-using namespace Opcode;
 
 namespace
 {
 template <bool bClass3, bool bFirst>
 class frustum_collider
 {
-public:
+private:
     COLLIDER* dest;
-    TRI* tris;
-    Fvector* verts;
+    std::span<const Fvector4> verts;
+    std::span<const TRI> tris;
 
     const CFrustum* F;
 
-    constexpr void _init(COLLIDER* CL, Fvector* V, TRI* T, const CFrustum* _F)
+public:
+    constexpr explicit frustum_collider(COLLIDER* CL, std::span<const Fvector4> V, std::span<const TRI> T, const CFrustum* _F)
+        : dest{CL}, verts{V}, tris{T}, F{_F}
+    {}
+
+private:
+    [[nodiscard]] constexpr EFC_Visible _box(const tinybvh::bvhvec3& min, const tinybvh::bvhvec3& max, u32 mask) const
     {
-        dest = CL;
-        tris = T;
-        verts = V;
-        F = _F;
+        // CFrustum::testAABB() takes a pointer to 6 f32s (min.{x,y,z}, max.{x,y,z})
+        static_assert(sizeof(std::array<tinybvh::bvhvec3, 2>) == 6 * sizeof(f32));
+
+        return F->testAABB(reinterpret_cast<const f32*>(std::array<tinybvh::bvhvec3, 2>{min, max}.data()), mask);
     }
 
-    [[nodiscard]] constexpr EFC_Visible _box(const Fvector& C, const Fvector& E, u32 mask) const
+    constexpr void _prim(u32 prim) const
     {
-        Fvector mM[2];
-        mM[0].sub(C, E);
-        mM[1].add(C, E);
-
-        return F->testAABB(&mM[0].x, mask);
-    }
-
-    constexpr void _prim(size_t prim) const
-    {
-        const auto id = gsl::narrow<s32>(prim);
-        const auto& tri = tris[id];
+        auto& tri = tris[prim];
+        const std::array<Fvector3, 3> vs{verts[tri.verts[0]].xyz(), verts[tri.verts[1]].xyz(), verts[tri.verts[2]].xyz()};
 
         if constexpr (bClass3)
         {
             sPoly src, dst;
-            src.resize(3);
-            src[0] = verts[tri.verts[0]];
-            src[1] = verts[tri.verts[1]];
-            src[2] = verts[tri.verts[2]];
+            src.assign_range(vs);
 
             if (F->ClipPoly(src, dst))
-                dest->r_add(id, verts[tri.verts[0]], verts[tri.verts[1]], verts[tri.verts[2]], tri.dummy);
+                dest->r_add(gsl::narrow<s32>(prim), vs[0], vs[1], vs[2], tri.dummy);
         }
         else
         {
-            dest->r_add(id, verts[tri.verts[0]], verts[tri.verts[1]], verts[tri.verts[2]], tri.dummy);
+            dest->r_add(gsl::narrow<s32>(prim), vs[0], vs[1], vs[2], tri.dummy);
         }
     }
 
-    constexpr void _stab(const AABBNoLeafNode* node, u32 mask) const
+public:
+    constexpr void _stab(std::span<const tinybvh::BVH::BVHNode> nodes, std::span<const u32> prim_ids, u32 mask)
     {
-        // Actual frustum/aabb test
-        if (_box(*reinterpret_cast<const Fvector*>(&node->mAABB.mCenter), *reinterpret_cast<const Fvector*>(&node->mAABB.mExtents), mask) == fcvNone)
-            return;
+        xr::unordered_set<u32> prims;
+        xr::inlined_vector<u32, 32> stack;
 
-        // 1st chield
-        if (node->HasPosLeaf())
-            _prim(node->GetPosPrimitive());
-        else
-            _stab(node->GetPos(), mask);
+        stack.emplace_back(0);
 
-        // Early exit for "only first"
-        if constexpr (bFirst)
+        while (!stack.empty())
         {
-            if (!dest->r_empty())
-                return;
-        }
+            auto& node = nodes[stack.back()];
+            stack.pop_back();
 
-        // 2nd chield
-        if (node->HasNegLeaf())
-            _prim(node->GetNegPrimitive());
-        else
-            _stab(node->GetNeg(), mask);
+            // Actual frustum/aabb test
+            if (_box(node.aabbMin, node.aabbMax, mask) == fcvNone)
+                continue;
+
+            if (!node.isLeaf())
+            {
+                // 2nd child
+                stack.emplace_back(node.leftFirst + 1);
+                // 1st child
+                stack.emplace_back(node.leftFirst);
+
+                continue;
+            }
+
+            for (auto id : prim_ids.subspan(node.leftFirst, node.triCount))
+            {
+                // Early exit for "only first"
+                if constexpr (bFirst)
+                {
+                    _prim(id);
+
+                    if (!dest->r_empty())
+                        return;
+                }
+                else if (prims.emplace(id).second)
+                {
+                    _prim(id);
+                }
+            }
+        }
     }
 };
 } // namespace
@@ -102,45 +99,28 @@ public:
 void COLLIDER::frustum_query(u32 frustum_mode, const MODEL* m_def, const CFrustum& F)
 {
     m_def->syncronize();
-
-    // This should be smart_cast<>()/dynamic_cast<>(), but OpCoDe doesn't use our custom RTTI.
-    // So we just rely on that `AABBOptimizedTree` starts at offset 0 inside `AABBNoLeafTree`.
-    // OpCoDe itself uses C-style casts for downcasting, which is roughly the same.
-    const AABBNoLeafTree* T = reinterpret_cast<const AABBNoLeafTree*>(m_def->tree->GetTree());
-    const AABBNoLeafNode* N = T->GetNodes();
-    const DWORD mask = F.getMask();
-
     r_clear();
+
+    const auto& bvh = *m_def->get_tree();
+    const auto mask = F.getMask();
 
     // Binary dispatcher
     if (frustum_mode & OPT_FULL_TEST)
     {
         if (frustum_mode & OPT_ONLYFIRST)
-        {
-            frustum_collider<true, true> BC;
-            BC._init(this, m_def->verts, m_def->tris, &F);
-            BC._stab(N, mask);
-        }
+            frustum_collider<true, true>{this, m_def->get_verts(), m_def->get_tris(), &F}._stab(std::span{bvh.bvhNode, bvh.usedNodes},
+                                                                                                std::span{bvh.primIdx, bvh.idxCount}, mask);
         else
-        {
-            frustum_collider<true, false> BC;
-            BC._init(this, m_def->verts, m_def->tris, &F);
-            BC._stab(N, mask);
-        }
+            frustum_collider<true, false>{this, m_def->get_verts(), m_def->get_tris(), &F}._stab(std::span{bvh.bvhNode, bvh.usedNodes},
+                                                                                                 std::span{bvh.primIdx, bvh.idxCount}, mask);
     }
     else
     {
         if (frustum_mode & OPT_ONLYFIRST)
-        {
-            frustum_collider<false, true> BC;
-            BC._init(this, m_def->verts, m_def->tris, &F);
-            BC._stab(N, mask);
-        }
+            frustum_collider<false, true>{this, m_def->get_verts(), m_def->get_tris(), &F}._stab(std::span{bvh.bvhNode, bvh.usedNodes},
+                                                                                                 std::span{bvh.primIdx, bvh.idxCount}, mask);
         else
-        {
-            frustum_collider<false, false> BC;
-            BC._init(this, m_def->verts, m_def->tris, &F);
-            BC._stab(N, mask);
-        }
+            frustum_collider<false, false>{this, m_def->get_verts(), m_def->get_tris(), &F}._stab(std::span{bvh.bvhNode, bvh.usedNodes},
+                                                                                                  std::span{bvh.primIdx, bvh.idxCount}, mask);
     }
 }

@@ -492,27 +492,29 @@ CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
     {
         constexpr Fvector dir{0.0f, -1.0f, 0.0f};
         CDB::COLLIDER geom_DB;
-
         geom_DB.ray_query(CDB::OPT_ONLYNEAREST, geom_ENV, P, dir, 1000.f);
+
         if (geom_DB.r_count())
         {
-            CDB::RESULT* r = geom_DB.r_begin();
-            CDB::TRI* T = geom_ENV->get_tris() + r->id;
-            Fvector* V = geom_ENV->get_verts();
+            auto& T = geom_ENV->get_tris()[geom_DB.r_begin()->id];
+            const auto V = geom_ENV->get_verts();
 
             Fvector tri_norm;
-            tri_norm.mknormal(V[T->verts[0]], V[T->verts[1]], V[T->verts[2]]);
-            const float dot = dir.dotproduct(tri_norm);
-            if (dot <= 0)
+            tri_norm.mknormal(V[T.verts[0]].xyz(), V[T.verts[1]].xyz(), V[T.verts[2]].xyz());
+            u16 id;
+
+            if (const f32 dot = dir.dotproduct(tri_norm); dot <= 0.0f)
             {
-                u16 id_front = (u16)((T->dummy & 0x0000ffff) >> 0); //	front face
-                return s_environment->Get(id_front);
+                // front face
+                id = gsl::narrow_cast<u16>(T.dummy);
             }
             else
             {
-                u16 id_back = (u16)((T->dummy & 0xffff0000) >> 16); //	back face
-                return s_environment->Get(id_back);
+                // back face
+                id = gsl::narrow_cast<u16>(T.dummy >> 16);
             }
+
+            return s_environment->Get(id);
         }
     }
 

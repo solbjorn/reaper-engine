@@ -60,14 +60,11 @@ public:
     [[nodiscard]] gsl::index GetNearest(xr_vector<ISpatial*>& q_spatial, xr_vector<CObject*>& q_nearest, const Fvector& point, float range,
                                         CObject* ignore_object);
 
-    [[nodiscard]] CDB::TRI* GetStaticTris() { return Static.get_tris(); }
-    [[nodiscard]] const CDB::TRI* GetStaticTris() const { return Static.get_tris(); }
+    [[nodiscard]] constexpr auto GetStaticVerts() const { return Static.get_verts(); }
+    [[nodiscard]] constexpr auto GetStaticTris() const { return Static.get_tris(); }
 
-    [[nodiscard]] Fvector* GetStaticVerts() { return Static.get_verts(); }
-    [[nodiscard]] const Fvector* GetStaticVerts() const { return Static.get_verts(); }
-
-    [[nodiscard]] CDB::MODEL* GetStaticModel() { return &Static; }
     [[nodiscard]] const CDB::MODEL* GetStaticModel() const { return &Static; }
+    [[nodiscard]] CDB::MODEL* GetStaticModel() { return &Static; }
 
     [[nodiscard]] const Fbox& GetBoundingVolume() const { return m_BoundingVolume; }
 

@@ -85,13 +85,14 @@ BOOL CObjectSpace::_RayTest(const Fvector& start, const Fvector& dir, float rang
 
             // cache polygon
             cache->set(start, dir, range, TRUE);
-            CDB::RESULT* R = xrc.r_begin();
-            CDB::TRI& T = Static.get_tris()[R->id];
 
-            Fvector* V = Static.get_verts();
-            cache->verts[0].set(V[T.verts[0]]);
-            cache->verts[1].set(V[T.verts[1]]);
-            cache->verts[2].set(V[T.verts[2]]);
+            CDB::RESULT* R = xrc.r_begin();
+            auto& T = Static.get_tris()[gsl::narrow_cast<std::size_t>(R->id)];
+            const auto V = Static.get_verts();
+
+            cache->verts[0].set(V[T.verts[0]].xyz());
+            cache->verts[1].set(V[T.verts[1]].xyz());
+            cache->verts[2].set(V[T.verts[2]].xyz());
 
             return TRUE;
         }

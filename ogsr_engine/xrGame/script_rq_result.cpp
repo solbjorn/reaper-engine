@@ -14,6 +14,7 @@ void script_rq_result::set_result(collide::rq_result _res)
     range = _res.range;
     element = _res.element;
     result = true;
+
     if (_res.O)
     {
         CGameObject* obj = smart_cast<CGameObject*>(_res.O);
@@ -30,20 +31,16 @@ void script_rq_result::set_result(collide::rq_result _res)
             }
         }
     }
-    else
+    else if (const auto material = Level().ObjectSpace.GetStaticTris()[element].material; material < GMLib.CountMaterial())
     {
-        CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + element;
-        if (T->material < GMLib.CountMaterial())
-        {
-            mtl = GMLib.GetMaterialByIdx(T->material);
-        }
+        mtl = GMLib.GetMaterialByIdx(material);
     }
 }
 
 namespace
 {
-[[nodiscard]] constexpr auto get_name(const SGameMtl& self) { return self.m_Name.c_str(); }
-[[nodiscard]] constexpr auto get_desc(const SGameMtl& self) { return self.m_Desc.c_str(); }
+[[nodiscard]] constexpr auto get_name(const SGameMtl& self) { return std::string_view{self.m_Name}; }
+[[nodiscard]] constexpr auto get_desc(const SGameMtl& self) { return std::string_view{self.m_Desc}; }
 } // namespace
 
 void script_rq_result::script_register(sol::state_view& lua)

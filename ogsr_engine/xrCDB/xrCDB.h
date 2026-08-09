@@ -1,13 +1,12 @@
 #pragma once
 
+namespace tinybvh
+{
+class BVH;
+}
+
 // forward declarations
 class CFrustum;
-
-namespace Opcode
-{
-class Model;
-class AABBNoLeafNode;
-} // namespace Opcode
 
 namespace CDB
 {
@@ -69,23 +68,14 @@ static_assert(sizeof(TRI) == 16);
 XR_TRIVIAL_ASSERT(TRI);
 
 // Build callback
-using build_callback = void(std::span<Fvector> V, std::span<TRI> T, void* params);
+using build_callback = void(std::span<Fvector4> V, std::span<TRI> T, void* params);
 using serialize_callback = void(IWriter& writer);
 using deserialize_callback = bool(IReader& reader);
 
-class Noncopyable
-{
-public:
-    Noncopyable() = default;
-    Noncopyable(const Noncopyable&) = delete;
-    Noncopyable& operator=(const Noncopyable&) = delete;
-};
-
 // Model definition
-class MODEL final : Noncopyable
+class MODEL final
 {
-    friend class COLLIDER;
-
+private:
     enum class state : s32
     {
         S_READY = 0,
@@ -93,27 +83,19 @@ class MODEL final : Noncopyable
         S_BUILD = 2,
     };
 
-private:
-    Opcode::Model* tree{};
+    std::unique_ptr<tinybvh::BVH> tree;
     state status{state::S_INIT}; // 0=ready, 1=init, 2=building
 
-    // tris
-    TRI* tris{};
-    gsl::index tris_count{};
-    Fvector* verts{};
-    gsl::index verts_count{};
+    xr_vector<Fvector4> verts;
+    xr_vector<TRI> tris;
 
 public:
     MODEL();
     ~MODEL();
 
-    [[nodiscard]] constexpr Fvector* get_verts() { return verts; }
-    [[nodiscard]] constexpr const Fvector* get_verts() const { return verts; }
-    [[nodiscard]] constexpr auto get_verts_count() const { return verts_count; }
-
-    [[nodiscard]] constexpr TRI* get_tris() { return tris; }
-    [[nodiscard]] constexpr const TRI* get_tris() const { return tris; }
-    [[nodiscard]] constexpr auto get_tris_count() const { return tris_count; }
+    [[nodiscard]] constexpr const tinybvh::BVH* get_tree() const { return tree.get(); }
+    [[nodiscard]] constexpr std::span<const Fvector4> get_verts() const { return verts; }
+    [[nodiscard]] constexpr std::span<const TRI> get_tris() const { return tris; }
 
     void syncronize() const
     {
@@ -121,16 +103,16 @@ public:
             Log("! WARNING: syncronized CDB::query");
     }
 
-    void build_internal(std::span<const Fvector> V, std::span<const TRI> T, build_callback* bc = nullptr, void* bcp = nullptr);
     void build(std::span<const Fvector> V, std::span<const TRI> T, build_callback* bc = nullptr, void* bcp = nullptr);
+    void serialize(gsl::czstring file, u64 xxh, serialize_callback callback = nullptr) const;
+    [[nodiscard]] bool deserialize(gsl::czstring file, u64 xxh, deserialize_callback callback = nullptr);
+
     [[nodiscard]] gsl::index memory() const;
 
-    [[nodiscard]] bool serialize(const char* file, u64 xxh, serialize_callback callback = nullptr) const;
-    [[nodiscard]] bool deserialize(const char* file, u64 xxh, deserialize_callback callback = nullptr);
-
 private:
-    void serialize_tree(IWriter* stream) const;
-    [[nodiscard]] bool deserialize_tree(IReader* stream);
+    void build_internal(std::span<const Fvector> V, std::span<const TRI> T, build_callback* bc = nullptr, void* bcp = nullptr);
+    void serialize_tree(IWriter& stream) const;
+    [[nodiscard]] bool deserialize_tree(IReader& stream);
 };
 
 // Collider result
@@ -270,7 +252,7 @@ public:
     }
 };
 
-class CollectorPacked final : public Noncopyable
+class CollectorPacked final
 {
 private:
     static constexpr gsl::index clpMX{24}, clpMY{16}, clpMZ{24};
@@ -286,6 +268,9 @@ private:
 
 public:
     explicit CollectorPacked(const Fbox& bb, gsl::index apx_vertices = 5000, gsl::index apx_faces = 5000);
+
+    CollectorPacked(const CollectorPacked&) = delete;
+    CollectorPacked& operator=(const CollectorPacked&) = delete;
 
     void add_face(const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector);
     void add_face_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy);

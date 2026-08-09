@@ -194,7 +194,7 @@ gsl::index CObjectSpace::GetNearest(xr_vector<CObject*>& q_nearest, ICollisionFo
 
 namespace
 {
-void build_callback(std::span<Fvector>, std::span<CDB::TRI> T, void*) { g_pGameLevel->Load_GameSpecific_CFORM(T); }
+void build_callback(std::span<Fvector4>, std::span<CDB::TRI> T, void*) { g_pGameLevel->Load_GameSpecific_CFORM(T); }
 void serialize_callback(IWriter& writer) { g_pGameLevel->Load_GameSpecific_CFORM_Serialize(writer); }
 bool deserialize_callback(IReader& reader) { return g_pGameLevel->Load_GameSpecific_CFORM_Deserialize(reader); }
 } // namespace
@@ -220,7 +220,7 @@ void CObjectSpace::Load()
     if (!FS.exist(cache) || !Static.deserialize(cache, xxh, deserialize_callback))
     {
         Static.build(std::span{verts, H.vertcount}, std::span{tris, H.facecount}, build_callback);
-        std::ignore = Static.serialize(cache, xxh, serialize_callback);
+        Static.serialize(cache, xxh, serialize_callback);
     }
 
     m_BoundingVolume.set(H.aabb);

@@ -53,7 +53,8 @@ IC void MulSprDmp(float& cfm, float& erp, float mul_spring, float mul_damping)
     cfm *= factor;
     erp *= (factor * mul_spring);
 }
-typedef void ContactCallbackFun(CDB::TRI* T, dContactGeom* c);
+
+using ContactCallbackFun = void(const CDB::TRI* T, dContactGeom* c);
 typedef void ObjectContactCallbackFun(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2);
 
 class CBoneInstance;

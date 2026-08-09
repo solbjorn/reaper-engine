@@ -154,9 +154,6 @@
 [submodule "3rd_party/Src/imgui/sol2_ImGui_Bindings"]
 	path = 3rd_party/Src/imgui/sol2_ImGui_Bindings
 	url = https://github.com/mblackman/sol2_ImGui_Bindings.git
-[submodule "3rd_party/Src/legacy/OpCoDe/OpCoDe"]
-	path = 3rd_party/Src/legacy/OpCoDe/OpCoDe
-	url = https://github.com/solbjorn/OpCoDe.git
 [submodule "3rd_party/Src/luajit2/luajit2"]
 	path = 3rd_party/Src/luajit2/luajit2
 	url = https://github.com/openresty/luajit2.git
@@ -193,6 +190,10 @@
 	path = 3rd_party/Src/system/mimalloc/mimalloc
 	url = https://github.com/microsoft/mimalloc.git
 	branch = dev3
+[submodule "3rd_party/Src/tinybvh"]
+	path = 3rd_party/Src/tinybvh
+	url = https://github.com/jbikker/tinybvh.git
+	branch = dev
 [submodule "3rd_party/Src/tmc/TooManyCooks"]
 	path = 3rd_party/Src/tmc/TooManyCooks
 	url = https://github.com/tzcnt/TooManyCooks.git

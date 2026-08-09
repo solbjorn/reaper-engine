@@ -134,7 +134,7 @@ endif()
 
 # llvm-libc, libc++
 if(LLVM_ENABLE_RUNTIMES)
-  set(conformance_options "${conformance_options} -DO_BINARY=_O_BINARY -DO_CREAT=_O_CREAT -DO_RDONLY=_O_RDONLY -DO_WRONLY=_O_WRONLY -Dalloca=_alloca -Dfdopen=_fdopen -Dfileno=_fileno -Doff_t=_off_t")
+  set(conformance_options "${conformance_options} -DLIBC_TYPES_HAS_INT128 -DO_BINARY=_O_BINARY -DO_CREAT=_O_CREAT -DO_RDONLY=_O_RDONLY -DO_WRONLY=_O_WRONLY -Dalloca=_alloca -Dfdopen=_fdopen -Dfileno=_fileno -Doff_t=_off_t")
   set(warning_options "${warning_options} -Wno-error=microsoft-enum-value")
 else()
   set(llvm_options "${llvm_options} /clang:-fopenmp /clang:-fopenmp-extensions")

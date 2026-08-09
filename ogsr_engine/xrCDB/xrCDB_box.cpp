@@ -1,27 +1,49 @@
 #include "stdafx.h"
 
-XR_DIAG_PUSH();
-XR_DIAG_IGNORE("-Wcast-qual");
-XR_DIAG_IGNORE("-Wclass-conversion");
-XR_DIAG_IGNORE("-Wfloat-conversion");
-XR_DIAG_IGNORE("-Wfloat-equal");
-XR_DIAG_IGNORE("-Wheader-hygiene");
-XR_DIAG_IGNORE("-Wold-style-cast");
-XR_DIAG_IGNORE("-Woverloaded-virtual");
-XR_DIAG_IGNORE("-Wshorten-64-to-32");
-XR_DIAG_IGNORE("-Wsign-conversion");
-XR_DIAG_IGNORE("-Wunknown-pragmas");
-XR_DIAG_IGNORE("-Wunused-parameter");
-
-#include <Opcode.h>
-
-XR_DIAG_POP();
+#include "../xrExternal/tinybvh.h"
 
 using namespace CDB;
-using namespace Opcode;
 
 namespace
 {
+// Was a part of IceMath
+class Point final
+{
+public:
+    f32 x, y, z;
+
+    constexpr Point() = default;
+
+    template <typename tof>
+    constexpr explicit Point(tof xx, tof yy, tof zz) : x{gsl::narrow_cast<f32>(xx)}, y{gsl::narrow_cast<f32>(yy)}, z{gsl::narrow_cast<f32>(zz)}
+    {}
+
+    constexpr Point(const Point& p) : x{p.x}, y{p.y}, z{p.z} {}
+
+    constexpr Point& Set(const Point& src)
+    {
+        x = src.x;
+        y = src.y;
+        z = src.z;
+        return *this;
+    }
+
+    constexpr Point& operator=(const Point& p)
+    {
+        Set(p);
+        return *this;
+    }
+
+    [[nodiscard]] constexpr Point operator-() const { return Point(-x, -y, -z); }
+    [[nodiscard]] constexpr Point operator-(const Point& p) const { return Point(x - p.x, y - p.y, z - p.z); }
+
+    [[nodiscard]] constexpr f32 operator|(const Point& p) const { return x * p.x + y * p.y + z * p.z; }
+    [[nodiscard]] constexpr Point operator^(const Point& p) const { return Point(y * p.z - z * p.y, z * p.x - x * p.z, x * p.y - y * p.x); }
+
+    [[nodiscard]] constexpr operator const f32*() const { return &x; }
+    [[nodiscard]] constexpr operator f32*() { return &x; }
+};
+
 //! This macro quickly finds the min & max values among 3 variables
 #define FINDMINMAX(x0, x1, x2, min, max) \
     min = max = x0; \
@@ -35,9 +57,9 @@ namespace
     max = x2
 
 //! TO BE DOCUMENTED
-[[nodiscard]] constexpr bool planeBoxOverlap(const IceMaths::Point& normal, float d, const IceMaths::Point& maxbox)
+[[nodiscard]] constexpr bool planeBoxOverlap(const Point& normal, float d, const Point& maxbox)
 {
-    IceMaths::Point vmin, vmax;
+    Point vmin, vmax;
     const f32* anorm{normal};
     const f32* abox{maxbox};
     f32* amin{vmin};
@@ -152,48 +174,50 @@ namespace
 template <bool bClass3, bool bFirst>
 class box_collider final
 {
-public:
+private:
     COLLIDER* dest;
-    TRI* tris;
-    Fvector* verts;
+    std::span<const Fvector4> verts;
+    std::span<const TRI> tris;
 
     Fvector b_min, b_max;
-    IceMaths::Point center, extents;
+    Point center, extents;
 
-    IceMaths::Point mLeafVerts[3];
+    Point mLeafVerts[3];
 
-    constexpr void _init(COLLIDER* CL, Fvector* V, TRI* T, const Fvector& C, const Fvector& E)
+public:
+    constexpr explicit box_collider(COLLIDER* CL, std::span<const Fvector4> V, std::span<const TRI> T, const Fvector& C, const Fvector& E)
+        : dest{CL}, verts{V}, tris{T}
     {
-        dest = CL;
-        verts = V;
-        tris = T;
-        center = IceMaths::Point(C.x, C.y, C.z);
-        extents = IceMaths::Point(E.x, E.y, E.z);
         b_min.sub(C, E);
         b_max.add(C, E);
+
+        center = Point(C.x, C.y, C.z);
+        extents = Point(E.x, E.y, E.z);
     }
 
-    [[nodiscard]] constexpr bool _box(const Fvector& C, const Fvector& E) const
+private:
+    [[nodiscard]] constexpr bool _box(const tinybvh::bvhvec3& min, const tinybvh::bvhvec3& max) const
     {
-        if (b_max.x < C.x - E.x)
+        if (b_max.x < min.x)
             return false;
-        if (b_max.y < C.y - E.y)
+        if (b_max.y < min.y)
             return false;
-        if (b_max.z < C.z - E.z)
+        if (b_max.z < min.z)
             return false;
-        if (b_min.x > C.x + E.x)
+        if (b_min.x > max.x)
             return false;
-        if (b_min.y > C.y + E.y)
+        if (b_min.y > max.y)
             return false;
-        if (b_min.z > C.z + E.z)
+        if (b_min.z > max.z)
             return false;
+
         return true;
     }
 
     [[nodiscard]] constexpr bool _tri() const
     {
         // move everything so that the boxcenter is in (0,0,0)
-        IceMaths::Point v0, v1, v2;
+        Point v0, v1, v2;
         v0.x = mLeafVerts[0].x - center.x;
         v1.x = mLeafVerts[1].x - center.x;
         v2.x = mLeafVerts[2].x - center.x;
@@ -226,9 +250,9 @@ public:
         // 2) Test if the box intersects the plane of the triangle
         // compute plane equation of triangle: normal*x+d=0
         // ### could be precomputed since we use the same leaf triangle several times
-        const IceMaths::Point e0 = v1 - v0;
-        const IceMaths::Point e1 = v2 - v1;
-        const IceMaths::Point normal = e0 ^ e1;
+        const Point e0 = v1 - v0;
+        const Point e1 = v2 - v1;
+        const Point normal = e0 ^ e1;
         const float d = -normal | v0;
         if (!planeBoxOverlap(normal, d, extents))
             return false;
@@ -258,7 +282,7 @@ public:
             AXISTEST_Y02(e1.z, e1.x, fez1, fex1);
             AXISTEST_Z0(e1.y, e1.x, fey1, fex1);
 
-            const IceMaths::Point e2 = mLeafVerts[0] - mLeafVerts[2];
+            const Point e2 = mLeafVerts[0] - mLeafVerts[2];
             const float fey2 = _abs(e2.y);
             const float fez2 = _abs(e2.z);
             AXISTEST_X2(e2.z, e2.y, fez2, fey2);
@@ -270,22 +294,21 @@ public:
         return true;
     }
 
-    constexpr void _prim(size_t prim)
+    constexpr void _prim(u32 prim)
     {
-        const auto id = gsl::narrow<s32>(prim);
-        const TRI& T = tris[id];
+        auto& T = tris[prim];
 
-        const Fvector& v0 = verts[T.verts[0]];
+        auto& v0 = verts[T.verts[0]];
         mLeafVerts[0].x = v0.x;
         mLeafVerts[0].y = v0.y;
         mLeafVerts[0].z = v0.z;
 
-        const Fvector& v1 = verts[T.verts[1]];
+        auto& v1 = verts[T.verts[1]];
         mLeafVerts[1].x = v1.x;
         mLeafVerts[1].y = v1.y;
         mLeafVerts[1].z = v1.z;
 
-        const Fvector& v2 = verts[T.verts[2]];
+        auto& v2 = verts[T.verts[2]];
         mLeafVerts[2].x = v2.x;
         mLeafVerts[2].y = v2.y;
         mLeafVerts[2].z = v2.z;
@@ -293,33 +316,52 @@ public:
         if (!_tri())
             return;
 
-        dest->r_add(id, v0, v1, v2, T.dummy);
+        dest->r_add(gsl::narrow<s32>(prim), v0.xyz(), v1.xyz(), v2.xyz(), T.dummy);
     }
 
-    constexpr void _stab(const AABBNoLeafNode* node)
+public:
+    constexpr void _stab(std::span<const tinybvh::BVH::BVHNode> nodes, std::span<const u32> prim_ids)
     {
-        // Actual box-box test
-        if (!_box(*reinterpret_cast<const Fvector*>(&node->mAABB.mCenter), *reinterpret_cast<const Fvector*>(&node->mAABB.mExtents)))
-            return;
+        xr::unordered_set<u32> prims;
+        xr::inlined_vector<u32, 32> stack;
 
-        // 1st chield
-        if (node->HasPosLeaf())
-            _prim(node->GetPosPrimitive());
-        else
-            _stab(node->GetPos());
+        stack.emplace_back(0);
 
-        // Early exit for "only first"
-        if constexpr (bFirst)
+        while (!stack.empty())
         {
-            if (!dest->r_empty())
-                return;
-        }
+            auto& node = nodes[stack.back()];
+            stack.pop_back();
 
-        // 2nd chield
-        if (node->HasNegLeaf())
-            _prim(node->GetNegPrimitive());
-        else
-            _stab(node->GetNeg());
+            // Actual box-box test
+            if (!_box(node.aabbMin, node.aabbMax))
+                continue;
+
+            if (!node.isLeaf())
+            {
+                // 2nd child
+                stack.emplace_back(node.leftFirst + 1);
+                // 1st child
+                stack.emplace_back(node.leftFirst);
+
+                continue;
+            }
+
+            for (auto id : prim_ids.subspan(node.leftFirst, node.triCount))
+            {
+                // Early exit for "only first"
+                if constexpr (bFirst)
+                {
+                    _prim(id);
+
+                    if (!dest->r_empty())
+                        return;
+                }
+                else if (prims.emplace(id).second)
+                {
+                    _prim(id);
+                }
+            }
+        }
     }
 };
 } // namespace
@@ -327,44 +369,27 @@ public:
 void COLLIDER::box_query(u32 box_mode, const MODEL* m_def, const Fvector& b_center, const Fvector& b_dim)
 {
     m_def->syncronize();
-
-    // This should be smart_cast<>()/dynamic_cast<>(), but OpCoDe doesn't use our custom RTTI.
-    // So we just rely on that `AABBOptimizedTree` starts at offset 0 inside `AABBNoLeafTree`.
-    // OpCoDe itself uses C-style casts for downcasting, which is roughly the same.
-    const AABBNoLeafTree* T = reinterpret_cast<const AABBNoLeafTree*>(m_def->tree->GetTree());
-    const AABBNoLeafNode* N = T->GetNodes();
-
     r_clear();
+
+    const auto& bvh = *m_def->get_tree();
 
     // Binary dispatcher
     if (box_mode & OPT_FULL_TEST)
     {
         if (box_mode & OPT_ONLYFIRST)
-        {
-            box_collider<true, true> BC;
-            BC._init(this, m_def->verts, m_def->tris, b_center, b_dim);
-            BC._stab(N);
-        }
+            box_collider<true, true>{this, m_def->get_verts(), m_def->get_tris(), b_center, b_dim}._stab(std::span{bvh.bvhNode, bvh.usedNodes},
+                                                                                                         std::span{bvh.primIdx, bvh.idxCount});
         else
-        {
-            box_collider<true, false> BC;
-            BC._init(this, m_def->verts, m_def->tris, b_center, b_dim);
-            BC._stab(N);
-        }
+            box_collider<true, false>{this, m_def->get_verts(), m_def->get_tris(), b_center, b_dim}._stab(std::span{bvh.bvhNode, bvh.usedNodes},
+                                                                                                          std::span{bvh.primIdx, bvh.idxCount});
     }
     else
     {
         if (box_mode & OPT_ONLYFIRST)
-        {
-            box_collider<false, true> BC;
-            BC._init(this, m_def->verts, m_def->tris, b_center, b_dim);
-            BC._stab(N);
-        }
+            box_collider<false, true>{this, m_def->get_verts(), m_def->get_tris(), b_center, b_dim}._stab(std::span{bvh.bvhNode, bvh.usedNodes},
+                                                                                                          std::span{bvh.primIdx, bvh.idxCount});
         else
-        {
-            box_collider<false, false> BC;
-            BC._init(this, m_def->verts, m_def->tris, b_center, b_dim);
-            BC._stab(N);
-        }
+            box_collider<false, false>{this, m_def->get_verts(), m_def->get_tris(), b_center, b_dim}._stab(std::span{bvh.bvhNode, bvh.usedNodes},
+                                                                                                           std::span{bvh.primIdx, bvh.idxCount});
     }
 }

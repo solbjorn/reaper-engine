@@ -508,6 +508,7 @@ bool CVisualMemoryManager::visible(u32 _level_vertex_id, float yaw, float eye_fo
 float CVisualMemoryManager::feel_vision_mtl_transp(CObject* O, u32 element)
 {
     float vis = 1.f;
+
     if (O)
     {
         IKinematics* V = smart_cast<IKinematics*>(O->Visual());
@@ -519,8 +520,7 @@ float CVisualMemoryManager::feel_vision_mtl_transp(CObject* O, u32 element)
     }
     else
     {
-        CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + element;
-        vis = GMLib.GetMaterialByIdx(T->material)->fVisTransparencyFactor;
+        vis = GMLib.GetMaterialByIdx(Level().ObjectSpace.GetStaticTris()[element].material)->fVisTransparencyFactor;
     }
 
     return vis;

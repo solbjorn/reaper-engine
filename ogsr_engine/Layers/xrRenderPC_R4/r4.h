@@ -182,9 +182,9 @@ public:
     void add_Visual(u32 context_id, IRenderable* root, IRenderVisual* V, Fmatrix& m) override;
 
     // wallmarks
-    void add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
-    void add_StaticWallmark(IWallMarkArray* pArray, const Fvector3& P, f32 s, CDB::TRI* T, Fvector3* V) override;
-    void add_StaticWallmark(const wm_shader& S, const Fvector3& P, f32 s, CDB::TRI* T, Fvector3* V) override;
+    void add_StaticWallmark(ref_shader& S, const Fvector& P, f32 s, const CDB::TRI& T, std::span<const Fvector4> V);
+    void add_StaticWallmark(IWallMarkArray* pArray, const Fvector3& P, f32 s, const CDB::TRI& T, std::span<const Fvector4> V) override;
+    void add_StaticWallmark(const wm_shader& S, const Fvector3& P, f32 s, const CDB::TRI& T, std::span<const Fvector4> V) override;
     void clear_static_wallmarks() override;
     void add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm);
     void add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size);

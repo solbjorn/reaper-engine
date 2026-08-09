@@ -65,7 +65,7 @@ bool dcTriListCollider::circleLineIntersection(const dReal* cn, const dReal* cp,
     }
 }
 
-int dcTriListCollider::dSortedTriCyl(const dReal*, const dReal*, const dReal* triAx, CDB::TRI* T, dReal dist, dxGeom* o1, dxGeom* o2, int flags,
+int dcTriListCollider::dSortedTriCyl(const dReal*, const dReal*, const dReal* triAx, const CDB::TRI* T, dReal dist, dxGeom* o1, dxGeom* o2, int flags,
                                      dContactGeom* contact, int skip)
 {
     XR_DEBUG_ASSERT(dGeomGetClass(o1) == dCylinderClassUser);
@@ -619,10 +619,11 @@ int dcTriListCollider::dTriCyl(const dReal* v0, const dReal* v1, const dReal* v2
     //////////////////////////////////////////////////////////////////////
     /// if we get to this poit tri touches cylinder///////////////////////
     /////////////////////////////////////////////////////////////////////
-    CDB::TRI* T_array = Level().ObjectSpace.GetStaticTris();
+    const auto T_array = Level().ObjectSpace.GetStaticTris();
     dVector3 norm;
     unsigned int ret;
     Flags8& gl_state = gl_cl_tries_state[I - B];
+
     if (code == 0)
     {
         norm[0] = triAx[0] * signum;

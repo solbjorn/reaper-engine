@@ -197,42 +197,45 @@ void CWallmarksEngine::BuildMatrix(Fmatrix& mView, float invsz, const Fvector& f
     mView.mulA_43(mScale);
 }
 
-void CWallmarksEngine::AddWallmark_internal(CDB::TRI* pTri, const Fvector* pVerts, const Fvector& contact_point, const ref_shader& hShader, float sz)
+void CWallmarksEngine::AddWallmark_internal(const CDB::TRI& pTri, std::span<const Fvector4> pVerts, const Fvector& contact_point, const ref_shader& hShader,
+                                            f32 sz)
 {
     XR_TRACY_ZONE_SCOPED();
 
     // query for polygons in bounding box
     // calculate adjacency
+    Fbox bb_query;
+    Fvector bbc, bbd;
+
+    bb_query.set(contact_point, contact_point);
+    bb_query.grow(sz * 2.5f);
+    bb_query.get_CD(bbc, bbd);
+
+    xrc.box_query(CDB::OPT_FULL_TEST, g_pGameLevel->ObjectSpace.GetStaticModel(), bbc, bbd);
+    const auto triCount = xrc.r_count();
+    if (0 == triCount)
+        return;
+
+    const auto tris = g_pGameLevel->ObjectSpace.GetStaticTris();
+    const std::array<Fvector3, 3> vs{pVerts[pTri.verts[0]].xyz(), pVerts[pTri.verts[1]].xyz(), pVerts[pTri.verts[2]].xyz()};
+
+    sml_collector.clear();
+    sml_collector.add_face_packed_D(vs[0], vs[1], vs[2], 0);
+
+    for (gsl::index t{0}; t < triCount; ++t)
     {
-        Fbox bb_query;
-        Fvector bbc, bbd;
-        bb_query.set(contact_point, contact_point);
-        bb_query.grow(sz * 2.5f);
-        bb_query.get_CD(bbc, bbd);
-        xrc.box_query(CDB::OPT_FULL_TEST, g_pGameLevel->ObjectSpace.GetStaticModel(), bbc, bbd);
-        const auto triCount = xrc.r_count();
-        if (0 == triCount)
-            return;
+        auto& T = tris[xrc.r_begin()[t].id];
+        if (&T == &pTri)
+            continue;
 
-        CDB::TRI* tris = g_pGameLevel->ObjectSpace.GetStaticTris();
-        sml_collector.clear();
-        sml_collector.add_face_packed_D(pVerts[pTri->verts[0]], pVerts[pTri->verts[1]], pVerts[pTri->verts[2]], 0);
-
-        for (gsl::index t{}; t < triCount; ++t)
-        {
-            CDB::TRI* T = tris + xrc.r_begin()[t].id;
-            if (T == pTri)
-                continue;
-
-            sml_collector.add_face_packed_D(pVerts[T->verts[0]], pVerts[T->verts[1]], pVerts[T->verts[2]], 0);
-        }
-
-        sml_collector.calc_adjacency(sml_adjacency);
+        sml_collector.add_face_packed_D(pVerts[T.verts[0]].xyz(), pVerts[T.verts[1]].xyz(), pVerts[T.verts[2]].xyz(), 0);
     }
+
+    sml_collector.calc_adjacency(sml_adjacency);
 
     // calc face normal
     Fvector N;
-    N.mknormal(pVerts[pTri->verts[0]], pVerts[pTri->verts[1]], pVerts[pTri->verts[2]]);
+    N.mknormal(vs[0], vs[1], vs[2]);
     sml_normal.set(N);
 
     // build 3D ortho-frustum
@@ -285,7 +288,8 @@ void CWallmarksEngine::AddWallmark_internal(CDB::TRI* pTri, const Fvector* pVert
     slot->static_items.push_back(W);
 }
 
-void CWallmarksEngine::AddStaticWallmark(CDB::TRI* pTri, const Fvector* pVerts, const Fvector& contact_point, const ref_shader& hShader, float sz)
+void CWallmarksEngine::AddStaticWallmark(const CDB::TRI& pTri, std::span<const Fvector4> pVerts, const Fvector& contact_point, const ref_shader& hShader,
+                                         f32 sz)
 {
     // optimization cheat: don't allow wallmarks more than 100 m from viewer/actor
     if (contact_point.distance_to_sqr(Device.vCameraPosition) > _sqr(100.f))

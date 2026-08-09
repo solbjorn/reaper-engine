@@ -9,18 +9,7 @@ struct _processor_info final
 private:
     cpu_features::X86Features features;
 
-    template <bool compile_time>
-    [[nodiscard]] static constexpr bool has(bool runtime)
-    {
-        if constexpr (compile_time)
-            return true;
-
-        return runtime;
-    }
-
 public:
-    [[nodiscard]] constexpr bool hasSSE() const { return has<CPU_FEATURES_COMPILED_X86_SSE>(features.sse); }
-
     std::unique_ptr<float[]> fUsage;
     DWORD m_dwNumberOfProcessors;
 

@@ -20,6 +20,9 @@
     <Project Path="3rd_party/Src/crypto/crypto.vcxproj" Id="4a9a3601-fa0a-4bfc-a5ff-0531cc9e0cd1">
       <BuildDependency Project="3rd_party/Src/system/llvm/llvm.vcxproj" />
     </Project>
+    <Project Path="3rd_party/Src/legacy/ode/ode.vcxproj" Id="1bf75feb-87dd-486c-880b-227987d191c2">
+      <BuildDependency Project="3rd_party/Src/system/llvm/llvm.vcxproj" />
+    </Project>
     <Project Path="3rd_party/Src/luajit2/luajit2.vcxproj" Id="632aeeb6-dc06-4e15-9551-b2b09a4b73c5" />
   </Folder>
   <Folder Name="/3rd_party/Archiving/">
@@ -130,14 +133,6 @@
     <Project Path="3rd_party/Src/i18n/budouxc/budouxc.vcxproj" Id="9547a077-04ba-477b-8b11-49c0fc49b586" />
     <Project Path="3rd_party/Src/i18n/unibreak/unibreak.vcxproj" Id="2e26d854-2878-4053-92d0-c19a68e32e3d" />
   </Folder>
-  <Folder Name="/3rd_party/Legacy/">
-    <Project Path="3rd_party/Src/legacy/OpCoDe/OpCoDe.vcxproj" Id="8b7e63c3-85be-4671-999e-6c72d67f062d">
-      <BuildDependency Project="3rd_party/Src/system/llvm/llvm.vcxproj" />
-    </Project>
-    <Project Path="3rd_party/Src/legacy/ode/ode.vcxproj" Id="1bf75feb-87dd-486c-880b-227987d191c2">
-      <BuildDependency Project="3rd_party/Src/system/llvm/llvm.vcxproj" />
-    </Project>
-  </Folder>
   <Folder Name="/3rd_party/OpenImageIO/">
     <Project Path="3rd_party/Src/OpenImageIO/Imath/Imath.vcxproj" Id="25f5549b-002b-40af-a1fb-34b166e89cb9">
       <BuildDependency Project="3rd_party/Src/system/llvm/llvm.vcxproj" />
@@ -227,7 +222,6 @@
     <BuildDependency Project="3rd_party/Src/utility/xxHash/xxHash.vcxproj" />
   </Project>
   <Project Path="ogsr_engine/xrCDB/xrCDB.vcxproj" Id="a19b1df2-82ec-4364-8bdf-85d13a1c89b5">
-    <BuildDependency Project="3rd_party/Src/legacy/OpCoDe/OpCoDe.vcxproj" />
     <BuildDependency Project="3rd_party/Src/tmc/cpu_features/cpu_features.vcxproj" />
     <BuildDependency Project="3rd_party/Src/utility/xxHash/xxHash.vcxproj" />
   </Project>

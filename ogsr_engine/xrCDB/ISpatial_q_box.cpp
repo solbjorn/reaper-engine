@@ -5,16 +5,16 @@ namespace
 template <bool b_first>
 class XR_TRIVIAL alignas(16) walker
 {
-public:
+private:
     u32 mask;
     Fvector center;
     Fvector size;
     Fbox box;
     ISpatial_DB* space;
 
-    constexpr walker() = default;
-
-    constexpr explicit walker(ISpatial_DB* _space, u32 _mask, const Fvector& _center, const Fvector& _size) : mask{_mask}, center{_center}, size{_size}, space{_space}
+public:
+    constexpr explicit walker(ISpatial_DB* _space, u32 _mask, const Fvector& _center, const Fvector& _size)
+        : mask{_mask}, center{_center}, size{_size}, space{_space}
     {
         box.setb(center, size);
     }
@@ -101,21 +101,14 @@ void ISpatial_DB::q_box(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvecto
     q_result->clear();
 
     if (_o & O_ONLYFIRST)
-    {
-        walker<true> W{this, _mask, _center, _size};
-        W.walk(m_root, m_center, m_bounds);
-    }
+        walker<true>{this, _mask, _center, _size}.walk(m_root, m_center, m_bounds);
     else
-    {
-        walker<false> W{this, _mask, _center, _size};
-        W.walk(m_root, m_center, m_bounds);
-    }
+        walker<false>{this, _mask, _center, _size}.walk(m_root, m_center, m_bounds);
 
     cs.Leave();
 }
 
 void ISpatial_DB::q_sphere(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvector& _center, f32 _radius)
 {
-    const Fvector _size{_radius, _radius, _radius};
-    q_box(R, _o, _mask, _center, _size);
+    q_box(R, _o, _mask, _center, Fvector{_radius, _radius, _radius});
 }

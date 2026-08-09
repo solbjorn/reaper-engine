@@ -4,7 +4,7 @@
 #include "dTriBox.h"
 #include "dcTriListCollider.h"
 
-int dcTriListCollider::dSortedTriBox(const dReal*, const dReal*, const dReal* triAx, CDB::TRI* T, dReal dist, dxGeom* o1, dxGeom* o2, int flags,
+int dcTriListCollider::dSortedTriBox(const dReal*, const dReal*, const dReal* triAx, const CDB::TRI* T, dReal dist, dxGeom* o1, dxGeom* o2, int flags,
                                      dContactGeom* contact, int skip)
 {
     XR_ASSERT(skip >= sizeof(dContactGeom));

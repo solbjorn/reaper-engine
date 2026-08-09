@@ -10,6 +10,7 @@ float asinf(float x);
 float atan2f(float x, float y);
 float atanf(float x);
 double atof(const char* str);
+float cbrtf(float x);
 
 #undef copysign
 double copysign(double x, double y);
@@ -54,6 +55,7 @@ float tanf(float x);
 #define atan2f dontuse_crt_atan2f
 #define atanf dontuse_crt_atanf
 #define atof dontuse_crt_atof
+#define cbrtf dontuse_crt__cbrtf
 #define copysign dontuse_crt_copysign
 #define cosf dontuse_crt_cosf
 #define expf dontuse_crt_expf
@@ -109,6 +111,7 @@ float tanf(float x);
 #undef expf
 #undef cosf
 #undef copysign
+#undef cbrtf
 #undef atof
 #undef atanf
 #undef atan2f

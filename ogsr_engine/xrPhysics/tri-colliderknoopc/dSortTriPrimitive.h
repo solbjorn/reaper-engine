@@ -12,7 +12,7 @@
 #include "../debug_output.h"
 #endif
 
-IC bool negative_tri_set_ignored_by_positive_tri(const Triangle& neg_tri, const Triangle& pos_tri, const Fvector* V_array)
+[[nodiscard]] constexpr bool negative_tri_set_ignored_by_positive_tri(const Triangle& neg_tri, const Triangle& pos_tri, std::span<const Fvector4> V_array)
 {
     bool common0 = (neg_tri.T->verts[0] == pos_tri.T->verts[0]) || (neg_tri.T->verts[0] == pos_tri.T->verts[1]) || (neg_tri.T->verts[0] == pos_tri.T->verts[2]);
     bool common1 = (neg_tri.T->verts[1] == pos_tri.T->verts[0]) || (neg_tri.T->verts[1] == pos_tri.T->verts[1]) || (neg_tri.T->verts[1] == pos_tri.T->verts[2]);
@@ -56,6 +56,7 @@ IC int SetBackTrajectoryCnt(const dReal* p, const dReal* last_pos, Triangle& neg
 
     if (dGeomGetUserData(o1)->callback)
         dGeomGetUserData(o1)->callback(neg_tri.T, Contacts);
+
     return 1;
 }
 
@@ -73,8 +74,9 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
     Fbox box;
     box.setb(cast_fv(p), AABB);
 
-    CDB::TRI* T_array = Level().ObjectSpace.GetStaticTris();
-    const Fvector* V_array = Level().ObjectSpace.GetStaticVerts();
+    const auto T_array = Level().ObjectSpace.GetStaticTris();
+    const auto V_array = Level().ObjectSpace.GetStaticVerts();
+
     if (no_last_pos || !last_box.contains(box))
     {
         Fvector aabb;
@@ -127,6 +129,7 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
         const dReal* neg_vertices[3] = {cast_fp(V_array[neg_tri.T->verts[0]]), cast_fp(V_array[neg_tri.T->verts[1]]), cast_fp(V_array[neg_tri.T->verts[2]])};
         neg_tri_contains_point = TriContainPoint(neg_vertices[0], neg_vertices[1], neg_vertices[2], neg_tri.norm, neg_tri.side0, neg_tri.side1, p);
         bool b_neg_dist = neg_tri.dist < 0.f;
+
         if (b_neg_dist || (!neg_tri_contains_point && !no_last_pos))
         {
             dReal sidePr = primitive.Proj(o1, neg_tri.norm);
@@ -171,16 +174,17 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
     B = data->cashed_tries.begin();
     E = data->cashed_tries.end();
     bool gb_pased = false;
+
     for (I = B; I != E; ++I)
     {
 #ifdef DEBUG
         debug_output().dbg_saved_tries_for_active_objects()++;
 #endif
 
-        // if(ignored_tries[I-B])continue;
-        CDB::TRI* Tr = T_array + *I;
+        const auto Tr = &T_array[*I];
         const Point vertices[3]{Point((const dReal*)&V_array[Tr->verts[0]]), Point((const dReal*)&V_array[Tr->verts[1]]),
                                 Point((const dReal*)&V_array[Tr->verts[2]])};
+
         if (!aabb_tri_aabb(Point(p), Point((const float*)&AABB), vertices))
             continue;
 
@@ -189,8 +193,10 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
             debug_output().DBG_DrawTri(Tr, V_array, D3DCOLOR_XRGB(0, 255, 0));
         debug_output().dbg_tries_num()++;
 #endif
+
         Triangle tri;
         CalculateTri(Tr, p, tri, vertices);
+
         if (tri.dist < 0.f)
         {
 #ifdef DEBUG

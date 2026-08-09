@@ -26,16 +26,20 @@ IC BOOL feel_vision_callback(collide::rq_result& result, LPVOID params)
 {
     SFeelParam* fp = (SFeelParam*)params;
     float vis = fp->parent->feel_vision_mtl_transp(result.O, result.element);
+
     fp->vis *= vis;
+
     if (!result.O && fis_zero(vis))
     {
-        CDB::TRI* T = g_pGameLevel->ObjectSpace.GetStaticTris() + result.element;
-        Fvector* V = g_pGameLevel->ObjectSpace.GetStaticVerts();
-        fp->item->Cache.verts[0].set(V[T->verts[0]]);
-        fp->item->Cache.verts[1].set(V[T->verts[1]]);
-        fp->item->Cache.verts[2].set(V[T->verts[2]]);
+        auto& tri = g_pGameLevel->ObjectSpace.GetStaticTris()[result.element];
+        const auto verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
+
+        fp->item->Cache.verts[0].set(verts[tri.verts[0]].xyz());
+        fp->item->Cache.verts[1].set(verts[tri.verts[1]].xyz());
+        fp->item->Cache.verts[2].set(verts[tri.verts[2]].xyz());
     }
-    return (fp->vis > fp->vis_threshold);
+
+    return fp->vis > fp->vis_threshold;
 }
 } // namespace
 

@@ -95,7 +95,7 @@ struct dxGeomUserData final
 {
     dVector3 last_pos;
     bool pushing_neg, pushing_b_neg, b_static_colide;
-    CDB::TRI *neg_tri, *b_neg_tri;
+    const CDB::TRI *neg_tri, *b_neg_tri;
     CPHObject* ph_object;
     CPhysicsShellHolder* ph_ref_object;
     u16 material;

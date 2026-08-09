@@ -122,7 +122,7 @@ void DBG_DrawPHAbstruct(SPHDBGDrawAbsract* a);
 void DBG_DrawPHObject(CPHObject* obj);
 void DBG_DrawContact(dContact& c);
 void DBG_DrawTri(CDB::RESULT* T, u32 c);
-void DBG_DrawTri(CDB::TRI* T, const Fvector* V_verts, u32 c);
+void DBG_DrawTri(const CDB::TRI* T, std::span<const Fvector4> V_verts, u32 c);
 void DBG_DrawLine(const Fvector& p0, const Fvector& p1, u32 c);
 void DBG_DrawAABB(const Fvector& center, const Fvector& AABB, u32 c);
 void DBG_DrawOBB(const Fmatrix& m, const Fvector h, u32 c);

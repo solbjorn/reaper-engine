@@ -211,9 +211,9 @@ public:
     [[nodiscard]] virtual IRender_Target* getTarget() = 0;
 
     virtual void add_Visual(u32 context_id, IRenderable* root, IRenderVisual* V, Fmatrix& m) = 0; // add visual leaf	(no culling performed at all)
-    virtual void add_StaticWallmark(const wm_shader& S, const Fvector3& P, f32 s, CDB::TRI* T, Fvector3* V) = 0;
+    virtual void add_StaticWallmark(const wm_shader& S, const Fvector3& P, f32 s, const CDB::TRI& T, std::span<const Fvector4> V) = 0;
     //	Prefer this function when possible
-    virtual void add_StaticWallmark(IWallMarkArray* pArray, const Fvector3& P, f32 s, CDB::TRI* T, Fvector3* V) = 0;
+    virtual void add_StaticWallmark(IWallMarkArray* pArray, const Fvector3& P, f32 s, const CDB::TRI& T, std::span<const Fvector4> V) = 0;
     virtual void clear_static_wallmarks() = 0;
     //	Prefer this function when possible
     virtual void add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector3& start, const Fvector3& dir, f32 size) = 0;

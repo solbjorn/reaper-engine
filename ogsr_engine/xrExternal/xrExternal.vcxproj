@@ -57,14 +57,14 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <FloatingPointModel>Precise</FloatingPointModel>
+      <FloatingPointModel>Fast</FloatingPointModel>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build\$(Configuration)\$(PlatformShortName)\include\freetype2;$(SolutionDir)\3rd_party\Src\FreeType\plutosvg\_Build\$(Configuration)\$(PlatformShortName)\include\plutosvg;$(SolutionDir)\3rd_party\Src\FreeType\plutovg\_Build\$(Configuration)\$(PlatformShortName)\include\plutovg;$(SolutionDir)\3rd_party\Src\discord_social_sdk\include;$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo\src;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\tmc\hwloc\_Build\$(Configuration)\$(PlatformShortName)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build\$(Configuration)\$(PlatformShortName)\include\freetype2;$(SolutionDir)\3rd_party\Src\FreeType\plutosvg\_Build\$(Configuration)\$(PlatformShortName)\include\plutosvg;$(SolutionDir)\3rd_party\Src\FreeType\plutovg\_Build\$(Configuration)\$(PlatformShortName)\include\plutovg;$(SolutionDir)\3rd_party\Src\discord_social_sdk\include;$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo\src;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\tinybvh;$(SolutionDir)\3rd_party\Src\tmc\hwloc\_Build\$(Configuration)\$(PlatformShortName)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -91,14 +91,14 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <FloatingPointModel>Precise</FloatingPointModel>
+      <FloatingPointModel>Fast</FloatingPointModel>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build\$(Configuration)\$(PlatformShortName)\include\freetype2;$(SolutionDir)\3rd_party\Src\FreeType\plutosvg\_Build\$(Configuration)\$(PlatformShortName)\include\plutosvg;$(SolutionDir)\3rd_party\Src\FreeType\plutovg\_Build\$(Configuration)\$(PlatformShortName)\include\plutovg;$(SolutionDir)\3rd_party\Src\discord_social_sdk\include;$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo\src;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\tmc\hwloc\_Build\$(Configuration)\$(PlatformShortName)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build\$(Configuration)\$(PlatformShortName)\include\freetype2;$(SolutionDir)\3rd_party\Src\FreeType\plutosvg\_Build\$(Configuration)\$(PlatformShortName)\include\plutosvg;$(SolutionDir)\3rd_party\Src\FreeType\plutovg\_Build\$(Configuration)\$(PlatformShortName)\include\plutovg;$(SolutionDir)\3rd_party\Src\discord_social_sdk\include;$(SolutionDir)\3rd_party\Src\imgui\ImGuizmo\src;$(SolutionDir)\3rd_party\Src\imgui\imgui;$(SolutionDir)\3rd_party\Src\imgui\sol2_ImGui_Bindings;$(SolutionDir)\3rd_party\Src\luajit2\_Build\$(Configuration)\$(PlatformShortName)\include\luajit;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\tinybvh;$(SolutionDir)\3rd_party\Src\tmc\hwloc\_Build\$(Configuration)\$(PlatformShortName)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -117,6 +117,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="tinybvh.cpp" />
     <ClCompile Include="tmc.cpp" />
     <ClCompile Include="tracy.cpp" />
   </ItemGroup>
@@ -126,6 +127,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="rtti.h" />
     <ClInclude Include="sol.h" />
+    <ClInclude Include="tinybvh.h" />
     <ClInclude Include="tmc.h" />
     <ClInclude Include="tracy.h" />
   </ItemGroup>

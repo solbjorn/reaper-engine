@@ -68,11 +68,11 @@ public:
         solid = false;
     }
 
-    explicit SPHDBGDrawTri(CDB::TRI* T, const Fvector* V_array, u32 ac)
+    explicit SPHDBGDrawTri(const CDB::TRI* T, std::span<const Fvector4> V_array, u32 ac)
     {
-        v[0].set(V_array[T->verts[0]]);
-        v[1].set(V_array[T->verts[1]]);
-        v[2].set(V_array[T->verts[2]]);
+        v[0].set(V_array[T->verts[0]].xyz());
+        v[1].set(V_array[T->verts[1]].xyz());
+        v[2].set(V_array[T->verts[2]].xyz());
         c = ac;
         solid = false;
     }
@@ -117,7 +117,7 @@ static void clear_vector(PHABS_DBG_V& v)
 }
 
 void DBG_DrawTri(CDB::RESULT* T, u32 c) { DBG_DrawPHAbstruct(xr_new<SPHDBGDrawTri>(T, c)); }
-void DBG_DrawTri(CDB::TRI* T, const Fvector* V_verts, u32 c) { DBG_DrawPHAbstruct(xr_new<SPHDBGDrawTri>(T, V_verts, c)); }
+void DBG_DrawTri(const CDB::TRI* T, std::span<const Fvector4> V_verts, u32 c) { DBG_DrawPHAbstruct(xr_new<SPHDBGDrawTri>(T, V_verts, c)); }
 
 struct SPHDBGDrawLine final : public SPHDBGDrawAbsract
 {

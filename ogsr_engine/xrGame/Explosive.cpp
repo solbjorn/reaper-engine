@@ -179,6 +179,7 @@ ICF static BOOL grenade_hit_callback(collide::rq_result& result, LPVOID params)
 {
     SExpQParams& ep = *(SExpQParams*)params;
     u16 mtl_idx = GAMEMTL_NONE_IDX;
+
     if (result.O)
     {
         IKinematics* V{};
@@ -191,11 +192,12 @@ ICF static BOOL grenade_hit_callback(collide::rq_result& result, LPVOID params)
     else
     {
         // получить треугольник и узнать его материал
-        CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
-        mtl_idx = T->material;
+        mtl_idx = Level().ObjectSpace.GetStaticTris()[result.element].material;
     }
+
     SGameMtl* mtl = GMLib.GetMaterialByIdx(mtl_idx);
     ep.shoot_factor *= mtl->fShootFactor;
+
 #ifdef DEBUG
     if (ph_dbg_draw_mask.test(phDbgDrawExplosions))
     {
@@ -207,6 +209,7 @@ ICF static BOOL grenade_hit_callback(collide::rq_result& result, LPVOID params)
         DBG_DrawPoint(p, 0.1f, D3DCOLOR_XRGB(255 - c, 0, c));
     }
 #endif
+
     return (ep.shoot_factor > 0.01f);
 }
 
@@ -639,18 +642,19 @@ void CExplosive::FindNormal(Fvector& normal)
     }
     else
     {
-        Fvector* pVerts = Level().ObjectSpace.GetStaticVerts();
-        CDB::TRI* pTri = Level().ObjectSpace.GetStaticTris() + RQ.element;
-        normal.mknormal(pVerts[pTri->verts[0]], pVerts[pTri->verts[1]], pVerts[pTri->verts[2]]);
+        const auto pVerts = Level().ObjectSpace.GetStaticVerts();
+        auto& pTri = Level().ObjectSpace.GetStaticTris()[RQ.element];
+
+        normal.mknormal(pVerts[pTri.verts[0]].xyz(), pVerts[pTri.verts[1]].xyz(), pVerts[pTri.verts[2]].xyz());
     }
 }
 
 void CExplosive::StartLight()
 {
     VERIFY(!ph_world->Processing());
+
     if (m_fLightTime > 0)
     {
-        //		VERIFY					(!m_pLight);
         LightCreate();
 
         m_pLight->set_color(m_LightColor.r, m_LightColor.g, m_LightColor.b);

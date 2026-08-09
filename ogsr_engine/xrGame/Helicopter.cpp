@@ -121,7 +121,7 @@ void CHelicopter::reload(LPCSTR section) { inherited::reload(section); }
 namespace
 {
 void CollisionCallbackAlife(bool& do_colide, bool, dContact&, SGameMtl*, SGameMtl*) { do_colide = false; }
-void ContactCallbackAlife(CDB::TRI*, dContactGeom*) {}
+void ContactCallbackAlife(const CDB::TRI*, dContactGeom*) {}
 } // namespace
 
 tmc::task<bool> CHelicopter::net_Spawn(CSE_Abstract* DC)

@@ -45,7 +45,6 @@ RD /s /q 3rd_party\Src\formatting\scn\_Build2
 RD /s /q 3rd_party\Src\i18n\SheenBidi\_Build
 RD /s /q 3rd_party\Src\i18n\budouxc\_Build
 RD /s /q 3rd_party\Src\i18n\unibreak\_Build
-RD /s /q 3rd_party\Src\legacy\OpCoDe\_Build
 RD /s /q 3rd_party\Src\luajit2\_Build
 RD /s /q 3rd_party\Src\sound\lame\_Build
 RD /s /q 3rd_party\Src\sound\mpg123\_Build
@@ -56,6 +55,7 @@ RD /s /q 3rd_party\Src\system\abseil\_Build
 RD /s /q 3rd_party\Src\system\boost\_Build
 RD /s /q 3rd_party\Src\system\llvm\_Build
 RD /s /q 3rd_party\Src\system\mimalloc\_Build
+RD /s /q 3rd_party\Src\tmc\cpu_features\_Build
 RD /s /q 3rd_party\Src\tmc\hwloc\_Build
 RD /s /q 3rd_party\Src\utility\pugixml\_Build
 RD /s /q 3rd_party\Src\utility\xxHash\_Build

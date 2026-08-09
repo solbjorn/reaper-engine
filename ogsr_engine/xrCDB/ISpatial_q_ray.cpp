@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include "cpu.h"
-
 namespace
 {
 struct XR_TRIVIAL alignas(16) vec_t : public Fvector3
@@ -103,108 +101,6 @@ struct XR_TRIVIAL alignas(16) ray_t
 };
 XR_TRIVIAL_ASSERT(ray_t);
 
-[[nodiscard]] constexpr u32 uf(const f32& x) { return std::bit_cast<u32>(x); }
-
-[[nodiscard]] constexpr bool isect_fpu(const Fvector& min, const Fvector& max, const ray_t& ray, Fvector& coord)
-{
-    Fvector MaxT{-1.0f, -1.0f, -1.0f};
-    BOOL Inside = TRUE;
-
-    // Find candidate planes.
-    if (ray.pos[0] < min[0])
-    {
-        coord[0] = min[0];
-        Inside = FALSE;
-        if (uf(ray.inv_dir[0]))
-            MaxT[0] = (min[0] - ray.pos[0]) * ray.inv_dir[0]; // Calculate T distances to candidate planes
-    }
-    else if (ray.pos[0] > max[0])
-    {
-        coord[0] = max[0];
-        Inside = FALSE;
-        if (uf(ray.inv_dir[0]))
-            MaxT[0] = (max[0] - ray.pos[0]) * ray.inv_dir[0]; // Calculate T distances to candidate planes
-    }
-    if (ray.pos[1] < min[1])
-    {
-        coord[1] = min[1];
-        Inside = FALSE;
-        if (uf(ray.inv_dir[1]))
-            MaxT[1] = (min[1] - ray.pos[1]) * ray.inv_dir[1]; // Calculate T distances to candidate planes
-    }
-    else if (ray.pos[1] > max[1])
-    {
-        coord[1] = max[1];
-        Inside = FALSE;
-        if (uf(ray.inv_dir[1]))
-            MaxT[1] = (max[1] - ray.pos[1]) * ray.inv_dir[1]; // Calculate T distances to candidate planes
-    }
-    if (ray.pos[2] < min[2])
-    {
-        coord[2] = min[2];
-        Inside = FALSE;
-        if (uf(ray.inv_dir[2]))
-            MaxT[2] = (min[2] - ray.pos[2]) * ray.inv_dir[2]; // Calculate T distances to candidate planes
-    }
-    else if (ray.pos[2] > max[2])
-    {
-        coord[2] = max[2];
-        Inside = FALSE;
-        if (uf(ray.inv_dir[2]))
-            MaxT[2] = (max[2] - ray.pos[2]) * ray.inv_dir[2]; // Calculate T distances to candidate planes
-    }
-
-    // Ray ray.pos inside bounding box
-    if (Inside)
-    {
-        coord = ray.pos;
-        return true;
-    }
-
-    // Get largest of the maxT's for final choice of intersection
-    u32 WhichPlane = 0;
-    if (MaxT[1] > MaxT[0])
-        WhichPlane = 1;
-    if (MaxT[2] > MaxT[WhichPlane])
-        WhichPlane = 2;
-
-    // Check final candidate actually inside box (if max < 0)
-    if (uf(MaxT[WhichPlane]) & 0x80000000)
-        return false;
-
-    if (0 == WhichPlane)
-    { // 1 & 2
-        coord[1] = ray.pos[1] + MaxT[0] * ray.fwd_dir[1];
-        if ((coord[1] < min[1]) || (coord[1] > max[1]))
-            return false;
-        coord[2] = ray.pos[2] + MaxT[0] * ray.fwd_dir[2];
-        if ((coord[2] < min[2]) || (coord[2] > max[2]))
-            return false;
-        return true;
-    }
-    if (1 == WhichPlane)
-    { // 0 & 2
-        coord[0] = ray.pos[0] + MaxT[1] * ray.fwd_dir[0];
-        if ((coord[0] < min[0]) || (coord[0] > max[0]))
-            return false;
-        coord[2] = ray.pos[2] + MaxT[1] * ray.fwd_dir[2];
-        if ((coord[2] < min[2]) || (coord[2] > max[2]))
-            return false;
-        return true;
-    }
-    if (2 == WhichPlane)
-    { // 0 & 1 //KRodin: это условие тоже всегда истинно. //-V547
-        coord[0] = ray.pos[0] + MaxT[2] * ray.fwd_dir[0];
-        if ((coord[0] < min[0]) || (coord[0] > max[0]))
-            return false;
-        coord[1] = ray.pos[1] + MaxT[2] * ray.fwd_dir[1];
-        if ((coord[1] < min[1]) || (coord[1] > max[1]))
-            return false;
-        return true;
-    }
-    return false;
-}
-
 // turn those verbose intrinsics into something readable.
 #define loadps(mem) _mm_load_ps(reinterpret_cast<const f32*>(mem))
 #define storess(ss, mem) _mm_store_ss(reinterpret_cast<f32*>(mem), (ss))
@@ -217,7 +113,7 @@ XR_TRIVIAL_ASSERT(ray_t);
 #define rotatelps(ps) _mm_shuffle_ps((ps), (ps), 0x39) // a,b,c,d -> b,c,d,a
 #define muxhps(low, high) _mm_movehl_ps((low), (high)) // low{a,b,c,d}|high{e,f,g,h} = {c,d,g,h}
 
-constexpr auto flt_plus_inf{std::numeric_limits<float>::infinity()};
+constexpr auto flt_plus_inf{std::numeric_limits<f32>::max()};
 constexpr float __declspec(align(16)) ps_cst_plus_inf[]{flt_plus_inf, flt_plus_inf, flt_plus_inf, flt_plus_inf};
 constexpr float __declspec(align(16)) ps_cst_minus_inf[]{-flt_plus_inf, -flt_plus_inf, -flt_plus_inf, -flt_plus_inf};
 
@@ -258,25 +154,21 @@ constexpr float __declspec(align(16)) ps_cst_minus_inf[]{-flt_plus_inf, -flt_plu
     lmin = maxss(lmin, lmin1);
 
     const bool ret = _mm_comige_ss(lmax, _mm_setzero_ps()) & _mm_comige_ss(lmax, lmin);
-
     storess(lmin, &dist);
-    // storess	(lmax, &rs.t_far);
 
     return ret;
 }
 
-template <bool b_use_sse, bool b_first, bool b_nearest>
+template <bool b_first, bool b_nearest>
 class XR_TRIVIAL alignas(16) walker
 {
-public:
+private:
     ray_t ray;
     u32 mask;
     float range;
-    float range2;
     ISpatial_DB* space;
 
-    constexpr walker() = default;
-
+public:
     constexpr walker(const walker& that) { xr_memcpy128(this, &that, sizeof(that)); }
 
 #ifdef XR_TRIVIAL_BROKEN
@@ -303,46 +195,18 @@ public:
 
     constexpr explicit walker(ISpatial_DB* _space, u32 _mask, const Fvector& _start, const Fvector& _dir, float _range)
     {
-        mask = _mask;
         ray.pos.set(_start);
-        ray.inv_dir.set(1.f, 1.f, 1.f).div(_dir);
+        ray.inv_dir.x = (_abs(_dir.x) > flt_eps) ? (1.0f / _dir.x) : flt_plus_inf;
+        ray.inv_dir.y = (_abs(_dir.y) > flt_eps) ? (1.0f / _dir.y) : flt_plus_inf;
+        ray.inv_dir.z = (_abs(_dir.z) > flt_eps) ? (1.0f / _dir.z) : flt_plus_inf;
         ray.fwd_dir.set(_dir);
 
-        if constexpr (!b_use_sse)
-        {
-            // for FPU - zero out inf
-            if (_abs(_dir.x) > flt_eps)
-            {
-            }
-            else
-                ray.inv_dir.x = 0;
-            if (_abs(_dir.y) > flt_eps)
-            {
-            }
-            else
-                ray.inv_dir.y = 0;
-            if (_abs(_dir.z) > flt_eps)
-            {
-            }
-            else
-                ray.inv_dir.z = 0;
-        }
-
+        mask = _mask;
         range = _range;
-        range2 = _range * _range;
         space = _space;
     }
 
-    // fpu
-    [[nodiscard]] constexpr bool _box_fpu(const Fvector& n_C, f32 n_R, Fvector& coord)
-    {
-        // box
-        const f32 n_vR{2 * n_R};
-        const Fbox BB{n_C.x - n_vR, n_C.y - n_vR, n_C.z - n_vR, n_C.x + n_vR, n_C.y + n_vR, n_C.z + n_vR};
-
-        return isect_fpu(BB.min, BB.max, ray, coord);
-    }
-
+private:
     // sse
     [[nodiscard]] constexpr bool _box_sse(const Fvector& n_C, f32 n_R, f32& dist)
     {
@@ -363,27 +227,16 @@ public:
         return isect_sse(init(n_C, n_R), ray, dist);
     }
 
+public:
     void walk(ISpatial_NODE& N, const Fvector& n_C, f32 n_R)
     {
         // Actual ray/aabb test
-        if constexpr (b_use_sse)
-        {
-            // use SSE
-            float d;
-            if (!_box_sse(n_C, n_R, d))
-                return;
-            if (d > range)
-                return;
-        }
-        else
-        {
-            // use FPU
-            Fvector P;
-            if (!_box_fpu(n_C, n_R, P))
-                return;
-            if (P.distance_to_sqr(ray.pos) > range2)
-                return;
-        }
+        // use SSE
+        float d;
+        if (!_box_sse(n_C, n_R, d))
+            return;
+        if (d > range)
+            return;
 
         // test items
         for (auto it : N.items)
@@ -405,8 +258,6 @@ public:
                     case Fsphere::rpOriginOutside: range = dist; break;
                     default: xr::unreachable();
                     }
-
-                    range2 = range * range;
                 }
 
                 space->q_result->push_back(S);
@@ -434,14 +285,10 @@ public:
         }
     }
 };
-XR_TRIVIAL_ASSERT(walker<true, true, true>);
-XR_TRIVIAL_ASSERT(walker<true, true, false>);
-XR_TRIVIAL_ASSERT(walker<true, false, true>);
-XR_TRIVIAL_ASSERT(walker<true, false, false>);
-XR_TRIVIAL_ASSERT(walker<false, true, true>);
-XR_TRIVIAL_ASSERT(walker<false, true, false>);
-XR_TRIVIAL_ASSERT(walker<false, false, true>);
-XR_TRIVIAL_ASSERT(walker<false, false, false>);
+XR_TRIVIAL_ASSERT(walker<true, true>);
+XR_TRIVIAL_ASSERT(walker<true, false>);
+XR_TRIVIAL_ASSERT(walker<false, true>);
+XR_TRIVIAL_ASSERT(walker<false, false>);
 } // namespace
 
 void ISpatial_DB::q_ray(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_and, const Fvector& _start, const Fvector& _dir, f32 _range)
@@ -451,63 +298,19 @@ void ISpatial_DB::q_ray(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_and, const Fv
     q_result = &R;
     q_result->clear();
 
-    if (CPU::ID.hasSSE())
+    if (_o & O_ONLYFIRST)
     {
-        if (_o & O_ONLYFIRST)
-        {
-            if (_o & O_ONLYNEAREST)
-            {
-                walker<true, true, true> W{this, _mask_and, _start, _dir, _range};
-                W.walk(*m_root, m_center, m_bounds);
-            }
-            else
-            {
-                walker<true, true, false> W{this, _mask_and, _start, _dir, _range};
-                W.walk(*m_root, m_center, m_bounds);
-            }
-        }
+        if (_o & O_ONLYNEAREST)
+            walker<true, true>{this, _mask_and, _start, _dir, _range}.walk(*m_root, m_center, m_bounds);
         else
-        {
-            if (_o & O_ONLYNEAREST)
-            {
-                walker<true, false, true> W{this, _mask_and, _start, _dir, _range};
-                W.walk(*m_root, m_center, m_bounds);
-            }
-            else
-            {
-                walker<true, false, false> W{this, _mask_and, _start, _dir, _range};
-                W.walk(*m_root, m_center, m_bounds);
-            }
-        }
+            walker<true, false>{this, _mask_and, _start, _dir, _range}.walk(*m_root, m_center, m_bounds);
     }
     else
     {
-        if (_o & O_ONLYFIRST)
-        {
-            if (_o & O_ONLYNEAREST)
-            {
-                walker<false, true, true> W{this, _mask_and, _start, _dir, _range};
-                W.walk(*m_root, m_center, m_bounds);
-            }
-            else
-            {
-                walker<false, true, false> W{this, _mask_and, _start, _dir, _range};
-                W.walk(*m_root, m_center, m_bounds);
-            }
-        }
+        if (_o & O_ONLYNEAREST)
+            walker<false, true>{this, _mask_and, _start, _dir, _range}.walk(*m_root, m_center, m_bounds);
         else
-        {
-            if (_o & O_ONLYNEAREST)
-            {
-                walker<false, false, true> W{this, _mask_and, _start, _dir, _range};
-                W.walk(*m_root, m_center, m_bounds);
-            }
-            else
-            {
-                walker<false, false, false> W{this, _mask_and, _start, _dir, _range};
-                W.walk(*m_root, m_center, m_bounds);
-            }
-        }
+            walker<false, false>{this, _mask_and, _start, _dir, _range}.walk(*m_root, m_center, m_bounds);
     }
 
     cs.Leave();

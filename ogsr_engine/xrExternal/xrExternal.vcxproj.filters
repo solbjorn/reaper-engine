@@ -13,6 +13,9 @@
     <Filter Include="ImGui">
       <UniqueIdentifier>{1bedd022-e50c-4080-813d-e27315bac8cd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Physics">
+      <UniqueIdentifier>{25085312-f998-4a20-9d9c-7d751ac9ae85}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Profiling">
       <UniqueIdentifier>{03acac38-71f4-48a3-833f-d74066591de7}</UniqueIdentifier>
     </Filter>
@@ -32,6 +35,9 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="tinybvh.cpp">
+      <Filter>Physics</Filter>
     </ClCompile>
     <ClCompile Include="tmc.cpp">
       <Filter>Concurrency</Filter>
@@ -56,6 +62,9 @@
     <ClInclude Include="sol.h">
       <Filter>Scripting</Filter>
     </ClInclude>
+    <ClCompile Include="tinybvh.h">
+      <Filter>Physics</Filter>
+    </ClCompile>
     <ClCompile Include="tmc.h">
       <Filter>Concurrency</Filter>
     </ClCompile>

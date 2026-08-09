@@ -4,14 +4,12 @@ namespace
 {
 class XR_TRIVIAL walker final
 {
-public:
+private:
     ISpatial_DB* space;
     const CFrustum* F;
-
     u32 mask;
 
 public:
-    constexpr walker() = delete;
     constexpr explicit walker(ISpatial_DB* _space, u32 _mask, const CFrustum* _F) : space{_space}, F{_F}, mask{_mask} {}
 
     constexpr walker(const walker& that) { xr::memcpy64(this, &that, sizeof(that)); }
@@ -86,8 +84,7 @@ void ISpatial_DB::q_frustum(xr_vector<ISpatial*>& R, u32 _mask, const CFrustum& 
     q_result = &R;
     q_result->clear();
 
-    walker W{this, _mask, &_frustum};
-    W.walk(m_root, m_center, m_bounds, _frustum.getMask());
+    walker{this, _mask, &_frustum}.walk(m_root, m_center, m_bounds, _frustum.getMask());
 
     cs.Leave();
 }

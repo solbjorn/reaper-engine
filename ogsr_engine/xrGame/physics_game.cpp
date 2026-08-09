@@ -136,17 +136,13 @@ class CPHWallMarksCall final : public CPHAction
 {
     RTTI_DECLARE_TYPEINFO(CPHWallMarksCall, CPHAction);
 
-public:
+private:
     wm_shader pWallmarkShader;
+    const CDB::TRI& T;
     Fvector pos;
-    CDB::TRI* T;
 
-    explicit CPHWallMarksCall(const Fvector& p, CDB::TRI* Tri, const wm_shader& s)
-    {
-        pWallmarkShader = s;
-        pos.set(p);
-        T = Tri;
-    }
+public:
+    explicit CPHWallMarksCall(const Fvector& p, const CDB::TRI& Tri, const wm_shader& s) : pWallmarkShader{s}, T{Tri}, pos{p} {}
 
     ~CPHWallMarksCall() override = default;
 
@@ -162,7 +158,7 @@ public:
 CPHSoundPlayer* object_snd_player(dxGeomUserData* data) noexcept { return data->ph_ref_object ? data->ph_ref_object->ph_sound_player() : nullptr; }
 
 template <class Pars>
-void TContactShotMark(CDB::TRI* T, dContactGeom* c)
+void TContactShotMark(const CDB::TRI* T, dContactGeom* c)
 {
     dBodyID b = dGeomGetBody(c->g1);
     dxGeomUserData* data;
@@ -195,7 +191,7 @@ void TContactShotMark(CDB::TRI* T, dContactGeom* c)
             if (vel_cret > Pars::vel_cret_wallmark && !mtl_pair->CollideMarks->empty())
             {
                 wm_shader WallmarkShader = mtl_pair->CollideMarks->GenerateWallmark();
-                std::ignore = Level().ph_commander().add_call(xr_new<CPHOnesCondition>(), xr_new<CPHWallMarksCall>(*((Fvector*)c->pos), T, WallmarkShader));
+                std::ignore = Level().ph_commander().add_call(xr_new<CPHOnesCondition>(), xr_new<CPHWallMarksCall>(*((Fvector*)c->pos), *T, WallmarkShader));
             }
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             if (square_cam_dist < SQUARE_SOUND_EFFECT_DIST && !mtl_pair->CollideSounds.empty())

@@ -83,8 +83,6 @@ void CDetailManager::cache_Decompress(Slot* S)
 
     xrc.box_query(CDB::OPT_FULL_TEST, g_pGameLevel->ObjectSpace.GetStaticModel(), bC, bD);
     const auto triCount = xrc.r_count();
-    CDB::TRI* tris = g_pGameLevel->ObjectSpace.GetStaticTris();
-    Fvector* verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
 
     if (0 == triCount)
         return;
@@ -108,6 +106,9 @@ void CDetailManager::cache_Decompress(Slot* S)
     // Prepare to actual-bounds-calculations
     Fbox Bounds;
     Bounds.invalidate();
+
+    const auto tris = g_pGameLevel->ObjectSpace.GetStaticTris();
+    const auto verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
 
     // Decompressing itself
     for (u32 z = 0; z <= d_size; z++)
@@ -179,16 +180,16 @@ void CDetailManager::cache_Decompress(Slot* S)
             dir.set(0, -1, 0);
             Fvector3 terrain_normal;
 
-            float r_u, r_v, r_range;
-            for (gsl::index tid{}; tid < triCount; ++tid)
+            for (gsl::index tid{0}; tid < triCount; ++tid)
             {
-                CDB::TRI& T = tris[xrc.r_begin()[tid].id];
-                SGameMtl* mtl = GMLib.GetMaterialByIdx(T.material);
-                if (mtl->Flags.test(SGameMtl::flPassable))
+                auto& T = tris[xrc.r_begin()[tid].id];
+                if (GMLib.GetMaterialByIdx(T.material)->Flags.test(SGameMtl::flPassable))
                     continue;
 
-                const Fvector Tv[3]{verts[T.verts[0]], verts[T.verts[1]], verts[T.verts[2]]};
-                if (CDB::TestRayTri(Item_P, dir, Tv, r_u, r_v, r_range, TRUE))
+                const std::array<Fvector3, 3> Tv{verts[T.verts[0]].xyz(), verts[T.verts[1]].xyz(), verts[T.verts[2]].xyz()};
+                f32 r_u, r_v, r_range;
+
+                if (CDB::TestRayTri(Item_P, dir, Tv.data(), r_u, r_v, r_range, true))
                 {
                     if (r_range >= 0)
                     {

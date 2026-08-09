@@ -274,6 +274,7 @@ private:
 public:
     constexpr _fvector4() noexcept = default;
     constexpr explicit _fvector4(T x, T y, T z, T w) noexcept { set(x, y, z, w); }
+    constexpr explicit _fvector4(const Tvector& vec, T w) noexcept { set(vec, w); }
 
     constexpr _fvector4(const Self& that) noexcept { set(that); }
 
@@ -395,6 +396,24 @@ public:
     {
         xr_memcpy16(&mv, &v.mv);
         return *this;
+    }
+
+    [[nodiscard]] constexpr Tvector xyz() const
+    {
+        Tvector ret;
+
+        if (std::is_constant_evaluated())
+        {
+            ret.x = x;
+            ret.y = y;
+            ret.z = z;
+        }
+        else
+        {
+            DirectX::XMStoreFloat3(reinterpret_cast<DirectX::XMFLOAT3*>(&ret), mv);
+        }
+
+        return ret;
     }
 
     constexpr SelfRef add(const Self& v)

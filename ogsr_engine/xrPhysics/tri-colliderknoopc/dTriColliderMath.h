@@ -78,7 +78,7 @@ inline void PlanePoint(const Triangle& tri, const dReal* from, const dReal* to, 
     point[2] = from[2] - dir[2];
 }
 
-ICF void InitTriangle(CDB::TRI* XTri, Triangle& triangle, const Point* VRT)
+ICF void InitTriangle(const CDB::TRI* XTri, Triangle& triangle, const Point* VRT)
 {
     dVectorSub(triangle.side0, VRT[1], VRT[0]);
     dVectorSub(triangle.side1, VRT[2], VRT[1]);
@@ -88,20 +88,20 @@ ICF void InitTriangle(CDB::TRI* XTri, Triangle& triangle, const Point* VRT)
     triangle.pos = dDOT(VRT[0], triangle.norm);
 }
 
-ICF void InitTriangle(CDB::TRI* XTri, Triangle& triangle, const Fvector* V_array)
+ICF void InitTriangle(const CDB::TRI* XTri, Triangle& triangle, std::span<const Fvector4> V_array)
 {
     const Point vertices[3]{Point((const dReal*)&V_array[XTri->verts[0]]), Point((const dReal*)&V_array[XTri->verts[1]]),
                             Point((const dReal*)&V_array[XTri->verts[2]])};
     InitTriangle(XTri, triangle, vertices);
 }
 
-ICF void CalculateTri(CDB::TRI* XTri, const float* pos, Triangle& triangle, const Fvector* V_array)
+ICF void CalculateTri(const CDB::TRI* XTri, const float* pos, Triangle& triangle, std::span<const Fvector4> V_array)
 {
     InitTriangle(XTri, triangle, V_array);
     triangle.dist = dDOT(pos, triangle.norm) - triangle.pos;
 }
 
-ICF void CalculateTri(CDB::TRI* XTri, const float* pos, Triangle& triangle, const Point* VRT)
+ICF void CalculateTri(const CDB::TRI* XTri, const float* pos, Triangle& triangle, const Point* VRT)
 {
     InitTriangle(XTri, triangle, VRT);
     triangle.dist = dDOT(pos, triangle.norm) - triangle.pos;

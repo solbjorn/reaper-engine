@@ -6,19 +6,19 @@
 #include "Geometry.h"
 #include "tri-colliderknoopc/dTriColliderMath.h"
 
-ICF void GetNormal(CDB::TRI* XTri, Fvector& n)
+ICF void GetNormal(const CDB::TRI* XTri, Fvector& n)
 {
-    const Fvector* V_array = Level().ObjectSpace.GetStaticVerts();
+    const auto V_array = Level().ObjectSpace.GetStaticVerts();
     Fvector sd1;
-    sd1.sub(V_array[XTri->verts[1]], V_array[XTri->verts[0]]);
+    sd1.sub(V_array[XTri->verts[1]].xyz(), V_array[XTri->verts[0]].xyz());
     Fvector sd2;
-    sd2.sub(V_array[XTri->verts[2]], V_array[XTri->verts[1]]);
+    sd2.sub(V_array[XTri->verts[2]].xyz(), V_array[XTri->verts[1]].xyz());
     n.crossproduct(sd1, sd2);
 }
 
-ICF void InitTriangle(CDB::TRI* XTri, Triangle& triangle)
+ICF void InitTriangle(const CDB::TRI* XTri, Triangle& triangle)
 {
-    const Fvector* V_array = Level().ObjectSpace.GetStaticVerts();
+    const auto V_array = Level().ObjectSpace.GetStaticVerts();
     const float* VRT[3]{(const dReal*)&V_array[XTri->verts[0]], (const dReal*)&V_array[XTri->verts[1]], (const dReal*)&V_array[XTri->verts[2]]};
 
     dVectorSub(triangle.side0, VRT[1], VRT[0]);
@@ -29,13 +29,13 @@ ICF void InitTriangle(CDB::TRI* XTri, Triangle& triangle)
     triangle.pos = dDOT(VRT[0], triangle.norm);
 }
 
-ICF void CalculateTriangle(CDB::TRI* XTri, const float* pos, Triangle& triangle)
+ICF void CalculateTriangle(const CDB::TRI* XTri, const float* pos, Triangle& triangle)
 {
     InitTriangle(XTri, triangle);
     triangle.dist = dDOT(pos, triangle.norm) - triangle.pos;
 }
 
-ICF void CalculateTriangle(CDB::TRI* XTri, dGeomID g, Triangle& triangle)
+ICF void CalculateTriangle(const CDB::TRI* XTri, dGeomID g, Triangle& triangle)
 {
     XR_ASSERT(g != nullptr);
 
@@ -83,11 +83,10 @@ ICF bool TriContainPoint(const dReal* v0, const dReal* v1, const dReal* v2, cons
     return TriContainPoint(v0, v1, v2, triSideAx0, triSideAx1, triSideAx2, triAx, pos, c);
 }
 
-ICF bool TriContainPoint(Triangle* T, const float* pos, u16& c)
+ICF bool TriContainPoint(const Triangle* T, const float* pos, u16& c)
 {
-    // TriContainPoint(const dReal* v0,const dReal* v1,const dReal* v2,const dReal* triAx,const dReal* triSideAx0,const dReal* triSideAx1, const dReal* pos)
-    const Fvector* V_array = Level().ObjectSpace.GetStaticVerts();
-    CDB::TRI* XTri = T->T;
+    const auto V_array = Level().ObjectSpace.GetStaticVerts();
+    const auto XTri = T->T;
     const float* VRT[3]{(const dReal*)&V_array[XTri->verts[0]], (const dReal*)&V_array[XTri->verts[1]], (const dReal*)&V_array[XTri->verts[2]]};
 
     return TriContainPoint(VRT[0], VRT[1], VRT[2], T->norm, T->side0, T->side1, pos, c);
@@ -151,7 +150,7 @@ ICF float DistToTri(Triangle* T, const float* pos, float* dir, float* p, ETriDis
         return T->dist;
     }
 
-    CDB::TRI* XTri = T->T;
+    const auto XTri = T->T;
     const float* VRT[3]{(const dReal*)&V_array[XTri->verts[0]], (const dReal*)&V_array[XTri->verts[1]], (const dReal*)&V_array[XTri->verts[2]]};
     u16 cd = u16(-1);
     float tdist = 0.f;

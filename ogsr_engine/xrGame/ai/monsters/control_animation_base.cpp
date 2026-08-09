@@ -603,6 +603,7 @@ public:
 ICF static BOOL check_hit_trace_callback(collide::rq_result& result, LPVOID params)
 {
     ray_query_param* param = (ray_query_param*)params;
+
     if (result.O)
     {
         const CBaseMonster* monster = smart_cast<const CBaseMonster*>(result.O);
@@ -612,13 +613,12 @@ ICF static BOOL check_hit_trace_callback(collide::rq_result& result, LPVOID para
         else if (entity_alive == param->m_enemy)
             param->m_can_hit_enemy = true;
     }
-    else
+    // получить треугольник и узнать его материал
+    else if (GMLib.GetMaterialByIdx(Level().ObjectSpace.GetStaticTris()[result.element].material)->Flags.is(SGameMtl::flPassable))
     {
-        // получить треугольник и узнать его материал
-        CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
-        if (GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flPassable))
-            return TRUE;
+        return TRUE;
     }
+
     return FALSE;
 }
 

@@ -125,11 +125,9 @@ IC bool dcTriListCollider::PointSphereTest(const dReal* center, const dReal radi
 }
 /////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
-int dcTriListCollider::dSortedTriSphere(const dReal*, const dReal*, const dReal* triAx, CDB::TRI* T, dReal dist, dxGeom* Sphere, dxGeom* Geometry, int,
+int dcTriListCollider::dSortedTriSphere(const dReal*, const dReal*, const dReal* triAx, const CDB::TRI* T, dReal dist, dxGeom* Sphere, dxGeom* Geometry, int,
                                         dContactGeom* Contacts, int)
 {
-    // const dReal* v1=(dReal*)T->verts[1];
-    // const dReal* v2=(dReal*)T->verts[2];
     const dReal* SphereCenter = dGeomGetPosition(Sphere);
     const float SphereRadius = dGeomSphereGetRadius(Sphere);
 
@@ -169,27 +167,28 @@ int dcTriListCollider::dTriSphere(const dReal* v0, const dReal* v1, const dReal*
     const dVector3& triSideAx1 = T->side1;
     const dVector3& triAx = T->norm;
 
-    // if(!TriPlaneContainPoint(triAx,v0,SphereCenter)) return 0;
-
     const dReal radius = dGeomSphereGetRadius(Sphere);
     float Depth = -T->dist + radius;
     if (Depth < 0.f)
         return 0;
+
     const dReal* pos = dGeomGetPosition(Sphere);
     dVector3 ContactNormal;
+
     if (TriContainPoint(v0, v1, v2, triAx, triSideAx0, triSideAx1, pos))
     {
         ContactNormal[0] = triAx[0];
         ContactNormal[1] = triAx[1];
         ContactNormal[2] = triAx[2];
-        // dVector3 ContactPos={pos[0]-triAx[0]* radius,pos[1]-triAx[1]* radius,pos[2]-triAx[2]* radius};
     }
     else
     {
-        CDB::TRI* T_array = Level().ObjectSpace.GetStaticTris();
+        const auto T_array = Level().ObjectSpace.GetStaticTris();
         Flags8& gl_state = gl_cl_tries_state[I - B];
+
         if (gl_state.test(fl_engaged_s0) || gl_state.test(fl_engaged_s1) || gl_state.test(fl_engaged_s2))
             return 0;
+
         if (FragmentonSphereTest(pos, radius, v0, v1, ContactNormal, Depth))
         {
             SideToGlClTriState(T->T->verts[0], T->T->verts[1], T_array);
@@ -206,18 +205,13 @@ int dcTriListCollider::dTriSphere(const dReal* v0, const dReal* v1, const dReal*
         {
             if (gl_state.test(fl_engaged_v0) || gl_state.test(fl_engaged_v1) || gl_state.test(fl_engaged_v2))
                 return 0;
+
             if (PointSphereTest(pos, radius, v0, ContactNormal, Depth))
-            {
                 VxToGlClTriState(T->T->verts[0], T_array);
-            }
             else if (PointSphereTest(pos, radius, v1, ContactNormal, Depth))
-            {
                 VxToGlClTriState(T->T->verts[1], T_array);
-            }
             else if (PointSphereTest(pos, radius, v2, ContactNormal, Depth))
-            {
                 VxToGlClTriState(T->T->verts[2], T_array);
-            }
             else
                 return 0;
         }
@@ -239,6 +233,6 @@ int dcTriListCollider::dTriSphere(const dReal* v0, const dReal* v1, const dReal*
         dGeomGetUserData(Sphere)->callback(T->T, Contacts);
     SURFACE(Contacts, 0)->mode = T->T->material;
     //////////////////////////////////
-    //	++OutTriCount;
+
     return 1;
 }

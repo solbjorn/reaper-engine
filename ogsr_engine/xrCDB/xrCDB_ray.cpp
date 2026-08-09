@@ -1,26 +1,8 @@
 #include "stdafx.h"
 
-#include "cpu.h"
-
-XR_DIAG_PUSH();
-XR_DIAG_IGNORE("-Wcast-qual");
-XR_DIAG_IGNORE("-Wclass-conversion");
-XR_DIAG_IGNORE("-Wfloat-conversion");
-XR_DIAG_IGNORE("-Wfloat-equal");
-XR_DIAG_IGNORE("-Wheader-hygiene");
-XR_DIAG_IGNORE("-Wold-style-cast");
-XR_DIAG_IGNORE("-Woverloaded-virtual");
-XR_DIAG_IGNORE("-Wshorten-64-to-32");
-XR_DIAG_IGNORE("-Wsign-conversion");
-XR_DIAG_IGNORE("-Wunknown-pragmas");
-XR_DIAG_IGNORE("-Wunused-parameter");
-
-#include <Opcode.h>
-
-XR_DIAG_POP();
+#include "../xrExternal/tinybvh.h"
 
 using namespace CDB;
-using namespace Opcode;
 
 namespace
 {
@@ -60,8 +42,6 @@ struct XR_TRIVIAL alignas(16) aabb_t
 {
     vec_t min;
     vec_t max;
-
-    constexpr aabb_t() = default;
 
     constexpr aabb_t(const aabb_t& that) { xr_memcpy128(this, &that, sizeof(that)); }
 
@@ -123,109 +103,6 @@ struct XR_TRIVIAL alignas(16) ray_t
 };
 XR_TRIVIAL_ASSERT(ray_t);
 
-[[nodiscard]] constexpr u32 uf(const float& x) { return std::bit_cast<u32>(x); }
-
-[[nodiscard]] constexpr bool isect_fpu(const Fvector& min, const Fvector& max, const ray_t& ray, Fvector& coord)
-{
-    Fvector MaxT{-1.0f, -1.0f, -1.0f};
-    BOOL Inside = TRUE;
-
-    // Find candidate planes.
-    if (ray.pos[0] < min[0])
-    {
-        coord[0] = min[0];
-        Inside = FALSE;
-        if (uf(ray.inv_dir[0]))
-            MaxT[0] = (min[0] - ray.pos[0]) * ray.inv_dir[0]; // Calculate T distances to candidate planes
-    }
-    else if (ray.pos[0] > max[0])
-    {
-        coord[0] = max[0];
-        Inside = FALSE;
-        if (uf(ray.inv_dir[0]))
-            MaxT[0] = (max[0] - ray.pos[0]) * ray.inv_dir[0]; // Calculate T distances to candidate planes
-    }
-    if (ray.pos[1] < min[1])
-    {
-        coord[1] = min[1];
-        Inside = FALSE;
-        if (uf(ray.inv_dir[1]))
-            MaxT[1] = (min[1] - ray.pos[1]) * ray.inv_dir[1]; // Calculate T distances to candidate planes
-    }
-    else if (ray.pos[1] > max[1])
-    {
-        coord[1] = max[1];
-        Inside = FALSE;
-        if (uf(ray.inv_dir[1]))
-            MaxT[1] = (max[1] - ray.pos[1]) * ray.inv_dir[1]; // Calculate T distances to candidate planes
-    }
-    if (ray.pos[2] < min[2])
-    {
-        coord[2] = min[2];
-        Inside = FALSE;
-        if (uf(ray.inv_dir[2]))
-            MaxT[2] = (min[2] - ray.pos[2]) * ray.inv_dir[2]; // Calculate T distances to candidate planes
-    }
-    else if (ray.pos[2] > max[2])
-    {
-        coord[2] = max[2];
-        Inside = FALSE;
-        if (uf(ray.inv_dir[2]))
-            MaxT[2] = (max[2] - ray.pos[2]) * ray.inv_dir[2]; // Calculate T distances to candidate planes
-    }
-
-    // Ray ray.pos inside bounding box
-    if (Inside)
-    {
-        coord = ray.pos;
-        return true;
-    }
-
-    // Get largest of the maxT's for final choice of intersection
-    u32 WhichPlane = 0;
-    if (MaxT[1] > MaxT[0])
-        WhichPlane = 1;
-    if (MaxT[2] > MaxT[WhichPlane])
-        WhichPlane = 2;
-
-    // Check final candidate actually inside box (if max < 0)
-    if (uf(MaxT[WhichPlane]) & 0x80000000)
-        return false;
-
-    if (0 == WhichPlane)
-    { // 1 & 2
-        coord[1] = ray.pos[1] + MaxT[0] * ray.fwd_dir[1];
-        if ((coord[1] < min[1]) || (coord[1] > max[1]))
-            return false;
-        coord[2] = ray.pos[2] + MaxT[0] * ray.fwd_dir[2];
-        if ((coord[2] < min[2]) || (coord[2] > max[2]))
-            return false;
-        return true;
-    }
-    if (1 == WhichPlane)
-    { // 0 & 2
-        coord[0] = ray.pos[0] + MaxT[1] * ray.fwd_dir[0];
-        if ((coord[0] < min[0]) || (coord[0] > max[0]))
-            return false;
-        coord[2] = ray.pos[2] + MaxT[1] * ray.fwd_dir[2];
-        if ((coord[2] < min[2]) || (coord[2] > max[2]))
-            return false;
-        return true;
-    }
-    if (2 == WhichPlane)
-    { // 0 & 1 //KRodin: это условие тоже всегда истинно. //-V547
-        coord[0] = ray.pos[0] + MaxT[2] * ray.fwd_dir[0];
-        if ((coord[0] < min[0]) || (coord[0] > max[0]))
-            return false;
-        coord[1] = ray.pos[1] + MaxT[2] * ray.fwd_dir[1];
-        if ((coord[1] < min[1]) || (coord[1] > max[1]))
-            return false;
-        return true;
-    }
-
-    return false;
-}
-
 // turn those verbose intrinsics into something readable.
 #define loadps(mem) _mm_load_ps(reinterpret_cast<const f32*>(mem))
 #define storess(ss, mem) _mm_store_ss(reinterpret_cast<f32*>(mem), (ss))
@@ -238,11 +115,11 @@ XR_TRIVIAL_ASSERT(ray_t);
 #define rotatelps(ps) _mm_shuffle_ps((ps), (ps), 0x39) // a,b,c,d -> b,c,d,a
 #define muxhps(low, high) _mm_movehl_ps((low), (high)) // low{a,b,c,d}|high{e,f,g,h} = {c,d,g,h}
 
-constexpr auto flt_plus_inf{std::numeric_limits<float>::infinity()};
+constexpr auto flt_plus_inf{std::numeric_limits<f32>::max()};
 constexpr float __declspec(align(16)) ps_cst_plus_inf[]{flt_plus_inf, flt_plus_inf, flt_plus_inf, flt_plus_inf};
 constexpr float __declspec(align(16)) ps_cst_minus_inf[]{-flt_plus_inf, -flt_plus_inf, -flt_plus_inf, -flt_plus_inf};
 
-[[nodiscard]] constexpr bool isect_sse(const aabb_t& box, const ray_t& ray, float& dist)
+[[nodiscard]] constexpr std::pair<bool, f32> isect_sse(const aabb_t& box, const ray_t& ray)
 {
     // you may already have those values hanging around somewhere
     const __m128 plus_inf = loadps(ps_cst_plus_inf), minus_inf = loadps(ps_cst_minus_inf);
@@ -278,10 +155,9 @@ constexpr float __declspec(align(16)) ps_cst_minus_inf[]{-flt_plus_inf, -flt_plu
     lmax = minss(lmax, lmax1);
     lmin = maxss(lmin, lmin1);
 
-    const bool ret = _mm_comige_ss(lmax, _mm_setzero_ps()) & _mm_comige_ss(lmax, lmin);
-
-    storess(lmin, &dist);
-    // storess	(lmax, &rs.t_far);
+    std::pair<bool, f32> ret;
+    ret.first = _mm_comige_ss(lmax, _mm_setzero_ps()) & _mm_comige_ss(lmax, lmin);
+    storess(lmin, &ret.second);
 
     return ret;
 }
@@ -297,20 +173,18 @@ constexpr float __declspec(align(16)) ps_cst_minus_inf[]{-flt_plus_inf, -flt_plu
 #undef rotatelps
 #undef muxhps
 
-template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest>
+template <bool bCull, bool bFirst, bool bNearest>
 class XR_TRIVIAL alignas(16) ray_collider
 {
-public:
+private:
     COLLIDER* dest;
-    TRI* tris;
-    Fvector* verts;
+    std::span<const Fvector4> verts;
+    std::span<const TRI> tris;
 
     ray_t ray;
     float rRange;
-    float rRange2;
 
-    constexpr ray_collider() = default;
-
+public:
     constexpr ray_collider(const ray_collider& that) { xr_memcpy128(this, &that, sizeof(that)); }
 
 #ifdef XR_TRIVIAL_BROKEN
@@ -335,81 +209,44 @@ public:
     }
 #endif
 
-    constexpr void _init(COLLIDER* CL, Fvector* V, TRI* T, const Fvector& C, const Fvector& D, float R)
+    constexpr explicit ray_collider(COLLIDER* CL, std::span<const Fvector4> V, std::span<const TRI> T, const Fvector& C, const Fvector& D, float R)
+        : dest{CL}, verts{V}, tris{T}
     {
-        dest = CL;
-        tris = T;
-        verts = V;
         ray.pos.set(C);
-        ray.inv_dir.set(1.f, 1.f, 1.f).div(D);
+        ray.inv_dir.x = (_abs(D.x) > flt_eps) ? (1.0f / D.x) : flt_plus_inf;
+        ray.inv_dir.y = (_abs(D.y) > flt_eps) ? (1.0f / D.y) : flt_plus_inf;
+        ray.inv_dir.z = (_abs(D.z) > flt_eps) ? (1.0f / D.z) : flt_plus_inf;
         ray.fwd_dir.set(D);
+
         rRange = R;
-        rRange2 = R * R;
-        if constexpr (!bUseSSE)
-        {
-            // for FPU - zero out inf
-            if (_abs(D.x) > flt_eps)
-            {
-            }
-            else
-                ray.inv_dir.x = 0;
-            if (_abs(D.y) > flt_eps)
-            {
-            }
-            else
-                ray.inv_dir.y = 0;
-            if (_abs(D.z) > flt_eps)
-            {
-            }
-            else
-                ray.inv_dir.z = 0;
-        }
     }
 
-    // fpu
-    [[nodiscard]] constexpr bool _box_fpu(const Fvector& bCenter, const Fvector& bExtents, Fvector& coord) const
-    {
-        Fbox BB;
-        BB.min.sub(bCenter, bExtents);
-        BB.max.add(bCenter, bExtents);
-
-        return isect_fpu(BB.min, BB.max, ray, coord);
-    }
-
+private:
     // sse
-    [[nodiscard]] constexpr bool _box_sse(const Fvector& bCenter, const Fvector& bExtents, float& dist) const
+    [[nodiscard]] constexpr std::pair<bool, f32> _box_sse(const tinybvh::BVH::BVHNode& node) const
     {
-        constexpr auto init = [](const Fvector& bCenter, const Fvector& bExtents) -> aabb_t {
-            __m128 CN = _mm_unpacklo_ps(_mm_load_ss(&bCenter.x), _mm_load_ss(&bCenter.y));
-            CN = _mm_movelh_ps(CN, _mm_load_ss(&bCenter.z));
+        static_assert(sizeof(aabb_t) == sizeof(tinybvh::BVH::BVHNode));
 
-            __m128 EX = _mm_unpacklo_ps(_mm_load_ss(&bExtents.x), _mm_load_ss(&bExtents.y));
-            EX = _mm_movelh_ps(EX, _mm_load_ss(&bExtents.z));
-
-            aabb_t box;
-            _mm_store_ps(reinterpret_cast<f32*>(&box.min), _mm_sub_ps(CN, EX));
-            _mm_store_ps(reinterpret_cast<f32*>(&box.max), _mm_add_ps(CN, EX));
-            return box;
-        };
-
-        return isect_sse(init(bCenter, bExtents), ray, dist);
+        return isect_sse(*reinterpret_cast<const aabb_t*>(std::assume_aligned<sizeof(tinybvh::BVH::BVHNode)>(&node)), ray);
     }
 
-    [[nodiscard]] constexpr bool _tri(const u32* p, float& u, float& v, float& range) const
+    [[nodiscard]] constexpr bool _tri(std::span<const Fvector3, 3> vs, float& u, float& v, float& range) const
     {
         Fvector edge1, edge2, tvec, pvec, qvec;
         float det, inv_det;
 
         // find vectors for two edges sharing vert0
-        Fvector& p0 = verts[p[0]];
-        Fvector& p1 = verts[p[1]];
-        Fvector& p2 = verts[p[2]];
+        auto& p0 = vs[0];
+        auto& p1 = vs[1];
+        auto& p2 = vs[2];
         edge1.sub(p1, p0);
         edge2.sub(p2, p0);
+
         // begin calculating determinant - also used to calculate U parameter
         // if determinant is near zero, ray lies in plane of triangle
         pvec.crossproduct(ray.fwd_dir, edge2);
         det = edge1.dotproduct(pvec);
+
         if constexpr (bCull)
         {
             if (det < EPS)
@@ -447,13 +284,13 @@ public:
         return true;
     }
 
-    constexpr void _prim(size_t prim)
+    constexpr void _prim(u32 prim)
     {
-        const auto id = gsl::narrow<s32>(prim);
-        const auto& tri = tris[id];
+        auto& tri = tris[prim];
+        const std::array<Fvector3, 3> vs{verts[tri.verts[0]].xyz(), verts[tri.verts[1]].xyz(), verts[tri.verts[2]].xyz()};
         f32 u, v, r;
 
-        if (!_tri(tri.verts, u, v, r))
+        if (!_tri(vs, u, v, r))
             return;
         if (r <= 0.0f || r > rRange)
             return;
@@ -465,246 +302,159 @@ public:
                 RESULT& R = *dest->r_begin();
                 if (r < R.range)
                 {
-                    R.id = id;
+                    R.id = gsl::narrow<s32>(prim);
                     R.range = r;
                     R.u = u;
                     R.v = v;
-                    R.verts[0] = verts[tri.verts[0]];
-                    R.verts[1] = verts[tri.verts[1]];
-                    R.verts[2] = verts[tri.verts[2]];
+                    R.verts[0] = vs[0];
+                    R.verts[1] = vs[1];
+                    R.verts[2] = vs[2];
                     R.dummy = tri.dummy;
                     rRange = r;
-                    rRange2 = r * r;
                 }
             }
             else
             {
-                dest->r_add(id, r, u, v, verts[tri.verts[0]], verts[tri.verts[1]], verts[tri.verts[2]], tri.dummy);
+                dest->r_add(gsl::narrow<s32>(prim), r, u, v, vs[0], vs[1], vs[2], tri.dummy);
                 rRange = r;
-                rRange2 = r * r;
             }
         }
         else
         {
-            dest->r_add(id, r, u, v, verts[tri.verts[0]], verts[tri.verts[1]], verts[tri.verts[2]], tri.dummy);
+            dest->r_add(gsl::narrow<s32>(prim), r, u, v, vs[0], vs[1], vs[2], tri.dummy);
         }
     }
 
-    constexpr void _stab(const AABBNoLeafNode* node)
+public:
+    constexpr void _stab(std::span<const tinybvh::BVH::BVHNode> nodes, std::span<const u32> prim_ids)
     {
-        // Should help
-        _mm_prefetch(reinterpret_cast<const char*>(node->GetNeg()), _MM_HINT_NTA);
+        const auto root = _box_sse(nodes[0]);
+        if (!root.first || root.second > rRange)
+            return;
 
-        // Actual ray/aabb test
-        if constexpr (bUseSSE)
+        xr::unordered_set<u32> prims;
+        xr::inlined_vector<std::pair<u32, f32>, 32> stack;
+
+        stack.emplace_back(0, root.second);
+
+        while (!stack.empty())
         {
-            // use SSE
-            f32 d;
-            if (!_box_sse(*reinterpret_cast<const Fvector*>(&node->mAABB.mCenter), *reinterpret_cast<const Fvector*>(&node->mAABB.mExtents), d))
-                return;
-            if (d > rRange)
-                return;
-        }
-        else
-        {
-            // use FPU
-            Fvector P;
-            if (!_box_fpu(*reinterpret_cast<const Fvector*>(&node->mAABB.mCenter), *reinterpret_cast<const Fvector*>(&node->mAABB.mExtents), P))
-                return;
-            if (P.distance_to_sqr(ray.pos) > rRange2)
-                return;
-        }
+            const auto [idx, dist] = stack.back();
+            stack.pop_back();
 
-        // 1st chield
-        if (node->HasPosLeaf())
-            _prim(node->GetPosPrimitive());
-        else
-            _stab(node->GetPos());
+            if (dist > rRange)
+                continue;
 
-        // Early exit for "only first"
-        if constexpr (bFirst)
-        {
-            if (!dest->r_empty())
-                return;
+            auto& node = nodes[idx];
+            if (node.isLeaf())
+            {
+                for (auto id : prim_ids.subspan(node.leftFirst, node.triCount))
+                {
+                    // Early exit for "only first"
+                    if constexpr (bFirst)
+                    {
+                        _prim(id);
+
+                        if (!dest->r_empty())
+                            return;
+                    }
+                    else if (prims.emplace(id).second)
+                    {
+                        _prim(id);
+                    }
+                }
+
+                continue;
+            }
+
+            const auto left_idx = node.leftFirst;
+            const auto right_idx = left_idx + 1;
+
+            const auto [hit_left, d_left] = _box_sse(nodes[left_idx]);
+            const auto [hit_right, d_right] = _box_sse(nodes[right_idx]);
+
+            switch ((u32{hit_left && d_left <= rRange} << 1) | u32{hit_right && d_right <= rRange})
+            {
+            case 3:
+                if (d_left < d_right)
+                {
+                    stack.emplace_back(right_idx, d_right);
+                    stack.emplace_back(left_idx, d_left);
+                }
+                else
+                {
+                    stack.emplace_back(left_idx, d_left);
+                    stack.emplace_back(right_idx, d_right);
+                }
+
+                break;
+            case 2: stack.emplace_back(left_idx, d_left); break;
+            case 1: stack.emplace_back(right_idx, d_right); break;
+            case 0: break;
+            default: xr::unreachable();
+            }
         }
-
-        // 2nd chield
-        if (node->HasNegLeaf())
-            _prim(node->GetNegPrimitive());
-        else
-            _stab(node->GetNeg());
     }
 };
-XR_TRIVIAL_ASSERT(ray_collider<true, true, true, true>);
-XR_TRIVIAL_ASSERT(ray_collider<true, true, true, false>);
-XR_TRIVIAL_ASSERT(ray_collider<true, true, false, true>);
-XR_TRIVIAL_ASSERT(ray_collider<true, true, false, false>);
-XR_TRIVIAL_ASSERT(ray_collider<true, false, true, true>);
-XR_TRIVIAL_ASSERT(ray_collider<true, false, true, false>);
-XR_TRIVIAL_ASSERT(ray_collider<true, false, false, true>);
-XR_TRIVIAL_ASSERT(ray_collider<true, false, false, false>);
-XR_TRIVIAL_ASSERT(ray_collider<false, true, true, true>);
-XR_TRIVIAL_ASSERT(ray_collider<false, true, true, false>);
-XR_TRIVIAL_ASSERT(ray_collider<false, true, false, true>);
-XR_TRIVIAL_ASSERT(ray_collider<false, true, false, false>);
-XR_TRIVIAL_ASSERT(ray_collider<false, false, true, true>);
-XR_TRIVIAL_ASSERT(ray_collider<false, false, true, false>);
-XR_TRIVIAL_ASSERT(ray_collider<false, false, false, true>);
-XR_TRIVIAL_ASSERT(ray_collider<false, false, false, false>);
+XR_TRIVIAL_ASSERT(ray_collider<true, true, true>);
+XR_TRIVIAL_ASSERT(ray_collider<true, true, false>);
+XR_TRIVIAL_ASSERT(ray_collider<true, false, true>);
+XR_TRIVIAL_ASSERT(ray_collider<true, false, false>);
+XR_TRIVIAL_ASSERT(ray_collider<false, true, true>);
+XR_TRIVIAL_ASSERT(ray_collider<false, true, false>);
+XR_TRIVIAL_ASSERT(ray_collider<false, false, true>);
+XR_TRIVIAL_ASSERT(ray_collider<false, false, false>);
 } // namespace
 
 void COLLIDER::ray_query(u32 ray_mode, const MODEL* m_def, const Fvector& r_start, const Fvector& r_dir, float r_range)
 {
     m_def->syncronize();
-
-    // This should be smart_cast<>()/dynamic_cast<>(), but OpCoDe doesn't use our custom RTTI.
-    // So we just rely on that `AABBOptimizedTree` starts at offset 0 inside `AABBNoLeafTree`.
-    // OpCoDe itself uses C-style casts for downcasting, which is roughly the same.
-    const AABBNoLeafTree* T = reinterpret_cast<const AABBNoLeafTree*>(m_def->tree->GetTree());
-    const AABBNoLeafNode* N = T->GetNodes();
-
     r_clear();
 
-    if (CPU::ID.hasSSE())
+    const auto& bvh = *m_def->get_tree();
+
+    // SSE
+    // Binary dispatcher
+    if (ray_mode & OPT_CULL)
     {
-        // SSE
-        // Binary dispatcher
-        if (ray_mode & OPT_CULL)
+        if (ray_mode & OPT_ONLYFIRST)
         {
-            if (ray_mode & OPT_ONLYFIRST)
-            {
-                if (ray_mode & OPT_ONLYNEAREST)
-                {
-                    ray_collider<true, true, true, true> RC;
-                    RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
-                    RC._stab(N);
-                }
-                else
-                {
-                    ray_collider<true, true, true, false> RC;
-                    RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
-                    RC._stab(N);
-                }
-            }
+            if (ray_mode & OPT_ONLYNEAREST)
+                ray_collider<true, true, true>{this, m_def->get_verts(), m_def->get_tris(), r_start, r_dir, r_range}._stab(
+                    std::span{bvh.bvhNode, bvh.usedNodes}, std::span{bvh.primIdx, bvh.idxCount});
             else
-            {
-                if (ray_mode & OPT_ONLYNEAREST)
-                {
-                    ray_collider<true, true, false, true> RC;
-                    RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
-                    RC._stab(N);
-                }
-                else
-                {
-                    ray_collider<true, true, false, false> RC;
-                    RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
-                    RC._stab(N);
-                }
-            }
+                ray_collider<true, true, false>{this, m_def->get_verts(), m_def->get_tris(), r_start, r_dir, r_range}._stab(
+                    std::span{bvh.bvhNode, bvh.usedNodes}, std::span{bvh.primIdx, bvh.idxCount});
         }
         else
         {
-            if (ray_mode & OPT_ONLYFIRST)
-            {
-                if (ray_mode & OPT_ONLYNEAREST)
-                {
-                    ray_collider<true, false, true, true> RC;
-                    RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
-                    RC._stab(N);
-                }
-                else
-                {
-                    ray_collider<true, false, true, false> RC;
-                    RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
-                    RC._stab(N);
-                }
-            }
+            if (ray_mode & OPT_ONLYNEAREST)
+                ray_collider<true, false, true>{this, m_def->get_verts(), m_def->get_tris(), r_start, r_dir, r_range}._stab(
+                    std::span{bvh.bvhNode, bvh.usedNodes}, std::span{bvh.primIdx, bvh.idxCount});
             else
-            {
-                if (ray_mode & OPT_ONLYNEAREST)
-                {
-                    ray_collider<true, false, false, true> RC;
-                    RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
-                    RC._stab(N);
-                }
-                else
-                {
-                    ray_collider<true, false, false, false> RC;
-                    RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
-                    RC._stab(N);
-                }
-            }
+                ray_collider<true, false, false>{this, m_def->get_verts(), m_def->get_tris(), r_start, r_dir, r_range}._stab(
+                    std::span{bvh.bvhNode, bvh.usedNodes}, std::span{bvh.primIdx, bvh.idxCount});
         }
     }
     else
     {
-        // FPU
-        // Binary dispatcher
-        if (ray_mode & OPT_CULL)
+        if (ray_mode & OPT_ONLYFIRST)
         {
-            if (ray_mode & OPT_ONLYFIRST)
-            {
-                if (ray_mode & OPT_ONLYNEAREST)
-                {
-                    ray_collider<false, true, true, true> RC;
-                    RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
-                    RC._stab(N);
-                }
-                else
-                {
-                    ray_collider<false, true, true, false> RC;
-                    RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
-                    RC._stab(N);
-                }
-            }
+            if (ray_mode & OPT_ONLYNEAREST)
+                ray_collider<false, true, true>{this, m_def->get_verts(), m_def->get_tris(), r_start, r_dir, r_range}._stab(
+                    std::span{bvh.bvhNode, bvh.usedNodes}, std::span{bvh.primIdx, bvh.idxCount});
             else
-            {
-                if (ray_mode & OPT_ONLYNEAREST)
-                {
-                    ray_collider<false, true, false, true> RC;
-                    RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
-                    RC._stab(N);
-                }
-                else
-                {
-                    ray_collider<false, true, false, false> RC;
-                    RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
-                    RC._stab(N);
-                }
-            }
+                ray_collider<false, true, false>{this, m_def->get_verts(), m_def->get_tris(), r_start, r_dir, r_range}._stab(
+                    std::span{bvh.bvhNode, bvh.usedNodes}, std::span{bvh.primIdx, bvh.idxCount});
         }
         else
         {
-            if (ray_mode & OPT_ONLYFIRST)
-            {
-                if (ray_mode & OPT_ONLYNEAREST)
-                {
-                    ray_collider<false, false, true, true> RC;
-                    RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
-                    RC._stab(N);
-                }
-                else
-                {
-                    ray_collider<false, false, true, false> RC;
-                    RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
-                    RC._stab(N);
-                }
-            }
+            if (ray_mode & OPT_ONLYNEAREST)
+                ray_collider<false, false, true>{this, m_def->get_verts(), m_def->get_tris(), r_start, r_dir, r_range}._stab(
+                    std::span{bvh.bvhNode, bvh.usedNodes}, std::span{bvh.primIdx, bvh.idxCount});
             else
-            {
-                if (ray_mode & OPT_ONLYNEAREST)
-                {
-                    ray_collider<false, false, false, true> RC;
-                    RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
-                    RC._stab(N);
-                }
-                else
-                {
-                    ray_collider<false, false, false, false> RC;
-                    RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
-                    RC._stab(N);
-                }
-            }
+                ray_collider<false, false, false>{this, m_def->get_verts(), m_def->get_tris(), r_start, r_dir, r_range}._stab(
+                    std::span{bvh.bvhNode, bvh.usedNodes}, std::span{bvh.primIdx, bvh.idxCount});
         }
     }
 }

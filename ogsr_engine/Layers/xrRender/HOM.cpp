@@ -161,6 +161,8 @@ void CHOM::Render_DB(CFrustum& base)
     tris_in_frame_visible = 0;
 #endif
 
+    const auto verts = m_pModel->get_verts();
+
     // Perfrom selection, sorting, culling
     for (auto& it : *xrc.r_get())
     {
@@ -176,13 +178,14 @@ void CHOM::Render_DB(CFrustum& base)
         }
 
         // Access to triangle vertices
-        CDB::TRI& t = m_pModel->get_tris()[it.id];
-        Fvector* v = m_pModel->get_verts();
+        auto& tri = m_pModel->get_tris()[it.id];
+
         src.clear();
         dst.clear();
-        src.push_back(v[t.verts[0]]);
-        src.push_back(v[t.verts[1]]);
-        src.push_back(v[t.verts[2]]);
+        src.emplace_back(verts[tri.verts[0]].xyz());
+        src.emplace_back(verts[tri.verts[1]].xyz());
+        src.emplace_back(verts[tri.verts[2]].xyz());
+
         sPoly* P = clip.ClipPoly(src, dst);
         if (nullptr == P)
         {
@@ -383,25 +386,29 @@ tmc::task<void> CHOM::OnRender()
     if (!psDeviceFlags.is(rsOcclusionDraw) || m_pModel == nullptr)
         co_return;
 
-    DEFINE_VECTOR(FVF::L, LVec, LVecIt);
-    static LVec poly;
-    poly.resize(m_pModel->get_tris_count() * 3);
-    static LVec line;
-    line.resize(m_pModel->get_tris_count() * 6);
-    for (int it = 0; it < m_pModel->get_tris_count(); it++)
+    const auto tris = m_pModel->get_tris();
+
+    static xr_vector<FVF::L> poly;
+    poly.resize(tris.size() * 3);
+    static xr_vector<FVF::L> line;
+    line.resize(tris.size() * 6);
+
+    const auto verts = m_pModel->get_verts();
+
+    for (auto [it, tri] : std::views_enumerate(tris))
     {
-        CDB::TRI* T = m_pModel->get_tris() + it;
-        Fvector* verts = m_pModel->get_verts();
-        poly[it * 3 + 0].set(*(verts + T->verts[0]), 0x80FFFFFF);
-        poly[it * 3 + 1].set(*(verts + T->verts[1]), 0x80FFFFFF);
-        poly[it * 3 + 2].set(*(verts + T->verts[2]), 0x80FFFFFF);
-        line[it * 6 + 0].set(*(verts + T->verts[0]), 0xFFFFFFFF);
-        line[it * 6 + 1].set(*(verts + T->verts[1]), 0xFFFFFFFF);
-        line[it * 6 + 2].set(*(verts + T->verts[1]), 0xFFFFFFFF);
-        line[it * 6 + 3].set(*(verts + T->verts[2]), 0xFFFFFFFF);
-        line[it * 6 + 4].set(*(verts + T->verts[2]), 0xFFFFFFFF);
-        line[it * 6 + 5].set(*(verts + T->verts[0]), 0xFFFFFFFF);
+        poly[it * 3 + 0].set(verts[tri.verts[0]].xyz(), 0x80FFFFFF);
+        poly[it * 3 + 1].set(verts[tri.verts[1]].xyz(), 0x80FFFFFF);
+        poly[it * 3 + 2].set(verts[tri.verts[2]].xyz(), 0x80FFFFFF);
+
+        line[it * 6 + 0].set(verts[tri.verts[0]].xyz(), 0xFFFFFFFF);
+        line[it * 6 + 1].set(verts[tri.verts[1]].xyz(), 0xFFFFFFFF);
+        line[it * 6 + 2].set(verts[tri.verts[1]].xyz(), 0xFFFFFFFF);
+        line[it * 6 + 3].set(verts[tri.verts[2]].xyz(), 0xFFFFFFFF);
+        line[it * 6 + 4].set(verts[tri.verts[2]].xyz(), 0xFFFFFFFF);
+        line[it * 6 + 5].set(verts[tri.verts[0]].xyz(), 0xFFFFFFFF);
     }
+
     RCache.set_xform_world(Fidentity);
     // draw solid
     Device.SetNearer(TRUE);

@@ -369,38 +369,21 @@ void CEntityAlive::PlaceBloodWallmark(const Fvector& dir, const Fvector& start_p
     if (!Level().ObjectSpace.RayPick(start_pos, dir, trace_dist, collide::rqtBoth, result, this))
         return;
 
+    if (result.O != nullptr)
+        return;
+
     // вычислить точку попадания
-    Fvector end_point;
-    end_point.set(0, 0, 0);
+    Fvector3 end_point{0.0f, 0.0f, 0.0f};
     end_point.mad(start_pos, dir, result.range);
 
-    if (result.O)
-    { // Dynamic object
-        /*
-                const auto pK = smart_cast<IKinematics*>(result.O->Visual());
-                if (!pK)
-                    return;
+    // если кровь долетела до статического объекта
+    auto& pTri = Level().ObjectSpace.GetStaticTris()[result.element];
 
-                const auto& bone_data = pK->LL_GetData((u16)result.element);
-                auto pMaterial = GMLib.GetMaterialByIdx(bone_data.game_mtl_idx);
-
-                if (pMaterial->Flags.is(SGameMtl::flBloodmark))
-                    ::Render->add_SkeletonWallmark(&result.O->renderable.xform, pK, pwallmarks_vector, end_point, dir, wallmark_size);
-        */
-    }
-    else
-    { // если кровь долетела до статического объекта
-        auto pTri = Level().ObjectSpace.GetStaticTris() + result.element;
-        auto pMaterial = GMLib.GetMaterialByIdx(pTri->material);
-
-        if (pMaterial->Flags.is(SGameMtl::flBloodmark))
-        {
-            // вычислить нормаль к пораженной поверхности
-            auto pVerts = Level().ObjectSpace.GetStaticVerts();
-
-            // добавить отметку на материале
-            ::Render->add_StaticWallmark(pwallmarks_vector, end_point, wallmark_size, pTri, pVerts);
-        }
+    if (GMLib.GetMaterialByIdx(pTri.material)->Flags.is(SGameMtl::flBloodmark))
+    {
+        // вычислить нормаль к пораженной поверхности
+        // добавить отметку на материале
+        ::Render->add_StaticWallmark(pwallmarks_vector, end_point, wallmark_size, pTri, Level().ObjectSpace.GetStaticVerts());
     }
 }
 

@@ -5,9 +5,12 @@
 constexpr inline float phInfinity{std::numeric_limits<float>::infinity()};
 #endif
 
-IC float* cast_fp(Fvector& fv) { return (float*)(&fv); }
+[[nodiscard]] constexpr const f32* cast_fp(const Fvector3& fv) { return (const float*)(&fv); }
+[[nodiscard]] constexpr f32* cast_fp(Fvector3& fv) { return (float*)(&fv); }
 
-IC const float* cast_fp(const Fvector& fv) { return (const float*)(&fv); }
+[[nodiscard]] constexpr const f32* cast_fp(const Fvector4& fv) { return (const float*)(&fv); }
+[[nodiscard]] constexpr f32* cast_fp(Fvector4& fv) { return (float*)(&fv); }
+
 IC Fvector& cast_fv(float* fp) { return *((Fvector*)fp); }
 
 IC const Fvector& cast_fv(const float* fp) { return *((const Fvector*)fp); }

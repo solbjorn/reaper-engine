@@ -70,6 +70,7 @@ void CHUDTarget::Load() { HUDCrosshair.Load(); }
 ICF static BOOL pick_trace_callback(collide::rq_result& result, LPVOID params)
 {
     collide::rq_result* RQ = (collide::rq_result*)params;
+
     if (result.O)
     {
         *RQ = result;
@@ -78,14 +79,15 @@ ICF static BOOL pick_trace_callback(collide::rq_result& result, LPVOID params)
     else
     {
         // получить треугольник и узнать его материал
-        CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
-        const auto* mtl = GMLib.GetMaterialByIdx(T->material);
+        const auto mtl = GMLib.GetMaterialByIdx(Level().ObjectSpace.GetStaticTris()[result.element].material);
+
         if (mtl->Flags.is(SGameMtl::flPassable))
             return TRUE;
         // возможно это сетка-рабица и через нее можно брать предметы
         else if (fsimilar(mtl->fVisTransparencyFactor, 1.0f, EPS) && fsimilar(mtl->fShootFactor, 1.0f, EPS) && mtl->Flags.is(SGameMtl::flSuppressWallmarks))
             return TRUE;
     }
+
     *RQ = result;
     return FALSE;
 }

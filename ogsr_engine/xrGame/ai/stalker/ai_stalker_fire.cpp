@@ -515,17 +515,11 @@ IC BOOL ray_query_callback(collide::rq_result& result, LPVOID params)
     float power = param->m_holder->feel_vision_mtl_transp(result.O, result.element);
     param->m_power *= power;
 
-    //	if (power >= .05f) {
-    //		param->m_pick_distance			= result.range;
-    //		return							(true);
-    //	}
-
     if (!result.O)
     {
         // статический объект
         // получить треугольник и узнать его материал
-        CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
-        SGameMtl* mtl = GMLib.GetMaterialByIdx(T->material);
+        SGameMtl* mtl = GMLib.GetMaterialByIdx(Level().ObjectSpace.GetStaticTris()[result.element].material);
         // Если материал полностью простреливаемый, продолжаем
         // трассировку.
         if (fsimilar(mtl->fShootFactor, 1.0f, EPS))
@@ -922,12 +916,10 @@ static float throw_select_pick_time(const float& start_low, float high, const Fv
 IC BOOL throw_query_callback(collide::rq_result& result, LPVOID params)
 {
     *(float*)params = result.range;
-    if (!result.O)
-    {
-        CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
-        if (GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flPassable))
-            return TRUE;
-    }
+
+    if (result.O == nullptr && GMLib.GetMaterialByIdx(Level().ObjectSpace.GetStaticTris()[result.element].material)->Flags.is(SGameMtl::flPassable))
+        return TRUE;
+
     return FALSE;
 }
 

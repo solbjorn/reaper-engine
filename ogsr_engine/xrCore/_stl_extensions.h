@@ -10,6 +10,7 @@ XR_DIAG_POP();
 
 #include <absl/container/btree_set.h>
 #include <absl/container/flat_hash_map.h>
+#include <absl/container/flat_hash_set.h>
 #include <absl/hash/hash.h>
 
 XR_DIAG_PUSH();
@@ -79,6 +80,10 @@ using string_map = absl::btree_map<Key, Value, Compare, Alloc>;
 template <typename Key, typename Value, typename Compare = absl::container_internal::StringBtreeDefaultLess,
           typename Alloc = xr_allocator<std::pair<const Key, Value>>>
 using string_multimap = absl::btree_multimap<Key, Value, Compare, Alloc>;
+
+template <typename T, typename Hash = typename absl::container_internal::FlatHashSetPolicy<T>::DefaultHash,
+          typename Eq = typename absl::container_internal::FlatHashSetPolicy<T>::DefaultEq, typename Allocator = xr_allocator<T>>
+using unordered_set = absl::flat_hash_set<T, Hash, Eq, Allocator>;
 } // namespace xr
 
 namespace std

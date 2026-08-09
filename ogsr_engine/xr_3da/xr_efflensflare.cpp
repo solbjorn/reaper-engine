@@ -172,10 +172,12 @@ struct STranspParam final
         : P(_P), D(_D), f(_f), pray_cache(p), vis(1.f), vis_threshold(_vis_threshold)
     {}
 };
+
 IC BOOL material_callback(collide::rq_result& result, LPVOID params)
 {
     STranspParam* fp = (STranspParam*)params;
     float vis = 1.f;
+
     if (result.O)
     {
         vis = 0.f;
@@ -185,19 +187,23 @@ IC BOOL material_callback(collide::rq_result& result, LPVOID params)
     }
     else
     {
-        CDB::TRI* T = g_pGameLevel->ObjectSpace.GetStaticTris() + result.element;
-        vis = g_pGamePersistent->MtlTransparent(T->material);
+        auto& T = g_pGameLevel->ObjectSpace.GetStaticTris()[result.element];
+
+        vis = g_pGamePersistent->MtlTransparent(T.material);
         if (fis_zero(vis))
         {
-            Fvector* V = g_pGameLevel->ObjectSpace.GetStaticVerts();
+            const auto V = g_pGameLevel->ObjectSpace.GetStaticVerts();
+
             fp->pray_cache->set(fp->P, fp->D, fp->f, TRUE);
-            fp->pray_cache->verts[0].set(V[T->verts[0]]);
-            fp->pray_cache->verts[1].set(V[T->verts[1]]);
-            fp->pray_cache->verts[2].set(V[T->verts[2]]);
+            fp->pray_cache->verts[0].set(V[T.verts[0]].xyz());
+            fp->pray_cache->verts[1].set(V[T.verts[1]].xyz());
+            fp->pray_cache->verts[2].set(V[T.verts[2]].xyz());
         }
     }
+
     fp->vis *= vis;
-    return (fp->vis > fp->vis_threshold);
+
+    return fp->vis > fp->vis_threshold;
 }
 
 IC void blend_lerp(float& cur, float tgt, float speed, float dt)

@@ -33,8 +33,8 @@ void CWalmarkManager::StartWorkflow()
 
     XRC.box_query(0, Level().ObjectSpace.GetStaticModel(), m_pos, Fvector().set(m_trace_dist, m_trace_dist, m_trace_dist));
 
-    CDB::TRI* T_array = Level().ObjectSpace.GetStaticTris();
-    Fvector* V_array = Level().ObjectSpace.GetStaticVerts();
+    const auto T_array = Level().ObjectSpace.GetStaticTris();
+    const auto V_array = Level().ObjectSpace.GetStaticVerts();
     u32 wm_count = 0;
 
     for (auto& Res : *XRC.r_get())
@@ -48,10 +48,10 @@ void CWalmarkManager::StartWorkflow()
         float pfTParam;
         Fvector _tri[3];
 
-        CDB::TRI* _t = T_array + Res.id;
-        _tri[0] = V_array[_t->verts[0]];
-        _tri[1] = V_array[_t->verts[1]];
-        _tri[2] = V_array[_t->verts[2]];
+        auto& _t = T_array[Res.id];
+        _tri[0] = V_array[_t.verts[0]].xyz();
+        _tri[1] = V_array[_t.verts[1]].xyz();
+        _tri[2] = V_array[_t.verts[2]].xyz();
 
         float dist = Distance(m_pos, _tri, pfSParam, pfTParam, end_point, pdir);
         float test = dist - EPS_L;

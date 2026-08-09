@@ -1,0 +1,30 @@
+Checks: >
+  -*,
+  bugprone-*,
+  cppcoreguidelines-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+
+  -readability-braces-around-statements,
+  -cppcoreguidelines-pro-bounds-constant-array-index
+
+HeaderFilterRegex: '^ogsr_engine/.*'
+
+WarningsAsErrors: ''
+AnalyzeTemporaryDtors: true
+
+CheckOptions:
+  - key:             modernize-use-auto.MinTypeNameLength
+    value:           '5'
+  - key:             performance-move-const-arg.CheckTriviallyCopyable
+    value:           'true'
+
+  - key:             readability-identifier-naming.VariableCase
+    value:           'snake_case'
+  - key:             readability-identifier-naming.LocalVariableCase
+    value:           'snake_case'
+  - key:             readability-identifier-naming.ParameterCase
+    value:           'snake_case'
+  - key:             readability-identifier-naming.MemberCase
+    value:           'snake_case'

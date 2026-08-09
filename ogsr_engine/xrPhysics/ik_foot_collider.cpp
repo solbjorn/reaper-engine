@@ -40,7 +40,7 @@ struct ik_pick_result final
     float range;
 };
 
-bool ignore_tri(CDB::TRI& tri)
+bool ignore_tri(const CDB::TRI& tri)
 {
     SGameMtl* material = GMLib.GetMaterialByIdx(tri.material);
     return (material->Flags.test(SGameMtl::flPassable) && !material->Flags.test(SGameMtl::flActorObstacle)) || material->Flags.test(SGameMtl::flClimable); // ||
@@ -60,21 +60,19 @@ IC void tri_plane(const Fvector& v0, const Fvector& v1, const Fvector& v2, Fplan
 IC bool get_plane_static(ik_pick_result& r, Fvector& next_pos, float& next_range, const collide::rq_result& R, float pick_dist, const Fvector& pos,
                          const Fvector& pick_v)
 {
-    XR_DEBUG_ASSERT(Level().ObjectSpace.GetStaticModel()->get_tris_count() > R.element);
+    auto& tri = Level().ObjectSpace.GetStaticTris()[R.element];
+    const auto pVerts = Level().ObjectSpace.GetStaticVerts();
 
-    CDB::TRI* tri = Level().ObjectSpace.GetStaticTris() + R.element;
-    Fvector* pVerts = Level().ObjectSpace.GetStaticVerts();
-
-    r.triangle[0] = pVerts[tri->verts[0]];
-    r.triangle[1] = pVerts[tri->verts[1]];
-    r.triangle[2] = pVerts[tri->verts[2]];
-
+    r.triangle[0] = pVerts[tri.verts[0]].xyz();
+    r.triangle[1] = pVerts[tri.verts[1]].xyz();
+    r.triangle[2] = pVerts[tri.verts[2]].xyz();
     tri_plane(r.triangle[0], r.triangle[1], r.triangle[2], r.p);
 
     r.position.add(pos, Fvector().mul(pick_v, R.range));
     next_pos.set(r.position);
     next_range = pick_dist - R.range;
-    if (ignore_tri(*tri))
+
+    if (ignore_tri(tri))
     {
         next_pos.add(Fvector().mul(pick_v, EPS_L));
         float dot = pick_v.dotproduct(r.p.n);
@@ -171,16 +169,14 @@ bool Pick(ik_pick_result& r, const ik_pick_query& q, CObject* ignore_object)
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(phDbgDrawIKCollision) && collided && !R.O)
     {
-        CDB::TRI* tri = Level().ObjectSpace.GetStaticTris() + R.element;
-        Fvector p = q.pos();
-        p.add(Fvector().mul(q.dir(), range));
+        Fvector3 p = q.pos();
+        p.add(Fvector3{}.mul(q.dir(), range));
+
         DBG_DrawLine(pos, p, color_xrgb(255, 0, 0));
-        if (tri)
-        {
-            DBG_DrawTri(tri, Level().ObjectSpace.GetStaticVerts(), color_xrgb(255, 0, 0));
-        }
+        DBG_DrawTri(&Level().ObjectSpace.GetStaticTris()[R.element], Level().ObjectSpace.GetStaticVerts(), color_xrgb(255, 0, 0));
     }
 #endif
+
     return collided;
 }
 

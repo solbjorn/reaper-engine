@@ -419,24 +419,24 @@ void CRender::add_Visual(u32 context_id, IRenderable* root, IRenderVisual* V, Fm
     get_context(context_id).add_leafs_dynamic(root, smart_cast<dxRender_Visual*>(V), m, V->_ignore_optimization);
 }
 
-void CRender::add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts)
+void CRender::add_StaticWallmark(ref_shader& S, const Fvector& P, f32 s, const CDB::TRI& T, std::span<const Fvector4> V)
 {
-    XR_ASSERT(T != nullptr && verts != nullptr && s > EPS_L, "", s);
+    XR_ASSERT(s > EPS_L);
 
-    if (T->suppress_wm)
+    if (T.suppress_wm)
         return;
 
     XR_DEBUG_ASSERT(_valid(P) && _valid(s), "invalid static wallmark params", P, s);
-    Wallmarks->AddStaticWallmark(T, verts, P, S, s);
+    Wallmarks->AddStaticWallmark(T, V, P, S, s);
 }
 
-void CRender::add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V)
+void CRender::add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, f32 s, const CDB::TRI& T, std::span<const Fvector4> V)
 {
     if (auto pShader = smart_cast<dxWallMarkArray*>(pArray)->dxGenerateWallmark(); pShader != nullptr)
         add_StaticWallmark(*pShader, P, s, T, V);
 }
 
-void CRender::add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V)
+void CRender::add_StaticWallmark(const wm_shader& S, const Fvector& P, f32 s, const CDB::TRI& T, std::span<const Fvector4> V)
 {
     add_StaticWallmark(smart_cast<dxUIShader*>(&*S)->hShader, P, s, T, V);
 }

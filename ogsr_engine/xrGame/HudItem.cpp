@@ -742,16 +742,11 @@ void CHudItem::UpdateCollision(Fmatrix& trans)
                 if (auto* e = smart_cast<CEntityAlive*>(result.O); e && e->g_Alive())
                     return TRUE;
 
-                // if (smart_cast<CCustomShell*>(result.O))
-                //     return TRUE;
-
                 *RQ = result;
                 return FALSE;
             }
 
-            CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
-            SGameMtl* mtl = GMLib.GetMaterialByIdx(T->material);
-            if (mtl->Flags.is(SGameMtl::flPassable))
+            if (GMLib.GetMaterialByIdx(Level().ObjectSpace.GetStaticTris()[result.element].material)->Flags.is(SGameMtl::flPassable))
                 return TRUE;
 
             *RQ = result;

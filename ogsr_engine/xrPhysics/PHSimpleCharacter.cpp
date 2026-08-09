@@ -37,8 +37,9 @@ constexpr inline float sgn(float v) { return v < 0.f ? -1.f : 1.f; }
 bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& fv_dir, const Fvector& box, int tri_id)
 {
     Triangle tri;
-    InitTriangle(Level().ObjectSpace.GetStaticTris() + tri_id, tri);
-    Fvector* verts = Level().ObjectSpace.GetStaticVerts();
+    InitTriangle(&Level().ObjectSpace.GetStaticTris()[tri_id], tri);
+    const auto verts = Level().ObjectSpace.GetStaticVerts();
+
     {
         float dist = cast_fv(tri.norm).dotproduct(center) - tri.dist;
         // if(dist<0.f)return false;
@@ -81,7 +82,7 @@ bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& f
             v = tri.T->verts[1];
         }
 
-        float vp = side_dir.dotproduct(verts[v]);
+        float vp = side_dir.dotproduct(verts[v].xyz());
         float dist = vp - sdc;
         float sg_dist = sgn(dist);
         float abs_dist = sg_dist * dist;
@@ -101,11 +102,13 @@ bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& f
     Fvector crses[3];
     crses[0].set(-tri.side0[2], 0, tri.side0[0]);
     crses[1].set(-tri.side1[2], 0, tri.side1[0]);
-    const Fvector& v2 = verts[tri.T->verts[2]];
-    const Fvector& v0 = verts[tri.T->verts[0]];
-    crses[2].x = -(v0.z - v2.z);
-    crses[2].y = 0.f;
-    crses[2].z = v0.x - v2.x;
+
+    auto& vert2 = verts[tri.T->verts[2]];
+    auto& vert0 = verts[tri.T->verts[0]];
+    crses[2].x = -(vert0.z - vert2.z);
+    crses[2].y = 0.0f;
+    crses[2].z = vert0.x - vert2.x;
+
     for (u8 i = 0; 3 > i; ++i)
     {
         const Fvector& crs = crses[i];
@@ -113,10 +116,11 @@ bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& f
         u32 ov = tri.T->verts[(i + 2) % 3];
 
         float c_prg = crs.dotproduct(center);
-        float sv_prg = crs.dotproduct(verts[sv]);
-        float ov_prg = crs.dotproduct(verts[ov]);
+        float sv_prg = crs.dotproduct(verts[sv].xyz());
+        float ov_prg = crs.dotproduct(verts[ov].xyz());
         float dist = c_prg - sv_prg;
         float sg_dist = sgn(dist);
+
         if (!fsimilar(sgn(ov_prg - c_prg), sg_dist))
         {
             if (_abs(fv_dir.dotproduct(crs)) * box.z + _abs(side_dir.dotproduct(crs)) * box.x < sg_dist * dist)
