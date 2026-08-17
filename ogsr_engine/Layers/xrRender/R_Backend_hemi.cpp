@@ -11,19 +11,20 @@ void R_hemi::unmap()
     c_material = nullptr;
 }
 
-void R_hemi::set_pos_faces(float posx, float posy, float posz)
+void R_hemi::set_pos_faces(CBackend& cmd_list, f32 posx, f32 posy, f32 posz)
 {
-    if (c_pos_faces)
-        cmd_list().set_c(c_pos_faces, posx, posy, posz, 0.f);
-}
-void R_hemi::set_neg_faces(float negx, float negy, float negz)
-{
-    if (c_neg_faces)
-        cmd_list().set_c(c_neg_faces, negx, negy, negz, 0.f);
+    if (c_pos_faces != nullptr)
+        cmd_list.set_c(c_pos_faces, posx, posy, posz, 0.0f);
 }
 
-void R_hemi::set_material(float x, float y, float z, float w)
+void R_hemi::set_neg_faces(CBackend& cmd_list, f32 negx, f32 negy, f32 negz)
 {
-    if (c_material)
-        cmd_list().set_c(c_material, x, y, z, w);
+    if (c_neg_faces != nullptr)
+        cmd_list.set_c(c_neg_faces, negx, negy, negz, 0.0f);
+}
+
+void R_hemi::set_material(CBackend& cmd_list, f32 x, f32 y, f32 z, f32 w)
+{
+    if (c_material != nullptr)
+        cmd_list.set_c(c_material, x, y, z, w);
 }

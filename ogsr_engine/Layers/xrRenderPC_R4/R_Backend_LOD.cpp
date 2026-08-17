@@ -4,11 +4,11 @@
 
 R_LOD::R_LOD() { unmap(); }
 
-void R_LOD::set_LOD(float LOD)
+void R_LOD::set_LOD(CBackend& cmd_list, f32 LOD)
 {
-    if (c_LOD)
+    if (c_LOD != nullptr)
     {
-        float factor = clampr(ceil(LOD * LOD * LOD * LOD * LOD * 8.0f), 1.0f, 7.0f);
-        cmd_list().set_c(c_LOD, factor);
+        const auto factor = clampr(ceil(LOD * LOD * LOD * LOD * LOD * 8.0f), 1.0f, 7.0f);
+        cmd_list.set_c(c_LOD, factor);
     }
 }

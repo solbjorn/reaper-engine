@@ -6,36 +6,35 @@ namespace
 {
 class IndexBufferGen final
 {
-    static constexpr gsl::index dwTriCount{4 * 1024};
-    static constexpr gsl::index dwIdxCount{dwTriCount * 2 * 3};
+private:
+    // 16-bit Quad IB can index up to 65536 vertices, each quad needs 4 vertices
+    static constexpr auto quad_count = (std::numeric_limits<u16>::max() + 1uz) / 4;
+    // Each quad consists of 2 triangles
+    static constexpr auto tri_count = quad_count * 2;
+    // Each triangle requires 3 indices
+    static constexpr auto idx_count = tri_count * 3;
 
-    std::array<u16, dwIdxCount> XR_ALIGNED_DEFAULT Indices;
+    static_assert(idx_count == 98304);
+
+    std::array<u16, idx_count> XR_ALIGNED_DEFAULT indices;
 
 public:
     constexpr IndexBufferGen()
     {
-        gsl::index ICnt{};
-        u16 Cnt{};
-
-        for (gsl::index i{}; i < dwTriCount; ++i)
+        for (auto [quad, ind] : std::views::enumerate(indices | std::views::chunk(6)))
         {
-            Indices[ICnt++] = Cnt;
-            Indices[ICnt++] = Cnt + 1;
-            Indices[ICnt++] = Cnt + 2;
-
-            Indices[ICnt++] = Cnt + 3;
-            Indices[ICnt++] = Cnt + 2;
-            Indices[ICnt++] = Cnt + 1;
-
-            Cnt += 4;
+            for (auto [i, add] : std::views::zip(ind, std::array{0, 1, 2, 3, 2, 1}))
+                i = gsl::narrow_cast<u16>(quad * 4 + add);
         }
     }
 
-    constexpr const u16* data() const { return Indices.data(); }
-    constexpr gsl::index width() const { return dwIdxCount * sizeof(u16); }
+    [[nodiscard]] constexpr auto data() const { return indices.data(); }
+    [[nodiscard]] constexpr auto max() const { return std::ranges::max(indices); }
+    [[nodiscard]] constexpr auto width() const { return xr::size_bytes(indices); }
 };
 
 constexpr IndexBufferGen IndexBuffer;
+static_assert(IndexBuffer.max() == std::numeric_limits<u16>::max());
 } // namespace
 
 void dxRenderDeviceRender::CreateQuadIB()

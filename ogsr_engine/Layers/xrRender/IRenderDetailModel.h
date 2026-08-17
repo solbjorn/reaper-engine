@@ -16,14 +16,16 @@ public:
         Fvector P;
         float u, v;
     };
+    static_assert(sizeof(fvfVertexIn) == 20);
+
     struct fvfVertexOut final
     {
         Fvector P;
         u32 C;
         float u, v;
     };
+    static_assert(sizeof(fvfVertexOut) == 24);
 
-public:
     Fsphere bv_sphere;
     Fbox bv_bb;
     Flags32 m_Flags;
@@ -31,16 +33,12 @@ public:
     float m_fMaxScale;
 
     ref_shader shader;
-    fvfVertexIn* vertices;
-    u32 number_vertices;
-    u16* indices;
-    u32 number_indices;
+    xr_vector<fvfVertexIn> vertices;
+    xr_vector<u16> indices;
 
-public:
     ~IRender_DetailModel() override = 0;
 
-    virtual void transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset) = 0;
-    virtual void transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, f32 du, f32 dv) = 0;
+    virtual void transfer(Fmatrix& mXform, std::span<fvfVertexOut> vDest, u32 C, std::span<u16> iDest, u32 iOffset, f32 du = 0.0f, f32 dv = 0.0f) const = 0;
 };
 
 inline IRender_DetailModel::~IRender_DetailModel() = default;

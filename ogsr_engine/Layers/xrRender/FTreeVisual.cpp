@@ -117,19 +117,18 @@ void FTreeVisual::Render(CBackend& cmd_list, float, bool)
 
     Fmatrix xform_v;
     xform_v.mul_43(cmd_list.get_xform_view(), xform);
-    cmd_list.tree.set_m_xform_v(xform_v); // matrix
+    cmd_list.tree.set_m_xform_v(cmd_list, xform_v); // matrix
 
     float s = ps_r__Tree_SBC;
-    cmd_list.tree.set_m_xform(xform); // matrix
-    cmd_list.tree.set_consts(tvs.scale, tvs.scale, 0, 0); // consts/scale
-    cmd_list.tree.set_wave(tvs.wave); // wave
-    cmd_list.tree.set_wind(tvs.wind); // wind
+    cmd_list.tree.set_m_xform(cmd_list, xform); // matrix
+    cmd_list.tree.set_consts(cmd_list, tvs.scale, tvs.scale, 0, 0); // consts/scale
+    cmd_list.tree.set_wave(cmd_list, tvs.wave); // wave
+    cmd_list.tree.set_wind(cmd_list, tvs.wind); // wind
 
     s *= 1.3333f;
-    cmd_list.tree.set_c_scale(s * c_scale.rgb.x, s * c_scale.rgb.y, s * c_scale.rgb.z, s * c_scale.hemi); // scale
-    cmd_list.tree.set_c_bias(s * c_bias.rgb.x, s * c_bias.rgb.y, s * c_bias.rgb.z, s * c_bias.hemi); // bias
-
-    cmd_list.tree.set_c_sun(s * c_scale.sun, s * c_bias.sun, 0, 0); // sun
+    cmd_list.tree.set_c_scale(cmd_list, s * c_scale.rgb.x, s * c_scale.rgb.y, s * c_scale.rgb.z, s * c_scale.hemi); // scale
+    cmd_list.tree.set_c_bias(cmd_list, s * c_bias.rgb.x, s * c_bias.rgb.y, s * c_bias.rgb.z, s * c_bias.hemi); // bias
+    cmd_list.tree.set_c_sun(cmd_list, s * c_scale.sun, s * c_bias.sun, 0, 0); // sun
 
     if (ps_ssfx_grass_interactive.y > 0)
     {

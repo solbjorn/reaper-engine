@@ -8,8 +8,11 @@ dxUIRender UIRenderImpl;
 
 void dxUIRender::CreateUIGeom()
 {
-    hGeom_TL.create(FVF::F_TL, RImplementation.Vertex.Buffer(), nullptr);
-    hGeom_LIT.create(FVF::F_LIT, RImplementation.Vertex.Buffer(), nullptr);
+    hGeom_TL.create(FVF::F_TL, SGeometry::default_vb(), nullptr);
+    XR_ASSERT(hGeom_TL.stride() == sizeof(FVF::TL));
+
+    hGeom_LIT.create(FVF::F_LIT, SGeometry::default_vb(), nullptr);
+    XR_ASSERT(hGeom_LIT.stride() == sizeof(FVF::LIT));
 }
 
 void dxUIRender::DestroyUIGeom()
@@ -26,31 +29,29 @@ void dxUIRender::DestroyUIGeom()
 void dxUIRender::SetShader(IUIShader& shader)
 {
     auto pShader = XR_ASSERT_VAL(smart_cast<dxUIShader*>(&shader) != nullptr);
-    RCache.set_Shader(XR_ASSERT_VAL(pShader->hShader));
+    RImplementation.get_imm_context().cmd_list.set_Shader(XR_ASSERT_VAL(pShader->hShader));
 }
 
 void dxUIRender::SetScissor(Irect* rect)
 {
-    RCache.set_Scissor(rect);
-    RCache.StateManager.OverrideScissoring(rect ? true : false, TRUE);
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+
+    cmd_list.set_Scissor(rect);
+    cmd_list.StateManager.OverrideScissoring(rect ? true : false, TRUE);
 }
 
 void dxUIRender::GetActiveTextureResolution(Fvector2& res)
 {
-    CTexture* T = RCache.get_ActiveTexture(0);
+    const auto T = RImplementation.get_imm_context().cmd_list.get_ActiveTexture(0);
     res.set(gsl::narrow_cast<f32>(T->get_Width()), gsl::narrow_cast<f32>(T->get_Height()));
 }
 
-LPCSTR dxUIRender::UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name)
+gsl::czstring dxUIRender::UpdateShaderName(gsl::czstring tex_name, gsl::czstring sh_name)
 {
-    string_path buff;
-    u32 v_dev = CAP_VERSION(HW.Caps.raster_major, HW.Caps.raster_minor);
-    u32 v_need = CAP_VERSION(2, 0);
-
-    if ((v_dev >= v_need) && FS.exist(buff, "$game_textures$", tex_name, ".ogm"))
+    if (string_path buff; FS.exist(buff, "$game_textures$", tex_name, ".ogm") != nullptr)
         return "hud\\movie";
-    else
-        return sh_name;
+
+    return sh_name;
 }
 
 void dxUIRender::PushPoint(float x, float y, float z, u32 C, float u, float v)
@@ -58,12 +59,12 @@ void dxUIRender::PushPoint(float x, float y, float z, u32 C, float u, float v)
     switch (m_PointType)
     {
     case pttLIT:
-        LIT_pv->set(x, y, z, C, u, v);
-        ++LIT_pv;
+        lit_verts[lit_written].set(x, y, z, C, u, v);
+        ++lit_written;
         break;
     case pttTL:
-        TL_pv->set(x, y, C, u, v);
-        ++TL_pv;
+        tl_verts[tl_written].set(x, y, C, u, v);
+        ++tl_written;
         break;
     default: xr::unreachable();
     }
@@ -73,6 +74,8 @@ void dxUIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointTy
 {
     XR_ASSERT(PrimitiveType == ptNone && m_PointType == pttNone, "", PrimitiveType, m_PointType);
 
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+
     m_iMaxVerts = iMaxVerts;
     PrimitiveType = primType;
     m_PointType = pointType;
@@ -80,12 +83,12 @@ void dxUIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointTy
     switch (pointType)
     {
     case pttLIT:
-        LIT_start_pv = (FVF::LIT*)RImplementation.Vertex.Lock(m_iMaxVerts, hGeom_LIT.stride(), vOffset);
-        LIT_pv = LIT_start_pv;
+        lit_verts = cmd_list.Vertex.Lock<FVF::LIT>(m_iMaxVerts);
+        lit_written = 0;
         break;
     case pttTL:
-        TL_start_pv = (FVF::TL*)RImplementation.Vertex.Lock(m_iMaxVerts, hGeom_TL.stride(), vOffset);
-        TL_pv = TL_start_pv;
+        tl_verts = cmd_list.Vertex.Lock<FVF::TL>(m_iMaxVerts);
+        tl_written = 0;
         break;
     default: xr::unreachable();
     }
@@ -93,21 +96,24 @@ void dxUIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointTy
 
 void dxUIRender::FlushPrimitive()
 {
-    gsl::index p_cnt;
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+
+    std::size_t vOffset;
+    std::size_t p_cnt;
 
     switch (m_PointType)
     {
     case pttLIT:
-        p_cnt = XR_ASSERT_VAL(LIT_pv - LIT_start_pv <= m_iMaxVerts);
-        RImplementation.Vertex.Unlock(p_cnt, hGeom_LIT.stride());
+        p_cnt = XR_ASSERT_VAL(lit_written <= m_iMaxVerts);
+        vOffset = cmd_list.Vertex.Unlock<FVF::LIT>(p_cnt);
 
-        RCache.set_Geometry(hGeom_LIT);
+        cmd_list.set_Geometry(hGeom_LIT);
         break;
     case pttTL:
-        p_cnt = XR_ASSERT_VAL(TL_pv - TL_start_pv <= m_iMaxVerts);
-        RImplementation.Vertex.Unlock(p_cnt, hGeom_TL.stride());
+        p_cnt = XR_ASSERT_VAL(tl_written <= m_iMaxVerts);
+        vOffset = cmd_list.Vertex.Unlock<FVF::TL>(p_cnt);
 
-        RCache.set_Geometry(hGeom_TL);
+        cmd_list.set_Geometry(hGeom_TL);
         break;
     default: xr::unreachable();
     }
@@ -119,30 +125,30 @@ void dxUIRender::FlushPrimitive()
     switch (PrimitiveType)
     {
     case ptTriStrip:
-        primCount = p_cnt - 2;
+        primCount = gsl::narrow_cast<gsl::index>(p_cnt) - 2;
         d3dPrimType = D3DPT_TRIANGLESTRIP;
         break;
     case ptTriList:
-        primCount = p_cnt / 3;
+        primCount = gsl::narrow_cast<gsl::index>(p_cnt) / 3;
         d3dPrimType = D3DPT_TRIANGLELIST;
         break;
     case ptLineStrip:
-        primCount = p_cnt - 1;
+        primCount = gsl::narrow_cast<gsl::index>(p_cnt) - 1;
         d3dPrimType = D3DPT_LINESTRIP;
         break;
     case ptLineList:
-        primCount = p_cnt / 2;
+        primCount = gsl::narrow_cast<gsl::index>(p_cnt) / 2;
         d3dPrimType = D3DPT_LINELIST;
         break;
     default: xr::unreachable();
     }
 
     if (primCount > 0)
-        RCache.Render(d3dPrimType, vOffset, primCount);
+        cmd_list.Render(d3dPrimType, vOffset, gsl::narrow_cast<std::size_t>(primCount));
 
     PrimitiveType = ptNone;
     m_PointType = pttNone;
 }
 
-void dxUIRender::CacheSetXformWorld(const Fmatrix& M) { RCache.set_xform_world(M); }
-void dxUIRender::CacheSetCullMode(CullMode m) { RCache.set_CullMode(CULL_NONE + m); }
+void dxUIRender::CacheSetXformWorld(const Fmatrix& M) { RImplementation.get_imm_context().cmd_list.set_xform_world(M); }
+void dxUIRender::CacheSetCullMode(CullMode m) { RImplementation.get_imm_context().cmd_list.set_CullMode(CULL_NONE + m); }

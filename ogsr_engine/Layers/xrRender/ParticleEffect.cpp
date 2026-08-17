@@ -216,9 +216,10 @@ void CParticleEffect::OnDeviceCreate()
     {
         if (m_Def->m_Flags.is(CPEDef::dfSprite))
         {
-            geom.create(FVF::F_LIT, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
-            if (m_Def)
-                shader = m_Def->m_CachedShader;
+            geom.create(FVF::F_LIT, SGeometry::default_vb(), RImplementation.QuadIB);
+            XR_ASSERT(geom.stride() == sizeof(FVF::LIT));
+
+            shader = m_Def->m_CachedShader;
         }
     }
 }
@@ -239,8 +240,8 @@ void CParticleEffect::OnDeviceDestroy()
 
 namespace
 {
-IC void FillSprite(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr,
-                   float sina, float cosa)
+constexpr ICF void FillSprite(auto&& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt, const Fvector2& rb, float r1, float r2,
+                              u32 clr, float sina, float cosa)
 {
     __m128 Vr, Vt, _T, _R, _pos, _zz, _sa, _ca, a, b, c, d;
 
@@ -271,33 +272,29 @@ IC void FillSprite(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const Fvec
     b = _mm_add_ps(b, _pos);
     c = _mm_add_ps(c, _pos);
 
-    _mm_store_ss((float*)&pv->p.x, d);
-    _mm_storeh_pi((__m64*)&pv->p.y, d);
-    pv->color = clr;
-    pv->t.set(lt.x, rb.y);
-    pv++;
+    _mm_store_ss((float*)&pv[0].p.x, d);
+    _mm_storeh_pi((__m64*)&pv[0].p.y, d);
+    pv[0].color = clr;
+    pv[0].t.set(lt.x, rb.y);
 
-    _mm_store_ss((float*)&pv->p.x, a);
-    _mm_storeh_pi((__m64*)&pv->p.y, a);
-    pv->color = clr;
-    pv->t.set(lt.x, lt.y);
-    pv++;
+    _mm_store_ss((float*)&pv[1].p.x, a);
+    _mm_storeh_pi((__m64*)&pv[1].p.y, a);
+    pv[1].color = clr;
+    pv[1].t.set(lt.x, lt.y);
 
-    _mm_store_ss((float*)&pv->p.x, c);
-    _mm_storeh_pi((__m64*)&pv->p.y, c);
-    pv->color = clr;
-    pv->t.set(rb.x, rb.y);
-    pv++;
+    _mm_store_ss((float*)&pv[2].p.x, c);
+    _mm_storeh_pi((__m64*)&pv[2].p.y, c);
+    pv[2].color = clr;
+    pv[2].t.set(rb.x, rb.y);
 
-    _mm_store_ss((float*)&pv->p.x, b);
-    _mm_storeh_pi((__m64*)&pv->p.y, b);
-    pv->color = clr;
-    pv->t.set(rb.x, lt.y);
-    pv++;
+    _mm_store_ss((float*)&pv[3].p.x, b);
+    _mm_storeh_pi((__m64*)&pv[3].p.y, b);
+    pv[3].color = clr;
+    pv[3].t.set(rb.x, lt.y);
 }
 
-IC void FillSprite(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float sina,
-                   float cosa)
+constexpr ICF void FillSprite(auto&& pv, const Fvector& pos, const Fvector& dir, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr,
+                              float sina, float cosa)
 {
     const Fvector& T = dir;
     Fvector R;
@@ -345,10 +342,10 @@ IC void FillSprite(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, const 
     _mm_store_ss((float*)&R.x, _t1);
     _mm_storeh_pi((__m64*)&R.y, _t1);
 
-    FillSprite(pv, T, R, pos, lt, rb, r1, r2, clr, sina, cosa);
+    FillSprite(std::forward<decltype(pv)>(pv), T, R, pos, lt, rb, r1, r2, clr, sina, cosa);
 }
 
-ICF void magnitude_sse(const Fvector& vec, float& res)
+constexpr ICF void magnitude_sse(const Fvector& vec, float& res)
 {
     __m128 tv, tu;
 
@@ -364,7 +361,7 @@ ICF void magnitude_sse(const Fvector& vec, float& res)
 }
 } // namespace
 
-void CParticleEffect::ParticleRenderStream(PAPI::Particle* particles, FVF::LIT* pv, u32 count)
+void CParticleEffect::ParticleRenderStream(std::span<FVF::LIT> verts, std::span<const PAPI::Particle> particles) const
 {
     XR_TRACY_ZONE_SCOPED();
 
@@ -373,22 +370,16 @@ void CParticleEffect::ParticleRenderStream(PAPI::Particle* particles, FVF::LIT* 
     // But it must be 0xFFFFFFFF or otherwise some particles won't play
     float angle = float(0xFFFFFFFF); // XXX: check if we can replace with flt_max
 
-    for (u32 i = 0; i < count; i++)
+    for (auto [pv, m] : std::views::zip(verts | std::views::chunk(4), particles))
     {
-        PAPI::Particle& m = particles[i];
-        Fvector2 lt, rb;
-        lt.set(0.f, 0.f);
-        rb.set(1.f, 1.f);
-
-        _mm_prefetch((const char*)&particles[i + 1], _MM_HINT_NTA);
+        Fvector2 lt{0.0f, 0.0f};
+        Fvector2 rb{1.0f, 1.0f};
 
         if (!fsimilar(angle, m.rot.x))
         {
             angle = m.rot.x;
             DirectX::XMScalarSinCos(&sina, &cosa, angle);
         }
-
-        _mm_prefetch(64 + (const char*)&particles[i + 1], _MM_HINT_NTA);
 
         if (m_Def->m_Flags.is(CPEDef::dfFramed))
             m_Def->m_Frame.CalculateTC(iFloor(float(m.frame) / 255.f), lt, rb);
@@ -415,11 +406,13 @@ void CParticleEffect::ParticleRenderStream(PAPI::Particle* particles, FVF::LIT* 
             {
                 Fmatrix M;
                 M.setXYZ(m_Def->m_APDefaultRotation);
+
                 if (m_RT_Flags.is(CParticleEffect::flRT_XFORM))
                 {
                     Fvector p;
                     m_XFORM.transform_tiny(p, m.pos);
                     M.mulA_43(m_XFORM);
+
                     FillSprite(pv, M.k, M.i, p, lt, rb, r_x, r_y, color_rgba_f(m.colorR, m.colorG, m.colorB, m.colorA), sina, cosa);
                 }
                 else
@@ -433,17 +426,21 @@ void CParticleEffect::ParticleRenderStream(PAPI::Particle* particles, FVF::LIT* 
                 M.identity();
                 M.k.div(m.vel, speed);
                 M.j.set(0, 1, 0);
+
                 if (_abs(M.j.dotproduct(M.k)) > .99f)
                     M.j.set(0, 0, 1);
+
                 M.i.crossproduct(M.j, M.k);
                 M.i.normalize();
                 M.j.crossproduct(M.k, M.i);
                 M.j.normalize();
+
                 if (m_RT_Flags.is(CParticleEffect::flRT_XFORM))
                 {
                     Fvector p;
                     m_XFORM.transform_tiny(p, m.pos);
                     M.mulA_43(m_XFORM);
+
                     FillSprite(pv, M.j, M.i, p, lt, rb, r_x, r_y, color_rgba_f(m.colorR, m.colorG, m.colorB, m.colorA), sina, cosa);
                 }
                 else
@@ -458,11 +455,13 @@ void CParticleEffect::ParticleRenderStream(PAPI::Particle* particles, FVF::LIT* 
                     dir.div(m.vel, speed);
                 else
                     dir.setHP(-m_Def->m_APDefaultRotation.y, -m_Def->m_APDefaultRotation.x);
+
                 if (m_RT_Flags.is(CParticleEffect::flRT_XFORM))
                 {
                     Fvector p, d;
                     m_XFORM.transform_tiny(p, m.pos);
                     m_XFORM.transform_dir(d, dir);
+
                     FillSprite(pv, p, d, lt, rb, r_x, r_y, color_rgba_f(m.colorR, m.colorG, m.colorB, m.colorA), sina, cosa);
                 }
                 else
@@ -477,6 +476,7 @@ void CParticleEffect::ParticleRenderStream(PAPI::Particle* particles, FVF::LIT* 
             {
                 Fvector p;
                 m_XFORM.transform_tiny(p, m.pos);
+
                 FillSprite(pv, Device.vCameraTop, Device.vCameraRight, p, lt, rb, r_x, r_y, color_rgba_f(m.colorR, m.colorG, m.colorB, m.colorA), sina, cosa);
             }
             else
@@ -490,7 +490,6 @@ void CParticleEffect::ParticleRenderStream(PAPI::Particle* particles, FVF::LIT* 
 
 void CParticleEffect::Render(CBackend& cmd_list, float, bool)
 {
-    u32 dwOffset, dwCount;
     // Get a pointer to the particles in gp memory
     PAPI::Particle* particles;
     u32 p_cnt;
@@ -502,14 +501,12 @@ void CParticleEffect::Render(CBackend& cmd_list, float, bool)
     if (!m_Def || !m_Def->m_Flags.is(CPEDef::dfSprite))
         return;
 
-    FVF::LIT* pv = (FVF::LIT*)RImplementation.Vertex.Lock(p_cnt * 4 * 4, geom->vb_stride, dwOffset);
-    ParticleRenderStream(particles, pv, p_cnt);
+    const auto dwCount = p_cnt * 4uz;
+    const auto verts = cmd_list.Vertex.Lock<FVF::LIT>(dwCount);
 
-    dwCount = p_cnt << 2;
-    RImplementation.Vertex.Unlock(dwCount, geom->vb_stride);
+    ParticleRenderStream(verts, std::span{particles, p_cnt});
 
-    if (!dwCount)
-        return;
+    const auto dwOffset = cmd_list.Vertex.Unlock<FVF::LIT>(dwCount);
 
     XR_TRACY_ZONE_SCOPED();
 

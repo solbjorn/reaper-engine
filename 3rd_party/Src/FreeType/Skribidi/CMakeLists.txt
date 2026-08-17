@@ -9,6 +9,15 @@ project(skribidi
 	LANGUAGES C CXX
 )
 
+set(SKRIBIDI_LIBRARY_TYPE "${SKRIBIDI_LIBRARY_TYPE}" CACHE STRING
+    "Library type override for Skribidi (SHARED, STATIC, OBJECT, or empty to follow BUILD_SHARED_LIBS)")
+
+if (SKRIBIDI_LIBRARY_TYPE)
+    string(COMPARE EQUAL "${SKRIBIDI_LIBRARY_TYPE}" "SHARED" SKRIBIDI_BUILD_SHARED_LIBRARY)
+else()
+    set(SKRIBIDI_BUILD_SHARED_LIBRARY ${BUILD_SHARED_LIBS})
+endif()
+
 option(ENABLE_ASAN "Enable Address Sanitizer flags" OFF)
 
 if(ENABLE_ASAN)
@@ -54,6 +63,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 add_subdirectory(src)
 
 # This hides samples, test, and doxygen from apps that use skribidi via FetchContent
@@ -64,11 +75,6 @@ if(PROJECT_IS_TOP_LEVEL)
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
 
 	include(GNUInstallDirs)
-
-	install(
-		DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Skribidi/include"
-		DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-	)
 
 	if(SKRIBIDI_UNIT_TESTS OR SKRIBIDI_EXAMPLE)
 

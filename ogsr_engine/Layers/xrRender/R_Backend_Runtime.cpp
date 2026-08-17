@@ -14,22 +14,27 @@ void CBackend::OnFrameEnd()
 void CBackend::OnFrameBegin()
 {
     Invalidate();
+
     // DX9 sets base rt nd base zb by default
     RImplementation.rmNormal(*this);
     set_RT(RImplementation.Target->get_base_rt());
     set_ZB(RImplementation.Target->rt_Base_Depth->pZRT[context_id]);
     memset(&stat, 0, sizeof(stat));
+
     set_Stencil(FALSE);
+    set_CullMode(CULL_CCW);
+
+    Vertex.Flush();
+    Index.Flush();
 }
 
 void CBackend::Invalidate()
 {
     XR_TRACY_ZONE_SCOPED();
 
-    pRT[0] = nullptr;
-    pRT[1] = nullptr;
-    pRT[2] = nullptr;
-    pRT[3] = nullptr;
+    for (auto& rt : pRT)
+        rt = nullptr;
+
     pZB = nullptr;
 
     decl = nullptr;
@@ -117,7 +122,7 @@ void CBackend::set_Textures(STextureList* textures_list)
     gsl::index _last_ds{-1};
     gsl::index _last_cs{-1};
 
-    for (auto& loader : *textures_list)
+    for (auto& loader : textures_list->list)
     {
         gsl::index load_id{loader.first};
         CTexture* load_surf = loader.second._get();
@@ -339,6 +344,10 @@ void CBackend::SetupStates()
 // Device dependance
 void CBackend::OnDeviceCreate()
 {
+    // streams
+    Vertex.Create(context_id);
+    Index.Create(context_id);
+
     context()->QueryInterface(IID_PPV_ARGS(&pAnnotation));
 
     // Debug Draw
@@ -350,6 +359,10 @@ void CBackend::OnDeviceCreate()
 
 void CBackend::OnDeviceDestroy()
 {
+    // streams
+    Index.Destroy();
+    Vertex.Destroy();
+
     // Debug Draw
     DestroyDebugDraw();
 
@@ -386,7 +399,7 @@ void CBackend::apply_lmaterial(IRenderable* O)
     CTexture* T = XR_ASSERT_VAL(get_ActiveTexture(C->samp.index) != nullptr);
     const auto mtl = T->m_material;
 
-    hemi.set_material(o.hemi, o.sun, 0, (mtl < 5 ? (mtl + .5f) / 4.f : mtl));
-    hemi.set_pos_faces(o.hemi_cube[CROS_impl::CUBE_FACE_POS_X], o.hemi_cube[CROS_impl::CUBE_FACE_POS_Y], o.hemi_cube[CROS_impl::CUBE_FACE_POS_Z]);
-    hemi.set_neg_faces(o.hemi_cube[CROS_impl::CUBE_FACE_NEG_X], o.hemi_cube[CROS_impl::CUBE_FACE_NEG_Y], o.hemi_cube[CROS_impl::CUBE_FACE_NEG_Z]);
+    hemi.set_material(*this, o.hemi, o.sun, 0, mtl < 5.0f ? (mtl + 0.5f) / 4.0f : mtl);
+    hemi.set_pos_faces(*this, o.hemi_cube[CROS_impl::CUBE_FACE_POS_X], o.hemi_cube[CROS_impl::CUBE_FACE_POS_Y], o.hemi_cube[CROS_impl::CUBE_FACE_POS_Z]);
+    hemi.set_neg_faces(*this, o.hemi_cube[CROS_impl::CUBE_FACE_NEG_X], o.hemi_cube[CROS_impl::CUBE_FACE_NEG_Y], o.hemi_cube[CROS_impl::CUBE_FACE_NEG_Z]);
 }

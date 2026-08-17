@@ -22,8 +22,6 @@ XR_DIAG_IGNORE("-Wsign-conversion");
 
 XR_DIAG_POP();
 
-#define _LIBCPP_ABI_BOUNDED_ITERATORS_IN_INPLACE_VECTOR
-
 #include <inplace_vector>
 #include <stack>
 
@@ -31,6 +29,9 @@ XR_DIAG_POP();
 
 namespace xr
 {
+// GSL doesn't provide one
+using cu8zstring = gsl::basic_zstring<const char8_t, gsl::dynamic_extent>;
+
 template <std::size_t total_size, typename storage_type = std::size_t>
 using bitset = plf::bitset<total_size, storage_type, true>;
 

@@ -107,7 +107,7 @@ s32 sentry_helper::init(gsl::czstring log)
     {
         string_path dbc;
         std::ignore = FS.update_path(dbc, xr::fsgame::app_data_root.data(), "sentry");
-        fs.assign(reinterpret_cast<gsl::cu8zstring>(dbc));
+        fs.assign(reinterpret_cast<xr::cu8zstring>(dbc));
     }
     else
     {
@@ -130,7 +130,7 @@ s32 sentry_helper::init(gsl::czstring log)
         sentry::sentry_options_set_cache_keep(opts, sentry::sentry_cache_keep_t::SENTRY_CACHE_KEEP_ALWAYS);
         sentry::sentry_options_set_cache_max_size(opts, 160 * 1024 * 1024);
 
-        fs.assign(reinterpret_cast<gsl::cu8zstring>(log));
+        fs.assign(reinterpret_cast<xr::cu8zstring>(log));
         sentry::sentry_options_add_attachmentw_n(opts, fs.c_str(), fs.native().size());
     }
 

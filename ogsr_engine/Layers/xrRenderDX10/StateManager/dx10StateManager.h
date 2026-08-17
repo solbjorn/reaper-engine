@@ -23,7 +23,7 @@ public:
     //	Set all states to default
     void Reset();
     //	Sends states to DX10 runtime, creates new state objects if nesessary
-    void Apply();
+    void Apply(CBackend& cmd_list);
 
     //	Unmaps all constant bindings.
     void UnmapConstants();
@@ -33,9 +33,9 @@ public:
     void SetDepthStencilState(ID3DDepthStencilState* pDSState);
     void SetBlendState(ID3DBlendState* pBlendState);
     void SetStencilRef(UINT uiStencilRef);
-    void SetAlphaRef(UINT uiAlphaRef);
 
-    void BindAlphaRef(R_constant* C);
+    void SetAlphaRef(CBackend& cmd_list, u32 uiAlphaRef);
+    void BindAlphaRef(CBackend& cmd_list, R_constant* C);
 
     //	The slowest (but finer) method
     //	Can create state objects in runtime
@@ -101,9 +101,6 @@ private:
     bool m_bOverrideScissoring;
     BOOL m_bOverrideScissoringValue;
     UINT m_uiSampleMask;
-
-private:
-    CBackend& cmd_list();
 };
 
 #endif //	dx10StateManager_included

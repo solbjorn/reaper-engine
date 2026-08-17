@@ -47,7 +47,7 @@ void dx103DFluidEmitters::DestroyShaders()
     }
 }
 
-void dx103DFluidEmitters::RenderDensity(const dx103DFluidData& FluidData)
+void dx103DFluidEmitters::RenderDensity(CBackend& cmd_list, const dx103DFluidData& FluidData)
 {
     const xr_vector<CEmitter>& Emitters = FluidData.GetEmittersList();
     u32 iNumEmitters = Emitters.size();
@@ -56,11 +56,11 @@ void dx103DFluidEmitters::RenderDensity(const dx103DFluidData& FluidData)
     {
         const CEmitter& Emitter = Emitters[i];
         if (Emitter.m_bApplyDensity)
-            ApplyDensity(Emitter);
+            ApplyDensity(cmd_list, Emitter);
     }
 }
 
-void dx103DFluidEmitters::RenderVelocity(const dx103DFluidData& FluidData)
+void dx103DFluidEmitters::RenderVelocity(CBackend& cmd_list, const dx103DFluidData& FluidData)
 {
     const xr_vector<CEmitter>& Emitters = FluidData.GetEmittersList();
     u32 iNumEmitters = Emitters.size();
@@ -69,14 +69,14 @@ void dx103DFluidEmitters::RenderVelocity(const dx103DFluidData& FluidData)
     {
         const CEmitter& Emitter = Emitters[i];
         if (Emitter.m_bApplyImpulse)
-            ApplyVelocity(Emitter);
+            ApplyVelocity(cmd_list, Emitter);
     }
 }
 
-void dx103DFluidEmitters::ApplyDensity(const CEmitter& Emitter)
+void dx103DFluidEmitters::ApplyDensity(CBackend& cmd_list, const CEmitter& Emitter)
 {
     // Draw gaussian ball of color
-    RCache.set_Element(m_EmitterTechnique[ET_SimpleGausian]);
+    cmd_list.set_Element(m_EmitterTechnique[ET_SimpleGausian]);
 
     float t = Device.fTimeGlobal;
 
@@ -93,11 +93,11 @@ void dx103DFluidEmitters::ApplyDensity(const CEmitter& Emitter)
     Fvector4 center;
     center.set(Emitter.m_vPosition.x, Emitter.m_vPosition.y, Emitter.m_vPosition.z, 0);
 
-    RCache.set_c(strImpulseSize, fRadius);
-    RCache.set_c(strSplatColor, color);
-    RCache.set_c(strImpulseCenter, center);
+    cmd_list.set_c(strImpulseSize, fRadius);
+    cmd_list.set_c(strSplatColor, color);
+    cmd_list.set_c(strImpulseCenter, center);
 
-    m_pGrid->DrawSlices();
+    m_pGrid->DrawSlices(cmd_list);
 }
 
 namespace
@@ -106,10 +106,10 @@ namespace
 [[nodiscard]] f32 lilrand() { return xr::random_f32(-2.5f, 2.5f); }
 } // namespace
 
-void dx103DFluidEmitters::ApplyVelocity(const CEmitter& Emitter)
+void dx103DFluidEmitters::ApplyVelocity(CBackend& cmd_list, const CEmitter& Emitter)
 {
     // Draw gaussian ball of velocity
-    RCache.set_Element(m_EmitterTechnique[ET_SimpleGausian]);
+    cmd_list.set_Element(m_EmitterTechnique[ET_SimpleGausian]);
 
     float fRadius = Emitter.m_fRadius;
     Fvector FlowVelocity = Emitter.m_vFlowVelocity;
@@ -129,16 +129,16 @@ void dx103DFluidEmitters::ApplyVelocity(const CEmitter& Emitter)
     default: break;
     }
 
-    RCache.set_c(strImpulseSize, fRadius);
+    cmd_list.set_c(strImpulseSize, fRadius);
 
     // Color in this case is the initial velocity given to the emitted smoke
     Fvector4 color;
     color.set(FlowVelocity.x, FlowVelocity.y, FlowVelocity.z, 0);
-    RCache.set_c(strSplatColor, color);
+    cmd_list.set_c(strSplatColor, color);
 
     Fvector4 center;
     center.set(Emitter.m_vPosition.x + lilrand(), Emitter.m_vPosition.y + lilrand(), Emitter.m_vPosition.z + lilrand(), 0);
-    RCache.set_c(strImpulseCenter, center);
+    cmd_list.set_c(strImpulseCenter, center);
 
-    m_pGrid->DrawSlices();
+    m_pGrid->DrawSlices(cmd_list);
 }

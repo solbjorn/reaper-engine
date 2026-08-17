@@ -68,9 +68,9 @@ void dx103DFluidObstacles::DestroyShaders()
     }
 }
 
-void dx103DFluidObstacles::ProcessObstacles(const dx103DFluidData& FluidData, float timestep)
+void dx103DFluidObstacles::ProcessObstacles(CBackend& cmd_list, const dx103DFluidData& FluidData, float timestep)
 {
-    PIX_EVENT(ProcessObstacles);
+    PIX_EVENT_CTX(cmd_list, ProcessObstacles);
 
     //	Prepare world-space to grid transform
     Fmatrix WorldToFluid;
@@ -89,17 +89,17 @@ void dx103DFluidObstacles::ProcessObstacles(const dx103DFluidData& FluidData, fl
         WorldToFluid.mul(TranslateScale, InvFluidTranform);
     }
 
-    ProcessDynamicObstacles(FluidData, WorldToFluid, timestep);
+    ProcessDynamicObstacles(cmd_list, FluidData, WorldToFluid, timestep);
 
     //	Render static obstacles last
     //	to override speed where bounding shapes of dynamic and
     //	static objects intersect.
-    ProcessStaticObstacles(FluidData, WorldToFluid);
+    ProcessStaticObstacles(cmd_list, FluidData, WorldToFluid);
 }
 
-void dx103DFluidObstacles::RenderStaticOOBB(const Fmatrix& Transform)
+void dx103DFluidObstacles::RenderStaticOOBB(CBackend& cmd_list, const Fmatrix& Transform)
 {
-    PIX_EVENT(RenderObstacle);
+    PIX_EVENT_CTX(cmd_list, RenderObstacle);
 
     //	Shader must be already set up!
     Fmatrix InvTransform;
@@ -112,15 +112,15 @@ void dx103DFluidObstacles::RenderStaticOOBB(const Fmatrix& Transform)
         Fvector4 TransformedPlane;
         ClipTransform.transform(TransformedPlane, UnitClipPlanes[i]);
         TransformedPlane.normalize_as_plane();
-        RCache.set_ca(strOOBBClipPlane, i, TransformedPlane);
+        cmd_list.set_ca(strOOBBClipPlane, i, TransformedPlane);
     }
 
-    m_pGrid->DrawSlices();
+    m_pGrid->DrawSlices(cmd_list);
 }
 
-void dx103DFluidObstacles::ProcessStaticObstacles(const dx103DFluidData& FluidData, const Fmatrix& WorldToFluid)
+void dx103DFluidObstacles::ProcessStaticObstacles(CBackend& cmd_list, const dx103DFluidData& FluidData, const Fmatrix& WorldToFluid)
 {
-    RCache.set_Element(m_ObstacleTechnique[OS_OOBB]);
+    cmd_list.set_Element(m_ObstacleTechnique[OS_OOBB]);
 
     const xr_vector<Fmatrix>& Obstacles = FluidData.GetObstaclesList();
     int iObstNum = Obstacles.size();
@@ -129,11 +129,11 @@ void dx103DFluidObstacles::ProcessStaticObstacles(const dx103DFluidData& FluidDa
         Fmatrix Transform;
         Transform.mul(WorldToFluid, Obstacles[i]);
 
-        RenderStaticOOBB(Transform);
+        RenderStaticOOBB(cmd_list, Transform);
     }
 }
 
-void dx103DFluidObstacles::ProcessDynamicObstacles(const dx103DFluidData& FluidData, const Fmatrix& WorldToFluid, float timestep)
+void dx103DFluidObstacles::ProcessDynamicObstacles(CBackend& cmd_list, const dx103DFluidData& FluidData, const Fmatrix& WorldToFluid, float timestep)
 {
     m_lstRenderables.clear();
     m_lstShells.clear();
@@ -178,34 +178,34 @@ void dx103DFluidObstacles::ProcessDynamicObstacles(const dx103DFluidData& FluidD
     if (m_lstShells.empty() && m_lstElements.empty())
         return;
 
-    RCache.set_Element(m_ObstacleTechnique[OS_DynamicOOBB]);
+    cmd_list.set_Element(m_ObstacleTechnique[OS_DynamicOOBB]);
 
     Fmatrix FluidToWorld;
     FluidToWorld.invert(WorldToFluid);
 
-    RCache.set_c(strWorldToLocal, WorldToFluid);
-    RCache.set_c(strLocalToWorld, FluidToWorld);
+    cmd_list.set_c(strWorldToLocal, WorldToFluid);
+    cmd_list.set_c(strLocalToWorld, FluidToWorld);
 
     for (IPhysicsShell* shell : m_lstShells)
-        RenderPhysicsShell(shell, WorldToFluid, timestep);
+        RenderPhysicsShell(cmd_list, shell, WorldToFluid, timestep);
 
     for (IPhysicsElement* element : m_lstElements)
-        RenderPhysicsElement(*element, WorldToFluid, timestep);
+        RenderPhysicsElement(cmd_list, *element, WorldToFluid, timestep);
 }
 
 //	TODO: DX10: Do it using instancing.
-void dx103DFluidObstacles::RenderPhysicsShell(IPhysicsShell* pShell, const Fmatrix& WorldToFluid, float timestep)
+void dx103DFluidObstacles::RenderPhysicsShell(CBackend& cmd_list, IPhysicsShell* pShell, const Fmatrix& WorldToFluid, float timestep)
 {
     u16 iObstNum = pShell->get_ElementsNumber();
 
     for (u16 i = 0; i < iObstNum; ++i)
     {
         IPhysicsElement& Element = pShell->IElement(i);
-        RenderPhysicsElement(Element, WorldToFluid, timestep);
+        RenderPhysicsElement(cmd_list, Element, WorldToFluid, timestep);
     }
 }
 
-void dx103DFluidObstacles::RenderPhysicsElement(IPhysicsElement& Element, const Fmatrix& WorldToFluid, float timestep)
+void dx103DFluidObstacles::RenderPhysicsElement(CBackend& cmd_list, IPhysicsElement& Element, const Fmatrix& WorldToFluid, float timestep)
 {
     //	Shader must be already set up!
     const Fvector3& MassCenter3 = Element.mass_Center();
@@ -231,36 +231,35 @@ void dx103DFluidObstacles::RenderPhysicsElement(IPhysicsElement& Element, const 
     AngularVelocity.mul(fVelocityScale);
     TranslationVelocity.mul(fVelocityScale);
 
-    RCache.set_c(strMassCenter, MassCenter);
-    RCache.set_c(strOOBBWorldAngularVelocity, AngularVelocity);
-    RCache.set_c(strOOBBWorldTranslationVelocity, TranslationVelocity);
+    cmd_list.set_c(strMassCenter, MassCenter);
+    cmd_list.set_c(strOOBBWorldAngularVelocity, AngularVelocity);
+    cmd_list.set_c(strOOBBWorldTranslationVelocity, TranslationVelocity);
 
     int iShapeNum = Element.numberOfGeoms();
 
     for (u16 i = 0; i < iShapeNum; ++i)
     {
         if (Element.geometry(i)->collide_fluids())
-            RenderDynamicOOBB(*Element.geometry(i), WorldToFluid);
+            RenderDynamicOOBB(cmd_list, *Element.geometry(i), WorldToFluid);
     }
 }
 
-void dx103DFluidObstacles::RenderDynamicOOBB(IPhysicsGeometry& Geometry, const Fmatrix& WorldToFluid)
+void dx103DFluidObstacles::RenderDynamicOOBB(CBackend& cmd_list, IPhysicsGeometry& Geometry, const Fmatrix& WorldToFluid)
 {
-    PIX_EVENT(RenderDynamicObstacle);
+    PIX_EVENT_CTX(cmd_list, RenderDynamicObstacle);
 
-    Fmatrix Transform;
-
-    Fvector3 BoxSize;
     Fmatrix OOBBTransform;
+    Fvector3 BoxSize;
     Geometry.get_Box(OOBBTransform, BoxSize);
 
+    Fmatrix Transform;
     Transform.mul(WorldToFluid, OOBBTransform);
 
     //	Shader must be already set up!
     //	DynOOBBData must be already set up!
     Fmatrix InvTransform;
-    Fmatrix ClipTransform;
     InvTransform.invert(Transform);
+    Fmatrix ClipTransform;
     ClipTransform.transpose(InvTransform);
 
     for (int i = 0; i < 6; ++i)
@@ -270,8 +269,8 @@ void dx103DFluidObstacles::RenderDynamicOOBB(IPhysicsGeometry& Geometry, const F
         Fvector4 TransformedPlane;
         ClipTransform.transform(TransformedPlane, UpdatedPlane);
         TransformedPlane.normalize_as_plane();
-        RCache.set_ca(strOOBBClipPlane, i, TransformedPlane);
+        cmd_list.set_ca(strOOBBClipPlane, i, TransformedPlane);
     }
 
-    m_pGrid->DrawSlices();
+    m_pGrid->DrawSlices(cmd_list);
 }

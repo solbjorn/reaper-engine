@@ -70,7 +70,7 @@ public:
 
     void SetScreenSize(int width, int height);
 
-    void Draw(const dx103DFluidData& FluidData);
+    void Draw(CBackend& cmd_list, const dx103DFluidData& FluidData);
 
 private:
     enum RendererShader
@@ -106,13 +106,13 @@ private:
 
     void CalculateRenderTextureSize(int screenWidth, int screenHeight);
     void CreateRayDataResources(int width, int height);
-    void PrepareCBuffer(const dx103DFluidData& FluidData, u32 RTWidth, u32 RTHeight);
+    void PrepareCBuffer(CBackend& cmd_list, const dx103DFluidData& FluidData, u32 RTWidth, u32 RTHeight);
 
-    void ComputeRayData(const dx103DFluidData& FluidData);
-    void ComputeEdgeTexture(const dx103DFluidData& FluidData);
+    void ComputeRayData(CBackend& cmd_list, const dx103DFluidData& FluidData);
+    void ComputeEdgeTexture(CBackend& cmd_list, const dx103DFluidData& FluidData);
 
-    void DrawScreenQuad();
-    void DrawBox();
+    void DrawScreenQuad(CBackend& cmd_list);
+    void DrawBox(CBackend& cmd_list);
 
     void CalculateLighting(const dx103DFluidData& FluidData, FogLighting& LightData);
 

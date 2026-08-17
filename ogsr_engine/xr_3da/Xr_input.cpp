@@ -191,7 +191,7 @@ private:
 public:
     constexpr keyconv()
     {
-        for (auto [code, scan, ext] : std::views::zip(std::views::iota(0z, std::ssize(to_scan)), to_scan, to_ext))
+        for (auto [code, scan, ext] : std::views::zip(std::views::indices(std::ssize(to_scan)), to_scan, to_ext))
         {
             scan = init(code, false);
             ext = init(code, true);

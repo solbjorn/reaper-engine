@@ -13,7 +13,7 @@ struct v_build final
     Fvector2 uv2;
     Fvector2 uv3;
 };
-static_assert(sizeof(v_build) == 48);
+static_assert(sizeof(v_build) == CRenderTarget::bloom_build_stride);
 
 struct v_filter final
 {
@@ -27,11 +27,12 @@ struct v_filter final
     Fvector4 uv6;
     Fvector4 uv7;
 };
-static_assert(sizeof(v_filter) == 144);
+static_assert(sizeof(v_filter) == CRenderTarget::bloom_filter_stride);
 
 // Gauss filtering coeffs
 // Samples:			0-central, -1, -2,..., -7, 1, 2,... 7
 //
+
 void CalcGauss_k7(Fvector4& w0, // weight
                   Fvector4& w1, // weight
                   float r = 3.3f, // gaussian radius
@@ -53,6 +54,7 @@ void CalcGauss_k7(Fvector4& w0, // weight
     w0.set(W[1], W[2], W[3], W[4]); // -1, -2, -3, -4
     w1.set(W[5], W[6], W[7], W[0]); // -5, -6, -7, 0
 }
+
 void CalcGauss_wave(Fvector4& w0, // weight
                     Fvector4& w1, // weight
                     float r_base = 3.3f, // gaussian radius
@@ -71,17 +73,18 @@ void CalcGauss_wave(Fvector4& w0, // weight
 void CRenderTarget::phase_bloom()
 {
     XR_TRACY_ZONE_SCOPED();
-    PIX_EVENT(phase_bloom);
 
-    u32 Offset;
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+
+    PIX_EVENT_CTX(cmd_list, phase_bloom);
 
     // Targets
-    u_setrt(RCache, rt_Bloom_1, {}, {}, nullptr); // No need for ZBuffer at all
+    u_setrt(cmd_list, rt_Bloom_1, {}, {}, nullptr); // No need for ZBuffer at all
 
     // Clear	- don't clear - it's stupid here :)
     // Stencil	- disable
     // Misc		- draw everything (no culling)
-    RCache.set_Z(FALSE);
+    cmd_list.set_Z(FALSE);
 
     // Transfer into Bloom1
     {
@@ -107,47 +110,50 @@ void CRenderTarget::phase_bloom()
         Fvector2 b_3{1 + a_3.x, 1 + a_3.y};
 
         // Fill vertex buffer
-        v_build* pv = (v_build*)RImplementation.Vertex.Lock(4, g_bloom_build->vb_stride, Offset);
-        pv->p.set(EPS, float(th + EPS), EPS, 1.f);
-        pv->uv0.set(a_0.x, b_0.y);
-        pv->uv1.set(a_1.x, b_1.y);
-        pv->uv2.set(a_2.x, b_2.y);
-        pv->uv3.set(a_3.x, b_3.y);
-        pv++;
-        pv->p.set(EPS, EPS, EPS, 1.f);
-        pv->uv0.set(a_0.x, a_0.y);
-        pv->uv1.set(a_1.x, a_1.y);
-        pv->uv2.set(a_2.x, a_2.y);
-        pv->uv3.set(a_3.x, a_3.y);
-        pv++;
-        pv->p.set(float(tw + EPS), float(th + EPS), EPS, 1.f);
-        pv->uv0.set(b_0.x, b_0.y);
-        pv->uv1.set(b_1.x, b_1.y);
-        pv->uv2.set(b_2.x, b_2.y);
-        pv->uv3.set(b_3.x, b_3.y);
-        pv++;
-        pv->p.set(float(tw + EPS), EPS, EPS, 1.f);
-        pv->uv0.set(b_0.x, a_0.y);
-        pv->uv1.set(b_1.x, a_1.y);
-        pv->uv2.set(b_2.x, a_2.y);
-        pv->uv3.set(b_3.x, a_3.y);
-        pv++;
-        RImplementation.Vertex.Unlock(4, g_bloom_build->vb_stride);
+        const auto verts = cmd_list.Vertex.Lock<v_build>(4);
+
+        verts[0].p.set(EPS, float(th + EPS), EPS, 1.f);
+        verts[0].uv0.set(a_0.x, b_0.y);
+        verts[0].uv1.set(a_1.x, b_1.y);
+        verts[0].uv2.set(a_2.x, b_2.y);
+        verts[0].uv3.set(a_3.x, b_3.y);
+
+        verts[1].p.set(EPS, EPS, EPS, 1.f);
+        verts[1].uv0.set(a_0.x, a_0.y);
+        verts[1].uv1.set(a_1.x, a_1.y);
+        verts[1].uv2.set(a_2.x, a_2.y);
+        verts[1].uv3.set(a_3.x, a_3.y);
+
+        verts[2].p.set(float(tw + EPS), float(th + EPS), EPS, 1.f);
+        verts[2].uv0.set(b_0.x, b_0.y);
+        verts[2].uv1.set(b_1.x, b_1.y);
+        verts[2].uv2.set(b_2.x, b_2.y);
+        verts[2].uv3.set(b_3.x, b_3.y);
+
+        verts[3].p.set(float(tw + EPS), EPS, EPS, 1.f);
+        verts[3].uv0.set(b_0.x, a_0.y);
+        verts[3].uv1.set(b_1.x, a_1.y);
+        verts[3].uv2.set(b_2.x, a_2.y);
+        verts[3].uv3.set(b_3.x, a_3.y);
+
+        const auto Offset = cmd_list.Vertex.Unlock<v_build>(4);
 
         // Perform combine (all scalers must account for 4 samples + final diffuse multiply);
         float s = ps_r2_ls_bloom_threshold; // scale
         f_bloom_factor = .9f * f_bloom_factor + .1f * ps_r2_ls_bloom_speed * Device.fTimeDelta; // speed
+
         if (!RImplementation.o.dx10_msaa)
-            RCache.set_Element(s_bloom->E[0]);
+            cmd_list.set_Element(s_bloom->E[0]);
         else
-            RCache.set_Element(s_bloom_msaa->E[0]);
-        RCache.set_c("b_params", s, s, s, f_bloom_factor);
-        RCache.set_Geometry(g_bloom_build);
-        RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+            cmd_list.set_Element(s_bloom_msaa->E[0]);
+
+        cmd_list.set_c("b_params", s, s, s, f_bloom_factor);
+        cmd_list.set_Geometry(g_bloom_build);
+        cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
     }
 
     // Capture luminance values
-    phase_luminance();
+    phase_luminance(cmd_list);
 
     if (RImplementation.o.ssfx_bloom)
         return;
@@ -170,67 +176,66 @@ void CRenderTarget::phase_bloom()
         Fvector4 a_7{a_6.x - two.x, half.y, half.y, a_6.w + two.x}; // -7,+7i
 
         // Fill vertex buffer
-        v_filter* pv = (v_filter*)RImplementation.Vertex.Lock(4, g_bloom_filter->vb_stride, Offset);
+        const auto verts = cmd_list.Vertex.Lock<v_filter>(4);
 
         // 0 - LB
-        pv->p.set(EPS, float(_h + EPS), EPS, 1.f);
-        pv->uv0.set(a_0.x, 1 + a_0.y, 0, 0);
-        pv->uv1.set(a_1.x, 1 + a_1.y, 1 + a_1.z, a_1.w);
-        pv->uv2.set(a_2.x, 1 + a_2.y, 1 + a_2.z, a_2.w);
-        pv->uv3.set(a_3.x, 1 + a_3.y, 1 + a_3.z, a_3.w);
-        pv->uv4.set(a_4.x, 1 + a_4.y, 1 + a_4.z, a_4.w);
-        pv->uv5.set(a_5.x, 1 + a_5.y, 1 + a_5.z, a_5.w);
-        pv->uv6.set(a_6.x, 1 + a_6.y, 1 + a_6.z, a_6.w);
-        pv->uv7.set(a_7.x, 1 + a_7.y, 1 + a_7.z, a_7.w);
-        pv++;
+        verts[0].p.set(EPS, float(_h + EPS), EPS, 1.f);
+        verts[0].uv0.set(a_0.x, 1 + a_0.y, 0, 0);
+        verts[0].uv1.set(a_1.x, 1 + a_1.y, 1 + a_1.z, a_1.w);
+        verts[0].uv2.set(a_2.x, 1 + a_2.y, 1 + a_2.z, a_2.w);
+        verts[0].uv3.set(a_3.x, 1 + a_3.y, 1 + a_3.z, a_3.w);
+        verts[0].uv4.set(a_4.x, 1 + a_4.y, 1 + a_4.z, a_4.w);
+        verts[0].uv5.set(a_5.x, 1 + a_5.y, 1 + a_5.z, a_5.w);
+        verts[0].uv6.set(a_6.x, 1 + a_6.y, 1 + a_6.z, a_6.w);
+        verts[0].uv7.set(a_7.x, 1 + a_7.y, 1 + a_7.z, a_7.w);
 
         // 1 - LT
-        pv->p.set(EPS, EPS, EPS, 1.f);
-        pv->uv0.set(a_0.x, a_0.y, 0, 0);
-        pv->uv1.set(a_1.x, a_1.y, a_1.z, a_1.w);
-        pv->uv2.set(a_2.x, a_2.y, a_2.z, a_2.w);
-        pv->uv3.set(a_3.x, a_3.y, a_3.z, a_3.w);
-        pv->uv4.set(a_4.x, a_4.y, a_4.z, a_4.w);
-        pv->uv5.set(a_5.x, a_5.y, a_5.z, a_5.w);
-        pv->uv6.set(a_6.x, a_6.y, a_6.z, a_6.w);
-        pv->uv7.set(a_7.x, a_7.y, a_7.z, a_7.w);
-        pv++;
+        verts[1].p.set(EPS, EPS, EPS, 1.f);
+        verts[1].uv0.set(a_0.x, a_0.y, 0, 0);
+        verts[1].uv1.set(a_1.x, a_1.y, a_1.z, a_1.w);
+        verts[1].uv2.set(a_2.x, a_2.y, a_2.z, a_2.w);
+        verts[1].uv3.set(a_3.x, a_3.y, a_3.z, a_3.w);
+        verts[1].uv4.set(a_4.x, a_4.y, a_4.z, a_4.w);
+        verts[1].uv5.set(a_5.x, a_5.y, a_5.z, a_5.w);
+        verts[1].uv6.set(a_6.x, a_6.y, a_6.z, a_6.w);
+        verts[1].uv7.set(a_7.x, a_7.y, a_7.z, a_7.w);
 
         // 2 - RB
-        pv->p.set(float(_w + EPS), float(_h + EPS), EPS, 1.f);
-        pv->uv0.set(1 + a_0.x, 1 + a_0.y, 0, 0);
-        pv->uv1.set(1 + a_1.x, 1 + a_1.y, 1 + a_1.z, 1 + a_1.w);
-        pv->uv2.set(1 + a_2.x, 1 + a_2.y, 1 + a_2.z, 1 + a_2.w);
-        pv->uv3.set(1 + a_3.x, 1 + a_3.y, 1 + a_3.z, 1 + a_3.w);
-        pv->uv4.set(1 + a_4.x, 1 + a_4.y, 1 + a_4.z, 1 + a_4.w);
-        pv->uv5.set(1 + a_5.x, 1 + a_5.y, 1 + a_5.z, 1 + a_5.w);
-        pv->uv6.set(1 + a_6.x, 1 + a_6.y, 1 + a_6.z, 1 + a_6.w);
-        pv->uv7.set(1 + a_7.x, 1 + a_7.y, 1 + a_7.z, 1 + a_7.w);
-        pv++;
+        verts[2].p.set(float(_w + EPS), float(_h + EPS), EPS, 1.f);
+        verts[2].uv0.set(1 + a_0.x, 1 + a_0.y, 0, 0);
+        verts[2].uv1.set(1 + a_1.x, 1 + a_1.y, 1 + a_1.z, 1 + a_1.w);
+        verts[2].uv2.set(1 + a_2.x, 1 + a_2.y, 1 + a_2.z, 1 + a_2.w);
+        verts[2].uv3.set(1 + a_3.x, 1 + a_3.y, 1 + a_3.z, 1 + a_3.w);
+        verts[2].uv4.set(1 + a_4.x, 1 + a_4.y, 1 + a_4.z, 1 + a_4.w);
+        verts[2].uv5.set(1 + a_5.x, 1 + a_5.y, 1 + a_5.z, 1 + a_5.w);
+        verts[2].uv6.set(1 + a_6.x, 1 + a_6.y, 1 + a_6.z, 1 + a_6.w);
+        verts[2].uv7.set(1 + a_7.x, 1 + a_7.y, 1 + a_7.z, 1 + a_7.w);
 
         // 3 - RT
-        pv->p.set(float(_w + EPS), EPS, EPS, 1.f);
-        pv->uv0.set(1 + a_0.x, a_0.y, 0, 0);
-        pv->uv1.set(1 + a_1.x, a_1.y, a_1.z, 1 + a_1.w);
-        pv->uv2.set(1 + a_2.x, a_2.y, a_2.z, 1 + a_2.w);
-        pv->uv3.set(1 + a_3.x, a_3.y, a_3.z, 1 + a_3.w);
-        pv->uv4.set(1 + a_4.x, a_4.y, a_4.z, 1 + a_4.w);
-        pv->uv5.set(1 + a_5.x, a_5.y, a_5.z, 1 + a_5.w);
-        pv->uv6.set(1 + a_6.x, a_6.y, a_6.z, 1 + a_6.w);
-        pv->uv7.set(1 + a_7.x, a_7.y, a_7.z, 1 + a_7.w);
-        pv++;
-        RImplementation.Vertex.Unlock(4, g_bloom_filter->vb_stride);
+        verts[3].p.set(float(_w + EPS), EPS, EPS, 1.f);
+        verts[3].uv0.set(1 + a_0.x, a_0.y, 0, 0);
+        verts[3].uv1.set(1 + a_1.x, a_1.y, a_1.z, 1 + a_1.w);
+        verts[3].uv2.set(1 + a_2.x, a_2.y, a_2.z, 1 + a_2.w);
+        verts[3].uv3.set(1 + a_3.x, a_3.y, a_3.z, 1 + a_3.w);
+        verts[3].uv4.set(1 + a_4.x, a_4.y, a_4.z, 1 + a_4.w);
+        verts[3].uv5.set(1 + a_5.x, a_5.y, a_5.z, 1 + a_5.w);
+        verts[3].uv6.set(1 + a_6.x, a_6.y, a_6.z, 1 + a_6.w);
+        verts[3].uv7.set(1 + a_7.x, a_7.y, a_7.z, 1 + a_7.w);
+
+        const auto Offset = cmd_list.Vertex.Unlock<v_filter>(4);
 
         // Perform filtering
         Fvector4 w0, w1;
         float kernel = ps_r2_ls_bloom_kernel_g;
         CalcGauss_wave(w0, w1, kernel, kernel / 3.0f, ps_r2_ls_bloom_kernel_scale);
-        u_setrt(RCache, rt_Bloom_2, {}, {}, nullptr); // No need for ZBuffer at all
-        RCache.set_Element(s_bloom->E[1]);
-        RCache.set_ca("weight", 0, w0);
-        RCache.set_ca("weight", 1, w1);
-        RCache.set_Geometry(g_bloom_filter);
-        RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+
+        u_setrt(cmd_list, rt_Bloom_2, {}, {}, nullptr); // No need for ZBuffer at all
+        cmd_list.set_Element(s_bloom->E[1]);
+        cmd_list.set_ca("weight", 0, w0);
+        cmd_list.set_ca("weight", 1, w1);
+
+        cmd_list.set_Geometry(g_bloom_filter);
+        cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
     }
 
     // Transfer into Bloom1, vertical filter
@@ -250,84 +255,84 @@ void CRenderTarget::phase_bloom()
         Fvector4 a_7{half.x, a_6.y - two.y, two.y + a_6.z, half.x}; // -7,+7i
 
         // Fill vertex buffer
-        v_filter* pv = (v_filter*)RImplementation.Vertex.Lock(4, g_bloom_filter->vb_stride, Offset);
+        const auto verts = cmd_list.Vertex.Lock<v_filter>(4);
 
         // 0 - LB
-        pv->p.set(EPS, float(_h + EPS), EPS, 1.f);
-        pv->uv0.set(a_0.x, 1 + a_0.y, 0, 0);
-        pv->uv1.set(a_1.x, 1 + a_1.y, 1 + a_1.z, a_1.w);
-        pv->uv2.set(a_2.x, 1 + a_2.y, 1 + a_2.z, a_2.w);
-        pv->uv3.set(a_3.x, 1 + a_3.y, 1 + a_3.z, a_3.w);
-        pv->uv4.set(a_4.x, 1 + a_4.y, 1 + a_4.z, a_4.w);
-        pv->uv5.set(a_5.x, 1 + a_5.y, 1 + a_5.z, a_5.w);
-        pv->uv6.set(a_6.x, 1 + a_6.y, 1 + a_6.z, a_6.w);
-        pv->uv7.set(a_7.x, 1 + a_7.y, 1 + a_7.z, a_7.w);
-        pv++;
+        verts[0].p.set(EPS, float(_h + EPS), EPS, 1.f);
+        verts[0].uv0.set(a_0.x, 1 + a_0.y, 0, 0);
+        verts[0].uv1.set(a_1.x, 1 + a_1.y, 1 + a_1.z, a_1.w);
+        verts[0].uv2.set(a_2.x, 1 + a_2.y, 1 + a_2.z, a_2.w);
+        verts[0].uv3.set(a_3.x, 1 + a_3.y, 1 + a_3.z, a_3.w);
+        verts[0].uv4.set(a_4.x, 1 + a_4.y, 1 + a_4.z, a_4.w);
+        verts[0].uv5.set(a_5.x, 1 + a_5.y, 1 + a_5.z, a_5.w);
+        verts[0].uv6.set(a_6.x, 1 + a_6.y, 1 + a_6.z, a_6.w);
+        verts[0].uv7.set(a_7.x, 1 + a_7.y, 1 + a_7.z, a_7.w);
 
         // 1 - LT
-        pv->p.set(EPS, EPS, EPS, 1.f);
-        pv->uv0.set(a_0.x, a_0.y, 0, 0);
-        pv->uv1.set(a_1.x, a_1.y, a_1.z, a_1.w);
-        pv->uv2.set(a_2.x, a_2.y, a_2.z, a_2.w);
-        pv->uv3.set(a_3.x, a_3.y, a_3.z, a_3.w);
-        pv->uv4.set(a_4.x, a_4.y, a_4.z, a_4.w);
-        pv->uv5.set(a_5.x, a_5.y, a_5.z, a_5.w);
-        pv->uv6.set(a_6.x, a_6.y, a_6.z, a_6.w);
-        pv->uv7.set(a_7.x, a_7.y, a_7.z, a_7.w);
-        pv++;
+        verts[1].p.set(EPS, EPS, EPS, 1.f);
+        verts[1].uv0.set(a_0.x, a_0.y, 0, 0);
+        verts[1].uv1.set(a_1.x, a_1.y, a_1.z, a_1.w);
+        verts[1].uv2.set(a_2.x, a_2.y, a_2.z, a_2.w);
+        verts[1].uv3.set(a_3.x, a_3.y, a_3.z, a_3.w);
+        verts[1].uv4.set(a_4.x, a_4.y, a_4.z, a_4.w);
+        verts[1].uv5.set(a_5.x, a_5.y, a_5.z, a_5.w);
+        verts[1].uv6.set(a_6.x, a_6.y, a_6.z, a_6.w);
+        verts[1].uv7.set(a_7.x, a_7.y, a_7.z, a_7.w);
 
         // 2 - RB
-        pv->p.set(float(_w + EPS), float(_h + EPS), EPS, 1.f);
-        pv->uv0.set(1 + a_0.x, 1 + a_0.y, 0, 0);
-        pv->uv1.set(1 + a_1.x, 1 + a_1.y, 1 + a_1.z, 1 + a_1.w);
-        pv->uv2.set(1 + a_2.x, 1 + a_2.y, 1 + a_2.z, 1 + a_2.w);
-        pv->uv3.set(1 + a_3.x, 1 + a_3.y, 1 + a_3.z, 1 + a_3.w);
-        pv->uv4.set(1 + a_4.x, 1 + a_4.y, 1 + a_4.z, 1 + a_4.w);
-        pv->uv5.set(1 + a_5.x, 1 + a_5.y, 1 + a_5.z, 1 + a_5.w);
-        pv->uv6.set(1 + a_6.x, 1 + a_6.y, 1 + a_6.z, 1 + a_6.w);
-        pv->uv7.set(1 + a_7.x, 1 + a_7.y, 1 + a_7.z, 1 + a_7.w);
-        pv++;
+        verts[2].p.set(float(_w + EPS), float(_h + EPS), EPS, 1.f);
+        verts[2].uv0.set(1 + a_0.x, 1 + a_0.y, 0, 0);
+        verts[2].uv1.set(1 + a_1.x, 1 + a_1.y, 1 + a_1.z, 1 + a_1.w);
+        verts[2].uv2.set(1 + a_2.x, 1 + a_2.y, 1 + a_2.z, 1 + a_2.w);
+        verts[2].uv3.set(1 + a_3.x, 1 + a_3.y, 1 + a_3.z, 1 + a_3.w);
+        verts[2].uv4.set(1 + a_4.x, 1 + a_4.y, 1 + a_4.z, 1 + a_4.w);
+        verts[2].uv5.set(1 + a_5.x, 1 + a_5.y, 1 + a_5.z, 1 + a_5.w);
+        verts[2].uv6.set(1 + a_6.x, 1 + a_6.y, 1 + a_6.z, 1 + a_6.w);
+        verts[2].uv7.set(1 + a_7.x, 1 + a_7.y, 1 + a_7.z, 1 + a_7.w);
 
         // 3 - RT
-        pv->p.set(float(_w + EPS), EPS, EPS, 1.f);
-        pv->uv0.set(1 + a_0.x, a_0.y, 0, 0);
-        pv->uv1.set(1 + a_1.x, a_1.y, a_1.z, 1 + a_1.w);
-        pv->uv2.set(1 + a_2.x, a_2.y, a_2.z, 1 + a_2.w);
-        pv->uv3.set(1 + a_3.x, a_3.y, a_3.z, 1 + a_3.w);
-        pv->uv4.set(1 + a_4.x, a_4.y, a_4.z, 1 + a_4.w);
-        pv->uv5.set(1 + a_5.x, a_5.y, a_5.z, 1 + a_5.w);
-        pv->uv6.set(1 + a_6.x, a_6.y, a_6.z, 1 + a_6.w);
-        pv->uv7.set(1 + a_7.x, a_7.y, a_7.z, 1 + a_7.w);
-        pv++;
-        RImplementation.Vertex.Unlock(4, g_bloom_filter->vb_stride);
+        verts[3].p.set(float(_w + EPS), EPS, EPS, 1.f);
+        verts[3].uv0.set(1 + a_0.x, a_0.y, 0, 0);
+        verts[3].uv1.set(1 + a_1.x, a_1.y, a_1.z, 1 + a_1.w);
+        verts[3].uv2.set(1 + a_2.x, a_2.y, a_2.z, 1 + a_2.w);
+        verts[3].uv3.set(1 + a_3.x, a_3.y, a_3.z, 1 + a_3.w);
+        verts[3].uv4.set(1 + a_4.x, a_4.y, a_4.z, 1 + a_4.w);
+        verts[3].uv5.set(1 + a_5.x, a_5.y, a_5.z, 1 + a_5.w);
+        verts[3].uv6.set(1 + a_6.x, a_6.y, a_6.z, 1 + a_6.w);
+        verts[3].uv7.set(1 + a_7.x, a_7.y, a_7.z, 1 + a_7.w);
+
+        const auto Offset = cmd_list.Vertex.Unlock<v_filter>(4);
 
         // Perform filtering
         Fvector4 w0, w1;
         float kernel = ps_r2_ls_bloom_kernel_g * float(Device.dwHeight) / float(Device.dwWidth);
         CalcGauss_wave(w0, w1, kernel, kernel / 3.f, ps_r2_ls_bloom_kernel_scale);
-        u_setrt(RCache, rt_Bloom_1, {}, {}, nullptr); // No need for ZBuffer at all
-        RCache.set_Element(s_bloom->E[2]);
-        RCache.set_ca("weight", 0, w0);
-        RCache.set_ca("weight", 1, w1);
-        RCache.set_Geometry(g_bloom_filter);
-        RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+
+        u_setrt(cmd_list, rt_Bloom_1, {}, {}, nullptr); // No need for ZBuffer at all
+        cmd_list.set_Element(s_bloom->E[2]);
+        cmd_list.set_ca("weight", 0, w0);
+        cmd_list.set_ca("weight", 1, w1);
+
+        cmd_list.set_Geometry(g_bloom_filter);
+        cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
     }
 
     // we are left here with bloom-target setup as primary one
     bool _menu_pp = g_pGamePersistent ? g_pGamePersistent->OnRenderPPUI_query() : false;
     if (_menu_pp)
-        RCache.ClearRT(RCache.get_RT(), {});
+        cmd_list.ClearRT(cmd_list.get_RT(), {});
 
     // re-enable z-buffer
-    RCache.set_Z(TRUE);
+    cmd_list.set_Z(TRUE);
 }
 
 void CRenderTarget::phase_ssfx_bloom()
 {
     XR_TRACY_ZONE_SCOPED();
 
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+
     // Constants
-    u32 Offset = 0;
     constexpr u32 C = color_rgba(0, 0, 0, 0);
 
     float w = float(Device.dwWidth);
@@ -335,81 +340,75 @@ void CRenderTarget::phase_ssfx_bloom()
 
     // BLOOM BUILD ////////////////////////////////////////////////////
     // Half resolution is the max size for everything
-    RCache.set_viewport_size(w / 2.0f, h / 2.0f);
+    cmd_list.set_viewport_size(w / 2.0f, h / 2.0f);
 
-    u_setrt(RCache, rt_ssfx_bloom1, {}, {}, nullptr);
-    RCache.set_CullMode(CULL_NONE);
-    RCache.set_Stencil(FALSE);
+    u_setrt(cmd_list, rt_ssfx_bloom1, {}, {}, nullptr);
+    cmd_list.set_CullMode(CULL_NONE);
+    cmd_list.set_Stencil(FALSE);
 
     // Fill vertex buffer
-    FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
-    pv->set(0, h, EPS_S, 1.0f, C, 0.0f, 1.0f);
-    pv++;
-    pv->set(0, 0, EPS_S, 1.0f, C, 0.0f, 0.0f);
-    pv++;
-    pv->set(w, h, EPS_S, 1.0f, C, 1.0f, 1.0f);
-    pv++;
-    pv->set(w, 0, EPS_S, 1.0f, C, 1.0f, 0.0f);
-    pv++;
-    RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
+    auto verts = cmd_list.Vertex.Lock<FVF::TL>(4);
+
+    verts[0].set(0, h, EPS_S, 1.0f, C, 0.0f, 1.0f);
+    verts[1].set(0, 0, EPS_S, 1.0f, C, 0.0f, 0.0f);
+    verts[2].set(w, h, EPS_S, 1.0f, C, 1.0f, 1.0f);
+    verts[3].set(w, 0, EPS_S, 1.0f, C, 1.0f, 0.0f);
+
+    auto Offset = cmd_list.Vertex.Unlock<FVF::TL>(4);
 
     // Draw COLOR
-    RCache.set_Element(s_ssfx_bloom->E[0]);
-    RCache.set_Geometry(g_combine);
-    RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+    cmd_list.set_Element(s_ssfx_bloom->E[0]);
+    cmd_list.set_Geometry(g_combine);
+    cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // BLOOM LENS /////////////////////////////////////////////////////
     if (ps_r2_mask_control.x > 0)
     {
-        RCache.set_viewport_size(w / 4.0f, h / 4.0f);
+        cmd_list.set_viewport_size(w / 4.0f, h / 4.0f);
 
-        u_setrt(RCache, rt_ssfx_bloom_tmp4, {}, {}, nullptr);
-        RCache.set_CullMode(CULL_NONE);
-        RCache.set_Stencil(FALSE);
+        u_setrt(cmd_list, rt_ssfx_bloom_tmp4, {}, {}, nullptr);
+        cmd_list.set_CullMode(CULL_NONE);
+        cmd_list.set_Stencil(FALSE);
 
         // Fill vertex buffer
-        pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
-        pv->set(0, h, EPS_S, 1.0f, C, 0.0f, 1.0f);
-        pv++;
-        pv->set(0, 0, EPS_S, 1.0f, C, 0.0f, 0.0f);
-        pv++;
-        pv->set(w, h, EPS_S, 1.0f, C, 1.0f, 1.0f);
-        pv++;
-        pv->set(w, 0, EPS_S, 1.0f, C, 1.0f, 0.0f);
-        pv++;
-        RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
+        verts = cmd_list.Vertex.Lock<FVF::TL>(4);
+
+        verts[0].set(0, h, EPS_S, 1.0f, C, 0.0f, 1.0f);
+        verts[1].set(0, 0, EPS_S, 1.0f, C, 0.0f, 0.0f);
+        verts[2].set(w, h, EPS_S, 1.0f, C, 1.0f, 1.0f);
+        verts[3].set(w, 0, EPS_S, 1.0f, C, 1.0f, 0.0f);
+
+        Offset = cmd_list.Vertex.Unlock<FVF::TL>(4);
 
         // Draw COLOR
-        RCache.set_Element(s_ssfx_bloom_lens->E[0]);
-        RCache.set_Geometry(g_combine);
-        RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+        cmd_list.set_Element(s_ssfx_bloom_lens->E[0]);
+        cmd_list.set_Geometry(g_combine);
+        cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
         // Lens 2 Phase blur
         ref_rt* rt_LensBlur[2] = {&rt_ssfx_bloom_tmp4_2, &rt_ssfx_bloom_lens};
 
         for (int lensblur = 0; lensblur < 2; lensblur++)
         {
-            u_setrt(RCache, *rt_LensBlur[lensblur], {}, {}, nullptr);
-            RCache.set_CullMode(CULL_NONE);
-            RCache.set_Stencil(FALSE);
+            u_setrt(cmd_list, *rt_LensBlur[lensblur], {}, {}, nullptr);
+            cmd_list.set_CullMode(CULL_NONE);
+            cmd_list.set_Stencil(FALSE);
 
             // Fill vertex buffer
-            pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
-            pv->set(0, h, EPS_S, 1.0f, C, 0.0f, 1.0f);
-            pv++;
-            pv->set(0, 0, EPS_S, 1.0f, C, 0.0f, 0.0f);
-            pv++;
-            pv->set(w, h, EPS_S, 1.0f, C, 1.0f, 1.0f);
-            pv++;
-            pv->set(w, 0, EPS_S, 1.0f, C, 1.0f, 0.0f);
-            pv++;
-            RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
+            verts = cmd_list.Vertex.Lock<FVF::TL>(4);
+
+            verts[0].set(0, h, EPS_S, 1.0f, C, 0.0f, 1.0f);
+            verts[1].set(0, 0, EPS_S, 1.0f, C, 0.0f, 0.0f);
+            verts[2].set(w, h, EPS_S, 1.0f, C, 1.0f, 1.0f);
+            verts[3].set(w, 0, EPS_S, 1.0f, C, 1.0f, 0.0f);
+
+            Offset = cmd_list.Vertex.Unlock<FVF::TL>(4);
 
             // Draw COLOR
-            RCache.set_Element(s_ssfx_bloom_lens->E[1 + lensblur]);
-            RCache.set_c("blur_setup", w / 4, h / 4, 0.f, 2.0f + (3.0f * lensblur));
-            RCache.set_Geometry(g_combine);
-            RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+            cmd_list.set_Element(s_ssfx_bloom_lens->E[1 + lensblur]);
+            cmd_list.set_c("blur_setup", w / 4, h / 4, 0.f, 2.0f + (3.0f * lensblur));
+            cmd_list.set_Geometry(g_combine);
+            cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
         }
     }
 
@@ -422,29 +421,27 @@ void CRenderTarget::phase_ssfx_bloom()
     {
         SampleScale = 1 << (downsample + 1);
 
-        RCache.set_viewport_size(w / SampleScale, h / SampleScale);
+        cmd_list.set_viewport_size(w / SampleScale, h / SampleScale);
 
-        u_setrt(RCache, *rt_Down[downsample], {}, {}, nullptr);
-        RCache.set_CullMode(CULL_NONE);
-        RCache.set_Stencil(FALSE);
+        u_setrt(cmd_list, *rt_Down[downsample], {}, {}, nullptr);
+        cmd_list.set_CullMode(CULL_NONE);
+        cmd_list.set_Stencil(FALSE);
 
         // Fill vertex buffer
-        pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
-        pv->set(0, h, EPS_S, 1.0f, C, 0.0f, 1.0f);
-        pv++;
-        pv->set(0, 0, EPS_S, 1.0f, C, 0.0f, 0.0f);
-        pv++;
-        pv->set(w, h, EPS_S, 1.0f, C, 1.0f, 1.0f);
-        pv++;
-        pv->set(w, 0, EPS_S, 1.0f, C, 1.0f, 0.0f);
-        pv++;
-        RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
+        verts = cmd_list.Vertex.Lock<FVF::TL>(4);
+
+        verts[0].set(0, h, EPS_S, 1.0f, C, 0.0f, 1.0f);
+        verts[1].set(0, 0, EPS_S, 1.0f, C, 0.0f, 0.0f);
+        verts[2].set(w, h, EPS_S, 1.0f, C, 1.0f, 1.0f);
+        verts[3].set(w, 0, EPS_S, 1.0f, C, 1.0f, 0.0f);
+
+        Offset = cmd_list.Vertex.Unlock<FVF::TL>(4);
 
         // Draw COLOR
-        RCache.set_Element(s_ssfx_bloom_downsample->E[downsample]);
-        RCache.set_c("blur_setup", w / SampleScale, h / SampleScale, 0.f, ps_ssfx_bloom_2.x);
-        RCache.set_Geometry(g_combine);
-        RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+        cmd_list.set_Element(s_ssfx_bloom_downsample->E[downsample]);
+        cmd_list.set_c("blur_setup", w / SampleScale, h / SampleScale, 0.f, ps_ssfx_bloom_2.x);
+        cmd_list.set_Geometry(g_combine);
+        cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
     }
 
     // End with `rt_ssfx_bloom_tmp2`
@@ -455,56 +452,52 @@ void CRenderTarget::phase_ssfx_bloom()
     {
         SampleScale = 1 << (5 - upsample);
 
-        RCache.set_viewport_size(w / SampleScale, h / SampleScale);
+        cmd_list.set_viewport_size(w / SampleScale, h / SampleScale);
 
-        u_setrt(RCache, *rt_Up[upsample], {}, {}, nullptr);
-        RCache.set_CullMode(CULL_NONE);
-        RCache.set_Stencil(FALSE);
+        u_setrt(cmd_list, *rt_Up[upsample], {}, {}, nullptr);
+        cmd_list.set_CullMode(CULL_NONE);
+        cmd_list.set_Stencil(FALSE);
 
         // Fill vertex buffer
-        pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
-        pv->set(0, h, EPS_S, 1.0f, C, 0.0f, 1.0f);
-        pv++;
-        pv->set(0, 0, EPS_S, 1.0f, C, 0.0f, 0.0f);
-        pv++;
-        pv->set(w, h, EPS_S, 1.0f, C, 1.0f, 1.0f);
-        pv++;
-        pv->set(w, 0, EPS_S, 1.0f, C, 1.0f, 0.0f);
-        pv++;
-        RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
+        verts = cmd_list.Vertex.Lock<FVF::TL>(4);
+
+        verts[0].set(0, h, EPS_S, 1.0f, C, 0.0f, 1.0f);
+        verts[1].set(0, 0, EPS_S, 1.0f, C, 0.0f, 0.0f);
+        verts[2].set(w, h, EPS_S, 1.0f, C, 1.0f, 1.0f);
+        verts[3].set(w, 0, EPS_S, 1.0f, C, 1.0f, 0.0f);
+
+        Offset = cmd_list.Vertex.Unlock<FVF::TL>(4);
 
         // Draw COLOR
-        RCache.set_Element(s_ssfx_bloom_upsample->E[upsample]);
-        RCache.set_c("blur_setup", w / SampleScale, h / SampleScale, 0.f, ps_ssfx_bloom_2.x);
-        RCache.set_Geometry(g_combine);
-        RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+        cmd_list.set_Element(s_ssfx_bloom_upsample->E[upsample]);
+        cmd_list.set_c("blur_setup", w / SampleScale, h / SampleScale, 0.f, ps_ssfx_bloom_2.x);
+        cmd_list.set_Geometry(g_combine);
+        cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
     }
 
     // The Upsample ends with `Half Res`
 
     // BLOOM COMBINE ///////////////////////////////////////////////
-    u_setrt(RCache, rt_ssfx_bloom1, {}, {}, nullptr);
-    RCache.set_CullMode(CULL_NONE);
-    RCache.set_Stencil(FALSE);
+    u_setrt(cmd_list, rt_ssfx_bloom1, {}, {}, nullptr);
+    cmd_list.set_CullMode(CULL_NONE);
+    cmd_list.set_Stencil(FALSE);
 
     // Fill vertex buffer
-    pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
-    pv->set(0, h, EPS_S, 1.0f, C, 0.0f, 1.0f);
-    pv++;
-    pv->set(0, 0, EPS_S, 1.0f, C, 0.0f, 0.0f);
-    pv++;
-    pv->set(w, h, EPS_S, 1.0f, C, 1.0f, 1.0f);
-    pv++;
-    pv->set(w, 0, EPS_S, 1.0f, C, 1.0f, 0.0f);
-    pv++;
-    RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
+    verts = cmd_list.Vertex.Lock<FVF::TL>(4);
+
+    verts[0].set(0, h, EPS_S, 1.0f, C, 0.0f, 1.0f);
+    verts[1].set(0, 0, EPS_S, 1.0f, C, 0.0f, 0.0f);
+    verts[2].set(w, h, EPS_S, 1.0f, C, 1.0f, 1.0f);
+    verts[3].set(w, 0, EPS_S, 1.0f, C, 1.0f, 0.0f);
+
+    Offset = cmd_list.Vertex.Unlock<FVF::TL>(4);
 
     // Draw COLOR
-    RCache.set_Element(s_ssfx_bloom->E[1]);
-    RCache.set_c("mask_control", ps_r2_mask_control);
-    RCache.set_Geometry(g_combine);
-    RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+    cmd_list.set_Element(s_ssfx_bloom->E[1]);
+    cmd_list.set_c("mask_control", ps_r2_mask_control);
+    cmd_list.set_Geometry(g_combine);
+    cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // Restore Viewport
-    RCache.set_viewport_size(Device.dwWidth, Device.dwHeight);
+    cmd_list.set_viewport_size(Device.dwWidth, Device.dwHeight);
 }

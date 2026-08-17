@@ -15,8 +15,8 @@ namespace skb
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wc++98-compat-extra-semi");
 
-#include <skb_image_atlas.h>
-#include <skb_layout.h>
+#include <skribidi/skb_image_atlas.h>
+#include <skribidi/skb_layout.h>
 
 XR_DIAG_POP();
 } // namespace skb
@@ -135,7 +135,7 @@ private:
     }
 
     void fill(f32 x, f32 y);
-    void batch(std::span<const skb::skb_quad_t> batch, u32 tex_id, ref_geom& geom, bool gradient);
+    void batch(CBackend& cmd_list, ref_geom& geom, std::span<const skb::skb_quad_t> batch, bool gradient);
 
 public:
     shaper();
@@ -160,7 +160,7 @@ public:
     }
 
     void run(gsl::czstring str, gsl::index family, f32 size, f32 x, f32 y, f32 width, skb::skb_color_t color);
-    void flush(ref_geom& geom, bool gradient);
+    void flush(CBackend& cmd_list, ref_geom& geom, bool gradient);
 };
 
 shaper::ft_font::ft_font(gsl::czstring path)
@@ -306,21 +306,25 @@ void shaper::fill(f32 x, f32 y)
     }
 }
 
-void shaper::batch(std::span<const skb::skb_quad_t> batch, u32 tex_id, ref_geom& geom, bool gradient)
+void shaper::batch(CBackend& cmd_list, ref_geom& geom, std::span<const skb::skb_quad_t> batch, bool gradient)
 {
-    const gsl::index runs = ps_r2_ls_flags_ext.test(R2FLAGEXT_FONT_SHADOWS) ? 2 : 1;
+    const auto runs = ps_r2_ls_flags_ext.test(R2FLAGEXT_FONT_SHADOWS) ? 2uz : 1uz;
+    const auto tex_id = batch.front().texture_idx;
     auto image = skb::skb_image_atlas_get_texture(atlas.get(), tex_id);
     const auto width = gsl::narrow_cast<f32>(image->width);
     const auto height = gsl::narrow_cast<f32>(image->height);
 
-    for (gsl::index i{0}; i < runs; ++i)
+    // 16-bit Quad IB handles up to 65536 verts (16384 quads) per batch
+    static constexpr auto lim = std::numeric_limits<u16>::max() + 1uz;
+
+    auto left = batch.size() * runs * 4;
+    auto verts = cmd_list.Vertex.Lock<FVF::TL>(std::min(left, lim));
+    std::size_t written{0};
+
+    for (std::size_t i{0}; i < runs; ++i)
     {
         const bool shadow = i + 2 == runs;
         const f32 add = shadow ? 2.0f * Device.dpi_scale : 0.0f;
-
-        u32 off;
-        auto v = static_cast<FVF::TL*>(RImplementation.Vertex.Lock(batch.size() * 4, geom.stride(), off));
-        auto start = v;
 
         for (auto& quad : batch)
         {
@@ -351,73 +355,65 @@ void shaper::batch(std::span<const skb::skb_quad_t> batch, u32 tex_id, ref_geom&
                 c1 = gradient ? color_rgba(quad.color.r / 2, quad.color.g / 2, quad.color.b / 2, quad.color.a) : c0;
             }
 
-            v->set(x0, y1, c1, u0, v1);
-            v++;
-            v->set(x0, y0, c0, u0, v0);
-            v++;
+            const auto v = verts.subspan(written, 4);
 
-            v->set(x1, y1, c1, u1, v1);
-            v++;
-            v->set(x1, y0, c0, u1, v0);
-            v++;
+            v[0].set(x0, y1, c1, u0, v1);
+            v[1].set(x0, y0, c0, u0, v0);
+            v[2].set(x1, y1, c1, u1, v1);
+            v[3].set(x1, y0, c0, u1, v0);
+
+            written += 4;
+            if (written != verts.size())
+                continue;
+
+            const auto off = cmd_list.Vertex.Unlock<FVF::TL>(written);
+
+            auto pos = skb::skb_image_atlas_get_texture_user_data(atlas.get(), tex_id);
+            if (pos == 0)
+            {
+                texture_create(atlas.get(), tex_id, this);
+                pos = skb::skb_image_atlas_get_texture_user_data(atlas.get(), tex_id);
+            }
+
+            auto& tex = textures[pos - 1];
+            if (tex->get_Width() != gsl::narrow_cast<u32>(image->width) || tex->get_Height() != gsl::narrow_cast<u32>(image->height))
+            {
+                const auto name = tex->cName;
+
+                tex.destroy();
+                tex.create(name.c_str());
+            }
+
+            surfaces.clear();
+            surfaces.list.emplace_back(0, tex);
+
+            cmd_list.set_c("font_params", image->bpp == 4 ? 1.0f : 2.0f, 0.0f, 0.0f, 0.0f);
+            cmd_list.set_Geometry(geom);
+            cmd_list.set_Textures(&surfaces);
+
+            cmd_list.Render(D3DPT_TRIANGLELIST, off, 0, written, 0, written / 2);
+
+            left -= written;
+            if (left == 0)
+                return;
+
+            verts = cmd_list.Vertex.Lock<FVF::TL>(std::min(left, lim));
+            written = 0;
         }
-
-        const auto vcnt = gsl::narrow_cast<u32>(v - start);
-        RImplementation.Vertex.Unlock(vcnt, geom.stride());
-
-        if (vcnt == 0)
-            continue;
-
-        auto pos = skb::skb_image_atlas_get_texture_user_data(atlas.get(), tex_id);
-        if (pos == 0)
-        {
-            texture_create(atlas.get(), tex_id, this);
-            pos = skb::skb_image_atlas_get_texture_user_data(atlas.get(), tex_id);
-        }
-
-        auto& tex = textures[pos - 1];
-        if (tex->get_Width() != gsl::narrow_cast<u32>(image->width) || tex->get_Height() != gsl::narrow_cast<u32>(image->height))
-        {
-            const auto name = tex->cName;
-
-            tex.destroy();
-            tex.create(name.c_str());
-        }
-
-        surfaces.clear();
-        surfaces.emplace_back(0, tex);
-
-        RCache.set_c("font_params", image->bpp == 4 ? 1.0f : 2.0f, 0.0f, 0.0f, 0.0f);
-        RCache.set_Geometry(geom);
-        RCache.set_Textures(&surfaces);
-
-        RCache.Render(D3DPT_TRIANGLELIST, off, 0, vcnt, 0, vcnt / 2);
     }
 }
 
-void shaper::flush(ref_geom& geom, bool gradient)
+void shaper::flush(CBackend& cmd_list, ref_geom& geom, bool gradient)
 {
     if (quads.empty())
         return;
 
     skb::skb_image_atlas_rasterize_missing_items(atlas.get(), temper.get(), raster.get());
-    std::ranges::stable_sort(quads, [](const auto& a, const auto& b) { return a.texture_idx < b.texture_idx; });
+    std::ranges::stable_sort(quads, {}, &skb::skb_quad_t::texture_idx);
 
-    auto start = &quads.front();
-    auto last_tex_id = start->texture_idx;
+    for (auto chunk : quads | std::views::chunk_by([] [[nodiscard]] (const auto& a, const auto& b) { return a.texture_idx == b.texture_idx; }))
+        batch(cmd_list, geom, chunk, gradient);
 
-    for (auto& quad : quads | std::views::drop(1))
-    {
-        if (const auto tex_id = quad.texture_idx; tex_id != last_tex_id)
-        {
-            batch(std::span{start, &quad}, last_tex_id, geom, gradient);
-
-            last_tex_id = tex_id;
-            start = &quad;
-        }
-    }
-
-    batch(std::span{start, &quads.back() + 1}, last_tex_id, geom, gradient);
     quads.clear();
 }
 
@@ -468,7 +464,9 @@ gsl::index dxFontRender::Initialize(gsl::czstring shader, gsl::czstring font)
     const auto ret = xr::shaper->font_add(font);
 
     pShader.create(shader);
-    pGeom.create(FVF::F_TL, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
+
+    pGeom.create(FVF::F_TL, SGeometry::default_vb(), RImplementation.QuadIB);
+    XR_ASSERT(pGeom.stride() == sizeof(FVF::TL));
 
     return ret;
 }
@@ -483,8 +481,10 @@ void dxFontRender::OnRender(CGameFont& owner)
 
     xr::shaper->begin();
 
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+
     if (pShader)
-        RCache.set_Shader(pShader);
+        cmd_list.set_Shader(pShader);
 
     for (auto& str : owner.strings)
     {
@@ -511,5 +511,5 @@ void dxFontRender::OnRender(CGameFont& owner)
         xr::shaper->run(str.string.c_str(), owner.family, owner.size, x, str.y, width * 2.0f, color);
     }
 
-    xr::shaper->flush(pGeom, !!(owner.uFlags & CGameFont::fsGradient));
+    xr::shaper->flush(cmd_list, pGeom, !!(owner.uFlags & CGameFont::fsGradient));
 }

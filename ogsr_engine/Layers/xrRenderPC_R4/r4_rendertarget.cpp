@@ -446,8 +446,13 @@ CRenderTarget::CRenderTarget()
             D3DFVF_TEXCOORDSIZE4(3) | D3DFVF_TEXCOORDSIZE4(4) | D3DFVF_TEXCOORDSIZE4(5) | D3DFVF_TEXCOORDSIZE4(6) | D3DFVF_TEXCOORDSIZE4(7);
         rt_Bloom_1.create(r2_RT_bloom1, w, h, fmt);
         rt_Bloom_2.create(r2_RT_bloom2, w, h, fmt);
-        g_bloom_build.create(fvf_build, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
-        g_bloom_filter.create(fvf_filter, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
+
+        g_bloom_build.create(fvf_build, SGeometry::default_vb(), RImplementation.QuadIB);
+        XR_ASSERT(g_bloom_build.stride() == bloom_build_stride);
+
+        g_bloom_filter.create(fvf_filter, SGeometry::default_vb(), RImplementation.QuadIB);
+        XR_ASSERT(g_bloom_filter.stride() == bloom_filter_stride);
+
         s_bloom.create<CBlender_bloom_build>("r2\\bloom");
         if (options.dx10_msaa)
         {
@@ -479,6 +484,8 @@ CRenderTarget::CRenderTarget()
         t_LUM_dest.create(r2_RT_luminance_cur);
 
         // create pool
+        auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+
         for (u32 it = 0; it < HW.Caps.iGPUNum * 2; it++)
         {
             string256 name;
@@ -486,10 +493,10 @@ CRenderTarget::CRenderTarget()
             rt_LUM_pool[it].create(name, 1, 1, D3DFMT_R32F);
 
             Fcolor ColorRGBA{127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f};
-            RCache.ClearRT(rt_LUM_pool[it], ColorRGBA);
+            cmd_list.ClearRT(rt_LUM_pool[it], ColorRGBA);
         }
 
-        u_setrt(RCache, Device.dwWidth, Device.dwHeight, get_base_rt(), nullptr, nullptr, get_base_zb());
+        u_setrt(cmd_list, Device.dwWidth, Device.dwHeight, get_base_rt(), nullptr, nullptr, get_base_zb());
     }
 
     // COMBINE
@@ -499,18 +506,21 @@ CRenderTarget::CRenderTarget()
 
         s_combine.create<CBlender_combine>("r2\\combine");
         s_combine_volumetric.create("combine_volumetric");
-        g_combine_VP.create(dwDecl, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
-        g_combine.create(FVF::F_TL, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
-        g_combine_2UV.create(FVF::F_TL2uv, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
-        g_combine_cuboid.create(dwDecl, RImplementation.Vertex.Buffer(), RImplementation.Index.Buffer());
 
-        constexpr u32 fvf_aa_blur =
-            D3DFVF_XYZRHW | D3DFVF_TEX4 | D3DFVF_TEXCOORDSIZE2(0) | D3DFVF_TEXCOORDSIZE2(1) | D3DFVF_TEXCOORDSIZE2(2) | D3DFVF_TEXCOORDSIZE2(3);
-        g_aa_blur.create(fvf_aa_blur, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
+        g_combine.create(FVF::F_TL, SGeometry::default_vb(), RImplementation.QuadIB);
+        XR_ASSERT(g_combine.stride() == sizeof(FVF::TL));
+
+        g_combine_2UV.create(FVF::F_TL2uv, SGeometry::default_vb(), RImplementation.QuadIB);
+        XR_ASSERT(g_combine_2UV.stride() == sizeof(FVF::TL2uv));
+
+        g_combine_cuboid.create(dwDecl, SGeometry::default_vb(), SGeometry::default_ib());
+        XR_ASSERT(g_combine_cuboid.stride() == sizeof(Fvector4));
 
         constexpr u32 fvf_aa_AA = D3DFVF_XYZRHW | D3DFVF_TEX7 | D3DFVF_TEXCOORDSIZE2(0) | D3DFVF_TEXCOORDSIZE2(1) | D3DFVF_TEXCOORDSIZE2(2) |
             D3DFVF_TEXCOORDSIZE2(3) | D3DFVF_TEXCOORDSIZE2(4) | D3DFVF_TEXCOORDSIZE4(5) | D3DFVF_TEXCOORDSIZE4(6);
-        g_aa_AA.create(fvf_aa_AA, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
+
+        g_aa_AA.create(fvf_aa_AA, SGeometry::default_vb(), RImplementation.QuadIB);
+        XR_ASSERT(g_aa_AA.stride() == aa_aa_stride);
     }
 
     // Build noise table
@@ -552,7 +562,7 @@ CRenderTarget::CRenderTarget()
             }
         }
 
-        for (auto [sub, it, noise] : std::views::zip(subData, std::views::iota(0u, TEX_jitter_count), t_noise))
+        for (auto [sub, it, noise] : std::views::zip(subData, std::views::indices(TEX_jitter_count), t_noise))
         {
             ID3DTexture2D* surf{nullptr};
             XR_ASSERT(xr::hr(HW.pDevice->CreateTexture2D(&desc, &sub, &surf)));
@@ -566,15 +576,22 @@ CRenderTarget::CRenderTarget()
 
     // PP
     s_postprocess.create("postprocess");
-    g_postprocess.create(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX3, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
+
+    g_postprocess.create(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX3, SGeometry::default_vb(), RImplementation.QuadIB);
+    XR_ASSERT(g_postprocess.stride() == postprocess_stride);
 
     // Menu
     s_menu.create("distort");
-    g_menu.create(FVF::F_TL, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
+
+    g_menu.create(FVF::F_TL, SGeometry::default_vb(), RImplementation.QuadIB);
+    XR_ASSERT(g_menu.stride() == sizeof(FVF::TL));
 
     //
-    dwWidth[RCache.context_id] = Device.dwWidth;
-    dwHeight[RCache.context_id] = Device.dwHeight;
+    for (auto [w, h] : std::views::zip(dwWidth, dwHeight))
+    {
+        w = Device.dwWidth;
+        h = Device.dwHeight;
+    }
 }
 
 CRenderTarget::~CRenderTarget()
@@ -613,23 +630,22 @@ void CRenderTarget::reset_light_marker(CBackend& cmd_list, bool bResetStencil)
 
     XR_TRACY_ZONE_SCOPED();
 
-    u32 Offset;
     float _w = float(Device.dwWidth);
     float _h = float(Device.dwHeight);
     constexpr u32 C = color_rgba(255, 255, 255, 255);
     constexpr float eps = 0;
     constexpr float _dw = 0.5f;
     constexpr float _dh = 0.5f;
-    FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
-    pv->set(-_dw, _h - _dh, eps, 1.f, C, 0, 0);
-    pv++;
-    pv->set(-_dw, -_dh, eps, 1.f, C, 0, 0);
-    pv++;
-    pv->set(_w - _dw, _h - _dh, eps, 1.f, C, 0, 0);
-    pv++;
-    pv->set(_w - _dw, -_dh, eps, 1.f, C, 0, 0);
-    pv++;
-    RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
+
+    const auto verts = cmd_list.Vertex.Lock<FVF::TL>(4);
+
+    verts[0].set(-_dw, _h - _dh, eps, 1.f, C, 0, 0);
+    verts[1].set(-_dw, -_dh, eps, 1.f, C, 0, 0);
+    verts[2].set(_w - _dw, _h - _dh, eps, 1.f, C, 0, 0);
+    verts[3].set(_w - _dw, -_dh, eps, 1.f, C, 0, 0);
+
+    const auto Offset = cmd_list.Vertex.Unlock<FVF::TL>(4);
+
     cmd_list.set_Element(s_occq->E[2]);
     cmd_list.set_Geometry(g_combine);
     cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);

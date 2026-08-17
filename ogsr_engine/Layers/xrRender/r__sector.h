@@ -173,7 +173,7 @@ public:
     void traverse(CSector* sector, CFrustum& F, Fvector& vBase, Fmatrix& mXFORM, u32 options);
     void traverse_sector(CSector* sector, CFrustum& F, _scissor& R);
     void fade_portal(CPortal* _p, float ssa);
-    void fade_render();
+    void fade_render(CBackend& cmd_list);
 
 #ifdef DEBUG
     void dbg_draw();

@@ -70,7 +70,6 @@ public:
 
     // Debugging
 #ifdef DEBUG
-    void dbgRender();
     [[nodiscard]] ref_shader dbgGetShader() { return sh_debug; }
 #endif
 };

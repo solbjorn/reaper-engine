@@ -457,30 +457,15 @@ void dbg_draw_piramid(Fvector pos, Fvector dir, float size, float xdir, u32 colo
     }
     t.c.set(pos);
 
-    //	Level().debug_renderer().draw_line(t, p0, p1, color);
-    //	Level().debug_renderer().draw_line(t, p1, p2, color);
-    //	Level().debug_renderer().draw_line(t, p2, p3, color);
-    //	Level().debug_renderer().draw_line(t, p3, p0, color);
-
-    //	Level().debug_renderer().draw_line(t, p0, p4, color);
-    //	Level().debug_renderer().draw_line(t, p1, p4, color);
-    //	Level().debug_renderer().draw_line(t, p2, p4, color);
-    //	Level().debug_renderer().draw_line(t, p3, p4, color);
-
     if (!Double)
     {
-        RCache.dbg_DrawTRI(t, p0, p1, p4, color);
-        RCache.dbg_DrawTRI(t, p1, p2, p4, color);
-        RCache.dbg_DrawTRI(t, p2, p3, p4, color);
-        RCache.dbg_DrawTRI(t, p3, p0, p4, color);
+        DRender->dbg_DrawTRI(t, p0, p1, p4, color);
+        DRender->dbg_DrawTRI(t, p1, p2, p4, color);
+        DRender->dbg_DrawTRI(t, p2, p3, p4, color);
+        DRender->dbg_DrawTRI(t, p3, p0, p4, color);
     }
     else
     {
-        //		Fmatrix scale;
-        //		scale.scale(0.8f, 0.8f, 0.8f);
-        //		t.mulA_44(scale);
-        //		t.c.set(pos);
-
         Level().debug_renderer().draw_line(t, p0, p1, color);
         Level().debug_renderer().draw_line(t, p1, p2, color);
         Level().debug_renderer().draw_line(t, p2, p3, color);

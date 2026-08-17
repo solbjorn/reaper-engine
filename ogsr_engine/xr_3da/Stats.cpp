@@ -29,10 +29,12 @@ Flags32 g_stats_flags = {0};
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
+#ifdef DEBUG
 namespace
 {
 BOOL g_bDisableRedText = FALSE;
 }
+#endif
 
 CStats::CStats()
 {
@@ -470,7 +472,9 @@ void CStats::Show_HW_Stats()
 
 void CStats::OnDeviceCreate()
 {
+#ifdef DEBUG
     g_bDisableRedText = strstr(Core.Params, "-xclsx") ? TRUE : FALSE;
+#endif
 
     pFont = xr_new<CGameFont>("stat_font", CGameFont::fsDeviceIndependent);
     pFontHW = xr_new<CGameFont>("stat_font", CGameFont::fsDeviceIndependent);

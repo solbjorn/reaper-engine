@@ -159,9 +159,6 @@ tmc::task<bool> CLevel::net_start5()
 
 namespace
 {
-BOOL g_start_total_res = TRUE;
-xrServer::EConnect g_connect_server_err = xrServer::ErrConnect;
-
 struct LevelLoadFinalizer final
 {
     tmc::task<bool> net_start_finalizer() { co_return true; }
@@ -172,8 +169,6 @@ LevelLoadFinalizer LF;
 
 tmc::task<bool> CLevel::net_start6()
 {
-    g_start_total_res = net_start_result_total;
-    g_connect_server_err = m_connect_server_err;
     g_loading_events.pop_front();
     g_loading_events.emplace_front(CallMe::fromMethod<&LevelLoadFinalizer::net_start_finalizer>(&LF));
 

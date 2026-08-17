@@ -28,25 +28,26 @@ private:
 
 public:
     R_xforms();
+
     void unmap();
-    void set_W(const Fmatrix& m);
-    void set_V(const Fmatrix& m);
-    void set_P(const Fmatrix& m);
+    void set_W(CBackend& cmd_list, const Fmatrix& m);
+    void set_V(CBackend& cmd_list, const Fmatrix& m);
+    void set_P(CBackend& cmd_list, const Fmatrix& m);
+
     IC const Fmatrix& get_W() { return m_w; }
     IC const Fmatrix& get_V() { return m_v; }
     IC const Fmatrix& get_P() { return m_p; }
-    IC void set_c_w(R_constant* C);
-    IC void set_c_invw(R_constant* C);
-    IC void set_c_v(R_constant* C);
-    IC void set_c_p(R_constant* C);
-    IC void set_c_wv(R_constant* C);
-    IC void set_c_vp(R_constant* C);
-    IC void set_c_wvp(R_constant* C);
+
+    inline void set_c_w(CBackend& cmd_list, R_constant* C);
+    inline void set_c_invw(CBackend& cmd_list, R_constant* C);
+    inline void set_c_v(CBackend& cmd_list, R_constant* C);
+    inline void set_c_p(CBackend& cmd_list, R_constant* C);
+    inline void set_c_wv(CBackend& cmd_list, R_constant* C);
+    inline void set_c_vp(CBackend& cmd_list, R_constant* C);
+    inline void set_c_wvp(CBackend& cmd_list, R_constant* C);
 
 private:
-    void apply_invw();
-
-    ICF CBackend& cmd_list();
+    void apply_invw(CBackend& cmd_list);
 };
 
 #endif

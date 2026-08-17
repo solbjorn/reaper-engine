@@ -56,7 +56,7 @@ void CPortalTraverser::traverse(CSector* start, CFrustum& F, Fvector& vBase, Fma
 
 void CPortalTraverser::fade_portal(CPortal* _p, float ssa) { f_portals.emplace_back(_p, ssa); }
 
-void CPortalTraverser::fade_render()
+void CPortalTraverser::fade_render(CBackend& cmd_list)
 {
     if (f_portals.empty())
         return;
@@ -64,28 +64,23 @@ void CPortalTraverser::fade_render()
     XR_TRACY_ZONE_SCOPED();
 
     // re-sort, back to front
-    std::ranges::sort(f_portals, [this](const auto& p1, const auto& p2) {
-        const float d1 = i_vBase.distance_to_sqr(p1.first->S.P);
-        const float d2 = i_vBase.distance_to_sqr(p2.first->S.P);
-        return d2 > d1; // descending, back to front
-    });
+    std::ranges::sort(f_portals, {}, [this] [[nodiscard]] (const auto& p) { return i_vBase.distance_to_sqr(p.first->S.P); });
 
     // calc poly-count
-    u32 _pcount = 0;
-    for (u32 _it = 0; _it < f_portals.size(); _it++)
-        _pcount += f_portals[_it].first->getPoly().size() - 2;
+    const auto _pcount =
+        std::ranges::fold_left(f_portals | std::views::transform([] [[nodiscard]] (auto fp) { return fp.first->getPoly().size() - 2; }), 0, std::plus{});
 
-    // fill buffers
-    u32 _offset = 0;
-    FVF::L* _v = (FVF::L*)RImplementation.Vertex.Lock(_pcount * 3, RImplementation.m_PortalFadeGeom.stride(), _offset);
     float ssaRange = r_ssaLOD_A - r_ssaLOD_B;
     Fvector _ambient_f = g_pGamePersistent->Environment().CurrentEnv->ambient;
     u32 _ambient = color_rgba_f(_ambient_f.x, _ambient_f.y, _ambient_f.z, 0);
-    for (u32 _it = 0; _it < f_portals.size(); _it++)
+
+    // fill buffers
+    const auto verts = cmd_list.Vertex.Lock<FVF::L>(_pcount * 3);
+    std::size_t written{0};
+
+    for (auto fp : f_portals)
     {
-        std::pair<CPortal*, float>& fp = f_portals[_it];
-        CPortal* portal = fp.first;
-        float _ssa = fp.second;
+        auto [portal, _ssa] = fp;
         float ssaDiff = _ssa - r_ssaLOD_B;
         float ssaScale = ssaDiff / ssaRange;
         int iA = iFloor((1 - ssaScale) * 255.5f);
@@ -93,26 +88,28 @@ void CPortalTraverser::fade_render()
         u32 _clr = subst_alpha(_ambient, u32(iA));
 
         // fill polys
-        u32 _polys = portal->getPoly().size() - 2;
-        for (u32 _pit = 0; _pit < _polys; _pit++)
+        const auto _polys = (portal->getPoly().size() - 2) * 3;
+
+        for (auto [_pit, v] : std::views::enumerate(verts.subspan(written, _polys) | std::views::chunk(3)))
         {
-            _v->set(portal->getPoly()[0], _clr);
-            _v++;
-            _v->set(portal->getPoly()[_pit + 1], _clr);
-            _v++;
-            _v->set(portal->getPoly()[_pit + 2], _clr);
-            _v++;
+            v[0].set(portal->getPoly()[0], _clr);
+            v[1].set(portal->getPoly()[_pit + 1], _clr);
+            v[2].set(portal->getPoly()[_pit + 2], _clr);
         }
+
+        written += _polys;
     }
-    RImplementation.Vertex.Unlock(_pcount * 3, RImplementation.m_PortalFadeGeom.stride());
+
+    const auto _offset = cmd_list.Vertex.Unlock<FVF::L>(_pcount * 3);
 
     // render
-    RCache.set_xform_world(Fidentity);
-    RCache.set_Shader(RImplementation.m_PortalFadeShader);
-    RCache.set_Geometry(RImplementation.m_PortalFadeGeom);
-    RCache.set_CullMode(CULL_NONE);
-    RCache.Render(D3DPT_TRIANGLELIST, _offset, _pcount);
-    RCache.set_CullMode(CULL_CCW);
+    cmd_list.set_xform_world(Fidentity);
+    cmd_list.set_Shader(RImplementation.m_PortalFadeShader);
+    cmd_list.set_Geometry(RImplementation.m_PortalFadeGeom);
+
+    cmd_list.set_CullMode(CULL_NONE);
+    cmd_list.Render(D3DPT_TRIANGLELIST, _offset, _pcount);
+    cmd_list.set_CullMode(CULL_CCW);
 
     // cleanup
     f_portals.clear();
@@ -121,15 +118,16 @@ void CPortalTraverser::fade_render()
 #ifdef DEBUG
 void CPortalTraverser::dbg_draw()
 {
-    RCache.OnFrameEnd();
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
 
-    RCache.set_xform_world(Fidentity);
-    RCache.set_xform_view(Fidentity);
-    RCache.set_xform_project(Fidentity);
-    RCache.set_Shader(RImplementation.m_WireShader);
+    cmd_list.OnFrameEnd();
+    cmd_list.set_xform_world(Fidentity);
+    cmd_list.set_xform_view(Fidentity);
+    cmd_list.set_xform_project(Fidentity);
+    cmd_list.set_Shader(RImplementation.m_WireShader);
 
     constexpr Fvector4 tfactor{1.f, 1.f, 1.f, 1.f};
-    RCache.set_c("tfactor", tfactor);
+    cmd_list.set_c("tfactor", tfactor);
 
     for (u32 s = 0; s < dbg_sectors.size(); s++)
     {
@@ -146,7 +144,7 @@ void CPortalTraverser::dbg_draw()
         verts[2].set(bb.max.x, bb.max.y, EPS, 0xffffffff);
         verts[3].set(bb.min.x, bb.max.y, EPS, 0xffffffff);
         verts[4].set(bb.min.x, bb.min.y, EPS, 0xffffffff);
-        RCache.dbg_Draw(D3DPT_LINESTRIP, verts, 4);
+        cmd_list.dbg_Draw(D3DPT_LINESTRIP, verts, 4);
     }
 }
 #endif

@@ -6,7 +6,7 @@ if(NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
   set(CMAKE_PCH_PROLOGUE "")
 endif()
 
-set(conformance_options "/Brepro /bigobj /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__STDC__ /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /Zc:checkGwOdr /Zc:forScope /Zc:templateScope /Zc:u8EscapeEncoding /Zc:wchar_t /Zc:alignedNew /Zc:noexceptTypes /Zc:nrvo /Zc:tlsGuards /JMC- /EHsc- /DNOMINMAX /DSTRICT -fstrict-aliasing -fno-delayed-template-parsing -fno-wrapv /D_CRT_STDIO_ISO_WIDE_SPECIFIERS -fno-ms-compatibility -fgnuc-version=0 /utf-8")
+set(conformance_options "/Brepro /bigobj /clang:-fconstexpr-depth=2147483647 /clang:-fconstexpr-steps=2147483647 /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__STDC__ /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /Zc:checkGwOdr /Zc:forScope /Zc:templateScope /Zc:u8EscapeEncoding /Zc:wchar_t /Zc:alignedNew /Zc:noexceptTypes /Zc:nrvo /Zc:tlsGuards /JMC- /EHsc- /DNOMINMAX /DSTRICT -fstrict-aliasing -fno-delayed-template-parsing -fno-wrapv /D_CRT_STDIO_ISO_WIDE_SPECIFIERS -fno-ms-compatibility -fgnuc-version=0 /utf-8")
 
 set(llvm_options "-fuse-ld=lld-link -gcodeview-ghash -march=x86-64-v3 -mavx2 -mbmi -mbmi2 -mfma -mlzcnt -flto -fmerge-all-constants -fforce-emit-vtables -fwhole-program-vtables /clang:-fcoro-aligned-allocation")
 
@@ -176,7 +176,7 @@ endif()
 # sentry
 if(SENTRY_TRANSPORT_COMPRESSION)
   set(conformance_options "${conformance_options} -DLK_UNLCK=_LK_UNLCK")
-  set(warning_options "${warning_options} -Wno-error=c++-keyword -Wno-error=gnu-include-next -Wno-error=implicit-int-enum-cast -Wno-error=implicit-void-ptr-cast -Wno-error=jump-misses-init -Wno-error=language-extension-token -Wno-error=microsoft-enum-value -Wno-error=missing-format-attribute -Wno-error=nrvo -Wno-error=padded -Wno-error=pre-c23-compat -Wno-error=used-but-marked-unused")
+  set(warning_options "${warning_options} -Wno-error=c++-keyword -Wno-error=gnu-include-next -Wno-error=implicit-int-enum-cast -Wno-error=implicit-void-ptr-cast -Wno-error=jump-misses-init -Wno-error=language-extension-token -Wno-error=lifetime-safety-intra-tu-suggestions -Wno-error=microsoft-enum-value -Wno-error=missing-format-attribute -Wno-error=nrvo -Wno-error=padded -Wno-error=pre-c23-compat -Wno-error=used-but-marked-unused")
 endif()
 
 # sndfile

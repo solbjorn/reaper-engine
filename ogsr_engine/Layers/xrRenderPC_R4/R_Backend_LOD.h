@@ -12,10 +12,8 @@ public:
 
     void unmap() { c_LOD = nullptr; }
     void set_LOD(R_constant* C) { c_LOD = C; }
-    void set_LOD(float LOD);
 
-private:
-    ICF CBackend& cmd_list();
+    void set_LOD(CBackend& cmd_list, f32 LOD);
 };
 
 #endif // R_BACKEND_LOD_H_INCLUDED

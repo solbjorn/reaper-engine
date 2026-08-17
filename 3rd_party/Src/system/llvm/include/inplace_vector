@@ -1,3 +1,5 @@
+#if __has_include(<__configuration/abi.h>)
+
 // -*- C++ -*-
 //===----------------------------------------------------------------------===//
 //
@@ -174,11 +176,13 @@ _LIBCPP_PUSH_MACROS
 #    include <__algorithm/remove_if.h>
 #    include <__algorithm/rotate.h>
 #    include <__algorithm/swap_ranges.h>
+#    include <__assert>
 #    include <__compare/synth_three_way.h>
 #    include <__compare/three_way_comparable.h>
 #    include <__concepts/assignable.h>
 #    include <__cstddef/ptrdiff_t.h>
 #    include <__cstddef/size_t.h>
+#    include <__fwd/optional.h>
 #    include <__iterator/bounded_iter.h>
 #    include <__iterator/capacity_aware_iterator.h>
 #    include <__iterator/concepts.h>
@@ -186,16 +190,21 @@ _LIBCPP_PUSH_MACROS
 #    include <__iterator/iterator_traits.h>
 #    include <__iterator/move_iterator.h>
 #    include <__iterator/reverse_iterator.h>
+#    include <__memory/addressof.h>
 #    include <__memory/construct_at.h>
 #    include <__memory/destroy.h>
 #    include <__memory/ranges_destroy.h>
 #    include <__memory/ranges_uninitialized_algorithms.h>
 #    include <__memory/uninitialized_algorithms.h>
 #    include <__new/exceptions.h>
+#    include <__optional/nullopt_t.h>
+#    include <__optional/optional_ref.h>
 #    include <__ranges/access.h>
 #    include <__ranges/concepts.h>
 #    include <__ranges/container_compatible_range.h>
 #    include <__ranges/from_range.h>
+#    include <__ranges/size.h>
+#    include <__type_traits/is_nothrow_assignable.h>
 #    include <__type_traits/is_nothrow_constructible.h>
 #    include <__type_traits/is_swappable.h>
 #    include <__type_traits/is_trivially_assignable.h>
@@ -203,12 +212,13 @@ _LIBCPP_PUSH_MACROS
 #    include <__type_traits/is_trivially_copyable.h>
 #    include <__type_traits/is_trivially_destructible.h>
 #    include <__utility/exception_guard.h>
+#    include <__utility/forward.h>
+#    include <__utility/in_place.h>
 #    include <__utility/move.h>
 #    include <__utility/unreachable.h>
 #    include <__verbose_trap>
 #    include <initializer_list>
 #    include <limits>
-#    include <optional>
 #    include <stdexcept>
 #    include <version>
 
@@ -349,10 +359,8 @@ public:
         }
       } else {
 #    if !defined(__cpp_trivial_union)
-        // TODO: Clang emits a -Wformat-security warning for this when it's in a consteval block. File bug for this
-        _LIBCPP_VERBOSE_ABORT("%s",
-                              "std::inplace_vector<T,N> currently cannot be used in constant expressions for "
-                              "non-trivial T on compilers where P3074 is not implemented.");
+        _LIBCPP_VERBOSE_TRAP("std::inplace_vector<T,N> currently cannot be used in constant expressions for "
+                             "non-trivial T on compilers where P3074 is not implemented.");
 #    endif
       }
     }
@@ -392,6 +400,12 @@ public:
 
   template <_ContainerCompatibleRange<_Tp> _Range>
   constexpr inplace_vector(from_range_t, _Range&& __rg) : inplace_vector() {
+    if constexpr (ranges::__static_sized_range<_Range>) {
+      // LWG4396
+      static_assert(std::ranges::size(__rg) <= _Cap,
+                    "inplace_vector<Tp,N>(from_range_t, Range): Statically sized range must be <= Capacity");
+    }
+
     append_range(__rg);
   }
 
@@ -827,6 +841,12 @@ public:
 
   template <_ContainerCompatibleRange<_Tp> _Range>
   constexpr inplace_vector(from_range_t, _Range&& __rg) {
+    if constexpr (ranges::__static_sized_range<_Range>) {
+      // LWG4396
+      static_assert(
+          std::ranges::size(__rg) == 0, "inplace_vector<Tp,0>(from_range_t, Range): Statically sized range must be 0");
+    }
+
     if (std::ranges::begin(__rg) != std::ranges::end(__rg)) {
       std::__throw_bad_alloc();
     }
@@ -1099,3 +1119,9 @@ _LIBCPP_POP_MACROS
 #endif // __cplusplus < 201103L && defined(_LIBCPP_USE_FROZEN_CXX03_HEADERS)
 
 #endif // _LIBCPP_INPLACE_VECTOR
+
+#else // !__has_include(<__configuration/abi.h>)
+
+#include_next <inplace_vector>
+
+#endif // !__has_include(<__configuration/abi.h>)

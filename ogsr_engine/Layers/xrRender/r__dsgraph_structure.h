@@ -63,7 +63,7 @@ private:
     // Runtime structures
     xr_multimap<float, R_dsgraph::mapNormal_T::value_type*, std::greater<float>> nrmPasses;
     xr_multimap<float, R_dsgraph::mapMatrix_T::value_type*, std::greater<float>> matPasses;
-    xr_vector<u32> lstLODgroups;
+    xr_vector<std::size_t> lstLODgroups;
     xr_vector<ISpatial*> lstRenderables;
 
     u32 counter_S{};

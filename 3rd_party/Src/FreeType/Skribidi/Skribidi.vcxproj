@@ -45,7 +45,7 @@
       md _Build
       cd _Build
       echo * > .gitignore
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build2\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\i18n\SheenBidi\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\i18n\budouxc\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\i18n\unibreak\_Build\$(Configuration)\$(PlatformShortName)" -DSKRIBIDI_EXAMPLE=OFF -DSKRIBIDI_UNIT_TESTS=OFF ..
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_PREFIX_PATH="$(SolutionDir)\3rd_party\Src\FreeType\freetype\_Build2\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\i18n\SheenBidi\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\i18n\budouxc\_Build\$(Configuration)\$(PlatformShortName);$(SolutionDir)\3rd_party\Src\i18n\unibreak\_Build\$(Configuration)\$(PlatformShortName)" -DBUILD_SHARED_LIBS=OFF -DSKRIBIDI_EXAMPLE=OFF -DSKRIBIDI_UNIT_TESTS=OFF ..
       cmake --build . --config $(Configuration)
       copy /Y "src\skribidi.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\skribidi.lib"
     </NMakeBuildCommandLine>

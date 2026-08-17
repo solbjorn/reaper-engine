@@ -134,6 +134,8 @@ void occRasterizer::on_dbg_render()
         return;
     }
 
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+
     for (int i = 0; i < occ_dim_0; ++i)
     {
         for (int j = 0; j < occ_dim_0; ++j)
@@ -173,8 +175,8 @@ void occRasterizer::on_dbg_render()
             // draw wire
             Device.SetNearer(TRUE);
 
-            RCache.set_Shader(RImplementation.m_SelectionShader);
-            RCache.dbg_DrawOBB(Transform, tmp.radius, D3DCOLOR_XRGB(u32(255 * pow(tmp.z, 20.f)), u32(255 * (1 - pow(tmp.z, 20.f))), 0));
+            cmd_list.set_Shader(RImplementation.m_SelectionShader);
+            cmd_list.dbg_DrawOBB(Transform, tmp.radius, D3DCOLOR_XRGB(u32(255 * pow(tmp.z, 20.f)), u32(255 * (1 - pow(tmp.z, 20.f))), 0));
             Device.SetNearer(FALSE);
         }
     }

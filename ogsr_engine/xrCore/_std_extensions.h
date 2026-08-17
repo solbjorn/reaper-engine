@@ -80,16 +80,10 @@ constexpr inline bool _valid(T x)
 
 char* timestamp(string64& dest);
 
-namespace gsl
-{
-// GSL doesn't provide one
-using cu8zstring = gsl::basic_zstring<const char8_t, gsl::dynamic_extent>;
-} // namespace gsl
-
 namespace xr
 {
-template <typename T>
-[[nodiscard]] constexpr bool is_aligned(T val, T align)
+template <std::integral T>
+[[nodiscard]] constexpr bool is_aligned(T val, T align) noexcept
 {
     return val % align == 0;
 }
@@ -97,31 +91,30 @@ template <typename T>
 // Round @x to next or prev @a boundary, where @a is a power of two
 
 template <std::unsigned_integral T>
-[[nodiscard]] constexpr T round_mask(T x, T mask)
+[[nodiscard]] constexpr T roundup(T x, T a) noexcept
 {
+    const T mask{a - 1};
+
+    if (x > std::numeric_limits<T>::max() - mask) [[unlikely]]
+        return std::numeric_limits<T>::max();
+
     return (x + mask) & ~mask;
 }
 
-template <std::unsigned_integral T>
-[[nodiscard]] constexpr T roundup(T x, T a)
-{
-    return xr::round_mask(x, a - 1);
-}
-
 template <std::signed_integral T>
-[[nodiscard]] constexpr T roundup(T x, T a)
+[[nodiscard]] constexpr T roundup(T x, T a) noexcept
 {
     return gsl::narrow_cast<T>(xr::roundup(gsl::narrow_cast<std::make_unsigned_t<T>>(x), gsl::narrow_cast<std::make_unsigned_t<T>>(a)));
 }
 
 template <std::unsigned_integral T>
-[[nodiscard]] constexpr T rounddown(T x, T a)
+[[nodiscard]] constexpr T rounddown(T x, T a) noexcept
 {
-    return xr::roundup(x - (a - 1), a);
+    return x & ~(a - 1);
 }
 
 template <std::signed_integral T>
-[[nodiscard]] constexpr T rounddown(T x, T a)
+[[nodiscard]] constexpr T rounddown(T x, T a) noexcept
 {
     return gsl::narrow_cast<T>(xr::rounddown(gsl::narrow_cast<std::make_unsigned_t<T>>(x), gsl::narrow_cast<std::make_unsigned_t<T>>(a)));
 }

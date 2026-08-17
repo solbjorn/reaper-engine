@@ -885,14 +885,11 @@ bool CCustomMonster::update_critical_wounded(const u16& bone_id, const float& po
 }
 
 #ifdef DEBUG
-
 extern void dbg_draw_frustum(float FOV, float _FAR, float A, Fvector& P, Fvector& D, Fvector& U);
 void draw_visiblity_rays(CCustomMonster* self, const CObject* object, collide::rq_results& rq_storage);
 
 void CCustomMonster::OnRender()
 {
-    RCache.OnFrameEnd();
-
     for (int i = 0; i < 1; ++i)
     {
         const xr_vector<CDetailPathManager::STravelPoint>& keys = !i ? movement().detail().m_key_points : movement().detail().m_key_points;

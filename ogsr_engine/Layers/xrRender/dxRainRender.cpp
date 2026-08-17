@@ -17,8 +17,6 @@ constexpr float sink_offset = -(max_distance - source_offset);
 constexpr float drop_length = 5.f;
 constexpr float drop_width = 0.30f;
 constexpr float drop_max_angle = deg2rad(35.f); // 10
-
-constexpr int particles_cache = 400;
 constexpr float particles_time = .3f;
 } // namespace
 
@@ -33,8 +31,12 @@ dxRainRender::dxRainRender()
     DM_Drop = ::RImplementation.model_CreateDM(F.get());
 
     SH_Rain.create("effects\\rain", "fx\\fx_rain");
-    hGeom_Rain.create(FVF::F_LIT, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
-    hGeom_Drops.create(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, RImplementation.Vertex.Buffer(), RImplementation.Index.Buffer());
+
+    hGeom_Rain.create(FVF::F_LIT, SGeometry::default_vb(), RImplementation.QuadIB);
+    XR_ASSERT(hGeom_Rain.stride() == sizeof(FVF::LIT));
+
+    hGeom_Drops.create(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, SGeometry::default_vb(), SGeometry::default_ib());
+    XR_ASSERT(hGeom_Drops.stride() == sizeof(IRender_DetailModel::fvfVertexOut));
 
     if (RImplementation.o.ssfx_rain)
         SH_Splash.create("effects\\rain_splash", "fx\\fx_rain");
@@ -49,6 +51,8 @@ void dxRainRender::Render(CEffect_Rain& owner)
         return;
 
     XR_TRACY_ZONE_SCOPED();
+
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
 
     float _drop_len = drop_length;
     float _drop_width = drop_width;
@@ -71,10 +75,10 @@ void dxRainRender::Render(CEffect_Rain& owner)
     if (!owner.items.empty())
     {
         // perform update
-        u32 vOffset;
-        FVF::LIT* verts = (FVF::LIT*)RImplementation.Vertex.Lock(owner.items.size() * 4, hGeom_Rain->vb_stride, vOffset);
-        FVF::LIT* start = verts;
         const Fvector& vEye = Device.vCameraPosition;
+
+        const auto verts = cmd_list.Vertex.Lock<FVF::LIT>(owner.items.size() * 4);
+        std::size_t written{0};
 
         for (const auto& one : owner.items)
         {
@@ -104,115 +108,118 @@ void dxRainRender::Render(CEffect_Rain& owner)
             lineTop.crossproduct(camDir, lineD);
             float w = _drop_width;
             u32 s = one.uv_set;
+
+            const auto v = verts.subspan(written, 4);
             P.mad(pos_trail, lineTop, -w);
-            verts->set(P, u_rain_color, UV[s][0].x, UV[s][0].y);
-            verts++;
+            v[0].set(P, u_rain_color, UV[s][0].x, UV[s][0].y);
             P.mad(pos_trail, lineTop, w);
-            verts->set(P, u_rain_color, UV[s][1].x, UV[s][1].y);
-            verts++;
+            v[1].set(P, u_rain_color, UV[s][1].x, UV[s][1].y);
             P.mad(pos_head, lineTop, -w);
-            verts->set(P, u_rain_color, UV[s][2].x, UV[s][2].y);
-            verts++;
+            v[2].set(P, u_rain_color, UV[s][2].x, UV[s][2].y);
             P.mad(pos_head, lineTop, w);
-            verts->set(P, u_rain_color, UV[s][3].x, UV[s][3].y);
-            verts++;
+            v[3].set(P, u_rain_color, UV[s][3].x, UV[s][3].y);
+            written += 4;
         }
 
-        u32 vCount = (u32)(verts - start);
-        RImplementation.Vertex.Unlock(vCount, hGeom_Rain->vb_stride);
+        const auto vOffset = cmd_list.Vertex.Unlock<FVF::LIT>(written);
 
         // Render if needed
-        if (vCount)
-        {
-            // HW.pDevice->SetRenderState	(D3DRS_CULLMODE,D3DCULL_NONE);
-            RCache.set_CullMode(CULL_NONE);
-            RCache.set_xform_world(Fidentity);
-            RCache.set_Shader(SH_Rain);
-            RCache.set_Geometry(hGeom_Rain);
-            RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, 0, vCount / 2);
-            // HW.pDevice->SetRenderState	(D3DRS_CULLMODE,D3DCULL_CCW);
-            RCache.set_CullMode(CULL_CCW);
-            RCache.set_c(s_shader_setup, ps_ssfx_rain_2); // Alpha, Brigthness, Refraction, Reflection
-        }
+        if (written == 0)
+            goto drops;
+
+        cmd_list.set_CullMode(CULL_NONE);
+        cmd_list.set_xform_world(Fidentity);
+        cmd_list.set_Shader(SH_Rain);
+        cmd_list.set_Geometry(hGeom_Rain);
+        cmd_list.Render(D3DPT_TRIANGLELIST, vOffset, 0, written, 0, written / 2);
+
+        cmd_list.set_CullMode(CULL_CCW);
+        cmd_list.set_c(s_shader_setup, ps_ssfx_rain_2); // Alpha, Brigthness, Refraction, Reflection
     }
 
+drops:
     // Particles
     CEffect_Rain::Particle* P = owner.particle_active;
     if (!P)
         return;
 
+    float dt = Device.fTimeDelta;
+
+    cmd_list.set_Shader(_splash_SH);
+    cmd_list.set_c(s_shader_setup, ps_ssfx_rain_3); // Alpha, Refraction
+
+    const auto vstep = DM_Drop->vertices.size();
+    const auto istep = DM_Drop->indices.size();
+    const auto particles_cache =
+        std::min(cmd_list.Vertex.GetSize() / (vstep * sizeof(IRender_DetailModel::fvfVertexOut)), cmd_list.Index.GetSize() / (istep * sizeof(u16)));
+    const auto vCount_Lock = particles_cache * vstep;
+    const auto iCount_Lock = particles_cache * istep;
+
+    auto verts = cmd_list.Vertex.Lock<IRender_DetailModel::fvfVertexOut>(vCount_Lock);
+    auto indices = cmd_list.Index.Lock(iCount_Lock);
+    std::size_t vwritten{0};
+    std::size_t iwritten{0};
+
+    while (P != nullptr)
     {
-        float dt = Device.fTimeDelta;
-        _IndexStream& _IS = RImplementation.Index;
-        RCache.set_Shader(_splash_SH);
-        RCache.set_c(s_shader_setup, ps_ssfx_rain_3); // Alpha, Refraction
+        CEffect_Rain::Particle* next = P->next;
 
-        Fmatrix mXform, mScale;
-        u32 pcount = 0;
-        u32 v_offset, i_offset;
-        u32 vCount_Lock = particles_cache * DM_Drop->number_vertices;
-        u32 iCount_Lock = particles_cache * DM_Drop->number_indices;
-        IRender_DetailModel::fvfVertexOut* v_ptr =
-            (IRender_DetailModel::fvfVertexOut*)RImplementation.Vertex.Lock(vCount_Lock, hGeom_Drops->vb_stride, v_offset);
-        u16* i_ptr = _IS.Lock(iCount_Lock, i_offset);
-        while (P)
+        // Update
+        // P can be zero sometimes and it crashes
+        P->time -= dt;
+        if (P->time < 0)
         {
-            CEffect_Rain::Particle* next = P->next;
-
-            // Update
-            // P can be zero sometimes and it crashes
-            P->time -= dt;
-            if (P->time < 0)
-            {
-                owner.p_free(P);
-                P = next;
-                continue;
-            }
-
-            // Render
-            if (RImplementation.ViewBase.testSphere_dirty(P->bounds.P, P->bounds.R))
-            {
-                // Build matrix
-                float scale = P->time / particles_time;
-                mScale.scale(scale, scale, scale);
-                mXform.mul_43(P->mXForm, mScale);
-
-                // XForm verts
-                DM_Drop->transfer(mXform, v_ptr, u_rain_color, i_ptr, pcount * DM_Drop->number_vertices);
-                v_ptr += DM_Drop->number_vertices;
-                i_ptr += DM_Drop->number_indices;
-                pcount++;
-
-                if (pcount >= particles_cache)
-                {
-                    // flush
-                    u32 dwNumPrimitives = iCount_Lock / 3;
-                    RImplementation.Vertex.Unlock(vCount_Lock, hGeom_Drops->vb_stride);
-                    _IS.Unlock(iCount_Lock);
-                    RCache.set_Geometry(hGeom_Drops);
-                    RCache.Render(D3DPT_TRIANGLELIST, v_offset, 0, vCount_Lock, i_offset, dwNumPrimitives);
-
-                    v_ptr = (IRender_DetailModel::fvfVertexOut*)RImplementation.Vertex.Lock(vCount_Lock, hGeom_Drops->vb_stride, v_offset);
-                    i_ptr = _IS.Lock(iCount_Lock, i_offset);
-
-                    pcount = 0;
-                }
-            }
-
+            owner.p_free(P);
             P = next;
+            continue;
         }
 
-        // Flush if needed
-        vCount_Lock = pcount * DM_Drop->number_vertices;
-        iCount_Lock = pcount * DM_Drop->number_indices;
-        u32 dwNumPrimitives = iCount_Lock / 3;
-        RImplementation.Vertex.Unlock(vCount_Lock, hGeom_Drops->vb_stride);
-        _IS.Unlock(iCount_Lock);
-        if (pcount)
+        // Render
+        if (!RImplementation.ViewBase.testSphere_dirty(P->bounds.P, P->bounds.R))
         {
-            RCache.set_Geometry(hGeom_Drops);
-            RCache.Render(D3DPT_TRIANGLELIST, v_offset, 0, vCount_Lock, i_offset, dwNumPrimitives);
+            P = next;
+            continue;
         }
+
+        // Build matrix
+        float scale = P->time / particles_time;
+        Fmatrix mScale;
+        mScale.scale(scale, scale, scale);
+        Fmatrix mXform;
+        mXform.mul_43(P->mXForm, mScale);
+
+        // XForm verts
+        DM_Drop->transfer(mXform, verts.subspan(vwritten, vstep), u_rain_color, indices.subspan(iwritten, istep), vwritten);
+        vwritten += vstep;
+        iwritten += istep;
+
+        if (vwritten == vCount_Lock || iwritten == iCount_Lock)
+        {
+            // flush
+            const auto v_offset = cmd_list.Vertex.Unlock<IRender_DetailModel::fvfVertexOut>(vCount_Lock);
+            const auto i_offset = cmd_list.Index.Unlock(iCount_Lock);
+
+            cmd_list.set_Geometry(hGeom_Drops);
+            cmd_list.Render(D3DPT_TRIANGLELIST, v_offset, 0, vCount_Lock, i_offset, iCount_Lock / 3);
+
+            verts = cmd_list.Vertex.Lock<IRender_DetailModel::fvfVertexOut>(vCount_Lock);
+            indices = cmd_list.Index.Lock(iCount_Lock);
+
+            vwritten = 0;
+            iwritten = 0;
+        }
+
+        P = next;
+    }
+
+    // Flush if needed
+    const auto v_offset = cmd_list.Vertex.Unlock<IRender_DetailModel::fvfVertexOut>(vwritten);
+    const auto i_offset = cmd_list.Index.Unlock(iwritten);
+
+    if (vwritten > 0 || iwritten > 0)
+    {
+        cmd_list.set_Geometry(hGeom_Drops);
+        cmd_list.Render(D3DPT_TRIANGLELIST, v_offset, 0, vwritten, i_offset, iwritten / 3);
     }
 }
 

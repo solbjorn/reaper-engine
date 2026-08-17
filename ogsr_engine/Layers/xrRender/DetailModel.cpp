@@ -8,81 +8,32 @@ CDetail::~CDetail() = default;
 
 void CDetail::Unload()
 {
-    if (vertices)
-    {
-        xr_free(vertices);
-        vertices = nullptr;
-    }
-
-    if (indices)
-    {
-        xr_free(indices);
-        indices = nullptr;
-    }
+    vertices.clear();
+    indices.clear();
 
     shader.destroy();
 }
 
-void CDetail::transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset)
+void CDetail::transfer(Fmatrix& mXform, std::span<fvfVertexOut> vDest, u32 C, std::span<u16> iDest, u32 iOffset, f32 du, f32 dv) const
 {
+    const auto vsize = vertices.size();
+    XR_ASSERT(vDest.size() >= vsize && iDest.size() >= indices.size(), "", vDest.size(), vsize, iDest.size(), indices.size());
+
     // Transfer vertices
+    for (auto [dst, src] : std::views::zip(vDest, vertices))
     {
-        CDetail::fvfVertexIn *srcIt = vertices, *srcEnd = vertices + number_vertices;
-        CDetail::fvfVertexOut* dstIt = vDest;
-        for (; srcIt != srcEnd; srcIt++, dstIt++)
-        {
-            mXform.transform_tiny(dstIt->P, srcIt->P);
-            dstIt->C = C;
-            dstIt->u = srcIt->u;
-            dstIt->v = srcIt->v;
-        }
+        mXform.transform_tiny(dst.P, src.P);
+        dst.C = C;
+        dst.u = src.u + du;
+        dst.v = src.v + dv;
     }
 
-    // Transfer indices (in 32bit lines)
-    XR_ASSERT(iOffset < std::numeric_limits<u16>::max());
+    // Transfer indices
+    // If this passes, `iOffset + src` can never overflow due to index validation in CDetail::Load()
+    XR_ASSERT(iOffset + vsize <= std::numeric_limits<u16>::max(), "", iOffset, vsize);
 
-    {
-        u32 item = (iOffset << 16) | iOffset;
-        u32 count = number_indices / 2;
-        LPDWORD sit = LPDWORD(indices);
-        LPDWORD send = sit + count;
-        LPDWORD dit = LPDWORD(iDest);
-        for (; sit != send; dit++, sit++)
-            *dit = *sit + item;
-        if (number_indices & 1)
-            iDest[number_indices - 1] = u16(indices[number_indices - 1] + u16(iOffset));
-    }
-}
-
-void CDetail::transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, float du, float dv)
-{
-    // Transfer vertices
-    {
-        CDetail::fvfVertexIn *srcIt = vertices, *srcEnd = vertices + number_vertices;
-        CDetail::fvfVertexOut* dstIt = vDest;
-        for (; srcIt != srcEnd; srcIt++, dstIt++)
-        {
-            mXform.transform_tiny(dstIt->P, srcIt->P);
-            dstIt->C = C;
-            dstIt->u = srcIt->u + du;
-            dstIt->v = srcIt->v + dv;
-        }
-    }
-
-    // Transfer indices (in 32bit lines)
-    XR_ASSERT(iOffset < std::numeric_limits<u16>::max());
-
-    {
-        u32 item = (iOffset << 16) | iOffset;
-        u32 count = number_indices / 2;
-        LPDWORD sit = LPDWORD(indices);
-        LPDWORD send = sit + count;
-        LPDWORD dit = LPDWORD(iDest);
-        for (; sit != send; dit++, sit++)
-            *dit = *sit + item;
-        if (number_indices & 1)
-            iDest[number_indices - 1] = u16(indices[number_indices - 1] + u16(iOffset));
-    }
+    for (auto [dst, src] : std::views::zip(iDest, indices))
+        dst = gsl::narrow_cast<u16>(iOffset + src);
 }
 
 void CDetail::Load(IReader* S)
@@ -97,30 +48,30 @@ void CDetail::Load(IReader* S)
     m_Flags.assign(S->r_u32());
     m_fMinScale = S->r_float();
     m_fMaxScale = S->r_float();
-    number_vertices = S->r_u32();
 
-    number_indices = S->r_u32();
+    const auto number_vertices = S->r_u32();
+    const auto number_indices = S->r_u32();
     XR_ASSERT(xr::is_aligned(number_indices, 3u), "", fnS, fnT);
 
     // Vertices
-    u32 size_vertices = number_vertices * sizeof(fvfVertexIn);
-    vertices = xr_alloc<CDetail::fvfVertexIn>(number_vertices);
-    S->r(vertices, size_vertices);
+    const auto vertices_size = XR_ASSERT_VAL(gsl::index{number_vertices} * gsl::index{sizeof(fvfVertexIn)} <= S->elapsed());
+    vertices.assign_range(std::span{static_cast<const fvfVertexIn*>(S->pointer()), number_vertices});
+    S->advance(vertices_size);
 
     // Indices
-    u32 size_indices = number_indices * sizeof(u16);
-    indices = xr_alloc<u16>(number_indices);
-    S->r(indices, size_indices);
+    const auto indices_size = XR_ASSERT_VAL(gsl::index{number_indices} * gsl::index{sizeof(u16)} <= S->elapsed());
+    indices.assign_range(std::span{static_cast<const u16*>(S->pointer()), number_indices});
+    S->advance(indices_size);
 
     // Validate indices
-    for (u32 idx = 0; idx < number_indices; ++idx)
-        XR_ASSERT(indices[idx] < number_vertices, "", fnS, fnT, idx);
+    for (auto [idx, ind] : std::views::enumerate(indices))
+        XR_ASSERT(ind < number_vertices, "", fnS, fnT, idx);
 
     // Calc BB & SphereRadius
     bv_bb.invalidate();
 
-    for (u32 i = 0; i < number_vertices; ++i)
-        bv_bb.modify(vertices[i].P);
+    for (auto& vert : vertices)
+        bv_bb.modify(vert.P);
 
     bv_bb.getsphere(bv_sphere.P, bv_sphere.R);
 
@@ -129,24 +80,25 @@ void CDetail::Load(IReader* S)
 
 void CDetail::Optimize()
 {
-    xr_vector<u16> vec_indices, vec_permute;
-    const int cache = HW.Caps.geometry.dwVertexCache;
+    const s32 cache = HW.Caps.geometry.dwVertexCache;
 
     // Stripify
-    vec_indices.assign(indices, indices + number_indices);
-    vec_permute.resize(number_vertices);
-    int vt_old = xrSimulate(vec_indices, cache);
-    xrStripify(vec_indices, vec_permute, cache, 0);
-    int vt_new = xrSimulate(vec_indices, cache);
-    if (vt_new < vt_old)
-    {
-        // Copy faces
-        std::memcpy(indices, vec_indices.data(), vec_indices.size() * sizeof(u16));
+    xr_vector<u16> vec_indices{indices};
+    xr_vector<u16> vec_permute(vertices.size());
 
-        // Permute vertices
-        xr_vector<fvfVertexIn> verts;
-        verts.assign(vertices, vertices + number_vertices);
-        for (u32 i = 0; i < verts.size(); i++)
-            vertices[i] = verts[vec_permute[i]];
-    }
+    const auto vt_old = xrSimulate(vec_indices, cache);
+    xrStripify(vec_indices, vec_permute, cache, 0);
+
+    if (xrSimulate(vec_indices, cache) >= vt_old)
+        return;
+
+    // Copy faces
+    indices.assign_range(vec_indices);
+
+    // Permute vertices
+    xr_vector<fvfVertexIn> verts;
+    verts.assign_range(vertices);
+
+    for (auto [vert, perm] : std::views::zip(vertices, vec_permute))
+        vert = verts[perm];
 }

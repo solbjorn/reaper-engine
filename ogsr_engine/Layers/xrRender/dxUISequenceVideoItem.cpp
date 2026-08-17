@@ -1,7 +1,8 @@
 #include "stdafx.h"
+
 #include "dxUISequenceVideoItem.h"
 
-dxUISequenceVideoItem::dxUISequenceVideoItem() {}
+dxUISequenceVideoItem::dxUISequenceVideoItem() = default;
 
 void dxUISequenceVideoItem::Copy(IUISequenceVideoItem& _in)
 {
@@ -10,4 +11,4 @@ void dxUISequenceVideoItem::Copy(IUISequenceVideoItem& _in)
     m_texture = in.m_texture;
 }
 
-void dxUISequenceVideoItem::CaptureTexture() { m_texture = RCache.get_ActiveTexture(0); }
+void dxUISequenceVideoItem::CaptureTexture() { m_texture = RImplementation.get_imm_context().cmd_list.get_ActiveTexture(0); }

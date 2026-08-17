@@ -250,7 +250,7 @@ constexpr dwarfs::reader::filesystem_options opts{.image_offset = dwarfs::reader
 void CLocatorAPI::archive::open_dwfs()
 {
     xr::dwfs_cb(cb) = dwarfs::reader::filesystem_v2{
-        xr::lg, xr::os, std::u8string_view{reinterpret_cast<gsl::cu8zstring>(path.c_str()), gsl::narrow_cast<std::size_t>(path.size())}, xr::opts};
+        xr::lg, xr::os, std::u8string_view{reinterpret_cast<xr::cu8zstring>(path.c_str()), gsl::narrow_cast<std::size_t>(path.size())}, xr::opts};
 }
 
 void CLocatorAPI::archive::autoload_dwfs()

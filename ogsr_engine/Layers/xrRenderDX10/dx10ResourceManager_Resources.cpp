@@ -321,29 +321,24 @@ void CResourceManager::_DeleteGS(const SGS* gs)
 
 //--------------------------------------------------------------------------------------------------------------
 
-static BOOL dcl_equal(const D3DVERTEXELEMENT9* a, const D3DVERTEXELEMENT9* b)
-{
-    // check sizes
-    u32 a_size = FVF::GetDeclLength(a);
-    u32 b_size = FVF::GetDeclLength(b);
-    if (a_size != b_size)
-        return FALSE;
-    return 0 == memcmp(a, b, a_size * sizeof(D3DVERTEXELEMENT9));
-}
-
 SDeclaration* CResourceManager::_CreateDecl(const D3DVERTEXELEMENT9* dcl)
 {
+    const auto dcls = std::span{dcl, FVF::GetDeclLength(dcl) + 1};
+
     // Search equal code
-    for (SDeclaration* D : v_declarations)
-    {
-        if (dcl_equal(dcl, &D->dcl_code.front()))
-            return D;
-    }
+    if (const auto it = std::ranges::find_if(v_declarations,
+                                             [dcls] [[nodiscard]] (const auto item) {
+                                                 return std::ranges::equal(dcls, item->dcl_code, [] [[nodiscard]] (const auto& lhs, const auto& rhs) {
+                                                     return lhs.Stream == rhs.Stream && lhs.Offset == rhs.Offset && lhs.Type == rhs.Type &&
+                                                         lhs.Method == rhs.Method && lhs.Usage == rhs.Usage && lhs.UsageIndex == rhs.UsageIndex;
+                                                 });
+                                             });
+        it != v_declarations.end())
+        return *it;
 
     // Create _new
     SDeclaration* D = v_declarations.emplace_back(xr_new<SDeclaration>());
-    u32 dcl_size = FVF::GetDeclLength(dcl) + 1;
-    D->dcl_code.assign(dcl, dcl + dcl_size);
+    D->dcl_code.assign_range(dcls);
     dx10BufferUtils::ConvertVertexDeclaration(D->dcl_code, D->dx10_dcl_code);
     D->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 
@@ -368,11 +363,8 @@ R_constant_table* CResourceManager::_CreateConstantTable(const R_constant_table&
     if (C.empty())
         return nullptr;
 
-    for (R_constant_table* table : v_constant_tables)
-    {
-        if (table->equal(C))
-            return table;
-    }
+    if (const auto it = std::ranges::find_if(v_constant_tables, [&C] [[nodiscard]] (const auto item) { return item->equal(C); }); it != v_constant_tables.end())
+        return *it;
 
     R_constant_table* table = v_constant_tables.emplace_back(xr_new<R_constant_table>());
     table->clone(C);
@@ -431,15 +423,14 @@ SGeometry* CResourceManager::CreateGeom(const D3DVERTEXELEMENT9* decl, ID3DVerte
     XR_ASSERT(decl != nullptr && vb != nullptr);
 
     SDeclaration* dcl = _CreateDecl(decl);
-    u32 vb_stride = FVF::ComputeVertexSize(decl, 0);
+    const auto vb_stride = FVF::ComputeVertexSize(decl, 0);
 
-    // ***** first pass - search already loaded shader
-    for (SGeometry* geom : v_geoms)
-    {
-        SGeometry& G = *geom;
-        if (G.dcl == dcl && G.vb == vb && G.ib == ib && G.vb_stride == vb_stride)
-            return geom;
-    }
+    if (const auto it = std::ranges::find_if(v_geoms,
+                                             [dcl, vb, vb_stride, ib] [[nodiscard]] (const auto elem) {
+                                                 return elem->dcl == dcl && elem->vb == vb && elem->vb_stride == vb_stride && elem->ib == ib;
+                                             });
+        it != v_geoms.end())
+        return *it;
 
     SGeometry* Geom = v_geoms.emplace_back(xr_new<SGeometry>());
     Geom->dwFlags |= xr_resource_flagged::RF_REGISTERED;
@@ -523,7 +514,7 @@ void CResourceManager::DBG_VerifyTextures()
 
 STextureList* CResourceManager::_CreateTextureList(STextureList& L)
 {
-    std::ranges::sort(L, {}, &std::pair<u32, ref_texture>::first);
+    std::ranges::sort(L.list, {}, &std::pair<u32, ref_texture>::first);
 
     for (STextureList* base : lst_textures)
     {

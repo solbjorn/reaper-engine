@@ -12,7 +12,7 @@ namespace
 {
 //////////////////////////////////////////////////////////////////////////
 // half box def
-constexpr std::array<Fvector, 24> XR_ALIGNED_DEFAULT hbox_verts{
+constexpr std::array<Fvector, 12 * 2> XR_ALIGNED_DEFAULT hbox_verts{
     Fvector{-1.f, -1.f, -1.f},  Fvector{-1.f, -1.01f, -1.f}, // down
     Fvector{1.f, -1.f, -1.f},   Fvector{1.f, -1.01f, -1.f}, // down
     Fvector{-1.f, -1.f, 1.f},   Fvector{-1.f, -1.01f, 1.f}, // down
@@ -152,14 +152,14 @@ dxEnvironmentRender::~dxEnvironmentRender() = default;
 void dxEnvironmentRender::Clear()
 {
     sky_r_textures.clear();
-    sky_r_textures.emplace_back(0, nullptr);
-    sky_r_textures.emplace_back(0, nullptr);
-    sky_r_textures.emplace_back(0, nullptr);
+    sky_r_textures.list.emplace_back(0, nullptr);
+    sky_r_textures.list.emplace_back(0, nullptr);
+    sky_r_textures.list.emplace_back(0, nullptr);
 
     clouds_r_textures.clear();
-    clouds_r_textures.emplace_back(0, nullptr);
-    clouds_r_textures.emplace_back(0, nullptr);
-    clouds_r_textures.emplace_back(0, nullptr);
+    clouds_r_textures.list.emplace_back(0, nullptr);
+    clouds_r_textures.list.emplace_back(0, nullptr);
+    clouds_r_textures.list.emplace_back(0, nullptr);
 }
 
 void dxEnvironmentRender::lerp(IEnvDescriptorRender* inA, IEnvDescriptorRender* inB)
@@ -168,17 +168,17 @@ void dxEnvironmentRender::lerp(IEnvDescriptorRender* inA, IEnvDescriptorRender* 
     dxEnvDescriptorRender* pB = (dxEnvDescriptorRender*)inB;
 
     sky_r_textures.clear();
-    sky_r_textures.emplace_back(tsky0_tstage, pA->sky_texture);
-    sky_r_textures.emplace_back(tsky1_tstage, pB->sky_texture);
-    sky_r_textures.emplace_back(tonemap_tstage_2sky, tonemap);
+    sky_r_textures.list.emplace_back(tsky0_tstage, pA->sky_texture);
+    sky_r_textures.list.emplace_back(tsky1_tstage, pB->sky_texture);
+    sky_r_textures.list.emplace_back(tonemap_tstage_2sky, tonemap);
 
     clouds_r_textures.clear();
-    clouds_r_textures.emplace_back(tclouds0_tstage, pA->clouds_texture);
-    clouds_r_textures.emplace_back(tclouds1_tstage, pB->clouds_texture);
-    clouds_r_textures.emplace_back(tonemap_tstage_clouds, tonemap);
+    clouds_r_textures.list.emplace_back(tclouds0_tstage, pA->clouds_texture);
+    clouds_r_textures.list.emplace_back(tclouds1_tstage, pB->clouds_texture);
+    clouds_r_textures.list.emplace_back(tonemap_tstage_clouds, tonemap);
 
-    auto e0 = sky_r_textures[0].second->surface_get();
-    auto e1 = sky_r_textures[1].second->surface_get();
+    auto e0 = sky_r_textures.list[0].second->surface_get();
+    auto e1 = sky_r_textures.list[1].second->surface_get();
     tsky0->surface_set(e0);
     tsky1->surface_set(e1);
 
@@ -194,59 +194,66 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env)
 {
     XR_TRACY_ZONE_SCOPED();
 
-    RImplementation.rmFar(RCache);
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+
+    RImplementation.rmFar(cmd_list);
 
     // draw sky box
     Fmatrix mSky;
     mSky.rotateY(env.CurrentEnv->sky_rotation);
     mSky.translate_over(Device.vCameraPosition);
 
-    u32 i_offset, v_offset;
     u32 C = color_rgba(iFloor(env.CurrentEnv->sky_color.x * 255.f), iFloor(env.CurrentEnv->sky_color.y * 255.f), iFloor(env.CurrentEnv->sky_color.z * 255.f),
                        iFloor(env.CurrentEnv->weight * 255.f));
 
     // Fill index buffer
-    u16* pib = RImplementation.Index.Lock(20 * 3, i_offset);
-    std::memcpy(pib, hbox_faces.data(), sizeof(hbox_faces));
-    RImplementation.Index.Unlock(20 * 3);
+    static constexpr auto inum = hbox_faces.size();
+    const auto indices = cmd_list.Index.Lock(inum);
+    std::ranges::copy(hbox_faces, indices.begin());
+    const auto i_offset = cmd_list.Index.Unlock(inum);
 
     // Fill vertex buffer
-    v_skybox* pv = (v_skybox*)RImplementation.Vertex.Lock(12, sh_2geom.stride(), v_offset);
-    for (u32 v = 0; v < 12; v++)
+    static constexpr auto vnum = hbox_verts.size() / 2;
+    const auto verts = cmd_list.Vertex.Lock<v_skybox>(vnum);
+
+    for (auto [i, v, hv] : std::views::zip(std::views::indices(vnum), verts, hbox_verts | std::views::chunk(2)))
     {
-        Fvector3 hv = hbox_verts[v * 2];
-        if (v >= 4 && v <= 7)
-            hv.y *= env.CurrentEnv->sky_height;
-        pv[v].set(hv, C, hbox_verts[v * 2 + 1]);
+        v.set(hv[0], C, hv[1]);
+
+        if (i >= 4 && i <= 7)
+            v.p.y *= env.CurrentEnv->sky_height;
     }
-    RImplementation.Vertex.Unlock(12, sh_2geom.stride());
+
+    const auto v_offset = cmd_list.Vertex.Unlock<v_skybox>(vnum);
 
     // Render
-    RCache.set_xform_world(mSky);
-    RCache.set_Geometry(sh_2geom);
-    RCache.set_Shader(sh_2sky);
-    RCache.set_Textures(&sky_r_textures);
-    RCache.Render(D3DPT_TRIANGLELIST, v_offset, 0, 12, i_offset, 20);
+    cmd_list.set_xform_world(mSky);
+    cmd_list.set_Geometry(sh_2geom);
+    cmd_list.set_Shader(sh_2sky);
+    cmd_list.set_Textures(&sky_r_textures);
+    cmd_list.Render(D3DPT_TRIANGLELIST, v_offset, 0, vnum, i_offset, inum / 3);
 
     // Sun
-    RImplementation.rmNormal(RCache);
+    RImplementation.rmNormal(cmd_list);
 
     //
     // This hack is done to make sure that the state is set for sure:
-    // The state may be not set by RCache if the state is changed using API SetRenderState() function before
-    // and the RCache flag will remain unchanged to it's old value.
+    // The state may be not set by cmd_list if the state is changed using API SetRenderState() function before
+    // and the cmd_list flag will remain unchanged to it's old value.
     //
-    RCache.set_Z(FALSE);
-    RCache.set_Z(TRUE);
+    cmd_list.set_Z(FALSE);
+    cmd_list.set_Z(TRUE);
     env.eff_LensFlare->Render(TRUE, FALSE, FALSE);
-    RCache.set_Z(FALSE);
+    cmd_list.set_Z(FALSE);
 }
 
 void dxEnvironmentRender::RenderClouds(CEnvironment& env)
 {
     XR_TRACY_ZONE_SCOPED();
 
-    RImplementation.rmFar(RCache);
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+
+    RImplementation.rmFar(cmd_list);
 
     Fmatrix mXFORM, mScale;
     mScale.scale(10, 0.4f, 10);
@@ -259,38 +266,47 @@ void dxEnvironmentRender::RenderClouds(CEnvironment& env)
     wd0.setHP(PI_DIV_4, 0);
     wd1.setHP(PI_DIV_4 + PI_DIV_8, 0);
     wind_dir.set(wd0.x, wd0.z, wd1.x, wd1.z).mul(0.5f).add(0.5f).mul(255.f);
-    u32 i_offset, v_offset;
+
     u32 C0 = color_rgba(iFloor(wind_dir.x), iFloor(wind_dir.y), iFloor(wind_dir.w), iFloor(wind_dir.z));
     u32 C1 = color_rgba(iFloor(env.CurrentEnv->clouds_color.x * 255.f), iFloor(env.CurrentEnv->clouds_color.y * 255.f),
                         iFloor(env.CurrentEnv->clouds_color.z * 255.f), iFloor(env.CurrentEnv->clouds_color.w * 255.f));
 
     // Fill index buffer
-    u16* pib = RImplementation.Index.Lock(env.CloudsIndices.size(), i_offset);
-    std::memcpy(pib, env.CloudsIndices.data(), env.CloudsIndices.size() * sizeof(u16));
-    RImplementation.Index.Unlock(env.CloudsIndices.size());
+    const auto inum = env.CloudsIndices.size();
+    const auto indices = cmd_list.Index.Lock(inum);
+    std::ranges::copy(env.CloudsIndices, indices.begin());
+    const auto i_offset = cmd_list.Index.Unlock(inum);
 
     // Fill vertex buffer
-    v_clouds* pv = (v_clouds*)RImplementation.Vertex.Lock(env.CloudsVerts.size(), clouds_geom.stride(), v_offset);
-    for (FvectorIt it = env.CloudsVerts.begin(); it != env.CloudsVerts.end(); it++, pv++)
-        pv->set(*it, C0, C1);
-    RImplementation.Vertex.Unlock(env.CloudsVerts.size(), clouds_geom.stride());
+    const auto vnum = env.CloudsVerts.size();
+    const auto verts = cmd_list.Vertex.Lock<v_clouds>(vnum);
+
+    for (auto [v, it] : std::views::zip(verts, env.CloudsVerts))
+        v.set(it, C0, C1);
+
+    const auto v_offset = cmd_list.Vertex.Unlock<v_clouds>(vnum);
 
     // Render
-    RCache.set_xform_world(mXFORM);
-    RCache.set_Geometry(clouds_geom);
-    RCache.set_Shader(clouds_sh);
-    RCache.set_Textures(&clouds_r_textures);
-    RCache.Render(D3DPT_TRIANGLELIST, v_offset, 0, env.CloudsVerts.size(), i_offset, env.CloudsIndices.size() / 3);
+    cmd_list.set_xform_world(mXFORM);
+    cmd_list.set_Geometry(clouds_geom);
+    cmd_list.set_Shader(clouds_sh);
+    cmd_list.set_Textures(&clouds_r_textures);
+    cmd_list.Render(D3DPT_TRIANGLELIST, v_offset, 0, vnum, i_offset, inum / 3);
 
-    RImplementation.rmNormal(RCache);
+    RImplementation.rmNormal(cmd_list);
 }
 
 void dxEnvironmentRender::OnDeviceCreate()
 {
     sh_2sky.create<CBlender_skybox>("skybox_2t");
-    sh_2geom.create(v_skybox_fvf, RImplementation.Vertex.Buffer(), RImplementation.Index.Buffer());
+
+    sh_2geom.create(v_skybox_fvf, SGeometry::default_vb(), SGeometry::default_ib());
+    XR_ASSERT(sh_2geom.stride() == sizeof(v_skybox));
+
     clouds_sh.create("clouds", "null");
-    clouds_geom.create(v_clouds_fvf, RImplementation.Vertex.Buffer(), RImplementation.Index.Buffer());
+
+    clouds_geom.create(v_clouds_fvf, SGeometry::default_vb(), SGeometry::default_ib());
+    XR_ASSERT(clouds_geom.stride() == sizeof(v_clouds));
 
     const auto& sky2_constants = sh_2sky->E[0]->passes[0]->constants;
     const auto& clouds_constants = clouds_sh->E[0]->passes[0]->constants;

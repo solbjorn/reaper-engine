@@ -3,7 +3,6 @@
 #include "tracy.h"
 
 #ifdef TRACY_ENABLE
-#define fileno _fileno
 #define fstat _fstat
 #define stat _stat
 #endif
@@ -23,6 +22,7 @@ XR_DIAG_IGNORE("-Wnewline-eof");
 XR_DIAG_IGNORE("-Wnrvo");
 XR_DIAG_IGNORE("-Wold-style-cast");
 XR_DIAG_IGNORE("-Wshorten-64-to-32");
+XR_DIAG_IGNORE("-Wsign-compare");
 XR_DIAG_IGNORE("-Wsign-conversion");
 XR_DIAG_IGNORE("-Wunused-function");
 XR_DIAG_IGNORE("-Wunused-parameter");

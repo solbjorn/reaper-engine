@@ -329,12 +329,12 @@ void CBulletManager::Render()
         extern FvectorVec g_hit[];
         FvectorIt it;
         u32 C[3] = {0xffff0000, 0xff00ff00, 0xff0000ff};
-        RCache.set_xform_world(Fidentity);
+
         for (int i = 0; i < 3; ++i)
+        {
             for (it = g_hit[i].begin(); it != g_hit[i].end(); ++it)
-            {
                 Level().debug_renderer().draw_aabb(*it, 0.01f, 0.01f, 0.01f, C[i]);
-            }
+        }
     }
 #endif
 

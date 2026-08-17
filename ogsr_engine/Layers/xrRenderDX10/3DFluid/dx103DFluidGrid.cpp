@@ -31,7 +31,7 @@ inline void ComputeRowColsForFlat3DTexture(int depth, int* outCols, int* outRows
 #define VERTICES_PER_LINE 2
 #define LINES_PER_SLICE 4
 
-dx103DFluidGrid::dx103DFluidGrid() {}
+dx103DFluidGrid::dx103DFluidGrid() = default;
 dx103DFluidGrid::~dx103DFluidGrid() { DestroyVertexBuffers(); }
 
 void dx103DFluidGrid::Initialize(int gridWidth, int gridHeight, int gridDepth)
@@ -226,26 +226,26 @@ void dx103DFluidGrid::InitBoundaryLines(VS_INPUT_FLUIDSIM_STRUCT** vertices, int
     }
 }
 
-void dx103DFluidGrid::DrawSlices(void)
+void dx103DFluidGrid::DrawSlices(CBackend& cmd_list)
 {
-    RCache.set_Geometry(m_GeomSlices);
-    RCache.Render(D3DPT_TRIANGLELIST, 0, m_iNumVerticesSlices / 3);
+    cmd_list.set_Geometry(m_GeomSlices);
+    cmd_list.Render(D3DPT_TRIANGLELIST, 0, m_iNumVerticesSlices / 3);
 }
 
-void dx103DFluidGrid::DrawSlicesToScreen(void)
+void dx103DFluidGrid::DrawSlicesToScreen(CBackend& cmd_list)
 {
-    RCache.set_Geometry(m_GeomRenderQuad);
-    RCache.Render(D3DPT_TRIANGLELIST, 0, m_iNumVerticesRenderQuad / 3);
+    cmd_list.set_Geometry(m_GeomRenderQuad);
+    cmd_list.Render(D3DPT_TRIANGLELIST, 0, m_iNumVerticesRenderQuad / 3);
 }
 
-void dx103DFluidGrid::DrawBoundaryQuads(void)
+void dx103DFluidGrid::DrawBoundaryQuads(CBackend& cmd_list)
 {
-    RCache.set_Geometry(m_GeomBoundarySlices);
-    RCache.Render(D3DPT_TRIANGLELIST, 0, m_iNumVerticesBoundarySlices / 3);
+    cmd_list.set_Geometry(m_GeomBoundarySlices);
+    cmd_list.Render(D3DPT_TRIANGLELIST, 0, m_iNumVerticesBoundarySlices / 3);
 }
 
-void dx103DFluidGrid::DrawBoundaryLines(void)
+void dx103DFluidGrid::DrawBoundaryLines(CBackend& cmd_list)
 {
-    RCache.set_Geometry(m_GeomBoundaryLines);
-    RCache.Render(D3DPT_TRIANGLELIST, 0, m_iNumVerticesBoundaryLines / 3);
+    cmd_list.set_Geometry(m_GeomBoundaryLines);
+    cmd_list.Render(D3DPT_TRIANGLELIST, 0, m_iNumVerticesBoundaryLines / 3);
 }

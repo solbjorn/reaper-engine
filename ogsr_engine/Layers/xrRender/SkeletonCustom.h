@@ -30,16 +30,42 @@ public:
 
     Fsphere m_LocalBounds{}; // 16		model space
 
-    struct WMFace final
+    struct XR_TRIVIAL alignas(16) WMFace final
     {
-        Fvector3 vert[3];
-        Fvector2 uv[3];
-        u16 bone_id[3][4];
-        float weight[3][3];
-    };
-    DEFINE_VECTOR(WMFace, WMFacesVec, WMFacesVecIt);
+        std::array<Fvector2, 3> uv;
+        std::array<Fvector3, 3> vert;
+        std::array<std::array<f32, 3>, 3> weight;
+        std::array<std::array<u16, 4>, 3> bone_id;
 
-    WMFacesVec m_Faces; // 16
+        constexpr WMFace() = default;
+
+        constexpr WMFace(const WMFace& that) { xr_memcpy128(this, &that, sizeof(that)); }
+
+#ifdef XR_TRIVIAL_BROKEN
+        constexpr WMFace(WMFace&&) = default;
+#else
+        constexpr WMFace(WMFace&& that) { xr_memcpy128(this, &that, sizeof(that)); }
+#endif
+
+        constexpr WMFace& operator=(const WMFace& that)
+        {
+            xr_memcpy128(this, &that, sizeof(that));
+            return *this;
+        }
+
+#ifdef XR_TRIVIAL_BROKEN
+        constexpr WMFace& operator=(WMFace&&) = default;
+#else
+        constexpr WMFace& operator=(WMFace&& that)
+        {
+            xr_memcpy128(this, &that, sizeof(that));
+            return *this;
+        }
+#endif
+    };
+    XR_TRIVIAL_ASSERT(WMFace);
+
+    xr_vector<WMFace> m_Faces; // 16
     Fsphere m_Bounds{}; // 16		world space
 
     explicit CSkeletonWallmark(CKinematics* p, const Fmatrix* m, ref_shader s, const Fvector& cp, float ts)
@@ -59,10 +85,10 @@ public:
 #endif
 
     IC CKinematics* Parent() { return m_Parent; }
-    IC u32 VCount() { return m_Faces.size() * 3; }
+    [[nodiscard]] auto VCount() const { return m_Faces.size() * 3; }
     IC bool Similar(ref_shader& sh, const Fvector& cp, float eps) { return (m_Shader == sh) && m_ContactPoint.similar(cp, eps); }
-    IC float TimeStart() { return m_fTimeStart; }
-    IC const Fmatrix* XFORM() { return m_XForm; }
+    [[nodiscard]] auto TimeStart() const { return m_fTimeStart; }
+    [[nodiscard]] auto XFORM() const { return m_XForm; }
     IC const Fvector3& ContactPoint() { return m_ContactPoint; }
     IC ref_shader Shader() { return m_Shader; }
 };
@@ -173,7 +199,7 @@ public:
     // wallmarks
     void AddWallmark(const Fmatrix* parent, const Fvector3& start, const Fvector3& dir, ref_shader shader, float size);
     void CalculateWallmarks(bool hud);
-    void RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT*& verts);
+    void RenderWallmark(CSkeletonWallmark& wm, std::span<FVF::LIT> verts) const;
     void ClearWallmarks();
 
     [[nodiscard]] bool PickBone(const Fmatrix& parent_xform, IKinematics::pick_result& r, f32 dist, const Fvector3& start, const Fvector3& dir,

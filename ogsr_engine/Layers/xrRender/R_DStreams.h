@@ -1,103 +1,164 @@
 #ifndef r_DStreamsH
 #define r_DStreamsH
 
-enum
+#include <wrl.h>
+
+namespace xr
 {
-    LOCKFLAGS_FLUSH = D3DLOCK_DISCARD,
-    LOCKFLAGS_APPEND = D3DLOCK_NOOVERWRITE
+namespace detail
+{
+template <typename T, std::size_t A>
+struct aligned_allocator : std::allocator<T>
+{
+private:
+    static_assert(A > 0 && std::has_single_bit(A));
+
+    static constexpr auto actual = std::max(A, std::size_t{xr::align_v<T>});
+
+public:
+    template <typename U>
+    struct rebind
+    {
+        using other = aligned_allocator<U, A>;
+    };
+
+    constexpr aligned_allocator() noexcept = default;
+
+    template <typename U>
+    constexpr explicit aligned_allocator(const aligned_allocator<U, A>&) noexcept
+    {}
+
+    [[nodiscard]] constexpr T* allocate(std::size_t n) noexcept
+    {
+        if (n == 0)
+            return nullptr;
+
+        return static_cast<T*>(xrMemory::mem_alloc_aligned(gsl::narrow_cast<gsl::index>(xr::roundup(n * sizeof(T), actual)), gsl::index{actual}));
+    }
+
+    [[nodiscard]] constexpr std::allocation_result<T*> allocate_at_least(std::size_t n) noexcept
+    {
+        if (n == 0)
+            return {nullptr, 0};
+
+        n = xr::roundup(n * sizeof(T), actual) / sizeof(T);
+
+        return {allocate(n), n};
+    }
+
+    constexpr void deallocate(T* p, std::size_t) noexcept
+    {
+        if (p == nullptr)
+            return;
+
+        xrMemory::mem_free_aligned(p);
+    }
+
+    [[nodiscard]] constexpr bool operator==(const aligned_allocator&) const noexcept = default;
 };
+} // namespace detail
+} // namespace xr
 
 class _VertexStream final
 {
 private:
-    ID3DVertexBuffer* pVB;
-    u32 mSize; // size in bytes
-    u32 mPosition; // position in bytes
-    u32 mDiscardID; // ID of discard - usually for caching
+    Microsoft::WRL::ComPtr<ID3DVertexBuffer> pVB;
+    ctx_id_t context_id;
+    std::size_t mPosition;
+    std::vector<std::byte, xr::detail::aligned_allocator<std::byte, 64>> cache;
 
-#ifdef DEBUG
-    u32 dbg_lock;
-#endif
-
-public:
-    ID3DVertexBuffer* old_pVB;
-
-private:
-    void _clear()
+    constexpr void _clear()
     {
-        pVB = nullptr;
-        mSize = 0;
+        pVB.Reset();
+        context_id = R__INVALID_CTX_ID;
         mPosition = 0;
-        mDiscardID = 0;
-
-#ifdef DEBUG
-        dbg_lock = 0;
-#endif
+        cache.clear();
     }
 
 public:
-    void Create();
-    void Destroy();
-    void reset_begin();
-    void reset_end();
-
-    IC ID3DVertexBuffer* Buffer() const { return pVB; }
-    IC u32 DiscardID() const { return mDiscardID; }
-    IC void Flush() { mPosition = mSize; }
-
-    void* Lock(u32 vl_Count, u32 Stride, u32& vOffset);
-    void Unlock(u32 Count, u32 Stride);
-    u32 GetSize() const { return mSize; }
-
-    _VertexStream() { _clear(); }
-    _VertexStream(const _VertexStream&) = default;
-    _VertexStream(_VertexStream&&) = default;
+    constexpr _VertexStream() { _clear(); }
     ~_VertexStream() { Destroy(); }
 
-    _VertexStream& operator=(const _VertexStream&) = default;
-    _VertexStream& operator=(_VertexStream&&) = default;
+    _VertexStream(const _VertexStream&) = delete;
+    _VertexStream& operator=(const _VertexStream&) = delete;
+
+    void Create(ctx_id_t context_id);
+    void Destroy();
+
+    [[nodiscard]] constexpr auto Buffer() const { return pVB.Get(); }
+    [[nodiscard]] constexpr auto GetSize() const { return cache.size(); }
+    constexpr void Flush() { mPosition = cache.size(); }
+
+private:
+    [[nodiscard]] void* Lock(std::size_t count, std::size_t stride);
+    [[nodiscard]] std::size_t Unlock(std::size_t count, std::size_t stride);
+
+public:
+    template <typename T>
+    [[nodiscard]] std::span<T> Lock(std::size_t count)
+    {
+        return std::span{static_cast<T*>(std::assume_aligned<64>(Lock(count, sizeof(T)))), count};
+    }
+
+    template <typename T>
+    [[nodiscard]] std::size_t Unlock(std::size_t count)
+    {
+        // The caller is responsible for not rendering anything when @count is zero,
+        // this is just a random sentinel and early return (nothing to write).
+        if (count == 0)
+            return std::numeric_limits<std::size_t>::max();
+
+        return Unlock(count, sizeof(T));
+    }
 };
 
 class _IndexStream final
 {
 private:
-    ID3DIndexBuffer* pIB;
-    u32 mSize; // real size (usually mCount, aligned on 512b boundary)
-    u32 mPosition;
-    u32 mDiscardID;
+    static constexpr auto stride{sizeof(u16)};
 
-public:
-    ID3DIndexBuffer* old_pIB;
+    Microsoft::WRL::ComPtr<ID3DIndexBuffer> pIB;
+    ctx_id_t context_id;
+    std::size_t mPosition;
+    std::vector<std::byte, xr::detail::aligned_allocator<std::byte, 64>> cache;
 
-private:
     void _clear()
     {
-        pIB = nullptr;
-        mSize = 0;
+        pIB.Reset();
+        context_id = R__INVALID_CTX_ID;
         mPosition = 0;
-        mDiscardID = 0;
+        cache.clear();
     }
 
 public:
-    void Create();
-    void Destroy();
-    void reset_begin();
-    void reset_end();
-
-    IC ID3DIndexBuffer* Buffer() const { return pIB; }
-    IC u32 DiscardID() const { return mDiscardID; }
-    void Flush() { mPosition = mSize; }
-
-    u16* Lock(u32 Count, u32& vOffset);
-    void Unlock(u32 RealCount);
-
-    _IndexStream() { _clear(); }
-    _IndexStream(const _IndexStream&) = default;
-    _IndexStream(_IndexStream&&) = default;
+    constexpr _IndexStream() { _clear(); }
     ~_IndexStream() { Destroy(); }
 
-    _IndexStream& operator=(const _IndexStream&) = default;
-    _IndexStream& operator=(_IndexStream&&) = default;
+    _IndexStream(const _IndexStream&) = delete;
+    _IndexStream& operator=(const _IndexStream&) = delete;
+
+    void Create(ctx_id_t context_id);
+    void Destroy();
+
+    [[nodiscard]] constexpr auto Buffer() const { return pIB.Get(); }
+    [[nodiscard]] constexpr auto GetSize() const { return cache.size(); }
+    constexpr void Flush() { mPosition = cache.size(); }
+
+private:
+    [[nodiscard]] u16* lock_raw(std::size_t count);
+    [[nodiscard]] std::size_t unlock_raw(std::size_t count);
+
+public:
+    [[nodiscard]] std::span<u16> Lock(std::size_t count) { return std::span{std::assume_aligned<64>(lock_raw(count)), count}; }
+
+    [[nodiscard]] std::size_t Unlock(std::size_t count)
+    {
+        // Same as in _VertexStream::Unlock<>()
+        if (count == 0)
+            return std::numeric_limits<std::size_t>::max();
+
+        return unlock_raw(count);
+    }
 };
 
 #endif

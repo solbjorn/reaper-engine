@@ -133,9 +133,6 @@ void CLevelGraph::draw_edge(const int& vertex_id0, const int& vertex_id1)
     render.draw_aabb(position0, radius, radius, radius, vertex_color);
     render.draw_aabb(position1, radius, radius, radius, vertex_color);
     render.draw_line(Fidentity, position0, position1, edge_color);
-    //	RCache.dbg_DrawAABB		(position0,radius,radius,radius,vertex_color);
-    //	RCache.dbg_DrawAABB		(position1,radius,radius,radius,vertex_color);
-    //	RCache.dbg_DrawLINE		(Fidentity,position0,position1,edge_color);
 }
 
 void CLevelGraph::draw_vertex(const int& vertex_id)
@@ -462,9 +459,6 @@ void CLevelGraph::draw_game_graph()
     if (!Level().CurrentEntity())
         return;
 
-    //	Fvector					camera_position = Level().CurrentEntity()->Position();
-    //	CGameFont				*font = HUD().Font().pFontDI;
-
     const Fmatrix& xform = Level().CurrentEntity()->XFORM();
     Fvector center = Fvector().set(0.f, 5.f, 0.f);
     Fvector bounds = Fvector().set(3.f, 0.f, 3.f);
@@ -475,10 +469,6 @@ void CLevelGraph::draw_game_graph()
     xform.transform_tiny(vertices[1], Fvector().set(center.x + bounds.x, center.y + bounds.y, center.z + bounds.z));
     xform.transform_tiny(vertices[2], Fvector().set(center.x - bounds.x, center.y - bounds.y, center.z - bounds.z));
     xform.transform_tiny(vertices[3], Fvector().set(center.x + bounds.x, center.y - bounds.y, center.z - bounds.z));
-
-    //	u32						back_color = D3DCOLOR_XRGB(0,0,0);
-    //	RCache.dbg_DrawTRI		(Fidentity,vertices[0],vertices[2],vertices[1],back_color);
-    //	RCache.dbg_DrawTRI		(Fidentity,vertices[1],vertices[2],vertices[3],back_color);
 
     // draw vertices
     CGameGraph& graph = ai().game_graph();

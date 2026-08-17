@@ -100,8 +100,8 @@ void CDetailManager::hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, 
     Device.Statistic->RenderDUMP_DT_Count = 0;
 
     // Matrices and offsets
-    u32 vOffset = 0;
-    u32 iOffset = 0;
+    std::size_t vOffset{0};
+    std::size_t iOffset{0};
 
     vis_list& list = m_visibles[var_id];
 
@@ -198,8 +198,9 @@ void CDetailManager::hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, 
                         {
                             // flush
                             Device.Statistic->RenderDUMP_DT_Count += dwBatch;
-                            u32 dwCNT_verts = dwBatch * Object.number_vertices;
-                            u32 dwCNT_prims = (dwBatch * Object.number_indices) / 3;
+
+                            const auto dwCNT_verts = dwBatch * Object.vertices.size();
+                            const auto dwCNT_prims = (dwBatch * Object.indices.size()) / 3;
                             cmd_list.Render(D3DPT_TRIANGLELIST, vOffset, 0, dwCNT_verts, iOffset, dwCNT_prims);
                             cmd_list.stat.r.s_details.add(dwCNT_verts);
 
@@ -217,8 +218,9 @@ void CDetailManager::hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, 
                 if (dwBatch)
                 {
                     Device.Statistic->RenderDUMP_DT_Count += dwBatch;
-                    u32 dwCNT_verts = dwBatch * Object.number_vertices;
-                    u32 dwCNT_prims = (dwBatch * Object.number_indices) / 3;
+
+                    const auto dwCNT_verts = dwBatch * Object.vertices.size();
+                    const auto dwCNT_prims = (dwBatch * Object.indices.size()) / 3;
                     cmd_list.Render(D3DPT_TRIANGLELIST, vOffset, 0, dwCNT_verts, iOffset, dwCNT_prims);
                     cmd_list.stat.r.s_details.add(dwCNT_verts);
                 }
@@ -239,7 +241,7 @@ void CDetailManager::hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, 
             }
         }
 
-        vOffset += hw_BatchSize * Object.number_vertices;
-        iOffset += hw_BatchSize * Object.number_indices;
+        vOffset += hw_BatchSize * Object.vertices.size();
+        iOffset += hw_BatchSize * Object.indices.size();
     }
 }

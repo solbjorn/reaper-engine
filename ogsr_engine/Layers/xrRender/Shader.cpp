@@ -115,23 +115,22 @@ bool Shader::equal(const Shader* S) const
 
 void STextureList::clear()
 {
-    for (auto& it : *this)
+    for (auto& it : list)
         it.second.destroy();
 
-    inherited_vec::clear();
+    list.clear();
 }
 
 u32 STextureList::find_texture_stage(const shared_str& TexName) const
 {
-    return XR_ASSERT_VAL(std::ranges::find_if(*this, [&TexName] [[nodiscard]] (const auto& elem) { return elem.second && elem.second->cName == TexName; }) !=
-                             this->end(),
+    return XR_ASSERT_VAL(std::ranges::find_if(list, [&TexName] [[nodiscard]] (const auto& elem) { return elem.second && elem.second->cName == TexName; }) !=
+                             list.end(),
                          "texture stage not found", TexName)
         ->first;
 }
 
 void STextureList::create_texture(u32 stage, const char* textureName)
 {
-    if (const auto it = std::ranges::find_if(*this, [stage] [[nodiscard]] (const auto& elem) { return elem.first == stage && !elem.second; });
-        it != this->end())
+    if (const auto it = std::ranges::find_if(list, [stage] [[nodiscard]] (const auto& elem) { return elem.first == stage && !elem.second; }); it != list.end())
         it->second.create(textureName);
 }

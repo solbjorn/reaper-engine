@@ -4,23 +4,23 @@
 #include "../xrRender/du_cone.h"
 #include "../xrRender/du_sphere.h"
 
-void CRenderTarget::draw_volume(const light* L)
+void CRenderTarget::draw_volume(CBackend& cmd_list, const light* L)
 {
     XR_TRACY_ZONE_SCOPED();
 
     switch (L->flags.type)
     {
     case IRender_Light::POINT:
-        RCache.set_Geometry(g_accum_point);
-        RCache.Render(D3DPT_TRIANGLELIST, 0, 0, DU_SPHERE_NUMVERTEX, 0, DU_SPHERE_NUMFACES);
+        cmd_list.set_Geometry(g_accum_point);
+        cmd_list.Render(D3DPT_TRIANGLELIST, 0, 0, DU_SPHERE_NUMVERTEX, 0, DU_SPHERE_NUMFACES);
         break;
     case IRender_Light::SPOT:
-        RCache.set_Geometry(g_accum_spot);
-        RCache.Render(D3DPT_TRIANGLELIST, 0, 0, DU_CONE_NUMVERTEX, 0, DU_CONE_NUMFACES);
+        cmd_list.set_Geometry(g_accum_spot);
+        cmd_list.Render(D3DPT_TRIANGLELIST, 0, 0, DU_CONE_NUMVERTEX, 0, DU_CONE_NUMFACES);
         break;
     case IRender_Light::OMNIPART:
-        RCache.set_Geometry(g_accum_omnipart);
-        RCache.Render(D3DPT_TRIANGLELIST, 0, 0, DU_SPHERE_PART_NUMVERTEX, 0, DU_SPHERE_PART_NUMFACES);
+        cmd_list.set_Geometry(g_accum_omnipart);
+        cmd_list.Render(D3DPT_TRIANGLELIST, 0, 0, DU_SPHERE_PART_NUMVERTEX, 0, DU_SPHERE_PART_NUMFACES);
         break;
     default: break;
     }

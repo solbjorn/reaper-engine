@@ -9,16 +9,18 @@ dxDebugRender DebugRenderImpl;
 
 void dxDebugRender::Render()
 {
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+
     if (!m_line_vertices.empty())
     {
         for (auto& [color, vert_vec] : m_line_vertices)
         {
             auto& ind_vec = m_line_indices.at(color);
-            RCache.set_xform_world(Fidentity);
-            RCache.set_Shader(RImplementation.m_WireShader);
-            RCache.set_c("tfactor", float(color_get_R(color)) / 255.f, float(color_get_G(color)) / 255.f, float(color_get_B(color)) / 255.f,
-                         float(color_get_A(color)) / 255.f);
-            RCache.dbg_Draw(D3DPT_LINELIST, &vert_vec.front(), static_cast<int>(vert_vec.size()), &ind_vec.front(), static_cast<int>(ind_vec.size() / 2));
+            cmd_list.set_xform_world(Fidentity);
+            cmd_list.set_Shader(RImplementation.m_WireShader);
+            cmd_list.set_c("tfactor", float(color_get_R(color)) / 255.f, float(color_get_G(color)) / 255.f, float(color_get_B(color)) / 255.f,
+                           float(color_get_A(color)) / 255.f);
+            cmd_list.dbg_Draw(D3DPT_LINELIST, &vert_vec.front(), static_cast<int>(vert_vec.size()), &ind_vec.front(), static_cast<int>(ind_vec.size() / 2));
         }
 
         m_line_vertices.clear();
@@ -27,19 +29,20 @@ void dxDebugRender::Render()
 
     if (!m_line_vertices_hud.empty())
     {
-        RCache.set_xform_project(Device.mProjectHud);
+        cmd_list.set_xform_project(Device.mProjectHud);
 
         for (auto& [color, vert_vec] : m_line_vertices_hud)
         {
             auto& ind_vec = m_line_indices_hud.at(color);
-            RCache.set_xform_world(Fidentity);
-            RCache.set_Shader(RImplementation.m_WireShader);
-            RCache.set_c("tfactor", float(color_get_R(color)) / 255.f, float(color_get_G(color)) / 255.f, float(color_get_B(color)) / 255.f,
-                         float(color_get_A(color)) / 255.f);
-            RCache.dbg_Draw_Near(D3DPT_LINELIST, &vert_vec.front(), static_cast<int>(vert_vec.size()), &ind_vec.front(), static_cast<int>(ind_vec.size() / 2));
+            cmd_list.set_xform_world(Fidentity);
+            cmd_list.set_Shader(RImplementation.m_WireShader);
+            cmd_list.set_c("tfactor", float(color_get_R(color)) / 255.f, float(color_get_G(color)) / 255.f, float(color_get_B(color)) / 255.f,
+                           float(color_get_A(color)) / 255.f);
+            cmd_list.dbg_Draw_Near(D3DPT_LINELIST, &vert_vec.front(), static_cast<int>(vert_vec.size()), &ind_vec.front(),
+                                   static_cast<int>(ind_vec.size() / 2));
         }
 
-        RCache.set_xform_project(Device.mProject);
+        cmd_list.set_xform_project(Device.mProject);
 
         m_line_vertices_hud.clear();
         m_line_indices_hud.clear();
@@ -87,9 +90,9 @@ void dxDebugRender::add_lines(Fvector const* vertices, u32 const& vertex_count, 
     }
 }
 
-void dxDebugRender::ZEnable(bool bEnable) { RCache.set_Z(bEnable); }
-void dxDebugRender::OnFrameEnd() { RCache.OnFrameEnd(); }
-void dxDebugRender::SetShader(const debug_shader& shader) { RCache.set_Shader(((dxUIShader*)&*shader)->hShader); }
+void dxDebugRender::ZEnable(bool bEnable) { RImplementation.get_imm_context().cmd_list.set_Z(bEnable); }
+void dxDebugRender::OnFrameEnd() { RImplementation.get_imm_context().cmd_list.OnFrameEnd(); }
+void dxDebugRender::SetShader(const debug_shader& shader) { RImplementation.get_imm_context().cmd_list.set_Shader(((dxUIShader*)&*shader)->hShader); }
 
 void dxDebugRender::SetDebugShader(dbgShaderHandle shdHandle)
 {
@@ -100,12 +103,15 @@ void dxDebugRender::SetDebugShader(dbgShaderHandle shdHandle)
     if (!m_dbgShaders[XR_ASSERT_VAL(shdHandle < dbgShaderCount)])
         m_dbgShaders[shdHandle].create(dbgShaderParams[shdHandle][0], dbgShaderParams[shdHandle][1]);
 
-    RCache.set_Shader(m_dbgShaders[shdHandle]);
+    RImplementation.get_imm_context().cmd_list.set_Shader(m_dbgShaders[shdHandle]);
 }
 
 void dxDebugRender::DestroyDebugShader(dbgShaderHandle shdHandle) { m_dbgShaders[XR_ASSERT_VAL(shdHandle < dbgShaderCount)].destroy(); }
 
-void dxDebugRender::dbg_DrawTRI(const Fmatrix& T, const Fvector& p1, const Fvector& p2, const Fvector& p3, u32 C) { RCache.dbg_DrawTRI(T, p1, p2, p3, C); }
+void dxDebugRender::dbg_DrawTRI(const Fmatrix& T, const Fvector& p1, const Fvector& p2, const Fvector& p3, u32 C)
+{
+    RImplementation.get_imm_context().cmd_list.dbg_DrawTRI(T, p1, p2, p3, C);
+}
 
 #ifdef DEBUG
 struct RDebugRender final : public dxDebugRender, public pureRender

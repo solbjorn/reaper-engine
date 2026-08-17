@@ -12,33 +12,40 @@ void dxObjectSpaceRender::dbgAddSphere(const Fsphere& sphere, u32 colour) { dbg_
 void dxObjectSpaceRender::dbgRender()
 {
     XR_ASSERT(bDebug);
-    RCache.set_Shader(m_shDebug);
 
-    for (u32 i = 0; i < q_debug.boxes.size(); i++)
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+
+    cmd_list.set_Shader(m_shDebug);
+
+    for (auto& obb : q_debug.boxes)
     {
-        Fobb& obb = q_debug.boxes[i];
-        Fmatrix X, S, R;
+        Fmatrix X;
         obb.xform_get(X);
-        RCache.dbg_DrawOBB(X, obb.m_halfsize, D3DCOLOR_XRGB(255, 0, 0));
+
+        cmd_list.dbg_DrawOBB(X, obb.m_halfsize, D3DCOLOR_XRGB(255, 0, 0));
+
+        Fmatrix S;
         S.scale(obb.m_halfsize);
+        Fmatrix R;
         R.mul(X, S);
-        RCache.dbg_DrawEllipse(R, D3DCOLOR_XRGB(0, 0, 255));
+
+        cmd_list.dbg_DrawEllipse(R, D3DCOLOR_XRGB(0, 0, 255));
     }
 
     q_debug.boxes.clear();
 
-    for (i = 0; i < dbg_S.size(); i++)
+    for (auto& P : dbg_S)
     {
-        std::pair<Fsphere, u32>& P = dbg_S[i];
         Fsphere& S = P.first;
         Fmatrix M;
         M.scale(S.R, S.R, S.R);
         M.translate_over(S.P);
-        RCache.dbg_DrawEllipse(M, P.second);
+
+        cmd_list.dbg_DrawEllipse(M, P.second);
     }
 
     dbg_S.clear();
 }
 
-void dxObjectSpaceRender::SetShader() { RCache.set_Shader(m_shDebug); }
+void dxObjectSpaceRender::SetShader() { RImplementation.get_imm_context().cmd_list.set_Shader(m_shDebug); }
 #endif // DEBUG

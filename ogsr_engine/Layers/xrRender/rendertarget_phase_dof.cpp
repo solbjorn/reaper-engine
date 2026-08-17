@@ -4,8 +4,9 @@ void CRenderTarget::phase_dof()
 {
     XR_TRACY_ZONE_SCOPED();
 
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+
     // Constants
-    u32 Offset{};
     constexpr u32 C{color_rgba(0, 0, 0, 255)};
 
     constexpr f32 d_Z{EPS_S};
@@ -17,55 +18,52 @@ void CRenderTarget::phase_dof()
 
     //////////////////////////////////////////////////////////////////////////
     // Set MSAA/NonMSAA rendertarget
-    u_setrt(RCache, rt_dof, {}, {}, get_base_zb());
+    u_setrt(cmd_list, rt_dof, {}, {}, get_base_zb());
 
-    RCache.set_CullMode(CULL_NONE);
-    RCache.set_Stencil(FALSE);
+    cmd_list.set_CullMode(CULL_NONE);
+    cmd_list.set_Stencil(FALSE);
 
     // Fill vertex buffer
-    FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
-    pv->set(0, h, d_Z, d_W, C, p0.x, p1.y);
-    pv++;
-    pv->set(0, 0, d_Z, d_W, C, p0.x, p0.y);
-    pv++;
-    pv->set(w, h, d_Z, d_W, C, p1.x, p1.y);
-    pv++;
-    pv->set(w, 0, d_Z, d_W, C, p1.x, p0.y);
-    pv++;
-    RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
+    auto verts = cmd_list.Vertex.Lock<FVF::TL>(4);
+
+    verts[0].set(0, h, d_Z, d_W, C, p0.x, p1.y);
+    verts[1].set(0, 0, d_Z, d_W, C, p0.x, p0.y);
+    verts[2].set(w, h, d_Z, d_W, C, p1.x, p1.y);
+    verts[3].set(w, 0, d_Z, d_W, C, p1.x, p0.y);
+
+    auto Offset = cmd_list.Vertex.Unlock<FVF::TL>(4);
 
     // Set pass
-    RCache.set_Element(s_dof->E[0]);
+    cmd_list.set_Element(s_dof->E[0]);
 
     // Set geometry
-    RCache.set_Geometry(g_combine);
-    RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+    cmd_list.set_Geometry(g_combine);
+    cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+
     ////////////////////////////////////////////////////////////////////////////
     ref_rt& dest_rt = RImplementation.o.dx10_msaa ? rt_Generic : rt_Color;
-    u_setrt(RCache, dest_rt, {}, {}, nullptr);
+    u_setrt(cmd_list, dest_rt, {}, {}, nullptr);
 
-    RCache.set_CullMode(CULL_NONE);
-    RCache.set_Stencil(FALSE);
+    cmd_list.set_CullMode(CULL_NONE);
+    cmd_list.set_Stencil(FALSE);
 
     // Fill vertex buffer
-    pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
-    pv->set(0, h, d_Z, d_W, C, p0.x, p1.y);
-    pv++;
-    pv->set(0, 0, d_Z, d_W, C, p0.x, p0.y);
-    pv++;
-    pv->set(w, h, d_Z, d_W, C, p1.x, p1.y);
-    pv++;
-    pv->set(w, 0, d_Z, d_W, C, p1.x, p0.y);
-    pv++;
-    RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
+    verts = cmd_list.Vertex.Lock<FVF::TL>(4);
+
+    verts[0].set(0, h, d_Z, d_W, C, p0.x, p1.y);
+    verts[1].set(0, 0, d_Z, d_W, C, p0.x, p0.y);
+    verts[2].set(w, h, d_Z, d_W, C, p1.x, p1.y);
+    verts[3].set(w, 0, d_Z, d_W, C, p1.x, p0.y);
+
+    Offset = cmd_list.Vertex.Unlock<FVF::TL>(4);
 
     // Set pass
-    RCache.set_Element(s_dof->E[1]);
+    cmd_list.set_Element(s_dof->E[1]);
 
     // Set geometry
-    RCache.set_Geometry(g_combine);
-    RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+    cmd_list.set_Geometry(g_combine);
+    cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // Resolve RT
-    RCache.context()->CopyResource(rt_Generic_0->pTexture->surface_get(), dest_rt->pTexture->surface_get());
+    cmd_list.context()->CopyResource(rt_Generic_0->pTexture->surface_get(), dest_rt->pTexture->surface_get());
 }

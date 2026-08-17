@@ -26,7 +26,7 @@ void R_dsgraph_structure::sorted_L1(float key, _MatrixItemS& val)
     cmd_list.apply_lmaterial(val.pObject);
 
     const float LOD = calcLOD(key, V->vis.sphere.R);
-    cmd_list.LOD.set_LOD(LOD);
+    cmd_list.LOD.set_LOD(cmd_list, LOD);
     V->Render(cmd_list, LOD, phase == CRender::PHASE_SMAP);
 }
 
@@ -85,7 +85,7 @@ void R_dsgraph_structure::hud_node(float key, _MatrixItemS& val)
     cmd_list.RVelocity = true;
 
     const float LOD = calcLOD(key, V->vis.sphere.R);
-    cmd_list.LOD.set_LOD(LOD);
+    cmd_list.LOD.set_LOD(cmd_list, LOD);
     V->Render(cmd_list, LOD, phase == CRender::PHASE_SMAP);
 
     cmd_list.RVelocity = false;
@@ -126,7 +126,7 @@ void R_dsgraph_structure::render_graph(u32 _priority)
                 for (const auto& item : items)
                 {
                     const float LOD = calcLOD(item.first, item.second.pVisual->vis.sphere.R);
-                    cmd_list.LOD.set_LOD(LOD);
+                    cmd_list.LOD.set_LOD(cmd_list, LOD);
                     item.second.pVisual->Render(cmd_list, LOD, phase == CRender::PHASE_SMAP);
                 }
                 items.clear();
@@ -164,7 +164,7 @@ void R_dsgraph_structure::render_graph(u32 _priority)
                     cmd_list.apply_lmaterial(item.second.pObject);
 
                     const float LOD = calcLOD(item.first, item.second.pVisual->vis.sphere.R);
-                    cmd_list.LOD.set_LOD(LOD);
+                    cmd_list.LOD.set_LOD(cmd_list, LOD);
                     // --#SM+#-- Обновляем шейдерные данные модели [update shader values for this model]
                     // cmd_list.hemi.c_update(item.second.pVisual);
 
@@ -379,7 +379,7 @@ void R_dsgraph_structure::pLandscape_0(_MatrixItemS& val)
     cmd_list.set_Element(val.se, 0);
 
     float LOD = calcLOD(val.ssa, V->vis.sphere.R);
-    cmd_list.LOD.set_LOD(LOD);
+    cmd_list.LOD.set_LOD(cmd_list, LOD);
     V->Render(cmd_list, LOD, phase == CRender::PHASE_SMAP);
 }
 
@@ -392,7 +392,7 @@ void R_dsgraph_structure::pLandscape_1(_MatrixItemS& val)
     cmd_list.apply_lmaterial();
 
     float LOD = calcLOD(val.ssa, V->vis.sphere.R);
-    cmd_list.LOD.set_LOD(LOD);
+    cmd_list.LOD.set_LOD(cmd_list, LOD);
     V->Render(cmd_list, LOD, phase == CRender::PHASE_SMAP);
 }
 
@@ -433,7 +433,7 @@ void R_dsgraph_structure::render_forward()
     // normal level, secondary priority
     render_graph(1);
     // faded-portals
-    PortalTraverser.fade_render();
+    PortalTraverser.fade_render(cmd_list);
     // strict-sorted geoms
     render_sorted();
 }

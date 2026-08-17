@@ -13,10 +13,6 @@ namespace
 {
 constexpr const char* EFFECTOR_ZOOM_SECTION = "zoom_inertion_effector";
 
-bool external_zoom_osc{}; // alpet: флажок внешнего рассчета колебаний прицела (из скриптов).
-
-void switch_zoom_osc(bool bExternal) { external_zoom_osc = bExternal; }
-
 CEffectorZoomInertion* FindEffectorZoomInertion()
 {
     CActor* actor = Actor();
@@ -171,5 +167,5 @@ void CEffectorZoomInertion::script_register(sol::state_view& lua)
         &CEffectorZoomInertion::m_fSpeedMin, "zoom_aim_disp_k", &CEffectorZoomInertion::m_fZoomAimingDispK, "zoom_aim_speed_k",
         &CEffectorZoomInertion::m_fZoomAimingSpeedK, "delta_time", &CEffectorZoomInertion::m_dwDeltaTime);
 
-    lua.set("find_effector_zi", &FindEffectorZoomInertion, "switch_zoom_osc", &switch_zoom_osc);
+    lua.set("find_effector_zi", &FindEffectorZoomInertion);
 }

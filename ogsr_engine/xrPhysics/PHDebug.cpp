@@ -92,8 +92,8 @@ public:
     {
         if (solid)
         {
-            RCache.dbg_DrawTRI(Fidentity, v[0], v[1], v[2], c);
-            RCache.dbg_DrawTRI(Fidentity, v[2], v[1], v[0], c);
+            DRender->dbg_DrawTRI(Fidentity, v[0], v[1], v[2], c);
+            DRender->dbg_DrawTRI(Fidentity, v[2], v[1], v[0], c);
         }
         else
         {

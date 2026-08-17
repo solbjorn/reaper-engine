@@ -95,21 +95,23 @@ void dx10StateManager::SetStencilRef(UINT uiStencilRef)
     }
 }
 
-void dx10StateManager::SetAlphaRef(UINT uiAlphaRef)
+void dx10StateManager::SetAlphaRef(CBackend& cmd_list, u32 uiAlphaRef)
 {
-    if (m_uiAlphaRef != uiAlphaRef)
-    {
-        m_uiAlphaRef = uiAlphaRef;
-        if (m_cAlphaRef)
-            cmd_list().set_c(m_cAlphaRef, (float)m_uiAlphaRef / 255.0f);
-    }
+    if (m_uiAlphaRef == uiAlphaRef)
+        return;
+
+    m_uiAlphaRef = uiAlphaRef;
+
+    if (m_cAlphaRef != nullptr)
+        cmd_list.set_c(m_cAlphaRef, gsl::narrow_cast<f32>(m_uiAlphaRef) / 255.0f);
 }
 
-void dx10StateManager::BindAlphaRef(R_constant* C)
+void dx10StateManager::BindAlphaRef(CBackend& cmd_list, R_constant* C)
 {
     m_cAlphaRef = C;
-    if (m_cAlphaRef)
-        cmd_list().set_c(m_cAlphaRef, (float)m_uiAlphaRef / 255.0f);
+
+    if (m_cAlphaRef != nullptr)
+        cmd_list.set_c(m_cAlphaRef, gsl::narrow_cast<f32>(m_uiAlphaRef) / 255.0f);
 }
 
 void dx10StateManager::ValidateRDesc()
@@ -152,9 +154,9 @@ void dx10StateManager::ValidateBDesc()
 }
 
 //	Sends states to DX10 runtime, creates new state objects if necessary
-void dx10StateManager::Apply()
+void dx10StateManager::Apply(CBackend& cmd_list)
 {
-    auto* pContext = cmd_list().context();
+    auto pContext = cmd_list.context();
 
     //	Apply rasterizer state
     if (m_bRSNeedApply || m_bRSChanged)

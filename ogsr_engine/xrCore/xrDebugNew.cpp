@@ -9,8 +9,8 @@
 
 #include <csignal>
 
+#include <new.h>
 #include <shellapi.h>
-#include <use_ansi.h>
 
 xrDebug Debug;
 
@@ -87,7 +87,7 @@ void show(std::string_view msg)
         return;
 
     if (const auto log = Debug.to_log(); log != nullptr)
-        ::ShellExecuteW(nullptr, L"open", std::filesystem::path{reinterpret_cast<gsl::cu8zstring>(log)}.c_str(), nullptr, nullptr, SW_SHOW);
+        ::ShellExecuteW(nullptr, L"open", std::filesystem::path{reinterpret_cast<xr::cu8zstring>(log)}.c_str(), nullptr, nullptr, SW_SHOW);
     else
         ::MessageBoxW(nullptr, sf::String::fromUtf8(msg.begin(), msg.end()).toWideString().c_str(), L"FATAL ERROR",
                       MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND | MB_TOPMOST);

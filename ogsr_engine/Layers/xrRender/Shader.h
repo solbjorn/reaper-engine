@@ -23,29 +23,18 @@ constexpr inline gsl::index SHADER_ELEMENTS_MAX{6};
 
 //////////////////////////////////////////////////////////////////////////
 
-struct STextureList final : public xr_resource_flagged, public xr_vector<std::pair<u32, ref_texture>>
+struct STextureList final : public xr_resource_flagged
 {
     RTTI_DECLARE_TYPEINFO(STextureList, xr_resource_flagged);
 
 public:
-    using inherited_vec = xr_vector<std::pair<u32, ref_texture>>;
+    xr_vector<std::pair<u32, ref_texture>> list;
 
     STextureList() = default;
     ~STextureList() override;
 
-    IC BOOL equal(const STextureList& base) const
-    {
-        if (size() != base.size())
-            return FALSE;
-        for (u32 cmp = 0; cmp < size(); cmp++)
-        {
-            if ((*this)[cmp].first != base[cmp].first)
-                return FALSE;
-            if ((*this)[cmp].second != base[cmp].second)
-                return FALSE;
-        }
-        return TRUE;
-    }
+    [[nodiscard]] auto equal(const STextureList& base) const { return list == base.list; }
+
     void clear();
 
     // Avoid using these functions.
@@ -56,7 +45,7 @@ public:
     void clone(const STextureList& from)
     {
         xr_resource_flagged::clone(from);
-        *static_cast<inherited_vec*>(this) = from;
+        list = from.list;
     }
 };
 typedef resptr_core<STextureList, resptr_base<STextureList>> ref_texture_list;
@@ -67,11 +56,18 @@ struct SGeometry final : public xr_resource_flagged
 {
     RTTI_DECLARE_TYPEINFO(SGeometry, xr_resource_flagged);
 
+private:
+    static constexpr u8 default_tag{0};
+
 public:
+    [[nodiscard]] static auto default_vb() { return reinterpret_cast<ID3DVertexBuffer*>(const_cast<u8*>(&default_tag)); }
+
+    [[nodiscard]] static auto default_ib() { return reinterpret_cast<ID3DIndexBuffer*>(const_cast<u8*>(&default_tag)); }
+
     ref_declaration dcl;
     ID3DVertexBuffer* vb;
+    std::size_t vb_stride;
     ID3DIndexBuffer* ib;
-    u32 vb_stride;
 
     SGeometry() = default;
     ~SGeometry() override;
@@ -82,7 +78,8 @@ struct resptrcode_geom : public resptr_base<SGeometry>
     void create(const D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
     void create(u32 FVF, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
     void destroy() { _set(nullptr); }
-    u32 stride() const { return _get()->vb_stride; }
+
+    [[nodiscard]] constexpr auto stride() const { return _get()->vb_stride; }
 };
 
 typedef resptr_core<SGeometry, resptrcode_geom> ref_geom;

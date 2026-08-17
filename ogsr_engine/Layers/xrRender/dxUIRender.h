@@ -36,14 +36,13 @@ private:
     ePointType m_PointType{pttNone};
 
     //	Vertex buffer attributes
-    u32 m_iMaxVerts;
-    u32 vOffset;
+    std::size_t m_iMaxVerts;
 
-    FVF::TL* TL_start_pv;
-    FVF::TL* TL_pv;
+    std::span<FVF::TL> tl_verts;
+    std::size_t tl_written;
 
-    FVF::LIT* LIT_start_pv;
-    FVF::LIT* LIT_pv;
+    std::span<FVF::LIT> lit_verts;
+    std::size_t lit_written;
 };
 
 extern dxUIRender UIRenderImpl;

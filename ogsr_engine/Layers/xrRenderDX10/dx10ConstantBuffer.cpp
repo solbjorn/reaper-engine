@@ -30,7 +30,7 @@ dx10ConstantBuffer::dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTabl
     m_MembersList.resize(Desc.Variables);
     m_MembersNames.resize(Desc.Variables);
 
-    for (auto [id, desc, name] : std::views::zip(std::views::iota(0u, Desc.Variables), m_MembersList, m_MembersNames))
+    for (auto [id, desc, name] : std::views::zip(std::views::indices(Desc.Variables), m_MembersList, m_MembersNames))
     {
         auto pVar = XR_ASSERT_VAL(pTable->GetVariableByIndex(id) != nullptr);
         XR_ASSERT_VAL(pVar->GetType() != nullptr)->GetDesc(&desc);

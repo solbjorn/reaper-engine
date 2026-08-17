@@ -43,7 +43,8 @@ void FLOD::Load(LPCSTR N, IReader* data, u32 dwFlags)
     }
 
     // VS
-    geom.create(dwDecl, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
+    geom.create(dwDecl, SGeometry::default_vb(), RImplementation.QuadIB);
+    XR_ASSERT(geom.stride() == sizeof(_hw));
 
     // lod correction
     Fvector3 S;

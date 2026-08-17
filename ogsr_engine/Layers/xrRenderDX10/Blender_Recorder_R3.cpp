@@ -48,7 +48,7 @@ void CBlender_Compile::r_dx10Texture(LPCSTR ResourceName, LPCSTR texture)
         return;
 
     XR_ASSERT(C->type == RC_dx10texture, "", ResourceName, TexName);
-    passTextures.emplace_back(C->samp.index, ref_texture{RImplementation.Resources->_CreateTexture(TexName)});
+    passTextures.list.emplace_back(C->samp.index, ref_texture{RImplementation.Resources->_CreateTexture(TexName)});
 }
 
 void CBlender_Compile::i_dx10Address(u32 s, u32 address)

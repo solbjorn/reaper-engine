@@ -18,11 +18,11 @@ public:
     void OnRender(CStatGraph& owner) override;
 
 private:
-    void RenderBack(CStatGraph& owner);
-    void RenderBars(CStatGraph& owner, FVF::TL0uv** ppv, CStatGraph::ElementsDeq* pelements);
-    void RenderBarLines(CStatGraph& owner, FVF::TL0uv** ppv, CStatGraph::ElementsDeq* pelements);
-    void RenderLines(CStatGraph& owner, FVF::TL0uv** ppv, CStatGraph::ElementsDeq* pelements);
-    void RenderMarkers(CStatGraph& owner, FVF::TL0uv** ppv, CStatGraph::MarkersDeq* pmarkers);
+    void RenderBack(CBackend& cmd_list, const CStatGraph& owner);
+    [[nodiscard]] std::size_t RenderBars(std::span<FVF::TL0uv> verts, const CStatGraph& owner, const CStatGraph::ElementsDeq& pelements) const;
+    [[nodiscard]] std::size_t RenderBarLines(std::span<FVF::TL0uv> verts, const CStatGraph& owner, const CStatGraph::ElementsDeq& pelements) const;
+    [[nodiscard]] std::size_t RenderLines(std::span<FVF::TL0uv> verts, const CStatGraph& owner, const CStatGraph::ElementsDeq& pelements) const;
+    void RenderMarkers(std::span<FVF::TL0uv> verts, const CStatGraph& owner, const CStatGraph::MarkersDeq& pmarkers) const;
 
 private:
     ref_geom hGeomTri;

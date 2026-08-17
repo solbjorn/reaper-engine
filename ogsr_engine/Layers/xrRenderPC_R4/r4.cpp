@@ -163,7 +163,7 @@ class cl_alpha_ref final : public R_constant_setup
     RTTI_DECLARE_TYPEINFO(cl_alpha_ref, R_constant_setup);
 
 public:
-    void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.StateManager.BindAlphaRef(C); }
+    void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.StateManager.BindAlphaRef(cmd_list, C); }
 } binder_alpha_ref;
 } // namespace
 
@@ -221,7 +221,7 @@ void CRender::create()
     PSLibrary.OnCreate();
     HWOCC.occq_create();
 
-    rmNormal(RCache);
+    rmNormal(get_imm_context().cmd_list);
 
     FluidManager.Initialize(70, 70, 70);
     FluidManager.SetScreenSize(Device.dwWidth, Device.dwHeight);

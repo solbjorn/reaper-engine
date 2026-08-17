@@ -21,38 +21,17 @@ void CResourceManager::reset_begin()
     RImplementation.old_QuadIB = RImplementation.QuadIB;
     HW.stats_manager.decrement_stats_ib(RImplementation.QuadIB);
     _RELEASE(RImplementation.QuadIB);
-
-    RImplementation.Index.reset_begin();
-    RImplementation.Vertex.reset_begin();
 }
 
 void CResourceManager::reset_end()
 {
     // create RDStreams
-    RImplementation.Vertex.reset_end();
-    RImplementation.Index.reset_end();
     RImplementation.CreateQuadIB();
 
-    // remark geom's which point to dynamic VB/IB
+    for (auto geom : v_geoms)
     {
-        for (u32 _it = 0; _it < v_geoms.size(); _it++)
-        {
-            SGeometry* _G = v_geoms[_it];
-            if (_G->vb == RImplementation.Vertex.old_pVB)
-                _G->vb = RImplementation.Vertex.Buffer();
-
-            // Here we may recover the buffer using one of
-            // RCache's index buffers.
-            // Do not remove else.
-            if (_G->ib == RImplementation.Index.old_pIB)
-            {
-                _G->ib = RImplementation.Index.Buffer();
-            }
-            else if (_G->ib == RImplementation.old_QuadIB)
-            {
-                _G->ib = RImplementation.QuadIB;
-            }
-        }
+        if (geom->ib == RImplementation.old_QuadIB)
+            geom->ib = RImplementation.QuadIB;
     }
 
     // create RTs in the same order as them was first created
@@ -62,7 +41,7 @@ void CResourceManager::reset_end()
     for (auto& rt_pair : m_rtargets)
         sorted_rts.push_back(rt_pair.second);
 
-    std::ranges::sort(sorted_rts, [](const CRT* A, const CRT* B) { return A->_order < B->_order; });
+    std::ranges::sort(sorted_rts, {}, &CRT::_order);
 
     for (CRT* rt : sorted_rts)
         rt->reset_end();

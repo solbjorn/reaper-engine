@@ -1,13 +1,12 @@
 #include "stdafx.h"
 
-void CRenderTarget::draw_rain(const light& RainSetup)
+void CRenderTarget::draw_rain(CBackend& cmd_list, const light& RainSetup)
 {
     XR_TRACY_ZONE_SCOPED();
 
     float fRainFactor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
 
     // Common calc for quad-rendering
-    u32 Offset;
     constexpr u32 C = color_rgba(255, 255, 255, 255);
     float _w = float(Device.dwWidth);
     float _h = float(Device.dwHeight);
@@ -29,22 +28,6 @@ void CRenderTarget::draw_rain(const light& RainSetup)
     Fvector W_dirZ;
     Device.mView.transform_dir(W_dirZ, Fvector().set(0.0f, 0.0f, 1.0f));
     W_dirZ.normalize();
-
-    // Perform masking (only once - on the first/near phase)
-    {
-        // Fill vertex buffer
-        FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
-        pv->set(EPS, float(_h + EPS), d_Z, d_W, C, p0.x, p1.y);
-        pv++;
-        pv->set(EPS, EPS, d_Z, d_W, C, p0.x, p0.y);
-        pv++;
-        pv->set(float(_w + EPS), float(_h + EPS), d_Z, d_W, C, p1.x, p1.y);
-        pv++;
-        pv->set(float(_w + EPS), EPS, d_Z, d_W, C, p1.x, p0.y);
-        pv++;
-        RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
-        RCache.set_Geometry(g_combine);
-    }
 
     // recalculate d_Z, to perform depth-clipping
     const float fRainFar = ps_ssfx_gloss_method == 0 ? ps_r3_dyn_wet_surf_far : 250.f;
@@ -118,104 +101,104 @@ void CRenderTarget::draw_rain(const light& RainSetup)
         j1.set(scale_X, scale_X).add(offset);
 
         // Fill vertex buffer
-        FVF::TL2uv* pv = (FVF::TL2uv*)RImplementation.Vertex.Lock(4, g_combine_2UV->vb_stride, Offset);
-        pv->set(-1, -1, d_Z, d_W, C, 0, 1, 0, scale_X);
-        pv++;
-        pv->set(-1, 1, d_Z, d_W, C, 0, 0, 0, 0);
-        pv++;
-        pv->set(1, -1, d_Z, d_W, C, 1, 1, scale_X, scale_X);
-        pv++;
-        pv->set(1, 1, d_Z, d_W, C, 1, 0, scale_X, 0);
-        pv++;
-        RImplementation.Vertex.Unlock(4, g_combine_2UV->vb_stride);
-        RCache.set_Geometry(g_combine_2UV);
+        const auto verts = cmd_list.Vertex.Lock<FVF::TL2uv>(4);
+
+        verts[0].set(-1, -1, d_Z, d_W, C, 0, 1, 0, scale_X);
+        verts[1].set(-1, 1, d_Z, d_W, C, 0, 0, 0, 0);
+        verts[2].set(1, -1, d_Z, d_W, C, 1, 1, scale_X, scale_X);
+        verts[3].set(1, 1, d_Z, d_W, C, 1, 0, scale_X, 0);
+
+        const auto Offset = cmd_list.Vertex.Unlock<FVF::TL2uv>(4);
+
+        cmd_list.set_Geometry(g_combine_2UV);
 
         //	Use for intermediate results
         //	Patch normal
-        u_setrt(RCache, rt_Accumulator, {}, {}, rt_MSAADepth);
+        u_setrt(cmd_list, rt_Accumulator, {}, {}, rt_MSAADepth);
 
-        RCache.set_Element(s_rain->E[1]);
-        RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0.f);
-        RCache.set_c("WorldX", W_dirX.x, W_dirX.y, W_dirX.z, 0.f);
-        RCache.set_c("WorldZ", W_dirZ.x, W_dirZ.y, W_dirZ.z, 0.f);
-        RCache.set_c("m_shadow", m_shadow);
-        RCache.set_c("m_sunmask", m_clouds_shadow);
-        RCache.set_c("RainDensity", fRainFactor, 0.f, 0.f, 0.f);
-        RCache.set_c("RainFallof", ps_r3_dyn_wet_surf_near, ps_r3_dyn_wet_surf_far, 0.f, 0.f);
+        cmd_list.set_Element(s_rain->E[1]);
+        cmd_list.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0.f);
+        cmd_list.set_c("WorldX", W_dirX.x, W_dirX.y, W_dirX.z, 0.f);
+        cmd_list.set_c("WorldZ", W_dirZ.x, W_dirZ.y, W_dirZ.z, 0.f);
+        cmd_list.set_c("m_shadow", m_shadow);
+        cmd_list.set_c("m_sunmask", m_clouds_shadow);
+        cmd_list.set_c("RainDensity", fRainFactor, 0.f, 0.f, 0.f);
+        cmd_list.set_c("RainFallof", ps_r3_dyn_wet_surf_near, ps_r3_dyn_wet_surf_far, 0.f, 0.f);
+
         if (!RImplementation.o.dx10_msaa)
         {
-            RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x01, 0);
-            RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+            cmd_list.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x01, 0);
+            cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
         }
         else
         {
             // per pixel execution
-            RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x81, 0);
-            RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+            cmd_list.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x81, 0);
+            cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
             // per sample
-            RCache.set_Element(s_rain_msaa->E[0]);
-            RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0.f);
-            RCache.set_c("WorldX", W_dirX.x, W_dirX.y, W_dirX.z, 0.f);
-            RCache.set_c("WorldZ", W_dirZ.x, W_dirZ.y, W_dirZ.z, 0.f);
-            RCache.set_c("m_shadow", m_shadow);
-            RCache.set_c("m_sunmask", m_clouds_shadow);
-            RCache.set_c("RainDensity", fRainFactor, 0.f, 0.f, 0.f);
-            RCache.set_c("RainFallof", ps_r3_dyn_wet_surf_near, ps_r3_dyn_wet_surf_far, 0.f, 0.f);
-            RCache.set_CullMode(CULL_NONE);
-            RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x81, 0x81, 0);
-            RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+            cmd_list.set_Element(s_rain_msaa->E[0]);
+            cmd_list.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0.f);
+            cmd_list.set_c("WorldX", W_dirX.x, W_dirX.y, W_dirX.z, 0.f);
+            cmd_list.set_c("WorldZ", W_dirZ.x, W_dirZ.y, W_dirZ.z, 0.f);
+            cmd_list.set_c("m_shadow", m_shadow);
+            cmd_list.set_c("m_sunmask", m_clouds_shadow);
+            cmd_list.set_c("RainDensity", fRainFactor, 0.f, 0.f, 0.f);
+            cmd_list.set_c("RainFallof", ps_r3_dyn_wet_surf_near, ps_r3_dyn_wet_surf_far, 0.f, 0.f);
+            cmd_list.set_CullMode(CULL_NONE);
+            cmd_list.set_Stencil(TRUE, D3DCMP_EQUAL, 0x81, 0x81, 0);
+            cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
         }
 
         //	Apply normal
-        RCache.set_Element(s_rain->E[2]);
-        RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0.f);
-        RCache.set_c("m_shadow", m_shadow);
-        RCache.set_c("m_sunmask", m_clouds_shadow);
+        cmd_list.set_Element(s_rain->E[2]);
+        cmd_list.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0.f);
+        cmd_list.set_c("m_shadow", m_shadow);
+        cmd_list.set_c("m_sunmask", m_clouds_shadow);
 
-        u_setrt(RCache, rt_Position, {}, {}, rt_MSAADepth);
+        u_setrt(cmd_list, rt_Position, {}, {}, rt_MSAADepth);
 
         if (!RImplementation.o.dx10_msaa)
         {
-            RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x01, 0);
-            RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+            cmd_list.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x01, 0);
+            cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
         }
         else
         {
             // per pixel execution
-            RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x81, 0);
-            RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+            cmd_list.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x81, 0);
+            cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
             // per sample
-            RCache.set_Element(s_rain_msaa->E[1]);
-            RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x81, 0x81, 0);
-            RCache.set_CullMode(CULL_NONE);
-            RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+            cmd_list.set_Element(s_rain_msaa->E[1]);
+            cmd_list.set_Stencil(TRUE, D3DCMP_EQUAL, 0x81, 0x81, 0);
+            cmd_list.set_CullMode(CULL_NONE);
+            cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
         }
 
         //	Apply gloss
-        RCache.set_Element(s_rain->E[3]);
-        RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0.f);
-        RCache.set_c("m_shadow", m_shadow);
-        RCache.set_c("m_sunmask", m_clouds_shadow);
+        cmd_list.set_Element(s_rain->E[3]);
+        cmd_list.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0.f);
+        cmd_list.set_c("m_shadow", m_shadow);
+        cmd_list.set_c("m_sunmask", m_clouds_shadow);
 
-        u_setrt(RCache, rt_Color, {}, {}, rt_MSAADepth);
+        u_setrt(cmd_list, rt_Color, {}, {}, rt_MSAADepth);
 
         if (!RImplementation.o.dx10_msaa)
         {
-            RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x01, 0);
-            RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+            cmd_list.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x01, 0);
+            cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
         }
         else
         {
             // per pixel execution
-            RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x81, 0);
-            RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+            cmd_list.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x81, 0);
+            cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
             // per sample
-            RCache.set_Element(s_rain_msaa->E[2]);
-            RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x81, 0x81, 0);
-            RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+            cmd_list.set_Element(s_rain_msaa->E[2]);
+            cmd_list.set_Stencil(TRUE, D3DCMP_EQUAL, 0x81, 0x81, 0);
+            cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
         }
     }
 }

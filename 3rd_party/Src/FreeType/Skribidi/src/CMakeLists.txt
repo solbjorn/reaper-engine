@@ -37,24 +37,24 @@ set(SKRIBIDI_SOURCE_FILES
 )
 
 set(SKRIBIDI_API_FILES
-	${SRC}/../include/skb_attributes.h
-	${SRC}/../include/skb_attribute_collection.h
-	${SRC}/../include/skb_canvas.h
-	${SRC}/../include/skb_common.h
-	${SRC}/../include/skb_editor.h
-	${SRC}/../include/skb_editor_rules.h
-	${SRC}/../include/skb_font_collection.h
-	${SRC}/../include/skb_icon_collection.h
-	${SRC}/../include/skb_image_atlas.h
-	${SRC}/../include/skb_layout.h
-	${SRC}/../include/skb_layout_cache.h
-	${SRC}/../include/skb_rasterizer.h
-	${SRC}/../include/skb_rich_layout.h
-	${SRC}/../include/skb_rich_text.h
-	${SRC}/../include/skb_text.h
+	${SRC}/../include/skribidi/skb_attributes.h
+	${SRC}/../include/skribidi/skb_attribute_collection.h
+	${SRC}/../include/skribidi/skb_canvas.h
+	${SRC}/../include/skribidi/skb_common.h
+	${SRC}/../include/skribidi/skb_editor.h
+	${SRC}/../include/skribidi/skb_editor_rules.h
+	${SRC}/../include/skribidi/skb_font_collection.h
+	${SRC}/../include/skribidi/skb_icon_collection.h
+	${SRC}/../include/skribidi/skb_image_atlas.h
+	${SRC}/../include/skribidi/skb_layout.h
+	${SRC}/../include/skribidi/skb_layout_cache.h
+	${SRC}/../include/skribidi/skb_rasterizer.h
+	${SRC}/../include/skribidi/skb_rich_layout.h
+	${SRC}/../include/skribidi/skb_rich_text.h
+	${SRC}/../include/skribidi/skb_text.h
 )
 
-add_library(skribidi ${SKRIBIDI_SOURCE_FILES} ${SKRIBIDI_API_FILES})
+add_library(skribidi ${SKRIBIDI_LIBRARY_TYPE} ${SKRIBIDI_SOURCE_FILES} ${SKRIBIDI_API_FILES})
 
 target_include_directories(skribidi
   PUBLIC
@@ -73,6 +73,8 @@ set_target_properties(skribidi PROPERTIES
 	C_STANDARD 17
     C_STANDARD_REQUIRED YES
     C_EXTENSIONS YES
+	C_VISIBILITY_PRESET hidden
+	VISIBILITY_INLINES_HIDDEN YES
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION_MAJOR}
 	DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX}
@@ -86,6 +88,14 @@ target_link_libraries(skribidi PRIVATE HarfBuzz::HarfBuzz SheenBidi::SheenBidi b
 
 if (MSVC)
 	target_sources(skribidi PRIVATE ${SRC}/skribidi.natvis)
+endif()
+
+if (SKRIBIDI_BUILD_SHARED_LIBRARY)
+	target_compile_definitions(skribidi PRIVATE SKB_BUILD_DLL)
+
+	if (WIN32)
+		target_compile_definitions(skribidi INTERFACE SKB_DLL)
+	endif()
 endif()
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/${SRC}" PREFIX "src" FILES ${SKRIBIDI_SOURCE_FILES})
@@ -103,6 +113,11 @@ install(
   EXPORT skribidiConfig
   NAMESPACE skribidi::
   DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/skribidi"
+)
+
+install(
+  FILES ${SKRIBIDI_API_FILES}
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/skribidi
 )
 
 include(CMakePackageConfigHelpers)

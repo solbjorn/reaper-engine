@@ -1,8 +1,6 @@
 #ifndef __DX_PIX_EVENT_WRAPPER_H
 #define __DX_PIX_EVENT_WRAPPER_H
 
-#define PIX_EVENT(Name) PIX_EVENT_CTX(RCache, Name)
-
 #ifdef MASTER_GOLD
 
 #define PIX_EVENT_CTX(C, Name) \

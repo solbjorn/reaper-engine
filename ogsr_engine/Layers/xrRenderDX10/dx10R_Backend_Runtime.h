@@ -35,12 +35,24 @@ IC void CBackend::set_ZB(ID3DDepthStencilView* ZB)
     }
 }
 
-IC void CBackend::ClearRT(ID3DRenderTargetView* rt, const Fcolor& color) { context()->ClearRenderTargetView(rt, reinterpret_cast<const float*>(&color)); }
-IC void CBackend::ClearZB(ID3DDepthStencilView* zb, float depth) { context()->ClearDepthStencilView(zb, D3D_CLEAR_DEPTH, depth, 0); }
-
-IC void CBackend::ClearZB(ID3DDepthStencilView* zb, float depth, u32 stencil)
+inline void CBackend::ClearRT(ID3DRenderTargetView* rt, const Fcolor& color)
 {
-    context()->ClearDepthStencilView(zb, D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, depth, stencil);
+    static_assert(sizeof(Fcolor) == 4 * sizeof(f32));
+
+    if (rt != nullptr)
+        context()->ClearRenderTargetView(rt, reinterpret_cast<const f32*>(&color));
+}
+
+inline void CBackend::ClearZB(ID3DDepthStencilView* zb, f32 depth)
+{
+    if (zb != nullptr)
+        context()->ClearDepthStencilView(zb, D3D_CLEAR_DEPTH, depth, 0);
+}
+
+inline void CBackend::ClearZB(ID3DDepthStencilView* zb, f32 depth, u32 stencil)
+{
+    if (zb != nullptr)
+        context()->ClearDepthStencilView(zb, D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, depth, stencil);
 }
 
 ICF void CBackend::set_Format(SDeclaration* _decl)
@@ -139,8 +151,11 @@ ICF void CBackend::set_VS(ID3DVertexShader* _vs, [[maybe_unused]] LPCSTR _n)
     }
 }
 
-ICF void CBackend::set_Vertices(ID3DVertexBuffer* _vb, u32 _vb_stride)
+ICF void CBackend::set_Vertices(ID3DVertexBuffer* _vb, std::size_t _vb_stride)
 {
+    if (_vb == SGeometry::default_vb())
+        _vb = Vertex.Buffer();
+
     if ((vb != _vb) || (vb_stride != _vb_stride))
     {
 #ifdef DEBUG
@@ -150,13 +165,17 @@ ICF void CBackend::set_Vertices(ID3DVertexBuffer* _vb, u32 _vb_stride)
         vb = _vb;
         vb_stride = _vb_stride;
 
-        u32 iOffset = 0;
-        context()->IASetVertexBuffers(0, 1, &vb, &_vb_stride, &iOffset);
+        const auto stride = gsl::narrow_cast<u32>(_vb_stride);
+        const u32 offset{0};
+        context()->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
     }
 }
 
 ICF void CBackend::set_Indices(ID3DIndexBuffer* _ib)
 {
+    if (_ib == SGeometry::default_ib())
+        _ib = Index.Buffer();
+
     if (ib != _ib)
     {
 #ifdef DEBUG
@@ -210,10 +229,10 @@ IC void CBackend::Compute(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT T
     stat.calls++;
 
     SRVSManager.Apply(context_id);
-    StateManager.Apply();
+    StateManager.Apply(*this);
 
     //	State manager may alter constants
-    constants.flush();
+    constants.flush(*this);
     context()->Dispatch(ThreadGroupCountX, ThreadGroupCountY, ThreadGroupCountZ);
 }
 
@@ -237,10 +256,10 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 baseV, u32, u32 countV, u32 sta
     SRVSManager.Apply(context_id);
     ApplyRTandZB();
     ApplyVertexLayout();
-    StateManager.Apply();
+    StateManager.Apply(*this);
 
     //	State manager may alter constants
-    constants.flush();
+    constants.flush(*this);
     context()->DrawIndexed(iIndexCount, startI, baseV);
 }
 
@@ -261,10 +280,10 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 startV, u32 PC)
     SRVSManager.Apply(context_id);
     ApplyRTandZB();
     ApplyVertexLayout();
-    StateManager.Apply();
+    StateManager.Apply(*this);
 
     //	State manager may alter constants
-    constants.flush();
+    constants.flush(*this);
     context()->Draw(iVertexCount, startV);
 }
 
@@ -535,11 +554,15 @@ IC void CBackend::set_Constants(R_constant_table* C)
 
 ICF void CBackend::ApplyRTandZB()
 {
-    if (m_bChangedRTorZB)
-    {
-        m_bChangedRTorZB = false;
-        context()->OMSetRenderTargets(sizeof(pRT) / sizeof(pRT[0]), pRT, pZB);
-    }
+    if (!m_bChangedRTorZB)
+        return;
+
+    auto sz = pRT.size();
+    while (sz > 0 && pRT[sz - 1] == nullptr)
+        --sz;
+
+    context()->OMSetRenderTargets(sz, pRT.data(), pZB);
+    m_bChangedRTorZB = false;
 }
 
 IC void CBackend::get_ConstantDirect(const char* n, size_t DataSize, void** pVData, void** pGData, void** pPData)
@@ -548,7 +571,7 @@ IC void CBackend::get_ConstantDirect(const char* n, size_t DataSize, void** pVDa
 
     if (C)
     {
-        constants.access_direct(&*C, DataSize, pVData, pGData, pPData);
+        constants.access_direct(*this, &*C, DataSize, pVData, pGData, pPData);
     }
     else
     {

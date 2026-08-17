@@ -68,16 +68,20 @@ public:
     D3D_PRIMITIVE_TOPOLOGY m_PrimitiveTopology;
     ID3DInputLayout* m_pInputLayout;
 
+    // Dynamic geometry streams
+    _VertexStream Vertex;
+    _IndexStream Index;
+
 private:
     // Render-targets
-    ID3DRenderTargetView* pRT[4];
+    std::array<ID3DRenderTargetView*, 4> pRT;
     ID3DDepthStencilView* pZB;
 
     // Vertices/Indices/etc
     SDeclaration* decl;
     ID3DVertexBuffer* vb;
+    std::size_t vb_stride;
     ID3DIndexBuffer* ib;
-    u32 vb_stride;
 
 public:
     // Pixel/Vertex constants
@@ -248,11 +252,13 @@ public:
 protected: //	In DX10 we need input shader signature which is stored in ref_vs
     ICF void set_VS(ID3DVertexShader* _vs, LPCSTR _n = nullptr);
 
-public:
-    ICF void set_Vertices(ID3DVertexBuffer* _vb, u32 _vb_stride);
+    ICF void set_Vertices(ID3DVertexBuffer* _vb, std::size_t _vb_stride);
     ICF void set_Indices(ID3DIndexBuffer* _ib);
+
+public:
     ICF void set_Geometry(SGeometry* _geom);
     ICF void set_Geometry(ref_geom& _geom) { set_Geometry(&*_geom); }
+
     IC void set_Stencil(u32 _enable, u32 _func = D3DCMP_ALWAYS, u32 _ref = 0x00, u32 _mask = 0x00, u32 _writemask = 0x00, u32 _fail = D3DSTENCILOP_KEEP,
                         u32 _pass = D3DSTENCILOP_KEEP, u32 _zfail = D3DSTENCILOP_KEEP);
     IC void set_Z(u32 _enable);
@@ -288,7 +294,8 @@ public:
     {
         if (!C)
             return;
-        constants.set(C, std::forward<Args>(args)...);
+
+        constants.set(*this, C, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
@@ -296,7 +303,8 @@ public:
     {
         if (!C)
             return;
-        constants.seta(C, std::forward<Args>(args)...);
+
+        constants.seta(*this, C, std::forward<Args>(args)...);
     }
 
     // constants - raw string (slow)
@@ -337,16 +345,17 @@ public:
     ICF void Render(D3DPRIMITIVETYPE T, u32 startV, u32 PC);
     ICF void Compute(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT ThreadGroupCountZ);
 
-    ICF void submit() const
+    ICF void submit()
     {
         XR_TRACY_ZONE_SCOPED();
         XR_ASSERT(context_id != R__IMM_CTX_ID);
 
-        ID3D11CommandList* pCommandList;
-        XR_ASSERT(xr::hr(HW.get_context(context_id)->FinishCommandList(false, &pCommandList)));
+        Microsoft::WRL::ComPtr<ID3D11CommandList> cmd_list;
+        XR_ASSERT(xr::hr(HW.get_context(context_id)->FinishCommandList(false, cmd_list.GetAddressOf())));
+        HW.get_imm_context()->ExecuteCommandList(cmd_list.Get(), false);
 
-        HW.get_imm_context()->ExecuteCommandList(pCommandList, false);
-        _RELEASE(pCommandList);
+        Vertex.Flush();
+        Index.Flush();
     }
 
     // Device create / destroy / frame signaling
@@ -411,7 +420,5 @@ public:
 
     SMAP_Allocator LP_smap_pool;
 };
-
-#define RCache (RImplementation.get_imm_context().cmd_list)
 
 #endif

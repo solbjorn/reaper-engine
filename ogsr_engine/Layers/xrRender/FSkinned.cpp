@@ -233,7 +233,7 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, const void* _verts_)
     // Create HW VB in case this is possible
     switch (RenderMode)
     {
-    case RM_SKINNING_SOFT: V.rm_geom.create(vertRenderFVF, RImplementation.Vertex.Buffer(), V.p_rm_Indices); break;
+    case RM_SKINNING_SOFT: V.rm_geom.create(vertRenderFVF, SGeometry::default_vb(), V.p_rm_Indices); break;
     case RM_SINGLE:
     case RM_SKINNING_1B: {
         // Back up vertex data since we can't read vertex buffer in DX10

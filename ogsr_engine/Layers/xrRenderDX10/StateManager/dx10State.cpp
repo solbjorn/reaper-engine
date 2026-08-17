@@ -38,7 +38,7 @@ HRESULT dx10State::Apply(CBackend& cmd_list)
         cmd_list.StateManager.SetStencilRef(m_uiStencilRef);
 
     cmd_list.StateManager.SetBlendState(XR_ASSERT_VAL(m_pBlendState != nullptr));
-    cmd_list.StateManager.SetAlphaRef(m_uiAlphaRef);
+    cmd_list.StateManager.SetAlphaRef(cmd_list, m_uiAlphaRef);
 
     SSManager.GSApplySamplers(context_id, m_GSSamplers);
     SSManager.VSApplySamplers(context_id, m_VSSamplers);

@@ -12,7 +12,7 @@ namespace skb
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wc++98-compat-extra-semi");
 
-#include <skb_image_atlas.h>
+#include <skribidi/skb_image_atlas.h>
 
 XR_DIAG_POP();
 } // namespace skb

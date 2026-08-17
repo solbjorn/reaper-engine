@@ -29,9 +29,6 @@ void dxRenderDeviceRender::Copy(IRenderDeviceRender& _in)
     m_PortalFadeShader = in.m_PortalFadeShader;
     m_PortalFadeGeom = in.m_PortalFadeGeom;
 
-    Vertex = in.Vertex;
-    Index = in.Index;
-
     QuadIB = in.QuadIB;
     old_QuadIB = in.old_QuadIB;
 
@@ -58,16 +55,12 @@ void dxRenderDeviceRender::OnDeviceDestroy(BOOL bKeepTextures)
 
     Resources->OnDeviceDestroy(bKeepTextures);
 
-    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
-        contexts_pool[id].cmd_list.OnDeviceDestroy();
+    for (auto& ctx : contexts_pool)
+        ctx.cmd_list.OnDeviceDestroy();
 
     // Quad
     HW.stats_manager.decrement_stats_ib(QuadIB);
     _RELEASE(QuadIB);
-
-    // streams
-    Index.Destroy();
-    Vertex.Destroy();
 }
 
 tmc::task<void> dxRenderDeviceRender::DestroyHW()
@@ -83,11 +76,24 @@ tmc::task<void> dxRenderDeviceRender::Reset(HWND hWnd, u32& dwWidth, u32& dwHeig
 #endif // DEBUG
 
     Resources->reset_begin();
+
+    for (auto& ctx : contexts_pool)
+    {
+        ctx.cmd_list.Index.Destroy();
+        ctx.cmd_list.Vertex.Destroy();
+    }
+
     Memory.mem_compact();
     co_await HW.Reset(hWnd, dwWidth, dwHeight);
 
     fWidth_2 = gsl::narrow_cast<f32>(dwWidth) / 2.0f;
     fHeight_2 = gsl::narrow_cast<f32>(dwHeight) / 2.0f;
+
+    for (auto [id, ctx] : std::views::enumerate(contexts_pool))
+    {
+        ctx.cmd_list.Vertex.Create(id);
+        ctx.cmd_list.Index.Create(id);
+    }
 
     Resources->reset_end();
 
@@ -100,24 +106,20 @@ void dxRenderDeviceRender::SetupStates()
 {
     HW.Caps.Update();
 
-    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
-        contexts_pool[id].cmd_list.SetupStates();
+    for (auto& ctx : contexts_pool)
+        ctx.cmd_list.SetupStates();
 }
 
 tmc::task<void> dxRenderDeviceRender::OnDeviceCreate()
 {
     // Signal everyone - device created
 
-    // streams
-    Vertex.Create();
-    Index.Create();
-
     CreateQuadIB();
 
-    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+    for (auto [id, ctx] : std::views::enumerate(contexts_pool))
     {
-        contexts_pool[id].cmd_list.context_id = id;
-        contexts_pool[id].cmd_list.OnDeviceCreate();
+        ctx.cmd_list.context_id = id;
+        ctx.cmd_list.OnDeviceCreate();
     }
 
     m_Gamma.Update();
@@ -128,7 +130,9 @@ tmc::task<void> dxRenderDeviceRender::OnDeviceCreate()
     m_WireShader.create("editor\\wire");
     m_SelectionShader.create("editor\\selection");
     m_PortalFadeShader.create("portal");
-    m_PortalFadeGeom.create(FVF::F_L, Vertex.Buffer(), nullptr);
+
+    m_PortalFadeGeom.create(FVF::F_L, SGeometry::default_vb(), nullptr);
+    XR_ASSERT(m_PortalFadeGeom.stride() == sizeof(FVF::L));
 
     DUImpl.OnDeviceCreate();
     UIRender->CreateUIGeom();
@@ -204,7 +208,7 @@ void dxRenderDeviceRender::ResourcesDumpMemoryUsage() const { Resources->_DumpMe
 tmc::task<DeviceState> dxRenderDeviceRender::GetDeviceState() { co_return co_await tmc::spawn_clang(HW.GetDeviceState(), xr::tmc_cpu_st_executor()); }
 
 BOOL dxRenderDeviceRender::GetForceGPU_REF() { return HW.Caps.bForceGPU_REF; }
-u32 dxRenderDeviceRender::GetCacheStatPolys() { return RCache.stat.polys; }
+u32 dxRenderDeviceRender::GetCacheStatPolys() { return RImplementation.get_imm_context().cmd_list.stat.polys; }
 
 void dxRenderDeviceRender::Begin()
 {
@@ -213,23 +217,18 @@ void dxRenderDeviceRender::Begin()
     get_imm_context().context_id = R__IMM_CTX_ID;
     contexts_used.set(R__IMM_CTX_ID);
 
-    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
-    {
-        contexts_pool[id].cmd_list.OnFrameBegin();
-        contexts_pool[id].cmd_list.set_CullMode(CULL_CW);
-        contexts_pool[id].cmd_list.set_CullMode(CULL_CCW);
-    }
-
-    Vertex.Flush();
-    Index.Flush();
+    for (auto& ctx : contexts_pool)
+        ctx.cmd_list.OnFrameBegin();
 }
 
 void dxRenderDeviceRender::Clear()
 {
-    RCache.ClearZB(RCache.get_ZB(), 1.0f, 0);
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+
+    cmd_list.ClearZB(cmd_list.get_ZB(), 1.0f, 0);
 
     if (psDeviceFlags.test(rsClearBB))
-        RCache.ClearRT(RCache.get_RT(), {});
+        cmd_list.ClearRT(cmd_list.get_RT(), {});
 }
 
 tmc::task<void> dxRenderDeviceRender::End()
@@ -238,8 +237,8 @@ tmc::task<void> dxRenderDeviceRender::End()
 
     XR_ASSERT(HW.pDevice != nullptr);
 
-    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
-        contexts_pool[id].cmd_list.OnFrameEnd();
+    for (auto& ctx : contexts_pool)
+        ctx.cmd_list.OnFrameEnd();
 
     // we're done with rendering
     cleanup_contexts();
@@ -249,15 +248,16 @@ tmc::task<void> dxRenderDeviceRender::End()
 
 void dxRenderDeviceRender::ClearTarget()
 {
-    RCache.ClearRT(RCache.get_RT(), {}); // black
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+    cmd_list.ClearRT(cmd_list.get_RT(), {}); // black
 }
 
 void dxRenderDeviceRender::SetCacheXform(Fmatrix& mView, Fmatrix& mProject)
 {
-    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+    for (auto& ctx : contexts_pool)
     {
-        contexts_pool[id].cmd_list.set_xform_view(mView);
-        contexts_pool[id].cmd_list.set_xform_project(mProject);
+        ctx.cmd_list.set_xform_view(mView);
+        ctx.cmd_list.set_xform_project(mProject);
     }
 }
 
@@ -282,8 +282,8 @@ ctx_id_t dxRenderDeviceRender::alloc_context()
 
 void dxRenderDeviceRender::cleanup_contexts()
 {
-    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
-        contexts_pool[id].reset();
+    for (auto& ctx : contexts_pool)
+        ctx.reset();
 
     contexts_used.reset();
 }

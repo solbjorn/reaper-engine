@@ -18,7 +18,7 @@ namespace
         RTTI_DECLARE_TYPEINFO(cl_xform_##xf, R_constant_setup); \
 \
     public: \
-        void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.xforms.set_c_##xf(C); } \
+        void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.xforms.set_c_##xf(cmd_list, C); } \
     } binder_##xf
 
 BIND_DECLARE(w);

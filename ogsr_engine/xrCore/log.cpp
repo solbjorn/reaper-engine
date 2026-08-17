@@ -71,7 +71,7 @@ public:
 
     void open(gsl::czstring path)
     {
-        logfs.open(std::filesystem::path{reinterpret_cast<gsl::cu8zstring>(path)}, std::ios::binary);
+        logfs.open(std::filesystem::path{reinterpret_cast<xr::cu8zstring>(path)}, std::ios::binary);
         flush();
     }
 

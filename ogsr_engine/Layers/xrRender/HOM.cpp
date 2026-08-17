@@ -386,6 +386,8 @@ tmc::task<void> CHOM::OnRender()
     if (!psDeviceFlags.is(rsOcclusionDraw) || m_pModel == nullptr)
         co_return;
 
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+
     const auto tris = m_pModel->get_tris();
 
     static xr_vector<FVF::L> poly;
@@ -409,27 +411,30 @@ tmc::task<void> CHOM::OnRender()
         line[it * 6 + 5].set(verts[tri.verts[0]].xyz(), 0xFFFFFFFF);
     }
 
-    RCache.set_xform_world(Fidentity);
+    cmd_list.set_xform_world(Fidentity);
+
     // draw solid
     Device.SetNearer(TRUE);
-    RCache.set_Shader(RImplementation.m_SelectionShader);
-    RCache.set_c("tfactor", float(color_get_R(0x80FFFFFF)) / 255.f, float(color_get_G(0x80FFFFFF)) / 255.f, float(color_get_B(0x80FFFFFF)) / 255.f,
-                 float(color_get_A(0x80FFFFFF)) / 255.f);
-    RCache.dbg_Draw(D3DPT_TRIANGLELIST, poly.data(), poly.size() / 3);
+
+    cmd_list.set_Shader(RImplementation.m_SelectionShader);
+    cmd_list.set_c("tfactor", float(color_get_R(0x80FFFFFF)) / 255.f, float(color_get_G(0x80FFFFFF)) / 255.f, float(color_get_B(0x80FFFFFF)) / 255.f,
+                   float(color_get_A(0x80FFFFFF)) / 255.f);
+    cmd_list.dbg_Draw(D3DPT_TRIANGLELIST, poly.data(), poly.size() / 3);
+
     Device.SetNearer(FALSE);
 
     // draw wire
     if (bDebug)
-        RImplementation.rmNear(RCache);
+        RImplementation.rmNear(cmd_list);
     else
         Device.SetNearer(TRUE);
 
-    RCache.set_Shader(RImplementation.m_SelectionShader);
-    RCache.set_c("tfactor", 1.f, 1.f, 1.f, 1.f);
-    RCache.dbg_Draw(D3DPT_LINELIST, line.data(), line.size() / 2);
+    cmd_list.set_Shader(RImplementation.m_SelectionShader);
+    cmd_list.set_c("tfactor", 1.f, 1.f, 1.f, 1.f);
+    cmd_list.dbg_Draw(D3DPT_LINELIST, line.data(), line.size() / 2);
 
     if (bDebug)
-        RImplementation.rmNormal(RCache);
+        RImplementation.rmNormal(cmd_list);
     else
         Device.SetNearer(FALSE);
 }

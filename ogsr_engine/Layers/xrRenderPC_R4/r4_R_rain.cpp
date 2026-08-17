@@ -214,12 +214,14 @@ tmc::task<void> CRender::rain_run()
 void CRender::rain_sync()
 {
     XR_TRACY_ZONE_SCOPED();
-    PIX_EVENT(DEFER_RAIN);
+
+    auto& cmd_list = get_imm_context().cmd_list;
+
+    PIX_EVENT_CTX(cmd_list, DEFER_RAIN);
 
     get_context(rain_context_id).cmd_list.submit();
     release_context(rain_context_id);
 
-    auto& cmd_list = get_imm_context().cmd_list;
     cmd_list.Invalidate();
 
     // Restore XForms
@@ -228,7 +230,7 @@ void CRender::rain_sync()
     cmd_list.set_xform_project(Device.mProject);
 
     // Accumulate
-    Target->phase_rain();
+    Target->phase_rain(cmd_list);
     Target->rt_smap_depth->set_slice_read(rain_context_id);
-    Target->draw_rain(*smart_cast<const light*>(Lights.rain._get()));
+    Target->draw_rain(cmd_list, *smart_cast<const light*>(Lights.rain._get()));
 }

@@ -27,17 +27,14 @@ public:
     void set_c_c_bias(R_constant* C) { c_c_bias = C; }
     void set_c_c_sun(R_constant* C) { c_c_sun = C; }
 
-    void set_m_xform_v(Fmatrix& mat);
-    void set_m_xform(Fmatrix& mat);
-    void set_consts(float x, float y, float z, float w);
-    void set_wave(Fvector4& vec);
-    void set_wind(Fvector4& vec);
-    void set_c_scale(float x, float y, float z, float w);
-    void set_c_bias(float x, float y, float z, float w);
-    void set_c_sun(float x, float y, float z, float w);
-
-private:
-    ICF CBackend& cmd_list();
+    void set_m_xform_v(CBackend& cmd_list, const Fmatrix& mat);
+    void set_m_xform(CBackend& cmd_list, const Fmatrix& mat);
+    void set_consts(CBackend& cmd_list, f32 x, f32 y, f32 z, f32 w);
+    void set_wave(CBackend& cmd_list, const Fvector4& vec);
+    void set_wind(CBackend& cmd_list, const Fvector4& vec);
+    void set_c_scale(CBackend& cmd_list, f32 x, f32 y, f32 z, f32 w);
+    void set_c_bias(CBackend& cmd_list, f32 x, f32 y, f32 z, f32 w);
+    void set_c_sun(CBackend& cmd_list, f32 x, f32 y, f32 z, f32 w);
 };
 
 #endif

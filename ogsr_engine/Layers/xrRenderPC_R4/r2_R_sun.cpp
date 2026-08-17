@@ -329,13 +329,15 @@ tmc::task<void> CRender::accumulate_cascade(u32 cascade_ind)
 }
 
 // minwindef.h
-#pragma push_macro("far")
 #undef far
 
 tmc::task<void> CRender::sun_sync()
 {
     XR_TRACY_ZONE_SCOPED();
-    PIX_EVENT(DEFER_SUN);
+
+    auto& cmd_list = get_imm_context().cmd_list;
+
+    PIX_EVENT_CTX(cmd_list, DEFER_SUN);
 
     co_await accumulate_cascade(SE_SUN_NEAR);
     auto middle = co_await tmc::fork_clang(accumulate_cascade(SE_SUN_MIDDLE));
@@ -357,7 +359,6 @@ tmc::task<void> CRender::sun_sync()
     get_context(context_id).cmd_list.submit();
     release_context(context_id);
 
-    auto& cmd_list = get_imm_context().cmd_list;
     cmd_list.Invalidate();
 
     // Restore XForms
@@ -365,5 +366,3 @@ tmc::task<void> CRender::sun_sync()
     cmd_list.set_xform_view(Device.mView);
     cmd_list.set_xform_project(Device.mProject);
 }
-
-#pragma pop_macro("far")

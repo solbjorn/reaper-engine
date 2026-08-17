@@ -12,9 +12,17 @@ class CRenderTarget final : public IRender_Target
 {
     RTTI_DECLARE_TYPEINFO(CRenderTarget, IRender_Target);
 
+public:
+    // Strides of vertices declared locally in multiple files
+    static constexpr auto aa_aa_stride{88uz};
+    static constexpr auto bloom_build_stride{48uz};
+    static constexpr auto bloom_filter_stride{144uz};
+    static constexpr auto postprocess_stride{48uz};
+
 private:
-    u32 dwWidth[R__NUM_CONTEXTS];
-    u32 dwHeight[R__NUM_CONTEXTS];
+    std::array<u32, R__NUM_CONTEXTS> dwWidth;
+    std::array<u32, R__NUM_CONTEXTS> dwHeight;
+
     u32 dwAccumulatorClearMark;
 
 public:
@@ -220,11 +228,10 @@ private:
 
     // Combine
     ref_geom g_combine;
-    ref_geom g_combine_VP; // xy=p,zw=tc
     ref_geom g_combine_2UV;
     ref_geom g_combine_cuboid;
-    ref_geom g_aa_blur;
     ref_geom g_aa_AA;
+
     ref_shader s_combine;
     ref_shader s_combine_msaa;
     ref_shader s_combine_volumetric;
@@ -301,8 +308,8 @@ public:
 
     void u_compute_texgen_screen(CBackend& cmd_list, Fmatrix& dest);
     void u_compute_texgen_jitter(CBackend& cmd_list, Fmatrix& dest);
-    void u_calc_tc_noise(Fvector2& p0, Fvector2& p1);
-    void u_calc_tc_duality_ss(Fvector2& r0, Fvector2& r1, Fvector2& l0, Fvector2& l1);
+    void u_calc_tc_noise(CBackend& cmd_list, Fvector2& p0, Fvector2& p1);
+    void u_calc_tc_duality_ss(CBackend& cmd_list, Fvector2& r0, Fvector2& r1, Fvector2& l0, Fvector2& l1);
     BOOL u_need_PP();
     bool u_need_CM();
 
@@ -338,26 +345,26 @@ public:
     void phase_ssfx_ao(); // AO
     void phase_ssfx_il(); // IL
 
-    void phase_rain();
-    void draw_rain(const light& RainSetup);
+    void phase_rain(CBackend& cmd_list);
+    void draw_rain(CBackend& cmd_list, const light& RainSetup);
 
-    void mark_msaa_edges();
+    void mark_msaa_edges(CBackend& cmd_list);
 
     bool need_to_render_sunshafts();
 
     BOOL enable_scissor(light* L); // true if intersects near plane
     void disable_aniso();
 
-    void draw_volume(const light* L);
+    void draw_volume(CBackend& cmd_list, const light* L);
     void accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, const Fmatrix& xform, const Fmatrix& xform_prev, float fBias);
-    void accum_direct_blend();
-    void accum_direct_volumetric(CBackend& cmd_list, u32 sub_phase, const u32 Offset, const Fmatrix& mShadow);
-    void accum_point(light* L);
-    void accum_spot(light* L);
+    void accum_direct_blend(CBackend& cmd_list);
+    void accum_direct_volumetric(CBackend& cmd_list, u32 sub_phase, std::size_t Offset, std::size_t i_offset, const Fmatrix& mShadow);
+    void accum_point(CBackend& cmd_list, light* L);
+    void accum_spot(CBackend& cmd_list, light* L);
     //	Igor: for volumetric lights
-    void accum_volumetric(light* L);
+    void accum_volumetric(CBackend& cmd_list, light* L);
     void phase_bloom();
-    void phase_luminance();
+    void phase_luminance(CBackend& cmd_list);
     tmc::task<void> phase_combine();
     void phase_combine_volumetric();
     void phase_pp();

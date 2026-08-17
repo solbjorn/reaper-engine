@@ -27,10 +27,9 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, cons
 
     //	TODO: DX10: Remove half pixe offset
     // *** assume accumulator setted up ***
-    light* sun = (light*)RImplementation.Lights.sun._get();
+    auto sun = smart_cast<light*>(RImplementation.Lights.sun._get());
 
     // Common calc for quad-rendering
-    u32 Offset;
     constexpr u32 C = color_rgba(255, 255, 255, 255);
     float _w = float(Device.dwWidth);
     float _h = float(Device.dwHeight);
@@ -50,21 +49,21 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, cons
 
     // Perform masking (only once - on the first/near phase)
     cmd_list.set_CullMode(CULL_NONE);
-    PIX_EVENT(SE_SUN_NEAR_sub_phase);
-    if (SE_SUN_NEAR == sub_phase) //.
-                                  // if( 0 )
+
+    if (SE_SUN_NEAR == sub_phase)
     {
+        PIX_EVENT_CTX(cmd_list, SE_SUN_NEAR_sub_phase);
+
         // Fill vertex buffer
-        FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
-        pv->set(EPS, float(_h + EPS), d_Z, d_W, C, p0.x, p1.y);
-        pv++;
-        pv->set(EPS, EPS, d_Z, d_W, C, p0.x, p0.y);
-        pv++;
-        pv->set(float(_w + EPS), float(_h + EPS), d_Z, d_W, C, p1.x, p1.y);
-        pv++;
-        pv->set(float(_w + EPS), EPS, d_Z, d_W, C, p1.x, p0.y);
-        pv++;
-        RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
+        const auto verts = cmd_list.Vertex.Lock<FVF::TL>(4);
+
+        verts[0].set(EPS, float(_h + EPS), d_Z, d_W, C, p0.x, p1.y);
+        verts[1].set(EPS, EPS, d_Z, d_W, C, p0.x, p0.y);
+        verts[2].set(float(_w + EPS), float(_h + EPS), d_Z, d_W, C, p1.x, p1.y);
+        verts[3].set(float(_w + EPS), EPS, d_Z, d_W, C, p1.x, p0.y);
+
+        const auto Offset = cmd_list.Vertex.Unlock<FVF::TL>(4);
+
         cmd_list.set_Geometry(g_combine);
 
         // setup
@@ -101,10 +100,10 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, cons
     Device.mFullTransform.transform(center_pt);
     d_Z = center_pt.z;
 
-    PIX_EVENT(Perform_lighting);
-
     // Perform lighting
     {
+        PIX_EVENT_CTX(cmd_list, Perform_lighting);
+
         phase_accumulator(cmd_list);
         cmd_list.set_CullMode(CULL_CCW); //******************************************************************
         cmd_list.set_ColorWriteEnable();
@@ -160,9 +159,9 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, cons
         // Compute textgen texture for pixel shader, for possitions texture.
         Fmatrix m_Texgen;
         m_Texgen.identity();
-        cmd_list.xforms.set_W(m_Texgen);
-        cmd_list.xforms.set_V(Device.mView);
-        cmd_list.xforms.set_P(Device.mProject);
+        cmd_list.set_xform_world(m_Texgen);
+        cmd_list.set_xform_view(Device.mView);
+        cmd_list.set_xform_project(Device.mProject);
         u_compute_texgen_screen(cmd_list, m_Texgen);
 
         // Make jitter texture
@@ -173,33 +172,27 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, cons
         j1.set(scale_X, scale_X).add(offset);
 
         // Fill vertex buffer
-        u32 i_offset;
+        const auto indices = cmd_list.Index.Lock(facetable.size());
+        std::ranges::copy(facetable, indices.begin());
+        const auto i_offset = cmd_list.Index.Unlock(facetable.size());
+
+        // corners
+        const auto verts = cmd_list.Vertex.Lock<Fvector4>(corners.size());
+
+        Fmatrix inv_XDcombine;
+        if (sub_phase == SE_SUN_FAR)
+            inv_XDcombine.invert(xform_prev);
+        else
+            inv_XDcombine.invert(xform);
+
+        for (auto [v, corner] : std::views::zip(verts, corners))
         {
-            u16* pib = RImplementation.Index.Lock(sizeof(facetable) / sizeof(u16), i_offset);
-            std::memcpy(pib, facetable.data(), sizeof(facetable));
-            RImplementation.Index.Unlock(sizeof(facetable) / sizeof(u16));
-
-            // corners
-
-            u32 ver_count = sizeof(corners) / sizeof(Fvector3);
-            Fvector4* pv = (Fvector4*)RImplementation.Vertex.Lock(ver_count, g_combine_cuboid.stride(), Offset);
-
-            Fmatrix inv_XDcombine;
-            if (sub_phase == SE_SUN_FAR)
-                inv_XDcombine.invert(xform_prev);
-            else
-                inv_XDcombine.invert(xform);
-
-            for (u32 i = 0; i < ver_count; ++i)
-            {
-                Fvector3 tmp_vec;
-                inv_XDcombine.transform(tmp_vec, corners[i]);
-                pv->set(tmp_vec.x, tmp_vec.y, tmp_vec.z, 1);
-                pv++;
-            }
-
-            RImplementation.Vertex.Unlock(ver_count, g_combine_cuboid.stride());
+            Fvector3 tmp_vec;
+            inv_XDcombine.transform(tmp_vec, corner);
+            v.set(tmp_vec, 1.0f);
         }
+
+        const auto Offset = cmd_list.Vertex.Unlock<Fvector4>(corners.size());
 
         cmd_list.set_Geometry(g_combine_cuboid);
 
@@ -264,13 +257,13 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, cons
         if (!RImplementation.o.dx10_msaa)
         {
             cmd_list.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, st_mask, D3DSTENCILOP_KEEP, st_pass, D3DSTENCILOP_KEEP);
-            cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 8, 0, 16);
+            cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 8, i_offset, 16);
         }
         else
         {
             // per pixel
             cmd_list.set_Stencil(TRUE, D3DCMP_EQUAL, dwLightMarkerID, 0xff, st_mask, D3DSTENCILOP_KEEP, st_pass, D3DSTENCILOP_KEEP);
-            cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 8, 0, 16);
+            cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 8, i_offset, 16);
 
             // per sample
             cmd_list.set_Element(s_accum_direct_msaa->E[uiElementIndex]);
@@ -284,24 +277,24 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, cons
 
             cmd_list.set_Stencil(TRUE, D3DCMP_EQUAL, dwLightMarkerID | 0x80, 0xff, st_mask, D3DSTENCILOP_KEEP, st_pass, D3DSTENCILOP_KEEP);
             cmd_list.set_CullMode(CULL_NONE);
-            cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 8, 0, 16);
+            cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 8, i_offset, 16);
 
             cmd_list.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0x00);
         }
 
         // Igor: draw volumetric here
         if ((ps_r_sunshafts_mode & SS_VOLUMETRIC) && sub_phase == SE_SUN_FAR)
-            accum_direct_volumetric(cmd_list, sub_phase, Offset, m_shadow);
+            accum_direct_volumetric(cmd_list, sub_phase, Offset, i_offset, m_shadow);
     }
 }
 
-void CRenderTarget::accum_direct_blend()
+void CRenderTarget::accum_direct_blend(CBackend& cmd_list)
 {
-    PIX_EVENT(accum_direct_blend);
-    increment_light_marker(RCache);
+    PIX_EVENT_CTX(cmd_list, accum_direct_blend);
+    increment_light_marker(cmd_list);
 }
 
-void CRenderTarget::accum_direct_volumetric(CBackend& cmd_list, u32 sub_phase, const u32 Offset, const Fmatrix& mShadow)
+void CRenderTarget::accum_direct_volumetric(CBackend& cmd_list, u32 sub_phase, std::size_t Offset, std::size_t i_offset, const Fmatrix& mShadow)
 {
     PIX_EVENT_CTX(cmd_list, accum_direct_volumetric);
 
@@ -323,7 +316,7 @@ void CRenderTarget::accum_direct_volumetric(CBackend& cmd_list, u32 sub_phase, c
     // Perform lighting
     {
         // *** assume accumulator setted up ***
-        light* sun = (light*)RImplementation.Lights.sun._get();
+        auto sun = smart_cast<light*>(RImplementation.Lights.sun._get());
 
         // Common constants (light-related)
         Fvector L_dir;
@@ -341,9 +334,9 @@ void CRenderTarget::accum_direct_volumetric(CBackend& cmd_list, u32 sub_phase, c
 
         Fmatrix m_Texgen;
         m_Texgen.identity();
-        cmd_list.xforms.set_W(m_Texgen);
-        cmd_list.xforms.set_V(Device.mView);
-        cmd_list.xforms.set_P(Device.mProject);
+        cmd_list.xforms.set_W(cmd_list, m_Texgen);
+        cmd_list.xforms.set_V(cmd_list, Device.mView);
+        cmd_list.xforms.set_P(cmd_list, Device.mProject);
         u_compute_texgen_screen(cmd_list, m_Texgen);
 
         cmd_list.set_c("m_texgen", m_Texgen);
@@ -377,6 +370,6 @@ void CRenderTarget::accum_direct_volumetric(CBackend& cmd_list, u32 sub_phase, c
         else
             cmd_list.set_ZFunc(D3DCMP_ALWAYS);
 
-        cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 8, 0, 16);
+        cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 8, i_offset, 16);
     }
 }

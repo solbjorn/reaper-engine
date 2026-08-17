@@ -8,9 +8,6 @@
 #include "../../Include/xrRender/DrawUtils.h"
 //----------------------------------------------------
 
-#define DU_DRAW_DIP RCache.dbg_DIP
-#define DU_DRAW_DP RCache.dbg_DP
-
 struct SPrimitiveBuffer final
 {
     ref_geom pGeom{};
@@ -19,10 +16,7 @@ struct SPrimitiveBuffer final
     D3DPRIMITIVETYPE p_type;
     u32 p_cnt;
     CallMe::Delegate<void()> OnRender;
-    void RenderDIP() { DU_DRAW_DIP(p_type, pGeom, 0, 0, v_cnt, 0, p_cnt); }
-    void RenderDP() { DU_DRAW_DP(p_type, pGeom, 0, p_cnt); }
 
-public:
     SPrimitiveBuffer() : OnRender(CallMe::Delegate<void()>()) {}
 
     void CreateFromData(D3DPRIMITIVETYPE, u32, u32, const void*, u32, const u16* = nullptr, u32 = 0) {}
@@ -55,19 +49,6 @@ public:
     ref_geom vs_TL{};
     ref_geom vs_LIT{};
 
-protected:
-    FVF::L* m_DD_pv{};
-    FVF::L* m_DD_pv_start{};
-    u32 m_DD_base{};
-    BOOL m_DD_wire{};
-    void DD_DrawFace_flush(BOOL try_again);
-
-public:
-    void DD_DrawFace_begin(BOOL bWire);
-    void DD_DrawFace_push(const Fvector& p0, const Fvector& p1, const Fvector& p2, u32 clr);
-    void DD_DrawFace_end();
-
-public:
     CDrawUtilities() = default;
     ~CDrawUtilities() override = default;
 

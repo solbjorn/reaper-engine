@@ -38,6 +38,8 @@ tmc::task<void> CPortal::OnRender()
 
     XR_ASSERT(!poly.empty());
 
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+
     // draw rect
     static xr_vector<FVF::L> V;
     V.resize(poly.size() + 2);
@@ -55,26 +57,26 @@ tmc::task<void> CPortal::OnRender()
     C.div((float)poly.size());
     V[0].set(C, portalColor);
 
-    RCache.set_xform_world(Fidentity);
+    cmd_list.set_xform_world(Fidentity);
     // draw solid
-    RCache.set_Shader(RImplementation.m_SelectionShader);
-    RCache.set_c("tfactor", float(color_get_R(portalColor)) / 255.f, float(color_get_G(portalColor)) / 255.f, float(color_get_B(portalColor)) / 255.f,
-                 float(color_get_A(portalColor)) / 255.f);
-    RCache.dbg_Draw(D3DPT_TRIANGLEFAN, V.data(), V.size() - 2);
+    cmd_list.set_Shader(RImplementation.m_SelectionShader);
+    cmd_list.set_c("tfactor", float(color_get_R(portalColor)) / 255.f, float(color_get_G(portalColor)) / 255.f, float(color_get_B(portalColor)) / 255.f,
+                   float(color_get_A(portalColor)) / 255.f);
+    cmd_list.dbg_Draw(D3DPT_TRIANGLEFAN, V.data(), V.size() - 2);
 
     // draw wire
     if (bDebug)
-        RImplementation.rmNear(RCache);
+        RImplementation.rmNear(cmd_list);
     else
         Device.SetNearer(TRUE);
 
-    RCache.set_Shader(RImplementation.m_WireShader);
-    RCache.set_c("tfactor", float(color_get_R(portalColor)) / 255.f, float(color_get_G(portalColor)) / 255.f, float(color_get_B(portalColor)) / 255.f,
-                 float(color_get_A(portalColor)) / 255.f);
-    RCache.dbg_Draw(D3DPT_LINESTRIP, V.data() + 1, V.size() - 2);
+    cmd_list.set_Shader(RImplementation.m_WireShader);
+    cmd_list.set_c("tfactor", float(color_get_R(portalColor)) / 255.f, float(color_get_G(portalColor)) / 255.f, float(color_get_B(portalColor)) / 255.f,
+                   float(color_get_A(portalColor)) / 255.f);
+    cmd_list.dbg_Draw(D3DPT_LINESTRIP, V.data() + 1, V.size() - 2);
 
     if (bDebug)
-        RImplementation.rmNormal(RCache);
+        RImplementation.rmNormal(cmd_list);
     else
         Device.SetNearer(FALSE);
 }

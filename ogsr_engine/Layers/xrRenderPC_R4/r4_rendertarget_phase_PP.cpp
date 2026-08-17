@@ -1,11 +1,11 @@
 #include "stdafx.h"
 
-void CRenderTarget::u_calc_tc_noise(Fvector2& p0, Fvector2& p1)
+void CRenderTarget::u_calc_tc_noise(CBackend& cmd_list, Fvector2& p0, Fvector2& p1)
 {
-    auto C = XR_ASSERT_VAL(RCache.get_c("s_noise")._get() != nullptr);
+    auto C = XR_ASSERT_VAL(cmd_list.get_c("s_noise")._get() != nullptr);
     XR_ASSERT(C->destination == RC_dest_sampler && C->type == RC_dx10texture, "", C->destination, C->type);
 
-    auto T = XR_ASSERT_VAL(RCache.get_ActiveTexture(C->samp.index) != nullptr);
+    auto T = XR_ASSERT_VAL(cmd_list.get_ActiveTexture(C->samp.index) != nullptr);
     u32 tw = iCeil(float(T->get_Width()) * param_noise_scale + EPS_S);
     u32 th = iCeil(float(T->get_Height()) * param_noise_scale + EPS_S);
     XR_ASSERT(tw != 0 && th != 0, "", tw, th);
@@ -36,11 +36,11 @@ void CRenderTarget::u_calc_tc_noise(Fvector2& p0, Fvector2& p1)
     p1.set(end_u, end_v);
 }
 
-void CRenderTarget::u_calc_tc_duality_ss(Fvector2& r0, Fvector2& r1, Fvector2& l0, Fvector2& l1)
+void CRenderTarget::u_calc_tc_duality_ss(CBackend& cmd_list, Fvector2& r0, Fvector2& r1, Fvector2& l0, Fvector2& l1)
 {
     // Calculate ordinaty TCs from blur and SS
-    float tw = gsl::narrow_cast<float>(get_width(RCache));
-    u32 dh = get_height(RCache);
+    float tw = gsl::narrow_cast<float>(get_width(cmd_list));
+    u32 dh = get_height(cmd_list);
     float th = gsl::narrow_cast<float>(dh);
 
     if (dh != Device.dwHeight)
@@ -110,23 +110,25 @@ struct TL_2c3uv final
         uv[2].set(u2, v2);
     }
 };
-static_assert(sizeof(TL_2c3uv) == 48);
+static_assert(sizeof(TL_2c3uv) == CRenderTarget::postprocess_stride);
 
 void CRenderTarget::phase_pp()
 {
     XR_TRACY_ZONE_SCOPED();
 
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+
     // combination/postprocess
-    u_setrt(RCache, Device.dwWidth, Device.dwHeight, get_base_rt(), nullptr, nullptr, get_base_zb());
+    u_setrt(cmd_list, Device.dwWidth, Device.dwHeight, get_base_rt(), nullptr, nullptr, get_base_zb());
 
     //	Element 0 for for normal post-process
     //	Element 4 for color map post-process
     bool bCMap = u_need_CM();
 
     if (!RImplementation.o.dx10_msaa)
-        RCache.set_Element(s_postprocess->E[bCMap ? 4 : 0]);
+        cmd_list.set_Element(s_postprocess->E[bCMap ? 4 : 0]);
     else
-        RCache.set_Element(s_postprocess_msaa->E[bCMap ? 4 : 0]);
+        cmd_list.set_Element(s_postprocess_msaa->E[bCMap ? 4 : 0]);
 
     int gblend = clampr(iFloor((1 - param_gray) * 255.f), 0, 255);
     int nblend = clampr(iFloor((1 - param_noise) * 255.f), 0, 255);
@@ -135,32 +137,31 @@ void CRenderTarget::phase_pp()
     Fvector p_brightness = param_color_add;
 
     // Draw full-screen quad textured with our scene image
-    u32 Offset;
     float _w = float(Device.dwWidth);
     float _h = float(Device.dwHeight);
 
     Fvector2 n0, n1, r0, r1, l0, l1;
-    u_calc_tc_duality_ss(r0, r1, l0, l1);
-    u_calc_tc_noise(n0, n1);
+    u_calc_tc_duality_ss(cmd_list, r0, r1, l0, l1);
+    u_calc_tc_noise(cmd_list, n0, n1);
+
+    float du = ps_r1_pps_u, dv = ps_r1_pps_v;
 
     // Fill vertex buffer
-    float du = ps_r1_pps_u, dv = ps_r1_pps_v;
-    TL_2c3uv* pv = (TL_2c3uv*)RImplementation.Vertex.Lock(4, g_postprocess.stride(), Offset);
-    pv->set(du + 0, dv + float(_h), p_color, p_gray, r0.x, r1.y, l0.x, l1.y, n0.x, n1.y);
-    pv++;
-    pv->set(du + 0, dv + 0, p_color, p_gray, r0.x, r0.y, l0.x, l0.y, n0.x, n0.y);
-    pv++;
-    pv->set(du + float(_w), dv + float(_h), p_color, p_gray, r1.x, r1.y, l1.x, l1.y, n1.x, n1.y);
-    pv++;
-    pv->set(du + float(_w), dv + 0, p_color, p_gray, r1.x, r0.y, l1.x, l0.y, n1.x, n0.y);
-    pv++;
-    RImplementation.Vertex.Unlock(4, g_postprocess.stride());
+    const auto verts = cmd_list.Vertex.Lock<TL_2c3uv>(4);
+
+    verts[0].set(du + 0, dv + float(_h), p_color, p_gray, r0.x, r1.y, l0.x, l1.y, n0.x, n1.y);
+    verts[1].set(du + 0, dv + 0, p_color, p_gray, r0.x, r0.y, l0.x, l0.y, n0.x, n0.y);
+    verts[2].set(du + float(_w), dv + float(_h), p_color, p_gray, r1.x, r1.y, l1.x, l1.y, n1.x, n1.y);
+    verts[3].set(du + float(_w), dv + 0, p_color, p_gray, r1.x, r0.y, l1.x, l0.y, n1.x, n0.y);
+
+    const auto Offset = cmd_list.Vertex.Unlock<TL_2c3uv>(4);
 
     // Actual rendering
     constexpr const char* s_brightness = "c_brightness";
     constexpr const char* s_colormap = "c_colormap";
-    RCache.set_c(s_brightness, p_brightness.x, p_brightness.y, p_brightness.z, 0.f);
-    RCache.set_c(s_colormap, param_color_map_influence, param_color_map_interpolate, 0.f, 0.f);
-    RCache.set_Geometry(g_postprocess);
-    RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+    cmd_list.set_c(s_brightness, p_brightness.x, p_brightness.y, p_brightness.z, 0.f);
+    cmd_list.set_c(s_colormap, param_color_map_influence, param_color_map_interpolate, 0.f, 0.f);
+
+    cmd_list.set_Geometry(g_postprocess);
+    cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 }

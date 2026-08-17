@@ -59,7 +59,7 @@ public:
     void Render(CBackend& cmd_list, f32, bool) override;
 
 private:
-    void ParticleRenderStream(PAPI::Particle* particles, FVF::LIT* pv, u32 count);
+    void ParticleRenderStream(std::span<FVF::LIT> verts, std::span<const PAPI::Particle> particles) const;
 
 public:
     void Copy(dxRender_Visual* pFrom) override;

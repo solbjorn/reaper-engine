@@ -229,36 +229,3 @@ void CObjectSpace::Load()
     Sound->set_geometry_occ(&Static);
     Sound->set_handler(_sound_event);
 }
-
-//----------------------------------------------------------------------
-
-#ifdef DEBUG
-void CObjectSpace::dbgRender()
-{
-    XR_ASSERT(bDebug);
-    RCache.set_Shader(sh_debug);
-
-    for (auto& obb : q_debug.boxes)
-    {
-        Fmatrix X, S, R;
-        obb.xform_get(X);
-        RCache.dbg_DrawOBB(X, obb.m_halfsize, D3DCOLOR_XRGB(255, 0, 0));
-        S.scale(obb.m_halfsize);
-        R.mul(X, S);
-        RCache.dbg_DrawEllipse(R, D3DCOLOR_XRGB(0, 0, 255));
-    }
-
-    q_debug.boxes.clear();
-
-    for (auto& P : dbg_S)
-    {
-        Fsphere& S = P.first;
-        Fmatrix M;
-        M.scale(S.R, S.R, S.R);
-        M.translate_over(S.P);
-        RCache.dbg_DrawEllipse(M, P.second);
-    }
-
-    dbg_S.clear();
-}
-#endif

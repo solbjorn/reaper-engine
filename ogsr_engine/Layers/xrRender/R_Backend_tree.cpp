@@ -16,50 +16,50 @@ void R_tree::unmap()
     c_c_sun = nullptr;
 }
 
-void R_tree::set_m_xform_v(Fmatrix& mat)
+void R_tree::set_m_xform_v(CBackend& cmd_list, const Fmatrix& mat)
 {
-    if (c_m_xform_v)
-        cmd_list().set_c(c_m_xform_v, mat);
+    if (c_m_xform_v != nullptr)
+        cmd_list.set_c(c_m_xform_v, mat);
 }
 
-void R_tree::set_m_xform(Fmatrix& mat)
+void R_tree::set_m_xform(CBackend& cmd_list, const Fmatrix& mat)
 {
-    if (c_m_xform)
-        cmd_list().set_c(c_m_xform, mat);
+    if (c_m_xform != nullptr)
+        cmd_list.set_c(c_m_xform, mat);
 }
 
-void R_tree::set_consts(float x, float y, float z, float w)
+void R_tree::set_consts(CBackend& cmd_list, f32 x, f32 y, f32 z, f32 w)
 {
-    if (c_consts)
-        cmd_list().set_c(c_consts, x, y, z, w);
+    if (c_consts != nullptr)
+        cmd_list.set_c(c_consts, x, y, z, w);
 }
 
-void R_tree::set_wave(Fvector4& vec)
+void R_tree::set_wave(CBackend& cmd_list, const Fvector4& vec)
 {
-    if (c_wave)
-        cmd_list().set_c(c_wave, vec);
+    if (c_wave != nullptr)
+        cmd_list.set_c(c_wave, vec);
 }
 
-void R_tree::set_wind(Fvector4& vec)
+void R_tree::set_wind(CBackend& cmd_list, const Fvector4& vec)
 {
-    if (c_wind)
-        cmd_list().set_c(c_wind, vec);
+    if (c_wind != nullptr)
+        cmd_list.set_c(c_wind, vec);
 }
 
-void R_tree::set_c_scale(float x, float y, float z, float w)
+void R_tree::set_c_scale(CBackend& cmd_list, f32 x, f32 y, f32 z, f32 w)
 {
-    if (c_c_scale)
-        cmd_list().set_c(c_c_scale, x, y, z, w);
+    if (c_c_scale != nullptr)
+        cmd_list.set_c(c_c_scale, x, y, z, w);
 }
 
-void R_tree::set_c_bias(float x, float y, float z, float w)
+void R_tree::set_c_bias(CBackend& cmd_list, f32 x, f32 y, f32 z, f32 w)
 {
-    if (c_c_bias)
-        cmd_list().set_c(c_c_bias, x, y, z, w);
+    if (c_c_bias != nullptr)
+        cmd_list.set_c(c_c_bias, x, y, z, w);
 }
 
-void R_tree::set_c_sun(float x, float y, float z, float w)
+void R_tree::set_c_sun(CBackend& cmd_list, f32 x, f32 y, f32 z, f32 w)
 {
-    if (c_c_sun)
-        cmd_list().set_c(c_c_sun, x, y, z, w);
+    if (c_c_sun != nullptr)
+        cmd_list.set_c(c_c_sun, x, y, z, w);
 }

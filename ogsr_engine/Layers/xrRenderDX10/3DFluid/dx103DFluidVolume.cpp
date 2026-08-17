@@ -3,8 +3,8 @@
 #include "dx103DFluidVolume.h"
 #include "dx103DFluidManager.h"
 
-dx103DFluidVolume::dx103DFluidVolume() {}
-dx103DFluidVolume::~dx103DFluidVolume() {}
+dx103DFluidVolume::dx103DFluidVolume() = default;
+dx103DFluidVolume::~dx103DFluidVolume() = default;
 
 void dx103DFluidVolume::Load(LPCSTR, IReader* data, u32)
 {
@@ -14,9 +14,6 @@ void dx103DFluidVolume::Load(LPCSTR, IReader* data, u32)
     //	Create shader for correct sort while rendering
     //	shader name can't start from a digit
     shader.create("fluid3d_stub", "water\\water_ryaska1");
-
-    //	Create debug geom
-    m_Geom.create(FVF::F_LIT, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
 
     Type = MT_3DFLUIDVOLUME;
 
@@ -36,101 +33,15 @@ void dx103DFluidVolume::Load(LPCSTR, IReader* data, u32)
     vis.sphere.R = vis.box.getradius();
 }
 
-void dx103DFluidVolume::Render(CBackend& cmd_list, float, bool) // LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored ?
+void dx103DFluidVolume::Render(CBackend& cmd_list, f32, bool)
 {
     if (!ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE))
         return;
 
     XR_TRACY_ZONE_SCOPED();
 
-    u32 dwOffset, dwCount;
-
-    FVF::LIT* pv_start = (FVF::LIT*)RImplementation.Vertex.Lock(6 * 3 * 2, m_Geom->vb_stride, dwOffset);
-    FVF::LIT* pv = pv_start;
-
-    constexpr u32 clr = 0xFFFFFFFF;
-
-    Fbox box;
-    box.min.set(-0.5f, -0.5f, -0.5f);
-    box.max.set(0.5f, 0.5f, 0.5f);
-
-    //	Prepare box here
-    {
-        //	Face 0
-        pv->set(box.x1, box.y1, box.z1, clr, 0, 0);
-        pv++;
-        pv->set(box.x1, box.y1, box.z2, clr, 0, 1);
-        pv++;
-        pv->set(box.x1, box.y2, box.z1, clr, 1, 0);
-        pv++;
-        pv->set(box.x1, box.y2, box.z2, clr, 1, 1);
-        pv++;
-
-        //	Face 1
-        pv->set(box.x2, box.y1, box.z2, clr, 0, 1);
-        pv++;
-        pv->set(box.x2, box.y1, box.z1, clr, 0, 0);
-        pv++;
-        pv->set(box.x2, box.y2, box.z2, clr, 1, 1);
-        pv++;
-        pv->set(box.x2, box.y2, box.z1, clr, 1, 0);
-        pv++;
-
-        //	Face 2
-        pv->set(box.x1, box.y1, box.z2, clr, 0, 1);
-        pv++;
-        pv->set(box.x1, box.y1, box.z1, clr, 0, 0);
-        pv++;
-        pv->set(box.x2, box.y1, box.z2, clr, 1, 1);
-        pv++;
-        pv->set(box.x2, box.y1, box.z1, clr, 1, 0);
-        pv++;
-
-        //	Face 3
-        pv->set(box.x1, box.y2, box.z1, clr, 0, 0);
-        pv++;
-        pv->set(box.x1, box.y2, box.z2, clr, 0, 1);
-        pv++;
-        pv->set(box.x2, box.y2, box.z1, clr, 1, 0);
-        pv++;
-        pv->set(box.x2, box.y2, box.z2, clr, 1, 1);
-        pv++;
-
-        //	Face 4
-        pv->set(box.x1, box.y1, box.z1, clr, 0, 1);
-        pv++;
-        pv->set(box.x1, box.y2, box.z1, clr, 0, 0);
-        pv++;
-        pv->set(box.x2, box.y1, box.z1, clr, 1, 1);
-        pv++;
-        pv->set(box.x2, box.y2, box.z1, clr, 1, 0);
-        pv++;
-
-        //	Face 5
-        pv->set(box.x1, box.y2, box.z2, clr, 0, 0);
-        pv++;
-        pv->set(box.x1, box.y1, box.z2, clr, 0, 1);
-        pv++;
-        pv->set(box.x2, box.y2, box.z2, clr, 1, 0);
-        pv++;
-        pv->set(box.x2, box.y1, box.z2, clr, 1, 1);
-        pv++;
-    }
-
-    cmd_list.set_xform_world(m_FluidData.GetTransform());
-
-    dwCount = u32(pv - pv_start);
-    RImplementation.Vertex.Unlock(dwCount, m_Geom->vb_stride);
-    cmd_list.set_Geometry(m_Geom);
-
-    //	Render obstacles
-    for (auto& obst : m_FluidData.GetObstaclesList())
-        cmd_list.set_xform_world(obst);
-
-    constexpr float fTimeStep = 2.0f;
-
-    FluidManager.Update(m_FluidData, fTimeStep);
-    FluidManager.RenderFluid(m_FluidData);
+    FluidManager.Update(cmd_list, m_FluidData, 2.0f);
+    FluidManager.RenderFluid(cmd_list, m_FluidData);
 }
 
 void dx103DFluidVolume::Copy(dxRender_Visual* pFrom) { dxRender_Visual::Copy(pFrom); }

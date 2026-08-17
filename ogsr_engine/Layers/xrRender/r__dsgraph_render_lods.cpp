@@ -13,35 +13,41 @@ void R_dsgraph_structure::render_lods()
     XR_TRACY_ZONE_SCOPED();
 
     // *** Fill VB and generate groups
-    constexpr u32 shid{4};
-    auto iter = mapLOD.begin();
-    FLOD* firstV = (FLOD*)iter->second.pVisual;
-    ref_selement cur_S = firstV->shader->E[shid];
-    float ssaRange = r_ssaLOD_A - r_ssaLOD_B;
-    if (ssaRange < EPS_S)
-        ssaRange = EPS_S;
+    constexpr auto shid{4uz};
+    const auto ssaRange = std::max(r_ssaLOD_A - r_ssaLOD_B, EPS_S);
 
-    constexpr u32 uiVertexPerImposter = 4;
-    const u32 uiImpostersFit = RImplementation.Vertex.GetSize() / (firstV->geom->vb_stride * uiVertexPerImposter);
+    static constexpr auto uiVertexPerImposter{4uz};
+    // 16-bit Quad IB addresses at most 65536 vertices per draw
+    static constexpr auto uiImpostersMax = (std::numeric_limits<u16>::max() + 1uz) / uiVertexPerImposter;
 
-    for (size_t i = 0; i < mapLOD.size(); i++, iter++)
+    const auto uiImpostersFit = std::min(cmd_list.Vertex.GetSize() / (sizeof(FLOD::_hw) * uiVertexPerImposter), uiImpostersMax);
+
+    for (auto batch = mapLOD.begin(), end = mapLOD.end(); batch != end;)
     {
-        const u32 iBatchSize = std::min(mapLOD.size() - i, (size_t)uiImpostersFit);
-        u32 cur_count = 0;
-        u32 vOffset;
-        FLOD::_hw* V = (FLOD::_hw*)RImplementation.Vertex.Lock(iBatchSize * uiVertexPerImposter, firstV->geom->vb_stride, vOffset);
+        const auto iBatchSize = std::min(gsl::narrow_cast<std::size_t>(std::distance(batch, end)), uiImpostersFit);
 
-        for (u32 j = 0; j < iBatchSize; ++j, ++i, iter++)
+        auto cur_S = batch->second.pVisual->shader->E[shid];
+        std::size_t cur_count{0};
+        auto iter = batch;
+
+        const auto verts = cmd_list.Vertex.Lock<FLOD::_hw>(iBatchSize * uiVertexPerImposter);
+        std::size_t written{0};
+
+        for (std::size_t j{0}; j < iBatchSize; ++j)
         {
             // sort out redundancy
-            R_dsgraph::_LodItem& P = iter->second;
-            if (P.pVisual->shader->E[shid] == cur_S)
-                cur_count++;
+            auto& P = iter->second;
+
+            if (P.pVisual->shader->E[shid] != cur_S)
+            {
+                lstLODgroups.emplace_back(cur_count);
+                cur_count = 1;
+
+                cur_S = P.pVisual->shader->E[shid];
+            }
             else
             {
-                lstLODgroups.push_back(cur_count);
-                cur_S = P.pVisual->shader->E[shid];
-                cur_count = 1;
+                ++cur_count;
             }
 
             // calculate alpha
@@ -51,7 +57,7 @@ void R_dsgraph_structure::render_lods()
             u32 uA = u32(clampr(iA, 0, 255));
 
             // calculate direction and shift
-            FLOD* lodV = (FLOD*)P.pVisual;
+            auto lodV = smart_cast<FLOD*>(P.pVisual);
             Fvector Ldir, shift;
             Ldir.sub(lodV->vis.sphere.P, Device.vCameraPosition).normalize();
             shift.mul(Ldir, -.5f * lodV->vis.sphere.R);
@@ -80,49 +86,57 @@ void R_dsgraph_structure::render_lods()
             // Fill VB
             const FLOD::_face& FA = facets[id_best];
             const FLOD::_face& FB = facets[id_next];
-            static constexpr int vid[4] = {3, 0, 2, 1};
-            for (int id : vid)
+
+            for (auto [v, id] : std::views::zip(verts.subspan(written, 4), std::array<std::size_t, 4>{3, 0, 2, 1}))
             {
-                V->p0.add(FB.v[id].v, shift);
-                V->p1.add(FA.v[id].v, shift);
-                V->n0 = FB.N;
-                V->n1 = FA.N;
-                V->sun_af = color_rgba(FB.v[id].c_sun, FA.v[id].c_sun, uA, uF);
-                V->t0x = FB.v[id].tx;
-                V->t0y = FB.v[id].ty;
-                V->t1x = FA.v[id].tx;
-                V->t1y = FA.v[id].ty;
-                V->rgbh0 = FB.v[id].c_rgb_hemi;
-                V->rgbh1 = FA.v[id].c_rgb_hemi;
-                V++;
+                v.p0.add(FB.v[id].v, shift);
+                v.p1.add(FA.v[id].v, shift);
+                v.n0 = FB.N;
+                v.n1 = FA.N;
+                v.sun_af = color_rgba(FB.v[id].c_sun, FA.v[id].c_sun, uA, uF);
+                v.t0x = FB.v[id].tx;
+                v.t0y = FB.v[id].ty;
+                v.t1x = FA.v[id].tx;
+                v.t1y = FA.v[id].ty;
+                v.rgbh0 = FB.v[id].c_rgb_hemi;
+                v.rgbh1 = FA.v[id].c_rgb_hemi;
             }
+
+            written += 4;
+            ++iter;
         }
-        lstLODgroups.push_back(cur_count);
-        RImplementation.Vertex.Unlock(iBatchSize * uiVertexPerImposter, firstV->geom->vb_stride);
+
+        lstLODgroups.emplace_back(cur_count);
+
+        const auto vOffset = cmd_list.Vertex.Unlock<FLOD::_hw>(written);
 
         // *** Render
         cmd_list.set_xform_world(Fidentity);
-        for (u32 uiPass = 0; uiPass < SHADER_PASSES_MAX; ++uiPass)
-        {
-            auto current = mapLOD.begin();
-            u32 vCurOffset = vOffset;
 
-            for (u32 p_count : lstLODgroups)
+        for (std::size_t uiPass{0}; uiPass < SHADER_PASSES_MAX; ++uiPass)
+        {
+            auto vCurOffset = vOffset;
+            auto current = batch;
+
+            for (auto p_count : lstLODgroups)
             {
-                u32 uiNumPasses = current->second.pVisual->shader->E[shid]->passes.size();
-                if (uiPass < uiNumPasses)
+                if (const auto vis = current->second.pVisual; uiPass < vis->shader->E[shid]->passes.size())
                 {
-                    cmd_list.set_Element(current->second.pVisual->shader->E[shid], uiPass);
-                    cmd_list.set_Geometry(firstV->geom);
+                    cmd_list.set_Element(vis->shader->E[shid], uiPass);
+                    cmd_list.set_Geometry(smart_cast<FLOD*>(vis)->geom);
+
                     cmd_list.Render(D3DPT_TRIANGLELIST, vCurOffset, 0, 4 * p_count, 0, 2 * p_count);
+
+                    cmd_list.stat.r.s_flora_lods.add(4 * p_count);
                 }
-                cmd_list.stat.r.s_flora_lods.add(4 * p_count);
-                current += p_count;
+
                 vCurOffset += 4 * p_count;
+                current += p_count;
             }
         }
 
         lstLODgroups.clear();
+        batch = iter;
     }
 
     mapLOD.clear();

@@ -29,14 +29,15 @@ tmc::task<void> CRender::render_lights_shadowed_one(light_ctx& task)
     XR_TRACY_ZONE_SCOPED();
 
     auto& dsgraph = get_context(task.context_id);
+    auto& cmd_list = dsgraph.cmd_list;
     auto iter = task.lights.begin(), end = task.lights.end();
 
-    Target->phase_smap_spot_clear(dsgraph.cmd_list);
+    Target->phase_smap_spot_clear(cmd_list);
 
     while (iter != end)
     {
         XR_TRACY_ZONE_SCOPED();
-        PIX_EVENT(SHADOWED_LIGHTS_RENDER_SUBSPACE);
+        PIX_EVENT_CTX(cmd_list, SHADOWED_LIGHTS_RENDER_SUBSPACE);
 
         auto L = *iter;
         L->svis[dsgraph.context_id].begin();
@@ -56,14 +57,14 @@ tmc::task<void> CRender::render_lights_shadowed_one(light_ctx& task)
 
             stats.s_merged++;
 
-            Target->phase_smap_spot(dsgraph.cmd_list, L);
-            dsgraph.cmd_list.set_xform_world(Fidentity);
-            dsgraph.cmd_list.set_xform_view(L->X.S.view);
-            dsgraph.cmd_list.set_xform_project(L->X.S.project);
+            Target->phase_smap_spot(cmd_list, L);
+            cmd_list.set_xform_world(Fidentity);
+            cmd_list.set_xform_view(L->X.S.view);
+            cmd_list.set_xform_project(L->X.S.project);
             dsgraph.render_graph(0);
 
             if (Details != nullptr && check_grass_shadow(L, ViewBase))
-                co_await Details->Render(dsgraph.cmd_list, L->position);
+                co_await Details->Render(cmd_list, L->position);
 
             L->svis[dsgraph.context_id].end();
 
@@ -124,7 +125,10 @@ tmc::task<void> CRender::render_lights_shadowed(light_Package& LP)
     // if (has_spot_shadowed)
     while (!source.empty())
     {
-        PIX_EVENT(SHADOWED_LIGHTS);
+        auto& cmd_list = get_imm_context().cmd_list;
+
+        PIX_EVENT_CTX(cmd_list, SHADOWED_LIGHTS);
+
         stats.s_used++;
 
         static xr_vector<light_ctx> light_tasks;
@@ -204,18 +208,17 @@ tmc::task<void> CRender::render_lights_shadowed(light_Package& LP)
             release_context(task.context_id);
         }
 
-        auto& cmd_list = get_imm_context().cmd_list;
         cmd_list.Invalidate();
 
         light_tasks.clear();
         std::ranges::sort(L_spot_s, light_cmp);
 
-        PIX_EVENT(UNSHADOWED_LIGHTS);
+        PIX_EVENT_CTX(cmd_list, UNSHADOWED_LIGHTS);
 
         //		switch-to-accumulator
         Target->phase_accumulator(cmd_list);
 
-        PIX_EVENT(POINT_LIGHTS);
+        PIX_EVENT_CTX(cmd_list, POINT_LIGHTS);
 
         //		if (has_point_unshadowed)	-> 	accum point unshadowed
         if (!LP.v_point.empty())
@@ -223,10 +226,10 @@ tmc::task<void> CRender::render_lights_shadowed(light_Package& LP)
             light* L2 = LP.v_point.back();
             LP.v_point.pop_back();
             if (L2->vis.visible)
-                Target->accum_point(L2);
+                Target->accum_point(cmd_list, L2);
         }
 
-        PIX_EVENT(SPOT_LIGHTS);
+        PIX_EVENT_CTX(cmd_list, SPOT_LIGHTS);
 
         //		if (has_spot_unshadowed)	-> 	accum spot unshadowed
         if (!LP.v_spot.empty())
@@ -236,23 +239,25 @@ tmc::task<void> CRender::render_lights_shadowed(light_Package& LP)
             if (L2->vis.visible)
             {
                 LR.compute_xf_spot(L2);
-                Target->accum_spot(L2);
+                Target->accum_spot(cmd_list, L2);
             }
         }
 
-        PIX_EVENT(SPOT_LIGHTS_ACCUM_VOLUMETRIC);
+        PIX_EVENT_CTX(cmd_list, SPOT_LIGHTS_ACCUM_VOLUMETRIC);
 
         //		if (was_spot_shadowed)		->	accum spot shadowed
         if (!L_spot_s.empty())
         {
-            PIX_EVENT(ACCUM_SPOT);
+            PIX_EVENT_CTX(cmd_list, ACCUM_SPOT);
+
             for (light* p_light : L_spot_s)
             {
                 Target->rt_smap_depth->set_slice_read(p_light->vis.smap_ID);
-                Target->accum_spot(p_light);
+                Target->accum_spot(cmd_list, p_light);
             }
 
-            PIX_EVENT(ACCUM_VOLUMETRIC);
+            PIX_EVENT_CTX(cmd_list, ACCUM_VOLUMETRIC);
+
             if (ps_r2_ls_flags.is(R2FLAG_VOLUMETRIC_LIGHTS))
             {
                 // Current Resolution
@@ -266,7 +271,7 @@ tmc::task<void> CRender::render_lights_shadowed(light_Package& LP)
                 for (light* p_light : L_spot_s)
                 {
                     Target->rt_smap_depth->set_slice_read(p_light->vis.smap_ID);
-                    Target->accum_volumetric(p_light);
+                    Target->accum_volumetric(cmd_list, p_light);
                 }
 
                 // Restore resolution
@@ -286,7 +291,10 @@ tmc::task<void> CRender::render_lights(light_Package& LP)
     if (!LP.v_shadowed.empty())
         co_await render_lights_shadowed(LP);
 
-    PIX_EVENT(POINT_LIGHTS_ACCUM);
+    auto& cmd_list = get_imm_context().cmd_list;
+
+    PIX_EVENT_CTX(cmd_list, POINT_LIGHTS_ACCUM);
+
     // Point lighting (unshadowed, if left)
     if (!LP.v_point.empty())
     {
@@ -294,12 +302,13 @@ tmc::task<void> CRender::render_lights(light_Package& LP)
         for (light* p_light : Lvec)
         {
             if (p_light->vis.visible)
-                Target->accum_point(p_light);
+                Target->accum_point(cmd_list, p_light);
         }
         Lvec.clear();
     }
 
-    PIX_EVENT(SPOT_LIGHTS_ACCUM);
+    PIX_EVENT_CTX(cmd_list, SPOT_LIGHTS_ACCUM);
+
     // Spot lighting (unshadowed, if left)
     if (!LP.v_spot.empty())
     {
@@ -309,7 +318,7 @@ tmc::task<void> CRender::render_lights(light_Package& LP)
             if (p_light->vis.visible)
             {
                 LR.compute_xf_spot(p_light);
-                Target->accum_spot(p_light);
+                Target->accum_spot(cmd_list, p_light);
             }
         }
         Lvec.clear();

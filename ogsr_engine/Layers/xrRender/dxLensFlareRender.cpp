@@ -5,8 +5,6 @@
 #include "../../xr_3da/xr_efflensflare.h"
 #include "../../xr_3da/IGame_Persistent.h"
 
-#define MAX_Flares 24
-
 void dxFlareRender::Copy(IFlareRender& _in)
 {
     auto& in{*smart_cast<const dxFlareRender*>(&_in)};
@@ -33,112 +31,126 @@ void dxLensFlareRender::Render(CLensFlare& owner, BOOL bSun, BOOL bFlares, BOOL 
 {
     XR_TRACY_ZONE_SCOPED();
 
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+
+    const auto fDistance = g_pGamePersistent->Environment().CurrentEnv->far_plane * 0.75f;
     Fcolor dwLight;
-    Fcolor color;
-    Fvector vec, vecSx, vecSy;
-    Fvector vecDx, vecDy;
-
     dwLight.set(owner.LightColor);
-    std::inplace_vector<ref_shader, MAX_Flares> _2render;
 
-    u32 VS_Offset;
-    FVF::LIT* pv = (FVF::LIT*)RImplementation.Vertex.Lock(MAX_Flares * 4, hGeom.stride(), VS_Offset);
+    xr::inlined_vector<ref_shader, 16> _2render;
 
-    float fDistance = g_pGamePersistent->Environment().CurrentEnv->far_plane * 0.75f;
+    // Source + n flares + gradient
+    const auto verts = cmd_list.Vertex.Lock<FVF::LIT>((owner.m_Current->m_Flares.size() + 2) * 4);
+    std::size_t written{0};
 
-    if (bSun)
+    if (bSun && owner.m_Current->m_Flags.is(CLensFlareDescriptor::flSource))
     {
-        if (owner.m_Current->m_Flags.is(CLensFlareDescriptor::flSource))
+        Fvector3 vecSx;
+        vecSx.mul(owner.vecX, owner.m_Current->m_Source.fRadius * fDistance);
+        Fvector3 vecSy;
+        vecSy.mul(owner.vecY, owner.m_Current->m_Source.fRadius * fDistance);
+
+        Fcolor color;
+        if (owner.m_Current->m_Source.ignore_color)
+            color.set(1.0f, 1.0f, 1.0f, 1.0f);
+        else
+            color.set(dwLight);
+
+        color.a *= owner.m_StateBlend;
+        u32 c = color.get();
+
+        const auto v = verts.subspan(written, 4);
+        v[0].set(owner.vecLight.x + vecSx.x - vecSy.x, owner.vecLight.y + vecSx.y - vecSy.y, owner.vecLight.z + vecSx.z - vecSy.z, c, 0, 0);
+        v[1].set(owner.vecLight.x + vecSx.x + vecSy.x, owner.vecLight.y + vecSx.y + vecSy.y, owner.vecLight.z + vecSx.z + vecSy.z, c, 0, 1);
+        v[2].set(owner.vecLight.x - vecSx.x - vecSy.x, owner.vecLight.y - vecSx.y - vecSy.y, owner.vecLight.z - vecSx.z - vecSy.z, c, 1, 0);
+        v[3].set(owner.vecLight.x - vecSx.x + vecSy.x, owner.vecLight.y - vecSx.y + vecSy.y, owner.vecLight.z - vecSx.z + vecSy.z, c, 1, 1);
+        written += 4;
+
+        _2render.emplace_back(smart_cast<const dxFlareRender*>(&*owner.m_Current->m_Source.m_pRender)->hShader);
+    }
+
+    if (owner.fBlend < EPS_L)
+        goto render;
+
+    if (bFlares && owner.m_Current->m_Flags.is(CLensFlareDescriptor::flFlare))
+    {
+        Fvector3 vecDx;
+        vecDx.normalize(owner.vecAxis);
+        Fvector3 vecDy;
+        vecDy.crossproduct(vecDx, owner.vecDir);
+
+        const auto cnt = owner.m_Current->m_Flares.size() * 4;
+
+        for (auto [v, F] : std::views::zip(verts.subspan(written, cnt) | std::views::chunk(4), owner.m_Current->m_Flares))
         {
-            vecSx.mul(owner.vecX, owner.m_Current->m_Source.fRadius * fDistance);
-            vecSy.mul(owner.vecY, owner.m_Current->m_Source.fRadius * fDistance);
-            if (owner.m_Current->m_Source.ignore_color)
-                color.set(1.f, 1.f, 1.f, 1.f);
-            else
-                color.set(dwLight);
-            color.a *= owner.m_StateBlend;
+            Fvector3 vec;
+            vec.mul(owner.vecAxis, F.fPosition);
+            vec.add(owner.vecCenter);
+
+            Fvector3 vecSx;
+            vecSx.mul(vecDx, F.fRadius * fDistance);
+            Fvector3 vecSy;
+            vecSy.mul(vecDy, F.fRadius * fDistance);
+
+            Fcolor color;
+            color.set(dwLight);
+            color.mul_rgba(F.fOpacity * owner.fBlend * owner.m_StateBlend);
             u32 c = color.get();
-            pv->set(owner.vecLight.x + vecSx.x - vecSy.x, owner.vecLight.y + vecSx.y - vecSy.y, owner.vecLight.z + vecSx.z - vecSy.z, c, 0, 0);
-            pv++;
-            pv->set(owner.vecLight.x + vecSx.x + vecSy.x, owner.vecLight.y + vecSx.y + vecSy.y, owner.vecLight.z + vecSx.z + vecSy.z, c, 0, 1);
-            pv++;
-            pv->set(owner.vecLight.x - vecSx.x - vecSy.x, owner.vecLight.y - vecSx.y - vecSy.y, owner.vecLight.z - vecSx.z - vecSy.z, c, 1, 0);
-            pv++;
-            pv->set(owner.vecLight.x - vecSx.x + vecSy.x, owner.vecLight.y - vecSx.y + vecSy.y, owner.vecLight.z - vecSx.z + vecSy.z, c, 1, 1);
-            pv++;
-            _2render.push_back(((dxFlareRender*)&*owner.m_Current->m_Source.m_pRender)->hShader);
+
+            v[0].set(vec.x + vecSx.x - vecSy.x, vec.y + vecSx.y - vecSy.y, vec.z + vecSx.z - vecSy.z, c, 0, 0);
+            v[1].set(vec.x + vecSx.x + vecSy.x, vec.y + vecSx.y + vecSy.y, vec.z + vecSx.z + vecSy.z, c, 0, 1);
+            v[2].set(vec.x - vecSx.x - vecSy.x, vec.y - vecSx.y - vecSy.y, vec.z - vecSx.z - vecSy.z, c, 1, 0);
+            v[3].set(vec.x - vecSx.x + vecSy.x, vec.y - vecSx.y + vecSy.y, vec.z - vecSx.z + vecSy.z, c, 1, 1);
+
+            _2render.emplace_back(smart_cast<const dxFlareRender*>(&*F.m_pRender)->hShader);
         }
+
+        written += cnt;
     }
-    if (owner.fBlend >= EPS_L)
+
+    // gradient
+    if (bGradient && owner.m_Current->m_Flags.is(CLensFlareDescriptor::flGradient) && owner.fGradientValue >= EPS_L)
     {
-        if (bFlares)
-        {
-            vecDx.normalize(owner.vecAxis);
-            vecDy.crossproduct(vecDx, owner.vecDir);
-            if (owner.m_Current->m_Flags.is(CLensFlareDescriptor::flFlare))
-            {
-                for (CLensFlareDescriptor::FlareIt it = owner.m_Current->m_Flares.begin(); it != owner.m_Current->m_Flares.end(); it++)
-                {
-                    CLensFlareDescriptor::SFlare& F = *it;
-                    vec.mul(owner.vecAxis, F.fPosition);
-                    vec.add(owner.vecCenter);
-                    vecSx.mul(vecDx, F.fRadius * fDistance);
-                    vecSy.mul(vecDy, F.fRadius * fDistance);
-                    float cl = F.fOpacity * owner.fBlend * owner.m_StateBlend;
-                    color.set(dwLight);
-                    color.mul_rgba(cl);
-                    u32 c = color.get();
-                    pv->set(vec.x + vecSx.x - vecSy.x, vec.y + vecSx.y - vecSy.y, vec.z + vecSx.z - vecSy.z, c, 0, 0);
-                    pv++;
-                    pv->set(vec.x + vecSx.x + vecSy.x, vec.y + vecSx.y + vecSy.y, vec.z + vecSx.z + vecSy.z, c, 0, 1);
-                    pv++;
-                    pv->set(vec.x - vecSx.x - vecSy.x, vec.y - vecSx.y - vecSy.y, vec.z - vecSx.z - vecSy.z, c, 1, 0);
-                    pv++;
-                    pv->set(vec.x - vecSx.x + vecSy.x, vec.y - vecSx.y + vecSy.y, vec.z - vecSx.z + vecSy.z, c, 1, 1);
-                    pv++;
-                    _2render.push_back(((dxFlareRender*)&*it->m_pRender)->hShader);
-                }
-            }
-        }
-        // gradient
-        if (bGradient && (owner.fGradientValue >= EPS_L))
-        {
-            if (owner.m_Current->m_Flags.is(CLensFlareDescriptor::flGradient))
-            {
-                vecSx.mul(owner.vecX, owner.m_Current->m_Gradient.fRadius * owner.fGradientValue * fDistance);
-                vecSy.mul(owner.vecY, owner.m_Current->m_Gradient.fRadius * owner.fGradientValue * fDistance);
+        Fvector3 vecSx;
+        vecSx.mul(owner.vecX, owner.m_Current->m_Gradient.fRadius * owner.fGradientValue * fDistance);
+        Fvector3 vecSy;
+        vecSy.mul(owner.vecY, owner.m_Current->m_Gradient.fRadius * owner.fGradientValue * fDistance);
 
-                color.set(dwLight);
-                color.mul_rgba(owner.fGradientValue * owner.m_StateBlend);
+        Fcolor color;
+        color.set(dwLight);
+        color.mul_rgba(owner.fGradientValue * owner.m_StateBlend);
+        u32 c = color.get();
 
-                u32 c = color.get();
-                pv->set(owner.vecLight.x + vecSx.x - vecSy.x, owner.vecLight.y + vecSx.y - vecSy.y, owner.vecLight.z + vecSx.z - vecSy.z, c, 0, 0);
-                pv++;
-                pv->set(owner.vecLight.x + vecSx.x + vecSy.x, owner.vecLight.y + vecSx.y + vecSy.y, owner.vecLight.z + vecSx.z + vecSy.z, c, 0, 1);
-                pv++;
-                pv->set(owner.vecLight.x - vecSx.x - vecSy.x, owner.vecLight.y - vecSx.y - vecSy.y, owner.vecLight.z - vecSx.z - vecSy.z, c, 1, 0);
-                pv++;
-                pv->set(owner.vecLight.x - vecSx.x + vecSy.x, owner.vecLight.y - vecSx.y + vecSy.y, owner.vecLight.z - vecSx.z + vecSy.z, c, 1, 1);
-                pv++;
-                _2render.push_back(((dxFlareRender*)&*owner.m_Current->m_Gradient.m_pRender)->hShader);
-            }
-        }
+        const auto v = verts.subspan(written, 4);
+        v[0].set(owner.vecLight.x + vecSx.x - vecSy.x, owner.vecLight.y + vecSx.y - vecSy.y, owner.vecLight.z + vecSx.z - vecSy.z, c, 0, 0);
+        v[1].set(owner.vecLight.x + vecSx.x + vecSy.x, owner.vecLight.y + vecSx.y + vecSy.y, owner.vecLight.z + vecSx.z + vecSy.z, c, 0, 1);
+        v[2].set(owner.vecLight.x - vecSx.x - vecSy.x, owner.vecLight.y - vecSx.y - vecSy.y, owner.vecLight.z - vecSx.z - vecSy.z, c, 1, 0);
+        v[3].set(owner.vecLight.x - vecSx.x + vecSy.x, owner.vecLight.y - vecSx.y + vecSy.y, owner.vecLight.z - vecSx.z + vecSy.z, c, 1, 1);
+        written += 4;
+
+        _2render.emplace_back(smart_cast<const dxFlareRender*>(&*owner.m_Current->m_Gradient.m_pRender)->hShader);
     }
-    RImplementation.Vertex.Unlock(_2render.size() * 4, hGeom.stride());
 
-    RCache.set_xform_world(Fidentity);
-    RCache.set_Geometry(hGeom);
-    for (u32 i = 0; i < _2render.size(); i++)
+render:
+    const auto VS_Offset = cmd_list.Vertex.Unlock<FVF::LIT>(XR_ASSERT_VAL(written == _2render.size() * 4));
+
+    if (written == 0)
+        return;
+
+    cmd_list.set_xform_world(Fidentity);
+    cmd_list.set_Geometry(hGeom);
+
+    for (auto [i, shader] : std::views::enumerate(_2render))
     {
-        if (_2render[i])
-        {
-            u32 vBase = i * 4 + VS_Offset;
-            RCache.set_Shader(_2render[i]);
-            RCache.Render(D3DPT_TRIANGLELIST, vBase, 0, 4, 0, 2);
-        }
+        cmd_list.set_Shader(XR_ASSERT_VAL(shader));
+        cmd_list.Render(D3DPT_TRIANGLELIST, VS_Offset + i * 4, 0, 4, 0, 2);
     }
 }
 
-void dxLensFlareRender::OnDeviceCreate() { hGeom.create(FVF::F_LIT, RImplementation.Vertex.Buffer(), RImplementation.QuadIB); }
+void dxLensFlareRender::OnDeviceCreate()
+{
+    hGeom.create(FVF::F_LIT, SGeometry::default_vb(), RImplementation.QuadIB);
+    XR_ASSERT(hGeom.stride() == sizeof(FVF::LIT));
+}
 
 void dxLensFlareRender::OnDeviceDestroy() { hGeom.destroy(); }

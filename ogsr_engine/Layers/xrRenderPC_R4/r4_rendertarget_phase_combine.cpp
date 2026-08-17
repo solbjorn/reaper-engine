@@ -8,15 +8,17 @@
 tmc::task<void> CRenderTarget::phase_combine()
 {
     XR_TRACY_ZONE_SCOPED();
-    PIX_EVENT(phase_combine);
 
     auto& dsgraph = RImplementation.get_imm_context();
+    auto& cmd_list = dsgraph.cmd_list;
+
+    PIX_EVENT_CTX(cmd_list, phase_combine);
+
     bool ssfx_PrevPos_Requiered = false;
 
     //	TODO: DX10: Remove half poxel offset
     bool _menu_pp = g_pGamePersistent ? g_pGamePersistent->OnRenderPPUI_query() : false;
 
-    u32 Offset = 0;
     Fvector2 p0, p1;
 
     //*** exposure-pipeline
@@ -63,8 +65,8 @@ tmc::task<void> CRenderTarget::phase_combine()
         {
             // Clear RT
             constexpr Fcolor ColorRGBA{0.0f, 0.0f, 0.0f, 1.0f};
-            RCache.ClearRT(rt_ssfx_temp, ColorRGBA);
-            RCache.ClearRT(rt_ssfx_temp2, ColorRGBA);
+            cmd_list.ClearRT(rt_ssfx_temp, ColorRGBA);
+            cmd_list.ClearRT(rt_ssfx_temp2, ColorRGBA);
 
             if (RImplementation.o.ssfx_ao && ps_ssfx_ao.y > 0)
             {
@@ -85,19 +87,19 @@ tmc::task<void> CRenderTarget::phase_combine()
     // low/hi RTs
     if (!RImplementation.o.dx10_msaa)
     {
-        RCache.ClearRT(rt_Generic_0, ColorRGBA);
-        RCache.ClearRT(rt_Generic_1, ColorRGBA);
-        u_setrt(RCache, rt_Generic_0, rt_Generic_1, {}, get_base_zb());
+        cmd_list.ClearRT(rt_Generic_0, ColorRGBA);
+        cmd_list.ClearRT(rt_Generic_1, ColorRGBA);
+        u_setrt(cmd_list, rt_Generic_0, rt_Generic_1, {}, get_base_zb());
     }
     else
     {
-        RCache.ClearRT(rt_Generic_0_r, ColorRGBA);
-        RCache.ClearRT(rt_Generic_1_r, ColorRGBA);
-        u_setrt(RCache, rt_Generic_0_r, rt_Generic_1_r, {}, rt_MSAADepth);
+        cmd_list.ClearRT(rt_Generic_0_r, ColorRGBA);
+        cmd_list.ClearRT(rt_Generic_1_r, ColorRGBA);
+        u_setrt(cmd_list, rt_Generic_0_r, rt_Generic_1_r, {}, rt_MSAADepth);
     }
 
-    RCache.set_CullMode(CULL_NONE);
-    RCache.set_Stencil(FALSE);
+    cmd_list.set_CullMode(CULL_NONE);
+    cmd_list.set_Stencil(FALSE);
 
     // draw skybox
     g_pGamePersistent->Environment().RenderSky();
@@ -107,13 +109,13 @@ tmc::task<void> CRenderTarget::phase_combine()
     g_pGamePersistent->Environment().RenderClouds();
 
     //
-    RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00); // stencil should be >= 1
+    cmd_list.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00); // stencil should be >= 1
 
     // Draw full-screen quad textured with our scene image
     if (!_menu_pp)
     {
         XR_TRACY_ZONE_SCOPED();
-        PIX_EVENT(combine_1);
+        PIX_EVENT_CTX(cmd_list, combine_1);
 
         // Compute params
         CEnvDescriptorMixer& envdesc = *g_pGamePersistent->Environment().CurrentEnv;
@@ -152,48 +154,46 @@ tmc::task<void> CRenderTarget::phase_combine()
         float scale_Y = float(Device.dwHeight) / float(TEX_jitter);
 
         // Fill vertex buffer
-        FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
-        pv->set(-1, 1, 0, 1, 0, 0, scale_Y);
-        pv++;
-        pv->set(-1, -1, 0, 0, 0, 0, 0);
-        pv++;
-        pv->set(1, 1, 1, 1, 0, scale_X, scale_Y);
-        pv++;
-        pv->set(1, -1, 1, 0, 0, scale_X, 0);
-        pv++;
-        RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
+        const auto verts = cmd_list.Vertex.Lock<FVF::TL>(4);
+
+        verts[0].set(-1, 1, 0, 1, 0, 0, scale_Y);
+        verts[1].set(-1, -1, 0, 0, 0, 0, 0);
+        verts[2].set(1, 1, 1, 1, 0, scale_X, scale_Y);
+        verts[3].set(1, -1, 1, 0, 0, scale_X, 0);
+
+        const auto Offset = cmd_list.Vertex.Unlock<FVF::TL>(4);
 
         // Draw
-        RCache.set_Element(s_combine->E[0]);
-        RCache.set_Geometry(g_combine);
+        cmd_list.set_Element(s_combine->E[0]);
+        cmd_list.set_Geometry(g_combine);
 
-        RCache.set_c("m_v2w", Device.mInvView);
-        RCache.set_c("L_ambient", ambclr);
+        cmd_list.set_c("m_v2w", Device.mInvView);
+        cmd_list.set_c("L_ambient", ambclr);
 
-        RCache.set_c("Ldynamic_color", sunclr);
-        RCache.set_c("Ldynamic_dir", sundir);
+        cmd_list.set_c("Ldynamic_color", sunclr);
+        cmd_list.set_c("Ldynamic_dir", sundir);
 
-        RCache.set_c("env_color", envclr);
-        RCache.set_c("fog_color", fogclr);
+        cmd_list.set_c("env_color", envclr);
+        cmd_list.set_c("fog_color", fogclr);
 
         if (!RImplementation.o.dx10_msaa)
         {
-            RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+            cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
         }
         else
         {
-            RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x81, 0);
-            RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+            cmd_list.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x81, 0);
+            cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
-            RCache.set_Element(s_combine_msaa->E[0]);
-            RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x81, 0x81, 0);
-            RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+            cmd_list.set_Element(s_combine_msaa->E[0]);
+            cmd_list.set_Stencil(TRUE, D3DCMP_EQUAL, 0x81, 0x81, 0);
+            cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
-            RCache.set_Stencil(FALSE, D3DCMP_EQUAL, 0x01, 0xff, 0);
+            cmd_list.set_Stencil(FALSE, D3DCMP_EQUAL, 0x01, 0xff, 0);
         }
     }
 
-    auto* pContext = RCache.context();
+    auto pContext = cmd_list.context();
 
     // Copy previous rt
     if (!RImplementation.o.dx10_msaa)
@@ -212,23 +212,23 @@ tmc::task<void> CRenderTarget::phase_combine()
     {
         constexpr Fcolor ColorRGBA{0.0f, 0.0f, 0.0f, 1.0f};
 
-        RCache.ClearRT(rt_ssfx_temp, ColorRGBA);
-        RCache.ClearRT(rt_ssfx_temp2, ColorRGBA);
+        cmd_list.ClearRT(rt_ssfx_temp, ColorRGBA);
+        cmd_list.ClearRT(rt_ssfx_temp2, ColorRGBA);
 
-        u_setrt(RCache, rt_ssfx_temp, {}, {}, nullptr);
+        u_setrt(cmd_list, rt_ssfx_temp, {}, {}, nullptr);
 
         const f32 w = gsl::narrow_cast<f32>(Device.dwWidth);
         const f32 h = gsl::narrow_cast<f32>(Device.dwHeight);
 
         // Render Scale
-        RCache.set_viewport_size(w / ps_ssfx_water.x, h / ps_ssfx_water.x);
+        cmd_list.set_viewport_size(w / ps_ssfx_water.x, h / ps_ssfx_water.x);
 
         // Render Water SSR
-        RCache.set_xform_world(Fidentity);
+        cmd_list.set_xform_world(Fidentity);
         dsgraph.render_water_ssr();
 
         // Restore Viewport
-        RCache.set_viewport_size(w, h);
+        cmd_list.set_viewport_size(w, h);
 
         // Save Frame
         pContext->CopyResource(rt_ssfx_water->pTexture->surface_get(), rt_ssfx_temp->pTexture->surface_get());
@@ -241,12 +241,12 @@ tmc::task<void> CRenderTarget::phase_combine()
     }
 
     if (!RImplementation.o.dx10_msaa)
-        u_setrt(RCache, rt_Generic_0, {}, {}, get_base_zb());
+        u_setrt(cmd_list, rt_Generic_0, {}, {}, get_base_zb());
     else
-        u_setrt(RCache, rt_Generic_0_r, {}, {}, rt_MSAADepth);
+        u_setrt(cmd_list, rt_Generic_0_r, {}, {}, rt_MSAADepth);
 
     // Final water rendering ( All the code above can be omitted if the Water module isn't installed )
-    RCache.set_xform_world(Fidentity);
+    cmd_list.set_xform_world(Fidentity);
     dsgraph.render_water();
 
     {
@@ -255,9 +255,9 @@ tmc::task<void> CRenderTarget::phase_combine()
             phase_ssfx_rain(); // Render a small color buffer to do the refraction and more
 
             if (!RImplementation.o.dx10_msaa)
-                u_setrt(RCache, rt_Generic_0, {}, {}, get_base_zb());
+                u_setrt(cmd_list, rt_Generic_0, {}, {}, get_base_zb());
             else
-                u_setrt(RCache, rt_Generic_0_r, {}, {}, rt_MSAADepth);
+                u_setrt(cmd_list, rt_Generic_0_r, {}, {}, rt_MSAADepth);
         }
 
         co_await g_pGamePersistent->Environment().RenderLast(); // rain/thunder-bolts
@@ -268,16 +268,16 @@ tmc::task<void> CRenderTarget::phase_combine()
 
     // Forward rendering
     {
-        PIX_EVENT(Forward_rendering);
+        PIX_EVENT_CTX(cmd_list, Forward_rendering);
 
         if (!RImplementation.o.dx10_msaa)
-            u_setrt(RCache, rt_Generic_0, {}, {}, get_base_zb()); // LDR RT
+            u_setrt(cmd_list, rt_Generic_0, {}, {}, get_base_zb()); // LDR RT
         else
-            u_setrt(RCache, rt_Generic_0_r, {}, {}, rt_MSAADepth); // LDR RT
+            u_setrt(cmd_list, rt_Generic_0_r, {}, {}, rt_MSAADepth); // LDR RT
 
-        RCache.set_CullMode(CULL_CCW);
-        RCache.set_Stencil(FALSE);
-        RCache.set_ColorWriteEnable();
+        cmd_list.set_CullMode(CULL_CCW);
+        cmd_list.set_Stencil(FALSE);
+        cmd_list.set_ColorWriteEnable();
         dsgraph.render_forward();
 
         if (g_pGamePersistent)
@@ -298,7 +298,7 @@ tmc::task<void> CRenderTarget::phase_combine()
     }
 
     // Perform blooming filter and distortion if needed
-    RCache.set_Stencil(FALSE);
+    cmd_list.set_Stencil(FALSE);
 
     if (RImplementation.o.dx10_msaa)
     {
@@ -314,36 +314,37 @@ tmc::task<void> CRenderTarget::phase_combine()
     const bool bDistort = !dsgraph.mapDistort.empty() || !dsgraph.mapHUDDistort.empty() || _menu_pp;
     if (bDistort)
     {
-        PIX_EVENT(render_distort_objects);
+        PIX_EVENT_CTX(cmd_list, render_distort_objects);
 
         constexpr Fcolor ColorRGBA{127.0f / 255.0f, 127.0f / 255.0f, 0.0f, 127.0f / 255.0f};
 
         if (!RImplementation.o.dx10_msaa)
         {
-            u_setrt(RCache, rt_Generic_1, {}, {}, get_base_zb()); // Now RT is a distortion mask
-            RCache.ClearRT(rt_Generic_1, ColorRGBA);
+            u_setrt(cmd_list, rt_Generic_1, {}, {}, get_base_zb()); // Now RT is a distortion mask
+            cmd_list.ClearRT(rt_Generic_1, ColorRGBA);
         }
         else
         {
-            u_setrt(RCache, rt_Generic_1_r, {}, {}, rt_MSAADepth); // Now RT is a distortion mask
-            RCache.ClearRT(rt_Generic_1_r, ColorRGBA);
+            u_setrt(cmd_list, rt_Generic_1_r, {}, {}, rt_MSAADepth); // Now RT is a distortion mask
+            cmd_list.ClearRT(rt_Generic_1_r, ColorRGBA);
         }
 
-        RCache.set_CullMode(CULL_CCW);
-        RCache.set_Stencil(FALSE);
-        RCache.set_ColorWriteEnable();
+        cmd_list.set_CullMode(CULL_CCW);
+        cmd_list.set_Stencil(FALSE);
+        cmd_list.set_ColorWriteEnable();
+
         dsgraph.render_distort();
 
         if (g_pGamePersistent)
             g_pGamePersistent->OnRenderPPUI_PP(); // PP-UI
     }
 
-    RCache.set_Stencil(FALSE);
+    cmd_list.set_Stencil(FALSE);
 
     // Screen space sunshafts
     if (!_menu_pp && (ps_r_sunshafts_mode & SS_SS_MASK) && need_to_render_sunshafts())
     {
-        PIX_EVENT(phase_ss_ss);
+        PIX_EVENT_CTX(cmd_list, phase_ss_ss);
         PhaseSSSS();
     }
 
@@ -357,7 +358,7 @@ tmc::task<void> CRenderTarget::phase_combine()
         if (!Device.m_SecondViewport.IsSVPFrame())
             phase_ssfx_bloom();
         else
-            RCache.ClearRT(rt_ssfx_bloom1, ColorRGBA);
+            cmd_list.ClearRT(rt_ssfx_bloom1, ColorRGBA);
     }
 
     if (ps_r2_ls_flags.test(R2FLAG_DOF))
@@ -373,7 +374,7 @@ tmc::task<void> CRenderTarget::phase_combine()
     if (ps_smaa_quality)
     {
         ProcessSMAA();
-        RCache.set_Stencil(FALSE);
+        cmd_list.set_Stencil(FALSE);
     }
 
     // HOLGER - HACK
@@ -383,24 +384,24 @@ tmc::task<void> CRenderTarget::phase_combine()
     if (RImplementation.o.dx10_msaa)
     {
         if (PP_Complex)
-            u_setrt(RCache, rt_Generic, {}, {}, get_base_zb()); // LDR RT
+            u_setrt(cmd_list, rt_Generic, {}, {}, get_base_zb()); // LDR RT
         else
-            u_setrt(RCache, Device.dwWidth, Device.dwHeight, get_base_rt(), nullptr, nullptr, get_base_zb());
+            u_setrt(cmd_list, Device.dwWidth, Device.dwHeight, get_base_rt(), nullptr, nullptr, get_base_zb());
     }
     else
     {
         if (PP_Complex)
-            u_setrt(RCache, rt_Color, {}, {}, get_base_zb()); // LDR RT
+            u_setrt(cmd_list, rt_Color, {}, {}, get_base_zb()); // LDR RT
         else
-            u_setrt(RCache, Device.dwWidth, Device.dwHeight, get_base_rt(), nullptr, nullptr, get_base_zb());
+            u_setrt(cmd_list, Device.dwWidth, Device.dwHeight, get_base_rt(), nullptr, nullptr, get_base_zb());
     }
 
-    RCache.set_CullMode(CULL_NONE);
-    RCache.set_Stencil(FALSE);
+    cmd_list.set_CullMode(CULL_NONE);
+    cmd_list.set_Stencil(FALSE);
 
     {
         XR_TRACY_ZONE_SCOPED();
-        PIX_EVENT(combine_2);
+        PIX_EVENT_CTX(cmd_list, combine_2);
 
         //
         struct alignas(8) v_aa
@@ -414,7 +415,7 @@ tmc::task<void> CRenderTarget::phase_combine()
             Fvector2 uv5xy, uv5zw;
             Fvector2 uv6xy, uv6zw;
         };
-        static_assert(sizeof(struct v_aa) == 88);
+        static_assert(sizeof(struct v_aa) == CRenderTarget::aa_aa_stride);
 
         float _w = float(Device.dwWidth);
         float _h = float(Device.dwHeight);
@@ -424,86 +425,88 @@ tmc::task<void> CRenderTarget::phase_combine()
         p1.set((_w + .5f) / _w, (_h + .5f) / _h);
 
         // Fill vertex buffer
-        v_aa* pv = (v_aa*)RImplementation.Vertex.Lock(4, g_aa_AA->vb_stride, Offset);
-        pv->pxy.set(EPS, float(_h + EPS));
-        pv->pzw.set(EPS, 1.f);
-        pv->uv0.set(p0.x, p1.y);
-        pv->uv1.set(p0.x - ddw, p1.y - ddh);
-        pv->uv2.set(p0.x + ddw, p1.y + ddh);
-        pv->uv3.set(p0.x + ddw, p1.y - ddh);
-        pv->uv4.set(p0.x - ddw, p1.y + ddh);
-        pv->uv5xy.set(p0.x - ddw, p1.y);
-        pv->uv5zw.set(p1.y, p0.x + ddw);
-        pv->uv6xy.set(p0.x, p1.y - ddh);
-        pv->uv6zw.set(p1.y + ddh, p0.x);
-        pv++;
-        pv->pxy.set(EPS, EPS);
-        pv->pzw.set(EPS, 1.f);
-        pv->uv0.set(p0.x, p0.y);
-        pv->uv1.set(p0.x - ddw, p0.y - ddh);
-        pv->uv2.set(p0.x + ddw, p0.y + ddh);
-        pv->uv3.set(p0.x + ddw, p0.y - ddh);
-        pv->uv4.set(p0.x - ddw, p0.y + ddh);
-        pv->uv5xy.set(p0.x - ddw, p0.y);
-        pv->uv5zw.set(p0.y, p0.x + ddw);
-        pv->uv6xy.set(p0.x, p0.y - ddh);
-        pv->uv6zw.set(p0.y + ddh, p0.x);
-        pv++;
-        pv->pxy.set(float(_w + EPS), float(_h + EPS));
-        pv->pzw.set(EPS, 1.f);
-        pv->uv0.set(p1.x, p1.y);
-        pv->uv1.set(p1.x - ddw, p1.y - ddh);
-        pv->uv2.set(p1.x + ddw, p1.y + ddh);
-        pv->uv3.set(p1.x + ddw, p1.y - ddh);
-        pv->uv4.set(p1.x - ddw, p1.y + ddh);
-        pv->uv5xy.set(p1.x - ddw, p1.y);
-        pv->uv5zw.set(p1.y, p1.x + ddw);
-        pv->uv6xy.set(p1.x, p1.y - ddh);
-        pv->uv6zw.set(p1.y + ddh, p1.x);
-        pv++;
-        pv->pxy.set(float(_w + EPS), EPS);
-        pv->pzw.set(EPS, 1.f);
-        pv->uv0.set(p1.x, p0.y);
-        pv->uv1.set(p1.x - ddw, p0.y - ddh);
-        pv->uv2.set(p1.x + ddw, p0.y + ddh);
-        pv->uv3.set(p1.x + ddw, p0.y - ddh);
-        pv->uv4.set(p1.x - ddw, p0.y + ddh);
-        pv->uv5xy.set(p1.x - ddw, p0.y);
-        pv->uv5zw.set(p0.y, p1.x + ddw);
-        pv->uv6xy.set(p1.x, p0.y - ddh);
-        pv->uv6zw.set(p0.y + ddh, p1.x);
-        pv++;
-        RImplementation.Vertex.Unlock(4, g_aa_AA->vb_stride);
+        const auto verts = cmd_list.Vertex.Lock<v_aa>(4);
+
+        verts[0].pxy.set(EPS, float(_h + EPS));
+        verts[0].pzw.set(EPS, 1.f);
+        verts[0].uv0.set(p0.x, p1.y);
+        verts[0].uv1.set(p0.x - ddw, p1.y - ddh);
+        verts[0].uv2.set(p0.x + ddw, p1.y + ddh);
+        verts[0].uv3.set(p0.x + ddw, p1.y - ddh);
+        verts[0].uv4.set(p0.x - ddw, p1.y + ddh);
+        verts[0].uv5xy.set(p0.x - ddw, p1.y);
+        verts[0].uv5zw.set(p1.y, p0.x + ddw);
+        verts[0].uv6xy.set(p0.x, p1.y - ddh);
+        verts[0].uv6zw.set(p1.y + ddh, p0.x);
+
+        verts[1].pxy.set(EPS, EPS);
+        verts[1].pzw.set(EPS, 1.f);
+        verts[1].uv0.set(p0.x, p0.y);
+        verts[1].uv1.set(p0.x - ddw, p0.y - ddh);
+        verts[1].uv2.set(p0.x + ddw, p0.y + ddh);
+        verts[1].uv3.set(p0.x + ddw, p0.y - ddh);
+        verts[1].uv4.set(p0.x - ddw, p0.y + ddh);
+        verts[1].uv5xy.set(p0.x - ddw, p0.y);
+        verts[1].uv5zw.set(p0.y, p0.x + ddw);
+        verts[1].uv6xy.set(p0.x, p0.y - ddh);
+        verts[1].uv6zw.set(p0.y + ddh, p0.x);
+
+        verts[2].pxy.set(float(_w + EPS), float(_h + EPS));
+        verts[2].pzw.set(EPS, 1.f);
+        verts[2].uv0.set(p1.x, p1.y);
+        verts[2].uv1.set(p1.x - ddw, p1.y - ddh);
+        verts[2].uv2.set(p1.x + ddw, p1.y + ddh);
+        verts[2].uv3.set(p1.x + ddw, p1.y - ddh);
+        verts[2].uv4.set(p1.x - ddw, p1.y + ddh);
+        verts[2].uv5xy.set(p1.x - ddw, p1.y);
+        verts[2].uv5zw.set(p1.y, p1.x + ddw);
+        verts[2].uv6xy.set(p1.x, p1.y - ddh);
+        verts[2].uv6zw.set(p1.y + ddh, p1.x);
+
+        verts[3].pxy.set(float(_w + EPS), EPS);
+        verts[3].pzw.set(EPS, 1.f);
+        verts[3].uv0.set(p1.x, p0.y);
+        verts[3].uv1.set(p1.x - ddw, p0.y - ddh);
+        verts[3].uv2.set(p1.x + ddw, p0.y + ddh);
+        verts[3].uv3.set(p1.x + ddw, p0.y - ddh);
+        verts[3].uv4.set(p1.x - ddw, p0.y + ddh);
+        verts[3].uv5xy.set(p1.x - ddw, p0.y);
+        verts[3].uv5zw.set(p0.y, p1.x + ddw);
+        verts[3].uv6xy.set(p1.x, p0.y - ddh);
+        verts[3].uv6zw.set(p0.y + ddh, p1.x);
+
+        const auto Offset = cmd_list.Vertex.Unlock<v_aa>(4);
 
         // Draw COLOR
         if (!RImplementation.o.dx10_msaa)
-            RCache.set_Element(s_combine->E[bDistort ? 4 : 2]); // look at blender_combine.cpp
+            cmd_list.set_Element(s_combine->E[bDistort ? 4 : 2]); // look at blender_combine.cpp
         else
-            RCache.set_Element(s_combine_msaa->E[bDistort ? 4 : 2]); // look at blender_combine.cpp
+            cmd_list.set_Element(s_combine_msaa->E[bDistort ? 4 : 2]); // look at blender_combine.cpp
 
-        RCache.set_c("m_current", Matrix_current);
-        RCache.set_c("m_previous", Matrix_previous);
-        RCache.set_c("m_blur", m_blur_scale.x, m_blur_scale.y, 0.f, 0.f);
+        cmd_list.set_c("m_current", Matrix_current);
+        cmd_list.set_c("m_previous", Matrix_previous);
+        cmd_list.set_c("m_blur", m_blur_scale.x, m_blur_scale.y, 0.f, 0.f);
         /////lvutner
-        RCache.set_c("mask_control", ps_r2_mask_control);
+        cmd_list.set_c("mask_control", ps_r2_mask_control);
         //////////
 
-        RCache.set_Geometry(g_aa_AA);
-        RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+        cmd_list.set_Geometry(g_aa_AA);
+        cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
     }
-    RCache.set_Stencil(FALSE);
+
+    cmd_list.set_Stencil(FALSE);
 
     g_pGamePersistent->Environment().RenderFlares(); // lens-flares
 
     //	PP-if required
     if (PP_Complex)
     {
-        PIX_EVENT(phase_pp);
+        PIX_EVENT_CTX(cmd_list, phase_pp);
         phase_pp();
     }
 
     //	Re-adapt luminance
-    RCache.set_Stencil(FALSE);
+    cmd_list.set_Stencil(FALSE);
 
     //*** exposure-pipeline-clear
     {
@@ -513,39 +516,43 @@ tmc::task<void> CRenderTarget::phase_combine()
     }
 
 #ifdef DEBUG
-    RCache.set_CullMode(CULL_CCW);
+    cmd_list.set_CullMode(CULL_CCW);
     static xr_vector<Fplane> saved_dbg_planes;
+
     if (bDebug)
         saved_dbg_planes = dbg_planes;
     else
         dbg_planes = saved_dbg_planes;
-    if (1)
-        for (u32 it = 0; it < dbg_planes.size(); it++)
-        {
-            Fplane& P = dbg_planes[it];
-            Fvector zero;
-            zero.mul(P.n, P.d);
 
-            Fvector L_dir, L_up = P.n, L_right;
-            L_dir.set(0, 0, 1);
-            if (_abs(L_up.dotproduct(L_dir)) > .99f)
-                L_dir.set(1, 0, 0);
-            L_right.crossproduct(L_up, L_dir);
-            L_right.normalize();
-            L_dir.crossproduct(L_right, L_up);
-            L_dir.normalize();
+    for (u32 it = 0; it < dbg_planes.size(); it++)
+    {
+        Fplane& P = dbg_planes[it];
+        Fvector zero;
+        zero.mul(P.n, P.d);
 
-            Fvector p0, p1, p2, p3;
-            constexpr float sz = 100.f;
-            p0.mad(zero, L_right, sz).mad(L_dir, sz);
-            p1.mad(zero, L_right, sz).mad(L_dir, -sz);
-            p2.mad(zero, L_right, -sz).mad(L_dir, -sz);
-            p3.mad(zero, L_right, -sz).mad(L_dir, +sz);
-            RCache.dbg_DrawTRI(Fidentity, p0, p1, p2, 0xffffffff);
-            RCache.dbg_DrawTRI(Fidentity, p2, p3, p0, 0xffffffff);
-        }
+        Fvector L_dir, L_up = P.n, L_right;
+        L_dir.set(0, 0, 1);
+
+        if (_abs(L_up.dotproduct(L_dir)) > .99f)
+            L_dir.set(1, 0, 0);
+
+        L_right.crossproduct(L_up, L_dir);
+        L_right.normalize();
+        L_dir.crossproduct(L_right, L_up);
+        L_dir.normalize();
+
+        Fvector p0, p1, p2, p3;
+        constexpr float sz = 100.f;
+        p0.mad(zero, L_right, sz).mad(L_dir, sz);
+        p1.mad(zero, L_right, sz).mad(L_dir, -sz);
+        p2.mad(zero, L_right, -sz).mad(L_dir, -sz);
+        p3.mad(zero, L_right, -sz).mad(L_dir, +sz);
+        cmd_list.dbg_DrawTRI(Fidentity, p0, p1, p2, 0xffffffff);
+        cmd_list.dbg_DrawTRI(Fidentity, p2, p3, p0, 0xffffffff);
+    }
 
     static xr_vector<dbg_line_t> saved_dbg_lines;
+
     if (bDebug)
         saved_dbg_lines = dbg_lines;
     else
@@ -553,7 +560,7 @@ tmc::task<void> CRenderTarget::phase_combine()
 
     for (u32 it = 0; it < dbg_lines.size(); it++)
     {
-        RCache.dbg_DrawLINE(Fidentity, dbg_lines[it].P0, dbg_lines[it].P1, dbg_lines[it].color);
+        cmd_list.dbg_DrawLINE(Fidentity, dbg_lines[it].P0, dbg_lines[it].P1, dbg_lines[it].color);
     }
 
     dbg_spheres.clear();
@@ -564,50 +571,51 @@ tmc::task<void> CRenderTarget::phase_combine()
 
 void CRenderTarget::phase_wallmarks()
 {
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+
     // Targets
-    RCache.set_RT(nullptr, 2);
-    RCache.set_RT(nullptr, 1);
-    u_setrt(RCache, rt_Color, {}, {}, rt_MSAADepth);
+    cmd_list.set_RT(nullptr, 2);
+    cmd_list.set_RT(nullptr, 1);
+    u_setrt(cmd_list, rt_Color, {}, {}, rt_MSAADepth);
 
     // Stencil	- draw only where stencil >= 0x1
-    RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
-    RCache.set_CullMode(CULL_CCW);
-    RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
+    cmd_list.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
+    cmd_list.set_CullMode(CULL_CCW);
+    cmd_list.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
 }
 
 void CRenderTarget::phase_combine_volumetric()
 {
     XR_TRACY_ZONE_SCOPED();
-    PIX_EVENT(phase_combine_volumetric);
 
-    u32 Offset = 0;
+    auto& cmd_list = RImplementation.get_imm_context().cmd_list;
+
+    PIX_EVENT_CTX(cmd_list, phase_combine_volumetric);
 
     //	TODO: DX10: Remove half pixel offset here
 
     if (!RImplementation.o.dx10_msaa)
-        u_setrt(RCache, rt_Generic_0, rt_Generic_1, {}, get_base_zb());
+        u_setrt(cmd_list, rt_Generic_0, rt_Generic_1, {}, get_base_zb());
     else
-        u_setrt(RCache, rt_Generic_0_r, rt_Generic_1_r, {}, rt_MSAADepth);
+        u_setrt(cmd_list, rt_Generic_0_r, rt_Generic_1_r, {}, rt_MSAADepth);
 
     //	Sets limits to both render targets
-    RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
-    {
-        // Fill vertex buffer
-        FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
-        pv->set(-1, 1, 0, 1, 0, 0, 1);
-        pv++;
-        pv->set(-1, -1, 0, 0, 0, 0, 0);
-        pv++;
-        pv->set(1, 1, 1, 1, 0, 1, 1);
-        pv++;
-        pv->set(1, -1, 1, 0, 0, 1, 0);
-        pv++;
-        RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
+    cmd_list.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
 
-        // Draw
-        RCache.set_Element(s_combine_volumetric->E[0]);
-        RCache.set_Geometry(g_combine);
-        RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
-    }
-    RCache.set_ColorWriteEnable();
+    // Fill vertex buffer
+    const auto verts = cmd_list.Vertex.Lock<FVF::TL>(4);
+
+    verts[0].set(-1, 1, 0, 1, 0, 0, 1);
+    verts[1].set(-1, -1, 0, 0, 0, 0, 0);
+    verts[2].set(1, 1, 1, 1, 0, 1, 1);
+    verts[3].set(1, -1, 1, 0, 0, 1, 0);
+
+    const auto Offset = cmd_list.Vertex.Unlock<FVF::TL>(4);
+
+    // Draw
+    cmd_list.set_Element(s_combine_volumetric->E[0]);
+    cmd_list.set_Geometry(g_combine);
+    cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+
+    cmd_list.set_ColorWriteEnable();
 }
