@@ -3,12 +3,13 @@
 #include "../../xrCore/xr_resource.h"
 #include "../../xr_3da/Render.h"
 
+#include <wrl/client.h>
+
 namespace skb
 {
 typedef struct skb_image_atlas_t skb_image_atlas_t;
 }
 
-class CAviPlayerCustom;
 class CTheoraSurface;
 
 class CTexture : public ITexture, public xr_resource_named
@@ -42,14 +43,46 @@ public:
         rstInvalid = rstCompute + 256
     };
 
-public:
-    void apply_font(CBackend& cmd_list, u32 stage) const;
-    void apply_load(CBackend& cmd_list, u32 stage);
-    void apply_theora(CBackend& cmd_list, u32 stage);
-    void apply_avi(CBackend& cmd_list, u32 stage) const;
-    void apply_seq(CBackend& cmd_list, u32 stage);
-    void apply_normal(CBackend& cmd_list, u32 stage) const;
+private:
+    using normal = std::monostate;
 
+    class font
+    {
+    public:
+        skb::skb_image_atlas_t* atlas{nullptr};
+        gsl::index texture_idx{-1};
+
+        Microsoft::WRL::ComPtr<::ID3D11Resource> staging;
+    };
+
+    class seq
+    {
+    public:
+        // Sequence data milliseconds per frame
+        u32 seqMSPF{0};
+        bool seqCycles{false};
+
+        // Sequence data
+        xr_vector<Microsoft::WRL::ComPtr<::ID3D11Resource>> seqDATA;
+        // Sequence view data
+        xr_vector<Microsoft::WRL::ComPtr<::ID3D11ShaderResourceView>> m_seqSRView;
+    };
+
+    class theora
+    {
+    public:
+        std::unique_ptr<CTheoraSurface> pTheora;
+        // sync theora time
+        u32 m_play_time{std::numeric_limits<u32>::max()};
+
+        Microsoft::WRL::ComPtr<::ID3D11Resource> staging;
+        Microsoft::WRL::ComPtr<::ID3D11Resource> yuv;
+        Microsoft::WRL::ComPtr<::ID3D11VideoProcessor> processor;
+        Microsoft::WRL::ComPtr<::ID3D11VideoProcessorInputView> input;
+        Microsoft::WRL::ComPtr<::ID3D11VideoProcessorOutputView> output;
+    };
+
+public:
     void set_slice(gsl::index slice);
 
     const char* GetName() const override { return cName.c_str(); }
@@ -61,69 +94,64 @@ public:
     void PostLoad();
     void Unload() override;
 
-    void surface_set(ID3DBaseTexture* surf);
-    ID3DBaseTexture* surface_get() const;
+    void surface_set(::ID3D11Resource* surf);
 
-    inline u32 get_Width() const { return desc_Width; }
-    inline u32 get_Height() const { return desc_Height; }
+    [[nodiscard]] auto surface_get() const { return pSurface; }
+    [[nodiscard]] auto get_Width() const { return desc_Width; }
+    [[nodiscard]] auto get_Height() const { return desc_Height; }
 
-    void video_Sync(u32 _time) { m_play_time = _time; }
-    void video_Play(BOOL looped, u32 _time = 0xFFFFFFFF);
-    void video_Pause(BOOL state) const;
-    void video_Stop() const;
-    BOOL video_IsPlaying() const;
+    void video_Sync(u32 _time)
+    {
+        if (const auto theora = std::get_if<CTexture::theora>(&meta); theora != nullptr)
+            theora->m_play_time = _time;
+    }
+
+    void video_Play(bool looped, u32 _time = std::numeric_limits<u32>::max());
+    void video_Pause(bool state);
+    void video_Stop();
+    [[nodiscard]] bool video_IsPlaying() const;
 
     CTexture();
     ~CTexture() override;
 
-    ID3DShaderResourceView* get_SRView() { return m_pSRView; }
+    [[nodiscard]] auto get_SRView() const { return m_pSRView; }
 
 private:
-    void Apply(CBackend& cmd_list, u32 dwStage) const;
+    void load_normal(gsl::czstring name);
+    void load_font(std::string_view name);
+    void load_seq(gsl::czstring fn);
+    void load_theora(gsl::czstring fn);
 
-    skb::skb_image_atlas_t* atlas{nullptr};
-    gsl::index texture_idx{-1};
-    ID3DBaseTexture* staging{nullptr};
+    void apply_load(CBackend& cmd_list, u32 stage);
+
+    void Apply(CBackend& cmd_list, u32 dwStage) const;
+    void apply_font(CBackend& cmd_list, u32 stage) const;
+    void apply_seq(CBackend& cmd_list, u32 stage);
+    void apply_theora(CBackend& cmd_list, u32 stage) const;
 
     //	Class data
 public: //	Public class members (must be encapsulated further)
-    struct
-    {
-        u32 bLoaded : 1;
-        u32 seqCycles : 1;
-        u32 memUsage : 28;
-    } flags;
+    CallMe::Delegate<void(CBackend&, u32)> bind;
 
-    CallMe::Delegate<void(CBackend& cmd_list, u32)> bind;
-
-    CAviPlayerCustom* pAVI{};
-    CTheoraSurface* pTheora{};
+    std::size_t memUsage{0};
 
     shared_str m_bumpmap;
-    f32 m_material;
-
-    union
-    {
-        u32 m_play_time; // sync theora time
-        u32 seqMSPF; // Sequence data milliseconds per frame
-    };
+    f32 m_material{1.0f};
+    bool bLoaded{false};
 
     gsl::index curr_slice{-1};
     gsl::index last_slice{-1};
 
 private:
-    ID3DBaseTexture* pSurface{};
-    // Sequence data
-    xr_vector<ID3DBaseTexture*> seqDATA;
+    ::ID3D11Resource* pSurface{nullptr};
+    std::variant<normal, font, seq, theora> meta;
 
-    ID3DShaderResourceView* m_pSRView{};
-    ID3DShaderResourceView* srv_all{};
-    xr_vector<ID3DShaderResourceView*> srv_per_slice;
-    // Sequence view data
-    xr_vector<ID3DShaderResourceView*> m_seqSRView;
+    ::ID3D11ShaderResourceView* m_pSRView{nullptr};
+    ::ID3D11ShaderResourceView* srv_all{nullptr};
+    xr_vector<::ID3D11ShaderResourceView*> srv_per_slice;
 
-    u32 desc_Width{};
-    u32 desc_Height{};
+    u32 desc_Width{0};
+    u32 desc_Height{0};
 };
 
 struct resptrcode_texture : public resptr_base<CTexture>

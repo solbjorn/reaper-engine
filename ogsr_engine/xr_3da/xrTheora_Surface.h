@@ -8,16 +8,15 @@ class CTheoraSurface final : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CTheoraSurface);
 
 public:
-    CTheoraStream* m_rgb{};
-    CTheoraStream* m_alpha{};
+    std::unique_ptr<CTheoraStream> m_rgb;
 
     u32 tm_start{};
     u32 tm_play{};
     u32 tm_total{};
-    BOOL ready{};
 
-    BOOL playing{};
-    BOOL looped{};
+    bool ready{false};
+    bool playing{false};
+    bool looped{false};
 
 protected:
     void Reset();
@@ -26,11 +25,12 @@ public:
     CTheoraSurface();
     ~CTheoraSurface() override;
 
-    BOOL Valid();
-    BOOL Load(const char* fname);
+    [[nodiscard]] auto Valid() const { return ready; }
 
-    BOOL Update(u32 _time);
-    void DecompressFrame(u32* dst, u32 _width, int& count);
+    [[nodiscard]] bool Load(gsl::czstring fname);
+    [[nodiscard]] bool Update(u32 _time);
+
+    void DecompressFrame(std::span<std::byte> data, std::size_t row) const;
 
     void Play(BOOL _looped, u32 _time);
     void Pause(BOOL _pause) { playing = !_pause; }
@@ -39,8 +39,9 @@ public:
         playing = FALSE;
         Reset();
     }
-    BOOL IsPlaying() { return playing; }
 
-    u32 Width(bool bRealSize);
-    u32 Height(bool bRealSize);
+    [[nodiscard]] auto IsPlaying() const { return playing; }
+
+    [[nodiscard]] std::size_t Width() const;
+    [[nodiscard]] std::size_t Height() const;
 };

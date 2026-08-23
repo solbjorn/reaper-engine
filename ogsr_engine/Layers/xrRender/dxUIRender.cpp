@@ -46,14 +46,6 @@ void dxUIRender::GetActiveTextureResolution(Fvector2& res)
     res.set(gsl::narrow_cast<f32>(T->get_Width()), gsl::narrow_cast<f32>(T->get_Height()));
 }
 
-gsl::czstring dxUIRender::UpdateShaderName(gsl::czstring tex_name, gsl::czstring sh_name)
-{
-    if (string_path buff; FS.exist(buff, "$game_textures$", tex_name, ".ogm") != nullptr)
-        return "hud\\movie";
-
-    return sh_name;
-}
-
 void dxUIRender::PushPoint(float x, float y, float z, u32 C, float u, float v)
 {
     switch (m_PointType)

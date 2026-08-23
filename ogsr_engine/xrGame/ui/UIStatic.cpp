@@ -106,11 +106,11 @@ void CUIStatic::InitTextureEx(LPCSTR tex_name, LPCSTR sh_name)
     m_texture._set(tex_name);
     m_shader._set(sh_name);
 
-    LPCSTR res_shname = UIRender->UpdateShaderName(tex_name, sh_name);
-    CUITextureMaster::InitTexture(tex_name, res_shname, &m_UIStaticItem);
+    CUITextureMaster::InitTexture(tex_name, sh_name, &m_UIStaticItem);
 
     Fvector2 p = GetWndPos();
     m_UIStaticItem.SetPos(p.x, p.y);
+
     m_bAvailableTexture = true;
 }
 

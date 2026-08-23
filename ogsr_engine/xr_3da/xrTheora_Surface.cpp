@@ -5,23 +5,15 @@
 #include "xrTheora_Stream.h"
 
 CTheoraSurface::CTheoraSurface() = default;
-
-CTheoraSurface::~CTheoraSurface()
-{
-    xr_delete(m_rgb);
-    xr_delete(m_alpha);
-}
+CTheoraSurface::~CTheoraSurface() = default;
 
 void CTheoraSurface::Reset()
 {
     if (m_rgb)
         m_rgb->Reset();
-    if (m_alpha)
-        m_alpha->Reset();
+
     tm_play = 0;
 }
-
-BOOL CTheoraSurface::Valid() { return ready; }
 
 void CTheoraSurface::Play(BOOL _looped, u32 _time)
 {
@@ -30,7 +22,7 @@ void CTheoraSurface::Play(BOOL _looped, u32 _time)
     tm_start = _time;
 }
 
-BOOL CTheoraSurface::Update(u32 _time)
+bool CTheoraSurface::Update(u32 _time)
 {
     XR_ASSERT(ready);
 
@@ -52,51 +44,24 @@ BOOL CTheoraSurface::Update(u32 _time)
                 return FALSE;
             }
         }
+
         if (m_rgb)
             redraw |= m_rgb->Decode(tm_play);
-        if (m_alpha)
-            redraw |= m_alpha->Decode(tm_play);
     }
+
     return redraw;
 }
 
-BOOL CTheoraSurface::Load(const char* fname)
+bool CTheoraSurface::Load(gsl::czstring fname)
 {
     XR_ASSERT(!ready, "", fname);
 
-    m_rgb = xr_new<CTheoraStream>();
-    BOOL res = m_rgb->Load(fname);
-    if (res)
-    {
-        string_path alpha, ext;
-        strcpy_s(alpha, fname);
-        pstr pext = strext(alpha);
-        if (pext)
-        {
-            strcpy_s(ext, pext);
-            *pext = 0;
-        }
-        strconcat(sizeof(alpha), alpha, alpha, "#alpha", ext);
-        if (FS.exist(alpha))
-        {
-            m_alpha = xr_new<CTheoraStream>();
-            if (!m_alpha->Load(alpha))
-                res = FALSE;
-        }
-    }
+    m_rgb = std::make_unique<CTheoraStream>();
+    const auto res = m_rgb->Load(fname);
 
     if (res)
     {
-#ifdef DEBUG
-        if (m_alpha)
-        {
-            XR_ASSERT(m_rgb->tm_total == m_alpha->tm_total);
-            XR_ASSERT(m_rgb->t_info.frame_width == m_alpha->t_info.frame_width);
-            XR_ASSERT(m_rgb->t_info.frame_height == m_alpha->t_info.frame_height);
-            XR_ASSERT(m_rgb->t_info.pixelformat == m_alpha->t_info.pixelformat);
-        }
-#endif
-
+        XR_ASSERT(m_rgb->t_info.pixelformat == OC_PF_420, "", fname);
         tm_total = XR_ASSERT_VAL(m_rgb->tm_total != 0, "", fname);
 
         // reset playback
@@ -106,103 +71,40 @@ BOOL CTheoraSurface::Load(const char* fname)
     }
     else
     {
-        xr_delete(m_rgb);
-        xr_delete(m_alpha);
+        m_rgb.reset();
     }
-
-    if (res)
-        XR_ASSERT(Device.m_pRender != nullptr, "", fname);
 
     return res;
 }
 
-u32 CTheoraSurface::Width(bool bRealSize)
+std::size_t CTheoraSurface::Width() const { return m_rgb->t_info.frame_width; }
+std::size_t CTheoraSurface::Height() const { return m_rgb->t_info.frame_height; }
+
+void CTheoraSurface::DecompressFrame(std::span<std::byte> data, std::size_t row) const
 {
-    if (bRealSize)
-        return m_rgb->t_info.frame_width;
-    else
-        return btwPow2_Ceil((u32)m_rgb->t_info.frame_width);
-}
+    const auto& yuv = *XR_ASSERT_VAL(m_rgb)->CurrentFrame();
 
-u32 CTheoraSurface::Height(bool bRealSize)
-{
-    if (bRealSize)
-        return m_rgb->t_info.frame_height;
-    else
-        return btwPow2_Ceil((u32)m_rgb->t_info.frame_height);
-}
+    const auto width = Width();
+    const auto height = Height();
+    std::size_t stride = yuv.y_stride;
 
-void CTheoraSurface::DecompressFrame(u32* data, u32 _width, int& _pos)
-{
-    yuv_buffer* yuv_rgb = XR_ASSERT_VAL(m_rgb != nullptr)->CurrentFrame();
-    yuv_buffer* yuv_alpha = m_alpha ? m_alpha->CurrentFrame() : nullptr;
+    const auto y = std::span{reinterpret_cast<const std::byte*>(yuv.y), height * stride};
 
-    u32 width = Width(true);
-    u32 height = Height(true);
+    for (auto [dst, src] : std::views::zip(data | std::views::chunk(row), y | std::views::chunk(stride)))
+        std::ranges::copy_n(src.begin(), width, dst.begin());
 
-    u32 pixelformat = m_rgb->t_info.pixelformat;
+    data = data.subspan(height * row);
+    stride = yuv.uv_stride;
 
-    int uv_w = 1;
-    int uv_h = 1;
-    switch (pixelformat)
+    const auto u = std::span{reinterpret_cast<const std::byte*>(yuv.u), (height / 2) * stride};
+    const auto v = std::span{reinterpret_cast<const std::byte*>(yuv.v), (height / 2) * stride};
+
+    for (auto [dst, us, vs] : std::views::zip(data | std::views::chunk(row), u | std::views::chunk(stride), v | std::views::chunk(stride)))
     {
-    case OC_PF_444:
-        uv_w = 1;
-        uv_h = 1;
-        break;
-    case OC_PF_422:
-        uv_w = 2;
-        uv_h = 1;
-        break;
-    case OC_PF_420:
-        uv_w = 2;
-        uv_h = 2;
-        break;
-    default: xr::unreachable();
-    }
-
-    constexpr float K = 0.256788f + 0.504129f + 0.097906f;
-
-    // rgb
-    if (yuv_rgb)
-    {
-        yuv_buffer& yuv = *yuv_rgb;
-
-        u32 pos = 0;
-        for (u32 h = 0; h < height; ++h)
+        for (auto [dp, ub, vb] : std::views::zip(dst | std::views::take(width) | std::views::chunk(2), us, vs))
         {
-            u8* Y = yuv.y + yuv.y_stride * h;
-            u8* U = yuv.u + yuv.uv_stride * (h / uv_h);
-            u8* V = yuv.v + yuv.uv_stride * (h / uv_h);
-
-            for (u32 w = 0; w < width; ++w)
-            {
-                u8 y = Y[w];
-                u8 u = U[w / uv_w];
-                u8 v = V[w / uv_w];
-                data[pos] = color_rgba(int(y), int(u), int(v), 255);
-                pos++;
-                if (w == width - 1)
-                    pos += _width;
-            }
-            _pos = pos;
-        }
-    }
-
-    // alpha
-    if (yuv_alpha)
-    {
-        yuv_buffer& yuv = *yuv_alpha;
-        u32 pos = 0;
-        for (u32 h = 0; h < height; ++h)
-        {
-            u8* Y = yuv.y + yuv.y_stride * h;
-            for (u32 w = 0; w < width; ++w)
-            {
-                u8 y = Y[w];
-                u32& clr = data[++pos];
-                clr = subst_alpha(clr, iFloor(float((y - 16)) / K));
-            }
+            dp[0] = ub;
+            dp[1] = vb;
         }
     }
 }

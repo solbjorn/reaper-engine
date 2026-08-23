@@ -23,8 +23,6 @@ public:
     void StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType) override;
     void FlushPrimitive() override;
 
-    [[nodiscard]] gsl::czstring UpdateShaderName(gsl::czstring tex_name, gsl::czstring sh_name) override;
-
     void CacheSetXformWorld(const Fmatrix& M) override;
     void CacheSetCullMode(CullMode) override;
 

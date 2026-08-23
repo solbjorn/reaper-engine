@@ -94,7 +94,7 @@ void fix_texture_name(gsl::zstring fn)
         return;
     }
 
-    for (const auto& ext : std::array<std::string_view, 4>{".seq", ".ogm", ".avi", ".thm"})
+    for (const auto& ext : std::array<std::string_view, 3>{".seq", ".ogm", ".thm"})
     {
         if (std::is_neq(xr::strcasecmp(fext, ext)))
             continue;
@@ -169,8 +169,9 @@ ID3DBaseTexture* CRender::texture_load_dds(const string_path& path, u32& size)
 
         ID3DBaseTexture* pTexture2D;
 
-        const auto hr = DirectX::CreateTextureEx(HW.pDevice, texture.GetImages(), texture.GetImageCount(), meta, D3D_USAGE_IMMUTABLE, D3D_BIND_SHADER_RESOURCE,
-                                                 0, meta.miscFlags, DirectX::CREATETEX_DEFAULT, &pTexture2D);
+        const auto hr = DirectX::CreateTextureEx(HW.pDevice.Get(), texture.GetImages(), texture.GetImageCount(), meta, ::D3D11_USAGE::D3D11_USAGE_IMMUTABLE,
+                                                 ::D3D11_BIND_FLAG::D3D11_BIND_SHADER_RESOURCE, 0, meta.miscFlags, DirectX::CREATETEX_FLAGS::CREATETEX_DEFAULT,
+                                                 &pTexture2D);
         if (SUCCEEDED(hr))
         {
             // Получилось. Считаем сколько весит текстура и сваливаем.

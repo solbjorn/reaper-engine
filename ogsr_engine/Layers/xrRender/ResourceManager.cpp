@@ -249,7 +249,7 @@ void CResourceManager::_GetMemoryUsage(xr::render_memory_usage& usage) const
 
     for (auto [name, tex] : m_textures)
     {
-        const gsl::index m{tex->flags.memUsage};
+        const auto m = gsl::narrow_cast<gsl::index>(tex->memUsage);
 
         if (std::strstr(name, "lmap") != nullptr)
         {
@@ -272,7 +272,7 @@ void CResourceManager::_DumpMemoryUsage() const
 
     // sort
     for (auto [_, tex] : m_textures)
-        mtex.emplace(gsl::index{tex->flags.memUsage}, std::make_pair(tex->ref_count.load(), tex->cName.c_str()));
+        mtex.emplace(gsl::narrow_cast<gsl::index>(tex->memUsage), std::make_pair(tex->ref_count.load(), tex->cName.c_str()));
 
     // dump
     for (const auto [mem, entry] : mtex)

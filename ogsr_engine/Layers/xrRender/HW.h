@@ -5,13 +5,15 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include <d3d11_4.h>
-#include <dxgi1_4.h>
+#include "HWCaps.h"
+#include "stats_manager.h"
 
 #include "../../xr_3da/context.h"
 
-#include "HWCaps.h"
-#include "stats_manager.h"
+#include <d3d11_4.h>
+#include <dxgi1_4.h>
+
+#include <wrl/client.h>
 
 class CHW final : public pureAppActivate, public pureAppDeactivate
 {
@@ -37,16 +39,16 @@ private:
 public:
     void DumpVideoMemoryUsage() const;
 
-    [[nodiscard]] auto get_context(ctx_id_t context_id) const { return contexts_pool[context_id]; }
-    [[nodiscard]] auto get_imm_context() const { return contexts_pool[R__IMM_CTX_ID]; }
+    [[nodiscard]] auto get_context(ctx_id_t context_id) const { return contexts_pool[context_id].Get(); }
+    [[nodiscard]] auto get_imm_context() const { return contexts_pool[R__IMM_CTX_ID].Get(); }
 
     //	Variables section
     u32 BackBufferCount{};
     u32 CurrentBackBuffer{};
 
     IDXGIFactory2* m_pFactory{};
-    IDXGIAdapter1* m_pAdapter{};
-    ID3D11Device3* pDevice{}; // render device
+    Microsoft::WRL::ComPtr<::IDXGIAdapter3> m_pAdapter;
+    Microsoft::WRL::ComPtr<::ID3D11Device3> pDevice;
     IDXGISwapChain1* m_pSwapChain{};
 
     CHWCaps Caps;
@@ -62,8 +64,7 @@ public:
 
 private:
     void* waitable{};
-    IDXGIAdapter3* m_pAdapter3{};
-    std::array<ID3D11DeviceContext1*, R__NUM_CONTEXTS> contexts_pool{};
+    std::array<Microsoft::WRL::ComPtr<::ID3D11DeviceContext1>, R__NUM_CONTEXTS> contexts_pool;
 
 public:
     stats_manager stats_manager{};
@@ -80,6 +81,7 @@ public:
 
 private:
     void imgui_init() const;
+
     static void imgui_reset();
     static void imgui_shutdown();
 };

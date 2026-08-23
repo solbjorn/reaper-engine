@@ -1,7 +1,7 @@
 #ifndef r_DStreamsH
 #define r_DStreamsH
 
-#include <wrl.h>
+#include <wrl/client.h>
 
 namespace xr
 {

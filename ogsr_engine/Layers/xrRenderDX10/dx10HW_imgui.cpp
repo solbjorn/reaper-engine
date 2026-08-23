@@ -35,7 +35,7 @@ void CHW::imgui_init() const
     io.ConfigDpiScaleViewports = true;
 
     ImGui::GetPlatformIO().Platform_GetWindowDpiScale = [] [[nodiscard]] (ImGuiViewport*) { return Device.dpi_scale; };
-    ImGui_ImplDX11_Init(pDevice, contexts_pool[R__IMM_CTX_ID]);
+    ImGui_ImplDX11_Init(pDevice.Get(), get_imm_context());
 
     RECT rect;
     GetClientRect(m_hWnd, &rect);

@@ -179,8 +179,8 @@ void save_dds(IWriter* file, DirectX::ScratchImage& cap, bool resample)
     }
 
     DirectX::ScratchImage comp;
-    XR_ASSERT(xr::hr(
-        DirectX::Compress(HW.pDevice, tgt->GetImages()[0], DXGI_FORMAT_BC7_UNORM, DirectX::TEX_COMPRESS_PARALLEL, DirectX::TEX_ALPHA_WEIGHT_DEFAULT, comp)));
+    XR_ASSERT(xr::hr(DirectX::Compress(HW.pDevice.Get(), tgt->GetImages()[0], ::DXGI_FORMAT::DXGI_FORMAT_BC7_UNORM,
+                                       DirectX::TEX_COMPRESS_FLAGS::TEX_COMPRESS_PARALLEL, DirectX::TEX_ALPHA_WEIGHT_DEFAULT, comp)));
     tgt->Release();
 
     DirectX::Blob blob;
@@ -262,7 +262,7 @@ void CRender::Screenshot(ScreenshotMode mode, LPCSTR name)
     Target->get_base_rt()->GetResource(&pSrcTexture);
 
     DirectX::ScratchImage SImage;
-    XR_ASSERT(xr::hr(DirectX::CaptureTexture(HW.pDevice, HW.get_imm_context(), pSrcTexture, SImage)));
+    XR_ASSERT(xr::hr(DirectX::CaptureTexture(HW.pDevice.Get(), HW.get_imm_context(), pSrcTexture, SImage)));
     _RELEASE(pSrcTexture);
 
     xr::scrfmt fmt;

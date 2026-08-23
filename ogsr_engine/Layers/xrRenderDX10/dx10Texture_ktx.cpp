@@ -443,8 +443,9 @@ ID3DBaseTexture* CRender::texture_load_ktx(const string_path& path, u32& size)
     meta = texture.GetMetadata();
     ID3DBaseTexture* pTexture2D;
 
-    if (const auto hr = DirectX::CreateTextureEx(HW.pDevice, texture.GetImages(), texture.GetImageCount(), meta, D3D_USAGE_IMMUTABLE, D3D_BIND_SHADER_RESOURCE,
-                                                 0, meta.miscFlags, DirectX::CREATETEX_DEFAULT, &pTexture2D);
+    if (const auto hr = DirectX::CreateTextureEx(HW.pDevice.Get(), texture.GetImages(), texture.GetImageCount(), meta, ::D3D11_USAGE::D3D11_USAGE_IMMUTABLE,
+                                                 ::D3D11_BIND_FLAG::D3D11_BIND_SHADER_RESOURCE, 0, meta.miscFlags, DirectX::CREATETEX_FLAGS::CREATETEX_DEFAULT,
+                                                 &pTexture2D);
         FAILED(hr))
     {
         Msg("! Failed to create KTX texture: [{}], error: [{}]", path, hr);

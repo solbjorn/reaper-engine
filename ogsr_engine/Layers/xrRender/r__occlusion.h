@@ -1,6 +1,6 @@
 #pragma once
 
-#include <wrl.h>
+#include <wrl/client.h>
 
 // must conform to following order of allocation/free
 // a(A), a(B), a(C), a(D), ....

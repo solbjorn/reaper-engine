@@ -54,15 +54,15 @@ void CHW::CreateD3D()
 {
     XR_ASSERT(xr::hr(CreateDXGIFactory2(0, IID_PPV_ARGS(&m_pFactory))));
 
+    Microsoft::WRL::ComPtr<::IDXGIAdapter1> adapter;
     UINT i = 0;
-    while (m_pFactory->EnumAdapters1(i, &m_pAdapter) != DXGI_ERROR_NOT_FOUND)
+
+    while (m_pFactory->EnumAdapters1(i, adapter.ReleaseAndGetAddressOf()) != DXGI_ERROR_NOT_FOUND)
     {
         DXGI_ADAPTER_DESC desc{};
-        m_pAdapter->GetDesc(&desc);
+        adapter->GetDesc(&desc);
 
         Msg("* Avail GPU [vendor:{:X}]-[device:{:X}]: {}", desc.VendorId, desc.DeviceId, sf::String{desc.Description});
-
-        _RELEASE(m_pAdapter);
         ++i;
     }
 
@@ -71,7 +71,7 @@ void CHW::CreateD3D()
     IDXGIFactory6* pFactory6 = nullptr;
     if (SUCCEEDED(CreateDXGIFactory1(IID_PPV_ARGS(&pFactory6))))
     {
-        pFactory6->EnumAdapterByGpuPreference(0, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&m_pAdapter));
+        pFactory6->EnumAdapterByGpuPreference(0, ::DXGI_GPU_PREFERENCE::DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(adapter.ReleaseAndGetAddressOf()));
 
         Log(" !CHW::CreateD3D() use DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE");
 
@@ -81,10 +81,10 @@ void CHW::CreateD3D()
     {
         Log(" !CHW::CreateD3D() use EnumAdapters1(0)");
 
-        m_pFactory->EnumAdapters1(0, &m_pAdapter);
+        m_pFactory->EnumAdapters1(0, adapter.ReleaseAndGetAddressOf());
     }
 
-    m_pAdapter->QueryInterface(IID_PPV_ARGS(&m_pAdapter3));
+    XR_ASSERT(xr::hr(adapter.As(&m_pAdapter)));
 
     // when using FLIP_* present modes, to disable DWM vsync we have to use DXGI_PRESENT_ALLOW_TEARING with ->Present()
     // when vsync is off (PresentInterval = 0) and only when in window mode
@@ -118,11 +118,8 @@ void CHW::CreateD3D()
 
 void CHW::DestroyD3D()
 {
-    _SHOW_REF("refCount:m_pAdapter3", m_pAdapter3);
-    _RELEASE(m_pAdapter3);
-
     _SHOW_REF("refCount:m_pAdapter", m_pAdapter);
-    _RELEASE(m_pAdapter);
+    m_pAdapter.Reset();
 
     _SHOW_REF("refCount:m_pFactory", m_pFactory);
     _RELEASE(m_pFactory);
@@ -207,17 +204,17 @@ tmc::task<void> CHW::CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight)
 #endif
 
     // create device
-    ID3D11Device* device;
-    ID3D11DeviceContext* context;
+    Microsoft::WRL::ComPtr<::ID3D11Device> device;
+    Microsoft::WRL::ComPtr<::ID3D11DeviceContext> context;
 
     // Если мы выбираем конкретный адаптер, то мы обязаны использовать D3D_DRIVER_TYPE_UNKNOWN.
-    XR_ASSERT(xr::hr(
-        D3D11CreateDevice(m_pAdapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, create_device_flags, nullptr, 0, D3D11_SDK_VERSION, &device, &FeatureLevel, &context)));
+    XR_ASSERT(xr::hr(::D3D11CreateDevice(m_pAdapter.Get(), ::D3D_DRIVER_TYPE::D3D_DRIVER_TYPE_UNKNOWN, nullptr, create_device_flags, nullptr, 0,
+                                         D3D11_SDK_VERSION, &device, &FeatureLevel, &context)));
     // На всякий случай
     XR_ASSERT(FeatureLevel >= D3D_FEATURE_LEVEL_11_0);
 
-    XR_ASSERT(xr::hr(device->QueryInterface(IID_PPV_ARGS(&pDevice))));
-    XR_ASSERT(xr::hr(context->QueryInterface(IID_PPV_ARGS(&contexts_pool[R__IMM_CTX_ID]))));
+    XR_ASSERT(xr::hr(device.As(&pDevice)));
+    XR_ASSERT(xr::hr(context.As(&contexts_pool[R__IMM_CTX_ID])));
 
     D3D11_FEATURE_DATA_D3D11_OPTIONS options;
     pDevice->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS, &options, sizeof(options));
@@ -229,15 +226,12 @@ tmc::task<void> CHW::CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight)
     SAD4ShaderInstructions = options.SAD4ShaderInstructions;
     ExtendedDoublesShaderInstructions = options.ExtendedDoublesShaderInstructions;
 
-    _RELEASE(device);
-    _RELEASE(context);
-
     for (auto& ctx : contexts_pool | std::views::drop(R__PARALLEL_CTX_ID))
         XR_ASSERT(xr::hr(pDevice->CreateDeferredContext1(0, &ctx)));
 
     // create swapchain
     auto scope = co_await tmc::enter(xr::tmc_cpu_st_executor());
-    XR_ASSERT(xr::hr(m_pFactory->CreateSwapChainForHwnd(pDevice, m_hWnd, &sd, &sd_fullscreen, nullptr, &m_pSwapChain)));
+    XR_ASSERT(xr::hr(m_pFactory->CreateSwapChainForHwnd(pDevice.Get(), m_hWnd, &sd, &sd_fullscreen, nullptr, &m_pSwapChain)));
     co_await scope.exit();
 
     IDXGISwapChain3* swapchain3;
@@ -253,11 +247,9 @@ tmc::task<void> CHW::CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight)
     }
     else
     {
-        IDXGIDevice1* dxgi;
-        XR_ASSERT(xr::hr(pDevice->QueryInterface(IID_PPV_ARGS(&dxgi))));
-
+        Microsoft::WRL::ComPtr<::IDXGIDevice1> dxgi;
+        XR_ASSERT(xr::hr(pDevice.As(&dxgi)));
         XR_ASSERT(xr::hr(dxgi->SetMaximumFrameLatency(sd.BufferCount - 1)));
-        _RELEASE(dxgi);
     }
 
     _RELEASE(swapchain3);
@@ -298,11 +290,11 @@ tmc::task<void> CHW::DestroyDevice()
     _SHOW_REF("refCount:m_pSwapChain", m_pSwapChain);
     _RELEASE(m_pSwapChain);
 
-    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
-        _RELEASE(contexts_pool[R__NUM_CONTEXTS - 1 - id]);
+    for (auto& ctx : std::views::reverse(contexts_pool))
+        ctx.Reset();
 
     _SHOW_REF("DeviceREF:", pDevice);
-    _RELEASE(pDevice);
+    pDevice.Reset();
 
     DestroyD3D();
     free_vid_mode_list();
@@ -453,7 +445,7 @@ void CHW::DumpVideoMemoryUsage() const
 
     DXGI_QUERY_VIDEO_MEMORY_INFO videoMemoryInfo{};
 
-    if (m_pAdapter3 && SUCCEEDED(m_pAdapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo)))
+    if (xr::hr(m_pAdapter->QueryVideoMemoryInfo(0, ::DXGI_MEMORY_SEGMENT_GROUP::DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo)))
     {
         Msg("\tDedicated VRAM: {} MB ({} bytes)\n\tDedicated Memory: {} MB ({} bytes)\n\tShared Memory: {} MB ({} bytes)\n\tCurrentUsage: {} MB ({} "
             "bytes)\n\tBudget: {} MB ({} bytes)",

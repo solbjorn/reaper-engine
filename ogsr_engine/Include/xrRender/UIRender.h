@@ -46,8 +46,6 @@ public:
     virtual void StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType) = 0;
     virtual void FlushPrimitive() = 0;
 
-    [[nodiscard]] virtual gsl::czstring UpdateShaderName(gsl::czstring tex_name, gsl::czstring sh_name) = 0;
-
     virtual void CacheSetXformWorld(const Fmatrix& M) = 0;
     virtual void CacheSetCullMode(CullMode) = 0;
 };

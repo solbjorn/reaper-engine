@@ -29,7 +29,7 @@
     <AbseilSynchronization>absl\synchronization\absl_kernel_timeout_internal.lib;absl\synchronization\absl_synchronization.lib</AbseilSynchronization>
     <AbseilTime>absl\time\absl_time.lib;absl\time\absl_time_zone.lib</AbseilTime>
     <AbseilLibs>$(AbseilBase);$(AbseilContainer);$(AbseilDebugging);$(AbseilHash);$(AbseilLog);$(AbseilNumeric);$(AbseilRandom);$(AbseilStrings);$(AbseilSynchronization);$(AbseilTime)</AbseilLibs>
-    <WindowsLibs>Version.Lib;Vfw32.Lib;avrt.lib;d3d11.lib;dwrite.lib;dxgi.lib;dxguid.lib;psapi.lib;synchronization.lib;winhttp.lib;xmllite.lib</WindowsLibs>
+    <WindowsLibs>Version.Lib;avrt.lib;d3d11.lib;dwrite.lib;dxgi.lib;dxguid.lib;psapi.lib;synchronization.lib;winhttp.lib;xmllite.lib</WindowsLibs>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -217,7 +217,6 @@
     <ClInclude Include="StatGraph.h" />
     <ClInclude Include="Stats.h" />
     <ClInclude Include="WaveForm.h" />
-    <ClInclude Include="tntQAVI.h" />
     <ClInclude Include="xrTheora_Stream.h" />
     <ClInclude Include="xrTheora_Surface.h" />
     <ClInclude Include="Properties.h" />
@@ -296,7 +295,6 @@
     <ClCompile Include="Device_wndproc.cpp" />
     <ClCompile Include="StatGraph.cpp" />
     <ClCompile Include="Stats.cpp" />
-    <ClCompile Include="tntQAVI.cpp" />
     <ClCompile Include="xrTheora_Stream.cpp" />
     <ClCompile Include="xrTheora_Surface.cpp" />
     <ClCompile Include="xr_ioc_cmd.cpp" />
