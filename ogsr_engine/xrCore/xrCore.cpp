@@ -74,9 +74,7 @@ void xrCore::_initialize(gsl::czstring _ApplicationName, bool init_fs, gsl::czst
         DWORD sz_comp = sizeof(CompName);
         GetComputerNameA(CompName, &sz_comp);
 
-        SProcessMemInfo memCounters;
-        GetProcessMemInfo(memCounters);
-
+        xrMemory::_initialize();
         CPU::ID.print();
 
         xr::detail::xml_init();

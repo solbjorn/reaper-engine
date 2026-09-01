@@ -1,14 +1,34 @@
 #ifndef __XREXTERNAL_TMC_H
 #define __XREXTERNAL_TMC_H
 
+#include "../xrCore/defines.h"
+
+#define BOOST_ASIO_SEPARATE_COMPILATION
+
 #define TMC_NODISCARD_AWAIT
 #define TMC_PRIORITY_COUNT 3
 #define TMC_STANDALONE_COMPILATION
 #define TMC_TRIVIAL_TASK
+
+#define TMC_USE_BOOST_ASIO
 #define TMC_USE_HWLOC
 
 #ifndef TMC_IMPL
 #include <tmc/all_headers.hpp>
+
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wdeprecated-copy-with-user-provided-dtor");
+XR_DIAG_IGNORE("-Wdeprecated-redundant-constexpr-static-def");
+XR_DIAG_IGNORE("-Wnrvo");
+XR_DIAG_IGNORE("-Wold-style-cast");
+XR_DIAG_IGNORE("-Wsign-conversion");
+XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
+
+#include <tmc/asio/ex_asio.hpp>
+
+XR_DIAG_POP();
+
+#include <tmc/asio/safe_timer.hpp>
 #endif
 
 namespace xr

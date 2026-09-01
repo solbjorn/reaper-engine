@@ -139,6 +139,8 @@ void ISpatial_NODE::_remove(ISpatial* S)
 
 //////////////////////////////////////////////////////////////////////////
 
+ISpatial_DB::ISpatial_DB() { xr::logger_init_subsystem(); }
+
 ISpatial_DB::~ISpatial_DB()
 {
     if (m_root)

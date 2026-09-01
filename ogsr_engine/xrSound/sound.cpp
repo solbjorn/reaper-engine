@@ -14,6 +14,8 @@ tmc::task<void> CSound_manager_interface::_create(int stage)
 {
     if (stage == 0)
     {
+        xr::logger_init_subsystem();
+
         impl = xr_new<CSoundRender_CoreA>();
         Sound = SoundRender = impl;
 

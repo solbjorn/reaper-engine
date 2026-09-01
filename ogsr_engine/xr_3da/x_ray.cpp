@@ -374,6 +374,8 @@ namespace
 {
 s32 main(std::string_view cmdline, void* handle)
 {
+    xr::logger_init_subsystem();
+
     size_t cpus{0};
 
     if (const auto pos = cmdline.rfind("-max-threads"); pos != std::string_view::npos)
@@ -408,6 +410,8 @@ s32 main(std::string_view cmdline, void* handle)
         e_cores.set_cpu_kinds(tmc::topology::cpu_kind::EFFICIENCY1);
 
         cpu.add_partition(p_cores, xr::tmc_priority_high, xr::tmc_priority_any + 1).add_partition(e_cores, xr::tmc_priority_any, xr::tmc_priority_low + 1);
+        xr::tmc_cpu_st_executor().add_partition(p_cores);
+        tmc::asio_executor().add_partition(e_cores);
     }
 
     if (cpus != 0)
@@ -423,6 +427,9 @@ s32 main(std::string_view cmdline, void* handle)
             CPU::ID.threads.emplace_back(std::move(info));
         })
         .init();
+
+    xr::tmc_cpu_st_executor().set_thread_init_hook(&xrDebug::thread_init).init();
+    tmc::asio_executor().set_thread_init_hook(&xrDebug::thread_init).init();
 
     CPU::ID.init();
 
@@ -441,7 +448,7 @@ s32 main(std::string_view cmdline, void* handle)
 
 tmc::task<void> main_async(std::string_view cmdline, void* handle, std::atomic<xr::tmc_atomic_wait_t>& code)
 {
-    xr::tmc_cpu_st_executor().set_thread_init_hook(&xrDebug::thread_init).init();
+    co_await xr::detail::log_run();
 
     auto in = co_await tmc::fork_clang(CInput::co_create(), tmc::current_executor(), xr::tmc_priority_any);
     auto snd = co_await tmc::fork_clang(CSound_manager_interface::_create(0), tmc::current_executor(), xr::tmc_priority_any);

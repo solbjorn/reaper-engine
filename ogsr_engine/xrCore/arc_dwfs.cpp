@@ -41,8 +41,15 @@ private:
     using policy = dwarfs::prod_logger_policy;
 #endif
 
+    quill::Logger* logger;
+
 public:
-    dwfs_logger() { set_policy<policy>(); }
+    dwfs_logger()
+    {
+        logger = xr::logger_init("DwarFS");
+        set_policy<policy>();
+    }
+
     ~dwfs_logger() override = default;
 
     [[nodiscard]] dwarfs::logger::level_type threshold() const override { return thresh; }
@@ -55,23 +62,23 @@ void dwfs_logger::write(dwarfs::logger::level_type level, std::string_view outpu
     if (level > thresh)
         return;
 
-    std::string_view pfx;
+    quill::LogLevel lvl;
 
     switch (level)
     {
-    case dwarfs::logger::level_type::FATAL:
-    case dwarfs::logger::level_type::ERROR: pfx = "! "; break;
-    case dwarfs::logger::level_type::WARN: pfx = "~ "; break;
-    case dwarfs::logger::level_type::INFO: pfx = "* "; break;
+    case dwarfs::logger::level_type::FATAL: lvl = quill::LogLevel::Critical; break;
+    case dwarfs::logger::level_type::ERROR: lvl = quill::LogLevel::Error; break;
+    case dwarfs::logger::level_type::WARN: lvl = quill::LogLevel::Warning; break;
+    case dwarfs::logger::level_type::INFO: lvl = quill::LogLevel::Info; break;
     case dwarfs::logger::level_type::VERBOSE:
-    default: break;
-    case dwarfs::logger::level_type::DEBUG: pfx = "- "; break;
-    case dwarfs::logger::level_type::TRACE: pfx = "# "; break;
+    case dwarfs::logger::level_type::DEBUG: lvl = quill::LogLevel::Debug; break;
+    case dwarfs::logger::level_type::TRACE: lvl = quill::LogLevel::TraceL1; break;
+    default: lvl = quill::LogLevel::Notice; break;
     }
 
     const auto ctx = dwarfs::get_logger_context(loc);
 
-    Msg("{}DwarFS: {}{}", pfx, ctx, output);
+    XR_LOG__DYNAMIC(logger, lvl, "{}{}", ctx, output);
     XR_ASSERT(level != dwarfs::logger::level_type::FATAL, "DwarFS fatal error", ctx, output);
 }
 
@@ -230,7 +237,7 @@ CStreamReader* dwfs_stream::open_chunk(u32 chunk_id)
     return xr_new<xr::dwfs_stream>(cb, inode, tell(), size);
 }
 
-xr::dwfs_logger lg;
+std::optional<xr::dwfs_logger> lg;
 const dwarfs::os_access_generic os;
 
 constexpr dwarfs::reader::filesystem_options opts{.image_offset = dwarfs::reader::filesystem_options::IMAGE_OFFSET_AUTO,
@@ -249,8 +256,11 @@ constexpr dwarfs::reader::filesystem_options opts{.image_offset = dwarfs::reader
 
 void CLocatorAPI::archive::open_dwfs()
 {
+    if (!xr::lg)
+        xr::lg.emplace();
+
     xr::dwfs_cb(cb) = dwarfs::reader::filesystem_v2{
-        xr::lg, xr::os, std::u8string_view{reinterpret_cast<xr::cu8zstring>(path.c_str()), gsl::narrow_cast<std::size_t>(path.size())}, xr::opts};
+        *xr::lg, xr::os, std::u8string_view{reinterpret_cast<xr::cu8zstring>(path.c_str()), gsl::narrow_cast<std::size_t>(path.size())}, xr::opts};
 }
 
 void CLocatorAPI::archive::autoload_dwfs()

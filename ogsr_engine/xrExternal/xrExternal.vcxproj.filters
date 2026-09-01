@@ -13,6 +13,9 @@
     <Filter Include="ImGui">
       <UniqueIdentifier>{1bedd022-e50c-4080-813d-e27315bac8cd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Logging">
+      <UniqueIdentifier>{523ea590-296a-47ef-9106-04daaaebbdbe}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Physics">
       <UniqueIdentifier>{25085312-f998-4a20-9d9c-7d751ac9ae85}</UniqueIdentifier>
     </Filter>
@@ -24,6 +27,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="asio.cpp">
+      <Filter>Concurrency</Filter>
+    </ClCompile>
     <ClCompile Include="discord.cpp">
       <Filter>Discord</Filter>
     </ClCompile>
@@ -36,6 +42,9 @@
     <ClCompile Include="pch.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClInclude Include="quill.cpp">
+      <Filter>Logging</Filter>
+    </ClInclude>
     <ClCompile Include="tinybvh.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
@@ -48,13 +57,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="assert.h">
-      <Filter>Core</Filter>
+      <Filter>Logging</Filter>
     </ClInclude>
     <ClCompile Include="imgui.h">
       <Filter>ImGui</Filter>
     </ClCompile>
     <ClInclude Include="pch.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="quill.h">
+      <Filter>Logging</Filter>
     </ClInclude>
     <ClInclude Include="rtti.h">
       <Filter>Core</Filter>

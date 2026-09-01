@@ -24,6 +24,7 @@ private:
 
     const tmc::ex_any* const cpu{tmc::cpu_executor().type_erased()};
     const tmc::ex_any* const st{xr::tmc_cpu_st_executor().type_erased()};
+    const tmc::ex_any* const asio{tmc::asio_executor().type_erased()};
 
     void print_features(std::string_view pfx, std::span<std::string_view> list);
     void print_features();
@@ -41,6 +42,8 @@ public:
                               tmc::current_thread_index(), tmc::current_priority());
         else if (tmc::current_executor() == st)
             return xr::format("ST00P{}", tmc::current_priority());
+        else if (tmc::current_executor() == asio)
+            return xr::format("AS00P{}", tmc::current_priority());
         else
             return xr::format("E{:X>5}", std::this_thread::get_id());
     }

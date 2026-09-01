@@ -123,6 +123,9 @@
 [submodule "3rd_party/Src/formatting/fmt/fmt"]
 	path = 3rd_party/Src/formatting/fmt/fmt
 	url = https://github.com/fmtlib/fmt.git
+[submodule "3rd_party/Src/formatting/quill"]
+	path = 3rd_party/Src/formatting/quill
+	url = https://github.com/odygrd/quill.git
 [submodule "3rd_party/Src/formatting/re2/re2"]
 	path = 3rd_party/Src/formatting/re2/re2
 	url = https://github.com/google/re2.git

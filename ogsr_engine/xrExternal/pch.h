@@ -10,6 +10,7 @@
 
 #include "assert.h"
 #include "imgui.h"
+#include "quill.h"
 #include "rtti.h"
 #include "sol.h"
 #include "tinybvh.h"

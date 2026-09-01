@@ -11,6 +11,7 @@
 namespace mz
 {
 #include <mz.h>
+#include <mz_os.h>
 #include <mz_strm.h>
 #include <mz_zip.h>
 #include <mz_zip_rw.h>
@@ -44,6 +45,22 @@ public:
     class reader final : public std::unique_ptr<xr::detail::mz_zip_reader>
     {
     private:
+        class converter final
+        {
+        private:
+            gsl::czstring filename;
+            bool converted;
+
+        public:
+            explicit converter(gsl::czstring filename, u16 flag);
+            ~converter();
+
+            constexpr converter(const converter&) = delete;
+            constexpr converter& operator=(const converter&) = delete;
+
+            [[nodiscard]] constexpr auto str() const { return filename; }
+        };
+
         [[nodiscard]] constexpr auto& file_info() const { return *reinterpret_cast<mz::mz_zip_file**>(reinterpret_cast<std::byte*>(get()) + 56); }
 
         [[nodiscard]] static s32 password(void*, void*, mz::mz_zip_file*, gsl::zstring password, s32 max_password);
@@ -75,6 +92,29 @@ public:
     [[nodiscard]] const auto acquire_scoped() { return pool.acquire_scoped(path); }
 };
 
+zip::reader::converter::converter(gsl::czstring filename, u16 flag) : filename{filename}, converted{false}
+{
+    if ((flag & MZ_ZIP_FLAG_UTF8) || mz::mz_os_utf8_string_is_valid(filename) == MZ_OK)
+        return;
+
+    const auto encoding = mz::mz_os_get_default_encoding();
+    if (encoding <= 0)
+        return;
+
+    const auto utf8 = mz::mz_os_utf8_string_create(filename, encoding);
+    if (utf8 == nullptr)
+        return;
+
+    this->filename = utf8;
+    converted = true;
+}
+
+zip::reader::converter::~converter()
+{
+    if (converted)
+        mz::mz_os_utf8_string_delete(const_cast<gsl::zstring*>(&filename));
+}
+
 zip::reader::reader(gsl::czstring path)
 {
     reset(static_cast<xr::detail::mz_zip_reader*>(mz::mz_zip_reader_create()));
@@ -98,7 +138,7 @@ s32 zip::reader::index_one(void* handle, void* userdata, mz::mz_zip_file* file_i
         return 1;
 
     auto& reg = *static_cast<CallMe::Delegate<void(gsl::czstring, s64, s64, s64)>*>(userdata);
-    reg(file_info->filename, mz::mz_zip_get_entry(handle), file_info->uncompressed_size, file_info->modified_date);
+    reg(converter{file_info->filename, file_info->flag}.str(), mz::mz_zip_get_entry(handle), file_info->uncompressed_size, file_info->modified_date);
 
     return 1;
 }

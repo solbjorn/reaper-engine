@@ -2,6 +2,8 @@
 
 #include "xrsharedmem.h"
 
+#include <psapi.h>
+
 #ifndef __SANITIZE_ADDRESS__
 #define USE_MIMALLOC
 #endif
@@ -24,9 +26,33 @@ XR_DIAG_POP();
 #undef MI_SHARED_LIB
 
 #pragma comment(lib, "mimalloc.lib")
+
+namespace xr
+{
+namespace
+{
+quill::Logger* mimalloc_logger{nullptr};
+
+void mimalloc_print(gsl::czstring msg, void* arg)
+{
+    XR_LOG__DYNAMIC(xr::mimalloc_logger, gsl::narrow<quill::LogLevel>(std::bit_cast<std::uintptr_t>(arg)), "{}", msg);
+}
+} // namespace
+} // namespace xr
+#endif // USE_MIMALLOC
+
+void xrMemory::_initialize()
+{
+#ifdef USE_MIMALLOC
+    xr::mimalloc_logger = xr::logger_init("mimalloc");
+
+    mi_register_output(&xr::mimalloc_print, std::bit_cast<void*>(std::uintptr_t{std::to_underlying(quill::LogLevel::Error)}));
+    mi_options_print_out(&xr::mimalloc_print, std::bit_cast<void*>(std::uintptr_t{std::to_underlying(quill::LogLevel::Debug)}));
 #endif
 
-#include <psapi.h>
+    SProcessMemInfo memCounters;
+    GetProcessMemInfo(memCounters);
+}
 
 void xrMemory::mem_compact()
 {
@@ -108,15 +134,7 @@ void GetProcessMemInfo(SProcessMemInfo& minfo)
     }
 
 #ifdef USE_MIMALLOC
-    Log("####################[+MIMALLOC+]####################");
-    mi_stats_print_out(
-        [](const char* msg, void*) {
-            std::string str{msg};
-            xr_string_utils::rtrim(str);
-            Log(str);
-        },
-        nullptr);
-    Log("####################[-MIMALLOC-]####################");
+    mi_stats_print_out(&xr::mimalloc_print, std::bit_cast<void*>(std::uintptr_t{std::to_underlying(quill::LogLevel::Info)}));
 #endif
 }
 

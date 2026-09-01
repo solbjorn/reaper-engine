@@ -6,6 +6,7 @@ XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wcast-qual");
 XR_DIAG_IGNORE("-Wcomma");
 XR_DIAG_IGNORE("-Wc++98-compat-extra-semi");
+XR_DIAG_IGNORE("-Wdeprecated-copy-with-user-provided-dtor");
 XR_DIAG_IGNORE("-Wextra-semi-stmt");
 XR_DIAG_IGNORE("-Wfloat-equal");
 XR_DIAG_IGNORE("-Wnewline-eof");

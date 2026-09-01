@@ -33,6 +33,8 @@ extern shared_str g_active_task_id;
 
 void AttachGame()
 {
+    xr::logger_init_subsystem();
+
     g_fTimeFactor = pSettings->r_float("alife", "time_factor");
     g_active_task_id._set("");
 

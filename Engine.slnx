@@ -245,6 +245,7 @@
     <BuildDependency Project="3rd_party/Src/FreeType/plutosvg/plutosvg.vcxproj" />
     <BuildDependency Project="3rd_party/Src/debugging/assert/assert.vcxproj" />
     <BuildDependency Project="3rd_party/Src/luajit2/luajit2.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/system/boost/boost.vcxproj" />
     <BuildDependency Project="3rd_party/Src/system/llvm/llvm.vcxproj" />
     <BuildDependency Project="3rd_party/Src/tmc/hwloc/hwloc.vcxproj" />
   </Project>

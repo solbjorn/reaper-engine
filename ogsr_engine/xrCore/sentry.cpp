@@ -24,19 +24,19 @@ namespace
 {
 [[nodiscard]] constexpr auto& sentry_value_cast(u64& val) { return *reinterpret_cast<sentry::sentry_value_t*>(&val); }
 
-[[gnu::format(printf, 2, 0)]] void sentry_logger(sentry::sentry_level_t level, gsl::czstring message, std::va_list args, void*)
+[[gnu::format(printf, 2, 0)]] void sentry_logger(sentry::sentry_level_t level, gsl::czstring message, std::va_list args, void* userdata)
 {
-    std::string_view pfx;
+    quill::LogLevel lvl;
 
     switch (level)
     {
-    case sentry::sentry_level_t::SENTRY_LEVEL_FATAL:
-    case sentry::sentry_level_t::SENTRY_LEVEL_ERROR: pfx = "! "; break;
-    case sentry::sentry_level_t::SENTRY_LEVEL_WARNING: pfx = "~ "; break;
-    case sentry::sentry_level_t::SENTRY_LEVEL_INFO: pfx = "* "; break;
-    case sentry::sentry_level_t::SENTRY_LEVEL_DEBUG: pfx = "- "; break;
-    case sentry::sentry_level_t::SENTRY_LEVEL_TRACE: pfx = "# "; break;
-    default: break;
+    case sentry::sentry_level_t::SENTRY_LEVEL_FATAL: lvl = quill::LogLevel::Critical; break;
+    case sentry::sentry_level_t::SENTRY_LEVEL_ERROR: lvl = quill::LogLevel::Error; break;
+    case sentry::sentry_level_t::SENTRY_LEVEL_WARNING: lvl = quill::LogLevel::Warning; break;
+    case sentry::sentry_level_t::SENTRY_LEVEL_INFO: lvl = quill::LogLevel::Info; break;
+    case sentry::sentry_level_t::SENTRY_LEVEL_DEBUG: lvl = quill::LogLevel::Debug; break;
+    case sentry::sentry_level_t::SENTRY_LEVEL_TRACE: lvl = quill::LogLevel::TraceL1; break;
+    default: lvl = quill::LogLevel::Notice; break;
     }
 
     std::va_list copy;
@@ -58,7 +58,7 @@ namespace
         return size;
     });
 
-    Msg("{}Sentry: {}", pfx, std::move(res));
+    XR_LOG__DYNAMIC(static_cast<quill::Logger*>(userdata), lvl, "{}", std::move(res));
 }
 
 [[nodiscard]] auto sentry_on_crash(const sentry::sentry_ucontext_t*, sentry::sentry_value_t event, void* user_data)
@@ -118,7 +118,7 @@ s32 sentry_helper::init(gsl::czstring log)
     const auto opts = sentry::sentry_options_new();
     sentry::sentry_options_set_debug(opts, true);
     sentry::sentry_options_set_logger_level(opts, severity);
-    sentry::sentry_options_set_logger(opts, &xr::sentry_logger, nullptr);
+    sentry::sentry_options_set_logger(opts, &xr::sentry_logger, xr::logger_init("Sentry"));
 
     sentry::sentry_options_set_dsn(opts, XR_SENTRY_DSN);
     sentry::sentry_options_set_attach_screenshot(opts, true);

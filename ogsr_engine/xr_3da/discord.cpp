@@ -95,6 +95,7 @@ private:
     static constexpr u64 id{XR_DISCORD_APPID};
 
     discordpp::Client client;
+    quill::Logger* logger;
 
     gsl::index nextup{0};
     bool& ready;
@@ -102,7 +103,7 @@ private:
     meta meta;
     rich rich;
 
-    static void log(std::string message, discordpp::LoggingSeverity severity);
+    void log(std::string_view message, discordpp::LoggingSeverity severity) const;
 
     void refresh(bool login);
     void refresh_async(discordpp::ClientResult result, std::string access, std::string refresh, discordpp::AuthorizationTokenType type, s32 expires,
@@ -207,12 +208,13 @@ discord::discord(bool& ready) : ready{ready}
 {
     ready = false;
 
-    client.AddLogCallback(&xr::discord::log, severity);
+    logger = xr::logger_init("Discord");
+    client.AddLogCallback([this](std::string message, discordpp::LoggingSeverity severity) { log(std::move(message), severity); }, severity);
 
     client.SetStatusChangedCallback([this](discordpp::Client::Status status, discordpp::Client::Error error, s32 detail) {
         if (error != discordpp::Client::Error::None)
         {
-            Msg("! Discord: connection error: {} ({})", error, detail);
+            XR_LOG__ERROR(logger, "Connection error: {} ({})", error, detail);
             disconnect();
         }
         else if (status == discordpp::Client::Status::Ready)
@@ -220,7 +222,7 @@ discord::discord(bool& ready) : ready{ready}
             this->ready = true;
 
             if (const auto user = client.GetCurrentUserV2(); user)
-                Msg("* Discord: Hi, {}", user->DisplayName());
+                XR_LOG__INFO(logger, "Hi, {}", user->DisplayName());
 
             set_rich();
         }
@@ -233,10 +235,10 @@ discord::discord(bool& ready) : ready{ready}
 
 discord::~discord() = default;
 
-void discord::log(std::string message, discordpp::LoggingSeverity severity)
+void discord::log(std::string_view message, discordpp::LoggingSeverity severity) const
 {
     if (const auto iter = std::ranges::find_if(filter,
-                                               [severity, message = std::string_view{message}] [[nodiscard]] (const auto& item) {
+                                               [severity, message] [[nodiscard]] (const auto& item) {
                                                    return severity == std::get<1>(item) && message.find(std::get<0>(item)) != std::string_view::npos;
                                                });
         iter != filter.end())
@@ -246,24 +248,25 @@ void discord::log(std::string message, discordpp::LoggingSeverity severity)
             return;
     }
 
-    std::string_view lvl;
+    quill::LogLevel lvl;
 
     switch (severity)
     {
-    case discordpp::LoggingSeverity::Verbose: break;
-    case discordpp::LoggingSeverity::Info: lvl = "* "; break;
-    case discordpp::LoggingSeverity::Warning: lvl = "~ "; break;
-    case discordpp::LoggingSeverity::Error: lvl = "! "; break;
+    case discordpp::LoggingSeverity::Verbose: lvl = quill::LogLevel::Debug; break;
+    case discordpp::LoggingSeverity::Info: lvl = quill::LogLevel::Info; break;
+    case discordpp::LoggingSeverity::Warning: lvl = quill::LogLevel::Warning; break;
+    case discordpp::LoggingSeverity::Error: lvl = quill::LogLevel::Error; break;
     case discordpp::LoggingSeverity::None:
-    default: break;
+    default: lvl = quill::LogLevel::Notice; break;
     }
 
-    if (const auto pos = message.find('('); pos != std::string::npos)
-        message = message.substr(pos);
+    if (const auto pos = message.find("): "); pos != std::string_view::npos)
+        message = message.subview(pos + 3);
 
-    message.pop_back();
+    while (!message.empty() && (message.back() == '\n' || message.back() == '\r'))
+        message.remove_suffix(1);
 
-    Msg("{}Discord: {}", lvl, std::move(message));
+    XR_LOG__DYNAMIC(logger, lvl, "{}", message);
 }
 
 void discord::refresh(bool login)
@@ -279,7 +282,7 @@ void discord::refresh_async(discordpp::ClientResult result, std::string access, 
 {
     if (!result.Successful())
     {
-        Msg("! Discord: failed to get token: {}", result.Error());
+        XR_LOG__ERROR(logger, "Failed to get token: {}", result.Error());
 
         disconnect();
         return;
@@ -296,7 +299,7 @@ void discord::login(bool connect)
     client.UpdateToken(type, std::move(access), [this, connect](discordpp::ClientResult result) {
         if (!result.Successful())
         {
-            Msg("! Discord: failed to update token: {}", result.Error());
+            XR_LOG__ERROR(logger, "Failed to update token: {}", result.Error());
 
             disconnect();
             return;
@@ -321,7 +324,7 @@ void discord::authorize()
     client.Authorize(std::move(args), [this, verifier = std::move(verifier)](discordpp::ClientResult result, std::string code, std::string uri) {
         if (!result.Successful())
         {
-            Msg("! Discord: authentication error: {}", result.Error());
+            XR_LOG__ERROR(logger, "Authentication error: {}", result.Error());
 
             ready = false;
             return;
@@ -378,9 +381,9 @@ void discord::set_rich()
     ds.SetUrl(XR_DISCORD_SERVER_URL);
     activity.AddButton(std::move(ds));
 
-    client.UpdateRichPresence(std::move(activity), [](discordpp::ClientResult result) {
+    client.UpdateRichPresence(std::move(activity), [this](discordpp::ClientResult result) {
         if (!result.Successful())
-            Msg("! Discord: failed to update rich presence: {}", result.Error());
+            XR_LOG__ERROR(logger, "Failed to update rich presence: {}", result.Error());
     });
 }
 

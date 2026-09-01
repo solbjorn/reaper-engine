@@ -47,20 +47,22 @@ long (*orig)(::EXCEPTION_POINTERS*){nullptr};
 // Formatted stacktrace when captured inside UEF
 xr_string maybe_trace;
 
+quill::Logger* cpptrace_logger{nullptr};
+
 void log_callback(cpptrace::log_level lvl, gsl::czstring msg)
 {
-    std::string_view pfx;
+    quill::LogLevel qlvl;
 
     switch (lvl)
     {
-    case cpptrace::log_level::debug: pfx = "- "; break;
-    case cpptrace::log_level::info: pfx = "* "; break;
-    case cpptrace::log_level::warning: pfx = "~ "; break;
-    case cpptrace::log_level::error: pfx = "! "; break;
-    default: break;
+    case cpptrace::log_level::debug: qlvl = quill::LogLevel::Debug; break;
+    case cpptrace::log_level::info: qlvl = quill::LogLevel::Info; break;
+    case cpptrace::log_level::warning: qlvl = quill::LogLevel::Warning; break;
+    case cpptrace::log_level::error: qlvl = quill::LogLevel::Error; break;
+    default: qlvl = quill::LogLevel::Notice; break;
     }
 
-    Msg("{}cpptrace: {}", pfx, msg);
+    XR_LOG__DYNAMIC(xr::cpptrace_logger, qlvl, "{}", msg);
 }
 
 void show(std::string_view msg)
@@ -74,11 +76,15 @@ void show(std::string_view msg)
         Log(msg);
 
     xr::log_flush();
+    const auto back = xr::detail::log_flush();
 
-    tmc::post(xr::tmc_cpu_st_executor(), [] -> tmc::task<void> {
-        ::ShowWindow(gGameWindow, SW_HIDE);
-        co_return;
-    }());
+    if (gGameWindow != nullptr)
+    {
+        tmc::post(xr::tmc_cpu_st_executor(), [] -> tmc::task<void> {
+            ::ShowWindow(gGameWindow, SW_HIDE);
+            co_return;
+        }());
+    }
 
     while (::ShowCursor(true) < 0)
         continue;
@@ -86,7 +92,7 @@ void show(std::string_view msg)
     if (xr::is_debugger_present())
         return;
 
-    if (const auto log = Debug.to_log(); log != nullptr)
+    if (const auto log = Debug.to_log(); log != nullptr && !back)
         ::ShellExecuteW(nullptr, L"open", std::filesystem::path{reinterpret_cast<xr::cu8zstring>(log)}.c_str(), nullptr, nullptr, SW_SHOW);
     else
         ::MessageBoxW(nullptr, sf::String::fromUtf8(msg.begin(), msg.end()).toWideString().c_str(), L"FATAL ERROR",
@@ -363,6 +369,9 @@ void sentry_init(gsl::czstring log = nullptr)
 void xrDebug::_initialize()
 {
     xr::detail::log_init();
+    xr::detail::log_init_new();
+
+    xr::cpptrace_logger = xr::logger_init("cpptrace");
     cpptrace::set_log_callback(&xr::log_callback);
 
     libassert::set_color_scheme(libassert::color_scheme::blank);

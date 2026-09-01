@@ -760,6 +760,7 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
     }
 
     CreateLog(params.contains("-nolog"));
+    xr::detail::log_create();
 }
 
 void CLocatorAPI::_destroy()

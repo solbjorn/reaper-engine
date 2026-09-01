@@ -185,7 +185,7 @@ private:
     void _remove(ISpatial_NODE* N, ISpatial_NODE* N_sub);
 
 public:
-    ISpatial_DB() = default;
+    ISpatial_DB();
     ~ISpatial_DB();
 
     // managing

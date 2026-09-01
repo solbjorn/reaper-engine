@@ -50,8 +50,8 @@
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)
       md "$(Configuration)\$(PlatformShortName)\lib\cmake\enchantum"
-      copy /Y "$(Configuration)\$(PlatformShortName)\cmake\enchantumConfig.cmake" "$(Configuration)\$(PlatformShortName)\lib\cmake\enchantum\enchantumConfig.cmake"
-      copy /Y "$(Configuration)\$(PlatformShortName)\cmake\enchantumConfigVersion.cmake" "$(Configuration)\$(PlatformShortName)\lib\cmake\enchantum\enchantumConfigVersion.cmake"
+      copy /Y "$(Configuration)\$(PlatformShortName)\share\enchantum\cmake\enchantumConfig.cmake" "$(Configuration)\$(PlatformShortName)\lib\cmake\enchantum\enchantumConfig.cmake"
+      copy /Y "$(Configuration)\$(PlatformShortName)\share\enchantum\cmake\enchantumConfigVersion.cmake" "$(Configuration)\$(PlatformShortName)\lib\cmake\enchantum\enchantumConfigVersion.cmake"
       RD /S/Q "$(Configuration)\$(PlatformShortName)\cmake"
       copy /Y "$(Configuration)\$(PlatformShortName)\share\enchantum\cmake\enchantumTargets.cmake" "$(Configuration)\$(PlatformShortName)\lib\cmake\enchantum\enchantumTargets.cmake"
       RD /S/Q "$(Configuration)\$(PlatformShortName)\share"

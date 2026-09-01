@@ -34,7 +34,7 @@ const dReal default_k_l = 0.0002f; // square resistance !!
 const dReal default_k_w = 0.05f;
 
 const dReal mass_limit = 10000.f; // some conventional value used as evaluative param (there is no code restriction on mass)
-extern const u16 max_joint_allowed_for_exeact_integration = 30;
+const u16 max_joint_allowed_for_exeact_integration{30};
 
 const dReal base_fixed_step = 0.02f;
 const dReal base_erp = 0.54545456f;
@@ -65,13 +65,17 @@ CBlockAllocator<CPHContactBodyEffector, 128> ContactEffectors;
 
 ///////////////////////////////////////////////////////////
 
-class SApplyBodyEffectorPred final
+namespace xr
 {
-public:
-    SApplyBodyEffectorPred() {}
+void physics_init()
+{
+    xr::logger_init_subsystem();
 
-    void operator()(CPHContactBodyEffector* pointer) const { pointer->Apply(); }
-};
+    dSetAllocHandler([] [[nodiscard]] (std::size_t size) { return xr_malloc(size); });
+    dSetReallocHandler([] [[nodiscard]] (void* ptr, std::size_t, std::size_t newsize) { return xr_realloc(ptr, newsize); });
+    dSetFreeHandler([](void* ptr, std::size_t) { xr_free(ptr); });
+}
+} // namespace xr
 
 /////////////////////////////////////////////////////////////////////////////
 

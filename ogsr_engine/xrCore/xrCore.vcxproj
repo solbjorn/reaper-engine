@@ -51,7 +51,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <PreprocessorDefinitions>NDEBUG;_LIB;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;XR_SUBSYSTEM=xrCore;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>%(AdditionalOptions) -Wconversion -Wnarrowing -Wold-style-cast -Wsigned-enum-bitfield</AdditionalOptions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -64,7 +64,7 @@
       <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\archiving\archive\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\archiving\dwarfs\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\archiving\minizip\_Build\$(Configuration)\$(PlatformShortName)\include\minizip;$(SolutionDir)\3rd_party\Src\archiving\squashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\debugging\sentry\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\system\boost\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\system\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tmc\cpputils\include;$(SolutionDir)\3rd_party\Src\tmc\cpu_features\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\utility\json\include;$(SolutionDir)\3rd_party\Src\utility\pugixml\pugixml\src;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\archiving\archive\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\archiving\dwarfs\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\archiving\minizip\_Build\$(Configuration)\$(PlatformShortName)\include\minizip;$(SolutionDir)\3rd_party\Src\archiving\squashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\debugging\sentry\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\system\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tmc\cpputils\include;$(SolutionDir)\3rd_party\Src\tmc\cpu_features\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\utility\json\include;$(SolutionDir)\3rd_party\Src\utility\pugixml\pugixml\src;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -84,7 +84,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <PreprocessorDefinitions>_DEBUG;_LIB;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;XR_SUBSYSTEM=xrCore;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>%(AdditionalOptions) -Wconversion -Wnarrowing -Wold-style-cast -Wsigned-enum-bitfield</AdditionalOptions>
       <StringPooling>false</StringPooling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -97,7 +97,7 @@
       <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\archiving\archive\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\archiving\dwarfs\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\archiving\minizip\_Build\$(Configuration)\$(PlatformShortName)\include\minizip;$(SolutionDir)\3rd_party\Src\archiving\squashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\debugging\sentry\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\system\boost\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\system\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tmc\cpputils\include;$(SolutionDir)\3rd_party\Src\tmc\cpu_features\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\utility\json\include;$(SolutionDir)\3rd_party\Src\utility\pugixml\pugixml\src;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\archiving\archive\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\archiving\dwarfs\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\archiving\minizip\_Build\$(Configuration)\$(PlatformShortName)\include\minizip;$(SolutionDir)\3rd_party\Src\archiving\squashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\debugging\sentry\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\system\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tmc\cpputils\include;$(SolutionDir)\3rd_party\Src\tmc\cpu_features\_Build\$(Configuration)\$(PlatformShortName)\include;$(SolutionDir)\3rd_party\Src\utility\json\include;$(SolutionDir)\3rd_party\Src\utility\pugixml\pugixml\src;$(SolutionDir)\3rd_party\Src\utility\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>

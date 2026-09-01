@@ -84,6 +84,7 @@ void MODEL::build_internal(std::span<const Fvector> V, std::span<const TRI> T, b
 
     tree->Build(tinybvh::bvhvec4slice{reinterpret_cast<const tinybvh::bvhvec4*>(verts.data()), gsl::narrow_cast<u32>(verts.size())}, indices.data(),
                 gsl::narrow_cast<u32>(indices.size() / 3));
+    tinybvh::tinybvh_shutdown_builtin_pool();
 
     // Although none of tree's methods is used beyond this point, zero out pointers to verts
     // and indices inside it to trigger stable access violation instead of UB due to possible
@@ -94,11 +95,7 @@ void MODEL::build_internal(std::span<const Fvector> V, std::span<const TRI> T, b
 
 gsl::index MODEL::memory() const
 {
-    if (status != state::S_READY)
-    {
-        Log("! xrCDB: model still isn't ready");
-        return 0;
-    }
+    XR_ASSERT(status == state::S_READY);
 
     const auto V = verts.capacity() * sizeof(Fvector4);
     const auto T = tris.capacity() * sizeof(TRI);
@@ -128,10 +125,9 @@ private:
     u16 useSpatialSplits : 1;
     u16 presplitPostPass : 1;
     u16 useFullSweep : 1;
-    u16 useLBVH : 1;
     u16 postOptimize : 1;
     u16 useSIMDifavailable : 1;
-    u16 padding : 9;
+    u16 padding : 10;
 
     f32 presplitFactor;
     s32 optimizeIterations;
@@ -148,7 +144,6 @@ public:
         useSpatialSplits = settings.useSpatialSplits;
         presplitPostPass = settings.presplitPostPass;
         useFullSweep = settings.useFullSweep;
-        useLBVH = settings.useLBVH;
         postOptimize = settings.postOptimize;
         useSIMDifavailable = settings.useSIMDifavailable;
         padding = 0;
@@ -200,8 +195,6 @@ public:
         if (presplitPostPass != that.presplitPostPass)
             return false;
         if (useFullSweep != that.useFullSweep)
-            return false;
-        if (useLBVH != that.useLBVH)
             return false;
         if (postOptimize != that.postOptimize)
             return false;

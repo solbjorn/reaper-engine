@@ -110,6 +110,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="asio.cpp" />
     <ClCompile Include="discord.cpp" />
     <ClCompile Include="imgui.cpp" />
     <ClCompile Include="imgui_lua.cpp" />
@@ -117,6 +118,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="quill.cpp" />
     <ClCompile Include="tinybvh.cpp" />
     <ClCompile Include="tmc.cpp" />
     <ClCompile Include="tracy.cpp" />
@@ -125,6 +127,7 @@
     <ClInclude Include="assert.h" />
     <ClInclude Include="imgui.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="quill.h" />
     <ClInclude Include="rtti.h" />
     <ClInclude Include="sol.h" />
     <ClInclude Include="tinybvh.h" />

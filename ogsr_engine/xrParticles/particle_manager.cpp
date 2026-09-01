@@ -18,6 +18,8 @@ IParticleManager* PAPI::ParticleManager() { return &PM; }
 CParticleManager::CParticleManager() = default;
 CParticleManager::~CParticleManager() = default;
 
+void CParticleManager::init() { xr::logger_init_subsystem(); }
+
 ParticleEffect* CParticleManager::GetEffectPtr(int effect_id)
 {
     std::scoped_lock<std::mutex> m(pm_Locked);

@@ -46,7 +46,7 @@
       md _Build
       cd _Build
       echo * > .gitignore
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_SHARED_LINKER_FLAGS="/machine:x64 $(SolutionDir)\3rd_party\Src\system\llvm\_Build\libc\lib\llvmlibc.lib" -DMI_BUILD_OBJECT=OFF -DMI_BUILD_STATIC=OFF -DMI_BUILD_TESTS=OFF -DMI_OPT_ARCH=ON -DMI_OPT_SIMD=ON -DMI_TLS_MODEL=WIN32 ..\mimalloc
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_SHARED_LINKER_FLAGS="/machine:x64 $(SolutionDir)\3rd_party\Src\system\llvm\_Build\libc\lib\llvmlibc.lib" -DMI_BUILD_OBJECT=OFF -DMI_BUILD_STATIC=OFF -DMI_BUILD_TESTS=OFF -DMI_OPT_ARCH=ON -DMI_OPT_SIMD=ON -DMI_SHOW_ERRORS=ON -DMI_TLS_MODEL=WIN32 ..\mimalloc
       cmake --build . --config $(Configuration)
       copy /Y "mimalloc.dll.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\mimalloc.lib"
       md "$(SolutionDir)\bin_$(PlatformShortName)"

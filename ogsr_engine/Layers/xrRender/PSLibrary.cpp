@@ -7,7 +7,11 @@
 
 #define _game_data_ "$game_data$"
 
-void CPSLibrary::OnCreate() { LoadAll(); }
+void CPSLibrary::OnCreate()
+{
+    PAPI::ParticleManager()->init();
+    LoadAll();
+}
 
 void CPSLibrary::LoadAll()
 {

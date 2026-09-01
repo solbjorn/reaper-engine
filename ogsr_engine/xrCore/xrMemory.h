@@ -17,6 +17,7 @@ extern bool g_enable_memory_debug;
 class xrMemory final
 {
 public:
+    static void _initialize();
     [[nodiscard]] static gsl::index mem_usage(gsl::index* pBlocksUsed = nullptr, gsl::index* pBlocksFree = nullptr);
     static void mem_compact();
 

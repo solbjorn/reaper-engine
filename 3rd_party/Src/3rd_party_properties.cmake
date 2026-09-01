@@ -31,7 +31,7 @@ if(ENABLE_OPENEXR_SUPPORT)
 endif()
 
 # OpenJPH
-if(OJPH_DISABLE_AVX512)
+if(DEFINED OJPH_BUILD_EXECUTABLES)
   set(warning_options "${warning_options} -Wno-error=format-signedness")
 endif()
 

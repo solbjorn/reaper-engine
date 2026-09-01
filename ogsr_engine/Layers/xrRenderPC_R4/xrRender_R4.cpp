@@ -9,6 +9,8 @@
 
 void AttachRender()
 {
+    xr::logger_init_subsystem();
+
     ::Render = &RImplementation;
     ::RenderFactory = &RenderFactoryImpl;
     ::DU = &DUImpl;

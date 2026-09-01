@@ -41,6 +41,11 @@ class CPHShell;
 extern dJointGroupID ContactGroup;
 extern Fbox phBoundaries;
 
+namespace xr
+{
+void physics_init();
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif // PHYSICS_H

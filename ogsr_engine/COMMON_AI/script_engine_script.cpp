@@ -14,6 +14,14 @@
 
 #include "../xr_3da/xr_input.h"
 
+namespace xr
+{
+namespace
+{
+quill::Logger* lua_logger{nullptr};
+}
+} // namespace xr
+
 namespace
 {
 struct profile_timer_script final
@@ -91,7 +99,16 @@ void take_screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name) { ::Re
 
 void CScriptEngine::script_register(sol::state_view& lua)
 {
-    lua.set("log1", sol::resolve<void(std::string_view)>(&Log), "screenshot", &take_screenshot);
+    xr::lua_logger = xr::logger_init("Lua");
+
+    lua.new_enum("log_level", "trace_l3", quill::LogLevel::TraceL3, "trace_l2", quill::LogLevel::TraceL2, "trace_l1", quill::LogLevel::TraceL1, "debug",
+                 quill::LogLevel::Debug, "info", quill::LogLevel::Info, "notice", quill::LogLevel::Notice, "warning", quill::LogLevel::Warning, "error",
+                 quill::LogLevel::Error, "critical", quill::LogLevel::Critical);
+
+    lua.set("log1",
+            sol::overload([](quill::LogLevel lvl, std::string_view msg) { XR_LOG__DYNAMIC(xr::lua_logger, lvl, "{}", msg); },
+                          [](std::string_view msg) { XR_LOG__NOTICE(xr::lua_logger, "{}", msg); }),
+            "screenshot", &take_screenshot);
 
     lua.new_enum("modes", "normal", IRender_interface::ScreenshotMode::SM_NORMAL, "cubemap", IRender_interface::ScreenshotMode::SM_FOR_CUBEMAP, "gamesave",
                  IRender_interface::ScreenshotMode::SM_FOR_GAMESAVE, "levelmap", IRender_interface::ScreenshotMode::SM_FOR_LEVELMAP);

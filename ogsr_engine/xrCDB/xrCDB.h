@@ -97,11 +97,7 @@ public:
     [[nodiscard]] constexpr std::span<const Fvector4> get_verts() const { return verts; }
     [[nodiscard]] constexpr std::span<const TRI> get_tris() const { return tris; }
 
-    void syncronize() const
-    {
-        if (status != state::S_READY)
-            Log("! WARNING: syncronized CDB::query");
-    }
+    constexpr void syncronize() const { XR_ASSERT(status == state::S_READY); }
 
     void build(std::span<const Fvector> V, std::span<const TRI> T, build_callback* bc = nullptr, void* bcp = nullptr);
     void serialize(gsl::czstring file, u64 xxh, serialize_callback callback = nullptr) const;

@@ -178,6 +178,8 @@ public:
     IParticleManager() = default;
     ~IParticleManager() override = 0;
 
+    virtual void init() = 0;
+
     // create&destroy
     [[nodiscard]] virtual s32 CreateEffect(u32 max_particles) = 0;
     virtual void DestroyEffect(s32 effect_id) = 0;

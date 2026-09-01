@@ -29,6 +29,7 @@ target_sources(libunibreak PRIVATE
 	${SRC}/indicconjunctbreakdef.h
 	${SRC}/linebreak.c
 	${SRC}/linebreak.h
+	${SRC}/linebreakauxdata.c
 	${SRC}/linebreakdata.c
 	${SRC}/linebreakdef.c
 	${SRC}/linebreakdef.h

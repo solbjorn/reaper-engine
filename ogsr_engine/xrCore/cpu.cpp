@@ -208,7 +208,7 @@ void _processor_info::print_topology()
         Log(out.data());
     }
 
-    Msg("* TMC threads: {} (main) + {} (ST)", tmc::cpu_executor().thread_count(), xr::tmc_cpu_st_executor().thread_count());
+    Msg("* TMC threads: {} (main) + {} (ST) + {} (Asio)", tmc::cpu_executor().thread_count(), xr::tmc_cpu_st_executor().thread_count(), 1);
 
     if (!hybrid)
         return;

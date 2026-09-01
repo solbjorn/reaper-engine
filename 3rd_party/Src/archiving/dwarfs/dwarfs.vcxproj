@@ -42,7 +42,7 @@
     <NMakeBuildCommandLine>
       set "PATH=%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin;$(SolutionDir)\3rd_party\Src\archiving\dwarfs\bin;%PATH%"
       set "LIBC_OPTIONS=$(libcOptions)"
-      set "LIBCXX_OPTIONS=$(libcxxOptions) -I$(SolutionDir)\3rd_party\Src\system\abseil\abseil-cpp /FI$(SolutionDir)\3rd_party\Src\system\abseil\include\override.h /FI$(SolutionDir)\3rd_party\Src\archiving\dwarfs\include\override.h -I$(SolutionDir)\3rd_party\Src\i18n\date\include -I$(SolutionDir)\3rd_party\Src\i18n\utfcpp\source -I$(SolutionDir)\3rd_party\Src\utility\json\include"
+      set "LIBCXX_OPTIONS=$(libcxxOptions) -I$(SolutionDir)\3rd_party\Src\system\boost\include -I$(SolutionDir)\3rd_party\Src\system\abseil\abseil-cpp /FI$(SolutionDir)\3rd_party\Src\system\abseil\include\override.h /FI$(SolutionDir)\3rd_party\Src\archiving\dwarfs\include\override.h -I$(SolutionDir)\3rd_party\Src\i18n\date\include -I$(SolutionDir)\3rd_party\Src\i18n\utfcpp\source -I$(SolutionDir)\3rd_party\Src\utility\json\include"
       set "LIBCXX_PATH=$(libcxxPath)"
       md _Build2
       cd _Build2

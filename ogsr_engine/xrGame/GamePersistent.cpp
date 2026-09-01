@@ -28,18 +28,12 @@
 #include "ai_debug.h"
 #include "ui/UIGameTutorial.h"
 
+#include "Physics.h"
 #include "xr_level_controller.h"
 
 #ifndef MASTER_GOLD
 #include "CustomMonster.h"
 #endif // MASTER_GOLD
-
-namespace
-{
-[[nodiscard]] void* ode_alloc(size_t size) { return xr_malloc(size); }
-[[nodiscard]] void* ode_realloc(void* ptr, size_t, size_t newsize) { return xr_realloc(ptr, newsize); }
-void ode_free(void* ptr, size_t) { return xr_free(ptr); }
-} // namespace
 
 CGamePersistent::CGamePersistent()
 {
@@ -48,10 +42,7 @@ CGamePersistent::CGamePersistent()
     m_pMainMenu = nullptr;
     m_intro_event = CallMe::fromMethod<&CGamePersistent::start_logo_intro>(this);
 
-    //
-    dSetAllocHandler(ode_alloc);
-    dSetReallocHandler(ode_realloc);
-    dSetFreeHandler(ode_free);
+    xr::physics_init();
 
     const std::string_view params{Core.Params};
 
