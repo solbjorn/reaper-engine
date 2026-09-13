@@ -92,12 +92,12 @@ static void InitConsole()
             }
             else
             {
-                Msg("! Invalid -ltx parameter argument: {}", res.error().msg());
+                XR_LOG_ERROR("Invalid -ltx parameter argument: {}", res.error().msg());
             }
         }
         else
         {
-            Msg("! The -ltx parameter requires an argument");
+            XR_LOG_ERROR("The -ltx parameter requires an argument");
         }
     }
 
@@ -385,18 +385,18 @@ s32 main(std::string_view cmdline, void* handle)
             if (const auto res = scn::scan_int<size_t>(cmdline.substr(pos + 13)); res)
             {
                 if (const auto val = res->value(); val < 1 || val > TMC_PLATFORM_BITS)
-                    Msg("! Invalid -max-threads parameter argument: {}, must be [1-{}]", val, TMC_PLATFORM_BITS);
+                    XR_LOG_ERROR("Invalid -max-threads parameter argument: {}, must be [1-{}]", val, TMC_PLATFORM_BITS);
                 else
                     cpus = val;
             }
             else
             {
-                Msg("! Invalid -max-threads parameter argument: {}", res.error().msg());
+                XR_LOG_ERROR("Invalid -max-threads parameter argument: {}", res.error().msg());
             }
         }
         else
         {
-            Msg("! The -max-threads parameter requires an argument");
+            XR_LOG_ERROR("The -max-threads parameter requires an argument");
         }
     }
 
@@ -470,16 +470,16 @@ tmc::task<void> main_async(std::string_view cmdline, void* handle, std::atomic<x
             }
             else
             {
-                Msg("! Invalid -fsltx parameter argument: {}", res.error().msg());
+                XR_LOG_ERROR("Invalid -fsltx parameter argument: {}", res.error().msg());
             }
         }
         else
         {
-            Msg("! The -fsltx parameter requires an argument");
+            XR_LOG_ERROR("The -fsltx parameter requires an argument");
         }
     }
 
-    Core._initialize("xray", true, fsgame[0] ? fsgame : nullptr);
+    co_await Core._initialize("xray", true, fsgame[0] ? fsgame : nullptr);
     InitSettings();
 
     {
@@ -690,8 +690,8 @@ void CApplication::LoadEnd()
 {
     if (--ll_dwReference == 0)
     {
-        Msg("* phase time: {} ms", phase_timer.GetElapsed_ms());
-        Msg("* phase cmem: {} K", Memory.mem_usage() / 1024);
+        XR_LOG_INFO("Phase time: {} ms", phase_timer.GetElapsed_ms());
+        XR_LOG_INFO("Phase cmem: {} Kb", Memory.mem_usage() / 1024);
 
         Console->Execute("stat_memory");
         g_appLoaded = TRUE;
@@ -735,8 +735,8 @@ void CApplication::LoadTitleInt() { loadingScreen->SetStageTip(); }
 
 tmc::task<void> CApplication::LoadStage()
 {
-    Msg("* phase time: {} ms", phase_timer.GetElapsed_ms());
-    Msg("* phase cmem: {} K", Memory.mem_usage() / 1024);
+    XR_LOG_INFO("Phase time: {} ms", phase_timer.GetElapsed_ms());
+    XR_LOG_INFO("Phase cmem: {} Kb", Memory.mem_usage() / 1024);
 
     phase_timer.Start();
 

@@ -370,18 +370,17 @@ void verify_vertex(const vertex_type& v, const Fvisual* V, const CKinematics* Pa
 
     for (u8 i = 0; i < vertex_type::bones_count; ++i)
     {
-        if (v.get_bone_id(i) >= Parent->LL_BoneCount())
-        {
-            Msg("v.get_bone_id(i): {}, Parent->LL_BoneCount() {} ", v.get_bone_id(i), Parent->LL_BoneCount());
-            Msg("&v: {}, &V: {}, indices: {}", &v, V, indices);
-            Msg(" iBase: {}, iCount: {}, V->iBase {}, V->iCount {}, V->vBase: {},  V->vCount  {}, vertex_idx: {}, idx: {}", iBase, iCount, V->iBase, V->iCount,
-                V->vBase, V->vCount, vertex_idx, idx);
-            Msg(" v.P: {} , v.N: {}, v.T: {}, v.B: {}", get_string(v.P), get_string(v.N), get_string(v.T), get_string(v.B));
-            Msg("Parent->dbg_name: {} ", Parent->dbg_name);
-            FlushLog();
+        if (v.get_bone_id(i) < Parent->LL_BoneCount())
+            continue;
 
-            XR_ASSERT(v.get_bone_id(i) < Parent->LL_BoneCount(), "", i);
-        }
+        XR_LOG_CRITICAL("v.get_bone_id(i): {}, Parent->LL_BoneCount() {} ", v.get_bone_id(i), Parent->LL_BoneCount());
+        XR_LOG_CRITICAL("&v: {}, &V: {}, indices: {}", &v, V, indices);
+        XR_LOG_CRITICAL(" iBase: {}, iCount: {}, V->iBase {}, V->iCount {}, V->vBase: {},  V->vCount  {}, vertex_idx: {}, idx: {}", iBase, iCount, V->iBase,
+                        V->iCount, V->vBase, V->vCount, vertex_idx, idx);
+        XR_LOG_CRITICAL(" v.P: {} , v.N: {}, v.T: {}, v.B: {}", get_string(v.P), get_string(v.N), get_string(v.T), get_string(v.B));
+        XR_LOG_CRITICAL("Parent->dbg_name: {} ", Parent->dbg_name);
+
+        XR_PANIC("", i);
     }
 }
 } // namespace

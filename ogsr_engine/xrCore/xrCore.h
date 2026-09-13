@@ -138,7 +138,7 @@ public:
                              actor_thirst = 1ull << 42, no_progress_bar_animation = 1ull << 43;
     };
 
-    void _initialize(gsl::czstring ApplicationName, bool init_fs = true, gsl::czstring fs_fname = nullptr);
+    tmc::task<void> _initialize(gsl::czstring ApplicationName, bool init_fs = true, gsl::czstring fs_fname = nullptr);
     void _destroy();
 
     [[nodiscard]] static constexpr std::string_view GetBuildConfiguration();

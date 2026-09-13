@@ -9,7 +9,19 @@ reviews:
 
   path_filters:
     - "!3rd_party/**"
+    - "Game/Resources_SoC_1.0006/gamedata/**"
     - "ogsr_engine/**"
+
+  path_instructions:
+    - path: "Game/Resources_SoC_1.0006/gamedata/scripts/**"
+      instructions: |
+        These files are Lua (LuaJIT 2.x) script files for the engine game logic. 
+        Review them as code, checking for common Lua performance issues, garbage collection allocations, global namespace pollution, and nil-pointer errors.
+
+    - path: "Game/Resources_SoC_1.0006/gamedata/shaders/**"
+      instructions: |
+        These files are HLSL (High-Level Shading Language, DirectX 11.2+) source code files for the engine. 
+        Review them as code, checking for common GPU performance pitfalls, register mapping errors, or uniform/buffer mismatches.
 
   instructions: |
     This repository is a high-performance game engine fork utilizing C++26.

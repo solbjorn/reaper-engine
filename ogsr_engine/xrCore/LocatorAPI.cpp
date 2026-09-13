@@ -565,10 +565,10 @@ bool CLocatorAPI::RecurseScanPhysicalPath(const char* path, const bool log_if_fo
     return true;
 }
 
-void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
+tmc::task<void> CLocatorAPI::_initialize(u32 flags, gsl::czstring target_folder, gsl::czstring fs_name)
 {
     if (m_Flags.is(flReady))
-        return;
+        co_return;
 
     const char _delimiter = '|'; //','
 
@@ -759,7 +759,7 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
     }
 
     CreateLog(params.contains("-nolog"));
-    xr::detail::log_create();
+    co_await xr::detail::log_create();
 }
 
 void CLocatorAPI::_destroy()

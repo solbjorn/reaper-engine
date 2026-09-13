@@ -159,8 +159,8 @@ tmc::task<void> IGame_Persistent::OnGameStart()
     p_time = 1000.f * Device.GetTimerGlobal()->GetElapsed_sec() - p_time;
     u32 p_mem = Memory.mem_usage() - mem_0;
 
-    Msg("* [prefetch] time:    {} ms", iFloor(p_time));
-    Msg("* [prefetch] memory:  {} Kb", p_mem / 1024);
+    XR_LOG_INFO("[prefetch] time:    {} ms", iFloor(p_time));
+    XR_LOG_INFO("[prefetch] memory:  {} Kb", p_mem / 1024);
 }
 
 void IGame_Persistent::OnGameEnd()

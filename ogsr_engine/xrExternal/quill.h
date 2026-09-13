@@ -27,11 +27,14 @@ XR_DIAG_POP();
 
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wnan-infinity-disabled");
+XR_DIAG_IGNORE("-Wnrvo");
 
-#include <quill/std/FilesystemPath.h>
+#include <quill/std/Array.h>
 
 XR_DIAG_POP();
 
+#include <quill/std/Atomic.h>
+#include <quill/std/FilesystemPath.h>
 #include <quill/std/SystemError.h>
 
 QUILL_BEGIN_NAMESPACE

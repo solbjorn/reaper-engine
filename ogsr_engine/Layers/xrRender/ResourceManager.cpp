@@ -216,13 +216,14 @@ tmc::task<void> CResourceManager::DeferredUpload()
     if (!Device.b_is_Ready)
         co_return;
 
-    Msg("CResourceManager::DeferredUpload [MT] -> START, size = [{}]", m_textures.size());
+    XR_LOG_NOTICE("Texture upload [MT] -> START, size = [{}]", m_textures.size());
     XR_LOG_INFO("VRAM usage before:");
 
     xr::render_memory_usage usage;
     _GetMemoryUsage(usage);
 
-    Msg("textures loaded size: {} Mb ({} bytes)", gsl::narrow_cast<f32>(usage.m_base + usage.m_lmaps) / 1024.0f / 1024.0f, usage.m_base + usage.m_lmaps);
+    XR_LOG_INFO("Textures loaded size: {} Mb ({} bytes)", gsl::narrow_cast<f32>(usage.m_base + usage.m_lmaps) / 1024.0f / 1024.0f,
+                usage.m_base + usage.m_lmaps);
     HW.DumpVideoMemoryUsage();
 
     // Теперь многопоточная загрузка текстур даёт очень существенный прирост скорости, проверено.
@@ -235,10 +236,11 @@ tmc::task<void> CResourceManager::DeferredUpload()
     XR_LOG_INFO("VRAM usage after:");
     _GetMemoryUsage(usage);
 
-    Msg("textures loaded size: {} Mb ({} bytes)", gsl::narrow_cast<f32>(usage.m_base + usage.m_lmaps) / 1024.0f / 1024.0f, usage.m_base + usage.m_lmaps);
+    XR_LOG_INFO("Textures loaded size: {} Mb ({} bytes)", gsl::narrow_cast<f32>(usage.m_base + usage.m_lmaps) / 1024.0f / 1024.0f,
+                usage.m_base + usage.m_lmaps);
     HW.DumpVideoMemoryUsage();
 
-    XR_LOG_NOTICE("END");
+    XR_LOG_NOTICE("Texture upload [MT] -> END");
 }
 
 void CResourceManager::_GetMemoryUsage(xr::render_memory_usage& usage) const
@@ -274,9 +276,9 @@ void CResourceManager::_DumpMemoryUsage() const
 
     // dump
     for (const auto [mem, entry] : mtex)
-        Msg("* {:4.1f} : {:4} {}", gsl::narrow_cast<f32>(mem) / 1024.0f, entry.first, entry.second);
+        XR_LOG_TRACE_L1(" {:4.1f} : {:4} {}", gsl::narrow_cast<f32>(mem) / 1024.0f, entry.first, entry.second);
 
-    Msg("* {:4.1f} : Lua", gsl::narrow_cast<f32>(LS_mem()) / 1024.0f);
+    XR_LOG_TRACE_L1("{:4.1f} : Lua", gsl::narrow_cast<f32>(LS_mem()) / 1024.0f);
 }
 
 xr_vector<ITexture*> CResourceManager::FindTexture(const char* Name) const

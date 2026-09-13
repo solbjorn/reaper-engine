@@ -41,7 +41,7 @@ private:
     using policy = dwarfs::prod_logger_policy;
 #endif
 
-    quill::Logger* logger;
+    xr::logger* logger;
 
 public:
     dwfs_logger()

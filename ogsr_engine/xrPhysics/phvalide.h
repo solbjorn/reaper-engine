@@ -21,11 +21,11 @@ IC BOOL dBodyStateValide(const dBodyID body)
     { \
         if (!valid_pos(pos, bounds)) \
         { \
-            Msg(" {}\t\n", msg); \
-            Msg(" pos: {},{},{}, seems to be invalid", pos.x, pos.y, pos.z); \
-            Msg("Level box: {},{},{}-{},{},{},", bounds.x1, bounds.y1, bounds.z1, bounds.x2, bounds.y2, bounds.z2); \
-            Msg("Object: {}", obj->Name()); \
-            Msg("Visual: {}", obj->cNameVisual()); \
+            XR_LOG_CRITICAL("{}", msg); \
+            XR_LOG_CRITICAL("Pos: {}, seems to be invalid", pos); \
+            XR_LOG_CRITICAL("Level box: {},{},{}-{},{},{},", bounds.x1, bounds.y1, bounds.z1, bounds.x2, bounds.y2, bounds.z2); \
+            XR_LOG_CRITICAL("Object: {}", obj->Name()); \
+            XR_LOG_CRITICAL("Visual: {}", obj->cNameVisual()); \
             XR_PANIC(); \
         } \
     }

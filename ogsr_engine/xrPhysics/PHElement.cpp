@@ -404,20 +404,22 @@ void CPHElement::PhDataUpdate(dReal)
 #ifdef DEBUG
     if (!dV_valid(angular_velocity))
     {
-        Msg("angular vel {},{},{}", angular_velocity[0], angular_velocity[1], angular_velocity[2]);
-        Msg("linear vel {},{},{}", linear_velocity[0], linear_velocity[1], linear_velocity[2]);
-        Msg("position  {},{},{}", dBodyGetPosition(m_body)[0], dBodyGetPosition(m_body)[1], dBodyGetPosition(m_body)[2]);
-        Msg("quaternion  {},{},{},{}", dBodyGetQuaternion(m_body)[0], dBodyGetQuaternion(m_body)[1], dBodyGetQuaternion(m_body)[2],
-            dBodyGetQuaternion(m_body)[3]);
-        Msg("matrix");
-        Msg("x  {},{},{}", dBodyGetRotation(m_body)[0], dBodyGetRotation(m_body)[4], dBodyGetRotation(m_body)[8]);
-        Msg("y  {},{},{}", dBodyGetRotation(m_body)[1], dBodyGetRotation(m_body)[5], dBodyGetRotation(m_body)[9]);
-        Msg("z  {},{},{}", dBodyGetRotation(m_body)[2], dBodyGetRotation(m_body)[6], dBodyGetRotation(m_body)[10]);
+        XR_LOG_CRITICAL("Angular vel {},{},{}", angular_velocity[0], angular_velocity[1], angular_velocity[2]);
+        XR_LOG_CRITICAL("Linear vel {},{},{}", linear_velocity[0], linear_velocity[1], linear_velocity[2]);
+        XR_LOG_CRITICAL("Position  {},{},{}", dBodyGetPosition(m_body)[0], dBodyGetPosition(m_body)[1], dBodyGetPosition(m_body)[2]);
+        XR_LOG_CRITICAL("Quaternion  {},{},{},{}", dBodyGetQuaternion(m_body)[0], dBodyGetQuaternion(m_body)[1], dBodyGetQuaternion(m_body)[2],
+                        dBodyGetQuaternion(m_body)[3]);
+
+        XR_LOG_CRITICAL("Matrix:");
+        XR_LOG_CRITICAL("x  {},{},{}", dBodyGetRotation(m_body)[0], dBodyGetRotation(m_body)[4], dBodyGetRotation(m_body)[8]);
+        XR_LOG_CRITICAL("y  {},{},{}", dBodyGetRotation(m_body)[1], dBodyGetRotation(m_body)[5], dBodyGetRotation(m_body)[9]);
+        XR_LOG_CRITICAL("z  {},{},{}", dBodyGetRotation(m_body)[2], dBodyGetRotation(m_body)[6], dBodyGetRotation(m_body)[10]);
 
         CPhysicsShellHolder* ph = PhysicsRefObject();
-        Msg("name visual {}", ph->cNameVisual());
-        Msg("name obj {}", ph->Name());
-        Msg("name section {}", ph->cNameSect());
+        XR_LOG_CRITICAL("Name visual {}", ph->cNameVisual());
+        XR_LOG_CRITICAL("Name obj {}", ph->Name());
+        XR_LOG_CRITICAL("Name section {}", ph->cNameSect());
+
         XR_PANIC("bad angular velocity");
     }
 #endif
@@ -949,7 +951,7 @@ void CPHElement::set_LinearVel(const Fvector& velocity)
 
 #ifdef DEBUG
     if (velocity.magnitude() > m_l_limit)
-        Msg(" CPHElement::set_LinearVel set velocity magnitude is too large {}", velocity.magnitude());
+        XR_LOG_ERROR("Set velocity magnitude is too large {}", velocity.magnitude());
 #endif
 
     put_in_range(vel, m_l_limit);
@@ -966,7 +968,7 @@ void CPHElement::set_AngularVel(const Fvector& velocity)
 
 #ifdef DEBUG
     if (velocity.magnitude() > m_w_limit)
-        Msg("CPHElement::set_AngularVel set velocity magnitude is too large {}", velocity.magnitude());
+        XR_LOG_ERROR("Set velocity magnitude is too large {}", velocity.magnitude());
 #endif
 
     put_in_range(vel, m_w_limit);

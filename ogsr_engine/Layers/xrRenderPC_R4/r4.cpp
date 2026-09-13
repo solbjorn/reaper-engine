@@ -519,15 +519,15 @@ void CRender::addShaderOption(const char* name, const char* value) { m_ShaderOpt
 namespace
 {
 template <typename T>
-HRESULT create_shader(DWORD const* buffer, u32 const buffer_size, LPCSTR const file_name, T*& result, const char* dbg_name)
+xr::hresult create_shader(DWORD const* buffer, u32 const buffer_size, LPCSTR const file_name, T*& result, const char* dbg_name)
 {
     result->sh = ShaderTypeTraits<T>::CreateHWShader(buffer, buffer_size);
     if (result->sh)
         result->sh->SetPrivateData(WKPDID_D3DDebugObjectName, xr_strlen(dbg_name), dbg_name);
 
     ID3DShaderReflection* pReflection{};
-    HRESULT const _hr = D3DReflect(buffer, buffer_size, IID_PPV_ARGS(&pReflection));
-    if (SUCCEEDED(_hr) && pReflection)
+    const auto _hr = xr::hr(::D3DReflect(buffer, buffer_size, IID_PPV_ARGS(&pReflection)));
+    if (_hr && pReflection != nullptr)
     {
         // Parse constant table data
         std::ignore = result->constants.parse(pReflection, ShaderTypeTraits<T>::GetShaderDest());
@@ -535,41 +535,42 @@ HRESULT create_shader(DWORD const* buffer, u32 const buffer_size, LPCSTR const f
     }
     else
     {
-        Msg("! D3DReflectShader {} hr == {}", file_name, _hr);
+        XR_LOG_ERROR("D3DReflectShader {}, error: {}", file_name, _hr);
     }
 
     return _hr;
 }
 
-HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffer_size, LPCSTR const file_name, void*& result, bool const disasm)
+xr::hresult create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffer_size, LPCSTR const file_name, void*& result, bool const disasm)
 {
     string128 dbg_name{}, dbg_ext{};
     _splitpath(file_name, nullptr, nullptr, dbg_name, dbg_ext);
     strcat_s(dbg_name, dbg_ext);
 
-    HRESULT _result = E_FAIL;
+    xr::hresult _result{E_FAIL};
+
     if (pTarget[0] == 'p')
     {
         SPS* sps_result = (SPS*)result;
 
-        _result = HW.pDevice->CreatePixelShader(buffer, buffer_size, nullptr, &sps_result->ps);
-        if (!SUCCEEDED(_result))
+        _result = xr::hr(HW.pDevice->CreatePixelShader(buffer, buffer_size, nullptr, &sps_result->ps));
+        if (!_result)
         {
-            Msg("! PS: [{}]", file_name);
-            Msg("! CreatePixelShader hr == {}", _result);
+            XR_LOG_ERROR("PS: [{}]", file_name);
+            XR_LOG_ERROR("CreatePixelShader, error: {}", _result);
 
-            return E_FAIL;
+            return _result;
         }
 
         if (sps_result->ps)
             sps_result->ps->SetPrivateData(WKPDID_D3DDebugObjectName, xr_strlen(dbg_name), dbg_name);
 
         ID3DShaderReflection* pReflection{};
-        _result = D3DReflect(buffer, buffer_size, IID_PPV_ARGS(&pReflection));
+        _result = xr::hr(::D3DReflect(buffer, buffer_size, IID_PPV_ARGS(&pReflection)));
 
         //	Parse constant, texture, sampler binding
         //	Store input signature blob
-        if (SUCCEEDED(_result) && pReflection)
+        if (_result && pReflection != nullptr)
         {
             //	Let constant table parse it's data
             std::ignore = sps_result->constants.parse(pReflection, RC_dest_pixel);
@@ -577,31 +578,32 @@ HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffe
         }
         else
         {
-            Msg("! PS: [{}]", file_name);
-            Msg("! D3DReflectShader hr == {}", _result);
+            XR_LOG_ERROR("PS: [{}]", file_name);
+            XR_LOG_ERROR("D3DReflectShader, error: {}", _result);
         }
     }
     else if (pTarget[0] == 'v')
     {
         SVS* svs_result = (SVS*)result;
 
-        _result = HW.pDevice->CreateVertexShader(buffer, buffer_size, nullptr, &svs_result->vs);
-        if (!SUCCEEDED(_result))
+        _result = xr::hr(HW.pDevice->CreateVertexShader(buffer, buffer_size, nullptr, &svs_result->vs));
+        if (!_result)
         {
-            Msg("! VS: [{}]", file_name);
-            Msg("! CreateVertexShader hr == {}", _result);
-            return E_FAIL;
+            XR_LOG_ERROR("VS: [{}]", file_name);
+            XR_LOG_ERROR("CreateVertexShader, error: {}", _result);
+
+            return _result;
         }
 
         if (svs_result->vs)
             svs_result->vs->SetPrivateData(WKPDID_D3DDebugObjectName, xr_strlen(dbg_name), dbg_name);
 
         ID3DShaderReflection* pReflection{};
-        _result = D3DReflect(buffer, buffer_size, IID_PPV_ARGS(&pReflection));
+        _result = xr::hr(::D3DReflect(buffer, buffer_size, IID_PPV_ARGS(&pReflection)));
 
         //	Parse constant, texture, sampler binding
         //	Store input signature blob
-        if (SUCCEEDED(_result) && pReflection)
+        if (_result && pReflection != nullptr)
         {
             //	TODO: DX10: share the same input signatures
 
@@ -618,32 +620,32 @@ HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffe
         }
         else
         {
-            Msg("! VS: [{}]", file_name);
-            Msg("! D3DXFindShaderComment hr == {}", _result);
+            XR_LOG_ERROR("VS: [{}]", file_name);
+            XR_LOG_ERROR("D3DReflectShader, error: {}", _result);
         }
     }
     else if (pTarget[0] == 'g')
     {
         SGS* sgs_result = (SGS*)result;
 
-        _result = HW.pDevice->CreateGeometryShader(buffer, buffer_size, nullptr, &sgs_result->gs);
-        if (!SUCCEEDED(_result))
+        _result = xr::hr(HW.pDevice->CreateGeometryShader(buffer, buffer_size, nullptr, &sgs_result->gs));
+        if (!_result)
         {
-            Msg("! GS: [{}]", file_name);
-            Msg("! CreateGeometryShaderhr == {}", _result);
+            XR_LOG_ERROR("GS: [{}]", file_name);
+            XR_LOG_ERROR("CreateGeometryShader, error: {}", _result);
 
-            return E_FAIL;
+            return _result;
         }
 
         if (sgs_result->gs)
             sgs_result->gs->SetPrivateData(WKPDID_D3DDebugObjectName, xr_strlen(dbg_name), dbg_name);
 
         ID3DShaderReflection* pReflection{};
-        _result = D3DReflect(buffer, buffer_size, IID_PPV_ARGS(&pReflection));
+        _result = xr::hr(::D3DReflect(buffer, buffer_size, IID_PPV_ARGS(&pReflection)));
 
         //	Parse constant, texture, sampler binding
         //	Store input signature blob
-        if (SUCCEEDED(_result) && pReflection)
+        if (_result && pReflection != nullptr)
         {
             //	Let constant table parse it's data
             std::ignore = sgs_result->constants.parse(pReflection, RC_dest_geometry);
@@ -651,8 +653,8 @@ HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffe
         }
         else
         {
-            Msg("! PS: [{}]", file_name);
-            Msg("! D3DReflectShader hr == {}", _result);
+            XR_LOG_ERROR("GS: [{}]", file_name);
+            XR_LOG_ERROR("D3DReflectShader, error: {}", _result);
         }
     }
     else if (pTarget[0] == 'c')
@@ -727,7 +729,7 @@ public:
 };
 } // namespace
 
-HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcDataLen, LPCSTR pFunctionName, LPCSTR pTarget, DWORD Flags, void*& result)
+xr::hresult CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcDataLen, LPCSTR pFunctionName, LPCSTR pTarget, DWORD Flags, void*& result)
 {
     xr_vector<D3D_SHADER_MACRO> defines{m_ShaderOptions};
     defines.reserve(55);
@@ -888,11 +890,11 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
     includer Includer;
     LPD3DBLOB pShaderBuf{};
     LPD3DBLOB pErrorBuf{};
-    HRESULT _result;
+    xr::hresult _result{E_FAIL};
     xxh::XXH64_hash_t xxh = std::numeric_limits<xxh::XXH64_hash_t>::max();
 
-    _result = D3DPreprocess(pSrcData, SrcDataLen, "", defines.data(), &Includer, &pShaderBuf, &pErrorBuf);
-    if (SUCCEEDED(_result))
+    _result = xr::hr(::D3DPreprocess(pSrcData, SrcDataLen, "", defines.data(), &Includer, &pShaderBuf, &pErrorBuf));
+    if (_result)
         xxh = xxh::XXH3_64bits(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
     if (pShaderBuf)
         pShaderBuf->Release();
@@ -908,29 +910,35 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
         if (fp->elapsed() > gsl::index{2 * sizeof(xxh)})
         {
             xxh::XXH64_hash_t xxh_read = fp->r_u64();
-            if (SUCCEEDED(_result) && xxh_read != xxh)
-                _result = E_FAIL;
+            if (_result && xxh_read != xxh)
+                _result = xr::hresult{E_FAIL};
+
             xxh_read = fp->r_u64();
-            if (SUCCEEDED(_result) && xxh_read != xxh::XXH3_64bits(fp->pointer(), fp->elapsed()))
-                _result = E_FAIL;
-            if (SUCCEEDED(_result))
+            if (_result && xxh_read != xxh::XXH3_64bits(fp->pointer(), fp->elapsed()))
+                _result = xr::hresult{E_FAIL};
+
+            if (_result)
                 _result = create_shader(pTarget, (const DWORD*)fp->pointer(), fp->elapsed(), file_name, result, o.disasm);
         }
         else
-            _result = E_FAIL;
+        {
+            _result = xr::hresult{E_FAIL};
+        }
 
         FS.r_close(fp);
     }
     else
-        _result = E_FAIL;
+    {
+        _result = xr::hresult{E_FAIL};
+    }
 
     pShaderBuf = nullptr;
     pErrorBuf = nullptr;
 
-    if (FAILED(_result))
+    if (!_result)
     {
-        _result = D3DCompile(pSrcData, SrcDataLen, "", defines.data(), &Includer, pFunctionName, pTarget, Flags, 0, &pShaderBuf, &pErrorBuf);
-        if (SUCCEEDED(_result))
+        _result = xr::hr(::D3DCompile(pSrcData, SrcDataLen, "", defines.data(), &Includer, pFunctionName, pTarget, Flags, 0, &pShaderBuf, &pErrorBuf));
+        if (_result)
         {
             IWriter* fp = FS.w_open(file);
             fp->w_u64(xxh);
@@ -945,13 +953,14 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
         }
     }
 
-    if (FAILED(_result))
+    if (!_result)
     {
-        Msg("! {}", file_name);
+        XR_LOG_ERROR("{}", file_name);
+
         if (pErrorBuf)
-            Msg("! error: {}", reinterpret_cast<gsl::czstring>(pErrorBuf->GetBufferPointer()));
+            XR_LOG_ERROR("Can't compile shader, log:\n{}", reinterpret_cast<gsl::czstring>(pErrorBuf->GetBufferPointer()));
         else
-            Msg("Can't compile shader hr={}", _result);
+            XR_LOG_ERROR("Can't compile shader, error: {}", _result);
     }
 
     if (pErrorBuf)

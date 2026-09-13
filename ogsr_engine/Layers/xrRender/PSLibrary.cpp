@@ -18,14 +18,9 @@ void CPSLibrary::LoadAll()
     if (!Load2()) // load ltx pg and pe
     {
         string_path fn;
-        if (FS.exist(fn, _game_data_, "particles_cop.xr"))
+        if (FS.exist(fn, _game_data_, "particles_cop.xr") != nullptr || FS.exist(fn, _game_data_, "particles.xr") != nullptr)
         {
-            Msg("Load [{}]", fn);
-            Load(fn);
-        }
-        else if (FS.exist(fn, _game_data_, "particles.xr"))
-        {
-            Msg("Load [{}]", fn);
+            XR_LOG_NOTICE("Load [{}]", fn);
             Load(fn);
         }
     }
@@ -39,7 +34,7 @@ void CPSLibrary::ExportAllAsNew()
     string_path fn;
     std::ignore = FS.update_path(fn, _game_data_, "particles_cop.new_xr"); // dummy file name
 
-    Msg("~ Exported all ltx shaders to [{}] in COP format. Rename file to use it.", fn);
+    XR_LOG_NOTICE("Exported all ltx shaders to [{}] in CoP format. Rename file to use it", fn);
     Save(fn);
 }
 
@@ -81,7 +76,7 @@ bool CPSLibrary::Load(const char* nm)
     const bool copFileFormat = strstr(nm, "_cop");
 
     if (copFileFormat)
-        Msg("cop format used for file [{}]", nm);
+        XR_LOG_INFO("CoP format used for file [{}]", nm);
 
     // second generation
     IReader* OBJ;
@@ -138,7 +133,7 @@ bool CPSLibrary::Load(const char* nm)
     // final
     FS.r_close(F);
 
-    Msg("Loaded xr_particle files: [{}]", loaded_count);
+    XR_LOG_NOTICE("Loaded xr_particle files: [{}]", loaded_count);
 
     return bRes;
 }
@@ -228,7 +223,7 @@ bool CPSLibrary::Load2()
         }
     }
 
-    Msg("Loaded particle files: [{}]", files.size());
+    XR_LOG_NOTICE("Loaded particle files: [{}]", files.size());
 
     return something_loaded;
 }

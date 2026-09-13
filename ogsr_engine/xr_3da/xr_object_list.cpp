@@ -90,13 +90,13 @@ tmc::task<void> CObjectList::SingleUpdate(CObject* O)
         if (O->H_Parent() && (O->H_Parent()->getDestroy() || O->H_Root()->getDestroy()))
         {
             // Push to destroy-queue if it isn't here already
-            Msg("! ERROR: incorrect destroy sequence for object[{}:{}], section[{}], parent[{}:{}]", O->ID(), O->cName(), O->cNameSect(), O->H_Parent()->ID(),
-                O->H_Parent()->cName());
+            XR_LOG_ERROR("Incorrect destroy sequence for object[{}:{}], section[{}], parent[{}:{}]", O->ID(), O->cName(), O->cNameSect(), O->H_Parent()->ID(),
+                         O->H_Parent()->cName());
         }
     }
 
     if (O->getDestroy() && (Device.dwFrame != O->dwFrame_UpdateCL))
-        Msg("- !!!processing_enabled ->destroy_queue.push_back {}[{}] frame [{}]", O->cName(), O->ID(), Device.dwFrame);
+        XR_LOG_NOTICE("Processing_enabled ->destroy_queue.push_back {}[{}] frame [{}]", O->cName(), O->ID(), Device.dwFrame);
 }
 
 namespace
@@ -190,12 +190,11 @@ tmc::task<void> CObjectList::ProcessDestroyQueue()
         {
             CObject* O = destroy_queue[it];
 
-#ifdef DEBUG
-            Msg("Destroying object[{:x}] [{}][{}] frame[{}]", O, O->ID(), O->cName(), Device.dwFrame);
-#endif // DEBUG
+            XR_LOG_TRACE_L1("Destroying object [{}][{}] frame[{}]", O->ID(), O->cName(), Device.dwFrame);
 
             O->setDestroy(true);
             co_await O->net_Destroy();
+
             Destroy(O);
         }
 
@@ -227,18 +226,17 @@ void CObjectList::Load() { XR_ASSERT(map_NETID.empty() && objects_active.empty()
 tmc::task<void> CObjectList::Unload()
 {
     if (!objects_sleeping.empty() || !objects_active.empty())
-        Msg("! objects-leaked: {}", objects_sleeping.size() + objects_active.size());
+        XR_LOG_ERROR("Objects-leaked: {}", objects_sleeping.size() + objects_active.size());
 
     // Destroy objects
     while (!objects_sleeping.empty())
     {
         CObject* O = objects_sleeping.back();
-        Msg("! s[{:4}]-[{}]-[{}]", O->ID(), O->cNameSect(), O->cName());
+
+        XR_LOG_ERROR(" s[{:4}]-[{}]-[{}]", O->ID(), O->cNameSect(), O->cName());
         O->setDestroy(TRUE);
 
-#ifdef DEBUG
-        Msg("Destroying object [{}][{}]", O->ID(), O->cName());
-#endif
+        XR_LOG_TRACE_L1("Destroying object [{}][{}]", O->ID(), O->cName());
 
         co_await O->net_Destroy();
         Destroy(O);
@@ -247,12 +245,11 @@ tmc::task<void> CObjectList::Unload()
     while (!objects_active.empty())
     {
         CObject* O = objects_active.back();
-        Msg("! a[{:4}]-[{}]-[{}]", O->ID(), O->cNameSect(), O->cName());
+
+        XR_LOG_ERROR("! a[{:4}]-[{}]-[{}]", O->ID(), O->cNameSect(), O->cName());
         O->setDestroy(TRUE);
 
-#ifdef DEBUG
-        Msg("Destroying object [{}][{}]", O->ID(), O->cName());
-#endif
+        XR_LOG_TRACE_L1("Destroying object [{}][{}]", O->ID(), O->cName());
 
         co_await O->net_Destroy();
         Destroy(O);
@@ -313,11 +310,12 @@ void dump_list(xr_vector<CObject*>& v, LPCSTR reason)
 {
     xr_vector<CObject*>::iterator it = v.begin();
     xr_vector<CObject*>::iterator it_e = v.end();
-    Msg("----------------dump_list [{}]", reason);
+
+    XR_LOG_TRACE_L1("----------------dump_list [{}]", reason);
 
     for (; it != it_e; ++it)
-        Msg("name [{}] ID[{}] parent[{}] getDestroy()=[{}]", (*it)->cName(), (*it)->ID(),
-            ((*it)->H_Parent()) ? std::string_view{(*it)->H_Parent()->cName()} : std::string_view{}, ((*it)->getDestroy()) ? "yes" : "no");
+        XR_LOG_TRACE_L1(" Name [{}] ID[{}] parent[{}] getDestroy()=[{}]", (*it)->cName(), (*it)->ID(),
+                        ((*it)->H_Parent()) ? std::string_view{(*it)->H_Parent()->cName()} : std::string_view{}, ((*it)->getDestroy()) ? "yes" : "no");
 }
 } // namespace
 
@@ -329,6 +327,7 @@ bool CObjectList::dump_all_objects()
 
     dump_list(crows_0, "crows_0");
     dump_list(crows_1, "crows_1");
+
     return false;
 }
 
@@ -342,7 +341,7 @@ void CObjectList::register_object_to_destroy(CObject* object_to_destroy)
         CObject* O = it;
         if (!O->getDestroy() && O->H_Parent() == object_to_destroy)
         {
-            Msg("setDestroy called, but not-destroyed child found parent[{}] child[{}] [{}]", object_to_destroy->ID(), O->ID(), Device.dwFrame);
+            XR_LOG_ERROR("setDestroy called, but not-destroyed child found parent[{}] child[{}] [{}]", object_to_destroy->ID(), O->ID(), Device.dwFrame);
             O->setDestroy(TRUE);
         }
     }
@@ -352,7 +351,7 @@ void CObjectList::register_object_to_destroy(CObject* object_to_destroy)
         CObject* O = it;
         if (!O->getDestroy() && O->H_Parent() == object_to_destroy)
         {
-            Msg("setDestroy called, but not-destroyed child found parent[{}] child[{}] [{}]", object_to_destroy->ID(), O->ID(), Device.dwFrame);
+            XR_LOG_ERROR("setDestroy called, but not-destroyed child found parent[{}] child[{}] [{}]", object_to_destroy->ID(), O->ID(), Device.dwFrame);
             O->setDestroy(TRUE);
         }
     }

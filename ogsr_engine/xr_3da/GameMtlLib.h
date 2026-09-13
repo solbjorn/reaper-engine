@@ -226,7 +226,7 @@ public:
         }
         else
         {
-            Msg("!![{}] material id [{}] not found!", std::source_location::current().function_name(), ID);
+            XR_LOG_ERROR("Material id [{}] not found!", ID);
             return 0;
         }
     }
@@ -239,7 +239,7 @@ public:
         }
         else
         {
-            Msg("!![{}] material name [{}] not found!", std::source_location::current().function_name(), name);
+            XR_LOG_ERROR("Material name [{}] not found!", name);
             return 0;
         }
     }
@@ -251,7 +251,7 @@ public:
         }
         else
         {
-            Msg("!![{}] material id [{}] not found!", std::source_location::current().function_name(), idx);
+            XR_LOG_ERROR("Material id [{}] not found!", idx);
             return materials.front();
         }
     }

@@ -42,7 +42,7 @@ void CDetailManager::hw_Load_Geom()
     hw_BatchSize = (HW.Caps.geometry.dwRegisters - c_hdr) / c_size;
     clamp(hw_BatchSize, 0uz, 64uz);
 
-    Msg("* [DETAILS] VertexConsts({}), Batch({})", +HW.Caps.geometry.dwRegisters, hw_BatchSize);
+    XR_LOG_INFO("VertexConsts({}), Batch({})", +HW.Caps.geometry.dwRegisters, hw_BatchSize);
 
     // Pre-process objects
     std::size_t dwVerts{0};
@@ -54,8 +54,8 @@ void CDetailManager::hw_Load_Geom()
         dwIndices += dp->indices.size() * hw_BatchSize;
     }
 
-    Msg("* [DETAILS] {} v({}), {} p", dwVerts, sizeof(vertHW), dwIndices / 3);
-    Msg("* [DETAILS] Batch({}), VB({}K), IB({}K)", hw_BatchSize, (dwVerts * sizeof(vertHW)) / 1024, (dwIndices * 2) / 1024);
+    XR_LOG_INFO("{} v({}), {} p", dwVerts, sizeof(vertHW), dwIndices / 3);
+    XR_LOG_INFO("Batch({}), VB({}K), IB({}K)", hw_BatchSize, (dwVerts * sizeof(vertHW)) / 1024, (dwIndices * 2) / 1024);
 
     // Fill VB
     {

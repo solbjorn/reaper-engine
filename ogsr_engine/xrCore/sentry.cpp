@@ -58,7 +58,7 @@ namespace
         return size;
     });
 
-    XR_LOG__DYNAMIC(static_cast<quill::Logger*>(userdata), lvl, "{}", std::move(res));
+    XR_LOG__DYNAMIC(static_cast<xr::logger*>(userdata), lvl, "{}", std::move(res));
 }
 
 [[nodiscard]] auto sentry_on_crash(const sentry::sentry_ucontext_t*, sentry::sentry_value_t event, void* user_data)

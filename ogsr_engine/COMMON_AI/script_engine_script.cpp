@@ -18,7 +18,7 @@ namespace xr
 {
 namespace
 {
-quill::Logger* lua_logger{nullptr};
+xr::logger* lua_logger{nullptr};
 }
 } // namespace xr
 

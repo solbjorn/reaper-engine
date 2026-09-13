@@ -95,7 +95,7 @@ private:
     static constexpr u64 id{XR_DISCORD_APPID};
 
     discordpp::Client client;
-    quill::Logger* logger;
+    xr::logger* logger;
 
     gsl::index nextup{0};
     bool& ready;

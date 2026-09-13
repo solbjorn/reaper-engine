@@ -24,7 +24,7 @@ tmc::task<void> CTextureDescrMngr::LoadLTX(gsl::czstring initial)
     FS_FileSet flist;
     std::ignore = FS.file_list(flist, initial, FS_ListFiles | FS_RootOnly, "*textures*.ltx");
 
-    Msg("Count of *textures*.ltx files in [{}]: [{}]", initial, flist.size());
+    XR_LOG_INFO("Count of *textures*.ltx files in [{}]: [{}]", initial, flist.size());
 
     if (flist.empty())
         co_return;
@@ -153,7 +153,7 @@ tmc::task<void> CTextureDescrMngr::LoadTHM(gsl::czstring initial)
     FS_FileSet flist;
     std::ignore = FS.file_list(flist, initial, FS_ListFiles, "*.thm");
 
-    Msg("Count of .thm files in [{}]: [{}]", initial, flist.size());
+    XR_LOG_INFO("Count of .thm files in [{}]: [{}]", initial, flist.size());
 
     if (flist.empty())
         co_return;
@@ -243,7 +243,7 @@ tmc::task<void> CTextureDescrMngr::Load()
     m_detail_scalers.rehash(0);
 
 #ifdef DEBUG
-    Msg("load time={} ms", TT.GetElapsed_ms());
+    XR_LOG_DEBUG("load time={} ms", TT.GetElapsed_ms());
 #endif // #ifdef DEBUG
 }
 

@@ -200,8 +200,8 @@ public:
     virtual void level_Unload() = 0;
 
     void shader_option_skinning(s32 mode) { m_skinning = mode; }
-    [[nodiscard]] virtual HRESULT shader_compile(gsl::czstring name, DWORD const* pSrcData, UINT SrcDataLen, gsl::czstring pFunctionName, gsl::czstring pTarget,
-                                                 DWORD Flags, void*& result) = 0;
+    [[nodiscard]] virtual xr::hresult shader_compile(gsl::czstring name, DWORD const* pSrcData, UINT SrcDataLen, gsl::czstring pFunctionName,
+                                                     gsl::czstring pTarget, DWORD Flags, void*& result) = 0;
 
     // Information
     virtual void Statistics(CGameFont*) {}

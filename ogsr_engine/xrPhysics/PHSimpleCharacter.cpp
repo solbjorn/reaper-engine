@@ -1043,9 +1043,7 @@ void CPHSimpleCharacter::SetVelocity(Fvector vel)
         float mag = _sqrt(sq_mag);
         vel.mul(default_l_limit / mag);
 
-#ifdef DEBUG
-        Msg("set velocity magnitude is too large {}", mag);
-#endif
+        XR_LOG_DYNAMIC_DEBUG(xr::level::Error, "Set velocity magnitude is too large {}", mag);
     }
 
     dBodySetLinearVel(m_body, vel.x, vel.y, vel.z);
@@ -1062,6 +1060,7 @@ void CPHSimpleCharacter::SetMas(dReal mass)
     dMassAdjust(&m, mass);
     dBodySetMass(m_body, &m);
 }
+
 #ifdef DEBUG
 void CPHSimpleCharacter::OnRender()
 {

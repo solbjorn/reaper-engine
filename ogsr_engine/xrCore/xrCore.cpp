@@ -18,7 +18,7 @@ bool gModulesLoaded = false;
 
 static u32 init_counter = 0;
 
-void xrCore::_initialize(gsl::czstring _ApplicationName, bool init_fs, gsl::czstring fs_fname)
+tmc::task<void> xrCore::_initialize(gsl::czstring _ApplicationName, bool init_fs, gsl::czstring fs_fname)
 {
     strcpy_s(ApplicationName, _ApplicationName);
     if (0 == init_counter)
@@ -99,7 +99,7 @@ void xrCore::_initialize(gsl::czstring _ApplicationName, bool init_fs, gsl::czst
         if (strstr(Params, "-file_activity"))
             flags |= CLocatorAPI::flDumpFileActivity;
 
-        FS._initialize(flags, nullptr, fs_fname);
+        co_await FS._initialize(flags, nullptr, fs_fname);
 
         XR_LOG_INFO("[ReapeR Engine ({})] build date: [" __DATE__ " " __TIME__ "]", GetBuildConfiguration());
 

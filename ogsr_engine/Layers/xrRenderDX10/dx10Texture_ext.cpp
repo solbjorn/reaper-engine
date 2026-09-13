@@ -141,13 +141,13 @@ ID3DBaseTexture* CRender::texture_load_exr(const string_path& path, u32& size)
 
     if (Imf::isMultiPart(ver))
     {
-        Msg("! Unsupported multi-part EXR texture: [{}]", path);
+        XR_LOG_ERROR("Unsupported multi-part EXR texture: [{}]", path);
         return nullptr;
     }
 
     if (Imf::isNonImage(ver))
     {
-        Msg("! Unsupported deep EXR texture: [{}]", path);
+        XR_LOG_ERROR("Unsupported deep EXR texture: [{}]", path);
         return nullptr;
     }
 
@@ -166,7 +166,7 @@ ID3DBaseTexture* CRender::texture_load_exr(const string_path& path, u32& size)
 
         if (width < 1 || height < 1)
         {
-            Msg("! Failed to load scanline EXR texture: [{}]", path);
+            XR_LOG_ERROR("Failed to load scanline EXR texture: [{}]", path);
             return nullptr;
         }
 
@@ -183,7 +183,7 @@ ID3DBaseTexture* CRender::texture_load_exr(const string_path& path, u32& size)
             }
             else
             {
-                Msg("! Unsupported scanline EXR texture envmap mode: [{}]", path);
+                XR_LOG_ERROR("Unsupported scanline EXR texture envmap mode: [{}]", path);
                 return nullptr;
             }
         }
@@ -197,9 +197,9 @@ ID3DBaseTexture* CRender::texture_load_exr(const string_path& path, u32& size)
         meta.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
         meta.dimension = DirectX::TEX_DIMENSION_TEXTURE2D;
 
-        if (const auto hr = texture.Initialize(meta); FAILED(hr))
+        if (const auto hr = xr::hr(texture.Initialize(meta)); !hr)
         {
-            Msg("! Failed to initialize scanline EXR texture data: [{}], error: [{}]", path, hr);
+            XR_LOG_ERROR("Failed to initialize scanline EXR texture data: [{}], error: {}", path, hr);
             return nullptr;
         }
 
@@ -217,7 +217,7 @@ ID3DBaseTexture* CRender::texture_load_exr(const string_path& path, u32& size)
 
         if (width < 1 || height < 1)
         {
-            Msg("! Failed to load tiled EXR texture: [{}]", path);
+            XR_LOG_ERROR("Failed to load tiled EXR texture: [{}]", path);
             return nullptr;
         }
 
@@ -228,7 +228,7 @@ ID3DBaseTexture* CRender::texture_load_exr(const string_path& path, u32& size)
         {
         case Imf::ONE_LEVEL:
         case Imf::MIPMAP_LEVELS: mip = rgba.numLevels(); break;
-        default: Msg("! Unsupported tiled EXR texture tile mode: [{}]", path); return nullptr;
+        default: XR_LOG_ERROR("Unsupported tiled EXR texture tile mode: [{}]", path); return nullptr;
         }
 
         size_t arr{1};
@@ -244,7 +244,7 @@ ID3DBaseTexture* CRender::texture_load_exr(const string_path& path, u32& size)
             }
             else
             {
-                Msg("! Unsupported tiled EXR texture envmap mode: [{}]", path);
+                XR_LOG_ERROR("Unsupported tiled EXR texture envmap mode: [{}]", path);
                 return nullptr;
             }
         }
@@ -258,9 +258,9 @@ ID3DBaseTexture* CRender::texture_load_exr(const string_path& path, u32& size)
         meta.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
         meta.dimension = DirectX::TEX_DIMENSION_TEXTURE2D;
 
-        if (const auto hr = texture.Initialize(meta); FAILED(hr))
+        if (const auto hr = xr::hr(texture.Initialize(meta)); !hr)
         {
-            Msg("! Failed to initialize tiled EXR texture data: [{}], error: [{}]", path, hr);
+            XR_LOG_ERROR("Failed to initialize tiled EXR texture data: [{}], error: {}", path, hr);
             return nullptr;
         }
 
@@ -279,12 +279,12 @@ ID3DBaseTexture* CRender::texture_load_exr(const string_path& path, u32& size)
     meta = texture.GetMetadata();
     ID3DBaseTexture* pTexture2D;
 
-    if (const auto hr = DirectX::CreateTextureEx(HW.pDevice.Get(), texture.GetImages(), texture.GetImageCount(), meta, ::D3D11_USAGE::D3D11_USAGE_IMMUTABLE,
-                                                 ::D3D11_BIND_FLAG::D3D11_BIND_SHADER_RESOURCE, 0, meta.miscFlags, DirectX::CREATETEX_FLAGS::CREATETEX_DEFAULT,
-                                                 &pTexture2D);
-        FAILED(hr))
+    if (const auto hr = xr::hr(DirectX::CreateTextureEx(HW.pDevice.Get(), texture.GetImages(), texture.GetImageCount(), meta,
+                                                        ::D3D11_USAGE::D3D11_USAGE_IMMUTABLE, ::D3D11_BIND_FLAG::D3D11_BIND_SHADER_RESOURCE, 0, meta.miscFlags,
+                                                        DirectX::CREATETEX_FLAGS::CREATETEX_DEFAULT, &pTexture2D));
+        !hr)
     {
-        Msg("! Failed to create EXR texture: [{}], error: [{}]", path, hr);
+        XR_LOG_ERROR("Failed to create EXR texture: [{}], error: {}", path, hr);
         return nullptr;
     }
 
@@ -300,7 +300,7 @@ ID3DBaseTexture* CRender::texture_load_sf(const string_path& path, u32& size, bo
 
     if (!image.loadFromStream(is))
     {
-        Msg("! Failed to load SFML texture: [{}]", path);
+        XR_LOG_ERROR("Failed to load SFML texture: [{}]", path);
         return nullptr;
     }
 
@@ -317,9 +317,9 @@ ID3DBaseTexture* CRender::texture_load_sf(const string_path& path, u32& size, bo
 
     DirectX::ScratchImage texture;
 
-    if (const auto hr = texture.Initialize(meta, DirectX::CP_FLAGS_NONE, false); FAILED(hr))
+    if (const auto hr = xr::hr(texture.Initialize(meta, DirectX::CP_FLAGS_NONE, false)); !hr)
     {
-        Msg("! Failed to initialize SFML texture data: [{}], error: [{}]", path, hr);
+        XR_LOG_ERROR("Failed to initialize SFML texture data: [{}], error: {}", path, hr);
         return nullptr;
     }
 
@@ -332,17 +332,17 @@ ID3DBaseTexture* CRender::texture_load_sf(const string_path& path, u32& size, bo
         mem.resize(base / 2);
 
         if (!xr::generate_mips(texture, mem, meta.mipLevels))
-            Msg("! Failed to generate mipmaps for SFML texture: [{}]", path);
+            XR_LOG_ERROR("Failed to generate mipmaps for SFML texture: [{}]", path);
     }
 
     ID3DBaseTexture* pTexture2D;
 
-    if (const auto hr = DirectX::CreateTextureEx(HW.pDevice.Get(), texture.GetImages(), texture.GetImageCount(), meta, ::D3D11_USAGE::D3D11_USAGE_IMMUTABLE,
-                                                 ::D3D11_BIND_FLAG::D3D11_BIND_SHADER_RESOURCE, 0, meta.miscFlags, DirectX::CREATETEX_FLAGS::CREATETEX_DEFAULT,
-                                                 &pTexture2D);
-        FAILED(hr))
+    if (const auto hr = xr::hr(DirectX::CreateTextureEx(HW.pDevice.Get(), texture.GetImages(), texture.GetImageCount(), meta,
+                                                        ::D3D11_USAGE::D3D11_USAGE_IMMUTABLE, ::D3D11_BIND_FLAG::D3D11_BIND_SHADER_RESOURCE, 0, meta.miscFlags,
+                                                        DirectX::CREATETEX_FLAGS::CREATETEX_DEFAULT, &pTexture2D));
+        !hr)
     {
-        Msg("! Failed to create SFML texture: [{}], error: [{}]", path, hr);
+        XR_LOG_ERROR("Failed to create SFML texture: [{}], error: {}", path, hr);
         return nullptr;
     }
 

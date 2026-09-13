@@ -27,6 +27,8 @@ void log_flush();
 
 #include "../xrExternal/quill.h"
 
+#include <enchantum/quill_format.hpp>
+
 #define XR__STRINGIFY(x) #x
 #define XR_STRINGIFY(x) XR__STRINGIFY(x)
 #define XR_LOGGER_SUBSYSTEM_NAME XR_STRINGIFY(XR_SUBSYSTEM)
@@ -94,12 +96,13 @@ void log_flush();
 namespace xr
 {
 using level = quill::LogLevel;
+using logger = quill::Logger;
 
 namespace detail
 {
 constexpr inline auto log_width{100uz};
 
-inline quill::Logger* XR__LOGGER_SUBSYSTEM;
+inline xr::logger* XR__LOGGER_SUBSYSTEM;
 
 // Some Beyond Berklee. Quill expects a valid '\0'-terminated string for runtime tags.
 // We don't want to format thread identificator on hotpath, instead, we encode 8-byte
@@ -158,33 +161,38 @@ static_assert(xr::detail::thread_tag{xr::detail::thread_tag::exec::ext, 0xfefe, 
 
 void log_init_new();
 tmc::task<void> log_run();
-void log_create();
+tmc::task<void> log_create();
 
 [[nodiscard]] bool log_flush();
 } // namespace detail
 
-[[nodiscard]] quill::Logger* logger_init(std::string_view name);
+[[nodiscard]] xr::logger* logger_init(std::string_view name);
 
 inline void logger_init_subsystem() { XR_LOGGER_SUBSYSTEM = xr::logger_init(XR_LOGGER_SUBSYSTEM_NAME); }
 } // namespace xr
 
-// Custom formatters
-
-template <enchantum::Enum E>
-struct fmtquill::formatter<E> final : fmtquill::formatter<enchantum::string_view>
-{
-    template <typename FormatContext>
-    constexpr auto format(const E e, FormatContext& ctx) const
-    {
-        return fmtquill::formatter<enchantum::string_view>::format(enchantum::details::format(e), ctx);
-    }
-};
-
 // Custom codecs
 
 template <>
-struct quill::Codec<shared_str> final : quill::Codec<std::string_view>
-{};
+struct quill::Codec<xr::hresult> final
+{
+private:
+    using base = quill::Codec<decltype(std::declval<xr::hresult>().code())>;
+
+public:
+    [[nodiscard]] static constexpr auto compute_encoded_size(quill::detail::SizeCacheVector& cache, const xr::hresult& arg) noexcept
+    {
+        return base::compute_encoded_size(cache, arg.code());
+    }
+
+    static constexpr void encode(std::byte*& buffer, const quill::detail::SizeCacheVector& cache, u32& index, const xr::hresult& arg) noexcept
+    {
+        base::encode(buffer, cache, index, arg.code());
+    }
+
+    [[nodiscard]] static constexpr auto decode_arg(std::byte*& buffer) { return xr::hresult{std::bit_cast<long>(base::decode_arg(buffer))}; }
+    static constexpr void decode_and_store_arg(std::byte*& buffer, quill::DynamicFormatArgStore* args_store) { args_store->push_back(decode_arg(buffer)); }
+};
 
 template <>
 struct quill::Codec<xr::last_error> final
@@ -193,19 +201,43 @@ private:
     using base = quill::Codec<decltype(std::declval<xr::last_error>().code())>;
 
 public:
-    [[nodiscard]] static constexpr auto compute_encoded_size(quill::detail::SizeCacheVector& conditional_arg_size_cache, const xr::last_error& err) noexcept
+    [[nodiscard]] static constexpr auto compute_encoded_size(quill::detail::SizeCacheVector& cache, const xr::last_error& arg) noexcept
     {
-        return base::compute_encoded_size(conditional_arg_size_cache, err.code());
+        return base::compute_encoded_size(cache, arg.code());
     }
 
-    static constexpr void encode(std::byte*& buffer, const quill::detail::SizeCacheVector& conditional_arg_size_cache, u32& conditional_arg_size_cache_index,
-                                 const xr::last_error& err) noexcept
+    static constexpr void encode(std::byte*& buffer, const quill::detail::SizeCacheVector& cache, u32& index, const xr::last_error& arg) noexcept
     {
-        base::encode(buffer, conditional_arg_size_cache, conditional_arg_size_cache_index, err.code());
+        base::encode(buffer, cache, index, arg.code());
     }
 
     [[nodiscard]] static constexpr auto decode_arg(std::byte*& buffer) { return xr::last_error{base::decode_arg(buffer)}; }
     static constexpr void decode_and_store_arg(std::byte*& buffer, quill::DynamicFormatArgStore* args_store) { args_store->push_back(decode_arg(buffer)); }
 };
+
+template <>
+struct quill::Codec<Fvector3> final
+{
+private:
+    using base = quill::Codec<std::array<f32, 3>>;
+
+public:
+    [[nodiscard]] static constexpr auto compute_encoded_size(quill::detail::SizeCacheVector& cache, const Fvector3& arg) noexcept
+    {
+        return base::compute_encoded_size(cache, arg.arr);
+    }
+
+    static constexpr void encode(std::byte*& buffer, const quill::detail::SizeCacheVector& cache, u32& index, const Fvector3& arg) noexcept
+    {
+        base::encode(buffer, cache, index, arg.arr);
+    }
+
+    [[nodiscard]] static constexpr auto decode_arg(std::byte*& buffer) { return std::bit_cast<Fvector3>(base::decode_arg(buffer)); }
+    static constexpr void decode_and_store_arg(std::byte*& buffer, quill::DynamicFormatArgStore* args_store) { args_store->push_back(decode_arg(buffer)); }
+};
+
+template <>
+struct quill::Codec<shared_str> final : quill::Codec<std::string_view>
+{};
 
 #endif // !__XRCORE_LOG_H

@@ -45,7 +45,7 @@ long (*orig)(::EXCEPTION_POINTERS*){nullptr};
 // Formatted stacktrace when captured inside UEF
 xr_string maybe_trace;
 
-quill::Logger* cpptrace_logger{nullptr};
+xr::logger* cpptrace_logger{nullptr};
 
 void log_callback(cpptrace::log_level lvl, gsl::czstring msg)
 {

@@ -17,7 +17,7 @@ void ip_address::set(LPCSTR src_string) // Это нужно
     }
     else
     {
-        Msg("! Bad ipAddress format [{}]: {}", src_string, res.error().msg());
+        XR_LOG_ERROR("Bad ipAddress format [{}]: {}", src_string, res.error().msg());
         m_data.data = 0;
     }
 }

@@ -1,0 +1,15 @@
+{
+  "ignorePatterns": ".git/**\n.github/**\n3rd_party/**",
+  "schema": [
+    {
+      "path": "Game/Resources_SoC_1.0006/gamedata/scripts/**",
+      "description": "Lua (LuaJIT 2.x) script files for the engine game logic. Read as Lua script text code."
+    },
+    {
+      "path": "Game/Resources_SoC_1.0006/gamedata/shaders/**",
+      "description": "HLSL (DirectX 11.2+) source code files for the engine. Read as High-Level Shading Language text code."
+    }
+  ],
+  "strictness": 1,
+  "triggerOnUpdates": false
+}

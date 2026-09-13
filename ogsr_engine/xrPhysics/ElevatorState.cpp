@@ -104,7 +104,7 @@ void CElevatorState::SwitchState(Estate new_state)
 
 #ifdef DEBUG
     if (ph_dbg_draw_mask.test(phDbgLadder))
-        Msg("{}", dbg_state[new_state]);
+        XR_LOG_DEBUG("{}", dbg_state[new_state]);
 #endif
 
     XR_ASSERT(m_character != nullptr);

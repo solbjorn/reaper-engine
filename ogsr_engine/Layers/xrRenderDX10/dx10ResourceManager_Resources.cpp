@@ -158,8 +158,8 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
     if (strstr(Core.Params, "-shadersdbg"))
         Flags |= D3DCOMPILE_FLAGS_DEBUG;
 
-    XR_ASSERT(xr::hr(RImplementation.shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry, c_target,
-                                                    Flags, (void*&)_vs)),
+    XR_ASSERT(RImplementation.shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry, c_target, Flags,
+                                             (void*&)_vs),
               "failed to compile shader", cname, c_target);
 
     return _vs;
@@ -173,7 +173,7 @@ void CResourceManager::_DeleteVS(const SVS* vs)
     const auto I = m_vs.find(vs->cName);
     if (I == m_vs.end())
     {
-        Msg("! ERROR: Failed to find compiled vertex-shader '{}'", vs->cName);
+        XR_LOG_ERROR("Failed to find compiled vertex-shader '{}'", vs->cName);
         return;
     }
 
@@ -251,8 +251,8 @@ SPS* CResourceManager::_CreatePS(LPCSTR _name)
     if (strstr(Core.Params, "-shadersdbg"))
         Flags |= D3DCOMPILE_FLAGS_DEBUG;
 
-    XR_ASSERT(xr::hr(RImplementation.shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry, c_target,
-                                                    Flags, (void*&)_ps)),
+    XR_ASSERT(RImplementation.shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry, c_target, Flags,
+                                             (void*&)_ps),
               "failed to compile shader", cname, c_target);
 
     return _ps;
@@ -264,7 +264,7 @@ void CResourceManager::_DeletePS(const SPS* ps)
         return;
 
     if (const auto I = m_ps.find(ps->cName); I == m_ps.end())
-        Msg("! ERROR: Failed to find compiled pixel-shader '{}'", ps->cName);
+        XR_LOG_ERROR("Failed to find compiled pixel-shader '{}'", ps->cName);
     else
         m_ps.erase(I);
 }
@@ -302,7 +302,7 @@ SGS* CResourceManager::_CreateGS(LPCSTR name)
     if (strstr(Core.Params, "-shadersdbg"))
         Flags |= D3DCOMPILE_FLAGS_DEBUG;
 
-    XR_ASSERT(xr::hr(RImplementation.shader_compile(name, (DWORD const*)file->pointer(), file->elapsed(), c_entry, c_target, Flags, (void*&)_gs)),
+    XR_ASSERT(RImplementation.shader_compile(name, (DWORD const*)file->pointer(), file->elapsed(), c_entry, c_target, Flags, (void*&)_gs),
               "failed to compile shader", cname, c_target);
 
     return _gs;
@@ -314,7 +314,7 @@ void CResourceManager::_DeleteGS(const SGS* gs)
         return;
 
     if (const auto I = m_gs.find(gs->cName); I == m_gs.end())
-        Msg("! ERROR: Failed to find compiled geometry shader '{}'", gs->cName);
+        XR_LOG_ERROR("Failed to find compiled geometry shader '{}'", gs->cName);
     else
         m_gs.erase(I);
 }
@@ -411,7 +411,7 @@ void CResourceManager::_DeleteRT(const CRT* RT)
         return;
 
     if (const auto I = m_rtargets.find(RT->cName); I == m_rtargets.end())
-        Msg("! ERROR: Failed to find render-target '{}'", RT->cName);
+        XR_LOG_ERROR("Failed to find render-target '{}'", RT->cName);
     else
         m_rtargets.erase(I);
 }
@@ -495,7 +495,7 @@ void CResourceManager::_DeleteTexture(const CTexture* T)
         return;
 
     if (const auto I = m_textures.find(T->cName); I == m_textures.end())
-        Msg("! ERROR: Failed to find texture surface '{}'", T->cName);
+        XR_LOG_ERROR("Failed to find texture surface '{}'", T->cName);
     else
         m_textures.erase(I);
 }

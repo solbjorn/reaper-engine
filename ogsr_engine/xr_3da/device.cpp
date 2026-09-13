@@ -67,8 +67,8 @@ tmc::task<void> CRenderDevice::RenderEnd()
 
             Memory.mem_compact();
 
-            Msg("* MEMORY USAGE: {} K", Memory.mem_usage() / 1024);
-            Msg("* End of synchronization A[{}] R[{}]", b_is_Active, b_is_Ready);
+            XR_LOG_INFO("MEMORY USAGE: {} K", Memory.mem_usage() / 1024);
+            XR_LOG_NOTICE("End of synchronization A[{}] R[{}]", b_is_Active, b_is_Ready);
         }
     }
 
@@ -305,8 +305,8 @@ tmc::task<void> CRenderDevice::ProcessFrame(decltype(std::chrono::high_resolutio
     {
         const std::chrono::duration<f64, std::milli> SecondThreadFreeTime = FrameElapsedTime - SecondThreadTasksElapsedTime;
 
-        Msg("##[{}] Second thread work time is too long! Avail: [{}]ms, used: [{}]ms, free: [{}]ms", std::source_location::current().function_name(),
-            FrameElapsedTime, SecondThreadTasksElapsedTime, SecondThreadFreeTime);
+        XR_LOG_WARNING("Second thread work time is too long! Avail: [{}]ms, used: [{}]ms, free: [{}]ms", FrameElapsedTime, SecondThreadTasksElapsedTime,
+                       SecondThreadFreeTime);
     }
 #else
     co_await std::move(second);
@@ -415,13 +415,13 @@ static void LogOsVersion()
 
         if (NT_SUCCESS(RtlGetVersion(&osInfo)))
         {
-            Msg("--OS Version major: [{}] minor: [{}], build: [{}]. Server OS: [{}]", osInfo.dwMajorVersion, osInfo.dwMinorVersion, osInfo.dwBuildNumber,
-                osInfo.wProductType != VER_NT_WORKSTATION ? "yes" : "no");
+            XR_LOG_INFO("OS Version major: [{}] minor: [{}], build: [{}]. Server OS: [{}]", osInfo.dwMajorVersion, osInfo.dwMinorVersion, osInfo.dwBuildNumber,
+                        osInfo.wProductType != VER_NT_WORKSTATION ? "yes" : "no");
             return;
         }
     }
 
-    Msg("!![{}] Can't get RtlGetVersion", std::source_location::current().function_name());
+    XR_LOG_ERROR("Can't get RtlGetVersion");
 }
 
 tmc::task<void> CRenderDevice::Run()

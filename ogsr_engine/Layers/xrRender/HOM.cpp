@@ -55,11 +55,11 @@ tmc::task<void> CHOM::Load()
     std::ignore = FS.update_path(fName, "$level$", "level.hom");
     if (!FS.exist(fName))
     {
-        Msg(" WARNING: Occlusion map '{}' not found.", fName);
+        XR_LOG_WARNING("Occlusion map '{}' not found", fName);
         co_return;
     }
 
-    Msg("* Loading HOM: {}", fName);
+    XR_LOG_NOTICE("Loading HOM: {}", fName);
     IReader* fs = FS.r_open(fName);
 
     // Load tris and merge them
@@ -92,7 +92,7 @@ tmc::task<void> CHOM::Load()
                                      rT.area = Area(v0, v1, v2);
 
                                      if (rT.area < EPS_L)
-                                         Msg("! Invalid HOM triangle {}-{}-{}", v0, v1, v2);
+                                         XR_LOG_ERROR("Invalid HOM triangle {}-{}-{}", v0, v1, v2);
 
                                      rT.plane.build(v0, v1, v2);
                                      rT.skip = 0;

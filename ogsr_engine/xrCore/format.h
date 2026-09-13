@@ -94,7 +94,10 @@ struct unformattable final
 template <typename T>
 struct std::formatter<std::atomic<T>> final : std::formatter<T>
 {
-    [[nodiscard]] constexpr auto format(const std::atomic<T>& val, std::format_context& ctx) const { return std::formatter<T>::format(val.load(), ctx); }
+    [[nodiscard]] constexpr auto format(const std::atomic<T>& val, std::format_context& ctx) const
+    {
+        return std::formatter<T>::format(val.load(std::memory_order_relaxed), ctx);
+    }
 };
 
 template <>

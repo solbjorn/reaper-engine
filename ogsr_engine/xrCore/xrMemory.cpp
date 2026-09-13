@@ -31,7 +31,7 @@ namespace xr
 {
 namespace
 {
-quill::Logger* mimalloc_logger{nullptr};
+xr::logger* mimalloc_logger{nullptr};
 
 void mimalloc_print(gsl::czstring msg, void* arg)
 {

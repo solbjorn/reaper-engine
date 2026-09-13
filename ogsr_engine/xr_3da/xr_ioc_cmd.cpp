@@ -31,8 +31,8 @@ constexpr xr_token vid_bpp_token[]{{"16", 16}, {"32", 32}, {0, 0}};
 
 void IConsole_Command::InvalidSyntax(std::string_view msg, std::string_view args) const
 {
-    Msg("~ Invalid syntax in call to '{}': {}: {}", cName, msg, args);
-    Msg("~ Valid arguments: {}", Info());
+    XR_LOG_ERROR("Invalid syntax in call to '{}': {}: {}", cName, msg, args);
+    XR_LOG_ERROR("Valid arguments: {}", Info());
 }
 
 void IConsole_Command::add_to_LRU(shared_str const& arg)
@@ -251,26 +251,26 @@ public:
         for (auto it = Console->Commands.begin(); it != Console->Commands.end(); it++)
         {
             IConsole_Command& C = *(it->second);
-            Msg("{:20} ({:10}) --- {}", C.Name(), C.Status(), C.Info());
+            XR_LOG_INFO(" {:20} ({:10}) --- {}", C.Name(), C.Status(), C.Info());
         }
 
-        XR_LOG_INFO("Key: Ctrl + A         === Select all ");
-        XR_LOG_INFO("Key: Ctrl + C         === Copy to clipboard ");
-        XR_LOG_INFO("Key: Ctrl + V         === Paste from clipboard ");
-        XR_LOG_INFO("Key: Ctrl + X         === Cut to clipboard ");
-        XR_LOG_INFO("Key: Ctrl + Z         === Undo ");
-        XR_LOG_INFO("Key: Ctrl + Insert    === Copy to clipboard ");
-        XR_LOG_INFO("Key: Shift + Insert   === Paste from clipboard ");
-        XR_LOG_INFO("Key: Shift + Delete   === Cut to clipboard ");
-        XR_LOG_INFO("Key: Insert           === Toggle mode <Insert> ");
-        XR_LOG_INFO("Key: Back / Delete          === Delete symbol left / right ");
+        XR_LOG_INFO(" Key: Ctrl + A         === Select all");
+        XR_LOG_INFO(" Key: Ctrl + C         === Copy to clipboard");
+        XR_LOG_INFO(" Key: Ctrl + V         === Paste from clipboard");
+        XR_LOG_INFO(" Key: Ctrl + X         === Cut to clipboard");
+        XR_LOG_INFO(" Key: Ctrl + Z         === Undo");
+        XR_LOG_INFO(" Key: Ctrl + Insert    === Copy to clipboard");
+        XR_LOG_INFO(" Key: Shift + Insert   === Paste from clipboard");
+        XR_LOG_INFO(" Key: Shift + Delete   === Cut to clipboard");
+        XR_LOG_INFO(" Key: Insert           === Toggle mode <Insert>");
+        XR_LOG_INFO(" Key: Back / Delete          === Delete symbol left / right");
 
-        XR_LOG_INFO("Key: Up   / Down            === Prev / Next command in tips list ");
-        XR_LOG_INFO("Key: Ctrl + Up / Ctrl + Down === Prev / Next executing command ");
-        XR_LOG_INFO("Key: Left, Right, Home, End {+Shift/+Ctrl}       === Navigation in text ");
-        XR_LOG_INFO("Key: PageUp / PageDown      === Scrolling history ");
-        XR_LOG_INFO("Key: Tab  / Shift + Tab     === Next / Prev possible command from list");
-        XR_LOG_INFO("Key: Enter  / NumEnter      === Execute current command ");
+        XR_LOG_INFO(" Key: Up   / Down            === Prev / Next command in tips list");
+        XR_LOG_INFO(" Key: Ctrl + Up / Ctrl + Down === Prev / Next executing command");
+        XR_LOG_INFO(" Key: Left, Right, Home, End {+Shift/+Ctrl}       === Navigation in text");
+        XR_LOG_INFO(" Key: PageUp / PageDown      === Scrolling history");
+        XR_LOG_INFO(" Key: Tab  / Shift + Tab     === Next / Prev possible command from list");
+        XR_LOG_INFO(" Key: Enter  / NumEnter      === Execute current command");
 
         XR_LOG_INFO("--- Command listing: end ----");
     }
@@ -335,7 +335,7 @@ public:
                 it->second->Save(F);
 
             FS.w_close(F);
-            Msg("Config-file [{}] saved successfully", cfg_full_name);
+            XR_LOG_NOTICE("Config-file [{}] saved successfully", cfg_full_name);
         }
         else
         {
@@ -349,7 +349,7 @@ CCC_LoadCFG::CCC_LoadCFG(LPCSTR N) : IConsole_Command{N} {}
 
 void CCC_LoadCFG::Execute(std::string_view args)
 {
-    Msg("Executing config-script \"{}\"...", args);
+    XR_LOG_NOTICE("Executing config-script \"{}\"...", args);
     string_path cfg_name;
 
     xr_strcpy(cfg_name, args.data());
@@ -399,8 +399,7 @@ void CCC_LoadCFG::Execute(std::string_view args)
         }
 
         FS.r_close(F);
-
-        Msg("[{}] successfully loaded.", cfg_full_name);
+        XR_LOG_NOTICE("[{}] successfully loaded", cfg_full_name);
     }
     else
     {

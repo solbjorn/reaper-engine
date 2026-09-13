@@ -113,13 +113,15 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 
         if (vis.sphere.R > 1000.f)
         {
+            XR_LOG_CRITICAL("All bones transform:--------[{}]", dbg_name);
+
             for (u16 ii = 0; ii < LL_BoneCount(); ++ii)
             {
-                Msg("bone: {}", LL_BoneName_dbg(ii));
-                Msg("bone_matrix: {}", LL_GetTransform(ii));
+                XR_LOG_CRITICAL(" bone: {}", LL_BoneName_dbg(ii));
+                XR_LOG_CRITICAL(" bone_matrix: {}", LL_GetTransform(ii));
             }
 
-            XR_LOG_ERROR("end-------");
+            XR_LOG_CRITICAL("end-------");
         }
 #endif
 
@@ -135,18 +137,19 @@ void check_kinematics(CKinematics* _k, LPCSTR s)
 {
     CKinematics* K = _k;
     Fmatrix& MrootBone = K->LL_GetBoneInstance(K->LL_GetBoneRoot()).mTransform;
+
     if (MrootBone.c.y > 10000)
     {
-        Msg("all bones transform:--------[{}]", s);
+        XR_LOG_CRITICAL("All bones transform:--------[{}]", s);
 
         for (u16 ii = 0; ii < K->LL_BoneCount(); ++ii)
         {
-            Msg("bone: {}", K->LL_BoneName_dbg(ii));
-            Msg("bone_matrix: {}", K->LL_GetTransform(ii));
+            XR_LOG_CRITICAL(" bone: {}", K->LL_BoneName_dbg(ii));
+            XR_LOG_CRITICAL(" bone_matrix: {}", K->LL_GetTransform(ii));
         }
 
-        XR_LOG_ERROR("end-------");
-        XR_PANIC("check_kinematics failed for ", s);
+        XR_LOG_CRITICAL("end-------");
+        XR_PANIC("kinematics check failed", s);
     }
 }
 #endif

@@ -208,7 +208,7 @@ void CEnvironment::SetWeather(shared_str name, bool forced)
     auto it = WeatherCycles.find(name);
     if (it == WeatherCycles.end())
     {
-        Msg("! Invalid weather name: {}", name);
+        XR_LOG_ERROR("Invalid weather name: {}", name);
         return;
     }
 
@@ -228,7 +228,7 @@ void CEnvironment::SetWeather(shared_str name, bool forced)
         SelectEnvs(fGameTime);
 
 #ifdef WEATHER_LOGGING
-    Msg("Starting Cycle: {} [{}]", name, forced ? "forced" : "deferred");
+    XR_LOG_INFO("Starting Cycle: {} [{}]", name, forced ? "forced" : "deferred");
 #endif
 }
 
@@ -286,10 +286,10 @@ bool CEnvironment::SetWeatherFX(shared_str name)
     Current[1] = C1;
 
 #ifdef WEATHER_LOGGING
-    Msg("Starting WFX: '{}' - {:3.2f} sec. GameTime: {:3.2f}", name, wfx_time, fGameTime);
+    XR_LOG_INFO("Starting WFX: '{}' - {:3.2f} sec. GameTime: {:3.2f}", name, wfx_time, fGameTime);
 
     for (EnvIt l_it = CurrentWeather->begin(); l_it != CurrentWeather->end(); l_it++)
-        Msg(". Env: '{}' Tm: {:3.2f}", (*l_it)->m_identifier, (*l_it)->exec_time);
+        XR_LOG_INFO(" Env: '{}' Tm: {:3.2f}", (*l_it)->m_identifier, (*l_it)->exec_time);
 #endif
 
     return true;
@@ -306,10 +306,10 @@ bool CEnvironment::StartWeatherFXFromTime(shared_str name, float time)
     wfx_time -= time;
 
 #ifdef WEATHER_LOGGING
-    Msg("Started WFX from time[{:3.2f}]: '{}' - {:3.2f} sec", time, name, wfx_time);
+    XR_LOG_INFO("Started WFX from time[{:3.2f}]: '{}' - {:3.2f} sec", time, name, wfx_time);
 
     for (EnvIt l_it = CurrentWeather->begin(); l_it != CurrentWeather->end(); l_it++)
-        Msg(". Env: '{}' Tm: {:3.2f}", (*l_it)->m_identifier, (*l_it)->exec_time);
+        XR_LOG_INFO(" Env: '{}' Tm: {:3.2f}", (*l_it)->m_identifier, (*l_it)->exec_time);
 #endif
 
     return true;
@@ -331,7 +331,8 @@ void CEnvironment::StopWFX()
     Current[1] = WFX_end_desc[1];
 
 #ifdef WEATHER_LOGGING
-    Msg("WFX - end. Weather: '{}' Desc: '{}'/'{}' GameTime: {:3.2f}", CurrentWeatherName, Current[0]->m_identifier, Current[1]->m_identifier, fGameTime);
+    XR_LOG_INFO("WFX - end. Weather: '{}' Desc: '{}'/'{}' GameTime: {:3.2f}", CurrentWeatherName, Current[0]->m_identifier, Current[1]->m_identifier,
+                fGameTime);
 #endif
 }
 
@@ -406,7 +407,7 @@ void CEnvironment::SelectEnvs(float gt)
             g_pGameLevel->OnChangeCurrentWeather(Current[0]->m_identifier.c_str());
 
 #ifdef WEATHER_LOGGING
-            Msg("Weather: '{}' Desc: '{}' Time: {:3.2f}/{:3.2f}", CurrentWeatherName, Current[1]->m_identifier, Current[1]->exec_time, fGameTime);
+            XR_LOG_INFO("Weather: '{}' Desc: '{}' Time: {:3.2f}/{:3.2f}", CurrentWeatherName, Current[1]->m_identifier, Current[1]->exec_time, fGameTime);
 #endif
         }
     }
@@ -678,7 +679,7 @@ void CEnvironment::SetWeatherNext(shared_str name)
     auto it = WeatherCycles.find(name);
     if (it == WeatherCycles.end())
     {
-        Msg("! [{}]: Invalid weather name: {}", std::source_location::current().function_name(), name);
+        XR_LOG_ERROR("Invalid weather name: {}", name);
         return;
     }
 

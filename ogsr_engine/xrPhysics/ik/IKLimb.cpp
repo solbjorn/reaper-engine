@@ -238,11 +238,10 @@ u16 get_ik_bone(IKinematics* K, LPCSTR S, u16 i)
 {
     string32 sbone;
     std::ignore = _GetItem(S, i, sbone);
-    u16 bone = K->LL_BoneID(sbone);
 
-    if (BI_NONE == bone)
-        Msg("!![{}]ik bone: [{}] does not found in visual: [{}]", std::source_location::current().function_name(), sbone,
-            smart_cast<IRenderVisual*>(K)->getDebugName());
+    u16 bone = K->LL_BoneID(sbone);
+    if (bone == BI_NONE)
+        XR_LOG_ERROR("ik bone: [{}] not found in visual: [{}]", sbone, smart_cast<IRenderVisual*>(K)->getDebugName());
 
     return bone;
 }

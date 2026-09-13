@@ -77,37 +77,42 @@ std::pair<LPCSTR, LPCSTR> CKinematicsAnimated::LL_MotionDefName_dbg(MotionID ID)
     return std::make_pair((LPCSTR) nullptr, (LPCSTR) nullptr);
 }
 
-static LPCSTR name_bool(BOOL v)
+namespace
+{
+[[nodiscard]] [[maybe_unused]] gsl::czstring name_bool(bool v)
 {
     static constexpr xr_token token_bool[] = {{"false", 0}, {"true", 1}};
     return get_token_name(token_bool, v);
 }
 
-static LPCSTR name_blend_type(CBlend::ECurvature blend)
+[[nodiscard]] [[maybe_unused]] gsl::czstring name_blend_type(CBlend::ECurvature blend)
 {
     static constexpr xr_token token_blend[] = {{"eFREE_SLOT", CBlend::eFREE_SLOT}, {"eAccrue", CBlend::eAccrue}, {"eFalloff", CBlend::eFalloff}};
     return get_token_name(token_blend, blend);
 }
 
-static void dump_blend(CKinematicsAnimated* K, CBlend& B, u32 index)
+void dump_blend(CKinematicsAnimated* K, CBlend& B, u32 index)
 {
     XR_ASSERT(K != nullptr);
 
     XR_LOG_TRACE_L1("----------------------------------------------------------");
 
-    Msg("blend index: {} ", index);
-    Msg("time total: {}, speed: {} , power: {} ", B.timeTotal, B.speed, B.blendPower);
-    Msg("ammount: {}, time current: {}, frame {} ", B.blendAmount, B.timeCurrent, B.dwFrame);
-    Msg("accrue: {}, fallof: {} ", B.blendAccrue, B.blendFalloff);
+    XR_LOG_TRACE_L1("blend index: {} ", index);
+    XR_LOG_TRACE_L1("time total: {}, speed: {} , power: {} ", B.timeTotal, B.speed, B.blendPower);
+    XR_LOG_TRACE_L1("ammount: {}, time current: {}, frame {} ", B.blendAmount, B.timeCurrent, B.dwFrame);
+    XR_LOG_TRACE_L1("accrue: {}, fallof: {} ", B.blendAccrue, B.blendFalloff);
 
-    Msg("bonepart: {}, channel: {}, stop_at_end: {}, fall_at_end: {} ", B.bone_or_part, B.channel, name_bool(B.stop_at_end), name_bool(B.fall_at_end));
-    Msg("state: {}, playing: {}, stop_at_end_callback: {} ", name_blend_type(B.blend_state()), name_bool(B.playing), name_bool(B.stop_at_end_callback));
+    XR_LOG_TRACE_L1("bonepart: {}, channel: {}, stop_at_end: {}, fall_at_end: {} ", B.bone_or_part, B.channel, name_bool(B.stop_at_end),
+                    name_bool(B.fall_at_end));
+    XR_LOG_TRACE_L1("state: {}, playing: {}, stop_at_end_callback: {} ", name_blend_type(B.blend_state()), name_bool(B.playing),
+                    name_bool(B.stop_at_end_callback));
 
     if (B.blend_state() != CBlend::eFREE_SLOT)
-        Msg("motion : name {}, set: {} ", K->LL_MotionDefName_dbg(B.motionID).first, K->LL_MotionDefName_dbg(B.motionID).second);
+        XR_LOG_TRACE_L1("motion : name {}, set: {} ", K->LL_MotionDefName_dbg(B.motionID).first, K->LL_MotionDefName_dbg(B.motionID).second);
 
     XR_LOG_TRACE_L1("----------------------------------------------------------");
 }
+} // namespace
 
 void CKinematicsAnimated::LL_DumpBlends_dbg()
 {
@@ -709,7 +714,7 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)
             else
             {
                 m_Motions.pop_back();
-                Msg("! error in model [{}]. Unable to load motion file '{}'.", N, s);
+                XR_LOG_ERROR("Error in model [{}]. Unable to load motion file '{}'", N, s);
             }
         }
     }

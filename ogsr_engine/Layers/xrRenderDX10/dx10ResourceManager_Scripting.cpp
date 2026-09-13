@@ -190,7 +190,7 @@ module('{0}', package.seeall, function(m) this = m end); \
 {1}"};
 
 std::optional<sol::state> __declspec(align(TMC_CACHE_LINE_SIZE)) lua;
-quill::Logger* lua_logger{nullptr};
+xr::logger* lua_logger{nullptr};
 
 void lua_panic(s32 code)
 {
@@ -258,7 +258,7 @@ void do_file(gsl::czstring caScriptName, gsl::czstring caNameSpaceName)
     if (!l_tpFileReader)
     {
         // заменить на ассерт?
-        Msg("!![CResourceManager::do_file] Cannot open file [{}]", caScriptName);
+        XR_LOG_ERROR("Cannot open file [{}]", caScriptName);
         return;
     }
 

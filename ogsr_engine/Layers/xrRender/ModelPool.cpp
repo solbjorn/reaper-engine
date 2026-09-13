@@ -81,7 +81,7 @@ dxRender_Visual* CModelPool::Instance_Load(const char* N, BOOL allow_register)
     // Actual loading
 #ifdef DEBUG
     if (bLogging)
-        Msg("- Uncached model loading: {}", fn);
+        XR_LOG_DEBUG("Uncached model loading: {}", fn);
 #endif // DEBUG
 
     IReader* data = FS.r_open(fn);
@@ -129,7 +129,7 @@ void CModelPool::Destroy()
         dxRender_Visual* V = (dxRender_Visual*)it->first;
 
 #ifdef DEBUG
-        Msg("ModelPool: Destroy object: '{}'", V->dbg_name);
+        XR_LOG_DEBUG("Destroy object: '{}'", V->dbg_name);
 #endif
 
         DeleteInternal(V, TRUE);
@@ -170,7 +170,7 @@ CModelPool::CModelPool()
 
         if (F->elapsed() >= gsl::index{sizeof(u8)} && F->r_u8() == 0)
         {
-            Msg("!![{}] file [{}] broken!", std::source_location::current().function_name(), fname);
+            XR_LOG_ERROR("File [{}] broken!", fname);
 
             FS.r_close(F);
             FS.file_delete(fname);
@@ -440,16 +440,17 @@ void CModelPool::Prefetch()
                 }
                 else
                 {
-                    Msg("! [{}]: {} not found in $game_meshes$", std::source_location::current().function_name(), fname);
+                    XR_LOG_ERROR("{} not found in $game_meshes$", fname);
                 }
             }
         }
     }
+
     begin_prefetch1(false);
 
     if (!vis_prefetch_ini || !vis_prefetch_ini->section_exist("prefetch"))
     {
-        Msg("[{}] models prefetching time ({}): [{:.3} s.]", std::source_location::current().function_name(), cnt, timer.GetElapsed_sec());
+        XR_LOG_INFO("Models prefetching time ({}): [{:.3} s.]", cnt, timer.GetElapsed_sec());
         return;
     }
 
@@ -476,7 +477,7 @@ void CModelPool::Prefetch()
             }
             else
             {
-                Msg("! [{}]: {} not found in $game_meshes$", std::source_location::current().function_name(), fname);
+                XR_LOG_ERROR("{} not found in $game_meshes$", fname);
             }
         }
     }
@@ -484,7 +485,7 @@ void CModelPool::Prefetch()
     now_prefetch2 = false;
     Logging(TRUE);
 
-    Msg("[{}] models prefetching time ({}): [{:.3} s.]", std::source_location::current().function_name(), cnt, timer.GetElapsed_sec());
+    XR_LOG_INFO("Models prefetching time ({}): [{:.3} s.]", cnt, timer.GetElapsed_sec());
 }
 
 void CModelPool::ClearPool(BOOL b_complete)
@@ -530,11 +531,11 @@ void CModelPool::dump()
             const auto cur = K->mem_usage(false);
             sz += cur;
 
-            Msg("#{:3}: [{:3}/{:5} Kb] - {}", k++, I->refs, cur / 1024, I->name);
+            XR_LOG_TRACE_L1(" {:3}: [{:3}/{:5} Kb] - {}", k++, I->refs, cur / 1024, I->name);
         }
     }
 
-    Msg("--- models: {}, mem usage: {} Kb ", k, sz / 1024);
+    XR_LOG_TRACE_L1("--- models: {}, mem usage: {} Kb ", k, sz / 1024);
 
     sz = 0;
     k = 0;
@@ -550,10 +551,10 @@ void CModelPool::dump()
         if (b_free)
             ++free_cnt;
 
-        Msg("#{:3}: [{}] [{:5} Kb] - {}", k++, b_free ? "free" : "used", cur / 1024, it->second);
+        XR_LOG_TRACE_L1(" {:3}: [{}] [{:5} Kb] - {}", k++, b_free ? "free" : "used", cur / 1024, it->second);
     }
 
-    Msg("--- instances: {}, free {}, mem usage: {} Kb ", k, free_cnt, sz / 1024);
+    XR_LOG_TRACE_L1("--- instances: {}, free {}, mem usage: {} Kb ", k, free_cnt, sz / 1024);
     XR_LOG_TRACE_L1("--- model pool --- end");
 }
 

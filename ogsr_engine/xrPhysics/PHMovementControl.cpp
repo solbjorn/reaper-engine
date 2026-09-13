@@ -28,8 +28,7 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && (!!pObject->cName()) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), pObject->cName())))
-        Msg("CPHMovementControl::CPHMovementControl {} (constructor) {},{},{}Objectf", PH_DBG_ObjectTrack(), pObject->Position().x, pObject->Position().y,
-            pObject->Position().z);
+        XR_LOG_TRACE_L1("{} (constructor) {} Objectf", PH_DBG_ObjectTrack(), pObject->Position());
 #endif
 
     m_capture = nullptr;
@@ -72,8 +71,6 @@ CPHMovementControl::~CPHMovementControl()
     xr_delete(m_capture);
 }
 
-// static Fvector old_pos={0,0,0};
-// static bool bFirst=true;
 void CPHMovementControl::AddControlVel(const Fvector& vel)
 {
     vExternalImpulse.add(vel);
@@ -198,9 +195,8 @@ void CPHMovementControl::Calculate(const xr_vector<DetailPathManager::STravelPat
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && (!!pObject->cName()) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), pObject->cName())))
     {
-        Msg("CPHMovementControl::Calculate in {} (Object Position) {},{},{}", PH_DBG_ObjectTrack(), pObject->Position().x, pObject->Position().y,
-            pObject->Position().z);
-        Msg("CPHMovementControl::Calculate in {} (CPHMovementControl::vPosition) {},{},{}", PH_DBG_ObjectTrack(), vPosition.x, vPosition.y, vPosition.z);
+        XR_LOG_TRACE_L1("{} (Object Position) {}", PH_DBG_ObjectTrack(), pObject->Position());
+        XR_LOG_TRACE_L1("{} (CPHMovementControl::vPosition) {}", PH_DBG_ObjectTrack(), vPosition);
     }
 #endif
 
@@ -418,9 +414,8 @@ void CPHMovementControl::PathNearestPoint(const xr_vector<DetailPathManager::STr
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && (!!pObject->cName()) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), pObject->cName())))
     {
-        Msg("CPHMovementControl::Calculate out {} (Object Position) {},{},{}", PH_DBG_ObjectTrack(), pObject->Position().x, pObject->Position().y,
-            pObject->Position().z);
-        Msg("CPHMovementControl::Calculate out {} (CPHMovementControl::vPosition) {},{},{}", PH_DBG_ObjectTrack(), vPosition.x, vPosition.y, vPosition.z);
+        XR_LOG_TRACE_L1("{} (Object Position) {}", PH_DBG_ObjectTrack(), pObject->Position());
+        XR_LOG_TRACE_L1("{} (CPHMovementControl::vPosition) {}", PH_DBG_ObjectTrack(), vPosition);
     }
 #endif
 }
@@ -801,9 +796,8 @@ void CPHMovementControl::SetPosition(const Fvector& P)
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && (!!pObject->cName()) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), pObject->cName())))
     {
-        Msg("CPHMovementControl::SetPosition {} (Object Position) {},{},{}", PH_DBG_ObjectTrack(), pObject->Position().x, pObject->Position().y,
-            pObject->Position().z);
-        Msg("CPHMovementControl::SetPosition {} (CPHMovementControl::vPosition) {},{},{}", PH_DBG_ObjectTrack(), vPosition.x, vPosition.y, vPosition.z);
+        XR_LOG_TRACE_L1("{} (Object Position) {}", PH_DBG_ObjectTrack(), pObject->Position());
+        XR_LOG_TRACE_L1("{} (CPHMovementControl::vPosition) {}", PH_DBG_ObjectTrack(), vPosition);
     }
 #endif
 
@@ -818,9 +812,8 @@ bool CPHMovementControl::TryPosition(Fvector& pos)
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && (!!pObject->cName()) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), pObject->cName())))
     {
-        Msg("CPHMovementControl::TryPosition {} (Object Position) {},{},{}", PH_DBG_ObjectTrack(), pObject->Position().x, pObject->Position().y,
-            pObject->Position().z);
-        Msg("CPHMovementControl::TryPosition {} (CPHMovementControl::vPosition) {},{},{}", PH_DBG_ObjectTrack(), vPosition.x, vPosition.y, vPosition.z);
+        XR_LOG_TRACE_L1("{} (Object Position) {}", PH_DBG_ObjectTrack(), pObject->Position());
+        XR_LOG_TRACE_L1("{} (CPHMovementControl::vPosition) {}", PH_DBG_ObjectTrack(), vPosition);
     }
 #endif
 
@@ -842,9 +835,8 @@ void CPHMovementControl::GetPosition(Fvector& P)
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && (!!pObject->cName()) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), pObject->cName())))
     {
-        Msg("CPHMovementControl::GetPosition {} (Object Position) {},{},{}", PH_DBG_ObjectTrack(), pObject->Position().x, pObject->Position().y,
-            pObject->Position().z);
-        Msg("CPHMovementControl::GetPosition {} (CPHMovementControl::vPosition) {},{},{}", PH_DBG_ObjectTrack(), vPosition.x, vPosition.y, vPosition.z);
+        XR_LOG_TRACE_L1("{} (Object Position) {}", PH_DBG_ObjectTrack(), pObject->Position());
+        XR_LOG_TRACE_L1("{} (CPHMovementControl::vPosition) {}", PH_DBG_ObjectTrack(), vPosition);
     }
 #endif
 
@@ -866,10 +858,8 @@ void CPHMovementControl::AllocateCharacterObject(CharacterType type)
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && (!!pObject->cName()) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), pObject->cName())))
     {
-        Msg("CPHMovementControl::AllocateCharacterObject {} (Object Position) {},{},{}", PH_DBG_ObjectTrack(), pObject->Position().x, pObject->Position().y,
-            pObject->Position().z);
-        Msg("CPHMovementControl::AllocateCharacterObject {} (CPHMovementControl::vPosition) {},{},{}", PH_DBG_ObjectTrack(), vPosition.x, vPosition.y,
-            vPosition.z);
+        XR_LOG_TRACE_L1("{} (Object Position) {}", PH_DBG_ObjectTrack(), pObject->Position());
+        XR_LOG_TRACE_L1("{} (CPHMovementControl::vPosition) {}", PH_DBG_ObjectTrack(), vPosition);
     }
 #endif
 }
@@ -1018,9 +1008,8 @@ void CPHMovementControl::CreateCharacter()
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && (!!pObject->cName()) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), pObject->cName())))
     {
-        Msg("CPHMovementControl::CreateCharacter {} (Object Position) {},{},{}", PH_DBG_ObjectTrack(), pObject->Position().x, pObject->Position().y,
-            pObject->Position().z);
-        Msg("CPHMovementControl::CreateCharacter {} (CPHMovementControl::vPosition) {},{},{}", PH_DBG_ObjectTrack(), vPosition.x, vPosition.y, vPosition.z);
+        XR_LOG_TRACE_L1("{} (Object Position) {}", PH_DBG_ObjectTrack(), pObject->Position());
+        XR_LOG_TRACE_L1("{} (CPHMovementControl::vPosition) {}", PH_DBG_ObjectTrack(), vPosition);
     }
 #endif
 
@@ -1193,7 +1182,7 @@ void CPHMovementControl::SetPathDir(const Fvector& v)
     _vPathDir = v;
 
     if (_abs(_vPathDir.x) > 1000 || _abs(_vPathDir.y) > 1000 || _abs(_vPathDir.z) > 1000)
-        Msg("_vPathDir: {}", _vPathDir);
+        XR_LOG_ERROR("_vPathDir: {}", _vPathDir);
 
     XR_DEBUG_ASSERT(_abs(_vPathDir.x) < 1000.0f);
 }

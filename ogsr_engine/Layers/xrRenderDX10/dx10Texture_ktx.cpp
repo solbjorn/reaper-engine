@@ -240,7 +240,7 @@ ktx_texture::ktx_texture(gsl::czstring path) : file{absl::WrapUnique(FS.rs_open(
 
     if (const auto res = ktx::ktxTexture_CreateFromStream(&is, ktx::KTX_TEXTURE_CREATE_NO_FLAGS, &tex); res != ktx::KTX_SUCCESS)
     {
-        Msg("! Failed to load KTX texture: [{}], error: [{}]", path, res);
+        XR_LOG_ERROR("Failed to load KTX texture: [{}], error: [{}]", path, res);
         tex = nullptr;
     }
 }
@@ -251,7 +251,7 @@ bool ktx_texture::iterate(const DirectX::ScratchImage& texture, xr_vector<std::u
     {
         if (const auto res = ktxTexture_LoadImageData(tex, nullptr, 0); res != ktx::KTX_SUCCESS)
         {
-            Msg("! Failed to load KTX texture: [{}], error: [{}]", path, res);
+            XR_LOG_ERROR("Failed to load KTX texture: [{}], error: [{}]", path, res);
             return false;
         }
     }
@@ -261,7 +261,7 @@ bool ktx_texture::iterate(const DirectX::ScratchImage& texture, xr_vector<std::u
 
     if (const auto res = ktx::ktxTexture_IterateLevelFaces(tex, &xr::ktx_texture::callback, userdata); res != ktx::KTX_SUCCESS)
     {
-        Msg("! Failed to iterate KTX texture subimages: [{}], error: [{}]", path, res);
+        XR_LOG_ERROR("Failed to iterate KTX texture subimages: [{}], error: [{}]", path, res);
         return false;
     }
 
@@ -323,13 +323,13 @@ ID3DBaseTexture* CRender::texture_load_ktx(const string_path& path, u32& size)
 
     if (tex->numDimensions != 2)
     {
-        Msg("! Unsupported non-2D KTX texture: [{}]", path);
+        XR_LOG_ERROR("Unsupported non-2D KTX texture: [{}]", path);
         return nullptr;
     }
 
     if (tex->isCubemap && tex->isArray)
     {
-        Msg("! Unsupported cubemap array KTX texture: [{}]", path);
+        XR_LOG_ERROR("Unsupported cubemap array KTX texture: [{}]", path);
         return nullptr;
     }
 
@@ -346,7 +346,7 @@ ID3DBaseTexture* CRender::texture_load_ktx(const string_path& path, u32& size)
         {
             if (const auto item2 = std::ranges::find_if(xr::etc, [fmt](auto& tup) { return std::get<0>(tup) == fmt; }); item2 == xr::etc.end())
             {
-                Msg("! Unsupported KTX1 texture format: [{}], glInternalformat: [{:#x}]", path, fmt);
+                XR_LOG_ERROR("Unsupported KTX1 texture format: [{}], glInternalformat: [{:#x}]", path, fmt);
                 return nullptr;
             }
             else
@@ -367,7 +367,7 @@ ID3DBaseTexture* CRender::texture_load_ktx(const string_path& path, u32& size)
 
         if (tex2->isVideo)
         {
-            Msg("! Unsupported video KTX2 texture: [{}]", path);
+            XR_LOG_ERROR("Unsupported video KTX2 texture: [{}]", path);
             return nullptr;
         }
 
@@ -377,7 +377,7 @@ ID3DBaseTexture* CRender::texture_load_ktx(const string_path& path, u32& size)
                                                                  ktx::KTX_TF_HIGH_QUALITY);
                 res != ktx::KTX_SUCCESS)
             {
-                Msg("! Failed to transcode BasisLZ/ETC1S/UASTC-encoded KTX2 texture: [{}], error: [{}]", path, res);
+                XR_LOG_ERROR("Failed to transcode BasisLZ/ETC1S/UASTC-encoded KTX2 texture: [{}], error: [{}]", path, res);
                 return nullptr;
             }
         }
@@ -385,7 +385,7 @@ ID3DBaseTexture* CRender::texture_load_ktx(const string_path& path, u32& size)
         {
             if (const auto res = ktx::ktxTexture2_DecodeAstc(tex2); res != ktx::KTX_SUCCESS)
             {
-                Msg("! Failed to decode ASTC-encoded KTX2 texture: [{}], error: [{}]", path, res);
+                XR_LOG_ERROR("Failed to decode ASTC-encoded KTX2 texture: [{}], error: [{}]", path, res);
                 return nullptr;
             }
         }
@@ -396,7 +396,7 @@ ID3DBaseTexture* CRender::texture_load_ktx(const string_path& path, u32& size)
         {
             if (const auto item2 = std::ranges::find_if(xr::etc, [fmt](auto& tup) { return std::get<1>(tup) == fmt; }); item2 == xr::etc.end())
             {
-                Msg("! Unsupported KTX2 texture format: [{}], vkFormat: [{:#x}]", path, fmt);
+                XR_LOG_ERROR("Unsupported KTX2 texture format: [{}], vkFormat: [{:#x}]", path, fmt);
                 return nullptr;
             }
             else
@@ -413,7 +413,7 @@ ID3DBaseTexture* CRender::texture_load_ktx(const string_path& path, u32& size)
         alpha = ktx::ktxTexture2_GetPremultipliedAlpha(tex2) ? DirectX::TEX_ALPHA_MODE_PREMULTIPLIED : DirectX::TEX_ALPHA_MODE_STRAIGHT;
         break;
     }
-    default: Msg("Invalid KTX texture version: [{}], classId: [{:#x}]", path, gsl::narrow_cast<u32>(tex->classId)); return nullptr;
+    default: XR_LOG_ERROR("Invalid KTX texture version: [{}], classId: [{:#x}]", path, gsl::narrow_cast<u32>(tex->classId)); return nullptr;
     }
 
     DirectX::TexMetadata meta{};
@@ -429,9 +429,9 @@ ID3DBaseTexture* CRender::texture_load_ktx(const string_path& path, u32& size)
 
     DirectX::ScratchImage texture;
 
-    if (const auto hr = texture.Initialize(meta, DirectX::CP_FLAGS_NONE, false); FAILED(hr))
+    if (const auto hr = xr::hr(texture.Initialize(meta, DirectX::CP_FLAGS_NONE, false)); !hr)
     {
-        Msg("! Failed to initialize KTX texture data: [{}], error: [{}]", path, hr);
+        XR_LOG_ERROR("Failed to initialize KTX texture data: [{}], error: {}", path, hr);
         return nullptr;
     }
 
@@ -443,12 +443,12 @@ ID3DBaseTexture* CRender::texture_load_ktx(const string_path& path, u32& size)
     meta = texture.GetMetadata();
     ID3DBaseTexture* pTexture2D;
 
-    if (const auto hr = DirectX::CreateTextureEx(HW.pDevice.Get(), texture.GetImages(), texture.GetImageCount(), meta, ::D3D11_USAGE::D3D11_USAGE_IMMUTABLE,
-                                                 ::D3D11_BIND_FLAG::D3D11_BIND_SHADER_RESOURCE, 0, meta.miscFlags, DirectX::CREATETEX_FLAGS::CREATETEX_DEFAULT,
-                                                 &pTexture2D);
-        FAILED(hr))
+    if (const auto hr = xr::hr(DirectX::CreateTextureEx(HW.pDevice.Get(), texture.GetImages(), texture.GetImageCount(), meta,
+                                                        ::D3D11_USAGE::D3D11_USAGE_IMMUTABLE, ::D3D11_BIND_FLAG::D3D11_BIND_SHADER_RESOURCE, 0, meta.miscFlags,
+                                                        DirectX::CREATETEX_FLAGS::CREATETEX_DEFAULT, &pTexture2D));
+        !hr)
     {
-        Msg("! Failed to create KTX texture: [{}], error: [{}]", path, hr);
+        XR_LOG_ERROR("Failed to create KTX texture: [{}], error: {}", path, hr);
         return nullptr;
     }
 

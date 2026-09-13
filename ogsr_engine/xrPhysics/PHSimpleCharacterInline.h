@@ -83,16 +83,16 @@ void CPHSimpleCharacter::UpdateDynamicDamage(dContact* c, u16 obj_material_idx, 
 
         XR_LOG_TRACE_L1("-----------------------------------------------------------------------------------------");
 
-        Msg("cd {} -effective vell {}", PhysicsRefObject()->cName(), c_vel);
-        Msg("cd {} -my_norm_vell {}", PhysicsRefObject()->cName(), dbg_my_norm_vell);
-        Msg("cd {} -obj_norm_vell {}", PhysicsRefObject()->cName(), dbg_obj_norm_vell);
-        Msg("cd {} -my_kinetic_e {}", PhysicsRefObject()->cName(), dbg_my_kinetic_e);
-        Msg("cd {} -obj_kinetic_e {}", PhysicsRefObject()->cName(), dbg_obj_kinetic_e);
-        Msg("cd {} -my_effective_e {}", PhysicsRefObject()->cName(), dbg_my_effective_e);
-        Msg("cd {} -obj_effective_e {}", PhysicsRefObject()->cName(), dbg_obj_effective_e);
-        Msg("cd {} -effective_acceted_e {}", PhysicsRefObject()->cName(), accepted_energy);
-        Msg("cd {} -real_acceted_e {}", PhysicsRefObject()->cName(), Kself + Kobj - KK);
-        Msg("cd {} -free_energy {}", PhysicsRefObject()->cName(), dbg_free_energy);
+        XR_LOG_TRACE_L1("cd {} -effective vell {}", PhysicsRefObject()->cName(), c_vel);
+        XR_LOG_TRACE_L1("cd {} -my_norm_vell {}", PhysicsRefObject()->cName(), dbg_my_norm_vell);
+        XR_LOG_TRACE_L1("cd {} -obj_norm_vell {}", PhysicsRefObject()->cName(), dbg_obj_norm_vell);
+        XR_LOG_TRACE_L1("cd {} -my_kinetic_e {}", PhysicsRefObject()->cName(), dbg_my_kinetic_e);
+        XR_LOG_TRACE_L1("cd {} -obj_kinetic_e {}", PhysicsRefObject()->cName(), dbg_obj_kinetic_e);
+        XR_LOG_TRACE_L1("cd {} -my_effective_e {}", PhysicsRefObject()->cName(), dbg_my_effective_e);
+        XR_LOG_TRACE_L1("cd {} -obj_effective_e {}", PhysicsRefObject()->cName(), dbg_obj_effective_e);
+        XR_LOG_TRACE_L1("cd {} -effective_acceted_e {}", PhysicsRefObject()->cName(), accepted_energy);
+        XR_LOG_TRACE_L1("cd {} -real_acceted_e {}", PhysicsRefObject()->cName(), Kself + Kobj - KK);
+        XR_LOG_TRACE_L1("cd {} -free_energy {}", PhysicsRefObject()->cName(), dbg_free_energy);
 
         XR_LOG_TRACE_L1("-----------------------------------------------------------------------------------------");
     }

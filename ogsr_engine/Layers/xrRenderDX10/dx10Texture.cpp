@@ -122,7 +122,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
     {
         if (fmt = xr::find_texture(fn, std::array{xr::fsgame::level, xr::fsgame::game_textures}, fview); fmt == xr::texfmt::none)
         {
-            Msg("! Fallback to default bump map: [{}]", fview);
+            XR_LOG_ERROR("Fallback to default bump map: [{}]", fview);
 
             if (fview.contains("_bump#"))
                 fmt = xr::find_texture(fn, std::array{xr::fsgame::game_textures}, "ed\\ed_dummy_bump#");
@@ -134,24 +134,28 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
     }
     else if (fmt = xr::find_texture(fn, std::array{xr::fsgame::level, xr::fsgame::game_textures, xr::fsgame::game_saves}, fview); fmt == xr::texfmt::none)
     {
-        Msg("! Can't find texture [{}]", fview);
+        XR_LOG_ERROR("Can't find texture [{}]", fview);
         fmt = XR_ASSERT_VAL(xr::find_texture(fn, std::array{xr::fsgame::game_textures}, "ed\\ed_not_existing_texture") != xr::texfmt::none, "", fview);
     }
 
+    ID3DBaseTexture* ret;
+
     switch (fmt)
     {
-    case xr::texfmt::dds: return texture_load_dds(fn, ret_msize);
-    case xr::texfmt::exr: return texture_load_exr(fn, ret_msize);
-    case xr::texfmt::ktx: return texture_load_ktx(fn, ret_msize);
-    case xr::texfmt::sf: return texture_load_sf(fn, ret_msize, bump || Resources->m_textures_description.contains(fview));
+    case xr::texfmt::dds: ret = texture_load_dds(fn, ret_msize); break;
+    case xr::texfmt::exr: ret = texture_load_exr(fn, ret_msize); break;
+    case xr::texfmt::ktx: ret = texture_load_ktx(fn, ret_msize); break;
+    case xr::texfmt::sf: ret = texture_load_sf(fn, ret_msize, bump || Resources->m_textures_description.contains(fview)); break;
     default: xr::unreachable();
     }
+
+    return XR_ASSERT_VAL(ret != nullptr, "", fn);
 }
 
 ID3DBaseTexture* CRender::texture_load_dds(const string_path& path, u32& size)
 {
-    DirectX::DDS_FLAGS dds_flags{DirectX::DDS_FLAGS_PERMISSIVE};
-    bool allowFallback{true};
+    DirectX::DDS_FLAGS dds_flags{DirectX::DDS_FLAGS::DDS_FLAGS_NONE};
+    gsl::index allowFallback{2};
     xr::istream is{path};
 
     do
@@ -160,34 +164,38 @@ ID3DBaseTexture* CRender::texture_load_dds(const string_path& path, u32& size)
 
         DirectX::ScratchImage texture;
         DirectX::TexMetadata meta;
+        xr::hresult hr{E_FAIL};
 
-        if (const auto hr = DirectX::LoadFromDDSStream(is, dds_flags, &meta, texture); FAILED(hr))
+        if (hr = xr::hr(DirectX::LoadFromDDSStream(is, dds_flags, &meta, texture)); !hr)
         {
-            Msg("! Failed to load DDS texture: [{}], error: [{}]", path, hr);
-            return nullptr;
+            XR_LOG_ERROR("Failed to load DDS texture: [{}], error: {}", path, hr);
+
+        fallback:
+            switch (allowFallback)
+            {
+            case 2: dds_flags |= DirectX::DDS_FLAGS::DDS_FLAGS_PERMISSIVE; break;
+            case 1: dds_flags |= DirectX::DDS_FLAGS::DDS_FLAGS_FORCE_RGB | DirectX::DDS_FLAGS::DDS_FLAGS_NO_16BPP; break;
+            case 0: return nullptr;
+            default: xr::unreachable();
+            }
+
+            --allowFallback;
+            continue;
         }
 
         ID3DBaseTexture* pTexture2D;
 
-        const auto hr = DirectX::CreateTextureEx(HW.pDevice.Get(), texture.GetImages(), texture.GetImageCount(), meta, ::D3D11_USAGE::D3D11_USAGE_IMMUTABLE,
+        if (hr = xr::hr(DirectX::CreateTextureEx(HW.pDevice.Get(), texture.GetImages(), texture.GetImageCount(), meta, ::D3D11_USAGE::D3D11_USAGE_IMMUTABLE,
                                                  ::D3D11_BIND_FLAG::D3D11_BIND_SHADER_RESOURCE, 0, meta.miscFlags, DirectX::CREATETEX_FLAGS::CREATETEX_DEFAULT,
-                                                 &pTexture2D);
-        if (SUCCEEDED(hr))
+                                                 &pTexture2D));
+            !hr)
         {
-            // Получилось. Считаем сколько весит текстура и сваливаем.
-            size = texture.GetImages()[0].slicePitch * meta.arraySize * meta.depth;
-            return pTexture2D;
+            XR_LOG_ERROR("Failed to create DDS texture: [{}], error: {}", path, hr);
+            goto fallback;
         }
 
-        if (!allowFallback)
-        {
-            Msg("! Failed to create DDS texture: [{}], error: [{}]", path, hr);
-            return nullptr; // Уже была вторая попытка, прекращаем.
-        }
+        size = texture.GetImages()[0].slicePitch * meta.arraySize * meta.depth;
 
-        // Помянем, не получилось загрузить текстуру...
-        // Давай заново, с конвертацией текстур. Может помочь.
-        dds_flags |= DirectX::DDS_FLAGS::DDS_FLAGS_NO_16BPP | DirectX::DDS_FLAGS_FORCE_RGB;
-        allowFallback = false;
+        return pTexture2D;
     } while (true);
 }

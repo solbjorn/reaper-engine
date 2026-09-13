@@ -64,7 +64,7 @@ void mdump(C c)
         return;
 
     for (auto& I : c)
-        Msg("*        : {:3}: {}", I.second->ref_count, I.second->cName);
+        XR_LOG_INFO("       : {:3}: {}", I.second->ref_count, I.second->cName);
 }
 } // namespace
 
@@ -72,42 +72,42 @@ CResourceManager::~CResourceManager() { Dump(false); }
 
 void CResourceManager::Dump(bool bBrief)
 {
-    Msg("* RM_Dump: textures  : {}", m_textures.size());
+    XR_LOG_INFO("RM_Dump: textures  : {}", m_textures.size());
     if (!bBrief)
         mdump(m_textures);
 
-    Msg("* RM_Dump: rtargets  : {}", m_rtargets.size());
+    XR_LOG_INFO("RM_Dump: rtargets  : {}", m_rtargets.size());
     if (!bBrief)
         mdump(m_rtargets);
 
-    Msg("* RM_Dump: vs        : {}", m_vs.size());
+    XR_LOG_INFO("RM_Dump: vs        : {}", m_vs.size());
     if (!bBrief)
         mdump(m_vs);
 
-    Msg("* RM_Dump: ps        : {}", m_ps.size());
+    XR_LOG_INFO("RM_Dump: ps        : {}", m_ps.size());
     if (!bBrief)
         mdump(m_ps);
 
-    Msg("* RM_Dump: gs        : {}", m_gs.size());
+    XR_LOG_INFO("RM_Dump: gs        : {}", m_gs.size());
     if (!bBrief)
         mdump(m_gs);
 
-    Msg("* RM_Dump: cs        : {}", m_cs.size());
+    XR_LOG_INFO("RM_Dump: cs        : {}", m_cs.size());
     if (!bBrief)
         mdump(m_cs);
 
-    Msg("* RM_Dump: hs        : {}", m_hs.size());
+    XR_LOG_INFO("RM_Dump: hs        : {}", m_hs.size());
     if (!bBrief)
         mdump(m_hs);
 
-    Msg("* RM_Dump: ds        : {}", m_ds.size());
+    XR_LOG_INFO("RM_Dump: ds        : {}", m_ds.size());
     if (!bBrief)
         mdump(m_ds);
 
-    Msg("* RM_Dump: dcl       : {}", v_declarations.size());
-    Msg("* RM_Dump: states    : {}", v_states.size());
-    Msg("* RM_Dump: tex_list  : {}", lst_textures.size());
-    Msg("* RM_Dump: v_passes  : {}", v_passes.size());
-    Msg("* RM_Dump: v_elements: {}", v_elements.size());
-    Msg("* RM_Dump: v_shaders : {}", v_shaders.size());
+    XR_LOG_INFO("RM_Dump: dcl       : {}", v_declarations.size());
+    XR_LOG_INFO("RM_Dump: states    : {}", v_states.size());
+    XR_LOG_INFO("RM_Dump: tex_list  : {}", lst_textures.size());
+    XR_LOG_INFO("RM_Dump: v_passes  : {}", v_passes.size());
+    XR_LOG_INFO("RM_Dump: v_elements: {}", v_elements.size());
+    XR_LOG_INFO("RM_Dump: v_shaders : {}", v_shaders.size());
 }

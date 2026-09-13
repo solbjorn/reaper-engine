@@ -278,7 +278,7 @@ CEnvDescriptor::CEnvDescriptor(shared_str const& identifier) : m_identifier{iden
 #define C_CHECK(C) \
     if (C.x < 0 || C.x > 2 || C.y < 0 || C.y > 2 || C.z < 0 || C.z > 2) \
     { \
-        Msg("! Invalid '{}' in env-section '{}'", #C, m_identifier); \
+        XR_LOG_ERROR("Invalid '{}' in env-section '{}'", #C, m_identifier); \
     } \
     XR_MACRO_END()
 

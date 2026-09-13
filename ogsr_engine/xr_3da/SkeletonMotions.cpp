@@ -18,7 +18,7 @@ u16 CPartition::part_id(const shared_str& name) const
             return i;
     }
 
-    Msg("!there is no part named [{}]", name);
+    XR_LOG_ERROR("There is no part named [{}]", name);
 
     return u16(-1);
 }
@@ -297,11 +297,10 @@ void motions_container::dump() const
     for (auto [k, kv] : std::views::enumerate(container))
     {
         sz += kv.second->mem_usage();
-        Msg("#{:3}: [{:3}/{:5} Kb] - {}", k, kv.second->m_dwReference, kv.second->mem_usage() / 1024, kv.first);
+        XR_LOG_TRACE_L1(" {:3}: [{:3}/{:5} Kb] - {}", k, kv.second->m_dwReference, kv.second->mem_usage() / 1024, kv.first);
     }
 
-    Msg("--- items: {}, mem usage: {} Kb ", std::ssize(container), sz / 1024);
-
+    XR_LOG_TRACE_L1("--- items: {}, mem usage: {} Kb ", std::ssize(container), sz / 1024);
     XR_LOG_TRACE_L1("--- motion container --- end");
 }
 

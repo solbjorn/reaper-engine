@@ -82,8 +82,7 @@ void CLight_DB::LoadHemi()
             const size_t count = size / element;
 
             if (const auto expected = count * element; size != expected)
-                Msg("! {}: {} has {} garbage bytes (count: {}, expected: {}, real: {})", std::source_location::current().function_name(), fn_game,
-                    size - expected, count, expected, size);
+                XR_LOG_ERROR("{} has {} garbage bytes (count: {}, expected: {}, real: {})", fn_game, size - expected, count, expected, size);
 
             v_hemi.reserve(count);
 

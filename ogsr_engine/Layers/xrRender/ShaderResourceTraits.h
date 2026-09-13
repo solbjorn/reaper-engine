@@ -124,7 +124,7 @@ inline T* CResourceManager::CreateShader(const char* name)
         Flags |= D3DCOMPILE_FLAGS_DEBUG;
 
     // Compile
-    XR_ASSERT(xr::hr(RImplementation.shader_compile(name, (const DWORD*)file->pointer(), file->elapsed(), c_entry, c_target, Flags, (void*&)sh)),
+    XR_ASSERT(RImplementation.shader_compile(name, (const DWORD*)file->pointer(), file->elapsed(), c_entry, c_target, Flags, (void*&)sh),
               "failed to compile shader", cname, c_target);
 
     return sh;
@@ -137,8 +137,9 @@ inline void CResourceManager::DestroyShader(const T* sh)
         return;
 
     auto& sh_map = GetShaderMap<typename ShaderTypeTraits<T>::MapType>();
+
     if (const auto I = sh_map.find(sh->cName); I == sh_map.end())
-        Msg("! ERROR: Failed to find compiled shader '{}'", sh->cName);
+        XR_LOG_ERROR("Failed to find compiled shader '{}'", sh->cName);
     else
         sh_map.erase(I);
 }

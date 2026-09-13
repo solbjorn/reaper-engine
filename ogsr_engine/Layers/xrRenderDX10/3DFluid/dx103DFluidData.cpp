@@ -99,7 +99,7 @@ void dx103DFluidData::ParseProfile(const xr_string& Profile)
 
     CInifile ini(fn, TRUE, TRUE, FALSE);
 
-    Msg("Reading fog volume config: {}", fn);
+    XR_LOG_NOTICE("Reading fog volume config: {}", fn);
 
     m_Settings.m_SimulationType = ST_FOG;
     m_Settings.m_fHemi = 0.2f;

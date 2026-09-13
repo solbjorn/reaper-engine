@@ -38,12 +38,12 @@ tmc::task<void> CResourceManager::OnDeviceCreate()
     string_path fname;
     if (FS.exist(fname, _game_data_, "shaders.ltx"))
     {
-        Msg("Loading shader file: [{}]", fname);
+        XR_LOG_NOTICE("Loading shader file: [{}]", fname);
         LoadShaderLtxFile(fname);
     }
     else if (FS.exist(fname, _game_data_, "shaders_cop.xr") || FS.exist(fname, _game_data_, "shaders.xr"))
     {
-        Msg("Loading shader file: [{}]", fname);
+        XR_LOG_NOTICE("Loading shader file: [{}]", fname);
         LoadShaderFile(fname);
     }
 
@@ -88,12 +88,12 @@ void CResourceManager::LoadShaderFile(LPCSTR fname)
             IBlenderXr* B = IBlenderXr::Create(desc.CLS);
             if (!B)
             {
-                Msg("! Renderer doesn't support blender '{}'", desc.cName);
+                XR_LOG_ERROR("Renderer doesn't support blender '{}'", desc.cName);
             }
             else
             {
                 if (B->getDescription().version < desc.version)
-                    Msg("! Version conflict in shader '{}'", desc.cName);
+                    XR_LOG_ERROR("Version conflict in shader '{}'", desc.cName);
 
                 chunk->seek(0);
 
@@ -104,7 +104,7 @@ void CResourceManager::LoadShaderFile(LPCSTR fname)
                 {
                     if (ini.section_exist(desc.cName))
                     {
-                        Msg("~~Found existing section [{}] in [{}]. Replacing!", desc.cName, ini_path);
+                        XR_LOG_WARNING("Found existing section [{}] in [{}]. Replacing!", desc.cName, ini_path);
                         ini.remove_section(desc.cName);
                     }
 
@@ -139,12 +139,12 @@ void CResourceManager::LoadShaderLtxFile(LPCSTR fname)
         IBlenderXr* B = IBlenderXr::Create(cls);
         if (!B)
         {
-            Msg("! Renderer doesn't support blender '{}'", name);
+            XR_LOG_ERROR("Renderer doesn't support blender '{}'", name);
         }
         else
         {
             if (B->getDescription().version < version)
-                Msg("! Version conflict in shader '{}'", name);
+                XR_LOG_ERROR("Version conflict in shader '{}'", name);
 
             B->LoadIni(&ini, name.c_str());
             XR_ASSERT(m_blenders.insert_or_assign(xr_strdup(name.c_str()), B).second, "duplicate shader name", name);

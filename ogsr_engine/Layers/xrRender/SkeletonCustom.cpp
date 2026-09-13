@@ -364,7 +364,7 @@ void CKinematics::LL_Validate()
             }
 
 #ifdef DEBUG
-            Msg("! ERROR: Invalid breakable object: '{}'", dbg_name);
+            XR_LOG_ERROR("Invalid breakable object: '{}'", dbg_name);
 #endif
         }
     }
@@ -880,57 +880,53 @@ void CKinematics::RC_Dump()
 
     const Fbox& mBox = getVisData().box;
     Fvector3 temp;
+
     mBox.getsize(temp);
-    Msg("[core] : box[{:3.3f},{:3.3f},{:3.3f}]", temp.x, temp.y, temp.z);
+    XR_LOG_TRACE_L1(" [core] : box{::3.3f}", temp);
     mBox.getcenter(temp);
-    Msg("[core] : center[{:3.3f},{:3.3f},{:3.3f}]", temp.x, temp.y, temp.z);
-    temp.set(mBox.min);
-    Msg("[core] : min[{:3.3f},{:3.3f},{:3.3f}]", temp.x, temp.y, temp.z);
-    temp.set(mBox.max);
-    Msg("[core] : max[{:3.3f},{:3.3f},{:3.3f}]", temp.x, temp.y, temp.z);
+    XR_LOG_TRACE_L1(" [core] : center{::3.3f}", temp);
 
-    for (u32 i = 0; i < children.size(); i++)
+    XR_LOG_TRACE_L1(" [core] : min{::3.3f}", mBox.min);
+    XR_LOG_TRACE_L1(" [core] : max{::3.3f}", mBox.max);
+
+    for (auto [i, child] : std::views::enumerate(children))
     {
-        temp.set(RC_VisBox(i));
-        Msg("[child {}] : box[{:3.3f},{:3.3f},{:3.3f}]", i, temp.x, temp.y, temp.z);
-        temp.set(RC_VisCenter(i));
-        Msg("[child {}] : center[{:3.3f},{:3.3f},{:3.3f}]", i, temp.x, temp.y, temp.z);
-        temp.set(RC_VisBorderMin(i));
-        Msg("[child {}] : min[{:3.3f},{:3.3f},{:3.3f}]", i, temp.x, temp.y, temp.z);
-        temp.set(RC_VisBorderMax(i));
-        Msg("[child {}] : max[{:3.3f},{:3.3f},{:3.3f}]", i, temp.x, temp.y, temp.z);
+        XR_LOG_TRACE_L1("  [child {}] : box{::3.3f}", i, RC_VisBox(i));
+        XR_LOG_TRACE_L1("  [child {}] : center{::3.3f}", i, RC_VisCenter(i));
+        XR_LOG_TRACE_L1("  [child {}] : min{::3.3f}", i, RC_VisBorderMin(i));
+        XR_LOG_TRACE_L1("  [child {}] : max{::3.3f}", i, RC_VisBorderMax(i));
 
-        FHierrarhyVisual* HV = smart_cast<FHierrarhyVisual*>(children.at(i));
-        if (HV && HV->children.size())
+        const auto HV = smart_cast<FHierrarhyVisual*>(child);
+        if (HV == nullptr)
+            continue;
+
+        for (auto [j, kchild] : std::views::enumerate(HV->children))
         {
-            for (u32 j = 0; j < HV->children.size(); j++)
-            {
-                const Fbox& FB = get_mesh_RC_data(HV, j);
-                FB.getsize(temp);
-                Msg("[child {}->{}] : box[{:3.3f},{:3.3f},{:3.3f}]", i, j, temp.x, temp.y, temp.z);
-                FB.getcenter(temp);
-                Msg("[child {}->{}] : center[{:3.3f},{:3.3f},{:3.3f}]", i, j, temp.x, temp.y, temp.z);
-                temp.set(FB.min);
-                Msg("[child {}->{}] : min[{:3.3f},{:3.3f},{:3.3f}]", i, j, temp.x, temp.y, temp.z);
-                temp.set(FB.max);
-                Msg("[child {}->{}] : max[{:3.3f},{:3.3f},{:3.3f}]", i, j, temp.x, temp.y, temp.z);
+            const Fbox& FB = get_mesh_RC_data(HV, j);
 
-                FHierrarhyVisual* kHV = smart_cast<FHierrarhyVisual*>(HV->children.at(j));
-                if (kHV && kHV->children.size())
-                {
-                    for (u32 k = 0; k < kHV->children.size(); k++)
-                    {
-                        const Fbox& kFB = get_mesh_RC_data(kHV, k);
-                        kFB.getsize(temp);
-                        Msg("[child {}->{}->{}] : box[{:3.3f},{:3.3f},{:3.3f}]", i, j, k, temp.x, temp.y, temp.z);
-                        kFB.getcenter(temp);
-                        Msg("[child {}->{}->{}] : center[{:3.3f},{:3.3f},{:3.3f}]", i, j, k, temp.x, temp.y, temp.z);
-                        temp.set(kFB.min);
-                        Msg("[child {}->{}->{}] : min[{:3.3f},{:3.3f},{:3.3f}]", i, j, k, temp.x, temp.y, temp.z);
-                        temp.set(kFB.max);
-                        Msg("[child {}->{}->{}] : max[{:3.3f},{:3.3f},{:3.3f}]", i, j, k, temp.x, temp.y, temp.z);
-                    }
-                }
+            FB.getsize(temp);
+            XR_LOG_TRACE_L1("   [child {}->{}] : box{::3.3f}", i, j, temp);
+            FB.getcenter(temp);
+            XR_LOG_TRACE_L1("   [child {}->{}] : center{::3.3f}", i, j, temp);
+
+            XR_LOG_TRACE_L1("   [child {}->{}] : min{::3.3f}", i, j, FB.min);
+            XR_LOG_TRACE_L1("   [child {}->{}] : max{::3.3f}", i, j, FB.max);
+
+            const auto kHV = smart_cast<FHierrarhyVisual*>(kchild);
+            if (kHV == nullptr)
+                continue;
+
+            for (auto k : std::views::indices(kHV->children.size()))
+            {
+                const Fbox& kFB = get_mesh_RC_data(kHV, k);
+
+                kFB.getsize(temp);
+                XR_LOG_TRACE_L1("    [child {}->{}->{}] : box{::3.3f}", i, j, k, temp);
+                kFB.getcenter(temp);
+                XR_LOG_TRACE_L1("    [child {}->{}->{}] : center{::3.3f}", i, j, k, temp);
+
+                XR_LOG_TRACE_L1("    [child {}->{}->{}] : min{::3.3f}", i, j, k, kFB.min);
+                XR_LOG_TRACE_L1("    [child {}->{}->{}] : max{::3.3f}", i, j, k, kFB.max);
             }
         }
     }
@@ -938,13 +934,10 @@ void CKinematics::RC_Dump()
     XR_LOG_TRACE_L1("|********** End Dump children meshes **********|");
     XR_LOG_TRACE_L1("|********** Dump children bones ***************|");
 
-    for (u32 i = 0; i < bones->size(); i++)
+    for (auto [i, B] : std::views::enumerate(*bones))
     {
-        CBoneData* B = (*bones)[i];
-        Msg("Bone [{}][{}]:", i, LL_BoneName_dbg(u16(i)));
-        Msg("bind_transform[{:3.3f},{:3.3f},{:3.3f}] m2b_transform[{:3.3f},{:3.3f},{:3.3f}] center_of_mass[{:3.3f},{:3.3f},{:3.3f}]", B->bind_transform.c.x,
-            B->bind_transform.c.y, B->bind_transform.c.z, B->m2b_transform.c.x, B->m2b_transform.c.y, B->m2b_transform.c.z, B->center_of_mass.x,
-            B->center_of_mass.y, B->center_of_mass.z);
+        XR_LOG_TRACE_L1(" Bone [{}][{}]:", i, LL_BoneName_dbg(i));
+        XR_LOG_TRACE_L1("  bind_transform{::3.3f}, m2b_transform{::3.3f}, center_of_mass{::3.3f}", B->bind_transform.c, B->m2b_transform.c, B->center_of_mass);
     }
 
     XR_LOG_TRACE_L1("|********** End Dump children bones ***********|");

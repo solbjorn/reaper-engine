@@ -158,14 +158,14 @@ void CCF_Skeleton::BuildState()
             // check matrix validity
             if (!b)
             {
-                XR_LOG_ERROR("Invalid bone xform . Bone disabled");
-                Msg("! ERROR: bone_id=[{}], world_pos{}", element.elem_id, TW.c);
+                XR_LOG_ERROR("Invalid bone xform. Bone disabled");
+                XR_LOG_ERROR("bone_id=[{}], world_pos{}", element.elem_id, TW.c);
 
-                Msg("visual name {}", owner->cNameVisual());
-                Msg("object name {}", owner->cName());
+                XR_LOG_ERROR("Visual name {}", owner->cNameVisual());
+                XR_LOG_ERROR("Object name {}", owner->cName());
 
 #ifdef DEBUG
-                Msg("{}", dbg_object_full_dump_string(owner));
+                XR_LOG_ERROR("{}", dbg_object_full_dump_string(owner));
 #endif // #ifdef DEBUG
 
                 element.elem_id = std::numeric_limits<u16>::max(); //. hack - disable invalid bone

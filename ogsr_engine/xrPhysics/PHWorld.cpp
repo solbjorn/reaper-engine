@@ -387,7 +387,7 @@ void CPHWorld::FrameStep(dReal step)
     start_time = Device.dwTimeGlobal; // - u32(m_frame_time*1000);
 
     if (g_bDebugDumpPhysicsStep && it_number > 20)
-        Msg("!!!TOO MANY PHYSICS STEPS PER FRAME = {} !!!", it_number);
+        XR_LOG_ERROR("TOO MANY PHYSICS STEPS PER FRAME = {} !!!", it_number);
 
     for (UINT i = 0; i < it_number; ++i)
         Step();
@@ -395,22 +395,11 @@ void CPHWorld::FrameStep(dReal step)
     b_processing = false;
 }
 
-void CPHWorld::AddObject(CPHObject* object)
-{
-    m_objects.push_back(object);
-    // xr_list <CPHObject*> ::iterator i= m_objects.end();
-    // return (--m_objects.end());
-}
-
+void CPHWorld::AddObject(CPHObject* object) { m_objects.push_back(object); }
 void CPHWorld::AddRecentlyDisabled(CPHObject* object) { m_recently_disabled_objects.push_back(object); }
 void CPHWorld::RemoveFromRecentlyDisabled(PH_OBJECT_I i) { m_recently_disabled_objects.erase(i); }
 
-void CPHWorld::AddUpdateObject(CPHUpdateObject* object)
-{
-    //.	if(object->IsFreezed())m_freezed_update_objects.erase(i);
-    m_update_objects.push_back(object);
-}
-
+void CPHWorld::AddUpdateObject(CPHUpdateObject* object) { m_update_objects.push_back(object); }
 void CPHWorld::RemoveUpdateObject(PH_UPDATE_OBJECT_I i) { m_update_objects.erase(i); }
 void CPHWorld::RemoveObject(PH_OBJECT_I i) { m_objects.erase((i)); }
 

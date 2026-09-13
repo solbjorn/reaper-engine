@@ -481,25 +481,26 @@ public:
         float vb_video = (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_vertex][D3DPOOL_DEFAULT] / 1024 / 1024;
         float vb_managed = (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_vertex][D3DPOOL_MANAGED] / 1024 / 1024;
         float vb_system = (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_vertex][D3DPOOL_SYSTEMMEM] / 1024 / 1024;
-        Msg("vertex buffer\t \t {} \t {} \t {} ", vb_video, vb_managed, vb_system);
+        XR_LOG_INFO("vertex buffer\t \t {} \t {} \t {}", vb_video, vb_managed, vb_system);
 
         float ib_video = (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_index][D3DPOOL_DEFAULT] / 1024 / 1024;
         float ib_managed = (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_index][D3DPOOL_MANAGED] / 1024 / 1024;
         float ib_system = (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_index][D3DPOOL_SYSTEMMEM] / 1024 / 1024;
-        Msg("index buffer\t \t {} \t {} \t {} ", ib_video, ib_managed, ib_system);
+        XR_LOG_INFO("index buffer\t \t {} \t {} \t {}", ib_video, ib_managed, ib_system);
 
         float rt_video = (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_rtarget][D3DPOOL_DEFAULT] / 1024 / 1024;
         float rt_managed = (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_rtarget][D3DPOOL_MANAGED] / 1024 / 1024;
         float rt_system = (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_rtarget][D3DPOOL_SYSTEMMEM] / 1024 / 1024;
-        Msg("rtarget\t \t {} \t {} \t {} ", rt_video, rt_managed, rt_system);
+        XR_LOG_INFO("rtarget\t \t {} \t {} \t {}", rt_video, rt_managed, rt_system);
 
-        Msg("total\t \t {} \t {} \t {} \n", vb_video + ib_video + rt_video, vb_managed + ib_managed + rt_managed, vb_system + ib_system + rt_system);
+        XR_LOG_INFO("total\t \t {} \t {} \t {}", vb_video + ib_video + rt_video, vb_managed + ib_managed + rt_managed, vb_system + ib_system + rt_system);
 
         xr::render_memory_usage usage;
         RImplementation.ResourcesGetMemoryUsage(usage);
 
-        Msg("textures loaded size: {} Mb ({} bytes)", gsl::narrow_cast<f32>(usage.m_base + usage.m_lmaps) / 1024.0f / 1024.0f, usage.m_base + usage.m_lmaps);
-        Msg("Lua memory usage: {} Mb ({} bytes)", gsl::narrow_cast<f32>(usage.lua) / 1024.0f / 1024.0f, usage.lua);
+        XR_LOG_INFO("textures loaded size: {} Mb ({} bytes)", gsl::narrow_cast<f32>(usage.m_base + usage.m_lmaps) / 1024.0f / 1024.0f,
+                    usage.m_base + usage.m_lmaps);
+        XR_LOG_INFO("Lua memory usage: {} Mb ({} bytes)", gsl::narrow_cast<f32>(usage.lua) / 1024.0f / 1024.0f, usage.lua);
 
         HW.DumpVideoMemoryUsage();
     }

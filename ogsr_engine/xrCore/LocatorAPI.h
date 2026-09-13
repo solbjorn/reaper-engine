@@ -173,7 +173,7 @@ public:
     CLocatorAPI();
     ~CLocatorAPI();
 
-    void _initialize(u32 flags, LPCSTR target_folder = nullptr, LPCSTR fs_name = nullptr);
+    tmc::task<void> _initialize(u32 flags, gsl::czstring target_folder = nullptr, gsl::czstring fs_name = nullptr);
     void _destroy();
 
     [[nodiscard]] IReader* r_open(gsl::czstring initial, gsl::czstring N);

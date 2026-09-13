@@ -123,7 +123,7 @@ void CROS_impl::update(IRenderable* O)
     {
         if (!skip)
         {
-            Msg("~ NaN position for obj id={} sect [{}] name [{}]. Skip!", _object->ID(), _object->cNameSect(), _object->cName());
+            XR_LOG_ERROR("NaN position for obj id={} sect [{}] name [{}]. Skip!", _object->ID(), _object->cNameSect(), _object->cName());
             skip = true;
         }
 

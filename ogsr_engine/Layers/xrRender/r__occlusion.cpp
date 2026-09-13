@@ -19,7 +19,7 @@ void R_occlusion::occq_destroy(bool silent)
     const auto p_cnt = std::ssize(pool);
 
     if (!silent)
-        Msg("* [{}]: fids[{}] used[{}] pool[{}]", std::source_location::current().function_name(), std::ssize(fids), std::ssize(used), p_cnt);
+        XR_LOG_INFO("fids[{}] used[{}] pool[{}]", std::ssize(fids), std::ssize(used), p_cnt);
 
     gsl::index u_cnt{};
 
@@ -34,7 +34,7 @@ void R_occlusion::occq_destroy(bool silent)
     fids.clear();
 
     if (!silent)
-        Msg("* [{}]: released [{}] used and [{}] pool queries", std::source_location::current().function_name(), u_cnt, p_cnt);
+        XR_LOG_INFO("Released [{}] used and [{}] pool queries", u_cnt, p_cnt);
 }
 
 void R_occlusion::cleanup_lost()
@@ -75,13 +75,16 @@ u32 R_occlusion::occq_begin(u32& ID, ctx_id_t context_id)
         ID = u32(used.size());
         _Q q{};
         q.order = ID;
+
         if (FAILED(CreateQuery(q.Q.GetAddressOf(), D3D_QUERY_OCCLUSION)))
         {
             if (Device.dwFrame % 100 == 0)
-                Msg("RENDER [Warning]: Too many occlusion queries were issued: {} !!!", used.size());
+                XR_LOG_ERROR("Too many occlusion queries were issued: {} !!!", used.size());
+
             ID = iInvalidHandle;
             return 0;
         }
+
         used.push_back(std::move(q));
     }
     else

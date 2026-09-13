@@ -21,7 +21,7 @@
 
 CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : CEffectorCam(cefDemo, life_time /*,FALSE*/)
 {
-    Msg("*** Playing demo: {}", name);
+    XR_LOG_INFO("Playing demo: {}", name);
 
     if (g_bBenchmark)
         Console->Execute("hud_draw 0");
@@ -77,7 +77,7 @@ CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : 
 
         FS.r_close(fs);
 
-        Msg("~ Total key-frames: [{}]", m_count);
+        XR_LOG_INFO("Total key-frames: [{}]", m_count);
     }
 
     stat_started = FALSE;
@@ -140,7 +140,7 @@ void CDemoPlay::stat_Stop()
     }
     rfps_middlepoint /= float(stat_table.size() - 1);
 
-    Msg("* [DEMO] FPS: average[{}], min[{}], max[{}], middle[{}]", rfps_average, rfps_min, rfps_max, rfps_middlepoint);
+    XR_LOG_INFO("FPS: average[{}], min[{}], max[{}], middle[{}]", rfps_average, rfps_min, rfps_max, rfps_middlepoint);
 
     if (g_bBenchmark)
     {

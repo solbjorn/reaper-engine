@@ -168,8 +168,8 @@ public:
     void level_Unload() override;
 
     ID3DBaseTexture* texture_load(LPCSTR fname, u32& msize);
-    [[nodiscard]] HRESULT shader_compile(gsl::czstring name, DWORD const* pSrcData, UINT SrcDataLen, gsl::czstring pFunctionName, gsl::czstring pTarget,
-                                         DWORD Flags, void*& result) override;
+    [[nodiscard]] xr::hresult shader_compile(gsl::czstring name, DWORD const* pSrcData, UINT SrcDataLen, gsl::czstring pFunctionName, gsl::czstring pTarget,
+                                             DWORD Flags, void*& result) override;
 
     // Information
     void Statistics(CGameFont* F) override;

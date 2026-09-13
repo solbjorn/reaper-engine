@@ -32,8 +32,8 @@ constexpr float erp{1.f};
 #define CHECK_POS(pos, msg, br) \
     if (!valid_pos(pos, phBoundaries)) \
     { \
-        Msg("pos: {}", pos); \
-        Msg("{}", msg); \
+        XR_LOG_ERROR("pos: {}", pos); \
+        XR_LOG_ERROR("{}", msg); \
         XR_ASSERT(!br); \
     } \
     XR_MACRO_END()
@@ -231,9 +231,7 @@ bool CPHActivationShape::Activate(const Fvector need_size, u16 steps, float, flo
             attempts--;
         } while (!ret && attempts > 0);
 
-#ifdef DEBUG
-        Msg("correction attempts {}", 10 - attempts);
-#endif
+        XR_LOG_DEBUG("Correction attempts: {}", 10 - attempts);
     }
 
     RestoreVelocityState(temp_state);

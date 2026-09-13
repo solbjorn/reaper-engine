@@ -31,6 +31,7 @@ char* strncat(char* __restrict dest, const char* __restrict src, size_t count);
 int strncmp(const char* left, const char* right, size_t n);
 char* strncpy(char* __restrict dest, const char* __restrict src, size_t n);
 size_t strnlen(const char* src, size_t n);
+char *strpbrk(const char *src, const char *breakset);
 size_t strspn(const char* src, const char* segment);
 char* strtok(char* __restrict src, const char* __restrict delimiter_string);
 
@@ -66,6 +67,7 @@ static __attribute__((always_inline)) __attribute__((__unused__)) size_t strnlen
 #define strncpy dontuse_crt_strncpy
 #define strnlen dontuse_crt_strnlen
 #define strnlen_s dontuse_crt_strnlen_s
+#define strpbrk dontuse_crt__strpbrk
 #define strspn dontuse_crt_strspn
 #define strtok dontuse_crt_strtok
 
@@ -73,6 +75,7 @@ static __attribute__((always_inline)) __attribute__((__unused__)) size_t strnlen
 
 #undef strtok
 #undef strspn
+#undef strpbrk
 #undef strnlen_s
 #undef strnlen
 #undef strncpy

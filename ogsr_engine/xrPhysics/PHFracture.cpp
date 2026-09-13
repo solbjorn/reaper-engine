@@ -520,7 +520,7 @@ bool CPHFracture::Update(CPHElement* element)
     }
 
 #ifdef DBG_BREAK
-    Msg("bone_id {} break_torque - {}(max {}) break_force {} (max {}) breaked {}", m_bone_id, btm_dbg, m_break_torque, bfm, m_break_force, m_breaked);
+    XR_LOG_DEBUG("bone_id {} break_torque - {}(max {}) break_force {} (max {}) breaked {}", m_bone_id, btm_dbg, m_break_torque, bfm, m_break_force, m_breaked);
 #endif
 
     return m_breaked;

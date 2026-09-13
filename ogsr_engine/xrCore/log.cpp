@@ -239,7 +239,7 @@ private:
         std::variant<::HANDLE, boost::asio::readable_pipe> read{INVALID_HANDLE_VALUE};
         xr_string buf;
 
-        quill::Logger* logger{nullptr};
+        xr::logger* logger;
         xr::level lvl;
 
         s32 orig_fd{-1};
@@ -258,7 +258,7 @@ private:
     class sbuf_redir final : public std::streambuf
     {
     private:
-        quill::Logger* logger;
+        xr::logger* logger;
         xr_string buf;
 
     public:
@@ -286,7 +286,7 @@ private:
     class absl_redir final : public absl::LogSink
     {
     private:
-        quill::Logger* logger;
+        xr::logger* logger;
 
     public:
         absl_redir() { logger = xr::logger_init("Abseil"); }
@@ -574,12 +574,15 @@ class relocatable_file_sink final : public quill::FileSink
 public:
     using quill::FileSink::FileSink;
 
-    void relocate(std::string_view src, std::filesystem::path dest)
+    tmc::task<void> relocate(std::string_view src, std::filesystem::path dest)
     {
         std::error_code ec;
 
         std::filesystem::create_directories(dest.parent_path(), ec);
         XR_ASSERT(!ec, "", dest);
+
+        flush_sink();
+        fsync_file(true);
 
         close_file();
 
@@ -587,6 +590,7 @@ public:
         XR_ASSERT(!ec, "", dest, src);
 
         open_file(std::move(dest), "a");
+        co_return;
     }
 };
 
@@ -620,7 +624,7 @@ std::optional<xr::redirect> redir;
 xr_string path;
 } // namespace
 
-quill::Logger* logger_init(std::string_view name)
+xr::logger* logger_init(std::string_view name)
 {
     const auto ret = quill::Frontend::create_or_get_logger(xr_string{name}, xr::sinks, xr::pattern);
 
@@ -635,6 +639,8 @@ namespace detail
 {
 void log_init_new()
 {
+    std::setlocale(LC_ALL, ".utf8");
+
     auto path = (std::filesystem::temp_directory_path() / xr::format("{}", std::this_thread::get_id()) / "tmp.log").u8string();
 
     sinks.emplace_back(quill::Frontend::create_or_get_sink<xr::relocatable_file_sink>(std::move(*reinterpret_cast<xr_string*>(&path)), [] [[nodiscard]] {
@@ -690,7 +696,7 @@ tmc::task<void> log_run()
     co_return;
 }
 
-void log_create()
+tmc::task<void> log_create()
 {
     xr_string name;
 
@@ -709,9 +715,12 @@ void log_create()
     string_path path;
     std::ignore = FS.update_path(path, "$logs$", name.c_str());
 
-    dynamic_cast<xr::relocatable_file_sink*>(xr::sinks[0].get())->relocate(xr::path, reinterpret_cast<xr::cu8zstring>(path));
-    xr::path.assign(path);
+    // Perform log file relocation on the Asio executor to serialize it with backend worker polling
+    // and make sure only the backend calls sink methods.
+    co_await tmc::spawn_clang(dynamic_cast<xr::relocatable_file_sink*>(xr::sinks[0].get())->relocate(xr::path, reinterpret_cast<xr::cu8zstring>(path)),
+                              tmc::asio_executor());
 
+    xr::path.assign(path);
     Debug.to_log(xr::path.c_str());
 }
 

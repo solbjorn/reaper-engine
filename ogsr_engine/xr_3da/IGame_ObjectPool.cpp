@@ -42,12 +42,12 @@ void IGame_ObjectPool::prefetch()
             }
             else
             {
-                Msg("! [{}] unknown section {} in {}", std::source_location::current().function_name(), item.first, section);
+                XR_LOG_ERROR("Unknown section {} in {}", item.first, section);
             }
         }
 
         Render->models_begin_prefetch1(false);
-        Msg("[{}] objects prefetching time ({}): [{:.3} s.]", std::source_location::current().function_name(), p_count, T.GetElapsed_sec());
+        XR_LOG_INFO("Objects prefetching time ({}): [{:.3} s.]", p_count, T.GetElapsed_sec());
     }
 
     // out statistic

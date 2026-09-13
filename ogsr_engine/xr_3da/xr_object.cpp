@@ -162,7 +162,8 @@ tmc::task<bool> CObject::net_Spawn(CSE_Abstract*)
     if (!Visual() && pSettings->line_exist(cNameSect(), "visual"))
     {
         gsl::czstring visual_name = pSettings->r_string(cNameSect(), "visual");
-        Msg("! [{}]: zero Visual() in {} found, use {} instead", std::source_location::current().function_name(), cName(), visual_name);
+
+        XR_LOG_ERROR("Zero Visual() in {} found, use {} instead", cName(), visual_name);
         cNameVisual_set(shared_str{visual_name});
     }
 
@@ -390,10 +391,7 @@ void CObject::setDestroy(BOOL _destroy)
     if (_destroy)
     {
         g_pGameLevel->Objects.register_object_to_destroy(this);
-
-#ifdef DEBUG
-        Msg("cl setDestroy [{}][{}]", ID(), Device.dwFrame);
-#endif
+        XR_LOG_TRACE_L1("cl setDestroy [{}][{}]", ID(), Device.dwFrame);
     }
     else
     {

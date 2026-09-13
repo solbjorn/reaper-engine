@@ -154,9 +154,9 @@ void CSkeletonX::_Render(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iO
             static bool logged{}; // чтоб не спамить в лог по сто раз за кадр.
             if (!logged)
             {
+                XR_LOG_ERROR("Can't get/create sbones_array for model [{}] vith [{}] bones. Most likely, an incorrect shader is assigned there",
+                             this->Parent->dbg_name, RMS_bonecount);
                 logged = true;
-                Msg("!![{}] Can't get/create sbones_array for model [{}] vith [{}] bones. Most likely, an incorrect shader is assigned there.",
-                    std::source_location::current().function_name(), this->Parent->dbg_name, RMS_bonecount);
             }
         }
 

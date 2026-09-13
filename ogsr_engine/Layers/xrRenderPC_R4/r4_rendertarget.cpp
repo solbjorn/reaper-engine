@@ -183,9 +183,7 @@ CRenderTarget::CRenderTarget()
     const auto& options = RImplementation.o;
     const u32 SampleCount = options.dx10_msaa ? options.dx10_msaa_samples : 1;
 
-#ifdef DEBUG
-    Msg("MSAA samples = {}", SampleCount);
-#endif
+    XR_LOG_DEBUG("MSAA samples = {}", SampleCount);
 
     param_blur = 0.f;
     param_gray = 0.f;

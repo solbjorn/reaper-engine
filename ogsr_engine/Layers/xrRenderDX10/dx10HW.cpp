@@ -62,7 +62,7 @@ void CHW::CreateD3D()
         DXGI_ADAPTER_DESC desc{};
         adapter->GetDesc(&desc);
 
-        Msg("* Avail GPU [vendor:{:X}]-[device:{:X}]: {}", desc.VendorId, desc.DeviceId, sf::String{desc.Description});
+        XR_LOG_INFO("Avail GPU [vendor:{:X}]-[device:{:X}]: {}", desc.VendorId, desc.DeviceId, std::wstring_view{desc.Description});
         ++i;
     }
 
@@ -138,7 +138,7 @@ tmc::task<void> CHW::CreateDevice(HWND wnd, u32& dwWidth, u32& dwHeight)
     DumpVideoMemoryUsage();
 
     //	Warning: Desc.Description is wide string
-    Msg("* Selected GPU [vendor:{:X}]-[device:{:X}]: {}", Desc.VendorId, Desc.DeviceId, sf::String{Desc.Description});
+    XR_LOG_NOTICE("Selected GPU [vendor:{:X}]-[device:{:X}]: {}", Desc.VendorId, Desc.DeviceId, std::wstring_view{Desc.Description});
 
     Caps.id_vendor = Desc.VendorId;
     Caps.id_device = Desc.DeviceId;
@@ -445,7 +445,8 @@ void CHW::DumpVideoMemoryUsage() const
 
     if (xr::hr(m_pAdapter->QueryVideoMemoryInfo(0, ::DXGI_MEMORY_SEGMENT_GROUP::DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo)))
     {
-        Msg("\tDedicated VRAM: {} MB ({} bytes)\n\tDedicated Memory: {} MB ({} bytes)\n\tShared Memory: {} MB ({} bytes)\n\tCurrentUsage: {} MB ({} "
+        XR_LOG_INFO(
+            "\tDedicated VRAM: {} MB ({} bytes)\n\tDedicated Memory: {} MB ({} bytes)\n\tShared Memory: {} MB ({} bytes)\n\tCurrentUsage: {} MB ({} "
             "bytes)\n\tBudget: {} MB ({} bytes)",
             Desc.DedicatedVideoMemory / 1024 / 1024, Desc.DedicatedVideoMemory, Desc.DedicatedSystemMemory / 1024 / 1024, Desc.DedicatedSystemMemory,
             Desc.SharedSystemMemory / 1024 / 1024, Desc.SharedSystemMemory, videoMemoryInfo.CurrentUsage / 1024 / 1024, videoMemoryInfo.CurrentUsage,
@@ -453,9 +454,9 @@ void CHW::DumpVideoMemoryUsage() const
     }
     else
     {
-        Msg("\tDedicated VRAM: {} MB ({} bytes)\n\tDedicated Memory: {} MB ({} bytes)\n\tShared Memory: {} MB ({} bytes)",
-            Desc.DedicatedVideoMemory / 1024 / 1024, Desc.DedicatedVideoMemory, Desc.DedicatedSystemMemory / 1024 / 1024, Desc.DedicatedSystemMemory,
-            Desc.SharedSystemMemory / 1024 / 1024, Desc.SharedSystemMemory);
+        XR_LOG_INFO("\tDedicated VRAM: {} MB ({} bytes)\n\tDedicated Memory: {} MB ({} bytes)\n\tShared Memory: {} MB ({} bytes)",
+                    Desc.DedicatedVideoMemory / 1024 / 1024, Desc.DedicatedVideoMemory, Desc.DedicatedSystemMemory / 1024 / 1024, Desc.DedicatedSystemMemory,
+                    Desc.SharedSystemMemory / 1024 / 1024, Desc.SharedSystemMemory);
     }
 }
 
@@ -580,22 +581,17 @@ void fill_vid_mode_list(CHW* _hw)
     u32 _cnt = _tmp.size() + 1;
 
     vid_mode_token = xr_alloc<xr_token>(_cnt);
-
     vid_mode_token[_cnt - 1].id = -1;
     vid_mode_token[_cnt - 1].name = nullptr;
 
-#ifdef DEBUG
-    Msg("Available video modes[{}]:", _tmp.size());
-#endif // DEBUG
+    XR_LOG_TRACE_L1("Available video modes[{}]:", _tmp.size());
 
     for (u32 i = 0; i < _tmp.size(); ++i)
     {
         vid_mode_token[i].id = i;
         vid_mode_token[i].name = _tmp[i];
 
-#ifdef DEBUG
-        Msg("[{}]", _tmp[i]);
-#endif // DEBUG
+        XR_LOG_TRACE_L1(" [{}]", _tmp[i]);
     }
 }
 

@@ -554,7 +554,7 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool allow_disabl
 
         if (!m_last_cmd.c_str() || std::is_neq(xr_strcmp(m_last_cmd, edt)))
         {
-            Msg("{} {}", c, edt);
+            XR_LOG_NOTICE("{} {}", c, edt);
 
             shared_str res{edt};
             add_cmd_history(res);
@@ -580,7 +580,7 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool allow_disabl
                 if (cc->bEmptyArgsHandled)
                     cc->Execute(last);
                 else
-                    Msg("- {} {}", cc->Name(), cc->Status());
+                    XR_LOG_INFO("{} {}", cc->Name(), cc->Status());
             }
             else
             {
@@ -591,12 +591,12 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool allow_disabl
         }
         else
         {
-            Msg("! Command disabled: {}", first);
+            XR_LOG_WARNING("Command disabled: {}", first);
         }
     }
     else
     {
-        Msg("! Unknown command: {}", first);
+        XR_LOG_ERROR("Unknown command: {}", first);
     }
 
     if (record_cmd)

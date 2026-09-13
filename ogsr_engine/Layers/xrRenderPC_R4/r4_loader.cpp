@@ -27,9 +27,9 @@ tmc::task<void> CRender::level_Load(IReader* fs)
     ResourcesGetMemoryUsage(usage);
 
     XR_LOG_NOTICE("LevelResources load...");
-    Msg("~ LevelResources - base: {}, {} Kb", usage.c_base, usage.m_base / 1024);
-    Msg("~ LevelResources - lmap: {}, {} Kb", usage.c_lmaps, usage.m_lmaps / 1024);
-    Msg("~ LevelResources - Lua: {} Kb", usage.lua / 1024);
+    XR_LOG_INFO("LevelResources - base: {}, {} Kb", usage.c_base, usage.m_base / 1024);
+    XR_LOG_INFO("LevelResources - lmap: {}, {} Kb", usage.c_lmaps, usage.m_lmaps / 1024);
+    XR_LOG_INFO("LevelResources - Lua: {} Kb", usage.lua / 1024);
 
     // Begin
     pApp->LoadBegin();
@@ -124,9 +124,9 @@ tmc::task<void> CRender::level_Load(IReader* fs)
     ResourcesGetMemoryUsage(usage);
 
     XR_LOG_NOTICE("LevelResources load completed!");
-    Msg("~ LevelResources - base: {}, {} Kb", usage.c_base, usage.m_base / 1024);
-    Msg("~ LevelResources - lmap: {}, {} Kb", usage.c_lmaps, usage.m_lmaps / 1024);
-    Msg("~ LevelResources - Lua: {} Kb", usage.lua / 1024);
+    XR_LOG_INFO("LevelResources - base: {}, {} Kb", usage.c_base, usage.m_base / 1024);
+    XR_LOG_INFO("LevelResources - lmap: {}, {} Kb", usage.c_lmaps, usage.m_lmaps / 1024);
+    XR_LOG_INFO("LevelResources - Lua: {} Kb", usage.lua / 1024);
 
     // signal loaded
     b_loaded = TRUE;
@@ -143,9 +143,9 @@ void CRender::level_Unload()
     ResourcesGetMemoryUsage(usage);
 
     XR_LOG_NOTICE("LevelResources unload...");
-    Msg("~ LevelResources - base: {}, {} Kb", usage.c_base, usage.m_base / 1024);
-    Msg("~ LevelResources - lmap: {}, {} Kb", usage.c_lmaps, usage.m_lmaps / 1024);
-    Msg("~ LevelResources - Lua: {} Kb", usage.lua / 1024);
+    XR_LOG_INFO("LevelResources - base: {}, {} Kb", usage.c_base, usage.m_base / 1024);
+    XR_LOG_INFO("LevelResources - lmap: {}, {} Kb", usage.c_lmaps, usage.m_lmaps / 1024);
+    XR_LOG_INFO("LevelResources - Lua: {} Kb", usage.lua / 1024);
 
     // HOM
     HOM.Unload();
@@ -206,9 +206,9 @@ void CRender::level_Unload()
     ResourcesGetMemoryUsage(usage);
 
     XR_LOG_NOTICE("LevelResources unload completed!");
-    Msg("~ LevelResources - base: {}, {} Kb", usage.c_base, usage.m_base / 1024);
-    Msg("~ LevelResources - lmap: {}, {} Kb", usage.c_lmaps, usage.m_lmaps / 1024);
-    Msg("~ LevelResources - Lua: {} Kb", usage.lua / 1024);
+    XR_LOG_INFO("LevelResources - base: {}, {} Kb", usage.c_base, usage.m_base / 1024);
+    XR_LOG_INFO("LevelResources - lmap: {}, {} Kb", usage.c_lmaps, usage.m_lmaps / 1024);
+    XR_LOG_INFO("LevelResources - Lua: {} Kb", usage.lua / 1024);
 
     b_loaded = FALSE;
 }
@@ -245,9 +245,7 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
         const auto vCount = fs->r_u32();
         const auto len = vCount * vSize;
 
-#ifndef MASTER_GOLD
-        Msg("* [Loading VB] {} verts, {} Kb", vCount, len / 1024);
-#endif
+        XR_LOG_DEBUG("[Loading VB] {} verts, {} Kb", vCount, len / 1024);
 
         // Create and fill
         //	TODO: DX10: Check fragmentation.
@@ -266,9 +264,7 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
         const auto iCount = fs->r_u32();
         const auto len = iCount * sizeof(u16);
 
-#ifndef MASTER_GOLD
-        Msg("* [Loading IB] {} indices, {} Kb", iCount, len / 1024);
-#endif
+        XR_LOG_DEBUG("[Loading IB] {} indices, {} Kb", iCount, len / 1024);
 
         // Create and fill
         //	TODO: DX10: Check fragmentation.
@@ -445,7 +441,7 @@ void CRender::Load3DFluid()
 
         const auto& v = pVolume->getVisData().sphere.P;
 
-        Msg("~ Loading fog volume with profile [{}]. Position: {}", pVolume->getProfileName(), v);
+        XR_LOG_NOTICE("Loading fog volume with profile [{}]. Position: {}", pVolume->getProfileName(), v);
 
         //	Attach to sector's static geometry
         for (auto& dsgraph : contexts_pool)
@@ -454,7 +450,7 @@ void CRender::Load3DFluid()
             //	3DFluid volume must be in render sector
             if (pSector == nullptr)
             {
-                Msg("!!Cannot find sector for fog volume. Position: {}", v);
+                XR_LOG_ERROR("Can't find sector for fog volume. Position: {}", v);
 
                 xr_delete(pVolume);
                 continue;

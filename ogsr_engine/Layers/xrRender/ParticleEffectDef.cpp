@@ -45,7 +45,7 @@ void CPEDef::CreateShader()
     if (m_ShaderName.c_str() != nullptr && m_TextureName.c_str() != nullptr)
         m_CachedShader.create(m_ShaderName.c_str(), m_TextureName.c_str());
     else
-        Msg("! ParticleEffect [{}] with empty texture or shader. Cannot create shader for Visual!", m_Name);
+        XR_LOG_ERROR("ParticleEffect [{}] with empty texture or shader. Cannot create shader for Visual!", m_Name);
 }
 
 void CPEDef::DestroyShader() { m_CachedShader.destroy(); }
