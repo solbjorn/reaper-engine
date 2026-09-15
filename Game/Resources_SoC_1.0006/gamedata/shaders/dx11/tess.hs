@@ -27,9 +27,9 @@ HS_CONSTANT_DATA_OUTPUT PatchConstantsHS(InputPatch<p_bumped, 3> ip, uint PatchI
 #endif
 
     //	Data for interpolation in screen space
-    //	float w0 = mul(m_P, float4(ip[2].position.xyz, 1)).w;
-    //	float w1 = mul(m_P, float4(ip[1].position.xyz, 1)).w;
-    //	float w2 = mul(m_P, float4(ip[0].position.xyz, 1)).w;
+    //	float w0 = mul(float4(ip[2].position.xyz, 1), m_P).w;
+    //	float w1 = mul(float4(ip[1].position.xyz, 1), m_P).w;
+    //	float w2 = mul(float4(ip[0].position.xyz, 1), m_P).w;
 
     //	Output.www = float3(w0, w1, w2);
 

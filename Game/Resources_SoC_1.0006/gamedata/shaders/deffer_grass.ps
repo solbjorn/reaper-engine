@@ -50,7 +50,7 @@ f_deffer main(p_bumped I)
     // https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders/
 
     // Fake UP Normal
-    float3 fN = mul(m_WV, float3(S.normal.x, 1.0f, S.normal.y));
+    float3 fN = mul(float3(S.normal.x, 1.0f, S.normal.y), m_WV);
     fN = normalize(fN);
 
     // Terrain Normal ( Engine feed the terrain normals )
@@ -61,7 +61,7 @@ f_deffer main(p_bumped I)
     S.gloss = def_gloss;
 
     // Dither
-    float4 Postc = mul(m_P, float4(I.position.xyz, 1));
+    float4 Postc = mul(float4(I.position.xyz, 1), m_P);
     float2 tc = (Postc.xy / Postc.w) * float2(0.5f, -0.5f) + 0.5f;
 
     float2 dither_uv = tc * screen_res.xy; // Aspect ratio

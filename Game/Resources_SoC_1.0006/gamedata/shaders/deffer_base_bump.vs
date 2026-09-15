@@ -9,8 +9,8 @@ v2p_bumped main(v_static I)
 
     // Eye-space pos/normal
     v2p_bumped O;
-    float3 Pe = mul(m_WV, w_pos);
-    O.hpos = mul(m_WVP, w_pos);
+    float3 Pe = mul(w_pos, m_WV);
+    O.hpos = mul(w_pos, m_WVP);
     O.tcdh = float4(tc.xyyy);
     O.position = float4(Pe, hemi);
     //	O.position	= float4	(O.hpos.xyz, hemi	);
@@ -24,7 +24,7 @@ v2p_bumped main(v_static I)
     float3 N = unpack_bx4(I.Nh); // just scale (assume normal in the -.5f, .5f)
     float3 T = unpack_bx4(I.T); //
     float3 B = unpack_bx4(I.B); //
-    float3x3 xform = mul((float3x3)m_WV, float3x3(T.x, B.x, N.x, T.y, B.y, N.y, T.z, B.z, N.z));
+    float3x3 xform = mul(float3x3(T, B, N), (float3x3)m_WV);
     // The pixel shader operates on the bump-map in [0..1] range
     // Remap this range in the matrix, anyway we are pixel-shader limited :)
     // ...... [ 2  0  0  0]

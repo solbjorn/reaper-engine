@@ -64,7 +64,7 @@ bool SSFX_is_valid_uv(float2 value) { return (value.x >= 0.0f && value.x <= 1.0f
 
 float2 SSFX_view_to_uv(float3 Pos)
 {
-    float4 tc = mul(m_P, float4(Pos, 1));
+    float4 tc = mul(float4(Pos, 1), m_P);
     return (tc.xy / tc.w) * float2(0.5f, -0.5f) + 0.5f;
 }
 
@@ -86,8 +86,8 @@ float3 SSFX_yaw_vector(float3 Vec, float Rot)
     sincos(Rot, s, c);
 
     // y-axis rotation matrix
-    float3x3 rot_mat = {c, 0, s, 0, 1, 0, -s, 0, c};
-    return mul(rot_mat, Vec);
+    float3x3 rot_mat = {c, 0, -s, 0, 1, 0, s, 0, c};
+    return mul(Vec, rot_mat);
 }
 
 float SSFX_get_depth(float2 tc, uint iSample : SV_SAMPLEINDEX)
@@ -212,7 +212,7 @@ float3 SSFX_get_scene(float2 tc, uint iSample : SV_SAMPLEINDEX)
     float rMtl = gbuf_unpack_mtl(rP.w);
     float rHemi = gbuf_unpack_hemi(rP.w);
 
-    float3 nw = mul(m_inv_V, rN);
+    float3 nw = mul(rN, m_inv_V);
 
 #ifdef SSFX_ENHANCED_SHADERS
 

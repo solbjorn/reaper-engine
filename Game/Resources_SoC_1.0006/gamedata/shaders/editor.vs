@@ -17,7 +17,7 @@ v2p main(vf i)
 {
     v2p o;
 
-    o.P = mul(m_WVP, i.P); // xform, input in world coords
+    o.P = mul(i.P, m_WVP); // xform, input in world coords
     o.C = tfactor;
 
     return o;

@@ -14,10 +14,10 @@ v2p_hud _main(v_model_hud I)
 {
     v2p_hud O;
 
-    O.HPos = mul(m_WVP, I.P);
+    O.HPos = mul(I.P, m_WVP);
 
     O.PC = O.HPos; // Current
-    O.PP = mul(m_WVP_prev, I.P_prev); // Previous
+    O.PP = mul(I.P_prev, m_WVP_prev); // Previous
 
     return O;
 }

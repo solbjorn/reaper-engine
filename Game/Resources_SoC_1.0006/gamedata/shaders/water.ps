@@ -32,7 +32,7 @@ float4 main(vf I) : SV_Target
     float3 n1 = s_nmap.Sample(smp_base, I.tnorm0.zw);
     float3 Navg = n0 + n1 - 1.0;
 
-    float3 Nw = mul(float3x3(I.M1, I.M2, I.M3), Navg);
+    float3 Nw = mul(Navg, float3x3(I.M1, I.M2, I.M3));
     Nw = normalize(Nw);
     float3 v2point = normalize(I.v2point_w);
 

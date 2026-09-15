@@ -16,10 +16,10 @@ vf _main(v_model v)
     vf o;
 
     float4 pos = v.P;
-    float3 pos_w = mul(m_W, pos);
-    float3 norm_w = normalize(mul(m_W, v.N));
+    float3 pos_w = mul(pos, m_W);
+    float3 norm_w = normalize(mul(v.N, m_W));
 
-    o.hpos = mul(m_WVP, pos); // xform, input in world coords
+    o.hpos = mul(pos, m_WVP); // xform, input in world coords
     o.tc0 = v.tc.xy; // copy tc
     o.tc1 = calc_reflection(pos_w, norm_w);
     o.c0 = calc_model_lq_lighting(float3(0, 1, 0)); // SSS 14.5 - Improve the illumination a little using a fake normal

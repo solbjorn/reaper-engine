@@ -56,7 +56,7 @@ float4 main(p_screen I) : SV_Target
     bool mat_flora = abs(mtl - MAT_FLORA) <= 0.04f;
 
     // If MAT_FLORA we use a fake normal to align the hemisphere
-    N.xyz = mat_flora ? mul(m_V, float3(0.0f, 0.25f, 0.0f)) : N.xyz;
+    N.xyz = mat_flora ? mul(float3(0.0f, 0.25f, 0.0f), m_V) : N.xyz;
 
     // A factor to adjust some values to only affect weapons ( closer objects )
     float3 HudMask = s_hud_mask.Sample(smp_nofilter, tc).rgb;
@@ -133,11 +133,11 @@ float4 main(p_screen I) : SV_Target
     float4 P4 = float4(P.xyz, 1.0);
 
     // Get current
-    float4 p_current = mul(m_current, P4);
+    float4 p_current = mul(P4, m_current);
     float2 current = p_current.xy / p_current.w;
 
     // Get previous
-    float4 p_previous = mul(m_previous, P4);
+    float4 p_previous = mul(P4, m_previous);
     float2 previous = p_previous.xy / p_previous.w;
 
     // Reprojection UV

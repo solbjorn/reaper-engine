@@ -80,7 +80,7 @@ inline CResourceManager::map_CS& CResourceManager::GetShaderMap()
     return m_cs;
 }
 
-constexpr inline auto D3DCOMPILE_FLAGS_DEFAULT{D3DCOMPILE_OPTIMIZATION_LEVEL3 | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR};
+constexpr inline auto D3DCOMPILE_FLAGS_DEFAULT{D3DCOMPILE_OPTIMIZATION_LEVEL3};
 constexpr inline auto D3DCOMPILE_FLAGS_DEBUG{D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_DEBUG};
 
 template <typename T>

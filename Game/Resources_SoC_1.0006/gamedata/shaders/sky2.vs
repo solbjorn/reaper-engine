@@ -22,7 +22,7 @@ v2p main(vi v)
     // v.c.rgb = v.c.bgr; // fix skybox color
 
     float4 tpos = float4(2000 * v.p.x, 2000 * v.p.y, 2000 * v.p.z, 2000 * v.p.w);
-    o.hpos = mul(m_WVP, tpos);
+    o.hpos = mul(tpos, m_WVP);
     o.hpos.z = o.hpos.w;
     o.tc0.xyz = v.tc0; // copy tc
     o.tc1.xyz = v.tc1; // copy tc

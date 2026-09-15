@@ -2,8 +2,8 @@
 
 cbuffer DynOOBBData
 {
-    float3x4 WorldToLocal; //	World to local of fog volume
-    float3x4 LocalToWorld; //	Local of fog volume to world
+    float4x3 WorldToLocal; //	World to local of fog volume
+    float4x3 LocalToWorld; //	Local of fog volume to world
     float4 MassCenter; //	Center for angular velocity
     float4 OOBBWorldAngularVelocity;
     float4 OOBBWorldTranslationVelocity;
@@ -23,13 +23,13 @@ v2g_fluidsim_dyn_aabb main(v_fluidsim input)
     {
         output.velocity = OOBBWorldTranslationVelocity;
 
-        float3 r = mul(LocalToWorld, float4(output.cell0, 1)) - MassCenter;
+        float3 r = mul(float4(output.cell0, 1), LocalToWorld) - MassCenter;
 
         float3 AngularVel = cross(OOBBWorldAngularVelocity.xyz, r);
 
         output.velocity += AngularVel;
 
-        output.velocity = mul(WorldToLocal, output.velocity);
+        output.velocity = mul(output.velocity, WorldToLocal);
     }
 
     for (int i = 0; i < 3; ++i)

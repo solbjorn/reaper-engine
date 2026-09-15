@@ -55,23 +55,23 @@ BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
             }
         }
         break;
-        case D3D10_SVC_MATRIX_ROWS: {
-            switch (TypeDesc.Columns)
+        case D3D10_SVC_MATRIX_COLUMNS: {
+            switch (TypeDesc.Rows)
             {
             case 4:
-                switch (TypeDesc.Rows)
+                switch (TypeDesc.Columns)
                 {
                 case 2: r_type = RC_2x4; break;
                 case 3: r_type = RC_3x4; break;
                 case 4: r_type = RC_4x4; break;
-                default: XR_PANIC("unsupported matrix constant row number", name, TypeDesc.Rows);
+                default: XR_PANIC("unsupported matrix constant column number", name, TypeDesc.Columns);
                 }
                 break;
-            default: XR_PANIC("unsupported matrix constant column number", name, TypeDesc.Columns);
+            default: XR_PANIC("unsupported matrix constant row number", name, TypeDesc.Rows);
             }
         }
         break;
-        case D3D10_SVC_MATRIX_COLUMNS:
+        case D3D10_SVC_MATRIX_ROWS:
         case D3D10_SVC_STRUCT:
         case D3D10_SVC_OBJECT: XR_PANIC("constant class is not supported", name, TypeDesc.Class);
         default: continue;

@@ -54,12 +54,12 @@ void hmodel(out float3 hdiffuse, out float3 hspecular, float m, float h, float4 
 
     // normal vector
     normal = normalize(normal);
-    float3 nw = mul(m_inv_V, normal);
+    float3 nw = mul(normal, m_inv_V);
     // nw = normalize(nw);
 
     // view vector
     Pnt = normalize(Pnt);
-    float3 v2Pnt = mul(m_inv_V, Pnt);
+    float3 v2Pnt = mul(Pnt, m_inv_V);
     // v2Pnt = normalize(v2Pnt);
 
     // normal remap

@@ -110,7 +110,7 @@ float4 main(vf I) : SV_Target
 // PARALLAX -------------------------------------------------------------------
 #if SSFX_WATER_PARALLAX > 0
 
-    float3 eye = normalize(mul(float3x3(I.M1.x, I.M2.x, I.M3.x, I.M1.y, I.M2.y, I.M3.y, I.M1.z, I.M2.z, I.M3.z), -I.v2point_w.xyz));
+    float3 eye = normalize(mul(-I.v2point_w.xyz, float3x3(I.M1.x, I.M2.x, I.M3.x, I.M1.y, I.M2.y, I.M3.y, I.M1.z, I.M2.z, I.M3.z)));
 
     float view_angle = abs(dot(float3(0.0, 0.0, 1.0), eye));
 
@@ -173,7 +173,7 @@ float4 main(vf I) : SV_Target
 #endif
 
     // Water Surface to world space
-    float3 w_s = mul(m_inv_V, Pv);
+    float3 w_s = mul(Pv, m_inv_V);
 
     // Rain intensity. Fadeout and rain cover
     float is_raining = rain_params.x > 0 ? 1.0f : 0.0f;
@@ -188,14 +188,14 @@ float4 main(vf I) : SV_Target
     Navg += float3(0.1f, 0.1f, 0.1f) + float3(Ripples, 0) * is_raining;
     Navg.xy *= 0.5f;
 
-    float3 Nw = mul(float3x3(I.M1, I.M2, I.M3), Navg);
+    float3 Nw = mul(Navg, float3x3(I.M1, I.M2, I.M3));
     Nw = normalize(Nw);
 
     float3 v2point = normalize(I.v2point_w);
     float3 vreflect = reflect(v2point, Nw.xyz);
 
     float3 eyedir = normalize(Pv);
-    float3 Nv = normalize(mul(m_V, Nw));
+    float3 Nv = normalize(mul(Nw, m_V));
 
     // Refractions normal ( Used by shadows and refraction )
     float2 N_Scr = Waves_Normal; // G_SSR_WATER_REFRACTION
@@ -210,7 +210,7 @@ float4 main(vf I) : SV_Target
     P.xyz = float3(P.z * (I.hpos.xy * pos_decompression_params.zw - pos_decompression_params.xy), P.z);
 
     // Bottom of the water to world space ( Project the caustics and water fog )
-    float3 w_p = mul(m_inv_V, float4(P.xyz, 1));
+    float3 w_p = mul(float4(P.xyz, 1), m_inv_V);
 
     // Shadows to do some tricks
 #ifndef USE_MSAA

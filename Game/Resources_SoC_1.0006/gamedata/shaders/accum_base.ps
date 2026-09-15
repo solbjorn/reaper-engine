@@ -61,7 +61,7 @@ float4 main(p_volume I, float4 pos2d : SV_Position) : SV_Target
 #endif
 
     float4 P4 = float4(_P.xyz + Offset, 1);
-    float4 PS = mul(m_shadow, P4);
+    float4 PS = mul(P4, m_shadow);
     float s = 1.f;
 #ifdef USE_SHADOW
     s = shadow(PS, pos2d.xy);

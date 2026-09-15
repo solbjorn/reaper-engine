@@ -23,7 +23,7 @@ v2p_shadow_direct main(a2v I)
     float4 pos = I.P;
     pos.y -= 0.1f;
 
-    O.hpos = mul(m_WVP, pos);
+    O.hpos = mul(pos, m_WVP);
 
     return O;
 }

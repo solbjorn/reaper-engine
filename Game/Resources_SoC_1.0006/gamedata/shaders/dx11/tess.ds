@@ -77,7 +77,7 @@
     // output.M1.z = Normal.x;
     // output.M2.z = Normal.y;
     // output.M3.z = Normal.z;
-    output.hpos = mul(m_P, float4(output.position.xyz, 1));
+    output.hpos = mul(float4(output.position.xyz, 1), m_P);
 
     return output;
 }

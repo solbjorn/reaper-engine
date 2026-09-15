@@ -8,10 +8,10 @@ v2p_flat main(v_static I)
 
     // Eye-space pos/normal
     v2p_flat O;
-    float4 Pp = mul(m_WVP, I.P);
+    float4 Pp = mul(I.P, m_WVP);
     O.hpos = Pp;
-    O.N = mul((float3x3)m_WV, unpack_bx2(I.Nh));
-    float3 Pe = mul(m_WV, I.P);
+    O.N = mul(unpack_bx2(I.Nh), (float3x3)m_WV);
+    float3 Pe = mul(I.P, m_WV);
 
     float2 tc = unpack_tc_base(I.tc, I.T.w, I.B.w); // copy tc
     O.tcdh = float4(tc.xyyy);

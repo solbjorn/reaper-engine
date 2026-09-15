@@ -34,7 +34,7 @@
     ComputeDisplacedVertex(Pos, Norm, tc, tcd);
 #endif
 
-    output.hpos = mul(m_P, float4(Pos, 1));
+    output.hpos = mul(float4(Pos, 1), m_P);
 
     return output;
 }

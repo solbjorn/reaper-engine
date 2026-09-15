@@ -50,8 +50,8 @@ float4 main(v2p_volume I) : SV_Target
     float depth = P.z;
     float deltaDepth = direction.z;
 
-    float4 current = mul(m_shadow, float4(P, 1.0));
-    float4 delta = mul(m_shadow, float4(direction, 0.0));
+    float4 current = mul(float4(P, 1.0), m_shadow);
+    float4 delta = mul(float4(direction, 0.0), m_shadow);
 
     float res = 0.0;
     float max_density = sun_shafts_intensity;

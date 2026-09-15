@@ -37,8 +37,8 @@ float4 main(p_screen I) : SV_Target
     float3 reVec = reflect(inVec, N); // Reflected
 
     // Transform space and calc reflection vector ( Skybox & Fresnel )
-    float3 nw = mul(m_inv_V, N);
-    float3 v2point = mul(m_inv_V, inVec);
+    float3 nw = mul(N, m_inv_V);
+    float3 v2point = mul(inVec, m_inv_V);
     float3 v2reflect = reflect(v2point, nw);
 
     // Fresnel

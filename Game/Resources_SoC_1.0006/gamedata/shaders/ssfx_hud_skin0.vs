@@ -15,13 +15,13 @@ v2p_hud _main(v_model_hud I, float3 psp)
 {
     v2p_hud O;
 
-    O.HPos = mul(m_WVP, I.P);
+    O.HPos = mul(I.P, m_WVP);
 
     // Apply bone matrix
-    float3 Pbone = mul(m_bone, I.P);
+    float3 Pbone = mul(I.P, m_bone);
 
     O.PC = O.HPos; // Current
-    O.PP = mul(m_WVP_prev, float4(Pbone, 1.0f)); // Previous
+    O.PP = mul(float4(Pbone, 1.0f), m_WVP_prev); // Previous
 
     return O;
 }

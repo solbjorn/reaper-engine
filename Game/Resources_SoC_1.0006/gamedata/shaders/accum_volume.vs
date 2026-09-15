@@ -8,8 +8,8 @@ uniform float4x4 m_texgen;
 v2p_volume main(float4 P : POSITION)
 {
     v2p_volume O;
-    O.hpos = mul(m_WVP, P);
-    O.tc = mul(m_texgen, P);
+    O.hpos = mul(P, m_WVP);
+    O.tc = mul(P, m_texgen);
     return O;
 }
 FXVS;

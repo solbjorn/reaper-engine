@@ -55,7 +55,7 @@ float SSFX_FOGGING(float Fog, float World_Py)
 
 float SSFX_CALC_FOG(float3 P)
 {
-    float3 WorldP = mul(m_inv_V, float4(P.xyz, 1));
+    float3 WorldP = mul(float4(P.xyz, 1), m_inv_V);
     float distance = length(P.xyz);
     float fog = saturate(distance * fog_params.w + fog_params.x); // Vanilla fog
     float fogheight = smoothstep(G_FOG_HEIGHT, -G_FOG_HEIGHT, WorldP.y) * G_FOG_HEIGHT_INTENSITY; // Height fog

@@ -13,7 +13,7 @@ float2x2 SLB_Rotate2Matrix(float a)
 {
     float s = sin(a);
     float c = cos(a);
-    return float2x2(float2(c, s), float2(-s, c));
+    return float2x2(float2(c, -s), float2(s, c));
 }
 
 float2 SLB_Rotate2(float2 v, float a)

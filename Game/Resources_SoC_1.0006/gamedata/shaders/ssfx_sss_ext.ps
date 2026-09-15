@@ -64,10 +64,10 @@ float4 main(p_screen I) : SV_Target
         float4 P4 = float4(P, 1.0);
 
         // Get current
-        float4 p_current = mul(m_current, P4);
+        float4 p_current = mul(P4, m_current);
 
         // Get previous
-        float4 p_previous = mul(m_previous, P4);
+        float4 p_previous = mul(P4, m_previous);
 
         float2 current = p_current.xy / p_current.w;
         float2 previous = p_previous.xy / p_previous.w;

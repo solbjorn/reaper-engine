@@ -90,7 +90,7 @@ v2p_bumped main(v_detail v)
     // https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders/
 
     // Use terrain normal [ c0.xyz ]
-    float3 N = mul((float3x3)m_WV, data.xyz);
+    float3 N = mul(data.xyz, (float3x3)m_WV);
 
     float3x3 xform = 0;
 
@@ -109,9 +109,9 @@ v2p_bumped main(v_detail v)
 
     // Eye-space pos/normal
     float hemi = clamp(c0.w, 0.05f, 1.0f); // Some spots are bugged ( Full black ), better if we limit the value till a better solution. // Option -> v_hemi(N);
-    float3 Pe = mul(m_V, pos);
+    float3 Pe = mul(pos, m_V);
     O.tcdh = float4((v.misc * consts).xyyy);
-    O.hpos = mul(m_VP, pos);
+    O.hpos = mul(pos, m_VP);
     O.position = float4(Pe, hemi);
 
     return O;

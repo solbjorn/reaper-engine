@@ -6,8 +6,8 @@
 float4 benders_pos[32];
 float4 benders_setup;
 
-uniform float3x4 m_xform;
-uniform float3x4 m_xform_v;
+uniform float4x3 m_xform;
+uniform float4x3 m_xform_v;
 uniform float4 consts; // {1/quant,1/quant,???,???}
 uniform float4 c_scale, c_bias, wind, wave;
 uniform float2 c_sun; // x=*, y=+
@@ -23,9 +23,9 @@ v2p_flat main(v_tree I)
     v2p_flat o;
 
     // Transform to world coords
-    float3 pos = mul(m_xform, I.P);
+    float3 pos = mul(I.P, m_xform);
 
-    float H = pos.y - m_xform._24; // height of vertex
+    float H = pos.y - m_xform._42; // height of vertex
     float2 tc = (I.tc * consts).xy;
     float3 wind_result = ssfx_wind_tree_branches(pos, H, tc.y, ssfx_wind_setup());
 #ifdef USE_TREEWAVE
@@ -66,11 +66,11 @@ v2p_flat main(v_tree I)
 
     // Final xform(s)
     // Final xform
-    float3 Pe = mul(m_V, w_pos);
+    float3 Pe = mul(w_pos, m_V);
     float hemi = I.Nh.w * c_scale.w + c_bias.w;
     // float 	hemi 	= I.Nh.w;
-    o.hpos = mul(m_VP, w_pos);
-    o.N = mul((float3x3)m_xform_v, unpack_bx2(I.Nh));
+    o.hpos = mul(w_pos, m_VP);
+    o.N = mul(unpack_bx2(I.Nh), (float3x3)m_xform_v);
     o.tcdh = float4((I.tc * consts).xyyy);
     o.position = float4(Pe, hemi);
 

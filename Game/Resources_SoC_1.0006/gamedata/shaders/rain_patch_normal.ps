@@ -84,9 +84,9 @@ float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR,
     float3 _D = gbd.C;
     float _M = gbd.mtl;
 
-    float4 PS = mul(m_shadow, _P);
-    float3 WorldP = mul(m_sunmask, _P);
-    float3 WorldN = mul(m_sunmask, _N.xyz);
+    float4 PS = mul(_P, m_shadow);
+    float3 WorldP = mul(_P, m_sunmask);
+    float3 WorldN = mul(_N.xyz, m_sunmask);
 
     // Read rain projection with some jetter. Also adding pixel normal
     // factor to jitter to make rain strips more realistic.
@@ -130,7 +130,7 @@ float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR,
     water *= HUD_Attenuation * saturate(RainInt) * Cover;
 
     // Convert normal to view space
-    water = mul(m_V, water);
+    water = mul(water, m_V);
 
     // Add water normal
     _N = normalize(_N + water.xyz);

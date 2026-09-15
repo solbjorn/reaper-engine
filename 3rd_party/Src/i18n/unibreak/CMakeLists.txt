@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 
 project(libunibreak
-	VERSION 7.0
+	VERSION 8.0
 	DESCRIPTION "The libunibreak library"
 	HOMEPAGE_URL "https://github.com/adah1972/libunibreak"
 	LANGUAGES C

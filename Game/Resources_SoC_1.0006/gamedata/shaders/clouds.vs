@@ -20,7 +20,7 @@ vf main(vi v)
 {
     vf o;
 
-    o.hpos = mul(m_WVP, v.p); // xform, input in world coords
+    o.hpos = mul(v.p, m_WVP); // xform, input in world coords
 
     // generate tcs
     float2 d0 = v.dir.xy * 2 - 1;

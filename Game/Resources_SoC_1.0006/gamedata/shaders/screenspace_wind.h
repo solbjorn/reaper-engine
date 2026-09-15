@@ -88,7 +88,7 @@ float3 ssfx_wind_grass(float3 pos, float H, wind_setup W)
 float3 ssfx_wind_tree_trunk(float3 pos, float Tree_H, wind_setup W)
 {
     // Phase ( from matrix ) + Offset
-    float Phase = m_xform._24 + ssfx_wind_anim.z * W.trees_trunk_animspeed;
+    float Phase = m_xform._42 + ssfx_wind_anim.z * W.trees_trunk_animspeed;
 
     // Trunk wave
     float TWave = (cos(Phase) * sin(Phase * 5.0f) + 0.5f) * W.trees_bend;

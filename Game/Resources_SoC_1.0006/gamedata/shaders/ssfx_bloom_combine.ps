@@ -60,7 +60,7 @@ float4 main(p_screen I) : SV_Target
     float aspect = screen_res.x / screen_res.y;
 
     // Starburst
-    float sOffset = dot(m_V[0], float3(0, 0, 1)) + dot(m_V[1], float3(0, 1, 0)) * 2; // Camera Angle
+    float sOffset = m_V[2][0] + m_V[1][1] * 2; // Camera Angle
 
     // Radial UV
     float2 cUV = I.tc0.xy - 0.5f;

@@ -22,7 +22,7 @@ float4 main(p_screen I) : SV_Target
     float sun_dist = FARPLANE / (sqrt(1.0f - L_sun_dir_w.y * L_sun_dir_w.y));
     // Sun pos
     float3 sun_pos_world = sun_dist * L_sun_dir_w + eye_position;
-    float4 sun_pos_projected = mul(m_VP, float4(sun_pos_world, 1.0f));
+    float4 sun_pos_projected = mul(float4(sun_pos_world, 1.0f), m_VP);
     float4 sun_pos_screen = proj_to_screen(sun_pos_projected) / sun_pos_projected.w;
     // sun-pixel vector
     float2 sun_vec_screen = normalize(sun_pos_screen.xy - I.tc0.xy);

@@ -7,13 +7,13 @@ v2p_bumped _main(v_model I)
 
     // Eye-space pos/normal
     v2p_bumped O;
-    O.hpos = mul(m_WVP, w_pos);
+    O.hpos = mul(w_pos, m_WVP);
     float2 tc = I.tc;
-    float3 Pe = mul(m_WV, w_pos);
+    float3 Pe = mul(w_pos, m_WV);
     O.tcdh = float4(tc.xyyy);
 
     //  Hemi cube lighting
-    float3 Nw = mul((float3x3)m_W, (float3)I.N);
+    float3 Nw = mul((float3)I.N, (float3x3)m_W);
     float3 hc_pos = (float3)hemi_cube_pos_faces;
     float3 hc_neg = (float3)hemi_cube_neg_faces;
     float3 hc_mixed = (Nw < 0) ? hc_neg : hc_pos;
@@ -28,7 +28,7 @@ v2p_bumped _main(v_model I)
     float3 N = I.N; // just scale (assume normal in the -.5f, .5f)
     float3 T = I.T; //
     float3 B = I.B; //
-    float3x3 xform = mul((float3x3)m_WV, float3x3(2 * T.x, 2 * B.x, 2 * N.x, 2 * T.y, 2 * B.y, 2 * N.y, 2 * T.z, 2 * B.z, 2 * N.z));
+    float3x3 xform = mul(float3x3(2 * T, 2 * B, 2 * N), (float3x3)m_WV);
     // The pixel shader operates on the bump-map in [0..1] range
     // Remap this range in the matrix, anyway we are pixel-shader limited :)
     // ...... [ 2  0  0  0]

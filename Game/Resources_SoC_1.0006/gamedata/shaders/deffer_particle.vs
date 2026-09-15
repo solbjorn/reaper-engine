@@ -19,9 +19,9 @@ v2p_particle main(vv I)
 
     // Eye-space pos/normal
     v2p_flat O;
-    O.hpos = mul(m_WVP, w_pos);
+    O.hpos = mul(w_pos, m_WVP);
     O.N = normalize(eye_position - w_pos);
-    float3 Pe = mul(m_WV, I.P);
+    float3 Pe = mul(I.P, m_WV);
     O.tcdh = float4(I.tc.xyyy);
     O.position = float4(Pe, .2f);
 

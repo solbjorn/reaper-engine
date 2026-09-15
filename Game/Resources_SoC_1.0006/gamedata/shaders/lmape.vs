@@ -28,7 +28,7 @@ vf main(v_static v)
     float3 pos_w = v.P;
     float3 norm_w = normalize(unpack_normal(v.Nh));
 
-    o.hpos = mul(m_VP, v.P); // xform, input in world coords
+    o.hpos = mul(v.P, m_VP); // xform, input in world coords
     o.tc0 = unpack_tc_base(v.tc, v.T.w, v.B.w); // copy tc
     o.tc1 = unpack_tc_lmap(v.lmh); // copy tc
     o.tch = o.tc1;

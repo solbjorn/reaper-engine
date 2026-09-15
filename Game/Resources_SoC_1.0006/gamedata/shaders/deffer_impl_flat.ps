@@ -56,7 +56,7 @@ f_deffer main(p_flat I)
     float3 mix = n_R + n_G + n_B + n_A;
     mix *= float3(0.6f, 0.6f, 1); // Adjust bump strength
 
-    float3 N = mul(float3x3(I.M1, I.M2, I.M3), mix.xyz);
+    float3 N = mul(mix.xyz, float3x3(I.M1, I.M2, I.M3));
 
     // Puddles Implementation - SSS Update 14.6
     // https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders/
@@ -82,8 +82,8 @@ f_deffer main(p_flat I)
     float puddles = saturate((s_puddles_perlin.Sample(smp_base, I.tcdh * 15.0f / G_PUDDLES_GLOBAL_SIZE).r - size_f) * puddles_f);
 
     // Get normals and transform space to create a slope mask
-    float3 N1 = mul(float3x3(I.M1, I.M2, I.M3), float3(0, 0, 1));
-    float3 N2 = mul(m_inv_V, normalize(N1));
+    float3 N1 = mul(float3(0, 0, 1), float3x3(I.M1, I.M2, I.M3));
+    float3 N2 = mul(normalize(N1), m_inv_V);
 
     // Slope mask
     float slope = max(N2.x, N2.y);
@@ -130,7 +130,7 @@ f_deffer main(p_flat I)
 #endif
 
     // Normal Up and ripples for puddles
-    float3 MirrorUp = mul(m_V, float3(ripplesNormal.x, 1.0, ripplesNormal.y));
+    float3 MirrorUp = mul(float3(ripplesNormal.x, 1.0, ripplesNormal.y), m_V);
     N = lerp(N, MirrorUp, puddles);
 
     // Refraction Normal

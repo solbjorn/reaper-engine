@@ -9,7 +9,7 @@ uniform Texture2D s_mask_blur; // smoothed mask
 float4 main(p_screen I) : SV_Target
 {
     float sunFar = 100.0f / sqrt(1 - L_sun_dir_w.y * L_sun_dir_w.y);
-    float4 sunProj = mul(m_VP, float4(sunFar * L_sun_dir_w + eye_position, 1));
+    float4 sunProj = mul(float4(sunFar * L_sun_dir_w + eye_position, 1), m_VP);
     float4 sunScreen = proj_to_screen(sunProj) / sunProj.w; // projective 2 screen and normalize
 
     float fSign = dot(-eye_direction, normalize(L_sun_dir_w));

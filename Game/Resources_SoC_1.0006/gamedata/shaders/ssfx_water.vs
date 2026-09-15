@@ -50,7 +50,7 @@ vf main(v_vert v)
     float3 N = unpack_bx2(v.N);
     float3 T = unpack_bx2(v.T);
     float3 B = unpack_bx2(v.B);
-    float3x3 xform = mul((float3x3)m_W, float3x3(T.x, B.x, N.x, T.y, B.y, N.y, T.z, B.z, N.z));
+    float3x3 xform = mul(float3x3(T, B, N), (float3x3)m_W);
     // The pixel shader operates on the bump-map in [0..1] range
     // Remap this range in the matrix, anyway we are pixel-shader limited :)
     // ...... [ 2  0  0  0]
@@ -70,12 +70,12 @@ vf main(v_vert v)
     float3 L_sun = v_sun(N) * v.color.w; // sun
     float3 L_final = L_rgb + L_hemi + L_sun + L_ambient;
 
-    o.hpos = mul(m_VP, P);
+    o.hpos = mul(P, m_VP);
     o.fog = saturate(calc_fogging(v.P));
     o.c0 = float4(L_final, 1);
 
-    o.tctexgen = mul(m_texgen, P);
-    float3 Pe = mul(m_V, P);
+    o.tctexgen = mul(P, m_texgen);
+    float3 Pe = mul(P, m_V);
     o.tctexgen.z = Pe.z;
     return o;
 }

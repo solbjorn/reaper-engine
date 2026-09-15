@@ -24,12 +24,12 @@ v2p main(vv v)
 {
     v2p o;
 
-    o.hpos = mul(m_WVP, v.P); // xform, input in world coords
+    o.hpos = mul(v.P, m_WVP); // xform, input in world coords
     o.tc = v.tc; // copy tc
     o.c = unpack_D3DCOLOR(v.c); // copy color
 
     //	Igor: for additional depth dest
-    o.tctexgen = mul(mVPTexgen, v.P);
+    o.tctexgen = mul(v.P, mVPTexgen);
     o.tctexgen.z = o.hpos.z;
     o.fog = saturate(calc_fogging(v.P)); // // ForserX (Port SkyLoader fog fix): fog, input in world coords
 

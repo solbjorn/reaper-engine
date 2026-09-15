@@ -1,7 +1,7 @@
 #include "common.h"
 
-uniform float3x4 m_xform;
-uniform float3x4 m_xform_v;
+uniform float4x3 m_xform;
+uniform float4x3 m_xform_v;
 uniform float4 consts; // {1/quant,1/quant,???,???}
 uniform float4 c_scale, c_bias, wind, wave;
 uniform float2 c_sun; // x=*, y=+
@@ -15,10 +15,10 @@ v2p_flat main(v_tree I)
     v2p_flat o;
 
     // Transform to world coords
-    float3 pos = mul(m_xform, I.P);
+    float3 pos = mul(I.P, m_xform);
 
     //
-    float base = m_xform._24; // take base height from matrix
+    float base = m_xform._42; // take base height from matrix
     float dp = calc_cyclic(wave.w + dot(pos, (float3)wave));
     float H = pos.y - base; // height of vertex (scaled, rotated, etc.)
     float frac = I.tc.z * consts.x; // fractional (or rigidity)
@@ -52,12 +52,12 @@ v2p_flat main(v_tree I)
 
     // Final xform(s)
     // Final xform
-    float3 Pe = mul(m_V, f_pos);
-    // float3 Pe = mul(m_V, float4(pos.xyz,1));
+    float3 Pe = mul(f_pos, m_V);
+    // float3 Pe = mul(float4(pos.xyz, 1), m_V);
     float hemi = I.Nh.w * c_scale.w + c_bias.w;
     // float hemi 	= I.Nh.w;
-    o.hpos = mul(m_VP, f_pos);
-    o.N = mul((float3x3)m_xform_v, N);
+    o.hpos = mul(f_pos, m_VP);
+    o.N = mul(N, (float3x3)m_xform_v);
     o.tcdh = float4((I.tc * consts).xyyy);
     o.position = float4(Pe, hemi);
 

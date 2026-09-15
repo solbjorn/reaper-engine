@@ -33,57 +33,53 @@ static const float DIM_SURROUND_GAMMA = 0.9811;
 // Color transformation matrices
 //
 
-static const float3x3 sRGB_2_AP0 = {0.4397010, 0.3829780, 0.1773350, 0.0897923, 0.8134230, 0.0967616, 0.0175440, 0.1115440, 0.8707040};
+static const float3x3 sRGB_2_AP0 = {0.4397010, 0.0897923, 0.0175440, 0.3829780, 0.8134230, 0.1115440, 0.1773350, 0.0967616, 0.8707040};
 
-static const float3x3 AP0_2_sRGB = {
-    2.52169, -1.13413, -0.38756, -0.27648, 1.37272, -0.09624, -0.01538, -0.15298, 1.16835,
-};
+static const float3x3 AP0_2_sRGB = {2.52169, -0.27648, -0.01538, -1.13413, 1.37272, -0.15298, -0.38756, -0.09624, 1.16835};
 
-static const float3x3 sRGB_2_AP1 = {0.61319, 0.33951, 0.04737, 0.07021, 0.91634, 0.01345, 0.02062, 0.10957, 0.86961};
+static const float3x3 sRGB_2_AP1 = {0.61319, 0.07021, 0.02062, 0.33951, 0.91634, 0.10957, 0.04737, 0.01345, 0.86961};
 
-static const float3x3 AP1_2_sRGB = {
-    1.70505, -0.62179, -0.08326, -0.13026, 1.14080, -0.01055, -0.02400, -0.12897, 1.15297,
-};
+static const float3x3 AP1_2_sRGB = {1.70505, -0.13026, -0.02400, -0.62179, 1.14080, -0.12897, -0.08326, -0.01055, 1.15297};
 
-static const float3x3 AP0_2_AP1 = {1.4514393161, -0.2365107469, -0.2149285693, -0.0765537734, 1.1762296998, -0.0996759264, 0.0083161484, -0.0060324498, 0.9977163014};
+static const float3x3 AP0_2_AP1 = {1.4514393161, -0.0765537734, 0.0083161484, -0.2365107469, 1.1762296998, -0.0060324498, -0.2149285693, -0.0996759264, 0.9977163014};
 
-static const float3x3 AP1_2_AP0 = {0.6954522414, 0.1406786965, 0.1638690622, 0.0447945634, 0.8596711185, 0.0955343182, -0.0055258826, 0.0040252103, 1.0015006723};
+static const float3x3 AP1_2_AP0 = {0.6954522414, 0.0447945634, -0.0055258826, 0.1406786965, 0.8596711185, 0.0040252103, 0.1638690622, 0.0955343182, 1.0015006723};
 
 static const float3 AP1_RGB2Y = float3(0.272229, 0.674082, 0.0536895);
 /*
 static const float3x3 RRT_SAT_MAT =
 {
-    0.9708890, 0.0269633, 0.00214758,
-    0.0108892, 0.9869630, 0.00214758,
-    0.0108892, 0.0269633, 0.96214800
+    0.9708890, 0.0108892, 0.0108892,
+    0.0269633, 0.9869630, 0.0269633,
+    0.00214758, 0.00214758, 0.96214800
 };
 
 static const float3x3 ODT_SAT_MAT =
 {
-    0.949056, 0.0471857, 0.00375827,
-    0.019056, 0.9771860, 0.00375827,
-    0.019056, 0.0471857, 0.93375800
+    0.949056, 0.019056, 0.019056,
+    0.0471857, 0.9771860, 0.0471857,
+    0.00375827, 0.00375827, 0.93375800
 };
 */
-static const float3x3 AP1_2_XYZ_MAT = {0.6624541811, 0.1340042065, 0.1561876870, 0.2722287168, 0.6740817658, 0.0536895174, -0.0055746495, 0.0040607335, 1.0103391003};
+static const float3x3 AP1_2_XYZ_MAT = {0.6624541811, 0.2722287168, -0.0055746495, 0.1340042065, 0.6740817658, 0.0040607335, 0.1561876870, 0.0536895174, 1.0103391003};
 
-static const float3x3 XYZ_2_AP1_MAT = {1.6410233797, -0.3248032942, -0.2364246952, -0.6636628587, 1.6153315917, 0.0167563477, 0.0117218943, -0.0082844420, 0.9883948585};
+static const float3x3 XYZ_2_AP1_MAT = {1.6410233797, -0.6636628587, 0.0117218943, -0.3248032942, 1.6153315917, -0.0082844420, -0.2364246952, 0.0167563477, 0.9883948585};
 
 //=================================================================================================
 // Color space transformations
 //
 
-float3 sRGB_to_ACES(float3 x) { return mul(sRGB_2_AP0, x); }
+float3 sRGB_to_ACES(float3 x) { return mul(x, sRGB_2_AP0); }
 
-float3 ACES_to_sRGB(float3 x) { return mul(AP0_2_sRGB, x); }
+float3 ACES_to_sRGB(float3 x) { return mul(x, AP0_2_sRGB); }
 
-float3 sRGB_to_ACEScg(float3 x) { return mul(sRGB_2_AP1, x); }
+float3 sRGB_to_ACEScg(float3 x) { return mul(x, sRGB_2_AP1); }
 
-float3 ACEScg_to_sRGB(float3 x) { return mul(AP1_2_sRGB, x); }
+float3 ACEScg_to_sRGB(float3 x) { return mul(x, AP1_2_sRGB); }
 
-float3 ACEScg_to_ACES(float3 x) { return mul(AP1_2_AP0, x); }
+float3 ACEScg_to_ACES(float3 x) { return mul(x, AP1_2_AP0); }
 
-float3 ACES_to_ACEScg(float3 x) { return mul(AP0_2_AP1, x); }
+float3 ACES_to_ACEScg(float3 x) { return mul(x, AP0_2_AP1); }
 
 float lin_to_ACEScc(float x)
 {
@@ -211,14 +207,14 @@ float3 xyY_2_XYZ(float3 xyY)
 
 float3 darkSurround_to_dimSurround(float3 linearCV)
 {
-    float3 XYZ = mul(AP1_2_XYZ_MAT, linearCV);
+    float3 XYZ = mul(linearCV, AP1_2_XYZ_MAT);
 
     float3 xyY = XYZ_2_xyY(XYZ);
     xyY.z = clamp(xyY.z, 0.0, HALF_MAX);
     xyY.z = pow(xyY.z, DIM_SURROUND_GAMMA);
     XYZ = xyY_2_XYZ(xyY);
 
-    return mul(XYZ_2_AP1_MAT, XYZ);
+    return mul(XYZ, XYZ_2_AP1_MAT);
 }
 
 float3 ACES_ODT(float3 oces)
@@ -227,7 +223,7 @@ float3 ACES_ODT(float3 oces)
     oces = darkSurround_to_dimSurround(oces);
 
     // martix for ODT
-    // oces = mul(ODT_SAT_MAT, oces);
+    // oces = mul(oces, ODT_SAT_MAT);
     oces = lerp(dot(oces, AP1_RGB2Y).xxx, oces, ODT_SAT_FACTOR.xxx);
 
     oces = ACEScg_to_sRGB(oces);
@@ -351,7 +347,7 @@ float3 ACES_RRT(float3 aces)
     float3 rgbPre = clamp(aces, 0.0, HALF_MAX);
 
     // --- Global desaturation --- //
-    // rgbPre = mul(RRT_SAT_MAT, rgbPre);
+    // rgbPre = mul(rgbPre, RRT_SAT_MAT);
     rgbPre = lerp(dot(rgbPre, AP1_RGB2Y).xxx, rgbPre, RRT_SAT_FACTOR.xxx);
 
     float3 rgbPost;

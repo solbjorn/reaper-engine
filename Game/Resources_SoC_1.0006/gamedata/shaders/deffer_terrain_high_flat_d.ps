@@ -242,7 +242,7 @@ f_deffer main(p_bumped I)
     // Distance attenuation
     float dist_att = 1.0 - smoothstep(TERRAIN_POM_RANGE * 0.8f, TERRAIN_POM_RANGE, I.position.z);
 
-    float3 eye = normalize(mul(float3x3(I.M1.x, I.M2.x, I.M3.x, I.M1.y, I.M2.y, I.M3.y, I.M1.z, I.M2.z, I.M3.z), -I.position));
+    float3 eye = normalize(mul(-I.position, float3x3(I.M1.x, I.M2.x, I.M3.x, I.M1.y, I.M2.y, I.M3.y, I.M1.z, I.M2.z, I.M3.z)));
 
     float view_angle = abs(dot(float3(0.0, 0.0, 1.0), eye));
 
@@ -290,7 +290,7 @@ f_deffer main(p_bumped I)
     float PuddlesMask = 1.0f - s_puddles_mask.Sample(smp_base, I.tcdh).r;
 
     // Transform space to create a slope mask
-    float3 N = mul(m_inv_V, Nw);
+    float3 N = mul(Nw, m_inv_V);
 
     // Slope mask
     float SlopeMask = 1.0f - max(abs(N.x), abs(N.z));
@@ -357,7 +357,7 @@ f_deffer main(p_bumped I)
     // Mix everything  ------------------------------------------------
 
     // Normal
-    float3 Ne = normalize(mul(float3x3(I.M1, I.M2, I.M3), Sr.normal.rgb + Sg.normal.rgb + Sb.normal.rgb + Sa.normal.rgb));
+    float3 Ne = normalize(mul(Sr.normal.rgb + Sg.normal.rgb + Sb.normal.rgb + Sa.normal.rgb, float3x3(I.M1, I.M2, I.M3)));
 
     // Color
     C.rgb = (Sr.base.rgb + Sg.base.rgb + Sb.base.rgb + Sa.base.rgb) * C.rgb * 2.0;
@@ -368,7 +368,7 @@ f_deffer main(p_bumped I)
 #ifdef SSFX_PUDDLES // Puddles Mix
 
     // Normal Up and ripples for puddles
-    float3 PuddlesNormal = mul(m_V, float3(ripplesNormal.x, 1, ripplesNormal.y));
+    float3 PuddlesNormal = mul(float3(ripplesNormal.x, 1, ripplesNormal.y), m_V);
 
     // Puddles Normal
     Ne = lerp(Ne, PuddlesNormal, saturate(puddles * puddles * 2));

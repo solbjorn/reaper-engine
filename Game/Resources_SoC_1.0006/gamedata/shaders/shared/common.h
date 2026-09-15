@@ -9,8 +9,8 @@
 cbuffer dynamic_transforms
 {
     uniform float4x4 m_WVP; //	World View Projection composition
-    uniform float3x4 m_WV;
-    uniform float3x4 m_W;
+    uniform float4x3 m_WV;
+    uniform float4x3 m_W;
 
     //	Used by VS only
     uniform float4 L_material; // 0,0,0,mid
@@ -25,8 +25,8 @@ cbuffer shader_params { uniform float m_AlphaRef; }
 
 cbuffer static_globals
 {
-    uniform float3x4 m_V;
-    uniform float3x4 m_inv_V;
+    uniform float4x3 m_V;
+    uniform float4x3 m_inv_V;
     uniform float4x4 m_P;
     uniform float4x4 m_VP;
 

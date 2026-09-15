@@ -36,8 +36,8 @@ vf main(vv I)
 
     float h = lerp(I.rgbh0.w, I.rgbh1.w, factor) * L_SCALE;
 
-    o.hpos = mul(m_VP, pos); // xform, input in world coords
-    o.Pe = mul(m_V, pos);
+    o.hpos = mul(pos, m_VP); // xform, input in world coords
+    o.Pe = mul(pos, m_V);
 
     // replicate TCs
     o.tc0 = I.tc0;

@@ -17,7 +17,7 @@ v2p main(v_vert v)
 {
     v2p o;
 
-    o.hpos = mul(m_VP, v.pos); // xform, input in world coords
+    o.hpos = mul(v.pos, m_VP); // xform, input in world coords
 
 #ifdef SSFX_FOG
     float fog = saturate(calc_fogging(v.pos)); // fog, input in world coords

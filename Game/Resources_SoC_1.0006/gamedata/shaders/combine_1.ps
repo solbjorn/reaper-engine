@@ -169,7 +169,7 @@ _out main(_input I, uint iSample : SV_SAMPLEINDEX)
 
     // here should be distance fog
 #ifdef SSFX_FOG
-    float3 WorldP = mul(m_inv_V, float4(P.xyz, 1));
+    float3 WorldP = mul(float4(P.xyz, 1), m_inv_V);
     float fog = SSFX_HEIGHT_FOG(P.xyz, WorldP.y, color);
 
     float skyblend = saturate(fog * fog);

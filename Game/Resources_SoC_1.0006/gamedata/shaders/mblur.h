@@ -23,11 +23,11 @@ float3 mblur(float2 UV, float3 pos, float3 img)
     float4 pos4 = float4(pos, 1.0);
 
     // Get current texture coordinates
-    float4 p_current = mul(m_current, pos4);
+    float4 p_current = mul(pos4, m_current);
     float2 current_tc = p_current.xy /= p_current.w;
 
     // Get previous texture coordinates
-    float4 p_previous = mul(m_previous, pos4);
+    float4 p_previous = mul(pos4, m_previous);
     float2 previous_tc = p_previous.xy / p_previous.w;
 
     // Get velocity (multiplied with motion blur intensity)

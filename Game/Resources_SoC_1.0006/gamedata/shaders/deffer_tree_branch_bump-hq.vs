@@ -12,8 +12,8 @@
 float4 benders_pos[32];
 float4 benders_setup;
 
-uniform float3x4 m_xform;
-uniform float3x4 m_xform_v;
+uniform float4x3 m_xform;
+uniform float4x3 m_xform_v;
 uniform float4 consts; // {1/quant,1/quant,???,???}
 uniform float4 c_scale, c_bias, wind, wave;
 uniform float2 c_sun; // x=*, y=+
@@ -30,12 +30,12 @@ v2p_bumped main(v_tree I)
 
     // Transform to world coords
 
-    float3 pos = mul(m_xform, I.P);
-    float H = pos.y - m_xform._24; // height of vertex
+    float3 pos = mul(I.P, m_xform);
+    float H = pos.y - m_xform._42; // height of vertex
     float2 tc = (I.tc * consts).xy;
 
 #ifndef SSFX_WIND
-    float base = m_xform._24; // take base height from matrix
+    float base = m_xform._42; // take base height from matrix
     float dp = calc_cyclic(wave.w + dot(pos, (float3)wave));
     float frac = I.tc.z * consts.x; // fractional (or rigidity)
     float inten = H * dp; // intensity
@@ -87,9 +87,9 @@ v2p_bumped main(v_tree I)
 
     // Eye-space pos/normal
     v2p_bumped O;
-    float3 Pe = mul(m_V, w_pos);
+    float3 Pe = mul(w_pos, m_V);
     O.tcdh = float4(tc.xyyy);
-    O.hpos = mul(m_VP, w_pos);
+    O.hpos = mul(w_pos, m_VP);
     O.position = float4(Pe, hemi);
 
     // Calculate the 3x3 transform from tangent space to eye-space
@@ -103,7 +103,7 @@ v2p_bumped main(v_tree I)
     float3 N = unpack_bx4(I.Nh);
     float3 T = unpack_bx4(I.T);
     float3 B = unpack_bx4(I.B);
-    float3x3 xform = mul((float3x3)m_xform_v, float3x3(T.x, B.x, N.x, T.y, B.y, N.y, T.z, B.z, N.z));
+    float3x3 xform = mul(float3x3(T, B, N), (float3x3)m_xform_v);
 
     // The pixel shader operates on the bump-map in [0..1] range
     // Remap this range in the matrix, anyway we are pixel-shader limited :)

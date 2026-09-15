@@ -33,12 +33,12 @@ float4 main(v2p I, uint iSample : SV_SAMPLEINDEX) : SV_Target
 #endif
 {
     // Screen UV ( view to uv ) // TODO : Use the Matrix mul from the vertex shader
-    float4 Postc = mul(m_P, float4(I.vPos, 1));
+    float4 Postc = mul(float4(I.vPos, 1), m_P);
     float2 tc = (Postc.xy / Postc.w) * float2(0.5f, -0.5f) + 0.5f;
 
     // Shadow matrix
     float4 P4 = float4(I.vPos, 1);
-    float4 PS = mul(m_shadow, P4);
+    float4 PS = mul(P4, m_shadow);
     PS.xyz /= PS.w;
 
     // Occlusion from light perspective.

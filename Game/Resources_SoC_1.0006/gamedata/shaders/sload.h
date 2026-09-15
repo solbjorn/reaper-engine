@@ -53,7 +53,7 @@ void UpdateTC(inout p_bumped I, inout float H)
     if (I.position.z >= ssfx_pom.y)
         return;
 
-    float3 eye = normalize(mul(float3x3(I.M1.x, I.M2.x, I.M3.x, I.M1.y, I.M2.y, I.M3.y, I.M1.z, I.M2.z, I.M3.z), -I.position));
+    float3 eye = normalize(mul(-I.position, float3x3(I.M1.x, I.M2.x, I.M3.x, I.M1.y, I.M2.y, I.M3.y, I.M1.z, I.M2.z, I.M3.z)));
 
     float view_angle = abs(dot(float3(0.0, 0.0, 1.0), eye));
 
@@ -136,7 +136,7 @@ void UpdateTC(inout p_bumped I, inout float H)
 
 void UpdateTC(inout p_bumped I, inout float H)
 {
-    float3 eye = mul(float3x3(I.M1.x, I.M2.x, I.M3.x, I.M1.y, I.M2.y, I.M3.y, I.M1.z, I.M2.z, I.M3.z), -I.position.xyz);
+    float3 eye = mul(-I.position.xyz, float3x3(I.M1.x, I.M2.x, I.M3.x, I.M1.y, I.M2.y, I.M3.y, I.M1.z, I.M2.z, I.M3.z));
 
     float height = s_bumpX.Sample(smp_base, I.tcdh).w;
     H = height;

@@ -31,12 +31,12 @@ v2p_flat main(v_detail v)
     norm.z = pos.z - m2.w;
 
     // Final out
-    float4 Pp = mul(m_WVP, pos);
+    float4 Pp = mul(pos, m_WVP);
     O.hpos = Pp;
-    float3 orig = mul(m_WV, normalize(norm));
+    float3 orig = mul(normalize(norm), m_WV);
 
-    O.N = lerp(orig, mul((float3x3)m_WV, v.pos), 0.25);
-    float3 Pe = mul(m_WV, pos);
+    O.N = lerp(orig, mul(v.pos, (float3x3)m_WV), 0.25);
+    float3 Pe = mul(pos, m_WV);
     O.tcdh = float4((v.misc * consts).xyyy);
 
     O.position = float4(Pe, c0.w);

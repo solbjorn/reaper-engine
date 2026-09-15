@@ -12,7 +12,7 @@ v2p_shadow_direct main(a2v I)
 {
     v2p_shadow_direct O;
 
-    O.hpos = mul(m_WVP, I.P);
+    O.hpos = mul(I.P, m_WVP);
     return O;
 }
 FXVS;

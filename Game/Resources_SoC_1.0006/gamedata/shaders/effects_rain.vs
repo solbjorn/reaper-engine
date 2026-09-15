@@ -23,11 +23,11 @@ v2p_Rain main(v_TL I)
     v2p_Rain O;
 
     // Basic Stuff
-    O.HPos = mul(m_WVP, I.P);
+    O.HPos = mul(I.P, m_WVP);
     O.Tex0 = I.Tex0;
 
     // Screen Space Data
-    O.tc = mul(mVPTexgen, I.P);
+    O.tc = mul(I.P, mVPTexgen);
     O.tc.z = O.HPos.z;
 
     return O;

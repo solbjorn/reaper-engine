@@ -8,7 +8,7 @@
 
 #include "common.h"
 
-uniform float3x4 m_xform;
+uniform float4x3 m_xform;
 uniform float4 consts; // {1/quant,1/quant,???,???}
 
 #include "screenspace_wind.h"
@@ -26,8 +26,8 @@ v2p_shadow_direct main(v_shadow_direct I)
 #endif
 
     // Transform to world coords
-    float3 pos = mul(m_xform, I.P);
-    float H = pos.y - m_xform._24; // height of vertex (scaled, rotated, etc.)
+    float3 pos = mul(I.P, m_xform);
+    float H = pos.y - m_xform._42; // height of vertex (scaled, rotated, etc.)
     float2 tc = 0;
     float3 wind_result = 0;
 
@@ -46,7 +46,7 @@ v2p_shadow_direct main(v_shadow_direct I)
 
     float4 f_pos = float4(pos.xyz + wind_result.xyz, 1);
 
-    O.hpos = mul(m_VP, f_pos);
+    O.hpos = mul(f_pos, m_VP);
 
 #ifdef USE_AREF
     O.tc0 = tc;

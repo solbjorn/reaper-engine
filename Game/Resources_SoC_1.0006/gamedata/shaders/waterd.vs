@@ -39,12 +39,12 @@ vf main(v_vert v)
     o.tbase = unpack_tc_base(v.uv, v.T.w, v.B.w); // copy tc
     o.tdist0 = watermove_tc(o.tbase * W_DISTORT_BASE_TILE_0, P.xz, W_DISTORT_AMP_0);
     o.tdist1 = watermove_tc(o.tbase * W_DISTORT_BASE_TILE_1, P.xz, W_DISTORT_AMP_1);
-    o.hpos = mul(m_VP, P); // xform, input in world coords
+    o.hpos = mul(P, m_VP); // xform, input in world coords
     o.fog = saturate(calc_fogging(v.P)); // Always do this for forward geometry (AMD)
 
     //	Igor: for additional depth dest
-    o.tctexgen = mul(m_texgen, P);
-    float3 Pe = mul(m_V, P);
+    o.tctexgen = mul(P, m_texgen);
+    float3 Pe = mul(P, m_V);
     o.tctexgen.z = Pe.z;
 
     return o;

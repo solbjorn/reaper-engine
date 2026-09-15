@@ -97,7 +97,7 @@ float3 Calc_Fog(float3 pos, float3 color)
     color = SRGBToLinear(color.rgb);
 
     // view to world space
-    float3 sky = mul(m_inv_V, pos);
+    float3 sky = mul(pos, m_inv_V);
     float3 wpos = sky + eye_position;
 
     float distance = length(pos);
