@@ -1,13 +1,13 @@
 # Custom
 
-Game/Resources_SoC_1.0006/gamedata/shaders/**/*.cs text diff=hlsl linguist-language=HLSL
-Game/Resources_SoC_1.0006/gamedata/shaders/**/*.ds text diff=hlsl linguist-language=HLSL
-Game/Resources_SoC_1.0006/gamedata/shaders/**/*.gs text diff=hlsl linguist-language=HLSL
-Game/Resources_SoC_1.0006/gamedata/shaders/**/*.h text diff=hlsl linguist-language=HLSL
-Game/Resources_SoC_1.0006/gamedata/shaders/**/*.hs text diff=hlsl linguist-language=HLSL
+Game/Resources_SoC_1.0006/gamedata/shaders/**/*.cs text diff=c linguist-language=HLSL
+Game/Resources_SoC_1.0006/gamedata/shaders/**/*.ds text diff=c linguist-language=HLSL
+Game/Resources_SoC_1.0006/gamedata/shaders/**/*.gs text diff=c linguist-language=HLSL
+Game/Resources_SoC_1.0006/gamedata/shaders/**/*.h text diff=c linguist-language=HLSL
+Game/Resources_SoC_1.0006/gamedata/shaders/**/*.hs text diff=c linguist-language=HLSL
 Game/Resources_SoC_1.0006/gamedata/shaders/**/*.s text diff=lua linguist-language=Lua
-Game/Resources_SoC_1.0006/gamedata/shaders/**/*.ps text diff=hlsl linguist-language=HLSL
-Game/Resources_SoC_1.0006/gamedata/shaders/**/*.vs text diff=hlsl linguist-language=HLSL
+Game/Resources_SoC_1.0006/gamedata/shaders/**/*.ps text diff=c linguist-language=HLSL
+Game/Resources_SoC_1.0006/gamedata/shaders/**/*.vs text diff=c linguist-language=HLSL
 
 Game/Resources_SoC_1.0006/gamedata/**/*.ltx text diff=ini linguist-language=INI
 Game/Resources_SoC_1.0006/gamedata/**/*.script text diff=lua linguist-language=Lua
