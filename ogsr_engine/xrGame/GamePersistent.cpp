@@ -54,7 +54,7 @@ CGamePersistent::CGamePersistent()
             {
                 auto& fname = res->value();
 
-                Msg("- playing in demo mode '{}'", fname);
+                XR_LOG_NOTICE("Playing in demo mode '{}'", fname);
                 pDemoFile = FS.r_open(fname.c_str());
 
                 Device.seqFrame.Add(this);
@@ -62,13 +62,13 @@ CGamePersistent::CGamePersistent()
             }
             else
             {
-                Msg("! Invalid -demomode parameter argument: {}", res.error().msg());
+                XR_LOG_ERROR("Invalid -demomode parameter argument: {}", res.error().msg());
                 goto null;
             }
         }
         else
         {
-            Msg("! The -demomode parameter requires an argument");
+            XR_LOG_ERROR("The -demomode parameter requires an argument");
             goto null;
         }
     }

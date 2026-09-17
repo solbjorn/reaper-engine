@@ -267,7 +267,7 @@ public:
 
         XR_LOG_INFO(" Key: Up   / Down            === Prev / Next command in tips list");
         XR_LOG_INFO(" Key: Ctrl + Up / Ctrl + Down === Prev / Next executing command");
-        XR_LOG_INFO(" Key: Left, Right, Home, End {+Shift/+Ctrl}       === Navigation in text");
+        XR_LOG_INFO(" Key: Left, Right, Home, End {{+Shift/+Ctrl}}       === Navigation in text");
         XR_LOG_INFO(" Key: PageUp / PageDown      === Scrolling history");
         XR_LOG_INFO(" Key: Tab  / Shift + Tab     === Next / Prev possible command from list");
         XR_LOG_INFO(" Key: Enter  / NumEnter      === Execute current command");

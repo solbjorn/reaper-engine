@@ -161,40 +161,39 @@ u32 dwfChooseAction(u32 dwActionRefreshRate, float fMinProbability0, float fMinP
     ai().ef_storage().non_alife().member_item() = nullptr;
     ai().ef_storage().non_alife().enemy_item() = nullptr;
 
-    WRITE_QUERY_TO_LOG("\nNew query");
     if (bfGetActionSuccessProbability(Members, VisibleEnemies, fMinProbability0, *ai().ef_storage().m_pfVictoryProbability))
     {
         Group.m_dwLastActionTime = Device.dwTimeGlobal;
         Group.m_dwLastAction = 0;
-        WRITE_QUERY_TO_LOG("Attack");
+
         return (a0);
     }
     else if (bfGetActionSuccessProbability(Members, VisibleEnemies, fMinProbability1, *ai().ef_storage().m_pfVictoryProbability))
     {
         Group.m_dwLastActionTime = Device.dwTimeGlobal;
         Group.m_dwLastAction = 1;
-        WRITE_QUERY_TO_LOG("Attack 1");
+
         return (a1);
     }
     else if (bfGetActionSuccessProbability(Members, VisibleEnemies, fMinProbability2, *ai().ef_storage().m_pfVictoryProbability))
     {
         Group.m_dwLastActionTime = Device.dwTimeGlobal;
         Group.m_dwLastAction = 2;
-        WRITE_QUERY_TO_LOG("Defend");
+
         return (a2);
     }
     else if (bfGetActionSuccessProbability(Members, VisibleEnemies, fMinProbability3, *ai().ef_storage().m_pfVictoryProbability))
     {
         Group.m_dwLastActionTime = Device.dwTimeGlobal;
         Group.m_dwLastAction = 3;
-        WRITE_QUERY_TO_LOG("Defend 1");
+
         return (a3);
     }
     else
     {
         Group.m_dwLastActionTime = Device.dwTimeGlobal;
         Group.m_dwLastAction = 4;
-        WRITE_QUERY_TO_LOG("Retreat");
+
         return (a4);
     }
 }
@@ -213,7 +212,7 @@ void CAniVector::Load(IKinematicsAnimated* tpKinematics, LPCSTR caBaseName)
 
 #ifdef DEBUG
             if (psAI_Flags.test(aiAnimation))
-                Msg("* Loaded animation {}", id);
+                XR_LOG_TRACE_L1("Loaded animation {}", id);
 #endif
         }
         else if (auto tpMotionDef = tpKinematics->ID_FX_Safe(id); tpMotionDef)
@@ -222,7 +221,7 @@ void CAniVector::Load(IKinematicsAnimated* tpKinematics, LPCSTR caBaseName)
 
 #ifdef DEBUG
             if (psAI_Flags.test(aiAnimation))
-                Msg("* Loaded animation fx {}", id);
+                XR_LOG_TRACE_L1("Loaded animation fx {}", id);
 #endif
         }
         else if (i < 10)

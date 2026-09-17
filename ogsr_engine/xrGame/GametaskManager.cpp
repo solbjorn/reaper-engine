@@ -180,7 +180,7 @@ void CGameTaskManager::SetTaskState(const TASK_ID& id, u16 objective_num, ETaskS
     CGameTask* t = HasGameTask(id);
     if (!t)
     {
-        Msg("actor does not has task [{}]", id);
+        XR_LOG_ERROR("Actor doesn't have task [{}]", id);
         return;
     }
 
@@ -281,14 +281,14 @@ void CGameTaskManager::SetActiveTask(const TASK_ID& id, u16 idx, const bool safe
             g_active_task_objective_id = t->m_Objectives.size() - 1; // Некторые таски могут содержать всего один objective
 
             if (g_active_task_objective_id == 0)
-                Msg("!![{} - 1] g_active_task_objective_idx == 0", std::source_location::current().function_name());
+                XR_LOG_ERROR("g_active_task_objective_idx == 0");
         }
         else
         {
             g_active_task_objective_id = idx;
 
             if (g_active_task_objective_id == 0)
-                Msg("!![{} - 2] g_active_task_objective_idx == 0", std::source_location::current().function_name());
+                XR_LOG_ERROR("g_active_task_objective_idx == 0");
         }
     }
     else
@@ -296,7 +296,7 @@ void CGameTaskManager::SetActiveTask(const TASK_ID& id, u16 idx, const bool safe
         g_active_task_objective_id = idx;
 
         if (g_active_task_objective_id == 0)
-            Msg("!![{} - 3] g_active_task_objective_idx == 0", std::source_location::current().function_name());
+            XR_LOG_ERROR("g_active_task_objective_idx == 0");
     }
 
     Level().MapManager().DisableAllPointers();

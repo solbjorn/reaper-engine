@@ -172,14 +172,14 @@ void CClientSpawnManager::dump() const
     if (m_registry.empty())
         return;
 
-    Msg("dumping client spawn manager({} objects being waited):", m_registry.size());
+    XR_LOG_TRACE_L1("Dumping client spawn manager({} objects being waited):", m_registry.size());
 
     for (auto& req : m_registry)
     {
-        Msg("[{}], i.e. object with id {} left with hanging callbacks on it", req.first, req.first);
+        XR_LOG_TRACE_L1(" [{}], i.e. object with id {} left with hanging callbacks on it", req.first, req.first);
 
         for (auto& item : req.second)
-            Msg("[{}][{}], i.e. object with id {} waits for object with id {}", req.first, item.first, item.first, req.first);
+            XR_LOG_TRACE_L1("  [{}][{}], i.e. object with id {} waits for object with id {}", req.first, item.first, item.first, req.first);
     }
 }
 
@@ -188,10 +188,10 @@ void CClientSpawnManager::dump(ALife::_OBJECT_ID requesting_id) const
     for (auto& req : m_registry)
     {
         if (req.first == requesting_id)
-            Msg("! CClientSpawnManager::dump[hanging id {}]", requesting_id);
+            XR_LOG_ERROR("Dump[hanging id {}]", requesting_id);
 
         for (auto& item : req.second)
-            Msg("! CClientSpawnManager::dump[id {} waits for {}]", requesting_id, item.first);
+            XR_LOG_ERROR("Dump[id {} waits for {}]", requesting_id, item.first);
     }
 }
 #endif // DEBUG

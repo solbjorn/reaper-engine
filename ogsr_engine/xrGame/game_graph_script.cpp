@@ -32,7 +32,7 @@ void set_accessible(const CGameGraph* self, u32 vertex_id, bool value) { self->a
     const GameGraph::SLevel* level = ai().game_graph().header().level(level_name, true);
     if (level == nullptr)
     {
-        Msg("! Unknown level {}!", level_name);
+        XR_LOG_ERROR("Unknown level {}!", level_name);
         return std::unique_ptr<CGameLevelCrossTable>{};
     }
 

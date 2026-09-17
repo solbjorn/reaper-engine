@@ -89,7 +89,7 @@ void CSE_ALifeDynamicObject::switch_offline()
 
 #ifdef DEBUG
     if (!client_data.empty())
-        Msg("CSE_ALifeDynamicObject::switch_offline: client_data is cleared for [{}][{}]", ID, name_replace());
+        XR_LOG_TRACE_L1("client_data is cleared for [{}][{}]", ID, name_replace());
 #endif // DEBUG
 
     if (!keep_saved_data_anyway())
@@ -166,7 +166,7 @@ void CSE_ALifeDynamicObject::try_switch_online()
     {
 #ifdef DEBUG
         if (!client_data.empty())
-            Msg("CSE_ALifeDynamicObject::try_switch_online: client_data is cleared for [{}][{}]", ID, name_replace());
+            XR_LOG_TRACE_L1("client_data is cleared for [{}][{}]", ID, name_replace());
 #endif // DEBUG
 
         if (!keep_saved_data_anyway())
@@ -184,7 +184,7 @@ void CSE_ALifeDynamicObject::try_switch_online()
     {
 #ifdef DEBUG
         if (!client_data.empty())
-            Msg("CSE_ALifeDynamicObject::try_switch_online2: client_data is cleared for [{}][{}]", ID, name_replace());
+            XR_LOG_TRACE_L1("client_data is cleared for [{}][{}]", ID, name_replace());
 #endif // DEBUG
 
         if (!keep_saved_data_anyway())

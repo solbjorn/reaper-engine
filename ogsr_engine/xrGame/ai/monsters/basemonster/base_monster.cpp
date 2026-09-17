@@ -829,11 +829,11 @@ tmc::task<void> CBaseMonster::OnEvent(NET_Packet& P, u16 type)
     case GE_OWNERSHIP_REJECT:
     case GE_TRANSFER_REJECT: {
         P.r_u16(id);
-        CObject* O = Level().Objects.net_Find(id);
 
+        CObject* O = Level().Objects.net_Find(id);
         if (!O)
         {
-            Msg("! [{}] Error: No object to reject/sell [{}]", std::source_location::current().function_name(), id);
+            XR_LOG_ERROR("No object to reject/sell [{}]", id);
             break;
         }
 

@@ -17,11 +17,10 @@ class CPatternFunction final : public CBaseFunction
     RTTI_DECLARE_TYPEINFO(CPatternFunction, CBaseFunction);
 
 private:
+    static constexpr u32 EFC_VERSION{1};
+
     typedef CBaseFunction inherited;
-    enum
-    {
-        EFC_VERSION = 1
-    };
+
     typedef struct tagSEFHeader
     {
         u32 dwBuilderVersion;

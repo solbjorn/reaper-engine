@@ -43,8 +43,9 @@ tmc::task<void> CAI_Stalker::OnEvent(NET_Packet& P, u16 type)
         R_ASSERT(O);
 
 #ifndef SILENCE
-        Msg("Trying to take - {} ({})", O->cName(), O->ID());
+        XR_LOG_TRACE_L1("Trying to take - {} ({})", O->cName(), O->ID());
 #endif
+
         CGameObject* _O = smart_cast<CGameObject*>(O);
         if (inventory().CanTakeItem(smart_cast<CInventoryItem*>(_O)))
         {
@@ -56,7 +57,7 @@ tmc::task<void> CAI_Stalker::OnEvent(NET_Packet& P, u16 type)
             on_after_take(_O);
 
 #ifndef SILENCE
-            Msg("TAKE - {} ({})", O->cName(), O->ID());
+            XR_LOG_TRACE_L1("TAKE - {} ({})", O->cName(), O->ID());
 #endif
         }
         else
@@ -68,7 +69,7 @@ tmc::task<void> CAI_Stalker::OnEvent(NET_Packet& P, u16 type)
             u_EventSend(_P);
 
 #ifndef SILENCE
-            Msg("TAKE - can't take! - Dropping for valid server information {} ({})", O->cName(), O->ID());
+            XR_LOG_ERROR("TAKE - can't take! - Dropping for valid server information {} ({})", O->cName(), O->ID());
 #endif
         }
         break;
@@ -78,11 +79,11 @@ tmc::task<void> CAI_Stalker::OnEvent(NET_Packet& P, u16 type)
     case GE_TRANSFER_REJECT: {
         u16 id;
         P.r_u16(id);
-        CObject* O = Level().Objects.net_Find(id);
 
+        CObject* O = Level().Objects.net_Find(id);
         if (!O)
         {
-            Msg("! [{}] Error: No object to reject/sell [{}]", std::source_location::current().function_name(), id);
+            XR_LOG_ERROR("No object to reject/sell [{}]", id);
             break;
         }
 
@@ -142,7 +143,7 @@ void CAI_Stalker::feel_touch_new(CObject* O)
     if (!wounded() && !critically_wounded() && I && I->useful_for_NPC() && can_take(I))
     {
 #ifndef SILENCE
-        Msg("Taking item {} ({})!", I->object().cName(), I->object().ID());
+        XR_LOG_TRACE_L1("Taking item {} ({})!", I->object().cName(), I->object().ID());
 #endif
 
         NET_Packet P;

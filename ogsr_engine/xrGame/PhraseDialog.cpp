@@ -96,7 +96,7 @@ bool CPhraseDialog::SayPhrase(DIALOG_SHARED_PTR& phrase_dialog, const shared_str
                     LPCSTR phrase_text = next_phrase_vertex->data()->GetText();
                     shared_str id = next_phrase_vertex->data()->GetID();
 
-                    Msg("----added phrase text [{}]phrase_id=[{}] id=[{}] to dialog [{}]", phrase_text, phrase_id, id, phrase_dialog->m_DialogId);
+                    XR_LOG_TRACE_L1("Added phrase text [{}]phrase_id=[{}] id=[{}] to dialog [{}]", phrase_text, phrase_id, id, phrase_dialog->m_DialogId);
                 }
 #endif
             }

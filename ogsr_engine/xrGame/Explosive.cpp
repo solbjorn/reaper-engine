@@ -286,10 +286,10 @@ float CExplosive::ExplosionEffect(collide::rq_results& storage, CExplosive* exp_
 
         if (ph_dbg_draw_mask.test(phDbgDrawExplosions))
         {
-            Msg("dist {},effect R {}", mag, expl_radius);
-            Msg("test pass effect {}", add_eff);
-            Msg("S effect {}", _sqrt(l_S / max_s));
-            Msg("dist/overlap effect, {}", add_eff / _sqrt(l_S / max_s));
+            XR_LOG_TRACE_L1("Dist {},effect R {}", mag, expl_radius);
+            XR_LOG_TRACE_L1("Test pass effect {}", add_eff);
+            XR_LOG_TRACE_L1("S effect {}", _sqrt(l_S / max_s));
+            XR_LOG_TRACE_L1("Dist/overlap effect, {}", add_eff / _sqrt(l_S / max_s));
         }
 #else
         float l_S = effective_volume *
@@ -300,7 +300,7 @@ float CExplosive::ExplosionEffect(collide::rq_results& storage, CExplosive* exp_
 
 #ifdef DEBUG
     if (ph_dbg_draw_mask.test(phDbgDrawExplosions))
-        Msg("damage effect {}", effect / TEST_RAYS_PER_OBJECT);
+        XR_LOG_TRACE_L1("Damage effect {}", effect / TEST_RAYS_PER_OBJECT);
 #endif
 
     return effect / TEST_RAYS_PER_OBJECT;

@@ -38,12 +38,22 @@ void log_flush();
 #define XR__LOGGER_SUBSYSTEM XR_CONCAT(XR_SUBSYSTEM, _logger)
 #define XR_LOGGER_SUBSYSTEM xr::detail::XR__LOGGER_SUBSYSTEM
 
+// Quill doesn't perform compile-time format string vs arguments validation.
+// Force the validation using regular formatter without argument expansion.
+// Note that passing `__COUNTER__` as a format argument will still expand
+// twice, but it's not used anywhere for logging.
 #define XR_LOG__DYNAMIC(logger, lvl, fmt, ...) \
-    QUILL_LOG_RUNTIME_METADATA_HYBRID(logger, lvl, QUILL_FILE_NAME, QUILL_LINE_NO, QUILL_FUNCTION_NAME, xr::detail::this_thread().encode().data(), fmt, \
-                                      ##__VA_ARGS__)
-
-#define XR_LOG__NOOP(logger, lvl, fmt, ...) \
+    do \
+    { \
+        if constexpr (false) \
+            xr::detail::log_validate(fmt, ##__VA_ARGS__); \
 \
+        QUILL_LOG_RUNTIME_METADATA_HYBRID(logger, lvl, QUILL_FILE_NAME, QUILL_LINE_NO, QUILL_FUNCTION_NAME, xr::detail::this_thread().encode().data(), fmt, \
+                                          ##__VA_ARGS__); \
+    } while (0)
+
+// Compiled-out logging which still performs full syntax and format validation
+#define XR_LOG__NOOP(logger, lvl, fmt, ...) \
     do \
     { \
         if constexpr (false) \
@@ -157,6 +167,12 @@ static_assert(xr::detail::thread_tag{xr::detail::thread_tag::exec::ext, 0xfefe, 
         return xr::detail::thread_tag{xr::detail::thread_tag::exec::asio, prio, 0};
     else [[unlikely]]
         return xr::detail::thread_tag{xr::detail::thread_tag::exec::ext, 0, ::__readgsdword(0x48)};
+}
+
+template <typename... Args>
+constexpr void log_validate(xr::detail::format_string<Args...> fmt, Args&&...)
+{
+    fmt.get();
 }
 
 void log_init_new();

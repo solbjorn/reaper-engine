@@ -14,17 +14,15 @@
 #include "ai_space.h"
 #include "game_graph.h"
 
-CALifeStoryRegistry::~CALifeStoryRegistry() {}
+CALifeStoryRegistry::~CALifeStoryRegistry() = default;
 
 void CALifeStoryRegistry::add(ALife::_STORY_ID id, CSE_ALifeDynamicObject* object, bool no_assert)
 {
     if (id == INVALID_STORY_ID)
         return;
 
-#ifdef DEBUG
-    Msg("Adding Story item ID [{}], Object [{}] at level [{}]", id, object->name_replace(),
-        ai().game_graph().header().level(ai().game_graph().vertex(object->m_tGraphID)->level_id()).name());
-#endif
+    XR_LOG_TRACE_L1("Adding Story item ID [{}], Object [{}] at level [{}]", id, object->name_replace(),
+                    ai().game_graph().header().level(ai().game_graph().vertex(object->m_tGraphID)->level_id()).name());
 
     if (const auto I = m_objects.find(id); I != m_objects.end())
     {

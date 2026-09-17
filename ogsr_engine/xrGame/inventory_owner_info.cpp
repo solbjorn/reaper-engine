@@ -66,7 +66,7 @@ bool CInventoryOwner::OnReceiveInfo(shared_str info_id) const
 
 #ifdef DEBUG
     if (psAI_Flags.test(aiInfoPortion))
-        Msg("[{}] Received Info [{}]", Name(), info_id);
+        XR_LOG_TRACE_L1("[{}] Received Info [{}]", Name(), info_id);
 #endif
 
     // Запустить скриптовый callback
@@ -91,11 +91,11 @@ void CInventoryOwner::DumpInfo() const
     KNOWN_INFO_VECTOR& known_info = m_known_info_registry->registry().objects();
 
     XR_LOG_TRACE_L1("------------------------------------------");
-    Msg("Start KnownInfo dump for [{}]", Name());
+    XR_LOG_TRACE_L1("Start KnownInfo dump for [{}]", Name());
 
     KNOWN_INFO_VECTOR_IT it = known_info.begin();
     for (int i = 0; it != known_info.end(); ++it, ++i)
-        Msg("known info[{}]:{}", i, (*it).info_id);
+        XR_LOG_TRACE_L1(" known info[{}]:{}", i, (*it).info_id);
 
     XR_LOG_TRACE_L1("------------------------------------------");
 }
@@ -108,7 +108,7 @@ void CInventoryOwner::OnDisableInfo(shared_str info_id) const
 
 #ifdef DEBUG
     if (psAI_Flags.test(aiInfoPortion))
-        Msg("[{}] Disabled Info [{}]", Name(), info_id);
+        XR_LOG_TRACE_L1("[{}] Disabled Info [{}]", Name(), info_id);
 #endif
 
     KNOWN_INFO_VECTOR& known_info = m_known_info_registry->registry().objects();

@@ -203,7 +203,7 @@ bool CDetailPathManager::build_circle_trajectory(const STrajectoryPoint& positio
 #ifdef DEBUG
         if (m >= 10000)
         {
-            Msg("! [position.radius={}],[angle={}],[m={}]", position.radius, angle, m);
+            XR_LOG_ERROR("[position.radius={}],[angle={}],[m={}]", position.radius, angle, m);
             VERIFY(m < 10000);
         }
 #endif
@@ -802,7 +802,7 @@ void CDetailPathManager::build_smooth_path(const xr_vector<u32>& level_path, u32
         VERIFY(ai().level_graph().inside(start.vertex_id, start_pos));
 
         if (!((alvi && asp) || (!asp && !alvi)))
-            Msg("! vertex [{}], position {}", start.vertex_id, start_pos);
+            XR_LOG_ERROR("Vertex [{}], position {}", start.vertex_id, start_pos);
 
         VERIFY3((alvi && asp) || (!asp && !alvi) || show_restrictions(m_restricted_object), "Invalid restrictions (see log for details) for object ",
                 m_restricted_object->object().cName().c_str());

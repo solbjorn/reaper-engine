@@ -133,11 +133,11 @@ void CPhysicsShellHolder::correct_spawn_pos()
 #ifdef DEBUG
     if (!valid_pos(ap, phBoundaries))
     {
-        Msg("not valid position\t{},{},{}", ap.x, ap.y, ap.z);
-        Msg("size\t{},{},{}", size.x, size.y, size.z);
-        Msg("Object: {}", Name());
-        Msg("Visual: {}", cNameVisual());
-        Msg("Object\tpos\t{},{},{}", Position().x, Position().y, Position().z);
+        XR_LOG_ERROR("not valid position\t{}", ap);
+        XR_LOG_ERROR(" size\t{}", size);
+        XR_LOG_ERROR(" Object: {}", Name());
+        XR_LOG_ERROR(" Visual: {}", cNameVisual());
+        XR_LOG_ERROR(" Object\tpos\t{}", Position());
     }
 #endif // DEBUG
 
@@ -403,7 +403,7 @@ void CPhysicsShellHolder::PHSaveState(NET_Packet& P)
     P.w_u16(bones_number);
     if (bones_number > 64)
     {
-        Msg("!![CPhysicsShellHolder::PHSaveState] bones_number is [{}]!", bones_number);
+        XR_LOG_WARNING("bones_number is [{}]!", bones_number);
         P.w_u64(K != nullptr ? _vm.to_u64(1) : std::numeric_limits<u64>::max());
     }
 
@@ -439,7 +439,7 @@ void CPhysicsShellHolder::PHLoadState(IReader& P)
     u16 bones_number = P.r_u16();
     if (bones_number > 64)
     {
-        Msg("!![CPhysicsShellHolder::PHLoadState] bones_number is [{}]!", bones_number);
+        XR_LOG_WARNING("bones_number is [{}]!", bones_number);
         _high = P.r_u64();
     }
     VisMask _vm(_low, _high);

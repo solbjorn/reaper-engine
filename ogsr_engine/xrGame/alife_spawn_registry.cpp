@@ -158,7 +158,7 @@ void CALifeSpawnRegistry::load(IReader& file_stream, xrGUID* save_guid)
     build_story_spawns();
     build_root_spawns();
 
-    Msg("* {} spawn points are successfully loaded", m_spawns.vertex_count());
+    XR_LOG_INFO("{} spawn points are successfully loaded", m_spawns.vertex_count());
 }
 
 void CALifeSpawnRegistry::build_root_spawns()
@@ -232,7 +232,7 @@ ALife::_SPAWN_ID CALifeSpawnRegistry::spawn_id(const ALife::_SPAWN_STORY_ID& spa
 
     // KRodin: В оригинале при ненахождении стори айди, возвращался рандомный мусор, на мой взгляд лучше вернуть -1 и в лог написать, потому что там стоял
     // VERIFY. Хотя я не уверен что надо писать...
-    Msg("!![{}] Spawn story id [{}] cannot be found!", std::source_location::current().function_name(), spawn_story_id);
+    XR_LOG_ERROR("Spawn story id [{}] cannot be found!", spawn_story_id);
 
     return ALife::_SPAWN_ID(-1);
 }

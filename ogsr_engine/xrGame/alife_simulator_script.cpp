@@ -159,7 +159,7 @@ static CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self, LPCSTR 
     CSE_ALifeDynamicObject* object = ai().alife().objects().object(id_parent, true);
     if (!object)
     {
-        Msg("! invalid parent id [{}] specified", id_parent);
+        XR_LOG_ERROR("Invalid parent id [{}] specified", id_parent);
         return nullptr;
     }
 
@@ -195,7 +195,7 @@ static CSE_Abstract* CALifeSimulator__spawn_ammo(CALifeSimulator* self, LPCSTR s
         object = ai().alife().objects().object(id_parent, true);
         if (!object)
         {
-            Msg("! invalid parent id [{}] specified", id_parent);
+            XR_LOG_ERROR("Invalid parent id [{}] specified", id_parent);
             return nullptr;
         }
     }
@@ -270,7 +270,7 @@ static void CALifeSimulator__assign_story_id(CALifeSimulator* self, ALife::_OBJE
 
 #ifdef DEBUG
     if (psAI_Flags.test(aiALife))
-        Msg("[LSS] Assigning story_id for object [{}][{}][{}][{:#x}]", obj->name_replace(), obj->s_name, obj->ID, obj);
+        XR_LOG_TRACE_L1("[LSS] Assigning story_id for object [{}][{}][{}]", obj->name_replace(), obj->s_name, obj->ID);
 #endif
 
     if (!(ai().alife().story_objects().object(_story_id, true)))
@@ -288,8 +288,7 @@ static void CALifeSimulator__use_ai_locations(CALifeSimulator*, CSE_Abstract* ob
 {
 #ifdef DEBUG
     if (psAI_Flags.test(aiALife))
-        Msg("[LSS] Assigning use of ai locations for object [{}][{}][{}][{:#x}]", object->name_replace(), object->s_name, object->ID,
-            smart_cast<void*>(object));
+        XR_LOG_TRACE_L1("[LSS] Assigning use of ai locations for object [{}][{}][{}]", object->name_replace(), object->s_name, object->ID);
 #endif
 
     CSE_ALifeDynamicObject* obj = ai().alife().objects().object(object->ID);

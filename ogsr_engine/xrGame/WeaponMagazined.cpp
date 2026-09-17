@@ -97,7 +97,7 @@ tmc::task<bool> CWeaponMagazined::net_Spawn(CSE_Abstract* DC)
     m_iCurFireMode = wpn->m_u8CurFireMode;
     if (HasFireModes() && m_iCurFireMode >= std::ssize(m_aFireModes))
     {
-        Msg("! [{}]: {}: wrong m_iCurFireMode[{}/{}]", std::source_location::current().function_name(), cName(), m_iCurFireMode, std::ssize(m_aFireModes) - 1);
+        XR_LOG_ERROR("{}: wrong m_iCurFireMode[{}/{}]", cName(), m_iCurFireMode, std::ssize(m_aFireModes) - 1);
         m_iCurFireMode = std::ssize(m_aFireModes) - 1;
 
         auto se_obj = alife_object();
@@ -861,8 +861,8 @@ void CWeaponMagazined::switch2_Fire()
     VERIFY2(io, xr::format("no inventory owner, item {}", cName()));
 
     if (ii != io->inventory().ActiveItem())
-        Msg("! not an active item, item {}, owner {}, active item {}", cName(), H_Parent()->cName(),
-            io->inventory().ActiveItem() ? std::string_view{io->inventory().ActiveItem()->object()} : std::string_view{"no_active_item"});
+        XR_LOG_ERROR("Not an active item, item {}, owner {}, active item {}", cName(), H_Parent()->cName(),
+                     io->inventory().ActiveItem() ? std::string_view{io->inventory().ActiveItem()->object()} : std::string_view{"no_active_item"});
 
     if (!(io && (ii == io->inventory().ActiveItem())))
     {

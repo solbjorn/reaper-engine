@@ -450,7 +450,7 @@ void CCustomRocket::UpdateEngine()
         XR_LOG_ERROR("Update called without physic shell");
 
     if (!getVisible())
-        Msg("! CCustomRocket::UpdateEngine called, but false==getVisible() id[{}] frame[{}]", ID(), Device.dwFrame);
+        XR_LOG_ERROR("UpdateEngine called, but false==getVisible() id[{}] frame[{}]", ID(), Device.dwFrame);
 
     if (m_dwEngineTime <= 0)
     {

@@ -229,10 +229,7 @@ void CCharacterPhysicsSupport::SpawnInitPhysics(CSE_Abstract*)
     {
 #ifdef DEBUG
         if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), m_EntityAlife.cName())))
-        {
-            Msg("CCharacterPhysicsSupport::SpawnInitPhysics obj {} before collision correction {},{},{}", PH_DBG_ObjectTrack(), m_EntityAlife.Position().x,
-                m_EntityAlife.Position().y, m_EntityAlife.Position().z);
-        }
+            XR_LOG_TRACE_L1("Obj {} before collision correction {}", PH_DBG_ObjectTrack(), m_EntityAlife.Position());
 #endif
 
 #ifdef USE_IK
@@ -245,10 +242,7 @@ void CCharacterPhysicsSupport::SpawnInitPhysics(CSE_Abstract*)
 
 #ifdef DEBUG
         if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), m_EntityAlife.cName())))
-        {
-            Msg("CCharacterPhysicsSupport::SpawnInitPhysics obj {} after collision correction {},{},{}", PH_DBG_ObjectTrack(), m_EntityAlife.Position().x,
-                m_EntityAlife.Position().y, m_EntityAlife.Position().z);
-        }
+            XR_LOG_TRACE_L1("Obj {} after collision correction {}", PH_DBG_ObjectTrack(), m_EntityAlife.Position());
 #endif
     }
     else
@@ -523,7 +517,7 @@ void CCharacterPhysicsSupport::CreateSkeleton(CPhysicsShell*& pShell)
     pShell->Build();
 
 #ifdef DEBUG
-    Msg("shell for {}[{}] created in {} ms", m_EntityAlife.cName(), m_EntityAlife.ID(), t.GetElapsed_sec() * 1000.f);
+    XR_LOG_TRACE_L1("Shell for {}[{}] created in {} ms", m_EntityAlife.cName(), m_EntityAlife.ID(), t.GetElapsed_sec() * 1000.f);
 #endif
 }
 

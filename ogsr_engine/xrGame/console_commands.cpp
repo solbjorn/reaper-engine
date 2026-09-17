@@ -162,9 +162,9 @@ public:
         SProcessMemInfo memCounters;
         GetProcessMemInfo(memCounters);
 
-        Msg("[{} Mb] physical memory installed, [{} Mb] available, [{}] percent of memory in use", memCounters.TotalPhysicalMemory / (1024 * 1024),
-            memCounters.FreePhysicalMemory / (1024 * 1024), memCounters.MemoryLoad);
-        Msg("PageFile total: [{} Mb], free~ [{} Mb]", memCounters.TotalPageFile / (1024 * 1024), memCounters.FreePageFile / (1024 * 1024));
+        XR_LOG_INFO("[{} Mb] physical memory installed, [{} Mb] available, [{}] percent of memory in use", memCounters.TotalPhysicalMemory / (1024 * 1024),
+                    memCounters.FreePhysicalMemory / (1024 * 1024), memCounters.MemoryLoad);
+        XR_LOG_INFO("PageFile total: [{} Mb], free~ [{} Mb]", memCounters.TotalPageFile / (1024 * 1024), memCounters.FreePageFile / (1024 * 1024));
 
         // PeakWorkingSetSize
         //
@@ -174,8 +174,8 @@ public:
         //
         // The current working set size, in bytes.
 
-        Msg("Engine memory usage (Working Set): [{} Mb], peak: [{} Mb]", memCounters.WorkingSetSize / (1024 * 1024),
-            memCounters.PeakWorkingSetSize / (1024 * 1024));
+        XR_LOG_INFO("Engine memory usage (Working Set): [{} Mb], peak: [{} Mb]", memCounters.WorkingSetSize / (1024 * 1024),
+                    memCounters.PeakWorkingSetSize / (1024 * 1024));
 
         // PagefileUsage
         //
@@ -186,26 +186,25 @@ public:
         //
         // The peak value in bytes of the Commit Charge during the lifetime of this process.
 
-        Msg("Engine memory usage (Commit Charge): [{} Mb], peak: [{} Mb]", memCounters.PagefileUsage / (1024 * 1024),
-            memCounters.PeakPagefileUsage / (1024 * 1024));
-
+        XR_LOG_INFO("Engine memory usage (Commit Charge): [{} Mb], peak: [{} Mb]", memCounters.PagefileUsage / (1024 * 1024),
+                    memCounters.PeakPagefileUsage / (1024 * 1024));
         XR_LOG_INFO("--------------------------------------------------------------------------------");
 
         const auto _process_heap = mem_usage_impl(nullptr, nullptr);
         const auto _eco_strings = str_container::stat_economy();
         const auto _eco_smem = smem_container::stat_economy();
 
-        Msg("* [ D3D ]: textures count [{}]", usage.c_base + usage.c_lmaps);
-        Msg("* [ D3D ]: textures [{} Kb]", (usage.m_base + usage.m_lmaps) / 1024);
+        XR_LOG_INFO("[ D3D ]: textures count [{}]", usage.c_base + usage.c_lmaps);
+        XR_LOG_INFO("[ D3D ]: textures [{} Kb]", (usage.m_base + usage.m_lmaps) / 1024);
 
         const auto script = xr::script_engine_initialized() ? ai().script_engine().lua().memory_used() : 0uz;
-        Msg("* [ Lua ]: render [{} Kb], game [{} Kb]", usage.lua / 1024, script / 1024);
+        XR_LOG_INFO("[ Lua ]: render [{} Kb], game [{} Kb]", usage.lua / 1024, script / 1024);
 
-        Msg("* [x-ray]: process heap [{} Kb]", _process_heap / 1024);
-        Msg("* [x-ray]: economy: strings [{} Kb], smem [{} Kb]", _eco_strings / 1024, _eco_smem / 1024);
+        XR_LOG_INFO("[x-ray]: process heap [{} Kb]", _process_heap / 1024);
+        XR_LOG_INFO("[x-ray]: economy: strings [{} Kb], smem [{} Kb]", _eco_strings / 1024, _eco_smem / 1024);
 
 #ifdef DEBUG
-        Msg("* [x-ray]: file mapping: memory [{} Kb], count [{}]", g_file_mapped_memory / 1024, g_file_mapped_count);
+        XR_LOG_INFO("[x-ray]: file mapping: memory [{} Kb], count [{}]", g_file_mapped_memory / 1024, g_file_mapped_count);
         dump_file_mappings();
 #endif // DEBUG
     }
@@ -703,7 +702,7 @@ private:
         xr_free(args);
 
 #ifdef DEBUG
-        Msg("Game save overhead  : {} milliseconds", timer.GetElapsed_sec() * 1000.f);
+        XR_LOG_INFO("Game save overhead  : {} milliseconds", timer.GetElapsed_sec() * 1000.f);
 #endif
 
         SDrawStaticStruct* _s = HUD().GetUI()->UIGame()->AddCustomStatic("game_saved", true);
@@ -721,7 +720,7 @@ private:
         co_await MainMenu()->Screenshot(IRender_interface::SM_FOR_GAMESAVE, S1);
 
 #ifdef DEBUG
-        Msg("Screenshot overhead : {} milliseconds", timer.GetElapsed_sec() * 1000.f);
+        XR_LOG_INFO("Screenshot overhead : {} milliseconds", timer.GetElapsed_sec() * 1000.f);
 #endif
     }
 };
@@ -955,7 +954,7 @@ public:
         {
             CSE_ALifeCreatureAbstract* obj = smart_cast<CSE_ALifeCreatureAbstract*>(I->second);
             if (obj)
-                Msg("\"{}\",", obj->name_replace());
+                XR_LOG_TRACE_L1("\"{}\",", obj->name_replace());
         }
     }
 
@@ -1503,7 +1502,8 @@ public:
         if (CAttachableItem::m_dbgItem)
         {
             CAttachableItem::m_dbgItem = nullptr;
-            Msg("~~[{}] switched to off", std::source_location::current().function_name());
+
+            XR_LOG_NOTICE("Switched to off");
             return;
         }
 
@@ -1537,9 +1537,9 @@ public:
         }
 
         if (CAttachableItem::m_dbgItem)
-            Msg("--[{}] switched to ON for [{}]", std::source_location::current().function_name(), args);
+            XR_LOG_NOTICE("Switched to ON for [{}]", args);
         else
-            Msg("!![{}] cannot find attached item [{}]", std::source_location::current().function_name(), args);
+            XR_LOG_ERROR("Can't find attached item [{}]", args);
     }
 
     [[nodiscard]] xr_string Info() const override
@@ -1564,7 +1564,8 @@ public:
         if (CAttachableItem::m_dbgItem)
         {
             CAttachableItem::m_dbgItem = nullptr;
-            Msg("~~[{}] switched to off", std::source_location::current().function_name());
+
+            XR_LOG_NOTICE("Switched to off");
             return;
         }
 
@@ -1604,9 +1605,9 @@ public:
         }
 
         if (CAttachableItem::m_dbgItem)
-            Msg("--[{}] switched to ON for item in slot [{}]", std::source_location::current().function_name(), args);
+            XR_LOG_NOTICE("Switched to ON for item in slot [{}]", args);
         else
-            Msg("!![{}] cannot find attached item in slot [{}]", std::source_location::current().function_name(), args);
+            XR_LOG_ERROR("Can't find attached item in slot [{}]", args);
     }
 
     [[nodiscard]] xr_string Info() const override
@@ -1658,7 +1659,7 @@ public:
 
         if (!FS.exist(args.data()) && !FS.exist(fn, "$level$", name) && !FS.exist(fn, "$game_meshes$", name))
         {
-            Msg("! Cannot find visual \"{}\"", args);
+            XR_LOG_ERROR("Can't find visual \"{}\"", args);
             return;
         }
 
@@ -1667,14 +1668,15 @@ public:
         if (!kinematics)
         {
             Render->model_Delete(visual);
-            InvalidSyntax("! Invalid visual type (not a IKinematics)", args);
+
+            InvalidSyntax("Invalid visual type (not a Kinematics)", args);
             return;
         }
 
-        Msg("bones for model \"{}\"", args);
+        XR_LOG_TRACE_L1("Bones for model \"{}\"", args);
 
         for (u16 i = 0, n = kinematics->LL_BoneCount(); i < n; ++i)
-            Msg("{}", kinematics->LL_GetData(i).name);
+            XR_LOG_TRACE_L1(" {}", kinematics->LL_GetData(i).name);
 
         Render->model_Delete(visual);
     }

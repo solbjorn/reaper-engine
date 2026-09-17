@@ -327,8 +327,8 @@ void CCar::RestoreNetState(CSE_PHSkeleton* /*po*/)
     }
     else
     {
-        Msg("~ [{}]: [{}] has different state in m_doors[{}] door_states[{}] Visual[{}]", std::source_location::current().function_name(), obj->Name_script(),
-            m_doors.size(), co->door_states.size(), obj->cNameVisual());
+        XR_LOG_WARNING("[{}] has different state in m_doors[{}] door_states[{}] Visual[{}]", obj->Name_script(), m_doors.size(), co->door_states.size(),
+                       obj->cNameVisual());
     }
 
     co->door_states.clear();
@@ -347,8 +347,8 @@ void CCar::RestoreNetState(CSE_PHSkeleton* /*po*/)
     }
     else
     {
-        Msg("~ [{}]: [{}] has different state in m_wheels_map[{}] wheel_states[{}] Visual[{}]", std::source_location::current().function_name(),
-            obj->Name_script(), m_wheels_map.size(), co->wheel_states.size(), obj->cNameVisual());
+        XR_LOG_WARNING("[{}] has different state in m_wheels_map[{}] wheel_states[{}] Visual[{}]", obj->Name_script(), m_wheels_map.size(),
+                       co->wheel_states.size(), obj->cNameVisual());
     }
 
     co->wheel_states.clear();
@@ -1693,11 +1693,11 @@ tmc::task<void> CCar::OnEvent(NET_Packet& P, u16 type)
     case GE_OWNERSHIP_REJECT:
     case GE_TRANSFER_REJECT: {
         P.r_u16(id);
-        CObject* O = Level().Objects.net_Find(id);
 
+        CObject* O = Level().Objects.net_Find(id);
         if (!O)
         {
-            Msg("! [{}] Error: No object to reject/sell [{}]", std::source_location::current().function_name(), id);
+            XR_LOG_ERROR("No object to reject/sell [{}]", id);
             break;
         }
 

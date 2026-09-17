@@ -77,7 +77,7 @@ void CGameTask::Load(const TASK_ID& id)
 
 #ifdef DEBUG
     if (m_priority == u32(-1))
-        Msg("Game Task [{}] has no priority", id);
+        XR_LOG_WARNING("Game Task [{}] has no priority", id);
 #endif // DEBUG
 
     int tag_num = g_gameTaskXml->GetNodesNum(g_gameTaskXml->GetLocalRoot(), "objective");

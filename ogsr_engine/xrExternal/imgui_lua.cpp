@@ -29,13 +29,11 @@
 
 #define ImGuiTabBarFlags_FittingPolicyResizeDown ImGuiTabBarFlags_FittingPolicyShrink
 #define ImGuiTreeNodeFlags_NavLeftJumpsBackHere ImGuiTreeNodeFlags_NavLeftJumpsToParent
-#define ImGuiTreeNodeFlags_SpanTextWidth ImGuiTreeNodeFlags_SpanLabelWidth
 #endif // IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 
 #include <generated/sol_ImGui_Enums_gen.cpp>
 
 #ifdef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-#undef ImGuiTreeNodeFlags_SpanTextWidth
 #undef ImGuiTreeNodeFlags_NavLeftJumpsBackHere
 #undef ImGuiTabBarFlags_FittingPolicyResizeDown
 

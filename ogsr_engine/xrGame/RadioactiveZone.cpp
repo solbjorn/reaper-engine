@@ -2,6 +2,7 @@
 
 #include "RadioactiveZone.h"
 
+#include "Actor.h"
 #include "HUDManager.h"
 #include "Level.h"
 #include "xrMessages.h"
@@ -38,10 +39,8 @@ void CRadioactiveZone::Affect(SZoneObjectInfo* O)
         XFORM().transform_tiny(pos, CFORM()->getSphere().P);
 
 #ifdef DEBUG
-        char pow[255];
-        sprintf_s(pow, "zone hit. %.3f", Power(GO->Position().distance_to(pos)));
         if (bDebug)
-            Msg("{} {}", GO->cName(), pow);
+            XR_LOG_TRACE_L1("{} zone hit: {}", GO->cName(), Power(GO->Position().distance_to(pos)));
 #endif
 
         Fvector dir;
@@ -59,8 +58,6 @@ void CRadioactiveZone::Affect(SZoneObjectInfo* O)
 }
 
 void CRadioactiveZone::feel_touch_new(CObject* O) { inherited::feel_touch_new(O); }
-
-#include "Actor.h"
 
 BOOL CRadioactiveZone::feel_touch_contact(CObject* O)
 {

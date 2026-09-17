@@ -499,25 +499,25 @@ void CAgentEnemyManager::assign_wounded()
         if (!enemy)
         {
             XR_LOG_ERROR("error will occur now, dumping valuable info");
-
-            Msg("wounded enemies({}):", m_enemies.size());
+            XR_LOG_ERROR(" wounded enemies({}):", m_enemies.size());
 
             {
                 typedef ENEMIES::iterator iterator;
                 iterator I = m_enemies.begin();
                 iterator E = m_enemies.end();
                 for (; I != E; ++I)
-                    Msg("  [{}][{:#10x}][{:#10x}][{:.3}]", (*I).m_object->cName(), (*I).m_mask.get(), (*I).m_distribute_mask.get(), (*I).m_probability);
+                    XR_LOG_ERROR("  [{}][{:#10x}][{:#10x}][{:.3}]", (*I).m_object->cName(), (*I).m_mask.get(), (*I).m_distribute_mask.get(),
+                                 (*I).m_probability);
             }
 
-            Msg("combat members({}):", object().member().combat_members().size());
+            XR_LOG_ERROR(" combat members({}):", object().member().combat_members().size());
 
             {
                 typedef CAgentMemberManager::MEMBER_STORAGE::const_iterator const_iterator;
                 const_iterator I = object().member().combat_members().begin();
                 const_iterator E = object().member().combat_members().end();
                 for (; I != E; ++I)
-                    Msg("  [{}][{:#10x}][{:#10x}]", (*I)->object().cName(), object().member().mask(&(*I)->object()), (*I)->selected_enemy());
+                    XR_LOG_ERROR("  [{}][{:#10x}][{:#10x}]", (*I)->object().cName(), object().member().mask(&(*I)->object()), (*I)->selected_enemy());
             }
         }
 #endif

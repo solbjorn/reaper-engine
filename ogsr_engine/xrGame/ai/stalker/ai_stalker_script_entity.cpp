@@ -265,7 +265,8 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
     case MonsterSpace::eObjectActionTake: {
         if (l_tObjectAction.m_tpObject->H_Parent() == this)
         {
-            Msg("!![{}] item [{}] is already in the inventory!", std::source_location::current().function_name(), l_tObjectAction.m_tpObject->cName());
+            XR_LOG_ERROR("Item [{}] is already in the inventory!", l_tObjectAction.m_tpObject->cName());
+
             l_tObjectAction.m_bCompleted = true;
             return false;
         }
@@ -277,7 +278,8 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
     case MonsterSpace::eObjectActionDrop: {
         if (l_tObjectAction.m_tpObject->H_Parent() != this)
         {
-            Msg("!![{}] item [{}] is not in the inventory!", std::source_location::current().function_name(), l_tObjectAction.m_tpObject->cName());
+            XR_LOG_ERROR("Item [{}] is not in the inventory!", l_tObjectAction.m_tpObject->cName());
+
             l_tObjectAction.m_bCompleted = true;
             return false;
         }

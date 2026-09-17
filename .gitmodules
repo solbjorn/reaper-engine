@@ -156,7 +156,7 @@
 	branch = docking
 [submodule "3rd_party/Src/imgui/sol2_ImGui_Bindings"]
 	path = 3rd_party/Src/imgui/sol2_ImGui_Bindings
-	url = https://github.com/mblackman/sol2_ImGui_Bindings.git
+	url = https://github.com/marcmaravall/sol2_ImGui_Bindings.git
 [submodule "3rd_party/Src/luajit2/luajit2"]
 	path = 3rd_party/Src/luajit2/luajit2
 	url = https://github.com/openresty/luajit2.git

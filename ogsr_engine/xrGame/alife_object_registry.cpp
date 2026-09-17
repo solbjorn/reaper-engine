@@ -99,7 +99,7 @@ void CALifeObjectRegistry::save(IWriter& memory_stream)
 
     memory_stream.close_chunk();
 
-    Msg("* {} objects are successfully saved", object_count);
+    XR_LOG_INFO("{} objects are successfully saved", object_count);
 
     // Real Wolf: колбек после сохранения всех объектов. 01.08.2014.
     if (g_actor)
@@ -122,7 +122,7 @@ CSE_ALifeDynamicObject* CALifeObjectRegistry::get_object(IReader& file_stream)
 
 #ifdef DEBUG
     if (psAI_Flags.test(aiALife))
-        Msg("Loading object {}", s_name);
+        XR_LOG_TRACE_L1("Loading object {}", s_name);
 #endif
 
     // create entity
@@ -155,5 +155,5 @@ void CALifeObjectRegistry::load(IReader& file_stream)
     for (u32 i = 0; i < count; i++)
         add(get_object(file_stream));
 
-    Msg("* {} objects are successfully loaded", count);
+    XR_LOG_INFO("{} objects are successfully loaded", count);
 }

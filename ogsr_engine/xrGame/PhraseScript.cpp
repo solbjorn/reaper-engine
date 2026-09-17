@@ -52,7 +52,7 @@ bool CPhraseScript::CheckInfo(const CInventoryOwner* pOwner) const
         {
 #ifdef DEBUG
             if (psAI_Flags.test(aiDialogs))
-                Msg("----rejected: [{}] has info {}", pOwner->Name(), info);
+                XR_LOG_TRACE_L1("Rejected: [{}] has info {}", pOwner->Name(), info);
 #endif
 
             return false;
@@ -65,7 +65,7 @@ bool CPhraseScript::CheckInfo(const CInventoryOwner* pOwner) const
         {
 #ifdef DEBUG
             if (psAI_Flags.test(aiDialogs))
-                Msg("----rejected: [{}] dont has info {}", pOwner->Name(), info);
+                XR_LOG_TRACE_L1("Rejected: [{}] dont has info {}", pOwner->Name(), info);
 #endif
 
             return false;
@@ -94,7 +94,7 @@ bool CPhraseScript::Precondition(const CGameObject* pSpeakerGO, [[maybe_unused]]
     {
 #ifdef DEBUG
         if (psAI_Flags.test(aiDialogs))
-            Msg("dialog [{}] phrase[{}] rejected by CheckInfo", dialog_id, phrase_id);
+            XR_LOG_TRACE_L1("Dialog [{}] phrase[{}] rejected by CheckInfo", dialog_id, phrase_id);
 #endif
 
         return false;
@@ -131,7 +131,7 @@ bool CPhraseScript::Precondition(const CGameObject* pSpeakerGO, [[maybe_unused]]
         {
 #ifdef DEBUG
             if (psAI_Flags.test(aiDialogs))
-                Msg("dialog [{}] phrase[{}] rejected by script predicate", dialog_id, phrase_id);
+                XR_LOG_TRACE_L1("Dialog [{}] phrase[{}] rejected by script predicate", dialog_id, phrase_id);
 #endif
 
             break;
@@ -183,7 +183,7 @@ bool CPhraseScript::Precondition(const CGameObject* pSpeakerGO1, const CGameObje
     {
 #ifdef DEBUG
         if (psAI_Flags.test(aiDialogs))
-            Msg("dialog [{}] phrase[{}] rejected by CheckInfo", dialog_id, phrase_id);
+            XR_LOG_TRACE_L1("Dialog [{}] phrase[{}] rejected by CheckInfo", dialog_id, phrase_id);
 #endif
 
         return false;
@@ -220,7 +220,7 @@ bool CPhraseScript::Precondition(const CGameObject* pSpeakerGO1, const CGameObje
         {
 #ifdef DEBUG
             if (psAI_Flags.test(aiDialogs))
-                Msg("dialog [{}] phrase[{}] rejected by script predicate", dialog_id, phrase_id);
+                XR_LOG_TRACE_L1("Dialog [{}] phrase[{}] rejected by script predicate", dialog_id, phrase_id);
 #endif
 
             break;

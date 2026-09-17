@@ -50,8 +50,8 @@ tmc::task<bool> CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
         gsl::czstring N{visual_name(E)};
         if (N == nullptr || N[0] == '\0')
         {
-            Msg("! [{}]: prevent {}[{}] from spawn because it has no visual", std::source_location::current().function_name(),
-                E->name_replace()[0] ? std::string_view{E->name_replace()} : std::string_view{E->s_name}, E->ID);
+            XR_LOG_ERROR("Prevent {}[{}] from spawn because it has no visual",
+                         E->name_replace()[0] ? std::string_view{E->name_replace()} : std::string_view{E->s_name}, E->ID);
             co_return false;
         }
     }

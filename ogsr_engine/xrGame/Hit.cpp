@@ -129,15 +129,15 @@ void SHit::_dump()
 {
     XR_LOG_TRACE_L1("Dump begin");
 
-    XR_LOG_TRACE_L1("power={}", power);
-    XR_LOG_TRACE_L1("impulse={}", impulse);
-    XR_LOG_TRACE_L1("dir={}", dir);
-    XR_LOG_TRACE_L1("whoID={}", whoID);
-    XR_LOG_TRACE_L1("weaponID={}", weaponID);
-    XR_LOG_TRACE_L1("element={}", boneID);
-    XR_LOG_TRACE_L1("p_in_bone_space={}", p_in_bone_space);
-    XR_LOG_TRACE_L1("hit_type={}", hit_type);
-    XR_LOG_TRACE_L1("ap={}", ap);
+    XR_LOG_TRACE_L1(" power={}", power);
+    XR_LOG_TRACE_L1(" impulse={}", impulse);
+    XR_LOG_TRACE_L1(" dir={}", dir);
+    XR_LOG_TRACE_L1(" whoID={}", whoID);
+    XR_LOG_TRACE_L1(" weaponID={}", weaponID);
+    XR_LOG_TRACE_L1(" element={}", boneID);
+    XR_LOG_TRACE_L1(" p_in_bone_space={}", p_in_bone_space);
+    XR_LOG_TRACE_L1(" hit_type={}", hit_type);
+    XR_LOG_TRACE_L1(" ap={}", ap);
 
     XR_LOG_TRACE_L1("Dump end");
 }
@@ -148,7 +148,7 @@ void SHit::set_hit_initiator(CScriptGameObject* script_obj)
     auto obj = smart_cast<CObject*>(&(script_obj->object()));
     if (!obj)
     {
-        Msg("!![SHit::set_hit_initiator] CObject [{}] not found!", script_obj->Name());
+        XR_LOG_ERROR("Object [{}] not found!", script_obj->Name());
         return;
     }
 
@@ -162,8 +162,8 @@ CScriptGameObject* SHit::get_hit_initiator() const
         auto obj = smart_cast<CGameObject*>(who);
         if (obj)
             return obj->lua_game_object();
-        else
-            Msg("!![SHit::get_hit_initiator] Cast failed! CObject: [{}]", who->cName());
+
+        XR_LOG_ERROR("Not a game object: [{}]", who->cName());
     }
 
     return nullptr;

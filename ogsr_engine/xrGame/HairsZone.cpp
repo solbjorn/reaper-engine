@@ -74,11 +74,7 @@ void CHairsZone::Affect(SZoneObjectInfo* O)
 
 #ifdef DEBUG
     if (bDebug)
-    {
-        char l_pow[255];
-        sprintf_s(l_pow, "zone hit. %.1f", Power(pGameObject->Position().distance_to(P)));
-        Msg("{} {}", pGameObject->cName(), l_pow);
-    }
+        XR_LOG_TRACE_L1("{} zone hit: {}", pGameObject->cName(), Power(pGameObject->Position().distance_to(P)));
 #endif
 
     Fvector hit_dir;

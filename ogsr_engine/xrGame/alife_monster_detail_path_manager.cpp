@@ -105,16 +105,16 @@ void CALifeMonsterDetailPathManager::actualize()
 #ifdef DEBUG
     if (failed)
     {
-        Msg("! {} couldn't build game path from", object().name_replace());
+        XR_LOG_ERROR("{} couldn't build game path from", object().name_replace());
 
         {
             const CGameGraph::CVertex* vertex = ai().game_graph().vertex(object().m_tGraphID);
-            Msg("! [{}][{}]{}", object().m_tGraphID, ai().game_graph().header().level(vertex->level_id()).name(), vertex->level_point());
+            XR_LOG_ERROR("[{}][{}]{}", object().m_tGraphID, ai().game_graph().header().level(vertex->level_id()).name(), vertex->level_point());
         }
 
         {
             const CGameGraph::CVertex* vertex = ai().game_graph().vertex(m_destination.m_game_vertex_id);
-            Msg("! [{}][{}]{}", m_destination.m_game_vertex_id, ai().game_graph().header().level(vertex->level_id()).name(), vertex->level_point());
+            XR_LOG_ERROR("[{}][{}]{}", m_destination.m_game_vertex_id, ai().game_graph().header().level(vertex->level_id()).name(), vertex->level_point());
         }
     }
 #endif

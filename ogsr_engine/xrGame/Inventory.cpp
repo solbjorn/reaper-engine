@@ -119,12 +119,12 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
     if (pIItem->m_pCurrentInventory)
     {
         XR_LOG_ERROR("Object has m_pCurrentInventory");
-        Msg("! Inventory Owner is [{}]", GetOwner()->object_id());
-        Msg("! Object Inventory Owner is [{}]", pIItem->m_pCurrentInventory->GetOwner()->object_id());
+        XR_LOG_ERROR(" Inventory Owner is [{}]", GetOwner()->object_id());
+        XR_LOG_ERROR(" Object Inventory Owner is [{}]", pIItem->m_pCurrentInventory->GetOwner()->object_id());
 
         CObject* p = pObj->H_Parent();
         if (p)
-            Msg("! object parent is [{}] [{}]", p->cName(), p->ID());
+            XR_LOG_ERROR(" Object parent is [{}] [{}]", p->cName(), p->ID());
     }
 
     R_ASSERT(CanTakeItem(pIItem));
@@ -145,7 +145,7 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
         result = Belt(pIItem);
         if (!result)
         {
-            Msg("!![{}] cant put in belt item [{}], moving to ruck...", std::source_location::current().function_name(), pIItem->object().cName());
+            XR_LOG_ERROR("Can't put in belt item [{}], moving to ruck...", pIItem->object().cName());
 
             pIItem->m_eItemPlace = eItemPlaceRuck;
             R_ASSERT(Ruck(pIItem));
@@ -153,9 +153,10 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
 
         break;
     case eItemPlaceRuck: result = Ruck(pIItem);
+
 #ifdef DEBUG
         if (!result)
-            Msg("cant put in ruck item {}", pIItem->object().cName());
+            XR_LOG_ERROR("Can't put in ruck item {}", pIItem->object().cName());
 #endif
 
         break;
@@ -164,9 +165,10 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
             bNotActivate = true;
 
         result = Slot(pIItem, bNotActivate);
+
 #ifdef DEBUG
         if (!result)
-            Msg("cant slot in ruck item {}", pIItem->object().cName());
+            XR_LOG_ERROR("Can't put in slot item {}", pIItem->object().cName());
 #endif
 
         break;
@@ -234,7 +236,7 @@ bool CInventory::DropItem(CGameObject* pObj)
     case eItemPlaceBelt: {
         if (!InBelt(pIItem))
         {
-            Msg("!!CInventory::DropItem: InBelt(pIItem): [{}]", pObj->cName());
+            XR_LOG_ERROR("Not on belt: [{}]", pObj->cName());
             pIItem->m_eItemPlace = eItemPlaceUndefined;
         }
         else
@@ -248,7 +250,7 @@ bool CInventory::DropItem(CGameObject* pObj)
     case eItemPlaceRuck: {
         if (!InRuck(pIItem))
         {
-            Msg("!!CInventory::DropItem: InRuck(pIItem): [{}]", pObj->cName());
+            XR_LOG_ERROR("Not in ruck: [{}]", pObj->cName());
             pIItem->m_eItemPlace = eItemPlaceUndefined;
         }
         else
@@ -260,7 +262,7 @@ bool CInventory::DropItem(CGameObject* pObj)
     case eItemPlaceSlot: {
         if (!InSlot(pIItem))
         {
-            Msg("!!CInventory::DropItem: InSlot(pIItem): [{}], id: [{}]", pObj->cName(), pObj->ID());
+            XR_LOG_ERROR("Not in slot: [{}], id: [{}]", pObj->cName(), pObj->ID());
             pIItem->m_eItemPlace = eItemPlaceUndefined;
         }
         else

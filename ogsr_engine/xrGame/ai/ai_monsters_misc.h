@@ -17,30 +17,6 @@ namespace GroupHierarchyHolder
 typedef xr_vector<CEntity*> MEMBER_REGISTRY;
 }
 
-#define WRITE_LOG
-
-#ifndef DEBUG
-#undef WRITE_LOG
-#endif
-
-#ifdef WRITE_LOG
-#define WRITE_TO_LOG(S) \
-    { \
-        Msg("{},{},{},p[{:.3},{:.3},{:.3}],{:.3},h[{:.3},{:.3}],t[{:.3},{:.3}]", cName(), S, Device.dwTimeGlobal, Position().x, Position().y, Position().z, \
-            m_fCurSpeed, m_head.current.yaw, m_head.target.yaw, m_body.current.yaw, m_body.target.yaw); \
-        vfUpdateDynamicObjects(); \
-        m_bStopThinking = true; \
-    }
-#define WRITE_QUERY_TO_LOG(S) ;
-#else
-#define WRITE_QUERY_TO_LOG(S)
-#define WRITE_TO_LOG(S) \
-    { \
-        vfUpdateDynamicObjects(); \
-        m_bStopThinking = true; \
-    }
-#endif
-
 #define GO_TO_NEW_STATE(a) \
     { \
         m_tStateStack.top() = m_eCurrentState = a; \

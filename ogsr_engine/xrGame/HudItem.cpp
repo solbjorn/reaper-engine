@@ -594,9 +594,7 @@ bool CHudItem::AnimationExist(const char* anim_name) const
             return true;
     }
 
-#ifdef DEBUG
-    Msg("~ [WARNING] ------ Animation [{}] does not exist in [{}]", anim_name, HudSection());
-#endif
+    XR_LOG_DYNAMIC_DEBUG(xr::level::Warning, "Animation [{}] does not exist in [{}]", anim_name, HudSection());
 
     return false;
 }

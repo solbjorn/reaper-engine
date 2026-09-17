@@ -98,7 +98,7 @@ CSE_ALifeOnlineOfflineGroup::MEMBER* CSE_ALifeOnlineOfflineGroup::member(ALife::
     if (I == m_members.end())
     {
         if (!no_assert)
-            Msg("! There is no member with id {} in the OnlineOfflineGroup id {}", member_id, ID);
+            XR_LOG_ERROR("There is no member with id {} in the OnlineOfflineGroup id {}", member_id, ID);
 
         VERIFY(no_assert);
         return nullptr;

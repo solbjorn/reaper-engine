@@ -80,7 +80,6 @@ tmc::task<void> CGrenade::net_Destroy()
 }
 
 void CGrenade::OnH_B_Independent(bool just_before_destroy) { inherited::OnH_B_Independent(just_before_destroy); }
-
 void CGrenade::OnH_A_Independent() { inherited::OnH_A_Independent(); }
 
 void CGrenade::OnH_A_Chield()
@@ -112,9 +111,7 @@ void CGrenade::State(u32 state, u32 oldState)
 
             if (Local())
             {
-#ifdef DEBUG
-                Msg("Destroying local grenade[{}][{}]", ID(), Device.dwFrame);
-#endif
+                XR_LOG_TRACE_L1("Destroying local grenade[{}][{}]", ID(), Device.dwFrame);
                 DestroyObject();
             }
         }

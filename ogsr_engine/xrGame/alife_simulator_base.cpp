@@ -215,7 +215,7 @@ void CALifeSimulatorBase::release(CSE_Abstract* abstract, bool alife_query)
 {
 #ifdef DEBUG
     if (psAI_Flags.test(aiALife))
-        Msg("[LSS] Releasing object [{}][{}][{}][{:#x}]", abstract->name_replace(), abstract->s_name, abstract->ID, smart_cast<void*>(abstract));
+        XR_LOG_TRACE_L1("[LSS] Releasing object [{}][{}][{}]", abstract->name_replace(), abstract->s_name, abstract->ID);
 #endif
 
     CSE_ALifeDynamicObject* object = objects().object(abstract->ID);

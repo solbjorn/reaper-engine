@@ -59,13 +59,14 @@ CInventoryItem::~CInventoryItem()
         (!m_pCurrentInventory || (std::find(m_pCurrentInventory->m_all.begin(), m_pCurrentInventory->m_all.end(), this) == m_pCurrentInventory->m_all.end()));
     if (!B_GOOD)
     {
-        CObject* p = object().H_Parent();
-        Msg("inventory ptr is [{}]", m_pCurrentInventory ? "not-null" : "null");
-        if (p)
-            Msg("parent name is [{}]", p->cName());
+        XR_LOG_ERROR("Inventory ptr is [{}]", m_pCurrentInventory ? "not-null" : "null");
 
-        Msg("! ERROR item_id[{}] H_Parent=[{}][{}] [{}]", object().ID(), p ? std::string_view{p->cName()} : std::string_view{"none"}, p ? p->ID() : -1,
-            Device.dwFrame);
+        CObject* p = object().H_Parent();
+        if (p)
+            XR_LOG_ERROR(" Parent name is [{}]", p->cName());
+
+        XR_LOG_ERROR(" item_id[{}] H_Parent=[{}][{}] [{}]", object().ID(), p ? std::string_view{p->cName()} : std::string_view{"none"}, p ? p->ID() : -1,
+                     Device.dwFrame);
     }
 }
 
@@ -189,7 +190,7 @@ void CInventoryItem::SetSlot(u8 slot)
     }
     else
     {
-        Msg("!#ERROR: slot {} not acceptable for object {} ({}) with slots {{{}}}", slot, object().Name_script(), Name(), m_slots_sect);
+        XR_LOG_ERROR("Slot {} not acceptable for object {} ({}) with slots {{{}}}", slot, object().Name_script(), Name(), m_slots_sect);
         return;
     }
 }
@@ -401,7 +402,8 @@ void CInventoryItem::load(IReader& packet)
         else
         {
             std::ignore = packet.r_u8();
-            Msg("! [{}]: move {} from belt, because belt = false", std::source_location::current().function_name(), object().cName());
+
+            XR_LOG_ERROR("Move {} from belt, because belt = false", object().cName());
             m_eItemPlace = eItemPlaceRuck;
         }
     }

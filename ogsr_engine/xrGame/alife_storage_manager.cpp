@@ -93,9 +93,9 @@ void CALifeStorageManager::save(LPCSTR save_name, bool update_name)
     FS.w_close(writer);
 
 #ifdef DEBUG
-    Msg("* Game {} is successfully saved to file '{}' ({} bytes compressed to {})", m_save_name, temp, source_count, dest_count + 4);
+    XR_LOG_INFO("Game {} is successfully saved to file '{}' ({} bytes compressed to {})", m_save_name, temp, source_count, dest_count + 4);
 #else // DEBUG
-    Msg("* Game {} is successfully saved to file '{}'", m_save_name, temp);
+    XR_LOG_INFO("Game {} is successfully saved to file '{}'", m_save_name, temp);
 #endif // DEBUG
 
     if (!update_name)
@@ -164,7 +164,7 @@ bool CALifeStorageManager::load(LPCSTR save_name)
     stream = FS.r_open(file_name);
     if (!stream)
     {
-        Msg("* Cannot find saved game {}", file_name);
+        XR_LOG_ERROR("Cannot find saved game {}", file_name);
         strcpy_s(m_save_name, save);
 
         return (false);
@@ -187,7 +187,7 @@ bool CALifeStorageManager::load(LPCSTR save_name)
 
     VERIFY(graph().actor());
 
-    Msg("* Game {} is successfully loaded from file '{}' ({:.4}s)", save_name, file_name, timer.GetElapsed_sec());
+    XR_LOG_INFO("Game {} is successfully loaded from file '{}' ({:.4}s)", save_name, file_name, timer.GetElapsed_sec());
 
     return (true);
 }

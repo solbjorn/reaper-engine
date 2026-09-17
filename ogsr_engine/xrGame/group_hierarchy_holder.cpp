@@ -108,7 +108,7 @@ void CGroupHierarchyHolder::unregister_in_group(CEntity* member)
     if (I != m_members.end())
         m_members.erase(I);
     else
-        Msg("!![{}][{}] Specified group member cannot be found!", std::source_location::current().function_name(), member->cName());
+        XR_LOG_ERROR("[{}] Specified group member cannot be found!", member->cName());
 }
 
 void CGroupHierarchyHolder::unregister_in_squad([[maybe_unused]] CEntity* member)

@@ -206,7 +206,7 @@ void CCustomZone::Load(LPCSTR section)
         if (s32(m_dwBlowoutParticlesTime) > m_StateTime[eZoneStateBlowout])
         {
             m_dwBlowoutParticlesTime = m_StateTime[eZoneStateBlowout];
-            Msg("! ERROR: invalid 'blowout_particles_time' in '{}'", section);
+            XR_LOG_ERROR("Invalid 'blowout_particles_time' in '{}'", section);
         }
     }
     else
@@ -220,7 +220,7 @@ void CCustomZone::Load(LPCSTR section)
         if (s32(m_dwBlowoutLightTime) > m_StateTime[eZoneStateBlowout])
         {
             m_dwBlowoutLightTime = m_StateTime[eZoneStateBlowout];
-            Msg("! ERROR: invalid 'blowout_light_time' in '{}'", section);
+            XR_LOG_ERROR("Invalid 'blowout_light_time' in '{}'", section);
         }
     }
     else
@@ -234,7 +234,7 @@ void CCustomZone::Load(LPCSTR section)
         if (s32(m_dwBlowoutSoundTime) > m_StateTime[eZoneStateBlowout])
         {
             m_dwBlowoutSoundTime = m_StateTime[eZoneStateBlowout];
-            Msg("! ERROR: invalid 'blowout_sound_time' in '{}'", section);
+            XR_LOG_ERROR("Invalid 'blowout_sound_time' in '{}'", section);
         }
     }
     else
@@ -248,7 +248,7 @@ void CCustomZone::Load(LPCSTR section)
         if (s32(m_dwBlowoutExplosionTime) > m_StateTime[eZoneStateBlowout])
         {
             m_dwBlowoutExplosionTime = m_StateTime[eZoneStateBlowout];
-            Msg("! ERROR: invalid 'blowout_explosion_time' in '{}'", section);
+            XR_LOG_ERROR("Invalid 'blowout_explosion_time' in '{}'", section);
         }
     }
     else
@@ -268,7 +268,7 @@ void CCustomZone::Load(LPCSTR section)
         if ((s32)m_dwBlowoutWindTimeEnd < m_StateTime[eZoneStateBlowout])
         {
             m_dwBlowoutWindTimeEnd = u32(m_StateTime[eZoneStateBlowout] - 1);
-            Msg("! ERROR: invalid 'blowout_wind_time_end' in '{}'", section);
+            XR_LOG_ERROR("Invalid 'blowout_wind_time_end' in '{}'", section);
         }
 
         m_fBlowoutWindPowerMax = pSettings->r_float(section, "blowout_wind_power");
@@ -763,7 +763,7 @@ void CCustomZone::feel_touch_delete(CObject* O)
 {
 #ifdef DEBUG
     if (bDebug)
-        Msg("{} {}", O->cName(), "leaving a zone.");
+        XR_LOG_TRACE_L1("Leaving zone {}", O->cName());
 #endif
 
     if (smart_cast<CActor*>(O))
@@ -1263,8 +1263,8 @@ void CCustomZone::OnOwnershipTake(u16 id)
     CGameObject* GO = smart_cast<CGameObject*>(Level().Objects.net_Find(id));
     VERIFY(GO);
 
-    if (!smart_cast<CArtefact*>(GO))
-        Msg("[{}] zone_name[{}] object_name[{}]", std::source_location::current().function_name(), cName(), GO->cName());
+    if (smart_cast<CArtefact*>(GO) == nullptr)
+        XR_LOG_ERROR("Not an artifact: zone_name[{}] object_name[{}]", cName(), GO->cName());
 
     CArtefact* artefact = smart_cast<CArtefact*>(Level().Objects.net_Find(id));
     VERIFY(artefact);
@@ -1365,9 +1365,7 @@ void CCustomZone::SpawnArtefact()
     }
     R_ASSERT(i < m_ArtefactSpawn.size());
 
-#ifdef DEBUG
-    Msg("--[{}] anom: [{}], art: [{}]", std::source_location::current().function_name(), cName(), m_ArtefactSpawn[i].section);
-#endif
+    XR_LOG_TRACE_L1("Anom: [{}], art: [{}]", cName(), m_ArtefactSpawn[i].section);
 
     Fvector pos;
     Center(pos);
@@ -1380,9 +1378,7 @@ void CCustomZone::SpawnArtefact()
 
 void CCustomZone::BornArtefact(bool forced)
 {
-#ifdef DEBUG
-    Msg("BornArtefact[{}] prob {} cnt2 {} forced {}", cName(), m_fArtefactSpawnProbability, m_ArtefactSpawn.size(), forced);
-#endif
+    XR_LOG_TRACE_L1("[{}] prob {} cnt2 {} forced {}", cName(), m_fArtefactSpawnProbability, m_ArtefactSpawn.size(), forced);
 
     if (!SpawnBlowoutArtefacts || m_ArtefactSpawn.empty())
         return;

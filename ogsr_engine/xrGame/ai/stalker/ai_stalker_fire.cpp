@@ -232,9 +232,10 @@ void CAI_Stalker::Hit(SHit* pHDS)
 #ifdef DEBUG
                 IKinematicsAnimated* tpKinematics = smart_cast<IKinematicsAnimated*>(Visual());
                 tpKinematics->LL_GetBoneInstance(pHDS->bone());
+
                 if (pHDS->bone() >= tpKinematics->LL_BoneCount())
                 {
-                    Msg("tpKinematics has no bone_id {}", pHDS->bone());
+                    XR_LOG_ERROR("Kinematics has no bone {}", pHDS->bone());
                     pHDS->_dump();
                 }
 #endif

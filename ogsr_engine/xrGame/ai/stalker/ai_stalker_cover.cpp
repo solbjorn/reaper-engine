@@ -151,9 +151,7 @@ void CAI_Stalker::on_restrictions_change()
     inherited::on_restrictions_change();
     m_best_cover_actual = false;
 
-#ifdef DEBUG
-    Msg("* [{:6}][{}] on_restrictions_change", Device.dwTimeGlobal, cName());
-#endif
+    XR_LOG_TRACE_L1("[{:6}][{}] on_restrictions_change", Device.dwTimeGlobal, cName());
 }
 
 void CAI_Stalker::on_enemy_change(const CEntityAlive* enemy)

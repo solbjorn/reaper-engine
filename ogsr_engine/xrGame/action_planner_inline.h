@@ -49,11 +49,11 @@ void CPlanner::update()
             show_current_world_state();
             show_target_world_state();
 
-            Msg("{:6} : Solution for object {} [{} vertices searched]", Device.dwTimeGlobal, object_name(),
-                ai().graph_engine().solver_algorithm().data_storage().get_visited_node_count());
+            XR_LOG_TRACE_L1("{:6} : Solution for object {} [{} vertices searched]", Device.dwTimeGlobal, object_name(),
+                            ai().graph_engine().solver_algorithm().data_storage().get_visited_node_count());
 
             for (auto sol : this->solution())
-                Msg("{}", action2string(sol));
+                XR_LOG_TRACE_L1("{}", action2string(sol));
         }
     }
 
@@ -63,8 +63,8 @@ void CPlanner::update()
         show();
 
         XR_LOG_ERROR("There is no action sequence, which can transfer current world state to the target one");
-        Msg("Time : {:6}", Device.dwTimeGlobal);
-        Msg("Object : {}", object_name());
+        XR_LOG_ERROR(" Time : {:6}", Device.dwTimeGlobal);
+        XR_LOG_ERROR(" Object : {}", object_name());
 
         show_current_world_state();
         show_target_world_state();
@@ -172,7 +172,7 @@ IC void CPlanner::show_current_world_state()
         if ((J != this->current_state().conditions().end()) && ((*J).condition() == it.first))
         {
             temp = (*J).value() ? '+' : '-';
-            Msg("{:5} : [{}][{}]", temp, it.first, property2string(it.first));
+            XR_LOG_TRACE_L1(" {:5} : [{}][{}]", temp, it.first, property2string(it.first));
         }
     }
 }
@@ -189,7 +189,7 @@ IC void CPlanner::show_target_world_state()
         if ((J != this->target_state().conditions().end()) && ((*J).condition() == it.first))
         {
             temp = (*J).value() ? '+' : '-';
-            Msg("{:5} : [{}][{}]", temp, it.first, property2string(it.first));
+            XR_LOG_TRACE_L1(" {:5} : [{}][{}]", temp, it.first, property2string(it.first));
         }
     }
 }
@@ -199,7 +199,8 @@ IC void CPlanner::show(LPCSTR offset)
 {
     string256 temp;
     strconcat(sizeof(temp), temp, offset, "    ");
-    Msg("\n{}EVALUATORS : {}\n", offset, this->evaluators().size());
+
+    XR_LOG_TRACE_L1("\n{}EVALUATORS : {}\n", offset, this->evaluators().size());
 
     for (const auto& it : this->evaluators())
     {
@@ -209,19 +210,19 @@ IC void CPlanner::show(LPCSTR offset)
         if ((J != this->current_state().conditions().end()) && ((*J).condition() == it.first))
             current = (*J).value() ? '+' : '-';
 
-        Msg("{}evaluator   [{}][{}][{}]", offset, it.first, property2string(it.first), current);
+        XR_LOG_TRACE_L1("{} evaluator   [{}][{}][{}]", offset, it.first, property2string(it.first), current);
     }
 
-    Msg("\n{}OPERATORS : {}\n", offset, this->operators().size());
+    XR_LOG_TRACE_L1("\n{}OPERATORS : {}\n", offset, this->operators().size());
 
     for (const auto& it : this->operators())
     {
-        Msg("{}operator    [{}][{}]", offset, it.m_operator_id, it.m_operator->m_action_name);
+        XR_LOG_TRACE_L1("{} operator    [{}][{}]", offset, it.m_operator_id, it.m_operator->m_action_name);
 
         for (const auto& it2 : it.m_operator->conditions().conditions())
-            Msg("{}\tcondition [{}][{}] = {}", offset, it2.condition(), property2string(it2.condition()), it2.value() ? "TRUE" : "FALSE");
+            XR_LOG_TRACE_L1("{}\tcondition [{}][{}] = {}", offset, it2.condition(), property2string(it2.condition()), it2.value() ? "TRUE" : "FALSE");
         for (const auto& it2 : it.m_operator->effects().conditions())
-            Msg("{}\teffect    [{}][{}] = {}", offset, it2.condition(), property2string(it2.condition()), it2.value() ? "TRUE" : "FALSE");
+            XR_LOG_TRACE_L1("{}\teffect    [{}][{}] = {}", offset, it2.condition(), property2string(it2.condition()), it2.value() ? "TRUE" : "FALSE");
 
         it.m_operator->show(temp);
 

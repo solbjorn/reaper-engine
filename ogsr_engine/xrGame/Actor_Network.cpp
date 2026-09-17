@@ -98,7 +98,8 @@ tmc::task<bool> CActor::net_Spawn(CSE_Abstract* DC)
         {
             size_t s = news.size();
             news.erase(news.begin(), news.begin() + (news.size() - NewsToShow()));
-            Msg("[{}]: purge {} news items, {} left", std::source_location::current().function_name(), s - news.size(), news.size());
+
+            XR_LOG_WARNING("Purge {} news items, {} left", s - news.size(), news.size());
         }
     }
 
@@ -482,18 +483,21 @@ void dbg_draw_piramid(Fvector pos, Fvector dir, float size, float xdir, u32 colo
 void CActor::net_Save(NET_Packet& P)
 {
 #ifdef DEBUG
-    XR_LOG_DEBUG("Actor net_Save");
+    XR_LOG_DEBUG("Saving Actor");
 
     u32 pos = P.w_tell();
     inherited::net_Save(P);
-    Msg("inherited::net_Save() : {}", P.w_tell() - pos);
+
+    XR_LOG_DEBUG("Inherited: {}", P.w_tell() - pos);
 
     pos = P.w_tell();
     m_pPhysics_support->in_NetSave(P);
     P.w_u16(m_holderID);
-    Msg("m_pPhysics_support->in_NetSave() : {}", P.w_tell() - pos);
+
+    XR_LOG_DEBUG("Physics: {}", P.w_tell() - pos);
 #else
     inherited::net_Save(P);
+
     m_pPhysics_support->in_NetSave(P);
     P.w_u16(m_holderID);
 #endif

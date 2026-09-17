@@ -94,7 +94,7 @@ CCustomMonster::~CCustomMonster()
         g_pGameLevel->SoundEvent_OnDestDestroy(this);
 
 #ifdef DEBUG
-    Msg("dumping client spawn manager stuff for object with id {}", ID());
+    XR_LOG_TRACE_L1("Dumping client spawn manager stuff for object with id {}", ID());
     Level().client_spawn_manager().dump(ID());
 #endif // DEBUG
 

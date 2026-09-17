@@ -43,10 +43,8 @@ void CAmebaZone::Affect(SZoneObjectInfo* O)
         return;
 
 #ifdef DEBUG
-    char l_pow[255];
-    sprintf_s(l_pow, "zone hit. %.1f", Power(distance_to_center(O->object)));
     if (bDebug)
-        Msg("{} {}", pGameObject->cName(), l_pow);
+        XR_LOG_TRACE_L1("{} zone hit: {}", pGameObject->cName(), Power(distance_to_center(O->object)));
 #endif
 
     Fvector hit_dir;

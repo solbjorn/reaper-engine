@@ -262,9 +262,7 @@ tmc::task<void> CLevel::cl_Process_Event(u16 dest, u16 type, NET_Packet& P)
     CObject* O = Objects.net_Find(dest);
     if (!O)
     {
-#ifdef DEBUG
-        Msg("* WARNING: c_EVENT[{}] to [{}]: unknown dest", type, dest);
-#endif // DEBUG
+        XR_LOG_DYNAMIC_DEBUG(xr::level::Warning, "c_EVENT[{}] to [{}]: unknown dest", type, dest);
 
         ProcessGameSpawnsDestroy(dest, type);
         co_return;
@@ -273,7 +271,7 @@ tmc::task<void> CLevel::cl_Process_Event(u16 dest, u16 type, NET_Packet& P)
     CGameObject* GO = smart_cast<CGameObject*>(O);
     if (!GO)
     {
-        Msg("! ERROR: c_EVENT[{}] : non-game-object", dest);
+        XR_LOG_ERROR("c_EVENT[{}] : non-game-object", dest);
         co_return;
     }
 
@@ -583,17 +581,8 @@ tmc::task<void> CLevel::OnEvent(CEvent* E, u64 P1, u64)
 
 void CLevel::PhisStepsCallback(u32, u32) {}
 
-ALife::_TIME_ID CLevel::GetGameTime()
-{
-    return (game->GetGameTime());
-    //	return			(Server->game->GetGameTime());
-}
-
-ALife::_TIME_ID CLevel::GetEnvironmentGameTime()
-{
-    return (game->GetEnvironmentGameTime());
-    //	return			(Server->game->GetGameTime());
-}
+ALife::_TIME_ID CLevel::GetGameTime() { return (game->GetGameTime()); }
+ALife::_TIME_ID CLevel::GetEnvironmentGameTime() { return (game->GetEnvironmentGameTime()); }
 
 u8 CLevel::GetDayTime()
 {

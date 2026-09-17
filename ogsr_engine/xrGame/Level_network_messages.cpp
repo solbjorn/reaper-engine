@@ -38,7 +38,7 @@ tmc::task<void> CLevel::ClientReceive()
         case xr::msg::M_SPAWN:
             if (!m_bGameConfigStarted || !bReady)
             {
-                Msg("Unconventional M_SPAWN received : cgf[{}] | bReady[{}]", (m_bGameConfigStarted) ? "true" : "false", (bReady) ? "true" : "false");
+                XR_LOG_ERROR("Unconventional M_SPAWN received : cgf[{}] | bReady[{}]", (m_bGameConfigStarted) ? "true" : "false", (bReady) ? "true" : "false");
                 break;
             }
 

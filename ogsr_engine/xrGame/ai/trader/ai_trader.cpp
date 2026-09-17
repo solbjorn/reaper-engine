@@ -161,11 +161,11 @@ tmc::task<void> CAI_Trader::OnEvent(NET_Packet& P, u16 type)
     case GE_OWNERSHIP_REJECT:
     case GE_TRANSFER_REJECT: {
         P.r_u16(id);
-        Obj = Level().Objects.net_Find(id);
 
+        Obj = Level().Objects.net_Find(id);
         if (!Obj)
         {
-            Msg("! [{}] Error: No object to reject/sell [{}]", std::source_location::current().function_name(), id);
+            XR_LOG_ERROR("No object to reject/sell [{}]", id);
             break;
         }
 
@@ -190,10 +190,9 @@ void CAI_Trader::feel_touch_new(CObject* O)
 
     // Now, test for game specific logical objects to minimize traffic
     CInventoryItem* I = smart_cast<CInventoryItem*>(O);
-
     if (I && I->useful_for_NPC())
     {
-        Msg("Taking item {}!", I->object().cName());
+        XR_LOG_WARNING("Taking item {}!", I->object().cName());
 
         NET_Packet P;
         u_EventGen(P, GE_OWNERSHIP_TAKE, ID());
@@ -207,7 +206,7 @@ void CAI_Trader::DropItemSendMessage(CObject* O)
     if (!O || !O->H_Parent() || (this != O->H_Parent()))
         return;
 
-    XR_LOG_TRACE_L1("Dropping item!");
+    XR_LOG_WARNING("Dropping item!");
 
     // We doesn't have similar weapon - pick up it
     NET_Packet P;

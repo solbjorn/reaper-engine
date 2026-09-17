@@ -50,17 +50,18 @@ tmc::task<void> CEntity::OnEvent(NET_Packet& P, u16 type)
         u32 cl;
         P.r_u16(id);
         P.r_u32(cl);
+
         CObject* who = Level().Objects.net_Find(id);
         if (who)
         {
             if (this != who)
             {
                 if (bDebug)
-                    Msg("{} {} {} {}", cName(), "Killed by ", who->cName(), "...");
+                    XR_LOG_TRACE_L1("{} killed by {}...", cName(), who->cName());
             }
             else if (bDebug)
             {
-                Msg("{} {}", cName(), "Crashed...");
+                XR_LOG_TRACE_L1("{} crashed...", cName());
             }
         }
 
@@ -103,7 +104,7 @@ float CEntity::CalcCondition(float hit)
 void CEntity::Hit(SHit* pHDS)
 {
     if (bDebug)
-        Msg("Process HIT: [{}]", cName());
+        XR_LOG_TRACE_L1("Process HIT: [{}]", cName());
 
     // *** process hit calculations
     // Calc impulse
@@ -212,10 +213,9 @@ tmc::task<bool> CEntity::net_Spawn(CSE_Abstract* DC)
 
         while (squad.group(g_Group()).members().size() == sizeof(MemorySpace::squad_mask_type) * 8)
         {
-            Msg("* [{}]: [{}]: group [team:{}][squad:{}][group:{}] is full ({}), try next group {}", std::source_location::current().function_name(),
-                (E && E->name_replace()[0]) ? std::string_view{E->name_replace()} : std::string_view{cName()}, g_Team(), g_Squad(), g_Group(),
-                squad.group(g_Group()).members().size(), g_Group() + 1);
-
+            XR_LOG_WARNING("[{}]: group [team:{}][squad:{}][group:{}] is full ({}), try next group {}",
+                           (E && E->name_replace()[0]) ? std::string_view{E->name_replace()} : std::string_view{cName()}, g_Team(), g_Squad(), g_Group(),
+                           squad.group(g_Group()).members().size(), g_Group() + 1);
             ++id_Group;
         }
 
@@ -266,13 +266,13 @@ void CEntity::KillEntity(u16 whoID)
 #ifdef DEBUG
         if (m_killer_id != ALife::_OBJECT_ID(-1))
         {
-            Msg("! Entity [{}][{}] already has killer with id {}, but new killer id arrived - {}", cNameSect(), cName(), m_killer_id, whoID);
+            XR_LOG_ERROR("Entity [{}][{}] already has killer with id {}, but new killer id arrived - {}", cNameSect(), cName(), m_killer_id, whoID);
 
             CObject* old_killer = Level().Objects.net_Find(m_killer_id);
-            Msg("! Old killer is {}", old_killer ? std::string_view{old_killer->cName()} : std::string_view{"unknown"});
+            XR_LOG_ERROR("Old killer is {}", old_killer ? std::string_view{old_killer->cName()} : std::string_view{"unknown"});
 
             CObject* new_killer = Level().Objects.net_Find(whoID);
-            Msg("! New killer is {}", new_killer ? std::string_view{new_killer->cName()} : std::string_view{"unknown"});
+            XR_LOG_ERROR("New killer is {}", new_killer ? std::string_view{new_killer->cName()} : std::string_view{"unknown"});
 
             VERIFY(m_killer_id == ALife::_OBJECT_ID(-1));
         }

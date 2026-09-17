@@ -168,7 +168,7 @@ tmc::task<bool> CHangingLamp::net_Spawn(CSE_Abstract* DC)
     }
 
     if (lamp->flags.is(CSE_ALifeObjectHangingLamp::flPhysic) && !Visual())
-        Msg("! WARNING: lamp, obj name [{}],flag physics set, but has no visual", cName());
+        XR_LOG_ERROR("Lamp, obj name [{}],flag physics set, but has no visual", cName());
 
     if (Alive())
     {

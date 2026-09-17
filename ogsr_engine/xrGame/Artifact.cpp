@@ -655,7 +655,7 @@ void SArtefactActivation::SpawnAnomaly()
     Level().Send(P, net_flags(TRUE));
     F_entity_Destroy(object);
 
-    Msg("artefact [{}] spawned a zone [{}] at [{}]", m_af->cName(), zone_sect, Device.fTimeGlobal);
+    XR_LOG_DEBUG("Artefact [{}] spawned a zone [{}] at [{}]", m_af->cName(), zone_sect, Device.fTimeGlobal);
 }
 
 static shared_str clear_brackets(LPCSTR src)

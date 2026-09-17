@@ -377,8 +377,8 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
     }
 
     if (bDebug)
-        Msg("{} hitted in {} with {}[{}]", m_object->Name(), smart_cast<IKinematics*>(m_object->Visual())->LL_BoneName_dbg(pHDS->boneID),
-            m_fHealthLost * 100.0f, hit_power_org);
+        XR_LOG_TRACE_L1("{} hit in {} with {}[{}]", m_object->Name(), smart_cast<IKinematics*>(m_object->Visual())->LL_BoneName_dbg(pHDS->boneID),
+                        m_fHealthLost * 100.0f, hit_power_org);
 
     // раны добавляются только живому
     if (bAddWound && GetHealth() > 0)

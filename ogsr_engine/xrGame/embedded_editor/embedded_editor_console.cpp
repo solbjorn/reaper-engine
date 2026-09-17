@@ -877,7 +877,7 @@ void ImGuiGameConsole::ExecuteCommand(gsl::czstring cmd_str)
                 if (cc->bEmptyArgsHandled)
                     cc->Execute(last);
                 else
-                    Msg("- {} {}", cc->Name(), cc->Status());
+                    XR_LOG_INFO("{} {}", cc->Name(), cc->Status());
             }
             else
             {
@@ -887,12 +887,12 @@ void ImGuiGameConsole::ExecuteCommand(gsl::czstring cmd_str)
         }
         else
         {
-            Msg("! Unknown command: {}", first);
+            XR_LOG_WARNING("Command disabled: {}", first);
         }
     }
     else
     {
-        Msg("! Unknown command: {}", first);
+        XR_LOG_ERROR("Unknown command: {}", first);
     }
 
     m_edit_string[0] = '\0';
@@ -909,7 +909,7 @@ void ImGuiGameConsole::AddCmdHistory(gsl::czstring str)
 
     static constexpr std::array<char, 2> c{std::to_underlying(Console_mark::mark2), '\0'};
 
-    Msg("{} {}", c.data(), str);
+    XR_LOG_NOTICE("{} {}", c.data(), str);
 
     shared_str sh{str};
     add_cmd_history(sh);

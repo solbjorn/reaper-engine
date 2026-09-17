@@ -129,10 +129,8 @@ void add_online_impl(CSE_ALifeDynamicObject* object, const bool& update_registri
         CSE_Abstract* l_tpAbstract = smart_cast<CSE_Abstract*>(l_tpALifeInventoryItem);
         object->alife().server().entity_Destroy(l_tpAbstract);
 
-#ifdef DEBUG
-        Msg("[LSS][{}] Going online [{}][{}][{}] with parent [{}][{}] on '{}'", Device.dwFrame, Device.dwTimeGlobal,
-            l_tpALifeInventoryItem->base()->name_replace(), l_tpALifeInventoryItem->base()->ID, object->ID, object->name_replace(), "*SERVER*");
-#endif
+        XR_LOG_TRACE_L1("[LSS][{}] Going online [{}][{}][{}] with parent [{}][{}] on '{}'", Device.dwFrame, Device.dwTimeGlobal,
+                        l_tpALifeInventoryItem->base()->name_replace(), l_tpALifeInventoryItem->base()->ID, object->ID, object->name_replace(), "*SERVER*");
 
         l_tpALifeDynamicObject->o_Position = object->o_Position;
         l_tpALifeDynamicObject->m_tNodeID = object->m_tNodeID;
@@ -167,10 +165,8 @@ void add_offline_impl(CSE_ALifeDynamicObject* object, const xr_vector<ALife::_OB
         CSE_ALifeInventoryItem* inventory_item = smart_cast<CSE_ALifeInventoryItem*>(child);
         VERIFY2(inventory_item, "Non inventory item object has parent?!");
 
-#ifdef DEBUG
-        Msg("[LSS][{}] Going offline [{}][{}][{}] with parent [{}][{}] on '{}'", Device.dwFrame, Device.dwTimeGlobal, inventory_item->base()->name_replace(),
-            inventory_item->base()->ID, object->ID, object->name_replace(), "*SERVER*");
-#endif
+        XR_LOG_TRACE_L1("[LSS][{}] Going offline [{}][{}][{}] with parent [{}][{}] on '{}'", Device.dwFrame, Device.dwTimeGlobal,
+                        inventory_item->base()->name_replace(), inventory_item->base()->ID, object->ID, object->name_replace(), "*SERVER*");
 
         ALife::_OBJECT_ID item_id = inventory_item->base()->ID;
         inventory_item->base()->ID = object->alife().server().PerformIDgen(item_id);
@@ -185,7 +181,7 @@ void add_offline_impl(CSE_ALifeDynamicObject* object, const xr_vector<ALife::_OB
 
 #ifdef DEBUG
         if (!child->client_data.empty())
-            Msg("CSE_ALifeTraderAbstract::add_offline: client_data is cleared for [{}][{}]", child->ID, child->name_replace());
+            XR_LOG_TRACE_L1("client_data is cleared for [{}][{}]", child->ID, child->name_replace());
 #endif // DEBUG
 
         if (!child->keep_saved_data_anyway())

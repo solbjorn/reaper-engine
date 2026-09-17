@@ -35,9 +35,9 @@ tmc::task<void> CLevel::remove_objects()
     Device.m_pRender->ResourcesGetMemoryUsage(usage);
 
     XR_LOG_NOTICE("ObjectResources unload...");
-    Msg("~ ObjectResources - base: {}, {} Kb", usage.c_base, usage.m_base / 1024);
-    Msg("~ ObjectResources - lmap: {}, {} Kb", usage.c_lmaps, usage.m_lmaps / 1024);
-    Msg("~ ObjectResources - Lua: {} Kb", usage.lua / 1024);
+    XR_LOG_INFO("ObjectResources - base: {}, {} Kb", usage.c_base, usage.m_base / 1024);
+    XR_LOG_INFO("ObjectResources - lmap: {}, {} Kb", usage.c_lmaps, usage.m_lmaps / 1024);
+    XR_LOG_INFO("ObjectResources - Lua: {} Kb", usage.lua / 1024);
 
     co_await Game().reset_ui();
 
@@ -102,9 +102,9 @@ tmc::task<void> CLevel::remove_objects()
     Device.m_pRender->ResourcesGetMemoryUsage(usage);
 
     XR_LOG_NOTICE("ObjectResources unload completed!");
-    Msg("~ ObjectResources - base: {}, {} Kb", usage.c_base, usage.m_base / 1024);
-    Msg("~ ObjectResources - lmap: {}, {} Kb", usage.c_lmaps, usage.m_lmaps / 1024);
-    Msg("~ ObjectResources - Lua: {} Kb", usage.lua / 1024);
+    XR_LOG_INFO("ObjectResources - base: {}, {} Kb", usage.c_base, usage.m_base / 1024);
+    XR_LOG_INFO("ObjectResources - lmap: {}, {} Kb", usage.c_lmaps, usage.m_lmaps / 1024);
+    XR_LOG_INFO("ObjectResources - Lua: {} Kb", usage.lua / 1024);
 
     ai().script_engine().collect_all_garbage();
 
@@ -278,7 +278,8 @@ tmc::task<bool> CLevel::Connect2Server(gsl::czstring options)
         //-----------------------------------------
     }
 
-    Msg("{} client : connection {} - <{}>", m_bConnectResult ? '*' : '!', m_bConnectResult ? "accepted" : "rejected", m_sConnectResult);
+    XR_LOG_DYNAMIC(m_bConnectResult ? xr::level::Notice : xr::level::Error, "Client : connection {} - <{}>", m_bConnectResult ? "accepted" : "rejected",
+                   m_sConnectResult);
 
     if (!m_bConnectResult)
     {

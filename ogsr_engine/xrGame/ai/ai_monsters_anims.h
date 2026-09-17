@@ -44,7 +44,7 @@ public:
 
 #ifdef DEBUG
             if (A[i] && psAI_Flags.test(aiAnimation))
-                Msg("* Loaded animation {}", S);
+                XR_LOG_TRACE_L1("Loaded animation {}", S);
 #endif
         }
     }

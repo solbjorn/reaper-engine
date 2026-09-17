@@ -90,7 +90,7 @@ tmc::task<bool> CLevel::net_start1()
             {
                 pApp->LoadEnd();
 
-                Msg("Can't find level: [{}]", l_name);
+                XR_LOG_ERROR("Can't find level: [{}]", l_name);
                 net_start_result_total = FALSE;
 
                 co_return true;
@@ -194,12 +194,12 @@ tmc::task<bool> CLevel::net_start6()
             }
             else
             {
-                Msg("! Invalid -$ parameter arguments: {}", res.error().msg());
+                XR_LOG_ERROR("Invalid -$ parameter arguments: {}", res.error().msg());
             }
         }
         else
         {
-            Msg("! The -$ parameter requires 2 arguments");
+            XR_LOG_ERROR("The -$ parameter requires 2 arguments");
         }
     }
 

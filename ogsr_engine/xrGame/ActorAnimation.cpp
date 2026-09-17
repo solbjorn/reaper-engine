@@ -439,7 +439,7 @@ void CActor::g_SetAnimation(u32 mstate_rl)
                     M_torso = TW->drop;
                     if (!M_torso)
                     {
-                        Msg("! drop animation for {}", H->object().cName());
+                        XR_LOG_ERROR("Drop animation for {}", H->object().cName());
                         M_torso = ST->m_torso_idle;
                     }
 

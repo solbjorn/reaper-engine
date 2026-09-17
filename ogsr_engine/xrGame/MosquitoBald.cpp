@@ -48,10 +48,8 @@ void CMosquitoBald::Affect(SZoneObjectInfo* O)
     XFORM().transform_tiny(P, CFORM()->getSphere().P);
 
 #ifdef DEBUG
-    char l_pow[255];
-    sprintf_s(l_pow, "zone hit. %.1f", Power(pGameObject->Position().distance_to(P)));
     if (bDebug)
-        Msg("{} {}", pGameObject->cName(), l_pow);
+        XR_LOG_TRACE_L1("{} zone hit: {}", pGameObject->cName(), Power(pGameObject->Position().distance_to(P)));
 #endif
 
     Fvector hit_dir;

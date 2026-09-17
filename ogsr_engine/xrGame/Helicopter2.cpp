@@ -128,8 +128,9 @@ tmc::task<void> CHelicopter::explode_async(std::array<std::byte, 16>&)
 void CHelicopter::SetDestPosition(Fvector* pos)
 {
     m_movement.SetDestPosition(pos);
+
     if (bDebug)
-        Msg("---SetDestPosition {} {} {}", pos->x, pos->y, pos->z);
+        XR_LOG_TRACE_L1("Set position to: {}", *pos);
 }
 
 float CHelicopter::GetDistanceToDestPosition() { return m_movement.GetDistanceToDestPosition(); }
@@ -159,12 +160,13 @@ void CHelicopter::SetLinearAcc(float LAcc_fw, float LAcc_bw)
     m_movement.LinearAcc_bk = LAcc_bw; // ускорение торможения
 }
 //////////////////////End By JoHnY/////////////////////////
+
 void CHelicopter::SetSpeedInDestPoint(float sp)
 {
     m_movement.SetSpeedInDestPoint(sp);
 
     if (bDebug)
-        Msg("---SetSpeedInDestPoint {}", sp);
+        XR_LOG_TRACE_L1("Set speed in destination point to: {}", sp);
 }
 
 float CHelicopter::GetSpeedInDestPoint(float) { return m_movement.GetSpeedInDestPoint(); }
@@ -174,7 +176,7 @@ void CHelicopter::SetOnPointRangeDist(float d)
     m_movement.onPointRangeDist = d;
 
     if (bDebug)
-        Msg("---SetOnPointRangeDist {}", d);
+        XR_LOG_TRACE_L1("Set on point range distance to: {}", d);
 }
 
 float CHelicopter::GetOnPointRangeDist() { return m_movement.onPointRangeDist; }
@@ -216,7 +218,7 @@ void CHelicopter::Hit(SHit* pHDS)
 
 #ifdef DEBUG
         if (bDebug)
-            Msg("----Helicopter::PilotHit(). health={}", curHealth);
+            XR_LOG_TRACE_L1("Pilot hit. health={}", curHealth);
 #endif
     }
     else
@@ -231,7 +233,7 @@ void CHelicopter::Hit(SHit* pHDS)
 
 #ifdef DEBUG
         if (bDebug)
-            Msg("----Helicopter::Hit(). health={}", GetfHealth());
+            XR_LOG_TRACE_L1("Helicopter hit. health={}", GetfHealth());
 #endif
     }
 

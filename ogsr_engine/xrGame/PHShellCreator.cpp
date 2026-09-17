@@ -29,7 +29,7 @@ void CPHShellSimpleCreator::CreatePhysicsShell()
     if (owner->m_pPhysicsShell->get_ElementsNumber() == 0)
     {
 #ifdef DEBUG
-        Msg(" ! Error: world item visual [{}] has no elements!", pKinematics->getDebugName());
+        XR_LOG_ERROR("World item visual [{}] has no elements!", pKinematics->getDebugName());
 #else
         XR_LOG_ERROR("World item visual has no elements!");
 #endif
@@ -37,7 +37,7 @@ void CPHShellSimpleCreator::CreatePhysicsShell()
     else if (!owner->m_pPhysicsShell->get_ElementByStoreOrder(0)->has_geoms())
     {
 #ifdef DEBUG
-        Msg(" ! Error: world item visual [{}] has no shape!", pKinematics->getDebugName());
+        XR_LOG_ERROR("World item visual [{}] has no shape!", pKinematics->getDebugName());
 #else
         XR_LOG_ERROR("World item visual has no shape!");
 #endif

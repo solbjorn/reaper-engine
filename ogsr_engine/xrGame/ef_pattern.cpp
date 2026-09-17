@@ -35,22 +35,12 @@ CPatternFunction::~CPatternFunction()
 void CPatternFunction::vfLoadEF(LPCSTR caFileName)
 {
     string_path caPath;
-    if (!FS.exist(caPath, "$game_ai$", caFileName))
-    {
-        Msg("! Evaluation function : File not found \"{}\"", caPath);
-        R_ASSERT(false);
-    }
 
+    XR_ASSERT(FS.exist(caPath, "$game_ai$", caFileName) != nullptr, "evaluation function: file not found", caFileName);
     IReader* F = FS.r_open(caPath);
+
     F->r(&m_tEFHeader, sizeof(SEFHeader));
-
-    if (EFC_VERSION != m_tEFHeader.dwBuilderVersion)
-    {
-        FS.r_close(F);
-
-        Msg("! Evaluation function ({}) : Not supported version of the Evaluation Function Contructor", caPath);
-        R_ASSERT(false);
-    }
+    XR_ASSERT(m_tEFHeader.dwBuilderVersion == EFC_VERSION, "evaluation function: unsupported version of the Evaluation Function Contructor", caPath);
 
     F->r(&m_dwVariableCount, sizeof(m_dwVariableCount));
 
@@ -133,7 +123,7 @@ float CPatternFunction::ffGetValue()
             j += sprintf_s(caString + j, sizeof(caString) - j, " %3d", m_dwaVariableValues[i] + 1);
 
         sprintf_s(caString + j, sizeof(caString) - j, ") = %7.2f", value);
-        Msg("- {}", caString);
+        XR_LOG_TRACE_L1("{}", caString);
 
         return (value);
     }

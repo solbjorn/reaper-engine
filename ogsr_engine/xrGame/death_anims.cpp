@@ -22,13 +22,12 @@ rnd_motion* rnd_motion::setup(IKinematicsAnimated* k, const char* s)
     {
         string64 n;
         std::ignore = _GetItem(s, i, n);
+
         MotionID m = k->LL_MotionID(n);
         if (m.valid())
             motions.push_back(m);
-#ifdef DEBUG
         else
-            Msg("death_anims: motion: {} not found!", n);
-#endif
+            XR_LOG_DYNAMIC_DEBUG(xr::level::Error, "Motion {} not found!", n);
     }
 
     return this;
@@ -57,31 +56,26 @@ type_motion* type_motion::setup(IKinematicsAnimated* k, CInifile* ini, const cha
     {
         const char* line = ini->r_string(section, type);
         if (!line)
+        {
+            XR_LOG_DYNAMIC_DEBUG(xr::level::Warning, "No settings in section {} for {}", section, type);
             return this;
+        }
 
         R_ASSERT(xr_strlen(line) < 1023);
         const int num = _GetItemCount(line, '/');
-
-#ifdef DEBUG
-        Msg("death anims: load: no setings in section {} for {}", section, type);
-#endif
 
         for (int i = 0; num > i; ++i)
         {
             string1024 sdir_anim;
             set_motion(k, u16(i), _GetItem(line, i, sdir_anim, '/'));
 
-#ifdef DEBUG
-            Msg("death anims: load: loaded {} from section {} for {}", sdir_anim, section, type);
-#endif
+            XR_LOG_DYNAMIC_DEBUG(xr::level::Info, "Loaded {} from section {} for {}", sdir_anim, section, type);
         }
     }
-#ifdef DEBUG
     else
     {
-        Msg("death anims: load: no setings in section {} for {}", section, type);
+        XR_LOG_DYNAMIC_DEBUG(xr::level::Warning, "No settings in section {} for {}", section, type);
     }
-#endif
 
     return this;
 }

@@ -81,8 +81,8 @@ BOOL game_sv_Single::OnTouch(u16 eid_who, u16 eid_what, BOOL)
             alife().graph().attach(*e_who, l_tpALifeInventoryItem, l_tpDynamicObject->m_tGraphID, false, false);
 #ifdef DEBUG
         else if (psAI_Flags.test(aiALife))
-            Msg("Cannot attach object [{}][{}][{}] to object [{}][{}][{}]", e_what->name_replace(), e_what->s_name, e_what->ID, e_who->name_replace(),
-                e_who->s_name, e_who->ID);
+            XR_LOG_TRACE_L1("Cannot attach object [{}][{}][{}] to object [{}][{}][{}]", e_what->name_replace(), e_what->s_name, e_what->ID,
+                            e_who->name_replace(), e_who->s_name, e_who->ID);
 #endif
     }
 
@@ -128,9 +128,9 @@ void game_sv_Single::OnDetach(u16 eid_who, u16 eid_what)
 #ifdef DEBUG
             else if (psAI_Flags.test(aiALife))
             {
-                Msg("Cannot detach object [{}][{}][{}] from object [{}][{}][{}]", l_tpALifeInventoryItem->base()->name_replace(),
-                    l_tpALifeInventoryItem->base()->s_name, l_tpALifeInventoryItem->base()->ID, l_tpDynamicObject->base()->name_replace(),
-                    l_tpDynamicObject->base()->s_name, l_tpDynamicObject->ID);
+                XR_LOG_TRACE_L1("Cannot detach object [{}][{}][{}] from object [{}][{}][{}]", l_tpALifeInventoryItem->base()->name_replace(),
+                                l_tpALifeInventoryItem->base()->s_name, l_tpALifeInventoryItem->base()->ID, l_tpDynamicObject->base()->name_replace(),
+                                l_tpDynamicObject->base()->s_name, l_tpDynamicObject->ID);
             }
 #endif
         }

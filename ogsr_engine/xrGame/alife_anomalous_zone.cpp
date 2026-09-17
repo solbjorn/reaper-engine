@@ -112,7 +112,7 @@ void CSE_ALifeAnomalousZone::spawn_artefacts()
 
         if (item < itemCount)
         {
-            Msg("~ [{}] id={} offline spawn art [{}]", name(), ID, m_weights[item].first);
+            XR_LOG_NOTICE("[{}] id={} offline spawn art [{}]", name(), ID, m_weights[item].first);
 
             Fvector art_pos = position();
             art_pos.y = art_pos.y + 1;
