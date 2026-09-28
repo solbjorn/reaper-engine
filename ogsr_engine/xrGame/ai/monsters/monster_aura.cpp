@@ -185,8 +185,9 @@ void monster_aura::update_schedule()
         if (!m_pp_index)
         {
             m_pp_index = Actor()->Cameras().RequestPPEffectorId();
-            AddEffector(Actor(), m_pp_index, m_pp_effector_name, CallMe::fromMethod<&monster_aura::get_post_process_factor>(this));
+            AddEffector(Actor(), m_pp_index, m_pp_effector_name, std::function_ref{std::cw<&monster_aura::get_post_process_factor>, this});
         }
+
         if (this_is_psy_aura)
             Actor()->PsyAuraAffect = true;
     }
@@ -194,6 +195,7 @@ void monster_aura::update_schedule()
     {
         RemoveEffector(Actor(), m_pp_index);
         m_pp_index = 0;
+
         if (this_is_psy_aura)
             Actor()->PsyAuraAffect = false;
     }

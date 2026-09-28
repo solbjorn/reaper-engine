@@ -11,7 +11,7 @@ class anti_aim_ability final : public CControl_ComCustom<>
     RTTI_DECLARE_TYPEINFO(anti_aim_ability, CControl_ComCustom<>);
 
 public:
-    using hit_callback = CallMe::Delegate<void()>;
+    using hit_callback = std::function_ref<void()>;
 
 private:
     typedef CControl_ComCustom<> inherited;

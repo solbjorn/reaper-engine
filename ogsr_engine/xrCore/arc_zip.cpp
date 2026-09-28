@@ -5,7 +5,6 @@
 #include "FS_internal.h"
 #include "stream_reader.h"
 
-#include <CallMe.h>
 #include <bitmap_object_pool.hpp>
 
 namespace mz
@@ -70,7 +69,7 @@ public:
         reader() = delete;
         explicit reader(gsl::czstring path);
 
-        void index(CallMe::Delegate<void(gsl::czstring, s64, s64, s64)> reg) const;
+        void index(std::function_ref<void(gsl::czstring, s64, s64, s64)> reg) const;
         void goto_entry(s64 cd_pos) const;
     };
 
@@ -137,13 +136,13 @@ s32 zip::reader::index_one(void* handle, void* userdata, mz::mz_zip_file* file_i
     if (mz::mz_zip_entry_is_dir(handle) == MZ_OK)
         return 1;
 
-    auto& reg = *static_cast<CallMe::Delegate<void(gsl::czstring, s64, s64, s64)>*>(userdata);
+    auto& reg = *static_cast<std::function_ref<void(gsl::czstring, s64, s64, s64)>*>(userdata);
     reg(converter{file_info->filename, file_info->flag}.str(), mz::mz_zip_get_entry(handle), file_info->uncompressed_size, file_info->modified_date);
 
     return 1;
 }
 
-void zip::reader::index(CallMe::Delegate<void(gsl::czstring, s64, s64, s64)> reg) const
+void zip::reader::index(std::function_ref<void(gsl::czstring, s64, s64, s64)> reg) const
 {
     void* handle;
 
@@ -468,11 +467,10 @@ void CLocatorAPI::archive::autoload_zip()
 
 void CLocatorAPI::archive::index_zip(CLocatorAPI& loc, gsl::czstring fs_entry_point) const
 {
-    const auto reg = [this, &loc, fs_entry_point](gsl::czstring name, s64 cd_pos, s64 size, s64 modif) {
-        loc.Register(fs_entry_point, name, vfs_idx, std::bit_cast<u64>(cd_pos), size, modif);
-    };
-
-    xr::zip_cb(cb)->acquire_scoped().value.index(CallMe::fromFunctor(&reg));
+    xr::zip_cb(cb)->acquire_scoped().value.index(
+        std::function_ref<void(gsl::czstring, s64, s64, s64)>{[this, &loc, fs_entry_point](gsl::czstring name, s64 cd_pos, s64 size, s64 modif) {
+            loc.Register(fs_entry_point, name, vfs_idx, std::bit_cast<u64>(cd_pos), size, modif);
+        }});
 }
 
 IReader* CLocatorAPI::archive::read_zip(const struct file& desc, u32) const

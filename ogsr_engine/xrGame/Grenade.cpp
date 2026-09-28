@@ -26,12 +26,7 @@ tmc::task<void> prev_slot_async(std::array<std::byte, 16>& arg)
 }
 } // namespace
 
-CGrenade::CGrenade()
-{
-    m_destroy_callback = CallMe::Delegate<void(CGrenade*)>();
-    m_eSoundCheckout = ESoundTypes(SOUND_TYPE_WEAPON_RECHARGING);
-}
-
+CGrenade::CGrenade() : m_eSoundCheckout{SOUND_TYPE_WEAPON_RECHARGING}, m_destroy_callback{xr::noop_ref_v<void(CGrenade*)>} {}
 CGrenade::~CGrenade() { HUD_SOUND::DestroySound(sndCheckout); }
 
 void CGrenade::Load(LPCSTR section)
@@ -73,7 +68,7 @@ tmc::task<bool> CGrenade::net_Spawn(CSE_Abstract* DC)
 tmc::task<void> CGrenade::net_Destroy()
 {
     m_destroy_callback(this);
-    m_destroy_callback = CallMe::Delegate<void(CGrenade*)>();
+    m_destroy_callback = xr::noop_ref_v<void(CGrenade*)>;
 
     co_await inherited::net_Destroy();
     co_await CExplosive::net_Destroy();
@@ -164,7 +159,7 @@ void CGrenade::Destroy()
     Fvector normal;
 
     m_destroy_callback(this);
-    m_destroy_callback = CallMe::Delegate<void(CGrenade*)>();
+    m_destroy_callback = xr::noop_ref_v<void(CGrenade*)>;
 
     FindNormal(normal);
     Fvector C;
@@ -209,7 +204,7 @@ void CGrenade::PutNextToSlot()
         }
         else if (auto actor = smart_cast<CActor*>(m_pCurrentInventory->GetOwner()); actor != nullptr)
         {
-            auto& arg = Device.add_frame_async(CallMe::fromFunction<&prev_slot_async>());
+            auto& arg = Device.add_frame_async(std::function_ref{std::cw<&prev_slot_async>});
             *reinterpret_cast<CActor**>(&arg) = actor;
         }
     }

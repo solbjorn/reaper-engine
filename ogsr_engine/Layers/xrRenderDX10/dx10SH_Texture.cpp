@@ -22,7 +22,7 @@ void resptrcode_texture::create(LPCSTR _name) { _set(RImplementation.Resources->
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CTexture::CTexture() : bind{CallMe::fromMethod<&CTexture::apply_load>(this)} {}
+CTexture::CTexture() : bind{std::cw<&CTexture::apply_load>, this} {}
 
 CTexture::~CTexture()
 {
@@ -135,10 +135,10 @@ void CTexture::surface_set(::ID3D11Resource* surf)
 
 void CTexture::PostLoad()
 {
-    meta.visit(std::__variant_detail::__all_overloads{[this](const normal&) { bind = CallMe::fromMethod<&CTexture::Apply>(this); },
-                                                      [this](const font&) { bind = CallMe::fromMethod<&CTexture::apply_font>(this); },
-                                                      [this](const seq&) { bind = CallMe::fromMethod<&CTexture::apply_seq>(this); },
-                                                      [this](const theora&) { bind = CallMe::fromMethod<&CTexture::apply_theora>(this); }});
+    meta.visit(std::__variant_detail::__all_overloads{[this](const normal&) { bind = std::function_ref{std::cw<&CTexture::Apply>, this}; },
+                                                      [this](const font&) { bind = std::function_ref{std::cw<&CTexture::apply_font>, this}; },
+                                                      [this](const seq&) { bind = std::function_ref{std::cw<&CTexture::apply_seq>, this}; },
+                                                      [this](const theora&) { bind = std::function_ref{std::cw<&CTexture::apply_theora>, this}; }});
 }
 
 void CTexture::apply_load(CBackend& cmd_list, u32 dwStage)
@@ -555,7 +555,7 @@ void CTexture::Unload()
     for (auto& srv : srv_per_slice)
         _RELEASE(srv);
 
-    bind = CallMe::fromMethod<&CTexture::apply_load>(this);
+    bind = std::function_ref{std::cw<&CTexture::apply_load>, this};
 }
 
 void CTexture::video_Play(bool looped, u32 _time)

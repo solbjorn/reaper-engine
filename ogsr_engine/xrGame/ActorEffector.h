@@ -26,7 +26,7 @@ public:
     IC void hud_camera_Matrix(Fmatrix& M) { M.set(m_cam_info_hud.r, m_cam_info_hud.n, m_cam_info_hud.d, m_cam_info_hud.p); }
 };
 
-using GET_KOEFF_FUNC = CallMe::Delegate<float()>;
+using GET_KOEFF_FUNC = std::function_ref<f32()>;
 
 void AddEffector(CActor* A, int type, const shared_str& sect_name);
 void AddEffector(CActor* A, int type, const shared_str& sect_name, float factor);
@@ -103,7 +103,8 @@ class CAnimatorCamLerpEffector : public CAnimatorCamEffector
 
 protected:
     using inherited = CAnimatorCamEffector;
-    GET_KOEFF_FUNC m_func;
+
+    GET_KOEFF_FUNC m_func{xr::noop_ref_v<f32()>};
 
 public:
     ~CAnimatorCamLerpEffector() override = default;

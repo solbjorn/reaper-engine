@@ -22,7 +22,7 @@ std::pair<bool, s32> CRenderDevice::on_message(u32 msg, std::size_t wp, std::ptr
     case WM_XBUTTONUP:
     case WM_MOUSEWHEEL: pInput->mouse_event(msg, wp); return {true, 0};
     case WM_ACTIVATE: {
-        auto& arg = add_frame_async(CallMe::fromMethod<&CRenderDevice::OnWM_Activate>(this));
+        auto& arg = add_frame_async(std::function_ref{std::cw<&CRenderDevice::OnWM_Activate>, this});
         *reinterpret_cast<u64*>(&arg) = wp;
 
         return {false, 0};

@@ -17,33 +17,33 @@
 
 void CConsole::Register_callbacks()
 {
-    ec().assign_callback(sf::Keyboard::Scancode::PageUp, text_editor::ks_free, CallMe::fromMethod<&CConsole::Prev_log>(this));
-    ec().assign_callback(sf::Keyboard::Scancode::PageDown, text_editor::ks_free, CallMe::fromMethod<&CConsole::Next_log>(this));
-    ec().assign_callback(sf::Keyboard::Scancode::PageUp, text_editor::ks_Ctrl, CallMe::fromMethod<&CConsole::Begin_log>(this));
-    ec().assign_callback(sf::Keyboard::Scancode::PageDown, text_editor::ks_Ctrl, CallMe::fromMethod<&CConsole::End_log>(this));
+    ec().assign_callback(sf::Keyboard::Scancode::PageUp, text_editor::ks_free, std::function_ref{std::cw<&CConsole::Prev_log>, this});
+    ec().assign_callback(sf::Keyboard::Scancode::PageDown, text_editor::ks_free, std::function_ref{std::cw<&CConsole::Next_log>, this});
+    ec().assign_callback(sf::Keyboard::Scancode::PageUp, text_editor::ks_Ctrl, std::function_ref{std::cw<&CConsole::Begin_log>, this});
+    ec().assign_callback(sf::Keyboard::Scancode::PageDown, text_editor::ks_Ctrl, std::function_ref{std::cw<&CConsole::End_log>, this});
 
-    ec().assign_callback(sf::Keyboard::Scancode::Tab, text_editor::ks_free, CallMe::fromMethod<&CConsole::Find_cmd>(this));
-    ec().assign_callback(sf::Keyboard::Scancode::Tab, text_editor::ks_Shift, CallMe::fromMethod<&CConsole::Find_cmd_back>(this));
-    ec().assign_callback(sf::Keyboard::Scancode::Tab, text_editor::ks_Alt, CallMe::fromMethod<&CConsole::GamePause>(this));
+    ec().assign_callback(sf::Keyboard::Scancode::Tab, text_editor::ks_free, std::function_ref{std::cw<&CConsole::Find_cmd>, this});
+    ec().assign_callback(sf::Keyboard::Scancode::Tab, text_editor::ks_Shift, std::function_ref{std::cw<&CConsole::Find_cmd_back>, this});
+    ec().assign_callback(sf::Keyboard::Scancode::Tab, text_editor::ks_Alt, std::function_ref{std::cw<&CConsole::GamePause>, this});
 
-    ec().assign_callback(sf::Keyboard::Scancode::Up, text_editor::ks_free, CallMe::fromMethod<&CConsole::Prev_tip>(this));
-    ec().assign_callback(sf::Keyboard::Scancode::Down, text_editor::ks_free, CallMe::fromMethod<&CConsole::Next_tip>(this));
-    ec().assign_callback(sf::Keyboard::Scancode::Up, text_editor::ks_Ctrl, CallMe::fromMethod<&CConsole::Prev_cmd>(this));
-    ec().assign_callback(sf::Keyboard::Scancode::Down, text_editor::ks_Ctrl, CallMe::fromMethod<&CConsole::Next_cmd>(this));
+    ec().assign_callback(sf::Keyboard::Scancode::Up, text_editor::ks_free, std::function_ref{std::cw<&CConsole::Prev_tip>, this});
+    ec().assign_callback(sf::Keyboard::Scancode::Down, text_editor::ks_free, std::function_ref{std::cw<&CConsole::Next_tip>, this});
+    ec().assign_callback(sf::Keyboard::Scancode::Up, text_editor::ks_Ctrl, std::function_ref{std::cw<&CConsole::Prev_cmd>, this});
+    ec().assign_callback(sf::Keyboard::Scancode::Down, text_editor::ks_Ctrl, std::function_ref{std::cw<&CConsole::Next_cmd>, this});
 
-    ec().assign_callback(sf::Keyboard::Scancode::Home, text_editor::ks_Alt, CallMe::fromMethod<&CConsole::Begin_tips>(this));
-    ec().assign_callback(sf::Keyboard::Scancode::End, text_editor::ks_Alt, CallMe::fromMethod<&CConsole::End_tips>(this));
-    ec().assign_callback(sf::Keyboard::Scancode::PageUp, text_editor::ks_Alt, CallMe::fromMethod<&CConsole::PageUp_tips>(this));
-    ec().assign_callback(sf::Keyboard::Scancode::PageDown, text_editor::ks_Alt, CallMe::fromMethod<&CConsole::PageDown_tips>(this));
+    ec().assign_callback(sf::Keyboard::Scancode::Home, text_editor::ks_Alt, std::function_ref{std::cw<&CConsole::Begin_tips>, this});
+    ec().assign_callback(sf::Keyboard::Scancode::End, text_editor::ks_Alt, std::function_ref{std::cw<&CConsole::End_tips>, this});
+    ec().assign_callback(sf::Keyboard::Scancode::PageUp, text_editor::ks_Alt, std::function_ref{std::cw<&CConsole::PageUp_tips>, this});
+    ec().assign_callback(sf::Keyboard::Scancode::PageDown, text_editor::ks_Alt, std::function_ref{std::cw<&CConsole::PageDown_tips>, this});
 
-    ec().assign_callback(sf::Keyboard::Scancode::Enter, text_editor::ks_free, CallMe::fromMethod<&CConsole::Execute_cmd>(this));
-    ec().assign_callback(sf::Keyboard::Scancode::NumpadEnter, text_editor::ks_free, CallMe::fromMethod<&CConsole::Execute_cmd>(this));
+    ec().assign_callback(sf::Keyboard::Scancode::Enter, text_editor::ks_free, std::function_ref{std::cw<&CConsole::Execute_cmd>, this});
+    ec().assign_callback(sf::Keyboard::Scancode::NumpadEnter, text_editor::ks_free, std::function_ref{std::cw<&CConsole::Execute_cmd>, this});
 
-    ec().assign_callback(sf::Keyboard::Scancode::Escape, text_editor::ks_free, CallMe::fromMethod<&CConsole::Hide_cmd_esc>(this));
-    ec().assign_callback(sf::Keyboard::Scancode::Grave, text_editor::ks_free, CallMe::fromMethod<&CConsole::Hide_cmd>(this));
+    ec().assign_callback(sf::Keyboard::Scancode::Escape, text_editor::ks_free, std::function_ref{std::cw<&CConsole::Hide_cmd_esc>, this});
+    ec().assign_callback(sf::Keyboard::Scancode::Grave, text_editor::ks_free, std::function_ref{std::cw<&CConsole::Hide_cmd>, this});
 
     // Screenshot
-    ec().assign_callback(sf::Keyboard::Scancode::F12, text_editor::ks_free, CallMe::fromMethod<&CConsole::Screenshot>(this));
+    ec().assign_callback(sf::Keyboard::Scancode::F12, text_editor::ks_free, std::function_ref{std::cw<&CConsole::Screenshot>, this});
 }
 
 tmc::task<void> CConsole::Screenshot()

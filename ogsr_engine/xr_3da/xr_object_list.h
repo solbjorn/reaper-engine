@@ -19,7 +19,7 @@ private:
     xr_vector<CObject*>* crows;
 
 public:
-    using RELCASE_CALLBACK = CallMe::Delegate<void(CObject*)>;
+    using RELCASE_CALLBACK = std::function_ref<void(CObject*)>;
 
     struct SRelcasePair
     {

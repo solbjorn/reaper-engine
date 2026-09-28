@@ -254,16 +254,17 @@ tmc::task<bool> CAnimatorCamLerpEffector::ProcessCam(SCamEffectorInfo& info)
 
 CAnimatorCamLerpEffectorConst::CAnimatorCamLerpEffectorConst() : m_factor(0.0f)
 {
-    SetFactorFunc(CallMe::fromMethod<&CAnimatorCamLerpEffectorConst::GetFactor>(this));
+    SetFactorFunc(std::function_ref{std::cw<&CAnimatorCamLerpEffectorConst::GetFactor>, this});
 }
 
 CCameraEffectorControlled::CCameraEffectorControlled(CEffectorController* c) : m_controller(c)
 {
     m_controller->SetCam(this);
-    SetFactorFunc(CallMe::fromMethod<&CEffectorController::GetFactor>(m_controller));
+    SetFactorFunc(std::function_ref{std::cw<&CEffectorController::GetFactor>, m_controller});
 }
 
 CCameraEffectorControlled::~CCameraEffectorControlled() { m_controller->SetCam(nullptr); }
+
 BOOL CCameraEffectorControlled::Valid() { return m_controller->Valid(); }
 
 #define SND_MIN_VOLUME_FACTOR (0.1f)

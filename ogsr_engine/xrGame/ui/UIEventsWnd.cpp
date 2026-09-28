@@ -82,7 +82,7 @@ void CUIEventsWnd::Init()
     xml_init.InitTabControl(uiXml, "main_wnd:left_frame:filter_tab", 0, m_TaskFilter);
     m_TaskFilter->SetWindowName("filter_tab");
     Register(m_TaskFilter);
-    AddCallback("filter_tab", TAB_CHANGED, CallMe::fromMethod<&CUIEventsWnd::OnFilterChanged>(this));
+    AddCallback("filter_tab", TAB_CHANGED, std::function_ref{std::cw<&CUIEventsWnd::OnFilterChanged>, this});
 
     m_currFilter = ETaskFilters::eActiveTask;
     SetDescriptionMode(true);

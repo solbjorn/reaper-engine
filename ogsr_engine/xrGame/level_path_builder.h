@@ -34,7 +34,7 @@ public:
         m_dest_vertex_id = dest_vertex_id;
 
         m_object->m_wait_for_distributed_computation_2 = true;
-        Device.add_to_seq_parallel(CallMe::fromMethod<&CLevelPathBuilder::process_level>(this));
+        Device.add_to_seq_parallel(std::function_ref{std::cw<&CLevelPathBuilder::process_level>, this});
     }
 
     void process()
@@ -58,6 +58,6 @@ public:
     IC void remove()
     {
         m_object->m_wait_for_distributed_computation_2 = false;
-        Device.remove_from_seq_parallel(CallMe::fromMethod<&CLevelPathBuilder::process_level>(this));
+        Device.remove_from_seq_parallel(std::function_ref{std::cw<&CLevelPathBuilder::process_level>, this});
     }
 };

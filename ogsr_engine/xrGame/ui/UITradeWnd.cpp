@@ -805,11 +805,11 @@ void CUITradeWnd::SwitchToTalk() { GetMessageTarget()->SendMessage(this, TRADE_W
 
 void CUITradeWnd::BindDragDropListEvents(CUIDragDropListEx* lst)
 {
-    lst->m_f_item_drop = CallMe::fromMethod<&CUITradeWnd::OnItemDrop>(this);
-    lst->m_f_item_start_drag = CallMe::fromMethod<&CUITradeWnd::OnItemStartDrag>(this);
-    lst->m_f_item_db_click = CallMe::fromMethod<&CUITradeWnd::OnItemDbClick>(this);
-    lst->m_f_item_selected = CallMe::fromMethod<&CUITradeWnd::OnItemSelected>(this);
-    lst->m_f_item_rbutton_click = CallMe::fromMethod<&CUITradeWnd::OnItemRButtonClick>(this);
+    lst->m_f_item_drop = std::function_ref{std::cw<&CUITradeWnd::OnItemDrop>, this};
+    lst->m_f_item_start_drag = std::function_ref{std::cw<&CUITradeWnd::OnItemStartDrag>, this};
+    lst->m_f_item_db_click = std::function_ref{std::cw<&CUITradeWnd::OnItemDbClick>, this};
+    lst->m_f_item_selected = std::function_ref{std::cw<&CUITradeWnd::OnItemSelected>, this};
+    lst->m_f_item_rbutton_click = std::function_ref{std::cw<&CUITradeWnd::OnItemRButtonClick>, this};
 }
 
 void CUITradeWnd::PlaySnd(eInventorySndAction a)

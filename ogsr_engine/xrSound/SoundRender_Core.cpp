@@ -434,7 +434,7 @@ tmc::task<void> CSoundRender_Core::stop(std::array<std::byte, 16>& arg)
 
 void CSoundRender_Core::queue_stop(ref_sound& S, bool deferred, f32 speed_k)
 {
-    auto& arg = Device.add_frame_async(CallMe::fromMethod<&CSoundRender_Core::stop>(this));
+    auto& arg = Device.add_frame_async(std::function_ref{std::cw<&CSoundRender_Core::stop>, this});
     new (static_cast<void*>(&arg)) std::tuple<ref_sound, bool, f32>{S, deferred, speed_k};
 }
 
@@ -452,7 +452,7 @@ void CSoundRender_Core::queue_destroy(ref_sound& S)
 {
     if (S._feedback() != nullptr)
     {
-        auto& arg = Device.add_frame_async(CallMe::fromMethod<&CSoundRender_Core::destroy>(this));
+        auto& arg = Device.add_frame_async(std::function_ref{std::cw<&CSoundRender_Core::destroy>, this});
         new (static_cast<void*>(&arg)) ref_sound{S};
     }
 

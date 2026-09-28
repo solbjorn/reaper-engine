@@ -43,7 +43,7 @@ CStalkerCombatPlanner::CStalkerCombatPlanner(CAI_Stalker* object, LPCSTR action_
 
 CStalkerCombatPlanner::~CStalkerCombatPlanner()
 {
-    object().unsubscribe_on_best_cover_changed(CallMe::fromMethod<&CStalkerCombatPlanner::on_best_cover_changed>(this));
+    object().unsubscribe_on_best_cover_changed(std::function_ref{std::cw<&CStalkerCombatPlanner::on_best_cover_changed>, this});
 }
 
 void CStalkerCombatPlanner::on_best_cover_changed(const CCoverPoint*, const CCoverPoint*)
@@ -72,7 +72,7 @@ void CStalkerCombatPlanner::setup(CAI_Stalker* object, CPropertyStorage* storage
     add_evaluators();
     add_actions();
 
-    this->object().subscribe_on_best_cover_changed(CallMe::fromMethod<&CStalkerCombatPlanner::on_best_cover_changed>(this));
+    this->object().subscribe_on_best_cover_changed(std::function_ref{std::cw<&CStalkerCombatPlanner::on_best_cover_changed>, this});
 }
 
 void CStalkerCombatPlanner::execute() { inherited::execute(); }
@@ -83,11 +83,6 @@ void CStalkerCombatPlanner::update()
 
     object().react_on_grenades();
     object().react_on_member_death();
-
-    //	const CEntityAlive				*enemy = object().memory().enemy().selected();
-    //	VERIFY							(enemy);
-    //	const CAI_Stalker				*stalker = smart_cast<const CAI_Stalker*>(enemy);
-    //	m_last_wounded					= stalker && stalker->wounded();
 }
 
 void CStalkerCombatPlanner::initialize()

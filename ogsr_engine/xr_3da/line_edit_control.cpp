@@ -171,47 +171,47 @@ void line_edit_control::init(u32 str_buffer_size, init_mode mode)
 
     if (mode == im_read_only)
     {
-        assign_callback(sf::Keyboard::Scancode::A, ks_Ctrl, CallMe::fromMethod<&line_edit_control::select_all_buf>(this));
-        assign_callback(sf::Keyboard::Scancode::C, ks_Ctrl, CallMe::fromMethod<&line_edit_control::copy_to_clipboard>(this));
-        assign_callback(sf::Keyboard::Scancode::Insert, ks_Ctrl, CallMe::fromMethod<&line_edit_control::copy_to_clipboard>(this));
+        assign_callback(sf::Keyboard::Scancode::A, ks_Ctrl, std::function_ref{std::cw<&line_edit_control::select_all_buf>, this});
+        assign_callback(sf::Keyboard::Scancode::C, ks_Ctrl, std::function_ref{std::cw<&line_edit_control::copy_to_clipboard>, this});
+        assign_callback(sf::Keyboard::Scancode::Insert, ks_Ctrl, std::function_ref{std::cw<&line_edit_control::copy_to_clipboard>, this});
 
-        assign_callback(sf::Keyboard::Scancode::Home, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_home>(this));
-        assign_callback(sf::Keyboard::Scancode::End, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_end>(this));
-        assign_callback(sf::Keyboard::Scancode::Left, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_left>(this));
-        assign_callback(sf::Keyboard::Scancode::Right, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_right>(this));
-        assign_callback(sf::Keyboard::Scancode::Left, ks_Ctrl, CallMe::fromMethod<&line_edit_control::move_pos_left_word>(this));
-        assign_callback(sf::Keyboard::Scancode::Right, ks_Ctrl, CallMe::fromMethod<&line_edit_control::move_pos_right_word>(this));
+        assign_callback(sf::Keyboard::Scancode::Home, ks_free, std::function_ref{std::cw<&line_edit_control::move_pos_home>, this});
+        assign_callback(sf::Keyboard::Scancode::End, ks_free, std::function_ref{std::cw<&line_edit_control::move_pos_end>, this});
+        assign_callback(sf::Keyboard::Scancode::Left, ks_free, std::function_ref{std::cw<&line_edit_control::move_pos_left>, this});
+        assign_callback(sf::Keyboard::Scancode::Right, ks_free, std::function_ref{std::cw<&line_edit_control::move_pos_right>, this});
+        assign_callback(sf::Keyboard::Scancode::Left, ks_Ctrl, std::function_ref{std::cw<&line_edit_control::move_pos_left_word>, this});
+        assign_callback(sf::Keyboard::Scancode::Right, ks_Ctrl, std::function_ref{std::cw<&line_edit_control::move_pos_right_word>, this});
     }
     else
     {
         assign_char_pairs(mode);
 
-        assign_callback(sf::Keyboard::Scancode::Insert, ks_free, CallMe::fromMethod<&line_edit_control::flip_insert_mode>(this));
-        assign_callback(sf::Keyboard::Scancode::A, ks_Ctrl, CallMe::fromMethod<&line_edit_control::select_all_buf>(this));
-        assign_callback(sf::Keyboard::Scancode::Z, ks_Ctrl, CallMe::fromMethod<&line_edit_control::undo_buf>(this));
+        assign_callback(sf::Keyboard::Scancode::Insert, ks_free, std::function_ref{std::cw<&line_edit_control::flip_insert_mode>, this});
+        assign_callback(sf::Keyboard::Scancode::A, ks_Ctrl, std::function_ref{std::cw<&line_edit_control::select_all_buf>, this});
+        assign_callback(sf::Keyboard::Scancode::Z, ks_Ctrl, std::function_ref{std::cw<&line_edit_control::undo_buf>, this});
 
-        assign_callback(sf::Keyboard::Scancode::C, ks_Ctrl, CallMe::fromMethod<&line_edit_control::copy_to_clipboard>(this));
-        assign_callback(sf::Keyboard::Scancode::V, ks_Ctrl, CallMe::fromMethod<&line_edit_control::paste_from_clipboard>(this));
-        assign_callback(sf::Keyboard::Scancode::X, ks_Ctrl, CallMe::fromMethod<&line_edit_control::cut_to_clipboard>(this));
+        assign_callback(sf::Keyboard::Scancode::C, ks_Ctrl, std::function_ref{std::cw<&line_edit_control::copy_to_clipboard>, this});
+        assign_callback(sf::Keyboard::Scancode::V, ks_Ctrl, std::function_ref{std::cw<&line_edit_control::paste_from_clipboard>, this});
+        assign_callback(sf::Keyboard::Scancode::X, ks_Ctrl, std::function_ref{std::cw<&line_edit_control::cut_to_clipboard>, this});
 
-        assign_callback(sf::Keyboard::Scancode::Insert, ks_Ctrl, CallMe::fromMethod<&line_edit_control::copy_to_clipboard>(this));
-        assign_callback(sf::Keyboard::Scancode::Insert, ks_Shift, CallMe::fromMethod<&line_edit_control::paste_from_clipboard>(this));
-        assign_callback(sf::Keyboard::Scancode::Delete, ks_Shift, CallMe::fromMethod<&line_edit_control::cut_to_clipboard>(this));
+        assign_callback(sf::Keyboard::Scancode::Insert, ks_Ctrl, std::function_ref{std::cw<&line_edit_control::copy_to_clipboard>, this});
+        assign_callback(sf::Keyboard::Scancode::Insert, ks_Shift, std::function_ref{std::cw<&line_edit_control::paste_from_clipboard>, this});
+        assign_callback(sf::Keyboard::Scancode::Delete, ks_Shift, std::function_ref{std::cw<&line_edit_control::cut_to_clipboard>, this});
 
-        assign_callback(sf::Keyboard::Scancode::Home, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_home>(this));
-        assign_callback(sf::Keyboard::Scancode::End, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_end>(this));
-        assign_callback(sf::Keyboard::Scancode::Left, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_left>(this));
-        assign_callback(sf::Keyboard::Scancode::Right, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_right>(this));
-        assign_callback(sf::Keyboard::Scancode::Left, ks_Ctrl, CallMe::fromMethod<&line_edit_control::move_pos_left_word>(this));
-        assign_callback(sf::Keyboard::Scancode::Right, ks_Ctrl, CallMe::fromMethod<&line_edit_control::move_pos_right_word>(this));
+        assign_callback(sf::Keyboard::Scancode::Home, ks_free, std::function_ref{std::cw<&line_edit_control::move_pos_home>, this});
+        assign_callback(sf::Keyboard::Scancode::End, ks_free, std::function_ref{std::cw<&line_edit_control::move_pos_end>, this});
+        assign_callback(sf::Keyboard::Scancode::Left, ks_free, std::function_ref{std::cw<&line_edit_control::move_pos_left>, this});
+        assign_callback(sf::Keyboard::Scancode::Right, ks_free, std::function_ref{std::cw<&line_edit_control::move_pos_right>, this});
+        assign_callback(sf::Keyboard::Scancode::Left, ks_Ctrl, std::function_ref{std::cw<&line_edit_control::move_pos_left_word>, this});
+        assign_callback(sf::Keyboard::Scancode::Right, ks_Ctrl, std::function_ref{std::cw<&line_edit_control::move_pos_right_word>, this});
 
-        assign_callback(sf::Keyboard::Scancode::Backspace, ks_free, CallMe::fromMethod<&line_edit_control::delete_selected_back>(this));
-        assign_callback(sf::Keyboard::Scancode::Delete, ks_free, CallMe::fromMethod<&line_edit_control::delete_selected_forward>(this));
-        assign_callback(sf::Keyboard::Scancode::Backspace, ks_Ctrl, CallMe::fromMethod<&line_edit_control::delete_word_back>(this));
-        assign_callback(sf::Keyboard::Scancode::Delete, ks_Ctrl, CallMe::fromMethod<&line_edit_control::delete_word_forward>(this));
+        assign_callback(sf::Keyboard::Scancode::Backspace, ks_free, std::function_ref{std::cw<&line_edit_control::delete_selected_back>, this});
+        assign_callback(sf::Keyboard::Scancode::Delete, ks_free, std::function_ref{std::cw<&line_edit_control::delete_selected_forward>, this});
+        assign_callback(sf::Keyboard::Scancode::Backspace, ks_Ctrl, std::function_ref{std::cw<&line_edit_control::delete_word_back>, this});
+        assign_callback(sf::Keyboard::Scancode::Delete, ks_Ctrl, std::function_ref{std::cw<&line_edit_control::delete_word_forward>, this});
 
-        assign_callback(sf::Keyboard::Scancode::LShift, ks_Ctrl, CallMe::fromMethod<&line_edit_control::SwitchKL>(this));
-        assign_callback(sf::Keyboard::Scancode::LShift, ks_Alt, CallMe::fromMethod<&line_edit_control::SwitchKL>(this));
+        assign_callback(sf::Keyboard::Scancode::LShift, ks_Ctrl, std::function_ref{std::cw<&line_edit_control::SwitchKL>, this});
+        assign_callback(sf::Keyboard::Scancode::LShift, ks_Alt, std::function_ref{std::cw<&line_edit_control::SwitchKL>, this});
     } // if mode
 
     create_key_state(sf::Keyboard::Scancode::LShift, ks_LShift);

@@ -25,12 +25,7 @@ tmc::task<void> base::on_key_press(line_edit_control* const control)
 
 // -------------------------------------------------------------------------------------------------
 
-callback_base::callback_base(Callback const& callback, key_state state)
-{
-    m_callback = callback;
-    m_run_state = state;
-}
-
+callback_base::callback_base(Callback callback, key_state state) : m_run_state{state}, m_callback{callback} {}
 callback_base::~callback_base() = default;
 
 tmc::task<void> callback_base::on_key_press(line_edit_control* const control)

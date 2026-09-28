@@ -103,7 +103,7 @@ void CHelicopter::UpdateHeliParticles()
     }
 }
 
-void CHelicopter::ExplodeHelicopter() { Device.add_frame_async(CallMe::fromMethod<&CHelicopter::explode_async>(this)); }
+void CHelicopter::ExplodeHelicopter() { Device.add_frame_async(std::function_ref{std::cw<&CHelicopter::explode_async>, this}); }
 
 tmc::task<void> CHelicopter::explode_async(std::array<std::byte, 16>&)
 {
@@ -267,7 +267,7 @@ void CollisionCallbackDead(bool& do_colide, bool bo1, dContact& c, SGameMtl*, SG
 void CHelicopter::DieHelicopter()
 {
     if (state() != CHelicopter::eDead)
-        Device.add_frame_async(CallMe::fromMethod<&CHelicopter::die_async>(this));
+        Device.add_frame_async(std::function_ref{std::cw<&CHelicopter::die_async>, this});
 }
 
 tmc::task<void> CHelicopter::die_async(std::array<std::byte, 16>&)

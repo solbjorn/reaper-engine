@@ -85,7 +85,7 @@ TEMPLATE_SPECIALIZATION
 void CStateControllerControlHitAbstract::execute_hit_prepare()
 {
     object->com_man().ta_activate(object->anim_triple_control);
-    Device.add_frame_async(CallMe::fromMethod<&CController::play_control_sound_start>(object));
+    Device.add_frame_async(std::function_ref{std::cw<&CController::play_control_sound_start>, object});
 
     time_control_started = Device.dwTimeGlobal;
 }

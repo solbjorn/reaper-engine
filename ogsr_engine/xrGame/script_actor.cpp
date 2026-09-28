@@ -90,7 +90,7 @@ tmc::task<void> press_action_async(std::array<std::byte, 16>& arg)
 
 void press_action(CActor* actor, xr::key_id key)
 {
-    auto& arg = Device.add_frame_async(CallMe::fromFunction<&press_action_async>());
+    auto& arg = Device.add_frame_async(std::function_ref{std::cw<&press_action_async>});
     *reinterpret_cast<std::pair<CActor*, xr::key_id>*>(&arg) = std::make_pair(actor, key);
 }
 
@@ -102,7 +102,7 @@ tmc::task<void> hold_action_async(std::array<std::byte, 16>& arg)
 
 void hold_action(CActor* actor, xr::key_id key)
 {
-    auto& arg = Device.add_frame_async(CallMe::fromFunction<&hold_action_async>());
+    auto& arg = Device.add_frame_async(std::function_ref{std::cw<&hold_action_async>});
     *reinterpret_cast<std::pair<CActor*, xr::key_id>*>(&arg) = std::make_pair(actor, key);
 }
 } // namespace

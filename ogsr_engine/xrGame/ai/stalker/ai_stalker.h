@@ -427,7 +427,7 @@ public:
     IC u32 max_queue_interval_close() const;
 
 public:
-    using on_best_cover_changed_delegate = CallMe::Delegate<void(const CCoverPoint*, const CCoverPoint*)>;
+    using on_best_cover_changed_delegate = std::function_ref<void(const CCoverPoint*, const CCoverPoint*)>;
 
 private:
     typedef xr_vector<on_best_cover_changed_delegate> cover_delegates;

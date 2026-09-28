@@ -148,7 +148,7 @@ void PH_DBG_SetTrackObject(LPCSTR obj);
 struct CFunctionGraph final
 {
 public:
-    using type_function = CallMe::Delegate<float(float)>;
+    using type_function = std::function_ref<f32(f32)>;
 
 private:
     CStatGraph* m_stat_graph;
@@ -158,6 +158,7 @@ private:
 public:
     CFunctionGraph();
     ~CFunctionGraph();
+
     void Init(type_function fun, float x0, float x1, int l, int t, int w, int h, int points_num = 500, u32 color = D3DCOLOR_XRGB(0, 255, 0),
               u32 bk_color = D3DCOLOR_XRGB(255, 255, 255));
     void Clear();

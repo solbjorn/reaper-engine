@@ -36,10 +36,10 @@ class callback_base final : public base
     RTTI_DECLARE_TYPEINFO(callback_base, base);
 
 private:
-    using Callback = CallMe::Delegate<tmc::task<void>()>;
+    using Callback = std::function_ref<tmc::task<void>()>;
 
 public:
-    explicit callback_base(Callback const& callback, key_state state);
+    explicit callback_base(Callback callback, key_state state);
     ~callback_base() override;
 
     tmc::task<void> on_key_press(line_edit_control* const control) override;

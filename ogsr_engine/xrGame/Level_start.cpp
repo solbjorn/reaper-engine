@@ -56,12 +56,12 @@ BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
 
     //---------------------------------------------------------------------
     //---------------------------------------------------------------------------
-    g_loading_events.emplace_back(CallMe::fromMethod<&CLevel::net_start1>(this));
-    g_loading_events.emplace_back(CallMe::fromMethod<&CLevel::net_start2>(this));
-    g_loading_events.emplace_back(CallMe::fromMethod<&CLevel::net_start3>(this));
-    g_loading_events.emplace_back(CallMe::fromMethod<&CLevel::net_start4>(this));
-    g_loading_events.emplace_back(CallMe::fromMethod<&CLevel::net_start5>(this));
-    g_loading_events.emplace_back(CallMe::fromMethod<&CLevel::net_start6>(this));
+    g_loading_events.emplace_back(std::cw<&CLevel::net_start1>, this);
+    g_loading_events.emplace_back(std::cw<&CLevel::net_start2>, this);
+    g_loading_events.emplace_back(std::cw<&CLevel::net_start3>, this);
+    g_loading_events.emplace_back(std::cw<&CLevel::net_start4>, this);
+    g_loading_events.emplace_back(std::cw<&CLevel::net_start5>, this);
+    g_loading_events.emplace_back(std::cw<&CLevel::net_start6>, this);
 
     return net_start_result_total;
 }
@@ -135,12 +135,12 @@ tmc::task<bool> CLevel::net_start4()
 
     g_loading_events.pop_front();
 
-    g_loading_events.emplace_front(CallMe::fromMethod<&CLevel::net_start_client6>(this));
-    g_loading_events.emplace_front(CallMe::fromMethod<&CLevel::net_start_client5>(this));
-    g_loading_events.emplace_front(CallMe::fromMethod<&CLevel::net_start_client4>(this));
-    g_loading_events.emplace_front(CallMe::fromMethod<&CLevel::net_start_client3>(this));
-    g_loading_events.emplace_front(CallMe::fromMethod<&CLevel::net_start_client2>(this));
-    g_loading_events.emplace_front(CallMe::fromMethod<&CLevel::net_start_client1>(this));
+    g_loading_events.emplace_front(std::cw<&CLevel::net_start_client6>, this);
+    g_loading_events.emplace_front(std::cw<&CLevel::net_start_client5>, this);
+    g_loading_events.emplace_front(std::cw<&CLevel::net_start_client4>, this);
+    g_loading_events.emplace_front(std::cw<&CLevel::net_start_client3>, this);
+    g_loading_events.emplace_front(std::cw<&CLevel::net_start_client2>, this);
+    g_loading_events.emplace_front(std::cw<&CLevel::net_start_client1>, this);
 
     co_return false;
 }
@@ -170,7 +170,7 @@ LevelLoadFinalizer LF;
 tmc::task<bool> CLevel::net_start6()
 {
     g_loading_events.pop_front();
-    g_loading_events.emplace_front(CallMe::fromMethod<&LevelLoadFinalizer::net_start_finalizer>(&LF));
+    g_loading_events.emplace_front(std::cw<&LevelLoadFinalizer::net_start_finalizer>, &LF);
 
     // init bullet manager
     BulletManager().Clear();

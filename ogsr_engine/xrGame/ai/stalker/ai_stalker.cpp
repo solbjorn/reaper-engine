@@ -422,7 +422,7 @@ tmc::task<void> CAI_Stalker::net_Destroy()
     co_await CInventoryOwner::net_Destroy();
     m_pPhysics_support->in_NetDestroy();
 
-    Device.remove_from_seq_parallel(CallMe::fromMethod<&CAI_Stalker::update_object_handler>(this));
+    Device.remove_from_seq_parallel(std::function_ref{std::cw<&CAI_Stalker::update_object_handler>, this});
 
     xr_delete(m_ce_close);
     xr_delete(m_ce_far);
@@ -520,7 +520,7 @@ tmc::task<void> CAI_Stalker::UpdateCL()
     if (g_Alive())
     {
         if (g_mt_config.test(mtObjectHandler) && CObjectHandler::planner().initialized())
-            Device.add_to_seq_parallel(CallMe::fromMethod<&CAI_Stalker::update_object_handler>(this));
+            Device.add_to_seq_parallel(std::function_ref{std::cw<&CAI_Stalker::update_object_handler>, this});
         else
             co_await update_object_handler();
 
@@ -584,7 +584,7 @@ tmc::task<void> CAI_Stalker::shedule_Update(u32 DT)
 #endif // USE_SCHEDULER_IN_AGENT_MANAGER
 
         if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtAiVision))
-            Device.add_to_seq_parallel(CallMe::fromMethod<&CCustomMonster::Exec_Visibility>((CCustomMonster*)this));
+            Device.add_to_seq_parallel(std::function_ref{std::cw<&CCustomMonster::Exec_Visibility>, static_cast<CCustomMonster*>(this)});
         else
             co_await Exec_Visibility();
 

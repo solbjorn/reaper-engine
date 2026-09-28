@@ -64,7 +64,7 @@ CALifeUpdateManager::CALifeUpdateManager(LPCSTR section) : CALifeSwitchManager{s
 CALifeUpdateManager::~CALifeUpdateManager()
 {
     shedule_unregister(true);
-    Device.remove_from_seq_parallel(CallMe::fromMethod<&CALifeUpdateManager::update>(this));
+    Device.remove_from_seq_parallel(std::function_ref{std::cw<&CALifeUpdateManager::update>, this});
 }
 
 float CALifeUpdateManager::shedule_Scale() const { return 0.5f; }
@@ -100,7 +100,7 @@ tmc::task<void> CALifeUpdateManager::shedule_Update(u32 dt)
 
     if (!m_first_time && g_mt_config.test(mtALife))
     {
-        Device.add_to_seq_parallel(CallMe::fromMethod<&CALifeUpdateManager::update>(this));
+        Device.add_to_seq_parallel(std::function_ref{std::cw<&CALifeUpdateManager::update>, this});
         co_return;
     }
 

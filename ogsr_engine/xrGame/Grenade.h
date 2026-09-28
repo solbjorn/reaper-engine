@@ -74,7 +74,7 @@ public:
     [[nodiscard]] CGameObject* cast_game_object() override { return this; }
     [[nodiscard]] IDamageSource* cast_IDamageSource() override { return CExplosive::cast_IDamageSource(); }
 
-    using destroy_callback = CallMe::Delegate<void(CGrenade*)>;
+    using destroy_callback = std::function_ref<void(CGrenade*)>;
 
     void set_destroy_callback(destroy_callback callback) { m_destroy_callback = callback; }
 

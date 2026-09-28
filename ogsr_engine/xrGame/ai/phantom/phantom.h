@@ -34,7 +34,7 @@ private:
 
     void UpdateFlyMedia();
 
-    CallMe::Delegate<void()> UpdateEvent;
+    std::function_ref<void()> UpdateEvent;
 
     struct SStateData final
     {

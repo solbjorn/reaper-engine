@@ -150,10 +150,11 @@ tmc::task<void> CParticlesObject::shedule_Update(u32 _dt)
     u32 dt = Device.dwTimeGlobal - dwLastTime;
     if (dt)
     {
+        //. AlexMX comment this line// NO UNCOMMENT - DON'T WORK PROPERLY
         if constexpr (false)
-        { //. AlexMX comment this line// NO UNCOMMENT - DON'T WORK PROPERLY
+        {
             mt_dt = dt;
-            Device.add_to_seq_parallel(CallMe::fromMethod<&CParticlesObject::PerformAllTheWork_mt>(this));
+            Device.add_to_seq_parallel(std::function_ref{std::cw<&CParticlesObject::PerformAllTheWork_mt>, this});
         }
         else
         {

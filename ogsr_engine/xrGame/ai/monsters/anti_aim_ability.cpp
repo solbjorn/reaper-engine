@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "anti_aim_ability.h"
+
 #include "basemonster/base_monster.h"
 #include "../../Actor.h"
 #include "../../ActorEffector.h"
@@ -18,14 +19,13 @@ constexpr const char* s_anti_aim_detection_gain_speed_string = "anti_aim_detecti
 constexpr const char* s_anti_aim_detection_loose_speed_string = "anti_aim_detection_loose_speed";
 } // namespace
 
-anti_aim_ability::anti_aim_ability(CBaseMonster* const object) : m_object{object}
+anti_aim_ability::anti_aim_ability(CBaseMonster* const object) : m_object{object}, m_callback{xr::noop_ref_v<void()>}
 {
     m_effector_id = 0;
     m_max_angle = 0.5f;
     m_last_activated_tick = 0;
     m_last_detection_tick = 0;
     m_last_angle = M_PI;
-    m_callback = CallMe::Delegate<void()>();
 }
 
 anti_aim_ability::~anti_aim_ability() { do_deactivate(); }

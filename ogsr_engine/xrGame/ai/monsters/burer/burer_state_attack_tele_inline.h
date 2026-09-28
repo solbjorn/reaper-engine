@@ -104,10 +104,9 @@ void CStateBurerAttackTele<Object>::deactivate()
             {
                 continue;
             }
-            if (CGrenade* grenade = smart_cast<CGrenade*>(cur_object))
-            {
-                grenade->set_destroy_callback(CallMe::Delegate<void(CGrenade*)>());
-            }
+
+            if (const auto grenade = smart_cast<CGrenade*>(cur_object); grenade != nullptr)
+                grenade->set_destroy_callback(xr::noop_ref_v<void(CGrenade*)>);
         }
     }
 
@@ -465,7 +464,7 @@ void CStateBurerAttackTele<Object>::HandleGrenades()
             continue;
         }
 
-        grenade->set_destroy_callback(CallMe::fromMethod<&CStateBurerAttackTele<Object>::OnGrenadeDestroyed>(this));
+        grenade->set_destroy_callback(std::function_ref{std::cw<&CStateBurerAttackTele<Object>::OnGrenadeDestroyed>, this});
 
         float const height = 2.5f;
         bool const rotate = false;

@@ -10,14 +10,12 @@
 
 struct SPrimitiveBuffer final
 {
-    ref_geom pGeom{};
+    ref_geom pGeom;
     u32 v_cnt;
     u32 i_cnt;
     D3DPRIMITIVETYPE p_type;
     u32 p_cnt;
-    CallMe::Delegate<void()> OnRender;
-
-    SPrimitiveBuffer() : OnRender(CallMe::Delegate<void()>()) {}
+    std::function_ref<void()> OnRender{xr::noop_ref_v<void()>};
 
     void CreateFromData(D3DPRIMITIVETYPE, u32, u32, const void*, u32, const u16* = nullptr, u32 = 0) {}
     void Destroy();

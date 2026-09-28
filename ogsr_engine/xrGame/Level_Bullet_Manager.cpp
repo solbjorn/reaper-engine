@@ -393,7 +393,7 @@ tmc::task<void> CBulletManager::CommitRenderSet() // @ the end of frame
     m_BulletsRendered = m_Bullets;
 
     if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtBullets))
-        Device.add_to_seq_parallel(CallMe::fromMethod<&CBulletManager::UpdateWorkload>(this));
+        Device.add_to_seq_parallel(std::function_ref{std::cw<&CBulletManager::UpdateWorkload>, this});
     else
         co_await UpdateWorkload();
 }

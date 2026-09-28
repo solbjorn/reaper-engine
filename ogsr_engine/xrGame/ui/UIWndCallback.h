@@ -7,11 +7,12 @@ class CUIWndCallback : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CUIWndCallback);
 
 public:
-    using void_function = CallMe::Delegate<void(CUIWindow*, void*)>;
+    using void_function = std::function_ref<void(CUIWindow*, void*)>;
 
     struct callback
     {
-        CallMe::Delegate<void(CUIWindow*, void*)> m_cpp_callback;
+        std::function_ref<void(CUIWindow*, void*)> m_cpp_callback;
+
         shared_str m_controlName;
         s16 m_event;
     };

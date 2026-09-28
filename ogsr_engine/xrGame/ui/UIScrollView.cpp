@@ -42,14 +42,16 @@ void CUIScrollView::Init()
         m_pad->SetAutoDelete(true);
         AttachChild(m_pad);
     }
+
     m_pad->SetWndPos(0.0f, 0.0f);
+
     if (!m_VScrollBar)
     {
         m_VScrollBar = xr_new<CUIScrollBar>();
         m_VScrollBar->SetAutoDelete(true);
         AttachChild(m_VScrollBar);
         Register(m_VScrollBar);
-        AddCallback("scroll_v", SCROLLBAR_VSCROLL, CallMe::fromMethod<&CUIScrollView::OnScrollV>(this));
+        AddCallback("scroll_v", SCROLLBAR_VSCROLL, std::function_ref{std::cw<&CUIScrollView::OnScrollV>, this});
     }
 
     if (!!m_scrollbar_profile)

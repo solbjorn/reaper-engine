@@ -87,16 +87,6 @@ template <typename T, typename Hash = typename absl::container_internal::FlatHas
 using unordered_set = absl::flat_hash_set<T, Hash, Eq, Allocator>;
 } // namespace xr
 
-namespace std
-{
-// Same as for std::vector<> and absl::InlinedVector<>
-template <typename H, typename T, std::size_t C>
-[[nodiscard]] constexpr H AbslHashValue(H hash_state, const std::inplace_vector<T, C>& vector)
-{
-    return H::combine_contiguous(std::move(hash_state), vector.data(), vector.size());
-}
-} // namespace std
-
 namespace plf
 {
 // Same as for std::bitset<>
@@ -132,8 +122,42 @@ template <typename H, std::size_t total_size, typename storage_type, bool harden
 }
 } // namespace plf
 
+namespace std
+{
+// Same as for std::vector<> and absl::InlinedVector<>
+template <typename H, typename T, std::size_t C>
+[[nodiscard]] constexpr H AbslHashValue(H hash_state, const std::inplace_vector<T, C>& vector)
+{
+    return H::combine_contiguous(std::move(hash_state), vector.data(), vector.size());
+}
+} // namespace std
+
+// std::function_ref<> is always 2 pointers -- otherwise, std::bit_cast<> will fail.
+// This is used only in cases when we're absolutely sure it will work as expected.
+template <typename Sign>
+[[nodiscard]] constexpr bool operator==(const std::function_ref<Sign>& lhs, const std::function_ref<Sign>& rhs)
+{
+    using under = const std::array<std::uintptr_t, 2>;
+    return std::bit_cast<under>(lhs) == std::bit_cast<under>(rhs);
+}
+
 namespace xr
 {
+namespace detail
+{
+template <typename Sign>
+struct noop_ref;
+
+template <typename R, typename... Args>
+struct noop_ref<R(Args...)> final
+{
+    static constexpr auto value = std::function_ref<R(Args...)>{std::cw<[](Args...) -> R { return R{}; }>};
+};
+} // namespace detail
+
+template <typename Sign>
+constexpr inline auto noop_ref_v = xr::detail::noop_ref<Sign>::value;
+
 template <typename T>
 [[nodiscard]] constexpr auto size_bytes(const T& cont)
 {

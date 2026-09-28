@@ -34,7 +34,7 @@ void CZoneEffector::Activate()
         m_pp_effector = xr_new<CPostprocessAnimatorLerp>();
         m_pp_effector->SetType(EEffectorPPType{xr::wang_64_32(std::bit_cast<std::uintptr_t>(this))});
         m_pp_effector->SetCyclic(true);
-        m_pp_effector->SetFactorFunc(CallMe::fromMethod<&CZoneEffector::GetFactor>(this));
+        m_pp_effector->SetFactorFunc(std::function_ref{std::cw<&CZoneEffector::GetFactor>, this});
         m_pp_effector->Load(m_pp_fname.c_str());
         m_pActor->Cameras().AddPPEffector(m_pp_effector);
     }
@@ -44,7 +44,7 @@ void CZoneEffector::Activate()
         m_cam_effector = xr_new<CAnimatorCamLerpEffector>();
         m_cam_effector->SetType(effZone);
         m_cam_effector->SetCyclic(true);
-        m_cam_effector->SetFactorFunc(CallMe::fromMethod<&CZoneEffector::GetFactor>(this));
+        m_cam_effector->SetFactorFunc(std::function_ref{std::cw<&CZoneEffector::GetFactor>, this});
         m_cam_effector->Start(m_cam_fname.c_str());
         m_pActor->Cameras().AddCamEffector(m_cam_effector);
     }

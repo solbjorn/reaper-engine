@@ -78,7 +78,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
     m_UIMainScrollH->SetPageSize(iFloor(m_UILevelFrame->GetWidth()));
     m_UIMainFrame->AttachChild(m_UIMainScrollH);
     Register(m_UIMainScrollH);
-    AddCallback("scroll_h", SCROLLBAR_HSCROLL, CallMe::fromMethod<&CUIMapWnd::OnScrollH>(this));
+    AddCallback("scroll_h", SCROLLBAR_HSCROLL, std::function_ref{std::cw<&CUIMapWnd::OnScrollH>, this});
 
     m_UIMainScrollV = xr_new<CUIScrollBar>();
     m_UIMainScrollV->SetAutoDelete(true);
@@ -88,7 +88,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
     m_UIMainScrollV->SetPageSize(iFloor(m_UILevelFrame->GetHeight()));
     m_UIMainFrame->AttachChild(m_UIMainScrollV);
     Register(m_UIMainScrollV);
-    AddCallback("scroll_v", SCROLLBAR_VSCROLL, CallMe::fromMethod<&CUIMapWnd::OnScrollV>(this));
+    AddCallback("scroll_v", SCROLLBAR_VSCROLL, std::function_ref{std::cw<&CUIMapWnd::OnScrollV>, this});
 
     UIMainMapHeader = xr_new<CUIFrameLineWnd>();
     UIMainMapHeader->SetAutoDelete(true);
@@ -111,7 +111,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
         xml_init.Init3tButton(uiXml, pth, 0, m_ToolBar[btnIndex]);
         UIMainMapHeader->AttachChild(m_ToolBar[btnIndex]);
         Register(m_ToolBar[btnIndex]);
-        AddCallback(m_ToolBar[btnIndex]->WindowName().c_str(), BUTTON_CLICKED, CallMe::fromMethod<&CUIMapWnd::OnToolGlobalMapClicked>(this));
+        AddCallback(m_ToolBar[btnIndex]->WindowName().c_str(), BUTTON_CLICKED, std::function_ref{std::cw<&CUIMapWnd::OnToolGlobalMapClicked>, this});
     }
 
     btnIndex = eActor;
@@ -124,7 +124,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
         xml_init.Init3tButton(uiXml, pth, 0, m_ToolBar[btnIndex]);
         UIMainMapHeader->AttachChild(m_ToolBar[btnIndex]);
         Register(m_ToolBar[btnIndex]);
-        AddCallback(m_ToolBar[btnIndex]->WindowName().c_str(), BUTTON_CLICKED, CallMe::fromMethod<&CUIMapWnd::OnToolActorClicked>(this));
+        AddCallback(m_ToolBar[btnIndex]->WindowName().c_str(), BUTTON_CLICKED, std::function_ref{std::cw<&CUIMapWnd::OnToolActorClicked>, this});
     }
 
     btnIndex = eZoomIn;
@@ -137,7 +137,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
         xml_init.Init3tButton(uiXml, pth, 0, m_ToolBar[btnIndex]);
         UIMainMapHeader->AttachChild(m_ToolBar[btnIndex]);
         Register(m_ToolBar[btnIndex]);
-        AddCallback(m_ToolBar[btnIndex]->WindowName().c_str(), BUTTON_CLICKED, CallMe::fromMethod<&CUIMapWnd::OnToolZoomInClicked>(this));
+        AddCallback(m_ToolBar[btnIndex]->WindowName().c_str(), BUTTON_CLICKED, std::function_ref{std::cw<&CUIMapWnd::OnToolZoomInClicked>, this});
     }
 
     btnIndex = eZoomOut;
@@ -150,7 +150,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
         xml_init.Init3tButton(uiXml, pth, 0, m_ToolBar[btnIndex]);
         UIMainMapHeader->AttachChild(m_ToolBar[btnIndex]);
         Register(m_ToolBar[btnIndex]);
-        AddCallback(m_ToolBar[btnIndex]->WindowName().c_str(), BUTTON_CLICKED, CallMe::fromMethod<&CUIMapWnd::OnToolZoomOutClicked>(this));
+        AddCallback(m_ToolBar[btnIndex]->WindowName().c_str(), BUTTON_CLICKED, std::function_ref{std::cw<&CUIMapWnd::OnToolZoomOutClicked>, this});
     }
 
     m_text_hint = xr_new<CUIStatic>();

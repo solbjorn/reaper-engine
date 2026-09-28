@@ -61,7 +61,7 @@ namespace
     XR_LOG__DYNAMIC(static_cast<xr::logger*>(userdata), lvl, "{}", std::move(res));
 }
 
-[[nodiscard]] auto sentry_on_crash(const sentry::sentry_ucontext_t*, sentry::sentry_value_t event, void* user_data)
+[[nodiscard]] auto sentry_on_crash(const sentry::sentry_ucontext_t*, sentry::sentry_value_t event, sentry::sentry_hint_t*, void* user_data)
 {
     auto& helper = *static_cast<xr::sentry_helper*>(user_data);
 

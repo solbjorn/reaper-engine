@@ -75,7 +75,7 @@ public:
     explicit CCC_Quit(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_Quit() override = default;
 
-    void Execute(std::string_view) override { Device.add_frame_async(CallMe::fromMethod<&CCC_Quit::execute_async>(this)); }
+    void Execute(std::string_view) override { Device.add_frame_async(std::function_ref{std::cw<&CCC_Quit::execute_async>, this}); }
 
 private:
     tmc::task<void> execute_async(std::array<std::byte, 16>&)
@@ -218,7 +218,7 @@ public:
 
         const auto& [event, param] = res.values();
 
-        auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_E_Signal::execute_async>(this));
+        auto& arg = Device.add_frame_async(std::function_ref{std::cw<&CCC_E_Signal::execute_async>, this});
         *reinterpret_cast<std::pair<gsl::zstring, gsl::zstring>*>(&arg) = std::make_pair(xr_strdup(event.c_str()), xr_strdup(param.c_str()));
     }
 
@@ -435,7 +435,7 @@ public:
 
         const xr_string val{args.substr(start + 1, end - start - 1)};
 
-        auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_Start::execute_async>(this));
+        auto& arg = Device.add_frame_async(std::function_ref{std::cw<&CCC_Start::execute_async>, this});
         *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(val.c_str());
     }
 
@@ -451,7 +451,7 @@ public:
     explicit CCC_Disconnect(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_Disconnect() override = default;
 
-    void Execute(std::string_view) override { Device.add_frame_async(CallMe::fromMethod<&CCC_Disconnect::execute_async>(this)); }
+    void Execute(std::string_view) override { Device.add_frame_async(std::function_ref{std::cw<&CCC_Disconnect::execute_async>, this}); }
 
 private:
     tmc::task<void> execute_async(std::array<std::byte, 16>&) { co_await Engine.Event.Defer("KERNEL:disconnect"); }
@@ -470,7 +470,7 @@ public:
     void Execute(std::string_view) override
     {
         if (Device.b_is_Ready)
-            Device.add_frame_async(CallMe::fromMethod<&CCC_VID_Reset::execute_async>(this));
+            Device.add_frame_async(std::function_ref{std::cw<&CCC_VID_Reset::execute_async>, this});
     }
 
 private:
@@ -545,7 +545,7 @@ public:
 
     void Execute(std::string_view args) override
     {
-        auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_Screenmode::execute_async>(this));
+        auto& arg = Device.add_frame_async(std::function_ref{std::cw<&CCC_Screenmode::execute_async>, this});
         *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args.data());
     }
 
@@ -742,7 +742,7 @@ public:
     explicit CCC_HideConsole(gsl::czstring N) : IConsole_Command{N, true} {}
     ~CCC_HideConsole() override = default;
 
-    void Execute(std::string_view) override { Device.add_frame_async(CallMe::fromMethod<&CCC_HideConsole::execute_async>(this)); }
+    void Execute(std::string_view) override { Device.add_frame_async(std::function_ref{std::cw<&CCC_HideConsole::execute_async>, this}); }
     [[nodiscard]] xr_string Info() const override { return "hide console"; }
 
 private:

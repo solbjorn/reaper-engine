@@ -18,21 +18,19 @@ class CAI_Stalker;
 
 class CStalkerAnimationPair final
 {
-#ifdef USE_HEAD_BONE_PART_FAKE
 public:
+#ifdef USE_HEAD_BONE_PART_FAKE
     enum
     {
         all_bone_parts = u16(0xf),
     };
 #endif // USE_HEAD_BONE_PART_FAKE
 
-public:
-    typedef xr_vector<float> ANIMATION_WEIGHTS;
-    typedef std::pair<LPCSTR, LPCSTR> BLEND_ID;
+    using ANIMATION_WEIGHTS = xr_vector<f32>;
+    using BLEND_ID = std::pair<gsl::czstring, gsl::czstring>;
 
-public:
-    using CALLBACK_ID = CallMe::Delegate<void()>;
-    typedef xr_vector<CALLBACK_ID> CALLBACKS;
+    using CALLBACK_ID = std::function_ref<void()>;
+    using CALLBACKS = xr_vector<CALLBACK_ID>;
 
 private:
     MotionID m_animation;
@@ -93,9 +91,9 @@ public:
 #endif // DEBUG
 
 public:
-    IC const CALLBACK_ID* callback(const CALLBACK_ID& callback) const;
-    IC void add_callback(const CALLBACK_ID& callback);
-    IC void remove_callback(const CALLBACK_ID& callback);
+    IC const CALLBACK_ID* callback(CALLBACK_ID callback) const;
+    IC void add_callback(CALLBACK_ID callback);
+    IC void remove_callback(CALLBACK_ID callback);
     void on_animation_end();
     IC bool need_update() const;
 };

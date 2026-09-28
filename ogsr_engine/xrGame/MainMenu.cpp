@@ -448,7 +448,7 @@ xr_string CMainMenu::GetGSVer() { return Core.GetEngineVersion(); }
 
 void CMainMenu::PlaySound(gsl::czstring path)
 {
-    auto& arg = Device.add_frame_async(CallMe::fromMethod<&CMainMenu::play_sound_async>(this));
+    auto& arg = Device.add_frame_async(std::function_ref{std::cw<&CMainMenu::play_sound_async>, this});
     *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(path);
 }
 

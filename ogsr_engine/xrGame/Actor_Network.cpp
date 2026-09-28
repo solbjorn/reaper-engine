@@ -220,7 +220,7 @@ tmc::task<bool> CActor::net_Spawn(CSE_Abstract* DC)
 
     m_holder_id = E->m_holderID;
     if (E->m_holderID != ALife::_OBJECT_ID(-1))
-        Level().client_spawn_manager().add(E->m_holderID, ID(), CallMe::fromMethod<&CActor::on_requested_spawn>(this));
+        Level().client_spawn_manager().add(E->m_holderID, ID(), std::function_ref{std::cw<&CActor::on_requested_spawn>, this});
 
     // F
     //-------------------------------------------------------------

@@ -43,7 +43,7 @@ IC BOOL feel_vision_callback(collide::rq_result& result, LPVOID params)
 }
 } // namespace
 
-Vision::Vision() : pure_relcase{CallMe::fromMethod<&Vision::feel_vision_relcase>(this)} {}
+Vision::Vision() : pure_relcase{std::function_ref{std::cw<&Vision::feel_vision_relcase>, this}} {}
 Vision::~Vision() { feel_vision_clear(); }
 
 void Vision::o_new(CObject* O)

@@ -35,7 +35,7 @@ public:
         m_level_path = &level_path;
         m_path_vertex_index = path_vertex_index;
 
-        Device.add_to_seq_parallel(CallMe::fromMethod<&CDetailPathBuilder::process_detail>(this));
+        Device.add_to_seq_parallel(std::function_ref{std::cw<&CDetailPathBuilder::process_detail>, this});
     }
 
     void process()
@@ -60,7 +60,6 @@ public:
     IC void remove()
     {
         m_object->m_wait_for_distributed_computation = false;
-
-        Device.remove_from_seq_parallel(CallMe::fromMethod<&CDetailPathBuilder::process_detail>(this));
+        Device.remove_from_seq_parallel(std::function_ref{std::cw<&CDetailPathBuilder::process_detail>, this});
     }
 };

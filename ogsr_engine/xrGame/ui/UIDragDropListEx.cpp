@@ -42,12 +42,12 @@ CUIDragDropListEx::CUIDragDropListEx()
 
     m_vScrollBar->SetWindowName("scroll_v");
     Register(m_vScrollBar);
-    AddCallback("scroll_v", SCROLLBAR_VSCROLL, CallMe::fromMethod<&CUIDragDropListEx::OnScrollV>(this));
-    AddCallback("cell_item", DRAG_DROP_ITEM_DRAG, CallMe::fromMethod<&CUIDragDropListEx::OnItemStartDragging>(this));
-    AddCallback("cell_item", DRAG_DROP_ITEM_DROP, CallMe::fromMethod<&CUIDragDropListEx::OnItemDrop>(this));
-    AddCallback("cell_item", DRAG_DROP_ITEM_SELECTED, CallMe::fromMethod<&CUIDragDropListEx::OnItemSelected>(this));
-    AddCallback("cell_item", DRAG_DROP_ITEM_RBUTTON_CLICK, CallMe::fromMethod<&CUIDragDropListEx::OnItemRButtonClick>(this));
-    AddCallback("cell_item", DRAG_DROP_ITEM_DB_CLICK, CallMe::fromMethod<&CUIDragDropListEx::OnItemDBClick>(this));
+    AddCallback("scroll_v", SCROLLBAR_VSCROLL, std::function_ref{std::cw<&CUIDragDropListEx::OnScrollV>, this});
+    AddCallback("cell_item", DRAG_DROP_ITEM_DRAG, std::function_ref{std::cw<&CUIDragDropListEx::OnItemStartDragging>, this});
+    AddCallback("cell_item", DRAG_DROP_ITEM_DROP, std::function_ref{std::cw<&CUIDragDropListEx::OnItemDrop>, this});
+    AddCallback("cell_item", DRAG_DROP_ITEM_SELECTED, std::function_ref{std::cw<&CUIDragDropListEx::OnItemSelected>, this});
+    AddCallback("cell_item", DRAG_DROP_ITEM_RBUTTON_CLICK, std::function_ref{std::cw<&CUIDragDropListEx::OnItemRButtonClick>, this});
+    AddCallback("cell_item", DRAG_DROP_ITEM_DB_CLICK, std::function_ref{std::cw<&CUIDragDropListEx::OnItemDBClick>, this});
 
     back_color = 0xFFFFFFFF;
 }

@@ -2,10 +2,6 @@
 
 #include "tinybvh.h"
 
-#include "assert.h"
-
-#define fprintf(stream, format, line, desc) LIBASSERT_PANIC(desc)
-
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wcast-qual");
 XR_DIAG_IGNORE("-Wcomma");
@@ -28,5 +24,3 @@ XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
 #include <tiny_bvh.h>
 
 XR_DIAG_POP();
-
-#undef fprintf

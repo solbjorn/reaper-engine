@@ -44,7 +44,6 @@ IC const MotionID& CStalkerAnimationPair::animation() const { return (m_animatio
 IC CBlend* CStalkerAnimationPair::blend() const { return (m_blend); }
 
 IC void CStalkerAnimationPair::step_dependence(bool value) { m_step_dependence = value; }
-
 IC bool CStalkerAnimationPair::step_dependence() const { return (m_step_dependence); }
 
 #ifdef DEBUG
@@ -56,29 +55,27 @@ IC void CStalkerAnimationPair::set_dbg_info(LPCSTR object_name, LPCSTR animation
 #endif
 
 IC void CStalkerAnimationPair::global_animation(bool global_animation) { m_global_animation = global_animation; }
-
 IC bool CStalkerAnimationPair::global_animation() const { return (m_global_animation); }
 
 IC void CStalkerAnimationPair::make_inactual() { m_actual = false; }
 
-IC const CStalkerAnimationPair::CALLBACK_ID* CStalkerAnimationPair::callback(const CALLBACK_ID& callback) const
+IC const CStalkerAnimationPair::CALLBACK_ID* CStalkerAnimationPair::callback(CALLBACK_ID callback) const
 {
-    if (const auto it = std::ranges::find(m_callbacks, callback); it != m_callbacks.end())
+    if (const auto it = std::ranges::find_if(m_callbacks, [callback] [[nodiscard]] (const auto& item) { return item == callback; }); it != m_callbacks.end())
         return std::to_address(it);
 
     return nullptr;
 }
 
-IC void CStalkerAnimationPair::add_callback(const CALLBACK_ID& callback)
+IC void CStalkerAnimationPair::add_callback(CALLBACK_ID callback)
 {
-    VERIFY(std::find(m_callbacks.begin(), m_callbacks.end(), callback) == m_callbacks.end());
-    m_callbacks.push_back(callback);
+    VERIFY(std::ranges::find_if(m_callbacks, [callback] [[nodiscard]] (const auto& item) { return item == callback; }) == m_callbacks.end());
+    m_callbacks.emplace_back(callback);
 }
 
-IC void CStalkerAnimationPair::remove_callback(const CALLBACK_ID& callback)
+IC void CStalkerAnimationPair::remove_callback(CALLBACK_ID callback)
 {
-    CALLBACKS::iterator I = std::find(m_callbacks.begin(), m_callbacks.end(), callback);
-    if (I != m_callbacks.end())
+    if (const auto I = std::ranges::find_if(m_callbacks, [callback] [[nodiscard]] (const auto& item) { return item == callback; }); I != m_callbacks.end())
         m_callbacks.erase(I);
 }
 

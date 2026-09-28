@@ -308,7 +308,7 @@ tmc::task<void> CLevel::ProcessGameEvents()
     }
 
     if (!is_removing_objects())
-        Device.add_to_seq_parallel(CallMe::fromMethod<&CLevel::ProcessGameSpawns>(this));
+        Device.add_to_seq_parallel(std::function_ref{std::cw<&CLevel::ProcessGameSpawns>, this});
 }
 
 tmc::task<void> CLevel::OnFrame()
@@ -329,7 +329,7 @@ tmc::task<void> CLevel::OnFrame()
     co_await ProcessGameEvents();
 
     if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtMap))
-        Device.add_to_seq_parallel(CallMe::fromMethod<&CMapManager::Update>(m_map_manager));
+        Device.add_to_seq_parallel(std::function_ref{std::cw<&CMapManager::Update>, m_map_manager});
     else
         co_await MapManager().Update();
 
@@ -349,16 +349,16 @@ tmc::task<void> CLevel::OnFrame()
 
     // update static sounds
     if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtLevelSounds))
-        Device.add_to_seq_parallel(CallMe::fromMethod<&CLevelSoundManager::Update>(m_level_sound_manager));
+        Device.add_to_seq_parallel(std::function_ref{std::cw<&CLevelSoundManager::Update>, m_level_sound_manager});
     else
         co_await m_level_sound_manager->Update();
 
     if (!sound_registry_defer.empty())
-        Device.add_to_seq_parallel(CallMe::fromMethod<&CLevel::PrefetchDeferredSounds>(this));
+        Device.add_to_seq_parallel(std::function_ref{std::cw<&CLevel::PrefetchDeferredSounds>, this});
 
     // defer LUA-GC-STEP
     if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtLUA_GC))
-        Device.add_to_seq_parallel(CallMe::fromMethod<&CLevel::script_gc>(this));
+        Device.add_to_seq_parallel(std::function_ref{std::cw<&CLevel::script_gc>, this});
     else
         co_await script_gc();
 

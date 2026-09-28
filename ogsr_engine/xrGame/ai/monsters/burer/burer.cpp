@@ -183,8 +183,8 @@ void CBurer::Load(LPCSTR section)
     // 	anim().AddAnim(eAnimSitIdle,		"sit_idle_",			-1, &velocity_none,		PS_SIT); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l",
     // "fx_stand_r"); 	anim().AddAnim(eAnimCheckCorpse,	"sit_check_corpse_",	-1, &velocity_none,		PS_SIT); //, 	"fx_stand_f", "fx_stand_b",
     // "fx_stand_l", "fx_stand_r"); 	anim().AddAnim(eAnimSitStandUp,		"sit_stand_up_",		-1, &velocity_none,		PS_SIT); //, 	"fx_stand_f",
-    // "fx_stand_b", "fx_stand_l", "fx_stand_r"); 	anim().AddAnim(eAnimStandSitDown,	"stand_sit_down_",		-1, &velocity_none,		PS_STAND); //, "fx_stand_f",
-    // "fx_stand_b", "fx_stand_l", "fx_stand_r");
+    // "fx_stand_b", "fx_stand_l", "fx_stand_r"); 	anim().AddAnim(eAnimStandSitDown,	"stand_sit_down_",		-1, &velocity_none,		PS_STAND); //,
+    // "fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
 
     //	anim().AddTransition(PS_SIT,		PS_STAND,		eAnimSitStandUp,	false);
     //	anim().AddTransition(PS_STAND,		PS_SIT,			eAnimStandSitDown,	false);
@@ -215,10 +215,9 @@ void CBurer::Load(LPCSTR section)
 void CBurer::PostLoad(LPCSTR section)
 {
     inherited::PostLoad(section);
-    if (m_anti_aim)
-    {
-        m_anti_aim->set_callback(CallMe::fromMethod<&CBurer::StaminaHit>(this));
-    }
+
+    if (m_anti_aim != nullptr)
+        m_anti_aim->set_callback(std::function_ref{std::cw<&CBurer::StaminaHit>, this});
 }
 
 tmc::task<void> CBurer::shedule_Update(u32 dt)

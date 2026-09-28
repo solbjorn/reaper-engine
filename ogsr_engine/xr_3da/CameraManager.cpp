@@ -278,7 +278,7 @@ void CCameraManager::RemovePPEffector(EEffectorPPType type)
 void CCameraManager::OnEffectorReleased(SBaseEffector* e)
 {
     if (auto demo = smart_cast<CDemoRecord*>(e); demo != nullptr)
-        Device.add_frame_async(CallMe::fromMethod<&CDemoRecord::co_destroy>(demo));
+        Device.add_frame_async(std::function_ref{std::cw<&CDemoRecord::co_destroy>, demo});
     else
         xr_delete(e);
 }

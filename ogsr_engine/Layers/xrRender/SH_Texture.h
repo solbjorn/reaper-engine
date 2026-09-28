@@ -131,7 +131,7 @@ private:
 
     //	Class data
 public: //	Public class members (must be encapsulated further)
-    CallMe::Delegate<void(CBackend&, u32)> bind;
+    std::function_ref<void(CBackend&, u32)> bind;
 
     std::size_t memUsage{0};
 

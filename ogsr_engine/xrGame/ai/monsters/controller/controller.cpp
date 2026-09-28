@@ -385,7 +385,7 @@ void CController::control_hit()
     Actor()->Cameras().AddPPEffector(
         xr_new<CMonsterEffector>(m_control_effector.ppi, m_control_effector.time, m_control_effector.time_attack, m_control_effector.time_release));
 
-    Device.add_frame_async(CallMe::fromMethod<&CController::play_control_sound_hit>(this));
+    Device.add_frame_async(std::function_ref{std::cw<&CController::play_control_sound_hit>, this});
 }
 
 namespace
@@ -519,7 +519,7 @@ void CController::draw_fire_particles()
     dir.normalize();
 
     PlayParticles(shared_str{particles_fire}, my_head_pos, dir);
-    Device.add_frame_async(CallMe::fromMethod<&CController::play_control_sound_hit>(this));
+    Device.add_frame_async(std::function_ref{std::cw<&CController::play_control_sound_hit>, this});
 }
 
 void CController::psy_fire()

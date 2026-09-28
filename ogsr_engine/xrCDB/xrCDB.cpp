@@ -82,8 +82,11 @@ void MODEL::build_internal(std::span<const Fvector> V, std::span<const TRI> T, b
     };
     tree->context.free = [](void* ptr, void*) { xrMemory::mem_free_aligned(ptr); };
 
+    tinybvh::tinybvh_set_fatal_error_handler([](gsl::czstring message) { XR_PANIC(message); });
+
     tree->Build(tinybvh::bvhvec4slice{reinterpret_cast<const tinybvh::bvhvec4*>(verts.data()), gsl::narrow_cast<u32>(verts.size())}, indices.data(),
                 gsl::narrow_cast<u32>(indices.size() / 3));
+
     tinybvh::tinybvh_shutdown_builtin_pool();
 
     // Although none of tree's methods is used beyond this point, zero out pointers to verts
@@ -116,7 +119,7 @@ namespace
 struct XR_TRIVIAL alignas(16) bvh_build_serdes final
 {
 private:
-    static constexpr auto curr{(u32{tinybvh::BVHBase::BVHType::LAYOUT_BVH} << 24) | u32{TINY_BVH_CACHE_VERSION}};
+    static constexpr auto curr{(u32{tinybvh::BVHType::LAYOUT_BVH} << 24) | u32{TINY_BVH_CACHE_VERSION}};
 
     u32 magic;
     u16 sizeof_settings;

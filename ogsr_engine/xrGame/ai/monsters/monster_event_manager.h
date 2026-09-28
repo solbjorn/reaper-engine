@@ -2,7 +2,7 @@
 
 #include "monster_event_manager_defs.h"
 
-using typeEvent = CallMe::Delegate<void(IEventData*)>;
+using typeEvent = std::function_ref<void(IEventData*)>;
 
 class CMonsterEventManager
 {

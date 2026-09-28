@@ -69,7 +69,7 @@ void CUIPdaSpot::InitControls()
     xml_init.Init3tButton(uiXml, "btn_apply", 0, m_btn_ok);
     m_btn_ok->SetWindowName("btn_apply");
     Register(m_btn_ok);
-    AddCallback("btn_apply", BUTTON_CLICKED, CallMe::fromMethod<&CUIPdaSpot::OnApply>(this));
+    AddCallback("btn_apply", BUTTON_CLICKED, std::function_ref{std::cw<&CUIPdaSpot::OnApply>, this});
 
     m_btn_cancel = xr_new<CUI3tButton>();
     AttachChild(m_btn_cancel);
@@ -77,7 +77,7 @@ void CUIPdaSpot::InitControls()
     xml_init.Init3tButton(uiXml, "btn_cancel", 0, m_btn_cancel);
     m_btn_cancel->SetWindowName("btn_cancel");
     Register(m_btn_cancel);
-    AddCallback("btn_cancel", BUTTON_CLICKED, CallMe::fromMethod<&CUIPdaSpot::OnExit>(this));
+    AddCallback("btn_cancel", BUTTON_CLICKED, std::function_ref{std::cw<&CUIPdaSpot::OnExit>, this});
 }
 
 void CUIPdaSpot::OnAdd(CUIWindow* ui, void* d)

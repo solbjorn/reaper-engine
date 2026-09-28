@@ -8,7 +8,7 @@
 #include "../../../xr_3da/motion.h"
 #include "../../../Include/xrRender/KinematicsAnimated.h"
 
-CPhantom::CPhantom()
+CPhantom::CPhantom() : UpdateEvent{xr::noop_ref_v<void()>}
 {
     fSpeed = 4.f;
     fASpeed = 1.7f;
@@ -148,7 +148,8 @@ tmc::task<void> CPhantom::SwitchToState_internal(EState new_state)
     {
         IKinematicsAnimated* K = smart_cast<IKinematicsAnimated*>(Visual());
         Fmatrix xform = XFORM_center();
-        UpdateEvent = CallMe::Delegate<void()>();
+        UpdateEvent = xr::noop_ref_v<void()>;
+
         // after event
         switch (m_CurState)
         {
@@ -187,7 +188,7 @@ tmc::task<void> CPhantom::SwitchToState_internal(EState new_state)
         }
         break;
         case stFly: {
-            UpdateEvent = CallMe::fromMethod<&CPhantom::OnFlyState>(this);
+            UpdateEvent = std::function_ref{std::cw<&CPhantom::OnFlyState>, this};
             SStateData& sdata = m_state_data[new_state];
             m_fly_particles = PlayParticles(sdata.particles, FALSE, xform);
 
@@ -196,14 +197,14 @@ tmc::task<void> CPhantom::SwitchToState_internal(EState new_state)
         }
         break;
         case stContact: {
-            UpdateEvent = CallMe::fromMethod<&CPhantom::OnDeadState>(this);
+            UpdateEvent = std::function_ref{std::cw<&CPhantom::OnDeadState>, this};
             SStateData& sdata = m_state_data[new_state];
             sdata.sound.play_at_pos(nullptr, xform.c);
             std::ignore = K->PlayCycle(sdata.motion, TRUE, animation_end_callback, this);
         }
         break;
         case stShoot: {
-            UpdateEvent = CallMe::fromMethod<&CPhantom::OnDeadState>(this);
+            UpdateEvent = std::function_ref{std::cw<&CPhantom::OnDeadState>, this};
             SStateData& sdata = m_state_data[new_state];
             PlayParticles(sdata.particles, TRUE, xform);
 
@@ -212,9 +213,10 @@ tmc::task<void> CPhantom::SwitchToState_internal(EState new_state)
         }
         break;
         case stIdle: {
-            UpdateEvent = CallMe::fromMethod<&CPhantom::OnIdleState>(this);
+            UpdateEvent = std::function_ref{std::cw<&CPhantom::OnIdleState>, this};
             SStateData& sdata = m_state_data[m_CurState];
             co_await sdata.sound.stop();
+
             CParticlesObject::Destroy(m_fly_particles);
         }
         break;

@@ -2,8 +2,14 @@
 
 namespace tinybvh
 {
+namespace impl
+{
+template <typename Float, typename Index>
 class BVH;
 }
+
+using BVH = tinybvh::impl::BVH<f32, u32>;
+} // namespace tinybvh
 
 // forward declarations
 class CFrustum;

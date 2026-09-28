@@ -49,7 +49,7 @@ void start_tutorial(gsl::czstring name)
 
     g_tutorial = xr_new<CUISequencer>();
 
-    auto& arg = Device.add_frame_async(CallMe::fromFunction<&start_tutorial_async>());
+    auto& arg = Device.add_frame_async(std::function_ref{std::cw<&start_tutorial_async>});
     *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(name);
 }
 
@@ -60,7 +60,7 @@ tmc::task<void> stop_tutorial_async(std::array<std::byte, 16>&) { co_await g_tut
 void stop_tutorial()
 {
     if (g_tutorial != nullptr)
-        Device.add_frame_async(CallMe::fromFunction<&stop_tutorial_async>());
+        Device.add_frame_async(std::function_ref{std::cw<&stop_tutorial_async>});
 }
 
 u32 PlayHudMotion(u8 hand, LPCSTR hud_section, LPCSTR anm_name, bool bMixIn = true, float speed = 1.f, bool bOverride_item = false)

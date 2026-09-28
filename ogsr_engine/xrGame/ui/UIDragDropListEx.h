@@ -88,13 +88,13 @@ public:
 
     void Init(f32 x, f32 y, f32 w, f32 h) override;
 
-    using DRAG_DROP_EVENT = CallMe::Delegate<bool(CUICellItem*)>;
+    using DRAG_DROP_EVENT = std::function_ref<bool(CUICellItem*)>;
 
-    DRAG_DROP_EVENT m_f_item_drop;
-    DRAG_DROP_EVENT m_f_item_start_drag;
-    DRAG_DROP_EVENT m_f_item_db_click;
-    DRAG_DROP_EVENT m_f_item_selected;
-    DRAG_DROP_EVENT m_f_item_rbutton_click;
+    DRAG_DROP_EVENT m_f_item_drop{xr::noop_ref_v<bool(CUICellItem*)>};
+    DRAG_DROP_EVENT m_f_item_start_drag{xr::noop_ref_v<bool(CUICellItem*)>};
+    DRAG_DROP_EVENT m_f_item_db_click{xr::noop_ref_v<bool(CUICellItem*)>};
+    DRAG_DROP_EVENT m_f_item_selected{xr::noop_ref_v<bool(CUICellItem*)>};
+    DRAG_DROP_EVENT m_f_item_rbutton_click{xr::noop_ref_v<bool(CUICellItem*)>};
 
     u32 back_color;
 

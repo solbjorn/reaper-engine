@@ -16,11 +16,12 @@ class CClientSpawnManager final : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CClientSpawnManager);
 
 public:
-    using CALLBACK_TYPE = CallMe::Delegate<void(CObject*)>;
+    using CALLBACK_TYPE = std::function_ref<void(CObject*)>;
 
     struct CSpawnCallback
     {
-        CALLBACK_TYPE m_object_callback;
+        CALLBACK_TYPE m_object_callback{xr::noop_ref_v<void(CObject*)>};
+
         sol::function m_callback;
         sol::object m_object;
     };

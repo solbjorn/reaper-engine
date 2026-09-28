@@ -35,12 +35,10 @@
 #include "CustomMonster.h"
 #endif // MASTER_GOLD
 
-CGamePersistent::CGamePersistent()
+CGamePersistent::CGamePersistent() : m_intro_event{std::cw<&CGamePersistent::start_logo_intro>, this}
 {
     m_game_params.m_e_game_type = GAME_ANY;
-
     m_pMainMenu = nullptr;
-    m_intro_event = CallMe::fromMethod<&CGamePersistent::start_logo_intro>(this);
 
     xr::physics_init();
 
@@ -175,7 +173,7 @@ void CGamePersistent::PreStart(LPCSTR op)
 tmc::task<void> CGamePersistent::Start(gsl::czstring op)
 {
     co_await IGame_Persistent::Start(op);
-    m_intro_event = CallMe::fromMethod<&CGamePersistent::start_game_intro>(this);
+    m_intro_event = std::function_ref{std::cw<&CGamePersistent::start_game_intro>, this};
 }
 
 tmc::task<void> CGamePersistent::Disconnect()
@@ -453,7 +451,8 @@ tmc::task<void> CGamePersistent::start_logo_intro()
 {
     if (!strstr(Core.Params, "-intro"))
     {
-        m_intro_event = CallMe::Delegate<tmc::task<void>()>{};
+        m_intro_event = xr::noop_ref_v<tmc::task<void>()>;
+
         co_await Console->Show();
         co_await Device.execute_async("main_menu on");
 
@@ -463,7 +462,7 @@ tmc::task<void> CGamePersistent::start_logo_intro()
     if (Device.dwPrecacheFrame > 0)
         co_return;
 
-    m_intro_event = CallMe::fromMethod<&CGamePersistent::update_logo_intro>(this);
+    m_intro_event = std::function_ref{std::cw<&CGamePersistent::update_logo_intro>, this};
 
     if (!xr_strlen(m_game_params.m_game_or_spawn) && !g_pGameLevel)
     {
@@ -480,7 +479,7 @@ tmc::task<void> CGamePersistent::update_logo_intro()
     if (m_intro == nullptr || m_intro->IsActive())
         co_return;
 
-    m_intro_event = CallMe::Delegate<tmc::task<void>()>{};
+    m_intro_event = xr::noop_ref_v<tmc::task<void>()>;
     xr_delete(m_intro);
 
     co_await Device.execute_async("main_menu on");
@@ -490,13 +489,13 @@ tmc::task<void> CGamePersistent::start_game_intro()
 {
     if (g_pGameLevel && g_pGameLevel->bReady && Device.dwPrecacheFrame <= 2)
     {
-        m_intro_event = CallMe::fromMethod<&CGamePersistent::update_game_intro>(this);
+        m_intro_event = std::function_ref{std::cw<&CGamePersistent::update_game_intro>, this};
 
         if (std::is_eq(xr::strcasecmp(m_game_params.m_new_or_load, "new")))
         {
             VERIFY(m_intro == nullptr);
-
             m_intro = xr_new<CUISequencer>();
+
             co_await m_intro->Start("intro_game");
         }
     }
@@ -506,12 +505,12 @@ tmc::task<void> CGamePersistent::update_game_intro()
 {
     if (!m_intro)
     {
-        m_intro_event = CallMe::Delegate<tmc::task<void>()>{};
+        m_intro_event = xr::noop_ref_v<tmc::task<void>()>;
     }
     else if (!m_intro->IsActive())
     {
         xr_delete(m_intro);
-        m_intro_event = CallMe::Delegate<tmc::task<void>()>{};
+        m_intro_event = xr::noop_ref_v<tmc::task<void>()>;
     }
 
     co_return;
@@ -532,7 +531,7 @@ tmc::task<void> CGamePersistent::OnFrame()
     ++m_frame_counter;
 #endif
 
-    if (m_intro_event != CallMe::Delegate<tmc::task<void>()>{} && !load_screen_renderer.b_registered)
+    if (m_intro_event != xr::noop_ref_v<tmc::task<void>()> && !load_screen_renderer.b_registered)
         co_await m_intro_event();
 
     if (Device.dwPrecacheFrame == 0 && load_screen_renderer.b_registered && !GameAutopaused)

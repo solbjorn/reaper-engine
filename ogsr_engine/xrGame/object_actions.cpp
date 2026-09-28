@@ -249,11 +249,11 @@ CObjectActionStrapping::~CObjectActionStrapping()
 {
     if (m_callback_removed)
     {
-        VERIFY(!object().animation().torso().callback(CallMe::fromMethod<&CObjectActionStrapping::on_animation_end>(this)));
+        VERIFY(!object().animation().torso().callback(std::function_ref{std::cw<&CObjectActionStrapping::on_animation_end>, this}));
         return;
     }
 
-    object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionStrapping::on_animation_end>(this));
+    object().animation().torso().remove_callback(std::function_ref{std::cw<&CObjectActionStrapping::on_animation_end>, this});
 }
 
 void CObjectActionStrapping::on_animation_end()
@@ -262,8 +262,7 @@ void CObjectActionStrapping::on_animation_end()
 
     m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped, true);
 
-    object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionStrapping::on_animation_end>(this));
-
+    object().animation().torso().remove_callback(std::function_ref{std::cw<&CObjectActionStrapping::on_animation_end>, this});
     m_callback_removed = true;
 }
 
@@ -276,10 +275,9 @@ void CObjectActionStrapping::initialize()
     VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
     m_callback_removed = false;
-
     m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped2Idle, true);
 
-    object().animation().torso().add_callback(CallMe::fromMethod<&CObjectActionStrapping::on_animation_end>(this));
+    object().animation().torso().add_callback(std::function_ref{std::cw<&CObjectActionStrapping::on_animation_end>, this});
 }
 
 void CObjectActionStrapping::execute()
@@ -297,13 +295,12 @@ void CObjectActionStrapping::finalize()
 
     if (!m_callback_removed)
     {
-        object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionStrapping::on_animation_end>(this));
-
+        object().animation().torso().remove_callback(std::function_ref{std::cw<&CObjectActionStrapping::on_animation_end>, this});
         m_callback_removed = true;
     }
     else
     {
-        VERIFY(!object().animation().torso().callback(CallMe::fromMethod<&CObjectActionStrapping::on_animation_end>(this)));
+        VERIFY(!object().animation().torso().callback(std::function_ref{std::cw<&CObjectActionStrapping::on_animation_end>, this}));
     }
 }
 
@@ -321,11 +318,11 @@ CObjectActionStrappingToIdle::~CObjectActionStrappingToIdle()
 {
     if (m_callback_removed)
     {
-        VERIFY(!object().animation().torso().callback(CallMe::fromMethod<&CObjectActionStrappingToIdle::on_animation_end>(this)));
+        VERIFY(!object().animation().torso().callback(std::function_ref{std::cw<&CObjectActionStrappingToIdle::on_animation_end>, this}));
         return;
     }
 
-    object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionStrappingToIdle::on_animation_end>(this));
+    object().animation().torso().remove_callback(std::function_ref{std::cw<&CObjectActionStrappingToIdle::on_animation_end>, this});
 }
 
 void CObjectActionStrappingToIdle::on_animation_end()
@@ -334,8 +331,7 @@ void CObjectActionStrappingToIdle::on_animation_end()
 
     m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped2Idle, false);
 
-    object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionStrappingToIdle::on_animation_end>(this));
-
+    object().animation().torso().remove_callback(std::function_ref{std::cw<&CObjectActionStrappingToIdle::on_animation_end>, this});
     m_callback_removed = true;
 }
 
@@ -348,8 +344,7 @@ void CObjectActionStrappingToIdle::initialize()
     VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
     m_callback_removed = false;
-
-    object().animation().torso().add_callback(CallMe::fromMethod<&CObjectActionStrappingToIdle::on_animation_end>(this));
+    object().animation().torso().add_callback(std::function_ref{std::cw<&CObjectActionStrappingToIdle::on_animation_end>, this});
 }
 
 void CObjectActionStrappingToIdle::execute()
@@ -367,13 +362,12 @@ void CObjectActionStrappingToIdle::finalize()
 
     if (!m_callback_removed)
     {
-        object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionStrappingToIdle::on_animation_end>(this));
-
+        object().animation().torso().remove_callback(std::function_ref{std::cw<&CObjectActionStrappingToIdle::on_animation_end>, this});
         m_callback_removed = true;
     }
     else
     {
-        VERIFY(!object().animation().torso().callback(CallMe::fromMethod<&CObjectActionStrappingToIdle::on_animation_end>(this)));
+        VERIFY(!object().animation().torso().callback(std::function_ref{std::cw<&CObjectActionStrappingToIdle::on_animation_end>, this}));
     }
 }
 
@@ -391,11 +385,11 @@ CObjectActionUnstrapping::~CObjectActionUnstrapping()
 {
     if (m_callback_removed)
     {
-        VERIFY(!object().animation().torso().callback(CallMe::fromMethod<&CObjectActionUnstrapping::on_animation_end>(this)));
+        VERIFY(!object().animation().torso().callback(std::function_ref{std::cw<&CObjectActionUnstrapping::on_animation_end>, this}));
         return;
     }
 
-    object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionUnstrapping::on_animation_end>(this));
+    object().animation().torso().remove_callback(std::function_ref{std::cw<&CObjectActionUnstrapping::on_animation_end>, this});
 }
 
 void CObjectActionUnstrapping::on_animation_end()
@@ -404,8 +398,7 @@ void CObjectActionUnstrapping::on_animation_end()
 
     m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped, false);
 
-    object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionUnstrapping::on_animation_end>(this));
-
+    object().animation().torso().remove_callback(std::function_ref{std::cw<&CObjectActionUnstrapping::on_animation_end>, this});
     m_callback_removed = true;
 }
 
@@ -418,10 +411,9 @@ void CObjectActionUnstrapping::initialize()
     VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
     m_callback_removed = false;
-
     m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped2Idle, true);
 
-    object().animation().torso().add_callback(CallMe::fromMethod<&CObjectActionUnstrapping::on_animation_end>(this));
+    object().animation().torso().add_callback(std::function_ref{std::cw<&CObjectActionUnstrapping::on_animation_end>, this});
 }
 
 void CObjectActionUnstrapping::execute()
@@ -439,13 +431,12 @@ void CObjectActionUnstrapping::finalize()
 
     if (!m_callback_removed)
     {
-        object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionUnstrapping::on_animation_end>(this));
-
+        object().animation().torso().remove_callback(std::function_ref{std::cw<&CObjectActionUnstrapping::on_animation_end>, this});
         m_callback_removed = true;
     }
     else
     {
-        VERIFY(!object().animation().torso().callback(CallMe::fromMethod<&CObjectActionUnstrapping::on_animation_end>(this)));
+        VERIFY(!object().animation().torso().callback(std::function_ref{std::cw<&CObjectActionUnstrapping::on_animation_end>, this}));
     }
 }
 
@@ -463,11 +454,11 @@ CObjectActionUnstrappingToIdle::~CObjectActionUnstrappingToIdle()
 {
     if (m_callback_removed)
     {
-        VERIFY(!object().animation().torso().callback(CallMe::fromMethod<&CObjectActionUnstrappingToIdle::on_animation_end>(this)));
+        VERIFY(!object().animation().torso().callback(std::function_ref{std::cw<&CObjectActionUnstrappingToIdle::on_animation_end>, this}));
         return;
     }
 
-    object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionUnstrappingToIdle::on_animation_end>(this));
+    object().animation().torso().remove_callback(std::function_ref{std::cw<&CObjectActionUnstrappingToIdle::on_animation_end>, this});
 }
 
 void CObjectActionUnstrappingToIdle::on_animation_end()
@@ -476,8 +467,7 @@ void CObjectActionUnstrappingToIdle::on_animation_end()
 
     m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped2Idle, false);
 
-    object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionUnstrappingToIdle::on_animation_end>(this));
-
+    object().animation().torso().remove_callback(std::function_ref{std::cw<&CObjectActionUnstrappingToIdle::on_animation_end>, this});
     m_callback_removed = true;
 }
 
@@ -490,8 +480,7 @@ void CObjectActionUnstrappingToIdle::initialize()
     VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
     m_callback_removed = false;
-
-    object().animation().torso().add_callback(CallMe::fromMethod<&CObjectActionUnstrappingToIdle::on_animation_end>(this));
+    object().animation().torso().add_callback(std::function_ref{std::cw<&CObjectActionUnstrappingToIdle::on_animation_end>, this});
 }
 
 void CObjectActionUnstrappingToIdle::execute()
@@ -509,13 +498,12 @@ void CObjectActionUnstrappingToIdle::finalize()
 
     if (!m_callback_removed)
     {
-        object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionUnstrappingToIdle::on_animation_end>(this));
-
+        object().animation().torso().remove_callback(std::function_ref{std::cw<&CObjectActionUnstrappingToIdle::on_animation_end>, this});
         m_callback_removed = true;
     }
     else
     {
-        VERIFY(!object().animation().torso().callback(CallMe::fromMethod<&CObjectActionUnstrappingToIdle::on_animation_end>(this)));
+        VERIFY(!object().animation().torso().callback(std::function_ref{std::cw<&CObjectActionUnstrappingToIdle::on_animation_end>, this}));
     }
 }
 

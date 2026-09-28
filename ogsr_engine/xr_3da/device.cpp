@@ -171,7 +171,7 @@ void CRenderDevice::CalcFrameStats()
     goto out;
 }
 
-xr_list<CallMe::Delegate<tmc::task<bool>()>> g_loading_events;
+xr_list<std::function_ref<tmc::task<bool>()>> g_loading_events;
 
 tmc::task<bool> CRenderDevice::BeforeFrame()
 {
@@ -349,10 +349,12 @@ tmc::task<void> CRenderDevice::process_second()
 #endif
 
     auto size = seqParallel.size();
-    while (size-- > 0)
+    while (size-- > 0 && !seqParallel.empty())
     {
-        co_await seqParallel.front()();
+        const auto event = seqParallel.front();
         seqParallel.pop_front();
+
+        co_await event();
     }
 
     co_await seqFrameMT.process();

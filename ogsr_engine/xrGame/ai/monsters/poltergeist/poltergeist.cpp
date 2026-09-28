@@ -209,7 +209,7 @@ void CPoltergeist::update_detection()
             }
 
             AddEffector(Actor(), m_detection_pp_type_index, shared_str{m_detection_pp_effector_name},
-                        CallMe::fromMethod<&CPoltergeist::get_post_process_factor>(this));
+                        std::function_ref{std::cw<&CPoltergeist::get_post_process_factor>, this});
         }
     }
     else if (m_detection_pp_type_index != 0)

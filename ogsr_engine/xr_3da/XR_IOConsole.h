@@ -59,7 +59,7 @@ class CConsole final : public pureRender, public pureFrame, public pureScreenRes
     RTTI_DECLARE_TYPEINFO(CConsole, pureRender, pureFrame, pureScreenResolutionChanged);
 
 public:
-    using Callback = CallMe::Delegate<void()>;
+    using Callback = std::function_ref<void()>;
     using vecTips = xr_vector<shared_str>;
     using vecTipsEx = xr_vector<TipString>;
 

@@ -43,8 +43,8 @@ enum init_mode
 class line_edit_control final
 {
 private:
-    typedef text_editor::base Base;
-    using Callback = CallMe::Delegate<tmc::task<void>()>;
+    using Base = text_editor::base;
+    using Callback = std::function_ref<tmc::task<void>()>;
 
 public:
     explicit line_edit_control(u32 str_buffer_size);

@@ -212,9 +212,6 @@
 [submodule "3rd_party/Src/utility/GSL"]
 	path = 3rd_party/Src/utility/GSL
 	url = https://github.com/microsoft/GSL.git
-[submodule "3rd_party/Src/utility/callme"]
-	path = 3rd_party/Src/utility/callme
-	url = https://github.com/solbjorn/callme.git
 [submodule "3rd_party/Src/utility/json"]
 	path = 3rd_party/Src/utility/json
 	url = https://github.com/nlohmann/json.git

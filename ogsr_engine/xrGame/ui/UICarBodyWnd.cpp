@@ -907,11 +907,11 @@ bool CUICarBodyWnd::TransferItem(PIItem itm, CInventoryOwner* owner_from, CInven
 
 void CUICarBodyWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 {
-    lst->m_f_item_drop = CallMe::fromMethod<&CUICarBodyWnd::OnItemDrop>(this);
-    lst->m_f_item_start_drag = CallMe::fromMethod<&CUICarBodyWnd::OnItemStartDrag>(this);
-    lst->m_f_item_db_click = CallMe::fromMethod<&CUICarBodyWnd::OnItemDbClick>(this);
-    lst->m_f_item_selected = CallMe::fromMethod<&CUICarBodyWnd::OnItemSelected>(this);
-    lst->m_f_item_rbutton_click = CallMe::fromMethod<&CUICarBodyWnd::OnItemRButtonClick>(this);
+    lst->m_f_item_drop = std::function_ref{std::cw<&CUICarBodyWnd::OnItemDrop>, this};
+    lst->m_f_item_start_drag = std::function_ref{std::cw<&CUICarBodyWnd::OnItemStartDrag>, this};
+    lst->m_f_item_db_click = std::function_ref{std::cw<&CUICarBodyWnd::OnItemDbClick>, this};
+    lst->m_f_item_selected = std::function_ref{std::cw<&CUICarBodyWnd::OnItemSelected>, this};
+    lst->m_f_item_rbutton_click = std::function_ref{std::cw<&CUICarBodyWnd::OnItemRButtonClick>, this};
 }
 
 void CUICarBodyWnd::PlaySnd(eInventorySndAction a)

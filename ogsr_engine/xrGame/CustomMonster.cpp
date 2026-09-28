@@ -228,11 +228,11 @@ tmc::task<void> CCustomMonster::shedule_Update(u32 DT)
     {
         if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtAiVision))
 #ifndef DEBUG
-            Device.add_to_seq_parallel(CallMe::fromMethod<&CCustomMonster::Exec_Visibility>(this));
+            Device.add_to_seq_parallel(std::function_ref{std::cw<&CCustomMonster::Exec_Visibility>, this});
 #else // DEBUG
         {
             if (!psAI_Flags.test(aiStalker) || !!smart_cast<CActor*>(Level().CurrentEntity()))
-                Device.add_to_seq_parallel(CallMe::fromMethod<&CCustomMonster::Exec_Visibility>(this));
+                Device.add_to_seq_parallel(std::function_ref{std::cw<&CCustomMonster::Exec_Visibility>, this});
             else
                 co_await Exec_Visibility();
         }
@@ -337,7 +337,7 @@ tmc::task<void> CCustomMonster::UpdateCL()
     CScriptEntity::process_sound_callbacks();
 
     if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtSoundPlayer))
-        Device.add_to_seq_parallel(CallMe::fromMethod<&CCustomMonster::update_sound_player>(this));
+        Device.add_to_seq_parallel(std::function_ref{std::cw<&CCustomMonster::update_sound_player>, this});
     else
         co_await update_sound_player();
 
@@ -642,8 +642,8 @@ tmc::task<void> CCustomMonster::net_Destroy()
 
     Actor()->SetActorVisibility(ID(), 0.f);
 
-    Device.remove_from_seq_parallel(CallMe::fromMethod<&CCustomMonster::update_sound_player>(this));
-    Device.remove_from_seq_parallel(CallMe::fromMethod<&CCustomMonster::Exec_Visibility>(this));
+    Device.remove_from_seq_parallel(std::function_ref{std::cw<&CCustomMonster::update_sound_player>, this});
+    Device.remove_from_seq_parallel(std::function_ref{std::cw<&CCustomMonster::Exec_Visibility>, this});
 
 #ifdef DEBUG
     DBG().on_destroy_object(this);

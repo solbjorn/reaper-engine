@@ -466,11 +466,11 @@ void CUIInventoryWnd::SendEvent_Item_Eat(PIItem pItem)
 
 void CUIInventoryWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 {
-    lst->m_f_item_drop = CallMe::fromMethod<&CUIInventoryWnd::OnItemDrop>(this);
-    lst->m_f_item_start_drag = CallMe::fromMethod<&CUIInventoryWnd::OnItemStartDrag>(this);
-    lst->m_f_item_db_click = CallMe::fromMethod<&CUIInventoryWnd::OnItemDbClick>(this);
-    lst->m_f_item_selected = CallMe::fromMethod<&CUIInventoryWnd::OnItemSelected>(this);
-    lst->m_f_item_rbutton_click = CallMe::fromMethod<&CUIInventoryWnd::OnItemRButtonClick>(this);
+    lst->m_f_item_drop = std::function_ref{std::cw<&CUIInventoryWnd::OnItemDrop>, this};
+    lst->m_f_item_start_drag = std::function_ref{std::cw<&CUIInventoryWnd::OnItemStartDrag>, this};
+    lst->m_f_item_db_click = std::function_ref{std::cw<&CUIInventoryWnd::OnItemDbClick>, this};
+    lst->m_f_item_selected = std::function_ref{std::cw<&CUIInventoryWnd::OnItemSelected>, this};
+    lst->m_f_item_rbutton_click = std::function_ref{std::cw<&CUIInventoryWnd::OnItemRButtonClick>, this};
 }
 
 bool CUIInventoryWnd::OnKeyboard(xr::key_id dik, EUIMessages keyboard_action)

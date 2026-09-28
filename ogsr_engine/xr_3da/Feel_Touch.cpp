@@ -6,7 +6,7 @@
 
 using namespace Feel;
 
-Touch::Touch() : pure_relcase(CallMe::fromMethod<&Touch::feel_touch_relcase>(this)) {}
+Touch::Touch() : pure_relcase{std::function_ref{std::cw<&Touch::feel_touch_relcase>, this}} {}
 Touch::~Touch() = default;
 
 BOOL Touch::feel_touch_contact(CObject*) { return TRUE; }

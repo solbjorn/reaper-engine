@@ -644,21 +644,12 @@ void DBG_DrawStatAfterFrameStep()
     draw_frame = !draw_frame;
 }
 
-CFunctionGraph::CFunctionGraph()
-{
-    m_stat_graph = NULL;
-    m_function.clear();
-}
-
-CFunctionGraph::~CFunctionGraph()
-{
-    xr_delete(m_stat_graph);
-    m_function.clear();
-}
+CFunctionGraph::CFunctionGraph() : m_stat_graph{nullptr}, m_function{xr::noop_ref_v<f32(f32)>} {}
+CFunctionGraph::~CFunctionGraph() { xr_delete(m_stat_graph); }
 
 void CFunctionGraph::Init(type_function fun, float x0, float x1, int l, int t, int w, int h, int points_num /*=500*/, u32 color /*=*/, u32 bk_color)
 {
-    XR_ASSERT(!m_function.empty() && x1 > x0, "", x0, x1);
+    XR_ASSERT(fun != xr::noop_ref_v<f32(f32)> && x1 > x0, "", x0, x1);
 
     x_min = x0;
     x_max = x1;
@@ -720,12 +711,13 @@ void CFunctionGraph::ScaleMarkerPos(CStatGraph::EStyle Style, float& p)
 void CFunctionGraph::Clear()
 {
     xr_delete(m_stat_graph);
-    m_function.clear();
+    m_function = xr::noop_ref_v<f32(f32)>;
 }
 
 bool CFunctionGraph::IsActive()
 {
-    XR_ASSERT((m_stat_graph == nullptr) == m_function.empty());
+    XR_ASSERT((m_stat_graph == nullptr) == (m_function == xr::noop_ref_v<f32(f32)>));
+
     return !!m_stat_graph;
 }
 

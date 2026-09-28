@@ -280,7 +280,7 @@ public:
 
     void Execute(std::string_view args) override
     {
-        auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_GameLanguage::execute_async>(this));
+        auto& arg = Device.add_frame_async(std::function_ref{std::cw<&CCC_GameLanguage::execute_async>, this});
         *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args.data());
     }
 
@@ -547,7 +547,7 @@ public:
             return;
         }
 
-        auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_DemoRecord::execute_async>(this));
+        auto& arg = Device.add_frame_async(std::function_ref{std::cw<&CCC_DemoRecord::execute_async>, this});
         *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args.data());
     }
 
@@ -586,7 +586,7 @@ public:
             return;
         }
 
-        auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_DemoPlay::execute_async>(this));
+        auto& arg = Device.add_frame_async(std::function_ref{std::cw<&CCC_DemoPlay::execute_async>, this});
         *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args.data());
     }
 
@@ -660,7 +660,7 @@ public:
             return;
         }
 
-        auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_ALifeSave::execute_async>(this));
+        auto& arg = Device.add_frame_async(std::function_ref{std::cw<&CCC_ALifeSave::execute_async>, this});
         *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(named ? args.data() : "quick");
     }
 
@@ -747,7 +747,7 @@ public:
             return;
         }
 
-        auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_ALifeLoadFrom::execute_async>(this));
+        auto& arg = Device.add_frame_async(std::function_ref{std::cw<&CCC_ALifeLoadFrom::execute_async>, this});
         *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(args.data());
     }
 
@@ -1323,7 +1323,7 @@ public:
 
     void Execute(std::string_view args) override
     {
-        auto& arg = Device.add_frame_async(CallMe::fromMethod<&CCC_MainMenu::execute_async>(this));
+        auto& arg = Device.add_frame_async(std::function_ref{std::cw<&CCC_MainMenu::execute_async>, this});
         *reinterpret_cast<gsl::zstring*>(&arg) = xr_strdup(!args.empty() ? args.data() : "toggle");
     }
 

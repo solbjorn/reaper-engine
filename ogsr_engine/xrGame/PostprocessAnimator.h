@@ -147,12 +147,12 @@ class CPostprocessAnimatorLerp : public CPostprocessAnimator
     RTTI_DECLARE_TYPEINFO(CPostprocessAnimatorLerp, CPostprocessAnimator);
 
 protected:
-    CallMe::Delegate<float()> m_get_factor_func;
+    std::function_ref<f32()> m_get_factor_func{xr::noop_ref_v<f32()>};
 
 public:
     ~CPostprocessAnimatorLerp() override = default;
 
-    void SetFactorFunc(CallMe::Delegate<float()> f) { m_get_factor_func = f; }
+    void SetFactorFunc(std::function_ref<f32()> f) { m_get_factor_func = f; }
     [[nodiscard]] BOOL Process(SPPInfo& PPInfo) override;
 };
 

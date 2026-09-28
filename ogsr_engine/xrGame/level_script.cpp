@@ -800,7 +800,7 @@ tmc::task<void> send_event_key_press_async(std::array<std::byte, 16>& arg)
 
 void send_event_key_press(xr::key_id key)
 {
-    auto& arg = Device.add_frame_async(CallMe::fromFunction<&send_event_key_press_async>());
+    auto& arg = Device.add_frame_async(std::function_ref{std::cw<&send_event_key_press_async>});
     *reinterpret_cast<xr::key_id*>(&arg) = key;
 }
 
@@ -817,7 +817,7 @@ tmc::task<void> send_event_key_hold_async(std::array<std::byte, 16>& arg)
 
 void send_event_key_hold(xr::key_id key)
 {
-    auto& arg = Device.add_frame_async(CallMe::fromFunction<&send_event_key_hold_async>());
+    auto& arg = Device.add_frame_async(std::function_ref{std::cw<&send_event_key_hold_async>});
     *reinterpret_cast<xr::key_id*>(&arg) = key;
 }
 
@@ -829,7 +829,7 @@ tmc::task<void> send_event_mouse_wheel_async(std::array<std::byte, 16>& arg)
 
 void send_event_mouse_wheel(gsl::index vol)
 {
-    auto& arg = Device.add_frame_async(CallMe::fromFunction<send_event_mouse_wheel_async>());
+    auto& arg = Device.add_frame_async(std::function_ref{std::cw<send_event_mouse_wheel_async>});
     *reinterpret_cast<gsl::index*>(&arg) = vol;
 }
 
@@ -1161,7 +1161,7 @@ void CLevel::script_register(sol::state_view& lua)
         "add_cam_effector", &add_cam_effector, "add_cam_effector2", &add_cam_effector2, "remove_cam_effector", &remove_cam_effector, "add_pp_effector",
         &add_pp_effector, "set_pp_effector_factor", &set_pp_effector_factor, "set_pp_effector_factor", &set_pp_effector_factor2, "remove_pp_effector",
         &remove_pp_effector, "has_pp_effector", &has_pp_effector, "add_monster_cam_effector", &add_monster_cam_effector, "get_music_volume", &get_music_volume,
-        "set_music_volume", &set_music_volume, "demo_record_start", [] { Device.add_frame_async(CallMe::fromFunction<&demo_record_start>()); },
+        "set_music_volume", &set_music_volume, "demo_record_start", [] { Device.add_frame_async(std::function_ref{std::cw<&demo_record_start>}); },
         "demo_record_stop", &demo_record_stop, "demo_record_get_position", &demo_record_get_position, "demo_record_set_position", &demo_record_set_position,
         "demo_record_get_HPB", &demo_record_get_HPB, "demo_record_set_HPB", &demo_record_set_HPB, "demo_record_set_direct_input", &demo_record_set_direct_input,
         "add_complex_effector", &add_complex_effector, "remove_complex_effector", &remove_complex_effector, "game_id", &GameID, "set_ignore_game_state_update",

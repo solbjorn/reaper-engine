@@ -1115,14 +1115,14 @@ void CAI_Stalker::remove_critical_hit()
 {
     brain().CStalkerPlanner::m_storage.set_property(StalkerDecisionSpace::eWorldPropertyCriticallyWounded, false);
 
-    animation().global().remove_callback(CallMe::fromMethod<&CAI_Stalker::remove_critical_hit>(this));
+    animation().global().remove_callback(std::function_ref{std::cw<&CAI_Stalker::remove_critical_hit>, this});
 }
 
 void CAI_Stalker::critical_wounded_state_start()
 {
     brain().CStalkerPlanner::m_storage.set_property(StalkerDecisionSpace::eWorldPropertyCriticallyWounded, true);
 
-    animation().global().add_callback(CallMe::fromMethod<&CAI_Stalker::remove_critical_hit>(this));
+    animation().global().add_callback(std::function_ref{std::cw<&CAI_Stalker::remove_critical_hit>, this});
 }
 
 bool CAI_Stalker::can_cry_enemy_is_wounded() const

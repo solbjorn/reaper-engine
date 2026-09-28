@@ -7,8 +7,6 @@
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/RenderDeviceRender.h"
 
-#include <CallMe.h>
-
 #include <atomic>
 #include <numeric>
 
@@ -136,8 +134,8 @@ private:
     void _Destroy(BOOL bKeepTextures);
     void _SetupStates();
 
-    xr_deque<CallMe::Delegate<tmc::task<void>()>> seqParallel;
-    xr_vector<std::pair<CallMe::Delegate<tmc::task<void>(std::array<std::byte, 16>&)>, std::array<std::byte, 16>>> seq_frame_async;
+    xr_deque<std::function_ref<tmc::task<void>()>> seqParallel;
+    xr_vector<std::pair<std::function_ref<tmc::task<void>(std::array<std::byte, 16>&)>, std::array<std::byte, 16>>> seq_frame_async;
 
 public:
     u32 dwPrecacheTotal;
@@ -227,18 +225,19 @@ public:
     }
 
 public:
-    ICF bool add_to_seq_parallel(const CallMe::Delegate<tmc::task<void>()>& delegate)
+    ICF bool add_to_seq_parallel(std::function_ref<tmc::task<void>()> delegate)
     {
-        auto I = std::find(seqParallel.begin(), seqParallel.end(), delegate);
-        if (I != seqParallel.end())
+        if (const auto I = std::ranges::find_if(seqParallel, [delegate] [[nodiscard]] (const auto& item) { return item == delegate; }); I != seqParallel.end())
             return false;
-        seqParallel.push_back(delegate);
+
+        seqParallel.emplace_back(delegate);
+
         return true;
     }
 
-    ICF void remove_from_seq_parallel(const CallMe::Delegate<tmc::task<void>()>& delegate)
+    ICF void remove_from_seq_parallel(std::function_ref<tmc::task<void>()> delegate)
     {
-        seqParallel.erase(std::remove(seqParallel.begin(), seqParallel.end(), delegate), seqParallel.end());
+        std::erase_if(seqParallel, [delegate] [[nodiscard]] (const auto& item) { return item == delegate; });
     }
 
     template <typename D, typename... Args>
@@ -287,7 +286,7 @@ private:
 extern CRenderDevice Device;
 extern float refresh_rate;
 extern bool g_bBenchmark;
-extern xr_list<CallMe::Delegate<tmc::task<bool>()>> g_loading_events;
+extern xr_list<std::function_ref<tmc::task<bool>()>> g_loading_events;
 
 class CLoadScreenRenderer final : public pureRender
 {

@@ -32,7 +32,7 @@ public:
     CUISequencer* m_intro{};
     CEvent* eQuickLoad;
 
-    CallMe::Delegate<tmc::task<void>()> m_intro_event;
+    std::function_ref<tmc::task<void>()> m_intro_event;
 
     tmc::task<void> start_logo_intro();
     tmc::task<void> update_logo_intro();

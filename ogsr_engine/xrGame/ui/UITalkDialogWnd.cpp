@@ -90,8 +90,8 @@ void CUITalkDialogWnd::Init(float x, float y, float width, float height)
     SetWindowName("----CUITalkDialogWnd");
 
     Register(&UIToTradeButton);
-    AddCallback("question_item", LIST_ITEM_CLICKED, CallMe::fromMethod<&CUITalkDialogWnd::OnQuestionClicked>(this));
-    AddCallback("trade_btn", BUTTON_CLICKED, CallMe::fromMethod<&CUITalkDialogWnd::OnTradeClicked>(this));
+    AddCallback("question_item", LIST_ITEM_CLICKED, std::function_ref{std::cw<&CUITalkDialogWnd::OnQuestionClicked>, this});
+    AddCallback("trade_btn", BUTTON_CLICKED, std::function_ref{std::cw<&CUITalkDialogWnd::OnTradeClicked>, this});
 
     // Load sounds
     if (m_uiXml->NavigateToNode("action_sounds", 0))
@@ -257,7 +257,7 @@ CUIQuestionItem::CUIQuestionItem(CUIXml* xml_doc, LPCSTR path)
 
     Register(m_text);
     m_text->SetWindowName("text_button");
-    AddCallback("text_button", BUTTON_CLICKED, CallMe::fromMethod<&CUIQuestionItem::OnTextClicked>(this));
+    AddCallback("text_button", BUTTON_CLICKED, std::function_ref{std::cw<&CUIQuestionItem::OnTextClicked>, this});
 
     strconcat(sizeof(str), str, path, ":num_text");
 

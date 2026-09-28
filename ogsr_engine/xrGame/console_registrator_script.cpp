@@ -17,7 +17,7 @@ tmc::task<void> console_show_async(std::array<std::byte, 16>& arg)
 
 void console_show(CConsole* c)
 {
-    auto& arg = Device.add_frame_async(CallMe::fromFunction<&console_show_async>());
+    auto& arg = Device.add_frame_async(std::function_ref{std::cw<&console_show_async>});
     *reinterpret_cast<CConsole**>(&arg) = c;
 }
 
@@ -29,7 +29,7 @@ tmc::task<void> console_hide_async(std::array<std::byte, 16>& arg)
 
 void console_hide(CConsole* c)
 {
-    auto& arg = Device.add_frame_async(CallMe::fromFunction<&console_hide_async>());
+    auto& arg = Device.add_frame_async(std::function_ref{std::cw<&console_hide_async>});
     *reinterpret_cast<CConsole**>(&arg) = c;
 }
 
