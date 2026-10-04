@@ -51,26 +51,23 @@ void CMovementManager::process_game_path()
 
         if (game_path().failed())
         {
-            Msg("! Cannot build GAME path! (object {})", object().cName());
-            Msg("! CURRENT LEVEL : {}", Level().name());
-
-            Fvector temp = ai().game_graph().vertex(object().ai_location().game_vertex_id())->level_point();
-            Msg("! CURRENT game point position : {}", temp);
+            XR_LOG_ERROR("Cannot build GAME path! (object {})", object().cName());
+            XR_LOG_ERROR(" CURRENT LEVEL : {}", Level().name());
+            XR_LOG_ERROR(" CURRENT game point position : {}", ai().game_graph().vertex(object().ai_location().game_vertex_id())->level_point());
 
             const GameGraph::CVertex* vertex = ai().game_graph().vertex(game_dest_vertex_id());
-            Msg("! TARGET LEVEL : {}", ai().game_graph().header().level(vertex->level_id()).name());
-            temp = vertex->level_point();
+            XR_LOG_ERROR(" TARGET LEVEL : {}", ai().game_graph().header().level(vertex->level_id()).name());
+            XR_LOG_ERROR(" TARGET  game point position : {}", vertex->level_point());
 
-            Msg("! TARGET  game point position : {}", temp);
             const u8* target_vertex_type = ai().game_graph().vertex(game_dest_vertex_id())->vertex_type();
-            Msg("! Target point mask [{}][{}][{}][{}]", target_vertex_type[0], target_vertex_type[1], target_vertex_type[2], target_vertex_type[3]);
+            XR_LOG_ERROR(" Target point mask [{}][{}][{}][{}]", target_vertex_type[0], target_vertex_type[1], target_vertex_type[2], target_vertex_type[3]);
 
-            Msg("! Object masks ({}) :", m_location_manager->vertex_types().size());
+            XR_LOG_ERROR(" Object masks ({}) :", m_location_manager->vertex_types().size());
 
             auto I = m_location_manager->vertex_types().cbegin();
             auto E = m_location_manager->vertex_types().cend();
             for (; I != E; ++I)
-                Msg("!   [{}][{}][{}][{}]", (*I).tMask[0], (*I).tMask[1], (*I).tMask[2], (*I).tMask[3]);
+                XR_LOG_ERROR("  [{}][{}][{}][{}]", (*I).tMask[0], (*I).tMask[1], (*I).tMask[2], (*I).tMask[3]);
 
             break;
         }
@@ -91,10 +88,6 @@ void CMovementManager::process_game_path()
         }
 
         m_path_state = ePathStateBuildLevelPath;
-
-        //				if (time_over())
-        //					break;
-
         [[fallthrough]];
     }
     case ePathStateBuildLevelPath: {

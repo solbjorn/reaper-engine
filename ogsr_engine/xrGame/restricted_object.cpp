@@ -48,7 +48,7 @@ static void construct_string(StrType& result, xr_vector<ALife::_OBJECT_ID>& rest
         }
         else
         {
-            Msg("~~[{}]: remove invalid restriction with ID[{}] from {}", std::source_location::current().function_name(), *iter, monster->name_replace());
+            XR_LOG_WARNING("Remove invalid restriction with ID[{}] from {}", *iter, monster->name_replace());
             iter = restrictions.erase(iter);
         }
     }

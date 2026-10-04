@@ -194,6 +194,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
             l->OptimalFit(m_UILevelFrame->GetWndRect());
         }
     }
+
 #ifdef DEBUG
     GameMaps::iterator it = m_GameMaps.begin();
     GameMaps::iterator it2;
@@ -210,11 +211,11 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
             VERIFY(l2);
 
             if (l->GlobalRect().intersected(l2->GlobalRect()))
-                Msg(" --error-incorrect map definition global rect of map [{}] intersects with [{}]", l->MapName(), l2->MapName());
+                XR_LOG_ERROR("Incorrect map definition: global rect of map [{}] intersects with [{}]", l->MapName(), l2->MapName());
         }
 
-        if (FALSE == l->GlobalRect().intersected(GlobalMap()->BoundRect()))
-            Msg(" --error-incorrect map definition map [{}] places outside global map", l->MapName());
+        if (!l->GlobalRect().intersected(GlobalMap()->BoundRect()))
+            XR_LOG_ERROR("Incorrect map definition: map [{}] placed outside global map", l->MapName());
     }
 #endif
 

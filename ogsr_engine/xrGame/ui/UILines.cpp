@@ -594,7 +594,7 @@ u32 CUILines::GetColorFromText(std::string_view str) const
     else
     {
         // necessary comma not contains
-        Msg("!not valid text-color code detected. [{}]", str);
+        XR_LOG_ERROR("Invalid text color code: [{}]", str);
 
         a = 255;
         r = 200;

@@ -369,8 +369,9 @@ void CUIPdaWnd::SetActiveSubdialog(EPdaTabs section)
 
         g_pda_info_state &= ~pda_section::quests;
         break;
-    default: Msg("not registered button identifier [{}]", UITabControl->GetActiveIndex());
+    default: XR_LOG_ERROR("Unknown button identifier [{}]", section);
     }
+
     UIMainPdaFrame->AttachChild(m_pActiveDialog);
     m_pActiveDialog->Show(true);
 

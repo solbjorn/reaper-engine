@@ -128,10 +128,8 @@ void xrServer::OnBuildVersionRespond(IClient* CL, NET_Packet& P)
     u64 _our = 0;
     u64 _him = P.r_u64();
 
-#ifdef DEBUG
-    Msg("_our = {}", _our);
-    Msg("_him = {}", _him);
-#endif // DEBUG
+    XR_LOG_DEBUG("_our = {}", _our);
+    XR_LOG_DEBUG("_him = {}", _him);
 
     if (_our != _him)
         SendConnectResult(CL, 0, 0, "Data verification failed. Cheater? [3]");

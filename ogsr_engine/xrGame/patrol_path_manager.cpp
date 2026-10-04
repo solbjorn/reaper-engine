@@ -25,7 +25,7 @@ static void show_restrictions(LPCSTR restrictions)
 {
     string256 temp;
     for (int i = 0, n = _GetItemCount(restrictions); i < n; ++i)
-        Msg("     {}", _GetItem(restrictions, i, temp));
+        XR_LOG_ERROR("     {}", _GetItem(restrictions, i, temp));
 }
 
 bool show_restrictions(CRestrictedObject* object)
@@ -305,7 +305,7 @@ shared_str CPatrolPathManager::path_name() const
 {
     if (!m_path)
     {
-        Msg("!![CPatrolPathManager::path_name] Path not specified (object {})!", m_game_object->cName());
+        XR_LOG_ERROR("Path not specified (object {})!", m_game_object->cName());
         return shared_str{""};
     }
 

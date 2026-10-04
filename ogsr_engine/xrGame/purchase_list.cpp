@@ -35,7 +35,7 @@ void CPurchaseList::process(CInifile& ini_file, LPCSTR section, CInventoryOwner&
     {
         const char* callback = pSettings->r_string("engine_callbacks", "trade_purchase_item_process");
         if (!ai().script_engine().function(callback, lua_function))
-            Msg("Cannot get engine callback {}!", callback);
+            XR_LOG_ERROR("Can't get engine callback {}!", callback);
     }
 
     const CGameObject& game_object = *smart_cast<const CGameObject*>(&owner);

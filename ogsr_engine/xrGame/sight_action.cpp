@@ -96,7 +96,7 @@ void CSightAction::execute_current_direction()
     object().movement().m_head.target = object().movement().m_head.current;
 
 #ifdef SIGHT_TEST
-    Msg("{:6} eSightTypeCurrentDirection", Device.dwTimeGlobal);
+    XR_LOG_DYNAMIC(xr::level::TraceL1, "{:6} eSightTypeCurrentDirection", Device.dwTimeGlobal);
 #endif
 }
 
@@ -105,7 +105,7 @@ void CSightAction::execute_path_direction()
     object().sight().SetDirectionLook();
 
 #ifdef SIGHT_TEST
-    Msg("{:6} eSightTypePathDirection", Device.dwTimeGlobal);
+    XR_LOG_DYNAMIC(xr::level::TraceL1, "{:6} eSightTypePathDirection", Device.dwTimeGlobal);
 #endif
 }
 
@@ -116,7 +116,7 @@ void CSightAction::execute_direction()
     object().movement().m_head.target.pitch *= -1;
 
 #ifdef SIGHT_TEST
-    Msg("{:6} eSightTypeDirection", Device.dwTimeGlobal);
+    XR_LOG_DYNAMIC(xr::level::TraceL1, "{:6} eSightTypeDirection", Device.dwTimeGlobal);
 #endif
 }
 
@@ -128,7 +128,7 @@ void CSightAction::execute_position()
         object().sight().SetPointLookAngles(m_vector3d, object().movement().m_head.target.yaw, object().movement().m_head.target.pitch);
 
 #ifdef SIGHT_TEST
-    Msg("{:6} {}", Device.dwTimeGlobal, m_torso_look ? "eSightTypeFirePosition" : "eSightTypePosition");
+    XR_LOG_DYNAMIC(xr::level::TraceL1, "{:6} {}", Device.dwTimeGlobal, m_torso_look ? "eSightTypeFirePosition" : "eSightTypePosition");
 #endif
 }
 
@@ -156,7 +156,7 @@ void CSightAction::execute_object()
         object().movement().m_head.target.pitch = 0.f;
 
 #ifdef SIGHT_TEST
-    Msg("{:6} {}", Device.dwTimeGlobal, m_torso_look ? "eSightTypeFireObject" : "eSightTypeObject");
+    XR_LOG_DYNAMIC(xr::level::TraceL1, "{:6} {}", Device.dwTimeGlobal, m_torso_look ? "eSightTypeFireObject" : "eSightTypeObject");
 #endif
 }
 
@@ -168,8 +168,8 @@ void CSightAction::execute_cover()
         object().sight().SetLessCoverLook(m_object->ai_location().level_vertex(), m_path);
 
 #ifdef SIGHT_TEST
-    Msg("{:6} {} [{}] -> [{}]", Device.dwTimeGlobal, m_torso_look ? "eSightTypeFireCover" : "eSightTypeCover", object().movement().m_body.current.yaw,
-        object().movement().m_body.target.yaw);
+    XR_LOG_DYNAMIC(xr::level::TraceL1, "{:6} {} [{}] -> [{}]", Device.dwTimeGlobal, m_torso_look ? "eSightTypeFireCover" : "eSightTypeCover",
+                   object().movement().m_body.current.yaw, object().movement().m_body.target.yaw);
 #endif
 }
 
@@ -183,7 +183,7 @@ void CSightAction::execute_search()
     object().movement().m_head.target.pitch = PI_DIV_4;
 
 #ifdef SIGHT_TEST
-    Msg("{:6} {}", Device.dwTimeGlobal, m_torso_look ? "eSightTypeFireSearch" : "eSightTypeSearch");
+    XR_LOG_DYNAMIC(xr::level::TraceL1, "{:6} {}", Device.dwTimeGlobal, m_torso_look ? "eSightTypeFireSearch" : "eSightTypeSearch");
 #endif
 }
 
@@ -225,7 +225,6 @@ void CSightAction::execute_cover_look_over()
 }
 
 bool CSightAction::change_body_speed() const { return (false); }
-
 float CSightAction::body_speed() const { return (object().movement().m_body.speed); }
 
 bool CSightAction::change_head_speed() const { return ((SightManager::eSightTypeCoverLookOver == m_sight_type) && (m_internal_state != 2)); }

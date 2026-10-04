@@ -28,12 +28,12 @@ xr_vector<DBGList> dbg_list_wnds;
 
 void dump_list_wnd()
 {
-    Msg("------Total  wnds {}", dbg_list_wnds.size());
+    XR_LOG_DYNAMIC(xr::level::TraceL1, "------Total  wnds {}", dbg_list_wnds.size());
 
     xr_vector<DBGList>::iterator _it = dbg_list_wnds.begin();
     for (; _it != dbg_list_wnds.end(); ++_it)
         if (!(*_it).closed)
-            Msg("--leak detected ---- wnd = {}", (*_it).num);
+            XR_LOG_DYNAMIC(xr::level::TraceL1, " --leak detected ---- wnd = {}", (*_it).num);
 }
 #else
 void dump_list_wnd() {}
@@ -152,15 +152,16 @@ CUIWindow::~CUIWindow()
             dbg_list_wnds.erase(_it);
             break;
         }
+
         if ((*_it).num == m_dbg_id && (*_it).closed)
         {
-            Msg("--CUIWindow [{}] already deleted", m_dbg_id);
+            XR_LOG_ERROR("Window [{}] already deleted", m_dbg_id);
             bOK = true;
         }
     }
 
     if (!bOK)
-        Msg("CUIWindow::~CUIWindow.[{}] cannot find window in list", m_dbg_id);
+        XR_LOG_ERROR("[{}] can't find window in list", m_dbg_id);
 #endif
 }
 
@@ -278,7 +279,7 @@ void CUIWindow::DoDetachChild(CUIWindow* pChild, bool from_destructor)
     pChild->SetParent(nullptr);
 
     if (from_destructor && pChild->IsAutoDelete())
-        Msg("!![{}] detaching autodelete window from destructor : [{}]", std::source_location::current().function_name(), pChild->WindowName_script());
+        XR_LOG_ERROR("Detaching autodelete window from destructor : [{}]", pChild->WindowName_script());
 
     if (pChild->IsAutoDelete() && !from_destructor)
         xr_delete(pChild);

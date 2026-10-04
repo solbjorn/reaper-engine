@@ -201,7 +201,7 @@ void CLevelSoundManager::Load()
             LPCSTR music_sect = gameLtx.r_string(Level().name(), "music_tracks");
             if (music_sect && music_sect[0])
             {
-                Msg("- Loading music tracks from '{}'...", music_sect);
+                XR_LOG_NOTICE("Loading music tracks from '{}'...", music_sect);
 
                 CInifile::Sect& S = gameLtx.r_section(music_sect);
                 m_MusicTracks.reserve(S.Data.size());

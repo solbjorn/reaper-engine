@@ -141,7 +141,7 @@ void CUIStalkersRankingWnd::FillList()
             }
             else
             {
-                Msg("! [{}]: i[{}] id[{}] not a CSE_ALifeTraderAbstract", std::source_location::current().function_name(), i, id);
+                XR_LOG_ERROR("i[{}] id[{}] is not a CSE_ALifeTraderAbstract", i, id);
             }
 
             ++i;
@@ -224,7 +224,7 @@ void add_human_to_top_list(u16 id)
     }
     else
     {
-        Msg("! [{}]: id[{}] not a CSE_ALifeTraderAbstract", std::source_location::current().function_name(), id);
+        XR_LOG_ERROR("id[{}] not a CSE_ALifeTraderAbstract", id);
     }
 }
 

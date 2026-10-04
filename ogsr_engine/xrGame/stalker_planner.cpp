@@ -90,46 +90,51 @@ void CStalkerPlanner::update(u32)
     if (m_failed)
     {
         {
-            Msg("{}", evaluators().size());
+            XR_LOG_ERROR("{}", evaluators().size());
 
             EVALUATORS::const_iterator I = evaluators().begin();
             EVALUATORS::const_iterator E = evaluators().end();
+
             for (; I != E; ++I)
-                Msg("{},{}", (*I).first, (*I).second->evaluate() ? 1 : 0);
+                XR_LOG_ERROR(" {},{}", (*I).first, (*I).second->evaluate() ? 1 : 0);
         }
         {
-            Msg("{}", target_state().conditions().size());
+            XR_LOG_ERROR("{}", target_state().conditions().size());
 
             xr_vector<COperatorCondition>::const_iterator I = target_state().conditions().begin();
             xr_vector<COperatorCondition>::const_iterator E = target_state().conditions().end();
+
             for (; I != E; ++I)
-                Msg("{},{}", (*I).condition(), (*I).value() ? 1 : 0);
+                XR_LOG_ERROR(" {},{}", (*I).condition(), (*I).value() ? 1 : 0);
         }
         {
-            Msg("{}", operators().size());
+            XR_LOG_ERROR("{}", operators().size());
 
             const_iterator I = operators().begin();
             const_iterator E = operators().end();
+
             for (; I != E; ++I)
             {
-                Msg("{},{}", (*I).m_operator_id, (*I).m_operator->weight(target_state(), target_state()));
+                XR_LOG_ERROR(" {},{}", (*I).m_operator_id, (*I).m_operator->weight(target_state(), target_state()));
 
                 {
-                    Msg("{}", (*I).m_operator->conditions().conditions().size());
+                    XR_LOG_ERROR(" {}", (*I).m_operator->conditions().conditions().size());
 
                     xr_vector<COperatorCondition>::const_iterator i = (*I).m_operator->conditions().conditions().begin();
                     xr_vector<COperatorCondition>::const_iterator e = (*I).m_operator->conditions().conditions().end();
+
                     for (; i != e; ++i)
-                        Msg("{},{}", (*i).condition(), (*i).value() ? 1 : 0);
+                        XR_LOG_ERROR("  {},{}", (*i).condition(), (*i).value() ? 1 : 0);
                 }
 
                 {
-                    Msg("{}", (*I).m_operator->effects().conditions().size());
+                    XR_LOG_ERROR(" {}", (*I).m_operator->effects().conditions().size());
 
                     xr_vector<COperatorCondition>::const_iterator i = (*I).m_operator->effects().conditions().begin();
                     xr_vector<COperatorCondition>::const_iterator e = (*I).m_operator->effects().conditions().end();
+
                     for (; i != e; ++i)
-                        Msg("{},{}", (*i).condition(), (*i).value() ? 1 : 0);
+                        XR_LOG_ERROR("  {},{}", (*i).condition(), (*i).value() ? 1 : 0);
                 }
             }
         }

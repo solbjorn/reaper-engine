@@ -246,8 +246,10 @@ void CSightManager::Exec_Look(float dt)
         head_speed = current_action().head_speed();
 
 #ifdef SIGHT_DEBUG
-    Msg("{:6} BEFORE BODY [{}] -> [{}]", Device.dwTimeGlobal, object().movement().m_body.current.yaw, object().movement().m_body.target.yaw);
-    Msg("{:6} BEFORE HEAD [{}] -> [{}]", Device.dwTimeGlobal, object().movement().m_head.current.yaw, object().movement().m_head.target.yaw);
+    XR_LOG_DYNAMIC(xr::level::TraceL1, "{:6} BEFORE BODY [{}] -> [{}]", Device.dwTimeGlobal, object().movement().m_body.current.yaw,
+                   object().movement().m_body.target.yaw);
+    XR_LOG_DYNAMIC(xr::level::TraceL1, "{:6} BEFORE HEAD [{}] -> [{}]", Device.dwTimeGlobal, object().movement().m_head.current.yaw,
+                   object().movement().m_head.target.yaw);
 #endif
 
     vfValidateAngleDependency(body.current.yaw, body.target.yaw, head.current.yaw);
@@ -267,9 +269,10 @@ void CSightManager::Exec_Look(float dt)
     head.current.yaw = angle_normalize_signed(head.current.yaw);
     head.current.pitch = angle_normalize_signed(head.current.pitch);
 
-    Msg("{:6} AFTER  BODY [{}] -> [{}]", Device.dwTimeGlobal, object().movement().m_body.current.yaw, object().movement().m_body.target.yaw);
-    Msg("{:6} AFTER  HEAD [{}][{}] -> [{}][{}]", Device.dwTimeGlobal, object().movement().m_head.current.yaw, object().movement().m_head.current.pitch,
-        object().movement().m_head.target.yaw, object().movement().m_head.target.pitch);
+    XR_LOG_DYNAMIC(xr::level::TraceL1, "{:6} AFTER  BODY [{}] -> [{}]", Device.dwTimeGlobal, object().movement().m_body.current.yaw,
+                   object().movement().m_body.target.yaw);
+    XR_LOG_DYNAMIC(xr::level::TraceL1, "{:6} AFTER  HEAD [{}][{}] -> [{}][{}]", Device.dwTimeGlobal, object().movement().m_head.current.yaw,
+                   object().movement().m_head.current.pitch, object().movement().m_head.target.yaw, object().movement().m_head.target.pitch);
 #endif
 
     Fmatrix& m = m_object->XFORM();

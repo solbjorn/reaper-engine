@@ -1,30 +1,6 @@
 #ifndef __XRCORE_LOG_H
 #define __XRCORE_LOG_H
 
-void Log(xr::detail::string_view fmt, xr::detail::format_args args);
-
-template <typename... Args>
-constexpr void Msg(xr::detail::format_string<Args...> fmt, Args&&... args)
-{
-    Log(fmt.get(), xr::detail::make_format_args(args...));
-}
-
-void CreateLog(BOOL no_log = FALSE);
-
-extern xr_vector<xr_string> LogFile;
-
-namespace xr
-{
-namespace detail
-{
-constexpr inline auto log_pfx_len{33uz};
-
-void log_init();
-} // namespace detail
-
-void log_flush();
-} // namespace xr
-
 #include "../xrExternal/quill.h"
 
 #include <enchantum/quill_format.hpp>
@@ -175,7 +151,7 @@ constexpr void log_validate(xr::detail::format_string<Args...> fmt, Args&&...)
     fmt.get();
 }
 
-void log_init_new();
+void log_init();
 tmc::task<void> log_run();
 tmc::task<void> log_create();
 
@@ -186,6 +162,9 @@ tmc::task<void> log_create();
 
 inline void logger_init_subsystem() { XR_LOGGER_SUBSYSTEM = xr::logger_init(XR_LOGGER_SUBSYSTEM_NAME); }
 } // namespace xr
+
+// Legacy, to be removed when console is converted to Quill sink
+extern xr_vector<xr_string> LogFile;
 
 // Custom codecs
 

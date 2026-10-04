@@ -105,7 +105,7 @@ void CStalkerAnimationManager::play_fx(float power_factor, int fx_index)
     {
         LPCSTR name =
             m_skeleton_animated->LL_MotionDefName_dbg(m_data_storage->m_part_animations.A[object().movement().body_state()].m_global.A[0].A[fx_index]).first;
-        Msg("{:6} [{}][{}][{}][{}]", Device.dwTimeGlobal, object().cName(), "FX", name, power_factor);
+        XR_LOG_TRACE_L1("{:6} [{}][{}][{}][{}]", Device.dwTimeGlobal, object().cName(), "FX", name, power_factor);
     }
 #endif
 

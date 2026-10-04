@@ -186,7 +186,7 @@ IC T* CScriptGameObject::action_planner()
     auto manager = smart_cast<CAI_Stalker*>(&object());
     if (!manager)
     {
-        Msg("!!CAI_Stalker : cannot access class member action_planner! Object: [{}]", object().Name());
+        XR_LOG_ERROR("Can't access class member action_planner! Object: [{}]", object().Name());
         return nullptr;
     }
 

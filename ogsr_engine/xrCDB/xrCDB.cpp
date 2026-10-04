@@ -130,7 +130,10 @@ private:
     u16 useFullSweep : 1;
     u16 postOptimize : 1;
     u16 useSIMDifavailable : 1;
-    u16 padding : 10;
+    u16 enableThreading : 1;
+    u16 discardIntermediates : 1;
+    u16 minimizeMemUse : 1;
+    u16 padding : 7;
 
     f32 presplitFactor;
     s32 optimizeIterations;
@@ -149,6 +152,9 @@ public:
         useFullSweep = settings.useFullSweep;
         postOptimize = settings.postOptimize;
         useSIMDifavailable = settings.useSIMDifavailable;
+        enableThreading = settings.enableThreading;
+        discardIntermediates = settings.discardIntermediates;
+        minimizeMemUse = settings.minimizeMemUse;
         padding = 0;
 
         presplitFactor = settings.presplitFactor;
@@ -202,6 +208,12 @@ public:
         if (postOptimize != that.postOptimize)
             return false;
         if (useSIMDifavailable != that.useSIMDifavailable)
+            return false;
+        if (enableThreading != that.enableThreading)
+            return false;
+        if (discardIntermediates != that.discardIntermediates)
+            return false;
+        if (minimizeMemUse != that.minimizeMemUse)
             return false;
         if (padding != that.padding)
             return false;

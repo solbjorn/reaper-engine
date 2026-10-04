@@ -47,18 +47,18 @@ void CObjectHandler::reinit(CAI_Stalker* object)
 
     m_r_hand = kinematics->LL_BoneID(pSettings->r_string(planner().m_object->cNameSect(), "weapon_bone0"));
     if (m_r_hand == BI_NONE)
-        Msg("!![{}] weapon_bone [{}] not found in npc section [{}], npc visual [{}]", std::source_location::current().function_name(),
-            pSettings->r_string(planner().m_object->cNameSect(), "weapon_bone0"), planner().m_object->cNameSect(), planner().object().cNameVisual());
+        XR_LOG_ERROR("Weapon bone [{}] not found in npc section [{}], npc visual [{}]", pSettings->r_string(planner().m_object->cNameSect(), "weapon_bone0"),
+                     planner().m_object->cNameSect(), planner().object().cNameVisual());
 
     m_l_finger1 = kinematics->LL_BoneID(pSettings->r_string(planner().m_object->cNameSect(), "weapon_bone1"));
     if (m_l_finger1 == BI_NONE)
-        Msg("!![{}] weapon_bone [{}] not found in npc section [{}], npc visual [{}]", std::source_location::current().function_name(),
-            pSettings->r_string(planner().m_object->cNameSect(), "weapon_bone1"), planner().m_object->cNameSect(), planner().object().cNameVisual());
+        XR_LOG_ERROR("Weapon bone [{}] not found in npc section [{}], npc visual [{}]", pSettings->r_string(planner().m_object->cNameSect(), "weapon_bone1"),
+                     planner().m_object->cNameSect(), planner().object().cNameVisual());
 
     m_r_finger2 = kinematics->LL_BoneID(pSettings->r_string(planner().m_object->cNameSect(), "weapon_bone2"));
     if (m_r_finger2 == BI_NONE)
-        Msg("!![{}] weapon_bone [{}] not found in npc section [{}], npc visual [{}]", std::source_location::current().function_name(),
-            pSettings->r_string(planner().m_object->cNameSect(), "weapon_bone2"), planner().m_object->cNameSect(), planner().object().cNameVisual());
+        XR_LOG_ERROR("Weapon bone [{}] not found in npc section [{}], npc visual [{}]", pSettings->r_string(planner().m_object->cNameSect(), "weapon_bone2"),
+                     planner().m_object->cNameSect(), planner().object().cNameVisual());
 
     m_strap_object_id = ALife::_OBJECT_ID(-1);
     m_strap_bone0 = -1;
@@ -172,13 +172,13 @@ void CObjectHandler::weapon_bones(int& b0, int& b1, int& b2) const
 
         m_strap_bone0 = kinematics->LL_BoneID(weapon->strap_bone0());
         if (m_strap_bone0 == BI_NONE)
-            Msg("!![{}] strap_bone [{}] not found in npc visual [{}], weapon: [{}]", std::source_location::current().function_name(), weapon->strap_bone0(),
-                planner().object().cNameVisual(), weapon->cNameSect());
+            XR_LOG_ERROR("Strap bone [{}] not found in npc visual [{}], weapon: [{}]", weapon->strap_bone0(), planner().object().cNameVisual(),
+                         weapon->cNameSect());
 
         m_strap_bone1 = kinematics->LL_BoneID(weapon->strap_bone1());
         if (m_strap_bone1 == BI_NONE)
-            Msg("!![{}] strap_bone [{}] not found in npc visual [{}], weapon: [{}]", std::source_location::current().function_name(), weapon->strap_bone1(),
-                planner().object().cNameVisual(), weapon->cNameSect());
+            XR_LOG_ERROR("Strap bone [{}] not found in npc visual [{}], weapon: [{}]", weapon->strap_bone1(), planner().object().cNameVisual(),
+                         weapon->cNameSect());
 
         m_strap_object_id = weapon->ID();
     }

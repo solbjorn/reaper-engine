@@ -13,6 +13,7 @@
 #include "uilinestd.h"
 
 // #define LOG_ALL_LINES
+
 #ifdef LOG_ALL_LINES
 int ListLinesCount = 0;
 
@@ -26,11 +27,11 @@ xr_vector<DBGList> dbg_list_lines;
 
 void dump_list_lines()
 {
-    Msg("------Total  Lines {}", dbg_list_lines.size());
+    XR_LOG_DYNAMIC(xr::level::TraceL1, "------Total  Lines {}", dbg_list_lines.size());
 
     xr_vector<DBGList>::iterator _it = dbg_list_lines.begin();
     for (; _it != dbg_list_lines.end(); ++_it)
-        Msg("--leak detected ---- Line = {}", (*_it).num);
+        XR_LOG_DYNAMIC(xr::level::TraceL1, " --leak detected ---- Line = {}", (*_it).num);
 }
 #else
 void dump_list_lines() {}

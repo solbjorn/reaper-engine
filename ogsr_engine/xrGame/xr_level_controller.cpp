@@ -304,7 +304,7 @@ void initialize_bindings()
             const auto& _k2 = keyboards[i2];
 
             if (_k1.dik == _k2.dik && i1 != i2)
-                Msg("{}=={}", _k1.key_name, _k2.key_name);
+                XR_LOG_ERROR("Duplicate binding: {}=={}", _k1.key_name, _k2.key_name);
         }
     }
 #endif
@@ -368,7 +368,7 @@ _action* action_name_to_ptr(gsl::czstring _name)
         it != actions.end())
         return std::to_address(it);
 
-    Msg("! Can't find corresponding [id] for action_name [{}]", _name);
+    XR_LOG_ERROR("Can't find corresponding [id] for action_name [{}]", _name);
 
     return nullptr;
 }
@@ -400,7 +400,7 @@ namespace
         it != keyboards.end())
         return std::to_address(it);
 
-    Msg("! cant find corresponding [_keyboard*] for keyname {}", _name);
+    XR_LOG_ERROR("Can't find corresponding [_keyboard*] for keyname {}", _name);
 
     return nullptr;
 }
@@ -467,7 +467,7 @@ void GetActionAllBinding(gsl::czstring _action, gsl::zstring dst_buff, gsl::inde
     const _binding* pbinding{};
 
     if (action_id == EGameActions::kNOTBINDED)
-        Msg("!![{}] Action [{}] not found! Fix it or remove from text!", std::source_location::current().function_name(), _action);
+        XR_LOG_ERROR("Action [{}] not found! Fix it or remove from text!", _action);
     else
         pbinding = &g_key_bindings[std::to_underlying(action_id)];
 
@@ -617,7 +617,7 @@ public:
         XR_LOG_INFO("--- Action list start ---");
 
         for (const auto& pbinding : g_key_bindings)
-            Msg("- {}", pbinding.m_action->action_name);
+            XR_LOG_INFO(" {}", pbinding.m_action->action_name);
 
         XR_LOG_INFO("--- Action list end   ---");
     }
@@ -665,9 +665,9 @@ public:
 
         for (const auto& pbinding : g_key_bindings)
         {
-            Msg("[{}] primary is[{}] secondary is[{}]", pbinding.m_action->action_name,
-                pbinding.m_keyboard[0] != nullptr ? std::string_view{pbinding.m_keyboard[0]->key_local_name} : std::string_view{"None"},
-                pbinding.m_keyboard[1] != nullptr ? std::string_view{pbinding.m_keyboard[1]->key_local_name} : std::string_view{"None"});
+            XR_LOG_INFO(" [{}] primary is[{}] secondary is[{}]", pbinding.m_action->action_name,
+                        pbinding.m_keyboard[0] != nullptr ? std::string_view{pbinding.m_keyboard[0]->key_local_name} : std::string_view{"None"},
+                        pbinding.m_keyboard[1] != nullptr ? std::string_view{pbinding.m_keyboard[1]->key_local_name} : std::string_view{"None"});
         }
 
         XR_LOG_INFO("--- Bind list end   ---");

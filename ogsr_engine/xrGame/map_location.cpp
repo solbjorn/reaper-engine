@@ -325,7 +325,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp)
             obj = ai().alife().objects().object(m_objectID, true);
             if (!obj)
             {
-                Msg("- Critical: CMapLocation::UpdateSpot binded to non-existent object id={}", m_objectID);
+                XR_LOG_ERROR("Spot is binded to non-existent object id={}", m_objectID);
                 return;
             }
         }
@@ -419,8 +419,8 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp)
                     }
                 }
             }
-#ifdef DEBUG
 
+#ifdef DEBUG
             if (!bDone)
             {
                 XR_LOG_ERROR("Path from actor to selected map spot does not contain level changer :(");
@@ -429,7 +429,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp)
                 xr_vector<u32>::iterator it = map_point_path.begin();
                 xr_vector<u32>::iterator it_e = map_point_path.end();
                 for (; it != it_e; ++it)
-                    Msg("[{}] level[{}]", (*it), ai().game_graph().header().level(ai().game_graph().vertex(*it)->level_id()).name());
+                    XR_LOG_ERROR(" [{}] level[{}]", (*it), ai().game_graph().header().level(ai().game_graph().vertex(*it)->level_id()).name());
 
                 XR_LOG_ERROR("Available LevelChangers:");
 
@@ -438,10 +438,8 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp)
                 for (lit = g_lchangers.begin(); lit != lit_e; ++lit)
                 {
                     GameGraph::_GRAPH_ID gid = (*lit)->ai_location().game_vertex_id();
-                    Msg("[{}]", gid);
-
-                    Fvector p = ai().game_graph().vertex(gid)->level_point();
-                    Msg("lch_name={} pos={} {} {}", ai().game_graph().header().level(ai().game_graph().vertex(gid)->level_id()).name(), p.x, p.y, p.z);
+                    XR_LOG_ERROR(" [{}] lch_name={} pos={}", ai().game_graph().header().level(ai().game_graph().vertex(gid)->level_id()).name(),
+                                 ai().game_graph().vertex(gid)->level_point());
                 }
             }
 #endif // DEBUG
@@ -729,6 +727,7 @@ void CRelationMapLocation::UpdateLevelMap(CUICustomMap* map)
 void CRelationMapLocation::Dump()
 {
     inherited::Dump();
-    Msg("--CRelationMapLocation m_curr_spot_name=[{}]", m_curr_spot_name);
+
+    XR_LOG_TRACE_L1("  CRelationMapLocation m_curr_spot_name=[{}]", m_curr_spot_name);
 }
 #endif

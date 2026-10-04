@@ -17,10 +17,8 @@ CScriptBinderObject::CScriptBinderObject(CScriptGameObject* object) { m_object =
 
 CScriptBinderObject::~CScriptBinderObject()
 {
-#ifdef DEBUG
-    if (m_object)
-        Msg("Destroying binded object {}", m_object->Name());
-#endif
+    if (m_object != nullptr)
+        XR_LOG_TRACE_L1("Destroying binded object {}", m_object->Name());
 }
 
 void CScriptBinderObject::reinit()

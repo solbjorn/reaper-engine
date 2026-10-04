@@ -74,7 +74,7 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, LPCSTR path_ui)
 #ifdef DEBUG
             if (action_name_to_id(exe) == kNOTBINDED)
             {
-                Msg("action [{}] not exist. update data", exe);
+                XR_LOG_WARNING("Action [{}] doesn't exist. Update data", exe);
                 continue;
             }
 #endif
