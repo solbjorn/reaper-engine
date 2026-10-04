@@ -43,7 +43,7 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T restriction, const Fvector&
     xr_vector<u32>::const_iterator E = restriction->accessible_neighbour_border(restriction, out_restriction).end();
     if (I == E)
     {
-        Msg("! [{}]: {}: empty accessible_neighbour_border()", std::source_location::current().function_name(), name());
+        XR_LOG_ERROR("{}: empty accessible_neighbour_border()", name());
         selected = ai().level_graph().header().vertex_count() - 1;
     }
 

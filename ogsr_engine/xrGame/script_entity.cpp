@@ -548,14 +548,14 @@ LPCSTR CScriptEntity::GetPatrolPathName()
 #ifdef DEBUG
     if (!GetScriptControl())
     {
-        Msg("!![CScriptEntity::GetPatrolPathName] Object [{}] is not under script control while you are trying to get patrol path name!", m_object->cName());
+        XR_LOG_ERROR("Object [{}] is not under script control while you are trying to get patrol path name!", m_object->cName());
         return "";
     }
 #endif
 
     if (m_tpActionQueue.empty())
     {
-        Msg("!![CScriptEntity::GetPatrolPathName] Object [{}] m_tpActionQueue is empty!", m_object->cName());
+        XR_LOG_ERROR("Object [{}] m_tpActionQueue is empty!", m_object->cName());
         return "";
     }
 

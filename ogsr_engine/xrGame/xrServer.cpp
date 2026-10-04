@@ -264,9 +264,9 @@ void xrServer::SendUpdatesToAll()
             if (g_Dump_Update_Write)
             {
                 if (Client->ps)
-                    Msg("---- UPDATE_Write to {} --- ", Client->ps->getName());
+                    XR_LOG_DYNAMIC(xr::level::TraceL1, "---- UPDATE_Write to {} --- ", Client->ps->getName());
                 else
-                    Msg("---- UPDATE_Write to {} --- ", Client->name);
+                    XR_LOG_DYNAMIC(xr::level::TraceL1, "---- UPDATE_Write to {} --- ", Client->name);
             }
 
             NET_Packet tmpPacket;
@@ -298,10 +298,8 @@ void xrServer::SendUpdatesToAll()
                     if (ObjectSize == 0)
                         continue;
 
-#ifdef DEBUG
                     if (g_Dump_Update_Write)
-                        Msg("* {} : {}", Test.name(), ObjectSize);
-#endif
+                        XR_LOG_TRACE_L1(" {} : {}", Test.name(), ObjectSize);
 
                     if (pCurUpdatePacket->B.count + tmpPacket.B.count >= NET_PacketSizeLimit)
                         R_ASSERT(0);
@@ -320,7 +318,7 @@ void xrServer::SendUpdatesToAll()
             if (ToSend.B.count > 2)
             {
                 if (g_Dump_Update_Write && Client->ps)
-                    Msg("- Server Update[{}] to Client[{}]  : {}", *((u16*)ToSend.B.data), Client->ps->getName(), ToSend.B.count);
+                    XR_LOG_DYNAMIC(xr::level::TraceL1, "Server Update[{}] to Client[{}]  : {}", *((u16*)ToSend.B.data), Client->ps->getName(), ToSend.B.count);
 
                 SendTo(Client->ID, ToSend, net_flags(FALSE, TRUE));
             }
@@ -489,11 +487,9 @@ CSE_Abstract* xrServer::entity_Create(LPCSTR name) { return F_entity_Create(name
 
 void xrServer::entity_Destroy(CSE_Abstract*& P)
 {
-#ifdef DEBUG
-    Msg("xrServer::entity_Destroy : [{}][{}][{}]", P->ID, P->name(), P->name_replace());
-#endif
+    XR_ASSERT(P != nullptr);
+    XR_LOG_TRACE_L1("Destroy : [{}][{}][{}]", P->ID, P->name(), P->name_replace());
 
-    R_ASSERT(P);
     entities.erase(P->ID);
     m_tID_Generator.vfFreeID(P->ID, Device.TimerAsync());
 

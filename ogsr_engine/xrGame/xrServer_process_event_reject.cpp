@@ -10,19 +10,17 @@ bool xrServer::Process_event_reject(NET_Packet& P, const u16 id_parent, const u1
     CSE_Abstract* e_parent = game->get_entity_from_eid(id_parent);
     CSE_Abstract* e_entity = game->get_entity_from_eid(id_entity);
 
-#ifdef DEBUG
-    Msg("sv reject. id_parent {} id_entity {} [{}]", ent_name_safe(id_parent), ent_name_safe(id_entity), Device.dwFrame);
-#endif
+    XR_LOG_TRACE_L1("sv reject. id_parent {} id_entity {} [{}]", ent_name_safe(id_parent), ent_name_safe(id_entity), Device.dwFrame);
 
     if (!e_parent)
     {
-        XR_LOG_DYNAMIC_DEBUG(xr::level::Warning, "No parent object! ID {}", id_parent);
+        XR_LOG_DYNAMIC_DEBUG(xr::level::Error, "No parent object! ID {}", id_parent);
         return false;
     }
 
     if (!e_entity)
     {
-        XR_LOG_DYNAMIC_DEBUG(xr::level::Warning, "No entity object! ID {}", id_entity);
+        XR_LOG_DYNAMIC_DEBUG(xr::level::Error, "No entity object! ID {}", id_entity);
         return false;
     }
 

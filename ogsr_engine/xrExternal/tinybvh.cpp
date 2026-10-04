@@ -14,6 +14,7 @@ XR_DIAG_IGNORE("-Wimplicit-int-float-conversion");
 XR_DIAG_IGNORE("-Wmacro-redefined");
 XR_DIAG_IGNORE("-Wmissing-braces");
 XR_DIAG_IGNORE("-Wmissing-prototypes");
+XR_DIAG_IGNORE("-Wnan-infinity-disabled");
 XR_DIAG_IGNORE("-Wnewline-eof");
 XR_DIAG_IGNORE("-Wnrvo");
 XR_DIAG_IGNORE("-Wold-style-cast");

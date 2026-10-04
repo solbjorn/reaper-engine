@@ -66,9 +66,10 @@ void CObjectHandlerPlanner::set_goal(MonsterSpace::EObjectAction object_action, 
 #ifdef DEBUG
     if (m_use_log)
     {
-        Msg("{:6} : Active item {}", Device.dwTimeGlobal,
-            object().inventory().ActiveItem() ? std::string_view{object().inventory().ActiveItem()->object().cName()} : std::string_view{"no active items"});
-        Msg("{:6} : Goal {}", Device.dwTimeGlobal, property2string(condition_id));
+        XR_LOG_TRACE_L1("{:6} : Active item {}", Device.dwTimeGlobal,
+                        object().inventory().ActiveItem() ? std::string_view{object().inventory().ActiveItem()->object().cName()} :
+                                                            std::string_view{"no active items"});
+        XR_LOG_TRACE_L1("{:6} : Goal {}", Device.dwTimeGlobal, property2string(condition_id));
     }
 #endif
 

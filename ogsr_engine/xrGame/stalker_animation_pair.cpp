@@ -134,8 +134,8 @@ void CStalkerAnimationPair::play(IKinematicsAnimated* skeleton_animated, PlayCal
         VERIFY(motion);
 
         LPCSTR name = skeleton_animated->LL_MotionDefName_dbg(animation()).first;
-        Msg("{:6} [{}][{}][{}][{}] - LOOPED: {}", Device.dwTimeGlobal, m_object_name, m_animation_type_name, name, motion->bone_or_part,
-            !(motion->flags & esmStopAtEnd));
+        XR_LOG_TRACE_L1("{:6} [{}][{}][{}][{}] - LOOPED: {}", Device.dwTimeGlobal, m_object_name, m_animation_type_name, name, motion->bone_or_part,
+                        !(motion->flags & esmStopAtEnd));
     }
 #endif
 }

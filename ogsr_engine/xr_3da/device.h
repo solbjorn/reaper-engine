@@ -250,18 +250,15 @@ public:
 
     tmc::task<void> process_frame_async()
     {
-        XR_TRACY_ZONE_SCOPED();
-
         if (seq_frame_async.empty())
-            goto out;
+            co_return;
+
+        XR_TRACY_ZONE_SCOPED();
 
         for (auto& pair : seq_frame_async)
             co_await pair.first(pair.second);
 
         seq_frame_async.clear();
-
-    out:
-        xr::log_flush();
     }
 
     tmc::task<void> execute_async(gsl::czstring cmd);

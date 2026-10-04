@@ -42,8 +42,7 @@ const Fvector& CPatrolPathParams::point(u32 index) const
 
     if (!m_path->vertex(index))
     {
-        Msg("!![{}] Can't get information about patrol point number [{}] in the patrol way [{}]", std::source_location::current().function_name(), index,
-            m_path_name);
+        XR_LOG_ERROR("Can't get information about patrol point number [{}] in the patrol way [{}]", index, m_path_name);
         index = (*m_path->vertices().begin()).second->vertex_id();
     }
 
@@ -57,8 +56,7 @@ u32 CPatrolPathParams::level_vertex_id(u32 index) const
 
     if (!m_path->vertex(index))
     {
-        Msg("!![{}] Can't get information about patrol point number [{}] in the patrol way [{}]", std::source_location::current().function_name(), index,
-            m_path_name);
+        XR_LOG_ERROR("Can't get information about patrol point number [{}] in the patrol way [{}]", index, m_path_name);
         index = (*m_path->vertices().begin()).second->vertex_id();
     }
 
@@ -72,8 +70,7 @@ GameGraph::_GRAPH_ID CPatrolPathParams::game_vertex_id(u32 index) const
 
     if (!m_path->vertex(index))
     {
-        Msg("!![{}] Can't get information about patrol point number [{}] in the patrol way [{}]", std::source_location::current().function_name(), index,
-            m_path_name);
+        XR_LOG_ERROR("Can't get information about patrol point number [{}] in the patrol way [{}]", index, m_path_name);
         index = (*m_path->vertices().begin()).second->vertex_id();
     }
 

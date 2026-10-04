@@ -140,8 +140,7 @@ void CSpaceRestrictionHolder::register_restrictor(CSpaceRestrictor* space_restri
     CSpaceRestrictionShape* shape = xr_new<CSpaceRestrictionShape>(space_restrictor, restrictor_type != RestrictionSpace::eDefaultRestrictorTypeNone);
     if (shape->border().empty())
     {
-        Msg("* [{}]: change restrictor_type of {} to eRestrictorTypeNone because border().empty()", std::source_location::current().function_name(),
-            space_restrictor->cName());
+        XR_LOG_WARNING("Change restrictor_type of {} to eRestrictorTypeNone because border().empty()", space_restrictor->cName());
 
         space_restrictor->change_restrictor_type(RestrictionSpace::eRestrictorTypeNone);
         xr_delete(shape);

@@ -415,6 +415,7 @@ bool CUIInventoryWnd::OnItemDrop(CUICellItem* itm)
         if (item_w <= max_size.x && item_h <= max_size.y)
         {
             for (u8 i = 0; i < SLOTS_TOTAL; i++)
+            {
                 if (new_owner == GetSlotList(i))
                 {
                     if (item->IsPlaceable(i, i))
@@ -422,17 +423,18 @@ bool CUIInventoryWnd::OnItemDrop(CUICellItem* itm)
                         item->SetSlot(i);
                         can_put = true;
                     }
-                    else
+                    else if (!DropItem(CurrentIItem(), new_owner) && item->GetSlotsCount() > 0)
                     {
-                        if (!DropItem(CurrentIItem(), new_owner) && item->GetSlotsCount() > 0)
-                            Msg("! cannot put item {} into slot {}, allowed slots {{{}}}", name, i, item->GetSlotsSect());
+                        XR_LOG_ERROR("Can't put item {} into slot {}, allowed slots {{{}}}", name, i, item->GetSlotsSect());
                     }
+
                     break;
-                } // for-if
+                }
+            }
         }
         else
         {
-            Msg("!#ERROR: item {} to large for slot: ({} x {}) vs ({} x {}) ", name, item_w, item_h, max_size.x, max_size.y);
+            XR_LOG_ERROR("Item {} is too large for slot: ({} x {}) vs ({} x {})", name, item_w, item_h, max_size.x, max_size.y);
         }
 
         // при невозможности поместить в выбранный слот

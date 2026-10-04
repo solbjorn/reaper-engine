@@ -21,9 +21,7 @@ void xrServer::Process_event_ownership(NET_Packet& P, ClientID sender, u16 ID, B
     u16 id_parent = ID, id_entity;
     P.r_u16(id_entity);
 
-#ifdef DEBUG
-    Msg("sv ownership id_parent {} id_entity {} [{}]", ent_name_safe(id_parent), ent_name_safe(id_entity), Device.dwFrame);
-#endif
+    XR_LOG_TRACE_L1("sv ownership id_parent {} id_entity {} [{}]", ent_name_safe(id_parent), ent_name_safe(id_entity), Device.dwFrame);
 
     CSE_Abstract* e_entity = game->get_entity_from_eid(id_entity);
     if (e_entity == nullptr)
@@ -33,8 +31,8 @@ void xrServer::Process_event_ownership(NET_Packet& P, ClientID sender, u16 ID, B
 
     if (0xffff != e_entity->ID_Parent)
     {
-        Msg("sv !ownership (entity already has parent) new_parent {} id_parent {} id_entity {} [{}]", ent_name_safe(e_entity->ID_Parent),
-            ent_name_safe(id_parent), ent_name_safe(id_entity), Device.dwFrame);
+        XR_LOG_ERROR("sv !ownership (entity already has parent) new_parent {} id_parent {} id_entity {} [{}]", ent_name_safe(e_entity->ID_Parent),
+                     ent_name_safe(id_parent), ent_name_safe(id_entity), Device.dwFrame);
         return;
     }
 

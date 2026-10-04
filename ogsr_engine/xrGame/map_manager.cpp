@@ -266,7 +266,8 @@ void CMapManager::Dump()
     Locations_it it = Locations().begin();
     for (; it != Locations().end(); ++it)
     {
-        Msg("spot_type=[{}] object_id=[{}]", (*it).spot_type, (*it).object_id);
+        XR_LOG_TRACE_L1(" spot_type=[{}] object_id=[{}]", (*it).spot_type, (*it).object_id);
+
         (*it).location->Dump();
     }
 

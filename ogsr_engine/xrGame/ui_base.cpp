@@ -188,8 +188,8 @@ void ui_core::PushScissor(const Frect& r_tgt, bool overlapped)
 
     if (!(result.x1 >= 0 && result.y1 >= 0 && result.x2 <= UI_BASE_WIDTH && result.y2 <= UI_BASE_HEIGHT))
     {
-        Msg("! r_tgt [{:.4}][{:.4}][{:.4}][{:.4}]", r_tgt.x1, r_tgt.y1, r_tgt.x2, r_tgt.y2);
-        Msg("! result [{:.4}][{:.4}][{:.4}][{:.4}]", result.x1, result.y1, result.x2, result.y2);
+        XR_LOG_ERROR("r_tgt [{:.4}][{:.4}][{:.4}][{:.4}]", r_tgt.x1, r_tgt.y1, r_tgt.x2, r_tgt.y2);
+        XR_LOG_ERROR("result [{:.4}][{:.4}][{:.4}][{:.4}]", result.x1, result.y1, result.x2, result.y2);
 
         VERIFY(result.x1 >= 0 && result.y1 >= 0 && result.x2 <= UI_BASE_WIDTH && result.y2 <= UI_BASE_HEIGHT);
     }
@@ -307,7 +307,9 @@ shared_str ui_core::get_xml_name(LPCSTR fn)
             strcat_s(str, "_16.xml");
         }
         else
+        {
             sprintf_s(str, "%s_16", fn);
+        }
 
         if (!FS.exist(str_, "$game_config$", "ui\\", str))
         {
@@ -316,9 +318,7 @@ shared_str ui_core::get_xml_name(LPCSTR fn)
                 strcat_s(str, ".xml");
         }
 
-#ifdef DEBUG
-        Msg("[16-9] get_xml_name for[{}] returns [{}]", fn, str);
-#endif
+        XR_LOG_DEBUG("[16-9] get_xml_name for[{}] returns [{}]", fn, str);
     }
 
     return shared_str{str};

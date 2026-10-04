@@ -693,17 +693,17 @@ LPCSTR CScriptGameObject::GetBoneName(u16 id) const
 void CScriptGameObject::GetModelDump()
 {
     auto K = smart_cast<IKinematics*>(object().Visual());
-    Msg("##[{}] WORLD Dump begin::[{}] with visual [{}]", std::source_location::current().function_name(), cName(), object().cNameVisual());
+
+    XR_LOG_TRACE_L1("WORLD Dump begin::[{}] with visual [{}]", cName(), object().cNameVisual());
     K->RC_Dump();
-    Msg("##[{}] WORLD Dump [{}] end", std::source_location::current().function_name(), cName());
+    XR_LOG_TRACE_L1("WORLD Dump [{}] end", cName());
 
     auto huditem = smart_cast<const CHudItem*>(&object());
     if (huditem && huditem->HudItemData())
     {
-        Msg("##[{}] HUD Dump begin::[{}] with visual [{}]", std::source_location::current().function_name(), huditem->HudSection(),
-            huditem->HudItemData()->m_visual_name);
+        XR_LOG_TRACE_L1("HUD Dump begin::[{}] with visual [{}]", huditem->HudSection(), huditem->HudItemData()->m_visual_name);
         huditem->HudItemData()->m_model->RC_Dump();
-        Msg("##[{}] HUD Dump [{}] end", std::source_location::current().function_name(), huditem->HudSection());
+        XR_LOG_TRACE_L1("HUD Dump [{}] end", huditem->HudSection());
     }
 }
 
@@ -731,7 +731,7 @@ void CScriptGameObject::ShowModelMeshHUD(const u32 id, const bool state)
     if (huditem && huditem->HudItemData())
         huditem->HudItemData()->m_model->SetRFlag(id, state);
     else
-        Msg("!![{}] HUD model not found for [{}]", std::source_location::current().function_name(), cName());
+        XR_LOG_ERROR("HUD model not found for [{}]", cName());
 }
 
 bool CScriptGameObject::GetShowMeshHUD(const u32 id) const
@@ -740,7 +740,8 @@ bool CScriptGameObject::GetShowMeshHUD(const u32 id) const
     if (huditem && huditem->HudItemData())
         return huditem->HudItemData()->m_model->GetRFlag(id);
 
-    Msg("!![{}] HUD model not found for [{}]", std::source_location::current().function_name(), cName());
+    XR_LOG_ERROR("HUD model not found for [{}]", cName());
+
     return false;
 }
 
@@ -750,7 +751,9 @@ u32 CScriptGameObject::GetMeshCountHUD() const
     if (huditem && huditem->HudItemData())
         return huditem->HudItemData()->m_model->RChildCount();
 
-    Msg("!![{}] HUD model not found for [{}]", std::source_location::current().function_name(), cName());
+    XR_LOG_ERROR("HUD model not found for [{}]", cName());
+
     return 0;
 }
+
 /************************* End Add *************************************/

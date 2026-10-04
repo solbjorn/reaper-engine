@@ -28,11 +28,11 @@ xr_vector<DBGList> dbg_list_sublines;
 
 void dump_list_sublines()
 {
-    Msg("------Total  SubLines {}", dbg_list_sublines.size());
+    XR_LOG_DYNAMIC(xr::level::TraceL1, "------Total  SubLines {}", dbg_list_sublines.size());
 
     xr_vector<DBGList>::iterator _it = dbg_list_sublines.begin();
     for (; _it != dbg_list_sublines.end(); ++_it)
-        Msg("--leak detected ---- SubLine = {}", (*_it).num);
+        XR_LOG_DYNAMIC(xr::level::TraceL1, " --leak detected ---- SubLine = {}", (*_it).num);
 }
 #else
 void dump_list_sublines() {}

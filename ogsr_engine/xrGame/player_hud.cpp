@@ -164,8 +164,8 @@ void player_hud_motion_container::load(bool has_separated_hands, IKinematicsAnim
             if (pm.m_animations.empty())
             {
                 XR_ASSERT(!has_separated_hands, "motion not found in section", sect, pm.m_base_name, name);
+                XR_LOG_ERROR("Motion [{}]({}) not found in section [{}]", pm.m_base_name, name, sect);
 
-                Msg("! [{}] motion [{}]({}) not found in section [{}]", std::source_location::current().function_name(), pm.m_base_name, name, sect);
                 continue;
             }
 
@@ -632,7 +632,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
             motion_descr& additional = anm->m_additional_animations[rnd_idx2];
 
             if (bDebug)
-                Msg("playing item animation [{}]", additional.name);
+                XR_LOG_TRACE_L1("Playing item animation [{}]", additional.name);
 
             M2 = ka->ID_Cycle_Safe(additional.name);
         }
@@ -641,7 +641,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
             shared_str item_anm_name = M.name;
 
             if (bDebug)
-                Msg("playing item animation [{}]", item_anm_name);
+                XR_LOG_TRACE_L1("Playing item animation [{}]", item_anm_name);
 
             M2 = ka->ID_Cycle_Safe(item_anm_name);
         }
@@ -1608,7 +1608,8 @@ u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, b
 {
     if (!pSettings->section_exist(hud_section))
     {
-        Msg("! script motion section [{}] does not exist", hud_section);
+        XR_LOG_ERROR("Script motion section [{}] does not exist", hud_section);
+
         m_bStopAtEndAnimIsRunning = true;
         script_anim_end = Device.dwTimeGlobal;
 
@@ -1661,7 +1662,8 @@ u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, b
 
     if (!phm)
     {
-        Msg("! script motion [{}] not found in section [{}]", anm_name, hud_section);
+        XR_LOG_ERROR("Script motion [{}] not found in section [{}]", anm_name, hud_section);
+
         m_bStopAtEndAnimIsRunning = true;
         script_anim_end = Device.dwTimeGlobal;
 
@@ -1680,7 +1682,7 @@ u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, b
             motion_descr& additional = phm->m_additional_animations[rnd_idx2];
 
             if (bDebug)
-                Msg("playing item animation [{}]", additional.name);
+                XR_LOG_TRACE_L1("Playing item animation [{}]", additional.name);
 
             M2 = script_anim_item_model->ID_Cycle_Safe(additional.name);
         }
@@ -1689,7 +1691,7 @@ u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, b
             shared_str item_anm_name = M.name;
 
             if (bDebug)
-                Msg("playing item animation [{}]", item_anm_name);
+                XR_LOG_TRACE_L1("Playing item animation [{}]", item_anm_name);
 
             M2 = script_anim_item_model->ID_Cycle_Safe(item_anm_name);
         }
@@ -1787,7 +1789,7 @@ u32 player_hud::motion_length_script(LPCSTR hud_section, LPCSTR anm_name, float 
 {
     if (!pSettings->section_exist(hud_section))
     {
-        Msg("! script motion section [{}] does not exist", hud_section);
+        XR_LOG_ERROR("Script motion section [{}] does not exist", hud_section);
         return 0;
     }
 
@@ -1807,7 +1809,7 @@ u32 player_hud::motion_length_script(LPCSTR hud_section, LPCSTR anm_name, float 
     player_hud_motion* phm = pm->find_motion(shared_str{anm_name});
     if (!phm)
     {
-        Msg("! script motion [{}] not found in section [{}]", anm_name, hud_section);
+        XR_LOG_ERROR("Script motion [{}] not found in section [{}]", anm_name, hud_section);
         return 0;
     }
 

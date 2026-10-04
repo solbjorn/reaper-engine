@@ -211,8 +211,8 @@ void CStalkerActionCombatBase::play_attack_sound(u32 max_start_time, u32 min_sta
 
 #ifdef DEBUG
     if (object().agent_manager().member().combat_members().empty())
-        Msg("! I am in combat, but there is no combat members at all (including me), npc[{}],team[{}],squad[{}],group[{}]", object().cName(), object().g_Team(),
-            object().g_Squad(), object().g_Group());
+        XR_LOG_ERROR("I am in combat, but there is no combat members at all (including me), npc[{}],team[{}],squad[{}],group[{}]", object().cName(),
+                     object().g_Team(), object().g_Squad(), object().g_Group());
 #endif // DEBUG
 
     if (object().agent_manager().member().combat_members().size() > 1)
@@ -235,8 +235,8 @@ void CStalkerActionCombatBase::play_start_search_sound(u32 max_start_time, u32 m
 
 #ifdef DEBUG
     if (object().agent_manager().member().combat_members().empty())
-        Msg("! I am in combat, but there is no combat members at all (including me), npc[{}],team[{}],squad[{}],group[{}]", object().cName(), object().g_Team(),
-            object().g_Squad(), object().g_Group());
+        XR_LOG_ERROR("I am in combat, but there is no combat members at all (including me), npc[{}],team[{}],squad[{}],group[{}]", object().cName(),
+                     object().g_Team(), object().g_Squad(), object().g_Group());
 #endif // DEBUG
 
     bool search_with_allies = object().agent_manager().member().combat_members().size() > 1;

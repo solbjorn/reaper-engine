@@ -69,7 +69,7 @@ static void check_object(CScriptGameObject* object)
 {
     try
     {
-        Msg("check_object {}", object->Name());
+        XR_LOG_DEBUG("check_object {}", object->Name());
     }
     catch (...)
     {

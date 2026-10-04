@@ -17,6 +17,7 @@ shared_str CUIXml::correct_file_name(gsl::czstring path, gsl::czstring fn) const
 }
 
 // #define LOG_ALL_XMLS
+
 #ifdef LOG_ALL_XMLS
 int ListXmlCount = 0;
 
@@ -30,12 +31,14 @@ xr_vector<DBGList_> dbg_list_xmls;
 
 void dump_list_xmls()
 {
-    Msg("------Total  xmls {}", dbg_list_xmls.size());
+    XR_LOG_DYNAMIC(xr::level::TraceL1, "------Total  xmls {}", dbg_list_xmls.size());
 
     xr_vector<DBGList_>::iterator _it = dbg_list_xmls.begin();
     for (; _it != dbg_list_xmls.end(); ++_it)
+    {
         if (!(*_it).closed)
-            Msg("--leak detected ---- xml = {}", (*_it).num);
+            XR_LOG_DYNAMIC(xr::level::TraceL1, " --leak detected ---- xml = {}", (*_it).num);
+    }
 }
 #else
 void dump_list_xmls() {}
@@ -57,6 +60,7 @@ CUIXml::~CUIXml()
 #ifdef LOG_ALL_XMLS
     xr_vector<DBGList_>::iterator _it = dbg_list_xmls.begin();
     bool bOK = false;
+
     for (; _it != dbg_list_xmls.end(); ++_it)
     {
         if ((*_it).num == m_dbg_id && !(*_it).closed)
@@ -69,12 +73,12 @@ CUIXml::~CUIXml()
 
         if ((*_it).num == m_dbg_id && (*_it).closed)
         {
-            Msg("--XML [{}] already deleted", m_dbg_id);
+            XR_LOG_ERROR("XML [{}] already deleted", m_dbg_id);
             bOK = true;
         }
     }
 
     if (!bOK)
-        Msg("CUIXml::~CUIXml.[{}] cannot find xml in list", m_dbg_id);
+        XR_LOG_ERROR("[{}] can't find XML in list", m_dbg_id);
 #endif
 }

@@ -9,9 +9,7 @@
 
 tmc::task<xrServer::EConnect> xrServer::Connect(shared_str& session_name)
 {
-#ifdef DEBUG
-    Msg("* sv_Connect: {}", session_name);
-#endif
+    XR_LOG_DEBUG("sv_Connect: {}", session_name);
 
     // Parse options and create game
     if (!std::string_view{session_name}.contains('/'))
@@ -28,9 +26,7 @@ tmc::task<xrServer::EConnect> xrServer::Connect(shared_str& session_name)
 
     csPlayers.Enter();
 
-#ifdef DEBUG
-    Msg("* Created server_game {}", game->type_name());
-#endif
+    XR_LOG_DEBUG("Created server_game {}", game->type_name());
 
     co_await game->Create(session_name);
     csPlayers.Leave();

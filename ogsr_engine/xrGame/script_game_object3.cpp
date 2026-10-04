@@ -307,7 +307,7 @@ LPCSTR CScriptGameObject::GetPatrolPathName()
         CScriptEntity* script_monster = smart_cast<CScriptEntity*>(&object());
         if (!script_monster)
         {
-            Msg("!![{}] cannot access class member GetPatrolPathName! Object: [{}]", std::source_location::current().function_name(), this->cName());
+            XR_LOG_ERROR("Can't access class member GetPatrolPathName! Object: [{}]", this->cName());
             return ("");
         }
         else

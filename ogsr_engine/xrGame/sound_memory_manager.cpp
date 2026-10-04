@@ -132,8 +132,8 @@ void CSoundMemoryManager::feel_sound_new(CObject* object, int sound_type, CSound
     VERIFY(self);
 
 #ifndef SILENCE
-    Msg("{} ({}) - sound type {:#x} from {} at {} in ({:.3},{:.3},{:.3}) with power {:.3}", self->cName(), Device.dwTimeGlobal, sound_type,
-        object ? std::string_view{object->cName()} : std::string_view{"world"}, Device.dwTimeGlobal, position.x, position.y, position.z, sound_power);
+    XR_LOG_DYNAMIC(xr::level::TraceL1, "{} ({}) - sound type {:#x} from {} at {} in {::.3} with power {:.3}", self->cName(), Device.dwTimeGlobal, sound_type,
+                   object != nullptr ? std::string_view{object->cName()} : std::string_view{"world"}, Device.dwTimeGlobal, position, sound_power);
 #endif
 
     // ignore unknown sounds

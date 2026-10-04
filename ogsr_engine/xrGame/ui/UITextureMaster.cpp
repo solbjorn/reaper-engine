@@ -23,7 +23,7 @@ u32 CUITextureMaster::m_time = 0;
 void CUITextureMaster::WriteLog()
 {
 #ifdef DEBUG
-    Msg("UI texture manager work time is {} ms", m_time);
+    XR_LOG_TRACE_L1("UI texture manager work time is {} ms", m_time);
 #endif
 }
 
@@ -151,7 +151,7 @@ float CUITextureMaster::GetTextureHeight(const char* texture_name)
     if (it != m_textures.end())
         return (*it).second.rect.height();
 
-    Msg("! CUITextureMaster::GetTextureHeight Can't find texture {}", texture_name);
+    XR_LOG_ERROR("Can't find texture {}", texture_name);
 
     return 0;
 }
@@ -162,7 +162,7 @@ Frect CUITextureMaster::GetTextureRect(const char* texture_name)
     if (it != m_textures.end())
         return (*it).second.rect;
 
-    Msg("! CUITextureMaster::GetTextureRect Can't find texture {}", texture_name);
+    XR_LOG_ERROR("Can't find texture {}", texture_name);
 
     return Frect{};
 }
@@ -173,7 +173,7 @@ float CUITextureMaster::GetTextureWidth(const char* texture_name)
     if (it != m_textures.end())
         return (*it).second.rect.width();
 
-    Msg("! CUITextureMaster::GetTextureWidth Can't find texture {}", texture_name);
+    XR_LOG_ERROR("Can't find texture {}", texture_name);
 
     return 0;
 }
@@ -184,7 +184,8 @@ LPCSTR CUITextureMaster::GetTextureFileName(const char* texture_name)
     if (it != m_textures.end())
         return it->second.file.c_str();
 
-    Msg("! CUITextureMaster::GetTextureFileName Can't find texture {}", texture_name);
+    XR_LOG_ERROR("Can't find texture {}", texture_name);
+
     return nullptr;
 }
 

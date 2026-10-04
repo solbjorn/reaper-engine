@@ -73,7 +73,6 @@ void show(std::string_view msg)
     if (Debug.to_log() != nullptr)
         XR_LOG_CRITICAL("{}", msg);
 
-    xr::log_flush();
     const auto back = xr::detail::log_flush();
 
     if (gGameWindow != nullptr)
@@ -367,7 +366,6 @@ void sentry_init(gsl::czstring log = nullptr)
 void xrDebug::_initialize()
 {
     xr::detail::log_init();
-    xr::detail::log_init_new();
 
     xr::cpptrace_logger = xr::logger_init("cpptrace");
     cpptrace::set_log_callback(&xr::log_callback);

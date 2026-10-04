@@ -426,10 +426,10 @@ void CUILevelMap::Init(shared_str name, CInifile& gameLtx, LPCSTR sh_name)
     float kw = m_GlobalRect.width() / BoundRect().width();
     float kh = m_GlobalRect.height() / BoundRect().height();
 
-    if (FALSE == fsimilar(kw, kh, EPS_L))
+    if (!fsimilar(kw, kh, EPS_L))
     {
-        Msg(" --incorrect global rect definition for map [{}]  kw={} kh={}", MapName(), kw, kh);
-        Msg(" --try x2={} or  y2={}", m_GlobalRect.x1 + kh * BoundRect().width(), m_GlobalRect.y1 + kw * BoundRect().height());
+        XR_LOG_ERROR("Incorrect global rect definition for map [{}]  kw={} kh={}", MapName(), kw, kh);
+        XR_LOG_ERROR("Try x2={} or  y2={}", m_GlobalRect.x1 + kh * BoundRect().width(), m_GlobalRect.y1 + kw * BoundRect().height());
     }
 #endif
 }

@@ -46,9 +46,10 @@ void CScriptBinder::reload(LPCSTR section)
 
     auto script_func_name = pSettings->r_string(section, "script_binding");
     sol::function lua_function;
+
     if (!ai().script_engine().function(script_func_name, lua_function))
     {
-        Msg("!![CScriptBinder::reload] function [{}] not loaded!", script_func_name);
+        XR_LOG_ERROR("Function [{}] not loaded!", script_func_name);
         return;
     }
 
@@ -85,10 +86,8 @@ tmc::task<void> CScriptBinder::net_Destroy()
 {
     if (m_object != nullptr)
     {
-#ifdef DEBUG
-        Msg("* Core object {} is UNbinded from the script object",
-            smart_cast<CGameObject*>(this) != nullptr ? std::string_view{smart_cast<CGameObject*>(this)->cName()} : std::string_view{});
-#endif // DEBUG
+        XR_LOG_TRACE_L1("Core object {} is UNbinded from the script object",
+                        smart_cast<CGameObject*>(this) != nullptr ? std::string_view{smart_cast<CGameObject*>(this)->cName()} : std::string_view{});
 
         co_await m_object->net_Destroy();
     }
@@ -100,10 +99,8 @@ void CScriptBinder::set_object(CScriptBinderObject* object)
 {
     VERIFY2(!m_object, "Cannot bind to the object twice!");
 
-#ifdef DEBUG
-    Msg("* Core object {} is binded with the script object",
-        smart_cast<CGameObject*>(this) != nullptr ? std::string_view{smart_cast<CGameObject*>(this)->cName()} : std::string_view{});
-#endif // DEBUG
+    XR_LOG_TRACE_L1("Core object {} is binded with the script object",
+                    smart_cast<CGameObject*>(this) != nullptr ? std::string_view{smart_cast<CGameObject*>(this)->cName()} : std::string_view{});
 
     m_object = object;
 }

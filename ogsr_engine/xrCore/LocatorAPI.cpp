@@ -758,7 +758,6 @@ tmc::task<void> CLocatorAPI::_initialize(u32 flags, gsl::czstring target_folder,
         }
     }
 
-    CreateLog(params.contains("-nolog"));
     co_await xr::detail::log_create();
 }
 
